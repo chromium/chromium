@@ -11,6 +11,7 @@
 #include <tuple>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
@@ -53,7 +54,7 @@ MerkleIntegritySourceStream::MerkleIntegritySourceStream(
       next_proof.size() != SHA256_DIGEST_LENGTH) {
     failed_ = true;
   } else {
-    memcpy(next_proof_, next_proof.data(), SHA256_DIGEST_LENGTH);
+    UNSAFE_TODO(memcpy(next_proof_, next_proof.data(), SHA256_DIGEST_LENGTH));
   }
 }
 
@@ -222,7 +223,7 @@ bool MerkleIntegritySourceStream::ProcessRecord(base::span<const char> record,
   // building in fuzzer mode, everything hashes to the same garbage value.
   memset(sha256, 0x42, SHA256_DIGEST_LENGTH);
 #endif
-  if (memcmp(sha256, next_proof_, SHA256_DIGEST_LENGTH) != 0) {
+  if (UNSAFE_TODO(memcmp(sha256, next_proof_, SHA256_DIGEST_LENGTH)) != 0) {
     return false;
   }
 
@@ -233,7 +234,7 @@ bool MerkleIntegritySourceStream::ProcessRecord(base::span<const char> record,
 
     // Save the next proof.
     CHECK_EQ(static_cast<size_t>(SHA256_DIGEST_LENGTH), hash.size());
-    memcpy(next_proof_, hash.data(), SHA256_DIGEST_LENGTH);
+    UNSAFE_TODO(memcpy(next_proof_, hash.data(), SHA256_DIGEST_LENGTH));
   }
 
   // Copy whatever output there is room for.

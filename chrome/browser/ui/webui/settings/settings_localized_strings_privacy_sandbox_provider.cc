@@ -338,10 +338,6 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
            l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)},
           nullptr));
   html_source->AddBoolean(
-      "firstPartySetsUIEnabled",
-      base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxFirstPartySetsUI));
-  html_source->AddBoolean(
       "isPrivacySandboxAdsApiUxEnhancementsEnabled",
       base::FeatureList::IsEnabled(
           privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements));

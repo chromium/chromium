@@ -181,8 +181,8 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
   // Potentially zero out initial frames leading up to the offset.
   if (destination_frame_offset) {
     for (unsigned i = 0; i < number_of_channels; ++i) {
-      memset(destination_channels_[i], 0,
-             sizeof(float) * destination_frame_offset);
+      UNSAFE_TODO(memset(destination_channels_[i], 0,
+                         sizeof(float) * destination_frame_offset));
     }
   }
 

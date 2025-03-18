@@ -130,7 +130,7 @@ class VersionUpdaterMac : public VersionUpdater {
                    status_callback) {
               base::ThreadPool::PostTaskAndReplyWithResult(
                   FROM_HERE, {base::MayBlock()},
-                  base::BindOnce(&GetUpdaterScope),
+                  base::BindOnce(&GetBrowserUpdaterScope),
                   base::BindOnce(
                       [](base::RepeatingCallback<void(
                              const updater::UpdateService::UpdateState&)>

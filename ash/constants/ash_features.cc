@@ -210,6 +210,11 @@ constexpr base::FeatureParam<base::TimeDelta>
         &kBocaCustomPolling, "InSessionPollingIntervalInSeconds",
         base::Seconds(60)};
 
+// Enables or disables Boca OnTask mute ARC audio requests on ChromeOS.
+BASE_FEATURE(kBocaOnTaskMuteArcAudio,
+             "BocaOnTaskMuteArcAudio",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables the Boca OnTask pod on ChromeOS.
 BASE_FEATURE(kBocaOnTaskPod,
              "BocaOnTaskPod",
@@ -229,7 +234,7 @@ BASE_FEATURE(kBocaStudentHeartbeatCustomInterval,
 constexpr base::FeatureParam<base::TimeDelta>
     kBocaStudentHeartbeatPeriodicJobIntervalInSeconds{
         &kBocaStudentHeartbeatCustomInterval,
-        "StudentHeartbeatPeriodicJobIntervalInSeconds", base::Seconds(60)};
+        "StudentHeartbeatPeriodicJobIntervalInSeconds", base::Seconds(30)};
 
 // Enables or disables Boca extension consumer experience on ChromeOS.
 BASE_FEATURE(kBocaExtensionConsumer,
@@ -536,6 +541,12 @@ BASE_FEATURE(kCryptohomeRecoveryByDefaultForEnterprise,
 // session.
 BASE_FEATURE(kDemoModeSignIn,
              "DemoModeSignIn",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether clean up local files between shopper session when demo mode
+// sign in is enable. No-op if demo mode sign in is disabled.
+BASE_FEATURE(kDemoModeSignInFileCleanup,
+             "DemoModeSignInFileCleanup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Toggle different display features based on user setting and power state
@@ -1971,6 +1982,11 @@ BASE_FEATURE(kNotificationsInContextMenu,
              "NotificationsInContextMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables showing OfflineItems in Notifications.
+BASE_FEATURE(kOfflineItemsInNotifications,
+             "OfflineItemsInNotifications",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to enable on-device grammar check service.
 BASE_FEATURE(kOnDeviceGrammarCheck,
              "OnDeviceGrammarCheck",
@@ -3361,6 +3377,10 @@ bool IsBocaCustomPollingEnabled() {
   return base::FeatureList::IsEnabled(kBocaCustomPolling);
 }
 
+bool IsBocaOnTaskMuteArcAudioEnabled() {
+  return base::FeatureList::IsEnabled(kBocaOnTaskMuteArcAudio);
+}
+
 bool IsBocaOnTaskPodEnabled() {
   return base::FeatureList::IsEnabled(kBocaOnTaskPod);
 }
@@ -3451,6 +3471,10 @@ bool IsCrosSwitcherEnabled() {
 
 bool IsDemoModeSignInEnabled() {
   return base::FeatureList::IsEnabled(kDemoModeSignIn);
+}
+
+bool IsDemoModeSignInFileCleanupEnabled() {
+  return base::FeatureList::IsEnabled(kDemoModeSignInFileCleanup);
 }
 
 bool IsDeskTemplateSyncEnabled() {
@@ -4052,6 +4076,10 @@ bool IsNotificationsInContextMenuEnabled() {
 
 bool IsNssDbClientCertsRollbackEnabled() {
   return base::FeatureList::IsEnabled(kEnableNssDbClientCertsRollback);
+}
+
+bool IsOfflineItemsInNotificationsEnabled() {
+  return base::FeatureList::IsEnabled(kOfflineItemsInNotifications);
 }
 
 bool AreOngoingProcessesEnabled() {

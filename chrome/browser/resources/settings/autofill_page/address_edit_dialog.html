@@ -74,6 +74,8 @@
           <select id="country" class="md-select" aria-labelledby="select-label"
               value="[[countryCode_]]" on-change="onCountryCodeSelectChange_"
               autofocus>
+            <!-- TODO(crbug.com/403312087): Add accessibility support for the
+                 empty option. -->
             <option value="" hidden="[[isAccountAddress_]]"></option>
             <template is="dom-repeat" items="[[countries_]]">
               <option value="[[getCode_(item)]]"

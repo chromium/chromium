@@ -278,7 +278,7 @@ void HistoryDatabase::ComputeDatabaseMetrics(
     std::set<std::string> month_hosts;
     base::Time one_week_ago = base::Time::Now() - base::Days(7);
     while (url_sql.Step()) {
-      GURL url(url_sql.ColumnString(0));
+      GURL url(url_sql.ColumnStringView(0));
       base::Time visit_time = url_sql.ColumnTime(1);
       ++month_url_count;
       month_hosts.insert(url.host());
@@ -311,7 +311,7 @@ int HistoryDatabase::CountUniqueHostsVisitedLastMonth() {
 
   std::set<std::string> hosts;
   while (url_sql.Step()) {
-    GURL url(url_sql.ColumnString(0));
+    GURL url(url_sql.ColumnStringView(0));
     hosts.insert(url.host());
   }
 
@@ -349,7 +349,7 @@ DomainsVisitedResult HistoryDatabase::GetUniqueDomainsVisited(
   std::set<std::string> locally_visited_domains_set;
 
   while (url_sql.Step()) {
-    GURL url(url_sql.ColumnString(0));
+    GURL url(url_sql.ColumnStringView(0));
     std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
         url, net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
 
@@ -364,7 +364,7 @@ DomainsVisitedResult HistoryDatabase::GetUniqueDomainsVisited(
       result.all_visited_domains.push_back(domain);
     }
 
-    bool is_local = url_sql.ColumnString(1).empty() &&
+    bool is_local = url_sql.ColumnStringView(1).empty() &&
                     url_sql.ColumnInt(2) == VisitSource::SOURCE_BROWSED;
 
     if (is_local && !locally_visited_domains_set.contains(domain)) {

@@ -14,7 +14,8 @@ import java.lang.reflect.InvocationHandler;
 
 /** Boundary interface for org.chromium.android_webview.AsyncShouldInterceptRequestCallback. */
 @NullMarked
-public interface AsyncShouldInterceptRequestCallbackBoundaryInterface {
+public interface AsyncShouldInterceptRequestCallbackBoundaryInterface
+        extends FeatureFlagHolderBoundaryInterface {
     void shouldInterceptRequestAsync(
             WebView webview,
             WebResourceRequest request,

@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_detector_detect_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_detection_result.h"
+#include "third_party/blink/renderer/modules/ai/on_device_translation/ai_resolver_with_abort_signal.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/language_detection/language_detection_model.h"
 
@@ -37,7 +38,7 @@ class AILanguageDetector final : public ScriptWrappable {
   static HeapVector<Member<LanguageDetectionResult>> ConvertResult(
       WTF::Vector<LanguageDetectionModel::LanguagePrediction> predictions);
   static void OnDetectComplete(
-      ScriptPromiseResolver<IDLSequence<LanguageDetectionResult>>* resolver,
+      AIResolverWithAbortSignal<IDLSequence<LanguageDetectionResult>>* resolver,
       base::expected<WTF::Vector<LanguageDetectionModel::LanguagePrediction>,
                      DetectLanguageError> result);
 

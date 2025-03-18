@@ -31,6 +31,20 @@ OnDeviceModelMetadata::OnDeviceModelMetadata(
     return;
   }
   validation_config_ = std::move(*config->mutable_validation_config());
+  for (int c : config->capabilities()) {
+    switch (c) {
+      case proto::OnDeviceModelCapability::
+          ON_DEVICE_MODEL_CAPABILITY_IMAGE_INPUT:
+        capabilities_.Put(on_device_model::CapabilityFlags::kImageInput);
+        break;
+      case proto::OnDeviceModelCapability::
+          ON_DEVICE_MODEL_CAPABILITY_AUDIO_INPUT:
+        capabilities_.Put(on_device_model::CapabilityFlags::kAudioInput);
+        break;
+      default:
+        break;
+    }
+  }
 }
 
 OnDeviceModelMetadata::~OnDeviceModelMetadata() = default;

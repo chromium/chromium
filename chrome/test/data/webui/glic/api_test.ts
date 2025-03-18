@@ -7,21 +7,33 @@
 //   --gn_target chrome/test/data/webui/glic:build_ts
 
 import {GetTabContextErrorReason, PanelStateKind, ScrollToErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
-import type {GetTabContextError, GlicBrowserHost, GlicWebClient, Observable, PanelOpeningData, ScrollToError} from '/glic/glic_api/glic_api.js';
+import type {GetTabContextError, GlicBrowserHost, GlicWebClient, Observable, PanelOpeningData, ScrollToError, Subscriber} from '/glic/glic_api/glic_api.js';
 
 import {createGlicHostRegistryOnLoad} from './api_boot.js';
+
+function getTestName(): string|null {
+  let testName = new URL(window.location.href).searchParams.get('test');
+  if (testName?.startsWith('DISABLED_')) {
+    testName = testName.substring('DISABLED_'.length);
+  }
+  return testName;
+}
 
 // Creates a queue of promises from an observable.
 class SequencedSubscriber<T> {
   private signals: Array<PromiseWithResolvers<T>> = [];
   private readIndex = 0;
   private writeIndex = 0;
+  private subscriber: Subscriber;
 
   constructor(observable: Observable<T>) {
-    observable.subscribe(this.change.bind(this));
+    this.subscriber = observable.subscribe(this.change.bind(this));
   }
   next(): Promise<T> {
     return this.getSignal(this.readIndex++).promise;
+  }
+  unsubscribe() {
+    this.subscriber.unsubscribe();
   }
   private change(val: T) {
     this.getSignal(this.writeIndex++).resolve(val);
@@ -51,28 +63,64 @@ class WebClient implements GlicWebClient {
       Promise<void> {
     this.firstOpened.resolve();
   }
+
+  async waitForFirstOpen() {
+    return this.firstOpened.promise;
+  }
 }
 
-let webClientPromise: Promise<WebClient>|undefined;
+interface TestStepper {
+  nextStep(): Promise<void>;
+}
 
-async function main() {
-  const {promise, resolve} = Promise.withResolvers<WebClient>();
-  webClientPromise = promise;
-  const registry = await createGlicHostRegistryOnLoad();
-  const webClient = new WebClient();
-  registry.registerWebClient(webClient);
-  resolve(webClient);
+class ApiTestFixtureBase {
+  private clientValue?: WebClient;
+  constructor(protected testStepper: TestStepper) {}
+
+  // Sets up the web client.
+  async setUpClient() {
+    const registry = await createGlicHostRegistryOnLoad();
+    const webClient = this.createWebClient();
+    registry.registerWebClient(webClient);
+    this.clientValue = webClient;
+    assertTrue(!!this.clientValue);
+  }
+
+  // Performs setup for the test, called after `setUpClient()`.
+  async setUpTest() {}
+
+  // Creates the web client. Allows a fixture to use a different implementation.
+  createWebClient() {
+    return new WebClient();
+  }
+
+  get host(): GlicBrowserHost {
+    const h = this.client.host;
+    assertTrue(!!h);
+    return h;
+  }
+
+  get client(): WebClient {
+    assertTrue(!!this.clientValue);
+    return this.clientValue;
+  }
 }
 
 // Test cases here correspond to test cases in glic_api_uitest.cc.
 // Since these tests run in the webview, this test can't use normal deps like
 // mocha or chai assert.
-class ApiTests {
-  constructor(private client: WebClient, private host: GlicBrowserHost) {}
-
-  async setUp() {
-    await this.client.firstOpened.promise;
+class ApiTests extends ApiTestFixtureBase {
+  override async setUpTest() {
+    await this.client.waitForFirstOpen();
   }
+
+  // Return to the C++ side, and wait for it to call ContinueJsTest() to
+  // continue execution in the JS test.
+  private advanceToNextStep(): Promise<void> {
+    return this.testStepper.nextStep();
+  }
+
+  async testDoNothing() {}
 
   async testCreateTab() {
     assertTrue(!!this.host.createTab);
@@ -112,6 +160,25 @@ class ApiTests {
     await this.waitForPanelState(PanelStateKind.DETACHED);
   }
 
+  // Verify that unsubscribing from an observable prevents future updates.
+  async testUnsubscribeFromObservable() {
+    await this.waitForPanelState(PanelStateKind.DETACHED);
+    const panelStateSequence1 = observeSequence(this.host.getPanelState!());
+    const panelStateSequence2 = observeSequence(this.host.getPanelState!());
+    assertEquals(
+        PanelStateKind.DETACHED, (await panelStateSequence1.next()).kind);
+    assertEquals(
+        PanelStateKind.DETACHED, (await panelStateSequence2.next()).kind);
+    panelStateSequence2.unsubscribe();
+    this.host.attachPanel!();
+    assertEquals(
+        PanelStateKind.ATTACHED, (await panelStateSequence1.next()).kind);
+    assertEquals('no-change', await Promise.race([
+      panelStateSequence2.next().then(state => state.kind),
+      sleep(100).then(() => 'no-change'),
+    ]));
+  }
+
   async testShowProfilePicker() {
     assertTrue(!!this.host.showProfilePicker);
     this.host.showProfilePicker();
@@ -123,9 +190,10 @@ class ApiTests {
 
   async testPanelActive() {
     assertTrue(!!this.host.panelActive);
-    const signal = Promise.withResolvers<boolean>();
-    this.host.panelActive().subscribe(v => signal.resolve(v));
-    assertTrue(await signal.promise);
+    const activeSequence = observeSequence(this.host.panelActive());
+    assertTrue(await activeSequence.next());
+    await this.advanceToNextStep();
+    assertTrue(!await activeSequence.next());
   }
 
   async testCanAttachPanel() {
@@ -148,8 +216,8 @@ class ApiTests {
   }
 
   async testGetContextFromFocusedTabWithoutPermission() {
-    assertTrue(!!this.host?.getContextFromFocusedTab);
-    await this.host?.setTabContextPermissionState(false);
+    assertTrue(!!this.host.getContextFromFocusedTab);
+    await this.host.setTabContextPermissionState(false);
 
     try {
       await this.host.getContextFromFocusedTab?.({});
@@ -161,9 +229,10 @@ class ApiTests {
   }
 
   async testGetContextFromFocusedTabWithNoRequestedData() {
-    await this.host?.setTabContextPermissionState(true);
+    assertTrue(!!this.host.getContextFromFocusedTab);
+    await this.host.setTabContextPermissionState(true);
 
-    const result = await this.host.getContextFromFocusedTab?.({});
+    const result = await this.host.getContextFromFocusedTab({});
     assertTrue(!!result);
     assertTrue(
         result.tabData.url.endsWith('glic/test.html') ?? false,
@@ -176,12 +245,13 @@ class ApiTests {
 
   // TODO(harringtond): Add a test for a PDF.
   async testGetContextFromFocusedTabWithAllRequestedData() {
-    await this.host?.setTabContextPermissionState(true);
+    await this.host.setTabContextPermissionState(true);
 
     const result = await this.host.getContextFromFocusedTab?.({
       innerText: true,
       viewportScreenshot: true,
       annotatedPageContent: true,
+      maxMetaTags: 32,
       pdfData: true,
     });
 
@@ -208,6 +278,21 @@ class ApiTests {
              .bytes())
             .length;
     assertTrue(annotatedPageContentSize > 1);
+
+    // Check metadata.
+    assertTrue(!!result.annotatedPageData.metadata);
+    assertTrue(!!result.annotatedPageData.metadata.frameMetadata);
+    assertEquals(
+        result.annotatedPageData.metadata.frameMetadata.length, 1);
+    const frameMetadata = result.annotatedPageData.metadata.frameMetadata[0];
+    assertTrue(!!frameMetadata);
+    const url:URL = new URL(frameMetadata.url);
+    assertEquals(url.pathname, '/glic/test.html');
+    assertEquals(frameMetadata.metaTags.length, 1);
+    const metaTag = frameMetadata.metaTags[0];
+    assertTrue(!!metaTag);
+    assertEquals(metaTag.name, 'author');
+    assertEquals(metaTag.content, 'George');
   }
 
   // TODO(harringtond): This is disabled because it hangs. Fix it.
@@ -311,6 +396,11 @@ class ApiTests {
     assertTrue(false, 'scrollTo should have thrown an error');
   }
 
+  async testSetSyntheticExperimentState() {
+    assertTrue(!!this.host.setSyntheticExperimentState);
+    this.host.setSyntheticExperimentState('TestTrial', 'Enabled');
+  }
+
   private async waitForPanelState(kind: PanelStateKind): Promise<void> {
     assertTrue(!!this.host.getPanelState);
     const sequence = observeSequence(this.host.getPanelState());
@@ -324,27 +414,137 @@ class ApiTests {
   }
 }
 
-async function runApiTest(name: string): Promise<string> {
-  try {
-    const client = await webClientPromise;
-    assertTrue(!!client);
-    const host = client.host;
-    assertTrue(!!host);
-
-    const fixture = new ApiTests(client, host);
-    await fixture.setUp();
-    assertTrue(!!(fixture as any)[name], 'Test case not found');
-    await (fixture as any)[name]();
-  } catch (e) {
-    if (e instanceof Error) {
-      console.error(e.stack);
-    }
-    return `fail: ${e}`;
+class WebClientThatOpensOnce extends WebClient {
+  notifyPanelWillOpenCallCount = 0;
+  override async notifyPanelWillOpen(panelOpeningData: PanelOpeningData):
+      Promise<void> {
+    this.notifyPanelWillOpenCallCount += 1;
+    super.notifyPanelWillOpen(panelOpeningData);
   }
-  return 'pass';
 }
 
-(window as any).runApiTest = runApiTest;
+class NotifyPanelWillOpenTest extends ApiTestFixtureBase {
+  override createWebClient(): WebClient {
+    return new WebClientThatOpensOnce();
+  }
+
+  async testNotifyPanelWillOpenIsCalledOnce() {
+    await sleep(100);
+    assertEquals(
+        (this.client as WebClientThatOpensOnce).notifyPanelWillOpenCallCount,
+        1);
+  }
+}
+
+// All test fixtures. We look up tests by name, and the fixture name is ignored.
+// Therefore all tests must have unique names.
+const TEST_FIXTURES = [
+  ApiTests,
+  NotifyPanelWillOpenTest,
+];
+
+function findTestFixture(testName: string): any {
+  for (const fixture of TEST_FIXTURES) {
+    if (Object.getOwnPropertyNames(fixture.prototype).includes(testName)) {
+      return fixture;
+    }
+  }
+  return undefined;
+}
+
+// Result of running a test.
+type TestResult =
+    // The test completed successfully.
+    'pass'|
+    // A test step is complete. `continueApiTest()` needs to be called to
+    // finish.
+    'next-step'|
+    // Any other string is an error.
+    string;
+
+// Runs a test.
+class TestRunner implements TestStepper {
+  nextStepPromise = Promise.withResolvers<'next-step'>();
+  continuePromise = Promise.withResolvers<void>();
+  fixture: ApiTestFixtureBase|undefined;
+  testDone: Promise<void>|undefined;
+  testFound = false;
+  constructor(private testName: string) {}
+
+  async setUp() {
+    let fixtureCtor = findTestFixture(this.testName);
+    if (!fixtureCtor) {
+      // Note: throwing an exception here will not make it to the c++ side.
+      // Wait until later to throw an error.
+      console.error(`Test case not found: ${this.testName}`);
+      this.testName = 'testDoNothing';
+      fixtureCtor = findTestFixture(this.testName);
+    } else {
+      this.testFound = true;
+    }
+    this.fixture = (new fixtureCtor(this)) as ApiTestFixtureBase;
+    return await this.fixture.setUpClient();
+  }
+
+  // Sets up the test and starts running it.
+  async run(): Promise<TestResult> {
+    assertTrue(this.testFound, `Test not found`);
+    await this.fixture?.setUpTest();
+    this.testDone = (this.fixture as any)[this.testName]() as Promise<void>;
+    return this.continueTest();
+  }
+
+  // If `run()` or `stepComplete()` returns 'next-step', this function is called
+  // to continue running the test.
+  stepComplete(): Promise<TestResult> {
+    this.nextStepPromise = Promise.withResolvers();
+    const continueResolve = this.continuePromise.resolve;
+    this.continuePromise = Promise.withResolvers();
+    continueResolve();
+    return this.continueTest();
+  }
+
+  private async continueTest(): Promise<TestResult> {
+    try {
+      const result =
+          await Promise.race([this.testDone, this.nextStepPromise.promise]);
+      if (result === 'next-step') {
+        return 'next-step';
+      }
+    } catch (e) {
+      if (e instanceof Error) {
+        console.error(e.stack);
+      }
+      return `fail: ${e}`;
+    }
+    return 'pass';
+  }
+
+  // TestStepper implementation.
+  nextStep(): Promise<void> {
+    this.nextStepPromise.resolve('next-step');
+    return this.continuePromise.promise;
+  }
+}
+
+let testRunner: TestRunner|undefined;
+
+async function main() {
+  // If no test is selected, load a client that does nothing.
+  // This is present because test.html is used as a dummy test client in
+  // some tests.
+  testRunner = new TestRunner(getTestName() ?? 'testDoNothing');
+  await testRunner.setUp();
+}
+
+(window as any).runApiTest = (): Promise<TestResult> => {
+  return testRunner!.run();
+};
+
+(window as any).continueApiTest = (): Promise<TestResult> => {
+  return testRunner!.stepComplete();
+};
+
 
 type ComparableValue = boolean|string|number|undefined|null;
 

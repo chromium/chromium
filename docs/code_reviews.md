@@ -123,7 +123,7 @@ New OWNERS are added by consensus of the existing OWNERS.
 
 Some directories have more well-defined processes for updating their OWNERS
 file which will be documented at the top of the OWNERS file itself (such as in
-(blink/renderer/)[../third_party/blink/renderer/OWNERS]).
+[blink/renderer/](../third_party/blink/renderer/OWNERS)).
 
 CLs for modifying OWNERS files should cc all other OWNERS for awareness (unless
 another awareness mechanism exists), and concerns may be raised even after

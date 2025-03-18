@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/events/progress_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/modules/event_target_modules_names.h"
 
 namespace blink {
@@ -38,7 +39,7 @@ ExecutionContext* AICreateMonitor::GetExecutionContext() const {
 
 void AICreateMonitor::OnDownloadProgressUpdate(uint64_t downloaded_bytes,
                                                uint64_t total_bytes) {
-  CHECK_EQ(total_bytes, 0x10000u);
+  CHECK_EQ(total_bytes, kNormalizedDownloadProgressMax);
   double normalized_downloaded_bytes =
       downloaded_bytes / static_cast<double>(total_bytes);
   DispatchEvent(*ProgressEvent::Create(event_type_names::kDownloadprogress,

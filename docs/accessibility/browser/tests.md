@@ -154,3 +154,52 @@ Across all tests there are some helpful flags that will make testing easier.
     `--test-launcher-jobs=10`
 
 *   Filter which tests to run: `--gtest_filter="*Cats*"`
+
+## Manual testing:
+The Chromium accessibility pipeline supports an ecosystem of various assistive
+technologies through the platform accessibility APIs. When we make changes that
+modify the output of a platform accessibility interface, we should test the
+major assistive technologies (JAWS, NVDA, Narrator, VoiceOver, etc.) that rely
+on those interfaces to reduce the risk of introducing regressions. Below is a
+list of key features to validate for each AT:
+
+### Narrator:
+Narrator relies only on UIA -- it does not use MSAA/IA2. When modifying the UIA
+APIs, we should ensure that these key features still work:
+* Scan Mode (toggle it with Narrator + space)
+* Navigation by text unit (Narrator + CTRL + up/down arrow to change the text
+  unit, then Narrator + left/right arrow to navigate backward or forward).
+  Here are the text units to validate:
+  * Character navigation
+  * Word navigation
+  * Line navigation
+  * Sentence navigation
+  * Paragraph navigation
+  * Item navigation (as in list items, bullet points)
+  * Heading navigation
+  * Link navigation
+  * Form field navigation
+  * Landmark navigation
+  * Table navigation
+* Search (Narrator + CTRL + F)
+* List of links (Narrator + F7)
+* List of headings (Narrator + F6)
+* List of landmarks (Narrator + F5)
+* Caret navigation (with Scan Mode off) in a text field
+  * The character that follows the caret should be read.
+  * "Blank" or similar should be announced when moving the character after the
+    last character of the text field.
+  * Spelling and grammar errors should be announced properly when moving using
+    the arrow keys.
+    * For web content, errors can be added using the aria-invalid attribute or
+      CSS highlights. Chromium's implementations for each of them is different
+      for UIA, so both should be tested.
+    * Errors should be announced when the caret is positioned at the very
+      beginning of an error range. We should test arrow key navigations and word
+      navigation (CTRL + right/left arrow key).
+    * All errors in the same line should be announced when arrowing up/down at
+      the start of a line.
+
+This section is continuously updated. Feel free to edit it to add more core
+features to test when making a potentially breaking change, or to add testing
+instructions for other assistive technologies.

@@ -127,9 +127,9 @@ const char kMemoryMainFrameMaxHistogramId[] =
 const char kMemoryUpdateCountHistogramId[] =
     "PageLoad.Clients.Ads.Memory.UpdateCount";
 const char kAdClickHistoryQueryCountHistogramId[] =
-    "PageLoad.Clients.Ads.AdClick.HistoryQueryCount";
+    "PageLoad.Clients.Ads.AdClick.HistoryQueryCount2";
 const char kAdClickEtldPlusOneHistoryQueryCountHistogramId[] =
-    "PageLoad.Clients.Ads.AdClick.EtldPlusOneHistoryQueryCount";
+    "PageLoad.Clients.Ads.AdClick.EtldPlusOneHistoryQueryCount2";
 
 const int kMaxHeavyAdNetworkBytes =
     heavy_ad_thresholds::kMaxNetworkBytes +
@@ -3758,6 +3758,22 @@ TEST_F(AdsPageLoadMetricsObserverAdUrlInHistoryTest,
        AdClick_HistoryQueryCount_HistoryEmpty) {
   QueryAdUrlAndWaitUntilComplete(GURL(kAdUrl));
 
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(kAdClickHistoryQueryCountHistogramId),
+      std::vector<base::Bucket>({{/*min=*/0, /*count=*/1}}));
+  EXPECT_THAT(histogram_tester().GetAllSamples(
+                  kAdClickEtldPlusOneHistoryQueryCountHistogramId),
+              std::vector<base::Bucket>({{/*min=*/0, /*count=*/1}}));
+}
+
+TEST_F(AdsPageLoadMetricsObserverAdUrlInHistoryTest,
+       AdClick_HistoryQueryCount_OnlyLastThirtyDaysHistoryQueried) {
+  GURL ad_url(kAdUrl);
+  history_service_->AddPage(ad_url, base::Time::Now() - base::Days(31),
+                            history::SOURCE_BROWSED);
+  QueryAdUrlAndWaitUntilComplete(ad_url);
+
+  // Should return empty history since the ad was visited more than 30 days ago.
   EXPECT_THAT(
       histogram_tester().GetAllSamples(kAdClickHistoryQueryCountHistogramId),
       std::vector<base::Bucket>({{/*min=*/0, /*count=*/1}}));

@@ -474,6 +474,30 @@ LensOverlayController* LensOverlayController::GetController(
              : nullptr;
 }
 
+void LensOverlayController::IssueContextualSearchRequest(
+    const GURL& destination_url,
+    AutocompleteMatchType::Type match_type,
+    bool is_zero_prefix_suggestion) {
+  // Ignore the request if the overlay is off or closing.
+  if (state_ == State::kOff || IsOverlayClosing()) {
+    return;
+  }
+
+  // Hold the request until the overlay has finished initializing.
+  if (IsOverlayInitializing()) {
+    pending_contextual_search_request_ = base::BindOnce(
+        &LensOverlayController::IssueContextualSearchRequest,
+        weak_factory_.GetWeakPtr(), destination_url, match_type,
+        is_zero_prefix_suggestion);
+    return;
+  }
+
+  // TODO(crbug.com/401583049): Revisit if this should go through the
+  // OnSuggestionAccepted flow or if there should be a more direct contextual
+  // search flow.
+  OnSuggestionAccepted(destination_url, match_type, is_zero_prefix_suggestion);
+}
+
 void LensOverlayController::ShowUIWithPendingRegion(
     lens::LensOverlayInvocationSource invocation_source,
     const gfx::Rect& tab_bounds,
@@ -848,6 +872,11 @@ bool LensOverlayController::IsOverlayShowing() {
 
 bool LensOverlayController::IsOverlayActive() {
   return IsOverlayShowing() || state_ == State::kLivePageAndResults;
+}
+
+bool LensOverlayController::IsOverlayInitializing() {
+  return state_ == State::kStartingWebUI || state_ == State::kScreenshot ||
+         state_ == State::kClosingOpenedSidePanel;
 }
 
 bool LensOverlayController::IsOverlayClosing() {
@@ -2460,6 +2489,12 @@ void LensOverlayController::InitializeOverlay(
   }
 
   state_ = State::kOverlay;
+
+  // If there is a pending contextual search request, issue it now that the
+  // overlay is initialized.
+  if (pending_contextual_search_request_) {
+    std::move(pending_contextual_search_request_).Run();
+  }
 
   // Update the entry points state to ensure that the entry points are disabled
   // now that the overlay is showing.

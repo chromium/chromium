@@ -1729,17 +1729,14 @@ PasswordForm LoginDatabase::GetFormWithoutPasswordFromStatement(
     sql::Statement& s) const {
   PasswordForm form;
   form.primary_key = FormPrimaryKey(s.ColumnInt(COLUMN_ID));
-  std::string tmp = s.ColumnString(COLUMN_ORIGIN_URL);
-  form.url = GURL(tmp);
-  tmp = s.ColumnString(COLUMN_ACTION_URL);
-  form.action = GURL(tmp);
+  form.url = GURL(s.ColumnStringView(COLUMN_ORIGIN_URL));
+  form.action = GURL(s.ColumnStringView(COLUMN_ACTION_URL));
   form.username_element = s.ColumnString16(COLUMN_USERNAME_ELEMENT);
   form.username_value = s.ColumnString16(COLUMN_USERNAME_VALUE);
   form.password_element = s.ColumnString16(COLUMN_PASSWORD_ELEMENT);
   s.ColumnBlobAsString(COLUMN_KEYCHAIN_IDENTIFIER, &form.keychain_identifier);
   form.submit_element = s.ColumnString16(COLUMN_SUBMIT_ELEMENT);
-  tmp = s.ColumnString(COLUMN_SIGNON_REALM);
-  form.signon_realm = tmp;
+  form.signon_realm = s.ColumnString(COLUMN_SIGNON_REALM);
   form.date_created = s.ColumnTime(COLUMN_DATE_CREATED);
   form.blocked_by_user = (s.ColumnInt(COLUMN_BLOCKLISTED_BY_USER) > 0);
   // TODO(crbug.com/40732888): Add metrics to capture how often these values
@@ -2116,7 +2113,7 @@ LoginDatabase::SyncMetadataStore::GetDataTypeState(syncer::DataType data_type) {
     }
   }
 
-  std::string serialized_state = s.ColumnString(0);
+  std::string_view serialized_state = s.ColumnStringView(0);
   if (state->ParseFromString(serialized_state)) {
     return state;
   }

@@ -672,7 +672,8 @@ void AudioData::CopyConvert(base::span<uint8_t> dest,
       int32_t* dest_data = reinterpret_cast<int32_t*>(dest.data());
       CHECK_LE(UNSAFE_TODO(offset_src_data + frame_count),
                UNSAFE_TODO(src_data + data_as_f32_bus_->frames()));
-      memcpy(dest_data, offset_src_data, sizeof(float) * frame_count);
+      UNSAFE_TODO(
+          memcpy(dest_data, offset_src_data, sizeof(float) * frame_count));
       return;
     }
     default:

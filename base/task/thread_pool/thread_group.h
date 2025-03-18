@@ -401,8 +401,12 @@ class BASE_EXPORT ThreadGroup {
     ~InitializedInStart();
 
 #if DCHECK_IS_ON()
-    // Set after all members of this struct are set.
+    // Set after all members of this struct are set to ensure
+    // `InitializedInStart` is read-only after initialization.
     bool initialized = false;
+    // Set to ensure Start() is only called once and that `ThreadGroup`
+    // operations only occur after it is called.
+    bool start_called = false;
 #endif
 
     // Initial value of |max_tasks_|.

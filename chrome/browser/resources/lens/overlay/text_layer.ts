@@ -27,6 +27,7 @@ import {CursorType} from './selection_utils.js';
 import type {GestureEvent} from './selection_utils.js';
 import type {BackgroundImageData, Line, Paragraph, Text, TranslatedLine, TranslatedParagraph, Word} from './text.mojom-webui.js';
 import {Alignment, WritingDirection} from './text.mojom-webui.js';
+import type {HighlightedLine} from './text_highlights.js';
 import {getTemplate} from './text_layer.html.js';
 import type {TextCopyCallback, TextLayerBase} from './text_layer_base.js';
 import {getTextSeparator, isWordRenderable, translateWords} from './text_rendering.js';
@@ -87,14 +88,6 @@ export interface TextLayerElement {
     translateContainer: DomRepeat,
     wordsContainer: DomRepeat,
   };
-}
-
-interface HighlightedLine {
-  height: number;
-  left: number;
-  top: number;
-  width: number;
-  rotation: number;
 }
 
 interface TranslatedLineData {

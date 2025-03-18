@@ -28,22 +28,28 @@ std::string ReadFile(base::File& file) {
   return std::string(base::as_string_view(base::as_chars(map.bytes())));
 }
 
-std::string OnDeviceInputToString(const mojom::Input& input) {
+std::string OnDeviceInputToString(const mojom::Input& input,
+                                  const Capabilities& capabilities) {
   std::ostringstream oss;
   for (const auto& piece : input.pieces) {
     if (std::holds_alternative<std::string>(piece)) {
       oss << std::get<std::string>(piece);
     }
     if (std::holds_alternative<SkBitmap>(piece)) {
-      oss << "<image>";
+      if (capabilities.Has(CapabilityFlags::kImageInput)) {
+        oss << "<image>";
+      } else {
+        oss << "<unsupported>";
+      }
     }
   }
   return oss.str();
 }
 
-std::string CtxToString(const mojom::AppendOptions& input) {
+std::string CtxToString(const mojom::AppendOptions& input,
+                        const Capabilities& capabilities) {
   std::string suffix;
-  std::string context = OnDeviceInputToString(*input.input);
+  std::string context = OnDeviceInputToString(*input.input, capabilities);
   if (input.token_offset > 0) {
     context.erase(context.begin(), context.begin() + input.token_offset);
   }
@@ -82,8 +88,9 @@ FakeOnDeviceServiceSettings::FakeOnDeviceServiceSettings() = default;
 FakeOnDeviceServiceSettings::~FakeOnDeviceServiceSettings() = default;
 
 FakeOnDeviceSession::FakeOnDeviceSession(FakeOnDeviceServiceSettings* settings,
-                                         FakeOnDeviceModel* model)
-    : settings_(settings), model_(model) {}
+                                         FakeOnDeviceModel* model,
+                                         const Capabilities& capabilities)
+    : settings_(settings), model_(model), capabilities_(capabilities) {}
 
 FakeOnDeviceSession::~FakeOnDeviceSession() = default;
 
@@ -128,7 +135,8 @@ void FakeOnDeviceSession::Score(const std::string& text,
 
 void FakeOnDeviceSession::Clone(
     mojo::PendingReceiver<on_device_model::mojom::Session> session) {
-  auto new_session = std::make_unique<FakeOnDeviceSession>(settings_, model_);
+  auto new_session =
+      std::make_unique<FakeOnDeviceSession>(settings_, model_, capabilities_);
   for (const auto& c : context_) {
     new_session->context_.push_back(c->Clone());
   }
@@ -160,7 +168,7 @@ void FakeOnDeviceSession::GenerateImpl(
   if (settings_->model_execute_result.empty()) {
     for (const auto& context : context_) {
       auto chunk = mojom::ResponseChunk::New();
-      chunk->text = "Context: " + CtxToString(*context) + "\n";
+      chunk->text = "Context: " + CtxToString(*context, capabilities_) + "\n";
       remote->OnResponse(std::move(chunk));
     }
     if (options->top_k > 1) {
@@ -188,8 +196,8 @@ void FakeOnDeviceSession::AppendImpl(
   if (client && !client.is_connected()) {
     return;
   }
-  uint32_t input_tokens =
-      static_cast<uint32_t>(OnDeviceInputToString(*options->input).size());
+  uint32_t input_tokens = static_cast<uint32_t>(
+      OnDeviceInputToString(*options->input, capabilities_).size());
   uint32_t max_tokens =
       options->max_tokens > 0 ? options->max_tokens : input_tokens;
   uint32_t token_offset = options->token_offset;
@@ -212,8 +220,12 @@ FakeOnDeviceModel::~FakeOnDeviceModel() = default;
 void FakeOnDeviceModel::StartSession(
     mojo::PendingReceiver<mojom::Session> session,
     mojom::SessionParamsPtr params) {
-  AddSession(std::move(session),
-             std::make_unique<FakeOnDeviceSession>(settings_, this));
+  Capabilities capabilities;
+  if (params) {
+    capabilities = params->capabilities;
+  }
+  AddSession(std::move(session), std::make_unique<FakeOnDeviceSession>(
+                                     settings_, this, capabilities));
 }
 
 void FakeOnDeviceModel::AddSession(
@@ -258,6 +270,11 @@ FakeTsModel::FakeTsModel(
   }
 }
 FakeTsModel::~FakeTsModel() = default;
+
+void FakeTsModel::StartSession(
+    mojo::PendingReceiver<mojom::TextSafetySession> session) {
+  sessions_.Add(this, std::move(session));
+}
 
 void FakeTsModel::ClassifyTextSafety(const std::string& text,
                                      ClassifyTextSafetyCallback callback) {

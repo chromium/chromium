@@ -26,6 +26,7 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/managed_installation_mode.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_all_signal_processor.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_signal_processor.h"
@@ -76,6 +77,7 @@ namespace safe_browsing {
 namespace {
 
 using ::extensions::ExtensionManagement;
+using ::extensions::ManagedInstallationMode;
 using ::extensions::mojom::ManifestLocation;
 using ::google::protobuf::RepeatedPtrField;
 using ExtensionInfo =
@@ -302,17 +304,17 @@ ExtensionTelemetryReportRequest::ManagementAuthority GetManagementAuthority(
 
 ExtensionInfo::InstallationPolicy
 ExtensionManagementInstallationModeToExtensionInfoInstallationPolicy(
-    const ExtensionManagement::InstallationMode& installation_mode) {
+    const ManagedInstallationMode& installation_mode) {
   switch (installation_mode) {
-    case ExtensionManagement::InstallationMode::INSTALLATION_ALLOWED:
+    case ManagedInstallationMode::kAllowed:
       return ExtensionInfo::INSTALLATION_ALLOWED;
-    case ExtensionManagement::InstallationMode::INSTALLATION_BLOCKED:
+    case ManagedInstallationMode::kBlocked:
       return ExtensionInfo::INSTALLATION_BLOCKED;
-    case ExtensionManagement::InstallationMode::INSTALLATION_FORCED:
+    case ManagedInstallationMode::kForced:
       return ExtensionInfo::INSTALLATION_FORCED;
-    case ExtensionManagement::InstallationMode::INSTALLATION_RECOMMENDED:
+    case ManagedInstallationMode::kRecommended:
       return ExtensionInfo::INSTALLATION_RECOMMENDED;
-    case ExtensionManagement::InstallationMode::INSTALLATION_REMOVED:
+    case ManagedInstallationMode::kRemoved:
       return ExtensionInfo::INSTALLATION_REMOVED;
     default:
       return ExtensionInfo::NO_POLICY;

@@ -100,12 +100,12 @@ class ToolbarViewTest : public InteractiveBrowserTest {
         // Because context menus run inside of a system message pump that cannot
         // process Chrome tasks, the following steps must be executed
         // immediately on the platform.
-        WithoutDelay(SelectMenuItem(TabMenuModel::kSideBySideMenuItem))
+        WithoutDelay(SelectMenuItem(TabMenuModel::kSplitTabsMenuItem))
 #else
         NameDescendantViewByType<Tab>(kTabStripElementId, kTabToHover,
                                       tab_index),
         MoveMouseTo(kTabToHover), ClickMouse(ui_controls::RIGHT),
-        SelectMenuItem(TabMenuModel::kSideBySideMenuItem)
+        SelectMenuItem(TabMenuModel::kSplitTabsMenuItem)
 #endif
     );
   }
@@ -360,11 +360,11 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewTest, BackButtonMenu) {
 
 // TODO(crbug.com/402492418): Find workaround for Mac and ChromeOS.
 #if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_SideBySideToolbarButton DISABLED_SideBySideToolbarButton
+#define MAYBE_SplitTabsToolbarButton DISABLED_SplitTabsToolbarButton
 #else
-#define MAYBE_SideBySideToolbarButton SideBySideToolbarButton
+#define MAYBE_SplitTabsToolbarButton SplitTabsToolbarButton
 #endif
-IN_PROC_BROWSER_TEST_F(ToolbarViewTest, MAYBE_SideBySideToolbarButton) {
+IN_PROC_BROWSER_TEST_F(ToolbarViewTest, MAYBE_SplitTabsToolbarButton) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContents1Id);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContents2Id);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContents3Id);
@@ -375,9 +375,9 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewTest, MAYBE_SideBySideToolbarButton) {
                   AddInstrumentedTab(kWebContents2Id, url1),
                   AddInstrumentedTab(kWebContents3Id, url1),
                   SelectTab(kTabStripElementId, 0), OpenSideBySideTab(1),
-                  WaitForShow(kToolbarSideBySideToolbarButtonElementId),
+                  WaitForShow(kToolbarSplitTabsToolbarButtonElementId),
                   SelectTab(kTabStripElementId, 2),
-                  WaitForHide(kToolbarSideBySideToolbarButtonElementId));
+                  WaitForHide(kToolbarSplitTabsToolbarButtonElementId));
 }
 
 // Tests that the browser updates the toolbar's visible security state only

@@ -133,26 +133,25 @@ TEST_F(ReadAnythingAppModelTest, FontName) {
 }
 
 TEST_F(ReadAnythingAppModelTest, OnSettingsRestoredFromPrefs) {
-  auto line_spacing = read_anything::mojom::LineSpacing::kDefaultValue;
-  auto letter_spacing = read_anything::mojom::LetterSpacing::kDefaultValue;
+  auto line_spacing = read_anything::mojom::LineSpacing::kLoose;
+  auto letter_spacing = read_anything::mojom::LetterSpacing::kWide;
   std::string font_name = "Roboto";
   double font_size = 3.0;
   bool links_enabled = false;
   bool images_enabled = true;
-  auto color = read_anything::mojom::Colors::kDefaultValue;
-  int color_value = 0;
+  auto color = read_anything::mojom::Colors::kDark;
 
   model().OnSettingsRestoredFromPrefs(line_spacing, letter_spacing, font_name,
                                       font_size, links_enabled, images_enabled,
                                       color);
 
-  EXPECT_EQ(static_cast<int>(line_spacing), model().line_spacing());
-  EXPECT_EQ(static_cast<int>(letter_spacing), model().letter_spacing());
+  EXPECT_EQ(line_spacing, model().line_spacing());
+  EXPECT_EQ(letter_spacing, model().letter_spacing());
   EXPECT_EQ(font_name, model().font_name());
   EXPECT_EQ(font_size, model().font_size());
   EXPECT_EQ(links_enabled, model().links_enabled());
   EXPECT_EQ(images_enabled, model().images_enabled());
-  EXPECT_EQ(color_value, model().color_theme());
+  EXPECT_EQ(color, model().color_theme());
 }
 
 TEST_F(ReadAnythingAppModelTest, InsertIdIfNotIgnored) {

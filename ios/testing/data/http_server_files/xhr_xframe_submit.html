@@ -1,0 +1,13 @@
+<html>
+<body>
+  <script>
+    function doXhrSubmit() {
+      // Remove the form in the child frame to trigger a XHR form submission there.
+      const iframeDoc = document.getElementById('address-form-iframe').contentDocument;
+      iframeDoc.forms[0].remove();
+    }
+  </script>
+  <iframe src="autofill_smoke_test.html" id="address-form-iframe"></iframe><br>
+  <button type="button" onclick="doXhrSubmit()" id="do-xhr-submit">XHR Submit</button>
+</body>
+</html>

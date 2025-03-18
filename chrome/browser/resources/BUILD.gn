@@ -55,6 +55,7 @@ group("resources") {
       "side_panel/bookmarks:resources",
       "side_panel/commerce:resources",
       "side_panel/customize_chrome:resources",
+      "side_panel/history:resources",
       "side_panel/history_clusters:resources",
       "side_panel/read_anything:resources",
       "side_panel/reading_list:resources",

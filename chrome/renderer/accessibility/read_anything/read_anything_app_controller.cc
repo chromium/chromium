@@ -11,12 +11,14 @@
 
 #include <climits>
 #include <memory>
+#include <optional>
 #include <queue>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/check_deref.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/debug/stack_trace.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
@@ -25,6 +27,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "chrome/common/read_anything/read_anything_util.h"
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
@@ -369,6 +372,20 @@ SkBitmap CorrectColorOfBitMap(SkBitmap& originalBitmap) {
   originalBitmap.readPixels(converted.info(), converted.getPixels(),
                             converted.rowBytes(), 0, 0);
   return converted;
+}
+
+template <typename T>
+  requires(std::is_enum_v<T> &&
+           requires {
+             T::kMinValue;
+             T::kMaxValue;
+           })
+std::optional<T> ToEnum(int value) {
+  if (value >= base::to_underlying(T::kMinValue) &&
+      value <= base::to_underlying(T::kMaxValue)) {
+    return static_cast<T>(value);
+  }
+  return std::nullopt;
 }
 
 }  // namespace
@@ -1029,15 +1046,15 @@ bool ReadAnythingAppController::IsPhraseHighlightingEnabled() const {
 }
 
 int ReadAnythingAppController::LetterSpacing() const {
-  return model_.letter_spacing();
+  return base::to_underlying(model_.letter_spacing());
 }
 
 int ReadAnythingAppController::LineSpacing() const {
-  return model_.line_spacing();
+  return base::to_underlying(model_.line_spacing());
 }
 
 int ReadAnythingAppController::ColorTheme() const {
-  return model_.color_theme();
+  return base::to_underlying(model_.color_theme());
 }
 
 double ReadAnythingAppController::SpeechRate() const {
@@ -1065,47 +1082,47 @@ int ReadAnythingAppController::HighlightGranularity() const {
 }
 
 int ReadAnythingAppController::StandardLineSpacing() const {
-  return static_cast<int>(read_anything::mojom::LineSpacing::kStandard);
+  return base::to_underlying(read_anything::mojom::LineSpacing::kStandard);
 }
 
 int ReadAnythingAppController::LooseLineSpacing() const {
-  return static_cast<int>(read_anything::mojom::LineSpacing::kLoose);
+  return base::to_underlying(read_anything::mojom::LineSpacing::kLoose);
 }
 
 int ReadAnythingAppController::VeryLooseLineSpacing() const {
-  return static_cast<int>(read_anything::mojom::LineSpacing::kVeryLoose);
+  return base::to_underlying(read_anything::mojom::LineSpacing::kVeryLoose);
 }
 
 int ReadAnythingAppController::StandardLetterSpacing() const {
-  return static_cast<int>(read_anything::mojom::LetterSpacing::kStandard);
+  return base::to_underlying(read_anything::mojom::LetterSpacing::kStandard);
 }
 
 int ReadAnythingAppController::WideLetterSpacing() const {
-  return static_cast<int>(read_anything::mojom::LetterSpacing::kWide);
+  return base::to_underlying(read_anything::mojom::LetterSpacing::kWide);
 }
 
 int ReadAnythingAppController::VeryWideLetterSpacing() const {
-  return static_cast<int>(read_anything::mojom::LetterSpacing::kVeryWide);
+  return base::to_underlying(read_anything::mojom::LetterSpacing::kVeryWide);
 }
 
 int ReadAnythingAppController::DefaultTheme() const {
-  return static_cast<int>(read_anything::mojom::Colors::kDefault);
+  return base::to_underlying(read_anything::mojom::Colors::kDefault);
 }
 
 int ReadAnythingAppController::LightTheme() const {
-  return static_cast<int>(read_anything::mojom::Colors::kLight);
+  return base::to_underlying(read_anything::mojom::Colors::kLight);
 }
 
 int ReadAnythingAppController::DarkTheme() const {
-  return static_cast<int>(read_anything::mojom::Colors::kDark);
+  return base::to_underlying(read_anything::mojom::Colors::kDark);
 }
 
 int ReadAnythingAppController::YellowTheme() const {
-  return static_cast<int>(read_anything::mojom::Colors::kYellow);
+  return base::to_underlying(read_anything::mojom::Colors::kYellow);
 }
 
 int ReadAnythingAppController::BlueTheme() const {
-  return static_cast<int>(read_anything::mojom::Colors::kBlue);
+  return base::to_underlying(read_anything::mojom::Colors::kBlue);
 }
 
 bool ReadAnythingAppController::IsHighlightOn() {
@@ -1504,32 +1521,28 @@ void ReadAnythingAppController::OnLinkClicked(ui::AXNodeID ax_node_id) const {
   }
   page_handler_->OnLinkClicked(model_.active_tree_id(), ax_node_id);
 }
+
 void ReadAnythingAppController::OnLetterSpacingChange(int value) {
-  if (value >
-      static_cast<int>(read_anything::mojom::LetterSpacing::kMaxValue)) {
-    return;
+  if (const auto maybe_enum =
+          ToEnum<read_anything::mojom::LetterSpacing>(value)) {
+    page_handler_->OnLetterSpaceChange(maybe_enum.value());
+    model_.set_letter_spacing(maybe_enum.value());
   }
-  page_handler_->OnLetterSpaceChange(
-      static_cast<read_anything::mojom::LetterSpacing>(value));
-  model_.set_letter_spacing(value);
 }
 
 void ReadAnythingAppController::OnLineSpacingChange(int value) {
-  if (value > static_cast<int>(read_anything::mojom::LineSpacing::kMaxValue)) {
-    return;
+  if (const auto maybe_enum =
+          ToEnum<read_anything::mojom::LineSpacing>(value)) {
+    page_handler_->OnLineSpaceChange(maybe_enum.value());
+    model_.set_line_spacing(maybe_enum.value());
   }
-  page_handler_->OnLineSpaceChange(
-      static_cast<read_anything::mojom::LineSpacing>(value));
-  model_.set_line_spacing(value);
 }
 
 void ReadAnythingAppController::OnThemeChange(int value) {
-  if (value > static_cast<int>(read_anything::mojom::Colors::kMaxValue)) {
-    return;
+  if (const auto maybe_enum = ToEnum<read_anything::mojom::Colors>(value)) {
+    page_handler_->OnColorChange(maybe_enum.value());
+    model_.set_color_theme(maybe_enum.value());
   }
-  page_handler_->OnColorChange(
-      static_cast<read_anything::mojom::Colors>(value));
-  model_.set_color_theme(value);
 }
 
 void ReadAnythingAppController::OnFontChange(const std::string& font) {
@@ -1567,26 +1580,32 @@ void ReadAnythingAppController::OnHighlightGranularityChanged(
 }
 
 double ReadAnythingAppController::GetLineSpacingValue(int line_spacing) const {
-  if (line_spacing >
-      static_cast<int>(read_anything::mojom::LineSpacing::kMaxValue)) {
-    return model_.GetLineSpacingValue(
-        read_anything::mojom::LineSpacing::kDefaultValue);
-  }
-
-  return model_.GetLineSpacingValue(
-      static_cast<read_anything::mojom::LineSpacing>(line_spacing));
+  using read_anything::mojom::LineSpacing;
+  static constexpr auto kEnumToValue =
+      base::MakeFixedFlatMap<LineSpacing, double>({
+          {LineSpacing::kTightDeprecated, 1.0},
+          // This value needs to be at least 1.35 to avoid cutting off
+          // descenders with the highlight with larger fonts such as Poppins.
+          {LineSpacing::kStandard, 1.35},
+          {LineSpacing::kLoose, 1.5},
+          {LineSpacing::kVeryLoose, 2.0},
+      });
+  return kEnumToValue.at(
+      ToEnum<LineSpacing>(line_spacing).value_or(LineSpacing::kDefaultValue));
 }
 
 double ReadAnythingAppController::GetLetterSpacingValue(
     int letter_spacing) const {
-  if (letter_spacing >
-      static_cast<int>(read_anything::mojom::LetterSpacing::kMaxValue)) {
-    return model_.GetLetterSpacingValue(
-        read_anything::mojom::LetterSpacing::kDefaultValue);
-  }
-
-  return model_.GetLetterSpacingValue(
-      static_cast<read_anything::mojom::LetterSpacing>(letter_spacing));
+  using read_anything::mojom::LetterSpacing;
+  static constexpr auto kEnumToValue =
+      base::MakeFixedFlatMap<LetterSpacing, double>({
+          {LetterSpacing::kTightDeprecated, -0.05},
+          {LetterSpacing::kStandard, 0},
+          {LetterSpacing::kWide, 0.05},
+          {LetterSpacing::kVeryWide, 0.1},
+      });
+  return kEnumToValue.at(ToEnum<LetterSpacing>(letter_spacing)
+                             .value_or(LetterSpacing::kDefaultValue));
 }
 
 void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,

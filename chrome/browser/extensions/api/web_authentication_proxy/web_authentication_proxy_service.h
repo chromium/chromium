@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_WEB_AUTHENTICATION_PROXY_WEB_AUTHENTICATION_PROXY_SERVICE_H_
 
 #include <optional>
+#include <variant>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -232,7 +233,7 @@ class WebAuthenticationProxyService
   std::optional<ExtensionId> active_proxy_;
 
   using CallbackType =
-      absl::variant<IsUvpaaCallback, CreateCallback, GetCallback>;
+      std::variant<IsUvpaaCallback, CreateCallback, GetCallback>;
   std::map<RequestId, CallbackType> pending_callbacks_;
 
   SEQUENCE_CHECKER(sequence_checker_);

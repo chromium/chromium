@@ -1594,7 +1594,7 @@ std::vector<WebContentsImpl*> WebContentsImpl::GetAllWebContents() {
       continue;
     }
     WebContents* web_contents = WebContents::FromRenderViewHost(rvh);
-    if (!web_contents) {
+    if (!web_contents || web_contents->IsBeingDestroyed()) {
       continue;
     }
     if (web_contents->GetPrimaryMainFrame()->GetRenderViewHost() != rvh) {

@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -304,7 +303,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mModel);
         when(mTabGroupModelFilter.getTabUngrouper()).thenReturn(mTabUnGrouper);
         when(mTabGroupModelFilter.isTabInTabGroup(mTabForInteractingView)).thenReturn(true);
-        when(mTabGroupModelFilter.getRelatedTabCountForRootId(anyInt())).thenReturn(1);
+        when(mTabGroupModelFilter.getTabCountForGroup(any())).thenReturn(1);
         when(mActionConfirmationManager.willSkipUngroupTabAttempt()).thenReturn(false);
         startTabReorder();
 

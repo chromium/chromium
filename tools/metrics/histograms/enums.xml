@@ -8778,6 +8778,7 @@ from previous Chrome versions.
   <int value="-2075720567"
       label="lacros-data-backward-migration-policy:disabled"/>
   <int value="-2075607807" label="CSSOverflowForReplacedElements:disabled"/>
+  <int value="-2075036790" label="GroupSuggestionService:enabled"/>
   <int value="-2074936999" label="AutoDisableAccessibilityV2:disabled"/>
   <int value="-2074080173" label="NightLight:disabled"/>
   <int value="-2073402331"
@@ -11405,6 +11406,7 @@ from previous Chrome versions.
   <int value="-1060395248" label="PasswordSearchMobile:enabled"/>
   <int value="-1059478136" label="PreinstalledWebAppDuplicationFixer:enabled"/>
   <int value="-1057056167" label="VirtualKeyboardMultipaste:enabled"/>
+  <int value="-1056947847" label="OfflineItemsInNotifications:disabled"/>
   <int value="-1056860259"
       label="OmniboxEnableClipboardProviderImageSuggestions:enabled"/>
   <int value="-1056629722" label="AssistantIntentTranslateInfo:enabled"/>
@@ -11685,6 +11687,7 @@ from previous Chrome versions.
   <int value="-954972757"
       label="QuickAnswersAlwaysTriggerForSingleWord:enabled"/>
   <int value="-954789862" label="ProductivityLauncher:enabled"/>
+  <int value="-954302223" label="OfflineItemsInNotifications:enabled"/>
   <int value="-953440781" label="SimplifiedBookmarkSaveFlow:disabled"/>
   <int value="-953330528" label="UserAgentOverrideExperiment:disabled"/>
   <int value="-953215709" label="StorageAccessAPI:enabled"/>
@@ -12082,6 +12085,7 @@ from previous Chrome versions.
   <int value="-787969387" label="HTTPSServerPreviewsUsingURLLoader:enabled"/>
   <int value="-787885873" label="BorealisForceBetaClient:disabled"/>
   <int value="-787876637" label="HomeLauncherGestures:enabled"/>
+  <int value="-787430013" label="GroupSuggestionService:disabled"/>
   <int value="-787426248" label="ChromeHomeSurvey:disabled"/>
   <int value="-787418584" label="EnableDozeModePowerScheduler:disabled"/>
   <int value="-787238455" label="OmniboxZeroSuggestionsOnSERP:disabled"/>
@@ -19342,6 +19346,7 @@ from previous Chrome versions.
   <int value="2015547864" label="NetworkServiceInProcess:enabled"/>
   <int value="2017283500" label="DragDropTabTearingEnableOEM:disabled"/>
   <int value="2018206979" label="FilesLocalImageSearch:disabled"/>
+  <int value="2018920414" label="scanner-disclaimer-debug-override"/>
   <int value="2018956925" label="UseAAudioDriver:disabled"/>
   <int value="2019319052" label="EnableVariableRefreshRate:disabled"/>
   <int value="2019412678" label="ContinuousOverviewScrollAnimation:disabled"/>
@@ -22374,6 +22379,12 @@ Called by update_net_error_codes.py.-->
       label="Tried to record metrics during a pending metrics recording task"/>
   <int value="1" label="Metrics were changed during recording"/>
   <int value="2" label="Failed to measure a particular metric value"/>
+</enum>
+
+<enum name="PreFreezeReadProcMapsType">
+  <int value="0" label="Failed to read /proc/self/maps"/>
+  <int value="1" label="/proc/self/maps is empty"/>
+  <int value="2" label="Read /proc/self/maps successfully"/>
 </enum>
 
 <enum name="PreloadingTriggeringOutcome">

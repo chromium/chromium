@@ -286,10 +286,6 @@ versionCache['org.jsoup:jsoup'] = '1.12.2'
 versionCache['org.jspecify:jspecify'] = '1.0.0'
 versionCache['org.reactivestreams:reactive-streams'] = '1.0.3'
 
-// This prefix is necessary since additional_readme_paths.json needs to
-// reference committed/libs/* instead of just libs/*.
-project.ext.readmePrefix = "committed/"
-
 apply plugin: ChromiumPlugin
 
 repositories {
@@ -450,13 +446,11 @@ dependencies {
 
 
 task setUpRepository(type: BuildConfigGenerator) {
-    // Paths are relative to the chromium source root.
-    repositoryPath 'third_party/androidx/cipd'
-    chromiumSourceRoot '../../..'
-    cipdBucket 'chromium'
-    internalTargetVisibility = ['//third_party/android_deps:*', ':*']
-    allFilesInCipd true
-    skipLicenses false
+    pathToBuildGradle 'third_party/androidx'
+    cipdPackagePrefix 'chromium/third_party/androidx'
+    artifactSubdir 'cipd'
+    committedSubdir 'committed'
+    internalTargetVisibility = [':*', '//third_party/android_deps:*', '//third_party/android_deps/autorolled:*']
     ignoreDEPS true
     writeBoM true
 }

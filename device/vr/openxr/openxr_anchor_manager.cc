@@ -8,6 +8,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
@@ -39,6 +40,7 @@ device::mojom::XRAnchorsDataPtr OpenXrAnchorManager::ProcessAnchorsForFrame(
     OpenXrApiWrapper* openxr,
     const std::vector<mojom::XRInputSourceStatePtr>& input_state,
     XrTime predicted_display_time) {
+  TRACE_EVENT0("xr", "ProcessAnchorsForFrame");
   ProcessCreateAnchorRequests(openxr, input_state);
   return GetCurrentAnchorsData(predicted_display_time);
 }

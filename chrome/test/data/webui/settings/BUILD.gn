@@ -35,6 +35,7 @@ build_webui_tests("build") {
     "chooser_exception_list_entry_test.ts",
     "chooser_exception_list_test.ts",
     "clear_browsing_data_test.ts",
+    "clear_browsing_data_dialog_v2_test.ts",
     "collapse_radio_button_test.ts",
     "controlled_button_test.ts",
     "controlled_radio_button_test.ts",

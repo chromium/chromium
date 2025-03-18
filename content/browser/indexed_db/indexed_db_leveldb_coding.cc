@@ -15,6 +15,7 @@
 
 #include "base/bits.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
@@ -185,7 +186,7 @@ void EncodeSortableDouble(double value, std::string* into) {
   CHECK(!std::isnan(value));
 
   uint64_t double_bits = 0;
-  std::memcpy(&double_bits, &value, sizeof(value));
+  UNSAFE_TODO(std::memcpy(&double_bits, &value, sizeof(value)));
 
   // When interpreted as plain bits, negative doubles will sort in reverse, so
   // invert the bits. For positive doubles we only have to invert the sign bit
@@ -226,7 +227,7 @@ bool DecodeSortableDouble(std::string_view& data, double* output) {
     host_bits = host_bits ^ std::numeric_limits<uint64_t>::max();
   }
 
-  std::memcpy(output, &host_bits, kLengthInBytes);
+  UNSAFE_TODO(std::memcpy(output, &host_bits, kLengthInBytes));
   return true;
 }
 

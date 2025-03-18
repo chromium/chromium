@@ -10,6 +10,8 @@
 #include "ash/boca/on_task/on_task_pod_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/tab_slider.h"
+#include "ash/style/tab_slider_button.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -92,16 +94,27 @@ OnTaskPodView::OnTaskPodView(OnTaskPodController* pod_controller)
 OnTaskPodView::~OnTaskPodView() = default;
 
 void OnTaskPodView::AddShortcutButtons() {
-  snap_pod_button_ = AddChildView(CreateIconButton(
-      base::BindRepeating(&OnTaskPodView::ToggleSnapLocation,
-                          weak_ptr_factory_.GetWeakPtr()),
-      &kKsvArrowRightIcon, IDS_ON_TASK_POD_TOGGLE_SNAP_LOCATION_ACCESSIBLE_NAME,
-      /*is_togglable=*/true));
-  snap_pod_button_->SetToggledVectorIcon(kKsvArrowLeftIcon);
-  snap_pod_button_->SetIconToggledColor(
-      cros_tokens::kCrosSysSystemOnPrimaryContainer);
-  snap_pod_button_->SetBackgroundToggledColor(
-      cros_tokens::kCrosSysSystemPrimaryContainer);
+  pod_position_slider_ = AddChildView(std::make_unique<TabSlider>(
+      /*max_tab_num=*/2,
+      TabSlider::InitParams{/*internal_border_padding=*/0,
+                            /*between_child_spacing=*/0,
+                            /*has_background=*/true,
+                            /*has_selector_animation=*/true,
+                            /*distribute_space_evenly=*/true}));
+  dock_left_button_ = pod_position_slider_->AddButton<IconSliderButton>(
+      base::BindRepeating(&OnTaskPodController::SetSnapLocation,
+                          base::Unretained(pod_controller_),
+                          OnTaskPodSnapLocation::kTopLeft),
+      &kKsvArrowLeftIcon,
+      l10n_util::GetStringUTF16(IDS_ON_TASK_MOVE_POD_TOP_LEFT_ACCESSIBLE_NAME));
+  dock_right_button_ = pod_position_slider_->AddButton<IconSliderButton>(
+      base::BindRepeating(&OnTaskPodController::SetSnapLocation,
+                          base::Unretained(pod_controller_),
+                          OnTaskPodSnapLocation::kTopRight),
+      &kKsvArrowRightIcon,
+      l10n_util::GetStringUTF16(
+          IDS_ON_TASK_MOVE_POD_TOP_RIGHT_ACCESSIBLE_NAME));
+  dock_left_button_->SetSelected(true);
 
   left_separator_ = AddChildView(std::make_unique<views::Separator>());
   left_separator_->SetBorder(views::CreateEmptyBorder(
@@ -161,15 +174,6 @@ void OnTaskPodView::UpdatePinTabStripButton() {
     pin_tab_strip_button_->SetBackground(views::CreateRoundedRectBackground(
         cros_tokens::kCrosSysSystemOnBaseOpaque, kLabelButtonRadius));
     pin_tab_strip_button_->SetEnabledTextColors(cros_tokens::kCrosSysOnSurface);
-  }
-}
-
-void OnTaskPodView::ToggleSnapLocation() {
-  snap_pod_button_->SetToggled(!snap_pod_button_->toggled());
-  if (snap_pod_button_->toggled()) {
-    pod_controller_->SetSnapLocation(OnTaskPodSnapLocation::kTopRight);
-  } else {
-    pod_controller_->SetSnapLocation(OnTaskPodSnapLocation::kTopLeft);
   }
 }
 

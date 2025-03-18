@@ -312,7 +312,7 @@ VisitSegmentDatabase::QuerySegmentUsage(
   for (std::unique_ptr<PageUsageData>& pud : segments) {
     statement2.BindInt64(0, pud->GetID());
     if (statement2.Step()) {
-      GURL url(statement2.ColumnString(0));
+      GURL url(statement2.ColumnStringView(0));
       if (url_filter.is_null() || url_filter.Run(url)) {
         pud->SetURL(url);
         pud->SetTitle(statement2.ColumnString16(1));
@@ -375,7 +375,7 @@ bool VisitSegmentDatabase::MigrateVisitSegmentNames() {
   bool success = true;
   while (select.Step()) {
     SegmentID id = select.ColumnInt64(0);
-    std::string old_name = select.ColumnString(1);
+    std::string_view old_name = select.ColumnStringView(1);
     std::string new_name = ComputeSegmentName(GURL(old_name));
     if (new_name.empty() || old_name == new_name)
       continue;

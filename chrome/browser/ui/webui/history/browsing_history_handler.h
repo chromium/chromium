@@ -20,6 +20,7 @@
 #include "base/time/clock.h"
 #include "base/values.h"
 #include "chrome/browser/history/profile_based_browsing_history_driver.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -44,9 +45,14 @@ class BrowsingHistoryHandler : public history::mojom::PageHandler,
 
   ~BrowsingHistoryHandler() override;
 
+  void SetSidePanelUIEmbedder(
+      base::WeakPtr<TopChromeWebUIController::Embedder> side_panel_embedder);
+
   void StartQueryHistory();
 
   void SetPage(mojo::PendingRemote<history::mojom::Page> pending_page) override;
+
+  void ShowSidePanelUI() override;
 
   void QueryHistory(const std::string& query,
                     int max_count,
@@ -102,6 +108,8 @@ class BrowsingHistoryHandler : public history::mojom::PageHandler,
   FRIEND_TEST_ALL_PREFIXES(BrowsingHistoryHandlerTest,
                            ObservingWebHistoryDeletions);
   FRIEND_TEST_ALL_PREFIXES(BrowsingHistoryHandlerTest, MdTruncatesTitles);
+
+  base::WeakPtr<TopChromeWebUIController::Embedder> side_panel_embedder_;
 
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;

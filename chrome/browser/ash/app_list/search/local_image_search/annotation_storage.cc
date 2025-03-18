@@ -278,8 +278,8 @@ std::vector<ImageInfo> AnnotationStorage::GetAllAnnotationsForTest() {
   std::vector<ImageInfo> matched_paths;
   while (statement->Step()) {
     const std::string annotation = statement->ColumnString(0);
-    base::FilePath file_path(statement->ColumnString(1));
-    file_path = file_path.Append(statement->ColumnString(2));
+    base::FilePath file_path(statement->ColumnStringView(1));
+    file_path = file_path.Append(statement->ColumnStringView(2));
     const base::Time time = statement->ColumnTime(3);
     const int64_t file_size = statement->ColumnInt64(4);
     DVLOG(1) << "Select find: " << annotation << ", " << file_path << ", "
@@ -454,22 +454,22 @@ std::vector<FileSearchResult> AnnotationStorage::PrefixSearch(
   while (statement->Step()) {
     double relevance = FuzzyTokenizedStringMatch::TokenSetRatio(
         tokenized_query,
-        TokenizedString(base::UTF8ToUTF16(statement->ColumnString(0)),
+        TokenizedString(base::UTF8ToUTF16(statement->ColumnStringView(0)),
                         Mode::kWords),
         /*partial=*/false);
     if (relevance < GetRelevanceThreshold()) {
       continue;
     }
 
-    base::FilePath file_path(statement->ColumnString(1));
-    file_path = file_path.Append(statement->ColumnString(2));
+    base::FilePath file_path(statement->ColumnStringView(1));
+    file_path = file_path.Append(statement->ColumnStringView(2));
     const base::Time time = statement->ColumnTime(3);
     // Updates the relevance as a weighted average of the query-term relevance
     // and the image annotation relevance score.
     relevance = kRelevanceWeight * relevance +
                 (1 - kRelevanceWeight) * statement->ColumnDouble(4);
-    DVLOG(1) << "Select: " << statement->ColumnString(0) << ", " << file_path
-             << ", " << time << " rl: " << relevance;
+    DVLOG(1) << "Select: " << statement->ColumnStringView(0) << ", "
+             << file_path << ", " << time << " rl: " << relevance;
 
     if (matched_paths.empty() || matched_paths.back().file_path != file_path) {
       matched_paths.emplace_back(file_path, std::move(time), relevance);

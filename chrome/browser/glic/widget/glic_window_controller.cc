@@ -60,7 +60,6 @@ namespace glic {
 DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kGlicWidgetAttached);
 
 namespace {
-constexpr static int kDefaultDetachedTopRightDistance = 48;
 
 // Default value for adding a buffer to the attachment zone.
 constexpr static int kAttachmentBuffer = 20;
@@ -632,6 +631,15 @@ void GlicWindowController::OpenAttached(Browser& browser) {
   // because it is tied to a views::View object within the current browser
   // window.
   gfx::Rect glic_window_widget_initial_rect = glic_button->GetBoundsWithInset();
+
+  // Ensure that we start with a non-empty rect (see DCHECK in
+  // NativeWidgetNSWindowBridge::SetInitialBounds).
+  if (glic_window_widget_initial_rect.IsEmpty()) {
+    glic_window_widget_initial_rect.set_width(
+        std::max(glic_window_widget_initial_rect.width(), 1));
+    glic_window_widget_initial_rect.set_height(
+        std::max(glic_window_widget_initial_rect.height(), 1));
+  }
 
   glic_widget_ = GlicWidget::Create(profile_, glic_window_widget_initial_rect,
                                     GetWeakPtr());

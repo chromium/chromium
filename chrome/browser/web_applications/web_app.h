@@ -20,7 +20,6 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
-#include "chrome/browser/web_applications/features.h"
 #include "chrome/browser/web_applications/generated_icon_fix_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"

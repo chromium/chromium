@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "arc_locked_fullscreen_manager_unittest\.cc": [
+    "+chrome/browser/ash/settings/scoped_cros_settings_test_helper.h",
+  ]
+}

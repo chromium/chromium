@@ -698,8 +698,6 @@ try_.builder(
     gn_args = "ci/android-cronet-riscv64-dbg",
     contact_team_email = "cronet-team@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-    # TODO(http://b/404125019): Enable this again.
-    siso_remote_linking = False,
 )
 
 try_.builder(

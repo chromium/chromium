@@ -8,6 +8,7 @@ load("@builtin//encoding.star", "json")
 load("@builtin//lib/gn.star", "gn")
 load("@builtin//struct.star", "module")
 load("./config.star", "config")
+load("./gn_logs.star", "gn_logs")
 
 # TODO: crbug.com/323091468 - Propagate target android ABI and
 # android SDK version from GN, and remove the hardcoded filegroups.
@@ -19,8 +20,6 @@ __archs = [
     "x86_64-linux-android",
 ]
 
-__versions = list(range(21, 34))
-
 def __enabled(ctx):
     if "args.gn" in ctx.metadata:
         gn_args = gn.args(ctx)
@@ -31,8 +30,9 @@ def __enabled(ctx):
 def __filegroups(ctx):
     fg = {}
     for arch in __archs:
-        for ver in __versions:
-            group = "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/%s/%d:link" % (arch, ver)
+        api_level = gn_logs.read(ctx).get("android64_ndk_api_level")
+        if api_level:
+            group = "third_party/android_toolchain/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/%s/%s:link" % (arch, api_level)
             fg[group] = {
                 "type": "glob",
                 "includes": ["*"],

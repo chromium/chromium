@@ -21,6 +21,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -107,14 +108,50 @@ class MediaCodecBridge {
                 return MediaCodecStatus.FRAME_TOO_LARGE;
             case MediaDrm.ErrorCodes.ERROR_LOST_STATE:
                 return MediaCodecStatus.LOST_STATE;
+            case MediaDrm.ErrorCodes.ERROR_CERTIFICATE_MALFORMED:
+                return MediaCodecStatus.CERTIFICATE_MALFORMED;
+            case MediaDrm.ErrorCodes.ERROR_CERTIFICATE_MISSING:
+                return MediaCodecStatus.CERTIFICATE_MISSING;
+            case MediaDrm.ErrorCodes.ERROR_CRYPTO_LIBRARY:
+                return MediaCodecStatus.CRYPTO_LIBRARY;
             case MediaDrm.ErrorCodes.ERROR_GENERIC_OEM:
                 return MediaCodecStatus.GENERIC_OEM;
             case MediaDrm.ErrorCodes.ERROR_GENERIC_PLUGIN:
                 return MediaCodecStatus.GENERIC_PLUGIN;
+            case MediaDrm.ErrorCodes.ERROR_INIT_DATA:
+                return MediaCodecStatus.INIT_DATA;
+            case MediaDrm.ErrorCodes.ERROR_KEY_NOT_LOADED:
+                return MediaCodecStatus.KEY_NOT_LOADED;
             case MediaDrm.ErrorCodes.ERROR_LICENSE_PARSE:
                 return MediaCodecStatus.LICENSE_PARSE;
+            case MediaDrm.ErrorCodes.ERROR_LICENSE_POLICY:
+                return MediaCodecStatus.LICENSE_POLICY;
+            case MediaDrm.ErrorCodes.ERROR_LICENSE_RELEASE:
+                return MediaCodecStatus.LICENSE_RELEASE;
+            case MediaDrm.ErrorCodes.ERROR_LICENSE_REQUEST_REJECTED:
+                return MediaCodecStatus.LICENSE_REQUEST_REJECTED;
+            case MediaDrm.ErrorCodes.ERROR_LICENSE_RESTORE:
+                return MediaCodecStatus.LICENSE_RESTORE;
+            case MediaDrm.ErrorCodes.ERROR_LICENSE_STATE:
+                return MediaCodecStatus.LICENSE_STATE;
             case MediaDrm.ErrorCodes.ERROR_MEDIA_FRAMEWORK:
                 return MediaCodecStatus.MEDIA_FRAMEWORK;
+            case MediaDrm.ErrorCodes.ERROR_PROVISIONING_CERTIFICATE:
+                return MediaCodecStatus.PROVISIONING_CERTIFICATE;
+            case MediaDrm.ErrorCodes.ERROR_PROVISIONING_CONFIG:
+                return MediaCodecStatus.PROVISIONING_CONFIG;
+            case MediaDrm.ErrorCodes.ERROR_PROVISIONING_PARSE:
+                return MediaCodecStatus.PROVISIONING_PARSE;
+            case MediaDrm.ErrorCodes.ERROR_PROVISIONING_REQUEST_REJECTED:
+                return MediaCodecStatus.PROVISIONING_REQUEST_REJECTED;
+            case MediaDrm.ErrorCodes.ERROR_PROVISIONING_RETRY:
+                return MediaCodecStatus.PROVISIONING_RETRY;
+            case MediaDrm.ErrorCodes.ERROR_SECURE_STOP_RELEASE:
+                return MediaCodecStatus.SECURE_STOP_RELEASE;
+            case MediaDrm.ErrorCodes.ERROR_STORAGE_READ:
+                return MediaCodecStatus.STORAGE_READ;
+            case MediaDrm.ErrorCodes.ERROR_STORAGE_WRITE:
+                return MediaCodecStatus.STORAGE_WRITE;
             case MediaDrm.ErrorCodes.ERROR_ZERO_SUBSAMPLES:
                 return MediaCodecStatus.ZERO_SUBSAMPLES;
             default:
@@ -136,6 +173,11 @@ class MediaCodecBridge {
                 return MediaCodecStatus.RECLAIMED;
             default:
                 Log.e(TAG, "Unknown CodecException error: " + e.getErrorCode());
+                if (e.getErrorCode() < 0) {
+                    RecordHistogram.recordSparseHistogram(
+                            "Media.MediaCodecError.NegativeCodecExceptionErrorCode",
+                            e.getErrorCode());
+                }
                 return MediaCodecStatus.UNKNOWN_CODEC_EXCEPTION;
         }
     }

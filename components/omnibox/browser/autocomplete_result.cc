@@ -29,6 +29,7 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
+#include "components/omnibox/browser/actions/contextual_search_action.h"
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
@@ -881,6 +882,16 @@ void AutocompleteResult::AttachPedalsToMatches(
         match.actions.push_back(pedal);
       }
     }
+  }
+}
+
+void AutocompleteResult::AttachContextualSearchActionToMatches() {
+  for (AutocompleteMatch& match : matches_) {
+    // TODO(crbug.com/400952597): Add a check on the provider type once one
+    // provider is created for @page suggestions.
+    match.takeover_action = base::MakeRefCounted<ContextualSearchAction>(
+        match.destination_url, match.type,
+        match.subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX));
   }
 }
 

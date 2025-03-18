@@ -8,7 +8,10 @@ import("//build/config/linux/pkg_config.gni")
 
 if (use_gio) {
   pkg_config("gio_config") {
-    packages = [ "gio-2.0" ]
+    packages = [
+      "gio-2.0",
+      "gio-unix-2.0",
+    ]
 
     defines = [ "USE_GIO" ]
   }

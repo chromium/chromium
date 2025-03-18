@@ -15,6 +15,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/webui/grit/ash_mall_cros_app_resources.h"
+#include "ash/webui/grit/ash_personalization_app_resources.h"
 #include "ash/webui/grit/ash_print_management_resources.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -239,8 +240,6 @@ std::optional<int> GetBuiltInImageResourceId(
       return IDR_SCALABLE_IPH_YOUTUBE_ICON_120_PNG;
     case BuiltInImage::kPlayStoreIcon:
       return IDR_SCALABLE_IPH_GOOGLE_PLAY_ICON_120_PNG;
-    case BuiltInImage::kRNotification:
-      return IDR_GROWTH_FRAMEWORK_R_NOTIFICATION_PNG;
 #else
     // Sclable Iph images are included only if ash-build and Chrome branded.
     // Returns a fall-back image for the other case.
@@ -250,8 +249,12 @@ std::optional<int> GetBuiltInImageResourceId(
     case BuiltInImage::kPlayStoreIcon:
       return IDR_PRODUCT_LOGO_128;
 #endif  // BUILDFLAG(ENABLE_CROS_SCALABLE_IPH)
+    case BuiltInImage::kRNotification:
+      return IDR_GROWTH_FRAMEWORK_R_NOTIFICATION_PNG;
     case growth::BuiltInImage::kMallAppIcon:
       return IDR_ASH_MALL_CROS_APP_IMAGES_MALL_ICON_192_PNG;
+    case growth::BuiltInImage::kPersonalizationIcon:
+      return IDR_ASH_PERSONALIZATION_APP_HUB_ICON_192_PNG;
   }
 
   return std::nullopt;
@@ -360,6 +363,7 @@ const Payload* GetPayloadBySlot(const Campaign* campaign, Slot slot) {
       return campaign->FindDictByDottedPath(base::StringPrintf(
           kPayloadPathTemplate, kDemoModeSignInExperiencePath));
     case Slot::kDemoModeFreePlayApps:
+    case Slot::kDryRun:
       NOTREACHED();
   }
 

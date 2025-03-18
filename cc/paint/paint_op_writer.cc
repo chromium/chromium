@@ -485,7 +485,7 @@ void PaintOpWriter::WriteImage(const gpu::Mailbox& mailbox,
     return;
   }
 
-  memcpy(memory_, mailbox.name, sizeof(mailbox.name));
+  UNSAFE_TODO(memcpy(memory_, mailbox.name, sizeof(mailbox.name)));
   DidWrite(sizeof(mailbox.name));
   Write(reinterpret_as_srgb);
 }
@@ -821,7 +821,7 @@ void PaintOpWriter::WriteData(base::span<const uint8_t> data) {
     return;
   }
 
-  memcpy(memory_, data.data(), data.size());
+  UNSAFE_TODO(memcpy(memory_, data.data(), data.size()));
   DidWrite(data.size());
 }
 

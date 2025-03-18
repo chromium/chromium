@@ -594,9 +594,9 @@ def _upload_skia_json(benchmark_name: str,
       machine_group=_GetMachineGroup(build_properties))
   skia_json_data = _process_skia_json(
       results_filename, builder_details, benchmark_name)
-  if not skia_json_data:
-    logdog_benchmark_dict['skia_json_conversion_failed'] = 'True'
-    logdog_benchmark_dict['skia_json_upload_failed'] = 'True'  # skip upload.
+  if json_util.is_empty(skia_json_data):
+    logdog_benchmark_dict['skia_json_empty'] = 'True'  # skip upload.
+    logdog_benchmark_dict['skia_json_upload_skipped'] = 'True'
     return 1
   skia_results_filename = os.path.join(tmpfile_dir, 'skia_results.json')
   with open(skia_results_filename, 'w') as f:

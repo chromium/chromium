@@ -14,10 +14,11 @@
 namespace updater {
 
 void DoPeriodicTasks(base::OnceClosure callback) {
-  base::MakeRefCounted<CheckUpdaterHealthTask>(::GetUpdaterScope())
-      ->Run(base::BindOnce(&BrowserUpdaterClient::RunPeriodicTasks,
-                           BrowserUpdaterClient::Create(::GetUpdaterScope()),
-                           std::move(callback)));
+  base::MakeRefCounted<CheckUpdaterHealthTask>(GetBrowserUpdaterScope())
+      ->Run(
+          base::BindOnce(&BrowserUpdaterClient::RunPeriodicTasks,
+                         BrowserUpdaterClient::Create(GetBrowserUpdaterScope()),
+                         std::move(callback)));
 }
 
 }  // namespace updater

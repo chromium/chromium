@@ -165,6 +165,9 @@ interface PageHandler {
   // Sets last selected tab so user returns to most recently used tab upon
   // revisiting the history page.
   SetLastSelectedTab(int32 last_tab);
+
+  // Notify the backend that the side panel UI is ready to be shown.
+  ShowSidePanelUI();
 };
 
 // WebUI-side handler for requests from browser.

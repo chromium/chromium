@@ -13,6 +13,10 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "media/midi/midi_manager_android.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace content {
 
 namespace {
@@ -30,6 +34,12 @@ class MidiBrowserTest : public ContentBrowserTest {
   }
 
   void NavigateAndCheckResult(const std::string& path) {
+#if BUILDFLAG(IS_ANDROID)
+    if (!midi::HasSystemFeatureMidiForTesting()) {
+      GTEST_SKIP() << "MIDI service is not available on this device.";
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
+
     const std::u16string expected = u"pass";
     content::TitleWatcher watcher(shell()->web_contents(), expected);
     const std::u16string failed = u"fail";

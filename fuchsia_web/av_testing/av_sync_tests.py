@@ -30,10 +30,8 @@ import monitors
 import perf_trace
 import version
 from chrome_driver_wrapper import ChromeDriverWrapper
-from common import get_build_info, get_ffx_isolate_dir, get_free_local_port
-from isolate_daemon import IsolateDaemon
+from common import get_build_info, get_free_local_port, get_ip_address
 from repeating_log import RepeatingLog
-from run_webpage_test import capture_devtools_addr
 
 
 HTTP_SERVER_PORT = get_free_local_port()
@@ -179,52 +177,49 @@ def run_video_perf_test(file: str, driver: ChromeDriverWrapper,
     shutil.move(camera_params.info_file, LOG_DIR)
 
 
-def run_test(proc: subprocess.Popen) -> None:
-    device, port = capture_devtools_addr(proc, LOG_DIR)
-    logging.warning('DevTools is now running on %s:%s', device, port)
-    # webpage test may update the fuchsia version, so get build_info after its
-    # finish.
-    logging.warning('Chrome version %s %s', version.chrome_version_str(),
-                    version.git_revision())
-    build_info = get_build_info()
-    logging.warning('Fuchsia build info %s', build_info)
-    monitors.tag(version.chrome_version_str(), build_info.version,
-                 version.chrome_version_str() + '/' + build_info.version)
-    # Replace the last byte to 1, by default it's the ip address of the host
-    # machine being accessible on the device.
-    host = '.'.join(device.split('.')[:-1] + ['1'])
-    proxy_host = os.environ.get('GCS_PROXY_HOST')
-    if proxy_host:
-        # This is a hacky way to get the ip address of the host machine
-        # being accessible on the device by the fuchsia managed docker image.
-        host = proxy_host + '0'
-    with ChromeDriverWrapper((device, port)) as driver:
-        # Waiting for a change like https://crrev.com/c/6063979 to loose the
-        # size limitation of the invocation which triggers an upload error when
-        # too many metrics are included.
-        # Before that, randomly select two of the videos to test so that we will
-        # have sufficient coverage after multiple runs.
-        # It also helps to reduce the time cost of each swarming job and ensures
-        # the devices can be restarted after several videos.
-        candidates = set(VIDEOS)
-        # Run extra 1080p tests on sherlock.
-        if build_info.board == 'sherlock':
-            candidates.update(HIGH_PERF_VIDEOS)
-        for file in random.sample(list(candidates), 2):
-            run_video_perf_test(file, driver, host)
-
-
 def main() -> int:
-    proc = subprocess.Popen([
-        os.path.join(TEST_SCRIPTS_ROOT,
-                     'run_test.py'), 'webpage', '--out-dir=.',
-        '--browser=web-engine-shell', '--device', f'--logs-dir={LOG_DIR}'
-    ],
-                            env={
-                                **os.environ, 'CHROME_HEADLESS': '1'
-                            })
     try:
-        run_test(proc)
+        with ChromeDriverWrapper() as driver:
+            # webpage test may update the fuchsia version, so get build_info
+            # after its finish.
+            logging.warning('Chrome version %s %s',
+                            version.chrome_version_str(),
+                            version.git_revision())
+            build_info = get_build_info()
+            logging.warning('Fuchsia build info %s', build_info)
+            monitors.tag(
+                version.chrome_version_str(), build_info.version,
+                version.chrome_version_str() + '/' + build_info.version)
+            proxy_host = os.environ.get('GCS_PROXY_HOST')
+            if proxy_host:
+                # This is a hacky way to get the ip address of the host machine
+                # being accessible on the device by the fuchsia managed docker
+                # image.
+                host = proxy_host + '0'
+            else:
+                # If not running in the managed docker image, replace the last
+                # byte of the fuchsia device ipv4 address to 1, by default it's
+                # the ip address of the host machine being accessible on the
+                # device.
+                # TODO(40935291): This hacky way should be removed once the
+                # tests are migrated to the managed docker image.
+                host = '.'.join(
+                    get_ip_address(os.environ.get('FUCHSIA_NODENAME'),
+                                   True).exploded.split('.')[:-1] + ['1'])
+
+            # Waiting for a change like https://crrev.com/c/6063979 to loose the
+            # size limitation of the invocation which triggers an upload error
+            # when too many metrics are included.
+            # Before that, randomly select two of the videos to test so that we
+            # will have sufficient coverage after multiple runs.
+            # It also helps to reduce the time cost of each swarming job and
+            # ensures the devices can be restarted after several videos.
+            candidates = set(VIDEOS)
+            # Run extra 1080p tests on sherlock.
+            if build_info.board == 'sherlock':
+                candidates.update(HIGH_PERF_VIDEOS)
+            for file in random.sample(list(candidates), 2):
+                run_video_perf_test(file, driver, host)
         return 0
     except:
         # Do not dump the results unless the tests were passed successfully to
@@ -232,8 +227,6 @@ def main() -> int:
         monitors.clear()
         raise
     finally:
-        proc.terminate()
-        proc.wait()
         # May need to merge with the existing file created by run_test.py
         # webpage process.
         monitors.dump(os.path.join(LOG_DIR, 'invocations'))
@@ -241,9 +234,5 @@ def main() -> int:
 
 if __name__ == '__main__':
     logging.warning('Running %s with env %s', sys.argv, os.environ)
-    # Setting a temporary isolate daemon dir and share it with the webpage
-    # runner.
-    with StartProcess(server.start, [HTTP_SERVER_PORT], True), \
-         IsolateDaemon.IsolateDir():
-        logging.warning('ffx daemon is running in %s', get_ffx_isolate_dir())
+    with StartProcess(server.start, [HTTP_SERVER_PORT], True):
         sys.exit(main())

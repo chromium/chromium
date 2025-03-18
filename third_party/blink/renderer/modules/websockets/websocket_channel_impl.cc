@@ -716,7 +716,7 @@ WebSocketChannelImpl::Message::Message(v8::Isolate* isolate,
       type_(kMessageTypeText),
       did_call_send_message_(did_call_send_message),
       completion_callback_(std::move(completion_callback)) {
-  memcpy(message_data_.get(), text.data(), text.length());
+  UNSAFE_TODO(memcpy(message_data_.get(), text.data(), text.length()));
   pending_payload_ =
       UNSAFE_TODO(base::span(message_data_.get(), text.length()));
 }
@@ -738,7 +738,7 @@ WebSocketChannelImpl::Message::Message(v8::Isolate* isolate,
       type_(kMessageTypeArrayBuffer),
       did_call_send_message_(did_call_send_message),
       completion_callback_(std::move(completion_callback)) {
-  memcpy(message_data_.get(), message.data(), message.size());
+  UNSAFE_TODO(memcpy(message_data_.get(), message.data(), message.size()));
   pending_payload_ =
       UNSAFE_TODO(base::span(message_data_.get(), message.size()));
 }

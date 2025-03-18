@@ -12,6 +12,7 @@
 
 #include "chrome/browser/about_flags.h"
 
+#include <array>
 #include <iterator>
 #include <map>
 #include <memory>
@@ -66,7 +67,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/unexpire_flags.h"
 #include "chrome/browser/unexpire_flags_gen.h"
-#include "chrome/browser/web_applications/features.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/browser/webauthn/webauthn_switches.h"
 #include "chrome/common/buildflags.h"
@@ -4439,6 +4439,20 @@ const FeatureEntry::FeatureVariation
          std::size(kStandardBoundSessionCredentialsEnabledOriginTrialToken),
          nullptr}};
 
+#if BUILDFLAG(IS_CHROMEOS)
+constexpr auto kScannerDisclaimerDebugOverrideChoices =
+    std::to_array<FeatureEntry::Choice>({
+        {flag_descriptions::kScannerDisclaimerDebugOverrideChoiceDefault, "",
+         ""},
+        {flag_descriptions::kScannerDisclaimerDebugOverrideChoiceAlwaysReminder,
+         ash::switches::kScannerDisclaimerDebugOverride,
+         ash::switches::kScannerDisclaimerDebugOverrideReminder},
+        {flag_descriptions::kScannerDisclaimerDebugOverrideChoiceAlwaysFull,
+         ash::switches::kScannerDisclaimerDebugOverride,
+         ash::switches::kScannerDisclaimerDebugOverrideFull},
+    });
+#endif
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -5227,6 +5241,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSysUiShouldHoldbackTaskManagementName,
      flag_descriptions::kSysUiShouldHoldbackTaskManagementDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSysUiShouldHoldbackTaskManagement)},
+    {"offline-items-in-notifications",
+     flag_descriptions::kOfflineItemsInNotificationsName,
+     flag_descriptions::kOfflineItemsInNotificationsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kOfflineItemsInNotifications)},
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
@@ -5369,18 +5387,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDesktopPWAsSyncChangesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kWebAppDontAddExistingAppsToSync)},
 #endif  // !BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(IS_CHROMEOS)
-    {"web-app-user-display-mode-sync-browser-mitigation",
-     flag_descriptions::kUserDisplayModeSyncBrowserMitigationName,
-     flag_descriptions::kUserDisplayModeSyncBrowserMitigationDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(web_app::kUserDisplayModeSyncBrowserMitigation)},
-    {"web-app-user-display-mode-sync-standalone-mitigation",
-     flag_descriptions::kUserDisplayModeSyncStandaloneMitigationName,
-     flag_descriptions::kUserDisplayModeSyncStandaloneMitigationDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(web_app::kUserDisplayModeSyncStandaloneMitigation)},
-#endif  // BUILDFLAG(IS_CHROMEOS)
     {"use-sync-sandbox", flag_descriptions::kSyncSandboxName,
      flag_descriptions::kSyncSandboxDescription, kOsAll,
      SINGLE_VALUE_TYPE_AND_VALUE(
@@ -9670,6 +9676,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kTabStripTransitionInDesktopWindow)},
 #endif
 
+    {"group-promo-prototype", flag_descriptions::kGroupPromoPrototypeName,
+     flag_descriptions::kGroupPromoPrototypeDescription, kOsAll,
+     FEATURE_VALUE_TYPE(
+         visited_url_ranking::features::kGroupSuggestionService)},
+
     {"use-dmsaa-for-tiles", flag_descriptions::kUseDMSAAForTilesName,
      flag_descriptions::kUseDMSAAForTilesDescription, kOsAll,
      FEATURE_VALUE_TYPE(::features::kUseDMSAAForTiles)},
@@ -11835,6 +11846,13 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(
          blink::features::kIsPaintableChecksResourceProviderInsteadOfBridge)},
+
+#if BUILDFLAG(IS_CHROMEOS)
+    {"scanner-disclaimer-debug-override",
+     flag_descriptions::kScannerDisclaimerDebugOverrideName,
+     flag_descriptions::kScannerDisclaimerDebugOverrideDescription, kOsCrOS,
+     MULTI_VALUE_TYPE(kScannerDisclaimerDebugOverrideChoices)},
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

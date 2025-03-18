@@ -190,6 +190,16 @@ class LensOverlayController : public LensSearchboxClient,
   static LensOverlayController* GetController(
       content::WebContents* webui_contents);
 
+  // Issues a contextual search request for Lens to fulfill.
+  // No-op if the Lens Overlay is off or closing. If the Lens Overlay is in the
+  // process of opening, the request will be queued until the overlay is fully
+  // opened.
+  // TODO(crbug.com/403629222): Revisit if it makes sense to pass the
+  // destination URL instead of the query text directly.
+  void IssueContextualSearchRequest(const GURL& destination_url,
+                                    AutocompleteMatchType::Type match_type,
+                                    bool is_zero_prefix_suggestion);
+
   // Sets a region to search after the overlay loads, then calls ShowUI().
   // All units are in device pixels. region_bitmap contains the high definition
   // image bytes to use for the search instead of cropping the region from the
@@ -398,6 +408,9 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Returns true if the overlay is showing or is in live page mode.
   bool IsOverlayActive();
+
+  // Returns true if the overlay is in the process of initializing.
+  bool IsOverlayInitializing();
 
   // Returns true if the overlay is currently in the process of closing.
   bool IsOverlayClosing();
@@ -1206,6 +1219,9 @@ class LensOverlayController : public LensSearchboxClient,
   // A pending thumbnail URI to be loaded in the side panel. Needed when the
   // side panel is not bound at the time of a region request.
   std::optional<std::string> pending_thumbnail_uri_ = std::nullopt;
+
+  // A contextual search request to be issued once the overlay is initialized.
+  base::OnceClosure pending_contextual_search_request_;
 
   // URL to load when command to open side panel in a new tab is executed.
   GURL side_panel_new_tab_url_;

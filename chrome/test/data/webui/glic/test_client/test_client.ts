@@ -48,8 +48,12 @@ interface PageElementTypes {
   getlocation: HTMLButtonElement;
   location: HTMLElement;
   locationStatus: HTMLDivElement;
-  locationErrorUI: HTMLDivElement;
+  locationOsErrorUI: HTMLDivElement;
+  locationGlicErrorUI: HTMLDivElement;
   openOsLocationSettingsButton: HTMLButtonElement;
+  openOsMicrophoneSettings: HTMLButtonElement;
+  openOsLocationSettings: HTMLButtonElement;
+  openGlicLocationSettingsButton: HTMLButtonElement;
   permissionSelect: HTMLSelectElement;
   enabledSelect: HTMLSelectElement;
   closebn: HTMLButtonElement;
@@ -97,6 +101,9 @@ interface PageElementTypes {
   osDenialUI: HTMLDivElement;
   openLocalSettingsButton: HTMLButtonElement;
   openOsSettingsButton: HTMLButtonElement;
+  osGeolocationPermissionSwitch: HTMLInputElement;
+  getOsMicrophonePermissionButton: HTMLButtonElement;
+  osMicrophonePermissionResult: HTMLSpanElement;
 }
 
 const $: PageElementTypes = new Proxy({}, {
@@ -151,6 +158,7 @@ class WebClient implements GlicWebClient {
           microphone: this.browser.getMicrophonePermissionState!(),
           geolocation: this.browser.getLocationPermissionState!(),
           tabContext: this.browser.getTabContextPermissionState!(),
+          osGeolocation: this.browser.getOsLocationPermissionState!(),
         };
     for (const permission of Object.keys(permissionStates) as
          PermissionSwitchName[]) {
@@ -350,11 +358,13 @@ async function updateSizingMode(inSizingTest: boolean) {
 
 // Permissions:
 
-type PermissionSwitchName = 'microphone'|'geolocation'|'tabContext';
+type PermissionSwitchName =
+    'microphone'|'geolocation'|'tabContext'|'osGeolocation';
 const permissionSwitches: Record<PermissionSwitchName, HTMLInputElement> = {
   microphone: $.microphoneSwitch,
   geolocation: $.geolocationSwitch,
   tabContext: $.tabContextSwitch,
+  osGeolocation: $.osGeolocationPermissionSwitch,
 };
 
 // Update a permission switch display state.
@@ -545,9 +555,10 @@ $.getlocation.addEventListener('click', async () => {
       if (error instanceof GeolocationPositionError) {
         if (error.code === 1) {
           $.locationStatus.innerText = `Permission Denied.`;
-          const locPermissionStatus = permissionSwitches['geolocation'].checked;
-          if (locPermissionStatus) {
-            $.locationErrorUI.style.display = 'block';
+          if (!permissionSwitches['osGeolocation'].checked) {
+            $.locationOsErrorUI.style.display = 'block';
+          } else if (!permissionSwitches['geolocation'].checked) {
+            $.locationGlicErrorUI.style.display = 'block';
           }
         }
       }
@@ -814,6 +825,20 @@ window.addEventListener('load', () => {
   });
   $.openOsLocationSettingsButton.addEventListener('click', () => {
     getBrowser()!.openOsPermissionSettingsMenu!('geolocation');
+  });
+  $.openOsLocationSettings.addEventListener('click', () => {
+    getBrowser()!.openOsPermissionSettingsMenu!('geolocation');
+  });
+  $.openOsMicrophoneSettings.addEventListener('click', () => {
+    getBrowser()!.openOsPermissionSettingsMenu!('media');
+  });
+  $.openGlicLocationSettingsButton.addEventListener('click', () => {
+    getBrowser()!.openGlicSettingsPage!();
+  });
+  $.getOsMicrophonePermissionButton.addEventListener('click', async () => {
+    const permission = await getBrowser()!.getOsMicrophonePermissionStatus!();
+    $.osMicrophonePermissionResult.textContent =
+        `OS Microphone Permission: ${permission}`;
   });
 });
 

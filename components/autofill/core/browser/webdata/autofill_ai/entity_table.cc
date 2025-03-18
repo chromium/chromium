@@ -310,7 +310,7 @@ bool EntityTable::RemoveEntityInstancesModifiedBetween(base::Time delete_begin,
   s.BindInt64(1, delete_end.ToTimeT());
   std::vector<base::Uuid> guids;
   while (s.Step()) {
-    base::Uuid guid = base::Uuid::ParseLowercase(s.ColumnString(0));
+    base::Uuid guid = base::Uuid::ParseLowercase(s.ColumnStringView(0));
     if (!guid.is_valid()) {
       continue;
     }
@@ -340,7 +340,7 @@ EntityTable::LoadAttributes() const {
                  attributes::kFieldType, attributes::kValueEncrypted,
                  attributes::kVerificationStatus});
   while (s.Step()) {
-    base::Uuid entity_guid = base::Uuid::ParseLowercase(s.ColumnString(0));
+    base::Uuid entity_guid = base::Uuid::ParseLowercase(s.ColumnStringView(0));
     std::string attribute_type_name = s.ColumnString(1);
     std::underlying_type_t<FieldType> underlying_field_type = s.ColumnInt(2);
     std::u16string decrypted_value;
@@ -377,7 +377,7 @@ std::vector<EntityInstance> EntityTable::GetEntityInstances() const {
                 {entities::kGuid, entities::kEntityType, entities::kNickname,
                  entities::kDateModified});
   while (s.Step()) {
-    base::Uuid guid = base::Uuid::ParseLowercase(s.ColumnString(0));
+    base::Uuid guid = base::Uuid::ParseLowercase(s.ColumnStringView(0));
     std::string type_name = s.ColumnString(1);
     std::string nickname = s.ColumnString(2);
     base::Time date_modified = base::Time::FromTimeT(s.ColumnInt64(3));

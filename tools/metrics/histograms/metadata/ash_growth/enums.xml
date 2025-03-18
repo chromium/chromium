@@ -32,6 +32,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Nudge"/>
   <int value="3" label="Notification"/>
   <int value="4" label="OOBE Perk Discovery Page"/>
+  <int value="5" label="Demo Mode Sign In Experience"/>
+  <int value="6" label="Dry Run"/>
 </enum>
 
 <enum name="CampaignsManagerError">

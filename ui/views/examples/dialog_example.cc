@@ -42,9 +42,11 @@ constexpr size_t kFakeModeless =
 }  // namespace
 
 template <class DialogType>
-class DialogExample::Delegate : public virtual DialogType {
+class DialogExampleDelegate : public DialogType {
  public:
-  explicit Delegate(DialogExample* parent) : parent_(parent) {
+  template <typename... Args>
+  explicit DialogExampleDelegate(DialogExample* parent, Args&&... args)
+      : DialogType(std::forward<Args>(args)...), parent_(parent) {
     DialogDelegate::SetButtons(parent_->GetDialogButtons());
     DialogDelegate::SetButtonLabel(ui::mojom::DialogButton::kOk,
                                    parent_->ok_button_text());
@@ -56,8 +58,8 @@ class DialogExample::Delegate : public virtual DialogType {
     WidgetDelegate::SetModalType(parent_->GetModalType());
   }
 
-  Delegate(const Delegate&) = delete;
-  Delegate& operator=(const Delegate&) = delete;
+  DialogExampleDelegate(const DialogExampleDelegate&) = delete;
+  DialogExampleDelegate& operator=(const DialogExampleDelegate&) = delete;
 
   void InitDelegate() {
     this->SetLayoutManager(std::make_unique<FillLayout>());
@@ -85,32 +87,33 @@ class DialogExample::Delegate : public virtual DialogType {
   raw_ptr<DialogExample> parent_;
 };
 
-class DialogExample::Bubble : public Delegate<BubbleDialogDelegateView> {
+class DialogExampleBubble
+    : public DialogExampleDelegate<BubbleDialogDelegateView> {
  public:
-  Bubble(DialogExample* parent, View* anchor)
-      : BubbleDialogDelegateView(anchor, BubbleBorder::TOP_LEFT),
-        Delegate(parent) {
+  DialogExampleBubble(DialogExample* parent, View* anchor)
+      : DialogExampleDelegate(parent, anchor, BubbleBorder::TOP_LEFT) {
     set_close_on_deactivate(!parent->persistent_bubble_checked());
   }
 
-  Bubble(const Bubble&) = delete;
-  Bubble& operator=(const Bubble&) = delete;
+  DialogExampleBubble(const DialogExampleBubble&) = delete;
+  DialogExampleBubble& operator=(const DialogExampleBubble&) = delete;
 
   // BubbleDialogDelegateView:
   void Init() override { InitDelegate(); }
 };
 
-class DialogExample::Dialog : public Delegate<DialogDelegateView> {
+class DialogExampleDialog : public DialogExampleDelegate<DialogDelegateView> {
  public:
-  explicit Dialog(DialogExample* parent) : Delegate(parent) {
+  explicit DialogExampleDialog(DialogExample* parent)
+      : DialogExampleDelegate(parent) {
     // Mac supports resizing of modal dialogs (parent or window-modal). On other
     // platforms this will be weird unless the modal type is "none", but helps
     // test layout.
     SetCanResize(true);
   }
 
-  Dialog(const Dialog&) = delete;
-  Dialog& operator=(const Dialog&) = delete;
+  DialogExampleDialog(const DialogExampleDialog&) = delete;
+  DialogExampleDialog& operator=(const DialogExampleDialog&) = delete;
 };
 
 DialogExample::DialogExample()
@@ -317,12 +320,12 @@ void DialogExample::ResizeDialog() {
 void DialogExample::ShowButtonPressed() {
   if (bubble_->GetChecked()) {
     // |bubble| will be destroyed by its widget when the widget is destroyed.
-    Bubble* bubble = new Bubble(this, show_);
+    auto* bubble = new DialogExampleBubble(this, show_);
     last_dialog_ = bubble;
     BubbleDialogDelegateView::CreateBubble(bubble);
   } else {
     // |dialog| will be destroyed by its widget when the widget is destroyed.
-    Dialog* dialog = new Dialog(this);
+    auto* dialog = new DialogExampleDialog(this);
     last_dialog_ = dialog;
     dialog->InitDelegate();
 

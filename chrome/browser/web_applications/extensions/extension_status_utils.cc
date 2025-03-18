@@ -10,6 +10,7 @@
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_management.h"
+#include "chrome/browser/extensions/managed_installation_mode.h"
 #include "chrome/browser/extensions/preinstalled_apps.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
@@ -53,12 +54,12 @@ bool IsExtensionBlockedByPolicy(content::BrowserContext* context,
   const Extension* extension = registry->GetInstalledExtension(extension_id);
   ExtensionManagement* management =
       ExtensionManagementFactory::GetForBrowserContext(context);
-  ExtensionManagement::InstallationMode mode =
+  ManagedInstallationMode mode =
       extension ? management->GetInstallationMode(extension)
                 : management->GetInstallationMode(extension_id,
                                                   /*update_url=*/std::string());
-  return mode == ExtensionManagement::INSTALLATION_BLOCKED ||
-         mode == ExtensionManagement::INSTALLATION_REMOVED;
+  return mode == ManagedInstallationMode::kBlocked ||
+         mode == ManagedInstallationMode::kRemoved;
 }
 
 bool IsExtensionInstalled(content::BrowserContext* context,

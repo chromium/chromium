@@ -165,8 +165,9 @@ class OpenXrApiWrapper {
   uint32_t GetRecommendedSwapchainSampleCount() const;
   void UpdateStageBounds();
   std::optional<gfx::Transform> GetLocalFromStage();
-  std::optional<gfx::Transform> GetBaseSpaceFromSpace(XrSpace base_space,
-                                                      XrSpace space);
+  std::optional<gfx::Transform> GetBaseSpaceFromSpace(
+      mojom::XRReferenceSpaceType base_space,
+      mojom::XRReferenceSpaceType space);
   XrResult CreateEmulatedLocalFloorSpace(XrSpace* space);
   XrResult UpdateLocalFloorSpace();
 
