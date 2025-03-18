@@ -3649,6 +3649,14 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-pending-mode-passwords-promo",
+    "owners": [
+      "uno-desktop@google.com",
+      "//components/signin/OWNERS"
+    ],
+    "expiry_milestone": 138
+  },
+  {
     "name": "enable-perfetto-system-tracing",
     "owners": [ "woa-performance@google.com" ],
     // This flag is used for recording system traces on Chrome for Android.

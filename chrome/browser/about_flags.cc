@@ -11601,6 +11601,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableSnackbarInSettingsDescription,
      kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(switches::kEnableSnackbarInSettings)},
+    {"enable-pending-mode-passwords-promo",
+     flag_descriptions::kEnablePendingModePasswordsPromoName,
+     flag_descriptions::kEnablePendingModePasswordsPromoDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(switches::kEnablePendingModePasswordsPromo)},
 #if BUILDFLAG(IS_ANDROID)
     {"new-etc1-encoder", flag_descriptions::kNewEtc1EncoderName,
      flag_descriptions::kNewEtc1EncoderDescription, kOsAndroid,
