@@ -71,7 +71,8 @@ if (is_nacl) {
 } else if (current_cpu == "x64" || current_cpu == "arm64" ||
            current_cpu == "loong64" || current_cpu == "riscv64") {
   has_64_bit_pointers = true
-} else if (current_cpu == "x86" || current_cpu == "arm") {
+} else if (current_cpu == "x86" || current_cpu == "arm" ||
+           current_cpu == "wasm") {
   has_64_bit_pointers = false
 } else {
   assert(false, "Unknown CPU: $current_cpu")

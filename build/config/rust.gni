@@ -109,7 +109,7 @@ declare_args() {
 use_chromium_rust_toolchain = rust_sysroot_absolute == ""
 
 # Platform support for the Rust toolchain.
-chromium_toolchain_supports_platform = !is_nacl
+chromium_toolchain_supports_platform = !is_nacl && !is_wasm
 custom_toolchain_supports_platform = !is_nacl || rust_toolchain_supports_nacl
 
 # Not all target triples (GN toolchains) are supported by the Rust compiler.
