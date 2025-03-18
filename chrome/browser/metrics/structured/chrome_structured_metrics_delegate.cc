@@ -35,7 +35,6 @@ namespace {
 enum class StructuredMetricsPlatform {
   kUninitialized = 0,
   kAshChrome = 1,
-  kLacrosChrome = 2,
 };
 
 #if BUILDFLAG(IS_CHROMEOS)
