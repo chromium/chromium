@@ -29,6 +29,7 @@
 
 #include <memory>
 #include <optional>
+#include <variant>
 
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -124,9 +125,10 @@ void ScanScriptWebBundle(
     scoped_refptr<const PreloadRequest::ExclusionInfo>& exclusion_info) {
   auto rule_or_error =
       ScriptWebBundleRule::ParseJson(inline_text, base_url, /*logger*/ nullptr);
-  if (!absl::holds_alternative<ScriptWebBundleRule>(rule_or_error))
+  if (!std::holds_alternative<ScriptWebBundleRule>(rule_or_error)) {
     return;
-  auto& rule = absl::get<ScriptWebBundleRule>(rule_or_error);
+  }
+  auto& rule = std::get<ScriptWebBundleRule>(rule_or_error);
 
   HashSet<KURL> scopes;
   HashSet<KURL> resources;

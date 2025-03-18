@@ -31,10 +31,10 @@
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 
 #include <utility>
+#include <variant>
 
 #include "base/functional/overloaded.h"
 #include "base/notreached.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_drag_data.h"
@@ -364,7 +364,7 @@ DataObject* DataObject::Create(ExecutionContext* context,
   bool has_file_system = false;
 
   for (const WebDragData::Item& item : data.Items()) {
-    absl::visit(
+    std::visit(
         base::Overloaded{
             [&](const WebDragData::StringItem& item) {
               if (String(item.type) == kMimeTypeTextURIList) {

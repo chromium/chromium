@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <optional>
+#include <variant>
 
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/authenticator_response.h"
@@ -47,8 +48,8 @@ class MODULES_EXPORT AuthenticatorAssertionResponse final
 
   DOMArrayBuffer* userHandle() const { return user_handle_.Get(); }
 
-  absl::variant<AuthenticatorAssertionResponseJSON*,
-                AuthenticatorAttestationResponseJSON*>
+  std::variant<AuthenticatorAssertionResponseJSON*,
+               AuthenticatorAttestationResponseJSON*>
   toJSON() const override;
 
   void Trace(Visitor*) const override;

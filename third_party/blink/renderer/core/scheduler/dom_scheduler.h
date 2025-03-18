@@ -8,7 +8,6 @@
 #include <atomic>
 
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"

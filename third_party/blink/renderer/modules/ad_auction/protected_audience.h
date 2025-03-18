@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AD_AUCTION_PROTECTED_AUDIENCE_H_
 
 #include <utility>
+#include <variant>
 
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -22,7 +22,7 @@ class ProtectedAudience : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  using FeatureVal = absl::variant<bool, size_t, double>;
+  using FeatureVal = std::variant<bool, size_t, double>;
 
   // `execution_context` is only used by the constructor.
   explicit ProtectedAudience(ExecutionContext* execution_context);

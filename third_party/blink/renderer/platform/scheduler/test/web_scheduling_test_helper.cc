@@ -6,10 +6,10 @@
 
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
@@ -63,15 +63,15 @@ void WebSchedulingTestHelper::PostTestTasks(
     const Vector<TestTaskSpecEntry>& test_spec) {
   for (const auto& entry : test_spec) {
     scoped_refptr<base::SingleThreadTaskRunner> task_runner;
-    if (absl::holds_alternative<WebSchedulingParams>(entry.type_info)) {
+    if (std::holds_alternative<WebSchedulingParams>(entry.type_info)) {
       WebSchedulingParams params =
-          absl::get<WebSchedulingParams>(entry.type_info);
+          std::get<WebSchedulingParams>(entry.type_info);
       task_runner =
           GetWebSchedulingTaskQueue(params.queue_type, params.priority)
               ->GetTaskRunner();
     } else {
       task_runner =
-          delegate_->GetTaskRunner(absl::get<TaskType>(entry.type_info));
+          delegate_->GetTaskRunner(std::get<TaskType>(entry.type_info));
     }
     task_runner->PostDelayedTask(
         FROM_HERE,
