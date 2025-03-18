@@ -4889,7 +4889,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordProtection.CSDCacheDebuggingMetadataSizeAtHit"
-    units="bytes" expires_after="2025-03-30">
+    units="bytes" expires_after="2026-03-30">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
