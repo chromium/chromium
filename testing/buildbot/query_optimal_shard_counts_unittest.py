@@ -104,6 +104,9 @@ class FormatQueryResults(unittest.TestCase):
               'chromium.builder_group': {
                   'builder_name': {
                       'fake_test_suite': {
+                          'debug': {
+                              'try_builder': 'linux-rel'
+                          },
                           'shards': 4
                       }
                   }
@@ -767,6 +770,58 @@ class FormatQueryResults(unittest.TestCase):
         ['webview_instrumentation_test_apk'],
         {'shards': 15},
     )
+
+  def testPruned(self):
+    suite_durations = json.dumps([
+        query_suite_durations_dict(
+            waterfall_builder_group='chromium.win',
+            waterfall_builder_name='Win10 Tests x64',
+            try_builder='win-rel',
+            test_suite='browser_tests',
+        ),
+    ])
+    overheads = json.dumps([
+        query_test_overheads_dict(
+            waterfall_builder_group='chromium.win',
+            waterfall_builder_name='Win10 Tests x64',
+            try_builder='win-rel',
+            test_suite='browser_tests',
+        ),
+    ])
+    avg_num_builds_per_hour = json.dumps([
+        query_average_number_builds_per_hour(try_builder='win-rel'),
+    ])
+    cq_builders = json.dumps([{'builder': 'linux-rel'}])
+    self._mock_check_output.side_effect = [
+        suite_durations,
+        overheads,
+        avg_num_builds_per_hour,
+        cq_builders,
+    ]
+
+    query_optimal_shard_counts.main([
+        '--verbose',
+        '--output-file',
+        self.output_file,
+        '--prune',
+    ])
+
+    with open(self.output_file, 'r') as f:
+      script_result = json.load(f)
+    # Only linux-rel is a required builder so win-rel should be pruned
+    self.assertEqual(
+        script_result, {
+            'chromium.builder_group': {
+                'builder_name': {
+                    'fake_test_suite': {
+                        'debug': {
+                            'try_builder': 'linux-rel'
+                        },
+                        'shards': 4
+                    }
+                }
+            }
+        })
 
   @mock.patch('query_optimal_shard_counts.TEST_SUITE_EXCLUDE_SET',
               new={'browser_tests', 'ui_tests'})

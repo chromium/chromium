@@ -10,6 +10,7 @@ duration below the desired max runtime.
 """
 
 import argparse
+import copy
 import datetime
 import json
 import os
@@ -212,6 +213,7 @@ def _calculate_estimated_bot_hour_cost(durations, lookback_start_date,
     updated_durations.append(r)
   return updated_durations
 
+
 def _meets_optimal_shard_count_and_simulated_duration_requirements(
     row, data, desired_runtime):
   builder_group = row['waterfall_builder_group']
@@ -266,6 +268,31 @@ def _meets_optimal_shard_count_and_simulated_duration_requirements(
   return True
 
 
+def _prune_builders(data):
+  query_file = os.path.join(os.path.dirname(__file__), 'autosharder_sql',
+                            'query_cq_builders.sql')
+  with open(query_file, 'r') as f:
+    query = f.read()
+
+  rows = _run_query([
+      'bq', 'query', '--project_id=' + _CLOUD_PROJECT_ID, '--format=json',
+      '--max_rows=100000', '--nouse_legacy_sql', query
+  ])
+
+  cq_builders = set(row['builder'] for row in rows)
+  data_copy = copy.deepcopy(data)
+  for builder_group_name, builder_group in data_copy.items():
+    for ci_builder_name, ci_builder in builder_group.items():
+      for test_suite_name, test_suite in ci_builder.items():
+        try_builder = test_suite['debug']['try_builder']
+        if try_builder not in cq_builders:
+          del data[builder_group_name][ci_builder_name][test_suite_name]
+      if len(data[builder_group_name][ci_builder_name]) == 0:
+        del data[builder_group_name][ci_builder_name]
+    if len(data[builder_group_name]) == 0:
+      del data[builder_group_name]
+
+
 def main(args):
   parser = argparse.ArgumentParser(
       description=('Calculate optimal shard counts from bigquery.\n\n'
@@ -282,6 +309,11 @@ def main(args):
                       '-o',
                       action='store',
                       help='The filename to store bigquery results.')
+  parser.add_argument('--prune',
+                      '-x',
+                      action='store_true',
+                      help='Remove non cq required builders and warn if a '
+                      'required builder is now path based.')
   parser.add_argument('--overwrite-output-file',
                       action='store_true',
                       help='If there is already an output-file written, '
@@ -445,6 +477,9 @@ def main(args):
                                                   {}).update(shard_dict)
     new_data.setdefault(builder_group, {}).setdefault(builder_name,
                                                       {}).update(shard_dict)
+
+  if opts.prune:
+    _prune_builders(data)
 
   output_data = json.dumps(data,
                            indent=4,
