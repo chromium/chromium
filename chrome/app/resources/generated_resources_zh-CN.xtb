@@ -16,7 +16,7 @@
 <translation id="1006873397406093306">此扩展程序可读取和更改您的网站数据。您可以控制此扩展程序能访问哪些网站。</translation>
 <translation id="1007057452468855774">开启 Google Play 商店</translation>
 <translation id="1008186147501209563">导出书签</translation>
-<translation id="1008261151167010035"><ph name="BRAND" />会记住您的登录方式，并在可能的情况下自动为您登录。关闭此功能后，您每次登录时，系统都会要求您确认。</translation>
+<translation id="1008261151167010035"><ph name="BRAND" />会记住您的登录信息，并在情况允许时为您自动登录。若关闭此功能，系统每次都会请您确认是否登录。</translation>
 <translation id="1008557486741366299">以后再说</translation>
 <translation id="100881991356161927">网站名称</translation>
 <translation id="1009663062402466586">游戏控件现已可供使用</translation>
@@ -3398,7 +3398,7 @@
 <translation id="338583716107319301">分隔符</translation>
 <translation id="3385916046075724800">您的标签页分组现在会自动保存。</translation>
 <translation id="3387023983419383865">、</translation>
-<translation id="3387588771342841525">当此设置处于开启状态时，密码会保存到 <ph name="EMAIL" /> 中。当此设置处于关闭状态时，密码只会保存在此设备上。</translation>
+<translation id="3387588771342841525">开启此设置，密码会保存到 <ph name="EMAIL" /> 中；关闭设置，密码只会保存在此设备上。</translation>
 <translation id="3387614642886316601">使用增强的“拼写检查”功能</translation>
 <translation id="3387829698079331264">不允许以下网站了解您何时在主动使用设备</translation>
 <translation id="3388094447051599208">出纸盘快满了</translation>
@@ -4401,7 +4401,7 @@
 <translation id="4047726037116394521">转到主屏幕</translation>
 <translation id="4048295959689903187">选择音频输出</translation>
 <translation id="4048384495227695211">在文件夹中显示 <ph name="FILE_NAME" /></translation>
-<translation id="404894744863342743">用完下载的文件后，请将其删除，以防使用此设备的他人看到您的密码。</translation>
+<translation id="404894744863342743">下载的文件使用完毕后，请及时删除，以防其他使用此设备的人看到您的密码。</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{有 # 个联系人不可用。如需使用“附近分享”功能与这个联系人分享内容，请将其 Google 账号所关联的电子邮件地址添加到您的通讯录中。}other{有 # 个联系人不可用。如需使用“附近分享”功能与这些联系人分享内容，请将其 Google 账号所关联的电子邮件地址添加到您的通讯录中。}}</translation>
 <translation id="4050225813016893843">身份验证方法</translation>
 <translation id="4050379682069019014">“<ph name="MAIN_GESTURE" />”可能与“<ph name="CONFLICTING_GESTURE" />”有相似之处。如果可能，请尝试选择其他手势。</translation>
@@ -10037,7 +10037,7 @@
 <translation id="8110489095782891123">正在下载联系人列表…</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" /> 麦克风使用权限</translation>
 <translation id="8116972784401310538">书签管理器(&amp;B)</translation>
-<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" />会记住您的登录方式，并在可能的情况下自动为您登录。关闭此功能后，您每次登录时，系统都会要求您确认。</translation>
+<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" />会记住您的登录信息，并在情况允许时为您自动登录。若关闭此功能，系统每次都会请您确认是否登录。</translation>
 <translation id="8118362518458010043">已被 Chrome 停用。此扩展程序可能不安全。</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# 个书签}other{# 个书签}}</translation>
 <translation id="8118488170956489476">您的<ph name="BEGIN_LINK" />浏览器由所属组织管理<ph name="END_LINK" /></translation>
