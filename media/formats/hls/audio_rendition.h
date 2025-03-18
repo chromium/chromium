@@ -8,6 +8,7 @@
 #include <list>
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
@@ -17,7 +18,6 @@
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/tags.h"
 #include "media/formats/hls/types.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 namespace media::hls {
@@ -98,7 +98,7 @@ class MEDIA_EXPORT AudioRenditionGroup
   // individually valid, has `type == MediaType::kAudio`, and belongs to this
   // group. If the rendition is invalid in the context of the group, an error
   // will be returned.
-  ParseStatus::Or<absl::monostate> AddRendition(
+  ParseStatus::Or<std::monostate> AddRendition(
       base::PassKey<MultivariantPlaylist>,
       XMediaTag tag,
       const GURL& playlist_uri);

@@ -13,6 +13,7 @@
 #include <string.h>
 
 #include <memory>
+#include <variant>
 
 #include "base/containers/heap_array.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -52,7 +53,7 @@ TEST(DecoderBufferTest, CreateEOSBuffer) {
   ASSERT_TRUE(buffer->next_config());
   {
     auto config = buffer->next_config().value();
-    auto* ac = absl::get_if<AudioDecoderConfig>(&config);
+    auto* ac = std::get_if<AudioDecoderConfig>(&config);
     ASSERT_TRUE(ac);
     EXPECT_TRUE(ac->Matches(TestAudioConfig::Normal()));
   }
@@ -62,7 +63,7 @@ TEST(DecoderBufferTest, CreateEOSBuffer) {
   ASSERT_TRUE(buffer->next_config());
   {
     auto config = buffer->next_config().value();
-    auto* vc = absl::get_if<VideoDecoderConfig>(&config);
+    auto* vc = std::get_if<VideoDecoderConfig>(&config);
     ASSERT_TRUE(vc);
     EXPECT_TRUE(vc->Matches(TestVideoConfig::Normal()));
   }

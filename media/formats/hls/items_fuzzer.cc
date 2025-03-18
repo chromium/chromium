@@ -13,9 +13,9 @@
 #include <cstdint>
 #include <optional>
 #include <string_view>
+#include <variant>
 
 #include "base/check.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace {
 
@@ -74,9 +74,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     }
 
     auto value = std::move(result).value();
-    auto content = absl::visit([](auto x) { return GetItemContent(x); }, value);
+    auto content = std::visit([](auto x) { return GetItemContent(x); }, value);
     auto line_number =
-        absl::visit([](auto x) { return GetItemLineNumber(x); }, value);
+        std::visit([](auto x) { return GetItemLineNumber(x); }, value);
 
     // Ensure that the line number associated with this item is between the
     // original line number and the updated line number
