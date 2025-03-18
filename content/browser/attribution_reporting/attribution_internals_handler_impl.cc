@@ -11,6 +11,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -57,7 +58,6 @@
 #include "content/public/common/content_client.h"
 #include "net/base/net_errors.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -171,7 +171,7 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
 
   const AttributionInfo& attribution_info = report.attribution_info();
 
-  ai_mojom::WebUIReportDataPtr data = absl::visit(
+  ai_mojom::WebUIReportDataPtr data = std::visit(
       base::Overloaded{
           [](const AttributionReport::EventLevelData& event_level_data) {
             return ai_mojom::WebUIReportData::NewEventLevelData(
@@ -387,7 +387,7 @@ void AttributionInternalsHandlerImpl::OnReportSent(
     const AttributionReport& report,
     bool is_debug_report,
     const SendResult& info) {
-  ReportStatusPtr status = absl::visit(
+  ReportStatusPtr status = std::visit(
       base::Overloaded{
           [](SendResult::Sent sent) {
             return ReportStatus::NewNetworkStatus(NetworkStatus(sent.status));
@@ -433,7 +433,7 @@ void AttributionInternalsHandlerImpl::OnAggregatableDebugReportSent(
       SerializeAttributionJson(report_body, /*pretty_print=*/true);
   web_report->process_result = process_result;
 
-  web_report->send_result = absl::visit(
+  web_report->send_result = std::visit(
       base::Overloaded{
           [](const SendAggregatableDebugReportResult::Sent& sent) {
             return attribution_internals::mojom::

@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <optional>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -40,7 +41,6 @@
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -226,9 +226,9 @@ std::optional<AggregatableDebugReport> AggregatableDebugReport::Create(
 std::optional<AggregatableDebugReport> AggregatableDebugReport::Create(
     base::FunctionRef<bool()> is_operation_allowed,
     const CreateReportResult& result) {
-  if (absl::holds_alternative<CreateReportResult::NotRegistered>(
+  if (std::holds_alternative<CreateReportResult::NotRegistered>(
           result.event_level_result()) &&
-      absl::holds_alternative<CreateReportResult::NotRegistered>(
+      std::holds_alternative<CreateReportResult::NotRegistered>(
           result.aggregatable_result())) {
     return std::nullopt;
   }

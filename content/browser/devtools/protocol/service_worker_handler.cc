@@ -5,6 +5,7 @@
 #include "content/browser/devtools/protocol/service_worker_handler.h"
 
 #include <memory>
+#include <variant>
 
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
@@ -404,9 +405,9 @@ void ServiceWorkerHandler::OnWorkerVersionUpdated(
     base::flat_set<std::string> client_set;
 
     for (const auto& client : version.clients) {
-      if (absl::holds_alternative<GlobalRenderFrameHostId>(client.second)) {
+      if (std::holds_alternative<GlobalRenderFrameHostId>(client.second)) {
         WebContents* web_contents = WebContentsImpl::FromRenderFrameHostID(
-            absl::get<GlobalRenderFrameHostId>(client.second));
+            std::get<GlobalRenderFrameHostId>(client.second));
         // There is a possibility that the frame is already deleted
         // because of the thread hopping.
         if (!web_contents)

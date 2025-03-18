@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/base64.h"
@@ -42,7 +43,6 @@
 #include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
 #include "url/gurl.h"
@@ -340,7 +340,7 @@ class AttributionAggregatableReportGoldenLatestVersionTest
 
     const auto get_report_body = [&](AggregatableReport assembled_report) {
       auto* data =
-          absl::get_if<AttributionReport::AggregatableData>(&report.data());
+          std::get_if<AttributionReport::AggregatableData>(&report.data());
       CHECK(data);
       data->SetAssembledReport(std::move(assembled_report));
       return report.ReportBody();

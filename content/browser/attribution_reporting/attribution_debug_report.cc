@@ -10,6 +10,7 @@
 #include <optional>
 #include <string_view>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -39,7 +40,6 @@
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.h"
 #include "net/base/schemeful_site.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -83,20 +83,20 @@ std::optional<DebugDataTypeAndBody> GetReportDataBody(
         type, std::move(limit), std::move(additional_fields)));
   };
 
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [](StoreSourceResult::ProhibitedByBrowserPolicy) {
             return std::optional<DebugDataTypeAndBody>();
           },
-          [&](absl::variant<StoreSourceResult::Success,
-                            // `kSourceSuccess` is sent for a few errors as well
-                            // to mitigate the security concerns on reporting
-                            // these errors. Because these errors are thrown
-                            // based on information across reporting origins,
-                            // reporting on them would violate the same-origin
-                            // policy.
-                            StoreSourceResult::ExcessiveReportingOrigins,
-                            StoreSourceResult::DestinationGlobalLimitReached>) {
+          [&](std::variant<StoreSourceResult::Success,
+                           // `kSourceSuccess` is sent for a few errors as well
+                           // to mitigate the security concerns on reporting
+                           // these errors. Because these errors are thrown
+                           // based on information across reporting origins,
+                           // reporting on them would violate the same-origin
+                           // policy.
+                           StoreSourceResult::ExcessiveReportingOrigins,
+                           StoreSourceResult::DestinationGlobalLimitReached>) {
             return make_report_body(result.is_noised()
                                         ? DebugDataType::kSourceNoised
                                         : DebugDataType::kSourceSuccess);
@@ -105,12 +105,11 @@ std::optional<DebugDataTypeAndBody> GetReportDataBody(
             return make_report_body(DebugDataType::kSourceDestinationLimit,
                                     GetLimit(v.limit));
           },
-          [&](absl::variant<StoreSourceResult::DestinationReportingLimitReached,
-                            StoreSourceResult::DestinationBothLimitsReached>
-                  v) {
+          [&](std::variant<StoreSourceResult::DestinationReportingLimitReached,
+                           StoreSourceResult::DestinationBothLimitsReached> v) {
             return make_report_body(
                 DebugDataType::kSourceDestinationRateLimit,
-                absl::visit([](auto v) { return GetLimit(v.limit); }, v));
+                std::visit([](auto v) { return GetLimit(v.limit); }, v));
           },
           [&](StoreSourceResult::DestinationPerDayReportingLimitReached v) {
             return make_report_body(
@@ -153,7 +152,7 @@ std::optional<DebugDataTypeAndBody> GetReportDataBody(
 
 std::optional<DebugDataTypeAndBody> GetReportDataTypeAndLimit(
     const CreateReportResult::EventLevel& result) {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [](const CreateReportResult::EventLevelSuccess&) {
             return std::optional<DebugDataTypeAndBody>();
@@ -232,7 +231,7 @@ std::optional<DebugDataTypeAndBody> GetReportDataTypeAndLimit(
 
 std::optional<DebugDataTypeAndBody> GetReportDataTypeAndLimit(
     const CreateReportResult::Aggregatable& result) {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [](const CreateReportResult::AggregatableSuccess&) {
             return std::optional<DebugDataTypeAndBody>();
