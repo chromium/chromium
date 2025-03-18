@@ -348,6 +348,9 @@ OptimizationMetadata MockOptGuideDecider::BuildDiscountsResponse(
       if (info.type == DiscountType::kFreeListingWithCode) {
         type = Discount_Type_FREE_LISTING_WITH_CODE;
       }
+      if (info.type == DiscountType::kCrawledPromotion) {
+        type = Discount_Type_CRAWLED_PROMOTION;
+      }
       discount->set_type(type);
 
       Discount_Description* description = discount->mutable_description();
@@ -358,7 +361,9 @@ OptimizationMetadata MockOptGuideDecider::BuildDiscountsResponse(
             info.terms_and_conditions.value());
       }
       description->set_value_text(info.value_in_text);
-      discount->set_expiry_time_sec(info.expiry_time_sec);
+      if (info.expiry_time_sec.has_value()) {
+        discount->set_expiry_time_sec(info.expiry_time_sec.value());
+      }
       discount->set_is_merchant_wide(info.is_merchant_wide);
       if (info.discount_code.has_value()) {
         discount->set_discount_code(info.discount_code.value());

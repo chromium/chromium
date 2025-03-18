@@ -155,6 +155,7 @@ public class DiscountsBottomSheetContentMediatorTest {
                 discountCode,
                 0L,
                 true,
+                true,
                 1.7267948E+9f,
                 0L);
     }

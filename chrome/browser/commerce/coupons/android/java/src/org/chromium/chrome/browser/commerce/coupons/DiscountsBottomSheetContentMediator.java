@@ -66,15 +66,17 @@ public class DiscountsBottomSheetContentMediator {
             if (info == null || info.discountCode.isEmpty()) {
                 continue;
             }
-            PropertyModel propertyModel =
+            PropertyModel.Builder propertyModelBuilder =
                     new PropertyModel.Builder(ALL_KEYS)
                             .with(DISCOUNT_CODE, info.discountCode.get())
                             .with(DESCRIPTION_DETAIL, info.descriptionDetail)
-                            .with(EXPIRY_TIME, formatExpiryTime(info.expiryTimeSec))
                             .with(
                                     COPY_BUTTON_TEXT,
-                                    mContext.getString(R.string.discount_code_copy_button_text))
-                            .build();
+                                    mContext.getString(R.string.discount_code_copy_button_text));
+            if (info.expiryTimeSec.isPresent()) {
+                propertyModelBuilder.with(EXPIRY_TIME, formatExpiryTime(info.expiryTimeSec.get()));
+            }
+            PropertyModel propertyModel = propertyModelBuilder.build();
             propertyModel.set(
                     COPY_BUTTON_ON_CLICK_LISTENER, createCopyButtonOnClickListener(propertyModel));
             mModelList.add(new ListItem(0, propertyModel));

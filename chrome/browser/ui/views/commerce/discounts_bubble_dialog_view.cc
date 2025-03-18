@@ -130,10 +130,13 @@ std::unique_ptr<views::View> DiscountsBubbleDialogView::CreateMainPageContent(
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .Build());
 
-  auto additional_info_text = l10n_util::GetStringFUTF16(
-      IDS_DISCOUNT_USE_THIS_CODE_AT_CHECKOUT_WITH_EXPIRATION_DATE,
-      TimeFormatShortDate(base::Time::FromSecondsSinceUnixEpoch(
-          discount_info.expiry_time_sec)));
+  auto additional_info_text =
+      discount_info.expiry_time_sec.has_value()
+          ? l10n_util::GetStringUTF16(IDS_DISCOUNT_USE_THIS_CODE_AT_CHECKOUT)
+          : l10n_util::GetStringFUTF16(
+                IDS_DISCOUNT_USE_THIS_CODE_AT_CHECKOUT_WITH_EXPIRATION_DATE,
+                TimeFormatShortDate(base::Time::FromSecondsSinceUnixEpoch(
+                    discount_info.expiry_time_sec.value())));
 
   if (discount_info.terms_and_conditions.has_value() &&
       !discount_info.terms_and_conditions.value().empty()) {
