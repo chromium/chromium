@@ -4473,21 +4473,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Midi.BackendType" enum="MidiBackendType"
-    expires_after="2025-08-03">
-  <owner>toyoshim@chromium.org</owner>
-  <owner>mjwilson@chromium.org</owner>
-  <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
-  <summary>
-    Reports the MidiManager backend type. This metric is recorded only on
-    Android to understand how many users still depend on the USB MIDI backend
-    that was originally used on pre-M Android devices, but potentially has been
-    used on M+ devices as the Android MIDI API support is optional, and vendors
-    can decide not to support the API. Emitted everytime a manager is created to
-    know the actual usages rather than supporting device ratio.
-  </summary>
-</histogram>
-
 <histogram name="Media.Midi.SendReceiveUsage{BackendType}"
     enum="MidiSendReceiveUsage" expires_after="2025-08-17">
   <owner>mjwilson@chromium.org</owner>

@@ -1540,15 +1540,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Not muted"/>
 </enum>
 
-<!-- LINT.IfChange(MidiBackendType) -->
-
-<enum name="MidiBackendType">
-  <int value="0" label="AndroidMidi"/>
-  <int value="1" label="AndroidUsb"/>
-</enum>
-
-<!-- LINT.ThenChange(//media/midi/midi_manager_android.cc:MidiBackendType) -->
-
 <enum name="MidiSendReceiveUsage">
   <int value="0" label="No transaction"/>
   <int value="1" label="Sent"/>
