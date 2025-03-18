@@ -1,31 +1,7 @@
 This is a wdspec test.
-[FAIL] test_params_user_contexts_invalid_type[True]
-  TypeError: BrowsingContext.set_viewport() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_params_user_contexts_invalid_type[foo]
-  TypeError: BrowsingContext.set_viewport() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_params_user_contexts_invalid_type[42]
-  TypeError: BrowsingContext.set_viewport() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_params_user_contexts_invalid_type[value3]
-  TypeError: BrowsingContext.set_viewport() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_params_user_contexts_empty_list
-  TypeError: BrowsingContext.set_viewport() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_params_user_contexts_entry_invalid_type[None]
-  TypeError: BrowsingContext.set_viewport() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_params_user_contexts_entry_invalid_type[False]
-  TypeError: BrowsingContext.set_viewport() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_params_user_contexts_entry_invalid_type[42]
-  TypeError: BrowsingContext.set_viewport() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_params_user_contexts_entry_invalid_type[value3]
-  TypeError: BrowsingContext.set_viewport() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_params_user_contexts_entry_invalid_type[value4]
-  TypeError: BrowsingContext.set_viewport() got an unexpected keyword argument 'user_contexts'
 [FAIL] test_params_user_contexts_entry_invalid_value[]
-  TypeError: BrowsingContext.set_viewport() got an unexpected keyword argument 'user_contexts'
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (userContexts is not supported)
 [FAIL] test_params_user_contexts_entry_invalid_value[somestring]
-  TypeError: BrowsingContext.set_viewport() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_params_both_user_contexts_and_context
-  TypeError: BrowsingContext.set_viewport() got an unexpected keyword argument 'user_contexts'
-[FAIL] test_params_no_user_contexts_and_context
-  TypeError: BrowsingContext.set_viewport() missing 1 required positional argument: 'context'
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (userContexts is not supported)
 Harness: the test ran to completion.
 
