@@ -240,6 +240,48 @@ error::Error RasterDecoderImpl::HandleDeletePaintCachePathsINTERNAL(
   return error::kNoError;
 }
 
+error::Error RasterDecoderImpl::HandleDeletePaintCacheEffectsINTERNALImmediate(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile raster::cmds::DeletePaintCacheEffectsINTERNALImmediate& c =
+      *static_cast<const volatile raster::cmds::
+                       DeletePaintCacheEffectsINTERNALImmediate*>(cmd_data);
+  GLsizei n = static_cast<GLsizei>(c.n);
+  uint32_t ids_size;
+  if (!base::CheckMul(n, sizeof(GLuint)).AssignIfValid(&ids_size)) {
+    return error::kOutOfBounds;
+  }
+  volatile const GLuint* ids =
+      gles2::GetImmediateDataAs<volatile const GLuint*>(c, ids_size,
+                                                        immediate_data_size);
+  if (ids == nullptr) {
+    return error::kOutOfBounds;
+  }
+  DeletePaintCacheEffectsINTERNALHelper(n, ids);
+  return error::kNoError;
+}
+
+error::Error RasterDecoderImpl::HandleDeletePaintCacheEffectsINTERNAL(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile raster::cmds::DeletePaintCacheEffectsINTERNAL& c =
+      *static_cast<
+          const volatile raster::cmds::DeletePaintCacheEffectsINTERNAL*>(
+          cmd_data);
+  GLsizei n = static_cast<GLsizei>(c.n);
+  uint32_t ids_size;
+  if (!base::CheckMul(n, sizeof(GLuint)).AssignIfValid(&ids_size)) {
+    return error::kOutOfBounds;
+  }
+  const GLuint* ids = GetSharedMemoryAs<const GLuint*>(
+      c.ids_shm_id, c.ids_shm_offset, ids_size);
+  if (ids == nullptr) {
+    return error::kOutOfBounds;
+  }
+  DeletePaintCacheEffectsINTERNALHelper(n, ids);
+  return error::kNoError;
+}
+
 error::Error RasterDecoderImpl::HandleClearPaintCacheINTERNAL(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {

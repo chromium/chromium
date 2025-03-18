@@ -23,6 +23,7 @@
 #include "base/numerics/safe_math.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/optional_util.h"
 #include "cc/base/features.h"
 #include "cc/paint/color_filter.h"
@@ -777,7 +778,66 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
   }
   ReadVectorContent(positions_size, ref.positions_);
 
-  Read(&ref.sksl_command_);
+  ReadSimple(&ref.sk_runtime_effect_id_);
+  if (!valid_) {
+    return;
+  }
+
+  uint32_t entry_state_int = 0u;
+  ReadSimple(&entry_state_int);
+  if (entry_state_int > static_cast<uint32_t>(PaintCacheEntryState::kLast)) {
+    valid_ = false;
+    return;
+  }
+
+  auto* cache = options_.paint_cache;
+  CHECK(cache);
+  switch (static_cast<PaintCacheEntryState>(entry_state_int)) {
+    case PaintCacheEntryState::kCached: {
+      sk_sp<SkRuntimeEffect> cached_effect_shader = nullptr;
+      if (!cache->GetEffect(ref.sk_runtime_effect_id_, &cached_effect_shader)) {
+        valid_ = false;
+        return;
+      }
+      TRACE_EVENT0("cc", "PaintCache_SkRE_CacheHit");
+      ref.cached_sk_runtime_effect_ = std::move(cached_effect_shader);
+      break;
+    }
+    case PaintCacheEntryState::kInlined: {
+      Read(&ref.sksl_command_);
+      if (!valid_) {
+        return;
+      }
+      sk_sp<SkRuntimeEffect> effect =
+          SkRuntimeEffect::MakeForShader(ref.sksl_command_).effect;
+      if (!effect) {
+        valid_ = false;
+        return;
+      }
+      TRACE_EVENT0("cc", "PaintCache_SkRE_CacheMiss");
+      ref.cached_sk_runtime_effect_ = std::move(effect);
+      cache->PutEffect(ref.sk_runtime_effect_id_,
+                       ref.cached_sk_runtime_effect_);
+      break;
+    }
+    case PaintCacheEntryState::kEmpty: {
+      if (ref.shader_type() != PaintShader::Type::kSkSLCommand &&
+          ref.sk_runtime_effect_id_ == 0u) {
+        // Deserializing a non-SkRuntimeEffect shader.
+      } else {
+        // A compromised client could send garbage data. Invalidate it.
+        valid_ = false;
+        return;
+      }
+      break;
+    }
+    case PaintCacheEntryState::kInlinedDoNotCache: {
+      // Client never serializes this enum.
+      valid_ = false;
+      break;
+    }
+  }
+
   Read(&ref.scalar_uniforms_);
   Read(&ref.float2_uniforms_);
   Read(&ref.float4_uniforms_);
