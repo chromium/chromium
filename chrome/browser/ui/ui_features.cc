@@ -236,10 +236,6 @@ BASE_FEATURE(kTearOffWebAppTabOpensWebAppWindow,
 BASE_FEATURE(kPinnedCastButton,
              "PinnedCastButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPinnableDownloadsButton,
-             "PinnableDownloadsButton",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Enables enterprise profile badging for managed profiles on the toolbar

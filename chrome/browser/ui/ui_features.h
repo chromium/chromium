@@ -174,7 +174,6 @@ BASE_DECLARE_FEATURE(kTearOffWebAppTabOpensWebAppWindow);
 bool IsToolbarPinningEnabled();
 
 BASE_DECLARE_FEATURE(kPinnedCastButton);
-BASE_DECLARE_FEATURE(kPinnableDownloadsButton);
 
 BASE_DECLARE_FEATURE(kEnterpriseProfileBadgingForAvatar);
 BASE_DECLARE_FEATURE(kEnterpriseProfileBadgingForMenu);

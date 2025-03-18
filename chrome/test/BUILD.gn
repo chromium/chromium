@@ -9806,7 +9806,6 @@ test("unit_tests") {
       "../browser/ui/views/download/bubble/download_bubble_row_list_view_unittest.cc",
       "../browser/ui/views/download/bubble/download_bubble_row_view_unittest.cc",
       "../browser/ui/views/download/bubble/download_bubble_security_view_unittest.cc",
-      "../browser/ui/views/download/bubble/download_toolbar_button_view_unittest.cc",
       "../browser/ui/views/sharing/sharing_dialog_view_unittest.cc",
       "../browser/ui/views/sharing/sharing_icon_view_unittest.cc",
       "../browser/upgrade_detector/installed_version_poller_unittest.cc",
