@@ -44,6 +44,7 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
   static override get properties() {
     return {
       hasCopiedText: {type: Boolean, reflect: true},
+      hideHighlightedLines: {type: Boolean, reflect: true},
       highlightedLines: {type: Array},
     };
   }
@@ -58,7 +59,10 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
 
   // Whether the user has copied text pertaining to the newest region selection
   // made.
-  protected hasCopiedText = false;
+  protected hasCopiedText: boolean = false;
+  // Whether to hide the highlighted lines in the region. Starts off true so
+  // highlighted lines can initially fade in.
+  protected hideHighlightedLines: boolean = true;
   // The currently selected lines.
   protected highlightedLines: HighlightedLine[] = [];
 
@@ -156,7 +160,9 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
 
   onSelectionStart(): void {
     this.hasCopiedText = false;
-    this.highlightedLines = [];
+    // Hide highlighted lines but do not clear them in order to allow them to
+    // fade out.
+    this.hideHighlightedLines = true;
     this.fire('hide-selected-region-context-menu');
   }
 
@@ -188,6 +194,9 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
           this.getRegionTextFromFullImage(startIndex, endIndex),
           this.fullTextResponse.contentLanguage, startIndex, endIndex,
           this.browserProxy);
+      this.highlightedLines =
+          createHighlightedLines(this.fullTextResponse, startIndex, endIndex);
+      this.hideHighlightedLines = false;
       return;
     }
 
@@ -315,6 +324,7 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
     this.highlightedLines = createHighlightedLines(
         this.regionTextResponse, 0,
         this.regionTextResponse.receivedWords.length - 1);
+    this.hideHighlightedLines = false;
 
     // Used to notify the post selection renderer so that, if a region has
     // already been selected, text in the region can be detected.
@@ -408,6 +418,10 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
         callback(
             startIndex, endIndex,
             this.getRegionTextFromFullImage(startIndex, endIndex));
+
+        this.highlightedLines =
+            createHighlightedLines(this.fullTextResponse, startIndex, endIndex);
+        this.hideHighlightedLines = false;
       }
       return;
     }
