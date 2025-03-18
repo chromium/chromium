@@ -49,7 +49,7 @@
 }
 
 - (void)start {
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
 
   CHECK(!profile->IsOffTheRecord());
 

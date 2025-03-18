@@ -75,7 +75,7 @@ using browsing_data::DeleteBrowsingDataDialogAction;
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
 
   CHECK(!profile->IsOffTheRecord());
 
@@ -197,7 +197,7 @@ using browsing_data::DeleteBrowsingDataDialogAction;
   }
 
   BrowsingDataRemover* browsingDataRemover =
-      BrowsingDataRemoverFactory::GetForProfile(self.browser->GetProfile());
+      BrowsingDataRemoverFactory::GetForProfile(self.profile);
   browsingDataRemover->SetCachedTabsInfo(cachedTabsInfo);
 
   BrowsingDataRemover::RemovalParams params{
