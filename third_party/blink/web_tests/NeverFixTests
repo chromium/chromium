@@ -1941,3 +1941,6 @@ virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/
 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/auto-name-from-id-shadow.html [ Skip ]
 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/match-element-name.html [ Skip ]
 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/auto-name-get-animations.html [ Skip ]
+
+# Servo browser specific
+external/wpt/html/webappapis/animation-frames/spurious-frame-callbacks-optimization.html [ Skip ]
