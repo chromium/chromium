@@ -314,10 +314,9 @@ TEST_F(SessionAuthzAuthenticatorTest,
 
 TEST_F(SessionAuthzAuthenticatorTest,
        AuthenticatedWithSessionPolicies_GetSessionPoliciesReturnsPolicies) {
-  SessionPolicies policies = {
-      .maximum_session_duration = base::Hours(10),
-      .curtain_required = true,
-  };
+  SessionPolicies policies;
+  policies.maximum_session_duration = base::Hours(10);
+  policies.curtain_required = true;
   EXPECT_CALL(*mock_service_client_, GenerateHostToken(_))
       .WillOnce(RespondGenerateHostToken());
   EXPECT_CALL(*mock_service_client_, VerifySessionToken(_, _))

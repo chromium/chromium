@@ -16,6 +16,14 @@ namespace remoting {
 
 // Policies to be applied to the CRD host.
 struct SessionPolicies {
+  SessionPolicies();
+  ~SessionPolicies();
+
+  SessionPolicies(const SessionPolicies&);
+  SessionPolicies& operator=(const SessionPolicies&);
+  SessionPolicies(SessionPolicies&&);
+  SessionPolicies& operator=(SessionPolicies&&);
+
   // Minimum value of `maximum_session_duration`, when set.
   static constexpr base::TimeDelta kMinMaximumSessionDuration =
       base::Minutes(30);
