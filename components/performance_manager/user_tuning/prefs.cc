@@ -36,6 +36,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kDiscardRingTreatmentEnabled, true);
   registry->RegisterBooleanPref(kPerformanceInterventionNotificationEnabled,
                                 true);
+  registry->RegisterTimePref(kPerformanceInterventionNotificationLastShown,
+                             base::Time());
+  registry->RegisterListPref(kPerformanceInterventionNotificationAcceptHistory);
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {

@@ -58,6 +58,40 @@ BASE_FEATURE(kPerformanceInterventionDemoMode,
              "PerformanceInterventionDemoMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPerformanceInterventionNotificationImprovements,
+             "PerformanceInterventionNotificationImprovements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kMinimumTimeBetweenReshow,
+                   &kPerformanceInterventionNotificationImprovements,
+                   "minimum_time_reshow",
+                   base::Hours(1));
+
+BASE_FEATURE_PARAM(int,
+                   kAcceptanceRateWindowSize,
+                   &kPerformanceInterventionNotificationImprovements,
+                   "window_size",
+                   10);
+
+BASE_FEATURE_PARAM(int,
+                   kScaleMaxTimesPerDay,
+                   &kPerformanceInterventionNotificationImprovements,
+                   "scale_max_times_per_day",
+                   5);
+
+BASE_FEATURE_PARAM(int,
+                   kScaleMaxTimesPerWeek,
+                   &kPerformanceInterventionNotificationImprovements,
+                   "scale_max_times_per_week",
+                   25);
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kNoAcceptanceBackOff,
+                   &kPerformanceInterventionNotificationImprovements,
+                   "no_acceptance_back_off",
+                   base::Days(30));
+
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kUnthrottledTabProcessReporting,
              "UnthrottledTabProcessReporting",
