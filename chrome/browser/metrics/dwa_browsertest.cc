@@ -239,6 +239,8 @@ IN_PROC_BROWSER_TEST_F(DwaBrowserTest, DwaServiceCheck) {
 
   dwa::DwaService* dwa_service = GetDwaService();
   dwa::DwaRecorder* dwa_recorder = metrics::dwa::DwaRecorder::Get();
+
+  PlatformBrowser browser = CreatePlatformBrowser(profile);
   ASSERT_TRUE(dwa_recorder->IsEnabled());
 
   // Records a DWA entry metric.
@@ -247,10 +249,7 @@ IN_PROC_BROWSER_TEST_F(DwaBrowserTest, DwaServiceCheck) {
   EXPECT_FALSE(dwa_recorder->HasPageLoadEvents());
   EXPECT_FALSE(dwa_service->unsent_log_store()->has_unsent_logs());
 
-  // Creating a new browser automatically navigates to new URL to simulate a
-  // page load action.
-  PlatformBrowser browser = CreatePlatformBrowser(profile);
-
+  dwa_recorder->OnPageLoad();
   EXPECT_FALSE(dwa_recorder->HasEntries());
   EXPECT_TRUE(dwa_recorder->HasPageLoadEvents());
   EXPECT_FALSE(dwa_service->unsent_log_store()->has_unsent_logs());
