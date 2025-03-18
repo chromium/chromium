@@ -9972,6 +9972,7 @@
     "FeedbackIncludeVariations": [
         {
             "platforms": [
+                "android",
                 "linux",
                 "mac",
                 "windows"
