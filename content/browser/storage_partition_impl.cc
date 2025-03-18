@@ -2370,6 +2370,11 @@ void StoragePartitionImpl::OnSharedStorageHeaderReceived(
       std::move(callback), mojo::GetBadMessageCallback(), /*can_defer=*/true);
 }
 
+void StoragePartitionImpl::OnAdAuctionEventRecordHeaderReceived(
+    network::AdAuctionEventRecord event_record) {
+  interest_group_manager_->RecordViewClick(std::move(event_record));
+}
+
 void StoragePartitionImpl::Clone(
     mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>
         observer) {

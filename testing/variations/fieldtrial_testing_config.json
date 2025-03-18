@@ -18728,6 +18728,25 @@
             ]
         }
     ],
+    "ProtectedAudienceClickiness": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AdAuctionEventRegistration"
+                    ]
+                }
+            ]
+        }
+    ],
     "ProtectedAudienceDealsSupport": [
         {
             "platforms": [

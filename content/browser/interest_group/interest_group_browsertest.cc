@@ -154,6 +154,12 @@ constexpr char kLegitimateAdAuctionSignals[] =
 // throwing an exception.
 const char kSuccess[] = "success";
 
+// A path for an update registered by `RegisterNoOpUpdate()` that returns an
+// empty dict, which is a valid update, but doesn't change the interest group.
+// Can be used with
+// WaitForInterestGroupsSatisfyingInvalidatingCacheByUpdating().
+constexpr char kNoOpUpdatePath[] = "/interest_group/no_op_update_path.json";
+
 // Returns a string that declares a "maybePromise()" Javascript function, which
 // takes an argument and either returns it (if `use_promise` is false) or
 // returns a promise that will be resolved with that value in a millisecond (if
@@ -458,12 +464,14 @@ class NetworkResponder {
   void RegisterNetworkResponse(const std::string& url_path,
                                std::string_view body,
                                std::string_view mime_type = "application/json",
-                               ResponseHeaders extra_response_headers = {}) {
+                               ResponseHeaders extra_response_headers = {},
+                               net::HttpStatusCode code = net::HTTP_OK) {
     base::AutoLock auto_lock(response_map_lock_);
     Response response;
     response.body = body;
     response.mime_type = mime_type;
     response.extra_response_headers = std::move(extra_response_headers);
+    response.code = code;
     response_map_[url_path] = std::move(response);
   }
 
@@ -621,6 +629,7 @@ function generateBid(
     std::string body;
     std::string mime_type;
     ResponseHeaders extra_response_headers;
+    net::HttpStatusCode code;
   };
 
   std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
@@ -632,7 +641,7 @@ function generateBid(
     }
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->AddCustomHeader(kFledgeHeader, "true");
-    response->set_code(net::HTTP_OK);
+    response->set_code(it->second.code);
     response->set_content(it->second.body);
     response->set_content_type(it->second.mime_type);
     for (const auto& header : it->second.extra_response_headers) {
@@ -767,7 +776,9 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          {blink::features::kFledgeDirectFromSellerSignalsWebBundles, {}},
          {blink::features::kFledgeTrustedSignalsKVv2Support, {}},
          {blink::features::kFledgeTrustedSignalsKVv1CreativeScanning, {}},
-         {features::kFledgeTextConversionHelpers, {}}},
+         {features::kFledgeTextConversionHelpers, {}},
+         {network::features::kAdAuctionEventRegistration, {}},
+         {blink::features::kFledgeClickiness, {}}},
         /*disabled_features=*/
         {blink::features::kFencedFrames,
          blink::features::kFledgeEnforceKAnonymity,
@@ -968,6 +979,14 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     if (group.trusted_bidding_signals_coordinator) {
       dict.Set("trustedBiddingSignalsCoordinator",
                group.trusted_bidding_signals_coordinator->Serialize());
+    }
+    if (group.view_and_click_counts_providers) {
+      base::Value::List providers;
+      for (const url::Origin& provider :
+           *group.view_and_click_counts_providers) {
+        providers.Append(provider.Serialize());
+      }
+      dict.Set("viewAndClickCountsProviders", std::move(providers));
     }
     if (group.user_bidding_signals) {
       dict.Set("userBiddingSignals", JsonToValue(*group.user_bidding_signals));
@@ -1515,6 +1534,41 @@ function provideAdditionalBids(seller, nonce, bidStringList,
         break;
       }
     }
+  }
+
+  // Waits until the `condition` callback over the interest groups returns
+  // true, running an update on the owner's groups in order to force interest
+  // group cache invalidation.
+  //
+  // This can be useful for loading things like clickiness data, whose updates
+  // intentionally don't invalidate cache.
+  //
+  // **REQUIREMENT**: At least one interest group owned by `owner` must have a
+  // valid updateURL and response registered, but the update response can be an
+  // empty dict. RegisterNoOpUpdate() and kNoOpUpdatePath can be used for this.
+  //
+  // Also, the current top-level page origin should be the same as `owner`.
+  void WaitForInterestGroupsSatisfyingInvalidatingCacheByUpdating(
+      const url::Origin& owner,
+      base::RepeatingCallback<bool(scoped_refptr<StorageInterestGroups>)>
+          condition) {
+    ASSERT_EQ(owner, shell()
+                         ->web_contents()
+                         ->GetPrimaryMainFrame()
+                         ->GetLastCommittedOrigin());
+    while (true) {
+      EXPECT_EQ("done", UpdateInterestGroupsInJS());
+      if (condition.Run(GetInterestGroupsForOwner(owner))) {
+        break;
+      }
+    }
+  }
+
+  // Registers an update at kNoOpUpdatePath that returns an empty dict, which
+  // is a valid update, but doesn't change the interest group. Can be used with
+  // WaitForInterestGroupsSatisfyingInvalidatingCacheByUpdating().
+  void RegisterNoOpUpdate() {
+    network_responder_->RegisterNetworkResponse(kNoOpUpdatePath, "{}");
   }
 
   // Waits for `url` to be requested by `embedded_https_test_server()`, or any
@@ -7889,6 +7943,219 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                                         decision_url, auction_nonce)));
 
   EXPECT_TRUE(console_observer.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, Clickiness_CaptureView) {
+  constexpr char kRecordViewClickPath[] =
+      "/interest_group/record_view_click_event.html";
+
+  GURL test_url_a = embedded_https_test_server().GetURL(
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
+  url::Origin test_origin_a = url::Origin::Create(test_url_a);
+  ASSERT_TRUE(test_url_a.SchemeIs(url::kHttpsScheme));
+  ASSERT_TRUE(NavigateToURL(shell(), test_url_a));
+
+  const std::string record_event_response = base::StringPrintf(
+      "type=\"view\", eligible-origins=(\"%s\")", test_origin_a.Serialize());
+
+  network_responder_->RegisterNetworkResponse(
+      kRecordViewClickPath, "Throwaway response", "image/jpeg",
+      /*extra_response_headers=*/
+      {{"Ad-Auction-Record-Event", record_event_response}});
+
+  GURL record_event_url =
+      embedded_https_test_server().GetURL("c.test", kRecordViewClickPath);
+
+  EXPECT_TRUE(ExecJs(web_contents(), JsReplace("createAttributionSrcImg($1);",
+                                               record_event_url)));
+
+  // This join should succeed. Register a no-op update URL to use
+  // WaitForInterestGroupsSatisfyingInvalidatingCacheByUpdating().
+  RegisterNoOpUpdate();
+  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(
+                          blink::TestInterestGroupBuilder(test_origin_a, "cars")
+                              .SetViewAndClickCountsProviders(
+                                  {{url::Origin::Create(record_event_url)}})
+                              .SetUpdateUrl(embedded_https_test_server().GetURL(
+                                  "a.test", kNoOpUpdatePath))
+                              .Build()));
+
+  WaitForInterestGroupsSatisfyingInvalidatingCacheByUpdating(
+      test_origin_a,
+      base::BindLambdaForTesting(
+          [](scoped_refptr<StorageInterestGroups> groups) {
+            EXPECT_EQ(groups->size(), 1u);
+            const StorageInterestGroup& group = *groups->GetInterestGroups()[0];
+            const blink::mojom::ViewAndClickCountsPtr& view_and_click_counts =
+                group.bidding_browser_signals->view_and_click_counts;
+            EXPECT_EQ(group.interest_group.name, "cars");
+            return view_and_click_counts->view_counts->past_hour == 1 &&
+                   view_and_click_counts->click_counts->past_hour == 0;
+          }));
+
+  // TODO(crbug.com/394108643): Also check generateBid() once the plumbing is
+  // hooked up.
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, Clickiness_CaptureClick) {
+  constexpr char kRecordViewClickPath[] =
+      "/interest_group/record_view_click_event.html";
+
+  GURL test_url_a = embedded_https_test_server().GetURL(
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
+  url::Origin test_origin_a = url::Origin::Create(test_url_a);
+  ASSERT_TRUE(test_url_a.SchemeIs(url::kHttpsScheme));
+  ASSERT_TRUE(NavigateToURL(shell(), test_url_a));
+
+  const std::string record_event_response = base::StringPrintf(
+      "type=\"click\", eligible-origins=(\"%s\")", test_origin_a.Serialize());
+
+  network_responder_->RegisterNetworkResponse(
+      kRecordViewClickPath, "Throwaway response", "image/jpeg",
+      /*extra_response_headers=*/
+      {{"Ad-Auction-Record-Event", record_event_response}});
+
+  GURL record_event_url =
+      embedded_https_test_server().GetURL("c.test", kRecordViewClickPath);
+
+  EXPECT_TRUE(
+      ExecJs(web_contents(),
+             JsReplace(R"(
+    createAttributionSrcAnchor({id: 'link',
+                        url: $1,
+                        attributionsrc: $2,
+                        target: $3});)",
+                       embedded_https_test_server().GetURL("a.test", "/echo"),
+                       record_event_url, "_top")));
+  TestNavigationObserver observer(web_contents());
+  EXPECT_TRUE(ExecJs(web_contents(), "simulateClick('link');"));
+  observer.Wait();
+
+  // This join should succeed. Register a no-op update URL to use
+  // WaitForInterestGroupsSatisfyingInvalidatingCacheByUpdating().
+  RegisterNoOpUpdate();
+  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(
+                          blink::TestInterestGroupBuilder(test_origin_a, "cars")
+                              .SetViewAndClickCountsProviders(
+                                  {{url::Origin::Create(record_event_url)}})
+                              .SetUpdateUrl(embedded_https_test_server().GetURL(
+                                  "a.test", kNoOpUpdatePath))
+                              .Build()));
+
+  WaitForInterestGroupsSatisfyingInvalidatingCacheByUpdating(
+      test_origin_a,
+      base::BindLambdaForTesting(
+          [](scoped_refptr<StorageInterestGroups> groups) {
+            EXPECT_EQ(groups->size(), 1u);
+            const StorageInterestGroup& group = *groups->GetInterestGroups()[0];
+            const blink::mojom::ViewAndClickCountsPtr& view_and_click_counts =
+                group.bidding_browser_signals->view_and_click_counts;
+            EXPECT_EQ(group.interest_group.name, "cars");
+            return view_and_click_counts->view_counts->past_hour == 0 &&
+                   view_and_click_counts->click_counts->past_hour == 1;
+          }));
+
+  // TODO(crbug.com/394108643): Also check generateBid() once the plumbing is
+  // hooked up.
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, Clickiness_NotStructuredDict) {
+  constexpr char kRecordViewClickPath[] =
+      "/interest_group/record_view_click_event.html";
+
+  GURL test_url_a = embedded_https_test_server().GetURL(
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
+  url::Origin test_origin_a = url::Origin::Create(test_url_a);
+  ASSERT_TRUE(test_url_a.SchemeIs(url::kHttpsScheme));
+  ASSERT_TRUE(NavigateToURL(shell(), test_url_a));
+
+  // Double equals isn't valid in structured headers -- this message should be
+  // rejected.
+  const std::string record_event_response = base::StringPrintf(
+      "type==\"view\", eligible-origins=(\"%s\")", test_origin_a.Serialize());
+
+  network_responder_->RegisterNetworkResponse(
+      kRecordViewClickPath, "Throwaway response", "image/jpeg",
+      /*extra_response_headers=*/
+      {{"Ad-Auction-Record-Event", record_event_response}});
+
+  GURL record_event_url =
+      embedded_https_test_server().GetURL("c.test", kRecordViewClickPath);
+
+  EXPECT_TRUE(ExecJs(web_contents(), JsReplace("createAttributionSrcImg($1);",
+                                               record_event_url)));
+
+  // This join should succeed.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(
+                          blink::TestInterestGroupBuilder(test_origin_a, "cars")
+                              .SetViewAndClickCountsProviders(
+                                  {{url::Origin::Create(record_event_url)}})
+                              .Build()));
+
+  // No change to view or click counts. Note that this is somewhat racy, as if
+  // the product code erroneously records a view or a click, it could happen
+  // after the join -- in that case, failures may be flaky. However, correct
+  // product code shouldn't result in flakes.
+  scoped_refptr<StorageInterestGroups> groups =
+      GetInterestGroupsForOwner(test_origin_a);
+  ASSERT_EQ(groups->size(), 1u);
+  const StorageInterestGroup& group = *groups->GetInterestGroups()[0];
+  const blink::mojom::ViewAndClickCountsPtr& view_and_click_counts =
+      group.bidding_browser_signals->view_and_click_counts;
+  EXPECT_EQ(group.interest_group.name, "cars");
+  EXPECT_EQ(view_and_click_counts->view_counts->past_hour, 0);
+  EXPECT_EQ(view_and_click_counts->click_counts->past_hour, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, Clickiness_InvalidType) {
+  constexpr char kRecordViewClickPath[] =
+      "/interest_group/record_view_click_event.html";
+
+  GURL test_url_a = embedded_https_test_server().GetURL(
+      "a.test", "/attribution_reporting/page_with_impression_creator.html");
+  url::Origin test_origin_a = url::Origin::Create(test_url_a);
+  ASSERT_TRUE(test_url_a.SchemeIs(url::kHttpsScheme));
+  ASSERT_TRUE(NavigateToURL(shell(), test_url_a));
+
+  // A valid structured dictionary, but not-view-or-click isn't a valid type --
+  // this message should be rejected.
+  const std::string record_event_response = base::StringPrintf(
+      "type=\"not-view-or-click\", eligible-origins=(\"%s\")",
+      test_origin_a.Serialize());
+
+  network_responder_->RegisterNetworkResponse(
+      kRecordViewClickPath, "Throwaway response", "image/jpeg",
+      /*extra_response_headers=*/
+      {{"Ad-Auction-Record-Event", record_event_response}});
+
+  GURL record_event_url =
+      embedded_https_test_server().GetURL("c.test", kRecordViewClickPath);
+
+  EXPECT_TRUE(ExecJs(web_contents(), JsReplace("createAttributionSrcImg($1);",
+                                               record_event_url)));
+
+  // This join should succeed.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(
+                          blink::TestInterestGroupBuilder(test_origin_a, "cars")
+                              .SetViewAndClickCountsProviders(
+                                  {{url::Origin::Create(record_event_url)}})
+                              .Build()));
+
+  // No change to view or click counts. Note that this is somewhat racy, as if
+  // the product code erroneously records a view or a click, it could happen
+  // after the join -- in that case, failures may be flaky. However, correct
+  // product code shouldn't result in flakes.
+  scoped_refptr<StorageInterestGroups> groups =
+      GetInterestGroupsForOwner(test_origin_a);
+  ASSERT_EQ(groups->size(), 1u);
+  const StorageInterestGroup& group = *groups->GetInterestGroups()[0];
+  const blink::mojom::ViewAndClickCountsPtr& view_and_click_counts =
+      group.bidding_browser_signals->view_and_click_counts;
+  EXPECT_EQ(group.interest_group.name, "cars");
+  EXPECT_EQ(view_and_click_counts->view_counts->past_hour, 0);
+  EXPECT_EQ(view_and_click_counts->click_counts->past_hour, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,

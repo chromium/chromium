@@ -717,6 +717,9 @@ URLLoader::URLLoader(
           std::make_unique<SharedStorageRequestHelper>(
               shared_storage_writable_eligible,
               url_loader_network_observer_)),
+      ad_auction_event_record_request_helper_(
+          request.attribution_reporting_eligibility,
+          url_loader_network_observer_),
       has_fetch_streaming_upload_body_(HasFetchStreamingUploadBody(&request)),
       accept_ch_frame_observer_(std::move(accept_ch_frame_observer)),
       allow_cookies_from_browser_(
@@ -2029,15 +2032,22 @@ void URLLoader::ProcessInboundSharedStorageInterceptorOnResponseStarted() {
 
 void URLLoader::ProcessInboundAttributionInterceptorOnResponseStarted() {
   if (!attribution_request_helper_) {
-    ProcessInboundSharedStorageInterceptorOnResponseStarted();
+    ProcessInboundAdAuctionEventRecordInterceptorOnResponseStarted();
     return;
   }
 
   attribution_request_helper_->Finalize(
       *response_,
       base::BindOnce(
-          &URLLoader::ProcessInboundSharedStorageInterceptorOnResponseStarted,
+          &URLLoader::
+              ProcessInboundAdAuctionEventRecordInterceptorOnResponseStarted,
           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void URLLoader::
+    ProcessInboundAdAuctionEventRecordInterceptorOnResponseStarted() {
+  ad_auction_event_record_request_helper_.HandleResponse(*url_request_);
+  ProcessInboundSharedStorageInterceptorOnResponseStarted();
 }
 
 void URLLoader::OnResponseStarted(net::URLRequest* url_request, int net_error) {

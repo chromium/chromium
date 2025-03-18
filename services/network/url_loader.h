@@ -36,6 +36,7 @@
 #include "net/socket/socket_tag.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request.h"
+#include "services/network/ad_auction/event_record_request_helper.h"
 #include "services/network/attribution/attribution_request_helper.h"
 #include "services/network/keepalive_statistics_recorder.h"
 #include "services/network/network_service.h"
@@ -412,8 +413,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Storage operations to call
   // - If the request has not received the `kSharedStorageWriteHeader` response
   // header, or if parsing fails to produce any valid operations, then
-  // immediately call `ContinueOnReceivedRedirect`
-  // - Otherwise, `ContinueOnReceivedRedirect` will be run asynchronously after
+  // immediately call `ContinueOnReceiveRedirect`
+  // - Otherwise, `ContinueOnReceiveRedirect` will be run asynchronously after
   // forwarding the operations to `URLLoaderNetworkServiceObserver` to queue via
   // Mojo
   //
@@ -448,7 +449,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   //
   // Start in `ProcessOutboundAttributionInterceptor`
   // - If `attribution_request_helper_` is not defined, immediately
-  //   calls`ScheduleStart`.
+  //   calls `ScheduleStart`.
   // - Otherwise:
   //   - Execute `AttributionRequestHelper::Begin`
   //   - On Begin's callback, calls `ScheduleStart`
@@ -466,17 +467,43 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Inbound control flow:
   //
   // Start in `ProcessInboundAttributionInterceptorOnResponseStarted`
-  //  - If `attribution_request_helper_` is not defined, immediately
-  //    calls`ProcessInboundSharedStorageInterceptorOnResponseStarted`.
+  //  - If `attribution_request_helper_` is not defined,
+  //    immediately calls
+  //    `ProcessInboundAdAuctionEventRecordInterceptorOnResponseStarted`.
   // - Otherwise:
   //   - Execute `AttributionRequestHelper::Finalize`
   //   - On Finalize's callback, calls
-  //   `ProcessInboundSharedStorageInterceptorOnResponseStarted`
+  //    `ProcessInboundAdAuctionEventRecordInterceptorOnResponseStarted`.
   void ProcessOutboundAttributionInterceptor();
   void ProcessInboundAttributionInterceptorOnReceivedRedirect(
       const ::net::RedirectInfo& redirect_info,
       mojom::URLResponseHeadPtr response);
   void ProcessInboundAttributionInterceptorOnResponseStarted();
+
+  // All inbound responses will invoke
+  // `ad_auction_event_record_request_helper_.HandleResponse()`, which
+  // always returns immediately without blocking, and also exits early for
+  // ineligible responses.
+  //
+  // Outbound control flow:
+  //
+  // There are no outbound flow methods as the request headers are set by
+  // ComputeAttributionReportingHeaders() in the URLLoader() constructor.
+  //
+  // Redirection control flow:
+  //
+  // Redirection isn't handled yet. TODO(crbug.com/394108643): Support
+  // capturing headers on redirection responses.
+  //
+  // Inbound control flow:
+  //
+  // Start in
+  // `ProcessInboundAdAuctionEventRecordInterceptorOnResponseStarted()`
+  //  - Execute
+  //   `ad_auction_event_record_request_helper_::HandleResponse()`.
+  //  - Afterwards, execute
+  //   `ProcessInboundSharedStorageInterceptorOnResponseStarted()`.
+  void ProcessInboundAdAuctionEventRecordInterceptorOnResponseStarted();
 
   // Continuation of `OnReceivedRedirect` after possibly asynchronously
   // concluding the request's Attribution and/or Shared Storage operations.
@@ -846,6 +873,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Request helper responsible for processing Shared Storage headers
   // (https://github.com/WICG/shared-storage#from-response-headers).
   std::unique_ptr<SharedStorageRequestHelper> shared_storage_request_helper_;
+
+  // Request helper responsible for processing Ad Auction record event
+  // headers.
+  // (https://github.com/WICG/turtledove/pull/1279)
+  AdAuctionEventRecordRequestHelper ad_auction_event_record_request_helper_;
 
   // Indicates |url_request_| is fetch upload request and that has streaming
   // body.
