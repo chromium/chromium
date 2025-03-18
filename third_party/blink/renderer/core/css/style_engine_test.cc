@@ -7281,6 +7281,7 @@ TEST_F(StyleEngineTest, CreateUnconnectedRuleSet) {
 
   RuleSet* rule_set = GetStyleEngine().CreateUnconnectedRuleSet(*sheet);
   ASSERT_TRUE(rule_set);
+  rule_set->AssertCompacted();
   EXPECT_EQ(2u, rule_set->ClassRules(AtomicString("a")).size());
 
   // As the above RuleSet is unconnected, it should not have affected
