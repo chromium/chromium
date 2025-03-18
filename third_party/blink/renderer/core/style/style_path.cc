@@ -15,22 +15,10 @@
 
 namespace blink {
 
-StylePath::StylePath(SVGPathByteStream path_byte_stream, WindRule wind_rule)
-    : byte_stream_(std::move(path_byte_stream)),
-      path_length_(std::numeric_limits<float>::quiet_NaN()),
-      wind_rule_(wind_rule) {}
-
-StylePath::~StylePath() = default;
-
-scoped_refptr<StylePath> StylePath::Create(SVGPathByteStream path_byte_stream,
-                                           WindRule wind_rule) {
-  return base::AdoptRef(new StylePath(std::move(path_byte_stream), wind_rule));
-}
-
 const StylePath* StylePath::EmptyPath() {
-  DEFINE_STATIC_REF(StylePath, empty_path,
-                    StylePath::Create(SVGPathByteStream()));
-  return empty_path;
+  DEFINE_STATIC_LOCAL(Persistent<StylePath>, empty_path,
+                      (MakeGarbageCollected<StylePath>(SVGPathByteStream())));
+  return empty_path.Get();
 }
 
 const Path& StylePath::GetPath() const {

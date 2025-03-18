@@ -435,24 +435,28 @@ const BasicShape* GetShapeOrPath(const CSSProperty& property,
 class InheritedShapeChecker
     : public CSSInterpolationType::CSSConversionChecker {
  public:
-  InheritedShapeChecker(const CSSProperty& property,
-                        scoped_refptr<const BasicShape> shape)
-      : property_(property), shape_(std::move(shape)) {}
+  InheritedShapeChecker(const CSSProperty& property, const BasicShape* shape)
+      : property_(property), shape_(shape) {}
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(shape_);
+    CSSInterpolationType::CSSConversionChecker::Trace(visitor);
+  }
 
  private:
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
-    return GetShapeOrPath(property_, *state.ParentStyle()) == shape_.get();
+    return GetShapeOrPath(property_, *state.ParentStyle()) == shape_.Get();
   }
 
   const CSSProperty& property_;
-  const scoped_refptr<const BasicShape> shape_;
+  const Member<const BasicShape> shape_;
 };
 
 }  // namespace
 
 // static
-scoped_refptr<BasicShape> CSSShapeInterpolationType::CreateShape(
+BasicShape* CSSShapeInterpolationType::CreateShape(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue* non_interpolable_value,
     const CSSToLengthConversionData& conversion_data) {
@@ -523,8 +527,9 @@ scoped_refptr<BasicShape> CSSShapeInterpolationType::CreateShape(
             NOTREACHED();
         }
       });
-  return StyleShape::Create(shape_non_interpolable_value.GetWindRule(),
-                            reader.Origin(), std::move(segments));
+  return MakeGarbageCollected<StyleShape>(
+      shape_non_interpolable_value.GetWindRule(), reader.Origin(),
+      std::move(segments));
 }
 
 DEFINE_NON_INTERPOLABLE_VALUE_TYPE(ShapeNonInterpolableValue);
@@ -544,8 +549,8 @@ void CSSShapeInterpolationType::ApplyStandardPropertyValue(
     StyleResolverState& state) const {
   // TODO(crbug.com/389713717) support also offset-path
   CHECK_EQ(CssProperty().PropertyID(), CSSPropertyID::kClipPath);
-  auto shape = CreateShape(interpolable_value, non_interpolable_value,
-                           state.CssToLengthConversionData());
+  auto* shape = CreateShape(interpolable_value, non_interpolable_value,
+                            state.CssToLengthConversionData());
 
   // TODO(nrosenthal): Handle geometry box.
   state.StyleBuilder().SetClipPath(
