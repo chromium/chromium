@@ -3474,9 +3474,11 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kSign:
         return RuntimeEnabledFeatures::CSSSignRelatedFunctionsEnabled();
       case CSSValueID::kProgress:
-      case CSSValueID::kMediaProgress:
-      case CSSValueID::kContainerProgress:
         return RuntimeEnabledFeatures::CSSProgressNotationEnabled();
+      case CSSValueID::kMediaProgress:
+        return RuntimeEnabledFeatures::CSSMediaProgressNotationEnabled();
+      case CSSValueID::kContainerProgress:
+        return RuntimeEnabledFeatures::CSSContainerProgressNotationEnabled();
       case CSSValueID::kSiblingCount:
       case CSSValueID::kSiblingIndex:
         return RuntimeEnabledFeatures::CSSSiblingFunctionsEnabled();
