@@ -1175,6 +1175,12 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   bool ShouldEnableSubframeZoom() override;
 
+  // Returns true if the given `url` is the search results page from the current
+  // default search engine for `browser_context`.
+  bool ShouldPrioritizeForBackForwardCache(
+      content::BrowserContext* browser_context,
+      const GURL& url) override;
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,

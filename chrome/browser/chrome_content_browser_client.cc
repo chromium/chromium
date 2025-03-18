@@ -9012,3 +9012,14 @@ ChromeContentBrowserClient::MaybeOverrideLocalURLCrossOriginEmbedderPolicy(
   return pdf_embedder->GetCrossOriginEmbedderPolicy();
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
+
+bool ChromeContentBrowserClient::ShouldPrioritizeForBackForwardCache(
+    content::BrowserContext* browser_context,
+    const GURL& url) {
+  if (!browser_context) {
+    return false;
+  }
+  return TemplateURLServiceFactory::GetForProfile(
+             Profile::FromBrowserContext(browser_context))
+      ->IsSearchResultsPageFromDefaultSearchProvider(url);
+}
