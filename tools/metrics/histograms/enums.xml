@@ -16957,6 +16957,8 @@ from previous Chrome versions.
   <int value="1121848336" label="UseNetworkFrameworkForLocalDiscovery:enabled"/>
   <int value="1121879933" label="CrosPrivacyHubAppPermissions:enabled"/>
   <int value="1122217615" label="PasswordGenerationBottomSheet:enabled"/>
+  <int value="1122327201"
+      label="MediaFoundationCameraUsageMonitoring:disabled"/>
   <int value="1122820469" label="ArcImageCopyPasteCompat:enabled"/>
   <int value="1122825280" label="FontationsFontBackend:enabled"/>
   <int value="1123140537" label="tab-link-drag-drop:disabled"/>
@@ -18127,6 +18129,7 @@ from previous Chrome versions.
   <int value="1563267770"
       label="FencedFramesReportingAttestationsChanges:disabled"/>
   <int value="1565467134" label="AccessibilityShakeToLocate:enabled"/>
+  <int value="1565630921" label="MediaFoundationCameraUsageMonitoring:enabled"/>
   <int value="1567695310" label="CrostiniBullseyeUpgrade:disabled"/>
   <int value="1567839560"
       label="ChromeHomePersonalizedOmniboxSuggestions:disabled"/>

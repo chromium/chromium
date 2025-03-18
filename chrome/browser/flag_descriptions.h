@@ -3180,6 +3180,9 @@ extern const char kMediaFoundationClearDescription[];
 extern const char kMediaFoundationClearStrategyName[];
 extern const char kMediaFoundationClearStrategyDescription[];
 
+extern const char kMediaFoundationCameraUsageMonitoringName[];
+extern const char kMediaFoundationCameraUsageMonitoringDescription[];
+
 extern const char kRawAudioCaptureName[];
 extern const char kRawAudioCaptureDescription[];
 

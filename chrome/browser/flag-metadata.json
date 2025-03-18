@@ -3520,6 +3520,14 @@
     "expiry_milestone": 125
   },
   {
+    "name": "enable-media-foundation-camera-usage-monitoring",
+    "owners": [
+      "guidou@chromium.org",
+      "agpalak@chromium.org"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "enable-media-foundation-clear",
     "owners": [
       "wicarr@microsoft.com"

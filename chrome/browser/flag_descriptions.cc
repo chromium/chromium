@@ -5423,6 +5423,12 @@ const char kMediaFoundationClearStrategyDescription[] =
     "current operating conditions. Other options will result in a default "
     "rendering strategy.";
 
+const char kMediaFoundationCameraUsageMonitoringName[] =
+    "Media Foundation Camera Usage Monitoring";
+const char kMediaFoundationCameraUsageMonitoringDescription[] =
+    "Enables the use of Media Foundation for camera usage monitoring. "
+    "This allows detecting if a camera is being used by another application.";
+
 const char kRawAudioCaptureName[] = "Raw audio capture";
 const char kRawAudioCaptureDescription[] =
     "Enable/Disable the usage of WASAPI raw audio capture. When enabled, the "

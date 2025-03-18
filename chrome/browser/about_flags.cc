@@ -5005,6 +5005,13 @@ const FeatureEntry kFeatureEntries[] = {
                                     kMediaFoundationClearStrategyVariations,
                                     "MediaFoundationClearRendering")},
     {
+        "enable-media-foundation-camera-usage-monitoring",
+        flag_descriptions::kMediaFoundationCameraUsageMonitoringName,
+        flag_descriptions::kMediaFoundationCameraUsageMonitoringDescription,
+        kOsWin,
+        FEATURE_VALUE_TYPE(features::kMediaFoundationCameraUsageMonitoring),
+    },
+    {
         "enable-waitable-swap-chain",
         flag_descriptions::kUseWaitableSwapChainName,
         flag_descriptions::kUseWaitableSwapChainDescription,
