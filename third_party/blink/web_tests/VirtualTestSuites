@@ -4277,17 +4277,6 @@
     "expires": "May 1, 2025"
   },
   {
-    "prefix": "webrtc-h265",
-    "owners": ["hbos@chromium.org", "eshr@chromium.org"],
-    "platforms": ["Mac", "Win"],
-    "bases": ["external/wpt/webrtc/protocol/h265-level-id.https.html"],
-    "args": [
-      "--enable-features=WebRtcAllowH265Send,WebRtcAllowH265Receive",
-      "--force-fieldtrials=WebRTC-Video-H26xPacketBuffer/Enabled/"
-    ],
-    "expires": "August 31, 2025"
-  },
-  {
     "prefix": "dbsc-enabled",
     "owners": ["thefrog@chromium.org", "drubery@chromium.org"],
     "platforms": ["Mac", "Win", "Linux"],
