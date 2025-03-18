@@ -893,6 +893,11 @@ NSString* SerializedValue(const base::Value* value) {
                                         visitTimestamp);
 }
 
++ (void)setHistoryServiceTitle:(NSString*)title forPage:(NSString*)URL {
+  chrome_test_util::SetPageTitle(GURL(base::SysNSStringToUTF8(URL)),
+                                 base::SysNSStringToUTF16(title));
+}
+
 + (void)deleteHistoryServiceTypedURL:(NSString*)URL {
   chrome_test_util::DeleteTypedUrlFromClient(
       GURL(base::SysNSStringToUTF8(URL)));

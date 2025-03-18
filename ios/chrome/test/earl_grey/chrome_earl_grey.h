@@ -290,6 +290,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)addHistoryServiceTypedURL:(const GURL&)URL
                    visitTimestamp:(base::Time)visitTimestamp;
 
+// Sets the page `title` for `URL` in the History Service.
+- (void)setHistoryServiceTitle:(const std::string_view&)title
+                       forPage:(const GURL&)URL;
+
 // Deletes typed URL from HistoryService.
 - (void)deleteHistoryServiceTypedURL:(const GURL&)URL;
 

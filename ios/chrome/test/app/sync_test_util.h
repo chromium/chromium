@@ -127,6 +127,9 @@ BOOL VerifyHistoryOnSyncServer(const std::multiset<GURL>& expected_urls,
 void AddTypedURLToClient(const GURL& url,
                          base::Time visitTimestamp = base::Time::Now());
 
+// Sets a page title for an item in the history.
+void SetPageTitle(const GURL& url, const std::u16string& title);
+
 // Injects a HISTORY visit into the fake sync server.
 void AddHistoryVisitToFakeSyncServer(const GURL& url);
 

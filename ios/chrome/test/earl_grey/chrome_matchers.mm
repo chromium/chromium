@@ -5,6 +5,8 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/browser_container/ui_bundled/edit_menu_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers_app_interface.h"
@@ -811,6 +813,14 @@ id<GREYMatcher> HistoryEntry(const std::string& url, const std::string& title) {
   return [ChromeMatchersAppInterface
       historyEntryForURL:base::SysUTF8ToNSString(url)
                    title:base::SysUTF8ToNSString(title)];
+}
+
+id<GREYMatcher> HistoryEntry(const GURL& url, const std::string& title) {
+  std::string url_string = base::UTF16ToUTF8(
+      url_formatter::
+          FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+              url));
+  return HistoryEntry(url_string, title);
 }
 
 id<GREYMatcher> SettingsToolbarAddButton() {
