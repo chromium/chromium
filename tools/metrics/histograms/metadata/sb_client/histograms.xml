@@ -47,21 +47,6 @@ chromium-metrics-reviews@google.com.
   <variant name="Shown" summary="shown"/>
 </variants>
 
-<histogram name="SBClientDownload.Android.DownloadProtectionOutcome"
-    enum="SBClientDownloadAndroidDownloadProtectionOutcome"
-    expires_after="2025-08-27">
-  <owner>chlily@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the outcome of a download on Android, with respect to Safe Browsing
-    download protection, up until the point of sending a ClientDownloadRequest.
-    This is logged exactly once per download for any download on Android,
-    regardless of Safe Browsing state. This does not record the outcome of the
-    ClientDownloadRequest itself, or the actual verdict if a
-    ClientDownloadResponse was received.
-  </summary>
-</histogram>
-
 <histogram name="SBClientDownload.AndroidAppVerificationPromptResult2"
     enum="SafeBrowsingVerifyAppsEnabledResult" expires_after="2025-05-24">
   <owner>drubery@chromium.org</owner>
