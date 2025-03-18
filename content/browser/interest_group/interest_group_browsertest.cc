@@ -774,7 +774,6 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          {blink::features::kFledgeAuctionDealSupport, {}},
          // TODO(crrev.com/c/6096602): Remove once implementation is removed.
          {blink::features::kFledgeDirectFromSellerSignalsWebBundles, {}},
-         {blink::features::kFledgeTrustedSignalsKVv2Support, {}},
          {blink::features::kFledgeTrustedSignalsKVv1CreativeScanning, {}},
          {features::kFledgeTextConversionHelpers, {}},
          {network::features::kAdAuctionEventRegistration, {}},
@@ -5864,19 +5863,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   WaitForAccessObserved({});
 }
 
-class InterestGroupCoordinatorBrowserTest : public InterestGroupBrowserTest {
- public:
-  InterestGroupCoordinatorBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {blink::features::kFledgeTrustedSignalsKVv2Support},
-        /*disabled_features=*/{});
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(InterestGroupCoordinatorBrowserTest,
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionValidTrustedScoringSignalsCoordinator) {
   GURL url = embedded_https_test_server().GetURL("a.test", "/echo");
   url::Origin origin = url::Origin::Create(url);
@@ -5892,7 +5879,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupCoordinatorBrowserTest,
   WaitForAccessObserved({});
 }
 
-IN_PROC_BROWSER_TEST_F(InterestGroupCoordinatorBrowserTest,
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionHTTPSchemeTrustedScoringSignalsCoordinator) {
   GURL url = embedded_https_test_server().GetURL("a.test", "/echo");
   url::Origin origin = url::Origin::Create(url);
@@ -5914,7 +5901,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupCoordinatorBrowserTest,
   WaitForAccessObserved({});
 }
 
-IN_PROC_BROWSER_TEST_F(InterestGroupCoordinatorBrowserTest,
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionOpaqueTrustedScoringSignalsCoordinator) {
   GURL url = embedded_https_test_server().GetURL("a.test", "/echo");
   url::Origin origin = url::Origin::Create(url);

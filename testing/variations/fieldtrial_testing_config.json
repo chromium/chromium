@@ -18902,25 +18902,6 @@
             ]
         }
     ],
-    "ProtectedAudienceTrustedKVSupport": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "FledgeTrustedSignalsKVv2Support"
-                    ]
-                }
-            ]
-        }
-    ],
     "ProtectedAudienceTrustedSignalsKVv1CreativeScanning": [
         {
             "platforms": [
