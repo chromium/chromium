@@ -112,8 +112,8 @@ constexpr CGFloat kInstructionsViewMargin = 17;
       _alertScreen.sheetPresentationController;
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
   presentationController.detents = @[
-    UISheetPresentationControllerDetent.mediumDetent,
-    UISheetPresentationControllerDetent.largeDetent
+    [UISheetPresentationControllerDetent mediumDetent],
+    [UISheetPresentationControllerDetent largeDetent]
   ];
   presentationController.preferredCornerRadius = kPreferredCornerRadius;
 }

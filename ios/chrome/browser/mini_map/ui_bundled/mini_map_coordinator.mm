@@ -108,7 +108,7 @@
       self.consentViewController.sheetPresentationController;
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
   presentationController.detents =
-      @[ UISheetPresentationControllerDetent.largeDetent ];
+      @[ [UISheetPresentationControllerDetent largeDetent] ];
   [self.baseViewController presentViewController:self.consentViewController
                                         animated:YES
                                       completion:nil];
