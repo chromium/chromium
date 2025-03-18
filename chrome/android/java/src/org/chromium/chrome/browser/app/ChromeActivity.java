@@ -2472,7 +2472,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         }
 
         if (id == R.id.ai_pdf_menu_id || id == R.id.ai_web_menu_id) {
-            var service = new AiAssistantService();
+            var service = AiAssistantService.getInstance();
             service.showAi(this, currentTab);
             return true;
         }

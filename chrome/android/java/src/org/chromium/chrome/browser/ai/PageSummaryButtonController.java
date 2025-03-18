@@ -51,6 +51,11 @@ public class PageSummaryButtonController extends BaseButtonDataProvider {
     }
 
     @Override
+    protected boolean shouldShowButton(Tab tab) {
+        return super.shouldShowButton(tab) && mAiAssistantService.canShowAiForTab(mContext, tab);
+    }
+
+    @Override
     public void onClick(View view) {
         assert mActiveTabSupplier.hasValue() : "Active tab supplier should have a value";
 

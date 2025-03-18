@@ -38,6 +38,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.ai.AiAssistantService;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
@@ -1271,7 +1272,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         if (currentTab == null
                 || currentTab.getWebContents() == null
                 || !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY)) {
+                        ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY)
+                || !AiAssistantService.getInstance().canShowAiForTab(mContext, currentTab)) {
             aiWebMenuItem.setVisible(false);
             aiPdfMenuItem.setVisible(false);
             return;
