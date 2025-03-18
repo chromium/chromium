@@ -32,6 +32,9 @@ class SearchEnginePreconnectorKeyedServiceFactory
   SearchEnginePreconnectorKeyedServiceFactory& operator=(
       const SearchEnginePreconnectorKeyedServiceFactory&) = delete;
 
+ protected:
+  bool ServiceIsCreatedWithBrowserContext() const override;
+
  private:
   friend struct base::LazyInstanceTraitsBase<
       SearchEnginePreconnectorKeyedServiceFactory>;

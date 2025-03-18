@@ -123,8 +123,10 @@ NavigationPredictorKeyedService::NavigationPredictorKeyedService(
   DCHECK(!browser_context->IsOffTheRecord());
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Start preconnecting to the search engine.
-  search_engine_preconnector_.StartPreconnecting(/*with_startup_delay=*/true);
+  if (!SearchEnginePreconnector::ShouldBeEnabledAsKeyedService()) {
+    // Start preconnecting to the search engine.
+    search_engine_preconnector_.StartPreconnecting(/*with_startup_delay=*/true);
+  }
 #endif
 }
 

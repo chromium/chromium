@@ -16,6 +16,7 @@
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
 #include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
+#include "chrome/browser/navigation_predictor/search_engine_preconnector_keyed_service_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -52,6 +53,14 @@ NavigationPredictorPreconnectClient::GetNavigationPredictorKeyedService()
 
 SearchEnginePreconnector*
 NavigationPredictorPreconnectClient::GetSearchEnginePreconnector() {
+  if (SearchEnginePreconnector::ShouldBeEnabledAsKeyedService()) {
+    // If we have `SearchEnginePreconnectorKeyedService` enabled, the
+    // `SearchEnginePreconnector` should be fetched directly from the
+    // `KeyedService`.
+    return SearchEnginePreconnectorKeyedServiceFactory::GetForProfile(
+        Profile::FromBrowserContext(browser_context_));
+  }
+
   auto* navigation_predictor_service = GetNavigationPredictorKeyedService();
   if (navigation_predictor_service) {
     return navigation_predictor_service->search_engine_preconnector();

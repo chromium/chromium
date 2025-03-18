@@ -55,11 +55,29 @@ SearchEnginePreconnectorKeyedServiceFactory::
 SearchEnginePreconnectorKeyedServiceFactory::
     ~SearchEnginePreconnectorKeyedServiceFactory() = default;
 
+bool SearchEnginePreconnectorKeyedServiceFactory::
+    ServiceIsCreatedWithBrowserContext() const {
+  return SearchEnginePreconnector::ShouldBeEnabledAsKeyedService();
+}
+
 std::unique_ptr<KeyedService> SearchEnginePreconnectorKeyedServiceFactory::
     BuildServiceInstanceForBrowserContext(
         content::BrowserContext* context) const {
   if (!SearchEnginePreconnector::ShouldBeEnabledAsKeyedService()) {
     return nullptr;
   }
-  return std::make_unique<SearchEnginePreconnector>(context);
+
+  auto search_engine_preconnector =
+      std::make_unique<SearchEnginePreconnector>(context);
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Start preconnecting to the search engine. For Android, we start the
+  // preconnect in the `NavigationPredictorBridge` where start / stop is
+  // centrally managed.
+  if (search_engine_preconnector) {
+    search_engine_preconnector->StartPreconnecting(
+        /*with_startup_delay=*/true);
+  }
+#endif
+  return search_engine_preconnector;
 }
