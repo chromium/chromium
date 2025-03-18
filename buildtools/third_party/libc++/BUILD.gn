@@ -78,6 +78,9 @@ builtin_modules("_Builtin_stdalign") {
 builtin_modules("_Builtin_stdarg") {
 }
 
+builtin_modules("_Builtin_stdbool") {
+}
+
 builtin_modules("_Builtin_stddef") {
 }
 
@@ -200,6 +203,14 @@ libcxx_modules("std_private_mbstate_t") {
     ":std_config",
  ]
 }
+
+libcxx_modules("std_stdbool_h") {
+  deps = [
+    ":std_config",
+    ":_Builtin_stdbool",
+  ]
+}
+
 
 libcxx_modules("std_stddef_h") {
 }
