@@ -258,8 +258,7 @@ public class TabDragSource implements View.OnDragListener {
         // Extract tab group metadata.
         TabGroupModelFilter tabGroupModelFilter =
                 mTabModelSelector.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter();
-        int rootId = tabGroupModelFilter.getRootIdFromTabGroupId(tabGroupId);
-        List<Tab> groupedTabs = tabGroupModelFilter.getRelatedTabListForRootId(rootId);
+        List<Tab> groupedTabs = tabGroupModelFilter.getTabsInGroup(tabGroupId);
         int windowId = TabWindowManagerSingleton.getInstance().getIndexForWindow(getActivity());
         TabGroupMetadata metadata =
                 TabGroupMetadataExtractor.extractTabGroupMetadata(

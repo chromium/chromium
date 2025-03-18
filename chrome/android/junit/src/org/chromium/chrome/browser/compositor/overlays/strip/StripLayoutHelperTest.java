@@ -4554,8 +4554,7 @@ public class StripLayoutHelperTest {
             relatedTabs.add(tab);
         }
         when(mTabGroupModelFilter.getTabCountForGroup(eq(tabGroupId))).thenReturn(numTabs);
-        when(mTabGroupModelFilter.getRelatedTabListForRootId(eq(groupRootId)))
-                .thenReturn(relatedTabs);
+        when(mTabGroupModelFilter.getTabsInGroup(eq(tabGroupId))).thenReturn(relatedTabs);
 
         mStripLayoutHelper.updateGroupTextAndSharedState(groupRootId);
         mStripLayoutHelper.rebuildStripViews();

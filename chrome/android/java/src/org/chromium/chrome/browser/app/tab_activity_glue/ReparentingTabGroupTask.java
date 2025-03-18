@@ -63,7 +63,7 @@ public class ReparentingTabGroupTask {
                 TabWindowManagerSingleton.getInstance()
                         .getGroupedTabsByWindow(
                                 mTabGroupMetadata.sourceWindowId,
-                                mTabGroupMetadata.rootId,
+                                mTabGroupMetadata.tabGroupId,
                                 mTabGroupMetadata.isIncognito);
         if (groupedTabs == null || groupedTabs.size() == 0) return;
         for (Tab tab : groupedTabs) {
