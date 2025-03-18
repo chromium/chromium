@@ -3,13 +3,20 @@
 // found in the LICENSE file.
 
 import type {InkSizeSelectorElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {PEN_SIZES} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertLabels, assertSelectedSize, getSizeButtons} from './test_util.js';
 
-function createSelector(): InkSizeSelectorElement {
+function createSelector(initialValue?: number): InkSizeSelectorElement {
   const selector = document.createElement('ink-size-selector');
+  // Emulate the parent initializing this value via a data binding, e.g. before
+  // the sidepanel is shown, or before the bottom toolbar size button is
+  // clicked to add this element to the DOM.
+  if (initialValue) {
+    selector.currentSize = initialValue;
+  }
   document.body.innerHTML = '';
   document.body.appendChild(selector);
   return selector;
@@ -181,6 +188,26 @@ chrome.test.runTests([
     assertLabels(sizeButtons[3]!, 'Thick');
     assertLabels(sizeButtons[4]!, 'Extra thick');
 
+    chrome.test.succeed();
+  },
+
+  async function testFocusesSelectedItem() {
+    let selector = createSelector(PEN_SIZES[1]!.size);
+    let sizeButtons = getSizeButtons(selector);
+    chrome.test.assertEq(5, sizeButtons.length);
+    assertSelectedSize(sizeButtons, /*buttonIndex=*/ 1);
+    let whenFocused = eventToPromise('focus', sizeButtons[1]!);
+    selector.focus();
+    await whenFocused;
+
+    // Recreate the selector and test a different initial condition.
+    selector = createSelector(PEN_SIZES[3]!.size);
+    sizeButtons = getSizeButtons(selector);
+    chrome.test.assertEq(5, sizeButtons.length);
+    assertSelectedSize(sizeButtons, /*buttonIndex=*/ 3);
+    whenFocused = eventToPromise('focus', sizeButtons[3]!);
+    selector.focus();
+    await whenFocused;
     chrome.test.succeed();
   },
 ]);

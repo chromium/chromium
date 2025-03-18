@@ -11,13 +11,13 @@ import type {InkSizeSelectorElement} from './ink_size_selector.js';
 
 export function getHtml(this: InkSizeSelectorElement) {
   return html`
-    <div role="listbox" @keydown="${this.onSizeKeydown_}">
+    <div @keydown="${this.onSizeKeydown_}" role="radiogroup">
       ${this.getCurrentBrushSizes_().map((item, index) => html`
-        <cr-icon-button iron-icon="pdf:${item.icon}" role="option"
+        <cr-icon-button iron-icon="pdf:${item.icon}" role="radio"
             tabindex="${this.getTabIndexForSize_(item.size)}"
             data-index="${index}" data-size="${item.size}"
             data-selected="${this.isCurrentSize_(item.size)}"
-            aria-selected="${this.isCurrentSize_(item.size)}"
+            aria-checked="${this.isCurrentSize_(item.size)}"
             aria-label="${this.i18n(item.label)}"
             title="${this.i18n(item.label)}"
             @click="${this.onSizeClick_}"></cr-icon-button>
