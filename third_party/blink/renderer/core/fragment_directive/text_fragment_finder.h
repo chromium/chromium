@@ -56,10 +56,6 @@ class CORE_EXPORT TextFragmentFinder
                      const TextFragmentSelector& selector,
                      Document* document,
                      FindBufferRunnerType runner_type);
-  TextFragmentFinder(Client& client,
-                     const TextFragmentSelector& selector,
-                     Range* range,
-                     FindBufferRunnerType runner_type);
   virtual ~TextFragmentFinder() = default;
 
   // Begins searching in the given top-level document.
@@ -74,6 +70,8 @@ class CORE_EXPORT TextFragmentFinder
   const TextFragmentSelector& GetSelector() const { return selector_; }
 
  protected:
+  friend class TextFragmentFinderTest;
+  FRIEND_TEST_ALL_PREFIXES(TextFragmentFinderTest, DOMMutation);
   void FindPrefix();
   void FindTextStart();
   void FindTextEnd();
@@ -90,10 +88,6 @@ class CORE_EXPORT TextFragmentFinder
   SelectorMatchStep step_ = kMatchPrefix;
 
  private:
-  friend class MockTextFragmentFinder;
-  friend class TextFragmentFinderTest;
-  FRIEND_TEST_ALL_PREFIXES(TextFragmentFinderTest, DOMMutation);
-
   void FindMatchFromPosition(PositionInFlatTree search_start);
 
   void OnFindMatchInRangeComplete(String search_text,
@@ -123,7 +117,7 @@ class CORE_EXPORT TextFragmentFinder
 
   Client& client_;
   const TextFragmentSelector selector_;
-  Member<Range> range_;
+  Member<Document> document_;
 
   // Start positions for the next text end |FindTask|, this is separate as the
   // search for end might move the position, which should be discarded.
