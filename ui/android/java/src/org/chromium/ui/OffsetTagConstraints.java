@@ -26,6 +26,33 @@ public final class OffsetTagConstraints {
         mMaxY = maxY;
     }
 
+    @Override
+    public String toString() {
+        return String.valueOf(mMinX)
+                + " "
+                + String.valueOf(mMaxX)
+                + " "
+                + String.valueOf(mMinY)
+                + " "
+                + String.valueOf(mMaxY);
+    }
+
+    public boolean isValid() {
+        return mMinX <= 0
+                && mMinY <= 0
+                && mMaxX >= 0
+                && mMaxY >= 0
+                && mMinX <= mMaxX
+                && mMinY <= mMaxY;
+    }
+
+    public void reset() {
+        mMinX = 0;
+        mMinY = 0;
+        mMaxX = 0;
+        mMaxY = 0;
+    }
+
     @CalledByNative
     public float minX() {
         return mMinX;
