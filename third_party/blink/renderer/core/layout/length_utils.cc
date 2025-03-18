@@ -1004,7 +1004,9 @@ std::optional<LogicalSize> ComputeNormalizedNaturalSize(
     intrinsic_inline = InlineSizeFromAspectRatio(border_padding, aspect_ratio,
                                                  box_sizing, *intrinsic_block);
   }
-  if (intrinsic_inline && !intrinsic_block) {
+  // There are cases where the natural-size wont match the aspect-ratio. Always
+  // coerce the natural block-size to respect the aspect-ratio when present.
+  if (intrinsic_inline && (!intrinsic_block || !aspect_ratio.IsEmpty())) {
     DCHECK(!aspect_ratio.IsEmpty());
     intrinsic_block = BlockSizeFromAspectRatio(border_padding, aspect_ratio,
                                                box_sizing, *intrinsic_inline);
