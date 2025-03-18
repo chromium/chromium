@@ -312,9 +312,13 @@ void PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(
   if (!base::FeatureList::IsEnabled(kPrivacySandboxMigratePrefsToSchemaV2)) {
     return;
   }
-  const base::Value::Dict* data =
-      pref_service->GetUserPrefValue(kPrivacySandboxNoticeDataPath)
-          ->GetIfDict();
+  const auto* notice_data_pref =
+      pref_service->GetUserPrefValue(kPrivacySandboxNoticeDataPath);
+  if (!notice_data_pref) {
+    return;
+  }
+
+  const base::Value::Dict* data = notice_data_pref->GetIfDict();
 
   for (const auto notice : kPrivacySandboxNoticeNames) {
     if (!data || !data->contains(notice)) {
