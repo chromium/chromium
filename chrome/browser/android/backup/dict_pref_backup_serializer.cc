@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/android/jni_string.h"
 #include "base/check.h"
@@ -55,7 +56,7 @@ void SetDict(PrefService* pref_service,
     // just no-op.
     return;
   }
-  pref_service->SetDict(pref_name, dict->Clone());
+  pref_service->SetDict(pref_name, *std::move(dict));
 }
 
 }  // namespace dict_pref_backup_serializer
