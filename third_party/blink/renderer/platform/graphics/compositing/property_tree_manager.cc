@@ -95,8 +95,9 @@ static void UpdateCcTransformLocalMatrix(
     DCHECK(transform_node.IsIdentityOr2dTranslation());
     // Blink creates a 2d transform node just for scroll offset whereas cc's
     // transform node has a special scroll offset field.
-    compositor_node.scroll_offset =
-        gfx::PointAtOffsetFromOrigin(-transform_node.Get2dTranslation());
+    compositor_node.SetScrollOffset(
+        gfx::PointAtOffsetFromOrigin(-transform_node.Get2dTranslation()),
+        cc::DamageReason::kUntracked);
     DCHECK(compositor_node.local.IsIdentity());
     DCHECK_EQ(gfx::Point3F(), compositor_node.origin);
   } else {
@@ -167,9 +168,9 @@ bool PropertyTreeManager::DirectlyUpdateScrollOffsetTransform(
       gfx::PointAtOffsetFromOrigin(-transform.Get2dTranslation());
   DirectlySetScrollOffset(host, scroll_node->GetCompositorElementId(),
                           scroll_offset);
-  if (cc_transform->scroll_offset != scroll_offset) {
+  if (cc_transform->scroll_offset() != scroll_offset) {
     UpdateCcTransformLocalMatrix(*cc_transform, transform);
-    cc_transform->transform_changed = true;
+    cc_transform->SetTransformChanged(cc::DamageReason::kUntracked);
     property_trees->transform_tree_mutable().set_needs_update(true);
     host.SetNeedsCommit();
   }
@@ -197,7 +198,7 @@ bool PropertyTreeManager::DirectlyUpdateTransform(
   // flag, we should clear it to let the compositor respect the new value.
   cc_transform->is_currently_animating = false;
 
-  cc_transform->transform_changed = true;
+  cc_transform->SetTransformChanged(cc::DamageReason::kUntracked);
   property_trees->transform_tree_mutable().set_needs_update(true);
   host.SetNeedsCommit();
   return true;
@@ -218,7 +219,7 @@ bool PropertyTreeManager::DirectlyUpdatePageScaleTransform(
   UpdateCcTransformLocalMatrix(*cc_transform, transform);
   SetTransformTreePageScaleFactor(property_trees->transform_tree_mutable(),
                                   *cc_transform);
-  cc_transform->transform_changed = true;
+  cc_transform->SetTransformChanged(cc::DamageReason::kUntracked);
   property_trees->transform_tree_mutable().set_needs_update(true);
   return true;
 }
@@ -464,7 +465,11 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
 
   compositor_node.should_undo_overscroll =
       transform_node.RequiresCompositingForFixedToViewport();
-  compositor_node.transform_changed = transform_node.NodeChangeAffectsRaster();
+  if (transform_node.NodeChangeAffectsRaster()) {
+    compositor_node.SetTransformChanged(cc::DamageReason::kUntracked);
+  } else {
+    compositor_node.ClearTransformChanged();
+  }
   compositor_node.flattens_inherited_transform =
       transform_node.FlattensInheritedTransform();
   compositor_node.sorting_context_id = transform_node.RenderingContextId();

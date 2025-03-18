@@ -932,7 +932,7 @@ void Layer::SetPosition(const gfx::PointF& position) {
     transform_node->post_translation =
         position.OffsetFromOrigin() + parent()->offset_to_transform_parent();
     transform_node->needs_local_transform_update = true;
-    transform_node->transform_changed = true;
+    transform_node->SetTransformChanged(DamageReason::kUntracked);
     layer_tree_host()
         ->property_trees()
         ->transform_tree_mutable()
@@ -979,7 +979,7 @@ void Layer::SetTransform(const gfx::Transform& transform) {
           Are2dAxisAligned(inputs.transform, transform);
       transform_node->local = transform;
       transform_node->needs_local_transform_update = true;
-      transform_node->transform_changed = true;
+      transform_node->SetTransformChanged(DamageReason::kUntracked);
       layer_tree_host()
           ->property_trees()
           ->transform_tree_mutable()
@@ -1014,7 +1014,7 @@ void Layer::SetTransformOrigin(const gfx::Point3F& transform_origin) {
     DCHECK_EQ(transform_tree_index(), transform_node->id);
     transform_node->origin = transform_origin;
     transform_node->needs_local_transform_update = true;
-    transform_node->transform_changed = true;
+    transform_node->SetTransformChanged(DamageReason::kUntracked);
     layer_tree_host()
         ->property_trees()
         ->transform_tree_mutable()
@@ -1082,7 +1082,7 @@ void Layer::UpdatePropertyTreeScrollOffset() {
   auto* transform_node =
       property_trees.transform_tree_mutable().Node(transform_tree_index());
   DCHECK_EQ(transform_tree_index(), transform_node->id);
-  transform_node->scroll_offset = scroll_offset();
+  transform_node->SetScrollOffset(scroll_offset(), DamageReason::kUntracked);
   transform_node->needs_local_transform_update = true;
   property_trees.transform_tree_mutable().set_needs_update(true);
 }

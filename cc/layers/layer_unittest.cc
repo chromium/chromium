@@ -545,7 +545,7 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
   TransformNode* node =
       layer_tree_host_->property_trees()->transform_tree_mutable().Node(
           top->transform_tree_index());
-  EXPECT_TRUE(node->transform_changed);
+  EXPECT_TRUE(node->transform_changed());
 
   EXECUTE_AND_VERIFY_SUBTREE_CHANGES_RESET_IN_COMMIT(
       top->PushPropertiesTo(top_impl.get(), *commit_state, unsafe_state);
@@ -554,14 +554,14 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
       grand_child->PushPropertiesTo(grand_child_impl.get(), *commit_state,
                                     unsafe_state);
       layer_tree_host_->property_trees()->ResetAllChangeTracking());
-  EXPECT_FALSE(node->transform_changed);
+  EXPECT_FALSE(node->transform_changed());
   layer_tree_host_->VerifyAndClearExpectations();
 
   EXPECT_CALL_MOCK_DELEGATE(*layer_tree_host_, SetNeedsCommit()).Times(1);
   child->SetPosition(arbitrary_point_f);
   node = layer_tree_host_->property_trees()->transform_tree_mutable().Node(
       child->transform_tree_index());
-  EXPECT_TRUE(node->transform_changed);
+  EXPECT_TRUE(node->transform_changed());
   layer_tree_host_->VerifyAndClearExpectations();
 
   EXECUTE_AND_VERIFY_SUBTREE_CHANGES_RESET_IN_COMMIT(
@@ -571,14 +571,14 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
       layer_tree_host_->property_trees()->ResetAllChangeTracking());
   node = layer_tree_host_->property_trees()->transform_tree_mutable().Node(
       child->transform_tree_index());
-  EXPECT_FALSE(node->transform_changed);
+  EXPECT_FALSE(node->transform_changed());
 
   gfx::Point3F arbitrary_point_3f = gfx::Point3F(0.125f, 0.25f, 0.f);
   EXPECT_CALL_MOCK_DELEGATE(*layer_tree_host_, SetNeedsCommit()).Times(1);
   top->SetTransformOrigin(arbitrary_point_3f);
   node = layer_tree_host_->property_trees()->transform_tree_mutable().Node(
       top->transform_tree_index());
-  EXPECT_TRUE(node->transform_changed);
+  EXPECT_TRUE(node->transform_changed());
   layer_tree_host_->VerifyAndClearExpectations();
 
   EXECUTE_AND_VERIFY_SUBTREE_CHANGES_RESET_IN_COMMIT(
@@ -595,7 +595,7 @@ TEST_F(LayerTest, LayerPropertyChangedForSubtree) {
   top->SetTransform(arbitrary_transform);
   node = layer_tree_host_->property_trees()->transform_tree_mutable().Node(
       top->transform_tree_index());
-  EXPECT_TRUE(node->transform_changed);
+  EXPECT_TRUE(node->transform_changed());
   layer_tree_host_->VerifyAndClearExpectations();
 }
 

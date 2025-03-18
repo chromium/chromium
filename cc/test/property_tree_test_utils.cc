@@ -195,7 +195,7 @@ void SetScrollOffsetInternal(LayerType* layer,
                              const gfx::PointF& scroll_offset) {
   DCHECK(layer->has_transform_node());
   auto* transform_node = GetTransformNode(layer);
-  transform_node->scroll_offset = scroll_offset;
+  transform_node->SetScrollOffset(scroll_offset, DamageReason::kUntracked);
   SetLocalTransformChanged(layer);
   GetPropertyTrees(layer)->scroll_tree_mutable().SetScrollOffset(
       layer->element_id(), scroll_offset);
