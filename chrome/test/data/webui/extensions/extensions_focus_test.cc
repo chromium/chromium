@@ -15,16 +15,21 @@ class CrExtensionsFocusTest : public WebUIMochaFocusTest {
   }
 };
 
+// TODO(crbug.com/392777363): Make the test pass on android.
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(CrExtensionsFocusTest, UninstallFocus) {
   RunTest("extensions/manager_unit_test.js",
           "runMochaTest('ExtensionManagerUnitTest', 'UninstallFocus')");
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsFocusTest, UpdateShortcut) {
   RunTest("extensions/keyboard_shortcuts_test.js",
           "runMochaTest('ExtensionShortcutTest', 'UpdateShortcut')");
 }
 
+// TODO(crbug.com/392777363): Compile the test on android.
+#if !BUILDFLAG(IS_ANDROID)
 class CrExtensionsOptionsPageTest : public ExtensionSettingsTestBase {
  protected:
   void OnWebContentsAvailable(content::WebContents* web_contents) override {
@@ -38,3 +43,4 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsOptionsPageTest, DISABLED_All) {
   InstallExtensionWithInPageOptions();
   RunTest("extensions/extension_options_dialog_test.js", "mocha.run()");
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
