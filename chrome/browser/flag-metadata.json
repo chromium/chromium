@@ -6207,6 +6207,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "notification-collision-management",
+    "owners": [ "thegreenfrog@chromium.org", "bling-gsu-pod@google.com" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "notification-one-tap-unsubscribe",
     "owners": [ "engedy@chromium.org" ],
     "expiry_milestone": 132
