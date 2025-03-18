@@ -440,6 +440,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="2789552044937754463">{COUNT,plural, =1{Password saved in your Google Account, {EMAIL}}other{Passwords saved in your Google Account, {EMAIL}}}</translation>
 <translation id="2791174088547598693">Add password…</translation>
 <translation id="2797302972324086597">Country code</translation>
+<translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} file}other{{COUNT} files}}</translation>
 <translation id="2816489851009559785">Menu → Settings → Default browser</translation>
 <translation id="2818821771744632548">You were signed out of your account, <ph name="USER_NAME" />, as part of your iPhone reset. To sign back in, tap 'Continue' below.</translation>
 <translation id="2819667972867209401">When on, data is saved in your Google Account. When off, data is saved only to this device and is deleted if you sign out.</translation>
@@ -504,6 +505,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="310900540163454140">Delete password for <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Mark…</translation>
 <translation id="3119874402040566234">You'll be signed out and browsing data will be deleted</translation>
+<translation id="3124568093781685165">Share your passwords with your family</translation>
 <translation id="3130863904455712965">History and more</translation>
 <translation id="313283613037595347">Create new Incognito tab.</translation>
 <translation id="3138611310073113613">Discard selection</translation>
@@ -1003,6 +1005,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="5352128922772839949">Save file</translation>
 <translation id="5355191726083956201">Enhanced protection is on</translation>
 <translation id="537853552771686272">Manage the topics and sites that you're interested in</translation>
+<translation id="5390458669633674385">{count,plural, =1{{count} closed}other{{count} closed}}</translation>
 <translation id="5394975111793637642">Hide product reviews for you card</translation>
 <translation id="5395707839134961196">Hide search engine details</translation>
 <translation id="5414763847370083940">You'll get an alert if the price drops on any site.</translation>
@@ -1132,6 +1135,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5897749768294722429">To quickly get back to sites you've visited, sync your tabs and history.</translation>
 <translation id="5898848375214731122">Mass</translation>
 <translation id="5899314093904173337">To share with people nearby, let them scan this QR code with their camera or QR scanner app</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} new tab}other{{count} new tabs}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5917913282764181683">Auto-delete your downloads</translation>
 <translation id="5922999516621365983">Drag tab here to pin it.</translation>
@@ -1674,6 +1678,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8131740175452115882">Confirm</translation>
 <translation id="8132598642024322408">Now <ph name="PRICE" />, was <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Use a unique password for every site or app. If someone discovers a reused password, it can be used to access your other accounts. Click to open the website and change them now.</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} closed tab}other{{count} closed tabs}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 other}other{# others}}</translation>
 <translation id="8150167929304790980">Full name</translation>
 <translation id="8152331954420209374">Go to Lens</translation>

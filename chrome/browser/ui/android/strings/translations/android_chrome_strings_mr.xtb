@@ -432,7 +432,6 @@
 <translation id="2981364137500752533">तुम्ही कमाल पाच विंडो उघडू शकता.</translation>
 <translation id="2983102365694924129">साइटवरील तुमच्या अ‍ॅक्टिव्हिटीवर आधारित. हे सेटिंग बंद आहे.</translation>
 <translation id="2984978667043170458">Google वर शोधताना आसपासच्या मजकुराचा समावेश करा</translation>
-<translation id="2988638966064514052">तुमचे पासवर्ड मजबूत करा</translation>
 <translation id="2989523299700148168">अलीकडे भेट दिलेले</translation>
 <translation id="2992473221983447149">इमेजची वर्णने</translation>
 <translation id="2996291259634659425">सांकेतिक पासफ्रेझ तयार करा</translation>
@@ -548,7 +547,6 @@
 <translation id="3557336313807607643">संपर्कांमध्ये जोडा</translation>
 <translation id="3563767357928833671">क्लिपबोर्डचा आशय दाखवला</translation>
 <translation id="3566639033325271639">सेटिंग्ज अपडेट करा</translation>
-<translation id="3568945271227339929">एकही पासवर्ड धोक्यात नाही</translation>
 <translation id="3575464060651642446">या डिव्हाइसवरील पासवर्ड तपासत आहे…</translation>
 <translation id="3577473026931028326">काहीतरी चूक झाली. पुन्हा प्रयत्न करा.</translation>
 <translation id="3577558748185201054">तुमची स्वारस्ये आणि प्राधान्ये व्यवस्थापित करा</translation>
@@ -1055,7 +1053,6 @@
 <translation id="5958275228015807058">तुमच्या फाइल आणि पेज डाउनलोडमध्ये शोधा</translation>
 <translation id="5958994127112619898">पेज सुलभ करा</translation>
 <translation id="5962718611393537961">संकुचित करण्‍यासाठी टॅप करा</translation>
-<translation id="5964180026566797835">पासवर्ड तपासू शकत नाही</translation>
 <translation id="5964869237734432770">इमेजची वर्णने थांबवा</translation>
 <translation id="5977976211062815271">या डिव्हाइसवरील</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{तुमच्या वाचन सूचीवरील १ पेज}other{तुमच्या वाचन सूचीवरील # पेज}}</translation>
@@ -1099,6 +1096,7 @@
 <translation id="6150320133806434356">बुकमार्क सेव्ह केला</translation>
 <translation id="6150706324143004339">तुमच्या Google खाते मधील Chrome डेटा वापरण्यासाठी आणि सेव्ह करण्यासाठी Chrome अपडेट करा</translation>
 <translation id="6154478581116148741">तुमचे पासवर्ड या डिव्हाइसवरून एक्सपोर्ट करण्यासाठी सेटिंग्जमधील लॉक स्क्रीन सुरू करा</translation>
+<translation id="6156323911414505561">बुकमार्क बार दर्शवा</translation>
 <translation id="6162892189396105610">Chrome ला तुम्ही भेट देण्याची शक्यता आहे, असे वाटत असलेली पेज ते प्रीलोड करते.</translation>
 <translation id="6170675927290506430">सूचना सेटिंग्ज वर जा</translation>
 <translation id="6186394685773237175">धोक्यात असलेले पासवर्ड सापडले नाहीत</translation>

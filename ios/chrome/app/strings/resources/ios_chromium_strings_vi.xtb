@@ -278,6 +278,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="7905064834449738336">Khi bạn dùng một mật khẩu đã bị công khai trên mạng, Chromium sẽ cảnh báo cho bạn. Trong quá trình này, mật khẩu và tên người dùng của bạn được mã hoá nên không ai đọc được, kể cả Google.</translation>
 <translation id="7928628054454574139">Mở Chromium bất cứ khi nào bạn nhấn vào đường liên kết trong các ứng dụng khác</translation>
 <translation id="7934404985878918282">Xem Danh sách đọc trên Chromium</translation>
+<translation id="7935734571048689933">Chromium đang được quản lý</translation>
 <translation id="7951793218148208717">Mở một thẻ mới trong Chromium.</translation>
 <translation id="7980860476903281594">Chromium chia sẻ thông tin vị trí của bạn với những trang web mà bạn cho phép.</translation>
 <translation id="7994322153108931467">Để biết các mẹo hữu ích khi dùng Chromium, hãy bật thông báo trong phần cài đặt của iOS.</translation>
@@ -308,6 +309,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="8754966941001340678">Chromium khuyên dùng chế độ bảo vệ nâng cao</translation>
 <translation id="8759037115129007407">Thành viên gia đình bạn hiện không thể nhận mật khẩu. Hãy đề nghị họ cập nhật Chromium và đồng bộ hoá mật khẩu của họ. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Tài khoản này và mọi dữ liệu chưa lưu sẽ bị xóa khỏi Chromium.</translation>
+<translation id="8793333988063379360">Bạn có thể tìm thấy các chế độ cài đặt Chromium và nhiều chế độ cài đặt khác tại đây</translation>
 <translation id="8805148242934787134">Đặt Chromium làm trình duyệt mặc định</translation>
 <translation id="8826789549860004832">Khai thác tối đa Chromium bằng cách tiếp tục thiết lập trình duyệt của bạn.</translation>
 <translation id="88376265765385899">Mở dấu trang trên Chromium.</translation>

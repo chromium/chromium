@@ -504,6 +504,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="310900540163454140">Vee wagwoord vir <ph name="WEBSITE" /> uit?</translation>
 <translation id="3112556859945124369">Merk …</translation>
 <translation id="3119874402040566234">Jy sal afgemeld word en blaaierdata sal uitgevee word</translation>
+<translation id="3124568093781685165">Deel jou wagwoorde met jou gesin</translation>
 <translation id="3130863904455712965">Geskiedenis en meer</translation>
 <translation id="313283613037595347">Skep nuwe Incognito-oortjie.</translation>
 <translation id="3138611310073113613">Gooi keuse weg</translation>
@@ -1003,6 +1004,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="5352128922772839949">Stoor lêer</translation>
 <translation id="5355191726083956201">Verbeterde Beskerming is aan</translation>
 <translation id="537853552771686272">Bestuur die onderwerpe en werwe waarin jy belangstel</translation>
+<translation id="5390458669633674385">{count,plural, =1{{count} is toegemaak}other{{count} is toegemaak}}</translation>
 <translation id="5394975111793637642">Versteek produkresensies vir jou kaart</translation>
 <translation id="5395707839134961196">Versteek soekenjinbesonderhede</translation>
 <translation id="5414763847370083940">Jy sal ’n opletberig kry as die prys op enige werf daal.</translation>
@@ -1132,6 +1134,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5897749768294722429">Sinkroniseer jou oortjies en geskiedenis om vinnig terug te gaan na werwe wat jy besoek het.</translation>
 <translation id="5898848375214731122">Massa</translation>
 <translation id="5899314093904173337">Laat mense in die omtrek hierdie QR-kode met hul kamera of QR-skandeerderprogram skandeer om met hulle te deel</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} nuwe oortjie}other{{count} nuwe oortjies}}</translation>
 <translation id="5911030830365207728">Google Vertaal</translation>
 <translation id="5917913282764181683">Vee jou aflaaie outomaties uit</translation>
 <translation id="5922999516621365983">Sleep oortjie hierheen om dit vas te speld.</translation>
@@ -1674,6 +1677,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8131740175452115882">Bevestig</translation>
 <translation id="8132598642024322408">Nou <ph name="PRICE" />, was <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Gebruik ’n unieke wagwoord vir elke werf of app. As iemand ’n hergebruikte wagwoord ontdek, kan hulle dit gebruik om toegang tot jou ander rekeninge te kry. Klik om die webwerf oop te maak en hulle nou te verander.</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} toegemaakte oortjie}other{{count} toegemaakte oortjies}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 ander}other{# ander}}</translation>
 <translation id="8150167929304790980">Volle naam</translation>
 <translation id="8152331954420209374">Gaan na Lens</translation>

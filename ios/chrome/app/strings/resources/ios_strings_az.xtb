@@ -504,6 +504,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="310900540163454140"><ph name="WEBSITE" /> parolu silinsin?</translation>
 <translation id="3112556859945124369">Qeyd edin...</translation>
 <translation id="3119874402040566234">Çıxacaqsınız və baxış datası silinəcək</translation>
+<translation id="3124568093781685165">Parollarınızı ailəniz ilə paylaşın</translation>
 <translation id="3130863904455712965">Tarixçə və digərləri</translation>
 <translation id="313283613037595347">Yeni Anonim tab yaradın.</translation>
 <translation id="3138611310073113613">Seçimdən imtina edin</translation>
@@ -1003,6 +1004,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="5352128922772839949">Faylı yadda saxlayın</translation>
 <translation id="5355191726083956201">Qabaqcıl Qoruma aktivdir</translation>
 <translation id="537853552771686272">Maraqlandığınız mövzu və saytları idarə edin</translation>
+<translation id="5390458669633674385">{count,plural, =1{{count} tab bağlanıb}other{{count} tab bağlanıb}}</translation>
 <translation id="5394975111793637642">Sizin üçün məhsul rəyləri kartını gizlədin</translation>
 <translation id="5395707839134961196">Axtarış mexanizmi detallarını gizlədin</translation>
 <translation id="5414763847370083940">Hər hansı saytda qiymət düşərsə, bildiriş alacaqsınız.</translation>
@@ -1132,6 +1134,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5897749768294722429">Daxil olduğunuz saytlara tez qayıtmaq üçün tab və tarixçəni sinxronlaşdırın.</translation>
 <translation id="5898848375214731122">Kütlə</translation>
 <translation id="5899314093904173337">Yaxınlıqdakı insanlarla paylaşmaq üçün onlara bu QR kodu öz kameraları və ya QR skaner tətbiqi ilə skanlamaq icazəsi verin</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} yeni tab}other{{count} yeni tab}}</translation>
 <translation id="5911030830365207728">Google Tərcümə</translation>
 <translation id="5917913282764181683">Endirmələrinizi avtomatik silin</translation>
 <translation id="5922999516621365983">Tabı buraya sürüşdürərək bərkidin.</translation>
@@ -1674,6 +1677,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8131740175452115882">Təsdiq edin</translation>
 <translation id="8132598642024322408"><ph name="PREVIOUS_PRICE" /> olan məhsul indi <ph name="PRICE" /> qiymətinədir.</translation>
 <translation id="813370552429173916">Hər sayt və ya tətbiq üçün unikal parol istifadə edin. Kimsə yenidən istifadə edilən parol aşkar edərsə, o, digər hesablarınıza giriş üçün istifadə edilə bilər. Veb-saytı açmaq və onları indi dəyişmək üçün klikləyin.</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} bağlı tab}other{{count} bağlı tab}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{digər 1}other{digər #}}</translation>
 <translation id="8150167929304790980">Ad və soyad</translation>
 <translation id="8152331954420209374">Linzaya keçin</translation>

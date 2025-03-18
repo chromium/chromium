@@ -432,7 +432,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2981364137500752533">Imate lahko največ pet oken.</translation>
 <translation id="2983102365694924129">Na podlagi vaše dejavnosti na spletnem mestu. Ta nastavitev je izklopljena.</translation>
 <translation id="2984978667043170458">Vključitev sobesedila v iskanja v Googlu</translation>
-<translation id="2988638966064514052">Okrepite gesla</translation>
 <translation id="2989523299700148168">Nedavno obiskano</translation>
 <translation id="2992473221983447149">Opisi slik</translation>
 <translation id="2996291259634659425">Ustvarjanje gesla</translation>
@@ -548,7 +547,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3557336313807607643">Dodaj med stike</translation>
 <translation id="3563767357928833671">Vsebina odložišča je prikazana</translation>
 <translation id="3566639033325271639">Posodobi nastavitve</translation>
-<translation id="3568945271227339929">Ni ogroženih gesel</translation>
 <translation id="3575464060651642446">Preverjanje gesel v tej napravi …</translation>
 <translation id="3577473026931028326">Prišlo je do napake. Poskusite znova.</translation>
 <translation id="3577558748185201054">Upravljanje zanimanj in nastavitev</translation>
@@ -1055,7 +1053,6 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5958275228015807058">Poiščite datoteke in strani v Prenosih</translation>
 <translation id="5958994127112619898">Poenostavi stran</translation>
 <translation id="5962718611393537961">Dotik za strnitev</translation>
-<translation id="5964180026566797835">Gesel ni mogoče preveriti</translation>
 <translation id="5964869237734432770">Ustavi prenos opisov slik</translation>
 <translation id="5977976211062815271">V tej napravi</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 stran na bralnem seznamu}one{# stran na bralnem seznamu}two{# strani na bralnem seznamu}few{# strani na bralnem seznamu}other{# strani na bralnem seznamu}}</translation>
@@ -1099,6 +1096,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="6150320133806434356">Zaznamek je shranjen</translation>
 <translation id="6150706324143004339">Če želite v računu Google uporabljati in shranjevati podatke iz Chroma, posodobite Chrome</translation>
 <translation id="6154478581116148741">Vklopite zaklepanje zaslona v nastavitvah, če želite izvoziti gesla iz te naprave.</translation>
+<translation id="6156323911414505561">Pokaži vrstico z zaznamki</translation>
 <translation id="6162892189396105610">Vnaprej naloži strani, za katere Chrome meni, da jih boste najverjetneje obiskali.</translation>
 <translation id="6170675927290506430">Na nastavitve obvestil</translation>
 <translation id="6186394685773237175">Najdeno ni bilo nobeno ogroženo geslo</translation>

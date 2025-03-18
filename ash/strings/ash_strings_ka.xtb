@@ -166,6 +166,7 @@
 <translation id="1505542291183484463">ფანჯრის ზომის შეცვლა მოზაიკურად ქვემო მიმართულებით</translation>
 <translation id="1510238584712386396">გამშვები</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{შეტყობინების პარამეტრების ჩვენება. შეტყობინებები გამორთულია აპისთვის}other{შეტყობინების პარამეტრების ჩვენება. შეტყობინებები გამორთულია # აპისთვის}}</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">ბატარეა <ph name="BATTERY_PERCENTAGE" />%-ზეა | სრულ დატენამდე დარჩა <ph name="TIME" /></translation>
 <translation id="1525508553941733066">დახურვა</translation>
 <translation id="1526448108126799339">ახალი ჩანართის გახსნა ახალ ფანჯარაში</translation>
@@ -345,7 +346,6 @@
 <translation id="2201071101391734388">ბოლოდროინდელი ფოტო <ph name="INDEX" /> / <ph name="TOTAL_COUNT" />-დან.</translation>
 <translation id="2201687081523799384">Google Tasks-ის ჩაკეცვა</translation>
 <translation id="2208323208084708176">ერთიანი დესკტოპის რეჟიმი</translation>
-<translation id="2220572644011485463">PIN-კოდი ან პაროლი</translation>
 <translation id="2222841058024245321">სამუშაო მაგიდა 7</translation>
 <translation id="2223384056430485343">გაყოფილ ეკრანზე</translation>
 <translation id="2224075387478458881">ეკრანის ჩაწერა დაუშვებელია, როცა ხილულია დაცული კონტენტი</translation>
@@ -1829,7 +1829,6 @@
 <translation id="7000027735917578303">ფანჯრებისა და სამუშაო მაგიდების პარამეტრები</translation>
 <translation id="7004910047186208204">დაუკავშირდით მობილურ ინტერნეტს</translation>
 <translation id="7005239792648594238">დასაწყებად გახსენით აპი</translation>
-<translation id="7007983414944123363">თქვენი PIN-კოდის ან პაროლის დადასტურება ვერ მოხერხდა. ცადეთ ხელახლა.</translation>
 <translation id="7014684956566476813">დაკავშირებულია მოწყობილობასთან, სახელად <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">დაბრუნდით <ph name="COME_BACK_TIME" />-ზე.</translation>
 <translation id="70168403932084660">სამუშაო მაგიდა 6</translation>
@@ -2467,6 +2466,7 @@
 <translation id="9168436347345867845">მოგვიანებით გაკეთება</translation>
 <translation id="9178475906033259337">ნაჩვენებია 1 შედეგი მოთხოვნაზე <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">ეს ფუნქცია საშუალებას გაძლევთ, სწრაფად და პაროლის გარეშე იქონიოთ წვდომა სისტემაში შესულ ნებისმიერ მომხმარებელზე. გამოიყენეთ ეს ფუნქცია მხოლოდ იმ ანგარიშებთან, რომლებსაც ენდობით.</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183456764293710005">სრულეკრანიანი ლუპა</translation>
 <translation id="9192133205265227850">„<ph name="DEVICE_NAME" />“-ის გამოყენება</translation>
 <translation id="9193626018745640770">მიმდინარეობს ტრანსლირება უცნობ მიმღებზე</translation>

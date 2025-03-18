@@ -316,7 +316,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1532118530259321453">Amalni tasdiqlang</translation>
 <translation id="1533966801397200693">Siz boshqariladigan profildan kirgansiz. Administrator profil sozlamalarini masofadan oʻzgartirishi, brauzer maʼlumotlaridan iborat hisobotlarni tahlil qilishi hamda boshqa vazifalarni bajarishi mumkin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Sahifani tarjima qilish</translation>
-<translation id="1538295100801850685">Yaxshilangan takliflar</translation>
 <translation id="1539840569003678498">Hisobot yuborildi:</translation>
 <translation id="1542105669288201090">Biznes taʼlim</translation>
 <translation id="1545757265410828525">Narxlar tarixi</translation>
@@ -1156,7 +1155,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3052868890529250114">Odatda saytlarga xavfsiz ulanasiz, lekin bu safar Chrome xavfsiz aloqa oʻrnata olmadi. Firibgar amallaringizni kuzatishga yoki tarmoq aloqasini oʻzgartirishga urinayotgan boʻlishi mumkin. <ph name="BEGIN_LEARN_MORE_LINK" />Bu ogohlantirish haqida batafsil<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> narxlari <ph name="PRICE_DROP" /> ga tushdi</translation>
 <translation id="3061707000357573562">Xizmatni tuzatish</translation>
-<translation id="306198082577913404">Yaxshilangan takliflarni yoqish</translation>
 <translation id="3062655045399308513">Brauzer maʼlumotlarini oʻchirish...</translation>
 <translation id="3063453392496098461">VPN fon xizmatlari oʻrnatilmadi.</translation>
 <translation id="306573536155379004">Oʻyin boshlandi.</translation>
@@ -2320,7 +2318,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5097099694988056070">Protsessor yoki operativ xotiradan foydalanish (CPU/RAM) statistikasi</translation>
 <translation id="5097468150760963273">27 x 39 in</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome foydalanishi uchun qurilmadagi <ph name="PERMISSION" />ga ruxsat bering</translation>
 <translation id="510644072453496781">Karton (oxiri)</translation>
 <translation id="5106648964679263509"><ph name="BNPL_ISSUER_NAME" /> virtual kartasi kiritildi</translation>
 <translation id="5108881358339761672">Sayt xavfsiz emas</translation>
@@ -4047,7 +4044,6 @@ Batafsil axborot:
 <translation id="8134058435519644366">Ishga yonlash va xodimlar boshqaruvi</translation>
 <translation id="8135546115396015134">chap tugma</translation>
 <translation id="8137456439814903304">Energiya va vositalar</translation>
-<translation id="81474145143203755">Bu saytda <ph name="PERMISSION" /> ishlatish uchun Chromega ruxsat berish kerak</translation>
 <translation id="8148608574971654810">PDF versiyasi:</translation>
 <translation id="8149426793427495338">Kompyuteringiz uyqu rejimiga o‘tib qoldi.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> manzilidagi faylni o‘qib bo‘lmadi. U o‘chirilgan, ko‘chirilgan yoki ko‘rishni taqiqlovchi ruxsat cheklamalariga ega bo‘lishi mumkin.</translation>

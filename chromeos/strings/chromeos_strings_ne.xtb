@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">अर्थ फ्लो वालपेपर</translation>
 <translation id="33736539805963175"><ph name="LETTERS_LETTER" /> अक्षर भएको <ph name="LETTERS_COLOR" /> ब्याकग्राउन्ड</translation>
 <translation id="3383623117265110236">विशेष</translation>
-<translation id="3395147534045164351">स्न्याप लोकेसन टगल गर्नुहोस्</translation>
 <translation id="3404249063913988450">स्क्रिन सेभर सक्षम पार्नुहोस्</translation>
 <translation id="3413935475507503304">तपाईं यो अपडेट प्राप्त गर्न चाहनुहुन्छ भने अर्को नामक बटन क्लिक गर्नुहोस्।</translation>
 <translation id="3428551088151258685">बाहिर</translation>
@@ -1395,6 +1394,7 @@
 <translation id="7388345524791662148"><ph name="RECORDING_NAME" />का थप विकल्पहरू</translation>
 <translation id="7388959671917308825">अन्तर्निर्मित टचप्याड</translation>
 <translation id="7397270852490618635">उज्यालो थिम अफ गर्नुहोस्</translation>
+<translation id="7400166052988585408">तपाईंका शिक्षकले <ph name="NUM_SECONDS" /> सेकेन्डमा तपाईंको स्क्रिन लक गर्नु हुने छ</translation>
 <translation id="7401543881546089382">शर्टकट मेटाउनुहोस्</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> अब अपडेट गर्न मिल्छ</translation>
 <translation id="741244894080940828">रूपान्तरण</translation>

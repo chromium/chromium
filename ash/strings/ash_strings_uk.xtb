@@ -166,6 +166,7 @@
 <translation id="1505542291183484463">Зміна розміру вікна витягуванням униз у мозаїчному макеті</translation>
 <translation id="1510238584712386396">Панель запуску</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Показати налаштування сповіщень. Сповіщення вимкнено для додатка}one{Показати налаштування сповіщень. Сповіщення вимкнено для # додатка}few{Показати налаштування сповіщень. Сповіщення вимкнено для # додатків}many{Показати налаштування сповіщень. Сповіщення вимкнено для # додатків}other{Показати налаштування сповіщень. Сповіщення вимкнено для # додатка}}</translation>
+<translation id="1521655867290435174">Google Таблиці</translation>
 <translation id="1523032696246003">Рівень заряду акумулятора: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> до повного заряду</translation>
 <translation id="1525508553941733066">ЗАКРИТИ</translation>
 <translation id="1526448108126799339">Відкрити нову вкладку в новому вікні</translation>
@@ -345,7 +346,6 @@
 <translation id="2201071101391734388">Фото <ph name="INDEX" /> з <ph name="TOTAL_COUNT" /> останніх.</translation>
 <translation id="2201687081523799384">Згорнути Google Завдання</translation>
 <translation id="2208323208084708176">Режим уніфікованого комп’ютера</translation>
-<translation id="2220572644011485463">PIN-код або пароль</translation>
 <translation id="2222841058024245321">Робочий стіл 7</translation>
 <translation id="2223384056430485343">У режимі розділення екрана</translation>
 <translation id="2224075387478458881">Запис екрана заборонено, якщо видно захищений контент</translation>
@@ -1829,7 +1829,6 @@
 <translation id="7000027735917578303">Налаштування Windows і робочих столів</translation>
 <translation id="7004910047186208204">Підключіться до мобільного Інтернету</translation>
 <translation id="7005239792648594238">Щоб почати, відкрийте додаток</translation>
-<translation id="7007983414944123363">Не вдалося підтвердити PIN-код або пароль. Повторіть спробу.</translation>
 <translation id="7014684956566476813">Підключено до пристрою "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7015766095477679451">Поверніться о <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Робочий стіл 6</translation>
@@ -2466,6 +2465,7 @@
 <translation id="9168436347345867845">Пізніше</translation>
 <translation id="9178475906033259337">Показано 1 результат для запиту "<ph name="QUERY" />"</translation>
 <translation id="9179259655489829027">Ця функція дає змогу швидко й без пароля змінити авторизованого користувача. Використовуйте її лише з обліковими записами, яким довіряєте.</translation>
+<translation id="9183302530794969518">Google Документи</translation>
 <translation id="9183456764293710005">Повноекранна лупа</translation>
 <translation id="9192133205265227850">Використовувати пристрій <ph name="DEVICE_NAME" /></translation>
 <translation id="9193626018745640770">Трансляція на невідомий пристрій</translation>

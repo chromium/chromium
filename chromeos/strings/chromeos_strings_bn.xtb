@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">আর্থ ফ্লো ওয়ালপেপার</translation>
 <translation id="33736539805963175"><ph name="LETTERS_LETTER" /> অক্ষর সহ <ph name="LETTERS_COLOR" /> ব্যাকগ্রাউন্ড</translation>
 <translation id="3383623117265110236">এক্সক্লুসিভ</translation>
-<translation id="3395147534045164351">স্ন্যাপ লোকেশন টগল করুন</translation>
 <translation id="3404249063913988450">স্ক্রিন সেভার চালু করুন</translation>
 <translation id="3413935475507503304">আপডেটগুলি ব্যবহার করে চালিয়ে যাওয়ার জন্য, 'পরবর্তী' বিকল্পে ক্লিক করুন।</translation>
 <translation id="3428551088151258685">আউটডোর</translation>
@@ -1395,6 +1394,7 @@
 <translation id="7388345524791662148"><ph name="RECORDING_NAME" />-এর জন্য আরও বিকল্প</translation>
 <translation id="7388959671917308825">বিল্ট-ইন টাচপ্যাড</translation>
 <translation id="7397270852490618635">হালকা থিম বন্ধ করুন</translation>
+<translation id="7400166052988585408">আপনার শিক্ষক <ph name="NUM_SECONDS" /> সেকেন্ডের মধ্যে আপনার স্ক্রিন লক করে দেবেন</translation>
 <translation id="7401543881546089382">শর্টকাট মুছুন</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> আপডেট করার জন্য রেডি</translation>
 <translation id="741244894080940828">রূপান্তর</translation>

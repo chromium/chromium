@@ -505,6 +505,7 @@
 <translation id="310900540163454140">Да се изтрие ли паролата за <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Означаване…</translation>
 <translation id="3119874402040566234">Ще излезете от профила си и данните за сърфирането ще бъдат изтрити</translation>
+<translation id="3124568093781685165">Споделете паролите със семейството си</translation>
 <translation id="3130863904455712965">История и др.</translation>
 <translation id="313283613037595347">Създаване на нов раздел в режим „инкогнито“.</translation>
 <translation id="3138611310073113613">Отхвърляне на избора</translation>
@@ -1004,6 +1005,7 @@
 <translation id="5352128922772839949">Запазване на файла</translation>
 <translation id="5355191726083956201">Режимът за подобрена защита е включен</translation>
 <translation id="537853552771686272">Управлявайте темите и сайтовете, които ви интересуват</translation>
+<translation id="5390458669633674385">{count,plural, =1{Затворихте {count}}other{Затворихте {count}}}</translation>
 <translation id="5394975111793637642">Скриване на картата „Подходящи за вас отзиви за продукт“</translation>
 <translation id="5395707839134961196">Скриване на подробностите за търсещата машина</translation>
 <translation id="5414763847370083940">Ще получите сигнал, когато цената в някой от сайтовете се понижи.</translation>
@@ -1133,6 +1135,7 @@
 <translation id="5897749768294722429">За да се връщате бързо към посетените от вас сайтове, синхронизирайте разделите и историята си.</translation>
 <translation id="5898848375214731122">Маса</translation>
 <translation id="5899314093904173337">За да споделите с хората в близост, те трябва да сканират този QR код с камерата си или с приложение за целта</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} нов раздел}other{{count} нови раздела}}</translation>
 <translation id="5911030830365207728">Google Преводач</translation>
 <translation id="5917913282764181683">Автоматично изтриване на изтеглянията ви</translation>
 <translation id="5922999516621365983">Плъзнете раздела тук, за да го фиксирате.</translation>
@@ -1675,6 +1678,7 @@
 <translation id="8131740175452115882">Потвърждаване</translation>
 <translation id="8132598642024322408">Сега цената е <ph name="PRICE" />, беше <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Използвайте уникална парола за всеки сайт или приложение. Ако някой разкрие повторно използвана парола, тя може да послужи за достъп до другите ви профили. Кликнете, за да отворите уебсайта и да промените съответните пароли сега.</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} затворен раздел}other{{count} затворени раздела}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{още 1}other{още #}}</translation>
 <translation id="8150167929304790980">Трите ви имена</translation>
 <translation id="8152331954420209374">Към Обектив</translation>

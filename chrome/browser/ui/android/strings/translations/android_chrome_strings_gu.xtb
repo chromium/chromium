@@ -432,7 +432,6 @@
 <translation id="2981364137500752533">તમે વધુમાં વધુ 5 વિન્ડો ખોલી શકો છો.</translation>
 <translation id="2983102365694924129">કોઈ સાઇટ પરની તમારી પ્રવૃત્તિના આધારે. આ સેટિંગ બંધ છે.</translation>
 <translation id="2984978667043170458">Google Searchમાં આજુબાજુની ટેક્સ્ટ શામેલ કરો</translation>
-<translation id="2988638966064514052">તમારા પાસવર્ડને સશક્ત બનાવો</translation>
 <translation id="2989523299700148168">તાજેતરમાં મુલાકાત લીધેલ</translation>
 <translation id="2992473221983447149">છબીના વર્ણનો</translation>
 <translation id="2996291259634659425">પાસફ્રેઝ બનાવો</translation>
@@ -548,7 +547,6 @@
 <translation id="3557336313807607643">સંપર્કોમાં ઉમેરો</translation>
 <translation id="3563767357928833671">ક્લિપબોર્ડનું કન્ટેન્ટ બતાવેલું છે</translation>
 <translation id="3566639033325271639">સેટિંગ અપડેટ કરો</translation>
-<translation id="3568945271227339929">કોઈ પાસવર્ડ સાથે ચેડાં થયાં નથી</translation>
 <translation id="3575464060651642446">આ ડિવાઇસ પર પાસવર્ડ ચેક કરી રહ્યાં છીએ…</translation>
 <translation id="3577473026931028326">કંઈક ખોટું થયું. ફરી પ્રયાસ કરો.</translation>
 <translation id="3577558748185201054">તમારી રુચિઓ અને પસંદગીઓ મેનેજ કરો</translation>
@@ -1055,7 +1053,6 @@
 <translation id="5958275228015807058">ડાઉનલોડમાં તમારી ફાઇલો અને પેજ શોધો</translation>
 <translation id="5958994127112619898">પૃષ્ઠ સરળ બનાવો</translation>
 <translation id="5962718611393537961">સંકુચિત કરવા માટે ટૅપ કરો</translation>
-<translation id="5964180026566797835">પાસવર્ડ ચેક કરી શકાતા નથી</translation>
 <translation id="5964869237734432770">છબીના વર્ણનો મેળવવાનું બંધ કરો</translation>
 <translation id="5977976211062815271">આ ડિવાઇસ પર</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{તમારી વાંચન સૂચિમાં 1 પેજ}one{તમારી વાંચન સૂચિમાં # પેજ}other{તમારી વાંચન સૂચિમાં # પેજ}}</translation>
@@ -1099,6 +1096,7 @@
 <translation id="6150320133806434356">બુકમાર્ક સાચવ્યું</translation>
 <translation id="6150706324143004339">તમારા Google એકાઉન્ટમાં Chrome ડેટાનો ઉપયોગ કરવા અને તેને સાચવવા માટે, Chrome અપડેટ કરો</translation>
 <translation id="6154478581116148741">આ ઉપકરણ પરથી તમારા બધા પાસવર્ડને નિકાસ કરવા માટે સેટિંગમાંથી સ્ક્રીન લૉક ચાલુ કરો</translation>
+<translation id="6156323911414505561">બુકમાર્ક બાર બતાવો</translation>
 <translation id="6162892189396105610">તમે મુલાકાત લઈ શકો છો એવી સંભાવના ધરાવતા પેજને Chrome પહેલેથી લોડ કરે છે.</translation>
 <translation id="6170675927290506430">નોટિફિકેશનના સેટિંગમાં જાઓ</translation>
 <translation id="6186394685773237175">ચેડાં કરાયેલો કોઈ પાસવર્ડ મળ્યો નથી</translation>

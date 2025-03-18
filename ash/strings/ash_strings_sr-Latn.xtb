@@ -166,6 +166,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1505542291183484463">Pomerite prozor promenljive veličine u obliku pločice nadole</translation>
 <translation id="1510238584712386396">Pokretač</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Pregledajte podešavanja obaveštenja. Obaveštenja su isključena za jednu aplikaciju}one{Pregledajte podešavanja obaveštenja. Obaveštenja su isključena za # aplikaciju}few{Pregledajte podešavanja obaveštenja. Obaveštenja su isključena za # aplikacije}other{Pregledajte podešavanja obaveštenja. Obaveštenja su isključena za # aplikacija}}</translation>
+<translation id="1521655867290435174">Google tabele</translation>
 <translation id="1523032696246003">Baterija <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> do kraja punjenja</translation>
 <translation id="1525508553941733066">ODBACI</translation>
 <translation id="1526448108126799339">Otvori novu karticu u novom prozoru</translation>
@@ -240,6 +241,8 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1755556344721611131">Aplikacija Dijagnostika</translation>
 <translation id="1756833229520115364">Čuvanje šablona nije uspelo. Ima previše prozora ili kartica.</translation>
 <translation id="1757857692711134412">Isključeno do sumraka</translation>
+<translation id="1763084151787818322">Druge radnje</translation>
+<translation id="1768138163688567246">Zatvorite pretragu ekrana</translation>
 <translation id="1768366657309696705">Tasterska prečica <ph name="LAUNCHER_KEY_NAME" /> + tačka je promenjena. Da biste koristili taster za umetanje, pritisnite taster <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Premešteno je u <ph name="ROW_NUMBER" />. red, <ph name="COLUMN_NUMBER" />. kolona.</translation>
 <translation id="1771761307086386028">Pomeri nadesno</translation>
@@ -345,7 +348,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2201071101391734388"><ph name="INDEX" />. nedavna slika od <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Skupi Google zadatke</translation>
 <translation id="2208323208084708176">Režim spojenih radnih površina</translation>
-<translation id="2220572644011485463">PIN ili lozinka</translation>
 <translation id="2222841058024245321">Radna površina 7</translation>
 <translation id="2223384056430485343">Na podeljenom ekranu</translation>
 <translation id="2224075387478458881">Snimanje ekrana nije dozvoljeno kada je vidljiv zaštićeni sadržaj</translation>
@@ -1830,7 +1832,6 @@ Novo instaliranje</translation>
 <translation id="7000027735917578303">Podešavanja prozora i radnih površina</translation>
 <translation id="7004910047186208204">Povežite se sa mobilnim podacima</translation>
 <translation id="7005239792648594238">Otvorite aplikaciju da biste započeli</translation>
-<translation id="7007983414944123363">Verifikacija PIN-a ili lozinke nije uspela. Probajte ponovo.</translation>
 <translation id="7014684956566476813">Povezani ste sa uređajem pod nazivom <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Vratite se u <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Radna površina 6</translation>
@@ -1945,6 +1946,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="742594950370306541">Kamera se koristi.</translation>
 <translation id="742608627846767349">Dobro jutro,</translation>
 <translation id="743058460480092004">Kamera i mikrofon se koriste.</translation>
+<translation id="7440404390546433462">Google pretraga</translation>
 <translation id="7441711280402516925">Reprodukuje se · Prebaci na karticu</translation>
 <translation id="7453330308669753048">Rezultat istorije pretrage je uklonjen</translation>
 <translation id="7459485586006128091">Hotspot je isključen zbog interne greške. Probajte ponovo da se povežete za par minuta.</translation>
@@ -2468,6 +2470,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="9168436347345867845">Uradiću to kasnije</translation>
 <translation id="9178475906033259337">Prikazuje se jedan rezultat za: <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Ova funkcija vam omogućava da brzo pristupite bilo kom prijavljenom korisniku bez lozinke. Koristite ovu funkciju samo sa nalozima u koje imate poverenja.</translation>
+<translation id="9183302530794969518">Google dokumenti</translation>
 <translation id="9183456764293710005">Lupa za ceo ekran</translation>
 <translation id="9192133205265227850">Koristite uređaj <ph name="DEVICE_NAME" /></translation>
 <translation id="9193626018745640770">Prebacuje se na nepoznati prijemnik</translation>

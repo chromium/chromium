@@ -432,7 +432,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2981364137500752533">Vous pouvez ouvrir jusqu'à 5 fenêtres.</translation>
 <translation id="2983102365694924129">D'après votre activité sur un site. Ce paramètre est désactivé.</translation>
 <translation id="2984978667043170458">Inclure le texte à proximité dans les recherches Google</translation>
-<translation id="2988638966064514052">Renforcez vos mots de passe</translation>
 <translation id="2989523299700148168">Consultations récentes</translation>
 <translation id="2992473221983447149">Descriptions d'images</translation>
 <translation id="2996291259634659425">Créer une phrase secrète</translation>
@@ -548,7 +547,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3557336313807607643">Ajouter aux contacts</translation>
 <translation id="3563767357928833671">Contenu du presse-papiers affiché</translation>
 <translation id="3566639033325271639">Mettre à jour les paramètres</translation>
-<translation id="3568945271227339929">Aucun mot de passe compromis</translation>
 <translation id="3575464060651642446">Vérification des mots de passe sur cet appareil…</translation>
 <translation id="3577473026931028326">Un problème est survenu. Réessayez.</translation>
 <translation id="3577558748185201054">Gérez vos centres d'intérêt et préférences</translation>
@@ -1055,7 +1053,6 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5958275228015807058">Recherchez vos fichiers et vos pages dans la section "Téléchargements"</translation>
 <translation id="5958994127112619898">Simplifier la page</translation>
 <translation id="5962718611393537961">Appuyer pour réduire</translation>
-<translation id="5964180026566797835">Impossible de vérifier les mots de passe</translation>
 <translation id="5964869237734432770">Arrêter descriptions images</translation>
 <translation id="5977976211062815271">Sur cet appareil</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 page sur votre liste de lecture}one{# page sur votre liste de lecture}other{# pages sur votre liste de lecture}}</translation>
@@ -1099,6 +1096,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="6150320133806434356">Favori enregistré</translation>
 <translation id="6150706324143004339">Pour utiliser et enregistrer des données Chrome dans votre compte Google, mettez Chrome à jour</translation>
 <translation id="6154478581116148741">Activez le verrouillage de l'écran dans les paramètres pour exporter vos mots de passe à partir de cet appareil</translation>
+<translation id="6156323911414505561">Afficher la barre de favoris</translation>
 <translation id="6162892189396105610">Les pages que vous êtes susceptible de consulter selon Chrome sont préchargées.</translation>
 <translation id="6170675927290506430">Accéder aux paramètres de notification</translation>
 <translation id="6186394685773237175">Aucun mot de passe compromis trouvé</translation>

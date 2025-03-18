@@ -316,7 +316,6 @@
 <translation id="1532118530259321453">Повідомлення з цієї сторінки</translation>
 <translation id="1533966801397200693">Ви ввійшли в керований профіль. Адміністратор може віддалено змінювати налаштування вашого профілю, аналізувати інформацію про вебпереглядач за допомогою звітів і виконувати інші необхідні дії. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Перекласти сторінку</translation>
-<translation id="1538295100801850685">Покращене прогнозування</translation>
 <translation id="1539840569003678498">Звіт надіслано:</translation>
 <translation id="1542105669288201090">Бізнес-освіта</translation>
 <translation id="1545757265410828525">Історія цін</translation>
@@ -1157,7 +1156,6 @@
 <translation id="3052868890529250114">Зазвичай ви безпечно підключаєтеся до сайтів, проте цього разу Chrome не може застосувати захищене з’єднання. Можливо, зловмисник намагається підслухати або змінити ваше з’єднання з мережею. <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше про це попередження<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Ціну на товар "<ph name="PRODUCT_NAME" />" знижено на <ph name="PRICE_DROP" /></translation>
 <translation id="3061707000357573562">Служба виправлень</translation>
-<translation id="306198082577913404">Увімкніть покращене прогнозування</translation>
 <translation id="3062655045399308513">Видалити дані вебперегляду…</translation>
 <translation id="3063453392496098461">Не вдалося встановити фонові сервіси VPN.</translation>
 <translation id="306573536155379004">Гра почалася.</translation>
@@ -2325,7 +2323,6 @@
 <translation id="5097099694988056070">Статистика пристрою, як-от використання ЦП чи оперативної пам’яті</translation>
 <translation id="5097468150760963273">27 x 39 дюйм.</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Вебпереглядачу Chrome потрібен дозвіл "<ph name="PERMISSION" />" на вашому пристрої</translation>
 <translation id="510644072453496781">Картон (обмежувальний)</translation>
 <translation id="5106648964679263509">Дані віртуальної картки <ph name="BNPL_ISSUER_NAME" /> заповнено</translation>
 <translation id="5108881358339761672">Сайт не захищений</translation>
@@ -4054,7 +4051,6 @@
 <translation id="8134058435519644366">Набір персоналу й працевлаштування</translation>
 <translation id="8135546115396015134">клавіша зі стрілкою вліво</translation>
 <translation id="8137456439814903304">Енергетична промисловість і комунальне господарство</translation>
-<translation id="81474145143203755">Щоб застосовувати на цьому сайті дозвіл "<ph name="PERMISSION" />", надайте його вебпереглядачу Chrome</translation>
 <translation id="8148608574971654810">Версія PDF:</translation>
 <translation id="8149426793427495338">Ваш комп’ютер перейшов у режим сну.</translation>
 <translation id="8150722005171944719">Файл за адресою <ph name="URL" /> не читається. Можливо, його видалено, переміщено або доступ заборонено дозволами файлу.</translation>

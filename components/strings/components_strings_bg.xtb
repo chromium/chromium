@@ -316,7 +316,6 @@
 <translation id="1532118530259321453">Тази страница изпраща съобщение</translation>
 <translation id="1533966801397200693">Потребителският профил, в който сте влезли, е управляван. Администраторът ви може да променя настройките на потребителския ви профил отдалечено, да анализира информацията за браузъра чрез отчитане и да изпълнява други необходими задачи. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Превод на страницата</translation>
-<translation id="1538295100801850685">Подобрения на предвижданията</translation>
 <translation id="1539840569003678498">Сигналът е изпратен на:</translation>
 <translation id="1542105669288201090">Бизнес образование</translation>
 <translation id="1545757265410828525">История на цените</translation>
@@ -605,6 +604,7 @@
 <translation id="2040894699575719559">Местоположението е блокирано</translation>
 <translation id="2041788246978549610">Използване на наличните микрофони (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Тава 7</translation>
+<translation id="2043896419861982462">За да скриете опциите за разсрочено плащане, отворете <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="2045871135676061132">Плик за лична кореспонденция</translation>
 <translation id="2046951263634619614">Книжарници</translation>
 <translation id="2048261947532620704">Страницата се превежда</translation>
@@ -762,6 +762,7 @@
 <translation id="2293443924986248631">Когато тази функция е включена, сайтовете не могат да използват „бисквитки“, които проследяват активността ви в мрежата. Функциите в някои сайтове може да не работят правилно.</translation>
 <translation id="2295831393422400053">Включете настройката „Подобряване на търсенията и сърфирането“, за да използвате функцията за помощ при писане</translation>
 <translation id="2296244067976588032">Ключ за достъп • iCloud Keychain</translation>
+<translation id="2296331629987861142">Плащане на лесни вноски (ако отговаряте на условията, се начисляват такси)</translation>
 <translation id="2300306941146563769">Не е качено</translation>
 <translation id="2301098101308036335">Кои уебсайтове са посетени и кога.</translation>
 <translation id="230286397113210245">Бутон „Отваряне на прозорец в режим „инкогнито“. Активирайте, за да отворите нов прозорец в режим „инкогнито“ и да сърфирате частно</translation>
@@ -1021,6 +1022,7 @@
 <translation id="2775884851269838147">Първа страница за отпечатване</translation>
 <translation id="2781185443919227679">Плажове и острови</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781799097551205934">Подготовка за плащане</translation>
 <translation id="2782088940970074970">Коли под наем</translation>
 <translation id="278436560439594386">Домашни уреди</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
@@ -1048,6 +1050,7 @@
 <translation id="2859383374160668142">По всяко време можете да преглеждате пониженията на цените за продуктите, които следите.</translation>
 <translation id="2859806420264540918">На този сайт се показват натрапчиви или подвеждащи реклами.</translation>
 <translation id="28618371182701850">Електрически превозни средства и хибриди, зареждащи се от електрическата мрежа</translation>
+<translation id="287387905105155974">Балонче за помощ</translation>
 <translation id="28761159517501904">Филми</translation>
 <translation id="2876489322757410363">Ще напуснете режим „инкогнито“, за да платите във външно приложение. Искате ли да продължите?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да управлявате Безопасно сърфиране и други функции от настройките на Chrome</translation>
@@ -1107,6 +1110,7 @@
 <translation id="2959274854674276289">Вегетарианска кухня</translation>
 <translation id="2961809451460302960">Застраховка „Живот“</translation>
 <translation id="2962073860865348475">12 x 18 инча</translation>
+<translation id="2965779286557330949">Само още няколко секунди...</translation>
 <translation id="2967082089043584472">Добавено към <ph name="SET" /></translation>
 <translation id="2967098518029543669">запазете я в профила си в Google</translation>
 <translation id="297173220375858963">Настолна издателска дейност</translation>
@@ -1157,7 +1161,6 @@
 <translation id="3052868890529250114">Обикновено се свързвате със сайтовете по сигурен начин, но този път Chrome не успя да използва защитена връзка. Възможно е хакер да се опитва да следи или промени връзката ви с мрежата. <ph name="BEGIN_LEARN_MORE_LINK" />Научете повече за това предупреждение<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Понижение на цената на <ph name="PRODUCT_NAME" /> в размер на <ph name="PRICE_DROP" /></translation>
 <translation id="3061707000357573562">Услуга за корекции</translation>
-<translation id="306198082577913404">Включване на подобренията на предвижданията</translation>
 <translation id="3062655045399308513">Изтр. на данните за сърф.</translation>
 <translation id="3063453392496098461">Инсталирането на фоновите услуги за VPN не бе успешно.</translation>
 <translation id="306573536155379004">Играта е стартирана.</translation>
@@ -1481,6 +1484,7 @@
 <translation id="3600106876108433070">Научете за таблиците за сравняване</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Бутон за управление на настройките за поверителност в Google. Активирайте, за да отворите настройките за поверителност за профила си в Google.</translation>
+<translation id="3602695245205338770">Изберете доставчик на разсрочено плащане</translation>
 <translation id="3603507503523709">Приложението е блокирано от администратора ви</translation>
 <translation id="3605899229568538311">5 x 5 инча</translation>
 <translation id="3606917451836803637">Телевизионни предавания и програми</translation>
@@ -2275,6 +2279,7 @@
 <translation id="5001526427543320409">„Бисквитки“ на трети страни</translation>
 <translation id="5002932099480077015">Ако настройката е активирана, копие на картата ви ще се съхранява в Chrome на това устройство с цел по-бързо попълване на формуляри.</translation>
 <translation id="5007392906805964215">Преглед</translation>
+<translation id="5010599530303458903">Плащане месечно или на 4 безлихвени вноски (ако отговаряте на условията)</translation>
 <translation id="5011561501798487822">Установен език</translation>
 <translation id="5015510746216210676">Име на компютъра:</translation>
 <translation id="5017554619425969104">Копиран от вас текст</translation>
@@ -2325,7 +2330,6 @@
 <translation id="5097099694988056070">Статистически данни за устройството, например за използването на процесора/RAM паметта</translation>
 <translation id="5097468150760963273">27 x 39 инча</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome се нуждае от достъп до <ph name="PERMISSION" /> на устройството ви</translation>
 <translation id="510644072453496781">Картон (окрайчен)</translation>
 <translation id="5106648964679263509">Виртуалната карта за <ph name="BNPL_ISSUER_NAME" /> е попълнена</translation>
 <translation id="5108881358339761672">Сайтът не е защитен</translation>
@@ -3239,6 +3243,7 @@
 <translation id="6706005862292023715">Завеси и покрития за прозорци</translation>
 <translation id="6706210727756204531">Обхват</translation>
 <translation id="6706678697074905703">Този IBAN номер не бе запазен в профила ви в Google. Вместо това е запазен в Chrome на това устройство.</translation>
+<translation id="6707388108229299854">Потвърдете самоличността си, за да получите този адрес на всичките си устройства</translation>
 <translation id="6709133671862442373">Новини</translation>
 <translation id="6710213216561001401">Предишно</translation>
 <translation id="6710594484020273272">&lt;Въведете дума за търсене&gt;</translation>
@@ -3917,6 +3922,7 @@
 <translation id="7887885240995164102">Преминаване в режим „Картина в картината“</translation>
 <translation id="7888575728750733395">Режим на изобразяване на цветовете при отпечатване</translation>
 <translation id="7890748547282909375">Влезте в Microsoft OneDrive, за да запазите екранната снимка</translation>
+<translation id="7892865709991296481">настройки за плащане</translation>
 <translation id="7894280532028510793">Ако изписването е правилно, <ph name="BEGIN_LINK" />стартирайте мрежова диагностика<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Плик 7 x 9 инча</translation>
 <translation id="7905064834449738336">Когато използвате парола, Chromium ще ви предупреди, ако е публикувана онлайн. Когато го прави, паролите и потребителските ви имена са шифровани, така че да не могат да бъдат прочетени от никого, включително от Google.</translation>
@@ -4054,7 +4060,6 @@
 <translation id="8134058435519644366">Подбор на персонал и кадрово обезпечение</translation>
 <translation id="8135546115396015134">клавиш със стрелка за наляво</translation>
 <translation id="8137456439814903304">Електроенергия и комунални услуги</translation>
-<translation id="81474145143203755">За да използвате <ph name="PERMISSION" /> на този сайт, дайте достъп на Chrome</translation>
 <translation id="8148608574971654810">PDF версия:</translation>
 <translation id="8149426793427495338">Компютърът ви премина в спящ режим.</translation>
 <translation id="8150722005171944719">Файлът на адрес <ph name="URL" /> не може да бъде прочетен.  Възможно е да е премахнат, преместен или разрешенията му да предотвратяват достъпа.</translation>

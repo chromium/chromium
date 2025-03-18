@@ -1335,6 +1335,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1918127774159128277">Atualizar capacidades de Wi-Fi Direct</translation>
 <translation id="1918141783557917887">Mai&amp;s pequeno</translation>
 <translation id="1918281588461452432">À medida que navega em sites, o conteúdo das respetivas páginas é encriptado e guardado no seu dispositivo</translation>
+<translation id="1919096511823372013">Insira links, emojis e muito mais. Também pode obter ajuda para escrever e criar imagens com a IA da Google.</translation>
 <translation id="1919872106782726755">Para configurar a impressão digital, peça à criança para tocar no sensor de impressões digitais no canto superior direito do teclado, junto ao botão ligar/desligar. Os dados de impressões digitais da criança são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="192015196730532810">Pode criar o seu próprio grupo de separadores.</translation>
 <translation id="1920314570001095522">Não existem separadores semelhantes para organizar, mas pode gostar destes grupos</translation>
@@ -8977,6 +8978,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7377451353532943397">Continuar a impedir o acesso aos sensores</translation>
 <translation id="7377481913241237033">Associar com um código</translation>
 <translation id="73786666777299047">Abrir a Web Store do Chrome</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Mais 1 tarefa no mesmo grupo de tarefas: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Mais # tarefas no mesmo grupo de tarefas: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380272457268061606">Desativar a recuperação de dados locais?</translation>
 <translation id="7380459290951585794">Certifique-se de que o telemóvel está próximo, desbloqueado e com o Bluetooth e o Wi-Fi ativados</translation>
 <translation id="7380622428988553498">O nome do dispositivo contém carateres inválidos.</translation>

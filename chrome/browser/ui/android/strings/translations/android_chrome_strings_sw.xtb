@@ -432,7 +432,6 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="2981364137500752533">Unaweza kuwa na hadi madirisha matano.</translation>
 <translation id="2983102365694924129">Kulingana na shughuli zako kwenye tovuti. Mipangilio hii imezimwa.</translation>
 <translation id="2984978667043170458">Jumuisha maandishi yaliyo karibu na maneno uliyoyachagua katika utafutaji kwenye Google</translation>
-<translation id="2988638966064514052">Imarisha manenosiri yako</translation>
 <translation id="2989523299700148168">Ulizotembelea hivi karibuni</translation>
 <translation id="2992473221983447149">Maelezo ya picha</translation>
 <translation id="2996291259634659425">Unda kauli ya siri</translation>
@@ -548,7 +547,6 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="3557336313807607643">Ongeza kwenye anwani</translation>
 <translation id="3563767357928833671">Yaliyomo kwenye ubao wa kunakili yameonyeshwa</translation>
 <translation id="3566639033325271639">Sasisha mipangilio</translation>
-<translation id="3568945271227339929">Hakuna manenosiri yaliyoathiriwa</translation>
 <translation id="3575464060651642446">Inakagua manenosiri kwenye kifaa hiki…</translation>
 <translation id="3577473026931028326">Hitilafu fulani imetokea. Jaribu tena.</translation>
 <translation id="3577558748185201054">Dhibiti mapendeleo na yanayokuvutia</translation>
@@ -1055,7 +1053,6 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="5958275228015807058">Tafuta faili na kurasa zako katika Vipakuliwa</translation>
 <translation id="5958994127112619898">Rahisisha ukurasa</translation>
 <translation id="5962718611393537961">Gusa ili ukunje</translation>
-<translation id="5964180026566797835">Imeshindwa kukagua manenosiri</translation>
 <translation id="5964869237734432770">Komesha maelezo ya picha</translation>
 <translation id="5977976211062815271">Kwenye kifaa hiki</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{Ukurasa 1 kwenye orodha yako ya kusoma}other{Kurasa # kwenye orodha yako ya kusoma}}</translation>
@@ -1099,6 +1096,7 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="6150320133806434356">Alamisho imehifadhiwa</translation>
 <translation id="6150706324143004339">Ili utumie na uhifadhi data ya Chrome kwenye Akaunti yako ya Google, sasisha Chrome</translation>
 <translation id="6154478581116148741">Washa kipengele cha kufunga skrini katika Mipangilio ili uhamishe manenosiri yako kutoka kwenye kifaa hiki</translation>
+<translation id="6156323911414505561">Onyesha sehemu ya alamisho</translation>
 <translation id="6162892189396105610">Hupakia mapema kurasa ambazo Chrome inafikiri kwamba unaweza kuzitembelea.</translation>
 <translation id="6170675927290506430">Nenda kwenye mipangilio ya arifa</translation>
 <translation id="6186394685773237175">Hatukupata manenosiri yaliyoathiriwa</translation>

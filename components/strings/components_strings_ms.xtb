@@ -316,7 +316,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1532118530259321453">Halaman ini menyatakan</translation>
 <translation id="1533966801397200693">Profil yang anda log masuk ialah profil terurus. Pentadbir anda boleh membuat perubahan pada tetapan profil anda dari jauh, menganalisis maklumat tentang penyemak imbas melalui pelaporan dan melaksanakan tugas penting yang lain. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Terjemahkan halaman</translation>
-<translation id="1538295100801850685">Peningkatan ramalan</translation>
 <translation id="1539840569003678498">Laporan dihantar:</translation>
 <translation id="1542105669288201090">Pendidikan Perniagaan</translation>
 <translation id="1545757265410828525">Sejarah harga</translation>
@@ -1162,7 +1161,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3052868890529250114">Anda biasanya menyambung kepada laman secara selamat tetapi Chrome tidak dapat menggunakan sambungan selamat pada kali ini. Penyerang mungkin cuba untuk mencuri dengar atau mengubah suai sambungan rangkaian anda. <ph name="BEGIN_LEARN_MORE_LINK" />Ketahui lebih lanjut tentang amaran ini<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> penurunan harga pada <ph name="PRODUCT_NAME" /></translation>
 <translation id="3061707000357573562">Perkhidmatan Tampung</translation>
-<translation id="306198082577913404">Hidupkan peningkatan ramalan</translation>
 <translation id="3062655045399308513">Padamkan Data Semakan Imbas...</translation>
 <translation id="3063453392496098461">Pemasangan perkhidmatan latar VPN gagal.</translation>
 <translation id="306573536155379004">Permainan dimulakan.</translation>
@@ -2335,7 +2333,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5097099694988056070">Statistik peranti seperti penggunaan CPU/RAM</translation>
 <translation id="5097468150760963273">27 x 39 in</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome memerlukan akses kepada <ph name="PERMISSION" /> peranti anda</translation>
 <translation id="510644072453496781">Kadbod (Hujung)</translation>
 <translation id="5106648964679263509">Kad maya untuk <ph name="BNPL_ISSUER_NAME" /> diisi</translation>
 <translation id="5108881358339761672">Laman tidak selamat</translation>
@@ -4069,7 +4066,6 @@ Butiran tambahan:
 <translation id="8134058435519644366">Perekrutan &amp; Pengambilan Pekerja</translation>
 <translation id="8135546115396015134">kekunci kiri</translation>
 <translation id="8137456439814903304">Tenaga &amp; Utiliti</translation>
-<translation id="81474145143203755">Untuk menggunakan <ph name="PERMISSION" /> anda pada laman ini, berikan akses kepada Chrome</translation>
 <translation id="8148608574971654810">Versi PDF:</translation>
 <translation id="8149426793427495338">Komputer anda dalam mod tidur.</translation>
 <translation id="8150722005171944719">Fail di <ph name="URL" /> tidak boleh dibaca.  Fail mungkin telah dialih keluar, dipindahkan atau kebenaran fail mungkin menghalang akses.</translation>

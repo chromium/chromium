@@ -166,6 +166,7 @@
 <translation id="1505542291183484463">የባለጡብ መስኮት መጠንን ወደ ታች ቀይር</translation>
 <translation id="1510238584712386396">ማስጀመሪያ</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{የማሳወቂያ ቅንብሮችን አሳይ። ማሳወቂያዎች ለአንድ መተግበሪያ ጠፍተዋል}one{የማሳወቂያ ቅንብሮችን አሳይ። ማሳወቂያዎች ለ# መተግበሪያዎች ጠፍተዋል}other{የማሳወቂያ ቅንብሮችን አሳይ። ማሳወቂያዎች ለ# መተግበሪያዎች ጠፍተዋል}}</translation>
+<translation id="1521655867290435174">Google ሉሆች</translation>
 <translation id="1523032696246003">ባትሪ <ph name="BATTERY_PERCENTAGE" />% | እስከሚሞላ ድረስ <ph name="TIME" /></translation>
 <translation id="1525508553941733066">አሰናብት</translation>
 <translation id="1526448108126799339">አዱስ ትርን በአዲስ መስኮት ውስጥ ይክፈቱ</translation>
@@ -345,7 +346,6 @@
 <translation id="2201071101391734388">የቅርብ ጊዜ ፎቶ <ph name="INDEX" /> ከ<ph name="TOTAL_COUNT" />።</translation>
 <translation id="2201687081523799384">Google ተግባሮችን ሰብስብ</translation>
 <translation id="2208323208084708176">የተዋሃደ የዴስክቶፕ ሁነታ</translation>
-<translation id="2220572644011485463">ፒን ወይም የይለፍ ቃል</translation>
 <translation id="2222841058024245321">ዴስክ 7</translation>
 <translation id="2223384056430485343">በተከፈለ ማያ ገጽ ውስጥ</translation>
 <translation id="2224075387478458881">ጥበቃ የሚደረግለት ይዘት በሚታይበት ጊዜ የማያ ገፅ ቀረጻ አይፈቀድም</translation>
@@ -1829,7 +1829,6 @@
 <translation id="7000027735917578303">የመስኮቶች እና የዴስኮች ቅንብሮች</translation>
 <translation id="7004910047186208204">ከተንቀሳቃሽ ስልክ ውሂብ ጋር ያገናኙ</translation>
 <translation id="7005239792648594238">ለመጀመር አንድ መተግበሪያ ይክፈቱ</translation>
-<translation id="7007983414944123363">የእርስዎ ፒን ወይም ይለፍ ቃል ሊረጋገጥ አልቻለም። እንደገና ይሞክሩ።</translation>
 <translation id="7014684956566476813"><ph name="DEVICE_NAME" /> ከተሰኘ መሣሪያ ጋር ተገናኝቷል</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> ላይ ተመልሰው ይምጡ።</translation>
 <translation id="70168403932084660">ዴስክ 6</translation>
@@ -2468,6 +2467,7 @@
 <translation id="9168436347345867845">በኋላ ያድርጉት</translation>
 <translation id="9178475906033259337">1 ውጤት ለ <ph name="QUERY" /> በማሳየት ላይ</translation>
 <translation id="9179259655489829027">ይህ ባህሪ የይለፍ ቃል ሳያስፈልገዎት ማንኛውም ወደ መለያ የገባ ተጠቃሚን በፍጥነት እንዲደርሱ ያስችልዎታል። ይህን ባህሪ በሚያምኗቸው መለያዎች ላይ ብቻ ይጠቀሙበት።</translation>
+<translation id="9183302530794969518">Google ሰነድ</translation>
 <translation id="9183456764293710005">የሙሉ ማያ ገፅ ማጉያ</translation>
 <translation id="9192133205265227850">«<ph name="DEVICE_NAME" />»ን ተጠቀም</translation>
 <translation id="9193626018745640770">በማይታወቅ ተቀባይ ላይ Cast በማድረግ ላይ</translation>

@@ -432,7 +432,6 @@
 <translation id="2981364137500752533">حداکثر ۵ پنجره می‌توانید داشته باشید.</translation>
 <translation id="2983102365694924129">براساس فعالیت شما در سایت. این تنظیم خاموش است.</translation>
 <translation id="2984978667043170458">‏گنجاندن نوشتار اطراف در جستجوهای Google</translation>
-<translation id="2988638966064514052">گذرواژه‌هایتان را تقویت کنید</translation>
 <translation id="2989523299700148168">اخیراً دیده‌شده</translation>
 <translation id="2992473221983447149">شرح تصویر</translation>
 <translation id="2996291259634659425">ایجاد گذرعبارت</translation>
@@ -548,7 +547,6 @@
 <translation id="3557336313807607643">افزودن به مخاطبین</translation>
 <translation id="3563767357928833671">محتوای بریده‌دان نشان داده شد</translation>
 <translation id="3566639033325271639">به‌روزرسانی تنظیمات</translation>
-<translation id="3568945271227339929">گذرواژه لورفته‌ای وجود ندارد</translation>
 <translation id="3575464060651642446">درحال بررسی گذرواژه‌های این دستگاه…</translation>
 <translation id="3577473026931028326">مشکلی پیش آمد. دوباره امتحان کنید.</translation>
 <translation id="3577558748185201054">مدیریت علایق و اولویت‌ها</translation>
@@ -1055,7 +1053,6 @@
 <translation id="5958275228015807058">فایل‌ها و صفحه‌هایتان را در «بارگیری‌ها» پیدا کنید</translation>
 <translation id="5958994127112619898">ساده کردن صفحه</translation>
 <translation id="5962718611393537961">برای کوچک کردن تک‌ضرب بزنید</translation>
-<translation id="5964180026566797835">بررسی گذرواژه‌ها امکان‌پذیر نیست</translation>
 <translation id="5964869237734432770">توقف توضیحات تصویر</translation>
 <translation id="5977976211062815271">در این دستگاه</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{‫۱ صفحه در «فهرست خواندن»}one{‫# صفحه در «فهرست خواندن»}other{‫# صفحه در «فهرست خواندن»}}</translation>
@@ -1099,6 +1096,7 @@
 <translation id="6150320133806434356">نشانک ذخیره شد</translation>
 <translation id="6150706324143004339">‏برای ذخیره و استفاده کردن از داده‌های Chrome در «حساب Google» خود، Chrome را به‌روزرسانی کنید</translation>
 <translation id="6154478581116148741">برای صادر کردن گذرواژه‌ها از این دستگاه، قفل صفحه را در تنظیمات روشن کنید.</translation>
+<translation id="6156323911414505561">نمایش نوار نشانک‌ها</translation>
 <translation id="6162892189396105610">‏صفحاتی که Chrome فکر می‌کند ممکن است بازدید کنید پیش‌بارگیری می‌شود.</translation>
 <translation id="6170675927290506430">رفتن به تنظیمات اعلان</translation>
 <translation id="6186394685773237175">گذرواژه لورفته‌ای پیدا نشد</translation>

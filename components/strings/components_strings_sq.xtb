@@ -316,7 +316,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1532118530259321453">Kjo faqe thotë</translation>
 <translation id="1533966801397200693">Profili në të cilin je identifikuar është një profil i menaxhuar. Administratori yt mund të bëjë ndryshime në cilësimet e profilit tënd në distancë, mund të analizojë informacionet rreth shfletuesit nëpërmjet raportimit dhe mund të kryejë detyra të tjera të nevojshme. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Përkthe faqen</translation>
-<translation id="1538295100801850685">Përmirësimet e parashikimit</translation>
 <translation id="1539840569003678498">Raporti u dërgua:</translation>
 <translation id="1542105669288201090">Edukim për biznesin</translation>
 <translation id="1545757265410828525">Historiku i çmimeve</translation>
@@ -1157,7 +1156,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3052868890529250114">Zakonisht lidhesh me sajtet në mënyrë të sigurt, por Chrome nuk mund të përdorte një lidhje të sigurt në këtë moment. Një sulmues mund të jetë duke u përpjekur të përgjojë ose modifikojë lidhjen tënde të internetit. <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë për këtë paralajmërim<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> ulje çmimi në <ph name="PRODUCT_NAME" /></translation>
 <translation id="3061707000357573562">Shërbimi i korrigjimit</translation>
-<translation id="306198082577913404">Aktivizo përmirësimet e parashikimit</translation>
 <translation id="3062655045399308513">Fshi të dhënat e shfletimit…</translation>
 <translation id="3063453392496098461">Instalimi i shërbimeve të VPN-së në sfond dështoi.</translation>
 <translation id="306573536155379004">Loja filloi.</translation>
@@ -2325,7 +2323,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5097099694988056070">Statistikat e pajisjes si p.sh. përdorimin e njësisë CPU/RAM</translation>
 <translation id="5097468150760963273">27 x 39 inç</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome ka nevojë për qasje te "<ph name="PERMISSION" />" në pajisjen tënde</translation>
 <translation id="510644072453496781">Karton (fundor)</translation>
 <translation id="5106648964679263509">Karta virtuale për <ph name="BNPL_ISSUER_NAME" /> është plotësuar</translation>
 <translation id="5108881358339761672">Sajti nuk është i sigurt</translation>
@@ -4052,7 +4049,6 @@ Detaje shtesë:
 <translation id="8134058435519644366">Rekrutimi i personelit</translation>
 <translation id="8135546115396015134">tasti majtas</translation>
 <translation id="8137456439814903304">Energjia dhe shërbimet utilitare</translation>
-<translation id="81474145143203755">Për ta përdorur "<ph name="PERMISSION" />" në këtë sajt, jepi qasje Chrome</translation>
 <translation id="8148608574971654810">Versioni i PDF-së:</translation>
 <translation id="8149426793427495338">Kompjuteri yt kaloi në gjumë.</translation>
 <translation id="8150722005171944719">Skedari në <ph name="URL" /> nuk është i lexueshëm: mund të jetë hequr, lëvizur ose lejet e tij mund të pengojnë qasjen.</translation>

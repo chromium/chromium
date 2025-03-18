@@ -316,7 +316,6 @@
 <translation id="1532118530259321453">Această pagină afișează mesajul</translation>
 <translation id="1533966801397200693">Profilul la care te-ai conectat este un profil gestionat. Administratorul poate să modifice setările profilului de la distanță, să analizeze informațiile despre browser cu ajutorul rapoartelor și să finalizeze alte activități necesare. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Tradu pagina</translation>
-<translation id="1538295100801850685">Îmbunătățiri ale predicțiilor</translation>
 <translation id="1539840569003678498">Raportul a fost trimis:</translation>
 <translation id="1542105669288201090">Educație comercială</translation>
 <translation id="1545757265410828525">Istoricul prețurilor</translation>
@@ -1157,7 +1156,6 @@
 <translation id="3052868890529250114">De obicei, te conectezi în siguranță la site-uri, dar Chrome nu a putut folosi o conexiune securizată de data aceasta. Un atacator ar putea încerca să intercepteze sau să modifice conexiunea la rețea. <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe despre acest mesaj de avertisment<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Scădere de preț de <ph name="PRICE_DROP" /> pentru <ph name="PRODUCT_NAME" /></translation>
 <translation id="3061707000357573562">Serviciu de corecție</translation>
-<translation id="306198082577913404">Activează îmbunătățirile predicțiilor</translation>
 <translation id="3062655045399308513">Șterge datele de navigare...</translation>
 <translation id="3063453392496098461">Serviciile VPN în fundal nu s-au instalat.</translation>
 <translation id="306573536155379004">Jocul a început.</translation>
@@ -2325,7 +2323,6 @@
 <translation id="5097099694988056070">Statistici privind dispozitivul, cum ar fi utilizarea CPU/RAM</translation>
 <translation id="5097468150760963273">27 x 39 in</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome are nevoie de acces la permisiunea <ph name="PERMISSION" /> a dispozitivului</translation>
 <translation id="510644072453496781">Carton (final)</translation>
 <translation id="5106648964679263509">Card virtual pentru <ph name="BNPL_ISSUER_NAME" /> completat</translation>
 <translation id="5108881358339761672">Site-ul nu este securizat</translation>
@@ -4054,7 +4051,6 @@ Detalii suplimentare:
 <translation id="8134058435519644366">Recrutare și personal</translation>
 <translation id="8135546115396015134">tasta săgeată spre stânga</translation>
 <translation id="8137456439814903304">Energie și utilități</translation>
-<translation id="81474145143203755">Pentru a folosi <ph name="PERMISSION" /> pe acest site, permite accesul browserului Chrome</translation>
 <translation id="8148608574971654810">Versiune PDF:</translation>
 <translation id="8149426793427495338">Computerul este inactiv.</translation>
 <translation id="8150722005171944719">Fișierul de la <ph name="URL" /> nu poate fi citit.  Este posibil să fi fost eliminat ori mutat sau ca permisiunile pentru fișiere să împiedice accesarea acestuia.</translation>

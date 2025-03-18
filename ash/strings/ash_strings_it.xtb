@@ -166,6 +166,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1505542291183484463">Allinea in basso finestra ridimensionata a riquadro</translation>
 <translation id="1510238584712386396">Avvio app</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostra impostazioni di notifica. Le notifiche sono disattivate per un'app}other{Mostra impostazioni di notifica. Le notifiche sono disattivate per # app}}</translation>
+<translation id="1521655867290435174">Fogli Google</translation>
 <translation id="1523032696246003">Batteria: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> alla ricarica completa</translation>
 <translation id="1525508553941733066">IGNORA</translation>
 <translation id="1526448108126799339">Apri nuova scheda in nuova finestra</translation>
@@ -240,6 +241,8 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1755556344721611131">App Diagnostica</translation>
 <translation id="1756833229520115364">Impossibile salvare il modello. Troppe finestre o schede.</translation>
 <translation id="1757857692711134412">Funzionalità disattivata fino al tramonto</translation>
+<translation id="1763084151787818322">Altre azioni</translation>
+<translation id="1768138163688567246">Chiudi la ricerca sullo schermo</translation>
 <translation id="1768366657309696705">La scorciatoia da tastiera <ph name="LAUNCHER_KEY_NAME" /> + Punto è cambiata. Per usare il tasto Ins, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Maiusc + Backspace.</translation>
 <translation id="1770726142253415363">Spostata alla riga <ph name="ROW_NUMBER" />, colonna <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Scorri a destra</translation>
@@ -345,7 +348,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2201071101391734388">Foto recente <ph name="INDEX" /> di <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Comprimi Google Tasks</translation>
 <translation id="2208323208084708176">Modalità desktop unificato</translation>
-<translation id="2220572644011485463">PIN o password</translation>
 <translation id="2222841058024245321">Scrivania 7</translation>
 <translation id="2223384056430485343">In uno schermo diviso</translation>
 <translation id="2224075387478458881">La funzionalità Registrazione dello schermo non è consentita se sono visibili contenuti protetti</translation>
@@ -1826,7 +1828,6 @@ Nuova installazione</translation>
 <translation id="7000027735917578303">Impostazioni di finestre e scrivanie</translation>
 <translation id="7004910047186208204">Connettiti ai dati mobili</translation>
 <translation id="7005239792648594238">Apri un'app per iniziare</translation>
-<translation id="7007983414944123363">Impossibile verificare il PIN o la password. Riprova.</translation>
 <translation id="7014684956566476813">Connessione stabilita con un dispositivo di nome <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Ritorna alle ore <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Scrivania 6</translation>
@@ -2463,6 +2464,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="9168436347345867845">Più tardi</translation>
 <translation id="9178475906033259337">Visualizzazione di un risultato per <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Questa funzione consente di accedere rapidamente a qualsiasi utente che abbia effettuato l'accesso, senza bisogno di una password. Utilizza questa funzione solo con gli account che consideri attendibili.</translation>
+<translation id="9183302530794969518">Documenti Google</translation>
 <translation id="9183456764293710005">Ingrandimento a schermo intero</translation>
 <translation id="9192133205265227850">Usa "<ph name="DEVICE_NAME" />"</translation>
 <translation id="9193626018745640770">Trasmissione a un ricevitore sconosciuto</translation>

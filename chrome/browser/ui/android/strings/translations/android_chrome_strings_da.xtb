@@ -432,7 +432,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2981364137500752533">Du kan have op til 5 vinduer.</translation>
 <translation id="2983102365694924129">Baseret på din aktivitet på et website. Denne indstilling er deaktiveret.</translation>
 <translation id="2984978667043170458">Medtag omgivende tekst i Google-søgninger</translation>
-<translation id="2988638966064514052">Gør dine adgangskoder stærkere</translation>
 <translation id="2989523299700148168">Besøgt for nylig</translation>
 <translation id="2992473221983447149">Billedbeskrivelser</translation>
 <translation id="2996291259634659425">Opret adgangssætning</translation>
@@ -548,7 +547,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3557336313807607643">Føj til kontakter</translation>
 <translation id="3563767357928833671">Indholdet af udklipsholderen vises</translation>
 <translation id="3566639033325271639">Opdater indstillinger</translation>
-<translation id="3568945271227339929">Der er ingen kompromitterede adgangskoder</translation>
 <translation id="3575464060651642446">Tjekker adgangskoder på denne enhed…</translation>
 <translation id="3577473026931028326">Der opstod en fejl. Prøv igen.</translation>
 <translation id="3577558748185201054">Administrer dine interesser og præferencer</translation>
@@ -1055,7 +1053,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5958275228015807058">Find dine filer og sider i Downloads</translation>
 <translation id="5958994127112619898">Gør siden mere enkel</translation>
 <translation id="5962718611393537961">Tryk for at skjule</translation>
-<translation id="5964180026566797835">Adgangskoderne kan ikke tjekkes</translation>
 <translation id="5964869237734432770">Stop billedbeskrivelser</translation>
 <translation id="5977976211062815271">På denne enhed</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 side på din læseliste}one{# side på din læseliste}other{# sider på din læseliste}}</translation>
@@ -1099,6 +1096,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="6150320133806434356">Bogmærket er gemt</translation>
 <translation id="6150706324143004339">Hvis du vil bruge og gemme Chrome-data på din Google-konto, skal du opdatere Chrome</translation>
 <translation id="6154478581116148741">Aktivér skærmlåsen i Indstillinger for at eksportere dine adgangskoder fra denne enhed</translation>
+<translation id="6156323911414505561">Vis bogmærkelinjen</translation>
 <translation id="6162892189396105610">Forudindlæser sider, som Google tror, at der er stor chance for, at du besøger.</translation>
 <translation id="6170675927290506430">Gå til indstillinger for notifikationer</translation>
 <translation id="6186394685773237175">Der blev ikke fundet nogen kompromitterede adgangskoder</translation>

@@ -166,6 +166,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="1505542291183484463">Ukushintsha usayizi wewindi eliyithayela libheke phansi</translation>
 <translation id="1510238584712386396">Isiqalisi</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Bonisa izilungiselelo zesaziso. Izaziso zivalekile kuhlelo lokusebenza}one{Bonisa izilungiselelo zesaziso. Izaziso zivaliwe kuzinhlelo zokusebenza ezingu-#}other{Bonisa izilungiselelo zesaziso. Izaziso zivaliwe kuzinhlelo zokusebenza ezingu-#}}</translation>
+<translation id="1521655867290435174">Amashidi we-Google</translation>
 <translation id="1523032696246003">Ibhethri ngu-<ph name="BATTERY_PERCENTAGE" />% | ngu-<ph name="TIME" /> ukuze ligcwale</translation>
 <translation id="1525508553941733066">CASHISA</translation>
 <translation id="1526448108126799339">Vula ithebhu entsha efasiteleni elisha</translation>
@@ -345,7 +346,6 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="2201071101391734388">Isithombe sakamuva <ph name="INDEX" /> kwezingu-<ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Goqa iGoogle Tasks</translation>
 <translation id="2208323208084708176">Imodi ehlanganisiwe yedeskithophu</translation>
-<translation id="2220572644011485463">Iphinikhodi noma iphasiwedi</translation>
 <translation id="2222841058024245321">Itafula 7</translation>
 <translation id="2223384056430485343">Ekuhlukaniseni isikrini</translation>
 <translation id="2224075387478458881">Ukurekhoda isikrini akuvumelekile lapho okuqukethwe okuvikelekile kungabonakali</translation>
@@ -1829,7 +1829,6 @@ Ukufaka okusha</translation>
 <translation id="7000027735917578303">Amasethingi we-Windows namatafula</translation>
 <translation id="7004910047186208204">Xhuma kudatha yeselula</translation>
 <translation id="7005239792648594238">Vula i-app ukuze uqalise</translation>
-<translation id="7007983414944123363">Iphinikhodi yakho noma iphasiwedi ayiqinisekiswanga. Zama futhi.</translation>
 <translation id="7014684956566476813">Ixhunywe kudivayisi ebizwa ngokuthi i-<ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Buya ngo-<ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Itafula 6</translation>
@@ -2466,6 +2465,7 @@ Ukuze uvale idivayisi, cindezela futhi ubambe inkinobho yamandla kudivayisi futh
 <translation id="9168436347345867845">Yenza emuva kwesikhathi</translation>
 <translation id="9178475906033259337">Ukubonisa umphumela ongu-1 we-<ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Lesi sici sikuvumela ukuthi ufinyelele ngokushesha kunoma imuphi umsebenzisi ongene ngemvume ngaphandle kokudinga iphasiwedi. Sebenzisa kuphela lesi sici ngama-akhawunti owathembayo.</translation>
+<translation id="9183302530794969518">Google Amadokhumenti</translation>
 <translation id="9183456764293710005">Isikhulisi sesikrini esigcwele</translation>
 <translation id="9192133205265227850">Sebenzisa okuthi "<ph name="DEVICE_NAME" />"</translation>
 <translation id="9193626018745640770">Isakaza kumamukeli ongaziwa</translation>

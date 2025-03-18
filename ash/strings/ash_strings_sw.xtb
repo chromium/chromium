@@ -166,6 +166,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1505542291183484463">Imefunika dirisha la kubadilisha ukubwa katika upande wa chini</translation>
 <translation id="1510238584712386396">Kizindua</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Onyesha mipangilio ya arifa. Umezima arifa katika programu moja}other{Onyesha mipangilio ya arifa. Umezima arifa katika programu #}}</translation>
+<translation id="1521655867290435174">Majedwali ya Google</translation>
 <translation id="1523032696246003">Chaji ya betri ni asilimia <ph name="BATTERY_PERCENTAGE" /> | zimesalia <ph name="TIME" /> ijae</translation>
 <translation id="1525508553941733066">ONDOA</translation>
 <translation id="1526448108126799339">Fungua kichupo kipya katika dirisha jipya</translation>
@@ -345,7 +346,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2201071101391734388">Picha ya hivi majuzi ya <ph name="INDEX" /> kati ya <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Kunja Majukumu kwenye Google</translation>
 <translation id="2208323208084708176">Hali ya eneo-kazi iliyounganishwa</translation>
-<translation id="2220572644011485463">PIN au nenosiri</translation>
 <translation id="2222841058024245321">Eneokazi la saba</translation>
 <translation id="2223384056430485343">Katika skrini iliyogawanywa</translation>
 <translation id="2224075387478458881">Huruhusiwi kurekodi skrini wakati maudhui yanayolindwa yanaonekana</translation>
@@ -1829,7 +1829,6 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="7000027735917578303">Mipangilio ya madirisha na maeneokazi</translation>
 <translation id="7004910047186208204">Unganisha kwenye data ya mtandao wa simu</translation>
 <translation id="7005239792648594238">Fungua programu ili uanze kuitumia</translation>
-<translation id="7007983414944123363">Imeshindwa kuthibitisha PIN au nenosiri lako. Jaribu tena.</translation>
 <translation id="7014684956566476813">Imeunganishwa kwenye kifaa kiitwacho <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Rejea saa <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Eneokazi la sita</translation>
@@ -2467,6 +2466,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="9168436347345867845">Ufanye baadaye</translation>
 <translation id="9178475906033259337">Inaonyesha matokeo moja ya <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Kipengele hiki kinakuruhusu ufikie kwa haraka mtumiaji yeyote aliyeingia katika akaunti bila ya kuweka nenosiri. Tumia kipengele hiki katika akaunti unazoamini pekee.</translation>
+<translation id="9183302530794969518">Hati za Google</translation>
 <translation id="9183456764293710005">Kikuza Skrini Nzima</translation>
 <translation id="9192133205265227850">Tumia "<ph name="DEVICE_NAME" />"</translation>
 <translation id="9193626018745640770">Inatuma kwenye kifaa au kwa mpokeaji usiyemjua</translation>

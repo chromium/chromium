@@ -316,7 +316,6 @@
 <translation id="1532118530259321453">এই পৃষ্ঠায় এটি দেখানো হচ্ছে</translation>
 <translation id="1533966801397200693">আপনি ম্যানেজ করা প্রোফাইলে সাইন-ইন করেছেন। আপনার অ্যাডমিনিস্ট্রেটর রিমোট লোকেশন থেকে আপনার প্রোফাইল সেটিংসে পরিবর্তন করতে পারবে। একই সাথে রিপোর্টিংয়ের সাহায্যে ব্রাউজার সম্পর্কিত তথ্য বিশ্লেষণ ও অন্যান্য প্রয়োজনীয় কাজ করতে পারবে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">পৃষ্ঠাটি অনুবাদ করুন</translation>
-<translation id="1538295100801850685">পূর্বাভাসের উন্নতি</translation>
 <translation id="1539840569003678498">রিপোর্ট পাঠানো হয়েছে:</translation>
 <translation id="1542105669288201090">ব্যবসা সম্পর্কিত প্রশিক্ষণ</translation>
 <translation id="1545757265410828525">দাম সম্পর্কিত ইতিহাস</translation>
@@ -1158,7 +1157,6 @@
 <translation id="3052868890529250114">সাধারণত আপনি এই সাইট নিরাপদে কানেক্ট করেন, তবে এখন Chrome কোনও সুরক্ষিত কানেকশন ব্যবহার করতে পারছে না। কোনও হ্যাকার হয়ত আপনার নেটওয়ার্ক কানেকশনে গোপনে আড়ি পাততে চাইছে বা সেটি পরিবর্তন করার চেষ্টা করছে। <ph name="BEGIN_LEARN_MORE_LINK" />এই সতর্কতা সম্পর্কে আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />-এ <ph name="PRICE_DROP" /> দাম কমে গেছে</translation>
 <translation id="3061707000357573562">প্যাচ পরিষেবা</translation>
-<translation id="306198082577913404">পূর্বাভাসের উন্নতি চালু করুন</translation>
 <translation id="3062655045399308513">ব্রাউজ করা ডেটা মুছে দিন...</translation>
 <translation id="3063453392496098461">VPN ব্যাকগ্রাউন্ড পরিষেবা ইনস্টলেশন করা যায়নি।</translation>
 <translation id="306573536155379004">গেম শুরু হয়েছে।</translation>
@@ -2326,7 +2324,6 @@
 <translation id="5097099694988056070">CPU/RAM ব্যবহারের মতো ডিভাইসের পরিসংখ্যান</translation>
 <translation id="5097468150760963273">২৭ x ৩৯ ইঞ্চি</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome-কে আপনার ডিভাইসের <ph name="PERMISSION" /> অ্যাক্সেস করার অনুমতি দিন</translation>
 <translation id="510644072453496781">কার্ডবোর্ড (এন্ড)</translation>
 <translation id="5106648964679263509"><ph name="BNPL_ISSUER_NAME" />-এর জন্য ভার্চুয়াল কার্ড পূরণ করা হয়েছে</translation>
 <translation id="5108881358339761672">সাইটটি সুরক্ষিত নয়</translation>
@@ -4054,7 +4051,6 @@
 <translation id="8134058435519644366">রিক্রুটমেন্ট ও স্টাফিং</translation>
 <translation id="8135546115396015134">বাঁদিকের তীরচিহ্নযুক্ত 'কী'</translation>
 <translation id="8137456439814903304">শক্তি ও উপযোগিতা</translation>
-<translation id="81474145143203755">এই সাইটে আপনার <ph name="PERMISSION" /> ব্যবহার করতে, Chrome-কে অ্যাক্সেস দিন</translation>
 <translation id="8148608574971654810">PDF ভার্সন:</translation>
 <translation id="8149426793427495338">আপনার কম্পিউটারটি নিদ্রা মোডে গিয়েছে।</translation>
 <translation id="8150722005171944719"><ph name="URL" />এ ফাইলটি পাঠযোগ্য নয়৷ এটা মুছে ফেলা হয়েছে পারে, সরিয়ে দেওয়া হয়েছে, অথবা ফাইল অনুমতি প্রবেশাধিকার প্রতিরোধ করতে পারে৷</translation>

@@ -1344,6 +1344,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1918127774159128277">Wi-Fi Direct-funkciók frissítése</translation>
 <translation id="1918141783557917887">&amp;Kisebb</translation>
 <translation id="1918281588461452432">A webhelyek közötti böngészés során az oldalak tartalmát a rendszer titkosítja és az Ön eszközére menti</translation>
+<translation id="1919096511823372013">Linkeket, emojikat és még sok mást is beilleszthet. A Google AI használatával az íráshoz és a képek létrehozásához is segítséget kaphat.</translation>
 <translation id="1919872106782726755">Az ujjlenyomat beállításához a gyermeknek meg kell érintenie az ujjlenyomat-érzékelőt a billentyűzet jobb felső sarkában, a bekapcsológomb mellett. Gyermeke ujjlenyomatadatait a(z) <ph name="DEVICE_TYPE" /> biztonságosan tárolja, és soha nem kerülnek ki az eszközről.</translation>
 <translation id="192015196730532810">Létrehozhat saját lapcsoportot is.</translation>
 <translation id="1920314570001095522">Nincsenek hasonló összerendezhető lapok, de ezek a csoportok tetszhetnek Önnek</translation>
@@ -8987,6 +8988,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7377451353532943397">Érzékelő-hozzáférés tiltásának fenntartása</translation>
 <translation id="7377481913241237033">Összekapcsolás kód használatával</translation>
 <translation id="73786666777299047">A Chrome Webáruház megnyitása</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Egy további feladat ugyanabban a feladatcsoportban: <ph name="OTHER_TASKS" />.}other{<ph name="TASK_ROW" />. További # feladat ugyanabban a feladatcsoportban: <ph name="OTHER_TASKS" />.}}</translation>
 <translation id="7380272457268061606">Kikapcsolja a helyi adatok helyreállítását?</translation>
 <translation id="7380459290951585794">Gondoskodjon arról, hogy telefonja a közelben legyen feloldott állapotban, valamint arról, hogy Bluetooth- és Wi-Fi-kapcsolata be legyen kapcsolva.</translation>
 <translation id="7380622428988553498">Az eszköznév érvénytelen karaktereket tartalmaz</translation>

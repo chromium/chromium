@@ -504,6 +504,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="310900540163454140">Të fshihet fjalëkalimi për <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Shëno...</translation>
 <translation id="3119874402040566234">Do të dalësh nga llogaria dhe të dhënat e shfletimit do të fshihen</translation>
+<translation id="3124568093781685165">Ndaj fjalëkalimet e tua me familjen tënde</translation>
 <translation id="3130863904455712965">Historiku etj.</translation>
 <translation id="313283613037595347">Krijo një skedë të re "të fshehtë".</translation>
 <translation id="3138611310073113613">Hiqe zgjedhjen</translation>
@@ -1003,6 +1004,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="5352128922772839949">Ruaj skedarin</translation>
 <translation id="5355191726083956201">"Mbrojtja e përmirësuar" është aktive</translation>
 <translation id="537853552771686272">Menaxho temat dhe sajtet që të interesojnë</translation>
+<translation id="5390458669633674385">{count,plural, =1{{count} u mbyll}other{{count} u mbyllën}}</translation>
 <translation id="5394975111793637642">Fshih kartën "Komentet e produktit për ty"</translation>
 <translation id="5395707839134961196">Fshih detajet e motorit të kërkimit</translation>
 <translation id="5414763847370083940">Do të marrësh një sinjalizim nëse ulet çmimi në ndonjë sajt.</translation>
@@ -1132,6 +1134,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5897749768294722429">Për t'u kthyer me shpejtësi te sajtet që ke vizituar, sinkronizo skedat dhe historikun.</translation>
 <translation id="5898848375214731122">Masa</translation>
 <translation id="5899314093904173337">Për të ndarë me personat në afërsi, lejoji të skanojnë këtë kod QR me kamerën e tyre ose aplikacionin e skanerit të kodeve QR</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} skedë e re}other{{count} skeda të reja}}</translation>
 <translation id="5911030830365207728">Përkthe me Google</translation>
 <translation id="5917913282764181683">Fshi automatikisht shkarkimet</translation>
 <translation id="5922999516621365983">Zvarrite skedën këtu për ta gozhduar.</translation>
@@ -1674,6 +1677,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8131740175452115882">Konfirmo</translation>
 <translation id="8132598642024322408">Tani <ph name="PRICE" />, ishte <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Përdor një fjalëkalim unik për çdo sajt ose aplikacion. Nëse dikush zbulon një fjalëkalim të ripërdorur, ai mund të përdoret për të marrë qasje te llogaritë e tua të tjera. Kliko për të hapur sajtin e uebit dhe për t'i ndryshuar tani.</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} skedë e mbyllur}other{{count} skeda të mbyllura}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 tjetër}other{# të tjera}}</translation>
 <translation id="8150167929304790980">Emri i plotë</translation>
 <translation id="8152331954420209374">Shko te "Lentja"</translation>

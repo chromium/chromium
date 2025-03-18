@@ -316,7 +316,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1532118530259321453">Leht ütleb</translation>
 <translation id="1533966801397200693">Profiil, millele sisse olete logitud, on hallatud profiil. Teie administraator saab teha teie profiili seadetes distantsilt muudatusi, analüüsida aruandluse kaudu brauseri teavet ning teha muid vajalikke ülesandeid. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Tõlgi leht</translation>
-<translation id="1538295100801850685">Ennustuste täiustused</translation>
 <translation id="1539840569003678498">Aruanne saadeti:</translation>
 <translation id="1542105669288201090">Ärijuhtimisharidus</translation>
 <translation id="1545757265410828525">Hinna ajalugu</translation>
@@ -1157,7 +1156,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3052868890529250114">Tavaliselt loote saitidega turvaliselt ühenduse, kuid Chrome ei saanud seekord turvalist ühendust kasutada. Ründaja võib püüda teie võrguühendust pealt kuulata või seda muuta. <ph name="BEGIN_LEARN_MORE_LINK" />Lisateave selle hoiatuse kohta<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> hinnalangus teenuse <ph name="PRODUCT_NAME" /> puhul</translation>
 <translation id="3061707000357573562">Teenuse paikamine</translation>
-<translation id="306198082577913404">Ennustuse täiustuste sisselülitamine</translation>
 <translation id="3062655045399308513">Sirvimisandmete kustutamine …</translation>
 <translation id="3063453392496098461">VPN-i taustateenuste installimine ebaõnnestus.</translation>
 <translation id="306573536155379004">Mäng algas.</translation>
@@ -2327,7 +2325,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5097099694988056070">Seadme statistika, näiteks protsessori/muutmälu kasutus</translation>
 <translation id="5097468150760963273">27 × 39 tolli</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome'ile on vajalik teie seadme <ph name="PERMISSION" /></translation>
 <translation id="510644072453496781">Papp (suletud otsad)</translation>
 <translation id="5106648964679263509">Teenuse <ph name="BNPL_ISSUER_NAME" /> virtuaalkaart on täidetud</translation>
 <translation id="5108881358339761672">Sait pole turvaline</translation>
@@ -4059,7 +4056,6 @@ Lisateave:
 <translation id="8134058435519644366">Töölevõtmine ja värbamine</translation>
 <translation id="8135546115396015134">vasak klahv</translation>
 <translation id="8137456439814903304">Energia- ja kommunaalteenused</translation>
-<translation id="81474145143203755">Kui <ph name="PERMISSION" /> on sellel saidil vajalik, andke Chrome'ile juurdepääs</translation>
 <translation id="8148608574971654810">PDF-i versioon:</translation>
 <translation id="8149426793427495338">Teie arvuti lülitus unerežiimile.</translation>
 <translation id="8150722005171944719">Fail <ph name="URL" /> ei ole loetav. Võimalik, et see on eemaldatud, teisaldatud või faili load takistavad juurdepääsu.</translation>

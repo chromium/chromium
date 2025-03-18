@@ -316,7 +316,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1532118530259321453">På den här sidan står det</translation>
 <translation id="1533966801397200693">Profilen som du är inloggad med är en hanterad profil. Administratören kan göra ändringar i profilinställningarna på distans, analysera information om webbläsaren genom rapportering och utföra andra nödvändiga uppgifter. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Översätt sidan</translation>
-<translation id="1538295100801850685">Förbättringar av förutsägelser</translation>
 <translation id="1539840569003678498">Rapporten skickades:</translation>
 <translation id="1542105669288201090">Företagsekonomi</translation>
 <translation id="1545757265410828525">Prishistorik</translation>
@@ -1157,7 +1156,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3052868890529250114">Du ansluter vanligtvis till webbplatser på ett säkert sätt, men den här gången kunde inte Chrome använda en säker anslutning. Det kan hända att en angripare försöker avlyssna eller ändra din nätverksanslutning. <ph name="BEGIN_LEARN_MORE_LINK" />Läs mer om den här varningen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Priset på <ph name="PRODUCT_NAME" /> sänkt med <ph name="PRICE_DROP" /></translation>
 <translation id="3061707000357573562">Tjänst för programkorrigering</translation>
-<translation id="306198082577913404">Aktivera förbättringar av förslag</translation>
 <translation id="3062655045399308513">Radera webbinformation …</translation>
 <translation id="3063453392496098461">Det gick inte att installera VPN-bakgrundstjänster.</translation>
 <translation id="306573536155379004">Spelet har startats.</translation>
@@ -2325,7 +2323,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5097099694988056070">Enhetsstatistik, till exempel processor- och RAM-användning</translation>
 <translation id="5097468150760963273">27 x 39 tum</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome behöver åtkomst till enhetens <ph name="PERMISSION" /></translation>
 <translation id="510644072453496781">Kartong (slut)</translation>
 <translation id="5106648964679263509">Virtuellt kort för <ph name="BNPL_ISSUER_NAME" /> har fyllts i</translation>
 <translation id="5108881358339761672">Webbplatsen är inte säker</translation>
@@ -4054,7 +4051,6 @@ Mer information.
 <translation id="8134058435519644366">Rekrytering och bemanning</translation>
 <translation id="8135546115396015134">vänstertangent</translation>
 <translation id="8137456439814903304">Energi och energiproduktion</translation>
-<translation id="81474145143203755">Om du vill använda <ph name="PERMISSION" /> på den här webbplatsen ger du Chrome åtkomst</translation>
 <translation id="8148608574971654810">PDF-version:</translation>
 <translation id="8149426793427495338">Datorn gick i viloläge.</translation>
 <translation id="8150722005171944719">Det går inte att läsa filen på <ph name="URL" />. Den kan ha tagits bort eller flyttats, eller så krävs behörighet för att få åtkomst till den.</translation>

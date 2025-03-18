@@ -166,6 +166,7 @@
 <translation id="1505542291183484463">ਟਾਇਲਡ ਮੁੜ-ਆਕਾਰ ਵਾਲੀ ਵਿੰਡੋ ਹੇਠਾਂ ਵੱਲ</translation>
 <translation id="1510238584712386396">ਲੌਂਚਰ</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{ਸੂਚਨਾ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ। ਇੱਕ ਐਪ ਲਈ ਸੂਚਨਾਵਾਂ ਬੰਦ ਹਨ}one{ਸੂਚਨਾ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ। # ਐਪ ਲਈ ਸੂਚਨਾਵਾਂ ਬੰਦ ਹਨ}other{ਸੂਚਨਾ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ। # ਐਪਾਂ ਲਈ ਸੂਚਨਾਵਾਂ ਬੰਦ ਹਨ}}</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">ਬੈਟਰੀ <ph name="BATTERY_PERCENTAGE" />% | ਪੂਰੀ ਤਰ੍ਹਾਂ ਚਾਰਜ ਹੋਣ ਵਿੱਚ <ph name="TIME" /> ਬਾਕੀ</translation>
 <translation id="1525508553941733066">ਬਰਖ਼ਾਸਤ ਕਰੋ</translation>
 <translation id="1526448108126799339">ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਨਵੀਂ ਟੈਬ ਖੋਲ੍ਹੋ</translation>
@@ -345,7 +346,6 @@
 <translation id="2201071101391734388">ਹਾਲੀਆ ਫ਼ੋਟੋ <ph name="TOTAL_COUNT" /> ਵਿੱਚੋਂ <ph name="INDEX" />।</translation>
 <translation id="2201687081523799384">Google Tasks ਨੂੰ ਸਮੇਟੋ</translation>
 <translation id="2208323208084708176">ਯੂਨੀਫਾਈਡ ਡੈਸਕਟਾਪ ਮੋਡ</translation>
-<translation id="2220572644011485463">ਪਿੰਨ ਜਾਂ ਪਾਸਵਰਡ</translation>
 <translation id="2222841058024245321">ਡੈਸਕ 7</translation>
 <translation id="2223384056430485343">ਸਪਲਿਟ ਸਕ੍ਰੀਨ ਵਿੱਚ</translation>
 <translation id="2224075387478458881">ਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ ਦੇ ਦਿਸਣਯੋਗ ਹੋਣ 'ਤੇ ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
@@ -1830,7 +1830,6 @@
 <translation id="7000027735917578303">ਵਿੰਡੋਆਂ ਅਤੇ ਡੈਸਕਾਂ ਦੀਆਂ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="7004910047186208204">ਮੋਬਾਈਲ ਡਾਟੇ ਨਾਲ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="7005239792648594238">ਸ਼ੁਰੂਆਤ ਕਰਨ ਲਈ ਐਪ ਨੂੰ ਖੋਲ੍ਹੋ</translation>
-<translation id="7007983414944123363">ਤੁਹਾਡੇ ਪਿੰਨ ਜਾਂ ਪਾਸਵਰਡ ਦੀ ਪੁਸ਼ਟੀ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="7014684956566476813"><ph name="DEVICE_NAME" /> ਨਾਮ ਵਾਲੇ ਕਿਸੇ ਡੀਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਹੈ</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> ਵਜੇ ਡੀਵਾਈਸ ਦੁਬਾਰਾ ਵਰਤੋ।</translation>
 <translation id="70168403932084660">ਡੈਸਕ 6</translation>
@@ -2467,6 +2466,7 @@
 <translation id="9168436347345867845">ਇਸਨੂੰ ਬਾਅਦ ਵਿੱਚ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> ਲਈ 1 ਨਤੀਜਾ ਦਿਖਾਇਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="9179259655489829027">ਇਹ ਵਿਸ਼ੇਸ਼ਤਾ ਤੁਹਾਨੂੰ ਕਿਸੇ ਪਾਸਵਰਡ ਦੀ ਲੋੜ ਤੋਂ ਬਿਨਾਂ ਕਿਸੇ ਵੀ ਸਾਈਨ-ਇਨ ਵਰਤੋਂਕਾਰ ਤੱਕ ਛੇਤੀ ਪਹੁੰਚ ਕਰਨ ਦਿੰਦੀ ਹੈ। ਇਸ ਵਿਸ਼ੇਸ਼ਤਾ ਦੀ ਵਰਤੋਂ ਸਿਰਫ਼ ਆਪਣੇ ਭਰੋਸੇਯੋਗ ਖਾਤਿਆਂ ਨਾਲ ਹੀ ਕਰੋ।</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183456764293710005">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਵੱਡਦਰਸ਼ੀ</translation>
 <translation id="9192133205265227850">"<ph name="DEVICE_NAME" />" ਵਰਤੋ</translation>
 <translation id="9193626018745640770">ਕਿਸੇ ਅਗਿਆਤ ਪ੍ਰਾਪਤਕਰਤਾ 'ਤੇ ਕਾਸਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>

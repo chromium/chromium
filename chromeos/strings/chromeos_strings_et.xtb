@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">Maa pöörlemise ekraanisäästja</translation>
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> taust tähega <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Eksklusiivne</translation>
-<translation id="3395147534045164351">Kiirasukoha lüliti</translation>
 <translation id="3404249063913988450">Ekraanisäästja lubamine</translation>
 <translation id="3413935475507503304">Värskendamisega jätkamiseks klõpsake nupul Järgmine.</translation>
 <translation id="3428551088151258685">loodus</translation>
@@ -1397,6 +1396,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="7388345524791662148">Rohkem valikuid: <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Sisseehitatud puuteplaat</translation>
 <translation id="7397270852490618635">Heleda teema väljalülitamine</translation>
+<translation id="7400166052988585408">Õpetaja lukustab teie ekraanikuva <ph name="NUM_SECONDS" /> sekundi pärast</translation>
 <translation id="7401543881546089382">Otsetee kustutamine</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> on värskendamiseks valmis</translation>
 <translation id="741244894080940828">teisendus</translation>

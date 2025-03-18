@@ -3746,6 +3746,7 @@ Chrome 114 までは、このポリシーを使用するには <ph name="SYNC_DI
 
 <ph name="MAC_OS_NAME" /> では、MDM を介して管理されるインスタンス、MCX を介してドメインに追加されたインスタンス、または <ph name="CHROME_ENTERPRISE_CORE_NAME" /> に登録されているインスタンスでのみこのポリシーを使用できます。</translation>
 <translation id="3845318141474759319">AI モデルの改善は行わずに生成 AI 壁紙を許可する</translation>
+<translation id="3849923496599301707">キオスクモードで Chrome アプリを強制的に許可する</translation>
 <translation id="3851443303439635700">JavaScript の setTimeout() 関数のクランプを開始するネストのしきい値を管理します</translation>
 <translation id="3854609566862485607">このポリシーでは、管理対象プロフィールの識別に使用するカスタムラベルを管理します。管理対象プロフィールでは、このラベルがツールバーのアバターの横に表示されます。カスタムラベルは翻訳されません。
 
@@ -5266,6 +5267,11 @@ JavaScript の最適化ポリシーの例外は、サイトの詳細レベル（
 <translation id="5041315457555330432">CastAllowAllIPs 機能がオンになっていない場合に、プライベート IP アドレスのデバイスにのみ <ph name="PRODUCT_NAME" /> の接続を許可する。</translation>
 <translation id="504689994545234073">ユーザー ファイルのローカル保存を有効にする</translation>
 <translation id="5048890362473520096">印刷サービスで LPAC サンドボックスを有効にする</translation>
+<translation id="5049989450078943331">このポリシーを True に設定した場合、Chrome アプリのデフォルトの有効化設定に関係なく、キオスク セッションで Chrome アプリが引き続き実行することを許可します。
+
+このポリシーを未設定のままにするか False に設定した場合、デバイスで定義されているデフォルトの動作が使用されます。
+
+ユーザーが無効になっている Chrome アプリを起動しようとすると、アプリが起動されなかった理由を説明するメッセージが表示され、IT 部門に連絡するよう促されます。</translation>
 <translation id="5055474681190962362">再起動する日付 [1-31]（デバイスのローカル タイムゾーン）です。frequency が「MONTHLY」に指定されている場合にのみ使用されます。値が対象月の最大日数を上回った場合は、その月末日が使用されます。</translation>
 <translation id="5055513974503523022">生成 AI ビデオ通話背景では、<ph name="PRODUCT_OS_NAME" /> で生成 AI 機能を使用して、個性を生かしたビデオ会議の背景を作成できます。
 
@@ -6093,6 +6099,7 @@ https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed#Kerberos_clien
 このポリシーを未設定のままにするか空のリストを指定した場合、<ph name="GET_SCANNER_LIST_FUNCTION" /> または <ph name="START_SCAN_FUNCTION" /> が呼び出されたときにスキャン確認ダイアログがユーザーに表示されます。</translation>
 <translation id="5599461642204007579"><ph name="MS_AD_NAME" /> 管理設定</translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5605676983184673391">キオスク セッションでの Chrome アプリの実行を許可する。</translation>
 <translation id="5607021831414604820">デバイスのストレージ ステータス レポートを有効にする</translation>
 <translation id="5608114828230655271">デフォルトのデバイスの動作</translation>
 <translation id="561001683838346956">このポリシーは <ph name="PRODUCT_NAME" /> 124 で削除されました。このバージョン以降、安全でないハッシュは常に禁止されます。以前のバージョンでは、ブラウザが TLS handshake プロセス中に安全でないレガシー ハッシュを許可するかどうかをこのポリシーで制御していました。
@@ -6212,6 +6219,7 @@ URL パターンは、<ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FO
 
 このポリシーは、オリジンに Direct Sockets API の使用が許可されている場合にのみ適用されます。
 詳しくは、<ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />、<ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" />、<ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" /> をご覧ください。</translation>
+<translation id="566569751231933416">デフォルトの動作を使用する。</translation>
 <translation id="5666457529647159548">インストール済みクライアント証明書の管理をユーザーに許可する。</translation>
 <translation id="5670249935663090320">このポリシーを有効に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> はオンになり、ユーザーはアプリメニュー、ページ コンテキスト メニュー、Cast 対応ウェブサイトのメディア コントロール、Cast ツールバー アイコン（表示されている場合）から起動できます。
 

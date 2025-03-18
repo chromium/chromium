@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">Жер қозғалысы бейнеленген тұсқағаз</translation>
 <translation id="33736539805963175"><ph name="LETTERS_LETTER" /> әрпі бар <ph name="LETTERS_COLOR" /> фон</translation>
 <translation id="3383623117265110236">Эксклюзивті</translation>
-<translation id="3395147534045164351">Орынды байланыстыру функциясын қосу/өшіру</translation>
 <translation id="3404249063913988450">Скринсейверді қосу</translation>
 <translation id="3413935475507503304">Жаңартуды жалғастыру үшін "Келесі" түймесін басыңыз.</translation>
 <translation id="3428551088151258685">сыртқы</translation>
@@ -929,6 +928,7 @@
 <translation id="5286263799730375393">жарық түсі</translation>
 <translation id="5292579816060236070">Күннің атуы бейнеленген тұсқағаз</translation>
 <translation id="5294769550414936029"><ph name="MILESTONE_VERSION" />-нұсқа</translation>
+<translation id="5300172019534884676">камераны пайдалану рұқсатын ауыстыру</translation>
 <translation id="5300814202279832142">Терезені жұмыс үстеліне жылжыту</translation>
 <translation id="5302048478445481009">Тіл</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> эксклюзивті тұсқағазы</translation>
@@ -1044,6 +1044,7 @@
 <translation id="5896602941605730551">Ойнату</translation>
 <translation id="5901630391730855834">Сары</translation>
 <translation id="5903200662178656908">Құрылғы пернетақта мен тінтуірден тұрады.</translation>
+<translation id="5903822368221507416">Қойындыларды жасыру</translation>
 <translation id="5904994456462260490">Жаңа APN қосу</translation>
 <translation id="590746845088109442">мысықтар</translation>
 <translation id="5907649332524363701">перне түсі</translation>
@@ -1395,6 +1396,7 @@
 <translation id="7388345524791662148"><ph name="RECORDING_NAME" />: басқа опциялар</translation>
 <translation id="7388959671917308825">Ендірілген сенсорлық тақта</translation>
 <translation id="7397270852490618635">Жарық режимді өшіру</translation>
+<translation id="7400166052988585408">Мұғалім экраныңызды <ph name="NUM_SECONDS" /> секундтан кейін құлыптайды.</translation>
 <translation id="7401543881546089382">Таңбашаны жою</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> жаңартуға дайын</translation>
 <translation id="741244894080940828">түрлендіру</translation>

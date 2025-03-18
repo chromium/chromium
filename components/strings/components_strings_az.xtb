@@ -316,7 +316,6 @@
 <translation id="1532118530259321453">Bu səhifə deyir:</translation>
 <translation id="1533966801397200693">Daxil olduğunuz profil idarə olunan profildir. Administrator profil ayarlarına uzaqdan dəyişiklik edə, hesabat vasitəsilə brauzer haqqında məlumatları təhlil edə və digər zəruri tapşırıqları yerinə yetirə bilər. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Səhifəni tərcümə edin</translation>
-<translation id="1538295100801850685">Proqnoz təkmilləşdirmələri</translation>
 <translation id="1539840569003678498">Şikayət göndərildi:</translation>
 <translation id="1542105669288201090">Biznes təhsili</translation>
 <translation id="1545757265410828525">Qiymət tarixçəsi</translation>
@@ -1157,7 +1156,6 @@
 <translation id="3052868890529250114">Adətən, saytlara təhlükəsiz qoşulursunuz, lakin Chrome bu dəfə güvənli bağlantı istifadə edə bilmədi. Hücumçu şəbəkə bağlantısını dinləməyə və ya dəyişdirməyə cəhd edə bilər. <ph name="BEGIN_LEARN_MORE_LINK" />Bu xəbərdarlıq haqqında ətraflı məlumat əldə edin<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> üçün <ph name="PRICE_DROP" /> endirim</translation>
 <translation id="3061707000357573562">Təmir Xidməti</translation>
-<translation id="306198082577913404">Proqnoz təkmilləşdirmələrini aktiv edin</translation>
 <translation id="3062655045399308513">Baxış datasını silin...</translation>
 <translation id="3063453392496098461">VPN fon xidmətlərinin quraşdırılması alınmadı.</translation>
 <translation id="306573536155379004">Oyun başladı.</translation>
@@ -2321,7 +2319,6 @@
 <translation id="5097099694988056070">CPU/RAM istifadəsi kimi cihaz statistikası</translation>
 <translation id="5097468150760963273">27 x 39 düym</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome cihazın <ph name="PERMISSION" /> tətbiqinə daxil olmalıdır</translation>
 <translation id="510644072453496781">Karton (son)</translation>
 <translation id="5106648964679263509"><ph name="BNPL_ISSUER_NAME" /> üçün virtual kart daxil edilib</translation>
 <translation id="5108881358339761672">Sayt güvənli deyil</translation>
@@ -4049,7 +4046,6 @@
 <translation id="8134058435519644366">İşə qəbul və iş heyəti</translation>
 <translation id="8135546115396015134">sol düymə</translation>
 <translation id="8137456439814903304">Enerji və Kommunal Xidmət</translation>
-<translation id="81474145143203755">Bu saytda <ph name="PERMISSION" /> istifadə etmək üçün Chrome-a giriş imkanı verin</translation>
 <translation id="8148608574971654810">PDF versiyası:</translation>
 <translation id="8149426793427495338">Kompüteriniz yatmağa getdi.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> linkində olan fayl oxunmur. O, silinmiş, köçürülmüş ola bilər və ya fayl icazələri girişin qarşısını alıb.</translation>
