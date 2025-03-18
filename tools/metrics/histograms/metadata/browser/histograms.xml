@@ -1467,6 +1467,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BrowserRenderProcessHost.SpareRendererTaken.IsReady"
+    enum="BooleanReady" expires_after="2025-08-24">
+  <owner>pmonette@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Records whether or not the spare was ready at the time it was taken.
+  </summary>
+</histogram>
+
+<histogram name="BrowserRenderProcessHost.SpareRendererTaken.TimeSinceCreation"
+    units="seconds" expires_after="2025-08-24">
+  <owner>pmonette@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Records the time delta since the spare RenderProcessHost was created at the
+    time it is taken.
+  </summary>
+</histogram>
+
 <histogram
     name="BrowserRenderProcessHost.SpareRendererTakenInSameNavigation.ForCOOP"
     enum="Boolean" expires_after="2025-09-07">
