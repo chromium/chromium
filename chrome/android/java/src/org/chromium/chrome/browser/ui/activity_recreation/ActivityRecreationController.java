@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ui.fold_transitions;
+package org.chromium.chrome.browser.ui.activity_recreation;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,9 +20,11 @@ import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 
-/** A utility class to handle saving and restoring the UI state across fold transitions. */
-public class FoldTransitionController {
-    public static final String DID_CHANGE_TABLET_MODE = "did_change_tablet_mode";
+/**
+ * A utility class to handle saving and restoring the UI state across fold transitions, density
+ * change or UI mode type change.
+ */
+public class ActivityRecreationController {
     static final String ACTIVITY_RECREATION_UI_STATE = "activity_recreation_ui_state";
 
     private final OneshotSupplier<ToolbarManager> mToolbarManagerSupplier;
@@ -32,14 +34,14 @@ public class FoldTransitionController {
     private ActivityRecreationUiState mRetainedUiState;
 
     /**
-     * Construct a {@link FoldTransitionController} instance.
+     * Construct a {@link ActivityRecreationController} instance.
      *
      * @param toolbarManagerSupplier The {@link ToolbarManager} instance supplier.
      * @param layoutManagerSupplier The {@link LayoutManager} instance supplier.
      * @param activityTabProvider The current activity tab provider.
      * @param layoutStateHandler The {@link Handler} to post UI state restoration.
      */
-    public FoldTransitionController(
+    public ActivityRecreationController(
             @NonNull OneshotSupplierImpl<ToolbarManager> toolbarManagerSupplier,
             @NonNull ObservableSupplier<LayoutManager> layoutManagerSupplier,
             @NonNull ActivityTabProvider activityTabProvider,
@@ -52,9 +54,9 @@ public class FoldTransitionController {
 
     /**
      * Saves the relevant UI to {@link ActivityRecreationUiState} before the activity is recreated
-     * on a device fold transition. This preserves the actual UI state, that could change before
-     * {@code Activity#onSaveInstanceState()} is called. For e.g. url bar focus is cleared before
-     * {@code Activity#onSaveInstanceState()}.
+     * on a device fold transition, density change or UI mode type change. This preserves the actual
+     * UI state, that could change before {@code Activity#onSaveInstanceState()} is called. For e.g.
+     * url bar focus is cleared before {@code Activity#onSaveInstanceState()}.
      */
     public void prepareUiState() {
         mRetainedUiState = new ActivityRecreationUiState();
@@ -77,35 +79,26 @@ public class FoldTransitionController {
 
     /**
      * Saves the relevant UI from {@link ActivityRecreationUiState} to {@link Bundle} when the
-     * activity is recreated on a device fold transition. Expected to be invoked during {@code
-     * Activity#onSaveInstanceState()}.
+     * activity is recreated on a device fold transition, density change or UI mode type change.
+     * Expected to be invoked during {@code Activity#onSaveInstanceState()}.
      *
      * @param savedInstanceState The {@link Bundle} where the UI state will be saved.
-     * @param didChangeTabletMode Whether the activity is recreated due to a fold configuration
-     *     change. {@code true} if the fold configuration changed, {@code false} otherwise.
-     * @param isIncognito Whether the current TabModel is incognito mode.
      */
-    public void saveUiState(
-            Bundle savedInstanceState, boolean didChangeTabletMode, boolean isIncognito) {
+    public void saveUiState(Bundle savedInstanceState) {
         if (savedInstanceState == null) return;
 
-        savedInstanceState.putBoolean(DID_CHANGE_TABLET_MODE, didChangeTabletMode);
-        if (mRetainedUiState == null || mRetainedUiState.shouldRetainState()) return;
+        if (mRetainedUiState == null || !mRetainedUiState.shouldRetainState()) return;
         savedInstanceState.putParcelable(ACTIVITY_RECREATION_UI_STATE, mRetainedUiState);
     }
 
     /**
-     * Restores the relevant UI state when the activity is recreated on a device fold transition.
+     * Restores the relevant UI state when the activity is recreated on a device fold transition,
+     * density change or UI mode type change.
      *
      * @param savedInstanceState The {@link Bundle} that is used to restore the UI state.
      */
     public void restoreUiState(Bundle savedInstanceState) {
         if (savedInstanceState == null || !mLayoutManagerSupplier.hasValue()) {
-            return;
-        }
-
-        // Restore the UI state only on a device fold transition.
-        if (!savedInstanceState.getBoolean(DID_CHANGE_TABLET_MODE, false)) {
             return;
         }
 
@@ -133,8 +126,9 @@ public class FoldTransitionController {
     }
 
     /**
-     * Determines whether the keyboard state should be saved during a fold transition. The keyboard
-     * state will be saved only if the web contents has a focused editable node.
+     * Determines whether the keyboard state should be saved during a fold transition, density
+     * change or UI mode type change. The keyboard state will be saved only if the web contents has
+     * a focused editable node.
      *
      * @param activityTabProvider The current activity tab provider.
      * @return {@code true} if the keyboard state should be saved, {@code false} otherwise.
@@ -242,7 +236,7 @@ public class FoldTransitionController {
 
     private static void setUrlBarFocusAndText(ToolbarManager toolbarManager, String urlBarText) {
         toolbarManager.setUrlBarFocusAndText(
-                true, OmniboxFocusReason.FOLD_TRANSITION_RESTORATION, urlBarText);
+                true, OmniboxFocusReason.ACTIVITY_RECREATION_RESTORATION, urlBarText);
     }
 
     private static void showSoftInput(@NonNull ActivityTabProvider activityTabProvider) {

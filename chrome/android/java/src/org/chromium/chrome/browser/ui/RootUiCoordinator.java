@@ -133,6 +133,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarBehavior;
 import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
+import org.chromium.chrome.browser.ui.activity_recreation.ActivityRecreationController;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinatorFactory;
@@ -142,7 +143,6 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
-import org.chromium.chrome.browser.ui.fold_transitions.FoldTransitionController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
@@ -320,7 +320,7 @@ public class RootUiCoordinator
 
     private final OneshotSupplierImpl<ToolbarManager> mToolbarManagerOneshotSupplier =
             new OneshotSupplierImpl<>();
-    private FoldTransitionController mFoldTransitionController;
+    private ActivityRecreationController mActivityRecreationController;
     private RestoreTabsFeatureHelper mRestoreTabsFeatureHelper;
     private @Nullable EdgeToEdgeController mEdgeToEdgeController;
     private ComposedBrowserControlsVisibilityDelegate mAppBrowserControlsVisibilityDelegate;
@@ -528,8 +528,8 @@ public class RootUiCoordinator
                                 return mProfileSupplier.get().getOriginalProfile();
                             }
                         });
-        mFoldTransitionController =
-                new FoldTransitionController(
+        mActivityRecreationController =
+                new ActivityRecreationController(
                         mToolbarManagerOneshotSupplier,
                         mLayoutManagerSupplier,
                         mActivityTabProvider,
@@ -685,8 +685,8 @@ public class RootUiCoordinator
             mBrowserControlsManager.removeObserver(mBrowserControlsObserver);
         }
 
-        if (mFoldTransitionController != null) {
-            mFoldTransitionController = null;
+        if (mActivityRecreationController != null) {
+            mActivityRecreationController = null;
         }
 
         if (mRestoreTabsFeatureHelper != null) {
@@ -1960,7 +1960,7 @@ public class RootUiCoordinator
 
     /** Saves the relevant UI state when the activity is recreated on a device fold transition. */
     public void prepareUiState() {
-        mFoldTransitionController.prepareUiState();
+        mActivityRecreationController.prepareUiState();
     }
 
     /**
@@ -1969,16 +1969,10 @@ public class RootUiCoordinator
      * recreated. This is expected to be invoked in {@code Activity#onSaveInstanceState(Bundle)}.
      *
      * @param outState The {@link Bundle} that is used to save state information.
-     * @param isRecreatingForTabletModeChange Whether the activity is recreated due to a fold
-     *     configuration change. {@code true} if the fold configuration changed, {@code false}
-     *     otherwise.
      */
-    public void onSaveInstanceState(Bundle outState, boolean isRecreatingForTabletModeChange) {
+    public void onSaveInstanceState(Bundle outState) {
         assert mTabModelSelectorSupplier.hasValue();
-        mFoldTransitionController.saveUiState(
-                outState,
-                isRecreatingForTabletModeChange,
-                mTabModelSelectorSupplier.get().isIncognitoSelected());
+        mActivityRecreationController.saveUiState(outState);
     }
 
     /**
@@ -1987,7 +1981,7 @@ public class RootUiCoordinator
      * @param savedInstanceState The {@link Bundle} that is used to restore the UI state.
      */
     public void restoreUiState(Bundle savedInstanceState) {
-        mFoldTransitionController.restoreUiState(savedInstanceState);
+        mActivityRecreationController.restoreUiState(savedInstanceState);
     }
 
     private void attemptToShowRestoreTabsPromo() {

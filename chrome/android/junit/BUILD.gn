@@ -1197,7 +1197,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/ui/AppLaunchDrawBlockerUnitTest.java",
       "src/org/chromium/chrome/browser/ui/ExpandedSheetHelperImplUnitTest.java",
       "src/org/chromium/chrome/browser/ui/IncognitoRestoreAppLaunchDrawBlockerUnitTest.java",
-      "src/org/chromium/chrome/browser/ui/fold_transitions/FoldTransitionControllerUnitTest.java",
+      "src/org/chromium/chrome/browser/ui/activity_recreation/ActivityRecreationControllerUnitTest.java",
       "src/org/chromium/chrome/browser/ui/system/StatusBarColorControllerUnitTest.java",
     ]
 

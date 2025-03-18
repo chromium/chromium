@@ -1243,6 +1243,8 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Query tiles NTP omnibox tapped."/>
   <int value="14" label="Focus restored on fold configuration change."/>
   <int value="15" label="Drag and drop on the omnibox."/>
+  <int value="16" label="Tapped after default focus with hardware keyboard."/>
+  <int value="17" label="Focus restored on activity recreation."/>
 </enum>
 
 <enum name="OmniboxSuggestionUiType">

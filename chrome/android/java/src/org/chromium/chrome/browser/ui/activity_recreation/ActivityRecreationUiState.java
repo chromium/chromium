@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ui.fold_transitions;
+package org.chromium.chrome.browser.ui.activity_recreation;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -79,6 +79,6 @@ final class ActivityRecreationUiState implements Parcelable {
     }
 
     boolean shouldRetainState() {
-        return !mIsUrlBarFocused && !mIsKeyboardShown && !mIsTabSwitcherShown;
+        return mIsUrlBarFocused || mIsKeyboardShown || mIsTabSwitcherShown;
     }
 }
