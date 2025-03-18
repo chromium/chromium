@@ -4,6 +4,8 @@
 
 #include "ui/ozone/platform/wayland/gpu/wayland_overlay_manager.h"
 
+#include <variant>
+
 #include "base/logging.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -88,12 +90,12 @@ bool WaylandOverlayManager::CanHandleCandidate(
                            kAssumedMaxDeviceScaleFactor) == 0)
     return false;
 
-  if (absl::holds_alternative<gfx::OverlayTransform>(candidate.transform)) {
-    if (absl::get<gfx::OverlayTransform>(candidate.transform) ==
+  if (std::holds_alternative<gfx::OverlayTransform>(candidate.transform)) {
+    if (std::get<gfx::OverlayTransform>(candidate.transform) ==
         gfx::OVERLAY_TRANSFORM_INVALID) {
       return false;
     }
-  } else if (absl::get<gfx::Transform>(candidate.transform).HasPerspective()) {
+  } else if (std::get<gfx::Transform>(candidate.transform).HasPerspective()) {
     // Wayland supports only 2d matrix transforms.
     return false;
   }

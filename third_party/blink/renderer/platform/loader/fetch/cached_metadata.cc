@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
 
 #include <utility>
+#include <variant>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -88,17 +89,17 @@ CachedMetadata::CachedMetadata(mojo_base::BigBuffer data,
 
 base::span<const uint8_t> CachedMetadata::SerializedData() const {
   base::span<const uint8_t> span_including_offset;
-  if (absl::holds_alternative<Vector<uint8_t>>(buffer_)) {
-    span_including_offset = absl::get<Vector<uint8_t>>(buffer_);
+  if (std::holds_alternative<Vector<uint8_t>>(buffer_)) {
+    span_including_offset = std::get<Vector<uint8_t>>(buffer_);
   } else {
-    CHECK(absl::holds_alternative<mojo_base::BigBuffer>(buffer_));
-    span_including_offset = absl::get<mojo_base::BigBuffer>(buffer_);
+    CHECK(std::holds_alternative<mojo_base::BigBuffer>(buffer_));
+    span_including_offset = std::get<mojo_base::BigBuffer>(buffer_);
   }
   CHECK_GE(span_including_offset.size(), offset_);
   return span_including_offset.subspan(offset_);
 }
 
-absl::variant<Vector<uint8_t>, mojo_base::BigBuffer>
+std::variant<Vector<uint8_t>, mojo_base::BigBuffer>
 CachedMetadata::DrainSerializedData() && {
   return std::move(buffer_);
 }

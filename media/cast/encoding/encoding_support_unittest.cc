@@ -37,8 +37,10 @@ TEST(EncodingSupportTest, EnablesVp8HardwareEncoderAlways) {
 
 TEST(EncodingSupportTest, DenyListedHardwareEncoderNotOffered) {
   EXPECT_TRUE(IsHardwareEnabled(VideoCodec::kVP8, GetValidProfiles()));
+  EXPECT_FALSE(IsHardwareDenyListed(VideoCodec::kVP8));
   DenyListHardwareCodec(VideoCodec::kVP8);
   EXPECT_FALSE(IsHardwareEnabled(VideoCodec::kVP8, GetValidProfiles()));
+  EXPECT_TRUE(IsHardwareDenyListed(VideoCodec::kVP8));
 }
 
 TEST(EncodingSupportTest, EnablesH264HardwareEncoderProperly) {

@@ -10,6 +10,7 @@
 #include <string>
 #include <unordered_map>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -2578,7 +2579,7 @@ TEST_F(UnderlayTest, AllowVerticalFlip) {
       &damage_rect_, &content_bounds_);
   ASSERT_EQ(1U, candidate_list.size());
   EXPECT_EQ(gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL,
-            absl::get<gfx::OverlayTransform>(candidate_list.back().transform));
+            std::get<gfx::OverlayTransform>(candidate_list.back().transform));
 }
 
 TEST_F(UnderlayTest, AllowHorizontalFlip) {
@@ -2604,7 +2605,7 @@ TEST_F(UnderlayTest, AllowHorizontalFlip) {
       &damage_rect_, &content_bounds_);
   ASSERT_EQ(1U, candidate_list.size());
   EXPECT_EQ(gfx::OVERLAY_TRANSFORM_FLIP_HORIZONTAL,
-            absl::get<gfx::OverlayTransform>(candidate_list.back().transform));
+            std::get<gfx::OverlayTransform>(candidate_list.back().transform));
 }
 
 TEST_F(SingleOverlayOnTopTest, AllowPositiveScaleTransform) {
@@ -2674,7 +2675,7 @@ TEST_F(UnderlayTest, Allow90DegreeRotation) {
       &damage_rect_, &content_bounds_);
   ASSERT_EQ(1U, candidate_list.size());
   EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90,
-            absl::get<gfx::OverlayTransform>(candidate_list.back().transform));
+            std::get<gfx::OverlayTransform>(candidate_list.back().transform));
 }
 
 TEST_F(UnderlayTest, Allow180DegreeRotation) {
@@ -2699,7 +2700,7 @@ TEST_F(UnderlayTest, Allow180DegreeRotation) {
       &damage_rect_, &content_bounds_);
   ASSERT_EQ(1U, candidate_list.size());
   EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_180,
-            absl::get<gfx::OverlayTransform>(candidate_list.back().transform));
+            std::get<gfx::OverlayTransform>(candidate_list.back().transform));
 }
 
 TEST_F(UnderlayTest, Allow270DegreeRotation) {
@@ -2724,7 +2725,7 @@ TEST_F(UnderlayTest, Allow270DegreeRotation) {
       &damage_rect_, &content_bounds_);
   ASSERT_EQ(1U, candidate_list.size());
   EXPECT_EQ(gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270,
-            absl::get<gfx::OverlayTransform>(candidate_list.back().transform));
+            std::get<gfx::OverlayTransform>(candidate_list.back().transform));
 }
 
 TEST_F(UnderlayTest, AllowsOpaqueCandidates) {

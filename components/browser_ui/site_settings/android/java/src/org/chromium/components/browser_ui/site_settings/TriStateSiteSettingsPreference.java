@@ -23,12 +23,15 @@ import org.chromium.components.content_settings.ContentSettingValues;
 @NullMarked
 public class TriStateSiteSettingsPreference extends Preference
         implements RadioGroup.OnCheckedChangeListener {
+    private static final int ICON_MARGIN_END_DP = 8;
     private @ContentSettingValues int mSetting = ContentSettingValues.DEFAULT;
     private int @Nullable [] mDescriptionIds;
+    private int @Nullable [] mIconIds;
     private RadioButtonWithDescription mAllowed;
     private RadioButtonWithDescription mAsk;
     private RadioButtonWithDescription mBlocked;
     private RadioGroup mRadioGroup;
+    private boolean mIsPermissionSiteSettingsRadioButtonFeatureEnabled;
 
     public TriStateSiteSettingsPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -44,13 +47,20 @@ public class TriStateSiteSettingsPreference extends Preference
     }
 
     /**
-     * @param setting        The initial setting for this Preference
-     * @param descriptionIds An array of 3 resource IDs for descriptions for
-     *                       Allowed, Ask and Blocked states, in that order.
+     * @param setting The initial setting for this Preference
+     * @param descriptionIds An array of 3 resource IDs for descriptions for Allowed, Ask and
+     *     Blocked states, in that order.
      */
-    public void initialize(@ContentSettingValues int setting, int @Nullable [] descriptionIds) {
+    public void initialize(
+            @ContentSettingValues int setting,
+            int @Nullable [] descriptionIds,
+            int @Nullable [] iconIds,
+            boolean isPermissionSiteSettingsRadioButtonFeatureEnabled) {
         mSetting = setting;
         mDescriptionIds = descriptionIds;
+        mIconIds = iconIds;
+        mIsPermissionSiteSettingsRadioButtonFeatureEnabled =
+                isPermissionSiteSettingsRadioButtonFeatureEnabled;
     }
 
     /** @return The current checked setting. */
@@ -87,9 +97,31 @@ public class TriStateSiteSettingsPreference extends Preference
         mRadioGroup.setOnCheckedChangeListener(this);
 
         if (mDescriptionIds != null) {
-            mAllowed.setDescriptionText(getContext().getText(mDescriptionIds[0]));
-            mAsk.setDescriptionText(getContext().getText(mDescriptionIds[1]));
-            mBlocked.setDescriptionText(getContext().getText(mDescriptionIds[2]));
+            if (mIsPermissionSiteSettingsRadioButtonFeatureEnabled) {
+                mAllowed.setPrimaryText(getContext().getText(mDescriptionIds[0]));
+                mAsk.setPrimaryText(getContext().getText(mDescriptionIds[1]));
+                mBlocked.setPrimaryText(getContext().getText(mDescriptionIds[2]));
+            } else {
+                mAllowed.setDescriptionText(getContext().getText(mDescriptionIds[0]));
+                mAsk.setDescriptionText(getContext().getText(mDescriptionIds[1]));
+                mBlocked.setDescriptionText(getContext().getText(mDescriptionIds[2]));
+            }
+        }
+
+        final float scale = getContext().getResources().getDisplayMetrics().density;
+        if (mIconIds != null) {
+            if (mIconIds[0] != 0) {
+                mAllowed.setIcon(mIconIds[0]);
+                mAllowed.setIconMarginEnd(Math.round(ICON_MARGIN_END_DP * scale));
+            }
+            if (mIconIds[1] != 0) {
+                mAsk.setIcon(mIconIds[1]);
+                mAsk.setIconMarginEnd(Math.round(ICON_MARGIN_END_DP * scale));
+            }
+            if (mIconIds[2] != 0) {
+                mBlocked.setIcon(mIconIds[2]);
+                mBlocked.setIconMarginEnd(Math.round(ICON_MARGIN_END_DP * scale));
+            }
         }
 
         RadioButtonWithDescription radioButton = findRadioButton(mSetting);

@@ -6,11 +6,14 @@ package org.chromium.chrome.browser.ai;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -18,8 +21,10 @@ import android.content.Intent;
 import android.net.Uri;
 
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.protobuf.InvalidProtocolBufferException;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -30,12 +35,16 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.android.util.concurrent.PausedExecutorService;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
+import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.AvailabilityResponse;
 import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.Capability;
 import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.LaunchRequest;
@@ -43,6 +52,7 @@ import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.ServiceAvail
 import org.chromium.chrome.browser.ai.proto.SystemAiProviderService.ServiceNotAvailable;
 import org.chromium.chrome.browser.content_extraction.InnerTextBridge;
 import org.chromium.chrome.browser.content_extraction.InnerTextBridgeJni;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -54,6 +64,8 @@ import java.util.Optional;
 /** Unit tests for {@link AiAssistantService}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@LooperMode(Mode.PAUSED)
+@EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY})
 public class AiAssistantServiceUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -68,14 +80,22 @@ public class AiAssistantServiceUnitTest {
     @Captor private ArgumentCaptor<Intent> mIntentCaptor;
     @Captor private ArgumentCaptor<LaunchRequest> mLaunchRequestCaptor;
 
+    private final PausedExecutorService mPausedExecutorService = new PausedExecutorService();
+
     @Before
     public void setUp() throws Exception {
+        AiAssistantService.resetForTesting();
         when(mSystemAiProviderFactory.createSystemAiProvider()).thenReturn(mSystemAiProvider);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.GOOGLE_URL_CAT);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mWebContents.getMainFrame()).thenReturn(mRenderFrameHost);
 
         InnerTextBridgeJni.setInstanceForTesting(mInnerTextNatives);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        AiAssistantService.resetForTesting();
     }
 
     @Test
@@ -85,8 +105,10 @@ public class AiAssistantServiceUnitTest {
         setInnerTextExtractionResult(pageContents);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
 
-        var service = new AiAssistantService();
+        var service = AiAssistantService.getInstance();
+        initializeAiAssistantService(service);
 
+        service.canShowAiForTab(mContext, mTab);
         service.showAi(mContext, mTab);
         ShadowLooper.idleMainLooper();
 
@@ -104,7 +126,8 @@ public class AiAssistantServiceUnitTest {
         setSystemAiProviderAsUnavailable();
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.GOOGLE_URL_DOG);
 
-        var service = new AiAssistantService();
+        var service = AiAssistantService.getInstance();
+        initializeAiAssistantService(service);
         service.showAi(mContext, mTab);
         ShadowLooper.idleMainLooper();
 
@@ -124,7 +147,8 @@ public class AiAssistantServiceUnitTest {
         when(pdfPage.getTitle()).thenReturn("file.pdf");
         when(mTab.getNativePage()).thenReturn(pdfPage);
 
-        var service = new AiAssistantService();
+        var service = AiAssistantService.getInstance();
+        initializeAiAssistantService(service);
         service.showAi(mContext, mTab);
 
         var launchRequest = assertVoiceActivityStartedWithLaunchRequest();
@@ -140,8 +164,10 @@ public class AiAssistantServiceUnitTest {
         setInnerTextExtractionResult(pageContents);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_2);
 
-        var service = new AiAssistantService();
+        var service = AiAssistantService.getInstance();
+        initializeAiAssistantService(service);
         service.showAi(mContext, mTab);
+
         ShadowLooper.idleMainLooper();
 
         verify(mSystemAiProvider).launch(eq(mContext), mLaunchRequestCaptor.capture());
@@ -153,21 +179,104 @@ public class AiAssistantServiceUnitTest {
     public void showAi_usesAnalyzeDocumentForPdfs() {
         ServiceLoaderUtil.setInstanceForTesting(
                 SystemAiProviderFactory.class, mSystemAiProviderFactory);
+        setSystemAiProviderAsAvailable();
         var pdfUri = "https://google.com/file.pdf";
         var pdfPage = mock(PdfPage.class);
         when(pdfPage.getUri()).thenReturn(Uri.parse(pdfUri));
         when(pdfPage.getTitle()).thenReturn("file.pdf");
         when(mTab.getNativePage()).thenReturn(pdfPage);
-        setSystemAiProviderAsAvailable();
 
-        var service = new AiAssistantService();
+        var service = AiAssistantService.getInstance();
+        initializeAiAssistantService(service);
 
         service.showAi(mContext, mTab);
+        // Simulate availability query response.
+        mPausedExecutorService.runAll();
 
         verify(mSystemAiProvider).launch(eq(mContext), mLaunchRequestCaptor.capture());
         assertLaunchRequestIsForAnalyzeAttachment(mLaunchRequestCaptor.getValue(), pdfUri);
     }
 
+    @Test
+    public void canShowAiForTab_initialCall() {
+        ServiceLoaderUtil.setInstanceForTesting(
+                SystemAiProviderFactory.class, mSystemAiProviderFactory);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+        setSystemAiProviderAsAvailable();
+
+        var service = AiAssistantService.getInstance();
+
+        var result = service.canShowAiForTab(mContext, mTab);
+
+        assertFalse("AI service should not be available, as we just queried the provider", result);
+        // System provider should be queried on the first call.
+        verify(mSystemAiProvider).isAvailable(eq(mContext), any());
+    }
+
+    @Test
+    public void canShowAiForTab_inMemoryCache() {
+        ServiceLoaderUtil.setInstanceForTesting(
+                SystemAiProviderFactory.class, mSystemAiProviderFactory);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+        setSystemAiProviderAsAvailable();
+
+        var service = AiAssistantService.getInstance();
+
+        var firstAvailabilityResult = service.canShowAiForTab(mContext, mTab);
+
+        assertFalse(
+                "AI service should not be available, as we just queried the provider",
+                firstAvailabilityResult);
+        // System provider should be queried on the first call.
+        verify(mSystemAiProvider).isAvailable(eq(mContext), any());
+        // Simulate query response.
+        mPausedExecutorService.runAll();
+
+        var secondAvailabilityResult = service.canShowAiForTab(mContext, mTab);
+
+        assertTrue(
+                "AI service should now be available, as its response was cached in memory",
+                secondAvailabilityResult);
+
+        verifyNoMoreInteractions(mSystemAiProvider);
+    }
+
+    @Test
+    public void canShowAiForTab_preferenceCache() {
+        ServiceLoaderUtil.setInstanceForTesting(
+                SystemAiProviderFactory.class, mSystemAiProviderFactory);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+
+        var service = AiAssistantService.getInstance();
+        setSystemAiProviderAsAvailable();
+
+        var firstAvailabilityResult = service.canShowAiForTab(mContext, mTab);
+
+        assertFalse(
+                "AI service should not be available, as we just queried the provider",
+                firstAvailabilityResult);
+        // System provider should be queried on the first call.
+        verify(mSystemAiProvider).isAvailable(eq(mContext), any());
+        // Simulate query response.
+        mPausedExecutorService.runAll();
+
+        service = null;
+        AiAssistantService.resetForTesting();
+
+        var newServiceInstance = AiAssistantService.getInstance();
+
+        var secondInstanceResult = newServiceInstance.canShowAiForTab(mContext, mTab);
+
+        assertTrue(
+                "AI service should now be available, as its response was cached in prefs",
+                secondInstanceResult);
+
+        verifyNoMoreInteractions(mSystemAiProvider);
+    }
+
+    // Sets the result of calling the system provider, the result gets scheduled on
+    // mPausedExecutorService, so we need to call mPausedExecutorService.runAll() afterwards to
+    // simulate the query response.
     private void setSystemAiProviderAsAvailable() {
         var serviceAvailableBuilder =
                 ServiceAvailable.newBuilder()
@@ -176,7 +285,14 @@ public class AiAssistantServiceUnitTest {
         var availabilityResponse =
                 AvailabilityResponse.newBuilder().setAvailable(serviceAvailableBuilder).build();
         when(mSystemAiProvider.isAvailable(eq(mContext), any()))
-                .thenReturn(Futures.immediateFuture(availabilityResponse));
+                .thenReturn(
+                        MoreExecutors.listeningDecorator(mPausedExecutorService)
+                                .submit(() -> availabilityResponse));
+    }
+
+    private void initializeAiAssistantService(AiAssistantService service) {
+        service.canShowAiForTab(mContext, mTab);
+        mPausedExecutorService.runAll();
     }
 
     private void setSystemAiProviderAsUnavailable() {
@@ -203,8 +319,8 @@ public class AiAssistantServiceUnitTest {
 
     private void assertLaunchRequestIsForSummarizeUrl(
             LaunchRequest launchRequest, String expectedUrl, String expectedPageContents) {
-        Assert.assertTrue(launchRequest.hasSummarizeUrl());
-        Assert.assertTrue(launchRequest.getSummarizeUrl().hasUrlContext());
+        assertTrue(launchRequest.hasSummarizeUrl());
+        assertTrue(launchRequest.getSummarizeUrl().hasUrlContext());
         Assert.assertEquals(expectedUrl, launchRequest.getSummarizeUrl().getUrlContext().getUrl());
         Assert.assertEquals(
                 expectedPageContents,
@@ -213,7 +329,7 @@ public class AiAssistantServiceUnitTest {
 
     private void assertLaunchRequestIsForAnalyzeAttachment(
             LaunchRequest launchRequest, String expectedUri) {
-        Assert.assertTrue(launchRequest.hasAnalyzeAttachment());
+        assertTrue(launchRequest.hasAnalyzeAttachment());
         assertThat(launchRequest.getAnalyzeAttachment().getFilesCount(), greaterThanOrEqualTo(1));
         Assert.assertEquals(expectedUri, launchRequest.getAnalyzeAttachment().getFiles(0).getUri());
     }

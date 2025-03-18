@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/check_op.h"
@@ -187,7 +188,7 @@ TransferableMessage EncodeWebMessagePayload(const WebMessagePayload& payload) {
   std::vector<uint8_t> buffer;
   WriteUint8(kVersionTag, &buffer);
   WriteUint32(kVersion, &buffer);
-  absl::visit(
+  std::visit(
       base::Overloaded{
           [&](const std::u16string& str) {
             if (ContainsOnlyLatin1(str)) {

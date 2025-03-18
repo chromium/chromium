@@ -25,6 +25,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchMetrics.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchProvider.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchUtils.java",
+    "java/src/org/chromium/chrome/browser/auxiliary_search/FetchAndRankHelper.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleBuilder.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleCoordinator.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/module/AuxiliarySearchModuleMediator.java",
@@ -78,7 +79,10 @@ android_library("java") {
 }
 
 generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchBridge.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchBridge.java",
+    "java/src/org/chromium/chrome/browser/auxiliary_search/FetchAndRankHelper.java",
+  ]
 }
 
 java_cpp_enum("auxiliary_search_enums_srcjar") {

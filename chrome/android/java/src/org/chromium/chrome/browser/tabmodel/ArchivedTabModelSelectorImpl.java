@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabmodel.TabCreator.NeedsTabModel;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -108,7 +109,9 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
                         return null;
                     }
                 };
-        ((ArchivedTabCreator) tabCreator).setTabModel(normalModel);
+        if (tabCreator instanceof NeedsTabModel needsTabModel) {
+            needsTabModel.setTabModel(normalModel);
+        }
 
         onNativeLibraryReadyInternal(
                 tabContentProvider,

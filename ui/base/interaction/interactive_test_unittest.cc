@@ -47,7 +47,9 @@ enum class ActionType {
   kSelectDropdownItem,
   kEnterText,
   kActivateSurface,
+  kFocusElement,
   kSendAccelerator,
+  kSendKeyPress,
   kConfirm
 };
 
@@ -120,13 +122,27 @@ class TestSimulator : public InteractionTestUtil::Simulator {
     return result_;
   }
 
+  ActionResult FocusElement(TrackedElement* element) override {
+    DoAction(ActionType::kFocusElement, element, InputType::kMouse);
+    return result_;
+  }
+
 #if !BUILDFLAG(IS_IOS)
+
   ActionResult SendAccelerator(TrackedElement* element,
                                Accelerator accel) override {
     DoAction(ActionType::kSendAccelerator, element, InputType::kKeyboard);
     return result_;
   }
-#endif
+
+  ActionResult SendKeyPress(TrackedElement* element,
+                            KeyboardCode key,
+                            int flags) override {
+    DoAction(ActionType::kSendKeyPress, element, InputType::kKeyboard);
+    return result_;
+  }
+
+#endif  // !BUILDFLAG(IS_IOS)
 
   ActionResult Confirm(TrackedElement* element) override {
     DoAction(ActionType::kConfirm, element, InputType::kDontCare);
@@ -293,9 +309,10 @@ TEST_F(InteractiveTestTest, InteractionVerbs) {
       SelectTab(kTestId4, 3U, InputType::kTouch),
       SelectDropdownItem(kTestId1, 2U, InputType::kDontCare),
       EnterText(kTestId2, u"The quick brown fox.", TextEntryMode::kAppend),
-      ActivateSurface(kTestId3),
+      ActivateSurface(kTestId3), FocusElement(kTestId1),
 #if !BUILDFLAG(IS_IOS)
       SendAccelerator(kTestId4, Accelerator()),
+      SendKeyPress(kTestId2, KeyboardCode::VKEY_A, EF_NONE),
 #endif
       Confirm(kTestId1));
 
@@ -315,8 +332,12 @@ TEST_F(InteractiveTestTest, InteractionVerbs) {
                                InputType::kKeyboard},
                   ActionRecord{ActionType::kActivateSurface, kTestId3,
                                kTestContext1, InputType::kMouse},
+                  ActionRecord{ActionType::kFocusElement, kTestId1,
+                               kTestContext1, InputType::kMouse},
 #if !BUILDFLAG(IS_IOS)
                   ActionRecord{ActionType::kSendAccelerator, kTestId4,
+                               kTestContext1, InputType::kKeyboard},
+                  ActionRecord{ActionType::kSendKeyPress, kTestId2,
                                kTestContext1, InputType::kKeyboard},
 #endif
                   ActionRecord{ActionType::kConfirm, kTestId1, kTestContext1,
@@ -339,9 +360,10 @@ TEST_F(InteractiveTestTest, InteractionVerbsInAnyContext) {
       InAnyContext(SelectTab(kTestId4, 3U, InputType::kTouch),
                    SelectDropdownItem(kTestId1, 2U, InputType::kDontCare),
                    EnterText(kTestId2, u"The quick brown fox."),
-                   ActivateSurface(kTestId3),
+                   ActivateSurface(kTestId3), FocusElement(kTestId1),
 #if !BUILDFLAG(IS_IOS)
                    SendAccelerator(kTestId4, Accelerator()),
+                   SendKeyPress(kTestId2, VKEY_A, EF_NONE),
 #endif
                    Confirm(kTestId1)));
 
@@ -361,8 +383,12 @@ TEST_F(InteractiveTestTest, InteractionVerbsInAnyContext) {
                                InputType::kKeyboard},
                   ActionRecord{ActionType::kActivateSurface, kTestId3,
                                kTestContext1, InputType::kMouse},
+                  ActionRecord{ActionType::kFocusElement, kTestId1,
+                               kTestContext1, InputType::kMouse},
 #if !BUILDFLAG(IS_IOS)
                   ActionRecord{ActionType::kSendAccelerator, kTestId4,
+                               kTestContext1, InputType::kKeyboard},
+                  ActionRecord{ActionType::kSendKeyPress, kTestId2,
                                kTestContext1, InputType::kKeyboard},
 #endif
                   ActionRecord{ActionType::kConfirm, kTestId1, kTestContext1,

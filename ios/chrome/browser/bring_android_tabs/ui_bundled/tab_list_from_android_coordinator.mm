@@ -26,15 +26,13 @@
 
 - (void)start {
   BringAndroidTabsToIOSService* service =
-      BringAndroidTabsToIOSServiceFactory::GetForProfileIfExists(
-          self.browser->GetProfile());
+      BringAndroidTabsToIOSServiceFactory::GetForProfileIfExists(self.profile);
   _mediator = [[TabListFromAndroidMediator alloc]
       initWithBringAndroidTabsService:service
                             URLLoader:UrlLoadingBrowserAgent::FromBrowser(
                                           self.browser)
                         faviconLoader:IOSChromeFaviconLoaderFactory::
-                                          GetForProfile(
-                                              self.browser->GetProfile())];
+                                          GetForProfile(self.profile)];
 
   TabListFromAndroidViewController* tableViewController =
       [[TabListFromAndroidViewController alloc] init];

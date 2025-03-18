@@ -45,6 +45,7 @@
 <translation id="1652197001188145583">Lorsque cette option est activée, les sites peuvent demander à utiliser des appareils CCP. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser les appareils CCP.</translation>
 <translation id="1660204651932907780">Autoriser les sites à faire jouer du son (recommandé)</translation>
 <translation id="1677097821151855053">Les témoins et les autres données de sites sont utilisés pour se souvenir de vous. Par exemple : pour vous connecter à votre compte ou pour personnaliser les annonces. Pour gérer les témoins pour tous les sites, reportez-vous au menu <ph name="BEGIN_LINK" />Paramètres<ph name="END_LINK" />.</translation>
+<translation id="1679305402657584804">Les sites peuvent demander d'utiliser des appareils CCP</translation>
 <translation id="1686785653877010442">Les sites envoient généralement des notifications pour vous présenter des nouvelles de dernière heure ou des messages de clavardage.</translation>
 <translation id="169515064810179024">Empêcher les sites d'accéder aux capteurs de mouvement</translation>
 <translation id="1703666494654169921">Ne pas autoriser les sites à utiliser des données ni des appareils de réalité virtuelle</translation>
@@ -84,6 +85,7 @@
 <translation id="2185965788978862351">Cette action supprimera <ph name="DATASIZE" /> de données et de témoins stockés par des sites ou des applications sur votre écran d'accueil.</translation>
 <translation id="2194856509914051091">Points à prendre en compte</translation>
 <translation id="2215727959747642672">Modification des fichiers</translation>
+<translation id="2218389616572918761">Les sites peuvent demander d'accéder à votre microphone</translation>
 <translation id="2228071138934252756">Pour autoriser <ph name="APP_NAME" /> à accéder à votre appareil photo, activez aussi celui-ci dans les <ph name="BEGIN_LINK" />paramètres d'Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Les témoins tiers sont bloqués</translation>
 <translation id="2238944249568001759">Recherches suggérées en fonction de votre dernier onglet</translation>
@@ -132,8 +134,10 @@
 <translation id="2726059656860238749">Lancez Chrome avec l'omnibox focalisé, réduisant ainsi le temps de démarrage sur les appareils bas de gamme.</translation>
 <translation id="2750481671343847896">Les sites peuvent afficher des invites de connexion provenant de services de vérification d'identité.</translation>
 <translation id="2787357173144933081">Démarrage rapide d'omnibox</translation>
+<translation id="2789132527330338807">Les sites peuvent demander de créer une carte 3D de votre environnement ou de suivre la position de la caméra</translation>
 <translation id="2790501146643349491">Lorsque cette option est activée, les sites récemment fermés peuvent terminer l'envoi et la réception de données. Lorsqu'elle est désactivée, les sites récemment fermés ne peuvent pas terminer l'envoi ni la réception de données.</translation>
 <translation id="2795716239552913152">Les sites utilisent généralement votre position pour proposer des fonctionnalités ou de l'information pertinente, comme la météo locale ou des magasins à proximité</translation>
+<translation id="2802908157808345702">Ne pas autoriser les sites à envoyer des fenêtres contextuelles ni à utiliser des redirections</translation>
 <translation id="2814830417943086299">Chrome affiche maintenant vos onglets récents dans la liste d'applis et les résultats de recherche de votre appareil. Vous pouvez désactiver cette option en tout temps dans les paramètres de Chrome.</translation>
 <translation id="2822354292072154809">Voulez-vous vraiment réinitialiser toutes les autorisations de site pour <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Demander l'affichage sur un appareil mobile</translation>
@@ -274,6 +278,7 @@
 <translation id="4598549027014564149">En mode navigation privée, les sites ne peuvent pas utiliser de témoins pour suivre votre activité de navigation sur les sites ni même sur les sites connexes. Votre activité de navigation n'utilise pas les options telles que la personnalisation des publicités. Les fonctionnalités de certains sites pourraient ne pas fonctionner.</translation>
 <translation id="461356340001513807">Vous permet de vous connecter à des sites Web en utilisant le compte que vous détenez auprès d'un service de vérification de l'identité</translation>
 <translation id="4619615317237390068">Onglets ouverts sur d'autres appareils</translation>
+<translation id="4635969503923889910">Ne pas autoriser les sites à utiliser des appareils CCP</translation>
 <translation id="4644713492825682049">Supprimer et réinitialiser</translation>
 <translation id="4645575059429386691">Géré par l’un de tes parents</translation>
 <translation id="4670064810192446073">Réalité virtuelle</translation>
@@ -372,6 +377,7 @@
 <translation id="5877248419911025165">Réduire toutes les requêtes</translation>
 <translation id="5884085660368669834">Préférence de site</translation>
 <translation id="5887687176710214216">Dernière visite : hier.</translation>
+<translation id="5908617755156109052">Ne pas permettre aux sites de créer une carte 3D de votre environnement ou de suivre la position de la caméra</translation>
 <translation id="5916664084637901428">Activé</translation>
 <translation id="5922853908706496913">Partage de votre écran en cours…</translation>
 <translation id="5922967540311291836">Bloquer les témoins tiers :</translation>
@@ -582,6 +588,7 @@
 <translation id="8676374126336081632">Effacer l'entrée</translation>
 <translation id="8681886425883659911">Les annonces sont bloquées sur les sites connus pour présenter des annonces intrusives ou trompeuses</translation>
 <translation id="868929229000858085">Effectuez une recherche dans vos contacts</translation>
+<translation id="8707904142362025782">Le site peut demander d'accéder à votre caméra</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8715862698998036666">Faites glisser à partir du haut et balayez à partir du bord gauche ou droit pour quitter le plein écran.</translation>
 <translation id="8719283222052720129">Vous pouvez activer l'autorisation pour <ph name="APP_NAME" /> dans les <ph name="BEGIN_LINK" />paramètres d'Android<ph name="END_LINK" />.</translation>

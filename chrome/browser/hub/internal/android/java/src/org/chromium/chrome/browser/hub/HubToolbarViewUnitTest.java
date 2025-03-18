@@ -5,13 +5,16 @@
 package org.chromium.chrome.browser.hub;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.ACTION_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.COLOR_SCHEME;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.HUB_SEARCH_ENABLED_STATE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_BUTTON_LOOKUP_CALLBACK;
@@ -304,5 +307,16 @@ public class HubToolbarViewUnitTest {
                 ColorStateList.valueOf(
                         ContextCompat.getColor(mActivity, R.color.color_primary_with_alpha_10)),
                 backgroundDrawable.getColor());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
+    public void testHubSearchEnabledState() {
+        mPropertyModel.set(HUB_SEARCH_ENABLED_STATE, false);
+        assertFalse(mSearchBoxText.isEnabled());
+
+        mPropertyModel.set(HUB_SEARCH_ENABLED_STATE, true);
+        assertTrue(mSearchBoxText.isEnabled());
     }
 }

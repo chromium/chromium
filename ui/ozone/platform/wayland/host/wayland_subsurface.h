@@ -5,9 +5,10 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_SUBSURFACE_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_SUBSURFACE_H_
 
+#include <variant>
+
 #include "base/containers/linked_list.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"

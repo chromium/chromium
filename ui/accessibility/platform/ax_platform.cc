@@ -44,6 +44,18 @@ void AXPlatform::NotifyModeAdded(AXMode mode) {
   observers_.Notify(&AXModeObserver::OnAXModeAdded, mode);
 }
 
+void AXPlatform::NotifyAssistiveTechChanged(AssistiveTech assistive_tech) {
+  if (active_assistive_tech_ == assistive_tech) {
+    return;
+  }
+  active_assistive_tech_ = assistive_tech;
+  observers_.Notify(&AXModeObserver::OnAssistiveTechChanged, assistive_tech);
+}
+
+bool AXPlatform::IsScreenReaderActive() {
+  return IsScreenReader(active_assistive_tech_);
+}
+
 bool AXPlatform::IsCaretBrowsingEnabled() {
   return caret_browsing_enabled_;
 }

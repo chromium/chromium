@@ -80,13 +80,13 @@
 
 - (void)start {
   AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
+      AuthenticationServiceFactory::GetForProfile(self.profile);
   id<SystemIdentity> identity =
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   const GaiaId gaiaID(identity.gaiaID);
-  PrefService* prefService = self.browser->GetProfile()->GetPrefs();
+  PrefService* prefService = self.profile->GetPrefs();
   syncer::DeviceInfoSyncService* deviceInfoSyncService =
-      DeviceInfoSyncServiceFactory::GetForProfile(self.browser->GetProfile());
+      DeviceInfoSyncServiceFactory::GetForProfile(self.profile);
   _notificationsObserver = [[NotificationsSettingsObserver alloc]
       initWithPrefService:prefService
                localState:GetApplicationContext()->GetLocalState()];
@@ -103,7 +103,7 @@
   self.viewController.presentationDelegate = self;
   self.viewController.modelDelegate = self.mediator;
   self.viewController.isContentNotificationEnabled =
-      IsContentNotificationEnabled(self.browser->GetProfile());
+      IsContentNotificationEnabled(self.profile);
   self.mediator.consumer = self.viewController;
   [self.baseNavigationController pushViewController:self.viewController
                                            animated:YES];

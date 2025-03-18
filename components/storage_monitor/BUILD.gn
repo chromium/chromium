@@ -4,7 +4,7 @@
 
 import("//build/config/features.gni")
 
-static_library("storage_monitor") {
+component("storage_monitor") {
   sources = [
     "media_storage_util.cc",
     "media_storage_util.h",
@@ -18,6 +18,8 @@ static_library("storage_monitor") {
     "transient_device_ids.cc",
     "transient_device_ids.h",
   ]
+
+  defines = [ "IS_STORAGE_MONITOR_IMPL" ]
 
   deps = [
     "//base",
@@ -162,7 +164,10 @@ source_set("unit_tests") {
       "image_capture_device_manager_unittest.mm",
       "storage_monitor_mac_unittest.mm",
     ]
-    frameworks = [ "UniformTypeIdentifiers.framework" ]
+    frameworks = [
+      "ImageCaptureCore.framework",
+      "UniformTypeIdentifiers.framework",
+    ]
   }
 
   if (is_chromeos) {

@@ -8,7 +8,6 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "components/prefs/pref_service.h"
@@ -40,17 +39,8 @@ const char kKioskLowDiskSeverity[] = "low-disk";
 const uint64_t kLowDiskSevereThreshold = 512 << 20;  // 512MB
 const uint64_t kLowDiskMediumThreshold = 1 << 30;    // 1GB
 
-LowDiskMetricsService::LowDiskMetricsService()
-    : LowDiskMetricsService(g_browser_process->local_state()) {}
-
-// static
-std::unique_ptr<LowDiskMetricsService> LowDiskMetricsService::CreateForTesting(
-    PrefService* pref) {
-  return base::WrapUnique(new LowDiskMetricsService(pref));
-}
-
-LowDiskMetricsService::LowDiskMetricsService(PrefService* prefs)
-    : prefs_(prefs) {
+LowDiskMetricsService::LowDiskMetricsService(PrefService& local_state)
+    : local_state_(local_state) {
   if (!UserDataAuthClient::Get()) {
     return;
   }
@@ -79,12 +69,13 @@ void LowDiskMetricsService::LowDiskSpace(
 
 void LowDiskMetricsService::UpdateCurrentSessionLowDiskSeverity(
     KioskLowDiskSeverity severity) {
-  prefs::ScopedDictionaryPrefUpdate update(prefs_, prefs::kKioskMetrics);
+  prefs::ScopedDictionaryPrefUpdate update(&local_state_.get(),
+                                           prefs::kKioskMetrics);
   update->SetInteger(kKioskLowDiskSeverity, static_cast<int>(severity));
 }
 
 void LowDiskMetricsService::ReportPreviousSessionLowDiskSeverity() {
-  const auto& metrics_dict = prefs_->GetDict(prefs::kKioskMetrics);
+  const auto& metrics_dict = local_state_->GetDict(prefs::kKioskMetrics);
 
   const auto* severity_value = metrics_dict.Find(kKioskLowDiskSeverity);
   if (!severity_value) {

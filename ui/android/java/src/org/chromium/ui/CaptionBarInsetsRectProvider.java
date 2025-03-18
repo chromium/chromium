@@ -9,12 +9,14 @@ import android.view.View;
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 // Note - this class does not currently support the case in which the status bar covers the caption
 // bar, and extends past it (i.e. there is a larger status bar than caption bar).
 // TODO(crbug.com/403349146): Add support for the edge case where the status bar extends below the
 // caption bar.
+@NullMarked
 public class CaptionBarInsetsRectProvider extends InsetsRectProvider {
     /**
      * Create a rect provider for caption bars, which understands the connection between caption bar

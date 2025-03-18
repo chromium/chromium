@@ -4,8 +4,8 @@
 
 #include "components/autofill/core/browser/form_processing/optimization_guide_proto_util.h"
 
-#include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/form_structure_test_api.h"
+#include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -14,42 +14,36 @@ namespace autofill {
 
 namespace {
 
-AutofillField& AddInputField(FormStructure& form,
-                             const std::u16string& label,
-                             const std::u16string& name,
-                             const std::u16string value) {
-  // Needed to have unique renderer ids for different fields.
-  static int renderer_id = 0;
-  FormStructureTestApi test_api{form};
-  AutofillField& added_field = test_api.PushField();
-  added_field.set_renderer_id(FieldRendererId(++renderer_id));
-  added_field.set_value(value);
-  added_field.set_name(name);
-  added_field.set_label(label);
-  return added_field;
-}
+class AutofillOptimizationGuideProtoUtilTest : public testing::Test {
+ private:
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
+};
 
-TEST(AutofillOptimizationGuideProtoUtilTest, ToFormDataProto) {
-  FormStructure form{FormData()};
-  AutofillField& field1 = AddInputField(form, u"label", u"name", u"val");
-  field1.set_is_visible(true);
-  field1.set_is_focusable(true);
-  field1.set_placeholder(u"placeholder");
-  field1.set_form_control_ax_id(123);
+TEST_F(AutofillOptimizationGuideProtoUtilTest, ToFormDataProto) {
+  FormData form = test::GetFormData(
+      {.fields = {{.is_focusable = true,
+                   .is_visible = true,
+                   .label = u"label",
+                   .name = u"name",
+                   .value = u"val",
+                   .placeholder = u"placeholder",
+                   .form_control_ax_id = 123},
+                  {.is_focusable = false,
+                   .is_visible = true,
+                   .label = u"label2",
+                   .name = u"name2",
+                   .value = u"value",
+                   .form_control_ax_id = 124},
+                  {.is_focusable = false,
+                   .is_visible = true,
+                   .label = u"select",
+                   .form_control_type = FormControlType::kSelectOne,
+                   .select_options = {{{.value = u"1", .text = u"text1"},
+                                       {.value = u"2", .text = u"text2"}}
 
-  AutofillField& field2 = AddInputField(form, u"label2", u"name2", u"value");
-  field2.set_is_visible(true);
-  field2.set_is_focusable(false);
-  field2.set_placeholder(u"");
-  field2.set_form_control_ax_id(124);
-
-  AutofillField& field3 = AddInputField(form, u"select", u"", u"");
-  field3.set_form_control_type(FormControlType::kSelectOne);
-  field3.set_options(
-      {{.value = u"1", .text = u"text1"}, {.value = u"2", .text = u"text2"}});
-
+                   }}}});
   optimization_guide::proto::FormData form_data_proto = ToFormDataProto(form);
-  EXPECT_EQ(form_data_proto.fields_size(), 3);
+  ASSERT_EQ(form_data_proto.fields_size(), 3);
 
   optimization_guide::proto::FormFieldData field_data1 =
       form_data_proto.fields(0);
@@ -77,7 +71,7 @@ TEST(AutofillOptimizationGuideProtoUtilTest, ToFormDataProto) {
   EXPECT_EQ(field_data3.field_label(), "select");
   EXPECT_TRUE(field_data3.field_value().empty());
   EXPECT_TRUE(field_data3.field_name().empty());
-  EXPECT_EQ(2, field_data3.select_options_size());
+  ASSERT_EQ(2, field_data3.select_options_size());
   optimization_guide::proto::SelectOption select_option1 =
       field_data3.select_options(0);
   EXPECT_EQ("1", select_option1.value());

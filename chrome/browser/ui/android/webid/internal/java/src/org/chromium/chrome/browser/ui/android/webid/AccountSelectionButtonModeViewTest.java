@@ -152,9 +152,9 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
     public void testAccountsListHasAccountPickerItemDecoration() {
         mSheetAccountItems.addAll(
                 asList(
-                        buildAccountItem(mAnaAccount),
-                        buildAccountItem(mNoOneAccount),
-                        buildAccountItem(mBobAccount)));
+                        buildAccountItem(mAnaAccount, /* showIdp= */ false),
+                        buildAccountItem(mNoOneAccount, /* showIdp= */ false),
+                        buildAccountItem(mBobAccount, /* showIdp= */ false)));
         ShadowLooper.shadowMainLooper().idle();
 
         assertEquals(View.VISIBLE, mContentView.getVisibility());

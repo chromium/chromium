@@ -139,8 +139,7 @@ class AccessibilityControllerTest : public AccessibilityControllerTestBase {
                               ::features::kAccessibilityAccelerator,
                               ::features::kAccessibilityFaceGaze,
                               ::features::kAccessibilityMouseKeys,
-                              ::features::kAccessibilityFlashScreenFeature,
-                              ::features::kOverlayScrollbarsOSSetting},
+                              ::features::kAccessibilityFlashScreenFeature},
         /*disabled_features=*/{::features::kOverlayScrollbar});
     AccessibilityControllerTestBase::SetUp();
   }

@@ -6,6 +6,7 @@
 
 #include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "services/on_device_model/ml/chrome_ml_api.h"
@@ -88,6 +89,8 @@ struct FakeSessionInstance {
   bool cloned;
   bool enable_image_input;
   bool enable_audio_input;
+  uint32_t top_k;
+  float temperature;
 };
 
 struct FakeTsModelInstance {
@@ -126,6 +129,8 @@ ChromeMLSession CreateSession(ChromeMLModel model,
   if (descriptor) {
     instance->enable_image_input = descriptor->enable_image_input;
     instance->enable_audio_input = descriptor->enable_audio_input;
+    instance->top_k = descriptor->top_k;
+    instance->temperature = descriptor->temperature;
     if (descriptor->model_data) {
       instance->adaptation_file_id_ = descriptor->model_data->file_id;
       if (model_instance->backend_type_ == ml::ModelBackendType::kGpuBackend) {
@@ -151,6 +156,8 @@ ChromeMLSession CloneSession(ChromeMLSession session) {
       .cloned = true,
       .enable_image_input = instance->enable_image_input,
       .enable_audio_input = instance->enable_audio_input,
+      .top_k = instance->top_k,
+      .temperature = instance->temperature,
   });
 }
 
@@ -225,6 +232,14 @@ bool SessionExecuteModel(ChromeMLSession session,
     }
     OutputChunk(adaptation_str + "\n");
   }
+
+  // Only include sampling params if they're not the respective default values.
+  if (instance->top_k != 1 || instance->temperature != 0) {
+    OutputChunk(base::StrCat(
+        {"TopK: ", base::NumberToString(instance->top_k),
+         ", Temp: ", base::NumberToString(instance->temperature), "\n"}));
+  }
+
   if (!instance->context_.empty()) {
     for (const std::string& context : instance->context_) {
       OutputChunk("Context: " + context + "\n");

@@ -8,6 +8,7 @@
 #include <string>
 #include <tuple>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -60,7 +61,6 @@
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -94,7 +94,7 @@ bool IsInfoMessage(const content::WebContentsConsoleObserver::Message& msg) {
 class SharedStorageFencedFrameInteractionBrowserTestBase
     : public SharedStorageBrowserTestBase {
  public:
-  using FencedFrameNavigationTarget = absl::variant<GURL, std::string>;
+  using FencedFrameNavigationTarget = std::variant<GURL, std::string>;
 
   // TODO(crbug.com/40256120): This function should be removed. Use
   // `CreateFencedFrame` in fenced_frame_test_util.h instead.
@@ -127,16 +127,16 @@ class SharedStorageFencedFrameInteractionBrowserTestBase
                                    const FencedFrameNavigationTarget& target) {
     return EvalJs(
         root,
-        absl::visit(base::Overloaded{
-                        [](const GURL& url) {
-                          return JsReplace(
-                              "f.config = new FencedFrameConfig($1);", url);
-                        },
-                        [](const std::string& config) {
-                          return JsReplace("f.config = window[$1]", config);
-                        },
-                    },
-                    target));
+        std::visit(base::Overloaded{
+                       [](const GURL& url) {
+                         return JsReplace(
+                             "f.config = new FencedFrameConfig($1);", url);
+                       },
+                       [](const std::string& config) {
+                         return JsReplace("f.config = window[$1]", config);
+                       },
+                   },
+                   target));
   }
 
   // Precondition: There is exactly one existing fenced frame.

@@ -12,6 +12,7 @@
 #include <optional>
 #include <set>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/barrier_closure.h"
@@ -94,7 +95,6 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/network_change_manager.mojom-forward.h"
 #include "storage/browser/quota/special_storage_policy.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -347,7 +347,7 @@ void LogAggregatableReportHistogramCustomTimes(const char* suffix,
 // Called when |report| is to be sent over network for event-level reports or
 // to be assembled for aggregatable reports, for logging metrics.
 void LogMetricsOnReportSend(const AttributionReport& report, base::Time now) {
-  absl::visit(
+  std::visit(
       base::Overloaded{
           [&](const AttributionReport::EventLevelData&) {
             // Use a large time range to capture users that might not open the
@@ -817,7 +817,7 @@ void AttributionManagerImpl::OnSourceStored(
   }
 
   if (const auto* success =
-          absl::get_if<StoreSourceResult::Success>(&result.result())) {
+          std::get_if<StoreSourceResult::Success>(&result.result())) {
     scheduler_timer_->MaybeSet(success->min_fake_report_time);
     if (success->min_fake_report_time.has_value()) {
       NotifyReportsChanged();
@@ -1205,38 +1205,38 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
   // from storage.
 
   std::optional<base::Time> new_report_time =
-      absl::visit(base::Overloaded{
-                      [&](SendResult::Sent sent) -> std::optional<base::Time> {
-                        switch (sent.result) {
-                          case SendResult::Sent::Result::kSent:
-                            LogMetricsOnReportSent(report);
-                            return std::nullopt;
-                          case SendResult::Sent::Result::kTransientFailure:
-                            RecordNetworkConnectionTypeOnFailure(
-                                report.GetReportType(),
-                                scheduler_timer_->connection_type());
-                            return HandleTransientFailureOnSendReport(report);
-                          case SendResult::Sent::Result::kFailure:
-                            RecordNetworkConnectionTypeOnFailure(
-                                report.GetReportType(),
-                                scheduler_timer_->connection_type());
-                            return std::nullopt;
-                        }
-                      },
-                      [](SendResult::Dropped) -> std::optional<base::Time> {
-                        return std::nullopt;
-                      },
-                      [&](SendResult::AssemblyFailure failure)
-                          -> std::optional<base::Time> {
-                        // TODO(linnan): Retry on transient assembly failure
-                        // isn't privacy sensitive, therefore we could consider
-                        // subjecting these failures to a different limit.
-                        return failure.transient
-                                   ? HandleTransientFailureOnSendReport(report)
-                                   : std::nullopt;
-                      },
-                  },
-                  info.result);
+      std::visit(base::Overloaded{
+                     [&](SendResult::Sent sent) -> std::optional<base::Time> {
+                       switch (sent.result) {
+                         case SendResult::Sent::Result::kSent:
+                           LogMetricsOnReportSent(report);
+                           return std::nullopt;
+                         case SendResult::Sent::Result::kTransientFailure:
+                           RecordNetworkConnectionTypeOnFailure(
+                               report.GetReportType(),
+                               scheduler_timer_->connection_type());
+                           return HandleTransientFailureOnSendReport(report);
+                         case SendResult::Sent::Result::kFailure:
+                           RecordNetworkConnectionTypeOnFailure(
+                               report.GetReportType(),
+                               scheduler_timer_->connection_type());
+                           return std::nullopt;
+                       }
+                     },
+                     [](SendResult::Dropped) -> std::optional<base::Time> {
+                       return std::nullopt;
+                     },
+                     [&](SendResult::AssemblyFailure failure)
+                         -> std::optional<base::Time> {
+                       // TODO(linnan): Retry on transient assembly failure
+                       // isn't privacy sensitive, therefore we could consider
+                       // subjecting these failures to a different limit.
+                       return failure.transient
+                                  ? HandleTransientFailureOnSendReport(report)
+                                  : std::nullopt;
+                     },
+                 },
+                 info.result);
 
   base::OnceCallback then = base::BindOnce(
       [](base::OnceClosure done, base::WeakPtr<AttributionManagerImpl> manager,
@@ -1342,8 +1342,7 @@ void AttributionManagerImpl::OnAggregatableReportAssembled(
     return;
   }
 
-  auto* data =
-      absl::get_if<AttributionReport::AggregatableData>(&report.data());
+  auto* data = std::get_if<AttributionReport::AggregatableData>(&report.data());
   CHECK(data);
   data->SetAssembledReport(std::move(assembled_report));
 
@@ -1381,7 +1380,7 @@ void AttributionManagerImpl::MaybeSendAggregatableDebugReport(
           AggregatableDebugReport::Create(is_operation_allowed, result)) {
     std::optional<StoredSource::Id> source_id;
     if (const auto* success =
-            absl::get_if<StoreSourceResult::Success>(&result.result())) {
+            std::get_if<StoreSourceResult::Success>(&result.result())) {
       source_id.emplace(success->source_id);
     }
 

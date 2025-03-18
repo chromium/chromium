@@ -9,6 +9,7 @@
 
 #import "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/history/ui_bundled/history_coordinator.h"
 #import "ios/chrome/browser/main/model/browser_impl.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
@@ -23,12 +24,15 @@
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/recording_command_dispatcher.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/web_state.h"
+#import "net/base/apple/url_conversions.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 
 #pragma mark - ChromeCoordinatorAppInterfaceHelper
 
@@ -42,6 +46,10 @@
 @property(nonatomic, readonly) Browser* browser;
 @property(nonatomic, readonly) RecordingCommandDispatcher* dispatcher;
 @property(nonatomic, readonly) UIViewController* rootViewController;
+
+// Can be used to store a reference to a mock object or delegate that may be
+// needed to test some coordinators.
+@property(nonatomic, strong) id mockObject;
 
 // Returns the shared instance, which holds references to the root view
 // controller, browser, and the coordinator.
@@ -84,6 +92,7 @@
       dismissViewControllerAnimated:NO
                          completion:nil];
   _rootViewController = nil;
+  _mockObject = nil;
   _browser.reset();
   _dispatcher = [[RecordingCommandDispatcher alloc] init];
 }
@@ -129,6 +138,8 @@
       chrome_test_util::GetForegroundActiveScene());
   testBrowser->SetCommandDispatcher(_dispatcher);
   _browser = std::move(testBrowser);
+  UrlLoadingNotifierBrowserAgent::CreateForBrowser(_browser.get());
+  FakeUrlLoadingBrowserAgent::InjectForBrowser(_browser.get());
   [self insertInitialWebstate];
 }
 
@@ -202,6 +213,20 @@
   return self.helper.coordinator;
 }
 
++ (NSURL*)lastURLLoaded {
+  FakeUrlLoadingBrowserAgent* URLLoader =
+      FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
+          UrlLoadingBrowserAgent::FromBrowser(self.helper.browser));
+  return net::NSURLWithGURL(URLLoader->last_params.web_params.url);
+}
+
++ (BOOL)lastURLLoadedInIncognito {
+  FakeUrlLoadingBrowserAgent* URLLoader =
+      FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
+          UrlLoadingBrowserAgent::FromBrowser(self.helper.browser));
+  return URLLoader->last_params.in_incognito;
+}
+
 #pragma mark - Methods to start coordinators
 
 + (void)startLensPromoCoordinator {
@@ -215,6 +240,24 @@
   self.helper.coordinator = [[EnhancedSafeBrowsingPromoCoordinator alloc]
       initWithBaseViewController:[self rootViewController]
                          browser:self.helper.browser];
+  [self.helper.coordinator start];
+}
+
++ (void)startHistoryCoordinator {
+  HistoryCoordinator* coordinator = [[HistoryCoordinator alloc]
+      initWithBaseViewController:[self rootViewController]
+                         browser:self.helper.browser];
+  // Set up a mock delegate to call the passed completion handler.
+  self.helper.mockObject =
+      OCMProtocolMock(@protocol(HistoryCoordinatorDelegate));
+  id completionCaller = [OCMArg checkWithBlock:^BOOL(void (^completion)()) {
+    completion();
+    return YES;
+  }];
+  [[self.helper.mockObject stub] closeHistoryWithCompletion:completionCaller];
+  coordinator.delegate = self.helper.mockObject;
+
+  self.helper.coordinator = coordinator;
   [self.helper.coordinator start];
 }
 

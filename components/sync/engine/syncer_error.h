@@ -6,10 +6,10 @@
 #define COMPONENTS_SYNC_ENGINE_SYNCER_ERROR_H_
 
 #include <string>
+#include <variant>
 
 #include "components/sync/engine/sync_protocol_error.h"
 #include "net/http/http_status_code.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace syncer {
 
@@ -49,12 +49,12 @@ class SyncerError {
   struct SuccessValueType {};
   struct ProtocolViolationValueType {};
 
-  using ValueType = absl::variant<SuccessValueType,
-                                  int /*network error code*/,
-                                  net::HttpStatusCode,
-                                  SyncProtocolErrorType,
-                                  ProtocolViolationValueType>;
-  static_assert(absl::variant_size<ValueType>::value ==
+  using ValueType = std::variant<SuccessValueType,
+                                 int /*network error code*/,
+                                 net::HttpStatusCode,
+                                 SyncProtocolErrorType,
+                                 ProtocolViolationValueType>;
+  static_assert(std::variant_size<ValueType>::value ==
                 static_cast<int>(Type::kMaxValue) + 1);
 
   SyncerError(Type type, ValueType value);

@@ -177,6 +177,11 @@ Si vous activez cette règle, les utilisateurs peuvent utiliser le matériel sur
        Détermine pour les appareils en mode Point de vente la durée d'inactivité préalable à l'affichage de l'économiseur d'écran sur l'écran de connexion.
 
        La valeur de cette règle est définie en millisecondes.</translation>
+<translation id="1141534298047883088">Cette règle permet de spécifier si les appareils des utilisateurs sélectionnés doivent être connectés à un réseau géré pour que ces utilisateurs puissent rejoindre une session <ph name="CLASS_TOOLS_NAME" />.
+
+   Si la règle est définie sur "True", les appareils doivent être connectés à un réseau géré.
+
+   Si la règle est définie sur "False" ou n'est pas configurée, les utilisateurs peuvent rejoindre une session sans être connectés à un réseau géré.</translation>
 <translation id="1143257335984030879">Cette règle détermine la disponibilité de la fonctionnalité Liste d'achats.
       Si elle est activée, les utilisateurs voient l'interface permettant de suivre le prix du produit affiché sur la page active. Le produit suivi s'affiche alors dans le panneau latéral des favoris.
       Si cette règle est activée ou n'est pas configurée, les utilisateurs ont accès à la fonctionnalité Liste d'achats.
@@ -205,6 +210,7 @@ Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA 
             * digest
             * ntlm
             Si cette option est laissée vide, ces trois méthodes peuvent être utilisées.</translation>
+<translation id="1153098295759945906">Les utilisateurs ne peuvent utiliser aucune fonctionnalité de <ph name="CLASS_TOOLS_NAME" /> ni être ajoutés à une session <ph name="CLASS_TOOLS_NAME" />.</translation>
 <translation id="1153306961094113710">Autoriser le débogage à distance</translation>
 <translation id="115699958189272121">Signaler les événements <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /></translation>
 <translation id="1157003104143964656">Ce paramètre active ou désactive l'interception de connexion.
@@ -877,6 +883,7 @@ Remarque : Cette règle ne concerne que l'UI. ChromeOS conserve les paramètres
 
       Remarque : Il est possible de définir des paramètres différents selon que l'appareil est relié à l'alimentation secteur ou qu'il fonctionne sur batterie.</translation>
 <translation id="1607734317623618500">L'appli Web kiosque est utilisable hors connexion</translation>
+<translation id="1608268562678058028">Empêcher les enseignants d'envoyer et d'épingler du contenu sur les écrans des élèves</translation>
 <translation id="1608755754295374538">URL autorisées à accéder aux appareils de capture audio sans avis préalable</translation>
 <translation id="1608901087213748889">Déclenche une action lorsque l'ordinateur est inactif.
 
@@ -1232,6 +1239,7 @@ Elle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</translation>
 Si cette règle est configurée, aucune connexion à un compte à partir des domaines listés n'est requise pour créer un profil distinct.
 
 Cette règle peut être définie sur une chaîne vide afin qu'une connexion à un compte soit toujours requise pour créer un profil distinct.</translation>
+<translation id="1895698360618946084">Configurer la fonctionnalité d'intégration de Google Classroom (<ph name="CLASS_TOOLS_NAME" />)</translation>
 <translation id="1897095538209040086">Si cette règle est activée ou qu'elle n'est pas configurée, <ph name="PRODUCT_NAME" /> laisse au moins un onglet ouvert après avoir basculé vers un navigateur secondaire.
 
 Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> ferme l'onglet après avoir basculé vers un navigateur secondaire, même s'il s'agit du dernier onglet. <ph name="PRODUCT_NAME" /> est alors fermé complètement.</translation>
@@ -1741,6 +1749,11 @@ Si cette règle est désactivée ou qu'elle n'est pas configurée, le transfert 
 <translation id="2246565294817797392">Bloquer les cookies tronqués</translation>
 <translation id="2246621891161157804">Autoriser Chrome à bloquer les navigations vers des protocoles externes dans des cadres iFrame en bac à sable</translation>
 <translation id="224750967938323855">Ne pas afficher l'autorisation de synchronisation lors de la procédure de connexion</translation>
+<translation id="2250738397312289836">Cette règle permet de spécifier si les enseignants sélectionnés peuvent envoyer et épingler du contenu sur les écrans des élèves.
+
+  Si la règle est définie sur "True" ou n'est pas configurée, les enseignants peuvent envoyer et épingler du contenu.
+
+  Si la règle est définie sur "False", les enseignants ne peuvent pas accéder à cette fonctionnalité.</translation>
 <translation id="2252400912879027343">WebSQL restera disponible dans des contextes non sécurisés jusqu'à M109, puis sera indisponible à partir de M110.</translation>
 <translation id="225340736558643885">Activer les avertissements pour les formulaires non sécurisés</translation>
 <translation id="2258126710006312594">Autoriser le transfert de fichiers vers et depuis l'hôte pour les utilisateurs connectés à distance</translation>
@@ -1868,6 +1881,7 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 
           Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.</translation>
 <translation id="2336822410658374491">Désactiver l'accès au menu contextuel du moteur de recherche par défaut</translation>
+<translation id="233726003666026610">Paramètres des groupes suggérés</translation>
 <translation id="2337859888277013371">Ne pas autoriser l'utilisation du cache amélioré</translation>
 <translation id="2341509917222115272">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent choisir d'associer les clients et les hôtes au moment de la connexion, ce qui évite d'avoir à saisir systématiquement un code.
 
@@ -2356,6 +2370,7 @@ Le système n'interroge les enregistrements AAAA que si un hôte IPv6 global pe
       Pour en savoir plus sur les formats d'URL de site valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés. Cette règle ne tient compte que de l'origine. Ainsi, tout chemin d'accès dans le format d'URL est ignoré.
 
       Si cette règle n'est pas définie pour un site, alors la règle <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> s'applique au site (si elle est définie). Sinon, les paramètres par défaut du navigateur s'appliquent, et les utilisateurs peuvent définir l'autorisation pour chaque site.</translation>
+<translation id="272712253546233296">Autoriser les enseignants à afficher à distance les écrans des élèves.</translation>
 <translation id="2727844239611930002">Autorisez <ph name="PRODUCT_NAME" /> à déterminer si l'invite <ph name="PRIVACY_SANDBOX_NAME" /> doit s'afficher ou non.</translation>
 <translation id="2729889068935597630">Cette règle définit le paramètre par défaut pour toutes les fonctionnalités d'IA générative couvertes. Par exemple, si cette règle est définie sur la valeur 1, cette valeur sera le paramètre par défaut pour toutes les fonctionnalités d'IA génératives couvertes. Cela n'aura aucune incidence sur les valeurs de règle définies manuellement. Pour connaître la liste des fonctionnalités couvertes, consultez https://support.google.com/chrome/a?p=generative_ai_settings.
 
@@ -3321,8 +3336,14 @@ Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_DIRECT_SOCKET
 Les formats d'URL ne doivent pas entrer en conflit avec ceux de la règle <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" />. Aucune règle ne prévaut si un format d'URL est listé dans les deux règles.
 
 Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
+<translation id="3475567950961265791">Cette règle permet de spécifier si les enseignants sélectionnés peuvent afficher à distance les écrans des élèves.
+
+   Si la règle est définie sur "True" ou n'est pas configurée, les enseignants peuvent afficher les écrans des élèves.
+
+   Si la règle est définie sur "False", les enseignants ne peuvent pas accéder à cette fonctionnalité.</translation>
 <translation id="3478024346823118645">Effacer les données utilisateur à la déconnexion</translation>
 <translation id="3478406829037689272">Activer l'analyse approfondie des téléchargements pour la navigation sécurisée</translation>
+<translation id="3480403794500220210">Autoriser les enseignants à utiliser une liste d'élèves de Google Classroom.</translation>
 <translation id="3480961938508521469">Recharge complète de la batterie en mode standard.</translation>
 <translation id="348110646151632565">Permet d'activer la fonctionnalité d'accessibilité Sélectionner pour écouter sur l'écran de connexion.
 
@@ -4227,6 +4248,7 @@ Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://cl
 <translation id="4158531549614162499">Activer la synchronisation de Google Drive via des connexions au réseau mobile</translation>
 <translation id="4160962198980004898">Source de l'adresse MAC de l'appareil lorsqu'il est connecté à une station d'accueil</translation>
 <translation id="4161019158509414446">Contrôle les règles pour la fonctionnalité d'ensembles de sites Web associés.</translation>
+<translation id="4161996763955215788">Ne pas exiger que les appareils des utilisateurs soient connectés à un réseau géré pour que ces utilisateurs rejoignent une session <ph name="CLASS_TOOLS_NAME" /></translation>
 <translation id="4164511138197196839">Si cette règle est activée, les extensions dont la publication est annulée sur le Chrome Web Store sont désactivées dans <ph name="PRODUCT_NAME" />.
 Elle ne s'applique qu'aux extensions installées et mises à jour à partir du Chrome Web Store.
 
@@ -4358,6 +4380,11 @@ Cette règle a été supprimée de la version 113 de <ph name="PRODUCT_NAME" />
 <translation id="4245159233848584683">Si cette règle est activée ou n'est pas configurée lorsqu'un appareil est hors connexion, et que la connexion automatique sans délai à un compte local de l'appareil est autorisée, <ph name="PRODUCT_OS_NAME" /> affiche une invite de configuration du réseau.
 
 Si cette règle est désactivée, un message d'erreur s'affiche à la place.</translation>
+<translation id="424605961245122145">Cette règle permet de spécifier si les enseignants peuvent communiquer avec les élèves à l'aide d'une liste d'élèves de Google Classroom. Consultez <ph name="GOOGLE_CLASSROOM_LINK" />.
+
+    Si la règle est définie sur "True" ou n'est pas configurée, les enseignants peuvent utiliser une liste d'élèves de Google Classroom.
+
+    Si la règle est définie sur "False", les enseignants ne peuvent pas accéder à cette fonctionnalité.</translation>
 <translation id="4248277954659222481">Autoriser la lecture automatique des contenus multimédias pour les formats d'URL sur liste d'autorisation</translation>
 <translation id="4250680216510889253">Non</translation>
 <translation id="4251370222792468420">Chrome tente de mettre à niveau certains types de sous-ressources de contenu mixte (HTTP sur un site HTTPS) sur iOS.
@@ -4696,6 +4723,7 @@ Elle n'a aucun effet si elle est activée, laissée vide ou n'est pas définie.<
 <translation id="4508728400492074981">Contrôle les règles pour la fonctionnalité d'ensembles propriétaires.</translation>
 <translation id="4510131075424939993">Spécifier une valeur de salage à utiliser dans <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> lors de l'évaluation des informations d'identification</translation>
 <translation id="4510923771103268849">L'utilisateur est autorisé à accéder à la racine des conteneurs Crostini</translation>
+<translation id="4511848671760711978">Empêcher les enseignants d'afficher à distance les écrans des élèves.</translation>
 <translation id="4512407512989846472">Permettre de bloquer la copie dans le presse-papiers sur les URL spécifiées</translation>
 <translation id="4513691822411041977">N'appliquez pas l'utilisation de SafeSearch dans la recherche Google ou du mode restreint sur YouTube</translation>
 <translation id="4515404363392014383">Activer la navigation sécurisée pour les sources fiables</translation>
@@ -5127,6 +5155,7 @@ Si cette règle est définie sur "False", c'est le comportement par défaut qui 
 <translation id="4826326557828204741">Définit l'action à effectuer si le délai d'inactivité est atteint lorsque l'appareil fonctionne sur batterie.</translation>
 <translation id="4826701474986856664">Afficher l'écran de détection de présence humaine lors de la connexion</translation>
 <translation id="4826977043372474305">Les identifiants Wi-Fi kiosque sont stockés au niveau du kiosque</translation>
+<translation id="4827191685269660892">Configurer la fonctionnalité de <ph name="CLASS_TOOLS_NAME" /> permettant d'envoyer du contenu</translation>
 <translation id="4827727182370777723">Paramètres de l'autorisation des polices locales par défaut</translation>
 <translation id="482803100714220060">Affiche les URL complètes</translation>
 <translation id="4832852360828533362">Création de rapports sur les utilisateurs et les appareils</translation>
@@ -5762,6 +5791,7 @@ Remarque : Cette fonctionnalité n'est pas encore disponible au grand public. S
 <translation id="5252995168844634755">Si cette règle est définie sur "True", le mode bureau unifié est activé, ce qui permet aux applications de couvrir plusieurs écrans. En cas d'écrans individuels, les utilisateurs peuvent désactiver ce mode.
 
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, le mode bureau unifié est désactivé, et les utilisateurs ne peuvent pas l'activer.</translation>
+<translation id="5255030951930491102">Configurer <ph name="CLASS_TOOLS_NAME" /></translation>
 <translation id="5255162913209987122">Peut être recommandée</translation>
 <translation id="525543707238275321">Désactiver les rapports sur le CPU de l'appareil</translation>
 <translation id="5255790642269910630">Si cette règle est configurée, chaque écran pivote en fonction de l'orientation spécifiée, à chaque redémarrage ainsi que la première fois qu'il est affiché après une modification de la valeur de cette règle. Une fois connectés, les utilisateurs peuvent modifier le paramètre de rotation d'écran. Toutefois, le paramètre initial sera rétabli au redémarrage suivant. Cette règle s'applique à l'écran principal, ainsi qu'aux écrans secondaires.
@@ -5950,6 +5980,7 @@ Si cette règle n'est pas configurée, aucune exception à <ph name="URL_BLOCKLI
 <translation id="5373552304217872025">Si cette règle est définie sur "true" ou si elle n'est pas configurée, <ph name="PRODUCT_NAME" /> et <ph name="LACROS_NAME" /> autorisent l'ajout d'une personne depuis le gestionnaire d'utilisateurs.
 
       Si elle est définie sur "false", <ph name="PRODUCT_NAME" /> et <ph name="LACROS_NAME" /> n'autorisent pas l'ajout d'une personne depuis le gestionnaire d'utilisateurs.</translation>
+<translation id="5376378981585287162">Supprimer les fichiers locaux existants (pris en charge depuis la version 136)</translation>
 <translation id="5377606826822211923">Contrôler l'accès par l'utilisateur aux applications Android provenant de sources non approuvées</translation>
 <translation id="5377826248281933035">Cette règle liste des sites sur lesquels les utilisateurs peuvent effectuer des recherches rapides à l'aide de raccourcis dans la barre d'adresse. Les utilisateurs peuvent lancer une recherche en saisissant dans la barre d'adresse le raccourci ou raccourci précédé du caractère @ (par exemple, @travail), puis en appuyant sur la barre d'espace ou la touche de tabulation.
 
@@ -6001,6 +6032,7 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 <translation id="5395778184390568113">Contrôle le raccourci utilisé pour déclencher les touches Origine et Fin du groupe de six touches</translation>
 <translation id="5396322417222266779">Autoriser l'utilisateur à personnaliser les raccourcis système</translation>
 <translation id="5398387276166014955">Autoriser l'injection de code tiers dans Chrome</translation>
+<translation id="5401574762248900530">Configurer la fonctionnalité de <ph name="CLASS_TOOLS_NAME" /> permettant d'afficher les écrans</translation>
 <translation id="5401696449591951427">Activer <ph name="CHROME_DEVICES_LINK" /></translation>
 <translation id="5404749470367600971">Autoriser le filtrage des performances d'accessibilité.</translation>
 <translation id="5405289061476885481">Détermine les dispositions de clavier autorisées sur l'écran de connexion <ph name="PRODUCT_OS_NAME" />.
@@ -6384,6 +6416,7 @@ Lorsqu'elle est définie pour <ph name="PRODUCT_OS_NAME" /> Kiosk, cette règle
 
       Cette règle n'est disponible que pour les utilisateurs disposant d'une licence Chrome Enterprise Premium attribuée.</translation>
 <translation id="5625771176514429288">Les applis Chrome seront autorisées à s'exécuter sur ces plates-formes.</translation>
+<translation id="5627270992026554674">Empêcher les enseignants d'utiliser une liste d'élèves de Google Classroom.</translation>
 <translation id="5630352020869108293">Restaurer la dernière session</translation>
 <translation id="5633871703004128675">Activer la fonctionnalité d'accessibilité de mise en surbrillance du curseur de saisie</translation>
 <translation id="5634032995857968056">Activer le bac à sable du conteneur d'appli de moteur de rendu</translation>
@@ -6629,6 +6662,17 @@ Vous pouvez ajouter une autre restriction de compte avec la règle <ph name="MIC
 <translation id="5836064773277134605">Restreindre la plage de ports UDP utilisés par l'hôte d'accès à distance</translation>
 <translation id="583627479140113555">Activer l'importation des mots de passe enregistrés à la première exécution</translation>
 <translation id="5838452040629810808">Activer la mise en surbrillance du curseur</translation>
+<translation id="5839430986743008680">Cette règle détermine si des groupes basés sur des contenus similaires seront suggérés pour <ph name="PRODUCT_OS_NAME" />. Ces contenus peuvent inclure des applis et onglets de navigateur. Les groupes seront suggérés lorsque les utilisateurs se connecteront. Les bureaux suggérés pour un groupe seront disponibles pendant une session.
+
+0 = Permettre d'utiliser la fonctionnalité tout en autorisant Google à utiliser des données pertinentes pour améliorer ses modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des requêtes, des entrées, des sorties, des documents source et des commentaires écrits. Elles pourront également être examinées par des réviseurs humains pour améliorer les modèles d'IA. 0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
+
+1 = Permettre d'utiliser la fonctionnalité, mais ne pas autoriser Google à améliorer ses modèles à l'aide du contenu des utilisateurs (y compris les requêtes, les entrées, les sorties, les documents source et les commentaires écrits). 1 est la valeur par défaut pour les utilisateurs de la version Enterprise gérés par <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> et pour les comptes Education gérés par <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Ne pas autoriser la fonctionnalité.
+
+Si la règle n'est pas configurée, son comportement est déterminé par la règle <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA générative, veuillez consulter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5841157246593092717">Détermine si les gestionnaires d'événements <ph name="UNLOAD_EVENT_NAME" /> peuvent être désactivés.</translation>
 <translation id="5842283830553218200">Le nouveau comportement d'envoi des événements sur les commandes de formulaire désactivées sera utilisé par défaut.</translation>
 <translation id="5843736977964493779">Interdire le flux <ph name="CLOUD_UPLOAD_NAME" /> pour <ph name="MICROSOFT_ONE_DRIVE_NAME" /> et <ph name="MICROSOFT_365_NAME" /></translation>
@@ -6857,6 +6901,7 @@ Cette règle ne s'applique qu'aux nouvelles tentatives de connexion et n'invalid
 <translation id="5997846976342452720">Indiquer si l'outil de recherche de plug-ins doit être désactivé (obsolète)</translation>
 <translation id="5998198091336830580">Cette règle fait partie du groupe atomique suivant (seules les règles issues de la source ayant la plus haute priorité dans le groupe sont appliquées) :</translation>
 <translation id="6001621991816939414">Effacer l'historique des téléchargements</translation>
+<translation id="600340336794837950">Les utilisateurs pourront rejoindre une session <ph name="CLASS_TOOLS_NAME" /> et y être ajoutés. Les enseignants pourront leur envoyer des contenus.</translation>
 <translation id="600402562436559989">Autoriser la synchronisation des configurations du réseau Wi-Fi entre les appareils <ph name="PRODUCT_OS_NAME" /> et un téléphone Android connecté</translation>
 <translation id="6004575267180297869">
       Indique si les modules WebAssembly peuvent être envoyés vers une autre fenêtre ou un autre nœud de calcul en multi-origine. Le partage de modules WebAssembly en multi-origine deviendra obsolète lors de l'abandon de document.domain. Consultez https://github.com/mikewest/deprecating-document-domain. Cette règle permet de réactiver le partage de modules WebAssembly en multi-origine pour prolonger la période de transition du processus d'abandon.
@@ -7808,6 +7853,7 @@ Pour que les modifications apportées à cette règle puissent être appliquées
       - Si cette règle est désactivée, les administrateurs doivent le signaler aux utilisateurs finaux de l'appareil.</translation>
 <translation id="6605778633186421420">Activer la prise en charge de la compression par dictionnaire</translation>
 <translation id="6607983779935460461">Prise en charge de l'URL des données pour SVGUseElement.</translation>
+<translation id="660893824005096050">Autoriser les enseignants à envoyer une transcription aux élèves.</translation>
 <translation id="6609867253856597039">Définir l'expérience utilisateur pour les fonctionnalités désactivées</translation>
 <translation id="6614557704487944013">Autoriser les utilisateurs à se servir du navigateur <ph name="LACROS_NAME" /></translation>
 <translation id="6614648642325603511">Algorithme pour générer des paires de clés. L'option EC est prise en charge depuis la version 132.</translation>
@@ -8321,6 +8367,13 @@ Cette règle sera supprimée quand la fonctionnalité de pilotes d'impression ho
 
       Si cette règle n'est pas configurée, le protocole HTTP/0.9 est désactivé sur les ports non définis par défaut.</translation>
 <translation id="6969332115615661188">Désactiver l'entrée vidéo</translation>
+<translation id="696985172258622870">Contrôle la migration des fichiers locaux vers le cloud.
+S'applique uniquement aux utilisateurs de SkyVault (c'est-à-dire lorsque LocalUserFilesAllowed est défini sur "False") et est ignoré dans le cas contraire.
+
+Si cette règle est définie sur "google_drive", les fichiers locaux sont déplacés vers Google Drive et les dossiers locaux sont masqués.
+Si cette règle est définie sur "microsoft_onedrive", les fichiers locaux sont déplacés vers OneDrive et les dossiers locaux sont masqués.
+Si cette règle est définie sur "read-only" ou n'est pas configurée, les fichiers locaux restent en mode lecture seule.
+Si cette règle est définie sur "delete", les fichiers locaux existants sont supprimés.</translation>
 <translation id="6969949359984470271">L'appli Web kiosque n'est pas utilisable hors connexion</translation>
 <translation id="6972540544240464302">Sélectionner la configuration du planificateur de tâches</translation>
 <translation id="6975533677426693807">Toujours ouvrir les fichiers PDF dans la visionneuse de PDF interne</translation>
@@ -9502,6 +9555,7 @@ Désactivez cette règle uniquement si vous utilisez une solution de sécurité 
       Si cette règle n'est pas configurée, les sites Web peuvent demander l'accès. Toutefois, les utilisateurs peuvent modifier ce paramètre.
 
       Pour les formats <ph name="URL_LABEL" /> spécifiques, cette règle peut être remplacée par les règles <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> et <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="7950451717181391167">Cette règle permet de spécifier si les utilisateurs utilisent <ph name="CLASS_TOOLS_NAME" /> pour envoyer/recevoir des contenus, envoyer/recevoir des sous-titres en tant qu'élèves ou enseignants, ou si les outils de gestion des cours sont désactivés pour les utilisateurs.</translation>
 <translation id="7952007677054834789">Permet de configurer les pages à charger au démarrage, la page d'accueil par défaut et la page Nouvel onglet par défaut dans <ph name="PRODUCT_NAME" />, tout en empêchant les utilisateurs de les modifier.
 
       Les paramètres de page d'accueil de l'utilisateur ne sont verrouillés complètement que si vous définissez la page Nouvel onglet ou une URL spécifique comme page d'accueil. Si vous ne précisez pas l'URL de la page d'accueil, l'utilisateur est toujours en mesure de définir la page d'accueil sur la page Nouvel onglet en spécifiant "chrome://newtab".
@@ -9637,6 +9691,7 @@ Nous vous recommandons d'utiliser "<ph name="LACROS_SELECTION_USER_CHOICE_VALUE"
 <translation id="80453040817068401">Rendre le navigateur <ph name="LACROS_NAME" /> disponible</translation>
 <translation id="804619600634661088">Autoriser l'utilisation du débogage à distance</translation>
 <translation id="8047600674992048328">Nom visible de l'utilisateur pour cette configuration</translation>
+<translation id="804935152359592405">Configurer la fonctionnalité de <ph name="CLASS_TOOLS_NAME" /> liée à la restriction réseau</translation>
 <translation id="8050080920415773384">Impression en mode natif</translation>
 <translation id="8056237304861875584">Autorisez la tâche Phone Hub à se poursuivre.</translation>
 <translation id="8056273037819805106">Les identifiants de connexion <ph name="PRODUCT_OS_NAME" /> seront utilisés pour l'authentification réseau sur un proxy géré.</translation>
@@ -10116,6 +10171,7 @@ Les certificats doivent être encodés en base64.</translation>
 <translation id="8393850527597048037">Plate-forme uniquement</translation>
 <translation id="8395350646076131800">Délai d'inactivité pour l'écran de verrouillage de l'économiseur d'écran de l'utilisateur.</translation>
 <translation id="8395749934754392549">Contrôle les paramètres du conteneur Android (ARC) et des applications Android.</translation>
+<translation id="8397522492225967301">Autoriser les enseignants à envoyer et épingler du contenu sur les écrans des élèves</translation>
 <translation id="8398952282584132331">Activer l'écran de confidentialité</translation>
 <translation id="8399825694820904218">Si cette règle est définie sur un nombre, <ph name="PRODUCT_NAME" /> affiche un message pendant le nombre de millisecondes défini, puis ouvre un navigateur secondaire.
 
@@ -10147,6 +10203,11 @@ Si cette règle est définie sur <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_
       Si cette règle n'est pas définie, l'API Event.path aura l'état par défaut disponible avant M109 et indisponible de M109 à 114.
 
       Cette règle sera supprimée après Chrome 115.</translation>
+<translation id="8413397475489512035">Cette règle permet de spécifier si les enseignants peuvent utiliser la fonctionnalité de sous-titres.
+
+   Si la règle est définie sur "True" ou n'est pas configurée, les enseignants sélectionnés peuvent sous-titrer leurs propos et envoyer la transcription aux élèves.
+
+   Si la règle est définie sur "False", les enseignants ne peuvent pas accéder à cette fonctionnalité.</translation>
 <translation id="841395160262233331">La touche du Lanceur d'applications/de recherche ne pourra pas modifier le comportement des touches de fonction, et les utilisateurs ne pourront pas modifier ce paramètre.</translation>
 <translation id="8415953438346821074">Si vous activez cette règle, les paramètres stockés dans les profils <ph name="PRODUCT_NAME" />, comme les favoris, les données de saisie automatique et les mots de passe, entre autres, sont également enregistrés dans un fichier stocké dans le dossier des profils utilisateur itinérants ou à un emplacement défini par l'administrateur tel que spécifié dans la règle <ph name="ROAMING_PROFILE_LOCATION_POLICY_NAME" />. Si cette règle est activée, la synchronisation cloud est désactivée.
 
@@ -10157,6 +10218,7 @@ Si cette règle est définie sur <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_
 
       Si la règle n'est pas configurée, la fréquence par défaut (15 minutes) est appliquée.</translation>
 <translation id="8420426128163801949">Autoriser les utilisateurs à activer ou désactiver le Bluetooth</translation>
+<translation id="8421202694245456861">Configurer la fonctionnalité de <ph name="CLASS_TOOLS_NAME" /> permettant d'activer les sous-titres</translation>
 <translation id="8422658829373743789">Contrôler le nouveau comportement d'envoi des événements sur les commandes de formulaire désactivées</translation>
 <translation id="8423237137411858515">Conserver les fichiers locaux en mode lecture seule</translation>
 <translation id="8424255554404582727">Définir la rotation de l'écran par défaut (réappliquée à chaque redémarrage)</translation>
@@ -10937,6 +10999,7 @@ Si cette règle n'est pas configurée, le nouveau comportement sera utilisé tou
 <translation id="8976248126101463034">Autoriser l'authentification gnubby pour les hôtes d'accès à distance</translation>
 <translation id="8976531594979650914">Utiliser l'imprimante système par défaut</translation>
 <translation id="8977192934280677167">Autoriser l'accès par défaut au menu contextuel du moteur de recherche</translation>
+<translation id="8979452496746546475">Empêcher les enseignants d'envoyer une transcription aux élèves.</translation>
 <translation id="8983537551095611459">Configurez la liste des identifiants d'extension exclus de la procédure de nettoyage des sessions Invité gérées restreintes</translation>
 <translation id="8983539044126123594">Permettre la connexion avec d'autres comptes Google</translation>
 <translation id="8985219286836584291">Activer les rapports sur les informations système de l'appareil</translation>
@@ -11324,6 +11387,7 @@ La valeur par défaut est "RollbackDisabled".</translation>
 <translation id="966425658642788645">Appliquer le comportement par défaut</translation>
 <translation id="971677226939413180">L'option "Imprimer en tant qu'image" n'est pas proposée à l'utilisateur.</translation>
 <translation id="974349541138387272">Permet de définir le modèle URI du résolveur DNS-over-HTTPS souhaité</translation>
+<translation id="976415389478739655">Exiger que les appareils des utilisateurs soient connectés un réseau géré pour que ces utilisateurs rejoignent une session <ph name="CLASS_TOOLS_NAME" /></translation>
 <translation id="978619365985286086">Paramètres des outils de gestion des cours</translation>
 <translation id="978658824596356870">Format 24 heures</translation>
 <translation id="979467274961593903">Ne pas autoriser l'utilisation du débogage à distance</translation>

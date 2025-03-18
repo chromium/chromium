@@ -40,7 +40,7 @@
 - (void)start {
   _viewController = [[RecentActivityViewController alloc] init];
 
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   _mediator = [[RecentActivityMediator alloc]
       initWithtabGroup:_tabGroup
       messagingService:collaboration::messaging::
@@ -59,7 +59,7 @@
   sheetPresentationController.widthFollowsPreferredContentSizeWhenEdgeAttached =
       YES;
   sheetPresentationController.detents = @[
-    UISheetPresentationControllerDetent.mediumDetent,
+    [UISheetPresentationControllerDetent mediumDetent],
   ];
 
   [self.baseViewController presentViewController:navigationController

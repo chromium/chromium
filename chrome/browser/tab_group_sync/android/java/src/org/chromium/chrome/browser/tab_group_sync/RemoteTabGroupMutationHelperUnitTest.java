@@ -82,7 +82,7 @@ public class RemoteTabGroupMutationHelperUnitTest {
         List<Tab> tabs = new ArrayList<>();
         tabs.add(mTab1);
         tabs.add(mTab2);
-        when(mTabGroupModelFilter.getRelatedTabListForRootId(eq(ROOT_ID_1))).thenReturn(tabs);
+        when(mTabGroupModelFilter.getTabsInGroup(eq(TOKEN_1))).thenReturn(tabs);
 
         when(mTabGroupModelFilter.getRootIdFromTabGroupId(eq(TOKEN_1))).thenReturn(ROOT_ID_1);
         when(mTabGroupModelFilter.getTabGroupIdFromRootId(eq(ROOT_ID_1))).thenReturn(TOKEN_1);
@@ -114,6 +114,6 @@ public class RemoteTabGroupMutationHelperUnitTest {
         Assert.assertEquals(TAB_URL_1, savedTab2.url);
         Assert.assertEquals(mSavedTabGroupCaptor.getValue().syncId, savedTab2.syncGroupId);
 
-        verify(mTabGroupModelFilter).getRelatedTabListForRootId(eq(ROOT_ID_1));
+        verify(mTabGroupModelFilter).getTabsInGroup(eq(TOKEN_1));
     }
 }

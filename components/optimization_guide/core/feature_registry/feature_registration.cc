@@ -76,6 +76,10 @@ BASE_FEATURE(kFormsAnnotationsMqlsLogging,
              "FormsAnnotationsMqlsLogging",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPasswordChangeSubmissionMqlsLogging,
+             "PasswordChangeSubmissionMqlsLogging",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 
 namespace {
@@ -190,6 +194,7 @@ void RegisterHistorySearch() {
 }
 
 void RegisterPasswordChangeSubmission() {
+  const char* kPasswordChangeSubmissionName = "PasswordChangeSubmission";
   EnterprisePolicyPref enterprise_policy =
       EnterprisePolicyRegistry::GetInstance().Register(
           prefs::kPasswordChangeSubmissionEnterprisePolicyAllowed);
@@ -199,6 +204,18 @@ void RegisterPasswordChangeSubmission() {
       UserVisibleFeatureKey::kPasswordChangeSubmission,
       std::move(enterprise_policy));
   SettingsUiRegistry::GetInstance().Register(std::move(ui_metadata));
+
+  UserFeedbackCallback logging_callback_answer =
+      base::BindRepeating([](proto::LogAiDataRequest& request_proto) {
+        // There is no user feedback on password change submission yet.
+        return proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
+      });
+  auto mqls_metadata = std::make_unique<MqlsFeatureMetadata>(
+      kPasswordChangeSubmissionName,
+      proto::LogAiDataRequest::FeatureCase::kPasswordChangeSubmission,
+      enterprise_policy, &features::kPasswordChangeSubmissionMqlsLogging,
+      logging_callback_answer);
+  MqlsFeatureRegistry::GetInstance().Register(std::move(mqls_metadata));
 }
 
 void RegisterProductSpecifications() {

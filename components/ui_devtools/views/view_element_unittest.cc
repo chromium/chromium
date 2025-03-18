@@ -281,7 +281,7 @@ TEST_F(ViewElementTest, GetNodeWindowAndScreenBounds) {
   widget->Init(std::move(params));
   widget->Show();
 
-  widget->GetContentsView()->AddChildView(view());
+  widget->GetContentsView()->AddChildViewRaw(view());
   gfx::Rect bounds(50, 60, 70, 80);
   view()->SetBoundsRect(bounds);
 
@@ -349,7 +349,7 @@ TEST_F(ViewElementTest, DispatchMouseEvent) {
       CreateParams(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
                    views::Widget::InitParams::TYPE_WINDOW);
   widget->Init(std::move(params));
-  widget->GetContentsView()->AddChildView(view());
+  widget->GetContentsView()->AddChildViewRaw(view());
   widget->Show();
   gfx::Rect bounds(50, 60, 70, 80);
   view()->SetBoundsRect(bounds);

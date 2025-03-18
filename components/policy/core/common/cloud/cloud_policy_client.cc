@@ -6,6 +6,7 @@
 
 #include <string>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/check_is_test.h"
@@ -309,13 +310,13 @@ CloudPolicyClient::Result::Result(DeviceManagementStatus status, int net_error)
 CloudPolicyClient::Result::Result(NotRegistered) : result_(NotRegistered()) {}
 
 bool CloudPolicyClient::Result::IsSuccess() const {
-  return result_ == absl::variant<NotRegistered, DeviceManagementStatus>(
-                        DM_STATUS_SUCCESS);
+  return result_ ==
+         std::variant<NotRegistered, DeviceManagementStatus>(DM_STATUS_SUCCESS);
 }
 
 bool CloudPolicyClient::Result::IsClientNotRegisteredError() const {
   return result_ ==
-         absl::variant<NotRegistered, DeviceManagementStatus>(NotRegistered());
+         std::variant<NotRegistered, DeviceManagementStatus>(NotRegistered());
 }
 
 bool CloudPolicyClient::Result::IsDMServerError() const {
@@ -323,7 +324,7 @@ bool CloudPolicyClient::Result::IsDMServerError() const {
 }
 
 DeviceManagementStatus CloudPolicyClient::Result::GetDMServerError() const {
-  return absl::get<DeviceManagementStatus>(result_);
+  return std::get<DeviceManagementStatus>(result_);
 }
 
 int CloudPolicyClient::Result::GetNetError() const {

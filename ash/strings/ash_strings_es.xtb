@@ -166,6 +166,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1505542291183484463">Ventana redimensionada en recuadro hacia abajo</translation>
 <translation id="1510238584712386396">Menú de aplicaciones</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Muestra la configuración de notificaciones. Las notificaciones están desactivadas para una aplicación.}other{Muestra la configuración de notificaciones. Las notificaciones están desactivadas para # aplicaciones.}}</translation>
+<translation id="1521655867290435174">Hojas de cálculo de Google</translation>
 <translation id="1523032696246003">Batería: <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> para completar la carga</translation>
 <translation id="1525508553941733066">CERRAR</translation>
 <translation id="1526448108126799339">Abrir nueva pestaña en una ventana nueva</translation>
@@ -345,7 +346,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2201071101391734388">Foto reciente <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Contraer Google Tasks</translation>
 <translation id="2208323208084708176">Modo Escritorio unificado</translation>
-<translation id="2220572644011485463">PIN o contraseña</translation>
 <translation id="2222841058024245321">Escritorio 7</translation>
 <translation id="2223384056430485343">En una pantalla dividida</translation>
 <translation id="2224075387478458881">La grabación de pantalla no está permitida cuando se muestra contenido protegido</translation>
@@ -1830,7 +1830,6 @@ Nueva instalación</translation>
 <translation id="7000027735917578303">Configuración de Windows y escritorios</translation>
 <translation id="7004910047186208204">Conectarse a datos móviles</translation>
 <translation id="7005239792648594238">Abre una aplicación para empezar</translation>
-<translation id="7007983414944123363">No se ha podido verificar tu PIN o contraseña. Inténtalo de nuevo.</translation>
 <translation id="7014684956566476813">Conectado a un dispositivo llamado <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Hora a la que puedes volver: <ph name="COME_BACK_TIME" /></translation>
 <translation id="70168403932084660">Escritorio 6</translation>
@@ -2467,6 +2466,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="9168436347345867845">En otro momento</translation>
 <translation id="9178475906033259337">Se muestra 1 resultado de <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Esta función te permite acceder rápidamente a cualquier usuario que haya iniciado sesión sin tener que introducir una contraseña. Solo debes usar esta función con las cuentas de confianza.</translation>
+<translation id="9183302530794969518">Documentos de Google</translation>
 <translation id="9183456764293710005">Lupa de pantalla completa</translation>
 <translation id="9192133205265227850">Usar <ph name="DEVICE_NAME" /></translation>
 <translation id="9193626018745640770">Se está enviando contenido a un receptor desconocido</translation>

@@ -12,6 +12,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -36,7 +37,6 @@
 #include "components/security_state/core/security_state.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class GURL;
 
@@ -870,8 +870,8 @@ class AutofillMetrics {
   // `payments::PaymentsAutofillClient::PaymentsRpcCardType` or
   // `CreditCard::RecordType`, starting with a period.
   static std::string GetHistogramStringForCardType(
-      absl::variant<payments::PaymentsAutofillClient::PaymentsRpcCardType,
-                    CreditCard::RecordType> card_type);
+      std::variant<payments::PaymentsAutofillClient::PaymentsRpcCardType,
+                   CreditCard::RecordType> card_type);
 
   // Returns 64-bit hash of the string of form global id, which consists of
   // |frame_token| and |renderer_id|.

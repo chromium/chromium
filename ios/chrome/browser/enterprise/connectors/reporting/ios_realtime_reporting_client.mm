@@ -6,11 +6,13 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/escape.h"
+#import "base/timer/timer.h"
 #import "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #import "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #import "components/enterprise/browser/identifiers/profile_id_service.h"
 #import "components/policy/core/common/cloud/affiliation.h"
 #import "components/policy/core/common/cloud/cloud_policy_client.h"
+#import "components/policy/core/common/cloud/cloud_policy_constants.h"
 #import "components/policy/core/common/cloud/dm_token.h"
 #import "components/policy/core/common/cloud/reporting_job_configuration_base.h"
 #import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
@@ -201,6 +203,31 @@ IOSRealtimeReportingClient::CreateUploadEventsRequest() {
 
   // TODO(crbug.com/394098919): Implement this before starting reporting events.
   return request;
+}
+
+void IOSRealtimeReportingClient::OnClientError(
+    policy::CloudPolicyClient* client) {
+  // This is the status set when the server returned 403, which is what the
+  // reporting server returns when the customer is not allowed to report events.
+  if (client->last_dm_status() ==
+      policy::DM_STATUS_SERVICE_MANAGEMENT_NOT_SUPPORTED) {
+    // This could happen if a second event was fired before the first one
+    // returned an error.
+    if (!rejected_dm_token_timers_.contains(client->dm_token())) {
+      rejected_dm_token_timers_[client->dm_token()] =
+          std::make_unique<base::OneShotTimer>();
+      rejected_dm_token_timers_[client->dm_token()]->Start(
+          FROM_HERE, base::Hours(24),
+          base::BindOnce(
+              &IOSRealtimeReportingClient::RemoveDmTokenFromRejectedSet,
+              AsWeakPtrImpl(), client->dm_token()));
+    }
+  }
+}
+
+void IOSRealtimeReportingClient::RemoveDmTokenFromRejectedSet(
+    const std::string& dm_token) {
+  rejected_dm_token_timers_.erase(dm_token);
 }
 
 base::WeakPtr<RealtimeReportingClientBase>

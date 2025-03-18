@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -135,10 +136,10 @@ void FrameCaptionButton::SetImage(CaptionButtonIcon icon,
   // If the button is not yet in a widget, OnThemeChanged() will call back
   // here once it is, updating the color as needed.
   SkColor icon_color = gfx::kPlaceholderColor;
-  if (absl::holds_alternative<SkColor>(color_)) {
-    icon_color = GetButtonColor(absl::get<SkColor>(color_));
+  if (std::holds_alternative<SkColor>(color_)) {
+    icon_color = GetButtonColor(std::get<SkColor>(color_));
   } else if (const auto* color_provider = GetColorProvider()) {
-    icon_color = color_provider->GetColor(absl::get<ui::ColorId>(color_));
+    icon_color = color_provider->GetColor(std::get<ui::ColorId>(color_));
   }
 
   gfx::ImageSkia new_icon_image =
@@ -215,8 +216,8 @@ views::PaintInfo::ScaleType FrameCaptionButton::GetPaintScaleType() const {
 }
 
 void FrameCaptionButton::SetBackgroundColor(SkColor background_color) {
-  if (absl::holds_alternative<SkColor>(color_) &&
-      absl::get<SkColor>(color_) == background_color) {
+  if (std::holds_alternative<SkColor>(color_) &&
+      std::get<SkColor>(color_) == background_color) {
     return;
   }
 
@@ -225,8 +226,8 @@ void FrameCaptionButton::SetBackgroundColor(SkColor background_color) {
 }
 
 void FrameCaptionButton::SetIconColorId(ui::ColorId icon_color_id) {
-  if (absl::holds_alternative<ui::ColorId>(color_) &&
-      absl::get<ui::ColorId>(color_) == icon_color_id) {
+  if (std::holds_alternative<ui::ColorId>(color_) &&
+      std::get<ui::ColorId>(color_) == icon_color_id) {
     return;
   }
 
@@ -235,7 +236,7 @@ void FrameCaptionButton::SetIconColorId(ui::ColorId icon_color_id) {
 }
 
 SkColor FrameCaptionButton::GetBackgroundColor() const {
-  return absl::get<SkColor>(color_);
+  return std::get<SkColor>(color_);
 }
 
 void FrameCaptionButton::SetInkDropCornerRadius(int ink_drop_corner_radius) {
@@ -400,9 +401,9 @@ void FrameCaptionButton::UpdateInkDropBaseColor() {
   // TODO(pkasting): It would likely be better to make the button glyph always
   // be an alpha-blended version of GetColorWithMaxContrast(background_color_).
   const SkColor button_color =
-      absl::holds_alternative<ui::ColorId>(color_)
-          ? GetColorProvider()->GetColor(absl::get<ui::ColorId>(color_))
-          : GetButtonColor(absl::get<SkColor>(color_));
+      std::holds_alternative<ui::ColorId>(color_)
+          ? GetColorProvider()->GetColor(std::get<ui::ColorId>(color_))
+          : GetButtonColor(std::get<SkColor>(color_));
 
   InkDrop::Get(this)->SetBaseColor(
       GetColorWithMaxContrast(GetColorWithMaxContrast(button_color)));

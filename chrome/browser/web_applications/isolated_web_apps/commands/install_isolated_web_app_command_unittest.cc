@@ -11,6 +11,7 @@
 #include <string_view>
 #include <type_traits>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check_op.h"
@@ -836,7 +837,7 @@ TEST_P(InstallIsolatedWebAppCommandBundleTest, InstallsWhenThereIsNoError) {
 
   if (bundle_info_.want_success) {
     EXPECT_THAT(result, HasValue());
-    absl::visit(
+    std::visit(
         base::Overloaded{[&iwa_root_dir](const IwaStorageOwnedBundle& bundle) {
                            EXPECT_TRUE(DirectoryExists(iwa_root_dir));
                            EXPECT_TRUE(PathExists(iwa_root_dir.AppendASCII(
@@ -851,7 +852,7 @@ TEST_P(InstallIsolatedWebAppCommandBundleTest, InstallsWhenThereIsNoError) {
     EXPECT_THAT(result, Not(HasValue()));
     // Wait till IWA directory is removed.
     task_environment()->RunUntilIdle();
-    absl::visit(
+    std::visit(
         base::Overloaded{
             [&iwa_root_dir](const IwaSourceBundleWithModeAndFileOp& source) {
               switch (source.mode_and_file_op()) {

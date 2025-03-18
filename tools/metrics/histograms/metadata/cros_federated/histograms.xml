@@ -32,7 +32,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="FederatedService.ServiceEvent" enum="FederatedServiceEvent"
-    expires_after="2025-07-13">
+    expires_after="2025-09-14">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>cros-federated-team@google.com</owner>
@@ -110,7 +110,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FederatedService.{Population}.Event"
-    enum="FederatedClientEvent" expires_after="2025-07-13">
+    enum="FederatedClientEvent" expires_after="2025-09-14">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>cros-federated-team@google.com</owner>

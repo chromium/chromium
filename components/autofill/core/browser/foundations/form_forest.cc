@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -20,7 +21,6 @@
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/autofill/core/browser/foundations/form_forest_util_inl.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace autofill::internal {
 
@@ -73,12 +73,12 @@ FormForest::FrameAndForm FormForest::GetRoot(FormGlobalId form) {
 }
 
 void FormForest::EraseReferencesTo(
-    absl::variant<LocalFrameToken, FormGlobalId> frame_or_form,
+    std::variant<LocalFrameToken, FormGlobalId> frame_or_form,
     base::flat_set<FormGlobalId>* forms_with_removed_fields) {
   auto Match = [&](FormGlobalId form) {
-    return absl::holds_alternative<LocalFrameToken>(frame_or_form)
-               ? absl::get<LocalFrameToken>(frame_or_form) == form.frame_token
-               : absl::get<FormGlobalId>(frame_or_form) == form;
+    return std::holds_alternative<LocalFrameToken>(frame_or_form)
+               ? std::get<LocalFrameToken>(frame_or_form) == form.frame_token
+               : std::get<FormGlobalId>(frame_or_form) == form;
   };
   for (std::unique_ptr<FrameData>& some_frame : frame_datas_) {
     for (FormData& some_form : some_frame->child_forms) {

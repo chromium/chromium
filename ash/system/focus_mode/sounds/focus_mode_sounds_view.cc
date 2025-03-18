@@ -5,6 +5,7 @@
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_view.h"
 
 #include <memory>
+#include <variant>
 
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -27,7 +28,6 @@
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -325,12 +325,12 @@ constexpr std::partial_ordering FocusModeSoundsView::ToastData::operator<=>(
     return kActionValue.at(action_type) <=> kActionValue.at(other.action_type);
   }
 
-  if (absl::holds_alternative<int>(message)) {
-    if (absl::holds_alternative<std::u16string>(other.message)) {
+  if (std::holds_alternative<int>(message)) {
+    if (std::holds_alternative<std::u16string>(other.message)) {
       return std::partial_ordering::less;
     }
   } else {
-    if (absl::holds_alternative<int>(other.message)) {
+    if (std::holds_alternative<int>(other.message)) {
       return std::partial_ordering::greater;
     }
   }
@@ -630,9 +630,9 @@ void FocusModeSoundsView::ProcessError(const ToastData& data) {
   }
 
   const std::u16string& message =
-      absl::holds_alternative<std::u16string>(data.message)
-          ? absl::get<std::u16string>(data.message)
-          : l10n_util::GetStringUTF16(absl::get<int>(data.message));
+      std::holds_alternative<std::u16string>(data.message)
+          ? std::get<std::u16string>(data.message)
+          : l10n_util::GetStringUTF16(std::get<int>(data.message));
   ShowErrorMessageForType(
       data.source == focus_mode_util::SoundType::kSoundscape, message,
       data.action_type);

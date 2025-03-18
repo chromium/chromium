@@ -6,16 +6,16 @@
 #define UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_OPTIONAL_H_
 
 #include <string>
+#include <variant>
 
 #include "base/component_export.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 // Used for template specialization.
 template <typename T>
 struct is_variant : std::false_type {};
 template <typename... Args>
-struct is_variant<absl::variant<Args...>> : std::true_type {};
+struct is_variant<std::variant<Args...>> : std::true_type {};
 template <typename T>
 inline constexpr bool is_variant_v = is_variant<T>::value;
 
@@ -117,7 +117,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXOptional final {
       State state,
       const std::string& state_text = {},
       typename std::enable_if<is_variant_v<T>>::type* = 0)
-      : value_(absl::monostate()), state_(state), state_text_(state_text) {}
+      : value_(std::monostate()), state_(state), state_text_(state_text) {}
 
   explicit constexpr AXOptional(ValueType value, State state)
       : value_(value), state_(state) {}

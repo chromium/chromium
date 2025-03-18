@@ -316,7 +316,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1532118530259321453">Denne side siger</translation>
 <translation id="1533966801397200693">Den profil, du er logget ind på, er en administreret profil. Din administrator kan foretage ændringer i dine profilindstillinger via fjernadgang, analysere oplysninger om browseren via rapportering og udføre andre nødvendige opgaver. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Oversæt side</translation>
-<translation id="1538295100801850685">Forbedringer af forudsigelser</translation>
 <translation id="1539840569003678498">Rapporten blev sendt:</translation>
 <translation id="1542105669288201090">Erhvervsuddannelse</translation>
 <translation id="1545757265410828525">Prishistorik</translation>
@@ -1157,7 +1156,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3052868890529250114">Du opretter normalt forbindelse til websites på en sikker måde, men Chrome kunne ikke anvende en sikker forbindelse denne gang. Det kan skyldes en hacker, der prøver at opfange eller ændre din netværksforbindelse. <ph name="BEGIN_LEARN_MORE_LINK" />Få flere oplysninger om denne advarsel<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Prisfald på <ph name="PRICE_DROP" /> på <ph name="PRODUCT_NAME" /></translation>
 <translation id="3061707000357573562">Tjeneste til programrettelse</translation>
-<translation id="306198082577913404">Aktivér forbedringer af forudsigelser</translation>
 <translation id="3062655045399308513">Slet browserdata...</translation>
 <translation id="3063453392496098461">Installationen af VPN-baggrundstjenester mislykkedes.</translation>
 <translation id="306573536155379004">Spillet er startet.</translation>
@@ -2325,7 +2323,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5097099694988056070">Enhedsstatistik som f.eks. CPU/RAM-forbrug</translation>
 <translation id="5097468150760963273">27 x 39 tommer</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome skal have adgang til din enheds <ph name="PERMISSION" /></translation>
 <translation id="510644072453496781">Pap (lukkede ender)</translation>
 <translation id="5106648964679263509">Virtuelt kort for <ph name="BNPL_ISSUER_NAME" /> er udfyldt</translation>
 <translation id="5108881358339761672">Websitet er ikke sikkert</translation>
@@ -4054,7 +4051,6 @@ Yderligere oplysninger:
 <translation id="8134058435519644366">Rekruttering og personale</translation>
 <translation id="8135546115396015134">venstre tast</translation>
 <translation id="8137456439814903304">Energi og forsyning</translation>
-<translation id="81474145143203755">Hvis du vil bruge <ph name="PERMISSION" /> på dette website, skal du give Chrome adgang</translation>
 <translation id="8148608574971654810">PDF-version:</translation>
 <translation id="8149426793427495338">Din computer gik i dvale.</translation>
 <translation id="8150722005171944719">Filen i <ph name="URL" /> kan ikke læses. Den kan være blevet fjernet, flyttet, eller også forhindrer filtilladelser muligvis adgangen.</translation>

@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 
+#include <variant>
+
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
@@ -33,9 +35,9 @@ MandatoryReauthManager::~MandatoryReauthManager() = default;
 // static
 NonInteractivePaymentMethodType
 MandatoryReauthManager::GetNonInteractivePaymentMethodType(
-    absl::variant<CreditCard::RecordType, Iban::RecordType> record_type) {
+    std::variant<CreditCard::RecordType, Iban::RecordType> record_type) {
   if (CreditCard::RecordType* type =
-          absl::get_if<CreditCard::RecordType>(&record_type)) {
+          std::get_if<CreditCard::RecordType>(&record_type)) {
     switch (*type) {
       case CreditCard::RecordType::kLocalCard:
         return NonInteractivePaymentMethodType::kLocalCard;
@@ -47,11 +49,11 @@ MandatoryReauthManager::GetNonInteractivePaymentMethodType(
         return NonInteractivePaymentMethodType::kMaskedServerCard;
     }
   } else {
-    if (absl::get<Iban::RecordType>(record_type) ==
+    if (std::get<Iban::RecordType>(record_type) ==
         Iban::RecordType::kLocalIban) {
       return NonInteractivePaymentMethodType::kLocalIban;
     } else {
-      CHECK_NE(absl::get<Iban::RecordType>(record_type),
+      CHECK_NE(std::get<Iban::RecordType>(record_type),
                Iban::RecordType::kUnknown);
       return NonInteractivePaymentMethodType::kServerIban;
     }

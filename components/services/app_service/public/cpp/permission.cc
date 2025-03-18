@@ -5,10 +5,10 @@
 #include "components/services/app_service/public/cpp/permission.h"
 
 #include <sstream>
+#include <variant>
 
 #include "base/containers/to_value_list.h"
 #include "base/strings/to_string.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace apps {
 
@@ -59,11 +59,11 @@ PermissionPtr Permission::Clone() const {
 }
 
 bool Permission::IsPermissionEnabled() const {
-  if (absl::holds_alternative<bool>(value)) {
-    return absl::get<bool>(value);
+  if (std::holds_alternative<bool>(value)) {
+    return std::get<bool>(value);
   }
-  if (absl::holds_alternative<TriState>(value)) {
-    return absl::get<TriState>(value) == TriState::kAllow;
+  if (std::holds_alternative<TriState>(value)) {
+    return std::get<TriState>(value) == TriState::kAllow;
   }
   return false;
 }
@@ -71,10 +71,10 @@ bool Permission::IsPermissionEnabled() const {
 std::string Permission::ToString() const {
   std::stringstream out;
   out << " permission type: " << EnumToString(permission_type) << std::endl;
-  if (absl::holds_alternative<bool>(value)) {
-    out << " bool_value: " << base::ToString(absl::get<bool>(value));
-  } else if (absl::holds_alternative<TriState>(value)) {
-    out << " tristate_value: " << EnumToString(absl::get<TriState>(value));
+  if (std::holds_alternative<bool>(value)) {
+    out << " bool_value: " << base::ToString(std::get<bool>(value));
+  } else if (std::holds_alternative<TriState>(value)) {
+    out << " tristate_value: " << EnumToString(std::get<TriState>(value));
   }
   out << std::endl;
   if (details.has_value()) {
@@ -114,11 +114,11 @@ base::Value::Dict ConvertPermissionToDict(const PermissionPtr& permission) {
 
   dict.Set(kPermissionTypeKey, static_cast<int>(permission->permission_type));
 
-  if (absl::holds_alternative<bool>(permission->value)) {
-    dict.Set(kValueKey, absl::get<bool>(permission->value));
-  } else if (absl::holds_alternative<TriState>(permission->value)) {
+  if (std::holds_alternative<bool>(permission->value)) {
+    dict.Set(kValueKey, std::get<bool>(permission->value));
+  } else if (std::holds_alternative<TriState>(permission->value)) {
     dict.Set(kValueKey,
-             static_cast<int>(absl::get<TriState>(permission->value)));
+             static_cast<int>(std::get<TriState>(permission->value)));
   }
 
   dict.Set(kIsManagedKey, permission->is_managed);

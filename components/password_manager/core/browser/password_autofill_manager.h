@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/check_deref.h"
@@ -27,7 +28,6 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_suggestion_flow.h"
 #include "components/password_manager/core/browser/password_suggestion_generator.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gfx/image/image.h"
 
 namespace favicon_base {
@@ -58,7 +58,7 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
   ~PasswordAutofillManager() override;
 
   // AutofillSuggestionDelegate implementation.
-  absl::variant<autofill::AutofillDriver*, PasswordManagerDriver*> GetDriver()
+  std::variant<autofill::AutofillDriver*, PasswordManagerDriver*> GetDriver()
       override;
   void OnSuggestionsShown(
       base::span<const autofill::Suggestion> suggestions) override;

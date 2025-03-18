@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -19,7 +20,6 @@
 #include "base/types/strong_alias.h"
 #include "base/values.h"
 #include "base/version.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -36,7 +36,7 @@ class UpdateChannel {
   // Returns an instance of the "default" update channel.
   static const UpdateChannel& default_channel();
 
-  static base::expected<UpdateChannel, absl::monostate> Create(
+  static base::expected<UpdateChannel, std::monostate> Create(
       std::string input);
 
   UpdateChannel(const UpdateChannel&);
@@ -76,7 +76,7 @@ class UpdateManifest {
 
   class ChannelMetadata {
    public:
-    static base::expected<ChannelMetadata, absl::monostate> ParseFromJson(
+    static base::expected<ChannelMetadata, std::monostate> ParseFromJson(
         const base::Value::Dict& channel_metadata_dict);
 
     ChannelMetadata(UpdateChannel update_channel,
@@ -111,7 +111,7 @@ class UpdateManifest {
 
   class VersionEntry {
    public:
-    static base::expected<VersionEntry, absl::monostate> ParseFromJson(
+    static base::expected<VersionEntry, std::monostate> ParseFromJson(
         const base::Value::Dict& version_entry_dict,
         const GURL& update_manifest_url);
 
@@ -136,11 +136,11 @@ class UpdateManifest {
    private:
     friend bool operator==(const VersionEntry& a, const VersionEntry& b);
 
-    static base::expected<base::Version, absl::monostate>
+    static base::expected<base::Version, std::monostate>
     ParseAndValidateVersion(
         base::optional_ref<const base::Value> version_value);
 
-    static base::expected<GURL, absl::monostate> ParseAndValidateSrc(
+    static base::expected<GURL, std::monostate> ParseAndValidateSrc(
         base::optional_ref<const base::Value> src_value,
         const GURL& update_manifest_url);
 
@@ -148,7 +148,7 @@ class UpdateManifest {
     // set of channels on success or an error on failure. If `channels` is not
     // set (i.e., `channels_value` is `std::nullopt`), then a set containing
     // just the "default" channel is returned.
-    static base::expected<base::flat_set<UpdateChannel>, absl::monostate>
+    static base::expected<base::flat_set<UpdateChannel>, std::monostate>
     ParseAndValidateChannels(
         base::optional_ref<const base::Value> channels_value);
 

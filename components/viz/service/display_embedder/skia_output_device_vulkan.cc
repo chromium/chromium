@@ -5,6 +5,7 @@
 #include "components/viz/service/display_embedder/skia_output_device_vulkan.h"
 
 #include <utility>
+#include <variant>
 
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
@@ -281,10 +282,10 @@ bool SkiaOutputDeviceVulkan::Initialize() {
       gpu::GpuSurfaceLookup::GetInstance()->AcquireJavaSurface(surface_handle_);
   // Should only reach here if surface control is disabled. In which case
   // browser should not be sending ScopedJavaSurfaceControl variant.
-  CHECK(absl::holds_alternative<gl::ScopedJavaSurface>(
+  CHECK(std::holds_alternative<gl::ScopedJavaSurface>(
       surface_record.surface_variant));
   gl::ScopedJavaSurface& scoped_java_surface =
-      absl::get<gl::ScopedJavaSurface>(surface_record.surface_variant);
+      std::get<gl::ScopedJavaSurface>(surface_record.surface_variant);
   gl::ScopedANativeWindow window(scoped_java_surface);
   accelerated_widget = window.a_native_window();
 #else

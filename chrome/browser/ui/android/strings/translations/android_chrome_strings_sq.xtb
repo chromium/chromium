@@ -432,7 +432,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2981364137500752533">Mund të kesh deri në 5 dritare.</translation>
 <translation id="2983102365694924129">Bazuar në aktivitetin tënd në një sajt. Ky cilësim është joaktiv.</translation>
 <translation id="2984978667043170458">Përfshi tekstin përreth në kërkimet e Google</translation>
-<translation id="2988638966064514052">Forco fjalëkalimet e tua</translation>
 <translation id="2989523299700148168">Vizituar së fundi</translation>
 <translation id="2992473221983447149">Përshkrimet e imazheve</translation>
 <translation id="2996291259634659425">Krijo një frazë kalimi</translation>
@@ -548,7 +547,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3557336313807607643">Shto te kontaktet</translation>
 <translation id="3563767357928833671">Përmbajtjet e kujtesës së fragmenteve janë shfaqur</translation>
 <translation id="3566639033325271639">Përditëso cilësimet</translation>
-<translation id="3568945271227339929">Asnjë fjalëkalim i komprometuar</translation>
 <translation id="3575464060651642446">Po kontrollohen fjalëkalimet në këtë pajisje…</translation>
 <translation id="3577473026931028326">Ndodhi një gabim. Provo përsëri.</translation>
 <translation id="3577558748185201054">Menaxho interesat dhe preferencat e tua</translation>
@@ -1055,7 +1053,6 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="5958275228015807058">Gjej skedarët dhe faqet e tua te "Shkarkimet"</translation>
 <translation id="5958994127112619898">Thjeshto faqen</translation>
 <translation id="5962718611393537961">Trokit për të palosur</translation>
-<translation id="5964180026566797835">Fjalëkalimet nuk mund të kontrollohen</translation>
 <translation id="5964869237734432770">Ndalo përshkrimet e imazheve</translation>
 <translation id="5977976211062815271">Në këtë pajisje</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 faqe në listën e leximit}other{# faqe në listën e leximit}}</translation>
@@ -1099,6 +1096,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="6150320133806434356">Faqeshënuesi u ruajt</translation>
 <translation id="6150706324143004339">Për të përdorur dhe ruajtur të dhënat e Chrome në "Llogarinë tënde të Google", përditëso Chrome</translation>
 <translation id="6154478581116148741">Aktivizo kyçjen e ekranit te "Cilësimet" për të eksportuar fjalëkalime e tua nga kjo pajisje</translation>
+<translation id="6156323911414505561">Shfaq shiritin e faqeshënuesve</translation>
 <translation id="6162892189396105610">Ngarkon paraprakisht faqet që Chrome mendon se mund të vizitosh.</translation>
 <translation id="6170675927290506430">Shko te cilësimet e njoftimeve</translation>
 <translation id="6186394685773237175">Nuk u gjetën fjalëkalime të komprometuara</translation>

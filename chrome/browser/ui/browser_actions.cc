@@ -616,8 +616,7 @@ void BrowserActions::InitializeBrowserActions() {
     CastToolbarButtonUtil::AddCastChildActions(media_router_action, browser);
   }
 
-  if (base::FeatureList::IsEnabled(features::kPinnableDownloadsButton) &&
-      download::IsDownloadBubbleEnabled()) {
+  if (download::IsDownloadBubbleEnabled()) {
     root_action_item_->AddChild(
         ChromeMenuAction(base::BindRepeating(
                              [](Browser* browser, actions::ActionItem* item,

@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <variant>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -27,7 +28,6 @@
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/resolve_context.h"
 #include "net/log/net_log_with_source.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace net {
 

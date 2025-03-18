@@ -167,6 +167,7 @@
 <translation id="1505542291183484463">تغيير حجم النافذة المنقسمة بسحب حافتها للأسفل</translation>
 <translation id="1510238584712386396">مشغِّل التطبيقات</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لتطبيق واحد}zero{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيق}two{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لتطبيقين (#)}few{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيقات}many{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيقًا}other{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيق}}</translation>
+<translation id="1521655867290435174">‏جداول بيانات Google</translation>
 <translation id="1523032696246003">مستوى شحن البطارية: %<ph name="BATTERY_PERCENTAGE" /> | الوقت المتبقي على اكتمال الشحن: <ph name="TIME" /></translation>
 <translation id="1525508553941733066">إغلاق</translation>
 <translation id="1526448108126799339">فتح علامة تبويب جديدة في نافذة جديدة</translation>
@@ -346,7 +347,6 @@
 <translation id="2201071101391734388">الصورة الحديثة رقم <ph name="INDEX" /> من إجمالي <ph name="TOTAL_COUNT" /></translation>
 <translation id="2201687081523799384">‏تصغير "مهام Google"</translation>
 <translation id="2208323208084708176">وضع سطح المكتب الموحد</translation>
-<translation id="2220572644011485463">رقم التعريف الشخصي أو كلمة المرور</translation>
 <translation id="2222841058024245321">سطح المكتب 7</translation>
 <translation id="2223384056430485343">في "وضع تقسيم الشاشة"</translation>
 <translation id="2224075387478458881">يتم حظر استخدام ميزة تسجيل الشاشة عند عرض محتوى محمي.</translation>
@@ -1827,7 +1827,6 @@
 <translation id="7000027735917578303">إعدادات النوافذ وأسطح المكتب</translation>
 <translation id="7004910047186208204">الاتصال بشبكة بيانات الجوّال</translation>
 <translation id="7005239792648594238">للبدء، افتح تطبيقًا.</translation>
-<translation id="7007983414944123363">تعذّر التحقُّق من رقم التعريف الشخصي أو كلمة المرور الخاصّة بك. يُرجى إعادة المحاولة.</translation>
 <translation id="7014684956566476813">تم الربط بالجهاز الذي يحمل الاسم <ph name="DEVICE_NAME" />.</translation>
 <translation id="7015766095477679451">يمكنك العودة لاستخدام الجهاز في <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">سطح المكتب 6</translation>
@@ -2465,6 +2464,7 @@
 <translation id="9168436347345867845">تنفيذ ذلك لاحقًا</translation>
 <translation id="9178475906033259337">عرض نتيجة واحدة عن <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">تسمح لك هذه الميزة بالوصول بسرعة إلى أي مستخدم سجّل دخوله بدون طلب كلمة مرور. لا تستخدم هذه الميزة إلا مع الحسابات التي تثق بها.</translation>
+<translation id="9183302530794969518">‏مستندات Google</translation>
 <translation id="9183456764293710005">المكبِّر بملء الشاشة</translation>
 <translation id="9192133205265227850">استخدام "<ph name="DEVICE_NAME" />"</translation>
 <translation id="9193626018745640770">إرسال إلى مستلم غير معروف</translation>

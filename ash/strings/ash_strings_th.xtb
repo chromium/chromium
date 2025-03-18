@@ -166,6 +166,7 @@
 <translation id="1505542291183484463">ปรับขนาดหน้าต่างแบบเรียงต่อกันลงด้านล่าง</translation>
 <translation id="1510238584712386396">ตัวเรียกใช้งาน</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{แสดงการตั้งค่าการแจ้งเตือน ปิดการแจ้งเตือนไว้สำหรับ 1 แอป}other{แสดงการตั้งค่าการแจ้งเตือน ปิดการแจ้งเตือนไว้สำหรับ # แอป}}</translation>
+<translation id="1521655867290435174">Google ชีต</translation>
 <translation id="1523032696246003">แบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />% | อีก <ph name="TIME" /> จะเต็ม</translation>
 <translation id="1525508553941733066">ปิด</translation>
 <translation id="1526448108126799339">เปิดแท็บใหม่ในหน้าต่างใหม่</translation>
@@ -345,7 +346,6 @@
 <translation id="2201071101391734388">รูปภาพล่าสุด <ph name="INDEX" /> จาก <ph name="TOTAL_COUNT" /></translation>
 <translation id="2201687081523799384">ยุบ Google Tasks</translation>
 <translation id="2208323208084708176">โหมดเดสก์ท็อปแบบรวม</translation>
-<translation id="2220572644011485463">PIN หรือรหัสผ่าน</translation>
 <translation id="2222841058024245321">เดสก์ 7</translation>
 <translation id="2223384056430485343">ในโหมดแยกหน้าจอ</translation>
 <translation id="2224075387478458881">ไม่อนุญาตให้บันทึกหน้าจอเมื่อมีเนื้อหาที่ได้รับการคุ้มครองแสดงอยู่</translation>
@@ -1824,7 +1824,6 @@
 <translation id="7000027735917578303">การตั้งค่า Windows และเดสก์</translation>
 <translation id="7004910047186208204">เชื่อมต่ออินเทอร์เน็ตมือถือ</translation>
 <translation id="7005239792648594238">เปิดแอปเพื่อเริ่มต้นใช้งาน</translation>
-<translation id="7007983414944123363">ยืนยัน PIN หรือรหัสผ่านของคุณไม่ได้ ลองใหม่</translation>
 <translation id="7014684956566476813">เชื่อมต่ออยู่กับอุปกรณ์ชื่อ <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">กลับมาเมื่อถึงเวลา <ph name="COME_BACK_TIME" /></translation>
 <translation id="70168403932084660">เดสก์ 6</translation>
@@ -2462,6 +2461,7 @@
 <translation id="9168436347345867845">ข้ามไปก่อน</translation>
 <translation id="9178475906033259337">กำลังแสดงผลการค้นหา 1 รายการสำหรับ "<ph name="QUERY" />"</translation>
 <translation id="9179259655489829027">ฟีเจอร์นี้ช่วยให้เข้าถึงผู้ใช้ที่ลงชื่อเข้าใช้แล้วได้อย่างรวดเร็วโดยไม่ต้องใช้รหัสผ่าน ใช้ฟีเจอร์นี้กับบัญชีที่คุณเชื่อถือเท่านั้น</translation>
+<translation id="9183302530794969518">Google เอกสาร</translation>
 <translation id="9183456764293710005">แว่นขยายทั้งหน้าจอ</translation>
 <translation id="9192133205265227850">ใช้ "<ph name="DEVICE_NAME" />"</translation>
 <translation id="9193626018745640770">กำลังแคสต์ไปยังเครื่องรับที่ไม่รู้จัก</translation>

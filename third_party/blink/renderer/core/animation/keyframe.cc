@@ -44,7 +44,7 @@ void Keyframe::AddKeyframePropertiesToV8Object(V8ObjectBuilder& object_builder,
     timeline_range_offset->setRangeName(timeline_offset_->name);
     DCHECK(timeline_offset_->offset.IsPercent());
     timeline_range_offset->setOffset(
-        CSSUnitValue::Create(timeline_offset_->offset.Value(),
+        CSSUnitValue::Create(timeline_offset_->offset.Percent(),
                              CSSPrimitiveValue::UnitType::kPercentage));
     object_builder.Add("offset", timeline_range_offset);
   } else if (offset_) {

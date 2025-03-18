@@ -278,6 +278,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="7905064834449738336">Når du bruker et passord, advarer Chromium deg hvis passordet er publisert på nettet. Denne funksjonen holder passordene og brukernavnene dine kryptert. Det betyr at ingen kan lese dem, ikke engang Google.</translation>
 <translation id="7928628054454574139">Åpne alltid Chromium når du trykker på linker i andre apper</translation>
 <translation id="7934404985878918282">Se Chromium-leselisten</translation>
+<translation id="7935734571048689933">Chromium administreres</translation>
 <translation id="7951793218148208717">Åpner en ny fane i Chromium.</translation>
 <translation id="7980860476903281594">Chromium deler posisjonen din med nettsteder du tillater.</translation>
 <translation id="7994322153108931467">For å få nyttige Chromium-tips, slå på varsler i iOS-innstillingene.</translation>
@@ -308,6 +309,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="8754966941001340678">Chromium anbefaler økt beskyttelse</translation>
 <translation id="8759037115129007407">Familiemedlemmet ditt kan ikke motta passord akkurat nå. Be vedkommende om å oppdatere Chromium og synkronisere passordene sine. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Denne kontoen og eventuelle ulagrede data blir fjernet fra Chromium.</translation>
+<translation id="8793333988063379360">Her finner du Chromium-innstillinger med mer</translation>
 <translation id="8805148242934787134">Angi Chromium som standardnettleser</translation>
 <translation id="8826789549860004832">Få mest mulig ut av Chromium ved å fortsette å konfigurere nettleseren din.</translation>
 <translation id="88376265765385899">Åpner Chromium-bokmerkene.</translation>

@@ -12,6 +12,7 @@
 #include <string_view>
 #include <type_traits>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/auto_reset.h"
@@ -67,7 +68,6 @@
 #include "components/sync/service/sync_service.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -916,7 +916,7 @@ void PopupViewViews::UpdateAccessibleStates() const {
 
 bool PopupViewViews::HasSelectablePopupRowViewAt(size_t index) const {
   return index < rows_.size() &&
-         absl::holds_alternative<PopupRowView*>(rows_[index]) &&
+         std::holds_alternative<PopupRowView*>(rows_[index]) &&
          GetPopupRowViewAt(index).IsSelectable();
 }
 
@@ -1404,7 +1404,7 @@ void PopupViewViews::MaybeA11yFocusInformationalSuggestion() {
     return;
   }
 
-  if (auto* warning_view = absl::get_if<PopupWarningView*>(&rows_[0]);
+  if (auto* warning_view = std::get_if<PopupWarningView*>(&rows_[0]);
       warning_view && *warning_view) {
     NotifyAXSelection(**warning_view);
     (*warning_view)

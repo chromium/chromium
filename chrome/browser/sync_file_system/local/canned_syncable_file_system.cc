@@ -686,7 +686,6 @@ void CannedSyncableFileSystem::DoGetUsageAndQuota(
   DCHECK(quota_manager_.get());
   quota_manager_->GetUsageAndQuota(
       blink::StorageKey::CreateFirstParty(url::Origin::Create(origin_)),
-      storage_type(),
       base::BindOnce(&DidGetUsageAndQuota, std::move(callback), usage, quota));
 }
 

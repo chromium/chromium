@@ -316,7 +316,6 @@
 <translation id="1532118530259321453">ეს გვერდი იუწყება:</translation>
 <translation id="1533966801397200693">პროფილი, რომელშიც შესული ხართ, მართული პროფილია. თქვენს ადმინისტრატორს შეუძლია, დისტანციურად შეიტანოს ცვლილებები თქვენი პროფილის პარამეტრებში, გააანალიზოს ინფორმაცია თქვენი ბრაუზერის შესახებ ანგარიშგების მეშვეობით და შეასრულოს აუცილებელი ამოცანები. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">გვერდის თარგმნა</translation>
-<translation id="1538295100801850685">პროგნოზირების გაუმჯობესებები</translation>
 <translation id="1539840569003678498">მოხსენება გაიგზავნა:</translation>
 <translation id="1542105669288201090">ბიზნესგანათლება</translation>
 <translation id="1545757265410828525">ფასების ისტორია</translation>
@@ -1162,7 +1161,6 @@
 <translation id="3052868890529250114">საიტებს, როგორც წესი, დაცულად უკავშირდებით, თუმცა Chrome-მა ამჯერად ვერ დაამყარა უსაფრთხო კავშირი. თავდამსხმელს შეეძლება თქვენს ქსელის კავშირზე თვალთვალი ან მისი შეცვლა. <ph name="BEGIN_LEARN_MORE_LINK" />შეიტყვეთ მეტი ამ გაფრთხილების შესახებ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />-ზე ფასის <ph name="PRICE_DROP" />-ით შემცირება</translation>
 <translation id="3061707000357573562">ჩასწორების სერვისი</translation>
-<translation id="306198082577913404">ჩართეთ პროგნოზირების გაუმჯობესებები</translation>
 <translation id="3062655045399308513">დათვალიერების მონაცემების წაშლა...</translation>
 <translation id="3063453392496098461">VPN-ის ფონური სერვისების ინსტალაცია წარუმატებელია.</translation>
 <translation id="306573536155379004">თამაში დაიწყო.</translation>
@@ -2334,7 +2332,6 @@
 <translation id="5097099694988056070">მოწყობილობის სტატისტიკა, როგორიცაა CPU/RAM-ის გამოყენება</translation>
 <translation id="5097468150760963273">27 x 39 დუიმი</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome საჭიროებს წვდომას, რომ გამოიყენოს თქვენი მოწყობილობის <ph name="PERMISSION" /></translation>
 <translation id="510644072453496781">მუყაო (ბოლო)</translation>
 <translation id="5106648964679263509">შევსებულია ვირტუალური ბარათი <ph name="BNPL_ISSUER_NAME" />-ისთვის</translation>
 <translation id="5108881358339761672">საიტი არ არის დაცული</translation>
@@ -4067,7 +4064,6 @@
 <translation id="8134058435519644366">დასაქმება და პერსონალი</translation>
 <translation id="8135546115396015134">მარცხენა კლავიში</translation>
 <translation id="8137456439814903304">ენერგომომარაგება და კომუნალური მომსახურებები</translation>
-<translation id="81474145143203755">თქვენი <ph name="PERMISSION" /> რომ გამოიყენოთ ამ ვებსაიტზე, დაუშვით Chrome-ის წვდომა</translation>
 <translation id="8148608574971654810">PDF ვერსია:</translation>
 <translation id="8149426793427495338">თქვენი კომპიუტერი ძილის რეჟიმზე გადავიდა.</translation>
 <translation id="8150722005171944719">ფაილი <ph name="URL" />-ზე არაწაკითხვადია. შესაძლოა, იგი წაშლილი ან გადატანილი იქნა, ან წვდომა აკრძალულია ნებართვების გამო.</translation>

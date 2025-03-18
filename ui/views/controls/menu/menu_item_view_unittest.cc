@@ -86,7 +86,7 @@ TEST_F(MenuItemViewUnitTest, TestMenuItemViewWithFlexibleWidthChild) {
 
   // Append a second MenuItemView that has a child SquareView.
   views::MenuItemView* flexible_view = root_menu.AppendMenuItem(2);
-  flexible_view->AddChildView(new SquareView());
+  flexible_view->AddChildView(std::make_unique<SquareView>());
   // Set margins to 0 so that we know width should match height.
   flexible_view->set_vertical_margin(0);
 

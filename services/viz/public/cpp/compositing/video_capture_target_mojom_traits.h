@@ -6,6 +6,7 @@
 #define SERVICES_VIZ_PUBLIC_CPP_COMPOSITING_VIDEO_CAPTURE_TARGET_MOJOM_TRAITS_H_
 
 #include <utility>
+#include <variant>
 
 #include "base/notreached.h"
 #include "build/build_config.h"
@@ -21,7 +22,7 @@ template <>
 struct UnionTraits<viz::mojom::VideoCaptureSubTargetDataView,
                    viz::VideoCaptureSubTarget> {
   static bool IsNull(const viz::VideoCaptureSubTarget& data) {
-    return absl::holds_alternative<absl::monostate>(data);
+    return std::holds_alternative<std::monostate>(data);
   }
 
   static void SetToNull(viz::VideoCaptureSubTarget* data) {
@@ -30,20 +31,20 @@ struct UnionTraits<viz::mojom::VideoCaptureSubTargetDataView,
 
   static const viz::RegionCaptureCropId& region_capture_crop_id(
       const viz::VideoCaptureSubTarget& data) {
-    return absl::get<viz::RegionCaptureCropId>(data);
+    return std::get<viz::RegionCaptureCropId>(data);
   }
 
   static viz::SubtreeCaptureId subtree_capture_id(
       const viz::VideoCaptureSubTarget& data) {
-    return absl::get<viz::SubtreeCaptureId>(data);
+    return std::get<viz::SubtreeCaptureId>(data);
   }
 
   using Tag = viz::mojom::VideoCaptureSubTargetDataView::Tag;
   static Tag GetTag(const viz::VideoCaptureSubTarget& data) {
-    if (absl::holds_alternative<viz::RegionCaptureCropId>(data)) {
+    if (std::holds_alternative<viz::RegionCaptureCropId>(data)) {
       return Tag::kRegionCaptureCropId;
     }
-    DCHECK(absl::holds_alternative<viz::SubtreeCaptureId>(data));
+    DCHECK(std::holds_alternative<viz::SubtreeCaptureId>(data));
     return Tag::kSubtreeCaptureId;
   }
 

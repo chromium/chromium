@@ -87,7 +87,7 @@ void SigninManager::UpdateUnconsentedPrimaryAccount(
   if (!signin::IsImplicitBrowserSigninOrExplicitDisabled(
           &identity_manager_.get(), &prefs_.get())) {
     // Only update the primary account implicitly if the user hasn't explicitly
-    // signed in or `switches::kExplicitBrowserSigninUIOnDesktop` is disabled.
+    // signed in or explicit signin is disabled.
     return;
   }
 

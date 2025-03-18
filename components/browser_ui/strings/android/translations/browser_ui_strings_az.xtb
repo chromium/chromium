@@ -45,6 +45,7 @@
 <translation id="1652197001188145583">Aktiv ediləndə saytlar NFC cihazlarından istifadə etmək üçün icazə istəyə bilər. Deaktiv ediləndə saytlar NFC cihazlarından istifadə edə bilməz.</translation>
 <translation id="1660204651932907780">Saytlara səs oxutmaq icazəsi verin (məsləhətli)</translation>
 <translation id="1677097821151855053">Kukilər və digər sayt datası sizin yadda saxlamaq üçün istifadə edilir, məsələn, daxil olmanıza və ya reklamları fərdiləşdirməyə imkan yaradır. Bütün saytlar üçün kukiləri idarə etmək üçün <ph name="BEGIN_LINK" />Ayarlara<ph name="END_LINK" /> baxın.</translation>
+<translation id="1679305402657584804">Saytlar NFC cihazlarından istifadə etmək istəyə bilər</translation>
 <translation id="1686785653877010442">Saytlar adətən təcili xəbərlər və ya söhbət mesajları barədə bildirmək üçün bildirişlər göndərir.</translation>
 <translation id="169515064810179024">Saytların hərəkət sensorlarına girişini blok edin</translation>
 <translation id="1703666494654169921">Saytlara virtual reallıq cihazlarından və ya datasından istifadə etmək icazəsi verməyin</translation>
@@ -84,6 +85,7 @@
 <translation id="2185965788978862351">Əsas ekranda sayt və ya tətbiqlər tərəfindən saxlanan <ph name="DATASIZE" /> data və kuki silinəcək.</translation>
 <translation id="2194856509914051091">Nəzərə alınmalı amillər</translation>
 <translation id="2215727959747642672">Fayl redaktəsi</translation>
+<translation id="2218389616572918761">Saytlar mikrofona giriş istəyə bilər</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> tətbiqinə kameranıza giriş icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> kameranı da aktiv edin.</translation>
 <translation id="2235344399760031203">Üçüncü tərəf kukiləri bloklanıb</translation>
 <translation id="2238944249568001759">Son tabınıza əsasən təklif olunan axtarışlar</translation>
@@ -132,8 +134,10 @@
 <translation id="2726059656860238749">Omnibox fokuslu Chrome-u işə salaraq aşağı keyfiyyətli cihazlarda işə başlama vaxtını azaldın.</translation>
 <translation id="2750481671343847896">Saytlar kimlik xidmətlərindən daxil olma sorğularını göstərə bilər.</translation>
 <translation id="2787357173144933081">Omnibox-u sürətlə başladın</translation>
+<translation id="2789132527330338807">Saytlar ətrafın 3D xəritəsini yaratmaq və ya kameranın mövqeyini izləmək istəyə bilər</translation>
 <translation id="2790501146643349491">Aktiv ediləndə son qapadılan saytlar data göndərilməsi və qəbulunu tamamlaya bilər. Deaktiv ediləndə son qapadılan saytlar data göndərilməsi və ya qəbulunu tamamlaya bilməz.</translation>
 <translation id="2795716239552913152">Saytlar adətən yerli xəbərlər və ya yaxınlıqdakı mağazalar kimi müvafiq xüsusiyyətlər və məlumatlar üçün məkanınızdan istifadə edir</translation>
+<translation id="2802908157808345702">Saytlara popap bildirişlər göndərmək və yönləndirmələrdən istifadə etmək icazəsi verməyin</translation>
 <translation id="2814830417943086299">Chrome indi cihazın tətbiq siyahısında və axtarış nəticələrində son tabları göstərir. Bunu istənilən vaxt Chrome ayarlarında deaktiv edə bilərsiniz.</translation>
 <translation id="2822354292072154809"><ph name="CHOSEN_OBJECT_NAME" /> üçün bütün sayt icazələrini sıfırlamaq istədiyinizə əminsiniz?</translation>
 <translation id="2850913818900871965">Mobil görünüş tələb edin</translation>
@@ -274,6 +278,7 @@
 <translation id="4598549027014564149">Anonim rejimdə olduqda, saytlar müxtəlif saytlarda, eləcə də əlaqəli saytlarda axtarış fəaliyyətinizi görmək üçün kukilərinizdən istifadə edə bilmir. Axtarış fəaliyyətiniz reklamların fərdiləşdirilməsi kimi işlər üçün istifadə edilmir. Bəzi saytlardakı funksiyalar işləməyə bilər.</translation>
 <translation id="461356340001513807">Kimlik xidməti olan hesabdan istifadə edərək veb-saytlara daxil olmağa imkan verir</translation>
 <translation id="4619615317237390068">Digər cihazlardan tablar</translation>
+<translation id="4635969503923889910">Saytlara NFC cihazlarından istifadə etmək icazəsi verməyin</translation>
 <translation id="4644713492825682049">Silin və sıfırlayın</translation>
 <translation id="4645575059429386691">Valideyniniz tərəfindən idarə olunur</translation>
 <translation id="4670064810192446073">Virtual reallıq</translation>
@@ -372,6 +377,7 @@
 <translation id="5877248419911025165">Bütün sorğuları yığcamlaşdırın</translation>
 <translation id="5884085660368669834">Sayt tərcihi</translation>
 <translation id="5887687176710214216">Son ziyarət dünən olub</translation>
+<translation id="5908617755156109052">Saytlara ətrafın 3D xəritəsini yaratmaq və ya kameranın mövqeyini izləmək icazəsi verməyin</translation>
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="5922853908706496913">Ekranınız paylaşılır</translation>
 <translation id="5922967540311291836">Üçüncü tərəf kukiləri bloklayın:</translation>
@@ -582,6 +588,7 @@
 <translation id="8676374126336081632">Daxiletməni silin</translation>
 <translation id="8681886425883659911">İntruziv və ya aldadıcı reklamlar göstərdiyi məlum olan saytlarda reklamlar bloklanır</translation>
 <translation id="868929229000858085">Kontaktlarda axtarın</translation>
+<translation id="8707904142362025782">Saytlar kameraya giriş istəyə bilər</translation>
 <translation id="8712637175834984815">Anladım</translation>
 <translation id="8715862698998036666">Tam ekrandan çıxmaq üçün yuxarıdan sürüşdürün, habelə sol və ya sağ kənardan çəkin.</translation>
 <translation id="8719283222052720129"><ph name="APP_NAME" /> üçün icazəni <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> aktiv edin.</translation>

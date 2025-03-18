@@ -71,10 +71,12 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/session_manager_types.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom-shared.h"
 #include "ui/compositor/compositor.h"
@@ -1679,10 +1681,13 @@ void WallpaperControllerImpl::OnActiveUserPrefServiceChanged(
   AccountId account_id = GetActiveAccountId();
 
   WallpaperInfo local_info;
-  bool has_local_info =
+  const bool has_local_info =
       pref_manager_->GetLocalWallpaperInfo(account_id, &local_info);
+  const bool is_oobe_or_demo =
+      IsOobeState() || (demo_mode::IsDeviceInDemoMode() &&
+                        features::IsDemoModeWallpaperUpdateEnabled());
   bool should_set_time_of_day_wallpaper =
-      IsOobeState() && has_local_info &&
+      is_oobe_or_demo && has_local_info &&
       local_info.type == WallpaperType::kDefault &&
       features::IsTimeOfDayWallpaperEnabled();
   if (should_set_time_of_day_wallpaper) {

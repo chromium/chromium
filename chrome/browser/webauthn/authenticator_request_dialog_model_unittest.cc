@@ -12,6 +12,7 @@
 #include <string_view>
 #include <tuple>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -63,7 +64,6 @@
 #include "device/fido/public_key_credential_user_entity.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -577,7 +577,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
   [[maybe_unused]] const auto enclave_pin = Step::kGPMEnterPin;
   using psync = base::StrongAlias<class PhoneFromSyncTag, std::string>;
   using pqr = base::StrongAlias<class PhoneFromQrTag, std::string>;
-  using PhoneVariant = absl::variant<psync, pqr>;
+  using PhoneVariant = std::variant<psync, pqr>;
 
   struct Test {
     int line_num;
@@ -1459,11 +1459,11 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
       std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
       for (const auto& phone : test.phones) {
         auto pairing = std::make_unique<device::cablev2::Pairing>();
-        if (absl::holds_alternative<pqr>(phone)) {
-          pairing->name = absl::get<pqr>(phone).value();
+        if (std::holds_alternative<pqr>(phone)) {
+          pairing->name = std::get<pqr>(phone).value();
           pairing->from_sync_deviceinfo = false;
         } else {
-          pairing->name = absl::get<psync>(phone).value();
+          pairing->name = std::get<psync>(phone).value();
           pairing->from_sync_deviceinfo = true;
         }
         pairing->peer_public_key_x962 = {0};
@@ -1753,7 +1753,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Cable2ndFactorFlows) {
         case Step::kMechanismSelection:
           // Click the first (and only) phone.
           for (const auto& mechanism : model->mechanisms) {
-            if (absl::holds_alternative<
+            if (std::holds_alternative<
                     AuthenticatorRequestDialogModel::Mechanism::Phone>(
                     mechanism.type)) {
               mechanism.callback.Run();
@@ -2547,10 +2547,10 @@ TEST_F(AuthenticatorRequestDialogControllerTest, BluetoothPermissionPrompt) {
           model->mechanisms,
           [click_specific_phone](const auto& m) -> bool {
             if (click_specific_phone) {
-              return absl::holds_alternative<
+              return std::holds_alternative<
                   AuthenticatorRequestDialogModel::Mechanism::Phone>(m.type);
             } else {
-              return absl::holds_alternative<
+              return std::holds_alternative<
                   AuthenticatorRequestDialogModel::Mechanism::AddPhone>(m.type);
             }
           })
@@ -2764,7 +2764,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, HybridButtonLabel) {
     controller.StartFlow(std::move(transports_info), {});
     auto hybrid_button_it =
         std::ranges::find_if(model->mechanisms, [](const auto& m) {
-          return absl::holds_alternative<
+          return std::holds_alternative<
               AuthenticatorRequestDialogModel::Mechanism::AddPhone>(m.type);
         });
     ASSERT_NE(hybrid_button_it, model->mechanisms.end());
@@ -3170,7 +3170,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
     controller.StartFlow(std::move(transports_info), {});
     auto win_button_it =
         std::ranges::find_if(model->mechanisms, [](const auto& m) {
-          return absl::holds_alternative<
+          return std::holds_alternative<
               AuthenticatorRequestDialogModel::Mechanism::WindowsAPI>(m.type);
         });
     if (test_case.expected_button == kNoWinButton) {
@@ -3237,7 +3237,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
     controller.StartFlow(std::move(transports_info), {});
     auto win_button_it =
         std::ranges::find_if(model->mechanisms, [](const auto& m) {
-          return absl::holds_alternative<
+          return std::holds_alternative<
               AuthenticatorRequestDialogModel::Mechanism::WindowsAPI>(m.type);
         });
     ASSERT_NE(win_button_it, model->mechanisms.end());

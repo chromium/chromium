@@ -53,14 +53,13 @@
       initWithStyle:ChromeTableViewStyle()];
   self.viewController.presentationDelegate = self;
   commerce::ShoppingService* shoppingService =
-      commerce::ShoppingServiceFactory::GetForProfile(
-          self.browser->GetProfile());
+      commerce::ShoppingServiceFactory::GetForProfile(self.profile);
   AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
+      AuthenticationServiceFactory::GetForProfile(self.profile);
   self.mediator = [[TrackingPriceMediator alloc]
       initWithShoppingService:shoppingService
         authenticationService:authService
-                  prefService:self.browser->GetProfile()->GetPrefs()];
+                  prefService:self.profile->GetPrefs()];
   self.mediator.consumer = self.viewController;
   self.mediator.presenter = self;
   self.viewController.modelDelegate = self.mediator;

@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_contents_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
@@ -48,7 +47,6 @@ class DownloadToolbarUIControllerBrowserTest : public DownloadTestBase {
   }
 
   void SetUp() override {
-    feature_list_.InitWithFeatures({features::kPinnableDownloadsButton}, {});
     DownloadTestBase::SetUp();
   }
 
@@ -95,7 +93,6 @@ class DownloadToolbarUIControllerBrowserTest : public DownloadTestBase {
         ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
   }
 
-  base::test::ScopedFeatureList feature_list_;
   // OS integration is needed to be able to launch web applications. This
   // override ensures OS integration doesn't leave any traces.
   std::unique_ptr<web_app::OsIntegrationTestOverrideImpl::BlockingRegistration>

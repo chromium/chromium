@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -76,11 +77,11 @@ bool FilterNoUrl(const GURL& gurl) {
 }
 
 MATCHER_P(PasswordChangesAre, expectations, "") {
-  if (absl::holds_alternative<PasswordStoreBackendError>(arg)) {
+  if (std::holds_alternative<PasswordStoreBackendError>(arg)) {
     return false;
   }
 
-  auto changes = absl::get<PasswordChanges>(arg);
+  auto changes = std::get<PasswordChanges>(arg);
   if (!changes.has_value()) {
     return false;
   }

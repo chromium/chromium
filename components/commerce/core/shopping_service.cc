@@ -1684,7 +1684,8 @@ std::vector<DiscountInfo> ShoppingService::OptGuideResultToDiscountInfos(
         continue;
       }
 
-      if (info.type == DiscountType::kFreeListingWithCode) {
+      if (info.type == DiscountType::kFreeListingWithCode ||
+          info.type == DiscountType::kCrawledPromotion) {
         if (discount.has_discount_code()) {
           info.discount_code = discount.discount_code();
         } else {
@@ -1700,7 +1701,7 @@ std::vector<DiscountInfo> ShoppingService::OptGuideResultToDiscountInfos(
 
       if (discount.has_expiry_time_sec()) {
         info.expiry_time_sec = discount.expiry_time_sec();
-      } else {
+      } else if (info.type != DiscountType::kCrawledPromotion) {
         continue;
       }
 

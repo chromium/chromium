@@ -166,6 +166,7 @@
 <translation id="1505542291183484463">Померите прозор променљиве величине у облику плочице надоле</translation>
 <translation id="1510238584712386396">Покретач</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Прегледајте подешавања обавештења. Обавештења су искључена за једну апликацију}one{Прегледајте подешавања обавештења. Обавештења су искључена за # апликацију}few{Прегледајте подешавања обавештења. Обавештења су искључена за # апликације}other{Прегледајте подешавања обавештења. Обавештења су искључена за # апликација}}</translation>
+<translation id="1521655867290435174">Google табеле</translation>
 <translation id="1523032696246003">Батерија <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> до краја пуњења</translation>
 <translation id="1525508553941733066">ОДБАЦИ</translation>
 <translation id="1526448108126799339">Отвори нову картицу у новом прозору</translation>
@@ -240,6 +241,8 @@
 <translation id="1755556344721611131">Апликација Дијагностика</translation>
 <translation id="1756833229520115364">Чување шаблона није успело. Има превише прозора или картица.</translation>
 <translation id="1757857692711134412">Искључено до сумрака</translation>
+<translation id="1763084151787818322">Друге радње</translation>
+<translation id="1768138163688567246">Затворите претрагу екрана</translation>
 <translation id="1768366657309696705">Тастерска пречица <ph name="LAUNCHER_KEY_NAME" /> + тачка је промењена. Да бисте користили тастер за уметање, притисните тастер <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Премештено је у <ph name="ROW_NUMBER" />. ред, <ph name="COLUMN_NUMBER" />. колона.</translation>
 <translation id="1771761307086386028">Помери надесно</translation>
@@ -345,7 +348,6 @@
 <translation id="2201071101391734388"><ph name="INDEX" />. недавна слика од <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Скупи Google задатке</translation>
 <translation id="2208323208084708176">Режим спојених радних површина</translation>
-<translation id="2220572644011485463">PIN или лозинка</translation>
 <translation id="2222841058024245321">Радна површина 7</translation>
 <translation id="2223384056430485343">На подељеном екрану</translation>
 <translation id="2224075387478458881">Снимање екрана није дозвољено када је видљив заштићени садржај</translation>
@@ -1830,7 +1832,6 @@
 <translation id="7000027735917578303">Подешавања прозора и радних површина</translation>
 <translation id="7004910047186208204">Повежите се са мобилним подацима</translation>
 <translation id="7005239792648594238">Отворите апликацију да бисте започели</translation>
-<translation id="7007983414944123363">Верификација PIN-а или лозинке није успела. Пробајте поново.</translation>
 <translation id="7014684956566476813">Повезани сте са уређајем под називом <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Вратите се у <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Радна површина 6</translation>
@@ -1945,6 +1946,7 @@
 <translation id="742594950370306541">Камера се користи.</translation>
 <translation id="742608627846767349">Добро јутро,</translation>
 <translation id="743058460480092004">Камера и микрофон се користе.</translation>
+<translation id="7440404390546433462">Google претрага</translation>
 <translation id="7441711280402516925">Репродукује се · Пребаци на картицу</translation>
 <translation id="7453330308669753048">Резултат историје претраге је уклоњен</translation>
 <translation id="7459485586006128091">Хотспот је искључен због интерне грешке. Пробајте поново да се повежете за пар минута.</translation>
@@ -2468,6 +2470,7 @@
 <translation id="9168436347345867845">Урадићу то касније</translation>
 <translation id="9178475906033259337">Приказује се један резултат за: <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Ова функција вам омогућава да брзо приступите било ком пријављеном кориснику без лозинке. Користите ову функцију само са налозима у које имате поверења.</translation>
+<translation id="9183302530794969518">Google документи</translation>
 <translation id="9183456764293710005">Лупа за цео екран</translation>
 <translation id="9192133205265227850">Користите уређај <ph name="DEVICE_NAME" /></translation>
 <translation id="9193626018745640770">Пребацује се на непознати пријемник</translation>

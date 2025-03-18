@@ -5,10 +5,10 @@
 #include "third_party/blink/renderer/modules/ad_auction/protected_audience.h"
 
 #include <utility>
+#include <variant>
 
 #include "base/feature_list.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
@@ -29,12 +29,12 @@ using FeatureVal = ProtectedAudience::FeatureVal;
 
 v8::Local<v8::Value> MakeV8Val(ScriptState* script_state,
                                const FeatureVal& val) {
-  if (const bool* bool_val = absl::get_if<bool>(&val)) {
+  if (const bool* bool_val = std::get_if<bool>(&val)) {
     return ToV8Traits<IDLBoolean>::ToV8(script_state, *bool_val);
-  } else if (const size_t* size_t_val = absl::get_if<size_t>(&val)) {
+  } else if (const size_t* size_t_val = std::get_if<size_t>(&val)) {
     return ToV8Traits<IDLUnsignedLongLong>::ToV8(script_state, *size_t_val);
   } else {
-    const double* double_val = absl::get_if<double>(&val);
+    const double* double_val = std::get_if<double>(&val);
     CHECK(double_val);
     return ToV8Traits<IDLDouble>::ToV8(script_state, *double_val);
   }

@@ -9,9 +9,11 @@ import android.window.InputTransferToken;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.InputTransferHandler;
 import org.chromium.content_public.browser.SurfaceInputTransferHandlerMap;
 
+@NullMarked
 public class InputTokenForwarderManager {
     @CalledByNative
     public static void onTokenReceived(int surfaceId, InputTransferToken vizInputToken) {

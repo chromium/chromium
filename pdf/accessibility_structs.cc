@@ -6,16 +6,6 @@
 
 namespace chrome_pdf {
 
-bool AccessibilityDocInfo::operator==(const AccessibilityDocInfo& other) const {
-  return page_count == other.page_count && is_tagged == other.is_tagged &&
-         text_accessible == other.text_accessible &&
-         text_copyable == other.text_copyable;
-}
-
-bool AccessibilityDocInfo::operator!=(const AccessibilityDocInfo& other) const {
-  return !(*this == other);
-}
-
 AccessibilityTextStyleInfo::AccessibilityTextStyleInfo() = default;
 
 AccessibilityTextStyleInfo::AccessibilityTextStyleInfo(
@@ -75,6 +65,32 @@ AccessibilityTextRunInfo::AccessibilityTextRunInfo(
 
 AccessibilityTextRunInfo::~AccessibilityTextRunInfo() = default;
 
+AccessibilityImageInfo::AccessibilityImageInfo() = default;
+
+AccessibilityImageInfo::AccessibilityImageInfo(const std::string& alt_text,
+                                               uint32_t text_run_index,
+                                               const gfx::RectF& bounds,
+                                               int32_t page_object_index)
+    : alt_text(alt_text),
+      text_run_index(text_run_index),
+      bounds(bounds),
+      page_object_index(page_object_index) {}
+
+AccessibilityImageInfo::AccessibilityImageInfo(
+    const AccessibilityImageInfo& other) = default;
+
+AccessibilityImageInfo::~AccessibilityImageInfo() = default;
+
+bool AccessibilityDocInfo::operator==(const AccessibilityDocInfo& other) const {
+  return page_count == other.page_count && is_tagged == other.is_tagged &&
+         text_accessible == other.text_accessible &&
+         text_copyable == other.text_copyable;
+}
+
+bool AccessibilityDocInfo::operator!=(const AccessibilityDocInfo& other) const {
+  return !(*this == other);
+}
+
 AccessibilityLinkInfo::AccessibilityLinkInfo() = default;
 
 AccessibilityLinkInfo::AccessibilityLinkInfo(
@@ -91,22 +107,6 @@ AccessibilityLinkInfo::AccessibilityLinkInfo(
     const AccessibilityLinkInfo& other) = default;
 
 AccessibilityLinkInfo::~AccessibilityLinkInfo() = default;
-
-AccessibilityImageInfo::AccessibilityImageInfo() = default;
-
-AccessibilityImageInfo::AccessibilityImageInfo(const std::string& alt_text,
-                                               uint32_t text_run_index,
-                                               const gfx::RectF& bounds,
-                                               int32_t page_object_index)
-    : alt_text(alt_text),
-      text_run_index(text_run_index),
-      bounds(bounds),
-      page_object_index(page_object_index) {}
-
-AccessibilityImageInfo::AccessibilityImageInfo(
-    const AccessibilityImageInfo& other) = default;
-
-AccessibilityImageInfo::~AccessibilityImageInfo() = default;
 
 AccessibilityHighlightInfo::AccessibilityHighlightInfo() = default;
 

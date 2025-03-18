@@ -388,6 +388,8 @@
   E_CPONLY(kColorPageInfoSubtitleForeground) \
   E_CPONLY(kColorPageInfoPermissionBlockedOnSystemLevelDisabled) \
   E_CPONLY(kColorPageInfoPermissionUsedIcon) \
+  /* Parent access local web approval dialog colors */ \
+  E_CPONLY(kColorParentAccessViewLocalWebApprovalBackground) \
   /* Payments colors. */ \
   E_CPONLY(kColorPaymentsFeedbackTipBackground) \
   E_CPONLY(kColorPaymentsFeedbackTipBorder) \

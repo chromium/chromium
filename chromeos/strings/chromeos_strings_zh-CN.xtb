@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">“地球的风景变化”壁纸</translation>
 <translation id="33736539805963175">包含字母 <ph name="LETTERS_LETTER" /> 的<ph name="LETTERS_COLOR" />背景</translation>
 <translation id="3383623117265110236">专有</translation>
-<translation id="3395147534045164351">切换贴靠位置</translation>
 <translation id="3404249063913988450">启用屏保功能</translation>
 <translation id="3413935475507503304">若要继续更新，请点击“下一步”。</translation>
 <translation id="3428551088151258685">室外</translation>
@@ -929,6 +928,7 @@
 <translation id="5286263799730375393">背光颜色</translation>
 <translation id="5292579816060236070">“日出”壁纸</translation>
 <translation id="5294769550414936029">版本 <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">启用/停用摄像头使用权</translation>
 <translation id="5300814202279832142">将窗口移至桌面</translation>
 <translation id="5302048478445481009">语言</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> 专属壁纸</translation>
@@ -1044,6 +1044,7 @@
 <translation id="5896602941605730551">播放</translation>
 <translation id="5901630391730855834">黄色</translation>
 <translation id="5903200662178656908">设备是键盘和鼠标的组合。</translation>
+<translation id="5903822368221507416">隐藏标签页</translation>
 <translation id="5904994456462260490">添加新的 APN</translation>
 <translation id="590746845088109442">猫</translation>
 <translation id="5907649332524363701">按键颜色</translation>

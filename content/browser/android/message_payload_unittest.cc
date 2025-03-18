@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <memory>
 #include <string>
+#include <variant>
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
@@ -29,7 +30,7 @@ TEST(MessagePayloadTest, SelfTest_ArrayBuffer) {
       android::ConvertWebMessagePayloadToJava(
           blink::WebMessageArrayBufferPayload::CreateForTesting(data)));
   const auto& array_buffer =
-      absl::get<std::unique_ptr<blink::WebMessageArrayBufferPayload>>(
+      std::get<std::unique_ptr<blink::WebMessageArrayBufferPayload>>(
           generated_message);
   EXPECT_EQ(data.size(), array_buffer->GetLength());
   EXPECT_FALSE(array_buffer->GetAsSpanIfPossible());
@@ -42,7 +43,7 @@ TEST(MessagePayloadTest, SelfTest_ArrayBuffer) {
   auto generated_message2 = android::ConvertToWebMessagePayloadFromJava(
       android::ConvertWebMessagePayloadToJava(generated_message));
   const auto& array_buffer2 =
-      absl::get<std::unique_ptr<blink::WebMessageArrayBufferPayload>>(
+      std::get<std::unique_ptr<blink::WebMessageArrayBufferPayload>>(
           generated_message2);
   EXPECT_EQ(data.size(), array_buffer2->GetLength());
   copied_data.clear();
@@ -56,7 +57,7 @@ TEST(MessagePayloadTest, SelfTest_ArrayBufferEmpty) {
       android::ConvertWebMessagePayloadToJava(
           blink::WebMessageArrayBufferPayload::CreateForTesting(
               std::vector<uint8_t>())));
-  EXPECT_EQ(absl::get<std::unique_ptr<blink::WebMessageArrayBufferPayload>>(
+  EXPECT_EQ(std::get<std::unique_ptr<blink::WebMessageArrayBufferPayload>>(
                 generated_message)
                 ->GetLength(),
             0u);

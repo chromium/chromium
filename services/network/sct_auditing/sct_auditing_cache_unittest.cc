@@ -4,6 +4,8 @@
 
 #include "services/network/sct_auditing/sct_auditing_cache.h"
 
+#include <utility>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -25,7 +27,6 @@
 #include "services/network/sct_auditing/sct_auditing_reporter.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
 

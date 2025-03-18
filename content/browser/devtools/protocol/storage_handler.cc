@@ -11,6 +11,7 @@
 #include <string>
 #include <unordered_set>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/barrier_closure.h"
@@ -152,7 +153,7 @@ void GetUsageAndQuotaOnIOThread(
     std::unique_ptr<StorageHandler::GetUsageAndQuotaCallback> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   manager->GetUsageAndQuotaForDevtools(
-      storage_key, blink::mojom::StorageType::kTemporary,
+      storage_key,
       base::BindOnce(&GotUsageAndQuotaDataCallback, std::move(callback)));
 }
 
@@ -902,7 +903,7 @@ SharedStorageRuntimeManager* StorageHandler::GetSharedStorageRuntimeManager() {
       ->GetSharedStorageRuntimeManager();
 }
 
-absl::variant<protocol::Response, storage::SharedStorageManager*>
+std::variant<protocol::Response, storage::SharedStorageManager*>
 StorageHandler::GetSharedStorageManager() {
   if (!storage_partition_) {
     return Response::InternalError();
@@ -1247,13 +1248,13 @@ void StorageHandler::GetSharedStorageMetadata(
     const std::string& owner_origin_string,
     std::unique_ptr<GetSharedStorageMetadataCallback> callback) {
   auto manager_or_response = GetSharedStorageManager();
-  if (absl::holds_alternative<protocol::Response>(manager_or_response)) {
-    callback->sendFailure(absl::get<protocol::Response>(manager_or_response));
+  if (std::holds_alternative<protocol::Response>(manager_or_response)) {
+    callback->sendFailure(std::get<protocol::Response>(manager_or_response));
     return;
   }
 
   storage::SharedStorageManager* manager =
-      absl::get<storage::SharedStorageManager*>(manager_or_response);
+      std::get<storage::SharedStorageManager*>(manager_or_response);
   DCHECK(manager);
 
   GURL owner_origin_url(owner_origin_string);
@@ -1300,13 +1301,13 @@ void StorageHandler::GetSharedStorageEntries(
     const std::string& owner_origin_string,
     std::unique_ptr<GetSharedStorageEntriesCallback> callback) {
   auto manager_or_response = GetSharedStorageManager();
-  if (absl::holds_alternative<protocol::Response>(manager_or_response)) {
-    callback->sendFailure(absl::get<protocol::Response>(manager_or_response));
+  if (std::holds_alternative<protocol::Response>(manager_or_response)) {
+    callback->sendFailure(std::get<protocol::Response>(manager_or_response));
     return;
   }
 
   storage::SharedStorageManager* manager =
-      absl::get<storage::SharedStorageManager*>(manager_or_response);
+      std::get<storage::SharedStorageManager*>(manager_or_response);
   DCHECK(manager);
 
   GURL owner_origin_url(owner_origin_string);
@@ -1345,13 +1346,13 @@ void StorageHandler::SetSharedStorageEntry(
     std::optional<bool> ignore_if_present,
     std::unique_ptr<SetSharedStorageEntryCallback> callback) {
   auto manager_or_response = GetSharedStorageManager();
-  if (absl::holds_alternative<protocol::Response>(manager_or_response)) {
-    callback->sendFailure(absl::get<protocol::Response>(manager_or_response));
+  if (std::holds_alternative<protocol::Response>(manager_or_response)) {
+    callback->sendFailure(std::get<protocol::Response>(manager_or_response));
     return;
   }
 
   storage::SharedStorageManager* manager =
-      absl::get<storage::SharedStorageManager*>(manager_or_response);
+      std::get<storage::SharedStorageManager*>(manager_or_response);
   DCHECK(manager);
 
   GURL owner_origin_url(owner_origin_string);
@@ -1394,13 +1395,13 @@ void StorageHandler::DeleteSharedStorageEntry(
     const std::string& key,
     std::unique_ptr<DeleteSharedStorageEntryCallback> callback) {
   auto manager_or_response = GetSharedStorageManager();
-  if (absl::holds_alternative<protocol::Response>(manager_or_response)) {
-    callback->sendFailure(absl::get<protocol::Response>(manager_or_response));
+  if (std::holds_alternative<protocol::Response>(manager_or_response)) {
+    callback->sendFailure(std::get<protocol::Response>(manager_or_response));
     return;
   }
 
   storage::SharedStorageManager* manager =
-      absl::get<storage::SharedStorageManager*>(manager_or_response);
+      std::get<storage::SharedStorageManager*>(manager_or_response);
   DCHECK(manager);
 
   GURL owner_origin_url(owner_origin_string);
@@ -1422,13 +1423,13 @@ void StorageHandler::ClearSharedStorageEntries(
     const std::string& owner_origin_string,
     std::unique_ptr<ClearSharedStorageEntriesCallback> callback) {
   auto manager_or_response = GetSharedStorageManager();
-  if (absl::holds_alternative<protocol::Response>(manager_or_response)) {
-    callback->sendFailure(absl::get<protocol::Response>(manager_or_response));
+  if (std::holds_alternative<protocol::Response>(manager_or_response)) {
+    callback->sendFailure(std::get<protocol::Response>(manager_or_response));
     return;
   }
 
   storage::SharedStorageManager* manager =
-      absl::get<storage::SharedStorageManager*>(manager_or_response);
+      std::get<storage::SharedStorageManager*>(manager_or_response);
   DCHECK(manager);
 
   GURL owner_origin_url(owner_origin_string);
@@ -1462,13 +1463,13 @@ void StorageHandler::ResetSharedStorageBudget(
     const std::string& owner_origin_string,
     std::unique_ptr<ResetSharedStorageBudgetCallback> callback) {
   auto manager_or_response = GetSharedStorageManager();
-  if (absl::holds_alternative<protocol::Response>(manager_or_response)) {
-    callback->sendFailure(absl::get<protocol::Response>(manager_or_response));
+  if (std::holds_alternative<protocol::Response>(manager_or_response)) {
+    callback->sendFailure(std::get<protocol::Response>(manager_or_response));
     return;
   }
 
   storage::SharedStorageManager* manager =
-      absl::get<storage::SharedStorageManager*>(manager_or_response);
+      std::get<storage::SharedStorageManager*>(manager_or_response);
   DCHECK(manager);
 
   GURL owner_origin_url(owner_origin_string);
@@ -1611,9 +1612,8 @@ void StorageHandler::NotifySharedStorageAccessed(
       type_enum = Storage::SharedStorageAccessTypeEnum::WorkletKeys;
       break;
     case AccessMethod::kValues:
-      // TODO(crbug.com/401011862): Implement this path.
-      NOTREACHED();
     case AccessMethod::kEntries:
+      // TODO(crbug.com/401011862): Separate values from entries.
       type_enum = Storage::SharedStorageAccessTypeEnum::WorkletEntries;
       break;
     case AccessMethod::kLength:

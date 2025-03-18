@@ -4,6 +4,7 @@
 
 #include "ui/gl/child_window_win.h"
 
+#include "base/at_exit.h"
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "base/functional/bind.h"
@@ -65,6 +66,12 @@ class HiddenPopupWindow : public gfx::WindowImpl {
     // to gfx::WindowImpl instance.
     gfx::WindowImpl* window_data =
         reinterpret_cast<gfx::WindowImpl*>(gfx::GetWindowUserData(window));
+    if (!window_data) {
+      // If a `ChildWindowWin` object is created but `Initialize` is not called,
+      // window_data is expected to be nullptr. This can occur in certain tests.
+      DCHECK(!window);
+      return;
+    }
     DCHECK_EQ(window, window_data->hwnd());
     DestroyWindow(window);
     delete window_data;
@@ -119,53 +126,37 @@ void DestroyWindowsOnThread(HWND child_window, HWND hidden_popup_window) {
   HiddenPopupWindow::Destroy(hidden_popup_window);
 }
 
-#if DCHECK_IS_ON()
-base::ThreadChecker& GetThreadChecker() {
-  static base::NoDestructor<base::ThreadChecker> thread_checker;
-  return *thread_checker;
-}
-#endif
-
 }  // namespace
 
-class ChildWindowWin::ChildWindowThread
-    : public base::RefCounted<ChildWindowThread> {
+class ChildWindowWin::ChildWindowThread {
  public:
   // Returns the singleton instance of the thread.
-  static scoped_refptr<ChildWindowThread> GetInstance() {
-    DCHECK_CALLED_ON_VALID_THREAD(GetThreadChecker());
-    static base::NoDestructor<base::WeakPtr<ChildWindowThread>> weak_instance;
-
-    auto instance = base::WrapRefCounted((*weak_instance).get());
-    if (!instance) {
-      instance = base::WrapRefCounted(new ChildWindowThread);
-      *weak_instance = instance->weak_ptr_factory_.GetWeakPtr();
-    }
-
-    return instance;
+  static ChildWindowThread* GetInstance() {
+    static base::NoDestructor<ChildWindowThread> instance;
+    return instance.get();
   }
 
   scoped_refptr<base::TaskRunner> task_runner() {
-    DCHECK_CALLED_ON_VALID_THREAD(GetThreadChecker());
     return thread_.task_runner();
   }
 
+  void DestroyThread() { thread_.Stop(); }
+
  private:
-  friend class base::RefCounted<ChildWindowThread>;
+  friend class base::NoDestructor<ChildWindowThread>;
 
   ChildWindowThread() : thread_("Window owner thread") {
-    DCHECK_CALLED_ON_VALID_THREAD(GetThreadChecker());
     base::Thread::Options options(base::MessagePumpType::UI, 0);
     thread_.StartWithOptions(std::move(options));
+    base::AtExitManager::RegisterCallback(
+        [](void*) { GetInstance()->DestroyThread(); }, NULL);
   }
 
   ~ChildWindowThread() {
-    DCHECK_CALLED_ON_VALID_THREAD(GetThreadChecker());
     thread_.Stop();
   }
 
   base::Thread thread_;
-  base::WeakPtrFactory<ChildWindowThread> weak_ptr_factory_{this};
 };
 
 ChildWindowWin::ChildWindowWin() = default;
@@ -174,26 +165,21 @@ void ChildWindowWin::Initialize() {
   if (window_)
     return;
 
-  thread_ = ChildWindowThread::GetInstance();
-
   base::WaitableEvent event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                             base::WaitableEvent::InitialState::NOT_SIGNALED);
 
-  thread_->task_runner()->PostTask(
+  ChildWindowThread::GetInstance()->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&CreateWindowsOnThread, &event, &window_,
                                 &initial_parent_window_));
   event.Wait();
 }
 
 ChildWindowWin::~ChildWindowWin() {
-  if (thread_) {
-    scoped_refptr<base::TaskRunner> task_runner = thread_->task_runner();
-    task_runner->PostTaskAndReply(
-        FROM_HERE,
-        base::BindOnce(&DestroyWindowsOnThread, window_,
-                       initial_parent_window_),
-        base::DoNothingWithBoundArgs(std::move(thread_)));
-  }
+  scoped_refptr<base::TaskRunner> task_runner =
+      ChildWindowThread::GetInstance()->task_runner();
+  task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&DestroyWindowsOnThread, window_, initial_parent_window_));
 }
 
 void ChildWindowWin::Resize(const gfx::Size& size) {
@@ -218,8 +204,7 @@ void ChildWindowWin::Resize(const gfx::Size& size) {
 }
 
 scoped_refptr<base::TaskRunner> ChildWindowWin::GetTaskRunnerForTesting() {
-  DCHECK(thread_);
-  return thread_->task_runner();
+  return ChildWindowThread::GetInstance()->task_runner();
 }
 
 }  // namespace gl

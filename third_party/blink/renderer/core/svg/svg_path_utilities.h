@@ -31,8 +31,8 @@ class SVGPathByteStream;
 class SVGPathByteStreamBuilder;
 
 // StringView/SVGPathByteStream -> Path
-bool CORE_EXPORT BuildPathFromString(const StringView&, Path&);
-bool BuildPathFromByteStream(const SVGPathByteStream&, Path&);
+Path CORE_EXPORT BuildPathFromString(const StringView&);
+Path BuildPathFromByteStream(const SVGPathByteStream&);
 
 SVGParsingError CORE_EXPORT
 BuildByteStreamFromString(const StringView&, SVGPathByteStreamBuilder&);

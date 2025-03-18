@@ -200,8 +200,11 @@ class SharedStorage::IterationSource final
       client->SharedStorageKeys(receiver_.BindNewPipeAndPassRemote(
           execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
     } else {
-      client->SharedStorageEntries(receiver_.BindNewPipeAndPassRemote(
-          execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+      bool values_only = GetKind() == Kind::kValue;
+      client->SharedStorageEntries(
+          receiver_.BindNewPipeAndPassRemote(
+              execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI)),
+          values_only);
     }
 
     base::UmaHistogramExactLinear(

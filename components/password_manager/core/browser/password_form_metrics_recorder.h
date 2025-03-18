@@ -11,6 +11,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <variant>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -22,7 +23,6 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -660,9 +660,9 @@ class PasswordFormMetricsRecorder
 
   bool recorded_fill_suggestion_has_grouped_match_ = false;
 
-  absl::variant<absl::monostate,
-                FillingAssistance,
-                SingleUsernameFillingAssistance>
+  std::variant<std::monostate,
+               FillingAssistance,
+               SingleUsernameFillingAssistance>
       filling_assistance_;
   std::optional<FillingSource> filling_source_;
   std::optional<features_util::PasswordAccountStorageUsageLevel>

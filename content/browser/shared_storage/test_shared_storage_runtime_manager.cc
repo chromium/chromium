@@ -88,6 +88,26 @@ TestSharedStorageRuntimeManager::GetAttachedWorkletHostForFrame(
   return worklet_hosts[0];
 }
 
+TestSharedStorageWorkletHost* TestSharedStorageRuntimeManager::
+    GetLastAttachedWorkletHostForFrameWithScriptSrc(
+        RenderFrameHost* frame,
+        const GURL& script_src_url) {
+  std::vector<TestSharedStorageWorkletHost*> worklet_hosts =
+      GetAttachedWorkletHostsForFrame(frame);
+
+  if (worklet_hosts.empty()) {
+    return nullptr;
+  }
+
+  for (size_t i = worklet_hosts.size(); i > 0; --i) {
+    auto* host = worklet_hosts[i - 1];
+    if (host->script_source_url() == script_src_url) {
+      return host;
+    }
+  }
+  return nullptr;
+}
+
 std::vector<TestSharedStorageWorkletHost*>
 TestSharedStorageRuntimeManager::GetAttachedWorkletHostsForFrame(
     RenderFrameHost* frame) {

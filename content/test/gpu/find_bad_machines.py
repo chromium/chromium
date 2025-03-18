@@ -115,7 +115,7 @@ def ParseArgs() -> argparse.Namespace:
   detection_modifiers.add_argument(
       '--random-chance-probability-threshold',
       type=float,
-      default=0.0005,
+      default=0.0001,
       help=('Used with the random chance detection method. Sets how unlikely '
             'it has to be that a bot randomly got at least as many failures as '
             'it did in order for it to be considered bad.'))

@@ -949,15 +949,17 @@ public class NewTabPageLayout extends LinearLayout {
         mIsInMultiWindowModeOnTablet =
                 MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity);
 
-        if (mShowingNonStandardGoogleLogo
-                && mLogoView != null
+        if (mLogoView != null
                 && isInMultiWindowModeOnTabletPreviousValue != mIsInMultiWindowModeOnTablet) {
             int doodleSize =
                     mIsInMultiWindowModeOnTablet
                             ? DoodleSize.TABLET_SPLIT_SCREEN
                             : DoodleSize.REGULAR;
             mLogoCoordinator.setDoodleSize(doodleSize);
-            LogoUtils.setLogoViewLayoutParamsForDoodle(mLogoView, getResources(), doodleSize);
+
+            if (mShowingNonStandardGoogleLogo) {
+                LogoUtils.setLogoViewLayoutParamsForDoodle(mLogoView, getResources(), doodleSize);
+            }
         }
     }
 

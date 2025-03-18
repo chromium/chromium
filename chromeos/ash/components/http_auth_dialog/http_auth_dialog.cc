@@ -29,7 +29,7 @@ namespace ash {
 namespace {
 
 // This dialog is used in place of the browser http auth dialog when
-// `g_enable_count` >= 1. Once Lacros ships, this feature can be enabled always.
+// `g_enable_count` >= 1.
 static int g_enable_count = 0;
 
 // The distance between vertical controls.
@@ -114,8 +114,7 @@ std::unique_ptr<HttpAuthDialog> HttpAuthDialog::Create(
     content::WebContents* web_contents,
     const GURL& url,
     content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback) {
-  // This class cannot handle UI-less auth dialog requests. Once Lacros ships,
-  // this should no longer be possible and this can become a CHECK.
+  // This class cannot handle UI-less auth dialog requests.
   if (!web_contents) {
     return nullptr;
   }

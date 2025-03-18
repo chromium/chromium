@@ -15,6 +15,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check_op.h"
@@ -22,7 +23,6 @@
 #include "base/containers/span.h"
 #include "base/functional/overloaded.h"
 #include "chrome/updater/certificate_tag_internal.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/crypto.h"
 
@@ -41,7 +41,7 @@ using SuccessfulParse = base::span<const uint8_t>;
 // list and see whether it has an extension with `kTagOID`, and if so, returns a
 // `base::span` of the tag within this `signed_data`. `success` is set to `true`
 // if there were no parse errors, even if a tag could not be found.
-absl::variant<FailedParse, SuccessfulEmptyParse, SuccessfulParse> ParseTagImpl(
+std::variant<FailedParse, SuccessfulEmptyParse, SuccessfulParse> ParseTagImpl(
     base::span<const uint8_t> signed_data) {
   CBS content_info = CBSFromSpan(signed_data);
   CBS pkcs7, certs;
@@ -377,7 +377,7 @@ std::optional<std::vector<uint8_t>> SetTagImpl(
   // it.
   {
     const auto result = ParseTagImpl(signed_data);
-    if (!absl::holds_alternative<SuccessfulParse>(result) &&
+    if (!std::holds_alternative<SuccessfulParse>(result) &&
         !CBB_add_bytes(&certs_cbb, CBS_data(&last_cert), CBS_len(&last_cert))) {
       return std::nullopt;
     }
@@ -523,15 +523,15 @@ std::optional<std::vector<uint8_t>> PEBinary::SetTag(
 PEBinary::PEBinary() = default;
 
 bool PEBinary::ParseTag() {
-  return absl::visit(base::Overloaded{
-                         [](FailedParse unused) { return false; },
-                         [](SuccessfulEmptyParse unused) { return true; },
-                         [this](SuccessfulParse tag) {
-                           tag_ = std::vector<uint8_t>(tag.begin(), tag.end());
-                           return true;
-                         },
-                     },
-                     ParseTagImpl(content_info_));
+  return std::visit(base::Overloaded{
+                        [](FailedParse unused) { return false; },
+                        [](SuccessfulEmptyParse unused) { return true; },
+                        [this](SuccessfulParse tag) {
+                          tag_ = std::vector<uint8_t>(tag.begin(), tag.end());
+                          return true;
+                        },
+                    },
+                    ParseTagImpl(content_info_));
 }
 
 std::optional<SectorFormat> NewSectorFormat(uint16_t sector_shift) {
@@ -977,15 +977,15 @@ std::optional<std::vector<uint8_t>> MSIBinary::SetTag(
 }
 
 bool MSIBinary::ParseTag() {
-  return absl::visit(base::Overloaded{
-                         [](FailedParse unused) { return false; },
-                         [](SuccessfulEmptyParse unused) { return true; },
-                         [this](SuccessfulParse tag) {
-                           tag_ = std::vector<uint8_t>(tag.begin(), tag.end());
-                           return true;
-                         },
-                     },
-                     ParseTagImpl(signed_data_bytes_));
+  return std::visit(base::Overloaded{
+                        [](FailedParse unused) { return false; },
+                        [](SuccessfulEmptyParse unused) { return true; },
+                        [this](SuccessfulParse tag) {
+                          tag_ = std::vector<uint8_t>(tag.begin(), tag.end());
+                          return true;
+                        },
+                    },
+                    ParseTagImpl(signed_data_bytes_));
 }
 
 std::optional<std::vector<uint8_t>> MSIBinary::tag() const {

@@ -62,6 +62,9 @@ interface TestMessageTarget {
   // javascript names when generating js bindings.
   MethodWithReservedNameParameter(array<int32> arguments)
       => (array<int32> arguments);
+
+  // Returns true for success case, and -1 for error case.
+  TestResult(bool simulateSuccess) => result<bool, int32>;
 };
 
 interface Subinterface {

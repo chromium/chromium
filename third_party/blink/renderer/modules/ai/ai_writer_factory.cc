@@ -118,14 +118,17 @@ class CreateWriterClient : public GarbageCollected<CreateWriterClient>,
     using mojom::blink::AIManagerCreateClientError;
 
     switch (error) {
-      // TODO(crbug.com/381975242): Set specific exception once the type is
-      // finalized for `kInitialPromptsTooLarge`.
       case AIManagerCreateClientError::kUnableToCreateSession:
-      case AIManagerCreateClientError::kUnableToCalculateTokenSize:
-      case AIManagerCreateClientError::kInitialPromptsTooLarge: {
+      case AIManagerCreateClientError::kUnableToCalculateTokenSize: {
         GetResolver()->RejectWithDOMException(
             DOMExceptionCode::kInvalidStateError,
             kExceptionMessageUnableToCreateSession);
+        break;
+      }
+      case AIManagerCreateClientError::kInitialInputTooLarge: {
+        GetResolver()->RejectWithDOMException(
+            DOMExceptionCode::kQuotaExceededError,
+            kExceptionMessageInputTooLarge);
         break;
       }
       case AIManagerCreateClientError::kUnsupportedLanguage: {

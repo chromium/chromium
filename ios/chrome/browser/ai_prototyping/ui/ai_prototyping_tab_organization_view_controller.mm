@@ -56,8 +56,8 @@ using optimization_guide::proto::
   [super viewDidLoad];
 
   self.sheetPresentationController.detents = @[
-    UISheetPresentationControllerDetent.mediumDetent,
-    UISheetPresentationControllerDetent.largeDetent,
+    [UISheetPresentationControllerDetent mediumDetent],
+    [UISheetPresentationControllerDetent largeDetent],
   ];
 
   UILabel* label = [[UILabel alloc] init];

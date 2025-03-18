@@ -14,6 +14,7 @@
 #include <string>
 #include <string_view>
 #include <type_traits>
+#include <variant>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -35,7 +36,6 @@
 #include "net/dns/public/resolve_error_info.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log_with_source.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/scheme_host_port.h"
 
 namespace net {
@@ -65,7 +65,7 @@ class NET_EXPORT HostResolver {
  public:
   class NET_EXPORT Host {
    public:
-    explicit Host(absl::variant<url::SchemeHostPort, HostPortPair> host);
+    explicit Host(std::variant<url::SchemeHostPort, HostPortPair> host);
     ~Host();
 
     Host(const Host&);
@@ -88,7 +88,7 @@ class NET_EXPORT HostResolver {
     bool operator<(const Host& other) const { return host_ < other.host_; }
 
    private:
-    absl::variant<url::SchemeHostPort, HostPortPair> host_;
+    std::variant<url::SchemeHostPort, HostPortPair> host_;
   };
 
   // Handler for an individual host resolution request. Created by

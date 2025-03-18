@@ -362,12 +362,20 @@ void MakePipeline(
     // Then, assemble the pipeline. If the pipeline fails, it falls back to the
     // previously-assembled pipeline.
     fallback = base::MakeRefCounted<Pipeline>(
-        MakeOperations(config, get_available_space, is_foreground, session_id,
-                       crx_cache, crx_format, id, pk_hash, install_data_index,
-                       installer, state_tracker, event_adder,
-                       download_progress_callback, install_progress_callback,
-                       install_complete_callback, action_handler, pipeline,
-                       cache_check, install_data),
+        MakeOperations(
+            config, get_available_space, is_foreground, session_id, crx_cache,
+            crx_format, id, pk_hash, install_data_index, installer,
+            state_tracker,
+            base::BindRepeating(
+                [](base::RepeatingCallback<void(base::Value::Dict)> event_adder,
+                   const std::string& pipeline_id, base::Value::Dict event) {
+                  event.Set("pipeline_id", pipeline_id);
+                  event_adder.Run(std::move(event));
+                },
+                event_adder, pipeline.pipeline_id),
+            download_progress_callback, install_progress_callback,
+            install_complete_callback, action_handler, pipeline, cache_check,
+            install_data),
         fallback);
   }
 

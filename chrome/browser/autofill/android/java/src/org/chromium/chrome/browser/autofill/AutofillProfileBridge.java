@@ -12,7 +12,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownKeyValue;
-import org.chromium.components.autofill.AutofillAddressUiComponent;
+import org.chromium.components.autofill.AutofillAddressEditorUiInfo;
 
 import java.text.Collator;
 import java.util.ArrayList;
@@ -27,8 +27,6 @@ import java.util.Locale;
  */
 @JNINamespace("autofill")
 public final class AutofillProfileBridge {
-    private String mCurrentBestLanguageCode;
-
     /**
      * @return The CLDR region code for the default locale.
      */
@@ -96,57 +94,20 @@ public final class AutofillProfileBridge {
 
     /**
      * Returns the UI components for the CLDR countryCode and languageCode provided. If no language
-     * code is provided, the application's default locale is used instead. Also stores the
-     * currentBestLanguageCode, retrievable via getCurrentBestLanguageCode, to be used when saving
-     * an autofill profile.
+     * code is provided, the application's default locale is used instead.
      *
      * @param countryCode The CLDR code used to retrieve address components.
      * @param languageCode The language code associated with the saved autofill profile that ui
      *     components are being retrieved for; can be null if ui components are being retrieved for
      *     a new profile.
      * @param validationType The target usage validation rules.
-     * @return A list of address UI components. The ordering in the list specifies the order these
-     *     components should appear in the UI.
+     * @return A list of address UI components bundled with the best language tag. The ordering in
+     *     the list specifies the order these components should appear in the UI.
      */
-    public List<AutofillAddressUiComponent> getAddressUiComponents(
-            @JniType("std::string") String countryCode,
-            @JniType("std::string") String languageCode,
-            @AddressValidationType int validationType) {
-        List<Integer> componentIds = new ArrayList<>();
-        List<String> componentNames = new ArrayList<>();
-        List<Integer> componentRequired = new ArrayList<>();
-        List<Integer> componentLengths = new ArrayList<>();
-        List<AutofillAddressUiComponent> uiComponents = new ArrayList<>();
-
-        mCurrentBestLanguageCode =
-                AutofillProfileBridgeJni.get()
-                        .getAddressUiComponents(
-                                countryCode,
-                                languageCode,
-                                validationType,
-                                componentIds,
-                                componentNames,
-                                componentRequired,
-                                componentLengths);
-
-        for (int i = 0; i < componentIds.size(); i++) {
-            uiComponents.add(
-                    new AutofillAddressUiComponent(
-                            componentIds.get(i),
-                            componentNames.get(i),
-                            componentRequired.get(i) == 1,
-                            componentLengths.get(i) == 1));
-        }
-
-        return uiComponents;
-    }
-
-    /**
-     * @return The language code associated with the most recently retrieved address ui components.
-     *         Will return null if getAddressUiComponents() has not been called yet.
-     */
-    public String getCurrentBestLanguageCode() {
-        return mCurrentBestLanguageCode;
+    public AutofillAddressEditorUiInfo getAddressEditorUiInfo(
+            String countryCode, String languageCode, @AddressValidationType int validationType) {
+        return AutofillProfileBridgeJni.get()
+                .getAddressEditorUiInfo(countryCode, languageCode, validationType);
     }
 
     @CalledByNative
@@ -174,14 +135,10 @@ public final class AutofillProfileBridge {
         void getRequiredFields(
                 @JniType("std::string") String countryCode, List<Integer> requiredFields);
 
-        @JniType("std::string")
-        String getAddressUiComponents(
+        @JniType("AutofillAddressEditorUiInfoAndroid")
+        AutofillAddressEditorUiInfo getAddressEditorUiInfo(
                 @JniType("std::string") String countryCode,
                 @JniType("std::string") String languageCode,
-                @AddressValidationType int validationType,
-                List<Integer> componentIds,
-                List<String> componentNames,
-                List<Integer> componentRequired,
-                List<Integer> componentLengths);
+                @AddressValidationType int validationType);
     }
 }

@@ -65,7 +65,7 @@ std::optional<double> NumberPropertyFunctions::GetNumber(
       // Numbers are represented by percentages.
       if (!length.IsPercent())
         return std::optional<double>();
-      double value = length.Value();
+      double value = length.Percent();
       // -100% represents the keyword "normal".
       if (value == -100)
         return std::optional<double>();

@@ -278,6 +278,7 @@
 <translation id="7905064834449738336">当您使用某个密码时，如果 Chromium 发现它已被在线发布，就会向您发出警告。当 Chromium 进行这项检查时，您的密码和用户名都会被加密，所以绝不会被任何人员/任何一方（包括 Google）读取。</translation>
 <translation id="7928628054454574139">每当您点按其他应用中的链接时，系统都会使用 Chromium 打开相应链接</translation>
 <translation id="7934404985878918282">查看 Chromium 阅读清单</translation>
+<translation id="7935734571048689933">Chromium 处于受管理状态</translation>
 <translation id="7951793218148208717">在 Chromium 中打开新标签页。</translation>
 <translation id="7980860476903281594">Chromium 会将您的位置信息分享给您允许的网站。</translation>
 <translation id="7994322153108931467">如需获取实用 Chromium 提示，请在 iOS 设置中开启通知。</translation>
@@ -308,6 +309,7 @@
 <translation id="8754966941001340678">Chromium 建议使用增强型保护</translation>
 <translation id="8759037115129007407">您的家庭成员目前无法接收密码。请让他们更新 Chromium 并同步其密码。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">系统会从 Chromium 中移除此账号以及所有未保存的数据。</translation>
+<translation id="8793333988063379360">您可以在此处找到 Chromium 设置和其他内容</translation>
 <translation id="8805148242934787134">将 Chromium 设为默认浏览器</translation>
 <translation id="8826789549860004832">继续设置浏览器，即可充分利用 Chromium 的各项功能。</translation>
 <translation id="88376265765385899">打开 Chromium 书签。</translation>

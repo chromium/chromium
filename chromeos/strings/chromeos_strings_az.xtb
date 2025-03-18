@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">"Torpaq axını" divar kağızı</translation>
 <translation id="33736539805963175"><ph name="LETTERS_LETTER" /> hərfi ilə <ph name="LETTERS_COLOR" /> arxa fon</translation>
 <translation id="3383623117265110236">Eksklüziv</translation>
-<translation id="3395147534045164351">Məkana uyğunlaşdır seçimini aktiv/deaktiv edin</translation>
 <translation id="3404249063913988450">Ekran qoruyucusunu aktiv edin</translation>
 <translation id="3413935475507503304">Güncəlləməyə keçmək üçün "Növbəti" seçiminə toxunun.</translation>
 <translation id="3428551088151258685">açıq məkan</translation>
@@ -1395,6 +1394,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="7388345524791662148"><ph name="RECORDING_NAME" /> üçün əlavə seçimlər</translation>
 <translation id="7388959671917308825">Quraşdırılmış taçped</translation>
 <translation id="7397270852490618635">İşıqlı temanı deaktiv edin</translation>
+<translation id="7400166052988585408">Müəllim <ph name="NUM_SECONDS" /> saniyə sonra ekranınızı kilidləyəcək</translation>
 <translation id="7401543881546089382">Qısayolu silin</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> güncəllənməyə hazırdır</translation>
 <translation id="741244894080940828">çevirmə</translation>

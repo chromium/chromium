@@ -1300,10 +1300,8 @@ PrivacySandboxServiceImpl::GetRelatedWebsiteSetOwner(
     const GURL& site_url) const {
   // If RWS is not affecting cookie access, then there are effectively no
   // related website sets.
-  if (!(cookie_settings_->ShouldBlockThirdPartyCookies() &&
-        cookie_settings_->GetDefaultCookieSetting() != CONTENT_SETTING_BLOCK &&
-        base::FeatureList::IsEnabled(
-            privacy_sandbox::kPrivacySandboxFirstPartySetsUI))) {
+  if (!cookie_settings_->ShouldBlockThirdPartyCookies() ||
+      cookie_settings_->GetDefaultCookieSetting() == CONTENT_SETTING_BLOCK) {
     return std::nullopt;
   }
 
@@ -1792,12 +1790,6 @@ void PrivacySandboxServiceImpl::MaybeInitializeRelatedWebsiteSetsPref() {
   if (pref_service_->GetBoolean(
           prefs::
               kPrivacySandboxRelatedWebsiteSetsDataAccessAllowedInitialized)) {
-    return;
-  }
-
-  // If the FPS UI is not available, no initialization is required.
-  if (!base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxFirstPartySetsUI)) {
     return;
   }
 

@@ -18,7 +18,9 @@
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
 #include "components/user_manager/user_type.h"
 #include "remoting/base/string_resources.h"
@@ -134,6 +136,9 @@ class It2MeConfirmationDialogChromeOSTest
     : public ash::AshTestBase,
       public testing::WithParamInterface<DialogStyle> {
  public:
+  It2MeConfirmationDialogChromeOSTest()
+      : ash::AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
   void SetUp() override {
     ash::AshTestBase::SetUp();
 
@@ -175,8 +180,15 @@ class It2MeConfirmationDialogChromeOSTest
 
   void CreateAndShowDialog(const std::string& remote_user_email,
                            It2MeConfirmationDialog::ResultCallback callback) {
+    CreateAndShowDialog(remote_user_email, std::move(callback),
+                        base::TimeDelta());
+  }
+
+  void CreateAndShowDialog(const std::string& remote_user_email,
+                           It2MeConfirmationDialog::ResultCallback callback,
+                           base::TimeDelta auto_accept_timeout) {
     dialog_ = std::make_unique<It2MeConfirmationDialogChromeOS>(
-        /*style=*/GetParam(), /*auto_accept_timeout=*/base::TimeDelta());
+        /*style=*/GetParam(), auto_accept_timeout);
     dialog_->Show(remote_user_email, std::move(callback));
   }
 
@@ -314,6 +326,19 @@ TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedDisabled,
 
   EXPECT_EQ(GetVisibleNotificationsCount(), 0);
   EXPECT_EQ(result_future.Get(), It2MeConfirmationDialog::Result::OK);
+}
+
+TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedDisabled,
+       ShouldNotAutoAcceptNotification) {
+  TestFuture<It2MeConfirmationDialog::Result> result_future;
+  CreateAndShowDialog(kTestingRemoteEmail, result_future.GetCallback(),
+                      base::Seconds(10));
+
+  EXPECT_EQ(GetVisibleNotificationsCount(), 1);
+
+  task_environment()->FastForwardBy(base::Seconds(11));
+
+  EXPECT_EQ(GetVisibleNotificationsCount(), 1);
 }
 
 // TODO(b:390164552) Add test for correct text in message box view.
@@ -478,6 +503,20 @@ TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
   DeclineDialog();
 
   ASSERT_EQ(result_future.Get(), It2MeConfirmationDialog::Result::CANCEL);
+}
+
+TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
+       ShouldAutoAcceptDialogIfAutoAcceptTimeoutParamIsPresent) {
+  TestFuture<It2MeConfirmationDialog::Result> result_future;
+  CreateAndShowDialog(kTestingRemoteEmail, result_future.GetCallback(),
+                      base::Seconds(10));
+
+  ASSERT_TRUE(DialogVisibleInParentContainer(kUserSessionScreen));
+
+  task_environment()->FastForwardBy(base::Seconds(10));
+
+  ASSERT_FALSE(DialogVisibleInParentContainer(kUserSessionScreen));
+  ASSERT_EQ(result_future.Get(), It2MeConfirmationDialog::Result::OK);
 }
 
 INSTANTIATE_TEST_SUITE_P(

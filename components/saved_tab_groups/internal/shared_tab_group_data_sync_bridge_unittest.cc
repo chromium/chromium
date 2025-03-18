@@ -26,6 +26,7 @@
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_model_observer.h"
 #include "components/saved_tab_groups/internal/sync_bridge_tab_group_model_wrapper.h"
+#include "components/saved_tab_groups/proto/shared_tab_group_data.pb.h"
 #include "components/saved_tab_groups/public/pref_names.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
@@ -505,6 +506,22 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
             next_unique_position, syncer::UniquePosition::RandomSuffix());
       }
     }
+    store().CommitWriteBatch(std::move(write_batch), base::DoNothing());
+  }
+
+  // Stores sync metadata for the tab. Used to store metadata for tabs missing
+  // their group (which are not present in the model).
+  void StoreMetadataForTabSpecifics(
+      const sync_pb::SharedTabGroupDataSpecifics& tab_specifics,
+      const syncer::CollaborationId& collaboration_id) {
+    std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
+        store().CreateWriteBatch();
+    syncer::MetadataChangeList* metadata_change_list =
+        write_batch->GetMetadataChangeList();
+    metadata_change_list->UpdateMetadata(
+        tab_specifics.guid(),
+        CreateMetadata(collaboration_id, SharedAttribution(),
+                       tab_specifics.tab().unique_position()));
     store().CommitWriteBatch(std::move(write_batch), base::DoNothing());
   }
 
@@ -1199,15 +1216,12 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncRemovedLocalGroup) {
   ASSERT_TRUE(model()->Contains(group.saved_guid()));
   ASSERT_EQ(model()->Get(group.saved_guid())->saved_tabs().size(), 2u);
 
-  // Only the group is removed, its tabs remain orphaned.
   EXPECT_CALL(mock_processor(),
               Delete(group.saved_guid().AsLowercaseString(), _, _));
   EXPECT_CALL(mock_processor(),
-              Delete(tab1.saved_tab_guid().AsLowercaseString(), _, _))
-      .Times(0);
+              Delete(tab1.saved_tab_guid().AsLowercaseString(), _, _));
   EXPECT_CALL(mock_processor(),
-              Delete(tab2.saved_tab_guid().AsLowercaseString(), _, _))
-      .Times(0);
+              Delete(tab2.saved_tab_guid().AsLowercaseString(), _, _));
   model()->RemovedLocally(group.saved_guid());
 }
 
@@ -2222,6 +2236,42 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
   EXPECT_CALL(mock_processor(), IsEntityUnsynced).Times(0);
   bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
                                         syncer::EntityChangeList());
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnTabsMissingGroups) {
+  const CollaborationId kCollaborationId("collaboration");
+  const base::Time kCreationTime = base::Time::Now();
+  const base::Uuid kMissingGroupGuid = base::Uuid::GenerateRandomV4();
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  sync_pb::SharedTabGroupDataSpecifics tab_specifics =
+      MakeTabSpecifics("tab title", GURL("http://google.com/1"),
+                       kMissingGroupGuid, GenerateRandomUniquePosition());
+  syncer::EntityChangeList change_list;
+  change_list.push_back(
+      CreateAddEntityChange(tab_specifics, kCollaborationId, kCreationTime));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(change_list));
+
+  std::vector<syncer::EntityData> entity_data_list =
+      ExtractEntityDataFromBatch(bridge()->GetAllDataForDebugging());
+
+  EXPECT_THAT(entity_data_list,
+              UnorderedElementsAre(HasTabEntityData(
+                  "tab title", "http://google.com/1", kCollaborationId)));
+
+  // Simulate browser restart and verify that the tab missing group is loaded.
+  StoreMetadataAndReset();
+
+  // Store the metadata for the tab missing group explicitly.
+  StoreMetadataForTabSpecifics(tab_specifics, kCollaborationId);
+
+  ASSERT_TRUE(InitializeBridgeAndModel());
+  entity_data_list =
+      ExtractEntityDataFromBatch(bridge()->GetAllDataForDebugging());
+  EXPECT_THAT(entity_data_list,
+              UnorderedElementsAre(HasTabEntityData(
+                  "tab title", "http://google.com/1", kCollaborationId)));
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, UntrackEntitiesForCollaboration) {

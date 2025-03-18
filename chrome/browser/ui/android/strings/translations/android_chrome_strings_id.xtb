@@ -432,7 +432,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2981364137500752533">Anda dapat membuka hingga 5 jendela.</translation>
 <translation id="2983102365694924129">Berdasarkan aktivitas Anda di situs. Setelan ini nonaktif.</translation>
 <translation id="2984978667043170458">Sertakan teks di sekitar dalam penelusuran Google</translation>
-<translation id="2988638966064514052">Perkuat sandi Anda</translation>
 <translation id="2989523299700148168">Baru saja dikunjungi</translation>
 <translation id="2992473221983447149">Deskripsi gambar</translation>
 <translation id="2996291259634659425">Buat frasa sandi</translation>
@@ -548,7 +547,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3557336313807607643">Tambahkan ke kontak</translation>
 <translation id="3563767357928833671">Konten papan klip ditampilkan</translation>
 <translation id="3566639033325271639">Perbarui setelan</translation>
-<translation id="3568945271227339929">Tidak ada sandi yang telah dibobol</translation>
 <translation id="3575464060651642446">Memeriksa sandi di perangkat ini…</translation>
 <translation id="3577473026931028326">Terjadi error. Coba lagi.</translation>
 <translation id="3577558748185201054">Kelola minat dan preferensi Anda</translation>
@@ -1055,7 +1053,6 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="5958275228015807058">Temukan file dan halaman di Download</translation>
 <translation id="5958994127112619898">Sederhanakan halaman</translation>
 <translation id="5962718611393537961">Ketuk untuk menciutkan</translation>
-<translation id="5964180026566797835">Tidak dapat memeriksa sandi</translation>
 <translation id="5964869237734432770">Hentikan deskripsi gambar</translation>
 <translation id="5977976211062815271">Di perangkat ini</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 halaman di daftar bacaan Anda}other{# halaman di daftar bacaan Anda}}</translation>
@@ -1099,6 +1096,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="6150320133806434356">Bookmark disimpan</translation>
 <translation id="6150706324143004339">Untuk menggunakan dan menyimpan data Chrome di Akun Google Anda, update Chrome</translation>
 <translation id="6154478581116148741">Aktifkan kunci layar di Setelan untuk mengekspor sandi dari perangkat ini</translation>
+<translation id="6156323911414505561">Tampilkan kolom bookmark</translation>
 <translation id="6162892189396105610">Melakukan pramuat halaman yang menurut Chrome mungkin akan Anda buka.</translation>
 <translation id="6170675927290506430">Buka setelan notifikasi</translation>
 <translation id="6186394685773237175">Tidak ditemukan sandi yang telah dibobol</translation>

@@ -316,7 +316,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1532118530259321453">Šajā lapā ir rakstīts</translation>
 <translation id="1533966801397200693">Profils, kurā esat pierakstījies, ir pārvaldīts profils. Administrators var attālināti veikt izmaiņas jūsu profila iestatījumos, analizēt informāciju par pārlūku, izmantojot pārskatus, kā arī veikt citus nepieciešamos uzdevumus. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="1536390784834419204">Tulkot lapu</translation>
-<translation id="1538295100801850685">Prognožu uzlabojumi</translation>
 <translation id="1539840569003678498">Pārskata nosūtīšanas laiks:</translation>
 <translation id="1542105669288201090">Uzņēmējdarbības izglītība</translation>
 <translation id="1545757265410828525">Cenu vēsture</translation>
@@ -1157,7 +1156,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3052868890529250114">Parasti jūs izveidojat drošu savienojumu ar vietnēm, taču šoreiz Chrome nevarēja izmantot drošu savienojumu. Iespējams, kāds uzbrucējs mēģina izsekot jūsu darbības vai mainīt jūsu tīkla savienojumu. <ph name="BEGIN_LEARN_MORE_LINK" />Uzzināt vairāk par šo brīdinājumu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> cenas kritums produktam “<ph name="PRODUCT_NAME" />”</translation>
 <translation id="3061707000357573562">Ielāpu pakalpojums</translation>
-<translation id="306198082577913404">Ieslēdziet prognožu uzlabojumus</translation>
 <translation id="3062655045399308513">Dzēst pārlūkošanas datus…</translation>
 <translation id="3063453392496098461">Neizdevās instalēt VPN fona pakalpojumus.</translation>
 <translation id="306573536155379004">Spēle sākta.</translation>
@@ -2323,7 +2321,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5097099694988056070">Ierīces statistika, piemēram, CPU/RAM lietojums</translation>
 <translation id="5097468150760963273">27 x 39 collas</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Pārlūkam Chrome ir vajadzīga piekļuve šādai ierīces atļaujai: <ph name="PERMISSION" />.</translation>
 <translation id="510644072453496781">Kartons (slēgti gali)</translation>
 <translation id="5106648964679263509"><ph name="BNPL_ISSUER_NAME" /> virtuālā karte ir aizpildīta</translation>
 <translation id="5108881358339761672">Vietne nav droša</translation>
@@ -4052,7 +4049,6 @@ Papildu informācija:
 <translation id="8134058435519644366">Pieņemšana darbā un personāla komplektēšana</translation>
 <translation id="8135546115396015134">kreisais taustiņš</translation>
 <translation id="8137456439814903304">Enerģija un komunālie pakalpojumi</translation>
-<translation id="81474145143203755">Lai šajā vietnē varētu izmantot atļauju “<ph name="PERMISSION" />”, piešķiriet pārlūkam Chrome piekļuvi.</translation>
 <translation id="8148608574971654810">PDF versija:</translation>
 <translation id="8149426793427495338">Dators tika pārslēgts miega režīmā.</translation>
 <translation id="8150722005171944719">Vietnē <ph name="URL" /> esošo failu nevar nolasīt. Iespējams, tas ir noņemts vai pārvietots vai piekļuvei nepieciešamas atļaujas.</translation>

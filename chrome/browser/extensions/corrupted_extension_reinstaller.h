@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 #include "net/base/backoff_entry.h"
@@ -25,7 +26,7 @@ namespace extensions {
 // Class that asks ExtensionService to reinstall corrupted extensions.
 // If a reinstallation fails for some reason (e.g. network unavailability) then
 // it will retry reinstallation with backoff.
-class CorruptedExtensionReinstaller {
+class CorruptedExtensionReinstaller : public KeyedService {
  public:
   // The reason why we want to reinstall the extension.
   // Note: enum used for UMA. Do NOT reorder or remove entries. Don't forget to
@@ -70,13 +71,13 @@ class CorruptedExtensionReinstaller {
       base::RepeatingCallback<void(base::OnceClosure callback,
                                    base::TimeDelta delay)>;
 
-  explicit CorruptedExtensionReinstaller(content::BrowserContext* context);
+  static CorruptedExtensionReinstaller* Get(content::BrowserContext* context);
 
   CorruptedExtensionReinstaller(const CorruptedExtensionReinstaller&) = delete;
   CorruptedExtensionReinstaller& operator=(
       const CorruptedExtensionReinstaller&) = delete;
 
-  ~CorruptedExtensionReinstaller();
+  ~CorruptedExtensionReinstaller() override;
 
   // Records UMA metrics about policy reinstall to UMA. Temporarily exposed
   // publicly because we now skip reinstall for non-webstore policy
@@ -112,14 +113,17 @@ class CorruptedExtensionReinstaller {
   // Notifies this reinstaller about an extension corruption.
   void NotifyExtensionDisabledDueToCorruption();
 
-  // Called when ExtensionSystem is shutting down. Cancels already-scheduled
-  // attempts, if any, for a smoother shutdown.
-  void Shutdown();
+  // KeyedService:
+  void Shutdown() override;
 
   // For tests, overrides the default action to take to initiate reinstalls.
   static void set_reinstall_action_for_test(ReinstallCallback* action);
 
  private:
+  friend class CorruptedExtensionReinstallerFactory;
+
+  explicit CorruptedExtensionReinstaller(content::BrowserContext* context);
+
   void Fire();
   base::TimeDelta GetNextFireDelay();
   void ScheduleNextReinstallAttempt();

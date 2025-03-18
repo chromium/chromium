@@ -245,6 +245,7 @@ public class AutocompleteMediatorUnitTest {
                 JUnitTestGURLs.NTP_URL, "New Tab Page", PageClassification.NTP_VALUE);
 
         mMediator.setOmniboxSuggestionsVisualStateObserver(Optional.of(mVisualStateObserver));
+        mMediator.onTopResumedActivityChanged(true);
     }
 
     /**
@@ -1418,18 +1419,63 @@ public class AutocompleteMediatorUnitTest {
     }
 
     @Test
-    public void onTopResumedActivityChanged_toActive() {
+    public void onTopResumedActivityChanged_nonZeroSuggest() {
+        mMediator.setAutocompleteProfile(mProfile);
+
+        GURL url = JUnitTestGURLs.BLUE_1;
+        int pageClassification = PageClassification.BLANK_VALUE;
+        setUpLocationBarDataProvider(url, url.getSpec(), pageClassification);
+        mMediator.onOmniboxSessionStateChange(true);
+
+        when(mTextStateProvider.shouldAutocomplete()).thenReturn(true);
+        when(mTextStateProvider.getSelectionStart()).thenReturn(4);
+        when(mTextStateProvider.getSelectionEnd()).thenReturn(4);
+
+        mMediator.onNativeInitialized();
+        mMediator.onTextChanged("test", /* isOnFocusContext= */ false);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verify(mAutocompleteController, times(1)).start(url, pageClassification, "test", 4, false);
+
+        mMediator.onTopResumedActivityChanged(false);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verify(mAutocompleteController, times(1)).start(url, pageClassification, "test", 4, false);
+
+        when(mTextStateProvider.getTextWithoutAutocomplete()).thenReturn("test");
+
         mMediator.onTopResumedActivityChanged(true);
-        verify(mAutocompleteDelegate, never()).clearOmniboxFocus();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verify(mAutocompleteController, times(2)).start(url, pageClassification, "test", 4, false);
     }
 
     @Test
-    public void onTopResumedActivityChanged_toNonActive() {
+    public void onTopResumedActivityChanged_zeroSuggest() {
         mMediator.setAutocompleteProfile(mProfile);
+
+        when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
+        when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
+
+        GURL url = JUnitTestGURLs.BLUE_1;
+        String title = "Title";
+        int pageClassification = PageClassification.BLANK_VALUE;
+        setUpLocationBarDataProvider(url, title, pageClassification);
+        mMediator.onOmniboxSessionStateChange(true);
+
+        when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
+
         mMediator.onNativeInitialized();
+        mMediator.onTextChanged("", /* isOnFocusContext= */ false);
+        verify(mAutocompleteController, times(1))
+                .startZeroSuggest("", url, pageClassification, title);
 
         mMediator.onTopResumedActivityChanged(false);
-        verify(mAutocompleteDelegate, times(1)).clearOmniboxFocus();
+        verify(mAutocompleteController, times(1))
+                .startZeroSuggest("", url, pageClassification, title);
+
+        when(mTextStateProvider.getTextWithoutAutocomplete()).thenReturn("");
+
+        mMediator.onTopResumedActivityChanged(true);
+        verify(mAutocompleteController, times(2))
+                .startZeroSuggest("", url, pageClassification, title);
     }
 
     @Test

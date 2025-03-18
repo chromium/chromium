@@ -170,7 +170,8 @@ TEST_F(SyncableFileSystemTest, SyncableLocalSandboxCombined) {
   FileSystemURL temp_url = URL(storage::kFileSystemTypeTemporary, "dir/foo");
   storage::AsyncFileTestHelper::CreateFile(file_system_context(), temp_url);
 
-  file_system_.quota_manager()->SetQuota(storage_key(), /*quota=*/12345 * 1024);
+  const int64_t kDefaultQuota = 12345 * 1024;
+  file_system_.quota_manager()->SetQuota(storage_key(), kDefaultQuota);
 
   ASSERT_OK_AND_ASSIGN(auto bucket,
                        GetOrCreateBucket(storage::kDefaultBucketName));
@@ -205,8 +206,7 @@ TEST_F(SyncableFileSystemTest, SyncableLocalSandboxCombined) {
   EXPECT_EQ(GetBucketUsage(bucket), 0);
 
   // Restore the system default quota.
-  file_system_.quota_manager()->SetQuota(
-      storage_key(), QuotaManager::kSyncableStorageDefaultStorageKeyQuota);
+  file_system_.quota_manager()->SetQuota(storage_key(), kDefaultQuota);
 }
 
 TEST_F(SyncableFileSystemTest, BucketDeletion) {

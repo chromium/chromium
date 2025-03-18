@@ -4,6 +4,8 @@
 
 #include "components/enterprise/connectors/core/analysis_settings.h"
 
+#include <variant>
+
 namespace enterprise_connectors {
 
 CloudAnalysisSettings::CloudAnalysisSettings() = default;
@@ -29,11 +31,11 @@ LocalAnalysisSettings::~LocalAnalysisSettings() = default;
 CloudOrLocalAnalysisSettings::CloudOrLocalAnalysisSettings() = default;
 CloudOrLocalAnalysisSettings::CloudOrLocalAnalysisSettings(
     CloudAnalysisSettings settings)
-    : absl::variant<CloudAnalysisSettings, LocalAnalysisSettings>(
+    : std::variant<CloudAnalysisSettings, LocalAnalysisSettings>(
           std::move(settings)) {}
 CloudOrLocalAnalysisSettings::CloudOrLocalAnalysisSettings(
     LocalAnalysisSettings settings)
-    : absl::variant<CloudAnalysisSettings, LocalAnalysisSettings>(
+    : std::variant<CloudAnalysisSettings, LocalAnalysisSettings>(
           std::move(settings)) {}
 CloudOrLocalAnalysisSettings::CloudOrLocalAnalysisSettings(
     CloudOrLocalAnalysisSettings&&) = default;
@@ -46,56 +48,56 @@ CloudOrLocalAnalysisSettings& CloudOrLocalAnalysisSettings::operator=(
 CloudOrLocalAnalysisSettings::~CloudOrLocalAnalysisSettings() = default;
 
 bool CloudOrLocalAnalysisSettings::is_cloud_analysis() const {
-  return absl::holds_alternative<CloudAnalysisSettings>(*this);
+  return std::holds_alternative<CloudAnalysisSettings>(*this);
 }
 
 bool CloudOrLocalAnalysisSettings::is_local_analysis() const {
-  return absl::holds_alternative<LocalAnalysisSettings>(*this);
+  return std::holds_alternative<LocalAnalysisSettings>(*this);
 }
 
 const CloudAnalysisSettings& CloudOrLocalAnalysisSettings::cloud_settings()
     const {
   DCHECK(is_cloud_analysis());
-  return absl::get<CloudAnalysisSettings>(*this);
+  return std::get<CloudAnalysisSettings>(*this);
 }
 
 const GURL& CloudOrLocalAnalysisSettings::analysis_url() const {
-  DCHECK(absl::holds_alternative<CloudAnalysisSettings>(*this));
-  return absl::get<CloudAnalysisSettings>(*this).analysis_url;
+  DCHECK(std::holds_alternative<CloudAnalysisSettings>(*this));
+  return std::get<CloudAnalysisSettings>(*this).analysis_url;
 }
 
 const std::string& CloudOrLocalAnalysisSettings::dm_token() const {
-  DCHECK(absl::holds_alternative<CloudAnalysisSettings>(*this));
-  return absl::get<CloudAnalysisSettings>(*this).dm_token;
+  DCHECK(std::holds_alternative<CloudAnalysisSettings>(*this));
+  return std::get<CloudAnalysisSettings>(*this).dm_token;
 }
 
 const LocalAnalysisSettings& CloudOrLocalAnalysisSettings::local_settings()
     const {
   DCHECK(is_local_analysis());
-  return absl::get<LocalAnalysisSettings>(*this);
+  return std::get<LocalAnalysisSettings>(*this);
 }
 
 const std::string CloudOrLocalAnalysisSettings::local_path() const {
-  DCHECK(absl::holds_alternative<LocalAnalysisSettings>(*this));
-  return absl::get<LocalAnalysisSettings>(*this).local_path;
+  DCHECK(std::holds_alternative<LocalAnalysisSettings>(*this));
+  return std::get<LocalAnalysisSettings>(*this).local_path;
 }
 
 bool CloudOrLocalAnalysisSettings::user_specific() const {
-  DCHECK(absl::holds_alternative<LocalAnalysisSettings>(*this));
-  return absl::get<LocalAnalysisSettings>(*this).user_specific;
+  DCHECK(std::holds_alternative<LocalAnalysisSettings>(*this));
+  return std::get<LocalAnalysisSettings>(*this).user_specific;
 }
 
 base::span<const char* const> CloudOrLocalAnalysisSettings::subject_names()
     const {
-  DCHECK(absl::holds_alternative<LocalAnalysisSettings>(*this));
-  return absl::get<LocalAnalysisSettings>(*this).subject_names;
+  DCHECK(std::holds_alternative<LocalAnalysisSettings>(*this));
+  return std::get<LocalAnalysisSettings>(*this).subject_names;
 }
 
 size_t CloudOrLocalAnalysisSettings::max_file_size() const {
   if (is_local_analysis()) {
-    return absl::get<LocalAnalysisSettings>(*this).max_file_size;
+    return std::get<LocalAnalysisSettings>(*this).max_file_size;
   } else {
-    return absl::get<CloudAnalysisSettings>(*this).max_file_size;
+    return std::get<CloudAnalysisSettings>(*this).max_file_size;
   }
 }
 

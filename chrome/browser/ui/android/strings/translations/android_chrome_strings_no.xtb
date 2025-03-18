@@ -432,7 +432,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2981364137500752533">Du kan ha opptil 5 vinduer.</translation>
 <translation id="2983102365694924129">Basert på aktiviteten din på et nettsted. Denne innstillingen er slått av.</translation>
 <translation id="2984978667043170458">Ta med den omliggende teksten i Google-søk</translation>
-<translation id="2988638966064514052">Gjør passordene dine sterkere</translation>
 <translation id="2989523299700148168">Nylig besøkte</translation>
 <translation id="2992473221983447149">Bildebeskrivelser</translation>
 <translation id="2996291259634659425">Opprett en passordfrase</translation>
@@ -548,7 +547,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3557336313807607643">Legg til i kontakter</translation>
 <translation id="3563767357928833671">Innholdet på utklippstavlen vises</translation>
 <translation id="3566639033325271639">Oppdater innstillingene</translation>
-<translation id="3568945271227339929">Ingen passord er utsatt for sikkerhetsbrudd</translation>
 <translation id="3575464060651642446">Sjekker passord på denne enheten …</translation>
 <translation id="3577473026931028326">Noe gikk galt. Prøv på nytt.</translation>
 <translation id="3577558748185201054">Administrer interessene og preferansene dine</translation>
@@ -1055,7 +1053,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5958275228015807058">Du finner filene og sidene dine under Nedlastinger</translation>
 <translation id="5958994127112619898">Forenkle siden</translation>
 <translation id="5962718611393537961">Trykk for å skjule</translation>
-<translation id="5964180026566797835">Kan ikke sjekke passordene</translation>
 <translation id="5964869237734432770">Stopp bildebeskrivelser</translation>
 <translation id="5977976211062815271">På denne enheten</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 side på leselisten din}other{# sider på leselisten din}}</translation>
@@ -1099,6 +1096,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="6150320133806434356">Bokmerket er lagret</translation>
 <translation id="6150706324143004339">For å bruke og lagre Chrome-data i Google-kontoen din, oppdater Chrome</translation>
 <translation id="6154478581116148741">Slå på skjermlåsen i Innstillinger for å eksportere passordene dine fra denne enheten</translation>
+<translation id="6156323911414505561">Vis bokmerkeraden</translation>
 <translation id="6162892189396105610">Forhåndslaster sider som Chrome tror du kanskje kommer til å besøke.</translation>
 <translation id="6170675927290506430">Gå til varslingsinnstillingene</translation>
 <translation id="6186394685773237175">Fant ingen passord som er utsatt for sikkerhetsbrudd</translation>

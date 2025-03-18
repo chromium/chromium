@@ -5,6 +5,7 @@
 #include "components/autofill/content/renderer/form_tracker.h"
 
 #include <optional>
+#include <variant>
 
 #include "base/check.h"
 #include "base/feature_list.h"
@@ -472,14 +473,14 @@ void FormTracker::TrackElement(mojom::SubmissionSource source) {
 }
 
 void FormTracker::UpdateLastInteractedElement(
-    absl::variant<FormRendererId, FieldRendererId> element_id) {
+    std::variant<FormRendererId, FieldRendererId> element_id) {
   ResetLastInteractedElements();
-  if (absl::holds_alternative<FormRendererId>(element_id)) {
-    FormRendererId form_id = absl::get<FormRendererId>(element_id);
+  if (std::holds_alternative<FormRendererId>(element_id)) {
+    FormRendererId form_id = std::get<FormRendererId>(element_id);
     CHECK(form_id);
     last_interacted_.form = FormRef(form_util::GetFormByRendererId(form_id));
   } else {
-    FieldRendererId field_id = absl::get<FieldRendererId>(element_id);
+    FieldRendererId field_id = std::get<FieldRendererId>(element_id);
     CHECK(field_id);
     last_interacted_.formless_element =
         FieldRef(form_util::GetFormControlByRendererId(field_id));

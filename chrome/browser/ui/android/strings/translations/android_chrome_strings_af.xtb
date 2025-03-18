@@ -432,7 +432,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2981364137500752533">Jy kan tot 5 vensters hê.</translation>
 <translation id="2983102365694924129">Gegrond op jou aktiwiteit op ’n werf. Hierdie instelling is af.</translation>
 <translation id="2984978667043170458">Sluit omringende teks by Google-soektogte in</translation>
-<translation id="2988638966064514052">Versterk tans jou wagwoorde</translation>
 <translation id="2989523299700148168">Onlangs besoek</translation>
 <translation id="2992473221983447149">Prentbeskrywings</translation>
 <translation id="2996291259634659425">Skep wagfrase</translation>
@@ -548,7 +547,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="3557336313807607643">Voeg by kontakte</translation>
 <translation id="3563767357928833671">Knipbordinhoud word gewys</translation>
 <translation id="3566639033325271639">Dateer instellings op</translation>
-<translation id="3568945271227339929">Geen gekompromitteerde wagwoorde nie</translation>
 <translation id="3575464060651642446">Gaan tans wagwoorde op hierdie toestel na …</translation>
 <translation id="3577473026931028326">Iets was fout. Probeer weer.</translation>
 <translation id="3577558748185201054">Bestuur jou belangstellings en voorkeure</translation>
@@ -1055,7 +1053,6 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5958275228015807058">Kry jou lêers en bladsye in Aflaaie</translation>
 <translation id="5958994127112619898">Vereenvoudig bladsy</translation>
 <translation id="5962718611393537961">Tik om in te vou</translation>
-<translation id="5964180026566797835">Kan nie wagwoorde kontroleer nie</translation>
 <translation id="5964869237734432770">Stop prentbeskrywings</translation>
 <translation id="5977976211062815271">Op hierdie toestel</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 bladsy op jou leeslys}other{# bladsye op jou leeslys}}</translation>
@@ -1099,6 +1096,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="6150320133806434356">Boekmerk is gestoor</translation>
 <translation id="6150706324143004339">Dateer Chrome op om Chrome-data in jou Google-rekening te gebruik en te stoor</translation>
 <translation id="6154478581116148741">Skakel skermslot in Instellings aan om jou wagwoorde van hierdie toestel af uit te voer</translation>
+<translation id="6156323911414505561">Wys boekmerkbalk</translation>
 <translation id="6162892189396105610">Laai bladsye vooraf wat Chrome dink jy waarskynlik gaan besoek.</translation>
 <translation id="6170675927290506430">Gaan na kennisgewinginstellings</translation>
 <translation id="6186394685773237175">Geen gekompromitteerde wagwoorde gekry nie</translation>

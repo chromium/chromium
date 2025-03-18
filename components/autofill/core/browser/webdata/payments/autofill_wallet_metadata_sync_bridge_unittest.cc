@@ -10,6 +10,7 @@
 #include <memory>
 #include <sstream>
 #include <utility>
+#include <variant>
 
 #include "base/base64.h"
 #include "base/files/scoped_temp_dir.h"
@@ -47,7 +48,7 @@ namespace autofill {
 namespace {
 
 using base::ScopedTempDir;
-using IbanChangeKey = absl::variant<std::string, int64_t>;
+using IbanChangeKey = std::variant<std::string, int64_t>;
 using sync_pb::WalletMetadataSpecifics;
 using syncer::DataBatch;
 using syncer::DataType;

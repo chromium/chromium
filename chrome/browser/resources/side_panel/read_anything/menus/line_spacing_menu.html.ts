@@ -17,8 +17,7 @@ export function getHtml(this: LineSpacingMenuElement) {
     event-name="${ToolbarEvent.LINE_SPACING}"
     .menuItems="${this.options_}"
     current-selected-index="${this.restoredLineSpacingIndex_()}"
-    @line-spacing-change="${this.onLineSpacingChange_}"
-    initial-count="3">
+    @line-spacing-change="${this.onLineSpacingChange_}">
 </simple-action-menu>
 <!--_html_template_end_-->`;
   // clang-format on

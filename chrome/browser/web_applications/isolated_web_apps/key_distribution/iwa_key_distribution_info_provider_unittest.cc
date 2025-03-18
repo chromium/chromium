@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 
+#include <variant>
+
 #include "base/base64.h"
 #include "base/containers/extend.h"
 #include "base/files/file_util.h"
@@ -207,7 +209,7 @@ TEST_F(SignedWebBundleSignatureVerifierWithKeyDistributionTest,
   EXPECT_THAT(ht.GetAllSamples(kIwaKeyRotationInfoSource),
               base::BucketsAre(base::Bucket(KeyRotationInfoSource::kNone, 1)));
 
-  auto expected_key = absl::visit(
+  auto expected_key = std::visit(
       [](const auto& key_pair) -> base::span<const uint8_t> {
         return key_pair.public_key.bytes();
       },

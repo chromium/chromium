@@ -37,10 +37,10 @@ export class HistoryEmbeddingsResultImageElement extends CrLitElement {
     };
   }
 
-  hasImage: boolean = false;
-  protected imageUrl_: string|null = null;
-  inSidePanel: boolean = false;
-  searchResult: SearchResultItem|null = null;
+  accessor hasImage: boolean = false;
+  protected accessor imageUrl_: string|null = null;
+  accessor inSidePanel: boolean = false;
+  accessor searchResult: SearchResultItem|null = null;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

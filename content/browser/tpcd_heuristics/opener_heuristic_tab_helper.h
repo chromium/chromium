@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_TPCD_HEURISTICS_OPENER_HEURISTIC_TAB_HELPER_H_
 
 #include <optional>
+#include <variant>
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -96,7 +97,7 @@ class CONTENT_EXPORT OpenerHeuristicTabHelper
     // and how long ago.
     struct FieldNotSet {};
     struct NoInteraction {};
-    absl::variant<FieldNotSet, NoInteraction, base::TimeDelta>
+    std::variant<FieldNotSet, NoInteraction, base::TimeDelta>
         time_since_interaction_;
     BtmInteractionType past_interaction_type_;
     // A source ID for `initial_url_`.

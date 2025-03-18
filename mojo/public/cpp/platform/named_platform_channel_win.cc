@@ -44,7 +44,12 @@ NamedPlatformChannel::GenerateRandomServerName() {
 // static
 std::wstring NamedPlatformChannel::GetPipeNameFromServerName(
     const NamedPlatformChannel::ServerName& server_name) {
-  return L"\\\\.\\pipe\\mojo." + server_name;
+  // https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createnamedpipea
+  // "Windows 10, version 1709:  Pipes are only supported within an
+  // app-container; ie, from one UWP process to another UWP process that's part
+  // of the same app. Also, named pipes must use the syntax \\.\pipe\LOCAL\ for
+  // the pipe name."
+  return L"\\\\.\\pipe\\LOCAL\\mojo." + server_name;
 }
 
 // static

@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.auxiliary_search;
 
 import android.text.TextUtils;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
@@ -65,5 +67,29 @@ public class AuxiliarySearchDataEntry {
     @Override
     public int hashCode() {
         return Objects.hash(type, url, title, lastActiveTime, tabId, appId, visitId);
+    }
+
+    /**
+     * Helper to add new {@link AuxiliarySearchDataEntry} to list.
+     *
+     * @param type The type of the data source.
+     * @param url The {@link GURL} of the entry.
+     * @param title The page title.
+     * @param lastActiveTime The last visited timestamp.
+     * @param tabId The Tad ID of the entry if it is a local Tab, -1 otherwise.
+     * @param appId The ID of the app which opens the URL if the entry is a CCT, null otherwise.
+     * @param visitId A unique ID of the entry if it isn't a local Tab, -1 otherwise.
+     */
+    @VisibleForTesting
+    static AuxiliarySearchDataEntry addDataEntry(
+            @AuxiliarySearchEntryType int type,
+            GURL url,
+            String title,
+            long lastActiveTime,
+            int tabId,
+            @Nullable String appId,
+            int visitId) {
+        return new AuxiliarySearchDataEntry(
+                type, url, title, lastActiveTime, tabId, appId, visitId);
     }
 }

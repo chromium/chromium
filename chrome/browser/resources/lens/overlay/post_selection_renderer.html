@@ -40,7 +40,12 @@
     opacity: 5%;
     position: absolute;
     top: var(--selection-top);
+    transition: opacity 100ms cubic-bezier(0.3, 0, 1, 1);
     width: var(--selection-width);
+  }
+
+  :host([should-darken-scrim]) #postSelection {
+    opacity: 20%;
   }
 
   #selectionCorners {
@@ -103,8 +108,6 @@
       width="[[canvasPhysicalWidth]]"
       style$="height: [[canvasHeight]]px; width: [[canvasWidth]]px;">
   </canvas>
-  <!-- This inner postSelection div isn't technically required, but helps make
-   testing easier and more readable. -->
   <div id="postSelection"></div>
   <div id="selectionCorners">
     <template is="dom-repeat" items="[[cornerIds]]">

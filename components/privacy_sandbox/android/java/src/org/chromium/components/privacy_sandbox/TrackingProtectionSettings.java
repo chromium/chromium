@@ -4,6 +4,7 @@
 
 package org.chromium.components.privacy_sandbox;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.browser_ui.settings.SearchUtils.handleSearchNavigation;
 import static org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.SITE_WILDCARD;
 
@@ -22,6 +23,9 @@ import androidx.preference.Preference.OnPreferenceClickListener;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup;
@@ -48,6 +52,7 @@ import java.util.List;
 import java.util.Locale;
 
 /** Fragment to manage settings for tracking protection. */
+@NullMarked
 public class TrackingProtectionSettings extends PrivacySandboxBaseFragment
         implements CustomDividerFragment, OnPreferenceClickListener, SiteAddedCallback {
     private static final String PREF_BLOCK_ALL_TOGGLE = "block_all_3pcd_toggle";
@@ -66,24 +71,25 @@ public class TrackingProtectionSettings extends PrivacySandboxBaseFragment
     private boolean mAllowListExpanded = true;
 
     // The item for searching the list of items.
-    private MenuItem mSearchItem;
+    private @Nullable MenuItem mSearchItem;
 
     // If not blank, represents a substring to use to search for site names.
-    private String mSearch;
+    private @Nullable String mSearch;
 
     private TrackingProtectionDelegate mDelegate;
 
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.tracking_protection_preferences);
         mPageTitle.set(getString(R.string.third_party_cookies_page_title));
 
         setHasOptionsMenu(true);
 
         // Format the Learn More link in the second bullet point.
-        TextMessagePreference bulletTwo = (TextMessagePreference) findPreference(PREF_BULLET_TWO);
+        TextMessagePreference bulletTwo = findPreference(PREF_BULLET_TWO);
+        assumeNonNull(bulletTwo);
         bulletTwo.setSummary(
                 SpanApplier.applySpans(
                         getResources()
@@ -96,8 +102,8 @@ public class TrackingProtectionSettings extends PrivacySandboxBaseFragment
                                 new ChromeClickableSpan(
                                         getContext(), (view) -> onLearnMoreClicked()))));
 
-        ChromeSwitchPreference blockAll3pCookiesSwitch =
-                (ChromeSwitchPreference) findPreference(PREF_BLOCK_ALL_TOGGLE);
+        ChromeSwitchPreference blockAll3pCookiesSwitch = findPreference(PREF_BLOCK_ALL_TOGGLE);
+        assumeNonNull(blockAll3pCookiesSwitch);
 
         // Block all 3rd party cookies switch.
         blockAll3pCookiesSwitch.setChecked(mDelegate.isBlockAll3pcEnabled());
@@ -110,6 +116,7 @@ public class TrackingProtectionSettings extends PrivacySandboxBaseFragment
         mAllowedSiteCount = 0;
         ExpandablePreferenceGroup allowedGroup =
                 getPreferenceScreen().findPreference(ALLOWED_GROUP);
+        assumeNonNull(allowedGroup);
         allowedGroup.setOnPreferenceClickListener(this);
         refreshBlockingExceptions();
 
@@ -163,6 +170,8 @@ public class TrackingProtectionSettings extends PrivacySandboxBaseFragment
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        assumeNonNull(mSearchItem);
+
         if (item.getItemId() == R.id.menu_id_site_settings_help) {
             mDelegate
                     .getSiteSettingsDelegate(getContext())
@@ -224,6 +233,7 @@ public class TrackingProtectionSettings extends PrivacySandboxBaseFragment
         refreshBlockingExceptions();
     }
 
+    @Initializer
     public void setTrackingProtectionDelegate(TrackingProtectionDelegate delegate) {
         mDelegate = delegate;
     }
@@ -250,6 +260,7 @@ public class TrackingProtectionSettings extends PrivacySandboxBaseFragment
 
         ExpandablePreferenceGroup allowedGroup =
                 getPreferenceScreen().findPreference(ALLOWED_GROUP);
+        assumeNonNull(allowedGroup);
         allowedGroup.removeAll();
         // Add the description preference.
         var description = new TextMessagePreference(getContext(), null);
@@ -267,6 +278,7 @@ public class TrackingProtectionSettings extends PrivacySandboxBaseFragment
     private void updateExceptionsHeader() {
         ExpandablePreferenceGroup allowedGroup =
                 getPreferenceScreen().findPreference(ALLOWED_GROUP);
+        assumeNonNull(allowedGroup);
         SpannableStringBuilder spannable =
                 new SpannableStringBuilder(
                         getString(R.string.tracking_protection_allowed_group_title));

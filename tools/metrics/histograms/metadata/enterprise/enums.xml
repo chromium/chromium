@@ -466,6 +466,9 @@ chromium-metrics-reviews@google.com.
   <int value="30" label="FAILURE_REAUTHZ_POLICY_CHECK_FAILED"/>
   <int value="31" label="FAILURE_NO_COMMON_AUTH_METHOD"/>
   <int value="32" label="FAILURE_SESSION_POLICIES_CHANGED"/>
+  <int value="33" label="FAILURE_UNEXPECTED_AUTHENTICATOR_ERROR"/>
+  <int value="34" label="FAILURE_INVALID_STATE"/>
+  <int value="35" label="FAILURE_INVALID_ARGUMENT"/>
 </enum>
 
 <enum name="EnterpriseDeviceManagementStatus">

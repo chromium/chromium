@@ -7,10 +7,10 @@
 
 #include <memory>
 #include <queue>
+#include <variant>
 
 #include "build/build_config.h"
 #include "device_management_backend.pb.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace enterprise_reporting {
 
@@ -56,9 +56,9 @@ class ReportRequest {
   std::unique_ptr<ReportRequest> Clone() const;
 
  private:
-  absl::variant<enterprise_management::ChromeDesktopReportRequest,
-                enterprise_management::ChromeOsUserReportRequest,
-                enterprise_management::ChromeProfileReportRequest>
+  std::variant<enterprise_management::ChromeDesktopReportRequest,
+               enterprise_management::ChromeOsUserReportRequest,
+               enterprise_management::ChromeProfileReportRequest>
       proto_;
 };
 

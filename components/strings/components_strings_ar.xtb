@@ -316,7 +316,6 @@
 <translation id="1532118530259321453">تعرض هذه الصفحة</translation>
 <translation id="1533966801397200693">الملف الشخصي الذي سجّلت الدخول إليه مُدار. يمكن للمشرف إجراء تغييرات على إعدادات ملفك الشخصي عن بُعد وتحليل المعلومات عن المتصفّح من خلال إعداد التقارير وتنفيذ المهام الضرورية الأخرى. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">ترجمة الصفحة</translation>
-<translation id="1538295100801850685">تحسينات التوقّعات</translation>
 <translation id="1539840569003678498">تاريخ ووقت إرسال الإبلاغ:</translation>
 <translation id="1542105669288201090">دراسة الأعمال</translation>
 <translation id="1545757265410828525">سجلّ الأسعار</translation>
@@ -1158,7 +1157,6 @@
 <translation id="3052868890529250114">‏يمكنك عادةً الاتصال بالمواقع الإلكترونية بشكل آمن، ولكن تعذَّر على Chrome استخدام اتصال آمن في الوقت الحالي. قد يحاول أحد المهاجمين التجسس على اتصالك بالشبكة أو تعديله. <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات حول هذا التحذير<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">انخفاض في سعر <ph name="PRODUCT_NAME" /> بقيمة <ph name="PRICE_DROP" /></translation>
 <translation id="3061707000357573562">خدمة رمز التصحيح</translation>
-<translation id="306198082577913404">تفعيل ميزة "تحسينات التوقعات"</translation>
 <translation id="3062655045399308513">حذف بيانات التصفّح…</translation>
 <translation id="3063453392496098461">‏تعذَّر تثبيت خدمات VPN التي تُشغَّل في الخلفية.</translation>
 <translation id="306573536155379004">بدأت اللعبة.</translation>
@@ -1699,6 +1697,7 @@
 <translation id="3964661563329879394">{COUNT,plural, =0{بدون}=1{من موقع واحد }two{من موقعين (#) }few{من # مواقع }many{من # موقعًا }other{من # موقع }}</translation>
 <translation id="3965672182149944205">هل تريد حفظ العنوان؟</translation>
 <translation id="3966044442021752214">أمان المنتج</translation>
+<translation id="3969869202926863008">الوصول إلى الشبكة المحلية</translation>
 <translation id="397105322502079400">جارٍ الحساب...</translation>
 <translation id="3973234410852337861">تم حظر <ph name="HOST_NAME" /></translation>
 <translation id="3975852104434126461">صناعة السيارات</translation>
@@ -2056,6 +2055,7 @@
 <translation id="460848736049414407">‏حظَر المشرف عنوان URL هذا</translation>
 <translation id="4610279718074907952">يندرج هذا الموقع الإلكتروني ضمن مجموعة حدّدها <ph name="SET_OWNER" /> ويمكنها الاطّلاع على نشاطك.</translation>
 <translation id="46128681529823442">معدّات كرة قدم</translation>
+<translation id="4612904677925722054">قد يتضمّن هذا الموقع الإلكتروني محتوى للكبار. يجب أن يوافق وصيّك أو أحد والدَيك على طلبك بزيارة هذا الموقع الإلكتروني.</translation>
 <translation id="4619564267100705184">إثبات هويّتك</translation>
 <translation id="4622292761762557753">النقل على أي حال</translation>
 <translation id="4622647778991854660">‏يؤدي هذا الخيار إلى تفعيل الإشعارات في "مركز الإشعارات" (Notification Center). فتح <ph name="LINK" /></translation>
@@ -2327,7 +2327,6 @@
 <translation id="5097099694988056070">‏إحصاءات الأجهزة، مثل استخدام وحدة المعالجة المركزية (CPU)/ذاكرة الوصول العشوائي (RAM)</translation>
 <translation id="5097468150760963273">27 × 39 بوصة</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">‏يحتاج Chrome إلى إذن باستخدام <ph name="PERMISSION" /> على جهازك</translation>
 <translation id="510644072453496781">ورق مقوّى (طرف)</translation>
 <translation id="5106648964679263509">تم ملء بيانات البطاقة الافتراضية لـ <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="5108881358339761672">الموقع الإلكتروني غير آمن</translation>
@@ -2654,6 +2653,7 @@
 <translation id="5660122698869360728">مجلّد ذكي جديد يساعدك في حفظ جميع صفحات التسوّق في مكان واحد وتتبُّع الأسعار تلقائيًا والحصول على معلومات مفصّلة عن الأسعار وغير ذلك</translation>
 <translation id="5663955426505430495">ثبَّت مشرف هذا الجهاز الإضافات للوظائف الإضافية. يمكن للإضافات الوصول إلى بعض بياناتك.</translation>
 <translation id="5667827081946850877">كتب مسموعة</translation>
+<translation id="5674082555327905359">السماح للمواقع الإلكترونية بطلب الاتصال بأي جهاز على شبكتك المحلية</translation>
 <translation id="5675650730144413517">يتعذّر على هذه الصفحة العمل</translation>
 <translation id="5675809467256309336">موسيقى إلكترونية وموسيقى رقص</translation>
 <translation id="5675959228867414813">العرض حسب التاريخ</translation>
@@ -2927,6 +2927,7 @@
 <translation id="6159908896951210943">نص رسمي</translation>
 <translation id="6160391204859821737">تفعيل إحدى ميزات الخصوصية في عرض الإعلانات</translation>
 <translation id="6162403104168428984">هل تريد تعديل العنوان؟</translation>
+<translation id="6164605812717770913">لم يوافق وصيّك أو أحد والدَيك على طلبك بزيارة هذا الموقع الإلكتروني. يمكنك طلب إزالة الحظر من أيّ منهما.</translation>
 <translation id="6165508094623778733">مزيد من المعلومات</translation>
 <translation id="6167577165590485365">وقت آخر محاولة استرجاع:</translation>
 <translation id="617256461084925519">‏يحاول Google Chrome إثبات هويتك لملء معلومات الدفع.</translation>
@@ -3018,6 +3019,7 @@
 <translation id="6321917430147971392">التحقق من إعدادات نظام أسماء النطاقات</translation>
 <translation id="6322182122604171028">‏تعذّر استخدام Windows Hello</translation>
 <translation id="6326947323444967009">‏ضبط Chrome كمتصفِّح تلقائي للنظام في إعدادات iOS</translation>
+<translation id="6327065120806001832">الوصول إلى الشبكة المحلية</translation>
 <translation id="6328639280570009161">تجربة إيقاف التنبؤ بإجراءات الشبكة</translation>
 <translation id="6335029926534404762">أحذية رياضية</translation>
 <translation id="6337133576188860026">سيتم تفريغ أقل من <ph name="SIZE" />. وقد يكون تحميل بعض المواقع الإلكترونية أبطأ عند زيارتها في المرة القادمة.</translation>
@@ -4056,7 +4058,6 @@
 <translation id="8134058435519644366">توظيف وعمالة</translation>
 <translation id="8135546115396015134">السهم المتجّه لليسار</translation>
 <translation id="8137456439814903304">طاقة وشركات طاقة</translation>
-<translation id="81474145143203755">‏لاستخدام <ph name="PERMISSION" /> على هذا الموقع الإلكتروني، يجب منح Chrome إذنًا بذلك</translation>
 <translation id="8148608574971654810">‏نسخة PDF:</translation>
 <translation id="8149426793427495338">خضع جهاز الكمبيوتر إلى وضع السكون.</translation>
 <translation id="8150722005171944719">الملف الموجود على <ph name="URL" /> غير قابل للقراءة. ربما تمت إزالته، أو ربما تكون أذونات الملف هي التي تمنع الدخول.</translation>

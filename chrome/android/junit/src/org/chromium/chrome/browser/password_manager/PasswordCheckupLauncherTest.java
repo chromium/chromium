@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
+import org.chromium.chrome.browser.safety_hub.SafetyHubFragment;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.prefs.PrefService;
@@ -256,7 +257,6 @@ public class PasswordCheckupLauncherTest {
     }
 
     @Test
-    @Features.DisableFeatures(ChromeFeatureList.SAFETY_HUB)
     public void testLaunchSafetyCheckOpensSafetyCheckInChromeSettings()
             throws PendingIntent.CanceledException {
         when(mMockSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.PASSWORDS));
@@ -271,5 +271,22 @@ public class PasswordCheckupLauncherTest {
         assertThat(
                 intent.getExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT),
                 is(SafetyCheckSettingsFragment.class.getName()));
+    }
+
+    @Test
+    public void testLaunchSafetyHupOpensSafetyHubInChromeSettings()
+            throws PendingIntent.CanceledException {
+        when(mMockSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.PASSWORDS));
+        when(mMockPasswordManagerUtilBridgeJni.shouldUseUpmWiring(mMockSyncService, mPrefService))
+                .thenReturn(true);
+
+        PasswordCheckupLauncher.launchSafetyHub(mMockWindowAndroid);
+
+        verify(mContext, times(1)).startActivity(mIntentCaptor.capture(), isNull());
+
+        Intent intent = mIntentCaptor.getValue();
+        assertThat(
+                intent.getExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT),
+                is(SafetyHubFragment.class.getName()));
     }
 }

@@ -7,6 +7,7 @@
 #include <limits>
 #include <memory>
 #include <tuple>
+#include <variant>
 
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
@@ -577,20 +578,20 @@ class ConditionObject {
   }
   bool Match(const network::ResourceRequest& request,
              std::optional<blink::EmbeddedWorkerStatus> running_status) const {
-    return absl::visit(
+    return std::visit(
         [&request, running_status](const auto& condition) {
           return condition.Match(request, running_status);
         },
         value_);
   }
   bool need_running_status() const {
-    return absl::visit(
+    return std::visit(
         [](const auto& condition) { return condition.need_running_status(); },
         value_);
   }
 
  private:
-  absl::variant<BaseCondition, OrCondition, NotCondition> value_;
+  std::variant<BaseCondition, OrCondition, NotCondition> value_;
 };
 
 ServiceWorkerRouterEvaluatorErrorEnums OrCondition::Set(

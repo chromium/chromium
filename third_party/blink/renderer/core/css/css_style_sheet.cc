@@ -208,8 +208,7 @@ CSSStyleSheet::~CSSStyleSheet() = default;
 
 void CSSStyleSheet::WillMutateRules() {
   // If we are the only client it is safe to mutate.
-  if (!contents_->IsUsedFromTextCache() &&
-      !contents_->IsReferencedFromResource()) {
+  if (!IsContentsShared()) {
     contents_->StartMutation();
     contents_->ClearRuleSet();
     return;
@@ -220,14 +219,8 @@ void CSSStyleSheet::WillMutateRules() {
 
   // Copy-on-write. Note that this eagerly parses any rules that were
   // lazily parsed.
-  contents_->UnregisterClient(this);
-  contents_ = contents_->Copy();
-  contents_->RegisterClient(this);
-
+  SetContents(contents_->Copy());
   contents_->StartMutation();
-
-  // Any existing CSSOM wrappers need to be connected to the copied child rules.
-  ReattachChildRuleCSSOMWrappers();
 }
 
 void CSSStyleSheet::DidMutate(Mutation mutation) {
@@ -275,6 +268,17 @@ void CSSStyleSheet::DisableRuleAccessForInspector() {
   enable_rule_access_for_inspector_ = false;
 }
 
+void CSSStyleSheet::BeginQuietMutation() {
+  if (IsContentsShared()) {
+    SetContents(contents_->Copy());
+  }
+}
+
+void CSSStyleSheet::EndQuietMutation(StyleSheetContents* original_contents) {
+  CHECK_NE(contents_, original_contents);
+  SetContents(original_contents);
+}
+
 CSSStyleSheet::InspectorMutationScope::InspectorMutationScope(
     CSSStyleSheet* sheet)
     : style_sheet_(sheet) {
@@ -283,6 +287,18 @@ CSSStyleSheet::InspectorMutationScope::InspectorMutationScope(
 
 CSSStyleSheet::InspectorMutationScope::~InspectorMutationScope() {
   style_sheet_->DisableRuleAccessForInspector();
+}
+
+bool CSSStyleSheet::IsContentsShared() const {
+  return contents_->IsUsedFromTextCache() ||
+         contents_->IsReferencedFromResource();
+}
+
+void CSSStyleSheet::SetContents(StyleSheetContents* contents) {
+  contents_->UnregisterClient(this);
+  contents_ = contents;
+  contents_->RegisterClient(this);
+  ReattachChildRuleCSSOMWrappers();
 }
 
 void CSSStyleSheet::ReattachChildRuleCSSOMWrappers() {

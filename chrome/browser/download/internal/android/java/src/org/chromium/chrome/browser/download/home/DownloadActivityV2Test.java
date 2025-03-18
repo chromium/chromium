@@ -60,9 +60,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
-import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.download.home.list.ListUtils;
 import org.chromium.chrome.browser.download.home.list.holder.ListItemViewHolder;
 import org.chromium.chrome.browser.download.home.rename.RenameUtils;
@@ -228,8 +226,7 @@ public class DownloadActivityV2Test {
         BackPressHelper.create(
                 sActivity,
                 sActivity.getOnBackPressedDispatcher(),
-                mDownloadCoordinator.getBackPressHandlers(),
-                SecondaryActivity.DOWNLOAD);
+                mDownloadCoordinator.getBackPressHandlers());
 
         mDownloadCoordinator.updateForUrl(UrlConstants.DOWNLOADS_URL);
     }
@@ -634,19 +631,11 @@ public class DownloadActivityV2Test {
         onView(withId(R.id.search_text)).check(matches(not(isDisplayed())));
 
         // Clear the selection by back press and assert that the search view is showing again.
-        var backPressRecorder =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.BackPress.SecondaryActivity", SecondaryActivity.DOWNLOAD);
         ThreadUtils.runOnUiThreadBlocking(sActivity.getOnBackPressedDispatcher()::onBackPressed);
-        backPressRecorder.assertExpected();
         onView(withId(R.id.search_text)).check(matches(isDisplayed()));
 
         // Close the search view, by performing a back press.
-        var backPressRecorder2 =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.BackPress.SecondaryActivity", SecondaryActivity.DOWNLOAD);
         ThreadUtils.runOnUiThreadBlocking(sActivity.getOnBackPressedDispatcher()::onBackPressed);
-        backPressRecorder2.assertExpected();
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
                     onView(withId(R.id.search_text)).check(matches(not(isDisplayed())));

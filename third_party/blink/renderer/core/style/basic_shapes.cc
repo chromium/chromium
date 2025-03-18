@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
@@ -85,7 +86,9 @@ void BasicShapeCircle::GetPathFromCenter(Path& path,
                                          float) const {
   DCHECK(path.IsEmpty());
   const float radius = FloatValueForRadiusInBox(center, bounding_box.size());
-  path.AddEllipse(center + bounding_box.OffsetFromOrigin(), radius, radius);
+
+  path = Path::MakeEllipse(center + bounding_box.OffsetFromOrigin(), radius,
+                           radius);
 }
 
 bool BasicShapeEllipse::IsEqualAssumingSameType(const BasicShape& o) const {
@@ -128,7 +131,8 @@ void BasicShapeEllipse::GetPathFromCenter(Path& path,
       FloatValueForRadiusInBox(radius_x_, center.x(), bounding_box.width());
   const float radius_y =
       FloatValueForRadiusInBox(radius_y_, center.y(), bounding_box.height());
-  path.AddEllipse(center + bounding_box.OffsetFromOrigin(), radius_x, radius_y);
+  path = Path::MakeEllipse(center + bounding_box.OffsetFromOrigin(), radius_x,
+                           radius_y);
 }
 
 void BasicShapePolygon::GetPath(Path& path,
@@ -138,24 +142,27 @@ void BasicShapePolygon::GetPath(Path& path,
   DCHECK(!(values_.size() % 2));
   wtf_size_t length = values_.size();
 
-  path.SetWindRule(wind_rule_);
+  PathBuilder builder;
+  builder.SetWindRule(wind_rule_);
   if (!length) {
     return;
   }
 
-  path.MoveTo(
+  builder.MoveTo(
       gfx::PointF(FloatValueForLength(values_.at(0), bounding_box.width()) +
                       bounding_box.x(),
                   FloatValueForLength(values_.at(1), bounding_box.height()) +
                       bounding_box.y()));
   for (wtf_size_t i = 2; i < length; i = i + 2) {
-    path.AddLineTo(gfx::PointF(
+    builder.LineTo(gfx::PointF(
         FloatValueForLength(values_.at(i), bounding_box.width()) +
             bounding_box.x(),
         FloatValueForLength(values_.at(i + 1), bounding_box.height()) +
             bounding_box.y()));
   }
-  path.CloseSubpath();
+  builder.Close();
+
+  path = builder.Finalize();
 }
 
 bool BasicShapePolygon::IsEqualAssumingSameType(const BasicShape& o) const {
@@ -196,7 +203,7 @@ void BasicShapeInset::GetPath(Path& path,
 
   FloatRoundedRect final_rect(rect, radii);
   final_rect.ConstrainRadii();
-  path.AddRoundedRect(final_rect);
+  path = Path::MakeRoundedRect(final_rect);
 }
 
 }  // namespace blink

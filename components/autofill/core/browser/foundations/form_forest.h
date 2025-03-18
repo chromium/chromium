@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -18,7 +19,6 @@
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace autofill::internal {
 
@@ -389,7 +389,7 @@ class FormForest {
   // erased before its ancestors, since otherwise |frame_or_form| is
   // disconnected from its root already.
   void EraseReferencesTo(
-      absl::variant<LocalFrameToken, FormGlobalId> frame_or_form,
+      std::variant<LocalFrameToken, FormGlobalId> frame_or_form,
       base::flat_set<FormGlobalId>* forms_with_removed_fields);
 
   // Adds |renderer_form| and |driver| to the relevant tree, where |driver| must

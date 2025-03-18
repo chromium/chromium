@@ -15,6 +15,7 @@
 #include <string_view>
 #include <type_traits>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -461,7 +462,7 @@ void PopulateHomeTabIcons(WebAppInstallInfo* web_app_info,
     return;
   }
 
-  const auto& home_tab = absl::get<blink::Manifest::HomeTabParams>(
+  const auto& home_tab = std::get<blink::Manifest::HomeTabParams>(
       web_app_info->tab_strip.value().home_tab);
 
   for (const auto& icon : home_tab.icons) {
@@ -667,7 +668,7 @@ void UpdateWebAppInstallInfoIconsFromManifestIfNeeded(
 // which limits the number of icons.
 void PopulateHomeTabIconsFromHomeTabManifestParams(
     WebAppInstallInfo* web_app_info) {
-  auto& home_tab = absl::get<blink::Manifest::HomeTabParams>(
+  auto& home_tab = std::get<blink::Manifest::HomeTabParams>(
       web_app_info->tab_strip->home_tab);
   std::vector<blink::Manifest::ImageResource> home_tab_icons;
   for (const auto& icon : home_tab.icons) {
@@ -1275,12 +1276,12 @@ bool HomeTabIconsExistInTabStrip(const WebAppInstallInfo& web_app_info) {
     return false;
   }
 
-  if (!absl::holds_alternative<blink::Manifest::HomeTabParams>(
+  if (!std::holds_alternative<blink::Manifest::HomeTabParams>(
           web_app_info.tab_strip.value().home_tab)) {
     return false;
   }
 
-  const auto& home_tab = absl::get<blink::Manifest::HomeTabParams>(
+  const auto& home_tab = std::get<blink::Manifest::HomeTabParams>(
       web_app_info.tab_strip.value().home_tab);
 
   if (home_tab.icons.empty()) {

@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -28,7 +29,6 @@
 #include "device/fido/public_key_credential_user_entity.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace device {
 namespace {
@@ -401,9 +401,9 @@ TEST_F(EnclaveProtocolUtilsTest, ParseGetAssertionResponse_Success) {
   auto parse_result =
       ParseGetAssertionResponse(std::move(response_cbor), cred_id);
   EXPECT_TRUE(
-      absl::holds_alternative<AuthenticatorGetAssertionResponse>(parse_result));
+      std::holds_alternative<AuthenticatorGetAssertionResponse>(parse_result));
   const auto& assertion_response =
-      absl::get<AuthenticatorGetAssertionResponse>(parse_result);
+      std::get<AuthenticatorGetAssertionResponse>(parse_result);
   EXPECT_EQ(assertion_response.user_entity->id,
             std::vector<uint8_t>({'a', 'b'}));
   EXPECT_EQ(assertion_response.credential->id, std::vector<uint8_t>({0, 1, 2}));
@@ -418,8 +418,8 @@ TEST_F(EnclaveProtocolUtilsTest, ParseGetAssertionResponse_Failures) {
     std::vector<uint8_t> cred_id = {0, 1, 2};
     auto parse_result =
         ParseGetAssertionResponse(std::move(response_cbor), cred_id);
-    EXPECT_TRUE(absl::holds_alternative<ErrorResponse>(parse_result) &&
-                absl::get<ErrorResponse>(parse_result).error_string.has_value())
+    EXPECT_TRUE(std::holds_alternative<ErrorResponse>(parse_result) &&
+                std::get<ErrorResponse>(parse_result).error_string.has_value())
         << "Failed GetAssertion response parsing for: " << test_case.name;
   }
 }
@@ -439,12 +439,12 @@ TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponse_Success) {
       std::move(response_cbor), ctap_request, kWrappedSecretVersion,
       UserPresentAndVerifiedBits::kPresentAndVerified);
   EXPECT_TRUE(
-      (absl::holds_alternative<std::pair<AuthenticatorMakeCredentialResponse,
-                                         sync_pb::WebauthnCredentialSpecifics>>(
+      (std::holds_alternative<std::pair<AuthenticatorMakeCredentialResponse,
+                                        sync_pb::WebauthnCredentialSpecifics>>(
           parse_result)));
   const auto& entity =
-      absl::get<std::pair<AuthenticatorMakeCredentialResponse,
-                          sync_pb::WebauthnCredentialSpecifics>>(parse_result)
+      std::get<std::pair<AuthenticatorMakeCredentialResponse,
+                         sync_pb::WebauthnCredentialSpecifics>>(parse_result)
           .second;
   EXPECT_EQ(entity.rp_id(), std::string(kRpId));
   EXPECT_EQ(entity.user_id(), std::string(user_id().begin(), user_id().end()));
@@ -453,8 +453,8 @@ TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponse_Success) {
                                             encrypted_passkey().end()));
 
   const auto& register_response =
-      absl::get<std::pair<AuthenticatorMakeCredentialResponse,
-                          sync_pb::WebauthnCredentialSpecifics>>(parse_result)
+      std::get<std::pair<AuthenticatorMakeCredentialResponse,
+                         sync_pb::WebauthnCredentialSpecifics>>(parse_result)
           .first;
   auto response_cred_id =
       register_response.attestation_object.authenticator_data()
@@ -489,12 +489,12 @@ TEST_F(EnclaveProtocolUtilsTest,
       std::move(response_cbor), ctap_request, kWrappedSecretVersion,
       UserPresentAndVerifiedBits::kNeither);
   EXPECT_TRUE(
-      (absl::holds_alternative<std::pair<AuthenticatorMakeCredentialResponse,
-                                         sync_pb::WebauthnCredentialSpecifics>>(
+      (std::holds_alternative<std::pair<AuthenticatorMakeCredentialResponse,
+                                        sync_pb::WebauthnCredentialSpecifics>>(
           parse_result)));
   const auto& register_response =
-      absl::get<std::pair<AuthenticatorMakeCredentialResponse,
-                          sync_pb::WebauthnCredentialSpecifics>>(parse_result)
+      std::get<std::pair<AuthenticatorMakeCredentialResponse,
+                         sync_pb::WebauthnCredentialSpecifics>>(parse_result)
           .first;
   EXPECT_FALSE(register_response.attestation_object.authenticator_data()
                    .obtained_user_presence());
@@ -516,8 +516,8 @@ TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponse_StringFailures) {
     auto parse_result = ParseMakeCredentialResponse(
         std::move(response_cbor), ctap_request, kWrappedSecretVersion,
         UserPresentAndVerifiedBits::kPresentOnly);
-    EXPECT_TRUE(absl::holds_alternative<ErrorResponse>(parse_result) &&
-                absl::get<ErrorResponse>(parse_result).error_string.has_value())
+    EXPECT_TRUE(std::holds_alternative<ErrorResponse>(parse_result) &&
+                std::get<ErrorResponse>(parse_result).error_string.has_value())
         << "Failed MakeCredential response parsing for: " << test_case.name;
   }
 }
@@ -530,9 +530,9 @@ TEST_F(EnclaveProtocolUtilsTest, ParseGetAssertionResponse_IntegerFailure) {
   auto parse_result =
       ParseGetAssertionResponse(std::move(response_cbor), cred_id);
 
-  EXPECT_TRUE(absl::holds_alternative<ErrorResponse>(parse_result));
-  EXPECT_TRUE(absl::get<ErrorResponse>(parse_result).error_code.has_value());
-  EXPECT_EQ(*absl::get<ErrorResponse>(parse_result).error_code, 2);
+  EXPECT_TRUE(std::holds_alternative<ErrorResponse>(parse_result));
+  EXPECT_TRUE(std::get<ErrorResponse>(parse_result).error_code.has_value());
+  EXPECT_EQ(*std::get<ErrorResponse>(parse_result).error_code, 2);
 }
 
 TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponse_IntegerFailure) {
@@ -549,9 +549,9 @@ TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponse_IntegerFailure) {
       std::move(response_cbor), ctap_request, kWrappedSecretVersion,
       UserPresentAndVerifiedBits::kPresentOnly);
 
-  EXPECT_TRUE(absl::holds_alternative<ErrorResponse>(parse_result));
-  EXPECT_TRUE(absl::get<ErrorResponse>(parse_result).error_code.has_value());
-  EXPECT_EQ(*absl::get<ErrorResponse>(parse_result).error_code, 2);
+  EXPECT_TRUE(std::holds_alternative<ErrorResponse>(parse_result));
+  EXPECT_TRUE(std::get<ErrorResponse>(parse_result).error_code.has_value());
+  EXPECT_EQ(*std::get<ErrorResponse>(parse_result).error_code, 2);
 }
 
 }  // namespace enclave

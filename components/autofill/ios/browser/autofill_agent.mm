@@ -13,6 +13,7 @@
 #import <string>
 #import <tuple>
 #import <utility>
+#import <variant>
 
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
@@ -84,7 +85,6 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
-#import "third_party/abseil-cpp/absl/types/variant.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/base/resource/resource_bundle.h"
 #import "ui/gfx/geometry/rect.h"
@@ -384,12 +384,12 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
       autofill_suggestion.field_by_field_filling_type_used =
           suggestion.fieldByFieldFillingTypeUsed;
       const std::string guid =
-          absl::holds_alternative<autofill::Suggestion::AutofillProfilePayload>(
+          std::holds_alternative<autofill::Suggestion::AutofillProfilePayload>(
               suggestion.payload)
-              ? absl::get<autofill::Suggestion::AutofillProfilePayload>(
+              ? std::get<autofill::Suggestion::AutofillProfilePayload>(
                     suggestion.payload)
                     .guid.value()
-              : absl::get<autofill::Suggestion::Guid>(suggestion.payload)
+              : std::get<autofill::Suggestion::Guid>(suggestion.payload)
                     .value();
       if (guid.empty()) {
         autofill_suggestion.payload = autofill::Suggestion::Payload();
@@ -1149,7 +1149,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   // generic network icon. The network icon may also be missing, in
   // which case we do not set an icon at all.
   if (auto* custom_icon =
-          absl::get_if<gfx::Image>(&popup_suggestion.custom_icon);
+          std::get_if<gfx::Image>(&popup_suggestion.custom_icon);
       custom_icon && !custom_icon->IsEmpty()) {
     UIImage* icon = custom_icon->ToUIImage();
 

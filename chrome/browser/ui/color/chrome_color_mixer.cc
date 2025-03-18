@@ -312,6 +312,10 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorPageInfoChosenObjectDeleteButtonIcon] = {ui::kColorIcon};
   mixer[kColorPageInfoChosenObjectDeleteButtonIconDisabled] = {
       ui::kColorIconDisabled};
+  mixer[kColorParentAccessViewLocalWebApprovalBackground] = {
+      // TODO(crbug.com/403555394): Update the dark mode color once the matching
+      // Family Link server color is updated.
+      dark_mode ? ui::SetAlpha(ui::kColorRefNeutral6, 0xFF) : SK_ColorWHITE};
   mixer[kColorPaymentsFeedbackTipBackground] = {
       ui::kColorSubtleEmphasisBackground};
   mixer[kColorPaymentsFeedbackTipBorder] = {ui::kColorBubbleFooterBorder};

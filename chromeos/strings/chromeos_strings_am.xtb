@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">የመሬት ፍሰት ልጣፍ</translation>
 <translation id="33736539805963175">የ<ph name="LETTERS_COLOR" /> ዳራ ከ<ph name="LETTERS_LETTER" /> ፊደል ጋር</translation>
 <translation id="3383623117265110236">ለሚመለከተው የተወሰነ</translation>
-<translation id="3395147534045164351">የsnap አካባቢን አሳይ</translation>
 <translation id="3404249063913988450">የማያ ገፅ ማቆያን አንቃ</translation>
 <translation id="3413935475507503304">በዝማኔው ለመቀጠል ቀጣይ የሚለውን ጠቅ ያድርጉ።</translation>
 <translation id="3428551088151258685">ከቤት ውጭ</translation>
@@ -1395,6 +1394,7 @@
 <translation id="7388345524791662148">ተጨማሪ አማራጮች ለ<ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">አብሮገነብ የመዳሰሻ ሰሌዳ</translation>
 <translation id="7397270852490618635">ነጣ ያለ ገጽታን አጥፋ</translation>
+<translation id="7400166052988585408">መምህርዎ በ<ph name="NUM_SECONDS" /> ሰከንዶች ውስጥ ማያ ገፅዎን ይቆልፋል</translation>
 <translation id="7401543881546089382">አቋረጭ ይሰርዙ</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> ለመዘመን ዝግጁ ነው</translation>
 <translation id="741244894080940828">ልወጣ</translation>

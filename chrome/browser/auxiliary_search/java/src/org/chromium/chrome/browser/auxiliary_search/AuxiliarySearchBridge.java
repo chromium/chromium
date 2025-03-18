@@ -14,11 +14,9 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,38 +84,7 @@ public class AuxiliarySearchBridge {
             return;
         }
 
-        List<AuxiliarySearchDataEntry> entries = new ArrayList<>();
-        AuxiliarySearchBridgeJni.get()
-                .getNonSensitiveHistoryData(mNativeBridge, this, entries, callback);
-    }
-
-    /**
-     * Helper to add new {@link AuxiliarySearchDataEntry} to list.
-     *
-     * @param type The type of the data source.
-     * @param url The {@link GURL} of the entry.
-     * @param title The page title.
-     * @param lastActiveTime The last visited timestamp.
-     * @param tabId The Tad ID of the entry if it is a local Tab, -1 otherwise.
-     * @param appId The ID of the app which opens the URL if the entry is a CCT, null otherwise.
-     * @param visitId A unique ID of the entry if it isn't a local Tab, -1 otherwise.
-     * @param entries The list of fetched entries.
-     */
-    @CalledByNative
-    @VisibleForTesting
-    void addDataEntry(
-            @AuxiliarySearchEntryType int type,
-            GURL url,
-            String title,
-            long lastActiveTime,
-            int tabId,
-            @Nullable String appId,
-            int visitId,
-            List<AuxiliarySearchDataEntry> entries) {
-        AuxiliarySearchDataEntry entry =
-                new AuxiliarySearchDataEntry(
-                        type, url, title, lastActiveTime, tabId, appId, visitId);
-        entries.add(entry);
+        AuxiliarySearchBridgeJni.get().getNonSensitiveHistoryData(mNativeBridge, callback);
     }
 
     /**
@@ -128,8 +95,8 @@ public class AuxiliarySearchBridge {
      */
     @CalledByNative
     @VisibleForTesting
-    void onDataReady(
-            List<AuxiliarySearchDataEntry> entries,
+    static void onDataReady(
+            @JniType("std::vector") List<AuxiliarySearchDataEntry> entries,
             Callback<List<AuxiliarySearchDataEntry>> callback) {
         callback.onResult(entries);
     }
@@ -144,8 +111,6 @@ public class AuxiliarySearchBridge {
 
         void getNonSensitiveHistoryData(
                 long nativeAuxiliarySearchProvider,
-                AuxiliarySearchBridge self,
-                List<AuxiliarySearchDataEntry> entries,
                 Callback<List<AuxiliarySearchDataEntry>> callback);
     }
 }

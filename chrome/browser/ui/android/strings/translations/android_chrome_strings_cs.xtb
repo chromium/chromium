@@ -432,7 +432,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2981364137500752533">Můžete mít až 5 oken.</translation>
 <translation id="2983102365694924129">Na základě vaší aktivity na webu. Toto nastavení je vypnuté.</translation>
 <translation id="2984978667043170458">Při vyhledávání na Googlu zahrnovat okolní text</translation>
-<translation id="2988638966064514052">Zesilte svá hesla</translation>
 <translation id="2989523299700148168">Nedávno navštívené</translation>
 <translation id="2992473221983447149">Popisy obrázků</translation>
 <translation id="2996291259634659425">Vytvoření heslové fráze</translation>
@@ -548,7 +547,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3557336313807607643">Přidat do kontaktů</translation>
 <translation id="3563767357928833671">Obsah schránky je zobrazen</translation>
 <translation id="3566639033325271639">Aktualizovat nastavení</translation>
-<translation id="3568945271227339929">Nebyla nalezena žádná prolomená hesla</translation>
 <translation id="3575464060651642446">Kontrola hesel na zařízení…</translation>
 <translation id="3577473026931028326">Došlo k chybě. Zkuste to znovu.</translation>
 <translation id="3577558748185201054">Spravujte své zájmy a preference</translation>
@@ -1055,7 +1053,6 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5958275228015807058">Najděte stažené soubory a stránky</translation>
 <translation id="5958994127112619898">Zjednodušit stránku</translation>
 <translation id="5962718611393537961">Klepnutím sbalíte</translation>
-<translation id="5964180026566797835">Hesla nelze zkontrolovat</translation>
 <translation id="5964869237734432770">Nezobrazovat popisy obrázků</translation>
 <translation id="5977976211062815271">V tomto zařízení</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 stránka ve vašem seznamu četby}few{# stránky ve vašem seznamu četby}many{# stránky ve vašem seznamu četby}other{# stránek ve vašem seznamu četby}}</translation>
@@ -1099,6 +1096,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="6150320133806434356">Záložka uložena</translation>
 <translation id="6150706324143004339">Pokud chcete používat data Chromu ve svém účtu Google a ukládat je do něj, aktualizujte Chrome</translation>
 <translation id="6154478581116148741">Chcete-li z tohoto zařízení exportovat svá hesla, zapněte v Nastavení zámek obrazovky</translation>
+<translation id="6156323911414505561">Zobrazit lištu záložek</translation>
 <translation id="6162892189396105610">Předběžně načítá stránky, o kterých si Chrome myslí, že byste je mohli navštívit.</translation>
 <translation id="6170675927290506430">Přejít do nastavení oznámení</translation>
 <translation id="6186394685773237175">Nebylo nalezeno žádné prolomené heslo</translation>

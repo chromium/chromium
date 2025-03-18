@@ -7,10 +7,10 @@
 
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/containers/span.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
 
@@ -63,8 +63,7 @@ class BLINK_COMMON_EXPORT WebMessageArrayBufferPayload {
 
 // Represent WebMessage payload type between browser and renderer process.
 using WebMessagePayload =
-    absl::variant<std::u16string,
-                  std::unique_ptr<WebMessageArrayBufferPayload>>;
+    std::variant<std::u16string, std::unique_ptr<WebMessageArrayBufferPayload>>;
 
 // To support exposing HTML message ports to Java, it is necessary to be able
 // to encode and decode message data using the same serialization format as V8.

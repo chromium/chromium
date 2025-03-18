@@ -43,7 +43,7 @@ namespace {
 // not register with VAPID.
 BASE_FEATURE(kSharingDisableVapid,
              "SharingDisableVapid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 

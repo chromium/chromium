@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_OBSERVER_OBSERVATION_H_
 
 #include <memory>
+#include <variant>
 
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -15,7 +16,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_observer.mojom.h"
 
 namespace content {
@@ -38,8 +38,8 @@ class FileSystemAccessObserverObservation
       FileSystemAccessObserverHost* host,
       std::unique_ptr<FileSystemAccessObservationGroup::Observer> observation,
       mojo::PendingRemote<blink::mojom::FileSystemAccessObserver> remote,
-      absl::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
-                    std::unique_ptr<FileSystemAccessFileHandleImpl>> handle);
+      std::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
+                   std::unique_ptr<FileSystemAccessFileHandleImpl>> handle);
   ~FileSystemAccessObserverObservation() override;
 
   FileSystemAccessObserverObservation(
@@ -87,8 +87,8 @@ class FileSystemAccessObserverObservation
   const raw_ptr<FileSystemAccessObserverHost> host_ = nullptr;
 
   // The `FileSystemHandle` being observed.
-  const absl::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
-                      std::unique_ptr<FileSystemAccessFileHandleImpl>>
+  const std::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
+                     std::unique_ptr<FileSystemAccessFileHandleImpl>>
       handle_;
 
   std::unique_ptr<FileSystemAccessObservationGroup::Observer> observation_

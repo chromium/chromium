@@ -23,7 +23,6 @@
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/common/aliases.h"
 #include "content/public/browser/render_widget_host.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
 class WebContents;

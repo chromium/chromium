@@ -584,6 +584,9 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   void SetLastUpdatedFormAndField(const blink::WebFormElement& form,
                                   const blink::WebFormControlElement& input);
 
+  bool CanShowPopupWithoutPasswords(
+      const blink::WebInputElement& password_element) const;
+
   // Returns true if the element is of type 'password' and has either user typed
   // input or input autofilled on user trigger.
   bool IsPasswordFieldFilledByUser(

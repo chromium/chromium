@@ -130,7 +130,7 @@
 
   // Similar to the bookmarks, the content and sign-in promo state should remain
   // the same in the incognito mode.
-  ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
+  ProfileIOS* profile = self.profile->GetOriginalProfile();
 
   // Create the mediator.
   ReadingListModel* model = ReadingListModelFactory::GetForProfile(profile);
@@ -375,7 +375,7 @@
       self.browser->GetWebStateList()->GetActiveWebState();
   bool is_ntp = activeWebState->GetVisibleURL() == kChromeUINewTabURL;
   new_tab_page_uma::RecordNTPAction(
-      self.browser->GetProfile()->IsOffTheRecord(), is_ntp,
+      self.profile->IsOffTheRecord(), is_ntp,
       new_tab_page_uma::ACTION_OPENED_READING_LIST_ENTRY);
 
   // Prepare the table for dismissal.
@@ -415,7 +415,7 @@
     return;
   }
 
-  BOOL offTheRecord = self.browser->GetProfile()->IsOffTheRecord();
+  BOOL offTheRecord = self.profile->IsOffTheRecord();
 
   if (entry->DistilledState() == ReadingListEntry::PROCESSED) {
     const GURL entryURL = entry->URL();

@@ -47,6 +47,9 @@ public class NotificationJobServiceImpl extends NotificationJobService.Impl {
                 NotificationConstants.EXTRA_NOTIFICATION_INFO_WEBAPK_PACKAGE,
                 intent.getStringExtra(
                         NotificationConstants.EXTRA_NOTIFICATION_INFO_WEBAPK_PACKAGE));
+        bundle.putString(
+                NotificationConstants.EXTRA_NOTIFICATION_INFO_CHANNEL_ID,
+                intent.getStringExtra(NotificationConstants.EXTRA_NOTIFICATION_INFO_CHANNEL_ID));
         bundle.putString(NotificationConstants.EXTRA_NOTIFICATION_ACTION, intent.getAction());
         // Only primitives can be set on a persistable bundle, so extract the raw reply.
         bundle.putString(

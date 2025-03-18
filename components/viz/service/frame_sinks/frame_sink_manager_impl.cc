@@ -11,6 +11,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -712,7 +713,7 @@ CapturableFrameSink* FrameSinkManagerImpl::FindCapturableFrameSink(
   // bounds matching the crop ID specified by |target| (if one was set), and
   // return the corresponding frame sink.
   if (IsRegionCapture(target.sub_target)) {
-    const auto crop_id = absl::get<RegionCaptureCropId>(target.sub_target);
+    const auto crop_id = std::get<RegionCaptureCropId>(target.sub_target);
     for (const auto& id_and_sink : support_map_) {
       const RegionCaptureBounds& bounds =
           id_and_sink.second->current_capture_bounds();

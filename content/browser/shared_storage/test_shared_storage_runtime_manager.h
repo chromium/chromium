@@ -66,6 +66,12 @@ class TestSharedStorageRuntimeManager : public SharedStorageRuntimeManager {
   TestSharedStorageWorkletHost* GetAttachedWorkletHostForFrame(
       RenderFrameHost* frame);
 
+  // Gets the host with `script_source_url` that was most recently attached for
+  // `frame`'s document service. Returns nullptr if there is no such host.
+  TestSharedStorageWorkletHost* GetLastAttachedWorkletHostForFrameWithScriptSrc(
+      RenderFrameHost* frame,
+      const GURL& script_src_url);
+
   // Precondition: `frame` is associated with a
   // `SharedStorageDocumentServiceImpl`.
   std::vector<TestSharedStorageWorkletHost*> GetAttachedWorkletHostsForFrame(

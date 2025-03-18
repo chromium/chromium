@@ -16,6 +16,7 @@
 #include <numbers>
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/check.h"
 #include "base/containers/circular_deque.h"
@@ -386,7 +387,7 @@ bool WebmMuxer::PutFrame(EncodedFrame frame,
                          base::TimeDelta relative_timestamp) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  AudioParameters* audio_params = absl::get_if<AudioParameters>(&frame.params);
+  AudioParameters* audio_params = std::get_if<AudioParameters>(&frame.params);
   TRACE_EVENT2("media", __func__, "timestamp", relative_timestamp,
                "is_keyframe", frame.data->is_key_frame());
   DVLOG(2) << __func__ << " - " << (audio_params ? "A " : "V ")
@@ -402,7 +403,7 @@ bool WebmMuxer::PutFrame(EncodedFrame frame,
     if (frame.data->empty()) {
       return true;
     }
-    auto* video_params = absl::get_if<VideoParameters>(&frame.params);
+    auto* video_params = std::get_if<VideoParameters>(&frame.params);
     CHECK(video_params);
     DCHECK(video_params->codec == VideoCodec::kVP8 ||
            video_params->codec == VideoCodec::kVP9 ||
@@ -463,7 +464,7 @@ bool WebmMuxer::WriteWebmFrame(EncodedFrame frame,
   }
 
   auto recorded_timestamp = relative_timestamp.InNanoseconds();
-  uint8_t track_index = absl::get_if<AudioParameters>(&frame.params)
+  uint8_t track_index = std::get_if<AudioParameters>(&frame.params)
                             ? audio_track_index_
                             : video_track_index_;
   return frame.data->side_data() && !frame.data->side_data()->alpha_data.empty()

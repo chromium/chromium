@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <utility>
+#include <variant>
 
 #include "ash/public/cpp/shelf_model.h"
 #include "base/files/file_path.h"
@@ -167,11 +168,11 @@ void LaunchPluginVmApp(Profile* profile,
   std::vector<std::string> launch_args;
   launch_args.reserve(args.size());
   for (const auto& arg : args) {
-    if (absl::holds_alternative<std::string>(arg)) {
-      launch_args.push_back(absl::get<std::string>(arg));
+    if (std::holds_alternative<std::string>(arg)) {
+      launch_args.push_back(std::get<std::string>(arg));
       continue;
     }
-    const storage::FileSystemURL& url = absl::get<storage::FileSystemURL>(arg);
+    const storage::FileSystemURL& url = std::get<storage::FileSystemURL>(arg);
     base::FilePath file_path;
     // Validate paths in MyFiles/PvmDefault, or are already shared, and convert.
     bool shared = GetDefaultSharedDir(profile).IsParent(url.path()) ||

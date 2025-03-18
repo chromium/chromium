@@ -6,6 +6,7 @@
 
 #include <set>
 #include <string>
+#include <variant>
 
 #include "base/barrier_closure.h"
 #include "base/check.h"
@@ -41,7 +42,6 @@
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -215,7 +215,7 @@ struct StorageRemoverHelper {
       base::OnceClosure completed);
 
  private:
-  // Visitor struct to hold information used for deletion. absl::visit doesn't
+  // Visitor struct to hold information used for deletion. std::visit doesn't
   // support multiple arguments elegantly.
   struct Visitor {
     raw_ptr<StorageRemoverHelper> helper;
@@ -410,7 +410,7 @@ void StorageRemoverHelper::RemoveDataKeyEntries(
   // synchronous or asynchronous.
   auto sync_completion = GetCompleteCallback();
   for (const auto& [key, details] : data_key_entries) {
-    absl::visit(Visitor{this, details.storage_types}, key);
+    std::visit(Visitor{this, details.storage_types}, key);
     if (delegate_) {
       delegate_->RemoveDataKey(key, details.storage_types,
                                GetCompleteCallback());
@@ -596,7 +596,7 @@ void OnDeviceBoundSessionsLoaded(
 std::optional<net::SchemefulSite> GetThirdPartyPartitioningSite(
     const BrowsingDataModel::DataKey& data_key) {
   std::optional<net::SchemefulSite> top_level_site = std::nullopt;
-  absl::visit(
+  std::visit(
       base::Overloaded{
           [&](const url::Origin&) {},
           [&](const content::InterestGroupManager::InterestGroupDataKey) {},
@@ -660,7 +660,7 @@ BrowsingDataModel::BrowsingDataEntryView::~BrowsingDataEntryView() = default;
 
 // static
 const std::string BrowsingDataModel::GetHost(const DataOwner& data_owner) {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [&](const std::string& host) { return host; },
           [&](const url::Origin& origin) { return origin.host(); }},
@@ -669,7 +669,7 @@ const std::string BrowsingDataModel::GetHost(const DataOwner& data_owner) {
 
 const url::Origin BrowsingDataModel::GetOriginForDataKey(
     const BrowsingDataModel::DataKey& data_key) {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [](const url::Origin& origin) { return origin; },
           [](const content::InterestGroupManager::InterestGroupDataKey
@@ -711,13 +711,13 @@ const url::Origin BrowsingDataModel::GetOriginForDataKey(
 
 bool BrowsingDataModel::BrowsingDataEntryView::Matches(
     const url::Origin& origin) const {
-  return absl::visit(base::Overloaded{[&](const std::string& entry_host) {
-                                        return entry_host == origin.host();
-                                      },
-                                      [&](const url::Origin& entry_origin) {
-                                        return entry_origin == origin;
-                                      }},
-                     *data_owner);
+  return std::visit(base::Overloaded{[&](const std::string& entry_host) {
+                                       return entry_host == origin.host();
+                                     },
+                                     [&](const url::Origin& entry_origin) {
+                                       return entry_origin == origin;
+                                     }},
+                    *data_owner);
 }
 
 std::optional<net::SchemefulSite>
@@ -868,7 +868,7 @@ void BrowsingDataModel::AddBrowsingData(const DataKey& data_key,
                                         uint64_t cookie_count,
                                         bool blocked_third_party) {
   DataOwner data_owner =
-      absl::visit(GetDataOwner(delegate_.get(), storage_type), data_key);
+      std::visit(GetDataOwner(delegate_.get(), storage_type), data_key);
 
   // Find the existing entry if it exists, constructing any missing components.
   auto& entry = browsing_data_entries_[data_owner][data_key];

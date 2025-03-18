@@ -166,6 +166,7 @@
 <translation id="1505542291183484463">タイル表示のウィンドウを下方向にサイズ変更</translation>
 <translation id="1510238584712386396">ランチャー</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{通知設定を表示します。1 件のアプリで通知がオフになっています}other{通知設定を表示します。# 件のアプリで通知がオフになっています}}</translation>
+<translation id="1521655867290435174">Google スプレッドシート</translation>
 <translation id="1523032696246003">バッテリー残量 <ph name="BATTERY_PERCENTAGE" />% | 充電完了まで <ph name="TIME" /></translation>
 <translation id="1525508553941733066">閉じる</translation>
 <translation id="1526448108126799339">新しいタブを新しいウィンドウで開く</translation>
@@ -240,6 +241,8 @@
 <translation id="1755556344721611131">診断アプリ</translation>
 <translation id="1756833229520115364">テンプレートを保存できませんでした。ウィンドウまたはタブの数が多すぎます。</translation>
 <translation id="1757857692711134412">日の入りまでオフ</translation>
+<translation id="1763084151787818322">その他の操作</translation>
+<translation id="1768138163688567246">画面検索を閉じる</translation>
 <translation id="1768366657309696705">キーボード ショートカット「<ph name="LAUNCHER_KEY_NAME" />+ピリオド」が変更されました。Insert キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+Shift+Backspace キーを押してください。</translation>
 <translation id="1770726142253415363">行 <ph name="ROW_NUMBER" />、列 <ph name="COLUMN_NUMBER" /> に移動しました。</translation>
 <translation id="1771761307086386028">右にスクロール</translation>
@@ -345,7 +348,6 @@
 <translation id="2201071101391734388">最近の <ph name="INDEX" /> / <ph name="TOTAL_COUNT" /> 件の写真。</translation>
 <translation id="2201687081523799384">Google ToDo リストを折りたたむ</translation>
 <translation id="2208323208084708176">デスクトップ統合モード</translation>
-<translation id="2220572644011485463">PIN またはパスワード</translation>
 <translation id="2222841058024245321">デスク 7</translation>
 <translation id="2223384056430485343">分割画面表示</translation>
 <translation id="2224075387478458881">保護されたコンテンツが表示されているときは、画面を録画できません</translation>
@@ -1829,7 +1831,6 @@
 <translation id="7000027735917578303">ウィンドウとデスクの設定</translation>
 <translation id="7004910047186208204">モバイルデータに接続する</translation>
 <translation id="7005239792648594238">開始するにはアプリを開きます</translation>
-<translation id="7007983414944123363">PIN またはパスワードを確認できませんでした。もう一度お試しください。</translation>
 <translation id="7014684956566476813"><ph name="DEVICE_NAME" /> という名前のデバイスに接続しています</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> になったら利用を再開できます。</translation>
 <translation id="70168403932084660">デスク 6</translation>
@@ -1944,6 +1945,7 @@
 <translation id="742594950370306541">カメラが使用中です。</translation>
 <translation id="742608627846767349">おはようございます</translation>
 <translation id="743058460480092004">カメラとマイクが使用中です。</translation>
+<translation id="7440404390546433462">Google 検索</translation>
 <translation id="7441711280402516925">再生中 · タブに切り替え</translation>
 <translation id="7453330308669753048">検索履歴の結果が削除されました</translation>
 <translation id="7459485586006128091">内部エラーにより、アクセス ポイントはオフになっています。数分後にもう一度接続してみてください。</translation>
@@ -2466,6 +2468,7 @@
 <translation id="9168436347345867845">後で行う</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> の結果 1 件を表示しています</translation>
 <translation id="9179259655489829027">この機能を使用すると、パスワードを入力せずにログイン ユーザーにすばやくアクセスできます。この機能は信頼できるアカウントにのみ使用してください。</translation>
+<translation id="9183302530794969518">Google ドキュメント</translation>
 <translation id="9183456764293710005">全画面拡大鏡</translation>
 <translation id="9192133205265227850">"<ph name="DEVICE_NAME" />" を使用する</translation>
 <translation id="9193626018745640770">不明な受信デバイスにキャストしています</translation>

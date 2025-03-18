@@ -81,15 +81,13 @@ ChromeExtensionRegistrarDelegate::ChromeExtensionRegistrarDelegate(
       extension_service_(extension_service),
       extension_prefs_(ExtensionPrefs::Get(profile_)),
       registry_(ExtensionRegistry::Get(profile_)),
+      delayed_install_manager_(DelayedInstallManager::Get(profile_)),
       component_loader_(component_loader) {}
 
 ChromeExtensionRegistrarDelegate::~ChromeExtensionRegistrarDelegate() = default;
 
-void ChromeExtensionRegistrarDelegate::Init(
-    ExtensionRegistrar* registrar,
-    DelayedInstallManager* delayed_install) {
+void ChromeExtensionRegistrarDelegate::Init(ExtensionRegistrar* registrar) {
   extension_registrar_ = registrar;
-  delayed_install_manager_ = delayed_install;
 }
 
 void ChromeExtensionRegistrarDelegate::Shutdown() {

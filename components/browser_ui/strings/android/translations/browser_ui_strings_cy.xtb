@@ -45,6 +45,7 @@
 <translation id="1652197001188145583">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am gael defnyddio dyfeisiau NFC. Pan fydd wedi'i ddiffodd, ni all gwefannau ddefnyddio dyfeisiau NFC.</translation>
 <translation id="1660204651932907780">Caniatáu i wefannau chwarae sain (argymhellir)</translation>
 <translation id="1677097821151855053">Defnyddir cwcis a data gwefan eraill i'ch cofio, er enghraifft i'ch mewngofnodi neu i bersonoleiddio hysbysebion. I reoli cwcis ar gyfer pob gwefan, gweler <ph name="BEGIN_LINK" />Gosodiadau<ph name="END_LINK" />.</translation>
+<translation id="1679305402657584804">Gall gwefannau ofyn am gael defnyddio dyfeisiau NFC</translation>
 <translation id="1686785653877010442">Mae gwefannau fel arfer yn anfon hysbysiadau i roi gwybod i chi am newyddion yn torri neu negeseuon sgwrsio.</translation>
 <translation id="169515064810179024">Rhwystro gwefannau rhag cael mynediad at synwyryddion symudiad</translation>
 <translation id="1703666494654169921">Peidio â chaniatáu i wefannau ddefnyddio dyfeisiau neu ddata rhithwirionedd</translation>
@@ -84,6 +85,7 @@
 <translation id="2185965788978862351">Bydd hyn yn dileu <ph name="DATASIZE" /> o ddata a chwcis sy'n cael eu storio gan wefannau neu gan apiau ar eich sgrîn Hafan.</translation>
 <translation id="2194856509914051091">Pethau i'w hystyried</translation>
 <translation id="2215727959747642672">Golygu ffeiliau</translation>
+<translation id="2218389616572918761">Gall gwefannau ofyn am eich meicroffon</translation>
 <translation id="2228071138934252756">I adael i <ph name="APP_NAME" /> gael mynediad at eich camera, trowch y camera ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" /> hefyd.</translation>
 <translation id="2235344399760031203">Mae cwcis trydydd parti yn cael eu rhwystro</translation>
 <translation id="2238944249568001759">Chwiliadau a awgrymir yn seiliedig ar eich tab diwethaf</translation>
@@ -132,8 +134,10 @@
 <translation id="2726059656860238749">Lansio Chrome gyda ffocws ar yr Omniflwch, gan leihau amser cychwyn ar ddyfeisiau llai datblygedig.</translation>
 <translation id="2750481671343847896">Gall gwefannau ddangos anogwyr mewngofnodi o wasanaethau hunaniaeth.</translation>
 <translation id="2787357173144933081">Cychwyn Cyflym Omniflwch</translation>
+<translation id="2789132527330338807">Gall gwefannau ofyn i greu map 3D o'ch amgylchoedd neu olrhain lleoliad camera</translation>
 <translation id="2790501146643349491">Pan fydd wedi'i droi ymlaen, gall gwefannau a gaewyd yn ddiweddar orffen anfon a derbyn data. Pan fydd wedi'i ddiffodd, ni all gwefannau a gaewyd yn ddiweddar orffen anfon a derbyn data.</translation>
 <translation id="2795716239552913152">Mae gwefannau fel arfer yn defnyddio'ch lleoliad ar gyfer nodweddion neu wybodaeth berthnasol, fel newyddion lleol neu siopau cyfagos</translation>
+<translation id="2802908157808345702">Peidio â chaniatáu i wefannau anfon ffenestri naid a defnyddio ailgyfeiriadau</translation>
 <translation id="2814830417943086299">Mae Chrome bellach yn dangos eich tabiau diweddar yn rhestr apiau a chanlyniadau chwilio eich dyfais. Gallwch ddiffodd hwn unrhyw bryd yng ngosodiadau Chrome.</translation>
 <translation id="2822354292072154809">Ydych yn siŵr eich bod am ailosod yr holl ganiatadau gwefan ar gyfer <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Gofyn am wedd symudol</translation>
@@ -274,6 +278,7 @@
 <translation id="4598549027014564149">Tra yn y modd Anhysbys, ni all gwefannau ddefnyddio'ch cwcis i weld eich gweithgarwch pori ar draws gwefannau, hyd yn oed gwefannau cysylltiedig. Nid yw eich gweithgarwch pori yn cael ei ddefnyddio ar gyfer pethau megis personoleiddio hysbysebion. Mae'n bosib na fydd nodweddion ar rai gwefannau yn gweithio.</translation>
 <translation id="461356340001513807">Yn gadael i chi fewngofnodi i wefannau gan ddefnyddio'r cyfrif sydd gennych gyda gwasanaeth hunaniaeth</translation>
 <translation id="4619615317237390068">Tabiau o ddyfeisiau eraill</translation>
+<translation id="4635969503923889910">Peidiwch â chaniatáu i wefannau ddefnyddio dyfeisiau NFC</translation>
 <translation id="4644713492825682049">Dileu ac ailosod</translation>
 <translation id="4645575059429386691">Rheolir gan dy riant</translation>
 <translation id="4670064810192446073">Realiti rhithwir</translation>
@@ -372,6 +377,7 @@
 <translation id="5877248419911025165">Crebachu'r holl geisiadau</translation>
 <translation id="5884085660368669834">Dewis penodol ar gyfer gwefan</translation>
 <translation id="5887687176710214216">Ymwelwyd ddiwethaf ddoe</translation>
+<translation id="5908617755156109052">Peidiwch â chaniatáu i wefannau greu map 3D o'ch amgylchoedd neu olrhain lleoliad camera</translation>
 <translation id="5916664084637901428">Ymlaen</translation>
 <translation id="5922853908706496913">Wrthi'n rhannu eich sgrîn</translation>
 <translation id="5922967540311291836">Rhwystro cwcis trydydd parti:</translation>
@@ -582,6 +588,7 @@
 <translation id="8676374126336081632">Clirio mewnbwn</translation>
 <translation id="8681886425883659911">Mae hysbysebion yn cael eu rhwystro ar wefannau y gwyddys eu bod yn dangos hysbysebion ymwthiol neu gamarweiniol</translation>
 <translation id="868929229000858085">Chwilio eich cysylltiadau</translation>
+<translation id="8707904142362025782">Gall y wefan ofyn am eich camera</translation>
 <translation id="8712637175834984815">Iawn</translation>
 <translation id="8715862698998036666">Llusgwch o'r brig a sweipiwch o'r ymyl chwith neu dde i adael y sgrîn lawn.</translation>
 <translation id="8719283222052720129">Gallwch droi ganiatâd ar gyfer <ph name="APP_NAME" /> ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>

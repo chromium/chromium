@@ -9,6 +9,7 @@
 #include <string_view>
 #include <tuple>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/base64.h"
@@ -111,7 +112,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -583,10 +583,10 @@ bool IsReady(GPMEnclaveController::AccountState state) {
 
 bool IsMechanismEnclaveCredential(
     const AuthenticatorRequestDialogModel::Mechanism& mechanism) {
-  if (absl::holds_alternative<
+  if (std::holds_alternative<
           AuthenticatorRequestDialogModel::Mechanism::Credential>(
           mechanism.type)) {
-    return absl::get<AuthenticatorRequestDialogModel::Mechanism::Credential>(
+    return std::get<AuthenticatorRequestDialogModel::Mechanism::Credential>(
                mechanism.type)
                ->source == device::AuthenticatorType::kEnclave;
   }
@@ -1151,9 +1151,9 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
   raw_ptr<ChromeAuthenticatorRequestDelegate> request_delegate_;
   std::unique_ptr<device::BluetoothAdapterFactory::GlobalOverrideValues>
       bluetooth_values_for_testing_;
-  absl::variant<crypto::ScopedNullUserVerifyingKeyProvider,
-                crypto::ScopedFakeUserVerifyingKeyProvider,
-                crypto::ScopedFailingUserVerifyingKeyProvider>
+  std::variant<crypto::ScopedNullUserVerifyingKeyProvider,
+               crypto::ScopedFakeUserVerifyingKeyProvider,
+               crypto::ScopedFailingUserVerifyingKeyProvider>
       fake_uv_provider_;
   logging::ScopedVmoduleSwitches scoped_vmodule_;
   bool sync_feature_enabled_ = true;
@@ -2201,14 +2201,14 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, GpmEnclaveNeedsReauth) {
   // No credentials should be displayed since tapping on them won't work.
   EXPECT_FALSE(
       std::ranges::any_of(dialog_model()->mechanisms, [](const auto& m) {
-        return absl::holds_alternative<
+        return std::holds_alternative<
             AuthenticatorRequestDialogModel::Mechanism::Credential>(m.type);
       }));
 
   // The button has text indicating the user they need to sign in.
   const auto sign_in_again_mech =
       std::ranges::find_if(dialog_model()->mechanisms, [](const auto& m) {
-        return absl::holds_alternative<
+        return std::holds_alternative<
             AuthenticatorRequestDialogModel::Mechanism::SignInAgain>(m.type);
       });
   ASSERT_NE(sign_in_again_mech, dialog_model()->mechanisms.end());
@@ -2315,7 +2315,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   // The sign in button is not visible.
   const auto sign_in_again_mech =
       std::ranges::find_if(dialog_model()->mechanisms, [](const auto& m) {
-        return absl::holds_alternative<
+        return std::holds_alternative<
             AuthenticatorRequestDialogModel::Mechanism::SignInAgain>(m.type);
       });
   ASSERT_EQ(sign_in_again_mech, dialog_model()->mechanisms.end());
@@ -2629,7 +2629,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
 
   EXPECT_TRUE(
       std::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
-        return absl::holds_alternative<
+        return std::holds_alternative<
             AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
       }));
   EXPECT_TRUE(
@@ -2659,7 +2659,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
 
   EXPECT_TRUE(
       std::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
-        return absl::holds_alternative<
+        return std::holds_alternative<
             AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
       }));
   EXPECT_FALSE(request_delegate()->enclave_controller_for_testing());
@@ -2688,7 +2688,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
 
   EXPECT_TRUE(
       std::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
-        return absl::holds_alternative<
+        return std::holds_alternative<
             AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
       }));
   EXPECT_FALSE(request_delegate()->enclave_controller_for_testing());
@@ -2785,7 +2785,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   content::ExecuteScriptAsync(web_contents, kGetAssertionUvDiscouraged);
   delegate_observer()->WaitForUI();
   std::vector<uint8_t> user_id =
-      absl::get<AuthenticatorRequestDialogModel::Mechanism::Credential>(
+      std::get<AuthenticatorRequestDialogModel::Mechanism::Credential>(
           dialog_model()
               ->mechanisms.at(*dialog_model()->priority_mechanism_index)
               .type)
@@ -2805,7 +2805,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   delegate_observer()->WaitForUI();
   EXPECT_TRUE(
       std::ranges::none_of(dialog_model()->mechanisms, [](const auto& mech) {
-        return absl::holds_alternative<
+        return std::holds_alternative<
             AuthenticatorRequestDialogModel::Mechanism::Credential>(mech.type);
       }));
   dialog_model()->CancelAuthenticatorRequest();
@@ -2819,7 +2819,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   // Make a request and expect to see the credential listed again.
   content::ExecuteScriptAsync(web_contents, kGetAssertionUvDiscouraged);
   delegate_observer()->WaitForUI();
-  user_id = absl::get<AuthenticatorRequestDialogModel::Mechanism::Credential>(
+  user_id = std::get<AuthenticatorRequestDialogModel::Mechanism::Credential>(
                 dialog_model()
                     ->mechanisms.at(*dialog_model()->priority_mechanism_index)
                     .type)
@@ -2847,7 +2847,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
     delegate_observer()->WaitForUI();
     EXPECT_TRUE(
         std::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
-          return absl::holds_alternative<
+          return std::holds_alternative<
               AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
         }));
     dialog_model()->CancelAuthenticatorRequest();
@@ -2871,7 +2871,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
     delegate_observer()->WaitForUI();
     EXPECT_TRUE(
         std::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
-          return absl::holds_alternative<
+          return std::holds_alternative<
               AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
         }));
     dialog_model()->CancelAuthenticatorRequest();
@@ -2901,7 +2901,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
     delegate_observer()->WaitForUI();
     EXPECT_FALSE(
         std::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
-          return absl::holds_alternative<
+          return std::holds_alternative<
               AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
         }));
     dialog_model()->CancelAuthenticatorRequest();
@@ -2960,7 +2960,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   for (size_t i = 0; i < dialog_model()->mechanisms.size(); ++i) {
     if (IsMechanismEnclaveCredential(dialog_model()->mechanisms[i])) {
       ASSERT_EQ(
-          absl::get<AuthenticatorRequestDialogModel::Mechanism::Credential>(
+          std::get<AuthenticatorRequestDialogModel::Mechanism::Credential>(
               dialog_model()->mechanisms[i].type)
               ->user_id,
           kCredId1);

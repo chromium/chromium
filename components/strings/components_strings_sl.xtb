@@ -316,7 +316,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1532118530259321453">Ta stran sporoča:</translation>
 <translation id="1533966801397200693">Profil, v katerega ste prijavljeni, je upravljani profil. Skrbnik lahko na daljavo spreminja nastavitve profila, analizira podatke o brskalniku prek poročanja in izvaja druga potrebna opravila. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Prevedi stran</translation>
-<translation id="1538295100801850685">Izboljšave predvidevanja</translation>
 <translation id="1539840569003678498">Poslano poročilo:</translation>
 <translation id="1542105669288201090">Poslovna izobrazba</translation>
 <translation id="1545757265410828525">Zgodovina cen</translation>
@@ -1157,7 +1156,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3052868890529250114">S temi spletnimi mesti se običajno varno povežete, vendar Chrome varne povezave tokrat ni mogel uporabiti. Napadalec morda poskuša prisluškovati ali spremeniti vašo omrežno povezavo. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem opozorilu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" />-odstotno znižanje cene izdelka <ph name="PRODUCT_NAME" /></translation>
 <translation id="3061707000357573562">Storitev za popravke</translation>
-<translation id="306198082577913404">Vklop izboljšav predvidevanj</translation>
 <translation id="3062655045399308513">Izbriši podatke brskanja …</translation>
 <translation id="3063453392496098461">Namestitev storitev v ozadju za omrežje VPN ni uspela.</translation>
 <translation id="306573536155379004">Igra se je začela.</translation>
@@ -1698,6 +1696,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3964661563329879394">{COUNT,plural, =0{Brez}=1{1 spletno mesto }one{# spletno mesto }two{# spletni mesti }few{# spletna mesta }other{# spletnih mest }}</translation>
 <translation id="3965672182149944205">Želite shraniti naslov?</translation>
 <translation id="3966044442021752214">Varnost izdelka</translation>
+<translation id="3969869202926863008">Dostop v lokalnem omrežju</translation>
 <translation id="397105322502079400">Izračunavanje …</translation>
 <translation id="3973234410852337861">Spletno mesto <ph name="HOST_NAME" /> je blokirano</translation>
 <translation id="3975852104434126461">Avtomobilska industrija</translation>
@@ -2054,6 +2053,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="460848736049414407">Blokiral skrbnik</translation>
 <translation id="4610279718074907952">To spletno mesto je v skupini, ki jo definiral(-a) <ph name="SET_OWNER" />, ki si lahko ogleda vašo dejavnost.</translation>
 <translation id="46128681529823442">Nogometna oprema</translation>
+<translation id="4612904677925722054">To spletno mesto morda vsebuje vsebino, neprimerno za otroke. Starš ali skrbnik mora potrditi, da lahko obiščeš to spletno mesto.</translation>
 <translation id="4619564267100705184">Potrditev identitete</translation>
 <translation id="4622292761762557753">Vseeno prenesi</translation>
 <translation id="4622647778991854660">Omogočite obvestila v središču za obvestila. Odprite »<ph name="LINK" />«.</translation>
@@ -2325,7 +2325,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5097099694988056070">Statistični podatki naprave, kot je uporaba CPE-ja/RAM-a</translation>
 <translation id="5097468150760963273">27 x 39 palcev</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome potrebuje dostop do tega v napravi: <ph name="PERMISSION" /></translation>
 <translation id="510644072453496781">Cardboard (End)</translation>
 <translation id="5106648964679263509">Navidezna kartica za storitev <ph name="BNPL_ISSUER_NAME" /> je izpolnjena</translation>
 <translation id="5108881358339761672">Spletno mesto ni varno</translation>
@@ -2652,6 +2651,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5660122698869360728">Nova pametna mapa, ki vam pomaga shraniti vse strani za nakupovanje na enem mestu in samodejno spremljati cene, pridobiti vpoglede v cene in drugo.</translation>
 <translation id="5663955426505430495">Skrbnik te naprave je namestil razširitve zaradi dodatnih funkcij. Razširitve imajo dostop do nekaterih vaših podatkov.</translation>
 <translation id="5667827081946850877">Zvočne knjige</translation>
+<translation id="5674082555327905359">Lahko zahteva vzpostavitev povezave s katero koli napravo v lokalnem omrežju</translation>
 <translation id="5675650730144413517">Ta stran ne deluje</translation>
 <translation id="5675809467256309336">Plesna in elektronska glasba</translation>
 <translation id="5675959228867414813">Prikaz glede na datum</translation>
@@ -2925,6 +2925,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6159908896951210943">Formalno</translation>
 <translation id="6160391204859821737">Vklop funkcije za zasebnost pri oglaševanju</translation>
 <translation id="6162403104168428984">Želite posodobiti naslov?</translation>
+<translation id="6164605812717770913">Starš ali skrbnik je navedel, da tega spletnega mesta ne moreš obiskati. Lahko ga prosiš, da ga odblokira.</translation>
 <translation id="6165508094623778733">Več o tem</translation>
 <translation id="6167577165590485365">Zadnji poskus pridobivanja:</translation>
 <translation id="617256461084925519">Google Chrome poskuša preveriti, ali ste to res vi, da bo lahko vnesel podatke za plačilo.</translation>
@@ -3016,6 +3017,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6321917430147971392">Preverite nastavitve za DNS</translation>
 <translation id="6322182122604171028">Funkcije Windows Hello ni bilo mogoče uporabiti</translation>
 <translation id="6326947323444967009">Nastavite Chrome kot privzeti brskalnik sistema v nastavitvah sistema iOS</translation>
+<translation id="6327065120806001832">dostop v lokalnem omrežju</translation>
 <translation id="6328639280570009161">Poskusite onemogočiti omrežno predvidevanje</translation>
 <translation id="6335029926534404762">Športni copati</translation>
 <translation id="6337133576188860026">Sprosti manj kot <ph name="SIZE" />. Nekatera spletna mesta se bodo ob naslednjem obisku morda počasneje naložila.</translation>
@@ -4054,7 +4056,6 @@ Dodatne podrobnosti:
 <translation id="8134058435519644366">Zaposlovanje in kadrovanje</translation>
 <translation id="8135546115396015134">tipka levo</translation>
 <translation id="8137456439814903304">Energetika in komunalne službe</translation>
-<translation id="81474145143203755">Omogočite Chromu dostop, če želite, da se na tem spletnem mestu uporablja to: <ph name="PERMISSION" /></translation>
 <translation id="8148608574971654810">Različica dokumenta PDF:</translation>
 <translation id="8149426793427495338">Računalnik je preklopil v stanje pripravljenosti.</translation>
 <translation id="8150722005171944719">Datoteke na <ph name="URL" /> ni mogoče prebrati. Morda je odstranjena, premaknjena ali pa dostop preprečujejo dovoljenja za datoteke.</translation>

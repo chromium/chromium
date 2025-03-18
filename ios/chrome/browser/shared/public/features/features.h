@@ -1074,4 +1074,10 @@ extern const char kIOSOneTapMiniMapRestrictionMinAlphanumProportionParamName[];
 extern const base::FeatureParam<double>
     kIOSOneTapMiniMapRestrictionMinAlphanumProportionParam;
 
+// Returns whether notification collision management is enabled.
+bool IsNotificationCollisionManagementEnabled();
+
+// Feature flag for enabling notification collision management.
+BASE_DECLARE_FEATURE(kNotificationCollisionManagement);
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

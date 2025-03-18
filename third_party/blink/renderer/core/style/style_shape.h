@@ -130,12 +130,9 @@ class StyleShape final : public BasicShape {
                                ArcBySegment,
                                CloseSegment>;
 
-  static scoped_refptr<StyleShape> Create(WindRule wind_rule,
-                                          const LengthPoint& origin,
-                                          Vector<Segment> segments) {
-    return base::AdoptRef(
-        new StyleShape(wind_rule, origin, std::move(segments)));
-  }
+  StyleShape(WindRule wind_rule,
+             const LengthPoint& origin,
+             Vector<Segment> segments);
 
   ShapeType GetType() const override { return kStyleShapeType; }
   void GetPath(Path&,
@@ -150,10 +147,6 @@ class StyleShape final : public BasicShape {
   bool IsEqualAssumingSameType(const BasicShape&) const override;
 
  private:
-  StyleShape(WindRule wind_rule,
-             const LengthPoint& origin,
-             Vector<Segment> segments);
-
   WindRule wind_rule_;
   LengthPoint origin_;
   Vector<Segment> segments_;

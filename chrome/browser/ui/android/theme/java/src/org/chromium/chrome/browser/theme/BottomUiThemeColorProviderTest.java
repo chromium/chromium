@@ -55,9 +55,8 @@ public class BottomUiThemeColorProviderTest {
         mContext =
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
-        mPrimaryBackgroundColorWithTopToolbar = SemanticColorUtils.getDialogBgColor(mContext);
-        mIncognitoBackgroundColorWithTopToolbar =
-                mContext.getColor(R.color.dialog_bg_color_dark_baseline);
+        mPrimaryBackgroundColorWithTopToolbar = SemanticColorUtils.getColorSurface(mContext);
+        mIncognitoBackgroundColorWithTopToolbar = mContext.getColor(R.color.tab_strip_bg_incognito);
         mPrimaryTintWithTopToolbar =
                 ContextCompat.getColorStateList(mContext, R.color.default_icon_color_tint_list);
         mIncognitoTintWithTopToolbar =

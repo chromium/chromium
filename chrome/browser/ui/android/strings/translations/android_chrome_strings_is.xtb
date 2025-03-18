@@ -432,7 +432,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2981364137500752533">Þú getur opnað allt að fimm glugga.</translation>
 <translation id="2983102365694924129">Byggt á virkni þinni á vefsvæði. Slökkt er á þessari stillingu.</translation>
 <translation id="2984978667043170458">Taka með texta umhverfis í Google leitum</translation>
-<translation id="2988638966064514052">Styrktu aðgangsorðin þín</translation>
 <translation id="2989523299700148168">Nýlega heimsótt</translation>
 <translation id="2992473221983447149">Myndalýsingar</translation>
 <translation id="2996291259634659425">Búa til aðgangsorð</translation>
@@ -548,7 +547,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3557336313807607643">Bæta við tengiliði</translation>
 <translation id="3563767357928833671">Efni klippiborðs sýnt</translation>
 <translation id="3566639033325271639">Uppfæra stillingar</translation>
-<translation id="3568945271227339929">Engin aðgangsorð í hættu</translation>
 <translation id="3575464060651642446">Kannar aðgangsorð í þessu tæki…</translation>
 <translation id="3577473026931028326">Eitthvað fór úrskeiðis. Reyndu aftur.</translation>
 <translation id="3577558748185201054">Stjórnaðu áhugasviðum þínum og kjörstillingum</translation>
@@ -1055,7 +1053,6 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="5958275228015807058">Þú finnur skrár og síður í Niðurhali</translation>
 <translation id="5958994127112619898">Einfalda síðu</translation>
 <translation id="5962718611393537961">Ýttu til að draga saman</translation>
-<translation id="5964180026566797835">Ekki er hægt að athuga aðgangsorð</translation>
 <translation id="5964869237734432770">Slökkva á myndlýsingum</translation>
 <translation id="5977976211062815271">Í þessu tæki</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{Ein síða á leslistanum þínum}one{# síða á leslistanum þínum}other{# síður á leslistanum þínum}}</translation>
@@ -1099,6 +1096,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="6150320133806434356">Bókamerki vistað</translation>
 <translation id="6150706324143004339">Til að nota og vista Chrome-gögnin á Google-reikningnum þínum skaltu uppfæra Chrome</translation>
 <translation id="6154478581116148741">Kveiktu á skjálás í stillingunum til að flytja aðgangsorðin þín út úr þessu tæki</translation>
+<translation id="6156323911414505561">Sýna bókamerkjastiku</translation>
 <translation id="6162892189396105610">Forhleður síðum sem Chrome telur að þú munir opna.</translation>
 <translation id="6170675927290506430">Opna tilkynningastillingar</translation>
 <translation id="6186394685773237175">Engin aðgangsorð í hættu fundust</translation>

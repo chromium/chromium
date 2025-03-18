@@ -194,7 +194,7 @@ END_METADATA
 
 void AddResourceIcon(const gfx::ImageSkia* skia_image, void* data) {
   views::View* parent = static_cast<views::View*>(data);
-  parent->AddChildView(
+  parent->AddChildViewRaw(
       new RatingStar(ui::ImageModel::FromImageSkia(*skia_image)));
 }
 

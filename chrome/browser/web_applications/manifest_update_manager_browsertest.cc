@@ -12,6 +12,7 @@
 #include <tuple>
 #include <type_traits>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -4798,7 +4799,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_TabStrip,
   EXPECT_TRUE(web_app->tab_strip().has_value());
   EXPECT_EQ(http_server_.GetURL("/new-tab-url"),
             web_app->tab_strip().value().new_tab_button.url);
-  EXPECT_EQ(absl::get<blink::Manifest::HomeTabParams>(
+  EXPECT_EQ(std::get<blink::Manifest::HomeTabParams>(
                 web_app->tab_strip().value().home_tab)
                 .scope_patterns.size(),
             1u);
@@ -4829,7 +4830,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_TabStrip,
   EXPECT_TRUE(web_app->tab_strip().has_value());
   EXPECT_EQ(http_server_.GetURL("/new-tab-url"),
             web_app->tab_strip().value().new_tab_button.url);
-  EXPECT_TRUE(absl::holds_alternative<blink::Manifest::HomeTabParams>(
+  EXPECT_TRUE(std::holds_alternative<blink::Manifest::HomeTabParams>(
       web_app->tab_strip().value().home_tab));
 
   OverrideManifest(kTabStripManifestTemplate, {kInstallableIconList});
@@ -4840,7 +4841,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_TabStrip,
   EXPECT_TRUE(web_app->tab_strip().has_value());
   EXPECT_EQ(http_server_.GetURL("/new-tab-url"),
             web_app->tab_strip().value().new_tab_button.url);
-  EXPECT_TRUE(absl::holds_alternative<blink::Manifest::HomeTabParams>(
+  EXPECT_TRUE(std::holds_alternative<blink::Manifest::HomeTabParams>(
       web_app->tab_strip().value().home_tab));
 }
 
@@ -4918,7 +4919,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_TabStrip,
   EXPECT_TRUE(web_app->tab_strip().has_value());
   EXPECT_EQ(http_server_.GetURL("/new-tab-url"),
             web_app->tab_strip().value().new_tab_button.url);
-  EXPECT_TRUE(absl::holds_alternative<blink::Manifest::HomeTabParams>(
+  EXPECT_TRUE(std::holds_alternative<blink::Manifest::HomeTabParams>(
       web_app->tab_strip().value().home_tab));
 
   OverrideManifest(kManifestTemplate, {kInstallableIconList});

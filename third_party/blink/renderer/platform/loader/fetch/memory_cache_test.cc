@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 
 #include <string_view>
+#include <variant>
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -68,7 +69,7 @@ class FakeDecodedResource final : public Resource {
       : Resource(request, ResourceType::kMock, options) {}
 
   void AppendData(
-      absl::variant<SegmentedBuffer, base::span<const char>> data) override {
+      std::variant<SegmentedBuffer, base::span<const char>> data) override {
     Resource::AppendData(std::move(data));
     SetDecodedSize(this->size());
   }

@@ -504,6 +504,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="310900540163454140">Wachtwoord voor <ph name="WEBSITE" /> verwijderen?</translation>
 <translation id="3112556859945124369">Markeren…</translation>
 <translation id="3119874402040566234">Je wordt uitgelogd en browsegegevens worden verwijderd</translation>
+<translation id="3124568093781685165">Deel je wachtwoorden met je gezin</translation>
 <translation id="3130863904455712965">Geschiedenis en meer</translation>
 <translation id="313283613037595347">Nieuw incognitotabblad maken</translation>
 <translation id="3138611310073113613">Selectie verwijderen</translation>
@@ -1003,6 +1004,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="5352128922772839949">Bestand opslaan</translation>
 <translation id="5355191726083956201">Geoptimaliseerde beveiliging staat aan</translation>
 <translation id="537853552771686272">Beheer de onderwerpen en sites waarin je geïnteresseerd bent</translation>
+<translation id="5390458669633674385">{count,plural, =1{{count} gesloten}other{{count} gesloten}}</translation>
 <translation id="5394975111793637642">Kaart Productreviews voor jou verbergen</translation>
 <translation id="5395707839134961196">Zoekmachinegegevens verbergen</translation>
 <translation id="5414763847370083940">Je krijgt een melding als de prijs op een site daalt.</translation>
@@ -1132,6 +1134,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5897749768294722429">Synchroniseer je tabbladen en geschiedenis om snel terug te gaan naar sites die je hebt bezocht.</translation>
 <translation id="5898848375214731122">Massa</translation>
 <translation id="5899314093904173337">Als je wilt delen met mensen in de buurt, laat je ze deze QR-code scannen met hun camera of een QR-scannerapp.</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} nieuw tabblad}other{{count} nieuwe tabbladen}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5917913282764181683">Je downloads automatisch verwijderen</translation>
 <translation id="5922999516621365983">Sleep het tabblad hier naartoe om het vast te zetten.</translation>
@@ -1674,6 +1677,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8131740175452115882">Bevestigen</translation>
 <translation id="8132598642024322408">Nu <ph name="PRICE" />, was eerder <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Gebruik voor elke site of app een uniek wachtwoord. Als iemand een hergebruikt wachtwoord vindt, kan diegene daarmee ook inloggen op je andere accounts. Klik om de website te openen en deze nu te wijzigen.</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} gesloten tabblad}other{{count} gesloten tabbladen}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 ander apparaat}other{# andere}}</translation>
 <translation id="8150167929304790980">Volledige naam</translation>
 <translation id="8152331954420209374">Naar Lens</translation>

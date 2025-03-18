@@ -128,6 +128,9 @@ specific_include_rules = {
   "eche_app_integration_browsertest.cc": [
     "+chrome/browser/ui/views",
   ],
+  "graduation_app_integration_browsertest.cc": [
+    "+chrome/browser/web_applications/test/web_app_install_test_utils.h",
+  ],
   "personalization_app_integration_browsertest.cc": [
     "+ash/ambient/test/ambient_ash_test_helper.h",
     "+ui/message_center/message_center.h",

@@ -380,8 +380,7 @@ public class TabGroupSyncLocalObserverUnitTest {
         when(mTabGroupSyncService.getGroup(LOCAL_TAB_GROUP_ID_1)).thenReturn(savedTabGroup);
         boolean hiding = true;
         when(mTabGroupModelFilter.isTabGroupHiding(TOKEN_1)).thenReturn(hiding);
-        when(mTabGroupModelFilter.getRelatedTabListForRootId(ROOT_ID_1))
-                .thenReturn(List.of(mTab1, mTab2));
+        when(mTabGroupModelFilter.getTabsInGroup(TOKEN_1)).thenReturn(List.of(mTab1, mTab2));
         TabModelObserver modelObserver = mTabModelObserverCaptor.getValue();
         TabGroupModelFilterObserver groupObserver = mTabGroupModelFilterObserverCaptor.getValue();
 
@@ -417,8 +416,7 @@ public class TabGroupSyncLocalObserverUnitTest {
         when(mTabGroupSyncService.getGroup(LOCAL_TAB_GROUP_ID_1)).thenReturn(savedTabGroup);
         boolean hiding = true;
         when(mTabGroupModelFilter.isTabGroupHiding(TOKEN_1)).thenReturn(hiding);
-        when(mTabGroupModelFilter.getRelatedTabListForRootId(ROOT_ID_1))
-                .thenReturn(List.of(mTab1, mTab2));
+        when(mTabGroupModelFilter.getTabsInGroup(TOKEN_1)).thenReturn(List.of(mTab1, mTab2));
         TabModelObserver modelObserver = mTabModelObserverCaptor.getValue();
         TabGroupModelFilterObserver groupObserver = mTabGroupModelFilterObserverCaptor.getValue();
 
@@ -558,7 +556,7 @@ public class TabGroupSyncLocalObserverUnitTest {
         verify(mTabGroupSyncService, times(1)).addGroup(mSavedTabGroupCaptor.capture());
         Assert.assertEquals(LOCAL_TAB_GROUP_ID_1, mSavedTabGroupCaptor.getValue().localId);
         verify(mTabGroupModelFilter, never()).getRelatedTabList(anyInt());
-        verify(mTabGroupModelFilter, times(1)).getRelatedTabListForRootId(1);
+        verify(mTabGroupModelFilter, times(1)).getTabsInGroup(TOKEN_1);
     }
 
     @Test

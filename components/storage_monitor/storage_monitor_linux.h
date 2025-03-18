@@ -15,6 +15,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -33,7 +34,8 @@ class SequencedTaskRunner;
 
 namespace storage_monitor {
 
-class StorageMonitorLinux : public StorageMonitor {
+class COMPONENT_EXPORT(STORAGE_MONITOR) StorageMonitorLinux
+    : public StorageMonitor {
  public:
   // Should only be called by browser start up code.
   // Use StorageMonitor::GetInstance() instead.

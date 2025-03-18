@@ -11,6 +11,7 @@
 #include <string>
 #include <tuple>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/containers/lru_cache.h"
@@ -233,8 +234,8 @@ bool UsernameOutsideOfFormHasHigherPriority(
 }
 
 bool ShouldUploadCrowdsourcingVotes(const FormOrDigest& form_or_digest) {
-  if (absl::holds_alternative<FormData>(form_or_digest)) {
-    return !net::IsLocalhost(absl::get<FormData>(form_or_digest).url());
+  if (std::holds_alternative<FormData>(form_or_digest)) {
+    return !net::IsLocalhost(std::get<FormData>(form_or_digest).url());
   }
   return false;
 }

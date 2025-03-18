@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <string_view>
+#include <utility>
 
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -44,7 +45,6 @@
 #include "sandbox/policy/switches.h"
 #include "services/audio/public/cpp/fake_stream_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>

@@ -16,6 +16,7 @@
 #include <iterator>
 #include <limits>
 #include <numeric>
+#include <variant>
 
 #include "base/bits.h"
 #include "base/check.h"
@@ -53,7 +54,6 @@
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_utils.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/fp16/src/include/fp16.h"
 
 namespace webnn::dml {
@@ -329,7 +329,7 @@ UploadAndCreateConstantBufferBinding(
     const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
         constant_operands,
     const AlignedByteLength<uint64_t>& aligned_byte_length,
-    absl::variant<UploadAndDefaultBuffers, ComPtr<ID3D12Resource>>
+    std::variant<UploadAndDefaultBuffers, ComPtr<ID3D12Resource>>
         buffer_variant) {
   // Map entire resource to copy the array buffer of constant/input one by one
   // with byte offset.
@@ -339,15 +339,15 @@ UploadAndCreateConstantBufferBinding(
   ComPtr<ID3D12Resource> cpu_buffer;
   ComPtr<ID3D12Resource> upload_buffer;
   ComPtr<ID3D12Resource> default_buffer;
-  if (absl::holds_alternative<ComPtr<ID3D12Resource>>(buffer_variant)) {
-    cpu_buffer = std::move(absl::get<ComPtr<ID3D12Resource>>(buffer_variant));
+  if (std::holds_alternative<ComPtr<ID3D12Resource>>(buffer_variant)) {
+    cpu_buffer = std::move(std::get<ComPtr<ID3D12Resource>>(buffer_variant));
     buffer_to_map = cpu_buffer.Get();
     buffer_to_bind = buffer_to_map;
   } else {
     upload_buffer = std::move(
-        absl::get<UploadAndDefaultBuffers>(buffer_variant).upload_buffer);
+        std::get<UploadAndDefaultBuffers>(buffer_variant).upload_buffer);
     default_buffer = std::move(
-        absl::get<UploadAndDefaultBuffers>(buffer_variant).default_buffer);
+        std::get<UploadAndDefaultBuffers>(buffer_variant).default_buffer);
     buffer_to_map = upload_buffer.Get();
     buffer_to_bind = default_buffer.Get();
   }
@@ -375,7 +375,7 @@ UploadAndCreateConstantBufferBinding(
   }
   buffer_to_map->Unmap(0, nullptr);
 
-  if (absl::holds_alternative<ComPtr<ID3D12Resource>>(buffer_variant)) {
+  if (std::holds_alternative<ComPtr<ID3D12Resource>>(buffer_variant)) {
     CHECK(cpu_buffer);
     command_recorder->ReferenceCommandResources(std::move(cpu_buffer));
   } else {
@@ -617,58 +617,58 @@ void CreateOperatorNodeForArgMinMax(const IdToOperandMap& id_to_operand_map,
 }
 
 struct ActivationOperatorDesc {
-  absl::variant<DML_ACTIVATION_ELU_OPERATOR_DESC,
-                DML_ACTIVATION_HARD_SIGMOID_OPERATOR_DESC,
-                DML_ACTIVATION_LEAKY_RELU_OPERATOR_DESC,
-                DML_ACTIVATION_LINEAR_OPERATOR_DESC,
-                DML_ACTIVATION_RELU_OPERATOR_DESC,
-                DML_ACTIVATION_SIGMOID_OPERATOR_DESC,
-                DML_ACTIVATION_SOFTMAX1_OPERATOR_DESC,
-                DML_ACTIVATION_SOFTPLUS_OPERATOR_DESC,
-                DML_ACTIVATION_SOFTSIGN_OPERATOR_DESC,
-                DML_ACTIVATION_TANH_OPERATOR_DESC>
+  std::variant<DML_ACTIVATION_ELU_OPERATOR_DESC,
+               DML_ACTIVATION_HARD_SIGMOID_OPERATOR_DESC,
+               DML_ACTIVATION_LEAKY_RELU_OPERATOR_DESC,
+               DML_ACTIVATION_LINEAR_OPERATOR_DESC,
+               DML_ACTIVATION_RELU_OPERATOR_DESC,
+               DML_ACTIVATION_SIGMOID_OPERATOR_DESC,
+               DML_ACTIVATION_SOFTMAX1_OPERATOR_DESC,
+               DML_ACTIVATION_SOFTPLUS_OPERATOR_DESC,
+               DML_ACTIVATION_SOFTSIGN_OPERATOR_DESC,
+               DML_ACTIVATION_TANH_OPERATOR_DESC>
       desc;
 
   DML_OPERATOR_DESC GetActivationDmlDesc() const {
-    if (absl::holds_alternative<DML_ACTIVATION_ELU_OPERATOR_DESC>(desc)) {
+    if (std::holds_alternative<DML_ACTIVATION_ELU_OPERATOR_DESC>(desc)) {
       return {DML_OPERATOR_ACTIVATION_ELU,
-              &absl::get<DML_ACTIVATION_ELU_OPERATOR_DESC>(desc)};
-    } else if (absl::holds_alternative<
+              &std::get<DML_ACTIVATION_ELU_OPERATOR_DESC>(desc)};
+    } else if (std::holds_alternative<
                    DML_ACTIVATION_HARD_SIGMOID_OPERATOR_DESC>(desc)) {
       return {DML_OPERATOR_ACTIVATION_HARD_SIGMOID,
-              &absl::get<DML_ACTIVATION_HARD_SIGMOID_OPERATOR_DESC>(desc)};
-    } else if (absl::holds_alternative<DML_ACTIVATION_LEAKY_RELU_OPERATOR_DESC>(
+              &std::get<DML_ACTIVATION_HARD_SIGMOID_OPERATOR_DESC>(desc)};
+    } else if (std::holds_alternative<DML_ACTIVATION_LEAKY_RELU_OPERATOR_DESC>(
                    desc)) {
       return {DML_OPERATOR_ACTIVATION_LEAKY_RELU,
-              &absl::get<DML_ACTIVATION_LEAKY_RELU_OPERATOR_DESC>(desc)};
-    } else if (absl::holds_alternative<DML_ACTIVATION_LINEAR_OPERATOR_DESC>(
+              &std::get<DML_ACTIVATION_LEAKY_RELU_OPERATOR_DESC>(desc)};
+    } else if (std::holds_alternative<DML_ACTIVATION_LINEAR_OPERATOR_DESC>(
                    desc)) {
       return {DML_OPERATOR_ACTIVATION_LINEAR,
-              &absl::get<DML_ACTIVATION_LINEAR_OPERATOR_DESC>(desc)};
-    } else if (absl::holds_alternative<DML_ACTIVATION_RELU_OPERATOR_DESC>(
+              &std::get<DML_ACTIVATION_LINEAR_OPERATOR_DESC>(desc)};
+    } else if (std::holds_alternative<DML_ACTIVATION_RELU_OPERATOR_DESC>(
                    desc)) {
       return {DML_OPERATOR_ACTIVATION_RELU,
-              &absl::get<DML_ACTIVATION_RELU_OPERATOR_DESC>(desc)};
-    } else if (absl::holds_alternative<DML_ACTIVATION_SIGMOID_OPERATOR_DESC>(
+              &std::get<DML_ACTIVATION_RELU_OPERATOR_DESC>(desc)};
+    } else if (std::holds_alternative<DML_ACTIVATION_SIGMOID_OPERATOR_DESC>(
                    desc)) {
       return {DML_OPERATOR_ACTIVATION_SIGMOID,
-              &absl::get<DML_ACTIVATION_SIGMOID_OPERATOR_DESC>(desc)};
-    } else if (absl::holds_alternative<DML_ACTIVATION_SOFTMAX1_OPERATOR_DESC>(
+              &std::get<DML_ACTIVATION_SIGMOID_OPERATOR_DESC>(desc)};
+    } else if (std::holds_alternative<DML_ACTIVATION_SOFTMAX1_OPERATOR_DESC>(
                    desc)) {
       return {DML_OPERATOR_ACTIVATION_SOFTMAX1,
-              &absl::get<DML_ACTIVATION_SOFTMAX1_OPERATOR_DESC>(desc)};
-    } else if (absl::holds_alternative<DML_ACTIVATION_SOFTPLUS_OPERATOR_DESC>(
+              &std::get<DML_ACTIVATION_SOFTMAX1_OPERATOR_DESC>(desc)};
+    } else if (std::holds_alternative<DML_ACTIVATION_SOFTPLUS_OPERATOR_DESC>(
                    desc)) {
       return {DML_OPERATOR_ACTIVATION_SOFTPLUS,
-              &absl::get<DML_ACTIVATION_SOFTPLUS_OPERATOR_DESC>(desc)};
-    } else if (absl::holds_alternative<DML_ACTIVATION_SOFTSIGN_OPERATOR_DESC>(
+              &std::get<DML_ACTIVATION_SOFTPLUS_OPERATOR_DESC>(desc)};
+    } else if (std::holds_alternative<DML_ACTIVATION_SOFTSIGN_OPERATOR_DESC>(
                    desc)) {
       return {DML_OPERATOR_ACTIVATION_SOFTSIGN,
-              &absl::get<DML_ACTIVATION_SOFTSIGN_OPERATOR_DESC>(desc)};
-    } else if (absl::holds_alternative<DML_ACTIVATION_TANH_OPERATOR_DESC>(
+              &std::get<DML_ACTIVATION_SOFTSIGN_OPERATOR_DESC>(desc)};
+    } else if (std::holds_alternative<DML_ACTIVATION_TANH_OPERATOR_DESC>(
                    desc)) {
       return {DML_OPERATOR_ACTIVATION_TANH,
-              &absl::get<DML_ACTIVATION_TANH_OPERATOR_DESC>(desc)};
+              &std::get<DML_ACTIVATION_TANH_OPERATOR_DESC>(desc)};
     } else {
       NOTREACHED() << "The activation type is not supported.";
     }
@@ -6089,7 +6089,7 @@ void GraphImplDml::OnCompilationComplete(
 
     size_t total_byte_length_of_constants =
         aligned_byte_length_of_constants.value().total_byte_length;
-    absl::variant<UploadAndDefaultBuffers, ComPtr<ID3D12Resource>>
+    std::variant<UploadAndDefaultBuffers, ComPtr<ID3D12Resource>>
         buffer_variant;
     if (adapter->IsUMA()) {
       // For GPU supports UMA, create the custom heap with CPU memory pool, and

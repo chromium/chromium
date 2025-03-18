@@ -4,13 +4,14 @@
 
 #include "content/browser/attribution_reporting/send_result.h"
 
+#include <variant>
+
 #include "base/functional/overloaded.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
 
 SendResult::Status SendResult::status() const {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{[](Sent sent) {
                          switch (sent.result) {
                            case Sent::Result::kSent:

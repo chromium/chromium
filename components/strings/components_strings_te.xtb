@@ -311,7 +311,6 @@
 <translation id="1532118530259321453">ఈ పేజీ ఇలా చెబుతోంది</translation>
 <translation id="1533966801397200693">మీరు సైన్ ఇన్ చేసిన ప్రొఫైల్, మేనేజ్ చేయబడే ప్రొఫైల్. మీ అడ్మినిస్ట్రేటర్ మీ ప్రొఫైల్ సెట్టింగ్‌లకు రిమోట్‌గా మార్పులు చేయవచ్చు, రిపోర్టింగ్ ద్వారా బ్రౌజర్ గురించిన సమాచారాన్ని విశ్లేషించవచ్చు, అవసరమైన ఇతర టాస్క్‌లను అమలు చేయవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">పేజీని అనువాదం చేయి</translation>
-<translation id="1538295100801850685">సూచన మెరుగుదలలు</translation>
 <translation id="1539840569003678498">రిపోర్ట్ పంపబడింది:</translation>
 <translation id="1542105669288201090">బిజినెస్‌కు సంబంధించిన విద్య</translation>
 <translation id="1545757265410828525">ధర హిస్టరీ</translation>
@@ -1152,7 +1151,6 @@
 <translation id="3052868890529250114">మీరు సాధారణంగా సైట్‌లకు సురక్షితంగానే కనెక్ట్ అవుతారు, కానీ Chrome ఈ సమయంలో సురక్షితమైన కనెక్షన్‌ను ఉపయోగించలేకపోతోంది. అటాకర్ మీ నెట్‌వర్క్ కనెక్షన్‌ను రహస్యంగా గమనించడానికి లేదా మార్చడానికి ట్రై చేస్తూ ఉండవచ్చు. <ph name="BEGIN_LEARN_MORE_LINK" />ఈ హెచ్చరిక గురించి మరింత తెలుసుకోండి<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> పైన <ph name="PRICE_DROP" /> తగ్గింపు</translation>
 <translation id="3061707000357573562">ప్యాచ్ సేవ</translation>
-<translation id="306198082577913404">సూచన మెరుగుదలలను ఆన్ చేయండి</translation>
 <translation id="3062655045399308513">బ్రౌజింగ్ డేటాను తొలగించండి...</translation>
 <translation id="3063453392496098461">VPN బ్యాక్‌గ్రౌండ్ సర్వీస్‌ల ఇన్‌స్టలేషన్ విఫలమైంది.</translation>
 <translation id="306573536155379004">గేమ్ ప్రారంభమైంది.</translation>
@@ -2320,7 +2318,6 @@
 <translation id="5097099694988056070">CPU/RAM వినియోగం లాంటి పరికర గణాంకాలు</translation>
 <translation id="5097468150760963273">27 x 39 అంగుళాలు</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chromeకి మీ పరికరం <ph name="PERMISSION" /> యాక్సెస్ అవసరం</translation>
 <translation id="510644072453496781">కార్డ్‌బోర్డ్ (ఎండ్)</translation>
 <translation id="5106648964679263509"><ph name="BNPL_ISSUER_NAME" /> కోసం వర్చువల్ కార్డ్ ఫిల్ చేయబడింది</translation>
 <translation id="5108881358339761672">సైట్ సురక్షితమైనది కాదు</translation>
@@ -4049,7 +4046,6 @@
 <translation id="8134058435519644366">నియామకాలు &amp; స్టాఫింగ్</translation>
 <translation id="8135546115396015134">ఎడమవైపు కీ</translation>
 <translation id="8137456439814903304">ఎనర్జీ &amp; యుటిలిటీస్</translation>
-<translation id="81474145143203755">ఈ సైట్‌లో మీ <ph name="PERMISSION" />ను ఉపయోగించడానికి, Chromeకి యాక్సెస్ ఇవ్వండి</translation>
 <translation id="8148608574971654810">PDF వెర్షన్:</translation>
 <translation id="8149426793427495338">మీ కంప్యూటర్ నిద్రావస్థకి వెళ్లింది.</translation>
 <translation id="8150722005171944719"><ph name="URL" />లో ఫైల్ చదవగలిగేది కాదు. దీన్ని తీసివేసి ఉండవచ్చు, తరలించి ఉండవచ్చు లేదా ఫైల్ అనుమతులు యాక్సెస్‌ను నిరోధిస్తుండవచ్చు.</translation>

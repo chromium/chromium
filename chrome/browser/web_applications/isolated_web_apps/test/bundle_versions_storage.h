@@ -5,12 +5,13 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_BUNDLE_VERSIONS_MAP_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_BUNDLE_VERSIONS_MAP_H_
 
+#include <variant>
+
 #include "base/containers/flat_map.h"
 #include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 namespace web_app::test {
@@ -56,7 +57,7 @@ class BundleVersionsStorage {
       const web_package::SignedWebBundleId& web_bundle_id) const;
 
   using BundleOrUpdateManifest =
-      absl::variant<BundledIsolatedWebApp*, base::Value::Dict>;
+      std::variant<BundledIsolatedWebApp*, base::Value::Dict>;
   // Handles the following routes:
   //  * /<web_bundle_id>/update_manifest.json
   //  * /<web_bundle_id>/<version>.swbn

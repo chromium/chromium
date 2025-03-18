@@ -12,6 +12,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -162,7 +163,11 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         if (PREF_FORCE_ENABLE_ZOOM.equals(preference.getKey())) {
             mDelegate.getForceEnableZoomAccessibilityDelegate().setValue((Boolean) newValue);
         } else if (PREF_READER_FOR_ACCESSIBILITY.equals(preference.getKey())) {
-            mDelegate.getReaderAccessibilityDelegate().setValue((Boolean) newValue);
+            boolean readerModeEnabled = (Boolean) newValue;
+            mDelegate.getReaderAccessibilityDelegate().setValue(readerModeEnabled);
+            RecordHistogram.recordBooleanHistogram(
+                    "DomDistiller.Android.ReaderModeEnabledInAccessibilitySettings",
+                    readerModeEnabled);
         } else if (PREF_PAGE_ZOOM_DEFAULT_ZOOM.equals(preference.getKey())) {
             mPageZoomLatestDefaultZoomPrefValue =
                     PageZoomUtils.convertSeekBarValueToZoomLevel((Integer) newValue);

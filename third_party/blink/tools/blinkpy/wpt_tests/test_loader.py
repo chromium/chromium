@@ -59,6 +59,7 @@ class TestLoader(testloader.TestLoader):
                  tests_to_skip: Optional[Collection[str]] = None,
                  **kwargs):
         self._port = port
+        self.sanitizer_mode = self._port.get_option('enable_sanitizer')
         self._expectations = expectations or TestExpectations(port)
         self._include = include
         self._tests_to_skip = tests_to_skip or []
@@ -138,7 +139,8 @@ class TestLoader(testloader.TestLoader):
             assert not test_type or test_type == item.item_type, item
             test_type = item.item_type
             expected_text = self._port.expected_text(test_name)
-            if expected_text:
+            # Do not compare baseline in sanitizer mode
+            if not self.sanitizer_mode and expected_text:
                 testharness_lines = parse_testharness_baseline(
                     expected_text.decode('utf-8', 'replace'))
             else:

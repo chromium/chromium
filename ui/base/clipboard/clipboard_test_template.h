@@ -25,6 +25,7 @@
 #include <array>
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -44,7 +45,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkScalar.h"
@@ -125,7 +125,7 @@ class MockPolicyController : public DataTransferPolicyController {
       PasteIfAllowed,
       void(base::optional_ref<const DataTransferEndpoint> data_src,
            base::optional_ref<const DataTransferEndpoint> data_dst,
-           absl::variant<size_t, std::vector<base::FilePath>> pasted_content,
+           std::variant<size_t, std::vector<base::FilePath>> pasted_content,
            content::RenderFrameHost* rfh,
            base::OnceCallback<void(bool)> callback));
   MOCK_METHOD4(DropIfAllowed,

@@ -166,6 +166,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1505542291183484463">Finestra redimensionada en mosaic cap avall</translation>
 <translation id="1510238584712386396">Menú d'aplicacions</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostra la configuració de les notificacions. Les notificacions estan desactivades per a una aplicació.}other{Mostra la configuració de les notificacions. Les notificacions estan desactivades per a # aplicacions.}}</translation>
+<translation id="1521655867290435174">Fulls de càlcul de Google</translation>
 <translation id="1523032696246003">Bateria: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> per completar la càrrega</translation>
 <translation id="1525508553941733066">IGNORA</translation>
 <translation id="1526448108126799339">Obre una pestanya nova en una finestra nova</translation>
@@ -345,7 +346,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2201071101391734388">Foto recent <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Replega Google Tasks</translation>
 <translation id="2208323208084708176">Mode d'escriptori unificat</translation>
-<translation id="2220572644011485463">PIN o contrasenya</translation>
 <translation id="2222841058024245321">Escriptori 7</translation>
 <translation id="2223384056430485343">En una pantalla dividida</translation>
 <translation id="2224075387478458881">No es permet la gravació de pantalla quan es mostra contingut protegit</translation>
@@ -1829,7 +1829,6 @@ Instal·lació nova</translation>
 <translation id="7000027735917578303">Configuració de finestres i d'escriptoris</translation>
 <translation id="7004910047186208204">Cal connectar-se a dades mòbils</translation>
 <translation id="7005239792648594238">Obre una aplicació per començar</translation>
-<translation id="7007983414944123363">El PIN o la contrasenya no s'han pogut verificar. Torna-ho a provar.</translation>
 <translation id="7014684956566476813">Connectat a un dispositiu Bluetooth anomenat <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Pots tornar a aquesta hora: <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Escriptori 6</translation>
@@ -1943,6 +1942,7 @@ Instal·lació nova</translation>
 <translation id="742594950370306541">La càmera s'està utilitzant.</translation>
 <translation id="742608627846767349">Bon dia,</translation>
 <translation id="743058460480092004">La càmera i el micròfon s'estan utilitzant.</translation>
+<translation id="7440404390546433462">Cerca de Google</translation>
 <translation id="7441711280402516925">S'està reproduint · Canvia a la pestanya</translation>
 <translation id="7453330308669753048">El resultat de l'historial de cerques s'ha suprimit</translation>
 <translation id="7459485586006128091">A causa d'un error intern, el punt d'accés Wi‐Fi s'ha desactivat. Prova de tornar a connectar-te d'aquí a uns quants minuts.</translation>
@@ -2466,6 +2466,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="9168436347345867845">Fes-ho més tard</translation>
 <translation id="9178475906033259337">S'està mostrant 1 resultat per a "<ph name="QUERY" />"</translation>
 <translation id="9179259655489829027">Aquesta funció et permet accedir ràpidament als usuaris que han iniciat la sessió sense haver d'introduir la contrasenya. Utilitza aquesta funció només amb comptes de confiança.</translation>
+<translation id="9183302530794969518">Documents de Google</translation>
 <translation id="9183456764293710005">Lupa de pantalla completa</translation>
 <translation id="9192133205265227850">Fes servir "<ph name="DEVICE_NAME" />"</translation>
 <translation id="9193626018745640770">S'està emetent contingut en un receptor desconegut</translation>

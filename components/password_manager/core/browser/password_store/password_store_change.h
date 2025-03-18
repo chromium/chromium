@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <ostream>
+#include <variant>
 #include <vector>
 
 #include "components/password_manager/core/browser/password_form.h"
@@ -55,7 +56,7 @@ class PasswordStoreChange {
 using PasswordStoreChangeList = std::vector<PasswordStoreChange>;
 using PasswordChanges = std::optional<PasswordStoreChangeList>;
 using PasswordChangesOrError =
-    absl::variant<PasswordChanges, PasswordStoreBackendError>;
+    std::variant<PasswordChanges, PasswordStoreBackendError>;
 
 // For testing.
 #if defined(UNIT_TEST)

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
@@ -321,8 +322,8 @@ bool DrmOverlayManager::CanHandleCandidate(
     return false;
   }
 
-  if (!absl::holds_alternative<gfx::OverlayTransform>(candidate.transform) ||
-      absl::get<gfx::OverlayTransform>(candidate.transform) ==
+  if (!std::holds_alternative<gfx::OverlayTransform>(candidate.transform) ||
+      std::get<gfx::OverlayTransform>(candidate.transform) ==
           gfx::OVERLAY_TRANSFORM_INVALID) {
     VLOG(3) << "Overlay Rejected: invalid transform";
     return false;

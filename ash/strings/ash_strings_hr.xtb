@@ -166,6 +166,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1505542291183484463">Promjena veličine prozora u pločicama povlačenjem prema dolje</translation>
 <translation id="1510238584712386396">Pokretač</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Prikaz postavki obavijesti. Obavijesti su isključene za jednu aplikaciju}one{Prikaz postavki obavijesti. Obavijesti su isključene za # aplikaciju}few{Prikaz postavki obavijesti. Obavijesti su isključene za # aplikacije}other{Prikaz postavki obavijesti. Obavijesti su isključene za # aplikacija}}</translation>
+<translation id="1521655867290435174">Google tablice</translation>
 <translation id="1523032696246003">Baterija <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> do napunjenosti</translation>
 <translation id="1525508553941733066">ODBACI</translation>
 <translation id="1526448108126799339">Otvaranje nove kartice u novom prozoru</translation>
@@ -345,7 +346,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2201071101391734388">Nedavna fotografija <ph name="INDEX" /> od <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Sažmi Google zadatke</translation>
 <translation id="2208323208084708176">Način jedinstvene radne površine</translation>
-<translation id="2220572644011485463">PIN ili zaporka</translation>
 <translation id="2222841058024245321">Radna površina 7</translation>
 <translation id="2223384056430485343">Na podijeljenom zaslonu</translation>
 <translation id="2224075387478458881">Snimanje zaslona nije dopušteno ako je vidljiv povjerljiv sadržaj</translation>
@@ -1829,7 +1829,6 @@ Novo instaliranje</translation>
 <translation id="7000027735917578303">Postavke Windowsa i radnih površina</translation>
 <translation id="7004910047186208204">Povežite se s mobilnom podatkovnom mrežom</translation>
 <translation id="7005239792648594238">Otvorite aplikaciju da biste započeli</translation>
-<translation id="7007983414944123363">Vaš PIN ili zaporku nije bilo moguće potvrditi. Pokušajte ponovo.</translation>
 <translation id="7014684956566476813">Povezano s uređajem <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Vratite se u <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Radna površina 6</translation>
@@ -2466,6 +2465,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="9168436347345867845">Kasnije ću</translation>
 <translation id="9178475906033259337">Prikazuje se jedan rezultat za upit <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Ta vam značajka omogućuje brzi pristup bilo kojem prijavljenom korisniku bez zahtijevanja zaporke. Tu značajku upotrebljavajte samo s pouzdanim računima.</translation>
+<translation id="9183302530794969518">Google dokumenti</translation>
 <translation id="9183456764293710005">Povećalo za cijeli zaslon</translation>
 <translation id="9192133205265227850">Koristite <ph name="DEVICE_NAME" /></translation>
 <translation id="9193626018745640770">Emitiranje na nepoznatom prijamniku</translation>

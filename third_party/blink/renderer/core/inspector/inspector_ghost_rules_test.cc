@@ -134,6 +134,55 @@ TEST_P(InspectorGhostRuleTest, RefTest) {
   EXPECT_EQ(before_string, after_string);
 }
 
+TEST_P(InspectorGhostRuleTest, SharedContents) {
+  String actual_text(GetParam());
+  String expected_text(GetParam());
+
+  SCOPED_TRACE(testing::Message() << "Actual input text: " << actual_text);
+  SCOPED_TRACE(testing::Message() << "Expected input text: " << expected_text);
+
+  CSSStyleSheet* expected_sheet =
+      css_test_helpers::CreateStyleSheet(GetDocument());
+  expected_sheet->SetText(expected_text, CSSImportRules::kIgnoreWithWarning);
+  // Remove any '--ghost' declarations, leaving empty CSSNestedDeclarations
+  // behind.
+  RemoveGhostDeclarations(expected_sheet);
+
+  CSSStyleSheet* actual_sheet =
+      css_test_helpers::CreateStyleSheet(GetDocument());
+  // InspectorGhostRules should create the ghost rules (i.e. empty
+  // CSSNestedDeclarations).
+  actual_text.Replace("--ghost: 1;", "");
+  actual_sheet->SetText(actual_text, CSSImportRules::kIgnoreWithWarning);
+
+  // Share contents with actual_sheet.
+  CSSStyleSheet* second_sheet =
+      MakeGarbageCollected<CSSStyleSheet>(actual_sheet->Contents());
+  // Pretend it's a cache hit.
+  second_sheet->Contents()->SetIsUsedFromTextCache();
+
+  StyleSheetContents* original_contents = actual_sheet->Contents();
+  ASSERT_EQ(second_sheet->Contents(), original_contents);
+
+  String before_string = Serialize(actual_sheet);
+  ASSERT_EQ(Serialize(second_sheet), before_string);
+
+  {
+    InspectorGhostRules ghost_rules;
+    ghost_rules.Populate(*actual_sheet);
+
+    EXPECT_EQ(Serialize(actual_sheet), Serialize(expected_sheet));
+
+    // `second_sheet` must remain unchanged, despite (originally) sharing
+    // contents with `actual_sheet`.
+    EXPECT_EQ(second_sheet->Contents(), original_contents);
+    EXPECT_EQ(Serialize(second_sheet), before_string);
+  }
+
+  EXPECT_EQ(actual_sheet->Contents(), original_contents);
+  EXPECT_EQ(second_sheet->Contents(), original_contents);
+}
+
 // For each of the items in this array, we'll produce an 'actual' stylesheet
 // and an 'expected' stylesheet, and see if they are the same.
 // The 'actual' stylesheet will be modified by InspectorGhostRules,

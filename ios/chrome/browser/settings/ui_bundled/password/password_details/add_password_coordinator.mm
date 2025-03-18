@@ -66,7 +66,7 @@
 }
 
 - (void)start {
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   self.viewController = [[AddPasswordViewController alloc] init];
   self.viewController.presentationController.delegate = self;
 

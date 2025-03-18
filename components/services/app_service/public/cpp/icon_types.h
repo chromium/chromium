@@ -6,11 +6,11 @@
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_ICON_TYPES_H_
 
 #include <optional>
+#include <variant>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace apps {
@@ -19,7 +19,7 @@ struct COMPONENT_EXPORT(APP_TYPES) IconKey {
   // The value of a UpdateVersion can be a bool or a int32_t, depending on
   // whether the IconKey is being passed between a publisher and App Service, or
   // App Service and clients.
-  using UpdateVersion = absl::variant<bool, int32_t>;
+  using UpdateVersion = std::variant<bool, int32_t>;
 
   IconKey();
   explicit IconKey(uint32_t icon_effects);

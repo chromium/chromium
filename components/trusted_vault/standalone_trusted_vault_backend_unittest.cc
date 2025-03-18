@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
@@ -55,7 +56,7 @@ using testing::SaveArg;
 
 MATCHER_P(MatchTrustedVaultKeyAndVersions, expected, "") {
   const auto* trusted_vault_keys =
-      absl::get_if<std::vector<TrustedVaultKeyAndVersion>>(&arg);
+      std::get_if<std::vector<TrustedVaultKeyAndVersion>>(&arg);
   if (!trusted_vault_keys) {
     *result_listener << "does not hold a vector of TrustedVaultKeyAndVersion";
     return false;

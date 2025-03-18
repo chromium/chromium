@@ -215,9 +215,7 @@ class MockPingManagerImpl : public PingManager {
     ErrorCategory error_category = ErrorCategory::kNone;
     int error_code = 0;
     int extra_code1 = 0;
-    ErrorCategory diff_error_category = ErrorCategory::kNone;
-    int diff_error_code = 0;
-    bool diff_update_failed = false;
+    std::string pipeline_id;
   };
 
   explicit MockPingManagerImpl(scoped_refptr<Configurator> config);
@@ -230,6 +228,7 @@ class MockPingManagerImpl : public PingManager {
                 base::OnceClosure callback) override;
 
   const std::vector<PingData>& ping_data() const;
+  const std::vector<PingData>& nonterminal_ping_data() const;
 
   const std::vector<base::Value::Dict>& events() const;
 
@@ -238,6 +237,7 @@ class MockPingManagerImpl : public PingManager {
 
  private:
   std::vector<PingData> ping_data_;
+  std::vector<PingData> nonterminal_ping_data_;
   std::vector<base::Value::Dict> events_;
 };
 
@@ -250,14 +250,10 @@ void MockPingManagerImpl::SendPing(const std::string& session_id,
                                    const CrxComponent& component,
                                    std::vector<base::Value::Dict> events,
                                    base::OnceClosure callback) {
-  PingData ping_data;
-  ping_data.id = component.app_id;
   for (const base::Value::Dict& event : events) {
+    PingData ping_data;
+    ping_data.id = component.app_id;
     int event_type = event.FindInt("eventtype").value_or(0);
-    if (event_type != 2 && event_type != 3 && event_type != 4) {
-      // Skip non-terminal events.
-      continue;
-    }
     const std::string* previous_version = event.FindString("previousversion");
     if (previous_version) {
       ping_data.previous_version = base::Version(*previous_version);
@@ -278,18 +274,16 @@ void MockPingManagerImpl::SendPing(const std::string& session_id,
     if (extra_code1) {
       ping_data.extra_code1 = *extra_code1;
     }
-    std::optional<int> diff_error_category = event.FindInt("differrorcat");
-    if (diff_error_category) {
-      ping_data.diff_error_category =
-          static_cast<ErrorCategory>(*diff_error_category);
-      ping_data.diff_update_failed = *diff_error_category != 0;
+    const std::string* pipeline_id = event.FindString("pipeline_id");
+    if (pipeline_id) {
+      ping_data.pipeline_id = *pipeline_id;
     }
-    std::optional<int> diff_error_code = event.FindInt("differrorcode");
-    if (diff_error_code) {
-      ping_data.diff_error_code = *diff_error_code;
+    if (event_type != 2 && event_type != 3 && event_type != 4) {
+      nonterminal_ping_data_.push_back(ping_data);
+    } else {
+      ping_data_.push_back(ping_data);
     }
   }
-  ping_data_.push_back(ping_data);
   events_ = std::move(events);
 
   std::move(callback).Run();
@@ -298,6 +292,11 @@ void MockPingManagerImpl::SendPing(const std::string& session_id,
 const std::vector<MockPingManagerImpl::PingData>&
 MockPingManagerImpl::ping_data() const {
   return ping_data_;
+}
+
+const std::vector<MockPingManagerImpl::PingData>&
+MockPingManagerImpl::nonterminal_ping_data() const {
+  return nonterminal_ping_data_;
 }
 
 const std::vector<base::Value::Dict>& MockPingManagerImpl::events() const {
@@ -1585,10 +1584,6 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
       EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", ping_data[1].id);
       EXPECT_EQ(base::Version("1.0"), ping_data[1].previous_version);
       EXPECT_EQ(base::Version("2.0"), ping_data[1].next_version);
-      EXPECT_FALSE(ping_data[1].diff_update_failed);
-      EXPECT_EQ(0, static_cast<int>(ping_data[1].diff_error_category));
-      EXPECT_EQ(0, ping_data[1].diff_error_code);
-      EXPECT_EQ(0, static_cast<int>(ping_data[1].error_category));
       EXPECT_EQ(0, ping_data[1].error_code);
     }
   };
@@ -1834,7 +1829,8 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
                   "status": "ok",
                   "nextversion": "1.0",
                   "pipelines": [
-                    { "operations": [
+                    { "pipeline_id": "pipe1",
+                      "operations": [
                         { "type": "download",
                           "urls": [{"url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"}],
                           "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}},
@@ -1904,6 +1900,10 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
       EXPECT_EQ(base::Version("1.0"), ping_data[0].next_version);
       EXPECT_EQ(ping_data[0].error_category, ErrorCategory::kInstaller);
       EXPECT_EQ(9, ping_data[0].error_code);  // GENERIC_ERROR.
+
+      // Expect that the download ping carries the pipeline id.
+      EXPECT_EQ(nonterminal_ping_data().size(), 1u);
+      EXPECT_EQ(nonterminal_ping_data()[0].pipeline_id, "pipe1");
     }
   };
 

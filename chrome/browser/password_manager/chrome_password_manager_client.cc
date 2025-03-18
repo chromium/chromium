@@ -41,6 +41,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/passwords/password_cross_domain_confirmation_popup_controller_impl.h"
@@ -95,6 +96,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/site_isolation/site_isolation_policy.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/translate/core/browser/translate_manager.h"
@@ -1239,6 +1241,11 @@ signin::IdentityManager* ChromePasswordManagerClient::GetIdentityManager() {
   return IdentityManagerFactory::GetForProfile(profile_->GetOriginalProfile());
 }
 
+const signin::IdentityManager* ChromePasswordManagerClient::GetIdentityManager()
+    const {
+  return IdentityManagerFactory::GetForProfile(profile_->GetOriginalProfile());
+}
+
 FieldInfoManager* ChromePasswordManagerClient::GetFieldInfoManager() const {
   return FieldInfoManagerFactory::GetForProfile(profile_);
 }
@@ -1420,6 +1427,14 @@ void ChromePasswordManagerClient::ShowCredentialsInAmbientBubble(
                                         std::move(callback));
 #else
   NOTREACHED();
+#endif
+}
+
+void ChromePasswordManagerClient::TriggerSignIn(
+    signin_metrics::AccessPoint access_point) const {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(profile_,
+                                                           access_point);
 #endif
 }
 

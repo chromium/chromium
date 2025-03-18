@@ -155,7 +155,7 @@ class LockScreenStartReauthDialog
 
   std::unique_ptr<LockScreenCaptivePortalDialog> captive_portal_dialog_;
 
-  std::unique_ptr<HttpAuthDialog::ScopedEnabler> enable_ash_httpauth_;
+  std::unique_ptr<HttpAuthDialog::ScopedEnabler> enable_system_httpauth_;
 
   // Callbacks and flags that are used in tests to check that the corresponding
   // dialog is loaded or closed.

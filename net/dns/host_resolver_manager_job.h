@@ -9,6 +9,7 @@
 #include <deque>
 #include <memory>
 #include <optional>
+#include <variant>
 #include <vector>
 
 #include "base/containers/linked_list.h"
@@ -28,7 +29,6 @@
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/log/net_log_with_source.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace net {
 

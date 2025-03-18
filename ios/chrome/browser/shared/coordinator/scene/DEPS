@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/data_sharing/public",
   "+ios/chrome/browser/ai_prototyping/coordinator",
   "+ios/chrome/browser/app_store_rating/ui_bundled",
   "+ios/chrome/browser/appearance/ui_bundled/appearance_customization.h",
@@ -6,6 +7,7 @@ include_rules = [
   "+ios/chrome/browser/browsing_data/model",
   "+ios/chrome/browser/crash_report/model",
   "+ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_scene_agent.h",
+  "+ios/chrome/browser/data_sharing/model",
   "+ios/chrome/browser/default_browser/model",
   "+ios/chrome/browser/enterprise/model/idle",
   "+ios/chrome/browser/feature_engagement/model",
@@ -15,7 +17,7 @@ include_rules = [
   "+ios/chrome/browser/incognito_interstitial/ui_bundled",
   "+ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h",
   "+ios/chrome/browser/infobars/model",
-  "+ios/chrome/browser/intents",
+  "+ios/chrome/browser/intents/model",
   "+ios/chrome/browser/lens/ui_bundled",
   "+ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h",
   "+ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h",

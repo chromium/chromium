@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -51,7 +52,6 @@
 #include "components/user_education/views/new_badge_label.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
@@ -90,7 +90,8 @@ constexpr auto kPopupItemTypesUsingLeadingIcons = DenseSet<SuggestionType>(
      SuggestionType::kManageAutofillAi, SuggestionType::kManageCreditCard,
      SuggestionType::kManageIban, SuggestionType::kManagePlusAddress,
      SuggestionType::kShowAccountCards, SuggestionType::kUndoOrClear,
-     SuggestionType::kViewPasswordDetails});
+     SuggestionType::kViewPasswordDetails,
+     SuggestionType::kPendingStateSignin});
 
 // Max width for the username and masked password.
 constexpr int kAutofillPopupUsernameMaxWidth = 272;
@@ -275,6 +276,12 @@ std::unique_ptr<PopupRowContentView> CreateFooterPopupRowContentView(
     main_text_label->SetEnabledColor(ui::kColorLabelForegroundSecondary);
   }
   main_text_label->SetEnabled(!suggestion.is_loading);
+
+  if (suggestion.type == SuggestionType::kPendingStateSignin) {
+    main_text_label->SetMultiLine(true);
+    main_text_label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
+  }
+
   view->AddChildView(std::move(main_text_label));
 
   popup_cell_utils::AddSpacerWithSize(*view,
@@ -351,7 +358,7 @@ std::unique_ptr<views::View> CreatePasswordSubtextView(
 std::unique_ptr<views::View> GetPasswordIconView(
     const Suggestion& suggestion,
     PasswordFaviconLoader* favicon_loader) {
-  if (!absl::holds_alternative<Suggestion::FaviconDetails>(
+  if (!std::holds_alternative<Suggestion::FaviconDetails>(
           suggestion.custom_icon)) {
     return popup_cell_utils::GetIconImageView(suggestion);
   }
@@ -368,7 +375,7 @@ std::unique_ptr<views::View> GetPasswordIconView(
       gfx::Size(kCustomIconSize, kCustomIconSize), std::move(placeholder_icon),
       base::BindOnce(
           &PasswordFaviconLoader::Load, base::Unretained(favicon_loader),
-          absl::get<Suggestion::FaviconDetails>(suggestion.custom_icon)));
+          std::get<Suggestion::FaviconDetails>(suggestion.custom_icon)));
 }
 
 std::unique_ptr<PopupRowContentView> CreatePasswordPopupRowContentView(

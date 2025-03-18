@@ -1159,6 +1159,11 @@ bool CheckCvcStorageAvailability() {
       autofill::features::kAutofillEnableCvcStorageAndFilling);
 }
 
+bool EnableNewFopDisplayDesktop() {
+  return base::FeatureList::IsEnabled(
+      autofill::features::kAutofillEnableNewFopDisplayDesktop);
+}
+
 void AddAutofillStrings(content::WebUIDataSource* html_source,
                         Profile* profile,
                         content::WebContents* web_contents) {
@@ -1419,6 +1424,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                           CheckDeviceAuthAvailability(web_contents));
 
   html_source->AddBoolean("cvcStorageAvailable", CheckCvcStorageAvailability());
+
+  html_source->AddBoolean("enableNewFopDisplay", EnableNewFopDisplayDesktop());
 
   html_source->AddBoolean(
       "autofillCardBenefitsAvailable",

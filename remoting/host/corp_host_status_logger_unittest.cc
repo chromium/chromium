@@ -34,10 +34,13 @@ constexpr char kFakeSessionId[] = "fake_session_id";
 constexpr char kFakeHostToken[] = "fake_host_token";
 constexpr char kFakeReauthToken[] = "fake_reauth_token";
 
-const SessionPolicies kFakeLocalSessionPolicies = {
-    .allow_relayed_connections = true,
-    .allow_file_transfer = false,
-};
+const SessionPolicies FakeLocalSessionPolicies() {
+  SessionPolicies session_policies;
+  session_policies.allow_relayed_connections = true;
+  session_policies.allow_file_transfer = false;
+
+  return session_policies;
+}
 
 class MockLoggingServiceClient final : public LoggingServiceClient {
  public:
@@ -80,7 +83,7 @@ CorpHostStatusLoggerTest::CorpHostStatusLoggerTest() {
   auto service_client = std::make_unique<MockLoggingServiceClient>();
   service_client_ = service_client.get();
   local_session_policies_provider_.set_local_policies(
-      kFakeLocalSessionPolicies);
+      FakeLocalSessionPolicies());
   logger_ = std::make_unique<CorpHostStatusLogger>(
       std::move(service_client), &local_session_policies_provider_);
   logger_as_observer_ = logger_.get();
@@ -154,7 +157,7 @@ TEST_F(CorpHostStatusLoggerTest,
   expected_request.session_authz_id = kFakeSessionId;
   expected_request.host_token = kFakeHostToken;
   expected_request.error_code = ErrorCode::PEER_IS_OFFLINE;
-  expected_request.effective_session_policies = kFakeLocalSessionPolicies;
+  expected_request.effective_session_policies = FakeLocalSessionPolicies();
   EXPECT_CALL(*service_client_, ReportSessionDisconnected(expected_request, _));
   SetUpSessionAuthzAuthenticator();
   session_authz_authenticator_.SetReauthorizerForTesting(nullptr);
@@ -169,7 +172,7 @@ TEST_F(CorpHostStatusLoggerTest,
   internal::ReportSessionDisconnectedRequestStruct expected_request;
   expected_request.session_authz_id = kFakeSessionId;
   expected_request.error_code = ErrorCode::PEER_IS_OFFLINE;
-  expected_request.effective_session_policies = kFakeLocalSessionPolicies;
+  expected_request.effective_session_policies = FakeLocalSessionPolicies();
   EXPECT_CALL(*service_client_, ReportSessionDisconnected(expected_request, _));
   SetUpSessionAuthzAuthenticator();
   session_authz_authenticator_.SetHostTokenForTesting({});
@@ -186,7 +189,7 @@ TEST_F(CorpHostStatusLoggerTest, ReportsSessionDisconnectedForClosed) {
   expected_request.host_token = kFakeHostToken;
   expected_request.session_authz_reauth_token = kFakeReauthToken;
   expected_request.error_code = ErrorCode::OK;
-  expected_request.effective_session_policies = kFakeLocalSessionPolicies;
+  expected_request.effective_session_policies = FakeLocalSessionPolicies();
   EXPECT_CALL(*service_client_, ReportSessionDisconnected(expected_request, _));
   SetUpSessionAuthzAuthenticator();
 
@@ -201,7 +204,7 @@ TEST_F(CorpHostStatusLoggerTest, ReportsSessionDisconnectedForFailed) {
   expected_request.host_token = kFakeHostToken;
   expected_request.session_authz_reauth_token = kFakeReauthToken;
   expected_request.error_code = ErrorCode::PEER_IS_OFFLINE;
-  expected_request.effective_session_policies = kFakeLocalSessionPolicies;
+  expected_request.effective_session_policies = FakeLocalSessionPolicies();
   EXPECT_CALL(*service_client_, ReportSessionDisconnected(expected_request, _));
   SetUpSessionAuthzAuthenticator();
 
@@ -211,11 +214,10 @@ TEST_F(CorpHostStatusLoggerTest, ReportsSessionDisconnectedForFailed) {
 
 TEST_F(CorpHostStatusLoggerTest,
        AuthenticatorHasSessionPolicies_ReportsItInsteadOfLocalPolicies) {
-  SessionPolicies authenticator_session_policies = {
-      .allow_relayed_connections = false,
-      .allow_file_transfer = true,
-  };
-  EXPECT_NE(authenticator_session_policies, kFakeLocalSessionPolicies);
+  SessionPolicies authenticator_session_policies;
+  authenticator_session_policies.allow_relayed_connections = false;
+  authenticator_session_policies.allow_file_transfer = true;
+  EXPECT_NE(authenticator_session_policies, FakeLocalSessionPolicies());
   EXPECT_CALL(session_, error()).WillOnce(Return(ErrorCode::OK));
   internal::ReportSessionDisconnectedRequestStruct expected_request;
   expected_request.session_authz_id = kFakeSessionId;

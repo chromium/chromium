@@ -84,9 +84,10 @@ namespace {
 base::LazyInstance<base::Lock>::DestructorAtExit g_download_controller_lock_;
 
 void CreateContextMenuDownloadInternal(
+    const GURL& url,
     const content::WebContents::Getter& wc_getter,
     const content::ContextMenuParams& params,
-    bool is_link,
+    bool is_media,
     bool granted) {
   content::WebContents* web_contents = wc_getter.Run();
   if (!granted)
@@ -99,7 +100,8 @@ void CreateContextMenuDownloadInternal(
   RecordDownloadSource(DOWNLOAD_INITIATED_BY_CONTEXT_MENU);
   auto origin = offline_pages::android::OfflinePageBridge::GetEncodedOriginApp(
       web_contents);
-  download::CreateContextMenuDownload(web_contents, params, origin, is_link);
+  download::CreateContextMenuDownload(url, web_contents, params, origin,
+                                      is_media);
 }
 
 // Helper class for retrieving a DownloadManager.
@@ -581,9 +583,10 @@ void DownloadController::OnDownloadComplete(download::DownloadItem* item) {
 }
 
 void DownloadController::StartContextMenuDownload(
+    const GURL& url,
     const ContextMenuParams& params,
     WebContents* web_contents,
-    bool is_link) {
+    bool is_media) {
   int process_id =
       web_contents->GetRenderViewHost()->GetProcess()->GetDeprecatedID();
   int routing_id = web_contents->GetRenderViewHost()->GetRoutingID();
@@ -592,8 +595,8 @@ void DownloadController::StartContextMenuDownload(
       base::BindRepeating(&GetWebContents, process_id, routing_id));
 
   AcquireFileAccessPermission(
-      wc_getter, base::BindOnce(&CreateContextMenuDownloadInternal, wc_getter,
-                                params, is_link));
+      wc_getter, base::BindOnce(&CreateContextMenuDownloadInternal, url,
+                                wc_getter, params, is_media));
 }
 
 ProfileKey* DownloadController::GetProfileKey(DownloadItem* download_item) {

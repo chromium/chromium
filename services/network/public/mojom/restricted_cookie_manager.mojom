@@ -24,6 +24,16 @@ struct CookieManagerGetOptions {
   CookieMatchType match_type;
 };
 
+  // Contains `cookies` and the `version` at the time of returning them.
+  // `version_buffer` is a handle to a shared memory region that only  contains
+  // a single 64 bit atomic integer used as a cookie version number. It can be
+  // null if it wasn't requested or if initialization of the region failed.
+struct CookiesResponse {
+  uint64 version;
+  mojo_base.mojom.ReadOnlySharedMemoryRegion? version_buffer;
+  string cookies;
+};
+
 // Affects whether http-only cookies are accessible, and the rules used for
 // SameSite cookie computations.
 enum RestrictedCookieManagerRole {
@@ -112,18 +122,31 @@ interface RestrictedCookieManager {
 
   // Sets a cookie.  If setting of this cookie is not permitted either by web
   // platform rules, or user preferences, the attempt will be silently ignored.
-  // This does not extend to passing in a |url| that does not match the origin
+  // This does not extend to passing in a `url` that does not match the origin
   // RestrictedCookieManager is bound to --- that will be treated as the
   // renderer violating security rules.
   //
   // The implementation may block, e.g. while cookies are still being loaded, or
   // to serialize with other operations.
+  //
+  // If feature gate GetCookiesOnSet is enabled and there are no failures, it
+  // returns a `response` containing `cookies` for the  given `url` after
+  // setting the new `cookie` and the `version` at this time. If
+  // `get_version_shared_memory` is true, then the response contains a
+  // `version_buffer`, unless its initialization fails.
+  //
+  // When the feature gate GetCookiesOnSet is disabled or the operation fails,
+  // the `response` is null.
   [Sync]
-  SetCookieFromString(url.mojom.Url url, SiteForCookies site_for_cookies,
-                      url.mojom.Origin top_frame_origin,
-                      StorageAccessApiStatus storage_access_api_status,
-                      bool apply_devtools_overrides,
-                      string cookie) => ();
+  SetCookieFromString(
+      url.mojom.Url url,
+      SiteForCookies site_for_cookies,
+      url.mojom.Origin top_frame_origin,
+      StorageAccessApiStatus storage_access_api_status,
+      bool get_version_shared_memory,
+      bool apply_devtools_overrides,
+      string cookie)
+      => (CookiesResponse? response);
 
   // Used to get cookies for the given URL. Cookies that are blocked by user
   // preferences will be skipped, down to potentially returning an empty string.

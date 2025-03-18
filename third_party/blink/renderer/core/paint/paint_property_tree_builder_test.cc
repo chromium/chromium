@@ -6690,8 +6690,8 @@ TEST_P(PaintPropertyTreeBuilderTest, SimpleScrollChangeDoesNotCausePacUpdate) {
   ASSERT_TRUE(cc_transform_node);
 
   EXPECT_TRUE(cc_transform_node->local.IsIdentity());
-  EXPECT_FLOAT_EQ(cc_transform_node->scroll_offset.x(), 0);
-  EXPECT_FLOAT_EQ(cc_transform_node->scroll_offset.y(), 0);
+  EXPECT_FLOAT_EQ(cc_transform_node->scroll_offset().x(), 0);
+  EXPECT_FLOAT_EQ(cc_transform_node->scroll_offset().y(), 0);
   auto current_scroll_offset =
       property_trees->scroll_tree().current_scroll_offset(
           properties->ScrollTranslation()
@@ -6707,14 +6707,14 @@ TEST_P(PaintPropertyTreeBuilderTest, SimpleScrollChangeDoesNotCausePacUpdate) {
             properties->ScrollTranslation()->Get2dTranslation());
   EXPECT_EQ(pac->NeedsUpdate(), PaintArtifactCompositor::UpdateType::kNone);
   EXPECT_TRUE(cc_transform_node->local.IsIdentity());
-  EXPECT_FLOAT_EQ(cc_transform_node->scroll_offset.x(), 0);
-  EXPECT_FLOAT_EQ(cc_transform_node->scroll_offset.y(), 10);
+  EXPECT_FLOAT_EQ(cc_transform_node->scroll_offset().x(), 0);
+  EXPECT_FLOAT_EQ(cc_transform_node->scroll_offset().y(), 10);
   current_scroll_offset = property_trees->scroll_tree().current_scroll_offset(
       properties->ScrollTranslation()->ScrollNode()->GetCompositorElementId());
   EXPECT_FLOAT_EQ(current_scroll_offset.x(), 0);
   EXPECT_FLOAT_EQ(current_scroll_offset.y(), 10);
   EXPECT_TRUE(property_trees->transform_tree().needs_update());
-  EXPECT_TRUE(cc_transform_node->transform_changed);
+  EXPECT_TRUE(cc_transform_node->transform_changed());
 
   UpdateAllLifecyclePhasesForTest();
 }
@@ -6758,7 +6758,7 @@ TEST_P(PaintPropertyTreeBuilderTest,
   EXPECT_EQ(pac->NeedsUpdate(), PaintArtifactCompositor::UpdateType::kNone);
   EXPECT_EQ(gfx::Vector2dF(), cc_transform_node->local.To2dTranslation());
   EXPECT_TRUE(property_trees->transform_tree().needs_update());
-  EXPECT_TRUE(cc_transform_node->transform_changed);
+  EXPECT_TRUE(cc_transform_node->transform_changed());
 
   UpdateAllLifecyclePhasesForTest();
 }

@@ -24,6 +24,10 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "extensions/buildflags/buildflags.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/enterprise/browser/promotion/promotion_eligibility_checker.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 class PrefChangeRegistrar;
 
 namespace features {
@@ -110,6 +114,9 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   void OnPromotionEligibilityFetched(
       const std::string& callback_id,
       enterprise_management::GetUserEligiblePromotionsResponse response);
+
+  std::unique_ptr<enterprise_promotion::PromotionEligibilityChecker>
+      promotion_eligibility_checker_;
 #endif
 
   // Build a JSON string of all the policies.

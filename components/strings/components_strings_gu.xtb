@@ -316,7 +316,6 @@
 <translation id="1532118530259321453">આ પેજ કહે છે કે</translation>
 <translation id="1533966801397200693">તમે જે પ્રોફાઇલમાં સાઇન ઇન કરેલું છે તે મેનેજ કરલી પ્રોફાઇલ છે તમારા ઍડમિનિસ્ટ્રેટર તમારી પ્રોફાઇલના સેટિંગમાં રિમોટલી ફેરફાર કરી શકે, રિપોર્ટિંગ મારફતે બ્રાઉઝર વિશેની માહિતીનું વિશ્લેષણ કરી શકે અને અન્ય જરૂરી કાર્યો કરી શકે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">પેજનો અનુવાદ કરો</translation>
-<translation id="1538295100801850685">પૂર્વાનુમાનમાં સુધારણાઓ</translation>
 <translation id="1539840569003678498">રિપોર્ટ મોકલ્યો:</translation>
 <translation id="1542105669288201090">વ્યવસાય સંબંધિત શિક્ષણ</translation>
 <translation id="1545757265410828525">કિંમતનો ઇતિહાસ</translation>
@@ -1157,7 +1156,6 @@
 <translation id="3052868890529250114">સામાન્ય રીતે તમને સુરક્ષિત રીતે બધી સાઇટ સાથે કનેક્ટ કરવામાં આવે છે, પરંતુ આ વખતે Chrome સુરક્ષિત કનેક્શનનો ઉપયોગ કરી શક્યું નથી. કોઈ હુમલાખોર તમારા નેટવર્ક કનેક્શનમાં છુપાઈને પ્રવેશ કરવાનો અથવા તેમાં ફેરફાર કરવાનો પ્રયાસ કરી રહ્યો હોઈ શકે છે. <ph name="BEGIN_LEARN_MORE_LINK" />આ ચેતવણી વિશે વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />ની કિંમતમાં <ph name="PRICE_DROP" />નો ઘટાડો થયો</translation>
 <translation id="3061707000357573562">પૅચ સેવા</translation>
-<translation id="306198082577913404">પૂર્વાનુમાનમાં સુધારણાઓ ચાલુ કરો</translation>
 <translation id="3062655045399308513">બ્રાઉઝિંગ ડેટા ડિલીટ કરી રહ્યાં છીએ...</translation>
 <translation id="3063453392496098461">VPNની બૅકગ્રાઉન્ડ સેવાઓનું ઇન્સ્ટૉલેશન નિષ્ફળ થયું.</translation>
 <translation id="306573536155379004">ગેમ શરૂ થઈ ગઈ છે.</translation>
@@ -2325,7 +2323,6 @@
 <translation id="5097099694988056070">CPU/RAM વપરાશ જેવા ડિવાઇસ આંકડા</translation>
 <translation id="5097468150760963273">27 x 39 ઇંચ</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chromeને તમારા ડિવાઇસના <ph name="PERMISSION" />ના ઍક્સેસની જરૂર છે</translation>
 <translation id="510644072453496781">કાર્ડબોર્ડ (અંત)</translation>
 <translation id="5106648964679263509"><ph name="BNPL_ISSUER_NAME" /> માટે વર્ચ્યુઅલ કાર્ડ ભરવામાં આવ્યું</translation>
 <translation id="5108881358339761672">સાઇટ સુરક્ષિત નથી</translation>
@@ -4054,7 +4051,6 @@
 <translation id="8134058435519644366">ભરતી અને કર્મચારીની નિયુક્તિ</translation>
 <translation id="8135546115396015134">ડાબી કી</translation>
 <translation id="8137456439814903304">ઊર્જા અને યુટિલિટી</translation>
-<translation id="81474145143203755">આ સાઇટ પર તમારા <ph name="PERMISSION" />નો ઉપયોગ કરવા માટે, Chromeને ઍક્સેસ આપો</translation>
 <translation id="8148608574971654810">PDF વર્ઝન:</translation>
 <translation id="8149426793427495338">તમારું કમ્પ્યુટર નિષ્ક્રિય થઈ ગયું હતું.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> પરની ફાઇલ વાંચનયોગ્ય નથી. તે દૂર કરવામાં, ખસેડવામાં આવી હોઈ શકે છે અથવા ફાઇલ પરવાનગીઓ ઍક્સેસ કરવાથી અટકાવતી હોઈ શકે છે.</translation>

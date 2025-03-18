@@ -71,11 +71,12 @@ export class ManagedFootnoteElement extends ManagedFootnoteElementBase {
     };
   }
 
-  protected isManaged_: boolean = loadTimeData.getBoolean('isManaged');
-  protected managedByIcon_: string = loadTimeData.getString('managedByIcon');
+  protected accessor isManaged_: boolean = loadTimeData.getBoolean('isManaged');
+  protected accessor managedByIcon_: string =
+      loadTimeData.getString('managedByIcon');
 
   // <if expr="is_chromeos">
-  showDeviceInfo: boolean = false;
+  accessor showDeviceInfo: boolean = false;
   // </if>
 
   override firstUpdated() {

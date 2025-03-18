@@ -22,3 +22,29 @@ if (is_mac) {
     outputs = [ "{{bundle_contents_dir}}/Libraries/$privacy_sandbox_attestations_component/{{source_file_part}}" ]
   }
 }
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  # Bundle the preload attestations component to Android APK assets.
+  android_assets("privacy_sandbox_attestations_assets") {
+    # Attestations list and manifest.
+    renaming_sources = [
+      "$root_out_dir/$privacy_sandbox_attestations_component/manifest.json",
+      "$root_out_dir/$privacy_sandbox_attestations_component/privacy-sandbox-attestations.dat",
+    ]
+
+    # Bundle destinations: assets/privacy_sandbox_attestations/*.
+    renaming_destinations = [
+      "privacy_sandbox_attestations/manifest.json",
+      "privacy_sandbox_attestations/privacy-sandbox-attestations.dat",
+    ]
+
+    deps = [ ":component" ]
+    disable_compression = true
+  }
+
+  source_set("preload") {
+    sources = [ "android_apk_assets.h" ]
+  }
+}

@@ -108,6 +108,8 @@ constexpr char kIdpBrandingKey[] = "branding";
 constexpr char kAccountIdKey[] = "id";
 constexpr char kAccountEmailKey[] = "email";
 constexpr char kAccountNameKey[] = "name";
+constexpr char kAccountPhoneNumberKey[] = "phone";
+constexpr char kAccountUsernameKey[] = "username";
 constexpr char kAccountGivenNameKey[] = "given_name";
 constexpr char kAccountPictureKey[] = "picture";
 constexpr char kAccountApprovedClientsKey[] = "approved_clients";
@@ -186,6 +188,17 @@ net::NetworkTrafficAnnotationTag CreateTrafficAnnotation() {
         })");
 }
 
+// Returns true for nullptr for easy use with Dict::FindString.
+bool IsEmptyOrWhitespace(const std::string* input) {
+  if (!input) {
+    return true;
+  }
+
+  auto trimmed_string =
+      base::TrimWhitespace(base::UTF8ToUTF16(*input), base::TRIM_ALL);
+  return trimmed_string.empty();
+}
+
 GURL ResolveConfigUrl(const GURL& config_url, const std::string& endpoint) {
   if (endpoint.empty())
     return GURL();
@@ -217,6 +230,8 @@ IdentityRequestAccountPtr ParseAccount(const base::Value::Dict& account,
   auto* id = account.FindString(kAccountIdKey);
   auto* email = account.FindString(kAccountEmailKey);
   auto* name = account.FindString(kAccountNameKey);
+  auto* phone = account.FindString(kAccountPhoneNumberKey);
+  auto* username = account.FindString(kAccountUsernameKey);
   auto* given_name = account.FindString(kAccountGivenNameKey);
   auto* picture = account.FindString(kAccountPictureKey);
   auto* approved_clients = account.FindList(kAccountApprovedClientsKey);
@@ -249,18 +264,46 @@ IdentityRequestAccountPtr ParseAccount(const base::Value::Dict& account,
     }
   }
 
-  // required fields
-  if (!(id && email && name)) {
+  if (!id) {
     return nullptr;
   }
 
-  auto trimmed_email =
-      base::TrimWhitespace(base::UTF8ToUTF16(*email), base::TRIM_ALL);
-  auto trimmed_name =
-      base::TrimWhitespace(base::UTF8ToUTF16(*name), base::TRIM_ALL);
-  // TODO(crbug.com/40849405): validate email address.
-  if (trimmed_email.empty() || trimmed_name.empty()) {
-    return nullptr;
+  std::string display_identifier;
+  std::string display_name;
+  std::string empty_string;
+  if (IsFedCmAlternativeIdentifiersEnabled()) {
+    std::vector<std::string_view> identifiers;
+    if (!IsEmptyOrWhitespace(name)) {
+      identifiers.emplace_back(*name);
+    } else {
+      name = &empty_string;
+    }
+    if (!IsEmptyOrWhitespace(username)) {
+      identifiers.emplace_back(*username);
+    }
+    if (!IsEmptyOrWhitespace(email)) {
+      identifiers.emplace_back(*email);
+    } else {
+      email = &empty_string;
+    }
+    if (!IsEmptyOrWhitespace(phone)) {
+      identifiers.emplace_back(*phone);
+    }
+    if (identifiers.empty()) {
+      return nullptr;
+    }
+    display_name = identifiers[0];
+    if (identifiers.size() > 1) {
+      display_identifier = identifiers[1];
+    }
+  } else {
+    // required fields
+    // TODO(crbug.com/40849405): validate email address.
+    if (IsEmptyOrWhitespace(email) || IsEmptyOrWhitespace(name)) {
+      return nullptr;
+    }
+    display_identifier = *email;
+    display_name = *name;
   }
 
   RecordApprovedClientsExistence(approved_clients != nullptr);
@@ -282,12 +325,11 @@ IdentityRequestAccountPtr ParseAccount(const base::Value::Dict& account,
     RecordApprovedClientsSize(approved_clients->size());
   }
 
-  // TODO(crbug.com/382086282): Support usernames and phone number for
-  // display_name and display_identifier.
   return base::MakeRefCounted<IdentityRequestAccount>(
-      *id, *email, *name, *email, *name, given_name ? *given_name : "",
-      picture ? GURL(*picture) : GURL(), std::move(account_hints),
-      std::move(domain_hints), std::move(labels), approved_value,
+      *id, display_identifier, display_name, *email, *name,
+      given_name ? *given_name : "", picture ? GURL(*picture) : GURL(),
+      std::move(account_hints), std::move(domain_hints), std::move(labels),
+      approved_value,
       /*browser_trusted_login_state=*/LoginState::kSignUp);
 }
 

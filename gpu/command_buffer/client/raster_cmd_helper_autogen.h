@@ -183,6 +183,27 @@ void DeletePaintCachePathsINTERNAL(GLsizei n,
   }
 }
 
+void DeletePaintCacheEffectsINTERNALImmediate(GLsizei n, const GLuint* ids) {
+  const uint32_t size =
+      raster::cmds::DeletePaintCacheEffectsINTERNALImmediate::ComputeSize(n);
+  raster::cmds::DeletePaintCacheEffectsINTERNALImmediate* c =
+      GetImmediateCmdSpaceTotalSize<
+          raster::cmds::DeletePaintCacheEffectsINTERNALImmediate>(size);
+  if (c) {
+    c->Init(n, ids);
+  }
+}
+
+void DeletePaintCacheEffectsINTERNAL(GLsizei n,
+                                     uint32_t ids_shm_id,
+                                     uint32_t ids_shm_offset) {
+  raster::cmds::DeletePaintCacheEffectsINTERNAL* c =
+      GetCmdSpace<raster::cmds::DeletePaintCacheEffectsINTERNAL>();
+  if (c) {
+    c->Init(n, ids_shm_id, ids_shm_offset);
+  }
+}
+
 void ClearPaintCacheINTERNAL() {
   raster::cmds::ClearPaintCacheINTERNAL* c =
       GetCmdSpace<raster::cmds::ClearPaintCacheINTERNAL>();

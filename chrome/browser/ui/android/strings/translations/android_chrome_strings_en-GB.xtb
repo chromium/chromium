@@ -432,7 +432,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2981364137500752533">You can have up to 5 windows.</translation>
 <translation id="2983102365694924129">Based on your activity on a site. This setting is off.</translation>
 <translation id="2984978667043170458">Include surrounding text in Google searches</translation>
-<translation id="2988638966064514052">Strengthen your passwords</translation>
 <translation id="2989523299700148168">Recently Visited</translation>
 <translation id="2992473221983447149">Image descriptions</translation>
 <translation id="2996291259634659425">Create passphrase</translation>
@@ -548,7 +547,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3557336313807607643">Add to contacts</translation>
 <translation id="3563767357928833671">Clipboard contents shown</translation>
 <translation id="3566639033325271639">Update settings</translation>
-<translation id="3568945271227339929">No compromised passwords</translation>
 <translation id="3575464060651642446">Checking passwords on this device…</translation>
 <translation id="3577473026931028326">Something went wrong. Try again.</translation>
 <translation id="3577558748185201054">Manage your interests and preferences</translation>
@@ -1055,7 +1053,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5958275228015807058">Find your files and pages in Downloads</translation>
 <translation id="5958994127112619898">Simplify page</translation>
 <translation id="5962718611393537961">Tap to collapse</translation>
-<translation id="5964180026566797835">Can't check passwords</translation>
 <translation id="5964869237734432770">Stop image descriptions</translation>
 <translation id="5977976211062815271">On this device</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 page on your reading list}other{# pages on your reading list}}</translation>
@@ -1099,6 +1096,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="6150320133806434356">Bookmark saved</translation>
 <translation id="6150706324143004339">To use and save Chrome data in your Google Account, update Chrome</translation>
 <translation id="6154478581116148741">Turn on screen lock in Settings to export your passwords from this device</translation>
+<translation id="6156323911414505561">Show bookmarks bar</translation>
 <translation id="6162892189396105610">Preloads pages that Chrome thinks that you are likely to visit.</translation>
 <translation id="6170675927290506430">Go to notification settings</translation>
 <translation id="6186394685773237175">No compromised passwords found</translation>

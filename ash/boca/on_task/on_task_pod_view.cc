@@ -12,6 +12,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/style/tab_slider.h"
 #include "ash/style/tab_slider_button.h"
+#include "ash/style/typography.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -58,22 +59,38 @@ std::unique_ptr<IconButton> CreateIconButton(base::RepeatingClosure callback,
   return button;
 }
 
-std::unique_ptr<views::LabelButton> CreateLabelButton(
-    base::RepeatingClosure callback,
-    const std::u16string& text,
-    const gfx::VectorIcon* icon) {
-  auto button = std::make_unique<views::LabelButton>(std::move(callback), text);
-  button->SetImageModel(views::Button::STATE_NORMAL,
-                        ui::ImageModel::FromVectorIcon(*icon, ui::kColorIcon));
-  button->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(kLabelButtonTopPadding, kLabelButtonLeftPadding,
-                        kLabelButtonButtomPadding, kLabelButtonRightPadding)));
-  button->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  button->SetImageLabelSpacing(kLabelButtonIconTextSpace);
-  button->SetBackground(views::CreateRoundedRectBackground(
-      cros_tokens::kCrosSysSystemOnBaseOpaque, kLabelButtonRadius));
-  return button;
-}
+class PinTabStripButton : public views::LabelButton {
+  METADATA_HEADER(PinTabStripButton, views::LabelButton)
+ public:
+  // This class subclasses views::LabelButton to allow access to the protected
+  // label() method.
+  PinTabStripButton(views::Button::PressedCallback callback,
+                    std::u16string_view text)
+      : views::LabelButton(std::move(callback), text) {
+    SetImageModel(views::Button::STATE_NORMAL,
+                  ui::ImageModel::FromVectorIcon(
+                      kTabsIcon, cros_tokens::kCrosSysOnSurface));
+    // Accessing protected member label() to set the font list.
+    label()->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
+        TypographyToken::kCrosButton2));
+    SetEnabledTextColors(cros_tokens::kCrosSysOnSurface);
+    SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+        kLabelButtonTopPadding, kLabelButtonLeftPadding,
+        kLabelButtonButtomPadding, kLabelButtonRightPadding)));
+    SetHorizontalAlignment(gfx::ALIGN_CENTER);
+    SetImageLabelSpacing(kLabelButtonIconTextSpace);
+    SetPreferredSize(gfx::Size(kLabelButtonWidth, kLabelButtonHeight));
+    SetBackground(views::CreateRoundedRectBackground(
+        cros_tokens::kCrosSysSystemOnBase, kLabelButtonRadius));
+  }
+
+  PinTabStripButton(const PinTabStripButton&) = delete;
+  PinTabStripButton& operator=(const PinTabStripButton&) = delete;
+  ~PinTabStripButton() override = default;
+};
+
+BEGIN_METADATA(PinTabStripButton)
+END_METADATA
 
 }  // namespace
 
@@ -83,7 +100,7 @@ OnTaskPodView::OnTaskPodView(OnTaskPodController* pod_controller)
   SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart);
   SetBackground(views::CreateRoundedRectBackground(
-      cros_tokens::kCrosSysSystemBaseElevated, kPodBorderRadius));
+      cros_tokens::kCrosSysSystemBaseElevatedOpaque, kPodBorderRadius));
   SetInsideBorderInsets(
       gfx::Insets::VH(kPodVerticalPadding, kPodHorizontalPadding));
   SetBetweenChildSpacing(kPodElementSpace);
@@ -105,13 +122,13 @@ void OnTaskPodView::AddShortcutButtons() {
       base::BindRepeating(&OnTaskPodController::SetSnapLocation,
                           base::Unretained(pod_controller_),
                           OnTaskPodSnapLocation::kTopLeft),
-      &kKsvArrowLeftIcon,
+      &kAutoclickPositionTopLeftIcon,
       l10n_util::GetStringUTF16(IDS_ON_TASK_MOVE_POD_TOP_LEFT_ACCESSIBLE_NAME));
   dock_right_button_ = pod_position_slider_->AddButton<IconSliderButton>(
       base::BindRepeating(&OnTaskPodController::SetSnapLocation,
                           base::Unretained(pod_controller_),
                           OnTaskPodSnapLocation::kTopRight),
-      &kKsvArrowRightIcon,
+      &kAutoclickPositionTopRightIcon,
       l10n_util::GetStringUTF16(
           IDS_ON_TASK_MOVE_POD_TOP_RIGHT_ACCESSIBLE_NAME));
   dock_left_button_->SetSelected(true);
@@ -144,13 +161,11 @@ void OnTaskPodView::AddShortcutButtons() {
   right_separator_->SetColorId(cros_tokens::kCrosSysSeparator);
   right_separator_->SetPreferredLength(kLabelButtonHeight);
 
-  pin_tab_strip_button_ = AddChildView(CreateLabelButton(
+  pin_tab_strip_button_ = AddChildView(std::make_unique<PinTabStripButton>(
       base::BindRepeating(&OnTaskPodView::UpdatePinTabStripButton,
                           base::Unretained(this)),
-      l10n_util::GetStringUTF16(IDS_ON_TASK_POD_PIN_TAP_STRIP_ACCESSIBLE_NAME),
-      &kUnpinnedIcon));
-  pin_tab_strip_button_->SetPreferredSize(
-      gfx::Size(kLabelButtonWidth, kLabelButtonHeight));
+      l10n_util::GetStringUTF16(
+          IDS_ON_TASK_POD_PIN_TAP_STRIP_ACCESSIBLE_NAME)));
   pin_tab_strip_button_->SetEnabled(
       pod_controller_->CanToggleTabStripVisibility());
 }
@@ -167,13 +182,21 @@ void OnTaskPodView::UpdatePinTabStripButton() {
         cros_tokens::kCrosSysSystemPrimaryContainer, kLabelButtonRadius));
     pin_tab_strip_button_->SetEnabledTextColors(
         cros_tokens::kCrosSysSystemOnPrimaryContainer);
+    pin_tab_strip_button_->SetImageModel(
+        views::Button::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(
+            kTabsIcon, cros_tokens::kCrosSysSystemOnPrimaryContainer));
   } else {
     // Otherwise, button is "Show tabs" when the tab strip is already hidden.
     pin_tab_strip_button_->SetText(l10n_util::GetStringUTF16(
         IDS_ON_TASK_POD_PIN_TAP_STRIP_ACCESSIBLE_NAME));
     pin_tab_strip_button_->SetBackground(views::CreateRoundedRectBackground(
-        cros_tokens::kCrosSysSystemOnBaseOpaque, kLabelButtonRadius));
+        cros_tokens::kCrosSysSystemOnBase, kLabelButtonRadius));
     pin_tab_strip_button_->SetEnabledTextColors(cros_tokens::kCrosSysOnSurface);
+    pin_tab_strip_button_->SetImageModel(
+        views::Button::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(kTabsIcon,
+                                       cros_tokens::kCrosSysOnSurface));
   }
 }
 

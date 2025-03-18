@@ -159,9 +159,13 @@ class InteractiveTestApi {
       std::u16string text,
       TextEntryMode mode = TextEntryMode::kReplaceAll);
   [[nodiscard]] StepBuilder ActivateSurface(ElementSpecifier element);
+  [[nodiscard]] StepBuilder FocusElement(ElementSpecifier element);
 #if !BUILDFLAG(IS_IOS)
   [[nodiscard]] StepBuilder SendAccelerator(ElementSpecifier element,
                                             Accelerator accelerator);
+  [[nodiscard]] StepBuilder SendKeyPress(ElementSpecifier element,
+                                         KeyboardCode key,
+                                         int flags = EF_NONE);
 #endif
   [[nodiscard]] StepBuilder Confirm(ElementSpecifier element);
 

@@ -7085,8 +7085,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <message name="IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS_BUTTON" desc="In Title Case: The label of the 'Manage Passwords' button in the manage-passwords bubble.">
           Manage Passwords
         </message>
-        <!-- TODO(b/316143236): Finalize the strings and make them translatable -->
-        <message name="IDS_PASSWORD_MANAGER_MANAGE_PASSWORD_BUTTON" desc="In Title Case: The label of the 'Manage Password' button in the password details bubble." translateable="false">
+        <message name="IDS_PASSWORD_MANAGER_MANAGE_PASSWORD_BUTTON" desc="In Title Case: The label of the 'Manage Password' button in the password details bubble.">
           Manage Password
         </message>
       </if>
@@ -7097,8 +7096,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <message name="IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS_BUTTON" desc="The label of the 'Manage passwords' link in the manage-passwords bubble.">
           Manage passwords
         </message>
-        <!-- TODO(b/316143236): Finalize the strings and make them translatable -->
-        <message name="IDS_PASSWORD_MANAGER_MANAGE_PASSWORD_BUTTON" desc="The label of the 'Manage password' link in the password details bubble." translateable="false">
+        <message name="IDS_PASSWORD_MANAGER_MANAGE_PASSWORD_BUTTON" desc="The label of the 'Manage password' link in the password details bubble.">
           Manage password
         </message>
       </if>
@@ -13878,12 +13876,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_DEVICE_SIGNALS_CONSENT_DIALOG_BODY_TEXT" desc="Message shown when user consent is required to share device signals.">
         To use your device with your <ph name="DOMAIN">$1<ex>example.com</ex></ph> profile, your organization needs information about the device.
 
-This can include information about installed software, files, your browser, and the device’s operating system.
+This can include information about installed software, files, your browser, the device’s operating system, and IP addresses.
         </message>
         <message name="IDS_DEVICE_SIGNALS_CONSENT_DIALOG_DEFAULT_BODY_TEXT" desc="Default message for device signals consent dialog when we are unable to retrieve the name of the managing organization.">
         To use your device with your organization profile, your organization needs information about the device.
 
-This can include information about installed software, files, your browser, and the device’s operating system.
+This can include information about installed software, files, your browser, the device’s operating system, and IP addresses.
         </message>
       </if>
 

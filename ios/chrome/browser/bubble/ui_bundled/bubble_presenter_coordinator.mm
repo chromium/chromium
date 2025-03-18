@@ -40,10 +40,8 @@
 }
 
 - (void)start {
-  ProfileIOS* profile = self.browser->GetProfile();
-
   feature_engagement::Tracker* engagementTracker =
-      feature_engagement::TrackerFactory::GetForProfile(profile);
+      feature_engagement::TrackerFactory::GetForProfile(self.profile);
   OverlayPresenter* webContentPresenter = OverlayPresenter::FromBrowser(
       self.browser, OverlayModality::kWebContentArea);
   OverlayPresenter* infobarBannerPresenter = OverlayPresenter::FromBrowser(
@@ -101,7 +99,7 @@
   if (IsIPHAblationEnabled()) {
     return;
   }
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   raw_ptr<segmentation_platform::DeviceSwitcherResultDispatcher>
       deviceSwitcherResultDispatcher = nullptr;
   if (!profile->IsOffTheRecord()) {

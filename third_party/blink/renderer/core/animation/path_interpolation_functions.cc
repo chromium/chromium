@@ -220,7 +220,7 @@ void PathInterpolationFunctions::Composite(
       value.non_interpolable_value.Get();
 }
 
-scoped_refptr<StylePath> PathInterpolationFunctions::AppliedValue(
+StylePath* PathInterpolationFunctions::AppliedValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue* non_interpolable_value) {
   auto* non_interpolable_path_value =
@@ -232,8 +232,8 @@ scoped_refptr<StylePath> PathInterpolationFunctions::AppliedValue(
   SVGPathByteStreamBuilder builder;
   svg_path_parser::ParsePath(source, builder);
 
-  return StylePath::Create(builder.CopyByteStream(),
-                           non_interpolable_path_value->GetWindRule());
+  return MakeGarbageCollected<StylePath>(
+      builder.CopyByteStream(), non_interpolable_path_value->GetWindRule());
 }
 
 }  // namespace blink

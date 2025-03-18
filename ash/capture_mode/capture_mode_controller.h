@@ -39,6 +39,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom-forward.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
@@ -554,19 +555,32 @@ class ASH_EXPORT CaptureModeController
       base::WeakPtr<BaseCaptureModeSession> image_search_token,
       scoped_refptr<base::RefCountedMemory> jpeg_bytes);
 
-  // Called when an access token request completes (successfully or not). Used
-  // for the Lens Web API POST request.
-  void OnPrimaryAccountAccessTokenAvailable(
+  // Called when an access token request completes (successfully or not).
+  void OnAccessTokenAvailableForImageSearch(
       const gfx::Image& original_image,
+      base::WeakPtr<BaseCaptureModeSession> image_search_token,
+      const std::string& access_token);
+  void OnAccessTokenAvailableForCopyText(
+      std::string vsr_id,
       base::WeakPtr<BaseCaptureModeSession> image_search_token,
       const std::string& access_token);
 
   // Called after a resource request is dispatched by a `SimpleURLLoader` and a
   // response is received.
-  void OnDispatchComplete(
+  void OnDispatchCompleteForImageSearch(
       base::WeakPtr<const network::SimpleURLLoader> url_loader,
       base::WeakPtr<BaseCaptureModeSession> image_search_token,
+      const std::string& access_token,
       std::unique_ptr<std::string> response_body);
+  void OnDispatchCompleteForCopyText(
+      base::WeakPtr<const network::SimpleURLLoader> url_loader,
+      base::WeakPtr<BaseCaptureModeSession> image_search_token,
+      const std::string& access_token,
+      std::unique_ptr<std::string> response_body);
+
+  // Called after the response to a /qfmetadata GET request is received and the
+  // response body has been decoded.
+  void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
 
   // Called back when on-device text detection is complete to show copy text and
   // smart actions buttons if needed. `image_search_token` is a weak pointer

@@ -120,7 +120,7 @@ void It2MeNativeMessageHostAsh::PostMessageFromNativeHost(
 
   if (type.empty()) {
     LOG(ERROR) << "'type' not found in request.";
-    CloseChannel(ErrorCodeToString(protocol::ErrorCode::INCOMPATIBLE_PROTOCOL));
+    CloseChannel(ErrorCodeToString(protocol::ErrorCode::INVALID_ARGUMENT));
     return;
   }
 
@@ -168,7 +168,7 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
   const std::string* new_state = message.FindString(kState);
   if (!new_state) {
     LOG(ERROR) << "Missing |" << kState << "| value in message.";
-    CloseChannel(ErrorCodeToString(protocol::ErrorCode::INCOMPATIBLE_PROTOCOL));
+    CloseChannel(ErrorCodeToString(protocol::ErrorCode::INVALID_ARGUMENT));
     return;
   }
 
@@ -187,16 +187,14 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
     const std::string* access_code = message.FindString(kAccessCode);
     if (!access_code) {
       LOG(ERROR) << "Missing |" << kAccessCode << "| value in message.";
-      CloseChannel(
-          ErrorCodeToString(protocol::ErrorCode::INCOMPATIBLE_PROTOCOL));
+      CloseChannel(ErrorCodeToString(protocol::ErrorCode::INVALID_ARGUMENT));
       return;
     }
     std::optional<int> access_code_lifetime =
         message.FindInt(kAccessCodeLifetime);
     if (!access_code_lifetime) {
       LOG(ERROR) << "Missing |" << kAccessCodeLifetime << "| value in message.";
-      CloseChannel(
-          ErrorCodeToString(protocol::ErrorCode::INCOMPATIBLE_PROTOCOL));
+      CloseChannel(ErrorCodeToString(protocol::ErrorCode::INVALID_ARGUMENT));
       return;
     }
     remote_->OnHostStateReceivedAccessCode(
@@ -207,8 +205,7 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
     const std::string* remote_username = message.FindString(kClient);
     if (!remote_username) {
       LOG(ERROR) << "Missing |" << kClient << "| value in message.";
-      CloseChannel(
-          ErrorCodeToString(protocol::ErrorCode::INCOMPATIBLE_PROTOCOL));
+      CloseChannel(ErrorCodeToString(protocol::ErrorCode::INVALID_ARGUMENT));
       return;
     }
     remote_->OnHostStateConnected(*remote_username);
@@ -226,8 +223,7 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
         message.FindString(kErrorMessageCode);
     if (!error_code_string) {
       LOG(ERROR) << "Missing |" << kErrorMessageCode << "| value in message.";
-      CloseChannel(
-          ErrorCodeToString(protocol::ErrorCode::INCOMPATIBLE_PROTOCOL));
+      CloseChannel(ErrorCodeToString(protocol::ErrorCode::INVALID_ARGUMENT));
       return;
     }
 
@@ -235,8 +231,7 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
     if (!ParseErrorCode(*error_code_string, &error_code)) {
       LOG(ERROR) << "Invalid |" << kErrorMessageCode << "| value "
                  << *error_code_string << "in message.";
-      CloseChannel(
-          ErrorCodeToString(protocol::ErrorCode::INCOMPATIBLE_PROTOCOL));
+      CloseChannel(ErrorCodeToString(protocol::ErrorCode::INVALID_ARGUMENT));
       return;
     }
     remote_->OnHostStateError(static_cast<int64_t>(error_code));
@@ -255,7 +250,7 @@ void It2MeNativeMessageHostAsh::HandleNatPolicyChangedMessage(
   if (!nat_enabled.has_value()) {
     LOG(ERROR) << "Missing |" << kNatPolicyChangedMessageNatEnabled
                << "| value in message.";
-    CloseChannel(ErrorCodeToString(protocol::ErrorCode::INCOMPATIBLE_PROTOCOL));
+    CloseChannel(ErrorCodeToString(protocol::ErrorCode::INVALID_ARGUMENT));
     return;
   }
 
@@ -264,7 +259,7 @@ void It2MeNativeMessageHostAsh::HandleNatPolicyChangedMessage(
   if (!nat_enabled.has_value()) {
     LOG(ERROR) << "Missing |" << kNatPolicyChangedMessageRelayEnabled
                << "| value in message.";
-    CloseChannel(ErrorCodeToString(protocol::ErrorCode::INCOMPATIBLE_PROTOCOL));
+    CloseChannel(ErrorCodeToString(protocol::ErrorCode::INVALID_ARGUMENT));
     return;
   }
 
@@ -285,7 +280,7 @@ void It2MeNativeMessageHostAsh::HandleErrorMessage(base::Value::Dict message) {
   const std::string* error_code_string = message.FindString(kErrorMessageCode);
   if (!error_code_string) {
     LOG(ERROR) << "Missing |" << kErrorMessageCode << "| value in message.";
-    CloseChannel(ErrorCodeToString(protocol::ErrorCode::INCOMPATIBLE_PROTOCOL));
+    CloseChannel(ErrorCodeToString(protocol::ErrorCode::INVALID_ARGUMENT));
     return;
   }
 
@@ -293,7 +288,7 @@ void It2MeNativeMessageHostAsh::HandleErrorMessage(base::Value::Dict message) {
   if (!ParseErrorCode(*error_code_string, &error_code)) {
     LOG(ERROR) << "Invalid |" << kErrorMessageCode << "| value "
                << *error_code_string << "in message.";
-    CloseChannel(ErrorCodeToString(protocol::ErrorCode::INCOMPATIBLE_PROTOCOL));
+    CloseChannel(ErrorCodeToString(protocol::ErrorCode::INVALID_ARGUMENT));
     return;
   }
 

@@ -1044,6 +1044,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Available"/>
 </enum>
 
+<!-- LINT.IfChange(IOSSpotlightDonatedIntentType) -->
+
 <enum name="IOSSpotlightDonatedIntentType">
   <int value="0" label="Search In Chrome"/>
   <int value="1" label="Open Reading List"/>
@@ -1066,6 +1068,8 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="Manage Passwords"/>
   <int value="19" label="Manage Settings"/>
 </enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/intents/model/intent_type.h:IOSSpotlightDonatedIntentType) -->
 
 <enum name="IOSSpotlightOrigin">
   <int value="0" label="Unknown Origin"/>

@@ -10,6 +10,7 @@ import android.net.Uri;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.url.GURL;
 
 /** Interface to handle context menu actions in native. */
 @NullMarked
@@ -37,11 +38,11 @@ public interface ContextMenuNativeDelegate {
     void retrieveImageForShare(@ContextMenuImageFormat int imageFormat, Callback<Uri> callback);
 
     /**
-     * Starts a download based on the params.
+     * Starts a download based on the given url.
      *
-     * @param isLink Whether the download target is a link.
+     * @param isMedia Whether the download target is a media.
      */
-    void startDownload(boolean isLink);
+    void startDownload(GURL url, boolean isMedia);
 
     /** Does a reverse image search for the current image that the context menu was triggered on. */
     void searchForImage();

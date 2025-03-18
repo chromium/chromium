@@ -12,6 +12,7 @@
 #include <stddef.h>
 
 #include <string>
+#include <variant>
 
 #include "base/base_paths.h"
 #include "base/check.h"
@@ -100,7 +101,6 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -745,7 +745,7 @@ std::optional<int> ChromeMainDelegate::PostEarlyInitialization(
     InvokedIn invoked_in) {
   DUMP_WILL_BE_CHECK(base::ThreadPoolInstance::Get());
   const auto* invoked_in_browser =
-      absl::get_if<InvokedInBrowserProcess>(&invoked_in);
+      std::get_if<InvokedInBrowserProcess>(&invoked_in);
   if (!invoked_in_browser) {
     CommonEarlyInitialization(invoked_in);
     return std::nullopt;
@@ -895,7 +895,7 @@ std::optional<int> ChromeMainDelegate::PostEarlyInitialization(
 bool ChromeMainDelegate::ShouldCreateFeatureList(InvokedIn invoked_in) {
   // The //content layer is always responsible for creating the FeatureList in
   // child processes.
-  if (absl::holds_alternative<InvokedInChildProcess>(invoked_in)) {
+  if (std::holds_alternative<InvokedInChildProcess>(invoked_in)) {
     return true;
   }
 
@@ -1524,7 +1524,7 @@ void ChromeMainDelegate::SandboxInitialized(const std::string& process_type) {
 #endif
 }
 
-absl::variant<int, content::MainFunctionParams> ChromeMainDelegate::RunProcess(
+std::variant<int, content::MainFunctionParams> ChromeMainDelegate::RunProcess(
     const std::string& process_type,
     content::MainFunctionParams main_function_params) {
 #if BUILDFLAG(IS_ANDROID)

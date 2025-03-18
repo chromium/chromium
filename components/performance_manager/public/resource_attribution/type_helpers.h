@@ -7,11 +7,11 @@
 
 #include <optional>
 #include <type_traits>
+#include <variant>
 
 #include "base/notreached.h"
 #include "base/types/optional_ref.h"
 #include "base/types/optional_util.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace resource_attribution {
 
@@ -19,10 +19,10 @@ namespace internal {
 
 // The constant IsVariantAlternative<T, V>::value is true iff T is one of the
 // alternative types of variant V.
-template <typename T, typename V, size_t I = absl::variant_size<V>::value>
+template <typename T, typename V, size_t I = std::variant_size<V>::value>
 struct IsVariantAlternative
     : std::disjunction<
-          std::is_same<T, typename absl::variant_alternative<I - 1, V>::type>,
+          std::is_same<T, typename std::variant_alternative<I - 1, V>::type>,
           IsVariantAlternative<T, V, I - 1>> {};
 
 template <typename T, typename V>
@@ -38,7 +38,7 @@ using EnableIfIsVariantAlternative =
 // returns that alternative. Otherwise returns nullopt.
 template <typename T, typename V, EnableIfIsVariantAlternative<T, V> = true>
 constexpr std::optional<T> GetAsOptional(const V& v) {
-  return base::OptionalFromPtr(absl::get_if<T>(&v));
+  return base::OptionalFromPtr(std::get_if<T>(&v));
 }
 
 // Returns true iff any element of `vs`, a vector of variants of type V,
@@ -48,7 +48,7 @@ constexpr std::optional<T> GetAsOptional(const V& v) {
 template <typename T, typename V, EnableIfIsVariantAlternative<T, V> = true>
 constexpr bool VariantVectorContains(const std::vector<V>& vs) {
   for (const V& v : vs) {
-    if (absl::holds_alternative<T>(v)) {
+    if (std::holds_alternative<T>(v)) {
       return true;
     }
   }
@@ -62,7 +62,7 @@ template <typename ConstT,
           EnableIfIsVariantAlternative<std::remove_const_t<ConstT>, V> = true>
 constexpr bool VariantVectorContains(const std::vector<V>& vs) {
   for (const V& v : vs) {
-    if (absl::holds_alternative<std::remove_const_t<ConstT>>(v)) {
+    if (std::holds_alternative<std::remove_const_t<ConstT>>(v)) {
       return true;
     }
   }
@@ -77,7 +77,7 @@ constexpr bool VariantVectorContains(const std::vector<V>& vs) {
 template <typename T, typename V, EnableIfIsVariantAlternative<T, V> = true>
 constexpr base::optional_ref<T> GetFromVariantVector(std::vector<V>& vs) {
   for (V& v : vs) {
-    T* t = absl::get_if<T>(&v);
+    T* t = std::get_if<T>(&v);
     if (t) {
       return t;
     }
@@ -90,7 +90,7 @@ template <typename T, typename V, EnableIfIsVariantAlternative<T, V> = true>
 constexpr base::optional_ref<const T> GetFromVariantVector(
     const std::vector<V>& vs) {
   for (const V& v : vs) {
-    const T* t = absl::get_if<T>(&v);
+    const T* t = std::get_if<T>(&v);
     if (t) {
       return t;
     }
@@ -106,7 +106,7 @@ template <typename ConstT,
 constexpr base::optional_ref<ConstT> GetFromVariantVector(
     const std::vector<V>& vs) {
   for (const V& v : vs) {
-    ConstT* t = absl::get_if<std::remove_const_t<ConstT>>(&v);
+    ConstT* t = std::get_if<std::remove_const_t<ConstT>>(&v);
     if (t) {
       return t;
     }
@@ -119,22 +119,22 @@ constexpr base::optional_ref<ConstT> GetFromVariantVector(
 
 template <typename T, typename V, EnableIfIsVariantAlternative<T, V> = true>
 constexpr bool operator==(const T& a, const V& b) {
-  return absl::holds_alternative<T>(b) && a == absl::get<T>(b);
+  return std::holds_alternative<T>(b) && a == std::get<T>(b);
 }
 
 template <typename T, typename V, EnableIfIsVariantAlternative<T, V> = true>
 constexpr bool operator==(const V& a, const T& b) {
-  return absl::holds_alternative<T>(a) && absl::get<T>(a) == b;
+  return std::holds_alternative<T>(a) && std::get<T>(a) == b;
 }
 
 template <typename T, typename V, EnableIfIsVariantAlternative<T, V> = true>
 constexpr bool operator!=(const T& a, const V& b) {
-  return !absl::holds_alternative<T>(b) || a != absl::get<T>(b);
+  return !std::holds_alternative<T>(b) || a != std::get<T>(b);
 }
 
 template <typename T, typename V, EnableIfIsVariantAlternative<T, V> = true>
 constexpr bool operator!=(const V& a, const T& b) {
-  return !absl::holds_alternative<T>(a) || absl::get<T>(a) != b;
+  return !std::holds_alternative<T>(a) || std::get<T>(a) != b;
 }
 
 }  // namespace internal

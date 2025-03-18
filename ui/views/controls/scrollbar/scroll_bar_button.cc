@@ -5,10 +5,10 @@
 #include "ui/views/controls/scrollbar/scroll_bar_button.h"
 
 #include <utility>
+#include <variant>
 
 #include "base/functional/bind.h"
 #include "base/time/tick_clock.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"

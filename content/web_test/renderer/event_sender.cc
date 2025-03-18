@@ -15,6 +15,7 @@
 #include <limits>
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/check_op.h"
@@ -38,7 +39,6 @@
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
 #include "net/base/filename_util.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
@@ -1877,7 +1877,7 @@ void EventSender::DumpFilenameBeingDragged(blink::WebLocalFrame* frame) {
   std::vector<WebDragData::Item> items = current_drag_data_->Items();
   for (const auto& item : items) {
     if (const auto* binary_data_item =
-            absl::get_if<WebDragData::BinaryDataItem>(&item)) {
+            std::get_if<WebDragData::BinaryDataItem>(&item)) {
       WebURL url = binary_data_item->source_url;
       WebString filename_extension = binary_data_item->filename_extension;
       WebString content_disposition = binary_data_item->content_disposition;
@@ -1957,7 +1957,7 @@ void EventSender::BeginDragWithItems(
   for (const WebDragData::Item& item : items) {
     current_drag_data_->AddItem(item);
     if (const auto* filename_item =
-            absl::get_if<WebDragData::FilenameItem>(&item)) {
+            std::get_if<WebDragData::FilenameItem>(&item)) {
       file_paths.push_back(blink::WebStringToFilePath(filename_item->filename));
     }
   }

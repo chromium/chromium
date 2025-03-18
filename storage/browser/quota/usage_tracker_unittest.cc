@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "storage/browser/quota/usage_tracker.h"
+
 #include <stdint.h>
 
 #include <cstdint>
@@ -23,10 +25,10 @@
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_impl.h"
-#include "storage/browser/quota/usage_tracker.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
 using ::blink::StorageKey;
 using ::blink::mojom::QuotaStatusCode;
@@ -46,7 +48,6 @@ class UsageTrackerTestQuotaClient : public mojom::QuotaClient {
 
   void GetBucketUsage(const BucketLocator& bucket,
                       GetBucketUsageCallback callback) override {
-    EXPECT_EQ(StorageType::kTemporary, bucket.type);
     int64_t usage = GetUsage(bucket);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), usage));
@@ -54,7 +55,6 @@ class UsageTrackerTestQuotaClient : public mojom::QuotaClient {
 
   void GetStorageKeysForType(StorageType type,
                              GetStorageKeysForTypeCallback callback) override {
-    EXPECT_EQ(StorageType::kTemporary, type);
     std::set<StorageKey> storage_keys;
     for (const auto& bucket_usage_pair : bucket_usage_map_) {
       storage_keys.emplace(bucket_usage_pair.first.storage_key);
@@ -67,7 +67,6 @@ class UsageTrackerTestQuotaClient : public mojom::QuotaClient {
 
   void DeleteBucketData(const BucketLocator& bucket,
                         DeleteBucketDataCallback callback) override {
-    EXPECT_EQ(StorageType::kTemporary, bucket.type);
     bucket_usage_map_.erase(bucket);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), QuotaStatusCode::kOk));
@@ -112,8 +111,7 @@ class UsageTrackerTest : public testing::Test {
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         storage_policy_.get(), GetQuotaSettingsFunc());
     usage_tracker_ = std::make_unique<UsageTracker>(
-        quota_manager_.get(), GetQuotaClientMap(), StorageType::kTemporary,
-        storage_policy_.get());
+        quota_manager_.get(), GetQuotaClientMap(), storage_policy_.get());
   }
 
   UsageTrackerTest(const UsageTrackerTest&) = delete;
@@ -180,7 +178,6 @@ class UsageTrackerTest : public testing::Test {
                              const std::string& bucket_name) {
     base::test::TestFuture<QuotaErrorOr<BucketInfo>> future;
     quota_manager_->CreateBucketForTesting(storage_key, bucket_name,
-                                           StorageType::kTemporary,
                                            future.GetCallback());
     QuotaErrorOr<BucketInfo> bucket_result = future.Take();
     DCHECK(bucket_result.has_value());

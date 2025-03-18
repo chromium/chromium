@@ -20,13 +20,11 @@ enum AIManagerCreateClientError {
   // The underlying service fails to create the on-device session.
   kUnableToCreateSession = 0,
 
-  // The manager is unable to calculate the token size of the initial prompt.
-  // This error occurs only for an initial prompt of AILanguageModel.
+  // The manager is unable to calculate the token size of the initial input.
   kUnableToCalculateTokenSize = 1,
 
-  // The initial prompt is too large to fit in the context.
-  // This error occurs only for an initial prompt of AILanguageModel.
-  kInitialPromptsTooLarge = 2,
+  // The initial input (context or prompt) exceeds the quota limit.
+  kInitialInputTooLarge = 2,
 
   // The expected language is not supported.
   kUnsupportedLanguage = 3,

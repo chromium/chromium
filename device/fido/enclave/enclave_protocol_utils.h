@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/component_export.h"
@@ -19,7 +20,6 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/enclave/types.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace sync_pb {
 class WebauthnCredentialSpecifics;
@@ -63,19 +63,19 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) ErrorResponse {
 // one is for the GetAssertion.
 // Returns one of: A successful response, or a struct containing details of
 //                 the error.
-absl::variant<AuthenticatorGetAssertionResponse, ErrorResponse>
-    COMPONENT_EXPORT(DEVICE_FIDO)
-        ParseGetAssertionResponse(cbor::Value response_value,
-                                  base::span<const uint8_t> credential_id);
+std::variant<AuthenticatorGetAssertionResponse, ErrorResponse> COMPONENT_EXPORT(
+    DEVICE_FIDO)
+    ParseGetAssertionResponse(cbor::Value response_value,
+                              base::span<const uint8_t> credential_id);
 
 // Parses a decrypted registration command response from the enclave.
 // If there are multiple request responses in the array, it assumes the last
 // one is for the MakeCredential.
 // Returns one of: A pair containing the response and the new passkey entity,
 //                 a struct containing details of the error.
-absl::variant<std::pair<AuthenticatorMakeCredentialResponse,
-                        sync_pb::WebauthnCredentialSpecifics>,
-              ErrorResponse>
+std::variant<std::pair<AuthenticatorMakeCredentialResponse,
+                       sync_pb::WebauthnCredentialSpecifics>,
+             ErrorResponse>
     COMPONENT_EXPORT(DEVICE_FIDO)
         ParseMakeCredentialResponse(cbor::Value response,
                                     const CtapMakeCredentialRequest& request,

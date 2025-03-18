@@ -50,6 +50,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
@@ -440,6 +441,26 @@ public class AccessibilitySettingsTest {
         onView(withId(R.id.text_size_contrast_slider)).perform(ViewActions.swipeRight());
         Assert.assertNotEquals(
                 startingVal, mPageZoomPref.getTextSizeContrastSliderForTesting().getProgress());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Accessibility"})
+    public void testReaderModePreferenceChange() {
+        ChromeSwitchPreference readerModePref =
+                (ChromeSwitchPreference)
+                        mAccessibilitySettings.findPreference(
+                                AccessibilitySettings.PREF_READER_FOR_ACCESSIBILITY);
+        boolean initialValue = readerModePref.isChecked();
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                "DomDistiller.Android.ReaderModeEnabledInAccessibilitySettings",
+                                !initialValue)
+                        .build();
+        readerModePref.callChangeListener(!initialValue);
+        watcher.assertExpected();
     }
 
     // Helper methods.

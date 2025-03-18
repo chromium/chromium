@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {AnnotationBrushType} from '../constants.js';
@@ -12,8 +12,6 @@ import {blendHighlighterColorValue, colorToHex, hexToColor} from '../pdf_viewer_
 
 import {getCss} from './ink_color_selector.css.js';
 import {getHtml} from './ink_color_selector.html.js';
-
-const NUM_OPTION_COLUMNS: number = 5;
 
 interface ColorOption {
   label: string;
@@ -37,7 +35,7 @@ const HIGHLIGHTER_COLORS: ColorOption[] = [
   // LINT.ThenChange(//pdf/pdf_ink_metrics_handler.cc:HighlighterColors)
 ];
 
-const PEN_COLORS: ColorOption[] = [
+export const PEN_COLORS: ColorOption[] = [
   // LINT.IfChange(PenColors)
   // Row 1:
   {label: 'annotationColorBlack', color: '#000000'},
@@ -73,55 +71,6 @@ function areColorsEqual(lhs: Color, rhs: Color): boolean {
   return lhs.r === rhs.r && lhs.g === rhs.g && lhs.b === rhs.b;
 }
 
-/**
- * Given an arrow key, the index of the current selected color, and the number
- * of color options, returns the index of the color that should be selected
- * after moving in the direction of the arrow key in a 2D grid of color options.
- * @param key The key pressed. Must be an arrow key.
- * @param currentIndex The index of the current selected color.
- * @param numOptions The number of color options.
- * @returns The index of the color that should be selected after moving in the
- *     direction of `key`.
- */
-function getNewColorIndex(
-    key: string, currentIndex: number, numOptions: number): number {
-  let delta: number;
-  switch (key) {
-    case 'ArrowLeft':
-      // If the current index is in the first column, wrap to the last column.
-      // Otherwise, move one column left.
-      delta = (currentIndex % NUM_OPTION_COLUMNS === 0) ?
-          NUM_OPTION_COLUMNS - 1 :
-          -1;
-      break;
-    case 'ArrowUp':
-      // If the current index is in the first row, wrap to the last row.
-      // Otherwise, move one row up.
-      delta = (currentIndex < NUM_OPTION_COLUMNS) ?
-          numOptions - NUM_OPTION_COLUMNS :
-          -NUM_OPTION_COLUMNS;
-      break;
-    case 'ArrowRight':
-      // If the current index is in the last column, wrap to the first column.
-      // Otherwise, move one column right.
-      delta = (currentIndex % NUM_OPTION_COLUMNS === NUM_OPTION_COLUMNS - 1) ?
-          -NUM_OPTION_COLUMNS + 1 :
-          1;
-      break;
-    case 'ArrowDown':
-      // If the current index is in the last row, wrap to the first row.
-      // Otherwise, move one row down.
-      delta = (currentIndex >= numOptions - NUM_OPTION_COLUMNS) ?
-          -numOptions + NUM_OPTION_COLUMNS :
-          NUM_OPTION_COLUMNS;
-      break;
-    default:
-      assertNotReached();
-  }
-  return currentIndex + delta;
-}
-
-
 const InkColorSelectorElementBase = I18nMixinLit(CrLitElement);
 
 export class InkColorSelectorElement extends InkColorSelectorElementBase {
@@ -154,29 +103,15 @@ export class InkColorSelectorElement extends InkColorSelectorElementBase {
     this.setBrushColor_(e.currentTarget as HTMLInputElement);
   }
 
-  protected onColorKeydown_(e: KeyboardEvent) {
-    // Only handle arrow keys.
-    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowUp' &&
-        e.key !== 'ArrowRight' && e.key !== 'ArrowDown') {
-      return;
-    }
-    e.preventDefault();
+  protected onCrGridFocusChanged_(e: CustomEvent<HTMLElement>) {
+    this.setBrushColor_(e.detail as HTMLInputElement);
+  }
 
-    const colorButton = e.target as HTMLInputElement;
-    const currentIndex = Number(colorButton.dataset['index']);
-
-    const brushColors = this.getCurrentBrushColors_();
-    const numOptions = brushColors.length;
-    const newIndex = getNewColorIndex(e.key, currentIndex, numOptions);
-    assert(newIndex >= 0);
-    assert(newIndex < numOptions);
-
-    const newColor = brushColors[newIndex]!.color;
-    const newColorButton = this.shadowRoot.querySelector<HTMLInputElement>(
-        `[value='${newColor}']`);
-    assert(newColorButton);
-    this.setBrushColor_(newColorButton);
-    newColorButton.focus();
+  override focus() {
+    const selectedButton =
+        this.shadowRoot.querySelector<HTMLElement>('input[checked]');
+    assert(selectedButton);
+    selectedButton.focus();
   }
 
   protected isCurrentColor_(hex: string): boolean {

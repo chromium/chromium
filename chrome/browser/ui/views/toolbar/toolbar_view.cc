@@ -48,7 +48,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
-#include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
@@ -284,13 +283,6 @@ void ToolbarView::Init() {
   // Make sure the toolbar shows by default.
   size_animation_.Reset(1);
 
-  std::unique_ptr<DownloadToolbarButtonView> download_button;
-  if (download::IsDownloadBubbleEnabled() &&
-      !base::FeatureList::IsEnabled(features::kPinnableDownloadsButton)) {
-    download_button =
-        std::make_unique<DownloadToolbarButtonView>(browser_view_);
-  }
-
   if (display_mode_ != DisplayMode::NORMAL) {
     location_bar_ = container_view_->AddChildView(std::move(location_bar));
     location_bar_->Init();
@@ -303,17 +295,6 @@ void ToolbarView::Init() {
     initialized_ = true;
     return;
   } else if (display_mode_ == DisplayMode::LOCATION) {
-    // Add the download button for popups.
-    if (download_button) {
-      download_button_ =
-          container_view_->AddChildView(std::move(download_button));
-      download_button_->SetPreferredSize(
-          gfx::Size(location_bar_->GetPreferredSize().height(),
-                    location_bar_->GetPreferredSize().height()));
-      download_button_->SetFocusBehavior(FocusBehavior::ALWAYS);
-      // Hide the icon by default; it will show up when there's a download.
-      download_button_->Hide();
-    }
     container_view_->SetBackground(
         views::CreateSolidBackground(kColorLocationBarBackground));
     container_view_->SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -448,11 +429,6 @@ void ToolbarView::Init() {
 
   if (media_button) {
     media_button_ = container_view_->AddChildView(std::move(media_button));
-  }
-
-  if (download_button) {
-    download_button_ =
-        container_view_->AddChildView(std::move(download_button));
   }
 
   avatar_ = container_view_->AddChildView(
@@ -1181,13 +1157,10 @@ IntentChipButton* ToolbarView::GetIntentChipButton() {
 }
 
 ToolbarButton* ToolbarView::GetDownloadButton() {
-  if (base::FeatureList::IsEnabled(features::kPinnableDownloadsButton)) {
     return pinned_toolbar_actions_container_
                ? pinned_toolbar_actions_container_->GetButtonFor(
                      kActionShowDownloads)
                : nullptr;
-  }
-  return download_button();
 }
 
 std::optional<BrowserRootView::DropIndex> ToolbarView::GetDropIndex(

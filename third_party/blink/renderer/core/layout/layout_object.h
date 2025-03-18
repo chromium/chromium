@@ -673,6 +673,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return StyleRef().ContainsBlockSize() && IsEligibleForSizeContainment();
   }
+  inline bool ShouldApplyAnySizeContainment() const {
+    NOT_DESTROYED();
+    return StyleRef().ContainsAnySize() && IsEligibleForSizeContainment();
+  }
   inline bool ShouldApplyStyleContainment() const {
     NOT_DESTROYED();
     return StyleRef().ContainsStyle();

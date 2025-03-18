@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/types/optional_ref.h"
@@ -15,7 +16,6 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace net {
 class SiteForCookies;
@@ -494,7 +494,7 @@ class CookieSettingsBase {
 
   // Returns a decision on whether to allow or block the cookie request. This
   // accounts for user settings, global settings, and special cases.
-  absl::variant<AllowAllCookies, AllowPartitionedCookies, BlockAllCookies>
+  std::variant<AllowAllCookies, AllowPartitionedCookies, BlockAllCookies>
   DecideAccess(const GURL& url,
                const GURL& first_party_url,
                bool is_third_party_request,

@@ -5,13 +5,14 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_AUTOFILL_SUGGESTION_DELEGATE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_AUTOFILL_SUGGESTION_DELEGATE_H_
 
+#include <variant>
+
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_button_action.h"
 #include "components/autofill/core/common/aliases.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace password_manager {
 class PasswordManagerDriver;
@@ -39,8 +40,8 @@ class AutofillSuggestionDelegate {
 
   virtual ~AutofillSuggestionDelegate() = default;
 
-  virtual absl::variant<AutofillDriver*,
-                        password_manager::PasswordManagerDriver*>
+  virtual std::variant<AutofillDriver*,
+                       password_manager::PasswordManagerDriver*>
   GetDriver() = 0;
 
   // Called when Autofill suggestions are shown. On Desktop, where the

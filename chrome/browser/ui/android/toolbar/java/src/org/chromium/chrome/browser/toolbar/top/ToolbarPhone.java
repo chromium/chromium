@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator.TransitionType;
+import org.chromium.chrome.browser.toolbar.reload_button.ReloadButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarColorObserver;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.UrlExpansionObserver;
@@ -351,7 +352,8 @@ public class ToolbarPhone extends ToolbarLayout
             ToolbarTablet.OfflineDownloader offlineDownloader,
             UserEducationHelper userEducationHelper,
             ObservableSupplier<Tracker> trackerSupplier,
-            ToolbarProgressBar progressBar) {
+            ToolbarProgressBar progressBar,
+            ReloadButtonCoordinator reloadButtonCoordinator) {
         super.initialize(
                 toolbarDataProvider,
                 tabController,
@@ -362,7 +364,8 @@ public class ToolbarPhone extends ToolbarLayout
                 offlineDownloader,
                 userEducationHelper,
                 trackerSupplier,
-                progressBar);
+                progressBar,
+                reloadButtonCoordinator);
         mUserEducationHelper = userEducationHelper;
         mTrackerSupplier = trackerSupplier;
 

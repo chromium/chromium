@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/loader/web_bundle/script_web_bundle_rule.h"
 
+#include <variant>
+
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
@@ -50,7 +52,7 @@ network::mojom::CredentialsMode ParseCredentials(const String& credentials) {
 
 }  // namespace
 
-absl::variant<ScriptWebBundleRule, ScriptWebBundleError>
+std::variant<ScriptWebBundleRule, ScriptWebBundleError>
 ScriptWebBundleRule::ParseJson(const String& inline_text,
                                const KURL& base_url,
                                ConsoleLogger* logger) {

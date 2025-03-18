@@ -649,7 +649,7 @@ TEST_F(RootViewTest, RemoveViewOnMouseEnterDispatch) {
   // to prevent test memory leak.
   RemoveViewOnEvent child(ui::EventType::kMouseEntered);
 
-  content->AddChildView(&child);
+  content->AddChildViewRaw(&child);
 
   // Make |child| smaller than the containing Widget and RootView.
   child.SetBounds(100, 100, 100, 100);

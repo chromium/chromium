@@ -45,8 +45,8 @@ public class PriceHistoryBottomSheetContentCoordinator
         mMediator =
                 new PriceHistoryBottomSheetContentMediator(
                         context,
-                        tabSupplier.get(),
-                        tabModelSelectorSupplier.get(),
+                        tabSupplier,
+                        tabModelSelectorSupplier,
                         propertyModel,
                         priceInsightsDelegate);
     }

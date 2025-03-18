@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <variant>
 
 #include "base/android/build_info.h"
 #include "base/feature_list.h"
@@ -93,7 +94,7 @@ void OverlayProcessorSurfaceControl::CheckOverlaySupportImpl(
     // `candidate.transform` here. `display_transform_` only applies to content
     // on the main plane so it needs to be removed candidate it its own plane.
     gfx::OverlayTransform candidate_overlay_transform = OverlayTransformsConcat(
-        absl::get<gfx::OverlayTransform>(candidate.transform),
+        std::get<gfx::OverlayTransform>(candidate.transform),
         InvertOverlayTransform(display_transform_));
     // Note the transform below using `candidate_overlay_transform` to compute
     // clipped and normalized `uv_rect` is only tested with NONE and

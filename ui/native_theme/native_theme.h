@@ -7,6 +7,7 @@
 
 #include <map>
 #include <optional>
+#include <variant>
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
@@ -15,7 +16,6 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/color/color_id.h"
@@ -359,25 +359,25 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
     int classic_state = 0;  // Used on Windows when uxtheme is not available.
   };
 
-  using ExtraParams = absl::variant<ButtonExtraParams,
-                                    FrameTopAreaExtraParams,
-                                    InnerSpinButtonExtraParams,
-                                    MenuArrowExtraParams,
-                                    MenuCheckExtraParams,
-                                    MenuItemExtraParams,
-                                    MenuSeparatorExtraParams,
-                                    MenuListExtraParams,
-                                    MenuBackgroundExtraParams,
-                                    ProgressBarExtraParams,
-                                    ScrollbarArrowExtraParams,
+  using ExtraParams = std::variant<ButtonExtraParams,
+                                   FrameTopAreaExtraParams,
+                                   InnerSpinButtonExtraParams,
+                                   MenuArrowExtraParams,
+                                   MenuCheckExtraParams,
+                                   MenuItemExtraParams,
+                                   MenuSeparatorExtraParams,
+                                   MenuListExtraParams,
+                                   MenuBackgroundExtraParams,
+                                   ProgressBarExtraParams,
+                                   ScrollbarArrowExtraParams,
 #if BUILDFLAG(IS_APPLE)
-                                    ScrollbarExtraParams,
+                                   ScrollbarExtraParams,
 #endif
-                                    ScrollbarTrackExtraParams,
-                                    ScrollbarThumbExtraParams,
-                                    SliderExtraParams,
-                                    TextFieldExtraParams,
-                                    TrackbarExtraParams>;
+                                   ScrollbarTrackExtraParams,
+                                   ScrollbarThumbExtraParams,
+                                   SliderExtraParams,
+                                   TextFieldExtraParams,
+                                   TrackbarExtraParams>;
 
   NativeTheme(const NativeTheme&) = delete;
   NativeTheme& operator=(const NativeTheme&) = delete;

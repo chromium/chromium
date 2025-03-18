@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <functional>
 #include <memory>
+#include <utility>
+#include <variant>
 
 #include "ash/constants/ash_features.h"
 #include "base/functional/callback_helpers.h"
@@ -67,7 +69,6 @@
 #include "storage/common/file_system/file_system_mount_option.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace {
 
@@ -687,7 +688,7 @@ TEST_F(ArcAppsPublisherTest, PublishPermission) {
   std::ranges::sort(result, std::less<>(), &apps::Permission::permission_type);
 
   EXPECT_EQ(result[0]->permission_type, apps::PermissionType::kCamera);
-  EXPECT_EQ(absl::get<apps::TriState>(result[0]->value), apps::TriState::kAsk);
+  EXPECT_EQ(std::get<apps::TriState>(result[0]->value), apps::TriState::kAsk);
   EXPECT_FALSE(result[0]->is_managed);
   EXPECT_EQ(result[0]->details, std::nullopt);
 

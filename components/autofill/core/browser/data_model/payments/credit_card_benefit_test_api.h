@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_PAYMENTS_CREDIT_CARD_BENEFIT_TEST_API_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_PAYMENTS_CREDIT_CARD_BENEFIT_TEST_API_H_
 
+#include <variant>
+
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card_benefit.h"
 #include "url/origin.h"
@@ -72,7 +74,7 @@ class CreditCardMerchantBenefitTestApi : public CreditCardBenefitBaseTestApi {
 };
 
 inline CreditCardBenefitBaseTestApi test_api(CreditCardBenefit& benefit) {
-  return CreditCardBenefitBaseTestApi(absl::visit(
+  return CreditCardBenefitBaseTestApi(std::visit(
       [](auto& a) -> CreditCardBenefitBase* { return &a; }, benefit));
 }
 

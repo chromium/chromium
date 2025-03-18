@@ -166,6 +166,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1505542291183484463">Loga izmēra mainīšana mozaīkas skatā — uz leju</translation>
 <translation id="1510238584712386396">Lietojumprogrammu palaidējs</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Rādīt paziņojumu iestatījumus. Paziņojumi lietotnei ir izslēgti}zero{Rādīt paziņojumu iestatījumus. Paziņojumi ir izslēgti # lietotnēm}one{Rādīt paziņojumu iestatījumus. Paziņojumi ir izslēgti # lietotnei}other{Rādīt paziņojumu iestatījumus. Paziņojumi ir izslēgti # lietotnēm}}</translation>
+<translation id="1521655867290435174">Google izklājlapas</translation>
 <translation id="1523032696246003">Akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> līdz pilnai uzlādei</translation>
 <translation id="1525508553941733066">NERĀDĪT</translation>
 <translation id="1526448108126799339">Atvērt jaunu cilni jaunā logā</translation>
@@ -345,7 +346,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2201071101391734388"><ph name="INDEX" />. jaunākais fotoattēls no <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Sakļaut pakalpojumu Google uzdevumi</translation>
 <translation id="2208323208084708176">Vienots darbvirsmas režīms</translation>
-<translation id="2220572644011485463">PIN vai parole</translation>
 <translation id="2222841058024245321">7. darbvieta</translation>
 <translation id="2223384056430485343">Sadalītā ekrānā</translation>
 <translation id="2224075387478458881">Ja ekrānā ir redzams aizsargāts saturs, ekrāna ierakstīšana ir liegta.</translation>
@@ -1829,7 +1829,6 @@ Jauna instalācija</translation>
 <translation id="7000027735917578303">Logu un darbvietu iestatījumi</translation>
 <translation id="7004910047186208204">Mobilo datu savienojuma izveide</translation>
 <translation id="7005239792648594238">Lai sāktu, atveriet kādu lietotni</translation>
-<translation id="7007983414944123363">Nevarēja verificēt jūsu PIN vai paroli. Mēģiniet vēlreiz.</translation>
 <translation id="7014684956566476813">Izveidots savienojums ar ierīci “<ph name="DEVICE_NAME" />”</translation>
 <translation id="7015766095477679451">Atgriezieties plkst. <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">6. darbvieta</translation>
@@ -2466,6 +2465,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="9168436347345867845">Vēlāk</translation>
 <translation id="9178475906033259337">Tiek rādīts 1 rezultāts vaicājumam “<ph name="QUERY" />”</translation>
 <translation id="9179259655489829027">Šī funkcija ļauj ātri piekļūt jebkuram lietotājam, kurš ir pierakstījies, nepieprasot paroli. Izmantojiet šo funkciju tikai uzticamiem kontiem.</translation>
+<translation id="9183302530794969518">Google dokumenti</translation>
 <translation id="9183456764293710005">Pilnekrāna lupa</translation>
 <translation id="9192133205265227850">Varat izmantot ierīci <ph name="DEVICE_NAME" />.</translation>
 <translation id="9193626018745640770">Apraide nezināmā uztvērējā</translation>

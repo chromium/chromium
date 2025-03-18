@@ -4,6 +4,8 @@
 
 #include "components/password_manager/core/browser/password_store/password_store_built_in_backend.h"
 
+#include <variant>
+
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
@@ -52,9 +54,9 @@ base::OnceCallback<Result(Result)> ReportMetricsForResultCallback(
   return base::BindOnce(
       [](PasswordStoreBackendMetricsRecorder reporter,
          Result result) -> Result {
-        if (absl::holds_alternative<PasswordStoreBackendError>(result)) {
+        if (std::holds_alternative<PasswordStoreBackendError>(result)) {
           reporter.RecordMetrics(SuccessStatus::kError,
-                                 absl::get<PasswordStoreBackendError>(result));
+                                 std::get<PasswordStoreBackendError>(result));
         } else {
           reporter.RecordMetrics(SuccessStatus::kSuccess, std::nullopt);
         }
@@ -474,13 +476,13 @@ void PasswordStoreBuiltInBackend::InjectAffiliationAndBrandingInformation(
     LoginsOrErrorReply callback,
     LoginsResultOrError forms_or_error) {
   if (!affiliated_match_helper_ ||
-      absl::holds_alternative<PasswordStoreBackendError>(forms_or_error) ||
-      absl::get<LoginsResult>(forms_or_error).empty()) {
+      std::holds_alternative<PasswordStoreBackendError>(forms_or_error) ||
+      std::get<LoginsResult>(forms_or_error).empty()) {
     std::move(callback).Run(std::move(forms_or_error));
     return;
   }
   affiliated_match_helper_->InjectAffiliationAndBrandingInformation(
-      std::move(absl::get<LoginsResult>(forms_or_error)), std::move(callback));
+      std::move(std::get<LoginsResult>(forms_or_error)), std::move(callback));
 }
 
 void PasswordStoreBuiltInBackend::OnInitComplete(

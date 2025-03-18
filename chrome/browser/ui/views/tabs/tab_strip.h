@@ -301,7 +301,7 @@ class TabStrip : public views::View,
   bool EndDrag(EndDragReason reason) override;
   Tab* GetTabAt(const gfx::Point& point) override;
   Tab* GetAdjacentTab(const Tab* tab, int offset) override;
-  Tab* GetAdjacentSplitTab(const Tab* tab) override;
+  std::vector<Tab*> GetTabsInSplit(const Tab* tab) override;
   void OnMouseEventInTab(views::View* source,
                          const ui::MouseEvent& event) override;
   void UpdateHoverCard(Tab* tab, HoverCardUpdateType update_type) override;

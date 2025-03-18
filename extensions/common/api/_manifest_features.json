@@ -11,6 +11,11 @@
     "channel": "stable",
     "extension_types": ["shared_module"]
   },
+  "action": {
+    "channel": "stable",
+    "extension_types": ["extension"],
+    "min_manifest_version": 3
+  },
   "action_handlers": {
     "channel": "stable",
     "extension_types": ["platform_app"],

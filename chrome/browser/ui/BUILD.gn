@@ -3978,8 +3978,6 @@ static_library("ui") {
       "views/digital_credentials/digital_identity_safety_interstitial_controller_desktop.h",
       "views/dotted_icon.cc",
       "views/dotted_icon.h",
-      "views/download/bubble/download_toolbar_button_view.cc",
-      "views/download/bubble/download_toolbar_button_view.h",
       "views/elevation_icon_setter.cc",
       "views/elevation_icon_setter.h",
       "views/exclusive_access_bubble_views.cc",

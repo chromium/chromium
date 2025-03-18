@@ -16,7 +16,6 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/permission.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 

@@ -9,6 +9,7 @@
 #include <limits>
 #include <memory>
 #include <string_view>
+#include <variant>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -22,7 +23,6 @@
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "net/base/mime_util.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_util.h"
@@ -228,7 +228,7 @@ void Clipboard::DispatchPortableRepresentation(const ObjectMapParams& params) {
   // arguments to write are empty. Historically, `params` was passed as a vector
   // of byte vectors, and if any of the byte vectors were empty, this would
   // simply early return.
-  absl::visit(
+  std::visit(
       base::Overloaded{
           [&](const BitmapData& data) {
             // Unlike many of the other types, this does not perform an empty

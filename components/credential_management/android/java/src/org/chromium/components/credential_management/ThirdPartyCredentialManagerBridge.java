@@ -6,6 +6,8 @@ package org.chromium.components.credential_management;
 
 import android.content.Context;
 
+import androidx.credentials.CreateCredentialResponse;
+import androidx.credentials.CreatePasswordRequest;
 import androidx.credentials.Credential;
 import androidx.credentials.CredentialManager;
 import androidx.credentials.CredentialManagerCallback;
@@ -13,6 +15,7 @@ import androidx.credentials.GetCredentialRequest;
 import androidx.credentials.GetCredentialResponse;
 import androidx.credentials.GetPasswordOption;
 import androidx.credentials.PasswordCredential;
+import androidx.credentials.exceptions.CreateCredentialException;
 import androidx.credentials.exceptions.GetCredentialException;
 
 import org.jni_zero.CalledByNative;
@@ -48,10 +51,10 @@ class ThirdPartyCredentialManagerBridge {
                 sCredentialManagerForTesting == null
                         ? CredentialManager.create(context)
                         : sCredentialManagerForTesting;
-        GetPasswordOption getPasswordRequest = new GetPasswordOption();
-        GetCredentialRequest request =
+        GetPasswordOption passwordOption = new GetPasswordOption();
+        GetCredentialRequest getPasswordRequest =
                 new GetCredentialRequest.Builder()
-                        .addCredentialOption(getPasswordRequest)
+                        .addCredentialOption(passwordOption)
                         .setOrigin(origin)
                         .build();
 
@@ -69,7 +72,34 @@ class ThirdPartyCredentialManagerBridge {
                             }
                         };
         credentialManager.getCredentialAsync(
-                context, request, null, Runnable::run, credentialCallback);
+                context, getPasswordRequest, null, Runnable::run, credentialCallback);
+    }
+
+    @CalledByNative
+    void store(String username, String password, String origin) {
+        Context context = ContextUtils.getApplicationContext();
+        CredentialManager credentialManager =
+                sCredentialManagerForTesting == null
+                        ? CredentialManager.create(context)
+                        : sCredentialManagerForTesting;
+        CreatePasswordRequest createPasswordRequest =
+                new CreatePasswordRequest(username, password, origin, false, false);
+
+        CredentialManagerCallback<CreateCredentialResponse, CreateCredentialException>
+                credentialCallback =
+                        new CredentialManagerCallback<>() {
+                            @Override
+                            public void onError(CreateCredentialException e) {
+                                onCreateCredentialResponse(false);
+                            }
+
+                            @Override
+                            public void onResult(CreateCredentialResponse response) {
+                                onCreateCredentialResponse(true);
+                            }
+                        };
+        credentialManager.createCredentialAsync(
+                context, createPasswordRequest, null, Runnable::run, credentialCallback);
     }
 
     private void onGetCredentialResponse(GetCredentialResponse result, String origin) {
@@ -84,6 +114,11 @@ class ThirdPartyCredentialManagerBridge {
         }
     }
 
+    private void onCreateCredentialResponse(boolean success) {
+        ThirdPartyCredentialManagerBridgeJni.get()
+                .onCreateCredentialResponse(mReceiverBridge, success);
+    }
+
     private void onGetCredentialError() {
         ThirdPartyCredentialManagerBridgeJni.get().onGetPasswordCredentialError(mReceiverBridge);
     }
@@ -95,6 +130,9 @@ class ThirdPartyCredentialManagerBridge {
                 String username,
                 String password,
                 String origin);
+
+        void onCreateCredentialResponse(
+                long nativeThirdPartyCredentialManagerBridge, boolean success);
 
         void onGetPasswordCredentialError(long nativeThirdPartyCredentialManagerBridge);
     }

@@ -33,6 +33,7 @@
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/data_sharing/public/data_sharing_service.h"
+#include "components/data_sharing/public/data_type_controller/collaboration_group_data_type_controller.h"
 #include "components/data_sharing/public/features.h"
 #include "components/history/core/browser/sync/history_data_type_controller.h"
 #include "components/history/core/browser/sync/history_delete_directives_data_type_controller.h"
@@ -51,7 +52,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/core/dual_reading_list_model.h"
 #include "components/reading_list/core/reading_list_local_data_batch_uploader.h"
-#include "components/saved_tab_groups/internal/shared_tab_group_data_type_controller.h"
+#include "components/saved_tab_groups/public/shared_tab_group_data_type_controller.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/send_tab_to_self/send_tab_to_self_data_type_controller.h"
@@ -940,14 +941,15 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
             ->GetCollaborationGroupControllerDelegate()
             .get();
 
-    controllers.push_back(std::make_unique<DataTypeController>(
-        syncer::COLLABORATION_GROUP,
-        /*delegate_for_full_sync_mode=*/
-        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
-            delegate),
-        /*delegate_for_transport_mode=*/
-        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
-            delegate)));
+    controllers.push_back(
+        std::make_unique<data_sharing::CollaborationGroupDataTypeController>(
+            /*delegate_for_full_sync_mode=*/
+            std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+                delegate),
+            /*delegate_for_transport_mode=*/
+            std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+                delegate),
+            sync_service, identity_manager_.value()));
   }
 
   return controllers;

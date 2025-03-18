@@ -368,7 +368,7 @@ void PaintLayerStackingNode::CollectLayers(PaintLayer& paint_layer,
     if (layer_to_paint_overlay_overflow_controls_after) {
       layer_to_overlay_overflow_controls_painting_after_
           .insert(layer_to_paint_overlay_overflow_controls_after,
-                  MakeGarbageCollected<PaintLayers>())
+                  MakeGarbageCollected<GCedPaintLayers>())
           .stored_value->value->push_back(paint_layer);
     }
     paint_layer.SetNeedsReorderOverlayOverflowControls(

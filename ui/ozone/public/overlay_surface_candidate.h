@@ -6,10 +6,10 @@
 #define UI_OZONE_PUBLIC_OVERLAY_SURFACE_CANDIDATE_H_
 
 #include <optional>
+#include <variant>
 #include <vector>
 
 #include "base/component_export.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
@@ -47,7 +47,7 @@ class COMPONENT_EXPORT(OZONE_BASE) OverlaySurfaceCandidate {
   // Transformation to apply to layer during composition.
   // Note: A |gfx::OverlayTransform| transforms the buffer within its bounds and
   // does not affect |display_rect|.
-  absl::variant<gfx::OverlayTransform, gfx::Transform> transform =
+  std::variant<gfx::OverlayTransform, gfx::Transform> transform =
       gfx::OVERLAY_TRANSFORM_NONE;
   // Format of the buffer to composite.
   gfx::BufferFormat format = gfx::BufferFormat::BGRA_8888;

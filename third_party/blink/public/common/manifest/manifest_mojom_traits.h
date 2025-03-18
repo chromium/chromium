@@ -7,11 +7,11 @@
 
 #include <optional>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -272,12 +272,12 @@ struct BLINK_COMMON_EXPORT UnionTraits<blink::mojom::HomeTabUnionDataView,
 
   static ::blink::mojom::TabStripMemberVisibility visibility(
       const ::blink::Manifest::TabStrip::HomeTab& value) {
-    return absl::get<blink::mojom::TabStripMemberVisibility>(value);
+    return std::get<blink::mojom::TabStripMemberVisibility>(value);
   }
 
   static const ::blink::Manifest::HomeTabParams& params(
       const ::blink::Manifest::TabStrip::HomeTab& value) {
-    return absl::get<blink::Manifest::HomeTabParams>(value);
+    return std::get<blink::Manifest::HomeTabParams>(value);
   }
 
   static bool Read(blink::mojom::HomeTabUnionDataView data,

@@ -504,6 +504,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="310900540163454140">Vil du slette adgangskoden til <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Markér…</translation>
 <translation id="3119874402040566234">Du logges ud, og browserdataene slettes.</translation>
+<translation id="3124568093781685165">Del dine adgangskoder med din familie</translation>
 <translation id="3130863904455712965">Historik m.m.</translation>
 <translation id="313283613037595347">Opret ny inkognitofane.</translation>
 <translation id="3138611310073113613">Kassér valg</translation>
@@ -1003,6 +1004,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5352128922772839949">Gem fil</translation>
 <translation id="5355191726083956201">Forbedret beskyttelse er aktiveret</translation>
 <translation id="537853552771686272">Administrer de emner og websites, du er interesseret i</translation>
+<translation id="5390458669633674385">{count,plural, =1{{count} er lukket}one{{count} closed}other{{count} er lukket}}</translation>
 <translation id="5394975111793637642">Skjul kortet Produktanmeldelser til dig</translation>
 <translation id="5395707839134961196">Skjul søgemaskineoplysninger</translation>
 <translation id="5414763847370083940">Du får en underretning, hvis prisen falder på et website.</translation>
@@ -1132,6 +1134,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5897749768294722429">Synkroniser dine faner og din historik for hurtigt at vende tilbage til de websites, du har besøgt.</translation>
 <translation id="5898848375214731122">Masse</translation>
 <translation id="5899314093904173337">Du kan dele med folk i nærheden ved at få dem til at scanne denne QR-kode med deres kamera eller app til scanning af QR-koder</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} ny fane}one{{count} ny fane}other{{count} nye faner}}</translation>
 <translation id="5911030830365207728">Google Oversæt</translation>
 <translation id="5917913282764181683">Slet dine downloads automatisk</translation>
 <translation id="5922999516621365983">Træk fanen hertil for at fastgøre den.</translation>
@@ -1674,6 +1677,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8131740175452115882">Bekræft</translation>
 <translation id="8132598642024322408">Koster nu <ph name="PRICE" />. Førprisen var <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Du bør bruge en unik adgangskode til hvert website og hver app. Hvis nogen får kendskab til en genbrugt adgangskode, kan vedkommende bruge den til at få adgang til dine andre konti. Klik for at åbne websitet og ændre dine adgangskoder nu.</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} lukket fane}one{{count} lukket fane}other{{count} lukkede faner}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 anden}one{# anden}other{# andre}}</translation>
 <translation id="8150167929304790980">Fulde navn</translation>
 <translation id="8152331954420209374">Gå til Lens</translation>

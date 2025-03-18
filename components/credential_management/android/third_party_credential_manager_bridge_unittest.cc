@@ -19,6 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace credential_management {
+using StoreCallback = base::OnceCallback<void()>;
 using GetCallback = base::OnceCallback<void(
     password_manager::CredentialManagerError,
     const std::optional<password_manager::CredentialInfo>&)>;
@@ -41,9 +42,6 @@ class FakeJniDelegate : public JniDelegate {
       bridge_->OnGetPasswordCredentialError(env);
       return;
     }
-
-    const std::string kTestUsername("username");
-    const std::string kTestPassword("password");
     jstring username_java = env->NewStringUTF(kTestUsername.c_str());
     jstring password_java = env->NewStringUTF(kTestPassword.c_str());
     jstring origin_java = env->NewStringUTF(kTestOrigin.c_str());
@@ -54,6 +52,13 @@ class FakeJniDelegate : public JniDelegate {
                                           password_param_ref, origin_param_ref);
   }
 
+  void Store(const std::string& username,
+             const std::string& password,
+             const std::string& origin) override {
+    JNIEnv* env = jni_zero::AttachCurrentThread();
+    bridge_->OnCreateCredentialResponse(env, !simulate_errors_);
+  }
+
   void set_bridge(ThirdPartyCredentialManagerBridge* bridge) {
     bridge_ = bridge;
   }
@@ -62,6 +67,8 @@ class FakeJniDelegate : public JniDelegate {
     simulate_errors_ = simulate_errors;
   }
 
+  static constexpr std::string kTestUsername = "username";
+  static constexpr std::string kTestPassword = "password";
   static constexpr std::string kTestOrigin = "origin.com";
 
  private:
@@ -94,13 +101,12 @@ class ThirdPartyCredentialManagerBridgeTest : public testing::Test {
 TEST_F(ThirdPartyCredentialManagerBridgeTest, testSuccessfulGetCall) {
   base::RunLoop run_loop;
   base::MockCallback<GetCallback> mock_callback;
-  auto* callback_ptr = &mock_callback;
   fake_jni_delegate().set_error_simulation(false);
 
   bridge()->Create(mock_callback.Get());
 
   EXPECT_CALL(
-      *callback_ptr,
+      mock_callback,
       Run(password_manager::CredentialManagerError::SUCCESS, testing::_))
       .WillOnce(testing::Invoke([&]() { run_loop.Quit(); }));
   bridge()->Get(FakeJniDelegate::kTestOrigin);
@@ -110,16 +116,45 @@ TEST_F(ThirdPartyCredentialManagerBridgeTest, testSuccessfulGetCall) {
 TEST_F(ThirdPartyCredentialManagerBridgeTest, testUnuccessfulGetCall) {
   base::RunLoop run_loop;
   base::MockCallback<GetCallback> mock_callback;
-  auto* callback_ptr = &mock_callback;
   fake_jni_delegate().set_error_simulation(true);
 
   bridge()->Create(mock_callback.Get());
 
   EXPECT_CALL(
-      *callback_ptr,
+      mock_callback,
       Run(password_manager::CredentialManagerError::UNKNOWN, testing::_))
       .WillOnce(testing::Invoke([&]() { run_loop.Quit(); }));
   bridge()->Get(FakeJniDelegate::kTestOrigin);
+  run_loop.Run();
+}
+
+TEST_F(ThirdPartyCredentialManagerBridgeTest, testSuccessfulStoreCall) {
+  base::RunLoop run_loop;
+  base::MockCallback<StoreCallback> mock_callback;
+  fake_jni_delegate().set_error_simulation(false);
+
+  bridge()->Create(mock_callback.Get());
+
+  EXPECT_CALL(mock_callback, Run()).WillOnce(testing::Invoke([&]() {
+    run_loop.Quit();
+  }));
+  bridge()->Store(FakeJniDelegate::kTestUsername,
+                  FakeJniDelegate::kTestPassword, FakeJniDelegate::kTestOrigin);
+  run_loop.Run();
+}
+
+TEST_F(ThirdPartyCredentialManagerBridgeTest, testUnuccessfulStoreCall) {
+  base::RunLoop run_loop;
+  base::MockCallback<StoreCallback> mock_callback;
+  fake_jni_delegate().set_error_simulation(true);
+
+  bridge()->Create(mock_callback.Get());
+
+  EXPECT_CALL(mock_callback, Run()).WillOnce(testing::Invoke([&]() {
+    run_loop.Quit();
+  }));
+  bridge()->Store(FakeJniDelegate::kTestUsername,
+                  FakeJniDelegate::kTestPassword, FakeJniDelegate::kTestOrigin);
   run_loop.Run();
 }
 

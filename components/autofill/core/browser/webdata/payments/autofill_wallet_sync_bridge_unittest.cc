@@ -9,6 +9,7 @@
 #include <memory>
 #include <string_view>
 #include <utility>
+#include <variant>
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -64,7 +65,7 @@ namespace {
 using ::autofill::AutofillProfileChange;
 using ::autofill::CreditCardChange;
 using ::base::ScopedTempDir;
-using IbanChangeKey = absl::variant<std::string, int64_t>;
+using IbanChangeKey = std::variant<std::string, int64_t>;
 using ::base::test::EqualsProto;
 using ::sync_pb::AutofillWalletSpecifics;
 using ::sync_pb::DataTypeState;

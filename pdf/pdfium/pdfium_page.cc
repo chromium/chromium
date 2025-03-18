@@ -1474,7 +1474,7 @@ void PDFiumPage::CalculateImages() {
     image.bounding_rect = PageToScreen(gfx::Point(), 1.0, left, top, right,
                                        bottom, PageOrientation::kOriginal);
 
-    if (engine_->IsTagged()) {
+    if (engine_->IsPDFDocTagged()) {
       // Collect all marked content IDs for image objects so that they can
       // later be used to retrieve alt text from struct tree for the page.
       FPDF_IMAGEOBJ_METADATA image_metadata;

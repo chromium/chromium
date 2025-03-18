@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/cros_apps/api/cros_apps_api_frame_context.h"
 
+#include <variant>
+
 #include "base/functional/overloaded.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/navigation_handle.h"
@@ -20,7 +22,7 @@ CrosAppsApiFrameContext::CrosAppsApiFrameContext(
 CrosAppsApiFrameContext::~CrosAppsApiFrameContext() = default;
 
 const GURL& CrosAppsApiFrameContext::GetUrl() const {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [](const raw_ref<content::RenderFrameHost> rfh) -> const GURL& {
             return rfh->GetLastCommittedURL();
@@ -31,7 +33,7 @@ const GURL& CrosAppsApiFrameContext::GetUrl() const {
 }
 
 bool CrosAppsApiFrameContext::IsPrimaryMainFrame() const {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [](const raw_ref<content::RenderFrameHost> rfh) {
             return rfh->IsInPrimaryMainFrame();
@@ -43,7 +45,7 @@ bool CrosAppsApiFrameContext::IsPrimaryMainFrame() const {
 }
 
 const Profile* CrosAppsApiFrameContext::Profile() const {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [](const raw_ref<content::RenderFrameHost> rfh) {
             return Profile::FromBrowserContext(rfh->GetBrowserContext());

@@ -639,11 +639,54 @@ int Element::DefaultTabIndex() const {
   return -1;
 }
 
-int Element::ReadingOrderValue() const {
-  if (const ComputedStyle* style = GetComputedStyle()) {
-    return style->ReadingOrder();
+const HeapVector<Member<Node>> Element::ReadingFlowChildren() const {
+  HeapVector<Member<Node>> children;
+  const Element* layout_parent =
+      HasDisplayContentsStyle()
+          ? LayoutTreeBuilderTraversal::LayoutParentElement(*this)
+          : this;
+  if (!layout_parent || !layout_parent->IsReadingFlowContainer()) {
+    return children;
   }
-  return 0;
+  // Add all reading flow items first, in the reading flow order.
+  for (Node* reading_flow_item :
+       layout_parent->GetLayoutBox()->ReadingFlowNodes()) {
+    // reading_flow_item or its ancestor (display: contents) might not be a
+    // direct child of this. Loop the parents and only add the node if its
+    // FlatTreeTraversal::ParentElement is this element.
+    while (reading_flow_item) {
+      auto* parent = FlatTreeTraversal::ParentElement(*reading_flow_item);
+      if (parent == this) {
+        // TODO(dizhangg) this check is O(n^2)
+        if (!children.Contains(reading_flow_item)) {
+          children.push_back(reading_flow_item);
+        }
+        break;
+      }
+      reading_flow_item = parent;
+    }
+  }
+  // Add all non-reading flow items at the end of the reading flow.
+  for (Node& child : FlatTreeTraversal::ChildrenOf(*this)) {
+    // TODO(dizhangg) this check is O(n^2)
+    if (!children.Contains(child)) {
+      children.push_back(child);
+    }
+  }
+  // Now that we have a complete list of children, sort them by reading-order.
+  auto reading_order = [](Node* node) {
+    if (const Element* el = DynamicTo<Element>(node)) {
+      if (const ComputedStyle* style = el->GetComputedStyle()) {
+        return style->ReadingOrder();
+      }
+    }
+    return 0;
+  };
+  std::stable_sort(children.begin(), children.end(),
+                   [&reading_order](const auto& lhs, const auto& rhs) {
+                     return reading_order(lhs) < reading_order(rhs);
+                   });
+  return children;
 }
 
 bool Element::IsFocusableStyle(UpdateBehavior update_behavior) const {
@@ -669,6 +712,16 @@ bool Element::IsFocusableStyle(UpdateBehavior update_behavior) const {
   // Also note that if this node is ignored due to a display lock for focus
   // activation reason, we simply return false to avoid updating style & layout
   // tree for this node.
+  if (update_behavior == UpdateBehavior::kStyleAndLayout) {
+    // This update is needed in the case that this element is inside a
+    // content-visibility:hidden element which hasn't gotten a
+    // DisplayLockContext created for it yet. Without this DisplayLockContext,
+    // DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock won't find the
+    // content-visibility:hidden ancestor and will erroneously tell us that
+    // there is no DisplayLocked ancestor, which will make this method return
+    // true instead of false.
+    GetDocument().UpdateStyleAndLayoutTree();
+  }
   if (DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock(
           *this, DisplayLockActivationReason::kUserFocus)) {
     return false;

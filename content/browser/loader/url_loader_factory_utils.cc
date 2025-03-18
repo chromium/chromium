@@ -4,6 +4,8 @@
 
 #include "content/browser/loader/url_loader_factory_utils.h"
 
+#include <variant>
+
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/cookies/cookie_setting_override.h"
@@ -254,7 +256,7 @@ template <typename OutType, typename... FinishArgs>
                                   factory_builder);
     }
 
-    return absl::visit(
+    return std::visit(
         [&factory_builder, &finish_args...](auto&& terminal) {
           return std::move(factory_builder)
               .template Finish<OutType>(

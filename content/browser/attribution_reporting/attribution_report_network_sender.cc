@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -33,7 +34,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -300,7 +300,7 @@ void AttributionReportNetworkSender::OnReportSent(
 
   std::optional<bool> has_trigger_context_id;
 
-  absl::visit(
+  std::visit(
       base::Overloaded{
           [&](const AttributionReport::EventLevelData&) {
             NetworkHistogram("ReportStatusEventLevel",

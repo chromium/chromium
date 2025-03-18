@@ -46,7 +46,7 @@ class FillLayoutTest : public testing::Test {
   StaticSizedView* AddChildView(int width, int height) {
     StaticSizedView* child_view = new StaticSizedView(gfx::Size(width, height));
     child_view->SizeToPreferredSize();
-    host_->AddChildView(child_view);
+    host_->AddChildViewRaw(child_view);
     return child_view;
   }
 

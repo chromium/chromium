@@ -1030,7 +1030,8 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                 mMockViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
 
         verify(mTabGroupModelFilter).mergeTabsToGroup(TAB1_ID, TAB2_ID);
-        verify(mTabGroupCreationDialogManager).showDialog(TAB2_ID, mTabGroupModelFilter);
+        verify(mTabGroupCreationDialogManager)
+                .showDialog(mTabModel.getTabById(TAB2_ID).getTabGroupId(), mTabGroupModelFilter);
     }
 
     private void verifyDrag(

@@ -1409,7 +1409,7 @@ void ServiceWorkerGlobalScope::DispatchExtendableMessageEventInternal(
     int event_id,
     mojom::blink::ExtendableMessageEventPtr event) {
   BlinkTransferableMessage msg = std::move(event->message);
-  MessagePortArray* ports =
+  GCedMessagePortArray* ports =
       MessagePort::EntanglePorts(*this, std::move(msg.ports));
   String origin;
   if (!event->source_origin->IsOpaque())

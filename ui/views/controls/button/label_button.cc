@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <string_view>
 #include <utility>
+#include <variant>
 
 #include "base/lazy_instance.h"
 #include "base/logging.h"
@@ -536,7 +537,7 @@ std::unique_ptr<ActionViewInterface> LabelButton::GetActionViewInterface() {
 }
 
 void LabelButton::GetExtraParams(ui::NativeTheme::ExtraParams* params) const {
-  auto& button = absl::get<ui::NativeTheme::ButtonExtraParams>(*params);
+  auto& button = std::get<ui::NativeTheme::ButtonExtraParams>(*params);
   button.checked = false;
   button.indeterminate = false;
   button.is_default = GetIsDefault();

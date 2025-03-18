@@ -503,6 +503,7 @@ Nếu bạn đặt chính sách này thành PromptInTab, thì khi phiên xác th
       Điều này áp dụng cho hoạt động loại bỏ ở chế độ hiệu suất cao và có áp lực bộ nhớ
       Trang bị loại bỏ sẽ bị huỷ tải và tài nguyên của trang được thu hồi hoàn toàn. Thẻ được liên kết với trang vẫn hiển thị trên dải thẻ, nhưng việc chuyển sang thẻ đó sẽ kích hoạt quá trình tải lại đầy đủ.
       </translation>
+<translation id="1386369130542976774">Chỉ định khoảng thời gian hằng tuần không thể sử dụng thiết bị ChromeOS</translation>
 <translation id="138847842893090358">Báo cáo trạng thái cập nhật hệ điều hành</translation>
 <translation id="1389138080311956934">Tiết kiệm bộ nhớ ở mức tối đa.</translation>
 <translation id="1390529781843037070">Nếu bạn đặt thành Bật hoặc không đặt chính sách này, thì người dùng sẽ có thể in bằng <ph name="CLOUD_PRINT_NAME" /> từ hộp thoại in trên <ph name="PRODUCT_NAME" />. <ph name="PRODUCT_NAME" /> có thể gửi các tài liệu tới <ph name="CLOUD_PRINT_NAME" /> để in. Điều này không ngăn người dùng gửi lệnh in trên các trang web.
@@ -4126,6 +4127,16 @@ có thể gửi báo cáo doanh nghiệp từ các điểm cuối này.
 
       Nếu bạn đặt chính sách này thành bật, bộ thuật toán mật mã 3DES trong TLS (Bảo mật tầng truyền tải) sẽ được kích hoạt. Bộ thuật toán mật mã sẽ bị vô hiệu hoá nếu bạn đặt chính sách này thành sai. Nếu bạn không đặt chính sách này, bộ thuật toán mật mã 3DES sẽ bị vô hiệu hoá theo mặc định. Bạn có thể dùng chính sách này để tạm thời duy trì khả năng tương thích với một máy chủ lỗi thời. Đây chỉ là giải pháp tạm thời nên bạn cần thiết lập lại máy chủ.
       </translation>
+<translation id="4016078577612157250">Chỉ định khoảng thời gian hằng tuần không thể sử dụng thiết bị ChromeOS.
+
+Trong khoảng thời gian bị hạn chế, mọi phiên đang diễn ra sẽ bị đóng và người dùng không thể đăng nhập.
+
+Những điều cần lưu ý:
+
+* Hệ thống không hỗ trợ khoảng thời gian chồng chéo.
+* Lịch biểu hạn chế trên thiết bị sẽ sử dụng múi giờ của thiết bị.
+* Để ngăn người dùng chỉnh sửa múi giờ của thiết bị, hãy sử dụng SystemTimezone.
+* Để ngăn người dùng chỉnh sửa thời gian trên thiết bị, hãy sử dụng SystemFeaturesDisableList để tắt Crosh và URLBlocklist để chặn chrome://set-time.</translation>
 <translation id="4016367078069682737">Chính sách này đã bị xóa trong phiên bản M61.
 
       Chỉ định cách thiết bị đã có sẵn ecryptfs sẽ hoạt động và cần phải chuyển đổi sang mã hóa ext4.

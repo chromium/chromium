@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 
 #include <memory>
+#include <variant>
 
 #include "base/check_op.h"
 #include "base/memory/singleton.h"
@@ -269,7 +270,7 @@ std::optional<AnalysisSettings> ConnectorsService::GetCommonAnalysisSettings(
     if (!dm_token.has_value())
       return std::nullopt;
 
-    absl::get<CloudAnalysisSettings>(settings.value().cloud_or_local_settings)
+    std::get<CloudAnalysisSettings>(settings.value().cloud_or_local_settings)
         .dm_token = dm_token.value().value;
   }
 

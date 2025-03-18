@@ -650,7 +650,7 @@ TEST_F(LabelButtonTest, TextSizeFromContext) {
 
   TestLabelButton* alternate_button =
       new TestLabelButton(text, kAlternateContext);
-  button()->parent()->AddChildView(alternate_button);
+  button()->parent()->AddChildViewRaw(alternate_button);
   EXPECT_EQ(alternate_delta,
             alternate_button->label()->font_list().GetFontSize() -
                 gfx::FontList().GetFontSize());

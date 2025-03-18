@@ -4,6 +4,8 @@
 
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_delegate_android_impl.h"
 
+#include <variant>
+
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
@@ -60,7 +62,7 @@ bool IsTriggeredOnIbanField(const FormStructure* form_field,
 
 TouchToFillDelegateAndroidImpl::DryRunResult::DryRunResult(
     TriggerOutcome outcome,
-    absl::variant<std::vector<CreditCard>, std::vector<Iban>> items_to_suggest)
+    std::variant<std::vector<CreditCard>, std::vector<Iban>> items_to_suggest)
     : outcome(outcome), items_to_suggest(std::move(items_to_suggest)) {}
 
 TouchToFillDelegateAndroidImpl::DryRunResult::DryRunResult(DryRunResult&&) =
@@ -194,7 +196,7 @@ bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
   DryRunResult dry_run = DryRun(form.global_id(), field.global_id(), form);
   if (dry_run.outcome == TriggerOutcome::kShown) {
     if (std::vector<CreditCard>* cards_to_suggest =
-            absl::get_if<std::vector<CreditCard>>(&dry_run.items_to_suggest);
+            std::get_if<std::vector<CreditCard>>(&dry_run.items_to_suggest);
         cards_to_suggest &&
         !manager_->client()
              .GetPaymentsAutofillClient()
@@ -205,7 +207,7 @@ bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
                      manager_->GetCreditCardFormEventLogger()))) {
       dry_run.outcome = TriggerOutcome::kFailedToDisplayBottomSheet;
     } else if (std::vector<Iban>* ibans_to_suggest =
-                   absl::get_if<std::vector<Iban>>(&dry_run.items_to_suggest);
+                   std::get_if<std::vector<Iban>>(&dry_run.items_to_suggest);
                ibans_to_suggest &&
                !manager_->client()
                     .GetPaymentsAutofillClient()
@@ -238,7 +240,7 @@ bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
   ttf_payment_method_state_ = TouchToFillState::kIsShowing;
   manager_->client().HideAutofillSuggestions(
       SuggestionHidingReason::kOverlappingWithTouchToFillSurface);
-  if (absl::get_if<std::vector<CreditCard>>(&dry_run.items_to_suggest)) {
+  if (std::get_if<std::vector<CreditCard>>(&dry_run.items_to_suggest)) {
     manager_->DidShowSuggestions({SuggestionType::kCreditCardEntry}, form,
                                  field.global_id());
   } else {
@@ -316,18 +318,18 @@ void TouchToFillDelegateAndroidImpl::CreditCardSuggestionSelected(
 }
 
 void TouchToFillDelegateAndroidImpl::IbanSuggestionSelected(
-    absl::variant<Iban::Guid, Iban::InstrumentId> backend_id) {
+    std::variant<Iban::Guid, Iban::InstrumentId> backend_id) {
   HideTouchToFill();
 
   manager_->client()
       .GetPaymentsAutofillClient()
       ->GetIbanAccessManager()
       ->FetchValue(
-          absl::holds_alternative<Iban::Guid>(backend_id)
+          std::holds_alternative<Iban::Guid>(backend_id)
               ? Suggestion::Payload(
-                    Suggestion::Guid(absl::get<Iban::Guid>(backend_id).value()))
+                    Suggestion::Guid(std::get<Iban::Guid>(backend_id).value()))
               : Suggestion::Payload(Suggestion::InstrumentId(
-                    absl::get<Iban::InstrumentId>(backend_id).value())),
+                    std::get<Iban::InstrumentId>(backend_id).value())),
           base::BindOnce(
               [](base::WeakPtr<TouchToFillDelegateAndroidImpl> delegate,
                  const std::u16string& value) {

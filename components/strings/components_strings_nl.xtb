@@ -316,7 +316,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1532118530259321453">Deze pagina meldt het volgende</translation>
 <translation id="1533966801397200693">Het profiel waarop je bent ingelogd, is een beheerd profiel. Je beheerder kan op afstand wijzigingen aanbrengen in je profielinstellingen, informatie over de browser analyseren via rapportage en andere nodige taken uitvoeren. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Pagina vertalen</translation>
-<translation id="1538295100801850685">Voorspellingsverbeteringen</translation>
 <translation id="1539840569003678498">Melding gestuurd:</translation>
 <translation id="1542105669288201090">Bedrijfsonderwijs</translation>
 <translation id="1545757265410828525">Prijsgeschiedenis</translation>
@@ -1157,7 +1156,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3052868890529250114">Meestal maak je veilig verbinding met sites, maar Chrome kan op dit moment geen beveiligde verbinding gebruiken. Een aanvaller probeert je netwerkverbinding af te luisteren of aan te passen. <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie over deze waarschuwing<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Prijsdaling van <ph name="PRICE_DROP" /> voor <ph name="PRODUCT_NAME" /></translation>
 <translation id="3061707000357573562">Patchservice</translation>
-<translation id="306198082577913404">Voorspellingsverbeteringen aanzetten</translation>
 <translation id="3062655045399308513">Browsegegevens verwijderen…</translation>
 <translation id="3063453392496098461">De installatie van VPN-achtergrondservices is mislukt.</translation>
 <translation id="306573536155379004">Game gestart.</translation>
@@ -2319,7 +2317,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5097099694988056070">Apparaatstatistieken zoals CPU-/RAM-gebruik rapporteren</translation>
 <translation id="5097468150760963273">27 x 39 inch</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome heeft toegang nodig tot de <ph name="PERMISSION" /> van je apparaat</translation>
 <translation id="510644072453496781">Karton (einde)</translation>
 <translation id="5106648964679263509">Virtuele kaart voor <ph name="BNPL_ISSUER_NAME" /> ingevuld</translation>
 <translation id="5108881358339761672">Site is niet beveiligd</translation>
@@ -4047,7 +4044,6 @@ Aanvullende informatie:
 <translation id="8134058435519644366">Werving en selectie</translation>
 <translation id="8135546115396015134">linkertoets</translation>
 <translation id="8137456439814903304">Nutsbedrijven</translation>
-<translation id="81474145143203755">Geef Chrome toegang om je <ph name="PERMISSION" /> op deze site te gebruiken</translation>
 <translation id="8148608574971654810">Pdf-versie:</translation>
 <translation id="8149426793427495338">De slaapstand van je computer is geactiveerd.</translation>
 <translation id="8150722005171944719">Het bestand op <ph name="URL" /> is onleesbaar. Het bestand is mogelijk verwijderd of verplaatst of de bestandsrechten zorgen ervoor dat het bestand niet kan worden geopend.</translation>

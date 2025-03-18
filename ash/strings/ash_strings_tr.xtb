@@ -166,6 +166,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1505542291183484463">Kutu içindeki yeniden boyutlandırma penceresini aşağı taşı</translation>
 <translation id="1510238584712386396">Başlatıcı</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Bildirim ayarlarını göster. Bildirimler bir uygulama için kapalı}other{Bildirim ayarlarını göster. Bildirimler # uygulama için kapalı}}</translation>
+<translation id="1521655867290435174">Google E-Tablolar</translation>
 <translation id="1523032696246003">Pil seviyesi %<ph name="BATTERY_PERCENTAGE" /> | Tamamen dolmasına <ph name="TIME" /> kaldı</translation>
 <translation id="1525508553941733066">KAPAT</translation>
 <translation id="1526448108126799339">Yeni sekmeyi yeni pencerede aç</translation>
@@ -345,7 +346,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2201071101391734388">Son <ph name="TOTAL_COUNT" /> fotoğraftan <ph name="INDEX" />. fotoğraf.</translation>
 <translation id="2201687081523799384">Google Görevler'i daraltın</translation>
 <translation id="2208323208084708176">Birleştirilmiş masaüstü modu</translation>
-<translation id="2220572644011485463">PIN veya şifre</translation>
 <translation id="2222841058024245321">Masa 7</translation>
 <translation id="2223384056430485343">Bölünmüş ekranda</translation>
 <translation id="2224075387478458881">Ekranda korunan içerik varken ekran kaydı almaya izin verilmez</translation>
@@ -1829,7 +1829,6 @@ Yeni yüklenmiş</translation>
 <translation id="7000027735917578303">Pencere ve masa ayarları</translation>
 <translation id="7004910047186208204">Hücresel veri bağlantısı kurma</translation>
 <translation id="7005239792648594238">Başlamak için bir uygulama açın</translation>
-<translation id="7007983414944123363">PIN'iniz veya şifreniz doğrulanamadı. Tekrar deneyin.</translation>
 <translation id="7014684956566476813"><ph name="DEVICE_NAME" /> adlı cihaza bağlanıldı</translation>
 <translation id="7015766095477679451">Saat <ph name="COME_BACK_TIME" /> olduğunda geri gelin.</translation>
 <translation id="70168403932084660">Masa 6</translation>
@@ -2466,6 +2465,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="9168436347345867845">Daha sonra yap</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> için 1 sonuç gösteriliyor</translation>
 <translation id="9179259655489829027">Bu özellik oturum açmış tüm kullanıcılara şifre gerektirmeden hızlı bir şekilde erişmenize olanak verir. Bu özelliği sadece güvendiğiniz hesaplarda kullanın.</translation>
+<translation id="9183302530794969518">Google Dokümanlar</translation>
 <translation id="9183456764293710005">Tam Ekran Büyüteci</translation>
 <translation id="9192133205265227850">"<ph name="DEVICE_NAME" />" hesabını kullan</translation>
 <translation id="9193626018745640770">Bilinmeyen bir alıcıya yayınlanıyor</translation>

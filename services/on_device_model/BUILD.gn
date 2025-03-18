@@ -58,6 +58,7 @@ source_set("tests") {
   deps = [
     ":on_device_model_service",
     "//base/test:test_support",
+    "//mojo/public/cpp/test_support:test_utils",
     "//services/on_device_model/fake",
     "//services/on_device_model/public/cpp/test_support",
     "//services/on_device_model/public/mojom",

@@ -54,7 +54,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/https_upgrades/model",
-    "//ios/chrome/browser/intents:intents_donation_helper",
+    "//ios/chrome/browser/intents/model:model_donation_helper",
     "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
     "//ios/chrome/browser/lens_overlay/model",
     "//ios/chrome/browser/lens_overlay/ui",

@@ -1949,4 +1949,10 @@ bool ContentBrowserClient::ShouldEnableSubframeZoom() {
   return false;
 }
 
+bool ContentBrowserClient::ShouldPrioritizeForBackForwardCache(
+    BrowserContext* browser_context,
+    const GURL& url) {
+  return false;
+}
+
 }  // namespace content

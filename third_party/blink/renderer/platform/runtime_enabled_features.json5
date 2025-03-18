@@ -862,6 +862,9 @@
       base_feature: "none",
     },
     {
+      name: "CompositingDecisionAtAnimationPhaseBoundaries"
+    },
+    {
       name: "CompositionForegroundMarkers",
       status: {
         "Android": "stable",
@@ -1060,6 +1063,12 @@
       name: "CSSComputedStyleFullPseudoElementParser",
       status: "stable",
     },
+    // https://drafts.csswg.org/css-values-5/#progress
+    // container-progress()
+    {
+      name: "CSSContainerProgressNotation",
+      status: "experimental",
+    },
     {
       // https://drafts.csswg.org/css-borders-4/#corner-shaping
       name: "CSSCornerShape",
@@ -1165,6 +1174,12 @@
       name: "CSSMasonryLayout",
       status: "test",
     },
+    // https://drafts.csswg.org/css-values-5/#progress
+    // media-progress()
+    {
+      name: "CSSMediaProgressNotation",
+      status: "experimental",
+    },
     {
       name: "CSSMixins",
       status: "test",
@@ -1191,7 +1206,7 @@
       status: "experimental",
     },
     // https://drafts.csswg.org/css-values-5/#progress
-    // progress(), media-progress(), container-progress()
+    // progress()
     {
       name: "CSSProgressNotation",
       status: "stable",
@@ -2124,7 +2139,7 @@
     },
     {
       name: "FledgeTrustedSignalsKVv2Support",
-      status: "test",
+      status: "stable",
     },
     {
       name: "FluentOverlayScrollbars",
@@ -2604,6 +2619,10 @@
       status: "experimental",
     },
     {
+      name: "LayoutWebkitBoxTreeFix",
+      status: "stable",
+    },
+    {
       name: "LazyInitializeMediaControls",
       base_feature: "none",
       public: true,
@@ -2942,13 +2961,7 @@
       // "virtual/text-antialias/" virtual test suite.
       // crbug.com/339041663
       name: "NoFontAntialiasing",
-      status: {
-        "Win": "test",
-        "Mac": "test",
-        "Linux": "test",
-        "Android": "test",
-        "default": ""
-      }
+      status: "test",
     },
     {
       name: "NoIdleEncodingForWebTests",
@@ -4419,6 +4432,11 @@
     },
     {
       name: "TextMetricsBaselines",
+      status: "stable",
+    },
+    {
+      // crbug.com/396666438
+      name: "TextOffsetMapCrashFix",
       status: "stable",
     },
     {

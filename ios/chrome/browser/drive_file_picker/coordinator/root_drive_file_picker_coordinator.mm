@@ -81,7 +81,7 @@
 }
 
 - (void)start {
-  ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
+  ProfileIOS* profile = self.profile->GetOriginalProfile();
   _authenticationService = AuthenticationServiceFactory::GetForProfile(profile);
   _currentIdentity =
       _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);

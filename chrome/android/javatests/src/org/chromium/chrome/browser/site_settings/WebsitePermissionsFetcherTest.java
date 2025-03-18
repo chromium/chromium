@@ -1464,9 +1464,6 @@ public class WebsitePermissionsFetcherTest {
         }
 
         Mockito.doReturn(true).when(mSiteSettingsDelegate).isRelatedWebsiteSetsDataAccessEnabled();
-        Mockito.doReturn(true)
-                .when(mSiteSettingsDelegate)
-                .isPrivacySandboxFirstPartySetsUiFeatureEnabled();
 
         var fetcher =
                 new WebsitePermissionsFetcher(

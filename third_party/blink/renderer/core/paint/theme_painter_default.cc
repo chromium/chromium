@@ -24,7 +24,8 @@
 
 #include "third_party/blink/renderer/core/paint/theme_painter_default.h"
 
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include <variant>
+
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/public/resources/grit/blink_image_resources.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -478,8 +479,7 @@ void ThemePainterDefault::SetupMenuListArrow(
     const ComputedStyle& style,
     const gfx::Rect& rect,
     WebThemeEngine::ExtraParams& extra_params) {
-  auto& menu_list =
-      absl::get<WebThemeEngine::MenuListExtraParams>(extra_params);
+  auto& menu_list = std::get<WebThemeEngine::MenuListExtraParams>(extra_params);
   WritingDirectionMode writing_direction = style.GetWritingDirection();
   PhysicalDirection block_end = writing_direction.BlockEnd();
   if (block_end == PhysicalDirection::kDown) {

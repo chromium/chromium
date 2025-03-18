@@ -5,6 +5,7 @@
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 
 #include <optional>
+#include <variant>
 #include <vector>
 
 #include "base/base64.h"
@@ -225,18 +226,18 @@ ParentAccessCallbackParsedResult::~ParentAccessCallbackParsedResult() = default;
 
 std::optional<ParentAccessWidgetError>
 ParentAccessCallbackParsedResult::GetError() const {
-  if (absl::holds_alternative<ParentAccessWidgetError>(result_)) {
-    return absl::get<ParentAccessWidgetError>(result_);
+  if (std::holds_alternative<ParentAccessWidgetError>(result_)) {
+    return std::get<ParentAccessWidgetError>(result_);
   }
   return std::nullopt;
 }
 
 std::optional<kids::platform::parentaccess::client::proto::ParentAccessCallback>
 ParentAccessCallbackParsedResult::GetCallback() const {
-  if (absl::holds_alternative<
+  if (std::holds_alternative<
           kids::platform::parentaccess::client::proto::ParentAccessCallback>(
           result_)) {
-    return absl::get<
+    return std::get<
         kids::platform::parentaccess::client::proto::ParentAccessCallback>(
         result_);
   }

@@ -22,7 +22,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
@@ -222,11 +221,6 @@ public class LightweightFirstRunActivity extends FirstRunActivityBase
     public @BackPressResult int handleBackPress() {
         abortFirstRunExperience();
         return BackPressResult.SUCCESS;
-    }
-
-    @Override
-    public int getSecondaryActivity() {
-        return SecondaryActivity.LIGHTWEIGHT_FIRST_RUN;
     }
 
     private void abortFirstRunExperience() {

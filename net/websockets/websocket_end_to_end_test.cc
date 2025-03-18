@@ -15,6 +15,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -80,7 +81,6 @@
 #include "net/websockets/websocket_event_interface.h"
 #include "net/websockets/websocket_handshake_response_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"

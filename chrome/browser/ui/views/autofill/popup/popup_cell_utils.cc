@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -33,7 +34,6 @@
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/image_model_utils.h"
@@ -408,7 +408,7 @@ std::unique_ptr<views::ImageView> GetIconImageView(
     const Suggestion& suggestion) {
   base::TimeTicks start_time = base::TimeTicks::Now();
 
-  if (auto* icon = absl::get_if<gfx::Image>(&suggestion.custom_icon);
+  if (auto* icon = std::get_if<gfx::Image>(&suggestion.custom_icon);
       icon && !icon->IsEmpty()) {
     std::optional<ui::ImageModel> image_model =
         ImageModelFromImageSkia(icon->AsImageSkia());

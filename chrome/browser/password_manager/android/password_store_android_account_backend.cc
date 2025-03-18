@@ -4,6 +4,8 @@
 
 #include "chrome/browser/password_manager/android/password_store_android_account_backend.h"
 
+#include <variant>
+
 #include "base/android/build_info.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -322,13 +324,13 @@ void PasswordStoreAndroidAccountBackend::
         LoginsOrErrorReply callback,
         LoginsResultOrError forms_or_error) {
   if (!affiliated_match_helper_ ||
-      absl::holds_alternative<PasswordStoreBackendError>(forms_or_error) ||
-      absl::get<LoginsResult>(forms_or_error).empty()) {
+      std::holds_alternative<PasswordStoreBackendError>(forms_or_error) ||
+      std::get<LoginsResult>(forms_or_error).empty()) {
     std::move(callback).Run(std::move(forms_or_error));
     return;
   }
   affiliated_match_helper_->InjectAffiliationAndBrandingInformation(
-      std::move(absl::get<LoginsResult>(forms_or_error)), std::move(callback));
+      std::move(std::get<LoginsResult>(forms_or_error)), std::move(callback));
 }
 
 void PasswordStoreAndroidAccountBackend::OnPasswordsSyncStateChanged() {

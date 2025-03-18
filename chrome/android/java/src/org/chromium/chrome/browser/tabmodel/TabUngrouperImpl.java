@@ -60,18 +60,6 @@ public class TabUngrouperImpl implements TabUngrouper {
 
     @Override
     public void ungroupTabGroup(
-            int rootId,
-            boolean trailing,
-            boolean allowDialog,
-            @Nullable TabModelActionListener listener) {
-        Function<TabGroupModelFilter, List<Tab>> tabsFetcher =
-                (filter) -> PassthroughTabUngrouper.getTabsToUngroup(filter, rootId);
-
-        ungroupTabsInternal(tabsFetcher, trailing, /* isTabGroup= */ true, allowDialog, listener);
-    }
-
-    @Override
-    public void ungroupTabGroup(
             @NonNull Token tabGroupId,
             boolean trailing,
             boolean allowDialog,

@@ -166,6 +166,7 @@
 <translation id="1505542291183484463">Ablak mozaikszerű átméretezése lefelé</translation>
 <translation id="1510238584712386396">Indító</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Értesítési beállítások megjelenítése. Az értesítések egyetlen alkalmazásnál vannak kikapcsolva}other{Értesítési beállítások megjelenítése. Az értesítések # alkalmazásnál ki vannak kapcsolva}}</translation>
+<translation id="1521655867290435174">Google Táblázatok</translation>
 <translation id="1523032696246003">Akkumulátor <ph name="BATTERY_PERCENTAGE" />%-on | <ph name="TIME" /> a teljes feltöltésig</translation>
 <translation id="1525508553941733066">ELVETÉS</translation>
 <translation id="1526448108126799339">Új lap megnyitása új ablakban</translation>
@@ -345,7 +346,6 @@
 <translation id="2201071101391734388"><ph name="INDEX" />. fénykép a legutóbbi <ph name="TOTAL_COUNT" /> fénykép közül.</translation>
 <translation id="2201687081523799384">A Google Tasks összecsukása</translation>
 <translation id="2208323208084708176">Egységes asztali mód</translation>
-<translation id="2220572644011485463">PIN-kód vagy jelszó</translation>
 <translation id="2222841058024245321">7. asztal</translation>
 <translation id="2223384056430485343">Osztott képernyőn</translation>
 <translation id="2224075387478458881">Nem engedélyezett felvétel készítése a képernyőről, ha védett tartalom látható rajta</translation>
@@ -1830,7 +1830,6 @@ Frissen telepítve</translation>
 <translation id="7000027735917578303">Ablakok és asztalok beállításai</translation>
 <translation id="7004910047186208204">Csatlakozás mobiladat-hálózathoz</translation>
 <translation id="7005239792648594238">A kezdéshez nyisson meg egy alkalmazást</translation>
-<translation id="7007983414944123363">PIN-kódjának vagy jelszavának ellenőrzése nem sikerült. Próbálja újra.</translation>
 <translation id="7014684956566476813">Csatlakoztatva van a(z) <ph name="DEVICE_NAME" /> nevű eszközhöz</translation>
 <translation id="7015766095477679451">Térjen vissza ekkor: <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">6. asztal</translation>
@@ -1944,6 +1943,7 @@ Frissen telepítve</translation>
 <translation id="742594950370306541">A kamera épp használatban van.</translation>
 <translation id="742608627846767349">Jó reggelt!</translation>
 <translation id="743058460480092004">A kamera és a mikrofon épp használatban van.</translation>
+<translation id="7440404390546433462">Google Kereső</translation>
 <translation id="7441711280402516925">Lejátszás folyamatban · Váltás a lapra</translation>
 <translation id="7453330308669753048">Keresésielőzmény-találat eltávolítva</translation>
 <translation id="7459485586006128091">Belső hiba miatt a hotspot ki lett kapcsolva. Néhány perc múlva próbáljon meg újra csatlakozni.</translation>
@@ -2467,6 +2467,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="9168436347345867845">Később</translation>
 <translation id="9178475906033259337">1 találat megjelenítése a következő lekérdezésre: <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Ez a funkció lehetővé teszi a bejelentkezett felhasználók gyors, jelszó nélküli elérését. Kizárólag olyan fiókok esetében használja a funkciót, amelyekben megbízik.</translation>
+<translation id="9183302530794969518">Google Dokumentumok</translation>
 <translation id="9183456764293710005">Teljes képernyős nagyító</translation>
 <translation id="9192133205265227850">A(z) „<ph name="DEVICE_NAME" />” használata</translation>
 <translation id="9193626018745640770">Átküldés ismeretlen fogadó eszközre</translation>

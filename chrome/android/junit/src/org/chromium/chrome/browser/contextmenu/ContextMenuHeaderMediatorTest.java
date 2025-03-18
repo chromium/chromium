@@ -87,6 +87,7 @@ public class ContextMenuHeaderMediatorTest {
                         0,
                         0,
                         false,
+                        /* openedFromInterestTarget= */ false,
                         /* additionalNavigationParams= */ null);
         final ContextMenuHeaderMediator mediator =
                 new ContextMenuHeaderMediator(mActivity, model, params, mProfile, mNativeDelegate);
@@ -133,6 +134,7 @@ public class ContextMenuHeaderMediatorTest {
                         0,
                         0,
                         false,
+                        /* openedFromInterestTarget= */ false,
                         /* additionalNavigationParams= */ null);
         final ContextMenuHeaderMediator mediator =
                 new ContextMenuHeaderMediator(mActivity, model, params, mProfile, mNativeDelegate);
@@ -172,6 +174,7 @@ public class ContextMenuHeaderMediatorTest {
                         0,
                         0,
                         false,
+                        /* openedFromInterestTarget= */ false,
                         /* additionalNavigationParams= */ null);
         final ContextMenuHeaderMediator mediator =
                 new ContextMenuHeaderMediator(mActivity, model, params, mProfile, mNativeDelegate);

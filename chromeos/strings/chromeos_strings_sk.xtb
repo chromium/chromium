@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">Tapeta s otáčaním Zeme</translation>
 <translation id="33736539805963175">Pozadie farby <ph name="LETTERS_COLOR" /> s písmenom <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Exkluzívne</translation>
-<translation id="3395147534045164351">Prepnúť umiestnenie prichytenia</translation>
 <translation id="3404249063913988450">Aktivovať šetrič obrazovky</translation>
 <translation id="3413935475507503304">Ak chcete pokračovať v aktualizácii, kliknite na Ďalej.</translation>
 <translation id="3428551088151258685">nezastrešená</translation>
@@ -1395,6 +1394,7 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="7388345524791662148">Ďalšie možnosti nahrávky <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Vstavaný touchpad</translation>
 <translation id="7397270852490618635">Vypnúť svetlý motív</translation>
+<translation id="7400166052988585408">Učiteľ uzamkne vašu obrazovku o <ph name="NUM_SECONDS" /> s</translation>
 <translation id="7401543881546089382">Odstrániť odkaz</translation>
 <translation id="7405493795721832710">Zariadenie <ph name="DEVICE_NAME" /> je pripravené na aktualizáciu</translation>
 <translation id="741244894080940828">prevod</translation>

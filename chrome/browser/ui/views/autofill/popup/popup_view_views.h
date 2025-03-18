@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_search_bar_view.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/input/native_web_keyboard_event.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -77,10 +77,10 @@ class PopupViewViews : public PopupBaseView,
       kAutofillStandaloneCvcSuggestionElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAutofillSuggestionElementId);
 
-  using RowPointer = absl::variant<PopupRowView*,
-                                   PopupSeparatorView*,
-                                   PopupTitleView*,
-                                   PopupWarningView*>;
+  using RowPointer = std::variant<PopupRowView*,
+                                  PopupSeparatorView*,
+                                  PopupTitleView*,
+                                  PopupWarningView*>;
 
   // The time it takes for a selected cell to open a sub-popup if it has one.
   static constexpr base::TimeDelta kMouseOpenSubPopupDelay =
@@ -172,10 +172,10 @@ class PopupViewViews : public PopupBaseView,
   // such a view at that line number - otherwise the underlying variant will
   // check false.
   PopupRowView& GetPopupRowViewAt(size_t index) {
-    return *absl::get<PopupRowView*>(rows_[index]);
+    return *std::get<PopupRowView*>(rows_[index]);
   }
   const PopupRowView& GetPopupRowViewAt(size_t index) const {
-    return *absl::get<PopupRowView*>(rows_[index]);
+    return *std::get<PopupRowView*>(rows_[index]);
   }
 
   void UpdateAccessibleStates() const;

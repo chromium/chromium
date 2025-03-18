@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleState;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -36,13 +37,18 @@ class SafetyHubUtils {
     static void showPasswordCheckUi(
             Context context,
             Profile profile,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            SettingsCustomTabLauncher settingsCustomTabLauncher) {
         PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(profile);
         String account = getAccountEmail(profile);
         assert account != null
                 : "The password check UI should only be launched for signed in Safety Hub users.";
         passwordManagerHelper.showPasswordCheckup(
-                context, PasswordCheckReferrer.SAFETY_CHECK, modalDialogManagerSupplier, account);
+                context,
+                PasswordCheckReferrer.SAFETY_CHECK,
+                modalDialogManagerSupplier,
+                account,
+                settingsCustomTabLauncher);
     }
 
     /**
@@ -53,13 +59,15 @@ class SafetyHubUtils {
     static void showLocalPasswordCheckUi(
             Context context,
             Profile profile,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            SettingsCustomTabLauncher settingsCustomTabLauncher) {
         PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(profile);
         passwordManagerHelper.showPasswordCheckup(
                 context,
                 PasswordCheckReferrer.SAFETY_CHECK,
                 modalDialogManagerSupplier,
-                /* accountEmail= */ null);
+                /* accountEmail= */ null,
+                settingsCustomTabLauncher);
     }
 
     /**
