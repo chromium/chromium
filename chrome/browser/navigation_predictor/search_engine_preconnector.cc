@@ -38,6 +38,10 @@ const bool kDefaultSkipInBackground = true;
 
 namespace features {
 // Feature to control preconnect to search.
+
+BASE_FEATURE(kPreconnectFromKeyedService,
+             "PreconnectFromKeyedService",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPreconnectToSearch,
              "PreconnectToSearch",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -87,10 +91,23 @@ void WebContentVisibilityManager::SetTickClockForTesting(
   tick_clock_ = tick_clock;
 }
 
+bool SearchEnginePreconnector::ShouldBeEnabledAsKeyedService() {
+  static bool preconnect_from_keyed_service =
+      base::FeatureList::IsEnabled(features::kPreconnectFromKeyedService);
+  return preconnect_from_keyed_service;
+}
+
+bool SearchEnginePreconnector::ShouldBeEnabledForOffTheRecord() {
+  static bool enabled_for_otr = base::GetFieldTrialParamByFeatureAsBool(
+      features::kPreconnectFromKeyedService, "run_on_otr", false);
+  return enabled_for_otr;
+}
+
 SearchEnginePreconnector::SearchEnginePreconnector(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context) {
-  DCHECK(!browser_context_->IsOffTheRecord());
+  DCHECK(ShouldBeEnabledForOffTheRecord() ||
+         !browser_context_->IsOffTheRecord());
 }
 
 SearchEnginePreconnector::~SearchEnginePreconnector() = default;
@@ -115,7 +132,8 @@ void SearchEnginePreconnector::StartPreconnecting(bool with_startup_delay) {
 }
 
 void SearchEnginePreconnector::PreconnectDSE() {
-  DCHECK(!browser_context_->IsOffTheRecord());
+  DCHECK(ShouldBeEnabledForOffTheRecord() ||
+         !browser_context_->IsOffTheRecord());
   DCHECK(!timer_.IsRunning());
   if (!base::FeatureList::IsEnabled(features::kPreconnectToSearch))
     return;

@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/predictors/preconnect_manager.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "url/origin.h"
 
 namespace content {
@@ -17,6 +18,7 @@ class WebContents;
 }  // namespace content
 
 namespace features {
+BASE_DECLARE_FEATURE(kPreconnectFromKeyedService);
 BASE_DECLARE_FEATURE(kPreconnectToSearch);
 BASE_DECLARE_FEATURE(kPreconnectToSearchNonGoogle);
 BASE_DECLARE_FEATURE(kPreconnectToSearchWithPrivacyModeEnabled);
@@ -61,8 +63,12 @@ class WebContentVisibilityManager {
 // Class to preconnect to the user's default search engine at regular intervals.
 // Preconnects are made by |this| if the browser app is likely in foreground.
 class SearchEnginePreconnector : public predictors::PreconnectManager::Delegate,
-                                 public WebContentVisibilityManager {
+                                 public WebContentVisibilityManager,
+                                 public KeyedService {
  public:
+  static bool ShouldBeEnabledAsKeyedService();
+  static bool ShouldBeEnabledForOffTheRecord();
+
   explicit SearchEnginePreconnector(content::BrowserContext* browser_context);
   ~SearchEnginePreconnector() override;
 
