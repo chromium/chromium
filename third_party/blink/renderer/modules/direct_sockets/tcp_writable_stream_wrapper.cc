@@ -218,7 +218,7 @@ void TCPWritableStreamWrapper::CloseStream() {
   }
 
   ResetPipe();
-  std::move(on_close_).Run(/*exception=*/ScriptValue());
+  std::move(on_close_).Run(/*exception=*/v8::Local<v8::Value>());
 }
 
 void TCPWritableStreamWrapper::ErrorStream(int32_t error_code) {
@@ -240,10 +240,8 @@ void TCPWritableStreamWrapper::ErrorStream(int32_t error_code) {
   // ScriptValue.
   ScriptState::Scope scope{script_state};
 
-  auto exception = ScriptValue(script_state->GetIsolate(),
-                               V8ThrowDOMException::CreateOrDie(
-                                   script_state->GetIsolate(),
-                                   DOMExceptionCode::kNetworkError, message));
+  auto exception = V8ThrowDOMException::CreateOrDie(
+      script_state->GetIsolate(), DOMExceptionCode::kNetworkError, message);
 
   // Can be already reset due to HandlePipeClosed() called previously.
   if (data_pipe_) {
@@ -254,7 +252,8 @@ void TCPWritableStreamWrapper::ErrorStream(int32_t error_code) {
     write_promise_resolver_->Reject(exception);
     write_promise_resolver_ = nullptr;
   } else {
-    Controller()->error(script_state, exception);
+    Controller()->error(script_state,
+                        ScriptValue(script_state->GetIsolate(), exception));
   }
 
   std::move(on_close_).Run(exception);

@@ -129,7 +129,7 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
   void Cleanup() { data_pipe_producer_.reset(); }
 
  private:
-  void Close(ScriptValue exception) {
+  void Close(v8::Local<v8::Value> exception) {
     close_called_with_ = !exception.IsEmpty();
   }
 

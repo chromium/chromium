@@ -203,11 +203,12 @@ void TCPServerSocket::ReleaseResources() {
   readable_stream_wrapper_.Clear();
 }
 
-void TCPServerSocket::OnReadableStreamClosed(ScriptValue exception) {
+void TCPServerSocket::OnReadableStreamClosed(v8::Local<v8::Value> exception) {
   DCHECK_EQ(GetState(), State::kOpen);
 
   if (!exception.IsEmpty()) {
-    GetClosedProperty().Reject(exception);
+    GetClosedProperty().Reject(
+        ScriptValue(GetScriptState()->GetIsolate(), exception));
     SetState(State::kAborted);
   } else {
     GetClosedProperty().ResolveWithUndefined();

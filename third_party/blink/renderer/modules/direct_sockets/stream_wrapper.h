@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "v8/include/v8.h"
 
 namespace blink {
 
@@ -25,7 +26,8 @@ class ScriptState;
 
 class MODULES_EXPORT StreamWrapper : public GarbageCollectedMixin {
  public:
-  using CloseOnceCallback = base::OnceCallback<void(ScriptValue exception)>;
+  using CloseOnceCallback =
+      base::OnceCallback<void(v8::Local<v8::Value> exception)>;
 
   enum class State { kOpen, kAborted, kClosed, kGracefullyClosing };
 

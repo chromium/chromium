@@ -57,7 +57,7 @@ class MODULES_EXPORT TCPServerSocket final : public ScriptWrappable,
   // Resets mojo resources held by this class.
   void ReleaseResources();
 
-  void OnReadableStreamClosed(ScriptValue exception);
+  void OnReadableStreamClosed(v8::Local<v8::Value> exception);
 
   Member<ScriptPromiseProperty<TCPServerSocketOpenInfo, DOMException>> opened_;
 
