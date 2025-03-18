@@ -1,9 +1,53 @@
-<style include="settings-shared"></style>
+<style include="settings-shared">
+  /* TODO(crbug.com/397187800): Handle background color for dark mode. */
+  #checkboxContainer {
+    background-color: var(--cr-fallback-color-surface2);
+    padding: 16px var(--cr-section-padding);
+    border-radius: 12px;
+  }
+
+  .checkbox-title {
+    font-weight: 500;
+  }
+</style>
 
 <cr-dialog id="deleteBrowsingDataDialog" close-text="$i18n{close}"
     show-on-attach ignore-popstate ignore-enter-key>
   <div slot="title">$i18n{clearBrowsingData}</div>
-  <div slot="body"></div>
+  <div slot="body">
+    <div id="checkboxContainer">
+      <settings-checkbox id="browsingCheckbox"
+          pref="{{prefs.browser.clear_data.browsing_history}}" no-set-pref>
+        <div class="checkbox-title">$i18n{clearBrowsingHistory}</div>
+      </settings-checkbox>
+      <settings-checkbox id="cookiesCheckbox"
+          class="cookies-checkbox"
+          pref="{{prefs.browser.clear_data.cookies}}" no-set-pref>
+        <div class="checkbox-title">$i18n{clearCookies}</div>
+      </settings-checkbox>
+      <settings-checkbox id="cacheCheckbox"
+          class="cache-checkbox"
+          pref="{{prefs.browser.clear_data.cache}}" no-set-pref>
+        <div class="checkbox-title">$i18n{clearCache}</div>
+      </settings-checkbox>
+      <settings-checkbox id="downloadCheckbox"
+          pref="{{prefs.browser.clear_data.download_history}}" no-set-pref>
+        <div class="checkbox-title">$i18n{clearDownloadHistory}</div>
+      </settings-checkbox>
+      <settings-checkbox
+          pref="{{prefs.browser.clear_data.form_data}}" no-set-pref>
+        <div class="checkbox-title">$i18n{clearFormData}</div>
+      </settings-checkbox>
+      <settings-checkbox
+          pref="{{prefs.browser.clear_data.site_settings}}" no-set-pref>
+        <div class="checkbox-title">$i18n{siteSettings}</div>
+      </settings-checkbox>
+      <settings-checkbox
+          pref="{{prefs.browser.clear_data.hosted_apps_data}}" no-set-pref>
+        <div class="checkbox-title">$i18n{clearHostedAppData}</div>
+      </settings-checkbox>
+    </div>
+  </div>
   <div slot="button-container">
     <cr-button class="cancel-button" autofocus on-click="onCancelClick_">
       $i18n{cancel}
