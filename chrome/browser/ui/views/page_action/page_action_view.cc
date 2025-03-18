@@ -89,6 +89,8 @@ void PageActionView::OnPageActionModelChanged(
 
   if (!model.GetVisible()) {
     ResetSlideAnimation(/*show=*/false);
+  } else if (!model.GetShouldAnimateChip()) {
+    ResetSlideAnimation(/*show=*/model.GetShowSuggestionChip());
   } else if (model.GetShowSuggestionChip()) {
     AnimateIn(/*string_id=*/std::nullopt);
   } else {
@@ -229,6 +231,7 @@ void PageActionView::OnClickCanceled(const ui::Event& event) {
 }
 
 void PageActionView::OnLabelVisibilityChanged() {
+  UpdateBackground();
   UpdateBorder();
   UpdateLabelColors();
   UpdateIconImage();

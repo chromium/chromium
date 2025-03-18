@@ -292,7 +292,6 @@ void LensOverlayEntryPointController::UpdatePageActionState() {
 
   if (!ShouldShowPageAction(active_tab)) {
     page_action_controller->Hide(page_action_id);
-    page_action_controller->HideSuggestionChip(page_action_id);
     return;
   }
 
@@ -302,7 +301,10 @@ void LensOverlayEntryPointController::UpdatePageActionState() {
       l10n_util::GetStringUTF16(IDS_CONTENT_LENS_OVERLAY_ENTRYPOINT_LABEL));
 
   page_action_controller->Show(page_action_id);
-  page_action_controller->ShowSuggestionChip(page_action_id);
+  page_action_controller->ShowSuggestionChip(page_action_id,
+                                             {
+                                                 .should_animate = false,
+                                             });
 }
 
 bool LensOverlayEntryPointController::IsOverlayActive() {

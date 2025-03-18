@@ -39,6 +39,15 @@ void PageActionModel::SetShowSuggestionChip(base::PassKey<PageActionController>,
   NotifyChange();
 }
 
+void PageActionModel::SetShouldAnimateChip(base::PassKey<PageActionController>,
+                                           bool animate) {
+  if (should_animate_ == animate) {
+    return;
+  }
+  should_animate_ = animate;
+  NotifyChange();
+}
+
 void PageActionModel::SetTabActive(base::PassKey<PageActionController>,
                                    bool is_active) {
   if (is_tab_active_ == is_active) {
@@ -99,6 +108,10 @@ bool PageActionModel::GetVisible() const {
 
 bool PageActionModel::GetShowSuggestionChip() const {
   return show_suggestion_chip_;
+}
+
+bool PageActionModel::GetShouldAnimateChip() const {
+  return should_animate_;
 }
 
 const ui::ImageModel& PageActionModel::GetImage() const {
