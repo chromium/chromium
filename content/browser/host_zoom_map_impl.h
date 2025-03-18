@@ -101,6 +101,7 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
   void SetIndependentZoomForFrameTreeNode(WebContents* web_contents,
                                           FrameTreeNodeId ftn_id) override;
   void ClearIndependentZoomForFrameTreeNode(FrameTreeNodeId ftn_id) override;
+  bool IsIndependentZoomFrameTreeNode(FrameTreeNodeId ftn_id) const;
 
  private:
   struct ZoomLevel {

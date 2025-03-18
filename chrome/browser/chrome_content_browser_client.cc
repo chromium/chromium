@@ -8894,6 +8894,14 @@ ChromeContentBrowserClient::OverrideForInternalWebUI(content::WebUI* web_ui,
   return std::make_unique<InternalDebugPagesDisabledUI>(web_ui, url.host());
 }
 
+bool ChromeContentBrowserClient::ShouldEnableSubframeZoom() {
+#if BUILDFLAG(ENABLE_PDF)
+  return chrome_pdf::features::IsOopifPdfEnabled();
+#else
+  return false;
+#endif
+}
+
 #if BUILDFLAG(ENABLE_PDF)
 std::optional<network::CrossOriginEmbedderPolicy>
 ChromeContentBrowserClient::MaybeOverrideLocalURLCrossOriginEmbedderPolicy(

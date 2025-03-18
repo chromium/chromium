@@ -20,11 +20,13 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/resource_context.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
@@ -61,6 +63,20 @@ std::string GetHostFromProcessFrame(RenderFrameHostImpl* rfh) {
   const GURL url = GetURLForRenderFrameHostPtr(rfh);
 
   return net::GetHostOrSpecFromURL(url);
+}
+
+// Allows HostZoomMap to grant independent zoom to subframes.
+BASE_FEATURE(kSubframeZoom, "SubframeZoom", base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Returns true if local root subframes may have different zoom levels than
+// the primary main frame.
+bool IsIndependentSubframeZoomEnabled() {
+  // kSubframeZoom acts as a killswitch here. It is enabled by default, but
+  // only return true here if some feature that requires subframe zoom is also
+  // enabled.
+  return base::FeatureList::IsEnabled(kSubframeZoom) &&
+         (base::FeatureList::IsEnabled(features::kGuestViewMPArch) ||
+          GetContentClient()->browser()->ShouldEnableSubframeZoom());
 }
 
 }  // namespace
@@ -374,9 +390,9 @@ void HostZoomMapImpl::SetDefaultZoomLevel(double level) {
                                 web_contents->GetPrimaryMainFrame());
   }
 
-  // If kGuestViewMPArch is enabled, then update zoom levels for subframes that
-  // do not have an overriding entry.
-  if (!base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+  // If independent subframe zoom is enabled, then update zoom levels for
+  // subframes that do not have an overriding entry.
+  if (!IsIndependentSubframeZoomEnabled()) {
     return;
   }
   for (auto ftn_id : independent_zoom_frame_tree_nodes_) {
@@ -466,7 +482,7 @@ void HostZoomMapImpl::SetTemporaryZoomLevel(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(rfh_id);
-  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+  if (IsIndependentSubframeZoomEnabled()) {
     CHECK(rfh->is_local_root());
   } else {
     DCHECK(rfh == rfh->GetOutermostMainFrame());
@@ -530,9 +546,9 @@ void HostZoomMapImpl::SendZoomLevelChange(const std::string& scheme,
   }
 
   // Also loop over the independently-zoomed FTNs that aren't primary
-  // mainframes. If kGuestViewMPArch isn't enabled, then there will be no
-  // such frames, so early-out in that case.
-  if (!base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+  // mainframes. If independent subframe zoom isn't enabled, then there will be
+  // no such frames, so early-out in that case.
+  if (!IsIndependentSubframeZoomEnabled()) {
     return;
   }
   for (auto ftn_id : independent_zoom_frame_tree_nodes_) {
@@ -734,15 +750,23 @@ void HostZoomMapImpl::SetIndependentZoomForFrameTreeNode(
     WebContents* web_contents,
     FrameTreeNodeId ftn_id) {
   CHECK(web_contents);
-  CHECK(static_cast<RenderFrameHostImpl*>(
-            web_contents->UnsafeFindFrameByFrameTreeNodeId(ftn_id))
-            ->is_local_root());
+  auto* rfh = static_cast<RenderFrameHostImpl*>(
+      web_contents->UnsafeFindFrameByFrameTreeNodeId(ftn_id));
+  CHECK(rfh->is_local_root());
   independent_zoom_frame_tree_nodes_.insert(ftn_id);
+
+  // Force an update in case the `rfh` contains content with a different zoom.
+  static_cast<WebContentsImpl*>(web_contents)->UpdateZoom(rfh->GetGlobalId());
 }
 
 void HostZoomMapImpl::ClearIndependentZoomForFrameTreeNode(
     FrameTreeNodeId ftn_id) {
   independent_zoom_frame_tree_nodes_.erase(ftn_id);
+}
+
+bool HostZoomMapImpl::IsIndependentZoomFrameTreeNode(
+    FrameTreeNodeId ftn_id) const {
+  return independent_zoom_frame_tree_nodes_.contains(ftn_id);
 }
 
 }  // namespace content

@@ -712,6 +712,14 @@ void RecordRendererUnresponsiveMetrics(
       rph_priority);
 }
 
+// Helper function to simplify getting the correct HostZoomMapImpl for a
+// RenderFrameHost. Implemented here to be close to its only consumer,
+// GetPendingZoomLevel().
+HostZoomMapImpl* HostZoomMapForRenderFrameHost(const RenderFrameHost* rfh) {
+  return static_cast<HostZoomMapImpl*>(
+      HostZoomMap::Get(rfh->GetSiteInstance()));
+}
+
 }  // namespace
 
 // This is a small helper class created while a JavaScript dialog is showing
@@ -8694,15 +8702,35 @@ void WebContentsImpl::RunFileChooser(
 }
 
 double WebContentsImpl::GetPendingZoomLevel(RenderWidgetHostImpl* rwh) {
-  // TODO(372932834): This needs to be modified for the PDF-in-OOPIF case, as
-  // while the PDF will have its own RenderWidgetHost, the associated
-  // RenderFrameHost won't always be at the root of a FrameTree (and the
-  // FrameTree won't be of type kGuest).
-  // Note: this could involve (something like) detecting that the rfh for `rwh`
-  // is *not* a frame-tree root, but *does* have a temporary zoom level set in
-  // HostZoomMap.
-  RenderFrameHostImpl* rfh =
-      rwh->frame_tree()->root()->current_frame_host()->GetOutermostMainFrame();
+  RenderFrameHostImpl* rfh = nullptr;
+  // Find the RenderFrameHost for `rwh`.
+  ForEachRenderFrameHostImplWithAction(
+      [rwh, &rfh](RenderFrameHostImpl* render_frame_host) {
+        if (render_frame_host->GetRenderWidgetHost() == rwh) {
+          rfh = render_frame_host;
+          return RenderFrameHost::FrameIterationAction::kStop;
+        }
+        return RenderFrameHost::FrameIterationAction::kContinue;
+      });
+
+  if (rfh) {
+    // Find nearest ancestor that has independent zoom.
+    // Use GetParentOrOuterDocument() instead of GetParent() in order
+    // to "step out of" any fenced frames that are encountered.
+    while (!HostZoomMapForRenderFrameHost(rfh)->IsIndependentZoomFrameTreeNode(
+               rfh->GetFrameTreeNodeId()) &&
+           rfh->GetParentOrOuterDocument()) {
+      rfh = rfh->GetParentOrOuterDocument();
+    }
+  } else {
+    // Not finding a `rfh` suggests that `rwh` is still in the process of being
+    // set up, or is for a newly created RenderWidgetHost without a
+    // RenderFrameHost (e.g. for a <select> tag popup>), and that this function
+    // will be called again when there is a findable `rfh` for `rwh`. For now,
+    // just return the zoom level of this WebContents, as that will most often
+    // be right.
+    return HostZoomMap::GetZoomLevel(this);
+  }
 
   GURL url;
   if (rfh->IsInBackForwardCache()) {
@@ -8726,13 +8754,12 @@ double WebContentsImpl::GetPendingZoomLevel(RenderWidgetHostImpl* rwh) {
     url = pending_entry->GetURL();
   }
 #if BUILDFLAG(IS_ANDROID)
-  return HostZoomMap::GetForWebContents(this)
+  return HostZoomMapForRenderFrameHost(rfh)
       ->GetZoomLevelForHostAndSchemeAndroid(url.scheme(),
                                             net::GetHostOrSpecFromURL(url));
 #else
-  return HostZoomMap::Get(rfh->GetSiteInstance())
-      ->GetZoomLevelForHostAndScheme(url.scheme(),
-                                     net::GetHostOrSpecFromURL(url));
+  return HostZoomMapForRenderFrameHost(rfh)->GetZoomLevelForHostAndScheme(
+      url.scheme(), net::GetHostOrSpecFromURL(url));
 #endif
 }
 
