@@ -265,6 +265,10 @@ void BtmShortVisitObserver::DidFinishNavigation(
           const int32_t visit_id = static_cast<int32_t>(base::RandUint64());
           ukm::builders::BTM_ShortVisit event(page_source_id_);
           event.SetVisitDuration(visit_seconds)
+              .SetEntranceWasRendererInitiated(
+                  last_navigation.was_renderer_initiated)
+              .SetEntranceHadUserGesture(last_navigation.had_user_gesture)
+              .SetEntrancePageTransition(last_navigation.page_transition)
               .SetExitWasRendererInitiated(
                   navigation_handle->IsRendererInitiated())
               .SetExitHadUserGesture(navigation_handle->HasUserGesture())
@@ -301,6 +305,10 @@ void BtmShortVisitObserver::DidFinishNavigation(
     }
   }
 
+  last_navigation.was_renderer_initiated =
+      navigation_handle->IsRendererInitiated();
+  last_navigation.had_user_gesture = navigation_handle->HasUserGesture();
+  last_navigation.page_transition = navigation_handle->GetPageTransition();
   prev_source_id_ = page_source_id_;
   page_source_id_ = navigation_handle->GetNextPageUkmSourceId();
   last_committed_at_ = clock_->Now();

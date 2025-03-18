@@ -5593,6 +5593,25 @@ be describing additional metrics about the same event.
     a page for 10 seconds or less, and either (or both) of the previous and
     following pages are not same-site to the current page.
   </summary>
+  <metric name="EntranceHadUserGesture">
+    <summary>
+      Whether or not the navigation to the page was initiated by a user gesture
+      (i.e., the value returned by NavigationHandle::HasUserGesture()).
+    </summary>
+  </metric>
+  <metric name="EntrancePageTransition">
+    <summary>
+      The type of transition to the page (i.e., the value returned by
+      NavigationHandle::GetPageTransition()).
+    </summary>
+  </metric>
+  <metric name="EntranceWasRendererInitiated">
+    <summary>
+      Whether or not the navigation to the page was initiated by the renderer
+      process (i.e., the value returned by
+      NavigationHandle::IsRendererInitiated()).
+    </summary>
+  </metric>
   <metric name="ExitHadUserGesture">
     <summary>
       Whether or not the navigation away from the page was initiated by a user
