@@ -512,7 +512,6 @@
 <translation id="3373141842870501561">Tapeta Ziemia</translation>
 <translation id="33736539805963175">Tło w kolorze <ph name="LETTERS_COLOR" /> z literą <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Na wyłączność</translation>
-<translation id="3395147534045164351">Przełącz lokalizację przyciągania</translation>
 <translation id="3404249063913988450">Włącz wygaszacz ekranu</translation>
 <translation id="3413935475507503304">Aby rozpocząć aktualizację, kliknij Dalej.</translation>
 <translation id="3428551088151258685">na zewnątrz</translation>
@@ -928,6 +927,7 @@
 <translation id="5286263799730375393">kolor podświetlenia klawiszy</translation>
 <translation id="5292579816060236070">Tapeta Wschód słońca</translation>
 <translation id="5294769550414936029">wersja <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">przełącz dostęp do aparatu</translation>
 <translation id="5300814202279832142">Przenieś okno na biurko</translation>
 <translation id="5302048478445481009">Język</translation>
 <translation id="5303837385540978511">Tapeta tylko na urządzenie <ph name="PRODUCT_NAME" /></translation>
@@ -1392,6 +1392,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="7388345524791662148"><ph name="RECORDING_NAME" /> – więcej opcji</translation>
 <translation id="7388959671917308825">Touchpad wbudowany</translation>
 <translation id="7397270852490618635">Wyłącz jasny motyw</translation>
+<translation id="7400166052988585408">Za <ph name="NUM_SECONDS" /> s nauczyciel zablokuje Twój ekran</translation>
 <translation id="7401543881546089382">Usuń skrót</translation>
 <translation id="7405493795721832710">Oprogramowanie <ph name="DEVICE_NAME" /> jest gotowe do zaktualizowania</translation>
 <translation id="741244894080940828">przeliczanie</translation>

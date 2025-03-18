@@ -338,17 +338,12 @@ void TabGroupEditorBubbleView::RebuildMenuContents() {
     simple_menu_items_.push_back(AddChildView(BuildNewTabInGroupButton()));
     simple_menu_items_.push_back(
         AddChildView(BuildMoveGroupToNewWindowButton()));
-    simple_menu_items_.push_back(AddChildView(BuildUngroupButton()));
     simple_menu_items_.push_back(AddChildView(BuildHideGroupButton()));
 
   } else {
     simple_menu_items_.push_back(AddChildView(BuildNewTabInGroupButton()));
     simple_menu_items_.push_back(
         AddChildView(BuildMoveGroupToNewWindowButton()));
-
-    if (OwnsGroup()) {
-      simple_menu_items_.push_back(AddChildView(BuildUngroupButton()));
-    }
 
     if (CanShareGroups()) {
       if (IsGroupShared()) {
@@ -367,6 +362,10 @@ void TabGroupEditorBubbleView::RebuildMenuContents() {
 
     simple_menu_items_.push_back(AddChildView(BuildHideGroupButton()));
     AddChildView(BuildSeparator());
+
+    if (!IsGroupShared()) {
+      simple_menu_items_.push_back(AddChildView(BuildUngroupButton()));
+    }
 
     if (OwnsGroup()) {
       simple_menu_items_.push_back(AddChildView(BuildDeleteGroupButton()));

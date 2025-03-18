@@ -7,6 +7,7 @@
 #include <functional>
 #include <memory>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -1369,10 +1370,10 @@ void DCLayerOverlayProcessorTest::TestRenderPassRootTransform(bool is_overlay) {
               << " damage rect: " << overlay_data.damage_rect.ToString();
 
     EXPECT_EQ(overlay_data.promoted_overlays.size(), 1u);
-    EXPECT_TRUE(absl::holds_alternative<gfx::Transform>(
+    EXPECT_TRUE(std::holds_alternative<gfx::Transform>(
         overlay_data.promoted_overlays[0].transform));
     EXPECT_EQ(
-        absl::get<gfx::Transform>(overlay_data.promoted_overlays[0].transform),
+        std::get<gfx::Transform>(overlay_data.promoted_overlays[0].transform),
         kRenderPassToRootTransform);
     if (is_overlay) {
       EXPECT_GT(overlay_data.promoted_overlays[0].plane_z_order, 0);
@@ -1462,7 +1463,7 @@ TEST_F(DCLayerOverlayProcessorTest, MultipleRenderPassesOneOverlay) {
       if (render_pass->id == AggregatedRenderPassId(1)) {
         // The render pass that contains an overlay.
         EXPECT_EQ(overlay_data.promoted_overlays.size(), 1u);
-        EXPECT_EQ(absl::get<gfx::Transform>(
+        EXPECT_EQ(std::get<gfx::Transform>(
                       overlay_data.promoted_overlays[0].transform),
                   gfx::Transform::MakeTranslation(1, 0));
         EXPECT_GT(overlay_data.promoted_overlays[0].plane_z_order, 0);

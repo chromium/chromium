@@ -16,7 +16,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/manta/proto/scanner.pb.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace ash {
 
@@ -161,7 +160,7 @@ class UserFacingValueWriter {
         depth_limit_(depth_limit),
         output_limit_(output_limit) {}
 
-  void BuildString(absl::monostate node) { OutputValue("null"); }
+  void BuildString(std::monostate node) { OutputValue("null"); }
   void BuildString(bool node) { OutputValue(node ? "true" : "false"); }
   void BuildString(int node) { OutputValue(base::NumberToString(node)); }
   void BuildString(double node) { OutputValue(base::NumberToString(node)); }

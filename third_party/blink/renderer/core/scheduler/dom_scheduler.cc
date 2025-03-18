@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/scheduler/dom_scheduler.h"
 
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"

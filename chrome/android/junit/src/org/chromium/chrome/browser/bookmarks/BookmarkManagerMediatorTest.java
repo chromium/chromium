@@ -146,8 +146,7 @@ import java.util.function.Consumer;
 /** Unit tests for {@link BookmarkManagerMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowPostTask.class})
-// TODO(crbug.com/327387704): Add tests with this flag enabled.
-@DisableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
+@EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
 public class BookmarkManagerMediatorTest {
     private static final GURL EXAMPLE_URL = JUnitTestGURLs.EXAMPLE_URL;
     private static final String EXAMPLE_URL_FORMATTED =
@@ -1389,6 +1388,7 @@ public class BookmarkManagerMediatorTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
     public void testPromoHeader() {
         BookmarkPromoHeader.forcePromoVisibilityForTesting(true);
         mMediator.getPromoHeaderManager().syncStateChanged();

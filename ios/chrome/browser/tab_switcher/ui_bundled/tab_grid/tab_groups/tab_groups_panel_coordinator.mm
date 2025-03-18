@@ -67,7 +67,7 @@ using collaboration::messaging::MessagingBackendServiceFactory;
 - (void)start {
   [super start];
 
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   _gridContainerViewController = [[GridContainerViewController alloc] init];
 
   BOOL regularModeDisabled = IsIncognitoModeForced(profile->GetPrefs());
@@ -148,8 +148,7 @@ using collaboration::messaging::MessagingBackendServiceFactory;
 - (void)tabGroupsPanelMediator:(TabGroupsPanelMediator*)tabGroupsPanelMediator
            openGroupWithSyncID:(const base::Uuid&)syncID {
   tab_groups::TabGroupSyncService* tabGroupSyncService =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          self.browser->GetProfile());
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(self.profile);
   tabGroupSyncService->OpenTabGroup(
       syncID,
       std::make_unique<tab_groups::IOSTabGroupActionContext>(self.browser));

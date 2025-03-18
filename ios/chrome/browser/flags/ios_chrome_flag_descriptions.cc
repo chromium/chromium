@@ -666,6 +666,11 @@ const char kNonModalSignInPromoName[] = "Non-modal sign-in promo";
 const char kNonModalSignInPromoDescription[] =
     "Enables a non-modal sign-in promo that prompts users to sign in.";
 
+const char kNotificationCollisionManagementName[] =
+    "Notification collision management";
+const char kNotificationCollisionManagementDescription[] =
+    "Enables delays to notifications to space them out more";
+
 const char kIOSSharedHighlightingColorChangeName[] =
     "IOS Shared Highlighting color change";
 const char kIOSSharedHighlightingColorChangeDescription[] =

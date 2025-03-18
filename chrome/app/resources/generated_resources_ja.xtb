@@ -1332,6 +1332,7 @@
 <translation id="1918127774159128277">Wi-Fi Direct 機能を更新</translation>
 <translation id="1918141783557917887">縮小(&amp;S)</translation>
 <translation id="1918281588461452432">サイトを閲覧すると、そのページのコンテンツが暗号化されてデバイスに保存されます</translation>
+<translation id="1919096511823372013">リンクや絵文字などを挿入したり、Google AI による文書や画像の作成サポートを利用することもできます。</translation>
 <translation id="1919872106782726755">指紋を設定するには、キーボードの右上にある電源ボタンの横の指紋認証センサーをお子様にタップしてもらってください。お子様の指紋データはこの <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="192015196730532810">独自のタブグループを作成できます。</translation>
 <translation id="1920314570001095522">類似タブは見つかりませんでした。次のグループをおすすめします</translation>
@@ -1874,6 +1875,7 @@
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300332192655962933">サイトでファイルを取得できませんでした</translation>
 <translation id="2300383962156589922"><ph name="APP_NAME" /> のカスタマイズと制御</translation>
+<translation id="2301064673700597535">適格証明書の宣言</translation>
 <translation id="2301382460326681002">拡張機能のルート ディレクトリが無効です。</translation>
 <translation id="2301402091755573488">共有されたタブ</translation>
 <translation id="2302342861452486996"><ph name="BEGIN_H3" />デバッグ機能<ph name="END_H3" />
@@ -8957,6 +8959,7 @@
 <translation id="7377451353532943397">センサーへのアクセスを引き続きブロックする</translation>
 <translation id="7377481913241237033">コードを使用して接続</translation>
 <translation id="73786666777299047">Chrome ウェブストアを開きます</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />。同じタスクグループ内の他 のタスク: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />。同じタスクグループ内の他 # 件のタスク: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380272457268061606">ローカルデータの復元を無効にしますか？</translation>
 <translation id="7380459290951585794">Bluetooth 搭載のスマートフォンが近くにあり、Wi-Fi がオンになっていて、ロックも解除されていることを確認してください</translation>
 <translation id="7380622428988553498">デバイス名に無効な文字が含まれています</translation>

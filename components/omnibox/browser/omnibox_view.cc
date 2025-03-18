@@ -178,9 +178,9 @@ OmniboxView::~OmniboxView() = default;
 
 bool OmniboxView::IsEditingOrEmpty() const {
   return model()->user_input_in_progress() || GetOmniboxTextLength() == 0 ||
-         (model()->focus_state() == OMNIBOX_FOCUS_VISIBLE &&
-          OmniboxFieldTrial::IsOnFocusZeroSuggestEnabledInContext(
-              model()->GetPageClassification()));
+         (OmniboxFieldTrial::IsOnFocusZeroSuggestEnabledInContext(
+              model()->GetPageClassification()) &&
+          model()->PopupIsOpen());
 }
 
 // TODO (manukh) OmniboxView::GetIcon is very similar to

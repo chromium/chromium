@@ -189,7 +189,7 @@ bool TransformTree::OnTransformAnimated(ElementId element_id,
     return false;
   node->local = transform;
   node->needs_local_transform_update = true;
-  node->transform_changed = true;
+  node->SetTransformChanged(DamageReason::kUntracked);
   property_trees()->set_changed(true);
   set_needs_update(true);
   return true;
@@ -199,7 +199,7 @@ void TransformTree::ResetChangeTracking() {
   for (int id = kContentsRootPropertyNodeId; id < static_cast<int>(size());
        ++id) {
     TransformNode* node = Node(id);
-    node->transform_changed = false;
+    node->ClearTransformChanged();
   }
 }
 
@@ -401,7 +401,7 @@ gfx::Vector2dF TransformTree::StickyPositionOffset(TransformNode* node) {
   // We need the scroll offset from the transform tree, not the scroll tree.
   // Tracking the scroll tree here would make sticky elements run "ahead" of a
   // main-repainted scroll.
-  gfx::PointF scroll_position = transform_node->scroll_offset;
+  gfx::PointF scroll_position = transform_node->scroll_offset();
   if (transform_node->scrolls) {
     // The scroll position does not include snapping which shifts the scroll
     // offset to align to a pixel boundary, we need to manually include it here.
@@ -567,7 +567,7 @@ gfx::Vector2dF TransformTree::AnchorPositionOffset(
       // We don't ever expect that an anchor node or any of its scrolling
       // containers should have an invalid transform_id.
       DCHECK(container_transform_id != kInvalidPropertyNodeId);
-      accumulated_offset += transform_node->scroll_offset.OffsetFromOrigin();
+      accumulated_offset += transform_node->scroll_offset().OffsetFromOrigin();
       // TODO(crbug.com/325613705): Should we consider snap_amount here?
     } else if (TransformNode* container_transform =
                    property_trees()
@@ -619,7 +619,7 @@ void TransformTree::UndoOverscroll(
 
   const TransformNode* overscroll_node = Node(transform_id);
   const gfx::Vector2dF overscroll_offset =
-      overscroll_node->scroll_offset.OffsetFromOrigin();
+      overscroll_node->scroll_offset().OffsetFromOrigin();
   if (overscroll_offset.IsZero())
     return;
 
@@ -663,12 +663,12 @@ void TransformTree::UpdateLocalTransform(
   if (node->should_undo_overscroll)
     UndoOverscroll(node, position_adjustment, viewport_property_ids);
   transform.Translate(position_adjustment -
-                      node->scroll_offset.OffsetFromOrigin());
+                      node->scroll_offset().OffsetFromOrigin());
   transform.Translate(StickyPositionOffset(node));
   if (node->anchor_position_scroll_data_id >= 0) {
     transform.Translate(AnchorPositionOffset(node, node->id - 1, update_data));
     // Make sure the damage rect is tracked.
-    node->transform_changed = true;
+    node->SetTransformChanged(DamageReason::kUntracked);
   }
   transform.PreConcat(node->local);
   transform.Translate3d(gfx::Point3F() - node->origin);
@@ -753,8 +753,9 @@ void TransformTree::UpdateSnapping(TransformNode* node) {
 void TransformTree::UpdateTransformChanged(TransformNode* node,
                                            TransformNode* parent_node) {
   DCHECK(parent_node);
-  if (parent_node->transform_changed)
-    node->transform_changed = true;
+  if (parent_node->transform_changed()) {
+    node->CopyTransformChangedFrom(*parent_node);
+  }
 }
 
 void TransformTree::UpdateNodeAndAncestorsAreAnimatedOrInvertible(
@@ -2368,8 +2369,9 @@ void PropertyTrees::GetChangedNodes(std::vector<int>& effect_nodes,
   }
   for (int id = kContentsRootPropertyNodeId;
        id < static_cast<int>(transform_tree().size()); ++id) {
-    if (transform_tree().Node(id)->transform_changed)
+    if (transform_tree().Node(id)->transform_changed()) {
       transform_nodes.push_back(id);
+    }
   }
 }
 
@@ -2377,10 +2379,13 @@ void PropertyTrees::ApplyChangedNodes(
     const std::vector<int>& changed_effect_nodes,
     const std::vector<int>& changed_transform_nodes) {
   if (changed_effect_nodes.size() || changed_transform_nodes.size()) {
-    for (int i : changed_effect_nodes)
+    for (int i : changed_effect_nodes) {
       effect_tree_mutable().Node(i)->effect_changed = true;
-    for (int i : changed_transform_nodes)
-      transform_tree_mutable().Node(i)->transform_changed = true;
+    }
+    for (int i : changed_transform_nodes) {
+      transform_tree_mutable().Node(i)->SetTransformChanged(
+          DamageReason::kUntracked);
+    }
     UpdateChangeTracking();
   }
 }

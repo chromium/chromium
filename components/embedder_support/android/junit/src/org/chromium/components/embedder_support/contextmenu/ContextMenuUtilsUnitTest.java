@@ -62,6 +62,7 @@ public class ContextMenuUtilsUnitTest {
                         0,
                         0,
                         false,
+                        /* openedFromInterestTarget= */ false,
                         /* additionalNavigationParams= */ null);
 
         assertEquals(sTitleText, ContextMenuUtils.getTitle(params));
@@ -86,6 +87,7 @@ public class ContextMenuUtilsUnitTest {
                         0,
                         0,
                         false,
+                        /* openedFromInterestTarget= */ false,
                         /* additionalNavigationParams= */ null);
 
         assertEquals(sLinkText, ContextMenuUtils.getTitle(params));
@@ -110,6 +112,7 @@ public class ContextMenuUtilsUnitTest {
                         0,
                         0,
                         false,
+                        /* openedFromInterestTarget= */ false,
                         /* additionalNavigationParams= */ null);
 
         assertEquals(URLUtil.guessFileName(sSrcUrl, null, null), ContextMenuUtils.getTitle(params));
@@ -134,6 +137,7 @@ public class ContextMenuUtilsUnitTest {
                         0,
                         0,
                         false,
+                        /* openedFromInterestTarget= */ false,
                         /* additionalNavigationParams= */ null);
 
         assertEquals("", ContextMenuUtils.getTitle(params));

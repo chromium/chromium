@@ -47,7 +47,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/events/ash/keyboard_layout_util.h"
-#include "ui/native_theme/features/native_theme_features.h"
 #include "ui/webui/webui_util.h"
 
 namespace ash::settings {
@@ -603,10 +602,6 @@ int GetDisplayAndMangificationLinkDescriptionResourceId() {
 
 bool IsAccessibilityReducedAnimationsEnabled() {
   return ::features::IsAccessibilityReducedAnimationsEnabled();
-}
-
-bool isAccessibilityAlwaysShowScrollbarsEnabled() {
-  return ::features::IsOverlayScrollbarOSSettingEnabled();
 }
 
 bool IsAccessibilityMagnifierFollowsChromeVoxEnabled() {
@@ -1600,9 +1595,6 @@ void AccessibilitySection::AddLoadTimeData(
 
   html_source->AddBoolean("isAccessibilityReducedAnimationsEnabled",
                           IsAccessibilityReducedAnimationsEnabled());
-
-  html_source->AddBoolean("isAccessibilityAlwaysShowScrollbarsEnabled",
-                          isAccessibilityAlwaysShowScrollbarsEnabled());
 
   html_source->AddBoolean("isAccessibilityMagnifierFollowsChromeVoxEnabled",
                           IsAccessibilityMagnifierFollowsChromeVoxEnabled());

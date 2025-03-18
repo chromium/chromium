@@ -4,6 +4,8 @@
 
 #include "services/webnn/webnn_graph_builder_impl.h"
 
+#include <variant>
+
 #include "base/check_is_test.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
@@ -2078,7 +2080,7 @@ bool OperationValidationContext::ValidateResample2d(
 
   // Validate and infer the output for resample2d with given scales or with
   // the sizes from output dimensions along axes.
-  absl::variant<base::span<const float>, base::span<const uint32_t>>
+  std::variant<base::span<const float>, base::span<const uint32_t>>
       scales_or_sizes;
   const auto& axes = resample2d.axes;
   std::vector<uint32_t> sizes;

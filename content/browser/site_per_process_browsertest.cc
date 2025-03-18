@@ -464,18 +464,10 @@ SitePerProcessBrowserTestBase::SitePerProcessBrowserTestBase() {
   // FrameOwnerPropertiesPropagationScrolling. crbug.com/662196.
   // Overlay scrollbar will be turned off with both conditions satisfied:
   // 1) feature flag `kOverlayScrollbar` is off
-  // 2) always show scrollbar os settings on :
-  //  2.1)`kOverlayScrollbarsOSSetting` off or
-  //  2.2)`kOverlayScrollbarsOSSetting` on and always show scrollbar preference
-  //  setting on.
+  // 2) always show scrollbar preference setting on.
   feature_list_.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kOverlayScrollbar
-#if BUILDFLAG(IS_CHROMEOS)
-                             ,
-                             features::kOverlayScrollbarsOSSetting
-#endif
-      });
+      /*disabled_features=*/{features::kOverlayScrollbar});
 #endif
 }
 

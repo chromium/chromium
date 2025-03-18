@@ -6,6 +6,7 @@
 #include <map>
 #include <memory>
 #include <string_view>
+#include <variant>
 
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -65,7 +66,7 @@ class SuccessfulMuxer : public Muxer {
   bool PutFrame(EncodedFrame frame,
                 base::TimeDelta relative_timestamp) override {
     int media_type =
-        absl::get_if<AudioParameters>(&frame.params) ? kAudio : kVideo;
+        std::get_if<AudioParameters>(&frame.params) ? kAudio : kVideo;
     put_timestamps_->emplace_back(media_type,
                                   relative_timestamp.InMilliseconds());
     muxer_->PutFrame(std::move(frame), relative_timestamp);

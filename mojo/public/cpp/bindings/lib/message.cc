@@ -37,10 +37,6 @@
 
 namespace mojo {
 
-BASE_FEATURE(kMojoMessageAlwaysUseLatestVersion,
-             "MojoMessageAlwaysUseLatestVersion",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
 
 BASE_FEATURE(kMojoBindingsInlineSLS,
@@ -115,40 +111,15 @@ void WriteMessageHeader(uint32_t name,
                         size_t payload_interface_id_count,
                         internal::Buffer* payload_buffer,
                         int64_t creation_timeticks_us) {
-  if (creation_timeticks_us > 0 ||
-      base::FeatureList::IsEnabled(kMojoMessageAlwaysUseLatestVersion)) {
-    // Version 3
-    internal::MessageHeaderV3* header;
-    AllocateHeaderFromBuffer(payload_buffer, &header);
-    header->version = 3;
-    header->name = name;
-    header->flags = flags;
-    header->trace_nonce = trace_nonce;
-    // The payload immediately follows the header.
-    header->payload.Set(header + 1);
-    header->creation_timeticks_us = creation_timeticks_us;
-  } else if (payload_interface_id_count > 0) {
-    // Version 2
-    internal::MessageHeaderV2* header;
-    AllocateHeaderFromBuffer(payload_buffer, &header);
-    header->version = 2;
-    header->name = name;
-    header->flags = flags;
-    header->trace_nonce = trace_nonce;
-    // The payload immediately follows the header.
-    header->payload.Set(header + 1);
-  } else if (flags &
-             (Message::kFlagExpectsResponse | Message::kFlagIsResponse)) {
-    // Version 1
-    WriteMessageHeaderV1(name, flags, trace_nonce, payload_buffer);
-  } else {
-    internal::MessageHeader* header;
-    AllocateHeaderFromBuffer(payload_buffer, &header);
-    header->version = 0;
-    header->name = name;
-    header->flags = flags;
-    header->trace_nonce = trace_nonce;
-  }
+  internal::MessageHeaderV3* header;
+  AllocateHeaderFromBuffer(payload_buffer, &header);
+  header->version = 3;
+  header->name = name;
+  header->flags = flags;
+  header->trace_nonce = trace_nonce;
+  // The payload immediately follows the header.
+  header->payload.Set(header + 1);
+  header->creation_timeticks_us = creation_timeticks_us;
 }
 
 void CreateSerializedMessageObject(uint32_t name,
@@ -170,7 +141,7 @@ void CreateSerializedMessageObject(uint32_t name,
   void* buffer;
   uint32_t buffer_size;
   const size_t total_size = internal::ComputeSerializedMessageSize(
-      flags, payload_size, payload_interface_id_count, creation_timeticks_us);
+      payload_size, payload_interface_id_count);
   const size_t total_allocation_size = internal::EstimateSerializedMessageSize(
       name, payload_size, total_size, estimated_payload_size);
 

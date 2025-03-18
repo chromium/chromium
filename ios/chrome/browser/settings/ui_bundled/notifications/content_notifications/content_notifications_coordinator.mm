@@ -56,11 +56,11 @@
 
 - (void)start {
   AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
+      AuthenticationServiceFactory::GetForProfile(self.profile);
   id<SystemIdentity> identity =
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   const GaiaId gaiaID(identity.gaiaID);
-  PrefService* prefService = self.browser->GetProfile()->GetPrefs();
+  PrefService* prefService = self.profile->GetPrefs();
 
   self.viewController = [[ContentNotificationsViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
@@ -69,8 +69,7 @@
       [[ContentNotificationsMediator alloc] initWithPrefService:prefService
                                                          gaiaID:gaiaID];
   ContentNotificationService* contentNotificationService =
-      ContentNotificationServiceFactory::GetForProfile(
-          self.browser->GetProfile());
+      ContentNotificationServiceFactory::GetForProfile(self.profile);
   self.mediator.contentNotificationService = contentNotificationService;
   self.mediator.consumer = self.viewController;
   self.mediator.presenter = self;

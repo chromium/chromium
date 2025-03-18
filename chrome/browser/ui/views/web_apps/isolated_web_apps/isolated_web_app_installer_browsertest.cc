@@ -4,6 +4,7 @@
 
 #include <optional>
 #include <string_view>
+#include <variant>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -31,7 +32,6 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/test/dialog_test.h"
@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerBrowserTest,
   AcceptDialogAndContinue(main_widget);
 
   ASSERT_TRUE(model->has_dialog());
-  ASSERT_TRUE(absl::holds_alternative<
+  ASSERT_TRUE(std::holds_alternative<
               IsolatedWebAppInstallerModel::ConfirmInstallationDialog>(
       model->dialog()));
 

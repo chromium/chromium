@@ -22,7 +22,6 @@ static_library("metrics") {
     "//components/prefs",
   ]
   deps = [
-    "//chrome/browser:browser_process",
     "//chrome/common:constants",
     "//services/preferences/public/cpp",
     "//ui/base",

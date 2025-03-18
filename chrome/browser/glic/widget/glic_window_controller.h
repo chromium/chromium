@@ -110,6 +110,9 @@ class GlicWindowController : public views::WidgetObserver,
               base::TimeDelta duration,
               base::OnceClosure callback);
 
+  // Allows the user to manually resize the widget by dragging.
+  void ShouldEnableDragResize(bool enabled);
+
   // Returns the current size of the glic window.
   gfx::Size GetSize();
 

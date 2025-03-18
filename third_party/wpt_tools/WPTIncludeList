@@ -471,6 +471,9 @@
 ./tools/wptrunner/wptrunner/wpttest.py
 ./tools/wptserve/LICENSE
 ./tools/wptserve/README.md
+./tools/wptserve/wptserve/cgi/LICENSE
+./tools/wptserve/wptserve/cgi/__init__.py
+./tools/wptserve/wptserve/cgi/cgi.py
 ./tools/wptserve/wptserve/__init__.py
 ./tools/wptserve/wptserve/config.py
 ./tools/wptserve/wptserve/constants.py

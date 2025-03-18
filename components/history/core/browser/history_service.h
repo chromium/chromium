@@ -202,7 +202,10 @@ class HistoryService : public KeyedService,
                VisitSource visit_source,
                bool did_replace_entry);
 
-  // For adding pages to history where no tracking information can be done.
+  // For adding pages to history where no tracking information can be done
+  // (namely, `chrome.history.addUrl()`). NOTE: when adding to the
+  // VisitedLinkDatabase, this function will construct a "self-link" of
+  // `<url, url, url>`.
   void AddPage(const GURL& url, base::Time time, VisitSource visit_source);
 
   // All AddPage variants end up here.

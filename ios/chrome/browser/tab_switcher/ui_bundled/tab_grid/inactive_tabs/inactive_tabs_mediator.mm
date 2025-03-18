@@ -316,7 +316,12 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   DCHECK_EQ(_webStateList, webStateList);
 
   AddWebStateObservations(_scopedWebStateObservation.get(), _webStateList);
-  PopulateConsumerItems(_consumer, _webStateList);
+
+  if (_webStateList->count() == 0) {
+    [_delegate inactiveTabsMediatorEmpty:self];
+  } else {
+    PopulateConsumerItems(_consumer, _webStateList);
+  }
 }
 
 - (void)webStateListDestroyed:(WebStateList*)webStateList {

@@ -4,6 +4,8 @@
 
 #include "media/formats/hls/playlist_common.h"
 
+#include <variant>
+
 #include "base/notreached.h"
 #include "media/formats/hls/playlist.h"
 #include "media/formats/hls/types.h"
@@ -27,7 +29,7 @@ ParseStatus::Or<M3uTag> CheckM3uTag(SourceLineIterator* src_iter) {
   }
 
   auto item = std::move(item_result).value();
-  if (auto* tag_item = absl::get_if<TagItem>(&item)) {
+  if (auto* tag_item = std::get_if<TagItem>(&item)) {
     // The #EXTM3U tag must be the first line in the playlist
     if (tag_item->GetName() != ToTagName(CommonTagName::kM3u) ||
         tag_item->GetLineNumber() != 1) {

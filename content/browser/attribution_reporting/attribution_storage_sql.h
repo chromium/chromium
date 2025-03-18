@@ -31,7 +31,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "sql/database.h"
 #include "sql/transaction.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom-forward.h"
 
 namespace attribution_reporting {
@@ -227,7 +226,7 @@ class CONTENT_EXPORT AttributionStorageSql {
   void ClearDataWithFilter(
       base::Time delete_begin,
       base::Time delete_end,
-      absl::variant<StoragePartition::StorageKeyMatcherFunction, url::Origin>
+      std::variant<StoragePartition::StorageKeyMatcherFunction, url::Origin>
           filter_or_origin,
       bool delete_rate_limit_data);
   [[nodiscard]] std::optional<AggregatableDebugSourceData>

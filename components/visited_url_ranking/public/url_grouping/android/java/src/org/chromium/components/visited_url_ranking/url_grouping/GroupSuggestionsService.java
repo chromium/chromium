@@ -4,10 +4,13 @@
 
 package org.chromium.components.visited_url_ranking.url_grouping;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * GroupSuggestionsService is the core class for managing group suggestions. It represents a native
  * GroupSuggestionsService object in Java.
  */
+@NullMarked
 public interface GroupSuggestionsService {
 
     /** Delegate class to show the suggestions in UI. */

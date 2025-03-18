@@ -26,7 +26,7 @@ QuotaManagerHost::QuotaManagerHost(const blink::StorageKey& storage_key,
 void QuotaManagerHost::QueryStorageUsageAndQuota(
     QueryStorageUsageAndQuotaCallback callback) {
   quota_manager_->GetUsageAndReportedQuotaWithBreakdown(
-      storage_key_, blink::mojom::StorageType::kTemporary,
+      storage_key_,
       base::BindOnce(&QuotaManagerHost::DidQueryStorageUsageAndQuota,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }

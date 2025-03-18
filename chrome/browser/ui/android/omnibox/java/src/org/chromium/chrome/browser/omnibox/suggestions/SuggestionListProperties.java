@@ -70,6 +70,12 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
     static final WritableBooleanPropertyKey CONTAINER_ALWAYS_VISIBLE =
             new WritableBooleanPropertyKey();
 
+    /**
+     * Whether the activity window is focused. See {@link Activity#onWindowFocusChanged(boolean)}.
+     */
+    static final WritableBooleanPropertyKey ACTIVITY_WINDOW_FOCUSED =
+            new WritableBooleanPropertyKey();
+
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 ALPHA,
@@ -84,6 +90,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
                 DROPDOWN_SCROLL_TO_TOP_LISTENER,
                 LIST_IS_FINAL,
                 DRAW_OVER_ANCHOR,
-                CONTAINER_ALWAYS_VISIBLE
+                CONTAINER_ALWAYS_VISIBLE,
+                ACTIVITY_WINDOW_FOCUSED
             };
 }

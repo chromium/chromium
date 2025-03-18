@@ -36,8 +36,7 @@ class ChromeExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
   ~ChromeExtensionRegistrarDelegate() override;
 
   // Provides pointers to objects that are constructed after this one.
-  void Init(ExtensionRegistrar* registrar,
-            DelayedInstallManager* delayed_install);
+  void Init(ExtensionRegistrar* registrar);
 
   // Clears member pointers. Call this during KeyedService two-phase shutdown to
   // avoid dangling pointers.

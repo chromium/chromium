@@ -154,7 +154,7 @@ class FlexLayoutTest : public testing::Test {
     if (!visible) {
       child->SetVisible(false);
     }
-    parent->AddChildView(child);
+    parent->AddChildViewRaw(child);
     return child;
   }
 

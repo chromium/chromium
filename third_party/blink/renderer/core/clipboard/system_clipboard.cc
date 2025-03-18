@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 
+#include <variant>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -11,7 +13,6 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "skia/ext/skia_utils_base.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -377,8 +378,7 @@ void SystemClipboard::WriteDataObject(DataObject* data_object) {
   HashMap<String, String> custom_data;
   WebDragData data = data_object->ToWebDragData();
   for (const WebDragData::Item& item : data.Items()) {
-    if (const auto* string_item =
-            absl::get_if<WebDragData::StringItem>(&item)) {
+    if (const auto* string_item = std::get_if<WebDragData::StringItem>(&item)) {
       if (string_item->type == kMimeTypeTextPlain) {
         clipboard_->WriteText(NonNullString(string_item->data));
       } else if (string_item->type == kMimeTypeTextHTML) {

@@ -189,7 +189,7 @@ class IndexedDBQuotaClientTest : public testing::Test,
       const StorageKey& storage_key,
       const std::string& name) {
     base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
-    quota_manager_->GetBucketByNameUnsafe(storage_key, name, kTemp,
+    quota_manager_->GetBucketByNameUnsafe(storage_key, name,
                                           future.GetCallback());
     return future.Take().transform(&storage::BucketInfo::ToBucketLocator);
   }
@@ -468,7 +468,7 @@ TEST_P(IndexedDBQuotaClientTest, IncognitoQuotaFirstParty) {
   base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>>
       bucket_future;
   quota_manager->CreateBucketForTesting(kStorageKeyFirstPartyA,
-                                        storage::kDefaultBucketName, kTemp,
+                                        storage::kDefaultBucketName,
                                         bucket_future.GetCallback());
   ASSERT_OK_AND_ASSIGN(auto bucket_a, bucket_future.Take());
 
@@ -494,7 +494,7 @@ TEST_P(IndexedDBQuotaClientTest, IncognitoQuotaThirdParty) {
   base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>>
       bucket_future;
   quota_manager->CreateBucketForTesting(kStorageKeyThirdPartyA,
-                                        storage::kDefaultBucketName, kTemp,
+                                        storage::kDefaultBucketName,
                                         bucket_future.GetCallback());
   ASSERT_OK_AND_ASSIGN(auto bucket_a, bucket_future.Take());
 

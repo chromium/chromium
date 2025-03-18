@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
+import static androidx.browser.customtabs.CustomTabsIntent.CLOSE_BUTTON_POSITION_DEFAULT;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -20,6 +22,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+
+import static org.chromium.chrome.browser.flags.ActivityType.CUSTOM_TAB;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -63,7 +67,9 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
+import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.CustomTabLocationBar;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -130,6 +136,8 @@ public class CustomTabToolbarUnitTest {
     @Mock WindowAndroid mWindowAndroid;
     private @Mock PageInfoIphController mPageInfoIphController;
     @Mock private CustomTabFeatureOverridesManager mFeatureOverridesManager;
+    @Mock private BrowserServicesIntentDataProvider mIntentDataProvider;
+    @Mock private CustomTabMinimizeDelegate mMinimizeDelegate;
 
     private Activity mActivity;
     private CustomTabToolbar mToolbar;
@@ -154,13 +162,26 @@ public class CustomTabToolbarUnitTest {
                 .getSecurityIconColorStateList();
         when(mToolbarDataProvider.getTab()).thenReturn(mTab);
         when(mTab.getUserDataHost()).thenReturn(new UserDataHost());
+        when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
         setUpForUrl(TEST_URL);
+        MinimizedFeatureUtils.setDeviceEligibleForMinimizedCustomTabForTesting(true);
+        when(mIntentDataProvider.getCustomTabMode())
+                .thenReturn(BrowserServicesIntentDataProvider.CustomTabProfileType.REGULAR);
+        when(mIntentDataProvider.getCloseButtonPosition())
+                .thenReturn(CLOSE_BUTTON_POSITION_DEFAULT);
+        when(mIntentDataProvider.isCloseButtonEnabled()).thenReturn(true);
+        when(mIntentDataProvider.getActivityType()).thenReturn(CUSTOM_TAB);
+        when(mFeatureOverridesManager.isFeatureEnabled(anyString())).thenReturn(null);
 
         mActivity = Robolectric.buildActivity(TestActivity.class).get();
+        int toolbarLayout =
+                ChromeFeatureList.sCctToolbarRefactor.isEnabled()
+                        ? R.layout.new_custom_tab_toolbar
+                        : R.layout.custom_tabs_toolbar;
         mToolbar =
                 (CustomTabToolbar)
-                        LayoutInflater.from(mActivity)
-                                .inflate(R.layout.custom_tabs_toolbar, null, false);
+                        LayoutInflater.from(mActivity).inflate(toolbarLayout, null, false);
         ObservableSupplierImpl<Tracker> trackerSupplier = new ObservableSupplierImpl<>();
         trackerSupplier.set(mTracker);
         mToolbarProgressBar = new ToolbarProgressBar(mActivity, null);
@@ -174,9 +195,13 @@ public class CustomTabToolbarUnitTest {
                 mOfflineDownloader,
                 mUserEducationHelper,
                 trackerSupplier,
-                mToolbarProgressBar);
+                mToolbarProgressBar,
+                null);
 
-        when(mFeatureOverridesManager.isFeatureEnabled(anyString())).thenReturn(null);
+        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
+            mToolbar.initializeToolbar(
+                    mActivity, mIntentDataProvider, mFeatureOverridesManager, mMinimizeDelegate);
+        }
         mToolbar.setFeatureOverridesManager(mFeatureOverridesManager);
 
         mLocationBar =
@@ -396,8 +421,6 @@ public class CustomTabToolbarUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.CCT_MINIMIZED})
     public void testMinimizeButtonEnabled() {
-        when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
-        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<Activity>(mActivity));
         MinimizedFeatureUtils.setDeviceEligibleForMinimizedCustomTabForTesting(true);
         setup();
         LinearLayout closeMinimizeLayout = mToolbar.findViewById(R.id.close_minimize_layout);
@@ -459,8 +482,6 @@ public class CustomTabToolbarUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.CCT_MINIMIZED})
     public void testMinimizeButtonEnabled_MultiWindowMode() {
-        when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
-        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<Activity>(mActivity));
         MinimizedFeatureUtils.setDeviceEligibleForMinimizedCustomTabForTesting(true);
         setup();
         // Not in multi-window, show minimize button.
@@ -614,6 +635,30 @@ public class CustomTabToolbarUnitTest {
         mLocationBar.onSecurityStateChanged();
 
         verify(mAnimationDelegate).updateSecurityButton(R.drawable.omnibox_not_secure_warning);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.CCT_TOOLBAR_REFACTOR})
+    @Config(qualifiers = "w200dp")
+    public void testLayoutForWidth_200dp() {
+        View closeButton = mToolbar.findViewById(R.id.close_button);
+        View menuButton = mToolbar.findViewById(R.id.menu_button_wrapper);
+        View minimizeButton = mToolbar.findViewById(R.id.custom_tabs_minimize_button);
+        assertNotNull(closeButton);
+        assertNotNull(menuButton);
+        assertNull(minimizeButton);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.CCT_TOOLBAR_REFACTOR})
+    @Config(qualifiers = "w400dp")
+    public void testLayoutForWidth_400dp() {
+        View closeButton = mToolbar.findViewById(R.id.close_button);
+        View menuButton = mToolbar.findViewById(R.id.menu_button_wrapper);
+        View minimizeButton = mToolbar.findViewById(R.id.custom_tabs_minimize_button);
+        assertNotNull(closeButton);
+        assertNotNull(menuButton);
+        assertNotNull(minimizeButton);
     }
 
     private void assertUrlAndTitleVisible(boolean titleVisible, boolean urlVisible) {

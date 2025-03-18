@@ -2549,6 +2549,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"lens-qr-code-parsing-fix", flag_descriptions::kLensQRCodeParsingFixName,
      flag_descriptions::kLensQRCodeParsingFixDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kLensQRCodeParsingFix)},
+    {"notification-collision-management",
+     flag_descriptions::kNotificationCollisionManagementName,
+     flag_descriptions::kNotificationCollisionManagementDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kNotificationCollisionManagement)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

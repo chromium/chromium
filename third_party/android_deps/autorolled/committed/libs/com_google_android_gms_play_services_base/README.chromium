@@ -1,0 +1,15 @@
+Name: play-services-base
+Short Name: play-services-base
+URL: https://developers.google.com/android/guides/setup
+Version: 18.5.0
+License: Android Software Development Kit License
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+Base library for gmscore / Google Play Services.
+
+Local Modifications:
+No modifications.

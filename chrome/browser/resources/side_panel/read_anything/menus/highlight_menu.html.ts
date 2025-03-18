@@ -16,8 +16,7 @@ export function getHtml(this: HighlightMenuElement) {
     label="$i18n{voiceHighlightLabel}"
     .menuItems="${this.options_}"
     event-name="${ToolbarEvent.HIGHLIGHT_CHANGE}"
-    current-selected-index="${this.restoredHighlightIndex_()}"
-    initial-count="5">
+    current-selected-index="${this.restoredHighlightIndex_()}">
 </simple-action-menu>
 <!--_html_template_end_-->`;
   // clang-format on

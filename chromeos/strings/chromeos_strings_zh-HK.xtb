@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">地球動態桌布</translation>
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" />背景，當中有字母 <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">獨家</translation>
-<translation id="3395147534045164351">切換對齊位置</translation>
 <translation id="3404249063913988450">啟用螢幕保護程式</translation>
 <translation id="3413935475507503304">如要繼續進行更新，請按一下 [下一步]。</translation>
 <translation id="3428551088151258685">室外</translation>
@@ -1395,7 +1394,7 @@
 <translation id="7388345524791662148">「<ph name="RECORDING_NAME" />」嘅其他選項</translation>
 <translation id="7388959671917308825">內置觸控板</translation>
 <translation id="7397270852490618635">關閉淺色主題背景</translation>
-<translation id="7400166052988585408">老師將在 <ph name="NUM_SECONDS" /> 秒後鎖定你的畫面</translation>
+<translation id="7400166052988585408">老師將於 <ph name="NUM_SECONDS" /> 秒後鎖定你的螢幕</translation>
 <translation id="7401543881546089382">刪除捷徑</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" />已準備好更新</translation>
 <translation id="741244894080940828">轉換</translation>

@@ -50,7 +50,7 @@ export function getHtml(this: LanguageMenuElement) {
       <span id="notificationText"
           class="notification-error-${item.notification.isError}"
           aria-live="polite">
-        ${this.i18nWraper(item.notification.text)}
+        ${item.notification.text ? this.i18n(item.notification.text) : ''}
       </span>
     `)}
     <language-toast .numAvailableVoices="${this.availableVoices.length}">

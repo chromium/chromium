@@ -113,6 +113,8 @@ bool IsAdAuctionHeadersEligibleInternal(Page& page,
 bool IsAdAuctionHeadersEligible(
     RenderFrameHostImpl& initiator_rfh,
     const network::ResourceRequest& resource_request) {
+  DCHECK(resource_request.ad_auction_headers);
+
   // Fenced frames disallow most permissions policies which would let this
   // function return false regardless, but adding this check to be more
   // explicit.
@@ -125,12 +127,10 @@ bool IsAdAuctionHeadersEligible(
 
   const network::PermissionsPolicy* permissions_policy =
       initiator_rfh.GetPermissionsPolicy();
-  if (!permissions_policy->IsFeatureEnabledForSubresourceRequest(
+  if (!permissions_policy->IsFeatureEnabledForOrigin(
           network::mojom::PermissionsPolicyFeature::kRunAdAuction,
           url::Origin::Create(resource_request.url),
-          resource_request.browsing_topics,
-          resource_request.shared_storage_writable_eligible,
-          resource_request.ad_auction_headers)) {
+          /*override_default_policy_to_all=*/true)) {
     base::UmaHistogramEnumeration(
         "Ads.InterestGroup.NetHeaderResponse.StartRequestOutcome",
         AdAuctionHeadersIsEligibleOutcomeForMetrics::

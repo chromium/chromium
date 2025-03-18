@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <variant>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -58,7 +59,7 @@ class Delegate : public TurnSyncOnHelper::Delegate {
   using SyncConfirmationCallback =
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>;
   using CallbackVariant =
-      absl::variant<signin::SigninChoiceCallback, SyncConfirmationCallback>;
+      std::variant<signin::SigninChoiceCallback, SyncConfirmationCallback>;
 
   explicit Delegate(Choices choices)
       : choices_(choices), run_loop_(std::make_unique<base::RunLoop>()) {}
@@ -119,22 +120,22 @@ class Delegate : public TurnSyncOnHelper::Delegate {
         NOTREACHED();
       case BlockingStep::kMergeData:
         ASSERT_TRUE(choices_.merge_data_choice.has_value());
-        std::move(absl::get<signin::SigninChoiceCallback>(blocking_callback_))
+        std::move(std::get<signin::SigninChoiceCallback>(blocking_callback_))
             .Run(*choices_.merge_data_choice);
         break;
       case BlockingStep::kEnterpriseManagement:
         ASSERT_TRUE(choices_.enterprise_management_choice.has_value());
-        std::move(absl::get<signin::SigninChoiceCallback>(blocking_callback_))
+        std::move(std::get<signin::SigninChoiceCallback>(blocking_callback_))
             .Run(*choices_.enterprise_management_choice);
         break;
       case BlockingStep::kSyncConfirmation:
         ASSERT_TRUE(choices_.sync_optin_choice.has_value());
-        std::move(absl::get<SyncConfirmationCallback>(blocking_callback_))
+        std::move(std::get<SyncConfirmationCallback>(blocking_callback_))
             .Run(*choices_.sync_optin_choice);
         break;
       case BlockingStep::kSyncDisabled:
         ASSERT_TRUE(choices_.sync_disabled_choice.has_value());
-        std::move(absl::get<SyncConfirmationCallback>(blocking_callback_))
+        std::move(std::get<SyncConfirmationCallback>(blocking_callback_))
             .Run(*choices_.sync_disabled_choice);
         break;
     }
@@ -149,28 +150,28 @@ class Delegate : public TurnSyncOnHelper::Delegate {
         if (!choices_.merge_data_choice.has_value()) {
           break;
         }
-        std::move(absl::get<signin::SigninChoiceCallback>(callback))
+        std::move(std::get<signin::SigninChoiceCallback>(callback))
             .Run(*choices_.merge_data_choice);
         return;
       case BlockingStep::kEnterpriseManagement:
         if (!choices_.enterprise_management_choice.has_value()) {
           break;
         }
-        std::move(absl::get<signin::SigninChoiceCallback>(callback))
+        std::move(std::get<signin::SigninChoiceCallback>(callback))
             .Run(*choices_.enterprise_management_choice);
         return;
       case BlockingStep::kSyncConfirmation:
         if (!choices_.sync_optin_choice.has_value()) {
           break;
         }
-        std::move(absl::get<SyncConfirmationCallback>(callback))
+        std::move(std::get<SyncConfirmationCallback>(callback))
             .Run(*choices_.sync_optin_choice);
         return;
       case BlockingStep::kSyncDisabled:
         if (!choices_.sync_disabled_choice.has_value()) {
           break;
         }
-        std::move(absl::get<SyncConfirmationCallback>(callback))
+        std::move(std::get<SyncConfirmationCallback>(callback))
             .Run(*choices_.sync_disabled_choice);
         return;
     }
@@ -287,11 +288,10 @@ IN_PROC_BROWSER_TEST_P(TurnSyncOnHelperBrowserTestWithParam,
       break;
     case TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT:
       if (should_remove_initial_account()) {
-        // With `switches::kExplicitBrowserSigninUIOnDesktop` enabled, the
-        // primary account isn't set implicitly based on cookies but by explicit
-        // user action, therefore it is also not removed when cookies change.
-        // The account should remain and Chrome still signed in.
-
+        // With explicit signin enabled, the primary account isn't set
+        // implicitly based on cookies but by explicit user action, therefore it
+        // is also not removed when cookies change. The account should remain
+        // and Chrome still signed in.
         EXPECT_FALSE(
             identity_manager()->GetAccountsWithRefreshTokens().empty());
         EXPECT_TRUE(identity_manager()->HasPrimaryAccount(
@@ -311,7 +311,8 @@ IN_PROC_BROWSER_TEST_P(TurnSyncOnHelperBrowserTestWithParam,
       break;
     case TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY:
       // This case is handled in the TurnSyncOnHelperBrowserTestWithUnoDesktop
-      // test suite, since this mode is used only when Uno Desktop is enabled.
+      // test suite, since this mode is used only when explicit signin Desktop
+      // is enabled.
       NOTREACHED();
   }
 }
@@ -378,12 +379,11 @@ IN_PROC_BROWSER_TEST_F(TurnSyncOnHelperBrowserTest, UndoSyncRemoveAccount) {
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
-  // On Dice platforms with `switches::kExplicitBrowserSigninUIOnDesktop`
-  // enabled and empty primary account, updating cookies is disabled. Therefore
-  // running the reconcilor doesn't require any network requests and might have
-  // been completed by now. The reconcilor will not remove the account from
-  // cookies but revoking refresh tokens should be sufficient to invalidate
-  // cookies.
+  // On Dice platforms with explicit signin enabled and empty primary account,
+  // updating cookies is disabled. Therefore running the reconcilor doesn't
+  // require any network requests and might have been completed by now. The
+  // reconcilor will not remove the account from cookies but revoking refresh
+  // tokens should be sufficient to invalidate cookies.
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

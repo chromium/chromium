@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/functional/overloaded.h"
@@ -27,7 +28,6 @@
 #include "services/network/public/mojom/attribution.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -469,7 +469,7 @@ TEST(AttributionInteropParserTest, ValidConfig) {
   typedef void (*MakeInteropConfigFunc)(AttributionInteropConfig&);
 
   using MakeExpectedFunc =
-      absl::variant<MakeAttributionConfigFunc, MakeInteropConfigFunc>;
+      std::variant<MakeAttributionConfigFunc, MakeInteropConfigFunc>;
 
   const struct {
     const char* json;
@@ -652,13 +652,13 @@ TEST(AttributionInteropParserTest, ValidConfig) {
     SCOPED_TRACE(test_case.json);
 
     AttributionInteropConfig expected;
-    absl::visit(base::Overloaded{
-                    [&](MakeAttributionConfigFunc f) {
-                      f(expected.attribution_config);
-                    },
-                    [&](MakeInteropConfigFunc f) { f(expected); },
-                },
-                test_case.make_expected);
+    std::visit(base::Overloaded{
+                   [&](MakeAttributionConfigFunc f) {
+                     f(expected.attribution_config);
+                   },
+                   [&](MakeInteropConfigFunc f) { f(expected); },
+               },
+               test_case.make_expected);
 
     base::Value::Dict dict = base::test::ParseJsonDict(test_case.json);
     if (test_case.required) {

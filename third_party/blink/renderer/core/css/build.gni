@@ -698,6 +698,7 @@ blink_core_sources_css = [
   "resolver/transform_builder.h",
   "resolver/viewport_style_resolver.cc",
   "resolver/viewport_style_resolver.h",
+  "quiet_mutation_scope.h",
   "rule_feature_set.cc",
   "rule_feature_set.h",
   "rule_set.cc",

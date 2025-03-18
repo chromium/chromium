@@ -14,6 +14,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <variant>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -23,7 +24,6 @@
 #include "media/base/video_color_space.h"
 #include "media/base/video_types.h"
 #include "media/parsers/h264_bit_reader.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace gfx {
 class Rect;
@@ -420,10 +420,10 @@ struct MEDIA_EXPORT H264SEIContentLightLevelInfo {
   gfx::HdrMetadataCta861_3 ToGfx() const;
 };
 
-using H264SEIMessage = absl::variant<absl::monostate,
-                                     H264SEIRecoveryPoint,
-                                     H264SEIMasteringDisplayInfo,
-                                     H264SEIContentLightLevelInfo>;
+using H264SEIMessage = std::variant<std::monostate,
+                                    H264SEIRecoveryPoint,
+                                    H264SEIMasteringDisplayInfo,
+                                    H264SEIContentLightLevelInfo>;
 
 struct MEDIA_EXPORT H264SEI {
   H264SEI();

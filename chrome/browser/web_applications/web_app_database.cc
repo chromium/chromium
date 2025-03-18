@@ -7,6 +7,7 @@
 #include <set>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -62,7 +63,6 @@
 #include "components/webapps/common/web_app_id.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
@@ -349,7 +349,7 @@ std::optional<base::FilePath> ProtoToFilePath(const std::string& bytes) {
 template <typename T>
 void IsolationDataLocationToProto(const IsolatedWebAppStorageLocation& location,
                                   T* proto) {
-  absl::visit(
+  std::visit(
       base::Overloaded{
           [&proto](const IwaStorageOwnedBundle& bundle) {
             proto->mutable_owned_bundle()->set_dir_name_ascii(
@@ -842,22 +842,22 @@ std::unique_ptr<proto::WebApp> WebAppDatabase::CreateWebAppProto(
     TabStrip tab_strip = web_app.tab_strip().value();
 
     auto* mutable_tab_strip = local_data->mutable_tab_strip();
-    if (absl::holds_alternative<TabStrip::Visibility>(tab_strip.home_tab)) {
+    if (std::holds_alternative<TabStrip::Visibility>(tab_strip.home_tab)) {
       mutable_tab_strip->set_home_tab_visibility(TabStripVisibilityToProto(
-          absl::get<TabStrip::Visibility>(tab_strip.home_tab)));
+          std::get<TabStrip::Visibility>(tab_strip.home_tab)));
     } else {
       auto* mutable_home_tab_params =
           mutable_tab_strip->mutable_home_tab_params();
 
       const std::optional<std::vector<blink::Manifest::ImageResource>>& icons =
-          absl::get<blink::Manifest::HomeTabParams>(tab_strip.home_tab).icons;
+          std::get<blink::Manifest::HomeTabParams>(tab_strip.home_tab).icons;
       for (const auto& image_resource : *icons) {
         *(mutable_home_tab_params->add_icons()) =
             AppImageResourceToProto(image_resource);
       }
 
       const std::vector<blink::SafeUrlPattern>& scope_patterns =
-          absl::get<blink::Manifest::HomeTabParams>(tab_strip.home_tab)
+          std::get<blink::Manifest::HomeTabParams>(tab_strip.home_tab)
               .scope_patterns;
       for (const auto& pattern : scope_patterns) {
         *(mutable_home_tab_params->add_scope_patterns()) =

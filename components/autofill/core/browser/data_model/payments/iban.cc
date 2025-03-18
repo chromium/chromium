@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 
 #include <string_view>
+#include <variant>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
@@ -539,8 +540,8 @@ bool Iban::operator==(const Iban& iban) const {
   return Compare(iban) == 0;
 }
 
-void Iban::set_identifier(const absl::variant<Guid, InstrumentId>& identifier) {
-  if (absl::holds_alternative<Guid>(identifier_)) {
+void Iban::set_identifier(const std::variant<Guid, InstrumentId>& identifier) {
+  if (std::holds_alternative<Guid>(identifier_)) {
     CHECK_NE(record_type_, kServerIban);
   } else {
     CHECK_EQ(record_type_, kServerIban);
@@ -549,13 +550,13 @@ void Iban::set_identifier(const absl::variant<Guid, InstrumentId>& identifier) {
 }
 
 const std::string& Iban::guid() const {
-  CHECK(absl::holds_alternative<Guid>(identifier_));
-  return absl::get<Guid>(identifier_).value();
+  CHECK(std::holds_alternative<Guid>(identifier_));
+  return std::get<Guid>(identifier_).value();
 }
 
 int64_t Iban::instrument_id() const {
-  CHECK(absl::holds_alternative<InstrumentId>(identifier_));
-  return absl::get<InstrumentId>(identifier_).value();
+  CHECK(std::holds_alternative<InstrumentId>(identifier_));
+  return std::get<InstrumentId>(identifier_).value();
 }
 
 void Iban::set_value(const std::u16string& value) {

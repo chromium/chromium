@@ -20,6 +20,7 @@ if (!is_android) {
       "//components/soda",
       "//components/soda:constants",
       "//components/sync_preferences",
+      "//ui/accessibility",
     ]
 
     if (is_chromeos) {

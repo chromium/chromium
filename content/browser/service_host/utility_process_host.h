@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/environment.h"
@@ -24,7 +25,6 @@
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 #if BUILDFLAG(USE_ZYGOTE)
 #include "content/public/common/zygote/zygote_handle.h"
@@ -132,7 +132,7 @@ class CONTENT_EXPORT UtilityProcessHost
   // Adds to ChildProcessLauncherFileData::files_to_preload, which maps |key| ->
   // |file| in the new process's base::FileDescriptorStore.
   void AddFileToPreload(std::string key,
-                        absl::variant<base::FilePath, base::ScopedFD> file);
+                        std::variant<base::FilePath, base::ScopedFD> file);
 #endif
 
 #if BUILDFLAG(USE_ZYGOTE)

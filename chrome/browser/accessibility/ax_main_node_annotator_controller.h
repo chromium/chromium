@@ -63,7 +63,7 @@ class AXMainNodeAnnotatorController : public KeyedService,
 
 #if !BUILDFLAG(IS_CHROMEOS)
   // ui::AXModeObserver:
-  void OnAXModeAdded(ui::AXMode mode) override;
+  void OnAssistiveTechChanged(ui::AssistiveTech assistive_tech) override;
 #endif
 
   void set_service_ready_for_testing() { service_ready_ = true; }

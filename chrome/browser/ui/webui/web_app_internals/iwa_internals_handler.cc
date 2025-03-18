@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/web_app_internals/iwa_internals_handler.h"
 
+#include <variant>
+
 #include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/overloaded.h"
@@ -225,11 +227,11 @@ class IwaInternalsHandler::IwaManifestInstallUpdateHandler
   // Retrieves the pending request for `app_id` and erases the entry from the
   // requests map. If there's no matching entry for `app_id`, returns an
   // unexpected.
-  base::expected<Handler::UpdateDevProxyIsolatedWebAppCallback, absl::monostate>
+  base::expected<Handler::UpdateDevProxyIsolatedWebAppCallback, std::monostate>
   ConsumeUpdateRequest(const webapps::AppId& app_id) {
     auto itr = update_requests_.find(app_id);
     if (itr == update_requests_.end()) {
-      return base::unexpected(absl::monostate());
+      return base::unexpected(std::monostate());
     }
 
     auto callback = std::move(itr->second);
@@ -448,7 +450,7 @@ void IwaInternalsHandler::GetIsolatedWebAppDevModeAppInfo(
       continue;
     }
 
-    base::expected<IwaSourceDevMode, absl::monostate> source =
+    base::expected<IwaSourceDevMode, std::monostate> source =
         IwaSourceDevMode::FromStorageLocation(profile()->GetPath(),
                                               app.isolation_data()->location());
     if (!source.has_value()) {
@@ -461,7 +463,7 @@ void IwaInternalsHandler::GetIsolatedWebAppDevModeAppInfo(
       pinned_version = pinned_versions_[app.app_id()].GetString();
     }
     bool allow_downgrades = app_ids_allowing_downgrades_.contains(app.app_id());
-    absl::visit(
+    std::visit(
         base::Overloaded{
             [&](const IwaSourceBundleDevMode& source) {
               dev_mode_apps.emplace_back(::mojom::IwaDevModeAppInfo::New(

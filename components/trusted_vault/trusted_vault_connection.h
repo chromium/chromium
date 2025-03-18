@@ -7,12 +7,12 @@
 
 #include <memory>
 #include <optional>
+#include <variant>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 struct CoreAccountInfo;
 
@@ -184,21 +184,21 @@ struct DownloadAuthenticationFactorsRegistrationStateResult {
 
 // Authentication factor types:
 using LocalPhysicalDevice =
-    base::StrongAlias<class LocalPhysicalDeviceTag, absl::monostate>;
+    base::StrongAlias<class LocalPhysicalDeviceTag, std::monostate>;
 using LockScreenKnowledgeFactor =
-    base::StrongAlias<class VirtualDeviceTag, absl::monostate>;
+    base::StrongAlias<class VirtualDeviceTag, std::monostate>;
 using ICloudKeychain =
-    base::StrongAlias<class ICloudKeychainTag, absl::monostate>;
+    base::StrongAlias<class ICloudKeychainTag, std::monostate>;
 // UnspecifiedAuthenticationFactorType carries a type hint for the backend.
 using UnspecifiedAuthenticationFactorType =
     base::StrongAlias<class UnspecifiedAuthenticationFactorTypeTag, int>;
 
 using AuthenticationFactorType =
-    absl::variant<LocalPhysicalDevice,
-                  LockScreenKnowledgeFactor,
-                  UnspecifiedAuthenticationFactorType,
-                  GpmPinMetadata,
-                  ICloudKeychain>;
+    std::variant<LocalPhysicalDevice,
+                 LockScreenKnowledgeFactor,
+                 UnspecifiedAuthenticationFactorType,
+                 GpmPinMetadata,
+                 ICloudKeychain>;
 
 struct TrustedVaultKeyAndVersion {
   TrustedVaultKeyAndVersion(const std::vector<uint8_t>& key, int version);
@@ -221,7 +221,7 @@ std::vector<TrustedVaultKeyAndVersion> GetTrustedVaultKeysWithVersions(
 // A MemberKeysSource provides a method of calculating the values needed to
 // add an authenticator factor.
 using MemberKeysSource =
-    absl::variant<std::vector<TrustedVaultKeyAndVersion>, MemberKeys>;
+    std::variant<std::vector<TrustedVaultKeyAndVersion>, MemberKeys>;
 
 // Supports interaction with vault service, all methods must called on trusted
 // vault backend sequence.

@@ -96,6 +96,8 @@ class GlicBorderView : public views::View,
   // adjusted by the Tester).
   base::TimeTicks GetCreationTime() const;
 
+  bool ForceSimplifiedShader() const;
+
   // A utility class that subscribe to `GlicKeyedService` for various browser UI
   // status change.
   class BorderViewUpdater;

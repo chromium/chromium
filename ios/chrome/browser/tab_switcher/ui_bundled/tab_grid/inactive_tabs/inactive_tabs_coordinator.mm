@@ -33,7 +33,7 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/strings/grit/ui_strings.h"
 
-// A view that can be dimmed continusouly between no dimming and being fully
+// A view that can be dimmed continuously between no dimming and being fully
 // dimmed (the view is then fully black).
 @interface DimmableSnapshot : UIView
 
@@ -106,6 +106,7 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 
 @interface InactiveTabsCoordinator () <
     GridViewControllerDelegate,
+    InactiveTabsMediatorDelegate,
     InactiveTabsUserEducationCoordinatorDelegate,
     InactiveTabsViewControllerDelegate,
     SettingsNavigationControllerDelegate>
@@ -119,7 +120,7 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 // The constraints for placing `viewController` horizontally.
 @property(nonatomic, strong) NSLayoutConstraint* horizontalPosition;
 
-// Whether the view controller is shown. It is true inbetween calls to `-show`
+// Whether the view controller is shown. It is true in-between calls to `-show`
 // and `-hide`.
 @property(nonatomic, getter=isShowing) BOOL showing;
 
@@ -216,6 +217,7 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
   [self.viewController.view addGestureRecognizer:edgeSwipeRecognizer];
 
   self.mediator.consumer = self.viewController.gridViewController;
+  self.mediator.delegate = self;
 
   self.viewController.gridViewController.menuProvider = _contextMenuProvider;
 
@@ -396,6 +398,12 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 - (void)didTapButtonInActivitySummary:
     (BaseGridViewController*)gridViewController {
   NOTREACHED();
+}
+
+#pragma mark - InactiveTabsMediatorDelegate
+
+- (void)inactiveTabsMediatorEmpty:(InactiveTabsMediator*)inactiveTabsMediator {
+  [self popIfNeeded];
 }
 
 #pragma mark - InactiveTabsUserEducationCoordinatorDelegate
@@ -631,6 +639,7 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
         self.baseViewSnapshot = nil;
         self.showing = NO;
         self.mediator.consumer = nil;
+        self.mediator.delegate = nil;
         self.viewController = nil;
       }];
 }
@@ -691,7 +700,8 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 // Tells the delegate this coordinator did finish if it was showing its view
 // controller and had no item left.
 - (void)popIfNeeded {
-  if ([self.mediator numberOfItems] == 0 && self.showing) {
+  if ([self.mediator numberOfItems] == 0 && self.showing &&
+      !self.presentingSettings) {
     [self didFinish];
   }
 }

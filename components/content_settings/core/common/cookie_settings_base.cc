@@ -7,6 +7,7 @@
 #include <functional>
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/check.h"
 #include "base/feature_list.h"
@@ -32,7 +33,6 @@
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/cookies/static_cookie_policy.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -564,9 +564,9 @@ bool CookieSettingsBase::IsAllowedBySandboxValue(
   return net::SchemefulSite::IsSameSite(origin, first_party_origin);
 }
 
-absl::variant<CookieSettingsBase::AllowAllCookies,
-              CookieSettingsBase::AllowPartitionedCookies,
-              CookieSettingsBase::BlockAllCookies>
+std::variant<CookieSettingsBase::AllowAllCookies,
+             CookieSettingsBase::AllowPartitionedCookies,
+             CookieSettingsBase::BlockAllCookies>
 CookieSettingsBase::DecideAccess(const GURL& url,
                                  const GURL& first_party_url,
                                  bool is_third_party_request,
@@ -712,13 +712,13 @@ CookieSettingsBase::GetCookieSettingInternal(
   const bool block_third_party_cookies = ShouldBlockThirdPartyCookies(
       url::Origin::Create(first_party_url), overrides);
 
-  const absl::variant<AllowAllCookies, AllowPartitionedCookies, BlockAllCookies>
+  const std::variant<AllowAllCookies, AllowPartitionedCookies, BlockAllCookies>
       choice = DecideAccess(url, first_party_url, is_third_party_request,
                             overrides, cookie_setting, is_explicit_setting,
                             block_third_party_cookies, setting_info);
 
   if (const AllowAllCookies* allow_cookies =
-          absl::get_if<AllowAllCookies>(&choice)) {
+          std::get_if<AllowAllCookies>(&choice)) {
     CHECK(IsAllowed(cookie_setting));
     CHECK(!is_third_party_request || !block_third_party_cookies ||
               allow_cookies->mechanism != ThirdPartyCookieAllowMechanism::kNone,
@@ -758,7 +758,7 @@ CookieSettingsBase::GetCookieSettingInternal(
     return out;
   }
 
-  if (absl::holds_alternative<AllowPartitionedCookies>(choice)) {
+  if (std::holds_alternative<AllowPartitionedCookies>(choice)) {
     CHECK(is_third_party_request, base::NotFatalUntil::M128);
     CHECK(block_third_party_cookies, base::NotFatalUntil::M128);
     CHECK(!is_explicit_setting, base::NotFatalUntil::M128);
@@ -780,7 +780,7 @@ CookieSettingsBase::GetCookieSettingInternal(
     return out;
   }
 
-  CHECK(absl::holds_alternative<BlockAllCookies>(choice));
+  CHECK(std::holds_alternative<BlockAllCookies>(choice));
   CHECK_EQ(cookie_setting, CONTENT_SETTING_BLOCK, base::NotFatalUntil::M128);
   FireStorageAccessHistogram(StorageAccessResult::ACCESS_BLOCKED);
 

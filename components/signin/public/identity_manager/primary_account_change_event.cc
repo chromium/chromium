@@ -4,6 +4,8 @@
 
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 
+#include <variant>
+
 #include "base/check_op.h"
 #include "build/build_config.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -33,7 +35,7 @@ PrimaryAccountChangeEvent::PrimaryAccountChangeEvent() = default;
 PrimaryAccountChangeEvent::PrimaryAccountChangeEvent(
     State previous_state,
     State current_state,
-    absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
+    std::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
         event_source)
     : previous_state_(previous_state),
       current_state_(current_state),
@@ -95,18 +97,18 @@ PrimaryAccountChangeEvent::GetPreviousState() const {
 
 std::optional<signin_metrics::AccessPoint>
 PrimaryAccountChangeEvent::GetSetPrimaryAccountAccessPoint() const {
-  if (absl::holds_alternative<signin_metrics::AccessPoint>(event_source_)) {
+  if (std::holds_alternative<signin_metrics::AccessPoint>(event_source_)) {
     return std::optional<signin_metrics::AccessPoint>(
-        absl::get<signin_metrics::AccessPoint>(event_source_));
+        std::get<signin_metrics::AccessPoint>(event_source_));
   }
   return std::nullopt;
 }
 
 std::optional<signin_metrics::ProfileSignout>
 PrimaryAccountChangeEvent::GetClearPrimaryAccountSource() const {
-  if (absl::holds_alternative<signin_metrics::ProfileSignout>(event_source_)) {
+  if (std::holds_alternative<signin_metrics::ProfileSignout>(event_source_)) {
     return std::optional<signin_metrics::ProfileSignout>(
-        absl::get<signin_metrics::ProfileSignout>(event_source_));
+        std::get<signin_metrics::ProfileSignout>(event_source_));
   }
   return std::nullopt;
 }
@@ -114,7 +116,7 @@ PrimaryAccountChangeEvent::GetClearPrimaryAccountSource() const {
 bool PrimaryAccountChangeEvent::StatesAndEventSourceAreValid(
     PrimaryAccountChangeEvent::State previous_state,
     PrimaryAccountChangeEvent::State current_state,
-    absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
+    std::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
         event_source) {
   // The states cannot have an empty primary account and the consent level
   // kSync.
@@ -131,7 +133,7 @@ bool PrimaryAccountChangeEvent::StatesAndEventSourceAreValid(
   // not, the event source should be an access point.
   if (previous_state.primary_account.IsEmpty() &&
       !current_state.primary_account.IsEmpty() &&
-      !absl::holds_alternative<signin_metrics::AccessPoint>(event_source)) {
+      !std::holds_alternative<signin_metrics::AccessPoint>(event_source)) {
     return false;
   }
 
@@ -139,7 +141,7 @@ bool PrimaryAccountChangeEvent::StatesAndEventSourceAreValid(
   // state's is empty, the event source should be a profile sign out.
   if (!previous_state.primary_account.IsEmpty() &&
       current_state.primary_account.IsEmpty() &&
-      !absl::holds_alternative<signin_metrics::ProfileSignout>(event_source)) {
+      !std::holds_alternative<signin_metrics::ProfileSignout>(event_source)) {
     return false;
   }
 
@@ -147,7 +149,7 @@ bool PrimaryAccountChangeEvent::StatesAndEventSourceAreValid(
   // kSync, the event source should be an access point.
   if (previous_state.consent_level == ConsentLevel::kSignin &&
       current_state.consent_level == ConsentLevel::kSync &&
-      !absl::holds_alternative<signin_metrics::AccessPoint>(event_source)) {
+      !std::holds_alternative<signin_metrics::AccessPoint>(event_source)) {
     return false;
   }
 
@@ -155,7 +157,7 @@ bool PrimaryAccountChangeEvent::StatesAndEventSourceAreValid(
   // kSignin, the event source should be a profile sign out.
   if (previous_state.consent_level == ConsentLevel::kSync &&
       current_state.consent_level == ConsentLevel::kSignin &&
-      !absl::holds_alternative<signin_metrics::ProfileSignout>(event_source)) {
+      !std::holds_alternative<signin_metrics::ProfileSignout>(event_source)) {
     return false;
   }
 
@@ -164,7 +166,7 @@ bool PrimaryAccountChangeEvent::StatesAndEventSourceAreValid(
   if (!current_state.primary_account.IsEmpty() &&
       previous_state.consent_level == current_state.consent_level &&
       previous_state.primary_account != current_state.primary_account &&
-      !absl::holds_alternative<signin_metrics::AccessPoint>(event_source)) {
+      !std::holds_alternative<signin_metrics::AccessPoint>(event_source)) {
     return false;
   }
 

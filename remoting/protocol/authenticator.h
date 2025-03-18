@@ -73,9 +73,6 @@ class Authenticator {
     // The client JID was not valid (i.e. violated a policy or was malformed).
     INVALID_ACCOUNT_ID,
 
-    // Generic error used when something goes wrong establishing a session.
-    PROTOCOL_ERROR,
-
     // Session was rejected by the user (i.e. via the confirmation dialog).
     REJECTED_BY_USER,
 
@@ -101,6 +98,16 @@ class Authenticator {
     // Failed to find an authentication method that is supported by both the
     // host and the client.
     NO_COMMON_AUTH_METHOD,
+
+    // The authenticator is not in a valid state.
+    INVALID_STATE,
+
+    // The peer has sent an invalid message. E.g. fields are missing in the
+    // message.
+    INVALID_ARGUMENT,
+
+    // Generic error used when something goes wrong establishing a session.
+    UNEXPECTED_ERROR,
   };
 
   // Details explaining why authentication was rejected.

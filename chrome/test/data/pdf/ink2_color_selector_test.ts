@@ -2,16 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AnnotationBrushType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import type {InkColorSelectorElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationBrushType, hexToColor, PEN_COLORS} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {Color, InkColorSelectorElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertLabels, assertSelectedColor, getColorButtons} from './test_util.js';
 
 
-function createSelector(): InkColorSelectorElement {
+function createSelector(initialValue?: Color): InkColorSelectorElement {
   const selector = document.createElement('ink-color-selector');
+  // Emulate the parent initializing this value via a data binding, e.g. before
+  // the sidepanel is shown, or before the bottom toolbar color button is
+  // clicked to add this element to the DOM.
+  if (initialValue) {
+    selector.currentColor = initialValue;
+  }
   document.body.innerHTML = '';
   document.body.appendChild(selector);
   return selector;
@@ -133,11 +139,11 @@ chrome.test.runTests([
   },
 
   // Test that when the color button in the first column is selected, pressing
-  // 'ArrowLeft' will select the color button in the last column in the same
+  // 'ArrowLeft' will select the color button in the last column in the previous
   // row.
   // Test that when the color button in the last column is selected,
   // pressing 'ArrowRight' will select the color button in the first column in
-  // the same row.
+  // the next row.
   async function testArrowKeysChangeColorFirstLastColumn() {
     const selector = createSelector();
     const colorButtons = getColorButtons(selector);
@@ -151,11 +157,11 @@ chrome.test.runTests([
 
     await testColorKeyboardEvent(
         colorButtons, colorButtons[5]!, 'ArrowLeft',
-        /*expectedButtonIndex=*/ 9);
+        /*expectedButtonIndex=*/ 4);
 
     await testColorKeyboardEvent(
         colorButtons, colorButtons[9]!, 'ArrowRight',
-        /*expectedButtonIndex=*/ 5);
+        /*expectedButtonIndex=*/ 10);
 
     chrome.test.succeed();
   },
@@ -238,6 +244,26 @@ chrome.test.runTests([
       assertLabels(colorButtons[i]!, expectedLabels[i]!);
     }
 
+    chrome.test.succeed();
+  },
+
+  async function testFocusesSelectedItem() {
+    let selector = createSelector(hexToColor(PEN_COLORS[1]!.color));
+    let colorButtons = getColorButtons(selector);
+    chrome.test.assertEq(20, colorButtons.length);
+    assertSelectedColor(colorButtons, /*buttonIndex=*/ 1);
+    let whenFocused = eventToPromise('focus', colorButtons[1]!);
+    selector.focus();
+    await whenFocused;
+
+    // Recreate the selector to test a different initial condition.
+    selector = createSelector(hexToColor(PEN_COLORS[10]!.color));
+    colorButtons = getColorButtons(selector);
+    chrome.test.assertEq(20, colorButtons.length);
+    assertSelectedColor(colorButtons, /*buttonIndex=*/ 10);
+    whenFocused = eventToPromise('focus', colorButtons[10]!);
+    selector.focus();
+    await whenFocused;
     chrome.test.succeed();
   },
 ]);

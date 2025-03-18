@@ -432,7 +432,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2981364137500752533">Puedes tener hasta 5 ventanas.</translation>
 <translation id="2983102365694924129">Según tu actividad en un sitio. Esta configuración está desactivada.</translation>
 <translation id="2984978667043170458">Incluir texto adyacente en las búsquedas de Google</translation>
-<translation id="2988638966064514052">Fortalece tus contraseñas</translation>
 <translation id="2989523299700148168">Visitados recientemente</translation>
 <translation id="2992473221983447149">Descripciones de imágenes</translation>
 <translation id="2996291259634659425">Crear frase de contraseña</translation>
@@ -548,7 +547,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3557336313807607643">Agregar a contactos</translation>
 <translation id="3563767357928833671">Se muestra el contenido del Portapapeles</translation>
 <translation id="3566639033325271639">Actualizar configuración</translation>
-<translation id="3568945271227339929">No tienes contraseñas hackeadas</translation>
 <translation id="3575464060651642446">Revisando las contraseñas en este dispositivo…</translation>
 <translation id="3577473026931028326">Se produjo un error. Vuelve a intentarlo.</translation>
 <translation id="3577558748185201054">Administra tus intereses y preferencias</translation>
@@ -1055,7 +1053,6 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5958275228015807058">Encuentra tus archivos y páginas en Descargas</translation>
 <translation id="5958994127112619898">Simplificar página</translation>
 <translation id="5962718611393537961">Presiona para contraer</translation>
-<translation id="5964180026566797835">No se pueden revisar las contraseñas</translation>
 <translation id="5964869237734432770">Detener descripciones de imágenes</translation>
 <translation id="5977976211062815271">En este dispositivo</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 página en tu lista de lectura}other{# páginas en tu lista de lectura}}</translation>
@@ -1099,6 +1096,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="6150320133806434356">Se guardó el favorito</translation>
 <translation id="6150706324143004339">Para usar y guardar datos de Chrome en tu Cuenta de Google, actualiza Chrome</translation>
 <translation id="6154478581116148741">Para exportar tus contraseñas de este dispositivo, activa el bloqueo de pantalla en Configuración</translation>
+<translation id="6156323911414505561">Mostrar barra de favoritos</translation>
 <translation id="6162892189396105610">Precarga las páginas que Chrome considera que posiblemente visites.</translation>
 <translation id="6170675927290506430">Ir a la configuración de notificaciones</translation>
 <translation id="6186394685773237175">No se encontraron contraseñas hackeadas</translation>

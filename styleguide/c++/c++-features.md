@@ -9,11 +9,13 @@ subprojects can choose to be more restrictive if necessary for toolchain
 support._
 
 The C++ language has in recent years received an updated standard every three
-years (C++11, C++14, etc.). For various reasons, Chromium does not immediately
-allow new features on the publication of such a standard. Instead, once
-Chromium supports the toolchain to a certain extent (e.g., build support is
-ready), a standard is declared "_initially supported_", with new
-language/library features banned pending discussion but not yet allowed.
+years (C++11, C++14, etc.).
+[For various reasons](https://chromium.googlesource.com/chromium/src/+/main/docs/process/c++_version_upgrades.md),
+Chromium does not immediately allow new features on the publication of such a
+standard. Instead, once Chromium supports the toolchain to a certain extent
+(e.g., build support is ready), a standard is declared "_initially supported_",
+with new language/library features banned pending discussion but not yet
+allowed.
 
 You can propose changing the status of a feature by sending an email to
 [cxx@chromium.org](https://groups.google.com/a/chromium.org/forum/#!forum/cxx).

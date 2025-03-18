@@ -92,6 +92,10 @@ assert(!enable_mutex_priority_inheritance || is_castos || is_cast_android,
 assert(!is_nacl || is_nacl_saigo,
        "base must not be built in most nacl toolchains")
 
+# Prevent //base having to support a toolchain that uses a different
+# llvm/libc++ version.
+assert(!is_wasm, "base must not be built in most wasm toolchains")
+
 # This is here instead of in //build because //build is DEPS'd in by a few
 # subprojects that still support MSVC.
 assert(!is_win || is_clang,

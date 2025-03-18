@@ -13,8 +13,8 @@
 #include <string>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/task/thread_pool.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
-#include "content/public/browser/browser_thread.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace content {
@@ -40,37 +40,20 @@ bool CheckCmdlineForOrca(const std::string& cmdline_all) {
   return false;  // Orca was not found
 }
 
-}  // namespace
-
-class BrowserAccessibilityStateImplAuralinux
-    : public BrowserAccessibilityStateImpl {
- public:
-  BrowserAccessibilityStateImplAuralinux() = default;
-
- protected:
-  void UpdateUniqueUserHistograms() override;
-  void UpdateKnownAssistiveTechSlow() override;
-  BrowserAccessibilityState::AssistiveTech ActiveKnownAssistiveTech() override;
-
- private:
-  bool is_orca_active_ = false;
-};
-
-void BrowserAccessibilityStateImplAuralinux::UpdateKnownAssistiveTechSlow() {
+// Returns true if Orca is active.
+bool DiscoverOrca() {
   // NOTE: this method is run from another thread to reduce jank, since
-  // there's no guarantee these system calls will return quickly. Code that
-  // needs to run in the UI thread can be run in
-  // UpdateHistogramsOnUIThread instead.
+  // there's no guarantee these system calls will return quickly.
   std::unique_ptr<DIR, decltype(&CloseDir)> proc_dir(opendir("/proc"),
                                                      &CloseDir);
   if (proc_dir == nullptr) {
     LOG(ERROR) << "Error opening /proc directory.";
-    return;
+    return false;
   }
 
-  is_orca_active_ = false;
+  bool is_orca_active = false;
   raw_ptr<dirent> entry;
-  while (!is_orca_active_ && (entry = readdir(proc_dir.get())) != nullptr) {
+  while (!is_orca_active && (entry = readdir(proc_dir.get())) != nullptr) {
     if (isdigit(entry->d_name[0])) {
       std::string pidStr(entry->d_name);
 
@@ -83,7 +66,7 @@ void BrowserAccessibilityStateImplAuralinux::UpdateKnownAssistiveTechSlow() {
             std::stringstream buffer;
             buffer << cmdline_file.rdbuf();
             std::string cmdline_all = buffer.str();
-            is_orca_active_ = CheckCmdlineForOrca(cmdline_all);
+            is_orca_active = CheckCmdlineForOrca(cmdline_all);
             cmdline_file.close();
           } else {
             DVLOG(1) << "Error opening cmdline for pid: " << pidStr;
@@ -95,31 +78,55 @@ void BrowserAccessibilityStateImplAuralinux::UpdateKnownAssistiveTechSlow() {
     }
   }
 
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.Linux.Orca", is_orca_active_);
+  return is_orca_active;
+}
+
+}  // namespace
+
+class BrowserAccessibilityStateImplAuralinux
+    : public BrowserAccessibilityStateImpl {
+ public:
+  BrowserAccessibilityStateImplAuralinux() = default;
+
+ protected:
+  void RefreshAssistiveTech() override;
+
+ private:
+  void OnDiscoveredOrca(bool is_orca_active);
+
+  // The presence of an AssistiveTech is currently being recomputed.
+  // Will be updated via DiscoverOrca().
+  bool awaiting_known_assistive_tech_computation_ = false;
+};
+
+void BrowserAccessibilityStateImplAuralinux::RefreshAssistiveTech() {
+  if (!awaiting_known_assistive_tech_computation_) {
+    awaiting_known_assistive_tech_computation_ = true;
+    // Using base::Unretained() instead of a weak pointer as the lifetime of
+    // this is tied to BrowserMainLoop.
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&DiscoverOrca),
+        base::BindOnce(
+            &BrowserAccessibilityStateImplAuralinux::OnDiscoveredOrca,
+            base::Unretained(this)));
+  }
+}
+
+void BrowserAccessibilityStateImplAuralinux::OnDiscoveredOrca(
+    bool is_orca_active) {
+  awaiting_known_assistive_tech_computation_ = false;
+
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.Linux.Orca", is_orca_active);
   static auto* ax_orca_crash_key = base::debug::AllocateCrashKeyString(
       "ax_orca", base::debug::CrashKeySize::Size32);
-  if (is_orca_active_) {
+  if (is_orca_active) {
     base::debug::SetCrashKeyString(ax_orca_crash_key, "true");
+    OnAssistiveTechFound(ui::AssistiveTech::kOrca);
   } else {
     base::debug::ClearCrashKeyString(ax_orca_crash_key);
+    OnAssistiveTechFound(ui::AssistiveTech::kNone);
   }
-
-  awaiting_known_assistive_tech_computation_ = false;
-}
-
-void BrowserAccessibilityStateImplAuralinux::UpdateUniqueUserHistograms() {
-  BrowserAccessibilityStateImpl::UpdateUniqueUserHistograms();
-
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.Linux.Orca.EveryReport",
-                        is_orca_active_);
-}
-
-BrowserAccessibilityState::AssistiveTech
-BrowserAccessibilityStateImplAuralinux::ActiveKnownAssistiveTech() {
-  if (awaiting_known_assistive_tech_computation_) {
-    return kUnknown;
-  }
-  return is_orca_active_ ? kOrca : kNone;
 }
 
 // static

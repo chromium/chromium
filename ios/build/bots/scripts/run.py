@@ -243,6 +243,8 @@ class Runner():
       # on exception to distinguish between a test failure, and a failure
       # to launch the test at all.
       exception_recorder.register(e)
+      if isinstance(e, test_runner_errors.XcodeInstallFailedError):
+        self.should_delete_xcode_cache = True
       return 2
     finally:
       if tr:
@@ -273,7 +275,8 @@ class Runner():
       with open(output_json_path, 'w') as f:
         json.dump(test_results, f)
 
-      if self.should_delete_xcode_cache:
+      if self.should_delete_xcode_cache and os.path.exists(
+          self.args.xcode_path):
         shutil.rmtree(self.args.xcode_path)
 
       test_runner.defaults_delete('com.apple.CoreSimulator',

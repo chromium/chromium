@@ -37,7 +37,7 @@ if (is_linux) {
 }
 
 # is_wasm is defined in BUILDCONFIG.gn only when wasmbuild.patch is applied.
-if (defined(is_wasm)) {
+if (false) {
   group("caspian_web") {
     deps = [ "//tools/binary_size/libsupersize/viewer/caspian:caspian_web(//build/toolchain/wasm:wasm)" ]
   }

@@ -51,6 +51,8 @@ public class BookmarkPane implements Pane {
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mHairlineVisibilitySupplier =
             new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean> mHubSearchEnabledStateSupplier =
+            new ObservableSupplierImpl<>();
 
     // FrameLayout which has HistoryManager's root view as the only child.
     private final FrameLayout mRootView;
@@ -193,6 +195,12 @@ public class BookmarkPane implements Pane {
             @NonNull HubContainerView hubContainerView) {
         return FadeHubLayoutAnimationFactory.createFadeOutAnimatorProvider(
                 hubContainerView, HUB_LAYOUT_FADE_DURATION_MS, mOnToolbarAlphaChange);
+    }
+
+    @NonNull
+    @Override
+    public ObservableSupplier<Boolean> getHubSearchEnabledStateSupplier() {
+        return mHubSearchEnabledStateSupplier;
     }
 
     private void onBookmarkOpened() {

@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -217,7 +218,7 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
     last_sent_offer_ = parsed_message.value();
     if (parsed_message.value().type == SenderMessage::Type::kOffer) {
       EXPECT_GT(parsed_message.value().sequence_number, 0);
-      const auto offer = absl::get<Offer>(parsed_message.value().body);
+      const auto offer = std::get<Offer>(parsed_message.value().body);
 
       for (const openscreen::cast::AudioStream& stream : offer.audio_streams) {
         EXPECT_EQ(
@@ -280,7 +281,7 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
     ASSERT_TRUE(session_host_);
     ASSERT_TRUE(last_sent_offer_);
 
-    const Offer& offer = absl::get<Offer>(last_sent_offer_->body);
+    const Offer& offer = std::get<Offer>(last_sent_offer_->body);
     openscreen::cast::Answer answer{.udp_port = 1234};
 
     if (!offer.audio_streams.empty()) {
@@ -681,7 +682,7 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
   void AssertCodecWasOffered(media::VideoCodec codec,
                              bool use_hardware_encoder = false) {
     // First check that is was actually included in the offer.
-    const auto& offer = absl::get<Offer>(last_sent_offer().body);
+    const auto& offer = std::get<Offer>(last_sent_offer().body);
     ASSERT_TRUE(std::any_of(
         offer.video_streams.begin(), offer.video_streams.end(),
         [codec](const VideoStream& stream) {

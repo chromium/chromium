@@ -8,6 +8,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <variant>
 
 #include "base/files/file.h"
 #include "base/functional/callback.h"
@@ -16,7 +17,6 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace net {
 class FirstPartySetsCacheFilter;
@@ -67,7 +67,7 @@ class CONTENT_EXPORT FirstPartySetsHandler {
    public:
     IssueWithMetadata(
         const T& issue_type,
-        const std::vector<absl::variant<int, std::string>>& issue_path)
+        const std::vector<std::variant<int, std::string>>& issue_path)
         : issue_type_(issue_type), issue_path_(issue_path) {}
     ~IssueWithMetadata() = default;
     IssueWithMetadata(const IssueWithMetadata<T>&) = default;
@@ -76,7 +76,7 @@ class CONTENT_EXPORT FirstPartySetsHandler {
 
     // Inserts path_prefix at the beginning of the path stored for this issue.
     void PrependPath(
-        const std::vector<absl::variant<int, std::string>>& path_prefix) {
+        const std::vector<std::variant<int, std::string>>& path_prefix) {
       issue_path_.insert(issue_path_.begin(), path_prefix.begin(),
                          path_prefix.end());
     }
@@ -87,13 +87,13 @@ class CONTENT_EXPORT FirstPartySetsHandler {
     // The path within the policy that was being parsed when the issue was
     // found. Based on the policy::PolicyErrorPath type defined in
     // components/policy.
-    std::vector<absl::variant<int, std::string>> path() const {
+    std::vector<std::variant<int, std::string>> path() const {
       return issue_path_;
     }
 
    private:
     T issue_type_;
-    std::vector<absl::variant<int, std::string>> issue_path_;
+    std::vector<std::variant<int, std::string>> issue_path_;
   };
 
   using ParseError = IssueWithMetadata<ParseErrorType>;

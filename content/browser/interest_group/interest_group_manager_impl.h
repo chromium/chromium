@@ -280,6 +280,10 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
                                  base::Time cooldown_start,
                                  DebugReportCooldownType cooldown_type);
 
+  // Records a view or a click event. Aggregate time bucketed view and click
+  // information is provided to bidder's browsing signals in generateBid().
+  void RecordViewClick(network::AdAuctionEventRecord event_record);
+
   // Reports the ad keys to the k-anonymity service. Should be called when
   // FLEDGE selects an ad.
   void RegisterAdKeysAsJoined(base::flat_set<std::string> hashed_keys);

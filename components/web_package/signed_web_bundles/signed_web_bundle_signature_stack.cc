@@ -5,6 +5,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack.h"
 
 #include <algorithm>
+#include <variant>
 
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
@@ -50,7 +51,7 @@ SignedWebBundleSignatureStack::Create(
   }
 
   if (std::ranges::all_of(entries, [](const auto& signature) {
-        return absl::holds_alternative<SignedWebBundleSignatureInfoUnknown>(
+        return std::holds_alternative<SignedWebBundleSignatureInfoUnknown>(
             signature.signature_info());
       })) {
     return base::unexpected(
@@ -97,7 +98,7 @@ bool SignedWebBundleSignatureStack::operator!=(
 std::vector<PublicKey> SignedWebBundleSignatureStack::public_keys() const {
   std::vector<PublicKey> public_keys;
   for (const auto& signature : entries()) {
-    absl::visit(
+    std::visit(
         base::Overloaded{[&](const auto& signature_info) {
                            public_keys.push_back(signature_info.public_key());
                          },

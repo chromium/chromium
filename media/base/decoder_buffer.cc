@@ -5,6 +5,7 @@
 #include "media/base/decoder_buffer.h"
 
 #include <sstream>
+#include <variant>
 
 #include "base/containers/heap_array.h"
 #include "base/debug/alias.h"
@@ -236,10 +237,10 @@ std::string DecoderBuffer::AsHumanReadableString(bool verbose) const {
 
     std::string config;
     const auto nc = next_config().value();
-    if (const auto* ac = absl::get_if<media::AudioDecoderConfig>(&nc)) {
+    if (const auto* ac = std::get_if<media::AudioDecoderConfig>(&nc)) {
       config = ac->AsHumanReadableString();
     } else {
-      config = absl::get<media::VideoDecoderConfig>(nc).AsHumanReadableString();
+      config = std::get<media::VideoDecoderConfig>(nc).AsHumanReadableString();
     }
 
     return base::StringPrintf("EOS config=(%s)", config.c_str());

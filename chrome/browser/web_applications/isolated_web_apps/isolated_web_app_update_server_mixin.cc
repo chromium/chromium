@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h"
 
+#include <variant>
+
 #include "base/functional/overloaded.h"
 #include "base/json/json_writer.h"
 #include "base/version.h"
@@ -72,7 +74,7 @@ IsolatedWebAppUpdateServerMixin::HandleRequest(
     return HttpNotFound();
   }
 
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [](BundledIsolatedWebApp* bundle)
               -> std::unique_ptr<net::test_server::HttpResponse> {

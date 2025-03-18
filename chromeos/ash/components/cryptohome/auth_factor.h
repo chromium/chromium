@@ -7,12 +7,12 @@
 
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/component_export.h"
 #include "base/containers/enum_set.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace cryptohome {
 
@@ -317,14 +317,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) AuthFactor {
  private:
   AuthFactorRef ref_;
   AuthFactorCommonMetadata common_metadata_;
-  absl::variant<absl::monostate,
-                SmartCardMetadata,
-                CryptohomeRecoveryMetadata,
-                PasswordMetadata,
-                PinMetadata,
-                FingerprintMetadata>
+  std::variant<std::monostate,
+               SmartCardMetadata,
+               CryptohomeRecoveryMetadata,
+               PasswordMetadata,
+               PinMetadata,
+               FingerprintMetadata>
       factor_metadata_;
-  absl::variant<absl::monostate, PinStatus> factor_status_;
+  std::variant<std::monostate, PinStatus> factor_status_;
 };
 
 }  // namespace cryptohome

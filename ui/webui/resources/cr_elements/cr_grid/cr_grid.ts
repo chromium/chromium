@@ -119,6 +119,7 @@ export class CrGridElement extends CrLitElement {
           item;
       assert(toFocus);
       toFocus.focus();
+      this.fire('cr-grid-focus-changed', toFocus);
     }
 
     if (['Enter', ' '].includes(e.key)) {

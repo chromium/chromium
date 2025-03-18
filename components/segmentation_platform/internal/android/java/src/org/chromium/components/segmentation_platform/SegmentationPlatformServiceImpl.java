@@ -71,6 +71,18 @@ public class SegmentationPlatformServiceImpl implements SegmentationPlatformServ
                         });
     }
 
+    @Override
+    public void collectTrainingData(
+            int segmentId,
+            long requestId,
+            long ukmSourceId,
+            TrainingLabels param,
+            Callback<Boolean> callback) {
+        SegmentationPlatformServiceImplJni.get()
+                .collectTrainingData(
+                        mNativePtr, segmentId, requestId, ukmSourceId, param, callback);
+    }
+
     @CalledByNative
     private void clearNativePtr() {
         mNativePtr = 0;
@@ -101,5 +113,13 @@ public class SegmentationPlatformServiceImpl implements SegmentationPlatformServ
                 long nativeSegmentationPlatformServiceAndroid,
                 String segmentationKey,
                 Callback<String[]> callback);
+
+        void collectTrainingData(
+                long nativeSegmentationPlatformServiceAndroid,
+                int segmentId,
+                long requestId,
+                long ukmSourceId,
+                TrainingLabels param,
+                Callback<Boolean> callback);
     }
 }

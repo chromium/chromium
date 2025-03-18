@@ -638,7 +638,7 @@ TEST_F(MenuRunnerWidgetTest, ClearsMouseHandlerOnRun) {
 
   // Create a second view that's supposed to get the second mouse press.
   EventCountView* second_event_count_view = new EventCountView();
-  widget()->GetRootView()->AddChildView(second_event_count_view);
+  widget()->GetRootView()->AddChildViewRaw(second_event_count_view);
 
   widget()->SetBounds(gfx::Rect(0, 0, 200, 100));
   event_count_view()->SetBounds(0, 0, 100, 100);

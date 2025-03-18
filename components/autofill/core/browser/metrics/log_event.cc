@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/metrics/log_event.h"
 
+#include <variant>
+
 #include "base/notreached.h"
 
 namespace autofill {
@@ -38,8 +40,8 @@ bool OptionalBooleanToBool(OptionalBoolean value) {
   NOTREACHED();
 }
 
-bool AreCollapsible(const absl::monostate& event1,
-                    const absl::monostate& event2) {
+bool AreCollapsible(const std::monostate& event1,
+                    const std::monostate& event2) {
   return true;
 }
 

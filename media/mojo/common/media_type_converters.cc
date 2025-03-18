@@ -10,6 +10,7 @@
 #include "media/mojo/common/media_type_converters.h"
 
 #include <memory>
+#include <variant>
 
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
@@ -106,14 +107,14 @@ TypeConverter<media::mojom::DecoderBufferPtr, media::DecoderBuffer>::Convert(
     if (input.next_config()) {
       const auto next_config = *input.next_config();
       if (const auto* ac =
-              absl::get_if<media::AudioDecoderConfig>(&next_config)) {
+              std::get_if<media::AudioDecoderConfig>(&next_config)) {
         eos->next_config =
             media::mojom::DecoderBufferSideDataNextConfig::NewNextAudioConfig(
                 *ac);
       } else {
         eos->next_config =
             media::mojom::DecoderBufferSideDataNextConfig::NewNextVideoConfig(
-                absl::get<media::VideoDecoderConfig>(next_config));
+                std::get<media::VideoDecoderConfig>(next_config));
       }
     }
     return media::mojom::DecoderBuffer::NewEos(std::move(eos));

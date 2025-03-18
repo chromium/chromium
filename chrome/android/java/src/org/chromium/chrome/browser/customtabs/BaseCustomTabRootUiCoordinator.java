@@ -368,7 +368,25 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
     @Override
     protected void initializeToolbar() {
+        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
+            CustomTabToolbar toolbar = mActivity.findViewById(R.id.toolbar);
+            toolbar.initializeToolbar(
+                    mActivity,
+                    mIntentDataProvider.get(),
+                    mFeatureOverridesManagerSupplier.get(),
+                    mMinimizeDelegateSupplier.get());
+
+            super.initializeToolbar();
+
+            mToolbarCoordinator.get().onToolbarInitialized(mToolbarManager);
+
+            return;
+        }
+
         super.initializeToolbar();
+
+        // TODO(crbug.com/402213312): Move as much of this as possible into
+        // CustomTabToolbar#initializeToolbar rather than calling a bunch of setters.
 
         mToolbarCoordinator.get().onToolbarInitialized(mToolbarManager);
 

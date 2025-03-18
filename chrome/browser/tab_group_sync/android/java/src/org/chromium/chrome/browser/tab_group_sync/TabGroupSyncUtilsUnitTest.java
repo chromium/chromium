@@ -175,7 +175,7 @@ public class TabGroupSyncUtilsUnitTest {
             tab.setRootId(rootId);
             tab.setTabGroupId(tabGroupId);
         }
-        when(mTabGroupModelFilter.getRelatedTabListForRootId(eq(rootId))).thenReturn(tabs);
+        when(mTabGroupModelFilter.getTabsInGroup(eq(tabGroupId))).thenReturn(tabs);
         when(mTabGroupModelFilter.getRootIdFromTabGroupId(eq(tabGroupId))).thenReturn(rootId);
         when(mTabGroupModelFilter.getTabGroupIdFromRootId(eq(rootId))).thenReturn(tabGroupId);
     }

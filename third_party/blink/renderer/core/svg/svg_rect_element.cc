@@ -108,9 +108,9 @@ Path SVGRectElement::AsPath() const {
     // than half of the width of the rectangle then its set to half of the
     // width; radii.y() is handled similarly.
     radii.SetToMin(gfx::ScaleVector2d(size, 0.5));
-    path.AddRoundedRect(FloatRoundedRect(rect, radii.x(), radii.y()));
+    path = Path::MakeRoundedRect(FloatRoundedRect(rect, radii.x(), radii.y()));
   } else {
-    path.AddRect(rect);
+    path = Path::MakeRect(rect);
   }
   return path;
 }

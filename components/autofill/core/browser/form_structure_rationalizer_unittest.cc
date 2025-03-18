@@ -55,6 +55,8 @@ struct FieldTemplate {
   // Section name of a field.
   std::string_view section = "";
   FormControlType form_control_type = FormControlType::kInputText;
+  std::string_view placeholder;
+  std::string_view value;
   std::optional<AutocompleteParsingResult> parsed_autocomplete = std::nullopt;
   bool is_focusable = true;
   size_t max_length = std::numeric_limits<int>::max();
@@ -82,6 +84,8 @@ std::pair<FormData, std::string> CreateFormAndServerClassification(
       field.set_section(Section::FromAutocomplete(
           {.section = std::string(field_template.section)}));
     }
+    field.set_value(base::UTF8ToUTF16(field_template.value));
+    field.set_placeholder(base::UTF8ToUTF16(field_template.placeholder));
     field.set_form_control_type(field_template.form_control_type);
     field.set_is_focusable(field_template.is_focusable);
     field.set_max_length(field_template.max_length);
@@ -136,13 +140,27 @@ std::unique_ptr<FormStructure> BuildFormStructure(
 }
 
 std::vector<FieldType> GetTypes(const FormStructure& form_structure) {
-  std::vector<FieldType> server_types;
-  server_types.reserve(form_structure.field_count());
+  std::vector<FieldType> types;
+  types.reserve(form_structure.field_count());
   for (size_t i = 0; i < form_structure.field_count(); ++i) {
-    server_types.emplace_back(
-        form_structure.field(i)->Type().GetStorableType());
+    types.push_back(form_structure.field(i)->Type().GetStorableType());
   }
-  return server_types;
+  return types;
+}
+
+std::vector<std::optional<std::string>> GetFormatStrings(
+    const FormStructure& form_structure) {
+  std::vector<std::optional<std::string>> format_strings;
+  format_strings.reserve(form_structure.field_count());
+  for (size_t i = 0; i < form_structure.field_count(); ++i) {
+    if (std::optional<std::u16string> format_string =
+            form_structure.field(i)->format_string().CopyAsOptional()) {
+      format_strings.emplace_back(base::UTF16ToUTF8(*format_string));
+    } else {
+      format_strings.push_back(std::nullopt);
+    }
+  }
+  return format_strings;
 }
 
 Matcher<AutofillField> HasType(FieldType type) {
@@ -176,15 +194,9 @@ Matcher<FormStructure> AreFields(Matchers... matchers) {
 }
 
 class FormStructureRationalizerTest : public testing::Test {
- public:
-  FormStructureRationalizerTest();
-
- protected:
-  base::test::ScopedFeatureList scoped_features_;
+ private:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
-
-FormStructureRationalizerTest::FormStructureRationalizerTest() = default;
 
 TEST_F(FormStructureRationalizerTest, ParseQueryResponse_RationalizeLoneField) {
   std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
@@ -878,14 +890,15 @@ struct RationalizeAutocompleteTestParam {
   std::vector<FieldTemplate> fields;
   std::vector<FieldType> final_types;
 };
+
 class RationalizeAutocompleteTest
-    : public testing::Test,
+    : public FormStructureRationalizerTest,
       public testing::WithParamInterface<RationalizeAutocompleteTestParam> {
- protected:
+ private:
   base::test::ScopedFeatureList scoped_features_{
       features::kAutofillEnableExpirationDateImprovements};
-  test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
+
 INSTANTIATE_TEST_SUITE_P(
     RationalizeAutocompleteTest,
     RationalizeAutocompleteTest,
@@ -1014,7 +1027,8 @@ TEST_F(FormStructureRationalizerTest, RationalizePhoneCountryCode_PhoneFields) {
                           PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX));
 }
 
-class RationalizePhoneNumbersForFillingTest : public testing::Test {
+class RationalizePhoneNumbersForFillingTest
+    : public FormStructureRationalizerTest {
  public:
   struct FieldTemplate {
     // Description of the field passed to the rationalization.
@@ -1042,15 +1056,6 @@ class RationalizePhoneNumbersForFillingTest : public testing::Test {
 
     return std::make_tuple(std::move(fields),
                            std::move(expected_only_fill_when_focused));
-  }
-
-  std::vector<AutofillField*> ToPointers(
-      std::vector<std::unique_ptr<AutofillField>>& fields) {
-    std::vector<AutofillField*> result;
-    for (const auto& f : fields) {
-      result.push_back(f.get());
-    }
-    return result;
   }
 
   std::vector<bool> GetOnlyFilledWhenFocused(
@@ -1190,6 +1195,167 @@ TEST_F(RationalizePhoneNumbersForFillingTest, IncorrectSuffix) {
   rationalizer.RationalizePhoneNumbersForFilling();
   EXPECT_THAT(GetOnlyFilledWhenFocused(fields),
               ::testing::Eq(expected_only_fill_when_focused));
+}
+
+class RationalizeDateFormatTest : public FormStructureRationalizerTest {
+ public:
+ private:
+  base::test::ScopedFeatureList scoped_features_{
+      features::kAutofillAiWithDataSchema};
+};
+
+// Tests that if there is no date format, it's left untouched.
+TEST_F(RationalizeDateFormatTest, LeavesUntouchedIfUnknown) {
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      {{.field_type = PASSPORT_EXPIRATION_DATE},
+       {.field_type = PASSPORT_EXPIRATION_DATE},
+       {.field_type = PASSPORT_EXPIRATION_DATE, .placeholder = "DD/MM/YYYY"}},
+      /*run_heuristics=*/false);
+  form_structure->fields()[1]->set_format_string_unless_overruled(
+      u"YYYY-MM-DD", AutofillField::FormatStringSource::kServer);
+  EXPECT_THAT(GetFormatStrings(*form_structure),
+              ElementsAre(std::nullopt, "YYYY-MM-DD", "DD/MM/YYYY"));
+}
+
+// Tests that a date format does not overrule the server's date format.
+TEST_F(RationalizeDateFormatTest, DoesNotOverruleTheServer) {
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      {{.field_type = PASSPORT_EXPIRATION_DATE, .placeholder = "DD/MM/YYYY"},
+       {.field_type = PASSPORT_EXPIRATION_DATE, .placeholder = "DD/MM/YYYY"}},
+      /*run_heuristics=*/false);
+  form_structure->fields().back()->set_format_string_unless_overruled(
+      u"YYYY-MM-DD", AutofillField::FormatStringSource::kServer);
+  EXPECT_THAT(GetFormatStrings(*form_structure),
+              ElementsAre("DD/MM/YYYY", "YYYY-MM-DD"));
+}
+
+// Tests that a date format in the placeholder is assignde to the field.
+TEST_F(RationalizeDateFormatTest, Placeholder) {
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      {{.field_type = PASSPORT_EXPIRATION_DATE, .placeholder = "YYYY-MM-DD"},
+       {.field_type = PASSPORT_EXPIRATION_DATE, .placeholder = "DD"},
+       {.field_type = PASSPORT_EXPIRATION_DATE, .placeholder = "YYYY-MM"},
+       {.field_type = PASSPORT_EXPIRATION_DATE, .placeholder = "DD/MM/YY"},
+       {.label = "YYYY-MM-DD",
+        .field_type = PASSPORT_EXPIRATION_DATE,
+        .placeholder = "DD/MM/YY",
+        .value = "YYYY-MM-DD"}},
+      /*run_heuristics=*/false);
+  EXPECT_THAT(
+      GetFormatStrings(*form_structure),
+      ElementsAre("YYYY-MM-DD", "DD", "YYYY-MM", "DD/MM/YY", "DD/MM/YY"));
+}
+
+// Tests that a date format in the initial value is assignde to the field.
+TEST_F(RationalizeDateFormatTest, Value) {
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      {{.field_type = PASSPORT_EXPIRATION_DATE, .value = "YYYY-MM-DD"},
+       {.field_type = PASSPORT_EXPIRATION_DATE, .value = "DD"},
+       {.field_type = PASSPORT_EXPIRATION_DATE,
+        .placeholder = "foobar",
+        .value = "YYYY-MM"},
+       {.field_type = PASSPORT_EXPIRATION_DATE,
+        .placeholder = "DD/MM/YY",
+        .value = "YYYY-MM-DD"},
+       {.label = "YYYY-MM-DD",
+        .field_type = PASSPORT_EXPIRATION_DATE,
+        .placeholder = "DD/MM/YY",
+        .value = "YYYY-MM-DD"}},
+      /*run_heuristics=*/false);
+  EXPECT_THAT(
+      GetFormatStrings(*form_structure),
+      ElementsAre("YYYY-MM-DD", "DD", "YYYY-MM", "DD/MM/YY", "DD/MM/YY"));
+}
+
+// Tests that a date format with three components in the label is assigned to
+// three consecutive fields.
+TEST_F(RationalizeDateFormatTest, Label_OnePerField) {
+  std::unique_ptr<FormStructure> form_structure =
+      BuildFormStructure({{.label = "When did you pick it up? YYYY-MM-DD",
+                           .field_type = PASSPORT_ISSUE_DATE},
+                          {.label = "Until which D/M/YY is the thing valid?",
+                           .field_type = PASSPORT_EXPIRATION_DATE}},
+                         /*run_heuristics=*/false);
+  EXPECT_THAT(GetFormatStrings(*form_structure),
+              ElementsAre("YYYY-MM-DD", "D/M/YY"));
+}
+
+// Tests that a date format with three components in the label is assigned to
+// three consecutive fields.
+TEST_F(RationalizeDateFormatTest, Label_SplitAcrossThreeFields) {
+  std::unique_ptr<FormStructure> form_structure =
+      BuildFormStructure({{.label = "When did you pick it up? YYYY-MM-DD",
+                           .field_type = PASSPORT_ISSUE_DATE},
+                          {.label = "When did you pick it up? YYYY-MM-DD",
+                           .field_type = PASSPORT_ISSUE_DATE},
+                          {.label = "When did you pick it up? YYYY-MM-DD",
+                           .field_type = PASSPORT_ISSUE_DATE},
+                          {.label = "Until which D/M/YY is the thing valid?",
+                           .field_type = PASSPORT_EXPIRATION_DATE}},
+                         /*run_heuristics=*/false);
+  EXPECT_THAT(GetFormatStrings(*form_structure),
+              ElementsAre("YYYY", "MM", "DD", "D/M/YY"));
+}
+
+// Tests that a date format with three components in the label is assigned to
+// three consecutive fields.
+TEST_F(RationalizeDateFormatTest, Label_SplitAcrossThreeFieldsWithSeparators) {
+  std::unique_ptr<FormStructure> form_structure =
+      BuildFormStructure({{.label = "When did you pick it up? DD/MM/YYYY",
+                           .field_type = PASSPORT_ISSUE_DATE},
+                          {.label = "/", .field_type = PASSPORT_ISSUE_DATE},
+                          {.label = "/", .field_type = PASSPORT_ISSUE_DATE},
+                          {.label = "Until which D/M/YY is the thing valid?",
+                           .field_type = PASSPORT_ISSUE_DATE}},
+                         /*run_heuristics=*/false);
+  EXPECT_THAT(GetFormatStrings(*form_structure),
+              ElementsAre("DD", "MM", "YYYY", "D/M/YY"));
+}
+
+// Tests that a date format with two components in the label is assigned to two
+// consecutive fields.
+TEST_F(RationalizeDateFormatTest, Label_SplitAcrossTwoFields) {
+  std::unique_ptr<FormStructure> form_structure =
+      BuildFormStructure({{.label = "When did you pick it up? YYYY-MM",
+                           .field_type = PASSPORT_ISSUE_DATE},
+                          {.label = "When did you pick it up? YYYY-MM",
+                           .field_type = PASSPORT_ISSUE_DATE},
+                          {.label = "Until which D/M/YY is the thing valid?",
+                           .field_type = PASSPORT_EXPIRATION_DATE}},
+                         /*run_heuristics=*/false);
+  EXPECT_THAT(GetFormatStrings(*form_structure),
+              ElementsAre("YYYY", "MM", "D/M/YY"));
+}
+
+// Tests that if the date format has more parts than there are fields, we do not
+// split the string.
+TEST_F(RationalizeDateFormatTest, Label_DoNotSplitIfTooFewFields) {
+  std::unique_ptr<FormStructure> form_structure =
+      BuildFormStructure({{.label = "When did you pick it up? YYYY-MM-DD",
+                           .field_type = PASSPORT_ISSUE_DATE},
+                          {.label = "When did you pick it up? YYYY-MM-DD",
+                           .field_type = PASSPORT_ISSUE_DATE}},
+                         /*run_heuristics=*/false);
+  EXPECT_THAT(GetFormatStrings(*form_structure),
+              ElementsAre("YYYY-MM-DD", "YYYY-MM-DD"));
+}
+
+// Tests even four fields for three parts in the label are handled in some
+// reasonable way.
+TEST_F(RationalizeDateFormatTest, Label_DoNotCrashIfManyFields) {
+  std::unique_ptr<FormStructure> form_structure =
+      BuildFormStructure({{.label = "When did you pick it up? YYYY-MM-DD",
+                           .field_type = PASSPORT_ISSUE_DATE},
+                          {.label = "When did you pick it up? YYYY-MM-DD",
+                           .field_type = PASSPORT_ISSUE_DATE},
+                          {.label = "When did you pick it up? YYYY-MM-DD",
+                           .field_type = PASSPORT_ISSUE_DATE},
+                          {.label = "When did you pick it up? YYYY-MM-DD",
+                           .field_type = PASSPORT_ISSUE_DATE}},
+                         /*run_heuristics=*/false);
+  // There is no particular motivation for this assignment.
+  EXPECT_THAT(GetFormatStrings(*form_structure),
+              ElementsAre("YYYY", "MM", "DD", "YYYY-MM-DD"));
 }
 
 }  // namespace

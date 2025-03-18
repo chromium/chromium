@@ -10,6 +10,10 @@
 #include "content/common/content_export.h"
 #include "ui/accessibility/ax_mode.h"
 
+namespace ui {
+enum class AssistiveTech;
+}
+
 namespace content {
 
 class BrowserContext;
@@ -28,15 +32,24 @@ class CONTENT_EXPORT BrowserAccessibilityState {
   static BrowserAccessibilityState* GetInstance();
 
   // Enables accessibility for all running tabs.
-  virtual void EnableAccessibility() = 0;
+  // Called when an accessibility client is detected.
+  // It is often preferable to use ScopedAccessibilityMode.
+  // The process AXMode is the default used for new WebContents and pages.
+  // When no mode argument is passed, ui::kAXModeComplete is assumed.
+  virtual void EnableProcessAccessibility() = 0;
 
   // Disables accessibility for all running tabs. (Only if accessibility is not
   // required by a command line flag or by a platform requirement.)
-  virtual void DisableAccessibility() = 0;
+  // Called when all AXModes should be turned off.
+  // By default, new WebContents and pages will not have accessibility on.
+  virtual void DisableProcessAccessibility() = 0;
 
-  // Returns true if renderer accessibility is not disabled via
+  // Returns true if accessibility is not disallowed via
   // --disable-renderer-accessibility on the process's command line.
-  virtual bool IsRendererAccessibilityEnabled() = 0;
+  // Note: the command line flag --disable-renderer-accessibility is a misnomer
+  // because it also disables accessibility in non-renderer contexts, such as
+  // UI.
+  virtual bool IsAccessibilityAllowed() = 0;
 
   // Returns the effective accessibility mode for the process. Individual
   // WebContentses may have an effective mode that is a superset of this as a
@@ -78,50 +91,18 @@ class CONTENT_EXPORT BrowserAccessibilityState {
   // accessibility mode bitmap.
   virtual void RemoveAccessibilityModeFlags(ui::AXMode mode) = 0;
 
-  // DEPRECATED. Resets accessibility to the platform default for all running
-  // tabs. This is probably off, but may be on, if
-  // --force_renderer_accessibility is passed, or EditableTextOnly if this is
-  // Win7.
-  virtual void ResetAccessibilityMode() = 0;
-
-  // Called when an accessibility client is detected, using a heuristic.
-  // These methods indicate the presence of AXMode::kExtendedProperties, which
-  // is a misnomer because it is used by many clients, and not just screen
-  // readers. Methods with "KnownScreenReader" or KnownAssistiveTech" in the
-  // name deal with actual screen reader or assistive tech usage.
-  virtual void OnScreenReaderDetected() = 0;
-
-  // Called when kExtendedProperties mode should be turned off.
-  virtual void OnScreenReaderStopped() = 0;
-
   // Some platforms have a strong signal indicating the presence of a
   // screen reader and can call in to let us know when one has
   // been enabled/disabled. This should be called for screen readers only.
-  virtual void SetKnownScreenReaderAppActive(bool is_active) = 0;
+  virtual void SetScreenReaderAppActive(bool is_active) = 0;
 
-  enum AssistiveTech {
-    // Use kUnknown if dependent on an expensive computation in
-    // UpdateKnownAssistiveTechSlow() that hasn't yet run.
-    kNone = 0,
-    kUnknown = 1,
-    kChromeVox = 2,
-    kJaws = 3,
-    kNarrator = 4,
-    kNvda = 5,
-    kOrca = 6,
-    kSupernova = 7,
-    kTalkback = 8,
-    kVoiceOver = 9,
-    kZoomText = 10,
-    kZdsr = 11,
-    kMaxValue = 11
-  };
-
-  virtual AssistiveTech ActiveKnownAssistiveTech() = 0;
-
-  // Returns true if there is an ActiveKnownAssistiveTech() matching a
-  // screen reader. Note, on some platforms this is slow to compute.
-  virtual bool IsKnownScreenReaderActiveSlow() = 0;
+  // Return the last active assistive technology. If multiple ATs are
+  // running concurrently (rare case), the result will prefer a screen reader.
+  // This will use the last known value, so it is possible for it to be out of
+  // date for a short period of time. Use
+  // AXModeObserver::OnAssistiveTechChanged() to get notifications for changes
+  // to this state.
+  virtual ui::AssistiveTech ActiveAssistiveTech() const = 0;
 
   // Returns true if the browser should be customized for accessibility.
   virtual bool IsAccessibleBrowser() = 0;
@@ -134,15 +115,6 @@ class CONTENT_EXPORT BrowserAccessibilityState {
   // Use this variant for a callback that must be run on the UI thread,
   // for example something that needs to access prefs.
   virtual void AddUIThreadHistogramCallback(base::OnceClosure callback) = 0;
-
-  // Use this variant for a callback that's better to run on another
-  // thread, for example something that may block or run slowly.
-  virtual void AddOtherThreadHistogramCallback(base::OnceClosure callback) = 0;
-
-  // Fire frequent metrics signals to ensure users keeping browser open multiple
-  // days are counted each day, not only at launch. This is necessary, because
-  // UMA only aggregates uniques on a daily basis,
-  virtual void UpdateUniqueUserHistograms() = 0;
 
   virtual void UpdateHistogramsForTesting() = 0;
 

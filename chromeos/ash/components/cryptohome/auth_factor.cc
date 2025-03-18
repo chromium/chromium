@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 
 #include <utility>
+#include <variant>
 
 #include "base/check_op.h"
 #include "base/time/time.h"
@@ -216,28 +217,28 @@ const AuthFactorCommonMetadata& AuthFactor::GetCommonMetadata() const {
 }
 
 const PinStatus& AuthFactor::GetPinStatus() const {
-  return absl::get<PinStatus>(factor_status_);
+  return std::get<PinStatus>(factor_status_);
 }
 
 const SmartCardMetadata& AuthFactor::GetSmartCardMetadata() const {
-  return absl::get<SmartCardMetadata>(factor_metadata_);
+  return std::get<SmartCardMetadata>(factor_metadata_);
 }
 
 const CryptohomeRecoveryMetadata& AuthFactor::GetCryptohomeRecoveryMetadata()
     const {
-  return absl::get<CryptohomeRecoveryMetadata>(factor_metadata_);
+  return std::get<CryptohomeRecoveryMetadata>(factor_metadata_);
 }
 
 const PasswordMetadata& AuthFactor::GetPasswordMetadata() const {
-  return absl::get<PasswordMetadata>(factor_metadata_);
+  return std::get<PasswordMetadata>(factor_metadata_);
 }
 
 const PinMetadata& AuthFactor::GetPinMetadata() const {
-  return absl::get<PinMetadata>(factor_metadata_);
+  return std::get<PinMetadata>(factor_metadata_);
 }
 
 const FingerprintMetadata& AuthFactor::GetFingerprintMetadata() const {
-  return absl::get<FingerprintMetadata>(factor_metadata_);
+  return std::get<FingerprintMetadata>(factor_metadata_);
 }
 
 }  // namespace cryptohome

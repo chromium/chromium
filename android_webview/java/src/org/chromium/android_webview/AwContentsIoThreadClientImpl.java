@@ -5,6 +5,7 @@
 package org.chromium.android_webview;
 
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.function.BooleanSupplier;
 
@@ -16,16 +17,19 @@ import java.util.function.BooleanSupplier;
 @Lifetime.WebView
 class AwContentsIoThreadClientImpl extends AwContentsIoThreadClient {
     private final AwSettings mSettings;
-    private final ShouldInterceptRequestMediator mBackgroundThreadClient;
+    private final AwContentsClient mContentsClient;
+    private final ShouldInterceptRequestMediator mShouldInterceptRequestMediator;
     // We could turn this into a delegate if we start needing more things from AwContents.
     private final BooleanSupplier mShouldAcceptCookies;
 
     public AwContentsIoThreadClientImpl(
             AwSettings settings,
-            ShouldInterceptRequestMediator backgroundThreadClient,
+            AwContentsClient contentsClient,
+            ShouldInterceptRequestMediator shouldInterceptRequestMediator,
             BooleanSupplier shouldAcceptCookies) {
         mSettings = settings;
-        mBackgroundThreadClient = backgroundThreadClient;
+        mContentsClient = contentsClient;
+        mShouldInterceptRequestMediator = shouldInterceptRequestMediator;
         mShouldAcceptCookies = shouldAcceptCookies;
     }
 
@@ -35,8 +39,13 @@ class AwContentsIoThreadClientImpl extends AwContentsIoThreadClient {
     }
 
     @Override
-    public ShouldInterceptRequestMediator getShouldInterceptRequestMediator() {
-        return mBackgroundThreadClient;
+    @Nullable
+    public ShouldInterceptRequestMediator getShouldInterceptRequestMediator(String url) {
+        if (mShouldInterceptRequestMediator.canSkipShouldInterceptRequest(url)) {
+            return null;
+        }
+
+        return mShouldInterceptRequestMediator;
     }
 
     @Override
@@ -72,5 +81,10 @@ class AwContentsIoThreadClientImpl extends AwContentsIoThreadClient {
     @Override
     public boolean getSafeBrowsingEnabled() {
         return mSettings.getSafeBrowsingEnabled();
+    }
+
+    @Override
+    public void onLoadResource(String url) {
+        mContentsClient.getCallbackHelper().postOnLoadResource(url);
     }
 }

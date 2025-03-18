@@ -24,10 +24,10 @@
 
 struct Env {
   Env() {
-    TestTimeouts::Initialize();
-    media::InitializeMediaLibrary();
     base::CommandLine::Init(0, nullptr);
     logging::SetMinLogLevel(logging::LOGGING_FATAL);
+    media::InitializeMediaLibrary();
+    TestTimeouts::Initialize();
   }
 
   base::AtExitManager at_exit_manager;

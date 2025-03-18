@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <utility>
+#include <variant>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -181,7 +182,7 @@ OpenerHeuristicTabHelper::PopupObserver::~PopupObserver() = default;
 void OpenerHeuristicTabHelper::PopupObserver::SetPastInteractionTimeAndType(
     TimestampRange user_activation_times,
     TimestampRange web_authn_assertion_times) {
-  CHECK(absl::holds_alternative<FieldNotSet>(time_since_interaction_))
+  CHECK(std::holds_alternative<FieldNotSet>(time_since_interaction_))
       << "SetPastInteractionTime() called more than once";
 
   base::Time most_recent_user_activation =
@@ -217,7 +218,7 @@ void OpenerHeuristicTabHelper::PopupObserver::SetPastInteractionTimeAndType(
 }
 
 void OpenerHeuristicTabHelper::PopupObserver::EmitPastInteractionIfReady() {
-  if (absl::holds_alternative<FieldNotSet>(time_since_interaction_) ||
+  if (std::holds_alternative<FieldNotSet>(time_since_interaction_) ||
       !initial_source_id_.has_value()) {
     // Not enough information to emit event yet.
     return;
@@ -225,7 +226,7 @@ void OpenerHeuristicTabHelper::PopupObserver::EmitPastInteractionIfReady() {
 
   auto has_iframe = GetOpenerHasSameSiteIframe(initial_url_);
   int32_t bucketized_time = -1;
-  if (auto* time = absl::get_if<base::TimeDelta>(&time_since_interaction_)) {
+  if (auto* time = std::get_if<base::TimeDelta>(&time_since_interaction_)) {
     bucketized_time =
         Bucketize3PCDHeuristicSample(time->InHours(), base::Days(30).InHours());
   }
@@ -243,7 +244,7 @@ void OpenerHeuristicTabHelper::PopupObserver::EmitPastInteractionIfReady() {
       initial_url_, has_iframe, /*is_current_interaction=*/false,
       /*interaction_type=*/BtmInteractionType::UserActivation,
       /*should_record_popup_and_maybe_grant=*/
-      absl::holds_alternative<base::TimeDelta>(time_since_interaction_),
+      std::holds_alternative<base::TimeDelta>(time_since_interaction_),
       /*grant_duration=*/
       content_settings::features::kTpcdWritePopupPastInteractionHeuristicsGrants
           .Get());

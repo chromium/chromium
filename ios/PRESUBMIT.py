@@ -305,7 +305,7 @@ def _IsAlphabeticallySortedXML(file):
 def _CheckOrderedStringFile(input_api, output_api):
     """ Checks that the string files are alphabetically ordered"""
     errors = []
-    for f in input_api.AffectedFiles():
+    for f in input_api.AffectedFiles(include_deletes=False):
         if not f.LocalPath().endswith("_strings.grd"):
             continue
         if not _IsAlphabeticallySortedXML(f.AbsoluteLocalPath()):

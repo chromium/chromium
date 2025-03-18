@@ -199,7 +199,7 @@ void WebrtcConnectionToHost::OnChannelClosed(
     ChannelDispatcherBase* channel_dispatcher) {
   LOG(ERROR) << "Channel " << channel_dispatcher->channel_name()
              << " was closed unexpectedly.";
-  SetState(FAILED, ErrorCode::INCOMPATIBLE_PROTOCOL);
+  SetState(FAILED, ErrorCode::CHANNEL_CONNECTION_ERROR);
 }
 
 ConnectionToHost::State WebrtcConnectionToHost::state() const {

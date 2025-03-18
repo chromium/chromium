@@ -13,6 +13,7 @@
 #include <limits>
 #include <memory>
 #include <optional>
+#include <variant>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -22,7 +23,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "media/base/media_switches.h"
 #include "media/parsers/h264_level_limits.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace media {
 namespace {
@@ -1715,7 +1715,7 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
           break;
 
         for (const auto& sei_msg : sei.msgs) {
-          if (!absl::visit(
+          if (!std::visit(
                   base::Overloaded{
                       [this](const H264SEIRecoveryPoint& recovery_point) {
                         // If we are after reset, we can also resume from a SEI
@@ -1760,7 +1760,7 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
                         hdr_metadata_->smpte_st_2086 = info.ToGfx();
                         return true;
                       },
-                      [](const absl::monostate) { return true; }},
+                      [](const std::monostate) { return true; }},
                   sei_msg)) {
             SET_ERROR_AND_RETURN();
           }

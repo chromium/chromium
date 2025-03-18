@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/on_device_model/fake/fake_chrome_ml_api.h"
 #include "services/on_device_model/fake/on_device_model_fake.h"
 #include "services/on_device_model/ml/chrome_ml_types.h"
@@ -182,6 +183,49 @@ TEST_F(OnDeviceModelServiceTest, Append) {
   EXPECT_THAT(response.responses(),
               ElementsAre("Context: cheese\n", "Context: more\n",
                           "Context: cheddar\n"));
+}
+
+TEST_F(OnDeviceModelServiceTest, PerSessionSamplingParams) {
+  auto model = LoadModel();
+
+  // Sampling params passed at session creation are used during Generate().
+  auto session_params = mojom::SessionParams::New();
+  session_params->top_k = 2;
+  session_params->temperature = 0.5;
+
+  TestResponseHolder response;
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(),
+                      std::move(session_params));
+
+  session->Append(MakeInput("cheese"), {});
+  session->Append(MakeInput("more"), {});
+  session->Append(MakeInput("cheddar"), {});
+  session->Generate(mojom::GenerateOptions::New(), response.BindRemote());
+  response.WaitForCompletion();
+
+  EXPECT_THAT(response.responses(),
+              ElementsAre("TopK: 2, Temp: 0.5\n", "Context: cheese\n",
+                          "Context: more\n", "Context: cheddar\n"));
+}
+
+TEST_F(OnDeviceModelServiceTest, GenerateWithSamplingParamsIsNotAllowed) {
+  auto model = LoadModel();
+
+  TestResponseHolder response;
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+  session->Append(MakeInput("cheese"), {});
+
+  // Sampling params should be passed at session creation, not to Generate().
+  auto generate_options = mojom::GenerateOptions::New();
+  generate_options->top_k = 2;
+  generate_options->temperature = 0.8;
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  session->Generate(std::move(generate_options), response.BindRemote());
+  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
+              testing::HasSubstr("deprecated"));
 }
 
 TEST_F(OnDeviceModelServiceTest, CloneContextAndContinue) {
@@ -533,6 +577,8 @@ TEST_F(OnDeviceModelServiceTest, AppendWithImages) {
   mojo::Remote<mojom::Session> session;
   auto params = mojom::SessionParams::New();
   params->capabilities.Put(CapabilityFlags::kImageInput);
+  params->top_k = 1;
+  params->temperature = 0;
   model->StartSession(session.BindNewPipeAndPassReceiver(), std::move(params));
 
   {

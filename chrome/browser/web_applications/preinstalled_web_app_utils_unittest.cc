@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/preinstalled_web_app_utils.h"
 
+#include <variant>
+
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/memory/scoped_refptr.h"
@@ -66,7 +68,7 @@ class PreinstalledWebAppUtilsTest : public testing::Test {
         ::web_app::ParseConfig(*file_utils, /*dir=*/base::FilePath(),
                                /*file=*/base::FilePath(), app_config.value());
     if (ExternalInstallOptions* options =
-            absl::get_if<ExternalInstallOptions>(&result)) {
+            std::get_if<ExternalInstallOptions>(&result)) {
       return std::move(*options);
     }
     return std::nullopt;
@@ -82,7 +84,7 @@ class PreinstalledWebAppUtilsTest : public testing::Test {
         base::FilePath(FILE_PATH_LITERAL("test_dir/test.json")),
         *offline_manifest);
     if (WebAppInstallInfoFactory* factory =
-            absl::get_if<WebAppInstallInfoFactory>(&result)) {
+            std::get_if<WebAppInstallInfoFactory>(&result)) {
       return std::move(*factory);
     }
     return std::nullopt;

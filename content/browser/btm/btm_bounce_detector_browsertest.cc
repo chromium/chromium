@@ -11,6 +11,7 @@
 #include <set>
 #include <string>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 #include "base/base64.h"
@@ -346,7 +347,7 @@ void WCOCallbackLogger::OnWorkerCreated(
     const url::Origin& security_origin,
     DedicatedWorkerCreator creator) {
   const GlobalRenderFrameHostId& render_frame_host_id =
-      absl::get<GlobalRenderFrameHostId>(creator);
+      std::get<GlobalRenderFrameHostId>(creator);
   RenderFrameHost* render_frame_host =
       RenderFrameHost::FromID(render_frame_host_id);
   GURL scope = GetFirstPartyURL(render_frame_host).value_or(GURL());

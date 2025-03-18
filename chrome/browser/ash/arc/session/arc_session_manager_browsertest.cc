@@ -7,8 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/ash_features.h"
-#include "ash/wm/window_pin_util.h"
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -17,8 +15,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
@@ -30,17 +26,15 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
+#include "chrome/browser/extensions/api/tabs/tabs_api.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
-#include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
-#include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
-#include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
@@ -59,7 +53,9 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/test_utils.h"
+#include "extensions/browser/api_test_utils.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/extension_builder.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -68,8 +64,6 @@ namespace {
 
 constexpr char kWellKnownConsumerName[] = "test@gmail.com";
 constexpr char kFakeUserName[] = "test@example.com";
-constexpr char kMuteAudioWithSuccessHistogram[] = "Arc.MuteAudioSuccess";
-constexpr char kUnmuteAudioWithSuccessHistogram[] = "Arc.UnmuteAudioSuccess";
 constexpr GaiaId::Literal kFakeGaiaId("1234567890");
 
 std::unique_ptr<KeyedService> CreateCertificateProviderService(
@@ -239,86 +233,31 @@ IN_PROC_BROWSER_TEST_F(ArcSessionManagerTest, ManagedAndroidAccount) {
   EXPECT_FALSE(IsArcPlayStoreEnabledForProfile(profile()));
 }
 
-class ArcSessionManagerLockedFullscreenTest : public ArcSessionManagerTest {
- protected:
-  ArcSessionManagerLockedFullscreenTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        ash::features::kBocaOnTaskMuteArcAudio);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ArcSessionManagerLockedFullscreenTest,
-                       ArcDisabledInLockedFullscreen) {
+// Make sure that ARC is disabled upon entering locked fullscreen mode.
+IN_PROC_BROWSER_TEST_F(ArcSessionManagerTest, ArcDisabledInLockedFullscreen) {
   EnableArc();
   ASSERT_EQ(ArcSessionManager::State::ACTIVE,
             ArcSessionManager::Get()->state());
 
-  // ARC should be disabled in locked fullscreen.
-  PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+  const int window_id = extensions::ExtensionTabUtil::GetWindowId(browser());
+  const char kStateLockedFullscreen[] =
+      "[%u, {\"state\": \"locked-fullscreen\"}]";
+
+  auto function = base::MakeRefCounted<extensions::WindowsUpdateFunction>();
+  scoped_refptr<const extensions::Extension> extension(
+      extensions::ExtensionBuilder("Test")
+          .SetID("pmgljoohajacndjcjlajcopidgnhphcl")
+          .AddAPIPermission("lockWindowFullscreenPrivate")
+          .Build());
+  function->set_extension(extension.get());
+
+  std::optional<base::Value> value =
+      extensions::api_test_utils::RunFunctionAndReturnSingleResult(
+          function.get(), base::StringPrintf(kStateLockedFullscreen, window_id),
+          browser()->profile());
+
   ASSERT_EQ(ArcSessionManager::State::STOPPED,
             ArcSessionManager::Get()->state());
-
-  // ARC should not remain disabled once we exit this mode.
-  UnpinWindow(browser()->window()->GetNativeWindow());
-  EXPECT_NE(ArcSessionManager::State::STOPPED,
-            ArcSessionManager::Get()->state());
 }
-
-// TODO - crbug.com/401589420: Move audio tests to the
-// //c/b/ash/arc/locked_fullscreen folder.
-class ArcSessionManagerLockedFullscreenWithMuteAudioTest
-    : public ArcSessionManagerTest,
-      public ::testing::WithParamInterface<bool> {
- protected:
-  ArcSessionManagerLockedFullscreenWithMuteAudioTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kBocaOnTaskMuteArcAudio);
-  }
-
-  bool IsMuteArcVMAudioSuccess() { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(ArcSessionManagerLockedFullscreenWithMuteAudioTest,
-                       AttemptArcVMMuteAudioInLockedFullscreen) {
-  base::HistogramTester histogram_tester;
-  EnableArc();
-  ASSERT_EQ(ArcSessionManager::State::ACTIVE,
-            ArcSessionManager::Get()->state());
-
-  ash::FakeConciergeClient* const concierge_client =
-      ash::FakeConciergeClient::Get();
-  vm_tools::concierge::SuccessFailureResponse mute_vm_audio_response;
-  mute_vm_audio_response.set_success(IsMuteArcVMAudioSuccess());
-  concierge_client->set_mute_vm_audio_response(mute_vm_audio_response);
-
-  // ARC should remain enabled when entering fullscreen mode. This is because
-  // we attempt to mute ARC VM audio instead.
-  PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
-  content::RunAllTasksUntilIdle();
-  ASSERT_EQ(ArcSessionManager::State::ACTIVE,
-            ArcSessionManager::Get()->state());
-  EXPECT_EQ(concierge_client->mute_vm_audio_call_count(), 1);
-  histogram_tester.ExpectUniqueSample(kMuteAudioWithSuccessHistogram,
-                                      IsMuteArcVMAudioSuccess(), 1);
-
-  // ARC should remain enabled once we exit locked fullscreen mode.
-  UnpinWindow(browser()->window()->GetNativeWindow());
-  content::RunAllTasksUntilIdle();
-  EXPECT_EQ(ArcSessionManager::State::ACTIVE,
-            ArcSessionManager::Get()->state());
-  EXPECT_EQ(concierge_client->mute_vm_audio_call_count(), 2);
-  histogram_tester.ExpectUniqueSample(kUnmuteAudioWithSuccessHistogram,
-                                      IsMuteArcVMAudioSuccess(), 1);
-}
-
-INSTANTIATE_TEST_SUITE_P(ArcSessionManagerLockedFullscreenWithMuteAudioTests,
-                         ArcSessionManagerLockedFullscreenWithMuteAudioTest,
-                         ::testing::Bool());
 
 }  // namespace arc

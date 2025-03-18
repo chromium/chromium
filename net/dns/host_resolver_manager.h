@@ -15,6 +15,7 @@
 #include <set>
 #include <string>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -44,7 +45,6 @@
 #include "net/dns/system_dns_config_change_notifier.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/datagram_client_socket.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
@@ -153,7 +153,7 @@ class NET_EXPORT HostResolverManager
   // `host_cache()` coming from a ContextHostResolver that owns
   // `resolve_context`.
   std::unique_ptr<HostResolver::ResolveHostRequest> CreateRequest(
-      absl::variant<url::SchemeHostPort, HostPortPair> host,
+      std::variant<url::SchemeHostPort, HostPortPair> host,
       NetworkAnonymizationKey network_anonymization_key,
       NetLogWithSource net_log,
       std::optional<ResolveHostParameters> optional_parameters,

@@ -504,6 +504,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="310900540163454140">Queres eliminar o contrasinal de <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Marcar como...</translation>
 <translation id="3119874402040566234">Pecharase a túa sesión e eliminaranse os datos de navegación</translation>
+<translation id="3124568093781685165">Comparte os teus contrasinais coa familia</translation>
 <translation id="3130863904455712965">Historial e moito máis</translation>
 <translation id="313283613037595347">Crear nova pestana do modo de incógnito.</translation>
 <translation id="3138611310073113613">Descartar selección</translation>
@@ -1003,6 +1004,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5352128922772839949">Gardar o ficheiro</translation>
 <translation id="5355191726083956201">A protección mellorada está activada</translation>
 <translation id="537853552771686272">Xestiona os temas e sitios que che interesan</translation>
+<translation id="5390458669633674385">{count,plural, =1{{count} pechada}other{{count} pechadas}}</translation>
 <translation id="5394975111793637642">Ocultar a tarxeta Reseñas de produtos para ti</translation>
 <translation id="5395707839134961196">Ocultar os detalles do buscador</translation>
 <translation id="5414763847370083940">Recibirás unha alerta se baixa o prezo en calquera sitio.</translation>
@@ -1132,6 +1134,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5897749768294722429">Para volver rapidamente aos sitios que xa visitases, sincroniza as pestanas e o historial.</translation>
 <translation id="5898848375214731122">Masa</translation>
 <translation id="5899314093904173337">Para compartir contido coas persoas que estean preto, deixa que escaneen este código QR coa cámara ou coa aplicación de escáner de QR</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} pestana nova}other{{count} pestanas novas}}</translation>
 <translation id="5911030830365207728">Tradutor de Google</translation>
 <translation id="5917913282764181683">Eliminar automaticamente as descargas</translation>
 <translation id="5922999516621365983">Arrastrar a pestana aquí para fixala.</translation>
@@ -1674,6 +1677,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8132598642024322408">Agora: <ph name="PRICE" />. Antes: <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Utiliza un contrasinal distinto para cada sitio ou aplicación. Se alguén descobre un contrasinal reutilizado, poderá acceder con el ás túas outras contas. Fai clic para abrir o sitio web e cambialos agora.</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} pestana pechada}other{{count} pestanas pechadas}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 máis}other{# máis}}</translation>
 <translation id="8150167929304790980">Nome completo</translation>
 <translation id="8152331954420209374">Ir a Lens</translation>

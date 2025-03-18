@@ -21,7 +21,6 @@
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "services/audio/input_sync_writer.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace audio {
 

@@ -15,6 +15,10 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
+
 namespace autofill {
 
 struct OfferNotificationOptions;
@@ -94,6 +98,14 @@ class OfferNotificationBubbleControllerImpl
     observer_for_testing_ = observer;
   }
 
+  // This is a helper method for controlling the page action on the new
+  // page actions framework, if the migration is enabled.
+  // Currently, `AutofillBubbleControllerBase::UpdatePageActionIcon` only
+  // updates to the legacy icon.
+  // TODO(crbug.com/402820548): Move this to `AutofillBubbleControllerBase`
+  // once per-PageAction migration feature flags are added.
+  void UpdatePageAction();
+
   // The timestamp that the bubble has been shown. Used to check if the bubble
   // has been shown for longer than kAutofillBubbleSurviveNavigationTime.
   std::optional<base::Time> bubble_shown_timestamp_;
@@ -118,6 +130,8 @@ class OfferNotificationBubbleControllerImpl
   BubbleState bubble_state_ = BubbleState::kHidden;
 
   raw_ptr<ObserverForTest> observer_for_testing_ = nullptr;
+
+  const raw_ref<tabs::TabInterface> tab_interface_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

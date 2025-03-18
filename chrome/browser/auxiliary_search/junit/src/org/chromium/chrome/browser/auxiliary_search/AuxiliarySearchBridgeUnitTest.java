@@ -116,15 +116,15 @@ public final class AuxiliarySearchBridgeUnitTest {
                         /* appId= */ null,
                         /* visitId= */ -1);
 
-        mBridge.addDataEntry(
-                mDataEntry1.type,
-                mDataEntry1.url,
-                mDataEntry1.title,
-                mDataEntry1.lastActiveTime,
-                mDataEntry1.tabId,
-                mDataEntry1.appId,
-                mDataEntry1.visitId,
-                entryList);
+        entryList.add(
+                AuxiliarySearchDataEntry.addDataEntry(
+                        mDataEntry1.type,
+                        mDataEntry1.url,
+                        mDataEntry1.title,
+                        mDataEntry1.lastActiveTime,
+                        mDataEntry1.tabId,
+                        mDataEntry1.appId,
+                        mDataEntry1.visitId));
 
         assertEquals(1, entryList.size());
 
@@ -139,7 +139,7 @@ public final class AuxiliarySearchBridgeUnitTest {
         List<AuxiliarySearchDataEntry> entryList = new ArrayList<>();
         Callback callback = mock(Callback.class);
 
-        mBridge.onDataReady(entryList, callback);
+        AuxiliarySearchBridge.onDataReady(entryList, callback);
         verify(callback).onResult(eq(entryList));
     }
 
@@ -149,8 +149,7 @@ public final class AuxiliarySearchBridgeUnitTest {
         Callback callback = mock(Callback.class);
         ThreadUtils.runOnUiThreadBlocking(() -> mBridge.getNonSensitiveHistoryData(callback));
 
-        verify(mMockAuxiliarySearchBridgeJni)
-                .getNonSensitiveHistoryData(anyLong(), eq(mBridge), any(), eq(callback));
+        verify(mMockAuxiliarySearchBridgeJni).getNonSensitiveHistoryData(anyLong(), eq(callback));
     }
 
     @Test
@@ -164,6 +163,6 @@ public final class AuxiliarySearchBridgeUnitTest {
 
         verify(callback).onResult(eq(null));
         verify(mMockAuxiliarySearchBridgeJni, never())
-                .getNonSensitiveHistoryData(anyLong(), eq(mBridge), any(), eq(callback));
+                .getNonSensitiveHistoryData(anyLong(), eq(callback));
     }
 }

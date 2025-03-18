@@ -139,7 +139,7 @@ public class StartupHelperUnitTest {
         tabs.add(mTab2);
         when(mTabGroupModelFilter.getRelatedTabIds(ROOT_ID_1)).thenReturn(tabIds);
         when(mTabGroupModelFilter.getRelatedTabList(ROOT_ID_1)).thenReturn(tabs);
-        when(mTabGroupModelFilter.getRelatedTabListForRootId(ROOT_ID_1)).thenReturn(tabs);
+        when(mTabGroupModelFilter.getTabsInGroup(TOKEN_1)).thenReturn(tabs);
 
         when(mTab1.getTabGroupId()).thenReturn(TOKEN_1);
         when(mTab2.getTabGroupId()).thenReturn(TOKEN_1);

@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
 

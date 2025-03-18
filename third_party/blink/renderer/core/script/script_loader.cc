@@ -24,6 +24,8 @@
 
 #include "third_party/blink/renderer/core/script/script_loader.h"
 
+#include <variant>
+
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
@@ -1006,19 +1008,19 @@ PendingScript* ScriptLoader::PrepareScript(
       case ScriptTypeAtPrepare::kWebBundle: {
         DCHECK(!script_web_bundle_);
 
-        absl::variant<ScriptWebBundle*, ScriptWebBundleError>
+        std::variant<ScriptWebBundle*, ScriptWebBundleError>
             script_web_bundle_or_error =
                 ScriptWebBundle::CreateOrReuseInline(*element_, source_text);
-        if (absl::holds_alternative<ScriptWebBundle*>(
+        if (std::holds_alternative<ScriptWebBundle*>(
                 script_web_bundle_or_error)) {
           script_web_bundle_ =
-              absl::get<ScriptWebBundle*>(script_web_bundle_or_error);
+              std::get<ScriptWebBundle*>(script_web_bundle_or_error);
           DCHECK(script_web_bundle_);
         }
-        if (absl::holds_alternative<ScriptWebBundleError>(
+        if (std::holds_alternative<ScriptWebBundleError>(
                 script_web_bundle_or_error)) {
           ScriptWebBundleError error =
-              absl::get<ScriptWebBundleError>(script_web_bundle_or_error);
+              std::get<ScriptWebBundleError>(script_web_bundle_or_error);
           // Errors with type kSystemError should fire an error event silently
           // for the user, while the other error types should report an
           // exception.

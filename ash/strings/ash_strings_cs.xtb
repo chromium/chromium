@@ -166,6 +166,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1505542291183484463">Roztáhnout dlaždicové okno dolů</translation>
 <translation id="1510238584712386396">Spouštěč</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Zobrazit nastavení oznámení. U jedné aplikace jsou oznámení vypnutá}few{Zobrazit nastavení oznámení. U # aplikací jsou oznámení vypnutá}many{Zobrazit nastavení oznámení. U # aplikace jsou oznámení vypnutá}other{Zobrazit nastavení oznámení. U # aplikací jsou oznámení vypnutá}}</translation>
+<translation id="1521655867290435174">Tabulky Google</translation>
 <translation id="1523032696246003">Baterie: <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> do úplného nabití</translation>
 <translation id="1525508553941733066">ZAVŘÍT</translation>
 <translation id="1526448108126799339">Otevřít novou kartu v novém okně</translation>
@@ -345,7 +346,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2201071101391734388">Nedávná fotka <ph name="INDEX" /> z <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Sbalit Úkoly Google</translation>
 <translation id="2208323208084708176">Jednotný režim klasické plochy</translation>
-<translation id="2220572644011485463">PIN nebo heslo</translation>
 <translation id="2222841058024245321">Plocha 7</translation>
 <translation id="2223384056430485343">Je zobrazena rozdělená obrazovka</translation>
 <translation id="2224075387478458881">Když je viditelný chráněný obsah, nahrávání obrazovky je zakázáno</translation>
@@ -1829,7 +1829,6 @@ Nová instalace</translation>
 <translation id="7000027735917578303">Nastavení oken a ploch</translation>
 <translation id="7004910047186208204">Připojte se k mobilní datové síti</translation>
 <translation id="7005239792648594238">Pokud chcete začít, otevřete aplikaci</translation>
-<translation id="7007983414944123363">Váš PIN nebo heslo se nepodařilo ověřit. Zkuste to znovu.</translation>
 <translation id="7014684956566476813">Připojeno k zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Vraťte se v <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Plocha 6</translation>
@@ -2464,6 +2463,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="9168436347345867845">Později</translation>
 <translation id="9178475906033259337">Zobrazuje se 1 výsledek pro dotaz <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Tato funkce umožňuje rychle získat přístup ke kterémukoliv přihlášenému uživateli, aniž by bylo potřeba zadávat heslo. Tuto funkci používejte pouze s účty, kterým důvěřujete.</translation>
+<translation id="9183302530794969518">Dokumenty Google</translation>
 <translation id="9183456764293710005">Zvětšení obrazovky</translation>
 <translation id="9192133205265227850">Použít zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="9193626018745640770">Odesílání do neznámého přijímače</translation>

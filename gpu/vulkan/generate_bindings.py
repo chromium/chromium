@@ -416,6 +416,75 @@ def GenerateHeaderFile(out_file):
 #define GPU_VULKAN_VULKAN_FUNCTION_POINTERS_H_
 
 #include <vulkan/vulkan.h>
+// vulkan.h includes <X11/Xlib.h> when VK_USE_PLATFORM_XLIB_KHR is defined
+// after https://github.com/KhronosGroup/Vulkan-Headers/pull/534.
+// This defines some macros which break build, so undefine them here.
+#undef Above
+#undef AllTemporary
+#undef AlreadyGrabbed
+#undef Always
+#undef AsyncBoth
+#undef AsyncKeyboard
+#undef AsyncPointer
+#undef Below
+#undef Bool
+#undef BottomIf
+#undef Button1
+#undef Button2
+#undef Button3
+#undef Button4
+#undef Button5
+#undef ButtonPress
+#undef ButtonRelease
+#undef ClipByChildren
+#undef Complex
+#undef Convex
+#undef CopyFromParent
+#undef CurrentTime
+#undef DestroyAll
+#undef DirectColor
+#undef DisplayString
+#undef EnterNotify
+#undef GrayScale
+#undef IncludeInferiors
+#undef InputFocus
+#undef InputOnly
+#undef InputOutput
+#undef KeyPress
+#undef KeyRelease
+#undef LSBFirst
+#undef LeaveNotify
+#undef LowerHighest
+#undef MSBFirst
+#undef Nonconvex
+#undef None
+#undef NotUseful
+#undef Opposite
+#undef ParentRelative
+#undef PointerRoot
+#undef PointerWindow
+#undef PseudoColor
+#undef RaiseLowest
+#undef ReplayKeyboard
+#undef ReplayPointer
+#undef RetainPermanent
+#undef RetainTemporary
+#undef StaticColor
+#undef StaticGray
+#undef Success
+#undef SyncBoth
+#undef SyncKeyboard
+#undef SyncPointer
+#undef TopIf
+#undef TrueColor
+#undef Unsorted
+#undef WhenMapped
+#undef XYBitmap
+#undef XYPixmap
+#undef YSorted
+#undef YXBanded
+#undef YXSorted
+#undef ZPixmap
 
 #include <memory>
 

@@ -47,7 +47,6 @@ inline constexpr int kPanelCornerRadius = 16;
 const std::u16string kSearchBoxPlaceholderText = u"Add to your search";
 inline constexpr gfx::Insets kPanelPadding =
     gfx::Insets(capture_mode::kPanelPaddingSize);
-inline constexpr int kHeaderIconSize = 20;
 inline constexpr int kSearchBoxHeight = 48;
 inline constexpr int kSearchBoxRadius = 24;
 inline constexpr int kSearchBoxImageRadius = 8;
@@ -58,7 +57,6 @@ inline constexpr gfx::Insets kSearchImageSpacing =
     gfx::Insets::TLBR(8, 16, 8, 12);
 inline constexpr gfx::Insets kSearchTextfieldSpacing =
     gfx::Insets::TLBR(14, 0, 14, 16);
-inline constexpr gfx::Insets kHeaderIconSpacing = gfx::Insets::TLBR(0, 2, 0, 8);
 
 // Returns the target container window for the panel widget.
 aura::Window* GetParentContainer(aura::Window* root, bool is_active) {
@@ -191,18 +189,12 @@ SearchResultsPanel::SearchResultsPanel() {
           .SetIgnoreDefaultMainAxisMargins(true)
           .SetCollapseMargins(true)
           .AddChildren(
-              // Lens icon.
-              views::Builder<views::ImageView>()
-                  .SetImage(ui::ImageModel::FromVectorIcon(
-                      kLensIcon, ui::kColorMenuIcon, kHeaderIconSize))
-                  .SetProperty(views::kMarginsKey, kHeaderIconSpacing),
               // Title.
               views::Builder<views::Label>()
                   .SetText(GetSearchResultsPanelTitle())
+                  .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
+                  .SetTextStyle(views::style::STYLE_HEADLINE_5)
                   .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-                  .SetFontList(
-                      TypographyProvider::Get()->ResolveTypographyToken(
-                          TypographyToken::kCrosTitle1))
                   .SetEnabledColor(cros_tokens::kCrosSysOnSurface),
               // Close Button, aligned to the right by setting a
               // `FlexSpecification` with unbounded maximum flex size and

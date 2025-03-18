@@ -5,6 +5,7 @@
 #include "components/web_package/signed_web_bundles/identity_validator.h"
 
 #include <algorithm>
+#include <variant>
 
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
@@ -48,7 +49,7 @@ base::expected<void, std::string> IdentityValidator::ValidateWebBundleIdentity(
     const std::string& web_bundle_id,
     const std::vector<PublicKey>& public_keys) const {
   if (!std::ranges::any_of(public_keys, [&](const auto& public_key) {
-        return absl::visit(
+        return std::visit(
             [&](const auto& public_key) {
               return SignedWebBundleId::CreateForPublicKey(public_key).id() ==
                      web_bundle_id;

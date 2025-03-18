@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
 
 #include <string>
+#include <variant>
 
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/check_op.h"
@@ -295,7 +296,7 @@ bool DataTransferDlpController::IsClipboardReadAllowed(
 void DataTransferDlpController::PasteIfAllowed(
     base::optional_ref<const ui::DataTransferEndpoint> data_src,
     base::optional_ref<const ui::DataTransferEndpoint> data_dst,
-    absl::variant<size_t, std::vector<base::FilePath>> pasted_content,
+    std::variant<size_t, std::vector<base::FilePath>> pasted_content,
     content::RenderFrameHost* rfh,
     base::OnceCallback<void(bool)> paste_cb) {
   // To simplify logic that would have to check OTR in every sub-call of DLP
@@ -308,10 +309,10 @@ void DataTransferDlpController::PasteIfAllowed(
       data_dst.has_value() && !data_dst->off_the_record() ? data_dst
                                                           : std::nullopt;
 
-  if (absl::holds_alternative<std::vector<base::FilePath>>(pasted_content) &&
+  if (std::holds_alternative<std::vector<base::FilePath>>(pasted_content) &&
       !IsFilesApp(destination)) {
     auto pasted_files =
-        std::move(absl::get<std::vector<base::FilePath>>(pasted_content));
+        std::move(std::get<std::vector<base::FilePath>>(pasted_content));
     auto* files_controller = dlp_rules_manager_->GetDlpFilesController();
     if (files_controller) {
       files_controller->CheckIfPasteOrDropIsAllowed(
@@ -320,10 +321,10 @@ void DataTransferDlpController::PasteIfAllowed(
     return;
   }
 
-  if (absl::holds_alternative<size_t>(pasted_content) &&
-      absl::get<size_t>(pasted_content) > 0) {
+  if (std::holds_alternative<size_t>(pasted_content) &&
+      std::get<size_t>(pasted_content) > 0) {
     ContinuePasteIfClipboardRestrictionsAllow(source, destination,
-                                              absl::get<size_t>(pasted_content),
+                                              std::get<size_t>(pasted_content),
                                               rfh, std::move(paste_cb));
     return;
   }

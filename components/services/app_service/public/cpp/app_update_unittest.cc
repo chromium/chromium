@@ -4,6 +4,8 @@
 
 #include "components/services/app_service/public/cpp/app_update.h"
 
+#include <variant>
+
 #include "base/time/time.h"
 #include "components/services/app_service/public/cpp/icon_effects.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
@@ -549,7 +551,7 @@ class AppUpdateTest : public testing::Test {
       expect_icon_key_ = IconKey();
       expect_icon_key_->update_version =
           (state && state->icon_key.has_value())
-              ? absl::get<int32_t>(state->icon_key->update_version) + 1
+              ? std::get<int32_t>(state->icon_key->update_version) + 1
               : IconKey::kInitVersion;
       expect_icon_key_changed_ = true;
       expect_changed_ = true;

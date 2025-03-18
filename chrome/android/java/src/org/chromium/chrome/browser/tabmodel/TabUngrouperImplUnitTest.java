@@ -115,16 +115,18 @@ public class TabUngrouperImplUnitTest {
     }
 
     @Test
-    public void testUngroupTabsHandler_UngroupTabGroup_RootId_DestructionOnly_ImmediateContinue() {
+    public void
+            testUngroupTabsHandler_UngroupTabGroup_TabGroupId_DestructionOnly_ImmediateContinue() {
         int id = 0;
         Tab tab0 = mTabModel.addTab(id);
-        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
+        Token tabGroupId = TAB_GROUP_ID.tabGroupId;
+        tab0.setTabGroupId(tabGroupId);
         tab0.setRootId(id);
-        when(mTabGroupModelFilter.getRelatedTabListForRootId(id)).thenReturn(List.of(tab0));
+        when(mTabGroupModelFilter.getTabsInGroup(tabGroupId)).thenReturn(List.of(tab0));
         when(mTabGroupModelFilter.isTabInTabGroup(tab0)).thenReturn(true);
 
         mTabUngrouperImpl.ungroupTabGroup(
-                id, /* trailing= */ true, /* allowDialog= */ true, mListener);
+                tabGroupId, /* trailing= */ true, /* allowDialog= */ true, mListener);
         verify(mTabModelRemover).doTabRemovalFlow(mHandlerCaptor.capture(), eq(true));
         TabModelRemoverFlowHandler handler = mHandlerCaptor.getValue();
 
@@ -163,16 +165,17 @@ public class TabUngrouperImplUnitTest {
 
     @Test
     public void
-            testUngroupTabsHandler_UngroupTabGroup_RootId_DestructionOnly_ConfirmationPositive() {
+            testUngroupTabsHandler_UngroupTabGroup_TabGroupId_DestructionOnly_ConfirmationPositive() {
         int id = 0;
         Tab tab0 = mTabModel.addTab(id);
-        tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
+        Token tabGroupId = TAB_GROUP_ID.tabGroupId;
+        tab0.setTabGroupId(tabGroupId);
         tab0.setRootId(id);
-        when(mTabGroupModelFilter.getRelatedTabListForRootId(id)).thenReturn(List.of(tab0));
+        when(mTabGroupModelFilter.getTabsInGroup(tabGroupId)).thenReturn(List.of(tab0));
         when(mTabGroupModelFilter.isTabInTabGroup(tab0)).thenReturn(true);
 
         mTabUngrouperImpl.ungroupTabGroup(
-                id, /* trailing= */ true, /* allowDialog= */ true, mListener);
+                tabGroupId, /* trailing= */ true, /* allowDialog= */ true, mListener);
         verify(mTabModelRemover).doTabRemovalFlow(mHandlerCaptor.capture(), eq(true));
         TabModelRemoverFlowHandler handler = mHandlerCaptor.getValue();
 
@@ -217,7 +220,7 @@ public class TabUngrouperImplUnitTest {
         tab0.setTabGroupId(tabGroupId);
         tab0.setRootId(id);
         when(mTabGroupModelFilter.getRootIdFromTabGroupId(tabGroupId)).thenReturn(id);
-        when(mTabGroupModelFilter.getRelatedTabListForRootId(id)).thenReturn(List.of(tab0));
+        when(mTabGroupModelFilter.getTabsInGroup(tabGroupId)).thenReturn(List.of(tab0));
         when(mTabGroupModelFilter.isTabInTabGroup(tab0)).thenReturn(true);
 
         mTabUngrouperImpl.ungroupTabGroup(

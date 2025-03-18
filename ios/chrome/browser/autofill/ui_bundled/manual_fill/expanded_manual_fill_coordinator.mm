@@ -278,23 +278,22 @@ using manual_fill::ManualFillDataType;
     return _manualFillPlusAddressMediator;
   }
 
-  ProfileIOS* profile = self.browser->GetProfile();
   FaviconLoader* faviconLoader =
-      IOSChromeFaviconLoaderFactory::GetForProfile(profile);
+      IOSChromeFaviconLoaderFactory::GetForProfile(self.profile);
 
   WebStateList* webStateList = self.browser->GetWebStateList();
   CHECK(webStateList->GetActiveWebState());
   const GURL& URL = webStateList->GetActiveWebState()->GetLastCommittedURL();
 
   plus_addresses::PlusAddressService* plusAddressService =
-      PlusAddressServiceFactory::GetForProfile(profile);
+      PlusAddressServiceFactory::GetForProfile(self.profile);
   CHECK(plusAddressService);
 
   _manualFillPlusAddressMediator = [[ManualFillPlusAddressMediator alloc]
         initWithFaviconLoader:faviconLoader
            plusAddressService:plusAddressService
                           URL:URL
-               isOffTheRecord:profile->IsOffTheRecord()
+               isOffTheRecord:self.profile->IsOffTheRecord()
       isAddressManualFallback:isAddressManualFallback];
 
   return _manualFillPlusAddressMediator;

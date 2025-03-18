@@ -111,9 +111,59 @@ TextOffsetMap::TextOffsetMap(const TextOffsetMap& map12,
   }
 }
 
+TextOffsetMap::TextOffsetMap(wtf_size_t length1,
+                             const TextOffsetMap& map12,
+                             wtf_size_t length2,
+                             const TextOffsetMap& map23,
+                             wtf_size_t length3) {
+  if (map12.IsEmpty()) {
+    entries_ = map23.entries_;
+    return;
+  }
+  if (map23.IsEmpty()) {
+    entries_ = map12.entries_;
+    return;
+  }
+
+  Vector<Length> length_map12 = map12.CreateLengthMap(length1, length2);
+  Vector<Length> length_map = map23.CreateLengthMap(length2, length3);
+  wtf_size_t index12 = 0;
+  for (wtf_size_t index23 = 0; index23 < length_map.size(); ++index23) {
+    Length length = length_map[index23];
+    Length sum = 0;
+    bool is_starting_at_middle = length > 0 && length_map12[index12] == 0;
+    for (wtf_size_t i = 0; i < length; ++i) {
+      sum += length_map12[index12++];
+    }
+    length_map[index23] = sum;
+    if (is_starting_at_middle) {
+      length_map[index23] = 0;
+      length_map[index23 - 1] += sum;
+    }
+  }
+
+  wtf_size_t source_index = 0;
+  for (wtf_size_t dest_index = 0; dest_index < length_map.size();
+       ++dest_index) {
+    wtf_size_t source_length = length_map[dest_index];
+    source_index += source_length;
+    wtf_size_t dest_length = 1;
+    if (source_length == 1) {
+      while (dest_index + 1 < length_map.size() &&
+             length_map[dest_index + 1] == 0u) {
+        ++dest_index;
+        ++dest_length;
+      }
+    }
+    if (source_length != dest_length) {
+      Append(source_index, dest_index + 1);
+    }
+  }
+}
+
 void TextOffsetMap::Append(wtf_size_t source, wtf_size_t target) {
   CHECK(IsEmpty() ||
-        (source > entries_.back().source && target > entries_.back().target));
+        (source >= entries_.back().source && target >= entries_.back().target));
   entries_.emplace_back(source, target);
 }
 

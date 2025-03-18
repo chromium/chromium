@@ -57,7 +57,8 @@ class AmountExtractionManagerTest : public testing::Test {
         /*enabled_features=*/{features::kAutofillEnableAmountExtractionDesktop,
                               features::kAutofillEnableBuyNowPayLaterSyncing,
                               features::kAutofillEnableBuyNowPayLater},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{
+            features::kAutofillEnableAmountExtractionDesktopLogging});
   }
 
  protected:
@@ -235,6 +236,29 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerIfUrlNotEligible) {
       .WillByDefault(testing::Return(false));
 
   EXPECT_FALSE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
+      context, /*should_suppress_suggestions=*/false,
+      /*has_suggestions=*/true, /*field_type=*/FieldType::CREDIT_CARD_NUMBER));
+}
+
+TEST_F(AmountExtractionManagerTest, ShouldTriggerWhenLoggingFeatureIsEnabled) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing,
+                            features::kAutofillEnableBuyNowPayLater,
+                            features::kAutofillEnableAmountExtractionDesktop,
+                            features::
+                                kAutofillEnableAmountExtractionDesktopLogging},
+      /*disabled_features=*/{});
+  SuggestionsContext context;
+  context.is_autofill_available = true;
+  context.filling_product = FillingProduct::kCreditCard;
+
+  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+              autofill_manager_->client().GetAutofillOptimizationGuide()),
+          IsUrlEligibleForCheckoutAmountSearchForIssuerId)
+      .WillByDefault(testing::Return(false));
+
+  EXPECT_TRUE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
       context, /*should_suppress_suggestions=*/false,
       /*has_suggestions=*/true, /*field_type=*/FieldType::CREDIT_CARD_NUMBER));
 }

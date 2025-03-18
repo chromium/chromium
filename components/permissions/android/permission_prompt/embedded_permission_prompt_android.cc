@@ -60,7 +60,7 @@ EmbeddedPermissionPromptAndroid::Create(content::WebContents* web_contents,
 
 PermissionPromptDisposition
 EmbeddedPermissionPromptAndroid::GetPromptDisposition() const {
-  return PermissionPromptDisposition::MODAL_DIALOG;
+  return PermissionPromptDisposition::ELEMENT_ANCHORED_BUBBLE;
 }
 
 bool EmbeddedPermissionPromptAndroid::ShouldFinalizeRequestAfterDecided()
@@ -73,6 +73,10 @@ EmbeddedPermissionPromptAndroid::GetViewBoundsInScreen() const {
   // This is a modal prompt, the view bounds will cover the whole content
   // view.
   return web_contents()->GetContainerBounds();
+}
+
+bool EmbeddedPermissionPromptAndroid::IsAskPrompt() const {
+  return (GetEmbeddedPromptVariant() == Variant::kAsk);
 }
 
 std::vector<permissions::ElementAnchoredBubbleVariant>

@@ -6,9 +6,9 @@
 #define UI_VIEWS_CONTROLS_BUTTON_TOGGLE_BUTTON_H_
 
 #include <optional>
+#include <variant>
 
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"

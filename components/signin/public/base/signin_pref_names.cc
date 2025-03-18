@@ -24,15 +24,14 @@ const char kAccountInfo[] = "account_info";
 
 // Whether the "clear on exit" migration is complete.
 // If this preference is not true, then the user needs to be migrated.
-// If a user has set clear cookies on exit prior to the activation of
-// `switches:: kExplicitBrowserSigninUIOnDesktop` which changes the behavior of
-// signed in users, they will need to do a migration.
-// The user can be migrated in various ways:
+// If a user has set clear cookies on exit prior to the activation of explicit
+// signin which changes the behavior of signed in users, they will need to do a
+// migration. The user can be migrated in various ways:
 // - the first time they launch Chrome, if they don't use the cookie setting
 // - by changing the value of the setting when it has the new behavior
 // - by seeing a notice dialog if they close the browser while being in a state
 //   where the new cookie setting behavior makes a difference (signed in with
-//   Uno and non-syncing).
+//   explicit signin and non-syncing).
 const char kCookieClearOnExitMigrationNoticeComplete[] =
     "signin.cookie_clear_on_exit_migration_notice_complete";
 
@@ -174,8 +173,7 @@ const char kUserCloudSigninPolicyResponseFromPolicyTestPage[] =
 // Registers that the sign in occurred with an explicit user action.
 // Affected by all signin sources except when signing in to Chrome caused by a
 // web sign in or by an unknown source.
-// Note: this pref is only recorded when the
-// `switches::kExplicitBrowserSigninUIOnDesktop` is enabled.
+// Note: this pref is only recorded when explicit signin is enabled.
 const char kExplicitBrowserSignin[] =
     "signin.signin_with_explicit_browser_signin_on";
 

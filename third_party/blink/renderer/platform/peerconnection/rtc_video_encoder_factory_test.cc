@@ -279,47 +279,29 @@ TEST_F(RTCVideoEncoderFactoryTest, QueryCodecSupportSvc) {
 
 #if BUILDFLAG(RTC_USE_H265)
 TEST_F(RTCVideoEncoderFactoryTest,
-       QueryCodecSupportForH265WithoutNeccessaryFeatures) {
+       QueryCodecSupportH265WithWebRtcAllowH265SendDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({}, {::features::kWebRtcAllowH265Send});
+
   EXPECT_CALL(mock_gpu_factories_, IsEncoderSupportKnown())
       .WillRepeatedly(Return(true));
 
-  // H.256 is not supported when WebRtcAllowH265Send is not enabled.
-  EXPECT_TRUE(Equals(encoder_factory_.QueryCodecSupport(
+  // The `disabled_profiles_` is set at construction time so we must create the
+  // encoder factory *after* InitWithFeatures in order for QueryCodecSupport()
+  // to say kUnsupported.
+  RTCVideoEncoderFactory encoder_factory(&mock_gpu_factories_, nullptr);
+  EXPECT_TRUE(Equals(encoder_factory.QueryCodecSupport(
                          webrtc::SdpVideoFormat("H265", {{"profile-id", "1"}}),
                          /*scalability_mode=*/std::nullopt),
                      kUnsupported));
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
-  // H.265 is not supported when WebRtcAllowH265Send is enabled but
-  // PlatformHEVCEncoderSupport is disabled.
-  scoped_feature_list.InitWithFeatures({::features::kWebRtcAllowH265Send},
-                                       {media::kPlatformHEVCEncoderSupport});
-  EXPECT_TRUE(Equals(encoder_factory_.QueryCodecSupport(
-                         webrtc::SdpVideoFormat("H265", {{"profile-id", "1"}}),
-                         /*scalability_mode=*/std::nullopt),
-                     kUnsupported));
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
 }
 
-TEST_F(RTCVideoEncoderFactoryTest,
-       QueryCodecSupportForH265WithNeccessaryFeatures) {
+TEST_F(RTCVideoEncoderFactoryTest, QueryCodecSupportForH265) {
   ClearDisabledProfilesForTesting();
-  base::test::ScopedFeatureList scoped_feature_list;
-  std::vector<base::test::FeatureRef> enabled_features;
-  enabled_features.emplace_back(::features::kWebRtcAllowH265Send);
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
-  enabled_features.emplace_back(media::kPlatformHEVCEncoderSupport);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
-
-  scoped_feature_list.InitWithFeatures(enabled_features, {});
-
   EXPECT_CALL(mock_gpu_factories_, IsEncoderSupportKnown())
       .WillRepeatedly(Return(true));
 
-  // H.265 main profile is supported when both WebRtcAllowH265Send and
-  // PlatformHEVCEncoderSupport are enabled. level-id, when not specified,
+  // H.265 main profile is supported by default. level-id, when not specified,
   // implies level 93, and tier-flag defaults to main tier.
   EXPECT_TRUE(Equals(encoder_factory_.QueryCodecSupport(
                          webrtc::SdpVideoFormat("H265", {{"profile-id", "1"}}),
@@ -357,13 +339,8 @@ TEST_F(RTCVideoEncoderFactoryTest, GetSupportedFormatsReturnsAllExpectedModes) {
   ClearDisabledProfilesForTesting();
   base::test::ScopedFeatureList scoped_feature_list;
   std::vector<base::test::FeatureRef> enabled_features;
-  enabled_features.emplace_back(::features::kWebRtcAllowH265Send);
   enabled_features.emplace_back(::features::kWebRtcH265L1T2);
   enabled_features.emplace_back(::features::kWebRtcH265L1T3);
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
-  enabled_features.emplace_back(media::kPlatformHEVCEncoderSupport);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) && \
     BUILDFLAG(ENABLE_OPENH264)
@@ -394,12 +371,7 @@ TEST_F(RTCVideoEncoderFactoryTest,
   ClearDisabledProfilesForTesting();
   base::test::ScopedFeatureList scoped_feature_list;
   std::vector<base::test::FeatureRef> enabled_features;
-  enabled_features.emplace_back(::features::kWebRtcAllowH265Send);
   enabled_features.emplace_back(::features::kWebRtcH265L1T2);
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
-  enabled_features.emplace_back(media::kPlatformHEVCEncoderSupport);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) && \
     BUILDFLAG(ENABLE_OPENH264)
@@ -432,12 +404,7 @@ TEST_F(RTCVideoEncoderFactoryTest,
   base::test::ScopedFeatureList scoped_feature_list;
   std::vector<base::test::FeatureRef> enabled_features;
   std::vector<base::test::FeatureRef> disabled_features;
-  enabled_features.emplace_back(::features::kWebRtcAllowH265Send);
   disabled_features.emplace_back(::features::kWebRtcH265L1T2);
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
-  enabled_features.emplace_back(media::kPlatformHEVCEncoderSupport);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) && \
     BUILDFLAG(ENABLE_OPENH264)

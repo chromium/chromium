@@ -30,6 +30,10 @@ class VIZ_SERVICE_EXPORT RenderInputRouterSupportChildFrame
   RenderInputRouterSupportChildFrame& operator=(
       const RenderInputRouterSupportChildFrame&) = delete;
 
+  // RenderInputRouterSupportBase implementation.
+  bool IsRenderInputRouterSupportChildFrame() const override;
+  void NotifySiteIsMobileOptimized(bool is_mobile_optimized) override {}
+
   // RenderWidgetHostViewInput implementation.
   const LocalSurfaceId& GetLocalSurfaceId() const override;
   // Empty implementation since SelectionController is not handled on Viz.

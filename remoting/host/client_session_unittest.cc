@@ -89,9 +89,6 @@ constexpr char kTestDataChannelCallbackName[] = "test_channel_name";
 // inadvertent casts to 32-bits.
 constexpr bool kUse64BitDisplayId = (sizeof(webrtc::ScreenId) >= 8);
 
-const SessionPolicies kInitialLocalPolicies = {.maximum_session_duration =
-                                                   base::Hours(10)};
-
 // Matches a |protocol::Capabilities| argument against a list of capabilities
 // formatted as a space-separated string.
 MATCHER_P(IncludesCapabilities, expected_capabilities, "") {
@@ -236,6 +233,8 @@ class ClientSessionTest : public testing::Test {
   std::vector<protocol::MouseEvent> mouse_events_;
   std::vector<protocol::ClipboardEvent> clipboard_events_;
 
+  SessionPolicies initial_local_policies_;
+
   LocalSessionPoliciesProvider local_session_policies_provider_;
 
   // ClientSession instance under test.
@@ -265,7 +264,8 @@ void ClientSessionTest::SetUp() {
           task_environment_.GetMainThreadTaskRunner());
   desktop_environment_options_ = DesktopEnvironmentOptions::CreateDefault();
 
-  local_session_policies_provider_.set_local_policies(kInitialLocalPolicies);
+  initial_local_policies_.maximum_session_duration = base::Hours(10);
+  local_session_policies_provider_.set_local_policies(initial_local_policies_);
 
   // Suppress spammy "uninteresting call" logs.
   EXPECT_CALL(client_stub_, SetCursorShape(_)).Times(testing::AnyNumber());
@@ -500,14 +500,15 @@ webrtc::ScreenId ClientSessionTest::GetSelectedSourceDisplayId() {
 TEST_F(
     ClientSessionTest,
     OnLocalPoliciesChanged_DoesNotDisconnectIfEffectivePoliciesComeFromRemotePolicies) {
-  SessionPolicies remote_policies = {.maximum_session_duration =
-                                         base::Hours(8)};
+  SessionPolicies remote_policies;
+  remote_policies.maximum_session_duration = base::Hours(8);
   CreateClientSession();
   ConnectClientSession(&remote_policies);
 
   EXPECT_TRUE(connection_->is_connected());
-  local_session_policies_provider_.set_local_policies(
-      {.maximum_session_duration = base::Hours(23)});
+  SessionPolicies new_policies;
+  new_policies.maximum_session_duration = base::Hours(23);
+  local_session_policies_provider_.set_local_policies(new_policies);
   EXPECT_TRUE(connection_->is_connected());
 }
 
@@ -517,7 +518,7 @@ TEST_F(ClientSessionTest,
   ConnectClientSession();
 
   EXPECT_TRUE(connection_->is_connected());
-  local_session_policies_provider_.set_local_policies(kInitialLocalPolicies);
+  local_session_policies_provider_.set_local_policies(initial_local_policies_);
   EXPECT_TRUE(connection_->is_connected());
 }
 
@@ -527,8 +528,9 @@ TEST_F(ClientSessionTest,
   ConnectClientSession();
 
   EXPECT_TRUE(connection_->is_connected());
-  local_session_policies_provider_.set_local_policies(
-      {.maximum_session_duration = base::Hours(23)});
+  SessionPolicies local_policies;
+  local_policies.maximum_session_duration = base::Hours(23);
+  local_session_policies_provider_.set_local_policies(local_policies);
   EXPECT_FALSE(connection_->is_connected());
 }
 
@@ -541,14 +543,14 @@ TEST_F(ClientSessionTest, DisconnectsAfterMaxSessionDurationIsReached) {
   // clock and run all the scheduled tasks, which includes the max duration
   // timer.
   task_environment_.AdvanceClock(
-      *kInitialLocalPolicies.maximum_session_duration + base::Minutes(1));
+      *initial_local_policies_.maximum_session_duration + base::Minutes(1));
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(connection_->is_connected());
 }
 
 TEST_F(ClientSessionTest, DisconnectsIfOnSessionPoliciesReceivedReturnsError) {
   EXPECT_CALL(session_event_handler_,
-              OnSessionPoliciesReceived(kInitialLocalPolicies))
+              OnSessionPoliciesReceived(initial_local_policies_))
       .WillOnce(Return(ErrorCode::DISALLOWED_BY_POLICY));
 
   CreateClientSession();
@@ -571,8 +573,9 @@ TEST_F(ClientSessionTest,
 
 TEST_F(ClientSessionTest,
        EffectivePoliciesExplicitlyAllowFileTransfer_HasCapability) {
-  local_session_policies_provider_.set_local_policies(
-      {.allow_file_transfer = true});
+  SessionPolicies local_policies;
+  local_policies.allow_file_transfer = true;
+  local_session_policies_provider_.set_local_policies(local_policies);
   EXPECT_CALL(
       client_stub_,
       SetCapabilities(IncludesCapabilities(protocol::kFileTransferCapability)));
@@ -583,8 +586,9 @@ TEST_F(ClientSessionTest,
 
 TEST_F(ClientSessionTest,
        EffectivePoliciesDisallowFileTransfer_DoesNotHaveCapability) {
-  local_session_policies_provider_.set_local_policies(
-      {.allow_file_transfer = false});
+  SessionPolicies local_policies;
+  local_policies.allow_file_transfer = false;
+  local_session_policies_provider_.set_local_policies(local_policies);
   EXPECT_CALL(client_stub_, SetCapabilities(Not(IncludesCapabilities(
                                 protocol::kFileTransferCapability))));
 
@@ -593,14 +597,13 @@ TEST_F(ClientSessionTest,
 }
 
 TEST_F(ClientSessionTest, ApplyPoliciesFromRemotePolicies) {
-  local_session_policies_provider_.set_local_policies({
-      .allow_file_transfer = true,
-      .allow_uri_forwarding = true,
-  });
-  SessionPolicies remote_policies = {
-      .allow_file_transfer = false,
-      .allow_uri_forwarding = false,
-  };
+  SessionPolicies local_policies;
+  local_policies.allow_file_transfer = true;
+  local_policies.allow_uri_forwarding = true;
+  local_session_policies_provider_.set_local_policies(local_policies);
+  SessionPolicies remote_policies;
+  remote_policies.allow_file_transfer = false;
+  remote_policies.allow_uri_forwarding = false;
   EXPECT_CALL(client_stub_,
               SetCapabilities(Not(IncludesCapabilities(
                   std::string() + protocol::kFileTransferCapability + " " +

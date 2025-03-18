@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">Тапет Earth Flow</translation>
 <translation id="33736539805963175">Заднина во <ph name="LETTERS_COLOR" /> со буквата „<ph name="LETTERS_LETTER" />“</translation>
 <translation id="3383623117265110236">Ексклузивно</translation>
-<translation id="3395147534045164351">Вклучување/Исклучување на снимањето локација</translation>
 <translation id="3404249063913988450">Овозможете го штедачот на екранот</translation>
 <translation id="3413935475507503304">За да продолжите со ажурирањето, кликнете „Следно“.</translation>
 <translation id="3428551088151258685">надвор</translation>
@@ -1395,6 +1394,7 @@
 <translation id="7388345524791662148">Повеќе опции за <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Вградена подлога за допир</translation>
 <translation id="7397270852490618635">Исклучи ја светлата тема</translation>
+<translation id="7400166052988585408">Вашиот наставник ќе го заклучи вашиот екран за <ph name="NUM_SECONDS" /> секунди</translation>
 <translation id="7401543881546089382">Избриши кратенка</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> е подготвен за ажурирање</translation>
 <translation id="741244894080940828">конверзија</translation>

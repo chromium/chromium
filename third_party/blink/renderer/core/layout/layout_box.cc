@@ -213,12 +213,12 @@ LayoutUnit TextFieldIntrinsicInlineSize(const HTMLInputElement& input,
       // spin_box->LogicalWidth() returns 0. Use the computed logical
       // width instead.
       if (logical_width.IsPercent()) {
-        if (logical_width.Value() != 100.f) {
-          result +=
-              result * logical_width.Value() / (100 - logical_width.Value());
+        const float value = logical_width.Percent();
+        if (value != 100.f) {
+          result += result * value / (100.f - value);
         }
-      } else {
-        result += logical_width.Value();
+      } else if (logical_width.IsFixed()) {
+        result += logical_width.Pixels();
       }
     }
   }
@@ -1208,7 +1208,7 @@ LayoutUnit LayoutBox::OverrideIntrinsicContentInlineSize() const {
 
   if (const auto& length = intrinsic_length.GetLength()) {
     DCHECK(length->IsFixed());
-    return LayoutUnit(length->Value());
+    return LayoutUnit(length->Pixels());
   }
 
   return kIndefiniteSize;
@@ -1242,7 +1242,7 @@ LayoutUnit LayoutBox::OverrideIntrinsicContentBlockSize() const {
 
   if (const auto& length = intrinsic_length.GetLength()) {
     DCHECK(length->IsFixed());
-    return LayoutUnit(length->Value());
+    return LayoutUnit(length->Pixels());
   }
 
   return kIndefiniteSize;

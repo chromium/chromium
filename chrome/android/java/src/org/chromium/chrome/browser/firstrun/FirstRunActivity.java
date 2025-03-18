@@ -30,7 +30,6 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.Promise;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.metrics.UmaUtils;
@@ -604,11 +603,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
             super.dispatchTouchEvent(mBlockedEvent); // Inject the blocked event
             mBlockedEvent = null;
         }
-    }
-
-    @Override
-    public int getSecondaryActivity() {
-        return SecondaryActivity.FIRST_RUN;
     }
 
     // FirstRunPageDelegate:

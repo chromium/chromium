@@ -4,7 +4,10 @@
 
 import {PluginController, PluginControllerEventType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import type {ViewerBottomToolbarDropdownElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
+import {keyDownOn, keyUpOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {getRequiredElement} from './test_util.js';
 
@@ -84,6 +87,33 @@ chrome.test.runTests([
     await microtasksFinished();
 
     chrome.test.assertTrue(!getMenu(dropdown));
+    chrome.test.succeed();
+  },
+
+  async function testDropdownFocusesMenuElement() {
+    document.body.innerHTML = getTrustedHTML`
+      <viewer-bottom-toolbar-dropdown>
+        <button slot="menu">Button</button>
+      </viewer-bottom-toolbar-dropdown>
+    `;
+    const dropdown =
+        document.body.querySelector('viewer-bottom-toolbar-dropdown');
+    assert(dropdown);
+    chrome.test.assertTrue(!getMenu(dropdown));
+    const button = document.body.querySelector('button');
+    assert(button);
+    const whenFocused = eventToPromise('focus', button);
+
+    // Focus the dropdown and open with the keyboard.
+    const crButton = getRequiredElement(dropdown, 'cr-button');
+    crButton.focus();
+    keyDownOn(crButton, 0, [], ' ');
+    keyUpOn(crButton, 0, [], ' ');
+    await microtasksFinished();
+    chrome.test.assertTrue(!!getMenu(dropdown));
+
+    // Focus should be on the button.
+    await whenFocused;
     chrome.test.succeed();
   },
 ]);

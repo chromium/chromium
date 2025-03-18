@@ -776,6 +776,13 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         assertNotNull(headerModel.get(IDP_BRAND_ICON));
         assertFalse(headerModel.get(IS_MULTIPLE_ACCOUNT_CHOOSER));
         assertFalse(headerModel.get(IS_MULTIPLE_IDPS));
+        // Should show continue button with the single account.
+        assertEquals("Incorrect item sheet count", 1, mSheetAccountItems.size());
+        testAccount(
+                mSheetAccountItems.get(0).model,
+                mNewUserAccount,
+                /* expectClickListener= */ false,
+                /* expectShowIdp= */ false);
 
         // Go back should show multiple IDP UI again.
         pressBack();
@@ -787,6 +794,17 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         assertNull(headerModel.get(IDP_BRAND_ICON));
         assertTrue(headerModel.get(IS_MULTIPLE_ACCOUNT_CHOOSER));
         assertTrue(headerModel.get(IS_MULTIPLE_IDPS));
+        assertEquals("Incorrect item sheet count", 3, mSheetAccountItems.size());
+        testAccount(
+                mSheetAccountItems.get(0).model,
+                mNewUserAccount,
+                /* expectClickListener= */ true,
+                /* expectShowIdp= */ true);
+        testAccount(
+                mSheetAccountItems.get(1).model,
+                mAnaAccountWithUseDifferentAccount,
+                /* expectClickListener= */ true,
+                /* expectShowIdp= */ true);
     }
 
     private void pressBack() {

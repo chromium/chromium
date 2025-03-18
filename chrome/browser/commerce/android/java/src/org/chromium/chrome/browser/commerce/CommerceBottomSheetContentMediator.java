@@ -90,9 +90,7 @@ public class CommerceBottomSheetContentMediator {
     private void showBottomSheet() {
         mContent =
                 new CommerceBottomSheetContent(
-                        mCommerceBottomSheetContentContainer,
-                        mModelList.size(),
-                        mBottomSheetController);
+                        mCommerceBottomSheetContentContainer, mBottomSheetController);
         mBottomSheetController.requestShowContent(mContent, true);
     }
 

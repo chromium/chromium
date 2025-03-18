@@ -4,6 +4,7 @@
 
 import typescriptEslint from '../../../../third_party/node/node_modules/@typescript-eslint/eslint-plugin/dist/index.js';
 import tsParser from '../../../../third_party/node/node_modules/@typescript-eslint/parser/dist/index.js';
+import webUiEslint from './webui_eslint_plugin.js';
 
 export default {
   languageOptions: {
@@ -23,6 +24,7 @@ export default {
 
   plugins: {
     '@typescript-eslint': typescriptEslint,
+    '@webui-eslint': webUiEslint,
   },
 
   files: ['**/*.ts'],
@@ -31,5 +33,8 @@ export default {
     'require-await': 'off',
     '@typescript-eslint/require-await' : 'error',
     '@typescript-eslint/no-unnecessary-type-assertion': 'error',
+
+    '@webui-eslint/lit-property-accessor': 'error',
+    '@webui-eslint/polymer-property-declare': 'error',
   },
 };

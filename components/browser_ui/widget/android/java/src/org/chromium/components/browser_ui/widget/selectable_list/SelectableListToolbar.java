@@ -10,6 +10,7 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
@@ -425,6 +426,7 @@ public class SelectableListToolbar<E> extends Toolbar
      */
     protected void setNavigationButton(@NavigationButton int navigationButton) {
         @StringRes int contentDescriptionId = Resources.ID_NULL;
+        Drawable navigationButtonDrawable = mNavigationIconDrawable;
 
         mNavigationButton = navigationButton;
         setNavigationOnClickListener(this);
@@ -433,6 +435,23 @@ public class SelectableListToolbar<E> extends Toolbar
             case NavigationButton.NONE:
                 break;
             case NavigationButton.SEARCH_BACK:
+                // Create a LayerDrawable to hold the search box button highlight background as well
+                // as the navigation icon drawable.
+                var navigationBackgroundDrawable =
+                        AppCompatResources.getDrawable(
+                                getContext(), R.drawable.search_box_button_ripple);
+                var navigationLayerDrawable =
+                        new LayerDrawable(
+                                new Drawable[] {
+                                    navigationBackgroundDrawable, mNavigationIconDrawable
+                                });
+                int inset =
+                        getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.search_box_nav_button_background_inset);
+                navigationLayerDrawable.setLayerInset(1, inset, inset, inset, inset);
+                navigationButtonDrawable = navigationLayerDrawable;
+
                 DrawableCompat.setTintList(mNavigationIconDrawable, mIconColorList);
                 contentDescriptionId = R.string.accessibility_toolbar_btn_back;
                 break;
@@ -452,7 +471,7 @@ public class SelectableListToolbar<E> extends Toolbar
         }
 
         setNavigationIcon(
-                contentDescriptionId == Resources.ID_NULL ? null : mNavigationIconDrawable);
+                contentDescriptionId == Resources.ID_NULL ? null : navigationButtonDrawable);
         setNavigationContentDescription(contentDescriptionId);
 
         updateDisplayStyleIfNecessary();

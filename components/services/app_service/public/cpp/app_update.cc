@@ -4,6 +4,8 @@
 
 #include "components/services/app_service/public/cpp/app_update.h"
 
+#include <variant>
+
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -44,11 +46,11 @@ void MergeIconKeyDelta(App* new_delta, App* delta) {
 
   // `new_delta` should hold a bool icon version only.
   CHECK(!new_delta->icon_key.has_value() ||
-        absl::holds_alternative<bool>(new_delta->icon_key->update_version));
+        std::holds_alternative<bool>(new_delta->icon_key->update_version));
 
   // `delta` should hold a bool icon version only.
   CHECK(!delta || !delta->icon_key.has_value() ||
-        absl::holds_alternative<bool>(delta->icon_key->update_version));
+        std::holds_alternative<bool>(delta->icon_key->update_version));
 
   if (delta && delta->readiness != Readiness::kUnknown &&
       !apps_util::IsInstalled(delta->readiness)) {
@@ -67,8 +69,8 @@ void MergeIconKeyDelta(App* new_delta, App* delta) {
     // If `new_delta`'s `update_version` is true, or `delta`'s `update_version`
     // is true, the new `update_version` should be true.
     delta->icon_key->update_version =
-        absl::get<bool>(new_delta->icon_key->update_version) ||
-        absl::get<bool>(delta->icon_key->update_version);
+        std::get<bool>(new_delta->icon_key->update_version) ||
+        std::get<bool>(delta->icon_key->update_version);
   }
 
   new_delta->icon_key = std::move(delta->icon_key);
@@ -83,11 +85,11 @@ void MergeIconKeyDelta(App* new_delta, App* delta) {
 std::optional<apps::IconKey> MergeIconKey(const App* state, const App* delta) {
   //`state` should have int32_t `update_version` only.
   CHECK(!state || !state->icon_key.has_value() ||
-        absl::holds_alternative<int32_t>(state->icon_key->update_version));
+        std::holds_alternative<int32_t>(state->icon_key->update_version));
 
   // `delta` should hold a bool icon version only.
   CHECK(!delta || !delta->icon_key.has_value() ||
-        absl::holds_alternative<bool>(delta->icon_key->update_version));
+        std::holds_alternative<bool>(delta->icon_key->update_version));
 
   if (delta && delta->readiness != Readiness::kUnknown &&
       !apps_util::IsInstalled(delta->readiness)) {

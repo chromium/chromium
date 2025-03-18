@@ -231,7 +231,7 @@ public class OverlayPanelEventFilterTest {
         // GestureHandler overrides.
 
         @Override
-        public void onDown(float x, float y, boolean fromMouse, int buttons) {}
+        public void onDown(float x, float y, int buttons) {}
 
         @Override
         public void onUpOrCancel() {}
@@ -242,7 +242,7 @@ public class OverlayPanelEventFilterTest {
         }
 
         @Override
-        public void click(float x, float y, boolean fromMouse, int buttons) {
+        public void click(float x, float y, int buttons) {
             mWasTapDetectedOnPanel = true;
         }
 

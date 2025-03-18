@@ -43,9 +43,6 @@ public class TriStateCookieSettingsPreference extends Preference
 
     /** Signals used to determine the view and button states. */
     public static class Params {
-        // Whether the PrivacySandboxFirstPartySetsUI feature is enabled.
-        public boolean isPrivacySandboxFirstPartySetsUiEnabled;
-
         // An enum indicating when to block third-party cookies.
         public @CookieControlsMode int cookieControlsMode;
 
@@ -66,15 +63,10 @@ public class TriStateCookieSettingsPreference extends Preference
 
     // UI Elements.
     private RadioButtonWithDescription mAllowButton;
-    private RadioButtonWithDescription mBlockThirdPartyIncognitoButton;
-    private RadioButtonWithDescription mBlockThirdPartyButton;
+    private RadioButtonWithDescriptionAndAuxButton mBlockThirdPartyIncognitoButton;
+    private RadioButtonWithDescriptionAndAuxButton mBlockThirdPartyButton;
     private @Nullable RadioGroup mRadioGroup;
     private TextViewWithCompoundDrawables mManagedView;
-
-    // Sometimes UI is initialized before the initializationParams are set. We keep this viewHolder
-    // to properly adjust UI once initializationParams are set. See crbug.com/1371236.
-    // TODO(tommasin) Remove this holder once the FirstPartySets UI will be enabled by default.
-    private PreferenceViewHolder mViewHolder;
 
     public TriStateCookieSettingsPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -90,7 +82,7 @@ public class TriStateCookieSettingsPreference extends Preference
     /** Sets the cookie settings state and updates the radio buttons. */
     public void setState(Params state) {
         if (mRadioGroup != null) {
-            setRadioButtonsVisibility(state);
+            setBlockThirdPartyCookieDescription(state);
             configureRadioButtons(state);
         } else {
             mInitializationParams = state;
@@ -132,14 +124,21 @@ public class TriStateCookieSettingsPreference extends Preference
 
     @Override
     @Initializer
-    // mBlockThirdPartyButton is assumed to be non-null in the rest of this
-    // class but it is not actually guaranteed to be inited here.
     @NullUnmarked
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
-        mViewHolder = holder;
         mAllowButton = (RadioButtonWithDescription) assertNonNull(holder.findViewById(R.id.allow));
+        mBlockThirdPartyIncognitoButton =
+                (RadioButtonWithDescriptionAndAuxButton)
+                        assumeNonNull(
+                                holder.findViewById(R.id.block_third_party_incognito_with_aux));
+        mBlockThirdPartyIncognitoButton.setAuxButtonClickedListener(this);
+        mBlockThirdPartyButton =
+                (RadioButtonWithDescriptionAndAuxButton)
+                        assumeNonNull(holder.findViewById(R.id.block_third_party_with_aux));
+        mBlockThirdPartyButton.setAuxButtonClickedListener(this);
+
         mRadioGroup = (RadioGroup) assumeNonNull(holder.findViewById(R.id.radio_button_layout));
         mRadioGroup.setOnCheckedChangeListener(this);
 
@@ -148,51 +147,13 @@ public class TriStateCookieSettingsPreference extends Preference
                         assertNonNull(holder.findViewById(R.id.managed_disclaimer_text));
 
         if (mInitializationParams != null) {
-            setRadioButtonsVisibility(mInitializationParams);
+            setBlockThirdPartyCookieDescription(mInitializationParams);
             configureRadioButtons(mInitializationParams);
         }
     }
 
     private Resources getResources() {
         return getContext().getResources();
-    }
-
-    private void setRadioButtonsVisibility(Params params) {
-        if (params.isPrivacySandboxFirstPartySetsUiEnabled) {
-            assumeNonNull(mViewHolder.findViewById(R.id.block_third_party_incognito))
-                    .setVisibility(View.GONE);
-            assumeNonNull(mViewHolder.findViewById(R.id.block_third_party))
-                    .setVisibility(View.GONE);
-
-            // TODO(crbug.com/40233724): Change the buttons class into a
-            // RadioButtonWithDescriptionAndAuxButton and remove the following casts when the
-            // PrivacySandboxFirstPartySetsUI feature is launched
-            var blockTPIncognitoBtnWithDescAndAux =
-                    (RadioButtonWithDescriptionAndAuxButton)
-                            mViewHolder.findViewById(R.id.block_third_party_incognito_with_aux);
-            assumeNonNull(blockTPIncognitoBtnWithDescAndAux);
-            var blockTPButtonWithDescAndAux =
-                    (RadioButtonWithDescriptionAndAuxButton)
-                            mViewHolder.findViewById(R.id.block_third_party_with_aux);
-            assumeNonNull(blockTPButtonWithDescAndAux);
-
-            blockTPIncognitoBtnWithDescAndAux.setVisibility(View.VISIBLE);
-            blockTPButtonWithDescAndAux.setVisibility(View.VISIBLE);
-
-            blockTPIncognitoBtnWithDescAndAux.setAuxButtonClickedListener(this);
-            blockTPButtonWithDescAndAux.setAuxButtonClickedListener(this);
-            mBlockThirdPartyIncognitoButton = blockTPIncognitoBtnWithDescAndAux;
-            mBlockThirdPartyButton = blockTPButtonWithDescAndAux;
-            setBlockThirdPartyCookieDescription(params);
-        } else {
-            var blockThirdPartyIncognitoButton =
-                    (RadioButtonWithDescription)
-                            mViewHolder.findViewById(R.id.block_third_party_incognito);
-            mBlockThirdPartyIncognitoButton = assumeNonNull(blockThirdPartyIncognitoButton);
-            var blockThirdPartyButton =
-                    (RadioButtonWithDescription) mViewHolder.findViewById(R.id.block_third_party);
-            mBlockThirdPartyButton = assumeNonNull(blockThirdPartyButton);
-        }
     }
 
     private void setBlockThirdPartyCookieDescription(Params params) {

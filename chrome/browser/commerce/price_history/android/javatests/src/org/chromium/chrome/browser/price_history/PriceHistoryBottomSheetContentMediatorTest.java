@@ -33,7 +33,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -42,7 +41,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
@@ -63,7 +61,6 @@ import java.util.Arrays;
 import java.util.Optional;
 
 /** Tests for {@link PriceHistoryBottomSheetContentMediator}. */
-@Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PriceHistoryBottomSheetContentMediatorTest {
@@ -114,7 +111,6 @@ public class PriceHistoryBottomSheetContentMediatorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
 
         doReturn(mMockProfile).when(mMockTab).getProfile();
@@ -125,8 +121,8 @@ public class PriceHistoryBottomSheetContentMediatorTest {
         mMediator =
                 new PriceHistoryBottomSheetContentMediator(
                         mActivity,
-                        mMockTab,
-                        mMockTabModelSelector,
+                        () -> mMockTab,
+                        () -> mMockTabModelSelector,
                         mPropertyModel,
                         mMockPriceInsightsDelegate);
     }

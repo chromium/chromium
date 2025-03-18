@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
@@ -214,22 +215,22 @@ void IsolatedWebAppReaderRegistry::OnComponentUpdateSuccess(
     auto iwa_source = IwaSourceWithMode::FromStorageLocation(
         profile_->GetPath(), isolation_data.location());
     WebAppUiManager& ui_manager = provider->ui_manager();
-    absl::visit(base::Overloaded{
-                    [&](const IwaSourceBundle& bundle) {
-                      const auto& app_id = iwa.get().app_id();
-                      if (ui_manager.GetNumWindowsForApp(app_id) == 0) {
-                        ClearCacheForPath(bundle.path(), base::DoNothing());
-                        return;
-                      }
-                      ui_manager.NotifyOnAllAppWindowsClosed(
-                          app_id,
-                          base::BindOnce(
-                              &IsolatedWebAppReaderRegistry::ClearCacheForPath,
-                              weak_ptr_factory_.GetWeakPtr(), bundle.path(),
-                              base::DoNothing()));
-                    },
-                    [](const IwaSourceProxy&) {}},
-                iwa_source.variant());
+    std::visit(base::Overloaded{
+                   [&](const IwaSourceBundle& bundle) {
+                     const auto& app_id = iwa.get().app_id();
+                     if (ui_manager.GetNumWindowsForApp(app_id) == 0) {
+                       ClearCacheForPath(bundle.path(), base::DoNothing());
+                       return;
+                     }
+                     ui_manager.NotifyOnAllAppWindowsClosed(
+                         app_id,
+                         base::BindOnce(
+                             &IsolatedWebAppReaderRegistry::ClearCacheForPath,
+                             weak_ptr_factory_.GetWeakPtr(), bundle.path(),
+                             base::DoNothing()));
+                   },
+                   [](const IwaSourceProxy&) {}},
+               iwa_source.variant());
   }
 }
 

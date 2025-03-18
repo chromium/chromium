@@ -35,7 +35,8 @@ SegmentationPlatformConversionBridge::CreateJavaClassificationResult(
     const ClassificationResult& result) {
   return Java_SegmentationPlatformConversionBridge_createClassificationResult(
       env, static_cast<int>(result.status),
-      base::android::ToJavaArrayOfStrings(env, result.ordered_labels));
+      base::android::ToJavaArrayOfStrings(env, result.ordered_labels),
+      static_cast<int>(result.request_id.value()));
 }
 
 }  // namespace segmentation_platform

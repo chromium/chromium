@@ -5,9 +5,9 @@
 #include "base/functional/overloaded.h"
 
 #include <string>
+#include <variant>
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
 
@@ -15,12 +15,12 @@ TEST(FunctionalTest, Overloaded) {
   struct PackageA {};
   struct PackageB {};
 
-  absl::variant<PackageA, PackageB> var = PackageA();
+  std::variant<PackageA, PackageB> var = PackageA();
 
   const std::string output =
-      absl::visit(Overloaded{[](const PackageA& pack) { return "PackageA"; },
-                             [](const PackageB& pack) { return "PackageB"; }},
-                  var);
+      std::visit(Overloaded{[](const PackageA& pack) { return "PackageA"; },
+                            [](const PackageB& pack) { return "PackageB"; }},
+                 var);
   EXPECT_EQ(output, "PackageA");
 }
 

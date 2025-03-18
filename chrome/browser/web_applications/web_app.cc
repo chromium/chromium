@@ -10,6 +10,7 @@
 #include <string>
 #include <tuple>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/check_is_test.h"
@@ -43,7 +44,6 @@
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
@@ -274,14 +274,14 @@ base::Value OptTabStripToDebugValue(
       "url", base::ToString(tab_strip->new_tab_button.url.value_or(GURL(""))));
   result.Set("new_tab_button", std::move(new_tab_button_json));
 
-  if (absl::holds_alternative<TabStrip::Visibility>(tab_strip->home_tab)) {
+  if (std::holds_alternative<TabStrip::Visibility>(tab_strip->home_tab)) {
     result.Set(
         "home_tab",
-        base::ToString(absl::get<TabStrip::Visibility>(tab_strip->home_tab)));
+        base::ToString(std::get<TabStrip::Visibility>(tab_strip->home_tab)));
   } else {
     base::Value::Dict home_tab_json;
     const blink::Manifest::HomeTabParams& home_tab_params =
-        absl::get<blink::Manifest::HomeTabParams>(tab_strip->home_tab);
+        std::get<blink::Manifest::HomeTabParams>(tab_strip->home_tab);
 
     base::Value::List icons_json;
     std::optional<std::vector<blink::Manifest::ImageResource>> icons =
@@ -920,7 +920,7 @@ const std::vector<TabbedModeScopeMatcher>& WebApp::GetTabbedModeHomeScope()
   if (!cached_derived_data_.home_tab_scope.has_value()) {
     cached_derived_data_.home_tab_scope.emplace();
     if (tab_strip_.has_value()) {
-      if (const auto* params = absl::get_if<blink::Manifest::HomeTabParams>(
+      if (const auto* params = std::get_if<blink::Manifest::HomeTabParams>(
               &tab_strip_->home_tab)) {
         for (auto& pattern : params->scope_patterns) {
           cached_derived_data_.home_tab_scope->emplace_back(pattern);

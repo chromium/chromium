@@ -166,6 +166,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1505542291183484463">Išklotinės dydžio keitimo langas apačioje</translation>
 <translation id="1510238584712386396">Paleidimo priemonė</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Rodyti pranešimų nustatymus. Programos pranešimai išjungti}one{Rodyti pranešimų nustatymus. # programos pranešimai išjungti}few{Rodyti pranešimų nustatymus. # programų pranešimai išjungti}many{Rodyti pranešimų nustatymus. # programos pranešimai išjungti}other{Rodyti pranešimų nustatymus. # programų pranešimai išjungti}}</translation>
+<translation id="1521655867290435174">„Google“ skaičiuoklės</translation>
 <translation id="1523032696246003">Akumuliatoriaus įkrovimo lygis: <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> iki visiško įkrovimo</translation>
 <translation id="1525508553941733066">ATSISAKYTI</translation>
 <translation id="1526448108126799339">Atidaryti naują skirtuką naujame lange</translation>
@@ -240,6 +241,8 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1755556344721611131">Diagnostikos programa</translation>
 <translation id="1756833229520115364">Nepavyko išsaugoti šablono. Per daug langų ar skirtukų.</translation>
 <translation id="1757857692711134412">Išjungta iki saulėlydžio</translation>
+<translation id="1763084151787818322">Kiti veiksmai</translation>
+<translation id="1768138163688567246">Uždaryti paiešką ekrane</translation>
 <translation id="1768366657309696705">Pakeistas spartusis klavišas <ph name="LAUNCHER_KEY_NAME" /> + taškas. Jei norite naudoti klavišą „Insert“, paspauskite <ph name="LAUNCHER_KEY_NAME" /> klavišą + antrojo lygio klavišą + naikinimo klavišą.</translation>
 <translation id="1770726142253415363">Perkelta į <ph name="ROW_NUMBER" /> eilutę, <ph name="COLUMN_NUMBER" /> stulpelį.</translation>
 <translation id="1771761307086386028">Slinkti dešinėn</translation>
@@ -345,7 +348,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2201071101391734388">Naujausia <ph name="INDEX" /> nuotrauka iš <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Sutraukti „Google Tasks“</translation>
 <translation id="2208323208084708176">Vieno darbalaukio režimas</translation>
-<translation id="2220572644011485463">PIN kodas arba slaptažodis</translation>
 <translation id="2222841058024245321">7 darbalaukis</translation>
 <translation id="2223384056430485343">Išskaidyto ekrano režimu</translation>
 <translation id="2224075387478458881">Negalima įrašyti ekrano vaizdo, jei matomas apsaugotas turinys</translation>
@@ -1829,7 +1831,6 @@ Naujas įdiegimas</translation>
 <translation id="7000027735917578303">„Windows“ ir darbalaukių nustatymai</translation>
 <translation id="7004910047186208204">Prisijungti prie mobiliojo ryšio duomenų tinklo</translation>
 <translation id="7005239792648594238">Atidarykite programą ir pradėkite</translation>
-<translation id="7007983414944123363">Nepavyko patvirtinti PIN kodo arba slaptažodžio. Bandykite dar kartą.</translation>
 <translation id="7014684956566476813">Prisijungta prie įrenginio pavadinimu „<ph name="DEVICE_NAME" />“</translation>
 <translation id="7015766095477679451">Grįžkite <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">6 darbalaukis</translation>
@@ -1943,6 +1944,7 @@ Naujas įdiegimas</translation>
 <translation id="742594950370306541">Kamera naudojama.</translation>
 <translation id="742608627846767349">Labas rytas,</translation>
 <translation id="743058460480092004">Kamera ir mikrofonas naudojami.</translation>
+<translation id="7440404390546433462">„Google“ paieška</translation>
 <translation id="7441711280402516925">Leidžiama · Perjungti į skirtuką</translation>
 <translation id="7453330308669753048">Paieškos istorijos rezultatas pašalintas</translation>
 <translation id="7459485586006128091">Dėl vidinės klaidos viešosios interneto prieigos taškas buvo išjungtas. Bandykite prisijungti iš naujo po kelių minučių.</translation>
@@ -2466,6 +2468,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="9168436347345867845">Atlikti vėliau</translation>
 <translation id="9178475906033259337">Pagal užklausą „<ph name="QUERY" />“ pateikiama rezultatų: 1</translation>
 <translation id="9179259655489829027">Naudodami šią funkciją galite greitai pasiekti bet kurį prisijungusį naudotoją be slaptažodžio. Šią funkciją naudokite tik su patikimomis paskyromis.</translation>
+<translation id="9183302530794969518">„Google“ dokumentai</translation>
 <translation id="9183456764293710005">Viso ekrano didinimas</translation>
 <translation id="9192133205265227850">Naudoti: „<ph name="DEVICE_NAME" />“</translation>
 <translation id="9193626018745640770">Perduodama į nežinomą imtuvą</translation>

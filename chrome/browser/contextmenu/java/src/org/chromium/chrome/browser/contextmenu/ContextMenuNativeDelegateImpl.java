@@ -24,6 +24,7 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuNativeDel
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 
 @NullMarked
 class ContextMenuNativeDelegateImpl implements ContextMenuNativeDelegate {
@@ -106,11 +107,11 @@ class ContextMenuNativeDelegateImpl implements ContextMenuNativeDelegate {
     }
 
     @Override
-    public void startDownload(boolean isLink) {
+    public void startDownload(GURL url, boolean isMedia) {
         if (mNativePtr == 0) return;
 
         ContextMenuNativeDelegateImplJni.get()
-                .startDownload(mNativePtr, ContextMenuNativeDelegateImpl.this, isLink);
+                .startDownload(mNativePtr, ContextMenuNativeDelegateImpl.this, url, isMedia);
     }
 
     @Override
@@ -175,7 +176,8 @@ class ContextMenuNativeDelegateImpl implements ContextMenuNativeDelegate {
         void startDownload(
                 long nativeContextMenuNativeDelegateImpl,
                 ContextMenuNativeDelegateImpl caller,
-                boolean isLink);
+                @JniType("GURL") GURL url,
+                boolean isMedia);
 
         void searchForImage(
                 long nativeContextMenuNativeDelegateImpl,

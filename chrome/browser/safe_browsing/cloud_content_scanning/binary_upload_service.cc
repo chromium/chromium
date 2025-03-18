@@ -5,6 +5,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 
 #include <algorithm>
+#include <variant>
 
 #include "base/command_line.h"
 #include "base/rand_util.h"
@@ -18,7 +19,6 @@
 #include "components/enterprise/connectors/core/analysis_settings.h"
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "net/base/url_util.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/enterprise/connectors/analysis/local_binary_upload_service_factory.h"
@@ -359,7 +359,7 @@ void BinaryUploadService::Request::SerializeToString(
 }
 
 GURL BinaryUploadService::Request::GetUrlWithParams() const {
-  DCHECK(absl::holds_alternative<enterprise_connectors::CloudAnalysisSettings>(
+  DCHECK(std::holds_alternative<enterprise_connectors::CloudAnalysisSettings>(
       cloud_or_local_settings_));
 
   GURL url = GetUrlOverride().value_or(cloud_or_local_settings_.analysis_url());

@@ -1588,15 +1588,24 @@ TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
   AdjustTabBoundsForDrag(previous_tab_area_width, first_tab_leading_x,
                          drag_bounds);
 
+  const gfx::Vector2d drag_offset = CalculateWindowDragOffset();
+#if (!BUILDFLAG(IS_MAC))
   // Set the window origin before making it visible, to avoid flicker on
   // Windows. See https://crbug.com/394529650
-  const gfx::Vector2d drag_offset = CalculateWindowDragOffset();
   dragged_widget->SetBounds(
       gfx::Rect(point_in_screen - drag_offset, dragged_widget->GetSize()));
+#endif
 
   dragged_widget->SetVisibilityChangedAnimationsEnabled(false);
   browser->window()->Show();
   dragged_widget->SetVisibilityChangedAnimationsEnabled(true);
+
+#if BUILDFLAG(IS_MAC)
+  // Set the window origin after making it visible, to avoid child windows (such
+  // as the find bar) being misplaced on Mac. See https://crbug.com/403129048
+  dragged_widget->SetBounds(
+      gfx::Rect(point_in_screen - drag_offset, dragged_widget->GetSize()));
+#endif
 
   // Activate may trigger a focus loss, destroying us.
   {

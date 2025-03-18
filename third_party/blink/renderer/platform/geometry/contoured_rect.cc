@@ -30,9 +30,7 @@ bool ContouredRect::IntersectsQuad(const gfx::QuadF& quad) const {
 }
 
 Path ContouredRect::GetPath() const {
-  Path path;
-  path.AddContouredRect(*this);
-  return path;
+  return Path::MakeContouredRect(*this);
 }
 
 // TODO(crbug.com/399449172) proper rendering of corner-shape with constant

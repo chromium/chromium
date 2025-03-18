@@ -12,6 +12,8 @@ export function getHtml(this: ViewerBottomToolbarDropdownElement) {
   return html`
     <cr-button @click="${this.toggleDropdown_}"
         data-selected="${this.showDropdown_}"
+        aria-expanded="${this.showDropdown_}"
+        aria-haspopup="true"
         title="${this.buttonTitle}">
       <slot name="icon"></slot>
     </cr-button>

@@ -313,7 +313,8 @@ class WPTAdapterTest(unittest.TestCase):
             self.host, ['--no-manifest-update', '--enable-sanitizer'],
             'test-linux-trusty')
         with adapter.test_env() as options:
-            self.assertAlmostEqual(options.timeout_multiplier, 5)
+            self.assertEqual(options.timeout_multiplier, 5)
+            self.assertTrue(options.sanitizer_enabled)
             run_info = self._read_run_info(options)
             self.assertTrue(run_info['sanitizer_enabled'])
 

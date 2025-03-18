@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_AUTOFILL_EXTERNAL_DELEGATE_H_
 
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -57,7 +58,7 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   static bool IsAutofillAndFirstLayerSuggestionId(SuggestionType item_id);
 
   // AutofillSuggestionDelegate implementation.
-  absl::variant<AutofillDriver*, password_manager::PasswordManagerDriver*>
+  std::variant<AutofillDriver*, password_manager::PasswordManagerDriver*>
   GetDriver() override;
   void OnSuggestionsShown(base::span<const Suggestion> suggestions) override;
   void OnSuggestionsHidden() override;

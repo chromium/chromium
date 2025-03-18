@@ -1337,6 +1337,7 @@
 <translation id="1918127774159128277">Обновить список возможностей Wi-Fi Direct</translation>
 <translation id="1918141783557917887">&amp;Мельче</translation>
 <translation id="1918281588461452432">При просмотре сайтов их содержимое шифруется и сохраняется на устройстве.</translation>
+<translation id="1919096511823372013">Вставляйте ссылки, эмодзи и многое другое, а также пишите тексты и создавайте изображения с помощью ИИ от Google.</translation>
 <translation id="1919872106782726755">Чтобы настроить разблокировку по отпечатку, ребенок должен приложить палец к сканеру отпечатков рядом с кнопкой питания в правом верхнем углу клавиатуры. Данные отпечатков пальцев ребенка хранятся только на устройстве <ph name="DEVICE_TYPE" />.</translation>
 <translation id="192015196730532810">Вы можете создать группу вкладок самостоятельно.</translation>
 <translation id="1920314570001095522">Нет похожих вкладок для группировки. Возможно, вам понравятся эти группы</translation>
@@ -5409,7 +5410,7 @@
 <translation id="4789348252524569426">Невозможно установить файлы для распознавания речи. Обновите операционную систему и перезапустите устройство, затем повторите попытку.</translation>
 <translation id="4789550509729954245">Показывать уведомления, когда устройства обмениваются данными</translation>
 <translation id="4791037424585594169">(UDP)</translation>
-<translation id="4791793693640849493">Сохраните объекты в аккаунте</translation>
+<translation id="4791793693640849493">Сохраните данные в аккаунте</translation>
 <translation id="4792290259143007505">Включить ускорение TrackPoint</translation>
 <translation id="4792711294155034829">Сообщить о &amp;проблеме...</translation>
 <translation id="4794810983896241342">Обновлениями управляет <ph name="BEGIN_LINK" />администратор<ph name="END_LINK" />.</translation>
@@ -8982,6 +8983,7 @@
 <translation id="7377451353532943397">Всегда запрещать использовать датчики</translation>
 <translation id="7377481913241237033">Подключиться с помощью кода</translation>
 <translation id="73786666777299047">Открыть интернет-магазин Chrome</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Другая задача в группе: <ph name="OTHER_TASKS" />.}one{<ph name="TASK_ROW" />. # другая задача в группе: <ph name="OTHER_TASKS" />.}few{<ph name="TASK_ROW" />. # другие задачи в группе: <ph name="OTHER_TASKS" />.}many{<ph name="TASK_ROW" />. # других задач в группе: <ph name="OTHER_TASKS" />.}other{<ph name="TASK_ROW" />. # другой задачи в группе: <ph name="OTHER_TASKS" />.}}</translation>
 <translation id="7380272457268061606">Отключить восстановление локальных данных?</translation>
 <translation id="7380459290951585794">Убедитесь, что телефон находится рядом, он разблокирован и на нем включены Bluetooth и Wi-Fi.</translation>
 <translation id="7380622428988553498">Имя устройства содержит недопустимые символы.</translation>

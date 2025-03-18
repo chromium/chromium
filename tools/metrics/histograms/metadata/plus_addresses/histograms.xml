@@ -210,7 +210,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PlusAddresses.{ModalType}.{Status}.Refreshes"
-    units="refreshes" expires_after="2025-07-13">
+    units="refreshes" expires_after="2025-09-14">
   <owner>jkeitel@google.com</owner>
   <owner>brunobraga@google.com</owner>
   <summary>

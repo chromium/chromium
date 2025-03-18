@@ -9,6 +9,8 @@
 
 #include "chrome/browser/webauthn/android/cable_module_android.h"
 
+#include <variant>
+
 #include "base/android/jni_array.h"
 #include "base/base64.h"
 #include "base/feature_list.h"
@@ -349,7 +351,7 @@ syncer::DeviceInfo::PhoneAsASecurityKeyInfo::StatusOrInfo CacheResult(
   // encoded `PhoneAsASecurityKeyInfo`.
   constexpr char kNoSupportString[] = ",";
 
-  if (absl::get_if<syncer::DeviceInfo::PhoneAsASecurityKeyInfo::NotReady>(
+  if (std::get_if<syncer::DeviceInfo::PhoneAsASecurityKeyInfo::NotReady>(
           &result)) {
     const std::string previous_result_serialized_b64 =
         state->GetString(kSerializedPaaskFieldsName);
@@ -373,13 +375,13 @@ syncer::DeviceInfo::PhoneAsASecurityKeyInfo::StatusOrInfo CacheResult(
     }
     return *paask_info;
   } else if (auto* paask_info =
-                 absl::get_if<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>(
+                 std::get_if<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>(
                      &result)) {
     SetPrefIfDifferent(
         state, kSerializedPaaskFieldsName,
         base::Base64Encode(internal::CBORFromPaaskInfo(*paask_info)));
     return result;
-  } else if (absl::get_if<
+  } else if (std::get_if<
                  syncer::DeviceInfo::PhoneAsASecurityKeyInfo::NoSupport>(
                  &result)) {
     SetPrefIfDifferent(state, kSerializedPaaskFieldsName, kNoSupportString);

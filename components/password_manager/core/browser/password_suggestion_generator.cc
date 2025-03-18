@@ -22,6 +22,9 @@
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -251,6 +254,45 @@ void AppendManualFallbackSuggestions(
   }
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Entry that prompts users in pending state to signin to access passwords
+// in their account
+void CreateEntryForPendingStateSignin(std::vector<Suggestion>& suggestions) {
+  if (!suggestions.empty()) {
+    Suggestion separator(SuggestionType::kSeparator);
+    suggestions.push_back(std::move(separator));
+  }
+
+  Suggestion suggestion;
+  suggestion.main_text = Suggestion::Text(
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_PENDING_STATE),
+      Suggestion::Text::IsPrimary(true),
+      Suggestion::Text::ShouldTruncate(false));
+  suggestion.icon = Suggestion::Icon::kGoogle;
+  suggestion.type = SuggestionType::kPendingStateSignin;
+
+  suggestions.emplace_back(std::move(suggestion));
+}
+
+bool CanShowPendingStatePromo(const PasswordManagerClient& password_client) {
+  const bool is_sync_passwords_enabled =
+      password_client.GetSyncService() &&
+      password_manager::sync_util::HasChosenToSyncPasswords(
+          password_client.GetSyncService());
+
+  const bool is_external_url =
+      !gaia::HasGaiaSchemeHostPort(password_client.GetLastCommittedURL());
+
+  return password_client.GetIdentityManager()
+             ->HasAccountWithRefreshTokenInPersistentErrorState(
+                 password_client.GetIdentityManager()->GetPrimaryAccountId(
+                     signin::ConsentLevel::kSignin)) &&
+         is_sync_passwords_enabled && is_external_url &&
+         base::FeatureList::IsEnabled(
+             switches::kEnablePendingModePasswordsPromo);
+}
+
+#endif
 }  // namespace
 
 PasswordSuggestionGenerator::PasswordSuggestionGenerator(
@@ -301,6 +343,12 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
 
   if (!fill_data.has_value() && !uses_passkeys && suggestions.empty()) {
     // Probably the credential was deleted in the mean time.
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    if (CanShowPendingStatePromo(*password_client_)) {
+      CreateEntryForPendingStateSignin(suggestions);
+    }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
     return suggestions;
   }
 
@@ -335,6 +383,12 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
 
   // Add "Manage all passwords" link to settings.
   MaybeAppendManagePasswordsEntry(&suggestions);
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  if (CanShowPendingStatePromo(*password_client_)) {
+    CreateEntryForPendingStateSignin(suggestions);
+  }
+#endif
 
   return suggestions;
 }

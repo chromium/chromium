@@ -145,7 +145,7 @@ CustomEventWithPortsFactoryCallback(base::RepeatingClosure quit_closure,
   return CrossThreadBindRepeating(base::BindLambdaForTesting(
       [quit_closure = std::move(quit_closure), out_event](
           ScriptState* script_state, CustomEventMessage message) -> Event* {
-        MessagePortArray* ports = MessagePort::EntanglePorts(
+        GCedMessagePortArray* ports = MessagePort::EntanglePorts(
             *ExecutionContext::From(script_state), std::move(message.ports));
         CustomEventWithData* result = MakeGarbageCollected<CustomEventWithData>(
             AtomicString::FromUTF8(kCustomEventName),

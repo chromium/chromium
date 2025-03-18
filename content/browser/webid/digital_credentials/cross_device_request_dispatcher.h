@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -17,7 +18,6 @@
 #include "content/public/browser/cross_device_request_info.h"
 #include "content/public/browser/digital_credentials_cross_device.h"
 #include "device/fido/fido_discovery_base.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace device {
 class FidoAuthenticator;
@@ -29,7 +29,7 @@ namespace content::digital_credentials::cross_device {
 // device.
 class CONTENT_EXPORT RequestDispatcher : device::FidoDiscoveryBase::Observer {
  public:
-  using Error = absl::variant<ProtocolError, RemoteError>;
+  using Error = std::variant<ProtocolError, RemoteError>;
   using CompletionCallback =
       base::OnceCallback<void(base::expected<Response, Error>)>;
 

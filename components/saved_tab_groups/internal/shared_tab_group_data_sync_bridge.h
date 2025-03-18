@@ -21,9 +21,11 @@
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/sync/base/collaboration_id.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/model_error.h"
+#include "components/sync/protocol/collaboration_metadata.h"
 #include "components/sync/protocol/unique_position.pb.h"
 
 class PrefService;
@@ -234,6 +236,24 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
 
   // List of tab groups waiting for being committed to the server.
   std::vector<base::Uuid> tab_groups_waiting_for_commit_;
+
+  // Used to store tabs whose groups were not added locally yet. These tabs will
+  // be removed after the TTL expires.
+  struct TabMissingGroup {
+    TabMissingGroup(sync_pb::SharedTabGroupDataSpecifics specifics,
+                    syncer::CollaborationMetadata collaboration_metadata,
+                    base::Time creation_time);
+    TabMissingGroup(const TabMissingGroup&);
+    TabMissingGroup& operator=(const TabMissingGroup&);
+    TabMissingGroup(TabMissingGroup&&);
+    TabMissingGroup& operator=(TabMissingGroup&&);
+    ~TabMissingGroup();
+
+    sync_pb::SharedTabGroupDataSpecifics specifics;
+    syncer::CollaborationMetadata collaboration_metadata;
+    base::Time creation_time;
+  };
+  std::map<base::Uuid, TabMissingGroup> tabs_missing_groups_;
 
   // Allows safe temporary use of the SharedTabGroupDataSyncBridge object if it
   // exists at the time of use.

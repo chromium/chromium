@@ -6,10 +6,10 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_GRAPH_CHANGE_H_
 
 #include <optional>
+#include <variant>
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/task_traits.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/origin.h"
 
 namespace performance_manager {
@@ -50,9 +50,9 @@ struct GraphChangeUpdateProcessPriority {
   base::TaskPriority previous_priority;
 };
 
-using GraphChange = absl::variant<NoGraphChange,
-                                  GraphChangeUpdateOrigin,
-                                  GraphChangeUpdateProcessPriority>;
+using GraphChange = std::variant<NoGraphChange,
+                                 GraphChangeUpdateOrigin,
+                                 GraphChangeUpdateProcessPriority>;
 
 }  // namespace resource_attribution
 

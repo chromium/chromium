@@ -408,8 +408,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             activity,
                             profile,
                             tabGroupId -> {
-                                int rootId = filter.getRootIdFromTabGroupId(tabGroupId);
-                                tabGroupCreationDialogManager.showDialog(rootId, filter);
+                                tabGroupCreationDialogManager.showDialog(tabGroupId, filter);
                             },
                             filter,
                             bottomSheetController,

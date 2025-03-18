@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace web_package {
 

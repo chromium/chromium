@@ -440,6 +440,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{पासवर्ड, आपके Google खाते, {EMAIL} में सेव हो गया है}one{पासवर्ड, आपके Google खाते, {EMAIL} में सेव हो गया है}other{पासवर्ड, आपके Google खाते, {EMAIL} में सेव हो गए हैं}}</translation>
 <translation id="2791174088547598693">पासवर्ड जोड़ें…</translation>
 <translation id="2797302972324086597">देश का कोड</translation>
+<translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} फ़ाइल}one{{COUNT} फ़ाइल}other{{COUNT} फ़ाइलें}}</translation>
 <translation id="2816489851009559785">मेन्यू → सेटिंग → डिफ़ॉल्ट ब्राउज़र</translation>
 <translation id="2818821771744632548">iPhone रीसेट होने की वजह से, आपको <ph name="USER_NAME" /> खाते से साइन आउट कर दिया गया था. फिर से साइन इन करने के लिए, नीचे "जारी रखें" पर टैप करें.</translation>
 <translation id="2819667972867209401">इन टॉगल के चालू होने पर, इनका डेटा आपके Google खाते में सेव हो जाता है. इनके बंद होने पर, डेटा को सिर्फ़ इस डिवाइस पर सेव किया जाता है. आपके साइन आउट करने पर डेटा को मिटा दिया जाता है.</translation>

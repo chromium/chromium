@@ -770,7 +770,7 @@ TEST_F(ScannerControllerTest, ResetsScannerSessionWhenActiveUserChanges) {
   EXPECT_FALSE(scanner_controller->HasActiveSessionForTesting());
 }
 
-TEST_F(ScannerControllerTest, ShowsNotificationWhileExecutingAction) {
+TEST_F(ScannerControllerTest, ShowsNotificationWhileExecutingNewEventAction) {
   base::test::TestFuture<ScannerSession::FetchActionsResponse> actions_future;
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
@@ -806,6 +806,41 @@ TEST_F(ScannerControllerTest, ShowsNotificationWhileExecutingAction) {
       manta::MantaStatus());
 
   // Notification should be hidden.
+  EXPECT_THAT(message_center::MessageCenter::Get()->GetVisibleNotifications(),
+              IsEmpty());
+}
+
+TEST_F(ScannerControllerTest,
+       NoNotificationWhileExecutingCopyToClipboardAction) {
+  base::test::TestFuture<ScannerSession::FetchActionsResponse> actions_future;
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  EXPECT_TRUE(scanner_controller->StartNewSession());
+  manta::proto::ScannerOutput output;
+  output.add_objects()
+      ->add_actions()
+      ->mutable_copy_to_clipboard()
+      ->set_html_text("<b>Hello</b>");
+  FakeScannerProfileScopedDelegate& fake_profile_scoped_delegate =
+      *GetFakeScannerProfileScopedDelegate(*scanner_controller);
+  EXPECT_CALL(fake_profile_scoped_delegate, FetchActionsForImage)
+      .WillOnce(RunOnceCallback<1>(
+          std::make_unique<manta::proto::ScannerOutput>(output),
+          manta::MantaStatus()));
+  base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
+      fetch_action_details_future;
+  EXPECT_CALL(fake_profile_scoped_delegate, FetchActionDetailsForImage)
+      .WillOnce(WithArg<2>(InvokeFuture(fetch_action_details_future)));
+
+  // Fetch an action and execute it.
+  scanner_controller->FetchActionsForImage(/*jpeg_bytes=*/nullptr,
+                                           actions_future.GetCallback());
+  ScannerSession::FetchActionsResponse actions = actions_future.Take();
+  ASSERT_THAT(actions, ValueIs(SizeIs(1)));
+  scanner_controller->ExecuteAction(actions.value()[0]);
+
+  // No notification needs to be shown while the copy to clipboard action is
+  // executing.
   EXPECT_THAT(message_center::MessageCenter::Get()->GetVisibleNotifications(),
               IsEmpty());
 }

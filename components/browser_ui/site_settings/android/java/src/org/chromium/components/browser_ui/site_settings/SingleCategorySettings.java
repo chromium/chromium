@@ -1404,7 +1404,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
 
         // Only show the link that explains protected content settings when needed.
         if (mCategory.getType() == SiteSettingsCategory.Type.PROTECTED_MEDIA
-                && getSiteSettingsDelegate().isHelpAndFeedbackEnabled()) {
+                && getSiteSettingsDelegate().isHelpAndFeedbackEnabled()
+                && !getSiteSettingsDelegate().isPermissionSiteSettingsRadioButtonFeatureEnabled()) {
             explainProtectedMediaKey.setOnPreferenceClickListener(
                     preference -> {
                         getSiteSettingsDelegate()
@@ -1506,8 +1507,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         params.cookieControlsMode = getCookieControlsMode();
         params.cookieControlsModeEnforced = mCategory.isManaged();
         params.isIncognitoModeEnabled = getSiteSettingsDelegate().isIncognitoModeEnabled();
-        params.isPrivacySandboxFirstPartySetsUiEnabled =
-                getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUiFeatureEnabled();
         params.isRelatedWebsiteSetsDataAccessEnabled =
                 getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled();
         params.isAlwaysBlock3pcsIncognitoEnabled =
@@ -1529,8 +1528,19 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 WebsitePreferenceBridge.getDefaultContentSetting(
                         getSiteSettingsDelegate().getBrowserContextHandle(), contentType);
         int[] descriptionIds =
-                ContentSettingsResources.getTriStateSettingDescriptionIDs(contentType);
-        triStateToggle.initialize(setting, descriptionIds);
+                ContentSettingsResources.getTriStateSettingDescriptionIDs(
+                        contentType,
+                        getSiteSettingsDelegate()
+                                .isPermissionSiteSettingsRadioButtonFeatureEnabled());
+        int[] iconIds = {0, 0, 0};
+        if (getSiteSettingsDelegate().isPermissionSiteSettingsRadioButtonFeatureEnabled()) {
+            iconIds = ContentSettingsResources.getTriStateSettingIconIDs(contentType);
+        }
+        triStateToggle.initialize(
+                setting,
+                descriptionIds,
+                iconIds,
+                getSiteSettingsDelegate().isPermissionSiteSettingsRadioButtonFeatureEnabled());
     }
 
     private void configureBinaryToggle(ChromeSwitchPreference binaryToggle, int contentType) {
@@ -1588,7 +1598,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 setting,
                 descriptionIds,
                 defaultEnabledValue != null ? defaultEnabledValue : ContentSettingValues.ASK,
-                defaultDisabledValue != null ? defaultDisabledValue : ContentSettingValues.BLOCK);
+                defaultDisabledValue != null ? defaultDisabledValue : ContentSettingValues.BLOCK,
+                getResources().getDimensionPixelSize(R.dimen.radio_button_compact_icon_margin_end));
     }
 
     private void updateNotificationsSecondaryControls() {

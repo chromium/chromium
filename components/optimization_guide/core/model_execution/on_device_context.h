@@ -45,6 +45,7 @@ struct OnDeviceOptions final {
   std::unique_ptr<SafetyChecker> safety_checker;
   TokenLimits token_limits;
   on_device_model::Capabilities capabilities;
+  SamplingParams sampling_params;
 
   base::WeakPtr<OptimizationGuideLogger> logger;
 

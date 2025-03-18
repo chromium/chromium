@@ -29,7 +29,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/origin.h"
 
 namespace content {
@@ -164,7 +163,7 @@ TEST_F(BucketManagerHostTest, OpenBucket) {
       bucket_future;
   quota_manager_->GetBucketByNameUnsafe(
       blink::StorageKey::CreateFromStringForTesting(kTestUrl), "inbox_bucket",
-      blink::mojom::StorageType::kTemporary, bucket_future.GetCallback());
+      bucket_future.GetCallback());
   ASSERT_OK_AND_ASSIGN(auto result, bucket_future.Take());
   EXPECT_GT(result.id.value(), 0u);
 }
@@ -240,7 +239,7 @@ TEST_F(BucketManagerHostTest, DeleteBucket) {
       bucket_future;
   quota_manager_->GetBucketByNameUnsafe(
       blink::StorageKey::CreateFromStringForTesting(kTestUrl), "inbox_bucket",
-      blink::mojom::StorageType::kTemporary, bucket_future.GetCallback());
+      bucket_future.GetCallback());
   auto result = bucket_future.Take();
   EXPECT_THAT(result, base::test::ErrorIs(storage::QuotaError::kNotFound));
 }

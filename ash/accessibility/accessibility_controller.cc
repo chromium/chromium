@@ -3285,9 +3285,6 @@ void AccessibilityController::UpdateCaretBlinkIntervalFromPrefs() const {
 }
 
 void AccessibilityController::UpdateUseOverlayScrollbarFromPref() const {
-  if (!::features::IsOverlayScrollbarOSSettingEnabled()) {
-    return;
-  }
   const bool overlay_scrollbar_enabled_by_feature_flag =
       ::ui::IsOverlayScrollbarEnabledByFeatureFlag();
   const bool overlay_scrollbar_enabled_by_os_setting =

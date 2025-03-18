@@ -59,7 +59,7 @@ void NegotiatingHostAuthenticator::ProcessMessage(
   if (current_method_ != AuthenticationMethod::INVALID &&
       method != current_method_) {
     state_ = REJECTED;
-    rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
+    rejection_reason_ = RejectionReason::INVALID_STATE;
     rejection_details_ = RejectionDetails(
         "The host has already chosen an authentication method. "
         "The client cannot change it.");
@@ -78,7 +78,7 @@ void NegotiatingHostAuthenticator::ProcessMessage(
         message->Attr(kSupportedMethodsAttributeQName);
     if (supported_methods_attr.empty()) {
       state_ = REJECTED;
-      rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
+      rejection_reason_ = RejectionReason::INVALID_ARGUMENT;
       rejection_details_ = RejectionDetails(
           "Message contains neither the 'method' nor the 'supported-methods' "
           "attributes.");

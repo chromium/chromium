@@ -5,9 +5,10 @@
 #ifndef UI_BASE_THEMED_VECTOR_ICON_H_
 #define UI_BASE_THEMED_VECTOR_ICON_H_
 
+#include <variant>
+
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"

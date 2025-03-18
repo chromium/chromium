@@ -25,7 +25,6 @@
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/privacy_sandbox/tracking_protection_settings_observer.h"
 #include "net/cookies/cookie_setting_override.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class GURL;
 class PrefService;

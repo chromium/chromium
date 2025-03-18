@@ -85,7 +85,7 @@ TEST_F(MessageEventTest, AccountForArrayBufferMemory) {
   int64_t initial = V8ExternalMemoryAccounterBase::
       GetTotalAmountOfExternalAllocatedMemoryForTesting(scope.GetIsolate());
 
-  MessagePortArray* ports = MakeGarbageCollected<MessagePortArray>(0);
+  GCedMessagePortArray* ports = MakeGarbageCollected<GCedMessagePortArray>(0);
   MessageEvent::Create(ports, serialized_script_value);
 
   int64_t size_with_event = V8ExternalMemoryAccounterBase::

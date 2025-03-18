@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <variant>
 
 #include "base/functional/overloaded.h"
 #include "base/memory/weak_ptr.h"
@@ -152,8 +153,9 @@ RenderFrameHost* CreateFencedFrame(RenderFrameHost* root,
   TestFrameNavigationObserver observer(
       fenced_frame_root_node->current_frame_host());
 
-  EvalJsResult result = EvalJs(
-      root, absl::visit(base::Overloaded{
+  EvalJsResult result =
+      EvalJs(root,
+             std::visit(base::Overloaded{
                             [](const GURL& url) {
                               return JsReplace(
                                   "f.config = new FencedFrameConfig($1);", url);

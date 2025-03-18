@@ -176,6 +176,7 @@ public class ContextMenuCoordinatorTest {
                         0,
                         0,
                         false,
+                        /* openedFromInterestTarget= */ false,
                         /* additionalNavigationParams= */ null);
         List<Pair<Integer, ModelList>> rawItems = new ArrayList<>();
         // Link items
@@ -229,6 +230,7 @@ public class ContextMenuCoordinatorTest {
                         0,
                         0,
                         false,
+                        /* openedFromInterestTarget= */ false,
                         /* additionalNavigationParams= */ null);
         List<Pair<Integer, ModelList>> rawItems = new ArrayList<>();
         // Link items
@@ -287,6 +289,7 @@ public class ContextMenuCoordinatorTest {
                         0,
                         0,
                         false,
+                        /* openedFromInterestTarget= */ false,
                         /* additionalNavigationParams= */ null);
         List<Pair<Integer, ModelList>> rawItems = new ArrayList<>();
         // Link items
@@ -327,6 +330,7 @@ public class ContextMenuCoordinatorTest {
                         0,
                         0,
                         false,
+                        /* openedFromInterestTarget= */ false,
                         /* additionalNavigationParams= */ null);
         List<Pair<Integer, ModelList>> rawItems = new ArrayList<>();
         // Video items
@@ -540,6 +544,7 @@ public class ContextMenuCoordinatorTest {
                 rootView,
                 contentView,
                 isPopup,
+                ContextMenuUtils.isPopupSupported(mActivity),
                 0,
                 0,
                 0,
@@ -566,6 +571,7 @@ public class ContextMenuCoordinatorTest {
                         triggeringTouchYDp,
                         0,
                         false,
+                        /* openedFromInterestTarget= */ false,
                         /* additionalNavigationParams= */ null);
 
         final WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);

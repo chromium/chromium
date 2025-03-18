@@ -8,6 +8,8 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -36,6 +38,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/resource_attribution/page_context.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
@@ -712,4 +715,94 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
             kMessageTriggerResultHistogram,
             InterventionMessageTriggerResult::kRateLimited, 1);
       }));
+}
+
+class PerformanceInterventionNotificationImprovementTest
+    : public PerformanceInterventionInteractiveTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        performance_manager::features::
+            kPerformanceInterventionNotificationImprovements);
+    PerformanceInterventionInteractiveTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PerformanceInterventionNotificationImprovementTest,
+                       UpdateLastShownTime) {
+  PrefService* const pref_service = g_browser_process->local_state();
+  base::Time last_shown = base::Time();
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GetURL()),
+      AddInstrumentedTab(kThirdTab, GetURL()), SelectTab(kTabStripElementId, 0),
+      Check([&]() {
+        return pref_service->GetTime(
+                   performance_manager::user_tuning::prefs::
+                       kPerformanceInterventionNotificationLastShown) ==
+               base::Time();
+      }),
+      TriggerOnActionableTabListChange({1, 2}),
+      WaitForShow(kToolbarPerformanceInterventionButtonElementId),
+      WaitForShow(PerformanceInterventionBubble::
+                      kPerformanceInterventionDialogDeactivateButton),
+      Do([&] {
+        last_shown = pref_service->GetTime(
+            performance_manager::user_tuning::prefs::
+                kPerformanceInterventionNotificationLastShown);
+      }),
+      Check([=]() {
+        return pref_service->GetTime(
+                   performance_manager::user_tuning::prefs::
+                       kPerformanceInterventionNotificationLastShown) !=
+               base::Time();
+      }),
+      PressButton(kToolbarPerformanceInterventionButtonElementId),
+      WaitForHide(
+          PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
+      PressButton(kToolbarPerformanceInterventionButtonElementId),
+      WaitForShow(
+          PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
+      Check([&]() {
+        return pref_service->GetTime(
+                   performance_manager::user_tuning::prefs::
+                       kPerformanceInterventionNotificationLastShown) ==
+               last_shown;
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(PerformanceInterventionNotificationImprovementTest,
+                       UpdateAcceptRate) {
+  PrefService* const pref_service = g_browser_process->local_state();
+
+  // Pre-populate the acceptance history with fake data.
+  base::Value::List previous_acceptance = base::Value::List();
+  for (int i = 0; i < 9; i++) {
+    previous_acceptance.Append(false);
+  }
+  previous_acceptance.Append(true);
+  pref_service->SetList(performance_manager::user_tuning::prefs::
+                            kPerformanceInterventionNotificationAcceptHistory,
+                        std::move(previous_acceptance));
+
+  PerformanceInterventionButtonController* const controller =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->toolbar()
+          ->performance_intervention_button()
+          ->controller();
+  ASSERT_EQ(10, controller->GetAcceptancePercentage());
+
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GetURL()),
+      AddInstrumentedTab(kThirdTab, GetURL()), SelectTab(kTabStripElementId, 0),
+      TriggerOnActionableTabListChange({1, 2}),
+      WaitForShow(kToolbarPerformanceInterventionButtonElementId),
+      WaitForShow(PerformanceInterventionBubble::
+                      kPerformanceInterventionDialogDeactivateButton),
+      PressButton(PerformanceInterventionBubble::
+                      kPerformanceInterventionDialogDeactivateButton),
+      WaitForHide(kToolbarPerformanceInterventionButtonElementId),
+      CheckResult([=] { return controller->GetAcceptancePercentage(); }, 20));
 }

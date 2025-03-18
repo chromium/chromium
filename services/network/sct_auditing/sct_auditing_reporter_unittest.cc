@@ -4,6 +4,8 @@
 
 #include "services/network/sct_auditing/sct_auditing_reporter.h"
 
+#include <utility>
+
 #include "base/base64.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
@@ -24,7 +26,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace network {
 

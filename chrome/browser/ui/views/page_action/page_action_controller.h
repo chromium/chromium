@@ -34,6 +34,12 @@ class PageActionModelFactory;
 class PageActionModelInterface;
 class PageActionModelObserver;
 
+// Configuration for a page action's suggestion chip.
+struct SuggestionChipConfig {
+  // Whether the chip should have expand/collapse animations.
+  bool should_animate = true;
+};
+
 // `PageActionController` controls the state of all page actions, scoped to a
 // single tab. Each page action has a corresponding `PageActionModel` that will
 // receive updates from this controller.
@@ -57,7 +63,8 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
   // request to show the chip does not guarantee it will be shown (for example,
   // the framework may choose to display only one chip at a time, despite
   // requests from multiple features).
-  void ShowSuggestionChip(actions::ActionId action_id);
+  void ShowSuggestionChip(actions::ActionId action_id,
+                          SuggestionChipConfig config = SuggestionChipConfig());
   void HideSuggestionChip(actions::ActionId action_id);
 
   // By default, in suggestion chip mode, the ActionItem text will be used as

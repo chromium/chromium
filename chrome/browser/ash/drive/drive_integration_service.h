@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -36,7 +37,6 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/auth_service_interface.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class PrefService;
 
@@ -91,8 +91,8 @@ struct PersistedMessage {
   Source source;
 
   // DriveFs Notification/Error types which require persistence.
-  using Type = absl::variant<drivefs::mojom::DriveFsNotification::Tag,
-                             drivefs::mojom::MirrorSyncError::Type>;
+  using Type = std::variant<drivefs::mojom::DriveFsNotification::Tag,
+                            drivefs::mojom::MirrorSyncError::Type>;
   Type type;
 
   base::FilePath path;

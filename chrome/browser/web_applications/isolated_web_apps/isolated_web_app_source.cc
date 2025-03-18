@@ -5,13 +5,13 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 
 #include <ostream>
+#include <variant>
 
 #include "base/files/file_path.h"
 #include "base/functional/overloaded.h"
 #include "base/json/values_util.h"
 #include "base/strings/to_string.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/origin.h"
 
 namespace web_app {
@@ -305,13 +305,13 @@ std::ostream& operator<<(std::ostream& os,
 }
 
 IwaSource::IwaSource(IwaSourceWithMode other)
-    : variant_(absl::visit(
+    : variant_(std::visit(
           base::Overloaded{[](auto variant_value) -> IwaSource::Variant {
             return variant_value;
           }},
           std::move(other.variant_))) {}
 IwaSource::IwaSource(IwaSourceWithModeAndFileOp other)
-    : variant_(absl::visit(
+    : variant_(std::visit(
           base::Overloaded{[](auto variant_value) -> IwaSource::Variant {
             return variant_value;
           }},
@@ -325,10 +325,10 @@ IwaSource::~IwaSource() = default;
 bool IwaSource::operator==(const IwaSource& other) const = default;
 
 base::Value IwaSource::ToDebugValue() const {
-  return absl::visit(base::Overloaded{[](const auto& source) {
-                       return source.ToDebugValue();
-                     }},
-                     variant_);
+  return std::visit(base::Overloaded{[](const auto& source) {
+                      return source.ToDebugValue();
+                    }},
+                    variant_);
 }
 
 std::ostream& operator<<(std::ostream& os, const IwaSource& source) {
@@ -339,7 +339,7 @@ std::ostream& operator<<(std::ostream& os, const IwaSource& source) {
 IwaSourceWithMode IwaSourceWithMode::FromStorageLocation(
     const base::FilePath& profile_dir,
     const IsolatedWebAppStorageLocation& storage_location) {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [&](const IwaStorageOwnedBundle& bundle) -> IwaSourceWithMode {
             return IwaSourceBundleWithMode(bundle.GetPath(profile_dir),
@@ -356,21 +356,21 @@ IwaSourceWithMode IwaSourceWithMode::FromStorageLocation(
 }
 
 IwaSourceWithMode::IwaSourceWithMode(IwaSourceDevMode other)
-    : IwaSourceWithMode(absl::visit(
+    : IwaSourceWithMode(std::visit(
           base::Overloaded{
               [](auto variant_value) -> IwaSourceWithMode::Variant {
                 return variant_value;
               }},
           std::move(other.variant_))) {}
 IwaSourceWithMode::IwaSourceWithMode(IwaSourceProdMode other)
-    : IwaSourceWithMode(absl::visit(
+    : IwaSourceWithMode(std::visit(
           base::Overloaded{
               [](auto variant_value) -> IwaSourceWithMode::Variant {
                 return variant_value;
               }},
           std::move(other.variant_))) {}
 IwaSourceWithMode::IwaSourceWithMode(IwaSourceWithModeAndFileOp other)
-    : IwaSourceWithMode(absl::visit(
+    : IwaSourceWithMode(std::visit(
           base::Overloaded{
               [](auto variant_value) -> IwaSourceWithMode::Variant {
                 return variant_value;
@@ -389,7 +389,7 @@ bool IwaSourceWithMode::operator==(const IwaSourceWithMode& other) const =
 [[nodiscard]] IwaSourceWithModeAndFileOp IwaSourceWithMode::WithFileOp(
     IwaSourceBundleProdFileOp prod_file_op,
     IwaSourceBundleDevFileOp dev_file_op) const {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [&](const IwaSourceBundleWithMode& source)
               -> IwaSourceWithModeAndFileOp::Variant {
@@ -402,16 +402,16 @@ bool IwaSourceWithMode::operator==(const IwaSourceWithMode& other) const =
 }
 
 bool IwaSourceWithMode::dev_mode() const {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{[](const auto& source) { return source.dev_mode(); }},
       variant_);
 }
 
 base::Value IwaSourceWithMode::ToDebugValue() const {
-  return absl::visit(base::Overloaded{[](const auto& source) {
-                       return source.ToDebugValue();
-                     }},
-                     variant_);
+  return std::visit(base::Overloaded{[](const auto& source) {
+                      return source.ToDebugValue();
+                    }},
+                    variant_);
 }
 
 std::ostream& operator<<(std::ostream& os, const IwaSourceWithMode& source) {
@@ -419,28 +419,28 @@ std::ostream& operator<<(std::ostream& os, const IwaSourceWithMode& source) {
 }
 
 // static
-base::expected<IwaSourceDevMode, absl::monostate>
+base::expected<IwaSourceDevMode, std::monostate>
 IwaSourceDevMode::FromStorageLocation(
     const base::FilePath& profile_dir,
     const IsolatedWebAppStorageLocation& storage_location) {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [&](const IwaStorageOwnedBundle& bundle)
-              -> base::expected<IwaSourceDevMode, absl::monostate> {
+              -> base::expected<IwaSourceDevMode, std::monostate> {
             if (!bundle.dev_mode()) {
-              return base::unexpected(absl::monostate());
+              return base::unexpected(std::monostate());
             }
             return IwaSourceBundleDevMode(bundle.GetPath(profile_dir));
           },
           [&](const IwaStorageUnownedBundle& bundle)
-              -> base::expected<IwaSourceDevMode, absl::monostate> {
+              -> base::expected<IwaSourceDevMode, std::monostate> {
             if (!bundle.dev_mode()) {
-              return base::unexpected(absl::monostate());
+              return base::unexpected(std::monostate());
             }
             return IwaSourceBundleDevMode(bundle.path());
           },
           [&](const IwaStorageProxy& proxy)
-              -> base::expected<IwaSourceDevMode, absl::monostate> {
+              -> base::expected<IwaSourceDevMode, std::monostate> {
             return IwaSourceProxy(proxy.proxy_url());
           },
       },
@@ -448,7 +448,7 @@ IwaSourceDevMode::FromStorageLocation(
 }
 
 IwaSourceDevMode::IwaSourceDevMode(IwaSourceDevModeWithFileOp other)
-    : IwaSourceDevMode(absl::visit(
+    : IwaSourceDevMode(std::visit(
           base::Overloaded{[](auto variant_value) -> IwaSourceDevMode::Variant {
             return variant_value;
           }},
@@ -465,7 +465,7 @@ bool IwaSourceDevMode::operator==(const IwaSourceDevMode& other) const =
 
 IwaSourceDevModeWithFileOp IwaSourceDevMode::WithFileOp(
     IwaSourceBundleDevFileOp file_op) const {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [&](const IwaSourceBundleDevMode& source)
               -> IwaSourceDevModeWithFileOp::Variant {
@@ -478,10 +478,10 @@ IwaSourceDevModeWithFileOp IwaSourceDevMode::WithFileOp(
 }
 
 base::Value IwaSourceDevMode::ToDebugValue() const {
-  return absl::visit(base::Overloaded{[](const auto& source) {
-                       return source.ToDebugValue();
-                     }},
-                     variant_);
+  return std::visit(base::Overloaded{[](const auto& source) {
+                      return source.ToDebugValue();
+                    }},
+                    variant_);
 }
 
 std::ostream& operator<<(std::ostream& os, const IwaSourceDevMode& source) {
@@ -489,37 +489,37 @@ std::ostream& operator<<(std::ostream& os, const IwaSourceDevMode& source) {
 }
 
 // static
-base::expected<IwaSourceProdMode, absl::monostate>
+base::expected<IwaSourceProdMode, std::monostate>
 IwaSourceProdMode::FromStorageLocation(
     const base::FilePath& profile_dir,
     const IsolatedWebAppStorageLocation& storage_location) {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [&](const IwaStorageOwnedBundle& bundle)
-              -> base::expected<IwaSourceProdMode, absl::monostate> {
+              -> base::expected<IwaSourceProdMode, std::monostate> {
             if (bundle.dev_mode()) {
-              return base::unexpected(absl::monostate());
+              return base::unexpected(std::monostate());
             }
             return IwaSourceBundleProdMode(bundle.GetPath(profile_dir));
           },
           [&](const IwaStorageUnownedBundle& bundle)
-              -> base::expected<IwaSourceProdMode, absl::monostate> {
+              -> base::expected<IwaSourceProdMode, std::monostate> {
             if (bundle.dev_mode()) {
-              return base::unexpected(absl::monostate());
+              return base::unexpected(std::monostate());
             }
             return IwaSourceBundleProdMode(bundle.path());
           },
           [&](const IwaStorageProxy& proxy)
-              -> base::expected<IwaSourceProdMode, absl::monostate> {
+              -> base::expected<IwaSourceProdMode, std::monostate> {
             CHECK(proxy.dev_mode());
-            return base::unexpected(absl::monostate());
+            return base::unexpected(std::monostate());
           },
       },
       storage_location.variant());
 }
 
 IwaSourceProdMode::IwaSourceProdMode(IwaSourceProdModeWithFileOp other)
-    : IwaSourceProdMode(absl::visit(
+    : IwaSourceProdMode(std::visit(
           base::Overloaded{
               [](auto variant_value) -> IwaSourceProdMode::Variant {
                 return variant_value;
@@ -537,7 +537,7 @@ bool IwaSourceProdMode::operator==(const IwaSourceProdMode& other) const =
 
 IwaSourceProdModeWithFileOp IwaSourceProdMode::WithFileOp(
     IwaSourceBundleProdFileOp file_op) const {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{[&](const IwaSourceBundleProdMode& source)
                            -> IwaSourceProdModeWithFileOp::Variant {
         return source.WithFileOp(file_op);
@@ -546,10 +546,10 @@ IwaSourceProdModeWithFileOp IwaSourceProdMode::WithFileOp(
 }
 
 base::Value IwaSourceProdMode::ToDebugValue() const {
-  return absl::visit(base::Overloaded{[](const auto& source) {
-                       return source.ToDebugValue();
-                     }},
-                     variant_);
+  return std::visit(base::Overloaded{[](const auto& source) {
+                      return source.ToDebugValue();
+                    }},
+                    variant_);
 }
 
 std::ostream& operator<<(std::ostream& os, const IwaSourceProdMode& source) {
@@ -558,7 +558,7 @@ std::ostream& operator<<(std::ostream& os, const IwaSourceProdMode& source) {
 
 IwaSourceWithModeAndFileOp::IwaSourceWithModeAndFileOp(
     IwaSourceDevModeWithFileOp other)
-    : IwaSourceWithModeAndFileOp(absl::visit(
+    : IwaSourceWithModeAndFileOp(std::visit(
           base::Overloaded{
               [](auto variant_value) -> IwaSourceWithModeAndFileOp::Variant {
                 return variant_value;
@@ -566,7 +566,7 @@ IwaSourceWithModeAndFileOp::IwaSourceWithModeAndFileOp(
           std::move(other.variant_))) {}
 IwaSourceWithModeAndFileOp::IwaSourceWithModeAndFileOp(
     IwaSourceProdModeWithFileOp other)
-    : IwaSourceWithModeAndFileOp(absl::visit(
+    : IwaSourceWithModeAndFileOp(std::visit(
           base::Overloaded{
               [](auto variant_value) -> IwaSourceWithModeAndFileOp::Variant {
                 return variant_value;
@@ -584,16 +584,16 @@ bool IwaSourceWithModeAndFileOp::operator==(
     const IwaSourceWithModeAndFileOp& other) const = default;
 
 bool IwaSourceWithModeAndFileOp::dev_mode() const {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{[](const auto& source) { return source.dev_mode(); }},
       variant_);
 }
 
 base::Value IwaSourceWithModeAndFileOp::ToDebugValue() const {
-  return absl::visit(base::Overloaded{[](const auto& source) {
-                       return source.ToDebugValue();
-                     }},
-                     variant_);
+  return std::visit(base::Overloaded{[](const auto& source) {
+                      return source.ToDebugValue();
+                    }},
+                    variant_);
 }
 
 std::ostream& operator<<(std::ostream& os,
@@ -612,10 +612,10 @@ bool IwaSourceDevModeWithFileOp::operator==(
     const IwaSourceDevModeWithFileOp& other) const = default;
 
 base::Value IwaSourceDevModeWithFileOp::ToDebugValue() const {
-  return absl::visit(base::Overloaded{[](const auto& source) {
-                       return source.ToDebugValue();
-                     }},
-                     variant_);
+  return std::visit(base::Overloaded{[](const auto& source) {
+                      return source.ToDebugValue();
+                    }},
+                    variant_);
 }
 
 std::ostream& operator<<(std::ostream& os,
@@ -634,10 +634,10 @@ bool IwaSourceProdModeWithFileOp::operator==(
     const IwaSourceProdModeWithFileOp& other) const = default;
 
 base::Value IwaSourceProdModeWithFileOp::ToDebugValue() const {
-  return absl::visit(base::Overloaded{[](const auto& source) {
-                       return source.ToDebugValue();
-                     }},
-                     variant_);
+  return std::visit(base::Overloaded{[](const auto& source) {
+                      return source.ToDebugValue();
+                    }},
+                    variant_);
 }
 
 std::ostream& operator<<(std::ostream& os,

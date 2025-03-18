@@ -7,6 +7,7 @@
 
 #include <set>
 #include <string>
+#include <variant>
 
 #include "components/browsing_topics/test_util.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -263,7 +264,7 @@ using MultipleInputKeys = MultipleKeys<InputKey>;
 using MultipleOutputKeys = MultipleKeys<OutputKey>;
 
 template <typename T>
-using TestKey = absl::variant<T, MultipleKeys<T>>;
+using TestKey = std::variant<T, MultipleKeys<T>>;
 
 using SiteDataException = std::pair<std::string, ContentSetting>;
 using SiteDataExceptions = std::vector<SiteDataException>;
@@ -272,22 +273,22 @@ using SiteDataExceptions = std::vector<SiteDataException>;
 // key types, the set of value types associated with those keys is shared, and
 // represented by this variant. When accessing keys, the test util will expect
 // a particular value type, and will error otherwise.
-using TestCaseItemValue = absl::variant<
-    bool,
-    bool*,
-    std::string,
-    std::string*,
-    url::Origin,
-    GURL,
-    content_settings::CookieControlsMode,
-    SiteDataExceptions,
-    ContentSetting,
-    int,
-    base::Time,
-    base::TimeDelta,
-    privacy_sandbox::TopicsConsentUpdateSource,
-    std::vector<int>,
-    std::optional<privacy_sandbox::PrivacySandboxAttestationsMap>>;
+using TestCaseItemValue =
+    std::variant<bool,
+                 bool*,
+                 std::string,
+                 std::string*,
+                 url::Origin,
+                 GURL,
+                 content_settings::CookieControlsMode,
+                 SiteDataExceptions,
+                 ContentSetting,
+                 int,
+                 base::Time,
+                 base::TimeDelta,
+                 privacy_sandbox::TopicsConsentUpdateSource,
+                 std::vector<int>,
+                 std::optional<privacy_sandbox::PrivacySandboxAttestationsMap>>;
 
 using TestState = std::map<TestKey<StateKey>, TestCaseItemValue>;
 using TestInput = std::map<TestKey<InputKey>, TestCaseItemValue>;

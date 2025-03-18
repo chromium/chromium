@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <variant>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -185,7 +186,7 @@ class StorageHandler
   IndexedDBObserver* GetIndexedDBObserver();
 
   SharedStorageRuntimeManager* GetSharedStorageRuntimeManager();
-  absl::variant<protocol::Response, storage::SharedStorageManager*>
+  std::variant<protocol::Response, storage::SharedStorageManager*>
   GetSharedStorageManager();
   storage::QuotaManagerProxy* GetQuotaManagerProxy();
   AttributionManager* GetAttributionManager();

@@ -67,22 +67,23 @@ PaintRecord CSSPaintDefinition::Paint(
       To<CSSPaintWorkletInput>(compositor_input);
   PaintWorkletStylePropertyMap* style_map =
       MakeGarbageCollected<PaintWorkletStylePropertyMap>(input->StyleMapData());
-  CSSStyleValueVector paint_arguments;
+  GCedCSSStyleValueVector* paint_arguments =
+      MakeGarbageCollected<GCedCSSStyleValueVector>();
   for (const auto& style_value : input->ParsedInputArguments()) {
-    paint_arguments.push_back(style_value->ToCSSStyleValue());
+    paint_arguments->push_back(style_value->ToCSSStyleValue());
   }
 
   ApplyAnimatedPropertyOverrides(style_map, animated_property_values);
 
   return Paint(input->GetSize(), input->EffectiveZoom(), style_map,
-               &paint_arguments);
+               paint_arguments);
 }
 
 PaintRecord CSSPaintDefinition::Paint(
     const gfx::SizeF& container_size,
     float zoom,
     StylePropertyMapReadOnly* style_map,
-    const CSSStyleValueVector* paint_arguments) {
+    const GCedCSSStyleValueVector* paint_arguments) {
   const gfx::SizeF specified_size = GetSpecifiedSize(container_size, zoom);
   ScriptState::Scope scope(script_state_);
 
@@ -99,9 +100,18 @@ PaintRecord CSSPaintDefinition::Paint(
       ToRoundedSize(container_size), context_settings_, zoom, global_scope_);
   PaintSize* paint_size = MakeGarbageCollected<PaintSize>(specified_size);
 
-  CSSStyleValueVector empty_paint_arguments;
-  if (!paint_arguments)
-    paint_arguments = &empty_paint_arguments;
+  if (!paint_arguments) {
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(
+        ThreadSpecific<Persistent<GCedCSSStyleValueVector>>,
+        static_empty_arguments, {});
+    Persistent<GCedCSSStyleValueVector>& empty_arguments =
+        *static_empty_arguments;
+    if (!empty_arguments) [[unlikely]] {
+      empty_arguments = MakeGarbageCollected<GCedCSSStyleValueVector>();
+      LEAK_SANITIZER_IGNORE_OBJECT(&empty_arguments);
+    }
+    paint_arguments = empty_arguments.Get();
+  }
 
   v8::TryCatch try_catch(isolate);
   try_catch.SetVerbose(true);

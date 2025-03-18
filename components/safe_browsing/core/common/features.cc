@@ -80,6 +80,10 @@ BASE_FEATURE(kClientSideDetectionSamplePing,
              "ClientSideDetectionSamplePing",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kClientSideDetectionShowLlamaScamVerdictWarning,
+             "ClientSideDetectionShowLlamaScamVerdictWarning",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kClientSideDetectionShowScamVerdictWarning,
              "ClientSideDetectionShowScamVerdictWarning",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -235,8 +239,17 @@ BASE_FEATURE(kMaliciousApkDownloadCheck,
              "MaliciousApkDownloadCheck",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-constexpr base::FeatureParam<bool> kMaliciousApkDownloadCheckTelemetryOnly{
-    &kMaliciousApkDownloadCheck, "telemetry_only", /*default_value=*/false};
+BASE_FEATURE_PARAM(bool,
+                   kMaliciousApkDownloadCheckTelemetryOnly,
+                   &kMaliciousApkDownloadCheck,
+                   "telemetry_only",
+                   /*default_value=*/false);
+
+BASE_FEATURE_PARAM(int,
+                   kMaliciousApkDownloadCheckSamplePercentage,
+                   &kMaliciousApkDownloadCheck,
+                   "sample_percentage",
+                   /*default_value=*/100);
 
 constexpr base::FeatureParam<std::string>
     kMaliciousApkDownloadCheckServiceUrlOverride{&kMaliciousApkDownloadCheck,

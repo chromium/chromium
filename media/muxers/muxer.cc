@@ -5,6 +5,7 @@
 #include "media/muxers/muxer.h"
 
 #include <optional>
+#include <variant>
 
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
@@ -46,7 +47,7 @@ std::string Muxer::VideoParameters::AsHumanReadableString() const {
 
 Muxer::EncodedFrame::EncodedFrame() = default;
 Muxer::EncodedFrame::EncodedFrame(
-    absl::variant<AudioParameters, VideoParameters> params,
+    std::variant<AudioParameters, VideoParameters> params,
     std::optional<media::AudioEncoder::CodecDescription> codec_description,
     scoped_refptr<DecoderBuffer> data)
     : params(std::move(params)),

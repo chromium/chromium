@@ -258,15 +258,14 @@ public class StripLayoutHelperManager
 
     private class TabStripEventHandler implements MotionEventHandler {
         @Override
-        public void onDown(float x, float y, boolean fromMouse, int buttons) {
+        public void onDown(float x, float y, int buttons) {
             if (DragDropGlobalState.hasValue()) {
                 return;
             }
-            if (mModelSelectorButton != null
-                    && mModelSelectorButton.onDown(x, y, fromMouse, buttons)) {
+            if (mModelSelectorButton != null && mModelSelectorButton.onDown(x, y, buttons)) {
                 return;
             }
-            getActiveStripLayoutHelper().onDown(x, y, fromMouse, buttons);
+            getActiveStripLayoutHelper().onDown(x, y, buttons);
         }
 
         @Override
@@ -294,17 +293,16 @@ public class StripLayoutHelperManager
         }
 
         @Override
-        public void click(float x, float y, boolean fromMouse, int buttons) {
+        public void click(float x, float y, int buttons) {
             if (DragDropGlobalState.hasValue()) {
                 return;
             }
             long time = time();
-            if (mModelSelectorButton != null
-                    && mModelSelectorButton.click(x, y, fromMouse, buttons)) {
+            if (mModelSelectorButton != null && mModelSelectorButton.click(x, y, buttons)) {
                 mModelSelectorButton.handleClick(time);
                 return;
             }
-            getActiveStripLayoutHelper().click(time(), x, y, fromMouse, buttons);
+            getActiveStripLayoutHelper().click(time(), x, y, buttons);
         }
 
         @Override
@@ -320,7 +318,7 @@ public class StripLayoutHelperManager
             if (DragDropGlobalState.hasValue()) {
                 return;
             }
-            getActiveStripLayoutHelper().onLongPress(time(), x, y);
+            getActiveStripLayoutHelper().onLongPress(x, y);
         }
 
         @Override
@@ -736,8 +734,8 @@ public class StripLayoutHelperManager
     }
 
     @VisibleForTesting
-    public void simulateClick(float x, float y, boolean fromMouse, int buttons) {
-        mTabStripEventHandler.click(x, y, fromMouse, buttons);
+    public void simulateClick(float x, float y, int buttons) {
+        mTabStripEventHandler.click(x, y, buttons);
     }
 
     @VisibleForTesting
@@ -1600,8 +1598,8 @@ public class StripLayoutHelperManager
         }
     }
 
-    void simulateOnDownForTesting(float x, float y, boolean fromMouse, int buttons) {
-        mTabStripEventHandler.onDown(x, y, fromMouse, buttons);
+    void simulateOnDownForTesting(float x, float y, int buttons) {
+        mTabStripEventHandler.onDown(x, y, buttons);
     }
 
     void setTabStripTreeProviderForTesting(TabStripSceneLayer tabStripTreeProvider) {

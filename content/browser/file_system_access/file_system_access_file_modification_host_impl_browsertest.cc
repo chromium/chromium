@@ -20,7 +20,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
 namespace content {
 
@@ -56,7 +55,6 @@ class FileSystemAccessFileModificationHostImplBrowserTest
     base::RunLoop run_loop;
     RunOnIOThreadBlocking(base::BindOnce(
         &storage::QuotaManager::GetUsageAndQuota, quota_manager, storage_key,
-        blink::mojom::StorageType::kTemporary,
         base::BindLambdaForTesting([&](blink::mojom::QuotaStatusCode result,
                                        int64_t usage, int64_t quota) {
           current_usage = usage;

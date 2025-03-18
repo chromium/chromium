@@ -48,6 +48,8 @@ static_library("renderer") {
     "//components/autofill/core/common:autofill_regex",
     "//components/password_manager/core/common:common",
     "//components/safe_browsing:buildflags",
+    "//components/signin/public/base:signin_buildflags",
+    "//components/signin/public/base:signin_switches",
     "//components/strings",
     "//content/public/common",
     "//content/public/renderer",

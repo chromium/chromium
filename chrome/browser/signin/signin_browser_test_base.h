@@ -43,10 +43,9 @@ class SigninBrowserTestBaseT : public T {
   ~SigninBrowserTestBaseT() override = default;
 
   // Sets accounts in the environment to new ones based on the given `emails`.
-  // The primary account is automatically set by Chrome when
-  // `switches::kExplicitBrowserSigninUIOnDesktop` is disabled, and remains
-  // unset when it is enabled. Returns `AccountInfo`s for each added account, in
-  // the same order as `emails`.
+  // The primary account is automatically set by Chrome when explicit signin is
+  // disabled, and remains unset when it is enabled. Returns `AccountInfo`s for
+  // each added account, in the same order as `emails`.
   std::vector<AccountInfo> SetAccountsCookiesAndTokens(
       const std::vector<std::string>& emails) {
     auto account_availability_options =

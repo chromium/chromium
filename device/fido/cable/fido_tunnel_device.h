@@ -6,6 +6,7 @@
 #define DEVICE_FIDO_CABLE_FIDO_TUNNEL_DEVICE_H_
 
 #include <array>
+#include <variant>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -18,7 +19,6 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"
 #include "device/fido/network_context_factory.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace device::cablev2 {
 
@@ -237,7 +237,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
   bool ProcessConnectSignal(base::span<const uint8_t> data);
 
   State state_ = State::kConnecting;
-  absl::variant<QRInfo, PairedInfo> info_;
+  std::variant<QRInfo, PairedInfo> info_;
   const std::array<uint8_t, 8> id_;
   const std::optional<base::RepeatingCallback<void(Event)>> event_callback_;
   const bool must_support_ctap_;

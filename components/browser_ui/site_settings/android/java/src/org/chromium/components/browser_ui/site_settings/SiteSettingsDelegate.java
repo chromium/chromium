@@ -76,11 +76,6 @@ public interface SiteSettingsDelegate {
     boolean isPermissionSiteSettingsRadioButtonFeatureEnabled();
 
     /**
-     * @return true if the PrivacySandboxFirstPartySetsUi Feature is enabled.
-     */
-    boolean isPrivacySandboxFirstPartySetsUiFeatureEnabled();
-
-    /**
      * @return The id of the notification channel associated with the given origin.
      */
     // TODO(crbug.com/40126121): Remove this once WebLayer supports notifications.

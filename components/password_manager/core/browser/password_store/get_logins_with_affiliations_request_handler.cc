@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/password_store/get_logins_with_affiliations_request_handler.h"
 
+#include <variant>
 #include <vector>
 
 #include "base/barrier_callback.h"
@@ -51,11 +52,11 @@ LoginsResultOrError ProcessExactAndPSLForms(
     const PasswordFormDigest& digest,
     const base::flat_set<std::string>& psl_extensions,
     LoginsResultOrError logins_or_error) {
-  if (absl::holds_alternative<PasswordStoreBackendError>(logins_or_error)) {
+  if (std::holds_alternative<PasswordStoreBackendError>(logins_or_error)) {
     return logins_or_error;
   }
 
-  for (auto& form : absl::get<LoginsResult>(logins_or_error)) {
+  for (auto& form : std::get<LoginsResult>(logins_or_error)) {
     switch (GetMatchResult(form, digest)) {
       case MatchResult::NO_MATCH:
         NOTREACHED();
@@ -84,13 +85,13 @@ void InjectAffiliationAndBrandingInformation(
     LoginsOrErrorReply callback,
     LoginsResultOrError forms_or_error) {
   if (!affiliated_match_helper ||
-      absl::holds_alternative<PasswordStoreBackendError>(forms_or_error) ||
-      absl::get<LoginsResult>(forms_or_error).empty()) {
+      std::holds_alternative<PasswordStoreBackendError>(forms_or_error) ||
+      std::get<LoginsResult>(forms_or_error).empty()) {
     std::move(callback).Run(std::move(forms_or_error));
     return;
   }
   affiliated_match_helper->InjectAffiliationAndBrandingInformation(
-      std::move(absl::get<LoginsResult>(forms_or_error)), std::move(callback));
+      std::move(std::get<LoginsResult>(forms_or_error)), std::move(callback));
 }
 
 // Removes username-only credentials from |credentials|.
@@ -239,10 +240,10 @@ LoginsResultOrError GetLoginsHelper::MergeResults(
     std::vector<LoginsResultOrError> results) {
   LoginsResult final_result;
   for (auto& result : results) {
-    if (absl::holds_alternative<PasswordStoreBackendError>(result)) {
-      return absl::get<PasswordStoreBackendError>(result);
+    if (std::holds_alternative<PasswordStoreBackendError>(result)) {
+      return std::get<PasswordStoreBackendError>(result);
     }
-    LoginsResult forms = std::move(absl::get<LoginsResult>(result));
+    LoginsResult forms = std::move(std::get<LoginsResult>(result));
     for (auto& form : forms) {
       final_result.push_back(std::move(form));
     }

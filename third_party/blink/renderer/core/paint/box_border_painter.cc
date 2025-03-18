@@ -1482,8 +1482,7 @@ void BoxBorderPainter::DrawDashedDottedBoxSideFromPath(
     Color color,
     EBorderStyle border_style) const {
   // Convert the path to be down the middle of the dots or dashes.
-  Path centerline_path;
-  centerline_path.AddRoundedRect(
+  const Path centerline_path = Path::MakeRoundedRect(
       ContouredBorderGeometry::PixelSnappedContouredBorderWithOutsets(
           style_, border_rect_, CenterOutsets(), sides_to_include_)
           .AsRoundedRect());

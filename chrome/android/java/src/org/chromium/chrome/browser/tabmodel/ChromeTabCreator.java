@@ -38,6 +38,8 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabParentIntent;
 import org.chromium.chrome.browser.tab.TabResolver;
 import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.tabmodel.TabCreator.NeedsTabModel;
+import org.chromium.chrome.browser.tabmodel.TabCreator.NeedsTabModelOrderController;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -48,19 +50,20 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 /** This class creates various kinds of new tabs and adds them to the right {@link TabModel}. */
-public class ChromeTabCreator extends TabCreator {
+public class ChromeTabCreator extends TabCreator
+        implements NeedsTabModel, NeedsTabModelOrderController {
     private final Activity mActivity;
+    private final WindowAndroid mNativeWindow;
+    private final Supplier<TabDelegateFactory> mTabDelegateFactorySupplier;
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
     private final boolean mIncognito;
-
-    private WindowAndroid mNativeWindow;
-    private TabModel mTabModel;
-    private TabModelOrderController mOrderController;
-    private Supplier<TabDelegateFactory> mTabDelegateFactorySupplier;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
-    @Nullable private final DseNewTabUrlManager mDseNewTabUrlManager;
+    private final @Nullable DseNewTabUrlManager mDseNewTabUrlManager;
+
+    private TabModel mTabModel;
+    private TabModelOrderController mOrderController;
 
     public ChromeTabCreator(
             Activity activity,
@@ -321,7 +324,7 @@ public class ChromeTabCreator extends TabCreator {
             } else if (asyncParams != null && asyncParams.getWebContents() != null) {
                 openInForeground = true;
                 WebContents webContents = asyncParams.getWebContents();
-                // A WebContents was passed through the Intent.  Create a new Tab to hold it.
+                // A WebContents was passed through the Intent. Create a new Tab to hold it.
                 Intent parentIntent =
                         IntentUtils.safeGetParcelableExtra(
                                 intent, IntentHandler.EXTRA_PARENT_INTENT);
@@ -425,7 +428,7 @@ public class ChromeTabCreator extends TabCreator {
             @Nullable Tab parent, WebContents webContents, @TabLaunchType int type, GURL url) {
         assert webContents != null;
 
-        // The parent tab was already closed.  Do not open child tabs.
+        // The parent tab was already closed. Do not open child tabs.
         int parentId = parent != null ? parent.getId() : Tab.INVALID_TAB_ID;
         if (mTabModel.isClosurePending(parentId)) return false;
 
@@ -446,7 +449,7 @@ public class ChromeTabCreator extends TabCreator {
             TabDelegateFactory delegateFactory =
                     parent == null ? createDefaultTabDelegateFactory() : null;
             Tab tab;
-            @TabCreationState int creationState = 0;
+            @TabCreationState int creationState;
             if (webContents.getMainFrame() == null
                     || !webContents.getMainFrame().isRenderFrameLive()) {
                 // The webContents may not have a renderer. Treat it as FROZEN_FOR_LAZY_LOAD
@@ -689,20 +692,18 @@ public class ChromeTabCreator extends TabCreator {
         return IntentHandler.getTransitionTypeFromIntent(intent, transition);
     }
 
-    /**
-     * Sets the tab model and tab content manager to use.
-     * @param model           The new {@link TabModel} to use.
-     * @param orderController The controller for determining the order of tabs.
-     */
-    public void setTabModel(TabModel model, TabModelOrderController orderController) {
-        mTabModel = model;
-        mOrderController = orderController;
+    @Override
+    public void setTabModel(TabModel tabModel) {
+        mTabModel = tabModel;
     }
 
-    /**
-     * @return The default tab delegate factory to be used if creating new tabs w/o parents.
-     */
-    public TabDelegateFactory createDefaultTabDelegateFactory() {
+    @Override
+    public void setTabModelOrderController(TabModelOrderController tabModelOrderController) {
+        mOrderController = tabModelOrderController;
+    }
+
+    /** Returns the default tab delegate factory to be used if creating new tabs w/o parents. */
+    private @Nullable TabDelegateFactory createDefaultTabDelegateFactory() {
         return mTabDelegateFactorySupplier != null ? mTabDelegateFactorySupplier.get() : null;
     }
 }

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
 
+#include <variant>
+
 #include "base/containers/span.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -45,14 +47,14 @@ void CheckTestCachedMetadata(scoped_refptr<CachedMetadata> cached_metadata) {
   EXPECT_EQ(cached_metadata->tag(), kTestTag);
   auto drained_data = std::move(*cached_metadata).DrainSerializedData();
 
-  if (absl::holds_alternative<Vector<uint8_t>>(drained_data)) {
-    EXPECT_THAT(absl::get<Vector<uint8_t>>(drained_data),
+  if (std::holds_alternative<Vector<uint8_t>>(drained_data)) {
+    EXPECT_THAT(std::get<Vector<uint8_t>>(drained_data),
                 testing::ElementsAreArray(CreateTestSerializedData()));
     return;
   }
-  CHECK(absl::holds_alternative<mojo_base::BigBuffer>(drained_data));
+  CHECK(std::holds_alternative<mojo_base::BigBuffer>(drained_data));
   mojo_base::BigBuffer drained_big_buffer =
-      std::move(absl::get<mojo_base::BigBuffer>(drained_data));
+      std::move(std::get<mojo_base::BigBuffer>(drained_data));
   EXPECT_THAT(base::span(drained_big_buffer),
               testing::ElementsAreArray(CreateTestSerializedData()));
 }

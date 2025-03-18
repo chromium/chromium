@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -1408,7 +1409,7 @@ CompositorFrameSinkSupport::GetRequestRegionProperties(
   // render pass.
   if (IsRegionCapture(sub_target)) {
     const auto it = current_capture_bounds_.bounds().find(
-        absl::get<RegionCaptureCropId>(sub_target));
+        std::get<RegionCaptureCropId>(sub_target));
     if (it != current_capture_bounds_.bounds().end() && !it->second.IsEmpty() &&
         gfx::Rect(out.root_render_pass_size).Contains(it->second)) {
       out.render_pass_subrect = it->second;
@@ -1422,7 +1423,7 @@ CompositorFrameSinkSupport::GetRequestRegionProperties(
   // Else, we have a subtree capture ID and should capture a subsection of a
   // child render pass.
   CHECK(IsSubtreeCapture(sub_target));
-  const SubtreeCaptureId& id = absl::get<SubtreeCaptureId>(sub_target);
+  const SubtreeCaptureId& id = std::get<SubtreeCaptureId>(sub_target);
   for (const auto& render_pass : frame.render_pass_list) {
     if (render_pass->subtree_capture_id == id) {
       out.transform_to_root = render_pass->transform_to_root_target;

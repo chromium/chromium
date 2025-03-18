@@ -1650,8 +1650,9 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
 
 // Verify that privacy sensitive permissions policy use counters are recorded
 // correctly when ad script is in the stack.
+// TODO(crbug.com/398639862): De-flake and reenable test.
 IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
-                       ReceivedPrivacyPermissionsUseCounters) {
+                       DISABLED_ReceivedPrivacyPermissionsUseCounters) {
   SetRulesetWithRules(
       {subresource_filter::testing::CreateSuffixRule("ad_script.js")});
   base::HistogramTester histogram_tester;

@@ -13,11 +13,11 @@
 #include "base/logging.h"
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_base.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "content/public/browser/browser_thread.h"
@@ -27,6 +27,7 @@
 namespace ash {
 
 std::unique_ptr<KioskIwaData> KioskIwaData::Create(
+    PrefService& local_state,
     const std::string& user_id,
     const std::string& web_bundle_id,
     const GURL& update_manifest_url,
@@ -48,17 +49,19 @@ std::unique_ptr<KioskIwaData> KioskIwaData::Create(
       web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
           parsed_id.value());
 
-  return std::make_unique<ash::KioskIwaData>(user_id, iwa_url_info,
+  return std::make_unique<ash::KioskIwaData>(local_state, user_id, iwa_url_info,
                                              update_manifest_url, delegate);
 }
 
-KioskIwaData::KioskIwaData(const std::string& user_id,
+KioskIwaData::KioskIwaData(PrefService& local_state,
+                           const std::string& user_id,
                            const web_app::IsolatedWebAppUrlInfo& iwa_info,
                            const GURL& update_manifest_url,
                            KioskAppDataDelegate& delegate)
     : KioskAppDataBase(KioskIwaManager::kIwaKioskDictionaryName,
                        iwa_info.app_id(),
                        AccountId::FromUserEmail(user_id)),
+      local_state_(local_state),
       iwa_info_(iwa_info),
       update_manifest_url_(update_manifest_url),
       delegate_(delegate) {
@@ -81,17 +84,14 @@ void KioskIwaData::Update(const std::string& title,
     SaveIcon(bitmap, cache_dir);
   }
 
-  PrefService* local_state = g_browser_process->local_state();
-  ScopedDictPrefUpdate dict_update(local_state, dictionary_name());
+  ScopedDictPrefUpdate dict_update(&local_state_.get(), dictionary_name());
   SaveToDictionary(dict_update);
 
   delegate_->OnKioskAppDataChanged(app_id());
 }
 
 bool KioskIwaData::LoadFromCache() {
-  PrefService* local_state = g_browser_process->local_state();
-  const base::Value::Dict& dict = local_state->GetDict(dictionary_name());
-
+  const base::Value::Dict& dict = local_state_->GetDict(dictionary_name());
   if (!LoadFromDictionary(dict)) {
     return false;
   }

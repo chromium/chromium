@@ -231,14 +231,6 @@ export class LanguageMenuElement extends LanguageMenuElementBase implements
     }
   }
 
-  // Runtime errors were thrown when this.i18n() was called in a Polymer
-  // computed bindining callback function, so instead we call this.i18n from the
-  // html via a wrapper.
-  protected i18nWraper(s: string|undefined): string {
-    return s ? this.i18n(s) : '';
-  }
-
-
   protected searchHasLanguages(): boolean {
     // We should only show the "No results" string when there are no available
     // languages and there is a valid search term.

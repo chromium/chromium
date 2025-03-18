@@ -38,7 +38,10 @@ class CONTENT_EXPORT SharedStorageEventParams {
   static SharedStorageEventParams CreateForAddModule(
       const GURL& script_source_url,
       int worklet_id);
-
+  static SharedStorageEventParams CreateForCreateWorklet(
+      const GURL& script_source_url,
+      const std::string& data_origin,
+      int worklet_id);
   static SharedStorageEventParams CreateForRun(
       const std::string& operation_name,
       const blink::CloneableMessage& serialized_data,
@@ -72,6 +75,7 @@ class CONTENT_EXPORT SharedStorageEventParams {
   SharedStorageEventParams& operator=(const SharedStorageEventParams&);
 
   std::optional<std::string> script_source_url;
+  std::optional<std::string> data_origin;
   std::optional<std::string> operation_name;
   std::optional<std::string> serialized_data;
   std::optional<std::vector<SharedStorageUrlSpecWithMetadata>>
@@ -85,6 +89,7 @@ class CONTENT_EXPORT SharedStorageEventParams {
   SharedStorageEventParams();
   SharedStorageEventParams(
       std::optional<std::string> script_source_url,
+      std::optional<std::string> data_origin,
       std::optional<std::string> operation_name,
       std::optional<std::string> serialized_data,
       std::optional<std::vector<SharedStorageUrlSpecWithMetadata>>
@@ -93,6 +98,11 @@ class CONTENT_EXPORT SharedStorageEventParams {
       std::optional<std::string> value,
       std::optional<bool> ignore_if_present,
       std::optional<int> worklet_id);
+
+  static SharedStorageEventParams CreateForWorkletCreation(
+      const GURL& script_source_url,
+      std::optional<std::string> data_origin,
+      int worklet_id);
 
   static SharedStorageEventParams CreateForWorkletOperation(
       const std::string& operation_name,

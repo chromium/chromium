@@ -11,6 +11,7 @@
 
 #include <memory>
 #include <string>
+#include <variant>
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
@@ -19,7 +20,6 @@
 #include "base/logging.h"
 #include "media/base/test_data_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace media {
 
@@ -448,7 +448,7 @@ TEST_F(H265ParserTest, HDRMetadataSEIParsing) {
   EXPECT_EQ(clli_sei.msgs.size(), 1u);
   for (const auto& sei_msg : clli_sei.msgs) {
     const auto* content_light_level_info =
-        absl::get_if<H265SEIContentLightLevelInfo>(&sei_msg);
+        std::get_if<H265SEIContentLightLevelInfo>(&sei_msg);
     ASSERT_TRUE(content_light_level_info);
     EXPECT_EQ(content_light_level_info->max_content_light_level, 1000u);
     EXPECT_EQ(content_light_level_info->max_picture_average_light_level, 400u);
@@ -461,7 +461,7 @@ TEST_F(H265ParserTest, HDRMetadataSEIParsing) {
   EXPECT_EQ(mdcv_sei.msgs.size(), 1u);
   for (const auto& sei_msg : mdcv_sei.msgs) {
     const auto* mastering_display_info =
-        absl::get_if<H265SEIMasteringDisplayInfo>(&sei_msg);
+        std::get_if<H265SEIMasteringDisplayInfo>(&sei_msg);
     ASSERT_TRUE(mastering_display_info);
     EXPECT_EQ(mastering_display_info->display_primaries[0][0], 13250u);
     EXPECT_EQ(mastering_display_info->display_primaries[0][1], 34500u);
@@ -511,7 +511,7 @@ TEST_F(H265ParserTest, AlphaChannelInfoSEIParsing) {
   // Alpha channel info present.
   for (const auto& sei_msg : alpha_sei.msgs) {
     const auto* alpha_channel_info =
-        absl::get_if<H265SEIAlphaChannelInfo>(&sei_msg);
+        std::get_if<H265SEIAlphaChannelInfo>(&sei_msg);
     ASSERT_TRUE(alpha_channel_info);
     EXPECT_EQ(alpha_channel_info->alpha_channel_cancel_flag, false);
     EXPECT_EQ(alpha_channel_info->alpha_channel_use_idc, false);
@@ -588,27 +588,27 @@ TEST_F(H265ParserTest, RecursiveSEIParsing) {
   EXPECT_EQ(clli_mdcv_sei.msgs.size(), 2u);
 
   for (const auto& sei_msg : clli_mdcv_sei.msgs) {
-    absl::visit(base::Overloaded{
-                    [](const H265SEIContentLightLevelInfo& info) {
-                      EXPECT_EQ(info.max_content_light_level, 1000u);
-                      EXPECT_EQ(info.max_picture_average_light_level, 200u);
-                    },
-                    [](const H265SEIMasteringDisplayInfo& info) {
-                      EXPECT_EQ(info.display_primaries[0][0], 13249u);
-                      EXPECT_EQ(info.display_primaries[0][1], 34499u);
-                      EXPECT_EQ(info.display_primaries[1][0], 7500u);
-                      EXPECT_EQ(info.display_primaries[1][1], 2999u);
-                      EXPECT_EQ(info.display_primaries[2][0], 34000u);
-                      EXPECT_EQ(info.display_primaries[2][1], 15999u);
-                      EXPECT_EQ(info.white_points[0], 15635u);
-                      EXPECT_EQ(info.white_points[1], 16449u);
-                      EXPECT_EQ(info.max_luminance, 10000000u);
-                      EXPECT_EQ(info.min_luminance, 50u);
-                    },
-                    [](const auto&) {
-                      EXPECT_TRUE(false) << "Unexpected message type!";
-                    }},
-                sei_msg);
+    std::visit(base::Overloaded{
+                   [](const H265SEIContentLightLevelInfo& info) {
+                     EXPECT_EQ(info.max_content_light_level, 1000u);
+                     EXPECT_EQ(info.max_picture_average_light_level, 200u);
+                   },
+                   [](const H265SEIMasteringDisplayInfo& info) {
+                     EXPECT_EQ(info.display_primaries[0][0], 13249u);
+                     EXPECT_EQ(info.display_primaries[0][1], 34499u);
+                     EXPECT_EQ(info.display_primaries[1][0], 7500u);
+                     EXPECT_EQ(info.display_primaries[1][1], 2999u);
+                     EXPECT_EQ(info.display_primaries[2][0], 34000u);
+                     EXPECT_EQ(info.display_primaries[2][1], 15999u);
+                     EXPECT_EQ(info.white_points[0], 15635u);
+                     EXPECT_EQ(info.white_points[1], 16449u);
+                     EXPECT_EQ(info.max_luminance, 10000000u);
+                     EXPECT_EQ(info.min_luminance, 50u);
+                   },
+                   [](const auto&) {
+                     EXPECT_TRUE(false) << "Unexpected message type!";
+                   }},
+               sei_msg);
   }
 }
 

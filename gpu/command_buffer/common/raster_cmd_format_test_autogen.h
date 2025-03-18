@@ -299,6 +299,43 @@ TEST_F(RasterFormatTest, DeletePaintCachePathsINTERNAL) {
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 
+TEST_F(RasterFormatTest, DeletePaintCacheEffectsINTERNALImmediate) {
+  static GLuint ids[] = {
+      12,
+      23,
+      34,
+  };
+  cmds::DeletePaintCacheEffectsINTERNALImmediate& cmd =
+      *GetBufferAs<cmds::DeletePaintCacheEffectsINTERNALImmediate>();
+  void* next_cmd = cmd.Set(&cmd, static_cast<GLsizei>(std::size(ids)), ids);
+  EXPECT_EQ(static_cast<uint32_t>(
+                cmds::DeletePaintCacheEffectsINTERNALImmediate::kCmdId),
+            cmd.header.command);
+  EXPECT_EQ(sizeof(cmd) + RoundSizeToMultipleOfEntries(cmd.n * 4u),
+            cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLsizei>(std::size(ids)), cmd.n);
+  CheckBytesWrittenMatchesExpectedSize(
+      next_cmd,
+      sizeof(cmd) + RoundSizeToMultipleOfEntries(std::size(ids) * 4u));
+  EXPECT_EQ(0, memcmp(ids, ImmediateDataAddress(&cmd), sizeof(ids)));
+}
+
+TEST_F(RasterFormatTest, DeletePaintCacheEffectsINTERNAL) {
+  cmds::DeletePaintCacheEffectsINTERNAL& cmd =
+      *GetBufferAs<cmds::DeletePaintCacheEffectsINTERNAL>();
+  void* next_cmd =
+      cmd.Set(&cmd, static_cast<GLsizei>(11), static_cast<uint32_t>(12),
+              static_cast<uint32_t>(13));
+  EXPECT_EQ(
+      static_cast<uint32_t>(cmds::DeletePaintCacheEffectsINTERNAL::kCmdId),
+      cmd.header.command);
+  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLsizei>(11), cmd.n);
+  EXPECT_EQ(static_cast<uint32_t>(12), cmd.ids_shm_id);
+  EXPECT_EQ(static_cast<uint32_t>(13), cmd.ids_shm_offset);
+  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
+}
+
 TEST_F(RasterFormatTest, ClearPaintCacheINTERNAL) {
   cmds::ClearPaintCacheINTERNAL& cmd =
       *GetBufferAs<cmds::ClearPaintCacheINTERNAL>();

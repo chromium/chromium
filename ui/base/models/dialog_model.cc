@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <variant>
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
@@ -110,7 +111,7 @@ DialogModel::Builder& DialogModel::Builder::AddButtonInternal(
     ButtonCallbackVariant& model_callback) {
   CHECK(params.is_visible_);
   CHECK(!model_button.has_value());
-  absl::visit(
+  std::visit(
       base::Overloaded{
           [](decltype(base::DoNothing())& callback) {
             // Intentional noop
@@ -239,7 +240,7 @@ bool DialogModel::OnDialogCancelAction(base::PassKey<DialogModelHost>) {
 }
 
 bool DialogModel::RunButtonCallback(ButtonCallbackVariant& callback_variant) {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [](decltype(base::DoNothing())& callback) { return true; },
           [](base::RepeatingCallback<bool()>& callback) {

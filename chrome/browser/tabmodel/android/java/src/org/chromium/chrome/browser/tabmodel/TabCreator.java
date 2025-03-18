@@ -124,4 +124,17 @@ public abstract class TabCreator {
             TraceEvent.end("TabCreator.launchNtp");
         }
     }
+
+    /** Semi-tag interface to denote dependency and provide a setter for {@link TabModel}. */
+    interface NeedsTabModel {
+        void setTabModel(TabModel tabModel);
+    }
+
+    /**
+     * Semi-tag interface to denote dependency and provide a setter for {@link
+     * TabModelOrderController}.
+     */
+    interface NeedsTabModelOrderController {
+        void setTabModelOrderController(TabModelOrderController tabModelOrderController);
+    }
 }

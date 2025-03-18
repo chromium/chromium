@@ -507,6 +507,13 @@ const char kEnableSnackbarInSettingsDescription[] =
     "setting that controls whether a user gets signed in to Chrome when "
     "signing in to Google Services.";
 
+const char kEnablePendingModePasswordsPromoName[] =
+    "Pending Mode Passwords Promo";
+const char kEnablePendingModePasswordsPromoDescription[] =
+    "Enables an autofill promo on passwords when the user is is pending state. "
+    "The promo prompts the user to signin to access passwords saved in their "
+    "account";
+
 const char kTextBasedAudioDescriptionName[] = "Enable audio descriptions.";
 const char kTextBasedAudioDescriptionDescription[] =
     "When enabled, HTML5 video elements with a 'descriptions' WebVTT track "
@@ -4328,10 +4335,6 @@ const char kCCTAuthTabEnableHttpsRedirectsName[] =
 const char kCCTAuthTabEnableHttpsRedirectsDescription[] =
     "Enables HTTPS redirect scheme in Auth Tab";
 
-const char kCCTBeforeUnloadName[] = "CCT before unload";
-const char kCCTBeforeUnloadDescription[] =
-    "Kill switch for new CCT before unload behavior during back press";
-
 const char kCCTEphemeralMediaViewerExperimentName[] =
     "Ephemeral CCT for Media Viewer";
 const char kCCTEphemeralMediaViewerExperimentDescription[] =
@@ -4392,6 +4395,9 @@ const char kCCTSignInPromptName[] = "Sign-in prompt in CCT.";
 const char kCCTSignInPromptDescription[] =
     "Displays a sign-in prompt message in CCT opened by 1P apps when the user "
     "is signed out of Chrome but signed in to the 1P app.";
+
+const char kCCTToolbarRefactorName[] = "CCT Toolbar Refactor";
+const char kCCTToolbarRefactorDescription[] = "CCT Toolbar Refactor";
 
 const char kBottomBrowserControlsRefactorName[] =
     "BottomBrowserControlsRefactor";
@@ -5422,6 +5428,12 @@ const char kMediaFoundationClearStrategyDescription[] =
     "modes based on the "
     "current operating conditions. Other options will result in a default "
     "rendering strategy.";
+
+const char kMediaFoundationCameraUsageMonitoringName[] =
+    "Media Foundation Camera Usage Monitoring";
+const char kMediaFoundationCameraUsageMonitoringDescription[] =
+    "Enables the use of Media Foundation for camera usage monitoring. "
+    "This allows detecting if a camera is being used by another application.";
 
 const char kRawAudioCaptureName[] = "Raw audio capture";
 const char kRawAudioCaptureDescription[] =
@@ -7888,6 +7900,10 @@ const char kGlicDescription[] = "Enables glic";
 const char kGlicDetachedName[] = "Glic Detached Mode";
 const char kGlicDetachedDescription[] = "Enables glic detached mode";
 
+const char kGlicUserResizeName[] = "Glic User Resize";
+const char kGlicUserResizeDescription[] =
+    "Enables resizing the glic panel by dragging";
+
 const char kDesktopPWAsUserLinkCapturingScopeExtensionsName[] =
     "Desktop PWA Link Capturing with Scope Extensions";
 const char kDesktopPWAsUserLinkCapturingScopeExtensionsDescription[] =
@@ -8001,12 +8017,6 @@ const char kEnablePolicyPromotionBannerName[] =
 const char kEnablePolicyPromotionBannerDescription[] =
     "Enables showing the policy promotion banner on chrome://policy page.";
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_CHROMEOS)
-const char kOverlayScrollbarsOSSettingsName[] = "Overlay Scrollbar OS Settings";
-const char kOverlayScrollbarsOSSettingsDescription[] =
-    "Enable the OS settings for overlay scrollbars on ChromeOS.";
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 const char kSupervisedUserBlockInterstitialV3Name[] =
     "Enable URL filter interstitial V3";

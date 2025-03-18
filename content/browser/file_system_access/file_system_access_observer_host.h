@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_OBSERVER_HOST_H_
 
 #include <memory>
+#include <variant>
 
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
@@ -66,8 +67,8 @@ class FileSystemAccessObserverHost
       FileSystemAccessTransferTokenImpl* resolved_token);
 
   void DidCheckIfSymlinkOrJunction(
-      absl::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
-                    std::unique_ptr<FileSystemAccessFileHandleImpl>> handle,
+      std::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
+                   std::unique_ptr<FileSystemAccessFileHandleImpl>> handle,
       ObserveCallback callback,
       storage::FileSystemURL url,
       bool is_recursive,
@@ -75,8 +76,8 @@ class FileSystemAccessObserverHost
       bool is_symlink_or_junction);
 
   void DidCheckItemExists(
-      absl::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
-                    std::unique_ptr<FileSystemAccessFileHandleImpl>> handle,
+      std::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
+                   std::unique_ptr<FileSystemAccessFileHandleImpl>> handle,
       ObserveCallback callback,
       storage::FileSystemURL url,
       bool is_recursive,
@@ -86,8 +87,8 @@ class FileSystemAccessObserverHost
       FileSystemAccessTransferTokenImpl* resolved_token);
 
   void GotObservation(
-      absl::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
-                    std::unique_ptr<FileSystemAccessFileHandleImpl>> handle,
+      std::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
+                   std::unique_ptr<FileSystemAccessFileHandleImpl>> handle,
       ObserveCallback callback,
       base::expected<
           std::unique_ptr<FileSystemAccessObservationGroup::Observer>,

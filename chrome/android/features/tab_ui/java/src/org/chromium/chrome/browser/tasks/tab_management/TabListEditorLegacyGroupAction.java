@@ -106,7 +106,7 @@ public class TabListEditorLegacyGroupAction extends TabListEditorAction {
             if (tabGroupModelFilter.isTabInTabGroup(tab)) return true;
 
             tabGroupModelFilter.createSingleTabGroup(tab);
-            mTabGroupCreationDialogManager.showDialog(tab.getRootId(), tabGroupModelFilter);
+            mTabGroupCreationDialogManager.showDialog(tab.getTabGroupId(), tabGroupModelFilter);
             return true;
         }
 
@@ -135,7 +135,7 @@ public class TabListEditorLegacyGroupAction extends TabListEditorAction {
 
         if (willMergingCreateNewGroup) {
             mTabGroupCreationDialogManager.showDialog(
-                    destinationTab.getRootId(), tabGroupModelFilter);
+                    destinationTab.getTabGroupId(), tabGroupModelFilter);
         }
 
         TabUiMetricsHelper.recordSelectionEditorActionMetrics(

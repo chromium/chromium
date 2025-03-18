@@ -83,7 +83,7 @@ class ClientBounceDetectionState {
 // Either the URL navigated away from (starting a new chain), or the client-side
 // redirect connecting the navigation to the currently-committed chain.
 // TODO: crbug.com/324573484 - rename to remove association with DIPS.
-using BtmNavigationStart = absl::variant<UrlAndSourceId, BtmRedirectInfoPtr>;
+using BtmNavigationStart = std::variant<UrlAndSourceId, BtmRedirectInfoPtr>;
 
 // In case of a client-side redirect loop, we need to impose a limit on the
 // stored redirect chain to avoid boundless memory use. Past this limit,

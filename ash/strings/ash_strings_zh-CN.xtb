@@ -166,6 +166,7 @@
 <translation id="1505542291183484463">将平铺窗口向下调整大小</translation>
 <translation id="1510238584712386396">启动器</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{显示通知设置。针对 1 个应用关闭通知}other{显示通知设置。针对 # 个应用关闭通知}}</translation>
+<translation id="1521655867290435174">Google 表格</translation>
 <translation id="1523032696246003">电池电量为 <ph name="BATTERY_PERCENTAGE" />% | 还需 <ph name="TIME" />才能充满</translation>
 <translation id="1525508553941733066">关闭</translation>
 <translation id="1526448108126799339">在新窗口中打开标签页</translation>
@@ -345,7 +346,6 @@
 <translation id="2201071101391734388">近期照片中的第 <ph name="INDEX" /> 张，共 <ph name="TOTAL_COUNT" /> 张。</translation>
 <translation id="2201687081523799384">收起 Google Tasks</translation>
 <translation id="2208323208084708176">统一桌面模式</translation>
-<translation id="2220572644011485463">PIN 码或密码</translation>
 <translation id="2222841058024245321">桌面 7</translation>
 <translation id="2223384056430485343">在分屏模式下</translation>
 <translation id="2224075387478458881">禁止在屏幕显示受保护内容时录制屏幕</translation>
@@ -1827,7 +1827,6 @@
 <translation id="7000027735917578303">窗口和桌面设置</translation>
 <translation id="7004910047186208204">连接到移动数据网络</translation>
 <translation id="7005239792648594238">打开一款应用即可开始使用</translation>
-<translation id="7007983414944123363">无法验证您的 PIN 码或密码。请重试。</translation>
 <translation id="7014684956566476813">已连接到一部名为“<ph name="DEVICE_NAME" />”的设备</translation>
 <translation id="7015766095477679451">您需要等到<ph name="COME_BACK_TIME" /> 才能再次使用此设备。</translation>
 <translation id="70168403932084660">桌面 6</translation>
@@ -1941,6 +1940,7 @@
 <translation id="742594950370306541">摄像头处于使用状态。</translation>
 <translation id="742608627846767349">上午好！</translation>
 <translation id="743058460480092004">摄像头和麦克风处于使用状态。</translation>
+<translation id="7440404390546433462">Google 搜索</translation>
 <translation id="7441711280402516925">正在播放 · 切换到标签页</translation>
 <translation id="7453330308669753048">已移除搜索记录结果</translation>
 <translation id="7459485586006128091">由于内部错误，热点已关闭。请过几分钟后尝试重新连接。</translation>
@@ -2464,6 +2464,7 @@
 <translation id="9168436347345867845">以后再说</translation>
 <translation id="9178475906033259337">显示了 1 条与“<ph name="QUERY" />”相符的结果</translation>
 <translation id="9179259655489829027">借助此功能，您无需使用密码即可快速访问任何已登录的用户。请仅对您信任的账号使用此功能。</translation>
+<translation id="9183302530794969518">Google 文档</translation>
 <translation id="9183456764293710005">全屏放大镜</translation>
 <translation id="9192133205265227850">使用“<ph name="DEVICE_NAME" />”</translation>
 <translation id="9193626018745640770">正在投放至不明接收器</translation>

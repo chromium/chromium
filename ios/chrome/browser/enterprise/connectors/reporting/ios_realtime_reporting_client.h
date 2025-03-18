@@ -38,6 +38,9 @@ class IOSRealtimeReportingClient : public RealtimeReportingClientBase {
   void SetBrowserCloudPolicyClientForTesting(policy::CloudPolicyClient* client);
   void SetProfileCloudPolicyClientForTesting(policy::CloudPolicyClient* client);
 
+  // policy::CloudPolicyClient::Observer overrides:
+  void OnClientError(policy::CloudPolicyClient* client) override;
+
   // Determines if the real-time reporting feature is enabled.
   // Obtain settings to apply to a reporting event from ConnectorsService.
   // std::nullopt represents that reporting should not be done.
@@ -73,6 +76,8 @@ class IOSRealtimeReportingClient : public RealtimeReportingClientBase {
 
   std::pair<std::string, policy::CloudPolicyClient*> InitProfileReportingClient(
       const std::string& dm_token) override;
+
+  void RemoveDmTokenFromRejectedSet(const std::string& dm_token);
 
   raw_ptr<ProfileIOS> profile_;
   std::string username_;

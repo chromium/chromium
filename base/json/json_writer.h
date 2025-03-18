@@ -11,6 +11,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <variant>
 
 #include "base/base_export.h"
 #include "base/json/json_common.h"
@@ -94,7 +95,7 @@ class BASE_EXPORT JSONWriter {
 
   // Called recursively to build the JSON string. When completed,
   // |json_string_| will contain the JSON.
-  bool BuildJSONString(absl::monostate node, size_t depth);
+  bool BuildJSONString(std::monostate node, size_t depth);
   bool BuildJSONString(bool node, size_t depth);
   bool BuildJSONString(int node, size_t depth);
   bool BuildJSONString(double node, size_t depth);

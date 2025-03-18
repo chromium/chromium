@@ -23,7 +23,6 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace ash {
 

@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
 
 #include <string>
+#include <variant>
 
 #include "base/containers/span.h"
 #include "base/functional/overloaded.h"
@@ -17,7 +18,6 @@
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -99,7 +99,7 @@ TransferableMessage EncodeWithV8(const WebMessagePayload& message,
     v8::ValueSerializer serializer(isolate);
     serializer.WriteHeader();
 
-    absl::visit(
+    std::visit(
         base::Overloaded{
             [&](const std::u16string& str) {
               v8::Local<v8::String> message_as_value =
@@ -153,8 +153,8 @@ void CheckStringEQ(const std::optional<WebMessagePayload>& optional_payload,
                    const std::u16string& str) {
   EXPECT_TRUE(optional_payload);
   auto& payload = optional_payload.value();
-  EXPECT_TRUE(absl::holds_alternative<std::u16string>(payload));
-  EXPECT_EQ(str, absl::get<std::u16string>(payload));
+  EXPECT_TRUE(std::holds_alternative<std::u16string>(payload));
+  EXPECT_EQ(str, std::get<std::u16string>(payload));
 }
 
 void CheckVectorEQ(const std::optional<WebMessagePayload>& optional_payload,
@@ -162,10 +162,10 @@ void CheckVectorEQ(const std::optional<WebMessagePayload>& optional_payload,
   EXPECT_TRUE(optional_payload);
   auto& payload = optional_payload.value();
   EXPECT_TRUE(
-      absl::holds_alternative<std::unique_ptr<WebMessageArrayBufferPayload>>(
+      std::holds_alternative<std::unique_ptr<WebMessageArrayBufferPayload>>(
           payload));
   auto& array_buffer =
-      absl::get<std::unique_ptr<WebMessageArrayBufferPayload>>(payload);
+      std::get<std::unique_ptr<WebMessageArrayBufferPayload>>(payload);
   EXPECT_EQ(buffer.size(), array_buffer->GetLength());
 
   auto span = array_buffer->GetAsSpanIfPossible();
@@ -328,8 +328,8 @@ TEST(StringMessageCodecTest, InvalidDecode) {
       {0xff, 0x15, 0xfe, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
        0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0x10, '"',  0x01, 'a'});
   ASSERT_TRUE(valid_payload.has_value());
-  ASSERT_TRUE(absl::holds_alternative<std::u16string>(*valid_payload));
-  EXPECT_EQ(absl::get<std::u16string>(*valid_payload), u"a");
+  ASSERT_TRUE(std::holds_alternative<std::u16string>(*valid_payload));
+  EXPECT_EQ(std::get<std::u16string>(*valid_payload), u"a");
 }
 
 }  // namespace

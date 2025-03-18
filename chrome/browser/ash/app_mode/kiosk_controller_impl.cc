@@ -47,6 +47,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/ozone/public/input_controller.h"
@@ -110,7 +111,9 @@ KioskApp EmptyKioskApp(const KioskAppId& app_id) {
 }  // namespace
 
 KioskControllerImpl::KioskControllerImpl(
-    user_manager::UserManager* user_manager) {
+    PrefService& local_state,
+    user_manager::UserManager* user_manager)
+    : local_state_(local_state), iwa_manager_(local_state) {
   user_manager_observation_.Observe(user_manager);
 }
 
@@ -168,7 +171,7 @@ void KioskControllerImpl::InitializeKioskSystemSession(
   CHECK(!system_session_.has_value())
       << "KioskSystemSession is already initialized";
 
-  system_session_.emplace(profile, kiosk_app_id, app_name);
+  system_session_.emplace(local_state_.get(), profile, kiosk_app_id, app_name);
 
   switch (kiosk_app_id.type) {
     case KioskAppType::kWebApp:

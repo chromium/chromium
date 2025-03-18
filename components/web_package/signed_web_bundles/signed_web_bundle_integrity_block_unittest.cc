@@ -5,6 +5,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 
 #include <utility>
+#include <variant>
 
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
@@ -113,7 +114,7 @@ TEST(SignedWebBundleIntegrityBlockTest, ValidIntegrityBlockWithOneSignature) {
   EXPECT_EQ(signature_stack.size(), 1ul);
 
   auto* ed25519_signature_info =
-      absl::get_if<web_package::SignedWebBundleSignatureInfoEd25519>(
+      std::get_if<web_package::SignedWebBundleSignatureInfoEd25519>(
           &signature_stack.entries()[0].signature_info());
   ASSERT_TRUE(ed25519_signature_info);
 
@@ -148,7 +149,7 @@ TEST(SignedWebBundleIntegrityBlockTest, ValidIntegrityBlockWithTwoSignatures) {
   EXPECT_EQ(signature_stack.size(), 2ul);
 
   auto* ed25519_signature_info1 =
-      absl::get_if<web_package::SignedWebBundleSignatureInfoEd25519>(
+      std::get_if<web_package::SignedWebBundleSignatureInfoEd25519>(
           &signature_stack.entries()[0].signature_info());
   ASSERT_TRUE(ed25519_signature_info1);
   EXPECT_EQ(ed25519_signature_info1->public_key().bytes(), kEd25519PublicKey1);
@@ -157,7 +158,7 @@ TEST(SignedWebBundleIntegrityBlockTest, ValidIntegrityBlockWithTwoSignatures) {
               ElementsAreArray(kAttributesCbor1));
 
   auto* ed25519_signature_info2 =
-      absl::get_if<web_package::SignedWebBundleSignatureInfoEd25519>(
+      std::get_if<web_package::SignedWebBundleSignatureInfoEd25519>(
           &signature_stack.entries()[1].signature_info());
   ASSERT_TRUE(ed25519_signature_info2);
   EXPECT_EQ(ed25519_signature_info2->public_key().bytes(), kEd25519PublicKey2);

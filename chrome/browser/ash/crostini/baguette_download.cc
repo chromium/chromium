@@ -49,6 +49,11 @@ const net::NetworkTrafficAnnotationTag kBaguetteTrafficAnnotation =
       }
       policy {
         cookies_allowed: NO
+        setting:
+          "This feature can not be disabled by settings."
+        policy_exception_justification:
+          "This feature is required to deliver core user experiences and "
+          "cannot be disabled by policy."
       }
     )");
 

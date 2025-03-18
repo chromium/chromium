@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {PluginController, PluginControllerEventType} from '../controller.js';
 
@@ -47,6 +49,23 @@ export class ViewerBottomToolbarDropdownElement extends CrLitElement {
   override disconnectedCallback() {
     this.tracker_.removeAll();
     super.disconnectedCallback();
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('showDropdown_') && this.showDropdown_) {
+      const menuSlot =
+          this.shadowRoot.querySelector<HTMLSlotElement>('slot[name="menu"]');
+      assert(menuSlot);
+      const menuElements = menuSlot.assignedElements();
+      if (menuElements.length > 0) {
+        (menuElements[0]! as HTMLElement).focus();
+      }
+    }
   }
 
   protected toggleDropdown_(): void {

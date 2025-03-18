@@ -1777,7 +1777,7 @@ TEST_F(PrivacySandboxServiceTest,
   net::SchemefulSite primary_site(GURL("https://primary.test"));
   net::SchemefulSite associate1_site(associate1_gurl);
 
-  // Create Global First-Party Sets with the following set:
+  // Create Global RWS with the following set:
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate1.test"}
   net::GlobalFirstPartySets global_sets(
@@ -1792,11 +1792,7 @@ TEST_F(PrivacySandboxServiceTest,
       },
       {});
 
-  // Simulate 3PC are allowed while:
-  // - RWS pref is enabled
-  // - FPS UI Feature is enabled
-  feature_list()->InitWithFeatures(
-      {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
+  // Simulate 3PC are allowed while RWS pref is enabled
   CreateService();
   ClearRwsUserPrefs(prefs());
   prefs()->SetUserPref(prefs::kCookieControlsMode,
@@ -1821,7 +1817,7 @@ TEST_F(
   net::SchemefulSite primary_site(GURL("https://primary.test"));
   net::SchemefulSite associate1_site(associate1_gurl);
 
-  // Create Global First-Party Sets with the following set:
+  // Create Global RWS with the following set:
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate1.test"}
   net::GlobalFirstPartySets global_sets(
@@ -1836,11 +1832,7 @@ TEST_F(
       },
       {});
 
-  // Simulate all cookies are blocked while:
-  // - RWS pref is enabled
-  // - FPS UI Feature is enabled
-  feature_list()->InitWithFeatures(
-      {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
+  // Simulate all cookies are blocked while RWS pref is enabled
   prefs()->SetUserPref(
       prefs::kCookieControlsMode,
       std::make_unique<base::Value>(static_cast<int>(
@@ -1861,57 +1853,12 @@ TEST_F(
 }
 
 TEST_F(PrivacySandboxServiceTest,
-       GetRelatedWebsiteSetOwner_SimulatedRwsData_DisabledByFpsUiFeature) {
-  GURL associate1_gurl("https://associate1.test");
-  net::SchemefulSite primary_site(GURL("https://primary.test"));
-  net::SchemefulSite associate1_site(associate1_gurl);
-
-  // Create Global First-Party Sets with the following set:
-  // { primary: "https://primary.test",
-  // associatedSites: ["https://associate1.test"}
-  net::GlobalFirstPartySets global_sets(
-      kRelatedWebsiteSetsVersion,
-      {
-          {primary_site,
-           {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary,
-                                    std::nullopt)}},
-          {associate1_site,
-           {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
-                                    0)}},
-      },
-      {});
-
-  // Simulate FPS UI feature disabled while:
-  // - RWS pref is enabled
-  // - 3PC are being blocked
-  feature_list()->InitWithFeatures(
-      {}, {privacy_sandbox::kPrivacySandboxFirstPartySetsUI});
-  prefs()->SetUserPref(
-      prefs::kCookieControlsMode,
-      std::make_unique<base::Value>(static_cast<int>(
-          content_settings::CookieControlsMode::kBlockThirdParty)));
-  CreateService();
-  ClearRwsUserPrefs(prefs());
-  prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
-                       std::make_unique<base::Value>(true));
-
-  mock_first_party_sets_handler().SetGlobalSets(global_sets.Clone());
-
-  first_party_sets_policy_service()->InitForTesting();
-
-  // We shouldn't get associate1's owner since RWS is disabled.
-  EXPECT_EQ(
-      privacy_sandbox_service()->GetRelatedWebsiteSetOwner(associate1_gurl),
-      std::nullopt);
-}
-
-TEST_F(PrivacySandboxServiceTest,
        GetRelatedWebsiteSetOwner_SimulatedRwsData_DisabledByRwsPref) {
   GURL associate1_gurl("https://associate1.test");
   net::SchemefulSite primary_site(GURL("https://primary.test"));
   net::SchemefulSite associate1_site(associate1_gurl);
 
-  // Create Global First-Party Sets with the following set:
+  // Create Global RWS with the following set:
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate1.test"}
   net::GlobalFirstPartySets global_sets(
@@ -1926,11 +1873,7 @@ TEST_F(PrivacySandboxServiceTest,
       },
       {});
 
-  // Simulate RWS pref disabled while:
-  // - FPS UI Feature is enabled
-  // - 3PC are being blocked
-  feature_list()->InitWithFeatures(
-      {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
+  // Simulate RWS pref disabled while 3PC are being blocked
   prefs()->SetUserPref(
       prefs::kCookieControlsMode,
       std::make_unique<base::Value>(static_cast<int>(
@@ -1959,10 +1902,7 @@ TEST_F(PrivacySandboxServiceTest,
   net::SchemefulSite associate1_site(associate1_gurl);
   net::SchemefulSite associate2_site(associate2_gurl);
 
-  // Set up state that fully enables the First-Party Sets for UI; blocking 3PC,
-  // and enabling the FPS UI feature and the RWS enabled pref.
-  feature_list()->InitWithFeatures(
-      {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
+  // Set up state for the RWS UI: block 3PC and enable the RWS pref.
   prefs()->SetUserPref(
       prefs::kCookieControlsMode,
       std::make_unique<base::Value>(static_cast<int>(
@@ -1991,10 +1931,7 @@ TEST_F(PrivacySandboxServiceTest,
   net::SchemefulSite associate1_site(associate1_gurl);
   net::SchemefulSite associate2_site(associate2_gurl);
 
-  // Set up state that fully enables the First-Party Sets for UI; blocking 3PC,
-  // and enabling the FPS UI feature and the RWS enabled pref.
-  feature_list()->InitWithFeatures(
-      {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
+  // Set up state for the RWS UI: block 3PC and enable the RWS pref.
   prefs()->SetUserPref(
       prefs::kCookieControlsMode,
       std::make_unique<base::Value>(static_cast<int>(
@@ -2004,7 +1941,7 @@ TEST_F(PrivacySandboxServiceTest,
   prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
 
-  // Simulate that the Global First-Party Sets are ready with the following set:
+  // Simulate that the Global RWS are ready with the following set:
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate1.test", "https://associate2.test"] }
   mock_first_party_sets_handler().SetGlobalSets(net::GlobalFirstPartySets(
@@ -2022,7 +1959,7 @@ TEST_F(PrivacySandboxServiceTest,
       },
       {}));
 
-  // Simulate that associate2 is removed from the Global First-Party Sets for
+  // Simulate that associate2 is removed from the Global RWS for
   // this profile.
   mock_first_party_sets_handler().SetContextConfig(
       net::FirstPartySetsContextConfig::Create(
@@ -2050,11 +1987,6 @@ TEST_F(PrivacySandboxServiceTest, RwsPrefInit) {
       std::make_unique<base::Value>(static_cast<int>(
           content_settings::CookieControlsMode::kBlockThirdParty)));
 
-  // Whilst the FPS UI is not available, the pref should not be init.
-  feature_list()->InitAndDisableFeature(
-      privacy_sandbox::kPrivacySandboxFirstPartySetsUI);
-
-  CreateService();
   EXPECT_TRUE(
       prefs()->GetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled));
   EXPECT_FALSE(prefs()->GetBoolean(
@@ -2062,11 +1994,6 @@ TEST_F(PrivacySandboxServiceTest, RwsPrefInit) {
 
   // If the UI is available, the user blocks 3PC, and the pref has not been
   // previously init, it should be.
-  ClearRwsUserPrefs(prefs());
-  feature_list()->Reset();
-  feature_list()->InitAndEnableFeature(
-      privacy_sandbox::kPrivacySandboxFirstPartySetsUI);
-
   CreateService();
   EXPECT_FALSE(
       prefs()->GetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled));
@@ -2111,10 +2038,7 @@ TEST_F(PrivacySandboxServiceTest, RwsPrefInit) {
 }
 
 TEST_F(PrivacySandboxServiceTest, UsesConfiguredRelatedWebsiteSets) {
-  // Set up state that fully enables the RWS UI: blocking 3PC and enabling the
-  // FPS UI feature + FPS pref.
-  feature_list()->InitWithFeatures(
-      {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
+  // Set up state for the RWS UI: block 3PC and enable the RWS pref.
   prefs()->SetUserPref(
       prefs::kCookieControlsMode,
       std::make_unique<base::Value>(static_cast<int>(
@@ -2124,7 +2048,7 @@ TEST_F(PrivacySandboxServiceTest, UsesConfiguredRelatedWebsiteSets) {
   prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
 
-  // Simulate that the Global First-Party Sets are ready with the following
+  // Simulate that the Global RWS are ready with the following
   // set:
   // { primary: "https://youtube-primary.test",
   // associatedSites: ["https://youtube.com"]
@@ -2145,8 +2069,7 @@ TEST_F(PrivacySandboxServiceTest, UsesConfiguredRelatedWebsiteSets) {
       },
       {}));
 
-  // Simulate that https://google.de is moved into a new First-Party Set for
-  // this profile.
+  // Simulate that https://google.de is moved into a new RWS for this profile.
   mock_first_party_sets_handler().SetContextConfig(
       net::FirstPartySetsContextConfig::Create(
           {{net::SchemefulSite(GURL("https://google.de")),

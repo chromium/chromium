@@ -67,16 +67,16 @@ float ViewportDescription::ResolveViewportLength(
     return ViewportDescription::kValueAuto;
 
   if (length.IsFixed())
-    return length.GetFloatValue();
+    return length.Pixels();
 
   if (length.IsExtendToZoom())
     return ViewportDescription::kValueExtendToZoom;
 
   if (length.IsPercent() && direction == Direction::kHorizontal)
-    return initial_viewport_size.width() * length.GetFloatValue() / 100.0f;
+    return initial_viewport_size.width() * length.Percent() / 100.0f;
 
   if (length.IsPercent() && direction == Direction::kVertical)
-    return initial_viewport_size.height() * length.GetFloatValue() / 100.0f;
+    return initial_viewport_size.height() * length.Percent() / 100.0f;
 
   if (length.IsDeviceWidth())
     return initial_viewport_size.width();

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/anchor_evaluator_impl.h"
 
+#include <variant>
+
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
@@ -40,7 +42,7 @@ struct AnchorTestData {
       const PhysicalAnchorQuery& anchor_query) {
     Vector<AnchorTestData> items;
     for (auto entry : anchor_query) {
-      if (auto** name = absl::get_if<const ScopedCSSName*>(&entry.key)) {
+      if (auto** name = std::get_if<const ScopedCSSName*>(&entry.key)) {
         items.push_back(AnchorTestData{(*name)->GetName(), entry.value->rect});
       }
     }

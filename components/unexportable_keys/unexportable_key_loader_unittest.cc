@@ -4,6 +4,8 @@
 
 #include "components/unexportable_keys/unexportable_key_loader.h"
 
+#include <variant>
+
 #include "base/check.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -72,8 +74,8 @@ class UnexportableKeyLoaderTest : public testing::Test {
           QUEUED};  // QUEUED - tasks don't run until `RunUntilIdle()` is
                     // called.
   // Provides a mock key provider by default.
-  absl::variant<crypto::ScopedMockUnexportableKeyProvider,
-                crypto::ScopedNullUnexportableKeyProvider>
+  std::variant<crypto::ScopedMockUnexportableKeyProvider,
+               crypto::ScopedNullUnexportableKeyProvider>
       scoped_key_provider_;
   std::unique_ptr<UnexportableKeyTaskManager> task_manager_;
   std::unique_ptr<UnexportableKeyServiceImpl> service_;
