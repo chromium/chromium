@@ -41,6 +41,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/chrome_extension_registrar_delegate.h"
 #include "chrome/browser/extensions/component_loader.h"
+#include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/delayed_install_manager.h"
 #include "chrome/browser/extensions/extension_action_storage_manager.h"
@@ -224,7 +225,8 @@ ExtensionService::ExtensionService(
                                 extension_registrar_),
       force_installed_tracker_(registry_, profile_),
       force_installed_metrics_(registry_, profile_, &force_installed_tracker_),
-      corrupted_extension_reinstaller_(profile_),
+      corrupted_extension_reinstaller_(
+          CorruptedExtensionReinstaller::Get(profile_)),
       delayed_install_manager_(DelayedInstallManager::Get(profile_)) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   TRACE_EVENT0("browser,startup", "ExtensionService::ExtensionService::ctor");
@@ -293,7 +295,7 @@ ExtensionService::ExtensionService(
 
 CorruptedExtensionReinstaller*
 ExtensionService::corrupted_extension_reinstaller() {
-  return &corrupted_extension_reinstaller_;
+  return corrupted_extension_reinstaller_;
 }
 
 base::WeakPtr<ExtensionServiceInterface> ExtensionService::AsWeakPtr() {
@@ -310,7 +312,7 @@ void ExtensionService::Shutdown() {
   ExtensionManagementFactory::GetForBrowserContext(profile())->RemoveObserver(
       this);
   external_install_manager_->Shutdown();
-  corrupted_extension_reinstaller_.Shutdown();
+  corrupted_extension_reinstaller_ = nullptr;
   extension_registrar_->Shutdown();
   extension_registrar_delegate_->Shutdown();
   external_provider_manager_->Shutdown();
