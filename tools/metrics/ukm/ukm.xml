@@ -5585,7 +5585,7 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="BTM.ShortVisit" singular="True">
+<event name="BTM.ShortVisit">
   <owner>rtarpine@chromium.org</owner>
   <owner>dc-komics@google.com</owner>
   <summary>
@@ -5632,6 +5632,12 @@ be describing additional metrics about the same event.
       previous site).
     </summary>
   </metric>
+  <metric name="ShortVisitId">
+    <summary>
+      A randomly-generated 32-bit id to connect this event with the
+      BTM.ShortVisitNeighbor events emitted for the same visit.
+    </summary>
+  </metric>
   <metric name="SiteEngagement" enum="SiteEngagementLevel">
     <summary>
       The level of site engagement returned by the SiteEngagementService.
@@ -5642,13 +5648,36 @@ be describing additional metrics about the same event.
       If the BTM database has a record of past user interaction on the
       briefly-visited page's site, then the time that has elapsed since then,
       bucketed according to ukm::GetSemanticBucketMinForDurationTiming(); if no
-      record, then -1.
+      record, then -1. If the BTM Service is disabled, then -2. If the last
+      record of interaction has a timestamp in the future, then -3.
     </summary>
   </metric>
   <metric name="VisitDuration">
     <summary>
       The integer number of seconds (0...10) the user spent on the page before
       initiating the navigation away.
+    </summary>
+  </metric>
+</event>
+
+<event name="BTM.ShortVisitNeighbor">
+  <owner>rtarpine@chromium.org</owner>
+  <owner>dc-komics@google.com</owner>
+  <summary>
+    Emitted at the same time as a BTM.ShortVisit event, but for the pages
+    visited before and after the current page.
+  </summary>
+  <metric name="IsPreceding">
+    <summary>
+      True iff this is the page visited *before* the page with the
+      BTM.ShortVisit event.
+    </summary>
+  </metric>
+  <metric name="ShortVisitId">
+    <summary>
+      A randomly-generated 32-bit id to connect this event with the
+      BTM.ShortVisit and other BTM.ShortVisitNeighbor event emitted for the same
+      visit.
     </summary>
   </metric>
 </event>
