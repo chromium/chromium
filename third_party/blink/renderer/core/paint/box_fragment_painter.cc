@@ -1338,87 +1338,11 @@ void BoxFragmentPainter::PaintGapDecorations(const PaintInfo& paint_info,
       box_fragment_.GapGeometry();
   CHECK(gap_geometry);
 
-  PaintNewGridGaps(kForRows, paint_info, paint_rect, gap_geometry);
-  PaintNewGridGaps(kForColumns, paint_info, paint_rect, gap_geometry);
+  PaintGridGaps(kForRows, paint_info, paint_rect, gap_geometry);
+  PaintGridGaps(kForColumns, paint_info, paint_rect, gap_geometry);
 }
 
 void BoxFragmentPainter::PaintGridGaps(
-    GridTrackSizingDirection track_direction,
-    const PaintInfo& paint_info,
-    const PhysicalRect& paint_rect,
-    const GapFragmentData::GapBoundaries& gaps) {
-  const ComputedStyle& style = box_fragment_.Style();
-
-  WritingModeConverter converter(style.GetWritingDirection(),
-                                 box_fragment_.Size());
-  AutoDarkMode auto_dark_mode(
-      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
-  BoxSide box_side = BoxSideFromGridDirection(style, track_direction);
-
-  Color rule_color;
-  EBorderStyle rule_style;
-  LayoutUnit rule_thickness;
-  // TODO(crbug.com/357648037): We are currently only painting gaps with a
-  // single color, but we should update this to paint with all values
-  // potentially set by the author.
-  if (track_direction == kForColumns) {
-    rule_color =
-        LayoutObject::ResolveColor(style, GetCSSPropertyColumnRuleColor());
-    rule_style = ComputedStyle::CollapsedBorderStyle(
-        style.ColumnRuleStyle().GetLegacyValue());
-    rule_thickness = LayoutUnit(style.ColumnRuleWidth().GetLegacyValue());
-  } else {
-    rule_color =
-        LayoutObject::ResolveColor(style, GetCSSPropertyRowRuleColor());
-    rule_style = ComputedStyle::CollapsedBorderStyle(
-        style.RowRuleStyle().GetLegacyValue());
-    rule_thickness = LayoutUnit(style.RowRuleWidth().GetLegacyValue());
-  }
-
-  const PhysicalRect local_rect = box_fragment_.LocalRect();
-  const LayoutUnit cross_track_offset = track_direction == kForColumns
-                                            ? local_rect.offset.top
-                                            : local_rect.offset.left;
-  const LayoutUnit cross_track_size = track_direction == kForColumns
-                                          ? local_rect.size.height
-                                          : local_rect.size.width;
-
-  for (const auto& gap : gaps) {
-    CHECK(gap.start_offset);
-    CHECK(gap.end_offset);
-
-    LayoutUnit inline_start;
-    LayoutUnit inline_size;
-    LayoutUnit block_start;
-    LayoutUnit block_size;
-
-    const LayoutUnit center = (gap.start_offset + gap.end_offset) / 2;
-    if (track_direction == kForColumns) {
-      // For columns, paint a vertical strip at the center of the gap.
-      inline_start = center - (rule_thickness / 2);
-      inline_size = rule_thickness;
-      block_start = cross_track_offset;
-      block_size = cross_track_size;
-    } else {
-      // For rows, paint a horizontal strip at the center of the gap.
-      inline_start = cross_track_offset;
-      inline_size = cross_track_size;
-      block_start = center - (rule_thickness / 2);
-      block_size = rule_thickness;
-    }
-
-    const LogicalRect gap_logical(inline_start, block_start, inline_size,
-                                  block_size);
-    PhysicalRect gap_rect = converter.ToPhysical(gap_logical);
-    gap_rect.offset += paint_rect.offset;
-
-    BoxBorderPainter::DrawBoxSide(paint_info.context,
-                                  ToPixelSnappedRect(gap_rect), box_side,
-                                  rule_color, rule_style, auto_dark_mode);
-  }
-}
-
-void BoxFragmentPainter::PaintNewGridGaps(
     GridTrackSizingDirection track_direction,
     const PaintInfo& paint_info,
     const PhysicalRect& paint_rect,
