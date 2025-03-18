@@ -134,9 +134,6 @@ class TabStyleViewsImpl : public TabStyleViews {
   // effects and consider only the current tab's state.
   TabStyle::SeparatorOpacities GetSeparatorOpacities(bool for_layout) const;
 
-  // Returns whether we shoould extend the hit test region for Fitts' Law.
-  bool ShouldExtendHitTest() const;
-
   // Returns whether the mouse is currently hovering this tab.
   bool IsHovering() const;
 
@@ -367,7 +364,6 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
 
   // Path-specific adjustments:
   const float stroke_adjustment = stroke_thickness * scale;
-  bool extend_to_top = false;
   if (path_type == TabStyle::PathType::kFill ||
       path_type == TabStyle::PathType::kBorder) {
     tab_left += 0.5f * stroke_adjustment;
@@ -422,37 +418,23 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
                tab_bottom - left_extension_corner_radius);
   }
 
-  // Draw the ascender and top-left curve, if present.
-  if (extend_to_top) {
-    //   ┎─────────╮
-    //   ┃ Content │
-    // ┌─╯         ╰─┐
-    path.lineTo(tab_left, tab_top);
-  } else {
-    //   ╔─────────╮
-    //   ┃ Content │
-    // ┌─╯         ╰─┐
-    path.lineTo(tab_left, tab_top + content_corner_radius);
-    path.arcTo(content_corner_radius, content_corner_radius, 0,
-               SkPath::kSmall_ArcSize, SkPathDirection::kCW,
-               tab_left + content_corner_radius, tab_top);
-  }
+  // Draw the ascender and top-left curve.
+  //   ╔─────────╮
+  //   ┃ Content │
+  // ┌─╯         ╰─┐
+  path.lineTo(tab_left, tab_top + content_corner_radius);
+  path.arcTo(content_corner_radius, content_corner_radius, 0,
+             SkPath::kSmall_ArcSize, SkPathDirection::kCW,
+             tab_left + content_corner_radius, tab_top);
 
-  // Draw the top crossbar and top-right curve, if present.
-  if (extend_to_top) {
-    //   ┌━━━━━━━━━┑
-    //   │ Content │
-    // ┌─╯         ╰─┐
-    path.lineTo(tab_right, tab_top);
-  } else {
-    //   ╭━━━━━━━━━╗
-    //   │ Content │
-    // ┌─╯         ╰─┐
-    path.lineTo(tab_right - content_corner_radius, tab_top);
-    path.arcTo(content_corner_radius, content_corner_radius, 0,
-               SkPath::kSmall_ArcSize, SkPathDirection::kCW, tab_right,
-               tab_top + content_corner_radius);
-  }
+  // Draw the top crossbar and top-right curve.
+  //   ╭━━━━━━━━━╗
+  //   │ Content │
+  // ┌─╯         ╰─┐
+  path.lineTo(tab_right - content_corner_radius, tab_top);
+  path.arcTo(content_corner_radius, content_corner_radius, 0,
+             SkPath::kSmall_ArcSize, SkPathDirection::kCW, tab_right,
+             tab_top + content_corner_radius);
 
   if (tab_right != right) {
     // Draw the descender and bottom-right corner.
@@ -802,11 +784,6 @@ float TabStyleViewsImpl::GetHoverInterpolatedSeparatorOpacity(
   };
   const float hover_value = GetHoverAnimationValue();
   return 1.0f - std::max(hover_value, adjacent_hover_value(other_tab));
-}
-
-bool TabStyleViewsImpl::ShouldExtendHitTest() const {
-  const views::Widget* widget = tab_->GetWidget();
-  return widget->IsMaximized() || widget->IsFullscreen();
 }
 
 bool TabStyleViewsImpl::IsHovering() const {
