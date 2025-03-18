@@ -7897,6 +7897,10 @@ const char kGlicDescription[] = "Enables glic";
 const char kGlicDetachedName[] = "Glic Detached Mode";
 const char kGlicDetachedDescription[] = "Enables glic detached mode";
 
+const char kGlicUserResizeName[] = "Glic User Resize";
+const char kGlicUserResizeDescription[] =
+    "Enables resizing the glic panel by dragging";
+
 const char kDesktopPWAsUserLinkCapturingScopeExtensionsName[] =
     "Desktop PWA Link Capturing with Scope Extensions";
 const char kDesktopPWAsUserLinkCapturingScopeExtensionsDescription[] =

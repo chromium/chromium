@@ -4940,6 +4940,14 @@
     "expiry_milestone": 137
   },
   {
+    "name": "glic-user-resize",
+    "owners": [
+      "iwells@chromium.org",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 137
+  },
+  {
     "name": "global-media-controls-updated-ui",
     "owners": [ "yrw@chromium.org", "media-dev@chromium.org" ],
     "expiry_milestone": 140
