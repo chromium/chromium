@@ -1450,6 +1450,21 @@ void URLLoader::FollowRedirect(
     NOTREACHED();
   }
 
+  // Note: There are some ordering dependencies here.
+  // `CalculateStorageAccessStatus` depends on
+  // `url_request->cookie_setting_overrides()`. `SetFetchMetadataHeaders`
+  // depends on `url_request_->storage_access_status()`.
+  url_request_->set_storage_access_status(
+      url_request_->CalculateStorageAccessStatus());
+
+  // We may need to clear out old Sec- prefixed request headers. We'll attempt
+  // to do this before we re-add any.
+  MaybeRemoveSecHeaders(url_request_.get(), *deferred_redirect_url_);
+  SetFetchMetadataHeaders(url_request_.get(), request_mode_,
+                          has_user_activation_, request_destination_,
+                          deferred_redirect_url_.get(), *factory_params_,
+                          *origin_access_list_, request_credentials_mode_);
+
   // Set seen_raw_request_headers_ to false in order to make sure this redirect
   // also calls the devtools observer.
   seen_raw_request_headers_ = false;
@@ -1804,21 +1819,6 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
     }
   }
   RecordStorageAccessRedirectMetric(storage_access_redirect_kind);
-
-  // Note: There are some ordering dependencies here.
-  // `CalculateStorageAccessStatus` depends on
-  // `url_request->cookie_setting_overrides()`. `SetFetchMetadataHeaders`
-  // depends on `url_request_->storage_access_status()`.
-  url_request_->set_storage_access_status(
-      url_request_->CalculateStorageAccessStatus(redirect_info));
-
-  // We may need to clear out old Sec- prefixed request headers. We'll attempt
-  // to do this before we re-add any.
-  MaybeRemoveSecHeaders(url_request_.get(), redirect_info.new_url);
-  SetFetchMetadataHeaders(url_request_.get(), request_mode_,
-                          has_user_activation_, request_destination_,
-                          &redirect_info.new_url, *factory_params_,
-                          *origin_access_list_, request_credentials_mode_);
 
   DCHECK_EQ(emitted_devtools_raw_request_, emitted_devtools_raw_response_);
   response->emitted_extra_info = emitted_devtools_raw_request_;

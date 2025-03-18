@@ -900,13 +900,15 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   static bool DefaultCanUseCookies();
 
   // Calculates the StorageAccessStatus for this request, according to the
-  // NetworkDelegate. Also records metrics.
+  // NetworkDelegate. Also records metrics. When calling this method during a
+  // redirect, the `URLRequest::Delegate::OnReceivedRedirect` must have already
+  // set `*defer_redirect` to true, and have returned control to URLRequest.
+  // This implies that it's illegal to call this method from within
+  // `Delegate::OnReceivedRedirect`.
   // TODO(https://crbug.com/366284840): Move this to URLLoader once the
   // "Activate-Storage-Access: retry" header is handled in URLLoader.
   std::optional<net::cookie_util::StorageAccessStatus>
-  CalculateStorageAccessStatus(
-      base::optional_ref<const RedirectInfo> redirect_info =
-          base::optional_ref<const RedirectInfo>(std::nullopt)) const;
+  CalculateStorageAccessStatus() const;
 
   base::WeakPtr<URLRequest> GetWeakPtr();
 

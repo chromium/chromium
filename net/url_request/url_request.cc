@@ -1385,10 +1385,16 @@ void URLRequest::set_socket_tag(const SocketTag& socket_tag) {
   socket_tag_ = socket_tag;
 }
 std::optional<net::cookie_util::StorageAccessStatus>
-URLRequest::CalculateStorageAccessStatus(
-    base::optional_ref<const RedirectInfo> redirect_info) const {
+URLRequest::CalculateStorageAccessStatus() const {
+  CHECK_EQ(is_redirecting(), deferred_redirect_info_.has_value());
+
+  // `Delegate::OnReceivedRedirect` may set `defer_redirect` inside of
+  // `URLRequest::ReceivedRedirect` to true, which in turn sets the
+  // `deferred_redirect_info_` that has to be used when calculating new storage
+  // access status.
   std::optional<net::cookie_util::StorageAccessStatus> storage_access_status =
-      network_delegate()->GetStorageAccessStatus(*this, redirect_info);
+      network_delegate()->GetStorageAccessStatus(*this,
+                                                 deferred_redirect_info_);
 
   auto get_storage_access_value_outcome_if_omitted =
       [&]() -> std::optional<net::cookie_util::StorageAccessStatusOutcome> {
