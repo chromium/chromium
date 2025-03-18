@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAVED_TAB_GROUPS_INTERNAL_SHARED_TAB_GROUP_PRECONDITION_CHECKER_H_
-#define COMPONENTS_SAVED_TAB_GROUPS_INTERNAL_SHARED_TAB_GROUP_PRECONDITION_CHECKER_H_
+#ifndef COMPONENTS_DATA_SHARING_PUBLIC_DATA_TYPE_CONTROLLER_MANAGED_ACCOUNT_PRECONDITION_CHECKER_H_
+#define COMPONENTS_DATA_SHARING_PUBLIC_DATA_TYPE_CONTROLLER_MANAGED_ACCOUNT_PRECONDITION_CHECKER_H_
 
 #include <memory>
 
@@ -13,20 +13,21 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
 
-namespace tab_groups {
+namespace data_sharing {
 
 // Helper class to determine whether a user is eligible for syncing the
-// SHARED_TAB_GROUP_DATA sync data type. This is needed to disable the data type
-// for unsupported users such as enterprise users in the data type controller.
-class SharedTabGroupPreconditionChecker : public syncer::SyncServiceObserver {
+// SHARED_TAB_GROUP_DATA and COLLABORATION_GROUP sync data types. This is needed
+// to disable the data type for unsupported users such as enterprise users in
+// the data type controller.
+class ManagedAccountPreconditionChecker : public syncer::SyncServiceObserver {
  public:
   // `on_precondition_changed` is called whenever the result of
   // `GetPreconditionState()` has possibly changed.
-  SharedTabGroupPreconditionChecker(
+  ManagedAccountPreconditionChecker(
       syncer::SyncService* sync_service,
       signin::IdentityManager* identity_manager,
       base::RepeatingClosure on_precondition_changed);
-  ~SharedTabGroupPreconditionChecker() override;
+  ~ManagedAccountPreconditionChecker() override;
 
   syncer::DataTypeController::PreconditionState GetPreconditionState() const;
 
@@ -46,6 +47,6 @@ class SharedTabGroupPreconditionChecker : public syncer::SyncServiceObserver {
   std::unique_ptr<signin::AccountManagedStatusFinder> managed_status_finder_;
 };
 
-}  // namespace tab_groups
+}  // namespace data_sharing
 
-#endif  // COMPONENTS_SAVED_TAB_GROUPS_INTERNAL_SHARED_TAB_GROUP_PRECONDITION_CHECKER_H_
+#endif  // COMPONENTS_DATA_SHARING_PUBLIC_DATA_TYPE_CONTROLLER_MANAGED_ACCOUNT_PRECONDITION_CHECKER_H_

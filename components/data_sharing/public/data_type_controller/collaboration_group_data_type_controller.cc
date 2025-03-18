@@ -2,25 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/saved_tab_groups/internal/shared_tab_group_data_type_controller.h"
+#include "components/data_sharing/public/data_type_controller/collaboration_group_data_type_controller.h"
 
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "components/saved_tab_groups/internal/shared_tab_group_precondition_checker.h"
+#include "components/data_sharing/public/data_type_controller/managed_account_precondition_checker.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
 
-namespace tab_groups {
+namespace data_sharing {
 
-SharedTabGroupDataTypeController::SharedTabGroupDataTypeController(
+CollaborationGroupDataTypeController::CollaborationGroupDataTypeController(
     std::unique_ptr<syncer::DataTypeControllerDelegate>
         delegate_for_full_sync_mode,
     std::unique_ptr<syncer::DataTypeControllerDelegate>
         delegate_for_transport_mode,
     syncer::SyncService* sync_service,
     signin::IdentityManager* identity_manager)
-    : DataTypeController(syncer::SHARED_TAB_GROUP_DATA,
+    : DataTypeController(syncer::COLLABORATION_GROUP,
                          std::move(delegate_for_full_sync_mode),
                          std::move(delegate_for_transport_mode)),
       precondition_checker_(
@@ -30,11 +30,12 @@ SharedTabGroupDataTypeController::SharedTabGroupDataTypeController(
                               base::Unretained(sync_service),
                               type())) {}
 
-SharedTabGroupDataTypeController::~SharedTabGroupDataTypeController() = default;
+CollaborationGroupDataTypeController::~CollaborationGroupDataTypeController() =
+    default;
 
 syncer::DataTypeController::PreconditionState
-SharedTabGroupDataTypeController::GetPreconditionState() const {
+CollaborationGroupDataTypeController::GetPreconditionState() const {
   return precondition_checker_.GetPreconditionState();
 }
 
-}  // namespace tab_groups
+}  // namespace data_sharing
