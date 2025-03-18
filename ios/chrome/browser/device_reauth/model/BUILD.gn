@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("device_reauth") {
+source_set("model") {
   sources = [
     "ios_device_authenticator.h",
     "ios_device_authenticator.mm",
@@ -25,7 +25,7 @@ source_set("unit_tests") {
   deps = [
     "//base/test:test_proto",
     "//base/test:test_support",
-    "//ios/chrome/browser/device_reauth:device_reauth",
+    "//ios/chrome/browser/device_reauth/model:model",
     "//ios/chrome/test/app:test_support",
     "//testing/gtest",
   ]

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_DEVICE_REAUTH_IOS_DEVICE_AUTHENTICATOR_H_
-#define IOS_CHROME_BROWSER_DEVICE_REAUTH_IOS_DEVICE_AUTHENTICATOR_H_
+#ifndef IOS_CHROME_BROWSER_DEVICE_REAUTH_MODEL_IOS_DEVICE_AUTHENTICATOR_H_
+#define IOS_CHROME_BROWSER_DEVICE_REAUTH_MODEL_IOS_DEVICE_AUTHENTICATOR_H_
 
 #import "base/functional/callback.h"
 #import "base/memory/weak_ptr.h"
@@ -41,4 +41,4 @@ class IOSDeviceAuthenticator : public DeviceAuthenticatorCommon {
   base::WeakPtrFactory<IOSDeviceAuthenticator> weak_ptr_factory_{this};
 };
 
-#endif  // IOS_CHROME_BROWSER_DEVICE_REAUTH_IOS_DEVICE_AUTHENTICATOR_H_
+#endif  // IOS_CHROME_BROWSER_DEVICE_REAUTH_MODEL_IOS_DEVICE_AUTHENTICATOR_H_

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/device_reauth/ios_device_authenticator_factory.h"
+#import "ios/chrome/browser/device_reauth/model/ios_device_authenticator_factory.h"
 
-#import "ios/chrome/browser/device_reauth/ios_device_authenticator.h"
+#import "ios/chrome/browser/device_reauth/model/ios_device_authenticator.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
