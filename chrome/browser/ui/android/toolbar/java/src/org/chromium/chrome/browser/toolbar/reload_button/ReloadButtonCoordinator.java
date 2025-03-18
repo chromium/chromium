@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar.reload_button;
 
+import android.animation.ObjectAnimator;
+import android.view.View;
 import android.widget.ImageButton;
 
 import org.chromium.build.annotations.NullMarked;
@@ -36,7 +38,17 @@ public class ReloadButtonCoordinator {
      * @param delegate that contains reload logic for reload button.
      */
     public ReloadButtonCoordinator(ImageButton view, ReloadButtonCoordinator.Delegate delegate) {
-        final var model = new PropertyModel.Builder(ReloadButtonProperties.ALL_KEYS).build();
+        final var model =
+                new PropertyModel.Builder(ReloadButtonProperties.ALL_KEYS)
+                        .with(ReloadButtonProperties.ALPHA, view.getAlpha())
+                        .with(
+                                ReloadButtonProperties.IS_VISIBLE,
+                                view.getVisibility() == View.VISIBLE)
+                        .with(
+                                ReloadButtonProperties.CONTENT_DESCRIPTION,
+                                view.getContentDescription())
+                        .with(ReloadButtonProperties.DRAWABLE_LEVEL, view.getDrawable().getLevel())
+                        .build();
         mMediator =
                 new ReloadButtonMediator(
                         model,
@@ -62,6 +74,25 @@ public class ReloadButtonCoordinator {
      */
     public void setEnabled(boolean isEnabled) {
         mMediator.setEnabled(isEnabled);
+    }
+
+    /**
+     * Sets reload button visibility.
+     *
+     * @param isVisible indicated whether view should be visible or gone.
+     */
+    public void setVisibility(boolean isVisible) {
+        mMediator.setVisibility(isVisible);
+    }
+
+    /**
+     * Prepares the view for fade animation and returns an alpha animator.
+     *
+     * @param shouldShow indicated fade in or out animation type.
+     * @return {@link ObjectAnimator} that animates view's alpha.
+     */
+    public ObjectAnimator getFadeAnimator(boolean shouldShow) {
+        return mMediator.getFadeAnimator(shouldShow);
     }
 
     /** Destroys current object instance. It can't be used after this call. */

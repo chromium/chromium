@@ -174,7 +174,8 @@ public class CustomTabToolbarUnitTest {
                 mOfflineDownloader,
                 mUserEducationHelper,
                 trackerSupplier,
-                mToolbarProgressBar);
+                mToolbarProgressBar,
+                null);
 
         when(mFeatureOverridesManager.isFeatureEnabled(anyString())).thenReturn(null);
         mToolbar.setFeatureOverridesManager(mFeatureOverridesManager);

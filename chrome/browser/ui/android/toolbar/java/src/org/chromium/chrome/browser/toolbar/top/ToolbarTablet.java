@@ -49,13 +49,16 @@ import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.reload_button.ReloadButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.widget.Toast;
 
 import java.util.ArrayList;
@@ -66,6 +69,9 @@ import java.util.function.BooleanSupplier;
 @SuppressLint("Instantiatable")
 public class ToolbarTablet extends ToolbarLayout
         implements OnClickListener, View.OnLongClickListener {
+    private static final int ICON_FADE_IN_ANIMATION_DELAY_MS = 75;
+    private static final int ICON_FADE_ANIMATION_DURATION_MS = 150;
+
     /** Downloads page for offline access. */
     public interface OfflineDownloader {
         /**
@@ -97,6 +103,7 @@ public class ToolbarTablet extends ToolbarLayout
 
     private Boolean mIsIncognitoBranded;
     private LocationBarCoordinator mLocationBar;
+    private ReloadButtonCoordinator mReloadButtonCoordinator;
 
     private final int mStartPaddingWithButtons;
     private final int mStartPaddingWithoutButtons;
@@ -138,7 +145,7 @@ public class ToolbarTablet extends ToolbarLayout
         // changes.
         mShouldAnimateButtonVisibilityChange = false;
         mToolbarButtonsVisible = true;
-        mToolbarButtons = new ImageButton[] {mBackButton, mForwardButton, mReloadButton};
+        mToolbarButtons = new ImageButton[] {mBackButton, mForwardButton};
     }
 
     @Override
@@ -583,7 +590,8 @@ public class ToolbarTablet extends ToolbarLayout
             OfflineDownloader offlineDownloader,
             UserEducationHelper userEducationHelper,
             ObservableSupplier<Tracker> trackerSupplier,
-            ToolbarProgressBar progressBar) {
+            ToolbarProgressBar progressBar,
+            ReloadButtonCoordinator reloadButtonCoordinator) {
         super.initialize(
                 toolbarDataProvider,
                 tabController,
@@ -594,9 +602,11 @@ public class ToolbarTablet extends ToolbarLayout
                 offlineDownloader,
                 userEducationHelper,
                 trackerSupplier,
-                progressBar);
+                progressBar,
+                reloadButtonCoordinator);
         mHistoryDelegate = historyDelegate;
         mOfflineDownloader = offlineDownloader;
+        mReloadButtonCoordinator = reloadButtonCoordinator;
         menuButtonCoordinator.setVisibility(true);
     }
 
@@ -772,6 +782,7 @@ public class ToolbarTablet extends ToolbarLayout
             for (ImageButton button : mToolbarButtons) {
                 button.setVisibility(visible ? View.VISIBLE : View.GONE);
             }
+            mReloadButtonCoordinator.setVisibility(visible);
             mLocationBar.setShouldShowButtonsWhenUnfocusedForTablet(visible);
             setStartPaddingBasedOnButtonVisibility(visible);
             setIncognitoIndicatorVisibility();
@@ -820,6 +831,12 @@ public class ToolbarTablet extends ToolbarLayout
             animators.add(mLocationBar.createShowButtonAnimatorForTablet(button));
         }
 
+        final var reloadButtonAnimator = mReloadButtonCoordinator.getFadeAnimator(true);
+        reloadButtonAnimator.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
+        reloadButtonAnimator.setStartDelay(ICON_FADE_IN_ANIMATION_DELAY_MS);
+        reloadButtonAnimator.setDuration(ICON_FADE_ANIMATION_DURATION_MS);
+        animators.add(reloadButtonAnimator);
+
         // Add animators for location bar.
         animators.addAll(
                 mLocationBar.getShowButtonsWhenUnfocusedAnimatorsForTablet(
@@ -836,6 +853,8 @@ public class ToolbarTablet extends ToolbarLayout
                         for (ImageButton button : mToolbarButtons) {
                             button.setVisibility(View.VISIBLE);
                         }
+                        mReloadButtonCoordinator.setVisibility(true);
+
                         // Set the padding at the start of the animation so the toolbar buttons
                         // don't jump when the animation ends.
                         setStartPaddingBasedOnButtonVisibility(true);
@@ -864,6 +883,11 @@ public class ToolbarTablet extends ToolbarLayout
             }
         }
 
+        final var reloadButtonAnimator = mReloadButtonCoordinator.getFadeAnimator(false);
+        reloadButtonAnimator.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
+        reloadButtonAnimator.setDuration(ICON_FADE_ANIMATION_DURATION_MS);
+        animators.add(reloadButtonAnimator);
+
         // Add animators for location bar.
         animators.addAll(
                 mLocationBar.getHideButtonsWhenUnfocusedAnimatorsForTablet(
@@ -873,27 +897,32 @@ public class ToolbarTablet extends ToolbarLayout
         set.playTogether(animators);
 
         set.addListener(
-                new AnimatorListenerAdapter() {
+                new CancelAwareAnimatorListener() {
                     @Override
-                    public void onAnimationStart(Animator animation) {
+                    public void onStart(Animator animator) {
                         keepControlsShownForAnimation();
 
                         setIncognitoIndicatorVisibility();
                     }
 
                     @Override
-                    public void onAnimationEnd(Animator animation) {
-                        // Only set end visibility and alpha if the animation is ending because it's
-                        // completely finished and not because it was canceled.
-                        if (mToolbarButtons[0].getAlpha() == 0.f) {
-                            for (ImageButton button : mToolbarButtons) {
-                                button.setVisibility(View.GONE);
-                                button.setAlpha(1.f);
-                            }
-                            // Set the padding at the end of the animation so the toolbar buttons
-                            // don't jump when the animation starts.
-                            setStartPaddingBasedOnButtonVisibility(false);
+                    public void onCancel(Animator animator) {
+                        mButtonVisibilityAnimators = null;
+                        allowBrowserControlsHide();
+                    }
+
+                    @Override
+                    public void onEnd(Animator animator) {
+                        for (ImageButton button : mToolbarButtons) {
+                            button.setVisibility(View.GONE);
                         }
+
+                        mReloadButtonCoordinator.setVisibility(false);
+
+                        // Set the padding at the end of the animation so the toolbar buttons
+                        // don't jump when the animation starts.
+                        setStartPaddingBasedOnButtonVisibility(false);
+
                         mButtonVisibilityAnimators = null;
                         allowBrowserControlsHide();
                     }
@@ -917,6 +946,11 @@ public class ToolbarTablet extends ToolbarLayout
 
     void setToolbarButtonsVisibleForTesting(boolean value) {
         mToolbarButtonsVisible = value;
+    }
+
+    @VisibleForTesting
+    void setReloadButtonCoordinator(ReloadButtonCoordinator coordinator) {
+        mReloadButtonCoordinator = coordinator;
     }
 
     public ImageButton getBookmarkButtonForTesting() {

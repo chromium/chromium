@@ -12,11 +12,11 @@ import android.view.MotionEvent;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.KeyboardNavigationListener;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelAnimatorFactory;
 
 /**
  * A Mediator for reload button. Glues reload button and external events to the model that relays
@@ -70,14 +70,15 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
             ColorStateList tint, ColorStateList activityFocusTint, int brandedColorScheme) {}
 
     /**
-     * Creates a show/hide animator that animates view's alpha.
+     * Prepares the view for fade animation and returns an alpha animator.
      *
-     * @param isShowing indicated fade in or out animation type
+     * @param shouldShow indicated fade in or out animation type
      * @return {@link ObjectAnimator} that animates view's alpha
      */
-    // TODO(vkorotkevich): Remove @Nullable
-    public @Nullable ObjectAnimator getFadeAnimator(boolean isShowing) {
-        return null;
+    public ObjectAnimator getFadeAnimator(boolean shouldShow) {
+        mModel.set(ReloadButtonProperties.ALPHA, shouldShow ? 0f : 1f);
+        return PropertyModelAnimatorFactory.ofFloat(
+                mModel, ReloadButtonProperties.ALPHA, shouldShow ? 1f : 0f);
     }
 
     /**
@@ -116,7 +117,9 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
      *
      * @param isVisible indicated whether view should be visible or gone.
      */
-    public void setVisibility(boolean isVisible) {}
+    public void setVisibility(boolean isVisible) {
+        mModel.set(ReloadButtonProperties.IS_VISIBLE, isVisible);
+    }
 
     /**
      * Sets a listeners that allows parent to intercept keyboard navigation events.

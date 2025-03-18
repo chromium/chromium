@@ -29,7 +29,7 @@ class ReloadButtonProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableBooleanPropertyKey IS_ENABLED = new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey IS_VISIBLE = new WritableBooleanPropertyKey();
-    public static final WritableObjectPropertyKey<String> CONTENT_DESCRIPTION =
+    public static final WritableObjectPropertyKey<CharSequence> CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS =

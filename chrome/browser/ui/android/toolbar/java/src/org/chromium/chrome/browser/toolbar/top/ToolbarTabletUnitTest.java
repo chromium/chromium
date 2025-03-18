@@ -32,11 +32,13 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.LooperMode;
@@ -61,6 +63,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBarAnimatingView;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.reload_button.ReloadButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarAllowCaptureReason;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarColorObserver;
@@ -75,6 +78,7 @@ import java.util.List;
 @LooperMode(LooperMode.Mode.PAUSED)
 @RunWith(BaseRobolectricTestRunner.class)
 public final class ToolbarTabletUnitTest {
+    @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
     @Mock private LocationBarCoordinator mLocationBar;
     @Mock private LocationBarCoordinatorTablet mLocationBarTablet;
     @Mock private ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;
@@ -84,6 +88,7 @@ public final class ToolbarTabletUnitTest {
     @Mock private ToolbarColorObserver mToolbarColorObserver;
     @Mock private ToolbarDataProvider mToolbarDataProvider;
     @Mock private NewTabPageDelegate mNewTabPageDelegate;
+    @Mock private ReloadButtonCoordinator mReloadButtonCoordinator;
     private Activity mActivity;
     private ToolbarTablet mToolbarTablet;
     private LinearLayout mToolbarTabletLayout;
@@ -98,7 +103,6 @@ public final class ToolbarTabletUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         ToolbarTablet realView =
@@ -113,6 +117,7 @@ public final class ToolbarTabletUnitTest {
         mToolbarTablet.setTabSwitcherButtonCoordinatorForTesting(mTabSwitcherButtonCoordinator);
         mToolbarTablet.setTabStripTransitionCoordinator(mTabStripTransitionCoordinator);
         mToolbarTablet.setToolbarColorObserver(mToolbarColorObserver);
+        mToolbarTablet.setReloadButtonCoordinator(mReloadButtonCoordinator);
         mToolbarTabletLayout =
                 (LinearLayout) mToolbarTablet.findViewById(R.id.toolbar_tablet_layout);
         mHomeButton = mToolbarTablet.findViewById(R.id.home_button);
@@ -125,6 +130,10 @@ public final class ToolbarTabletUnitTest {
         mSaveOfflineButton = mToolbarTablet.findViewById(R.id.save_offline_button);
         mProgressBar = new ToolbarProgressBar(mActivity, null);
         mProgressBar.setAnimatingView(new ToolbarProgressBarAnimatingView(mActivity, null));
+        when(mReloadButtonCoordinator.getFadeAnimator(false))
+                .thenReturn(ObjectAnimator.ofFloat(mReloadingButton, View.ALPHA, 0.f));
+        when(mReloadButtonCoordinator.getFadeAnimator(true))
+                .thenReturn(ObjectAnimator.ofFloat(mReloadingButton, View.ALPHA, 1.f));
     }
 
     @After
@@ -167,7 +176,8 @@ public final class ToolbarTabletUnitTest {
                 null,
                 null,
                 null,
-                mProgressBar);
+                mProgressBar,
+                mReloadButtonCoordinator);
         when(mToolbarDataProvider.getNewTabPageDelegate()).thenReturn(mNewTabPageDelegate);
         when(mToolbarDataProvider.isIncognitoBranded()).thenReturn(true);
         mToolbarTablet.onTabOrModelChanged();
@@ -227,10 +237,13 @@ public final class ToolbarTabletUnitTest {
             assertEquals(
                     "Toolbar button visibility is not as expected", View.GONE, btn.getVisibility());
         }
+
+        verify(mReloadButtonCoordinator).setVisibility(false);
     }
 
     @Test
     public void onMeasureLargeWidth_showsToolbarButtons() {
+        mToolbarTablet.setToolbarButtonsVisibleForTesting(false);
         mToolbarTablet.measure(700, 300);
 
         ImageButton[] btns = mToolbarTablet.getToolbarButtons();
@@ -240,6 +253,8 @@ public final class ToolbarTabletUnitTest {
                     View.VISIBLE,
                     btn.getVisibility());
         }
+
+        verify(mReloadButtonCoordinator).setVisibility(true);
     }
 
     @Test
@@ -256,7 +271,8 @@ public final class ToolbarTabletUnitTest {
                 null,
                 null,
                 null,
-                mProgressBar);
+                mProgressBar,
+                mReloadButtonCoordinator);
         when(mToolbarDataProvider.getNewTabPageDelegate()).thenReturn(mNewTabPageDelegate);
         when(mToolbarDataProvider.isIncognitoBranded()).thenReturn(true);
         mToolbarTablet.onTabOrModelChanged();
@@ -298,6 +314,7 @@ public final class ToolbarTabletUnitTest {
             assertEquals(
                     "Toolbar button visibility is not as expected", View.GONE, btn.getVisibility());
         }
+        verify(mReloadButtonCoordinator).setVisibility(false);
         verify(mTabStripTransitionCoordinator, atLeastOnce()).releaseTabStripToken(anyInt());
     }
 
@@ -324,6 +341,7 @@ public final class ToolbarTabletUnitTest {
                     View.VISIBLE,
                     btn.getVisibility());
         }
+        verify(mReloadButtonCoordinator).setVisibility(true);
         verify(mTabStripTransitionCoordinator, atLeastOnce()).releaseTabStripToken(anyInt());
     }
 

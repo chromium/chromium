@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.toolbar.reload_button;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -123,6 +125,36 @@ public class ReloadButtonMediatorTest {
 
         mModel.get(ReloadButtonProperties.LONG_CLICK_LISTENER).run();
         verify(mShowToastCallback).onResult(RELOAD_TOAST_MSG);
+    }
+
+    @Test
+    public void testChangeToVisible_showButton() {
+        mMediator.setVisibility(true);
+        assertTrue("Reload button is not visible", mModel.get(ReloadButtonProperties.IS_VISIBLE));
+    }
+
+    @Test
+    public void testChangeToHidden_hideButton() {
+        mMediator.setVisibility(false);
+        assertFalse("Reload button is visible", mModel.get(ReloadButtonProperties.IS_VISIBLE));
+    }
+
+    @Test
+    public void testPrepareFadeInAnimation_shouldSetAlpha0() {
+        mModel.set(ReloadButtonProperties.ALPHA, 1);
+
+        mMediator.getFadeAnimator(true);
+        assertEquals(
+                "Alpha should be set to 0", mModel.get(ReloadButtonProperties.ALPHA), 0f, 0.01f);
+    }
+
+    @Test
+    public void testPrepareFadeOutAnimation_shouldSetAlpha1() {
+        mModel.set(ReloadButtonProperties.ALPHA, 0f);
+
+        mMediator.getFadeAnimator(false);
+        assertEquals(
+                "Alpha should be set to 1", mModel.get(ReloadButtonProperties.ALPHA), 1f, 0.01f);
     }
 
     @Test
