@@ -86,10 +86,6 @@ BASE_FEATURE(kDisablePrivacySandboxPrompts,
              "DisablePrivacySandboxPrompts",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrivacySandboxFirstPartySetsUI,
-             "PrivacySandboxFirstPartySetsUI",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnforcePrivacySandboxAttestations,
              "EnforcePrivacySandboxAttestations",
              base::FEATURE_ENABLED_BY_DEFAULT);
