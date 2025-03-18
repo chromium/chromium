@@ -11148,6 +11148,7 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest, ModifierMethodTypeHierarchy) {
   v8_helpers_[0]->v8_runner()->PostTask(
       FROM_HERE, base::BindOnce(
                      [](scoped_refptr<AuctionV8Helper> v8_helper) {
+                       v8::Isolate::Scope isolate_scope{v8_helper->isolate()};
                        v8_helper->isolate()->RequestGarbageCollectionForTesting(
                            v8::Isolate::kFullGarbageCollection);
                      },
@@ -11601,6 +11602,7 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
   v8_helpers_[0]->v8_runner()->PostTask(
       FROM_HERE, base::BindOnce(
                      [](scoped_refptr<AuctionV8Helper> v8_helper) {
+                       v8::Isolate::Scope isolate_scope{v8_helper->isolate()};
                        v8_helper->isolate()->RequestGarbageCollectionForTesting(
                            v8::Isolate::kFullGarbageCollection);
                      },
