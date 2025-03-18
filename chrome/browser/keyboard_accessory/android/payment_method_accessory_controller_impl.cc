@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -144,11 +145,12 @@ bool ShouldCreateVirtualCard(const CreditCard* card) {
 }
 
 const CreditCard* UnwrapCardOrVirtualCard(
-    const absl::variant<const CreditCard*, std::unique_ptr<CreditCard>>& card) {
-  if (absl::holds_alternative<std::unique_ptr<CreditCard>>(card))
-    return absl::get<std::unique_ptr<CreditCard>>(card).get();
-  DCHECK(absl::holds_alternative<const CreditCard*>(card));
-  return absl::get<const CreditCard*>(card);
+    const std::variant<const CreditCard*, std::unique_ptr<CreditCard>>& card) {
+  if (std::holds_alternative<std::unique_ptr<CreditCard>>(card)) {
+    return std::get<std::unique_ptr<CreditCard>>(card).get();
+  }
+  DCHECK(std::holds_alternative<const CreditCard*>(card));
+  return std::get<const CreditCard*>(card);
 }
 
 PromoCodeInfo TranslateOffer(const AutofillOfferData* data) {

@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/command_line.h"
@@ -37,7 +38,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/chromeos/devicetype_utils.h"
 
 namespace ash::quick_start {
@@ -236,7 +236,7 @@ TEST_F(TargetDeviceBootstrapControllerTest, StartAdvertisingAndMaybeGetQRCode) {
       /*success=*/true);
   EXPECT_EQ(fake_observer_->last_status.step, Step::ADVERTISING_WITH_QR_CODE);
   EXPECT_TRUE(
-      absl::holds_alternative<QRCode>(fake_observer_->last_status.payload));
+      std::holds_alternative<QRCode>(fake_observer_->last_status.payload));
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest,
@@ -246,8 +246,8 @@ TEST_F(TargetDeviceBootstrapControllerTest,
       /*success=*/false);
   EXPECT_EQ(fake_observer_->last_status.step, Step::ERROR);
   ASSERT_TRUE(
-      absl::holds_alternative<ErrorCode>(fake_observer_->last_status.payload));
-  EXPECT_EQ(absl::get<ErrorCode>(fake_observer_->last_status.payload),
+      std::holds_alternative<ErrorCode>(fake_observer_->last_status.payload));
+  EXPECT_EQ(std::get<ErrorCode>(fake_observer_->last_status.payload),
             ErrorCode::START_ADVERTISING_FAILED);
   ExpectQuickStartConnectivityServiceCleanupCalled();
 }
@@ -259,7 +259,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
   EXPECT_EQ(fake_observer_->last_status.step,
             Step::ADVERTISING_WITHOUT_QR_CODE);
   EXPECT_FALSE(
-      absl::holds_alternative<QRCode>(fake_observer_->last_status.payload));
+      std::holds_alternative<QRCode>(fake_observer_->last_status.payload));
   EXPECT_EQ(
       1u, fake_target_device_connection_broker_->num_start_advertising_calls());
   ASSERT_TRUE(fake_target_device_connection_broker_
@@ -311,13 +311,13 @@ TEST_F(TargetDeviceBootstrapControllerTest, InitiateConnection_QRCode) {
       /*success=*/true);
   ASSERT_EQ(fake_observer_->last_status.step, Step::ADVERTISING_WITH_QR_CODE);
   EXPECT_TRUE(
-      absl::holds_alternative<QRCode>(fake_observer_->last_status.payload));
+      std::holds_alternative<QRCode>(fake_observer_->last_status.payload));
 
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
   // Status shouldn't change.
   EXPECT_EQ(fake_observer_->last_status.step, Step::ADVERTISING_WITH_QR_CODE);
   EXPECT_TRUE(
-      absl::holds_alternative<QRCode>(fake_observer_->last_status.payload));
+      std::holds_alternative<QRCode>(fake_observer_->last_status.payload));
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest, InitiateConnection_Pin) {
@@ -333,15 +333,15 @@ TEST_F(TargetDeviceBootstrapControllerTest, InitiateConnection_Pin) {
 
   EXPECT_EQ(fake_observer_->last_status.step, Step::PIN_VERIFICATION);
   EXPECT_TRUE(
-      absl::holds_alternative<PinString>(fake_observer_->last_status.payload));
+      std::holds_alternative<PinString>(fake_observer_->last_status.payload));
   EXPECT_TRUE(
-      absl::get<PinString>(fake_observer_->last_status.payload)->length() == 4);
+      std::get<PinString>(fake_observer_->last_status.payload)->length() == 4);
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest, AuthenticateConnection) {
   BootstrapConnection();
   EXPECT_TRUE(
-      absl::holds_alternative<QRCode>(fake_observer_->last_status.payload));
+      std::holds_alternative<QRCode>(fake_observer_->last_status.payload));
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest, FeatureSupportStatus) {
@@ -376,8 +376,8 @@ TEST_F(TargetDeviceBootstrapControllerTest, RejectConnection) {
 
   EXPECT_EQ(fake_observer_->last_status.step, Step::ERROR);
   ASSERT_TRUE(
-      absl::holds_alternative<ErrorCode>(fake_observer_->last_status.payload));
-  EXPECT_EQ(absl::get<ErrorCode>(fake_observer_->last_status.payload),
+      std::holds_alternative<ErrorCode>(fake_observer_->last_status.payload));
+  EXPECT_EQ(std::get<ErrorCode>(fake_observer_->last_status.payload),
             ErrorCode::CONNECTION_REJECTED);
 }
 
@@ -392,8 +392,8 @@ TEST_F(TargetDeviceBootstrapControllerTest, CloseConnection) {
 
   EXPECT_EQ(fake_observer_->last_status.step, Step::ERROR);
   ASSERT_TRUE(
-      absl::holds_alternative<ErrorCode>(fake_observer_->last_status.payload));
-  EXPECT_EQ(absl::get<ErrorCode>(fake_observer_->last_status.payload),
+      std::holds_alternative<ErrorCode>(fake_observer_->last_status.payload));
+  EXPECT_EQ(std::get<ErrorCode>(fake_observer_->last_status.payload),
             ErrorCode::CONNECTION_CLOSED);
 }
 
@@ -429,8 +429,8 @@ TEST_F(TargetDeviceBootstrapControllerTest,
   NotifySourceOfUpdateResponse(/*ack_successful=*/true);
 
   ASSERT_TRUE(
-      absl::holds_alternative<ErrorCode>(fake_observer_->last_status.payload));
-  EXPECT_EQ(absl::get<ErrorCode>(fake_observer_->last_status.payload),
+      std::holds_alternative<ErrorCode>(fake_observer_->last_status.payload));
+  EXPECT_EQ(std::get<ErrorCode>(fake_observer_->last_status.payload),
             ErrorCode::CONNECTION_CLOSED);
   EXPECT_TRUE(
       GetLocalState()->GetBoolean(prefs::kShouldResumeQuickStartAfterReboot));
@@ -451,8 +451,8 @@ TEST_F(TargetDeviceBootstrapControllerTest,
   NotifySourceOfUpdateResponse(/*ack_successful=*/false);
 
   ASSERT_TRUE(
-      absl::holds_alternative<ErrorCode>(fake_observer_->last_status.payload));
-  EXPECT_EQ(absl::get<ErrorCode>(fake_observer_->last_status.payload),
+      std::holds_alternative<ErrorCode>(fake_observer_->last_status.payload));
+  EXPECT_EQ(std::get<ErrorCode>(fake_observer_->last_status.payload),
             ErrorCode::CONNECTION_CLOSED);
   EXPECT_FALSE(
       GetLocalState()->GetBoolean(prefs::kShouldResumeQuickStartAfterReboot));
@@ -471,7 +471,7 @@ TEST_F(TargetDeviceBootstrapControllerTest, RequestWifiCredentials) {
 
   EXPECT_EQ(fake_observer_->last_status.step, Step::ADVERTISING_WITH_QR_CODE);
   EXPECT_TRUE(
-      absl::holds_alternative<QRCode>(fake_observer_->last_status.payload));
+      std::holds_alternative<QRCode>(fake_observer_->last_status.payload));
 
   fake_target_device_connection_broker_->GetFakeConnection()->VerifyUser(
       mojom::UserVerificationResponse(
@@ -479,7 +479,7 @@ TEST_F(TargetDeviceBootstrapControllerTest, RequestWifiCredentials) {
           /*is_first_user_verification=*/true));
 
   EXPECT_EQ(fake_observer_->last_status.step, Step::CONNECTED);
-  EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(
       fake_observer_->last_status.payload));
 
   bootstrap_controller_->AttemptWifiCredentialTransfer();
@@ -489,7 +489,7 @@ TEST_F(TargetDeviceBootstrapControllerTest, RequestWifiCredentials) {
                                  /*is_hidden=*/true, "password"));
 
   EXPECT_EQ(fake_observer_->last_status.step, Step::WIFI_CREDENTIALS_RECEIVED);
-  EXPECT_TRUE(absl::holds_alternative<mojom::WifiCredentials>(
+  EXPECT_TRUE(std::holds_alternative<mojom::WifiCredentials>(
       fake_observer_->last_status.payload));
   EXPECT_TRUE(GetSessionContext()->did_transfer_wifi());
   histogram_tester_.ExpectBucketCount(kWifiTransferResultHistogramName, true,
@@ -528,7 +528,7 @@ TEST_F(TargetDeviceBootstrapControllerTest, ConnectionFailsIfUserNotVerified) {
 
   EXPECT_EQ(fake_observer_->last_status.step, Step::ADVERTISING_WITH_QR_CODE);
   EXPECT_TRUE(
-      absl::holds_alternative<QRCode>(fake_observer_->last_status.payload));
+      std::holds_alternative<QRCode>(fake_observer_->last_status.payload));
 
   fake_target_device_connection_broker_->GetFakeConnection()->VerifyUser(
       mojom::UserVerificationResponse(
@@ -536,7 +536,7 @@ TEST_F(TargetDeviceBootstrapControllerTest, ConnectionFailsIfUserNotVerified) {
           /*is_first_user_verification=*/true));
 
   EXPECT_EQ(fake_observer_->last_status.step, Step::ERROR);
-  EXPECT_EQ(absl::get<ErrorCode>(fake_observer_->last_status.payload),
+  EXPECT_EQ(std::get<ErrorCode>(fake_observer_->last_status.payload),
             ErrorCode::USER_VERIFICATION_FAILED);
 }
 
@@ -551,13 +551,13 @@ TEST_F(TargetDeviceBootstrapControllerTest,
 
   EXPECT_EQ(fake_observer_->last_status.step, Step::ADVERTISING_WITH_QR_CODE);
   EXPECT_TRUE(
-      absl::holds_alternative<QRCode>(fake_observer_->last_status.payload));
+      std::holds_alternative<QRCode>(fake_observer_->last_status.payload));
 
   fake_target_device_connection_broker_->GetFakeConnection()->VerifyUser(
       std::nullopt);
 
   EXPECT_EQ(fake_observer_->last_status.step, Step::ERROR);
-  EXPECT_EQ(absl::get<ErrorCode>(fake_observer_->last_status.payload),
+  EXPECT_EQ(std::get<ErrorCode>(fake_observer_->last_status.payload),
             ErrorCode::USER_VERIFICATION_FAILED);
 }
 
@@ -574,7 +574,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
 
   EXPECT_EQ(fake_observer_->last_status.step,
             Step::REQUESTING_GOOGLE_ACCOUNT_INFO);
-  EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(
       fake_observer_->last_status.payload));
 
   std::string email = "fake_test_email";
@@ -583,8 +583,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
 
   EXPECT_EQ(fake_observer_->last_status.step,
             Step::GOOGLE_ACCOUNT_INFO_RECEIVED);
-  EXPECT_EQ(*absl::get<EmailString>(fake_observer_->last_status.payload),
-            email);
+  EXPECT_EQ(*std::get<EmailString>(fake_observer_->last_status.payload), email);
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest,
@@ -601,7 +600,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
 
   EXPECT_EQ(fake_observer_->last_status.step,
             Step::TRANSFERRING_GOOGLE_ACCOUNT_DETAILS);
-  EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(
       fake_observer_->last_status.payload));
 
   EXPECT_EQ(fake_target_device_connection_broker_->GetFakeConnection()
@@ -632,8 +631,8 @@ TEST_F(TargetDeviceBootstrapControllerTest,
 
   EXPECT_EQ(fake_observer_->last_status.step, Step::ERROR);
   ASSERT_TRUE(
-      absl::holds_alternative<ErrorCode>(fake_observer_->last_status.payload));
-  EXPECT_EQ(absl::get<ErrorCode>(fake_observer_->last_status.payload),
+      std::holds_alternative<ErrorCode>(fake_observer_->last_status.payload));
+  EXPECT_EQ(std::get<ErrorCode>(fake_observer_->last_status.payload),
             ErrorCode::FETCHING_CHALLENGE_BYTES_FAILED);
   histogram_tester_.ExpectBucketCount(kGaiaTransferResultHistogramName, false,
                                       1);
@@ -672,7 +671,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
 
   EXPECT_EQ(fake_observer_->last_status.step,
             Step::TRANSFERRING_GOOGLE_ACCOUNT_DETAILS);
-  EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(
       fake_observer_->last_status.payload));
 
   // Expect that the credential_id of the FidoAssertion coming from
@@ -695,10 +694,10 @@ TEST_F(TargetDeviceBootstrapControllerTest,
             Step::TRANSFERRED_GOOGLE_ACCOUNT_DETAILS);
   const auto payload = fake_observer_->last_status.payload;
   EXPECT_TRUE(
-      absl::holds_alternative<TargetDeviceBootstrapController::GaiaCredentials>(
+      std::holds_alternative<TargetDeviceBootstrapController::GaiaCredentials>(
           payload));
   const auto gaia_creds =
-      absl::get<TargetDeviceBootstrapController::GaiaCredentials>(payload);
+      std::get<TargetDeviceBootstrapController::GaiaCredentials>(payload);
   EXPECT_EQ(gaia_creds.auth_code, kTestAuthCode);
 }
 
@@ -723,14 +722,14 @@ TEST_F(TargetDeviceBootstrapControllerTest,
 
   EXPECT_EQ(fake_observer_->last_status.step,
             Step::TRANSFERRING_GOOGLE_ACCOUNT_DETAILS);
-  EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(
       fake_observer_->last_status.payload));
 
   fake_target_device_connection_broker_->GetFakeConnection()
       ->SendAccountTransferAssertionInfo(std::nullopt);
 
   EXPECT_EQ(fake_observer_->last_status.step, Step::ERROR);
-  EXPECT_EQ(absl::get<ErrorCode>(fake_observer_->last_status.payload),
+  EXPECT_EQ(std::get<ErrorCode>(fake_observer_->last_status.payload),
             ErrorCode::GAIA_ASSERTION_NOT_RECEIVED);
   histogram_tester_.ExpectBucketCount(kGaiaTransferResultHistogramName, false,
                                       1);
@@ -751,7 +750,7 @@ TEST_F(TargetDeviceBootstrapControllerTest, ConnectionDropped) {
 
   EXPECT_EQ(fake_observer_->last_status.step, Step::ADVERTISING_WITH_QR_CODE);
   EXPECT_TRUE(
-      absl::holds_alternative<QRCode>(fake_observer_->last_status.payload));
+      std::holds_alternative<QRCode>(fake_observer_->last_status.payload));
 
   bootstrap_controller_->StopAdvertising();
   fake_target_device_connection_broker_->on_stop_advertising_callback().Run();
@@ -761,8 +760,8 @@ TEST_F(TargetDeviceBootstrapControllerTest, ConnectionDropped) {
 
   EXPECT_EQ(fake_observer_->last_status.step, Step::ERROR);
   ASSERT_TRUE(
-      absl::holds_alternative<ErrorCode>(fake_observer_->last_status.payload));
-  EXPECT_EQ(absl::get<ErrorCode>(fake_observer_->last_status.payload),
+      std::holds_alternative<ErrorCode>(fake_observer_->last_status.payload));
+  EXPECT_EQ(std::get<ErrorCode>(fake_observer_->last_status.payload),
             ErrorCode::CONNECTION_CLOSED);
 
   ExpectQuickStartConnectivityServiceCleanupCalled();
@@ -794,12 +793,12 @@ TEST_F(TargetDeviceBootstrapControllerTest,
        ObserversAreNotNotifiedIfStatusStepIsSame) {
   EXPECT_EQ(0, fake_observer_->num_on_status_changed_called);
   UpdateStatus(/*step=*/Step::REQUESTING_WIFI_CREDENTIALS,
-               /*payload=*/absl::monostate());
+               /*payload=*/std::monostate());
   EXPECT_EQ(1, fake_observer_->num_on_status_changed_called);
 
   // Updating status again with the same step shouldn't notify observers.
   UpdateStatus(/*step=*/Step::REQUESTING_WIFI_CREDENTIALS,
-               /*payload=*/absl::monostate());
+               /*payload=*/std::monostate());
   EXPECT_EQ(1, fake_observer_->num_on_status_changed_called);
 }
 
@@ -811,7 +810,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
   EXPECT_EQ(fake_observer_->last_status.step,
             Step::ADVERTISING_WITHOUT_QR_CODE);
   EXPECT_FALSE(
-      absl::holds_alternative<QRCode>(fake_observer_->last_status.payload));
+      std::holds_alternative<QRCode>(fake_observer_->last_status.payload));
   fake_target_device_connection_broker_->on_start_advertising_callback().Run(
       /*success=*/true);
   fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);

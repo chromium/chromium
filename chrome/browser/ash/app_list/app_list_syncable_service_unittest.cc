@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <utility>
+#include <variant>
 
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/constants/ash_features.h"
@@ -39,7 +40,6 @@
 #include "components/sync/test/sync_change_processor_wrapper_for_test.h"
 #include "extensions/common/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 using crx_file::id_util::GenerateId;
 using testing::ElementsAre;
@@ -3880,9 +3880,9 @@ TEST_F(AppListSyncableServiceAppPreloadTest, LauncherOrdering) {
     std::vector<std::string> result;
     for (const auto& item : ordered) {
       std::string first =
-          absl::holds_alternative<std::string>(item.first)
-              ? absl::get<std::string>(item.first)
-              : absl::get<apps::PackageId>(item.first).ToString();
+          std::holds_alternative<std::string>(item.first)
+              ? std::get<std::string>(item.first)
+              : std::get<apps::PackageId>(item.first).ToString();
       result.push_back(first + "=" + item.second.ToDebugString());
     }
     return result;

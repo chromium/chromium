@@ -5,6 +5,7 @@
 #include "chrome/browser/privacy_budget/privacy_budget_ukm_entry_filter.h"
 
 #include <cstdint>
+#include <utility>
 
 #include "base/containers/flat_map.h"
 #include "base/metrics/metrics_hashes.h"
@@ -18,7 +19,6 @@
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 
 namespace {
