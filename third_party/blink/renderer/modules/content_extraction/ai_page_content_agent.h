@@ -61,9 +61,6 @@ class MODULES_EXPORT AIPageContentAgent final
   void GetAIPageContentSync(mojom::blink::AIPageContentOptionsPtr options,
                             GetAIPageContentCallback callback,
                             base::TimeTicks start_time) const;
-  // Runs tasks if the document lifecycle is at least as advanced as the
-  // associated vector.
-  void RunTasksIfReady();
 
   // Synchronously services a single request.
   class ContentBuilder final : public GarbageCollected<ContentBuilder> {
@@ -129,10 +126,8 @@ class MODULES_EXPORT AIPageContentAgent final
       receiver_set_;
   // Already registered for lifetime notifications.
   bool is_registered_ = false;
-  // Tasks to run when geometry is needed.
-  WTF::Vector<base::OnceClosure> geometry_tasks_;
-  // Tasks to run when geometry is not needed.
-  WTF::Vector<base::OnceClosure> layout_clean_tasks_;
+  // Tasks to run when post lifecycle.
+  WTF::Vector<base::OnceClosure> async_extraction_tasks_;
 };
 
 }  // namespace blink

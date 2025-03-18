@@ -493,15 +493,9 @@ void RecordLatencyMetrics(base::TimeDelta latency,
   }
 }
 
-// Runs the given tasks.
-void RunTasks(WTF::Vector<base::OnceClosure> tasks) {
-  for (auto& task : tasks) {
-    std::move(task).Run();
-  }
-}
-
-bool ShouldRunLifecycleForSyncExtraction(
-    const mojom::blink::AIPageContentOptions& options) {
+// Returns true if extracting the content can't be deferred until the next
+// frame.
+bool NeedsSyncExtraction(const mojom::blink::AIPageContentOptions& options) {
   // Including hidden searchable content requires layout for nodes which are
   // skipped during rendering. So we need a special lifecycle for them and can't
   // use the computed state from the regular lifecycle update.
@@ -566,7 +560,10 @@ void AIPageContentAgent::Trace(Visitor* visitor) const {
 }
 
 void AIPageContentAgent::DidFinishPostLifecycleSteps(const LocalFrameView&) {
-  RunTasksIfReady();
+  for (auto& task : std::move(async_extraction_tasks_)) {
+    std::move(task).Run();
+  }
+  async_extraction_tasks_.clear();
 }
 
 void AIPageContentAgent::GetAIPageContent(
@@ -574,46 +571,27 @@ void AIPageContentAgent::GetAIPageContent(
     GetAIPageContentCallback callback) {
   base::TimeTicks start_time = base::TimeTicks::Now();
 
-  if (ShouldRunLifecycleForSyncExtraction(*options)) {
+  LocalFrameView* view = GetSupplementable()->View();
+
+  // If there's no lifecycle pending, we can't rely on post lifecycle
+  // notifications and the layout is likely clean.
+  const bool can_do_sync_extraction = !view || !view->LifecycleUpdatePending();
+
+  if (can_do_sync_extraction || NeedsSyncExtraction(*options)) {
     GetAIPageContentSync(std::move(options), std::move(callback), start_time);
     return;
   }
 
   if (!is_registered_) {
     is_registered_ = true;
-    if (LocalFrameView* view = GetSupplementable()->View()) {
-      view->RegisterForLifecycleNotifications(this);
-    }
+    view->RegisterForLifecycleNotifications(this);
   }
 
-  // Running lifecycle beyond layout is expensive and the information is only
-  // needed to compute geometry. Limit the update to layout if we don't need the
-  // geometry.
   // We don't expect many overlapping calls to this service as the browser will
   // only issue one request at a time.
-  if (options->include_geometry) {
-    geometry_tasks_.push_back(WTF::BindOnce(
-        &AIPageContentAgent::GetAIPageContentSync, WrapWeakPersistent(this),
-        std::move(options), std::move(callback), start_time));
-  } else {
-    layout_clean_tasks_.push_back(WTF::BindOnce(
-        &AIPageContentAgent::GetAIPageContentSync, WrapWeakPersistent(this),
-        std::move(options), std::move(callback), start_time));
-  }
-
-  // Run tasks if the document lifecycle is at least as advanced.
-  RunTasksIfReady();
-}
-
-void AIPageContentAgent::RunTasksIfReady() {
-  if (GetSupplementable()->Lifecycle().GetState() >=
-      DocumentLifecycle::kPrePaintClean) {
-    RunTasks(std::move(geometry_tasks_));
-  }
-  if (GetSupplementable()->Lifecycle().GetState() >=
-      DocumentLifecycle::kLayoutClean) {
-    RunTasks(std::move(layout_clean_tasks_));
-  }
+  async_extraction_tasks_.push_back(WTF::BindOnce(
+      &AIPageContentAgent::GetAIPageContentSync, WrapWeakPersistent(this),
+      std::move(options), std::move(callback), start_time));
 }
 
 void AIPageContentAgent::GetAIPageContentSync(
@@ -667,35 +645,33 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
   // activation reason of FindInPage.
   std::vector<DisplayLockDocumentState::ScopedForceActivatableDisplayLocks>
       forced_activatable_locks;
-  if (ShouldRunLifecycleForSyncExtraction(*options_)) {
-    if (options_->include_hidden_searchable_content) {
-      forced_activatable_locks.emplace_back(
-          document.GetDisplayLockDocumentState()
-              .GetScopedForceActivatableLocks());
-      document.View()->ForAllChildLocalFrameViews(
-          [&](LocalFrameView& frame_view) {
-            if (!frame_view.GetFrame().GetDocument()) {
-              return;
-            }
+  if (options_->include_hidden_searchable_content) {
+    forced_activatable_locks.emplace_back(
+        document.GetDisplayLockDocumentState()
+            .GetScopedForceActivatableLocks());
+    document.View()->ForAllChildLocalFrameViews(
+        [&](LocalFrameView& frame_view) {
+          if (!frame_view.GetFrame().GetDocument()) {
+            return;
+          }
 
-            forced_activatable_locks.emplace_back(
-                frame_view.GetFrame()
-                    .GetDocument()
-                    ->GetDisplayLockDocumentState()
-                    .GetScopedForceActivatableLocks());
-          });
-    }
+          forced_activatable_locks.emplace_back(
+              frame_view.GetFrame()
+                  .GetDocument()
+                  ->GetDisplayLockDocumentState()
+                  .GetScopedForceActivatableLocks());
+        });
+  }
 
-    // Running lifecycle beyond layout is expensive and the information is only
-    // needed to compute geometry. Limit the update to layout if we don't need
-    // the geometry.
-    if (options_->include_geometry) {
-      document.View()->UpdateAllLifecyclePhasesExceptPaint(
-          DocumentUpdateReason::kUnknown);
-    } else {
-      document.View()->UpdateLifecycleToLayoutClean(
-          DocumentUpdateReason::kUnknown);
-    }
+  // Running lifecycle beyond layout is expensive and the information is only
+  // needed to compute geometry. Limit the update to layout if we don't need
+  // the geometry.
+  if (options_->include_geometry) {
+    document.View()->UpdateAllLifecyclePhasesExceptPaint(
+        DocumentUpdateReason::kUnknown);
+  } else {
+    document.View()->UpdateLifecycleToLayoutClean(
+        DocumentUpdateReason::kUnknown);
   }
 
   auto* layout_view = document.GetLayoutView();

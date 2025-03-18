@@ -4755,6 +4755,16 @@ void LocalFrameView::OnFirstContentfulPaint() {
   }
 }
 
+bool LocalFrameView::LifecycleUpdatePending() const {
+  if (auto* web_frame = WebLocalFrameImpl::FromFrame(frame_)) {
+    if (auto* widget = web_frame->LocalRootFrameWidget()) {
+      return widget->RequestedMainFramePending();
+    }
+  }
+
+  return false;
+}
+
 void LocalFrameView::RegisterForLifecycleNotifications(
     LifecycleNotificationObserver* observer) {
   lifecycle_observers_.insert(observer);
