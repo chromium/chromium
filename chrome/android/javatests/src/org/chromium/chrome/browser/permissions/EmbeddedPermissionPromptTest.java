@@ -518,6 +518,7 @@ public class EmbeddedPermissionPromptTest {
     @Test
     @MediumTest
     @Features.EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_ELEMENT})
+    @DisabledTest(message = "crbug.com/404464768")
     public void testDisableLocationSettingsPromptText() throws Exception {
         RuntimePermissionTestUtils.setupGeolocationSystemMock(false);
         String[] requestablePermission =
@@ -543,6 +544,7 @@ public class EmbeddedPermissionPromptTest {
     @Test
     @MediumTest
     @Features.EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_ELEMENT})
+    @DisabledTest(message = "crbug.com/404464768")
     public void testOsSettingsPromptText() throws Exception {
         mTestAndroidPermissionDelegate =
                 new TestAndroidPermissionDelegate(new String[] {}, RuntimePromptResponse.DENY);
