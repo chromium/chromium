@@ -1402,12 +1402,6 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     }
 
     @Override
-    public int getGroupLastShownTabId(int rootId) {
-        TabGroup group = mRootIdToGroupMap.get(rootId);
-        return group == null ? Tab.INVALID_TAB_ID : group.getLastShownTabId();
-    }
-
-    @Override
     public boolean tabGroupExists(@Nullable Token tabGroupId) {
         boolean foundKey = mGroupIdToRootIdMap.containsKey(tabGroupId);
         // Guards are in place to ensure this doesn't happen, assert if it does.

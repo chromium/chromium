@@ -137,15 +137,6 @@ public interface TabGroupModelFilter extends TabList {
     int getGroupLastShownTabId(@Nullable Token tabGroupId);
 
     /**
-     * Returns the last shown tab id in the tab group with {@code rootId}.
-     *
-     * @deprecated Use {@link #getGroupLastShownTabId(Token)} instead.
-     */
-    @Deprecated
-    @TabId
-    int getGroupLastShownTabId(@TabId int rootId);
-
-    /**
      * This method moves the tab group which contains the tab with tab {@code id} to {@code
      * newIndex} in TabModel.
      *
