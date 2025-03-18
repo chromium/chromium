@@ -11,7 +11,6 @@ import org.jni_zero.CalledByNative;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.SettingsCustomTabLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.SyncService;
@@ -52,8 +51,7 @@ public class PasswordManagerLauncher {
                         modalDialogManagerSupplier,
                         managePasskeys,
                         account,
-                        LaunchIntentDispatcher::createCustomTabActivityIntent,
-                        new SettingsCustomTabLauncherImpl());
+                        LaunchIntentDispatcher::createCustomTabActivityIntent);
     }
 
     @CalledByNative

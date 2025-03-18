@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConf
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -67,7 +66,6 @@ public class SafetyHubModuleDelegateTest {
     @Mock private SigninAndHistorySyncActivityLauncher mSigninLauncher;
     @Mock private Intent mSigninIntent;
     @Mock private Context mContext;
-    @Mock private SettingsCustomTabLauncher mSettingsCustomTabLauncher;
 
     private SafetyHubModuleDelegate mSafetyHubModuleDelegate;
     private Profile mProfile;
@@ -94,10 +92,7 @@ public class SafetyHubModuleDelegateTest {
 
         mSafetyHubModuleDelegate =
                 new SafetyHubModuleDelegateImpl(
-                        mProfile,
-                        mModalDialogManagerSupplier,
-                        mSigninLauncher,
-                        mSettingsCustomTabLauncher);
+                        mProfile, mModalDialogManagerSupplier, mSigninLauncher);
     }
 
     @Test

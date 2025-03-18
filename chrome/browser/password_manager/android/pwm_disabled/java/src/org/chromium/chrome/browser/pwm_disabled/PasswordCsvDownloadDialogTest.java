@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.pwm_disabled;
 import static android.app.Activity.RESULT_OK;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
@@ -17,7 +16,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.text.SpannableString;
-import android.text.style.ClickableSpan;
 import android.widget.TextView;
 
 import androidx.fragment.app.FragmentActivity;
@@ -26,7 +24,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -37,11 +34,9 @@ import org.robolectric.shadows.ShadowDialog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.test.BrowserUiDummyFragmentActivity;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
-import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -58,8 +53,6 @@ public class PasswordCsvDownloadDialogTest {
 
     private FragmentActivity mActivity;
 
-    @Mock private SettingsCustomTabLauncher mSettingsCustomTabLauncher;
-
     @Before
     public void setUp() {
         mActivity =
@@ -74,9 +67,7 @@ public class PasswordCsvDownloadDialogTest {
 
     @Test
     public void testDialogContentsWithGms() {
-        mController =
-                new PasswordCsvDownloadDialogController(
-                        mActivity, true, () -> {}, () -> {}, mSettingsCustomTabLauncher);
+        mController = new PasswordCsvDownloadDialogController(mActivity, true, () -> {}, () -> {});
         mController.showDialog();
         mActivity.getSupportFragmentManager().executePendingTransactions();
 
@@ -110,9 +101,7 @@ public class PasswordCsvDownloadDialogTest {
 
     @Test
     public void testDialogContentsNoGms() {
-        mController =
-                new PasswordCsvDownloadDialogController(
-                        mActivity, false, () -> {}, () -> {}, mSettingsCustomTabLauncher);
+        mController = new PasswordCsvDownloadDialogController(mActivity, false, () -> {}, () -> {});
         mController.showDialog();
         mActivity.getSupportFragmentManager().executePendingTransactions();
 
@@ -141,11 +130,7 @@ public class PasswordCsvDownloadDialogTest {
         Runnable positiveButtonCalback = mock(Runnable.class);
         mController =
                 new PasswordCsvDownloadDialogController(
-                        mActivity,
-                        false,
-                        positiveButtonCalback,
-                        () -> {},
-                        mSettingsCustomTabLauncher);
+                        mActivity, false, positiveButtonCalback, () -> {});
         mController.showDialog();
         mActivity.getSupportFragmentManager().executePendingTransactions();
 
@@ -159,11 +144,7 @@ public class PasswordCsvDownloadDialogTest {
         Runnable negativeButtonCalback = mock(Runnable.class);
         mController =
                 new PasswordCsvDownloadDialogController(
-                        mActivity,
-                        false,
-                        () -> {},
-                        negativeButtonCalback,
-                        mSettingsCustomTabLauncher);
+                        mActivity, false, () -> {}, negativeButtonCalback);
         mController.showDialog();
         mActivity.getSupportFragmentManager().executePendingTransactions();
 
@@ -173,26 +154,8 @@ public class PasswordCsvDownloadDialogTest {
     }
 
     @Test
-    public void testHelpLinkClick() {
-        mController =
-                new PasswordCsvDownloadDialogController(
-                        mActivity, true, () -> {}, () -> {}, mSettingsCustomTabLauncher);
-        mController.showDialog();
-        mActivity.getSupportFragmentManager().executePendingTransactions();
-
-        Dialog dialog = ShadowDialog.getLatestDialog();
-        TextViewWithClickableSpans textView = dialog.findViewById(R.id.details_paragraph1);
-        ClickableSpan[] clickableSpans = textView.getClickableSpans();
-        assertEquals(1, clickableSpans.length);
-        clickableSpans[0].onClick(textView);
-        verify(mSettingsCustomTabLauncher).openUrlInCct(any(), any());
-    }
-
-    @Test
     public void testOpensDocumentCreationAndReturnsUri() {
-        mController =
-                new PasswordCsvDownloadDialogController(
-                        mActivity, false, () -> {}, () -> {}, mSettingsCustomTabLauncher);
+        mController = new PasswordCsvDownloadDialogController(mActivity, false, () -> {}, () -> {});
         mController.showDialog();
         mActivity.getSupportFragmentManager().executePendingTransactions();
 

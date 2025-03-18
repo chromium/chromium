@@ -54,7 +54,6 @@ import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.password_manager.LoginDbDeprecationUtilBridge;
 import org.chromium.chrome.browser.password_manager.LoginDbDeprecationUtilBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.test.BrowserUiDummyFragmentActivity;
 import org.chromium.ui.widget.ToastManager;
 
@@ -87,7 +86,6 @@ public class PasswordCsvDownloadFlowControllerTest {
     @Mock Profile mProfile;
     @Mock ReauthenticatorBridge mReauthenticatorBridge;
     @Mock LoginDbDeprecationUtilBridge.Natives mLoginDbDeprecationUtilBridge;
-    @Mock SettingsCustomTabLauncher mSettingsCustomTabLauncher;
 
     @Before
     public void setUp() {
@@ -112,7 +110,7 @@ public class PasswordCsvDownloadFlowControllerTest {
     @Test
     public void testScreenLockNotAvailable() {
         mController = new PasswordCsvDownloadFlowController(mEndOfFlowCallback);
-        mController.showDialogAndStartFlow(mActivity, mProfile, true, mSettingsCustomTabLauncher);
+        mController.showDialogAndStartFlow(mActivity, mProfile, true);
         mActivity.getSupportFragmentManager().executePendingTransactions();
 
         ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorBridge);
@@ -139,7 +137,7 @@ public class PasswordCsvDownloadFlowControllerTest {
     @Test
     public void testScreenLockAvailableAuthFailed() {
         mController = new PasswordCsvDownloadFlowController(mEndOfFlowCallback);
-        mController.showDialogAndStartFlow(mActivity, mProfile, true, mSettingsCustomTabLauncher);
+        mController.showDialogAndStartFlow(mActivity, mProfile, true);
         mActivity.getSupportFragmentManager().executePendingTransactions();
 
         ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorBridge);
@@ -164,7 +162,7 @@ public class PasswordCsvDownloadFlowControllerTest {
         File sourceFile = setUpTempAutoExportedCsv(TEST_FILE_DATA);
 
         mController = new PasswordCsvDownloadFlowController(mEndOfFlowCallback);
-        mController.showDialogAndStartFlow(mActivity, mProfile, true, mSettingsCustomTabLauncher);
+        mController.showDialogAndStartFlow(mActivity, mProfile, true);
         mActivity.getSupportFragmentManager().executePendingTransactions();
 
         ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorBridge);
@@ -203,7 +201,7 @@ public class PasswordCsvDownloadFlowControllerTest {
         File sourceFile = setUpTempAutoExportedCsv(TEST_FILE_DATA);
 
         mController = new PasswordCsvDownloadFlowController(mEndOfFlowCallback);
-        mController.showDialogAndStartFlow(mActivity, mProfile, true, mSettingsCustomTabLauncher);
+        mController.showDialogAndStartFlow(mActivity, mProfile, true);
         mActivity.getSupportFragmentManager().executePendingTransactions();
 
         ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorBridge);
@@ -271,7 +269,7 @@ public class PasswordCsvDownloadFlowControllerTest {
         File sourceFile = setUpTempAutoExportedCsv(TEST_FILE_DATA);
 
         mController = new PasswordCsvDownloadFlowController(mEndOfFlowCallback);
-        mController.showDialogAndStartFlow(mActivity, mProfile, true, mSettingsCustomTabLauncher);
+        mController.showDialogAndStartFlow(mActivity, mProfile, true);
         mActivity.getSupportFragmentManager().executePendingTransactions();
 
         ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorBridge);

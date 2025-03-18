@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConf
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -40,37 +39,29 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
     private final @NonNull Profile mProfile;
     private final @NonNull Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final @NonNull SigninAndHistorySyncActivityLauncher mSigninLauncher;
-    private final @NonNull SettingsCustomTabLauncher mSettingsCustomTabLauncher;
 
     /**
      * @param profile A supplier for {@link Profile} that owns the data being deleted.
      * @param modalDialogManagerSupplier A supplier for {@link ModalDialogManager} that will be used
      *     to launch the password check UI.
-     * @param settingsCustomTabLauncher Used by the password manager dialogs to open a help center
-     *     article in a CCT.
      */
     public SafetyHubModuleDelegateImpl(
             @NonNull Profile profile,
             @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            @NonNull SigninAndHistorySyncActivityLauncher signinLauncher,
-            @NonNull SettingsCustomTabLauncher settingsCustomTabLauncher) {
+            @NonNull SigninAndHistorySyncActivityLauncher signinLauncher) {
         mProfile = profile;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mSigninLauncher = signinLauncher;
-
-        mSettingsCustomTabLauncher = settingsCustomTabLauncher;
     }
 
     @Override
     public void showPasswordCheckUi(Context context) {
-        SafetyHubUtils.showPasswordCheckUi(
-                context, mProfile, mModalDialogManagerSupplier, mSettingsCustomTabLauncher);
+        SafetyHubUtils.showPasswordCheckUi(context, mProfile, mModalDialogManagerSupplier);
     }
 
     @Override
     public void showLocalPasswordCheckUi(Context context) {
-        SafetyHubUtils.showLocalPasswordCheckUi(
-                context, mProfile, mModalDialogManagerSupplier, mSettingsCustomTabLauncher);
+        SafetyHubUtils.showLocalPasswordCheckUi(context, mProfile, mModalDialogManagerSupplier);
     }
 
     @Override

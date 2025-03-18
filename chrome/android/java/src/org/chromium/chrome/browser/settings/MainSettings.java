@@ -47,7 +47,6 @@ import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordAccessLossDialogHelper;
 import org.chromium.chrome.browser.password_manager.PasswordExportLauncher;
-import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.password_manager.settings.PasswordsPreference;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -73,7 +72,6 @@ import org.chromium.chrome.browser.ui.signin.SignOutCoordinator;
 import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
-import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -96,8 +94,7 @@ import java.util.Map;
 public class MainSettings extends ChromeBaseSettingsFragment
         implements TemplateUrlService.LoadListener,
                 SyncService.SyncStateChangedListener,
-                SigninManager.SignInStateObserver,
-                SettingsCustomTabLauncher.SettingsCustomTabLauncherClient {
+                SigninManager.SignInStateObserver {
     public static final String PREF_SETTINGS_PROMO_CARD = "settings_promo_card";
     public static final String PREF_ACCOUNT_AND_GOOGLE_SERVICES_SECTION =
             "account_and_google_services_section";
@@ -138,7 +135,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
     // `Lifecycle.State.STARTED`.
     private boolean mShouldShowSnackbar;
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
-    private SettingsCustomTabLauncher mSettingsCustomTabLauncher;
 
     public MainSettings() {
         setHasOptionsMenu(true);
@@ -219,11 +215,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
         super.onConfigurationChanged(newConfig);
         // Ensure the preference disabled state is reflected when device is folded or unfolded.
         updateAddressBarPreference();
-    }
-
-    @Override
-    public void setCustomTabLauncher(SettingsCustomTabLauncher customTabLauncher) {
-        mSettingsCustomTabLauncher = customTabLauncher;
     }
 
     private void createPreferences() {
@@ -529,17 +520,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
                             && getArguments()
                                     .getBoolean(PasswordExportLauncher.START_PASSWORDS_EXPORT);
             if (startPasswordsExportFlow) {
-                if (ChromeFeatureList.isEnabled(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)) {
-                    assert mSettingsCustomTabLauncher != null
-                            : "The CSV download flow dialog requires a non-null"
-                                    + " SettingsCustomTabLauncher.";
-                    PasswordManagerHelper.getForProfile(getProfile())
-                            .launchDownloadPasswordsCsvFlow(
-                                    getContext(), mSettingsCustomTabLauncher);
-                } else {
-                    PasswordAccessLossDialogHelper.launchExportFlow(
-                            getContext(), getProfile(), mModalDialogManagerSupplier);
-                }
+                PasswordAccessLossDialogHelper.launchExportFlow(
+                        getContext(), getProfile(), mModalDialogManagerSupplier);
                 getArguments().putBoolean(PasswordExportLauncher.START_PASSWORDS_EXPORT, false);
             }
         }
