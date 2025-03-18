@@ -39,6 +39,8 @@ class VIZ_SERVICE_EXPORT RenderInputRouterSupportBase
         const FrameSinkId& frame_sink_id) = 0;
   };
 
+  virtual bool IsRenderInputRouterSupportChildFrame() const = 0;
+
   // StylusInterface implementation.
   bool ShouldInitiateStylusWriting() override;
   void NotifyHoverActionStylusWritable(bool stylus_writable) override;

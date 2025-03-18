@@ -52,6 +52,9 @@ class VIZ_SERVICE_EXPORT RenderInputRouterSupportAndroid
                     bool emit_histograms) override;
   bool ShouldRouteEvents() const;
 
+  // RenderInputRouterSupportBase implementation.
+  bool IsRenderInputRouterSupportChildFrame() const override;
+
   // ui::GestureProviderClient implementation.
   void OnGestureEvent(const ui::GestureEventData& gesture) override;
   bool RequiresDoubleTapGestureEvents() const override;

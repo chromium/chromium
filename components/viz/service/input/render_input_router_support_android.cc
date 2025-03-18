@@ -64,6 +64,11 @@ bool RenderInputRouterSupportAndroid::RequiresDoubleTapGestureEvents() const {
   return input_helper_->RequiresDoubleTapGestureEvents();
 }
 
+bool RenderInputRouterSupportAndroid::IsRenderInputRouterSupportChildFrame()
+    const {
+  return false;
+}
+
 void RenderInputRouterSupportAndroid::OnGestureEvent(
     const ui::GestureEventData& gesture) {
   input_helper_->OnGestureEvent(gesture);

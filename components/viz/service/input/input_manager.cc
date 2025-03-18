@@ -416,7 +416,9 @@ void InputManager::StateOnTouchTransfer(
   if (iter != frame_sink_metadata_map_.end()) {
     RenderInputRouterSupportBase* support_base = iter->second.rir_support.get();
     CHECK(support_base);
-    if (support_base->GetRootView() == support_base) {
+    // TODO(401012917): Convert this to CHECK once the underlying reason for
+    // crash is fixed.
+    if (!support_base->IsRenderInputRouterSupportChildFrame()) {
       auto* support_android = static_cast<RenderInputRouterSupportAndroid*>(
           iter->second.rir_support.get());
       support_android_interface = support_android->GetWeakPtr();
@@ -427,6 +429,10 @@ void InputManager::StateOnTouchTransfer(
       UMA_HISTOGRAM_ENUMERATION(
           kStateProcessingResultHistogram,
           InputOnVizStateProcessingResult::kFrameSinkIdCorrespondsToChildView);
+      // Crash here so that the RenderInputRouterSupport gets created correctly
+      // on restart. Not crashing here means web contents becomes unresponsive
+      // since the sequence would just dropped later on.
+      NOTREACHED();
     }
   } else {
     UMA_HISTOGRAM_ENUMERATION(
