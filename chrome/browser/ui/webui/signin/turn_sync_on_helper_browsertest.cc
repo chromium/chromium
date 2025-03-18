@@ -287,11 +287,10 @@ IN_PROC_BROWSER_TEST_P(TurnSyncOnHelperBrowserTestWithParam,
       break;
     case TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT:
       if (should_remove_initial_account()) {
-        // With `switches::kExplicitBrowserSigninUIOnDesktop` enabled, the
-        // primary account isn't set implicitly based on cookies but by explicit
-        // user action, therefore it is also not removed when cookies change.
-        // The account should remain and Chrome still signed in.
-
+        // With explicit signin enabled, the primary account isn't set
+        // implicitly based on cookies but by explicit user action, therefore it
+        // is also not removed when cookies change. The account should remain
+        // and Chrome still signed in.
         EXPECT_FALSE(
             identity_manager()->GetAccountsWithRefreshTokens().empty());
         EXPECT_TRUE(identity_manager()->HasPrimaryAccount(
@@ -311,7 +310,8 @@ IN_PROC_BROWSER_TEST_P(TurnSyncOnHelperBrowserTestWithParam,
       break;
     case TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY:
       // This case is handled in the TurnSyncOnHelperBrowserTestWithUnoDesktop
-      // test suite, since this mode is used only when Uno Desktop is enabled.
+      // test suite, since this mode is used only when explicit signin Desktop
+      // is enabled.
       NOTREACHED();
   }
 }
@@ -378,12 +378,11 @@ IN_PROC_BROWSER_TEST_F(TurnSyncOnHelperBrowserTest, UndoSyncRemoveAccount) {
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
-  // On Dice platforms with `switches::kExplicitBrowserSigninUIOnDesktop`
-  // enabled and empty primary account, updating cookies is disabled. Therefore
-  // running the reconcilor doesn't require any network requests and might have
-  // been completed by now. The reconcilor will not remove the account from
-  // cookies but revoking refresh tokens should be sufficient to invalidate
-  // cookies.
+  // On Dice platforms with explicit signin enabled and empty primary account,
+  // updating cookies is disabled. Therefore running the reconcilor doesn't
+  // require any network requests and might have been completed by now. The
+  // reconcilor will not remove the account from cookies but revoking refresh
+  // tokens should be sufficient to invalidate cookies.
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
