@@ -269,9 +269,10 @@ void ExtensionApiTest::SetCustomArg(std::string_view custom_arg) {
 void ExtensionApiTest::SetUpCommandLine(base::CommandLine* command_line) {
   ExtensionApiTestBase::SetUpCommandLine(command_line);
 
+#if !BUILDFLAG(IS_ANDROID)
+  // On Android this is handled later.
   RegisterPathProvider();
 
-#if !BUILDFLAG(IS_ANDROID)
   // See comment in SetUpTestDataDir().
   SetUpTestDataDir();
 #endif

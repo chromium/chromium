@@ -67,7 +67,10 @@ public class NtpCustomizationCoordinator {
                 mPropertyModel, mViewFlipperView, NtpCustomizationViewBinder::bind);
 
         NtpCustomizationBottomSheetContent bottomSheetContent =
-                new NtpCustomizationBottomSheetContent(mContentView);
+                new NtpCustomizationBottomSheetContent(
+                        mContentView,
+                        /* backPressRunnable= */ () -> mMediator.backPressOnCurrentBottomSheet(),
+                        this::destroy);
 
         mMediator =
                 new NtpCustomizationMediator(
@@ -110,7 +113,9 @@ public class NtpCustomizationCoordinator {
     /** Removes all click listeners, all views inside the view flipper and destroy the mediator. */
     public void destroy() {
         mPropertyModel.set(NTP_CARDS_OPTION_CLICK_LISTENER, null);
-        mPropertyModel.set(NTP_CARDS_BACK_PRESS_HANDLER, null);
+        if (mNtpCardsCoordinator != null) {
+            mPropertyModel.set(NTP_CARDS_BACK_PRESS_HANDLER, null);
+        }
         mViewFlipperView.removeAllViews();
         mMediator.destroy();
     }

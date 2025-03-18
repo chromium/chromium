@@ -338,6 +338,8 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   void OnWindowGeometryChanged(
       const gfx::Rect& window_bounds_in_screen_dips,
       const gfx::Rect& content_bounds_in_screen_dips) override;
+  void OnWindowWillStartLiveResize() override;
+  void OnWindowDidEndLiveResize() override;
   void OnWindowFullscreenTransitionStart(bool target_fullscreen_state) override;
   void OnWindowFullscreenTransitionComplete(
       bool target_fullscreen_state) override;

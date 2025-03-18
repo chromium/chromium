@@ -322,7 +322,7 @@ std::string ExecuteWithResults(Database* db,
     for (int i = 0; i < s.ColumnCount(); ++i) {
       if (i > 0)
         ret += column_sep;
-      ret += s.ColumnString(i);
+      ret += s.ColumnStringView(i);
     }
   }
   return ret;

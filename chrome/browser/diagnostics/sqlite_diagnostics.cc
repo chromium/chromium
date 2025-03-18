@@ -144,7 +144,7 @@ class SqliteIntegrityTest : public DiagnosticsTest {
       }
 
       while (statement.Step()) {
-        std::string result(statement.ColumnString(0));
+        std::string_view result = statement.ColumnStringView(0);
         if ("ok" != result)
           ++errors;
       }

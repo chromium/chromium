@@ -12,11 +12,13 @@ namespace blink {
 
 class SVGValueNonInterpolableValue : public NonInterpolableValue {
  public:
+  explicit SVGValueNonInterpolableValue(SVGPropertyBase* svg_value)
+      : svg_value_(svg_value) {}
   ~SVGValueNonInterpolableValue() override = default;
 
-  static scoped_refptr<SVGValueNonInterpolableValue> Create(
-      SVGPropertyBase* svg_value) {
-    return base::AdoptRef(new SVGValueNonInterpolableValue(svg_value));
+  void Trace(Visitor* visitor) const override {
+    NonInterpolableValue::Trace(visitor);
+    visitor->Trace(svg_value_);
   }
 
   SVGPropertyBase* SvgValue() const { return svg_value_; }
@@ -24,10 +26,7 @@ class SVGValueNonInterpolableValue : public NonInterpolableValue {
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  SVGValueNonInterpolableValue(SVGPropertyBase* svg_value)
-      : svg_value_(svg_value) {}
-
-  Persistent<SVGPropertyBase> svg_value_;
+  Member<SVGPropertyBase> svg_value_;
 };
 
 DEFINE_NON_INTERPOLABLE_VALUE_TYPE(SVGValueNonInterpolableValue);
@@ -47,7 +46,7 @@ InterpolationValue SVGValueInterpolationType::MaybeConvertSVGValue(
       const_cast<SVGPropertyBase*>(&value);  // Take ref.
   return InterpolationValue(
       MakeGarbageCollected<InterpolableList>(0),
-      SVGValueNonInterpolableValue::Create(referenced_value));
+      MakeGarbageCollected<SVGValueNonInterpolableValue>(referenced_value));
 }
 
 SVGPropertyBase* SVGValueInterpolationType::AppliedSVGValue(

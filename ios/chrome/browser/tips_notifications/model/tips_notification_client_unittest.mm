@@ -674,10 +674,24 @@ TEST_F(TipsNotificationClientTest, TestOrderParam) {
   EXPECT_EQ(order[1], TipsNotificationType::kOmniboxPosition);
   EXPECT_EQ(order[2], TipsNotificationType::kEnhancedSafeBrowsing);
 
-  // Test Reactivation notifications order.
+  // Test Reactivation notifications order, default order.
   order = TipsNotificationsTypesOrder(true);
   EXPECT_EQ(order.size(), 3u);
   EXPECT_EQ(order[0], TipsNotificationType::kLens);
-  EXPECT_EQ(order[1], TipsNotificationType::kWhatsNew);
-  EXPECT_EQ(order[2], TipsNotificationType::kEnhancedSafeBrowsing);
+  EXPECT_EQ(order[1], TipsNotificationType::kEnhancedSafeBrowsing);
+  EXPECT_EQ(order[2], TipsNotificationType::kWhatsNew);
+
+  // Test Reactivation notifications order, alternate order.
+  feature_list.Reset();
+  feature_list.InitAndEnableFeatureWithParameters(
+      kIOSReactivationNotifications,
+      {
+          // The alternate order: ESB, Lens, What's New.
+          {kIOSReactivationNotificationsOrderParam, "8,7,1"},
+      });
+  order = TipsNotificationsTypesOrder(true);
+  EXPECT_EQ(order.size(), 3u);
+  EXPECT_EQ(order[0], TipsNotificationType::kEnhancedSafeBrowsing);
+  EXPECT_EQ(order[1], TipsNotificationType::kLens);
+  EXPECT_EQ(order[2], TipsNotificationType::kWhatsNew);
 }

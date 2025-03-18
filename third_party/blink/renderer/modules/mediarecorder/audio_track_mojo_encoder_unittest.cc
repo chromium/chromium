@@ -106,14 +106,14 @@ class TestInterfaceFactory final : public media::mojom::InterfaceFactory {
   }
   void CreateVideoDecoder(
       mojo::PendingReceiver<media::mojom::VideoDecoder> receiver,
-      mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
-          dst_video_decoder) override {
+      mojo::PendingRemote<media::mojom::VideoDecoder> dst_video_decoder)
+      override {
     NOTREACHED();
   }
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-  void CreateStableVideoDecoder(
-      mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder>
-          video_decoder) override {
+  void CreateVideoDecoderWithTracker(
+      mojo::PendingReceiver<media::mojom::VideoDecoder> receiver,
+      mojo::PendingRemote<media::mojom::VideoDecoderTracker> tracker) override {
     NOTREACHED();
   }
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)

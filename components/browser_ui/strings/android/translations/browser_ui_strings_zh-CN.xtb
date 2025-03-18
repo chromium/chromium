@@ -45,6 +45,7 @@
 <translation id="1652197001188145583">开启此设置后，网站可以请求使用 NFC 设备。关闭此设置后，网站无法使用 NFC 设备。</translation>
 <translation id="1660204651932907780">允许网站播放声音（推荐）</translation>
 <translation id="1677097821151855053">系统会使用 Cookie 和其他网站数据来记住您，以便实现某些功能或目的（例如帮您登录或向您展示个性化广告）。如需管理所有网站的 Cookie，请查看<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />。</translation>
+<translation id="1679305402657584804">网站可以请求使用 NFC 设备</translation>
 <translation id="1686785653877010442">网站通常会发送通知，告知您重大新闻或聊天消息。</translation>
 <translation id="169515064810179024">禁止网站使用移动传感器</translation>
 <translation id="1703666494654169921">不允许网站使用虚拟现实设备或数据</translation>
@@ -84,6 +85,7 @@
 <translation id="2185965788978862351">此操作会删除网站或其在主屏幕中安装的应用所存储的 <ph name="DATASIZE" /> 数据和 Cookie。</translation>
 <translation id="2194856509914051091">注意事项</translation>
 <translation id="2215727959747642672">文件修改</translation>
+<translation id="2218389616572918761">网站可以请求使用麦克风</translation>
 <translation id="2228071138934252756">若要允许 <ph name="APP_NAME" /> 使用您的摄像头，您还需在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启摄像头。</translation>
 <translation id="2235344399760031203">已阻止第三方 Cookie</translation>
 <translation id="2238944249568001759">根据您上次浏览的标签页建议的搜索</translation>
@@ -132,8 +134,10 @@
 <translation id="2726059656860238749">启动 Chrome 时将焦点放在多功能框上，从而缩短低端设备的启动时间。</translation>
 <translation id="2750481671343847896">网站可以显示来自身份服务的登录提示。</translation>
 <translation id="2787357173144933081">快速启动多功能框</translation>
+<translation id="2789132527330338807">网站可以请求为您的周边环境创建 3D 地图或跟踪摄像头位置</translation>
 <translation id="2790501146643349491">开启此设置后，最近关闭的网站可以完成数据收发操作。关闭此设置后，最近关闭的网站无法完成数据收发操作。</translation>
 <translation id="2795716239552913152">网站通常会使用您的位置信息以实现相关功能或提供相关信息（例如本地新闻或附近的商店）</translation>
+<translation id="2802908157808345702">不允许网站显示弹出式窗口和使用重定向</translation>
 <translation id="2814830417943086299">Chrome 现在会在设备的应用列表和搜索结果中显示您近期打开的标签页。您可以随时在 Chrome 设置中关闭此功能。</translation>
 <translation id="2822354292072154809">确定要重置<ph name="CHOSEN_OBJECT_NAME" />的所有网站权限吗？</translation>
 <translation id="2850913818900871965">请求使用移动视图</translation>
@@ -274,6 +278,7 @@
 <translation id="4598549027014564149">在无痕模式下，网站无法使用 Cookie 查看您在各个网站（即使是彼此相关的网站）上的浏览活动。系统不会将您的浏览活动用于展示个性化广告等用途。某些网站上的功能可能会无法正常运行。</translation>
 <translation id="461356340001513807">允许使用您在身份服务中注册的账号登录网站</translation>
 <translation id="4619615317237390068">从其他设备打开的标签页</translation>
+<translation id="4635969503923889910">不允许网站使用 NFC 设备</translation>
 <translation id="4644713492825682049">删除并重置</translation>
 <translation id="4645575059429386691">由您父母管理</translation>
 <translation id="4670064810192446073">虚拟现实</translation>
@@ -372,6 +377,7 @@
 <translation id="5877248419911025165">收起所有请求</translation>
 <translation id="5884085660368669834">网站偏好设置</translation>
 <translation id="5887687176710214216">上次访问时间：昨天</translation>
+<translation id="5908617755156109052">不允许网站为您的周边环境创建 3D 地图或跟踪摄像头位置</translation>
 <translation id="5916664084637901428">已启用</translation>
 <translation id="5922853908706496913">正在共享您的屏幕</translation>
 <translation id="5922967540311291836">阻止第三方 Cookie：</translation>
@@ -582,6 +588,7 @@
 <translation id="8676374126336081632">清除输入的内容</translation>
 <translation id="8681886425883659911">在已知会展示侵扰性或误导性广告的网站上屏蔽广告</translation>
 <translation id="868929229000858085">搜索联系人</translation>
+<translation id="8707904142362025782">网站可以请求使用摄像头</translation>
 <translation id="8712637175834984815">知道了</translation>
 <translation id="8715862698998036666">从顶部拖动并从左侧或右侧边缘滑动即可退出全屏模式。</translation>
 <translation id="8719283222052720129">在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中为 <ph name="APP_NAME" /> 开启这项权限。</translation>

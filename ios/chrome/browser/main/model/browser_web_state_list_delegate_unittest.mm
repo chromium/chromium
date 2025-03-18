@@ -8,6 +8,8 @@
 
 #import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -41,7 +43,10 @@ class BrowserWebStateListDelegateTest
  public:
   BrowserWebStateListDelegateTest() {
     profile_ = TestProfileIOS::Builder().Build();
-    profile_->CreateOffTheRecordProfileWithTestingFactories();
+    profile_->CreateOffTheRecordProfileWithTestingFactories(
+        {TestProfileIOS::TestingFactory{
+            TipsManagerIOSFactory::GetInstance(),
+            TipsManagerIOSFactory::GetDefaultFactory()}});
   }
 
   // Creates a fake WebState that is unrealized and off-the-record (this
@@ -63,6 +68,7 @@ class BrowserWebStateListDelegateTest
 
  private:
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
 };
 

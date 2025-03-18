@@ -105,6 +105,7 @@ constexpr AttributeType::DataType AttributeType::data_type() const {
   switch (name_) {
     case AttributeTypeName::kPassportName:
     case AttributeTypeName::kDriversLicenseName:
+    case AttributeTypeName::kVehicleOwner:
       return DataType::kName;
     case AttributeTypeName::kPassportCountry:
       return DataType::kCountry;
@@ -117,7 +118,6 @@ constexpr AttributeType::DataType AttributeType::data_type() const {
     case AttributeTypeName::kDriversLicenseState:
       return DataType::kState;
     case AttributeTypeName::kPassportNumber:
-    case AttributeTypeName::kVehicleOwner:
     case AttributeTypeName::kVehiclePlateNumber:
     case AttributeTypeName::kVehicleVin:
     case AttributeTypeName::kVehicleMake:

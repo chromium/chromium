@@ -46,6 +46,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/content_settings/core/browser/content_settings_type_set.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -69,6 +70,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -673,6 +675,10 @@ favicon::FaviconService* ChromePermissionsClient::GetFaviconService(
   return FaviconServiceFactory::GetForProfile(
       Profile::FromBrowserContext(browser_context),
       ServiceAccessType::EXPLICIT_ACCESS);
+}
+
+const std::u16string ChromePermissionsClient::GetClientApplicationName() const {
+  return l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME);
 }
 
 #else

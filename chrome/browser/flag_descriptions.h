@@ -55,6 +55,12 @@ extern const char kAcceleratedVideoDecodeDescription[];
 extern const char kAcceleratedVideoEncodeName[];
 extern const char kAcceleratedVideoEncodeDescription[];
 
+extern const char kAdjustCanCreateCanvas2DResourceProviderName[];
+extern const char kAdjustCanCreateCanvas2DResourceProviderDescription[];
+
+extern const char kAdjustGetOrCreate2DCanvasProviderName[];
+extern const char kAdjustGetOrCreate2DCanvasProviderDescription[];
+
 extern const char kAiSettingsPageRefreshName[];
 extern const char kAiSettingsPageRefreshDescription[];
 
@@ -650,6 +656,10 @@ extern const char kUseDnsHttpsSvcbAlpnDescription[];
 
 extern const char kIsolatedSandboxedIframesName[];
 extern const char kIsolatedSandboxedIframesDescription[];
+
+extern const char kIsPaintableChecksResourceProviderInsteadOfBridgeName[];
+extern const char
+    kIsPaintableChecksResourceProviderInsteadOfBridgeDescription[];
 
 extern const char kExperimentalAccessibilityLanguageDetectionName[];
 extern const char kExperimentalAccessibilityLanguageDetectionDescription[];
@@ -2284,6 +2294,9 @@ extern const char kVisitedURLRankingServiceHistoryVisibilityScoreFilterName[];
 extern const char
     kVisitedURLRankingServiceHistoryVisibilityScoreFilterDescription[];
 
+extern const char kGroupPromoPrototypeName[];
+extern const char kGroupPromoPrototypeDescription[];
+
 extern const char kV8VmFutureName[];
 extern const char kV8VmFutureDescription[];
 
@@ -3128,12 +3141,6 @@ extern const char kSmartCardWebApiDescription[];
 extern const char kTranslateOpenSettingsName[];
 extern const char kTranslateOpenSettingsDescription[];
 #endif
-
-extern const char kUserDisplayModeSyncBrowserMitigationName[];
-extern const char kUserDisplayModeSyncBrowserMitigationDescription[];
-
-extern const char kUserDisplayModeSyncStandaloneMitigationName[];
-extern const char kUserDisplayModeSyncStandaloneMitigationDescription[];
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 extern const char kWasmTtsComponentUpdaterEnabledName[];
@@ -4064,6 +4071,9 @@ extern const char kNearbyPresenceDescription[];
 extern const char kNotificationsIgnoreRequireInteractionName[];
 extern const char kNotificationsIgnoreRequireInteractionDescription[];
 
+extern const char kOfflineItemsInNotificationsName[];
+extern const char kOfflineItemsInNotificationsDescription[];
+
 extern const char kOnDeviceAppControlsName[];
 extern const char kOnDeviceAppControlsDescription[];
 
@@ -4120,6 +4130,12 @@ extern const char kArcWindowPredictorDescription[];
 
 extern const char kScalableIphDebugName[];
 extern const char kScalableIphDebugDescription[];
+
+extern const char kScannerDisclaimerDebugOverrideName[];
+extern const char kScannerDisclaimerDebugOverrideDescription[];
+extern const char kScannerDisclaimerDebugOverrideChoiceDefault[];
+extern const char kScannerDisclaimerDebugOverrideChoiceAlwaysReminder[];
+extern const char kScannerDisclaimerDebugOverrideChoiceAlwaysFull[];
 
 extern const char kSealKeyName[];
 extern const char kSealKeyDescription[];

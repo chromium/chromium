@@ -157,6 +157,45 @@ public class PasswordCsvDownloadFlowControllerTest {
     }
 
     @Test
+    public void testDestinationNotSet() throws IOException {
+        // Make sure the auto-exported csv is set up.
+        File sourceFile = setUpTempAutoExportedCsv(TEST_FILE_DATA);
+
+        mController = new PasswordCsvDownloadFlowController(mEndOfFlowCallback);
+        mController.showDialogAndStartFlow(mActivity, mProfile, true);
+        mActivity.getSupportFragmentManager().executePendingTransactions();
+
+        ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorBridge);
+        when(mReauthenticatorBridge.getBiometricAvailabilityStatus())
+                .thenReturn(BiometricStatus.BIOMETRICS_AVAILABLE);
+
+        Dialog exportDialog = ShadowDialog.getLatestDialog();
+        exportDialog.findViewById(R.id.positive_button).performClick();
+
+        ArgumentCaptor<Callback<Boolean>> resultCallbackCaptor =
+                ArgumentCaptor.forClass(Callback.class);
+        verify(mReauthenticatorBridge).reauthenticate(resultCallbackCaptor.capture());
+        resultCallbackCaptor.getValue().onResult(true);
+
+        ShadowActivity shadowActivity = shadowOf(mActivity);
+        Intent startedIntent = shadowActivity.getNextStartedActivityForResult().intent;
+        // Verify that the create document intent was triggered (creating file in Downloads for
+        // exported passwords).
+        assertEquals(Intent.ACTION_CREATE_DOCUMENT, startedIntent.getAction());
+
+        // Simulate the user cancelling the activity and not setting a destination file
+        shadowActivity.receiveResult(startedIntent, RESULT_OK, new Intent().setData(null));
+        shadowOf(Looper.getMainLooper()).idle();
+
+        assertFalse(exportDialog.isShowing());
+
+        // The source file should not have been deleted, because the write to the destination
+        // file didn't complete.
+        assertTrue(sourceFile.exists());
+        verify(mEndOfFlowCallback).run();
+    }
+
+    @Test
     public void testErrorDialog() throws IOException {
         // Make sure the auto-exported csv is set up.
         File sourceFile = setUpTempAutoExportedCsv(TEST_FILE_DATA);

@@ -44,12 +44,11 @@ std::wstring SysNativeMBToWide(std::string_view native_mb) {
 #else
 
 std::string SysWideToNativeMB(const std::wstring& wide) {
-  mbstate_t ps;
+  mbstate_t ps = {};
 
   // Calculate the number of multi-byte characters.  We walk through the string
   // without writing the output, counting the number of multi-byte characters.
   size_t num_out_chars = 0;
-  memset(&ps, 0, sizeof(ps));
   for (auto src : wide) {
     // Use a temp buffer since calling wcrtomb with an output of NULL does not
     // calculate the output length.
@@ -79,7 +78,7 @@ std::string SysWideToNativeMB(const std::wstring& wide) {
 
   // We walk the input string again, with |i| tracking the index of the
   // wide input, and |j| tracking the multi-byte output.
-  memset(&ps, 0, sizeof(ps));
+  ps = {};
   for (size_t i = 0, j = 0; i < wide.size(); ++i) {
     const wchar_t src = wide[i];
     // We don't want wcrtomb to do its funkiness for embedded NULLs.
@@ -102,12 +101,11 @@ std::string SysWideToNativeMB(const std::wstring& wide) {
 }
 
 std::wstring SysNativeMBToWide(std::string_view native_mb) {
-  mbstate_t ps;
+  mbstate_t ps = {};
 
   // Calculate the number of wide characters.  We walk through the string
   // without writing the output, counting the number of wide characters.
   size_t num_out_chars = 0;
-  memset(&ps, 0, sizeof(ps));
   for (size_t i = 0; i < native_mb.size();) {
     const char* src = UNSAFE_TODO(native_mb.data() + i);
     size_t res = mbrtowc(nullptr, src, native_mb.size() - i, &ps);
@@ -134,7 +132,7 @@ std::wstring SysNativeMBToWide(std::string_view native_mb) {
   std::wstring out;
   out.resize(num_out_chars);
 
-  memset(&ps, 0, sizeof(ps));  // Clear the shift state.
+  ps = {};  // Clear the shift state.
   // We walk the input string again, with |i| tracking the index of the
   // multi-byte input, and |j| tracking the wide output.
   for (size_t i = 0, j = 0; i < native_mb.size(); ++j) {

@@ -148,7 +148,6 @@ public class TabGroupListBottomSheetMediatorUnitTest {
         BottomSheetObserver observer = mBottomSheetObserverCaptor.getValue();
         observer.onSheetClosed(StateChangeReason.BACK_PRESS);
 
-        verify(mDelegate).onSheetClosed();
         verify(mBottomSheetController).removeObserver(observer);
         assertTrue(mModelList.isEmpty());
     }
@@ -162,7 +161,6 @@ public class TabGroupListBottomSheetMediatorUnitTest {
         BottomSheetObserver observer = mBottomSheetObserverCaptor.getValue();
         observer.onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
 
-        verify(mDelegate, never()).onSheetClosed();
         verify(mBottomSheetController, never()).removeObserver(any());
         assertFalse(mModelList.isEmpty());
     }
@@ -176,7 +174,6 @@ public class TabGroupListBottomSheetMediatorUnitTest {
         BottomSheetObserver observer = mBottomSheetObserverCaptor.getValue();
         observer.onSheetStateChanged(SheetState.HIDDEN, INTERACTION_COMPLETE);
 
-        verify(mDelegate).onSheetClosed();
         verify(mBottomSheetController).removeObserver(observer);
         assertTrue(mModelList.isEmpty());
     }

@@ -15,7 +15,6 @@ import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.widget.LinearLayout;
 
 import androidx.test.filters.SmallTest;
 
@@ -103,7 +102,7 @@ public class TileRendererTest {
 
     private ShadowPostTaskImpl mPostTaskRunner;
     private Activity mActivity;
-    private LinearLayout mSharedParent;
+    private TilesLinearLayout mSharedParent;
     private final ArgumentCaptor<LargeIconCallback> mImageFetcherCallbackCaptor =
             ArgumentCaptor.forClass(LargeIconCallback.class);
 
@@ -119,7 +118,7 @@ public class TileRendererTest {
 
         TemplateUrlServiceFactory.setInstanceForTesting(mMockTemplateUrlService);
 
-        mSharedParent = new LinearLayout(mActivity);
+        mSharedParent = new TilesLinearLayout(mActivity, /* attrs= */ null);
         SiteSuggestion siteSuggestion =
                 new SiteSuggestion("Example", TEST_URL, 0, TileSource.TOP_SITES, 0);
         mTile = new Tile(siteSuggestion, 0);

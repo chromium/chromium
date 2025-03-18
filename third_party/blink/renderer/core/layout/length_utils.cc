@@ -33,6 +33,7 @@ LayoutUnit ResolveInlineLengthInternal(
     const Length& original_length,
     const Length* auto_length,
     LengthTypeInternal length_type,
+    FitContentMode fit_content_mode,
     LayoutUnit override_available_size,
     CalcSizeKeywordBehavior calc_size_keyword_behavior) {
   DCHECK_EQ(constraint_space.GetWritingMode(), style.GetWritingMode());
@@ -68,11 +69,18 @@ LayoutUnit ResolveInlineLengthInternal(
     case Length::kPercent:
     case Length::kFixed:
     case Length::kCalculated: {
-      const LayoutUnit percentage_resolution_size =
+      LayoutUnit percentage_resolution_size =
           constraint_space.PercentageResolutionInlineSize();
       if (length.HasPercent() &&
           percentage_resolution_size == kIndefiniteSize) {
-        return kIndefiniteSize;
+        if (RuntimeEnabledFeatures::LayoutMinSizeIndefiniteEnabled()) {
+          if (length_type != LengthTypeInternal::kMin) {
+            return kIndefiniteSize;
+          }
+          percentage_resolution_size = LayoutUnit();
+        } else {
+          return kIndefiniteSize;
+        }
       }
       bool evaluated_indefinite = false;
       LayoutUnit value = MinimumValueForLength(
@@ -82,7 +90,7 @@ LayoutUnit ResolveInlineLengthInternal(
                  LayoutUnit result = ResolveInlineLengthInternal(
                      constraint_space, style, border_padding,
                      min_max_sizes_func, length_to_evaluate, auto_length,
-                     length_type, override_available_size,
+                     length_type, fit_content_mode, override_available_size,
                      calc_size_keyword_behavior);
                  if (result == kIndefiniteSize) {
                    evaluated_indefinite = true;
@@ -121,12 +129,19 @@ LayoutUnit ResolveInlineLengthInternal(
 
       // fit-content resolves differently depending on the type of length.
       if (available_size == kIndefiniteSize) {
-        switch (length_type) {
-          case LengthTypeInternal::kMin:
+        switch (fit_content_mode) {
+          case FitContentMode::kNormal:
+            switch (length_type) {
+              case LengthTypeInternal::kMin:
+                return min_max_sizes_func(SizeType::kContent).sizes.min_size;
+              case LengthTypeInternal::kMain:
+                return kIndefiniteSize;
+              case LengthTypeInternal::kMax:
+                return min_max_sizes_func(SizeType::kContent).sizes.max_size;
+            }
+          case FitContentMode::kMinContribution:
             return min_max_sizes_func(SizeType::kContent).sizes.min_size;
-          case LengthTypeInternal::kMain:
-            return kIndefiniteSize;
-          case LengthTypeInternal::kMax:
+          case FitContentMode::kMaxContribution:
             return min_max_sizes_func(SizeType::kContent).sizes.max_size;
         }
       }
@@ -194,15 +209,26 @@ LayoutUnit ResolveBlockLengthInternal(
     case Length::kPercent:
     case Length::kFixed:
     case Length::kCalculated: {
-      const LayoutUnit percentage_resolution_size =
+      LayoutUnit percentage_resolution_size =
           override_percentage_resolution_size
               ? *override_percentage_resolution_size
               : constraint_space.PercentageResolutionBlockSize();
       if (length.HasPercent() &&
           percentage_resolution_size == kIndefiniteSize) {
-        return length_type == LengthTypeInternal::kMain
-                   ? block_size_func(SizeType::kContent)
-                   : kIndefiniteSize;
+        switch (length_type) {
+          case LengthTypeInternal::kMin: {
+            if (RuntimeEnabledFeatures::LayoutMinSizeIndefiniteEnabled()) {
+              percentage_resolution_size = LayoutUnit();
+            } else {
+              return kIndefiniteSize;
+            }
+            break;
+          }
+          case LengthTypeInternal::kMain:
+            return block_size_func(SizeType::kContent);
+          case LengthTypeInternal::kMax:
+            return kIndefiniteSize;
+        }
       }
       bool evaluated_indefinite = false;
       LayoutUnit value = MinimumValueForLength(
@@ -412,15 +438,30 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
 
   // Check if we should apply the automatic minimum size.
   // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-minimum
-  const bool apply_automatic_min_size =
-      !style.IsScrollContainer() && applied_aspect_ratio;
+  const Length* auto_min_length =
+      (!style.IsScrollContainer() && applied_aspect_ratio)
+          ? &Length::MinIntrinsic()
+          : nullptr;
 
-  const MinMaxSizes min_max_sizes = ComputeMinMaxInlineSizes(
-      space, child, border_padding,
-      apply_automatic_min_size ? &Length::MinIntrinsic() : nullptr,
-      min_max_sizes_func);
-  sizes.Constrain(min_max_sizes.max_size);
-  sizes.Encompass(min_max_sizes.min_size);
+  // If fit-content is present we need to resolve the min/max sizes twice, once
+  // assuming its min-content, and max-content. See:
+  // https://github.com/w3c/csswg-drafts/issues/10721
+  if (style.LogicalMinWidth().HasFitContent() ||
+      style.LogicalMaxWidth().HasFitContent()) {
+    const MinMaxSizes min_sizes = ComputeMinMaxInlineSizes(
+        space, child, border_padding, auto_min_length, min_max_sizes_func,
+        TransferredSizesMode::kNormal, FitContentMode::kMinContribution);
+    const MinMaxSizes max_sizes = ComputeMinMaxInlineSizes(
+        space, child, border_padding, auto_min_length, min_max_sizes_func,
+        TransferredSizesMode::kNormal, FitContentMode::kMaxContribution);
+    sizes.min_size = min_sizes.ClampSizeToMinAndMax(sizes.min_size);
+    sizes.max_size = max_sizes.ClampSizeToMinAndMax(sizes.max_size);
+  } else {
+    const MinMaxSizes min_max_sizes = ComputeMinMaxInlineSizes(
+        space, child, border_padding, auto_min_length, min_max_sizes_func);
+    sizes.Constrain(min_max_sizes.max_size);
+    sizes.Encompass(min_max_sizes.min_size);
+  }
 
   return {sizes, depends_on_block_constraints};
 }
@@ -730,14 +771,16 @@ MinMaxSizes ComputeMinMaxInlineSizes(
     const Length* auto_min_length,
     MinMaxSizesFunctionRef min_max_sizes_func,
     TransferredSizesMode transferred_sizes_mode,
+    FitContentMode fit_content_mode,
     LayoutUnit override_available_size) {
   const ComputedStyle& style = node.Style();
   MinMaxSizes sizes = {
       ResolveMinInlineLength(space, style, border_padding, min_max_sizes_func,
                              style.LogicalMinWidth(), auto_min_length,
-                             override_available_size),
+                             override_available_size, fit_content_mode),
       ResolveMaxInlineLength(space, style, border_padding, min_max_sizes_func,
-                             style.LogicalMaxWidth(), override_available_size)};
+                             style.LogicalMaxWidth(), override_available_size,
+                             fit_content_mode)};
 
   // Clamp the auto min-size by the max-size.
   if (auto_min_length && style.LogicalMinWidth().HasAuto()) {

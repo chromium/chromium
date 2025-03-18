@@ -218,6 +218,7 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
   friend class ScopedRasterFlags;
   friend class ShaderPaintFilter;
   FRIEND_TEST_ALL_PREFIXES(PaintShaderTest, DecodePaintRecord);
+  FRIEND_TEST_ALL_PREFIXES(PaintShaderTest, InfinityStopShouldBeValid);
   FRIEND_TEST_ALL_PREFIXES(PaintOpBufferTest, PaintRecordShaderSerialization);
   FRIEND_TEST_ALL_PREFIXES(PaintOpBufferTest, RecordShadersCached);
 

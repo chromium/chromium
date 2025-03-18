@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.toolbar.bottom;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -68,7 +67,6 @@ public class BottomControlsCoordinator implements BackPressHandler {
     /**
      * Build the coordinator that manages the bottom controls.
      *
-     * @param activity Activity instance to use.
      * @param windowAndroid A {@link WindowAndroid} for watching keyboard visibility events.
      * @param layoutManager A {@link LayoutManager} to attach overlays to.
      * @param resourceManager A {@link ResourceManager} for loading textures into the compositor.
@@ -85,7 +83,6 @@ public class BottomControlsCoordinator implements BackPressHandler {
      */
     @SuppressLint("CutPasteId") // Not actually cut and paste since it's View vs ViewGroup.
     public BottomControlsCoordinator(
-            Activity activity,
             WindowAndroid windowAndroid,
             LayoutManager layoutManager,
             ResourceManager resourceManager,
@@ -155,7 +152,6 @@ public class BottomControlsCoordinator implements BackPressHandler {
         mContentDelegateSupplier.onAvailable(
                 (contentDelegate) -> {
                     contentDelegate.initializeWithNative(
-                            activity,
                             new BottomControlsVisibilityController() {
                                 @Override
                                 public void setBottomControlsVisible(boolean isVisible) {

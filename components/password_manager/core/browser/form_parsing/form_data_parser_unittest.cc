@@ -3927,6 +3927,42 @@ TEST_F(FormParserTest, ModelPredictionsAndManualOverrides) {
   });
 }
 
+TEST_F(FormParserTest, ModelPredictions_WebAuthnRationalization) {
+  CheckTestData({
+      {
+          .description_for_logging = "Mispredicted login form.",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME,
+                   .autocomplete_attribute = "username webauthn",
+                   .value = u"username",
+                   .form_control_type = FormControlType::kInputText,
+                   .model_predicted_type = autofill::UNKNOWN_TYPE},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .autocomplete_attribute = "current-password webauthn",
+                   .value = u"password",
+                   .form_control_type = FormControlType::kInputPassword,
+                   .model_predicted_type = autofill::UNKNOWN_TYPE},
+              },
+          .accepts_webauthn_credentials = true,
+      },
+      {
+          .description_for_logging =
+              "Single field tagged with autofill=\"webauthn\"",
+          .fields =
+              {
+                  {.role_filling = ElementRole::WEBAUTHN,
+                   .autocomplete_attribute = "webauthn",
+                   .value = u"rosalina",
+                   .name = u"username",
+                   .form_control_type = FormControlType::kInputText,
+                   .model_predicted_type = autofill::UNKNOWN_TYPE},
+              },
+          .accepts_webauthn_credentials = true,
+      },
+  });
+}
+
 }  // namespace
 
 }  // namespace password_manager

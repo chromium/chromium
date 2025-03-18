@@ -504,6 +504,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="310900540163454140">I-delete ang password para sa <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Markahan…</translation>
 <translation id="3119874402040566234">Masa-sign out ka at ide-delete ang data mula sa pag-browse</translation>
+<translation id="3124568093781685165">I-share ang iyong mga password sa iyong pamilya</translation>
 <translation id="3130863904455712965">History at higit pa</translation>
 <translation id="313283613037595347">Gumawa ng bagong tab na Incognito.</translation>
 <translation id="3138611310073113613">I-discard ang pinili</translation>
@@ -1003,6 +1004,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="5352128922772839949">I-save ang file</translation>
 <translation id="5355191726083956201">Naka-on ang Enhanced Protection</translation>
 <translation id="537853552771686272">Pamahalaan ang mga paksa at site kung saan ka interesado</translation>
+<translation id="5390458669633674385">{count,plural, =1{{count} ang isinara}one{{count} ang isinara}other{{count} ang isinara}}</translation>
 <translation id="5394975111793637642">I-hide ang card na mga review ng produkto para sa iyo</translation>
 <translation id="5395707839134961196">I-hide ang mga detalye ng search engine</translation>
 <translation id="5414763847370083940">Makakatanggap ka ng alerto kung bumaba ang presyo sa anumang site.</translation>
@@ -1132,6 +1134,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5897749768294722429">Para mabilis na makabalik sa mga site na binisita mo, i-sync ang iyong mga tab at history.</translation>
 <translation id="5898848375214731122">Mass</translation>
 <translation id="5899314093904173337">Para magbahagi sa mga taong nasa malapit, ipa-scan sa kanila ang QR code na ito gamit ang kanilang camera o QR scanner app</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} bagong tab}one{{count} bagong tab}other{{count} na bagong tab}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5917913282764181683">Awtomatikong i-delete ang iyong mga download</translation>
 <translation id="5922999516621365983">I-drag ang tab dito para i-pin ito.</translation>
@@ -1674,6 +1677,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8131740175452115882">Kumpirmahin</translation>
 <translation id="8132598642024322408"><ph name="PRICE" /> na lang ngayon ang dating <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Gumamit ng natatanging password para sa bawat site o app. Kung may makakatuklas ng password na ginamit ulit, posibleng gamitin ito para i-access ang iyong iba pang account. I-click para buksan ang website at baguhin ang mga ito ngayon.</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} nakasarang tab}one{{count} nakasarang tab}other{{count} na nakasarang tab}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 iba pa}one{# iba pa}other{# na iba pa}}</translation>
 <translation id="8150167929304790980">Buong pangalan</translation>
 <translation id="8152331954420209374">Pumunta sa Lens</translation>

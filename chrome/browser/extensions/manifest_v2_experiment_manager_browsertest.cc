@@ -12,6 +12,7 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_management_internal.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/profiles/profile.h"
@@ -743,11 +744,13 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
   base::FilePath crx_path = test_data_dir_.AppendASCII("good.crx");
 
   // Install a new external extension.
+  ExternalProviderManager* external_provider_manager =
+      ExternalProviderManager::Get(profile());
   TestExtensionRegistryObserver observer(extension_registry());
   auto provider = std::make_unique<MockExternalProvider>(
-      extension_service(), mojom::ManifestLocation::kExternalPref);
+      external_provider_manager, mojom::ManifestLocation::kExternalPref);
   provider->UpdateOrAddExtension(kExtensionId, "1.0.0.0", crx_path);
-  extension_service()->AddProviderForTesting(std::move(provider));
+  external_provider_manager->AddProviderForTesting(std::move(provider));
   extension_service()->CheckForExternalUpdates();
 
   auto extension = observer.WaitForExtensionInstalled();

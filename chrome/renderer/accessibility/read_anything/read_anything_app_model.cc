@@ -122,13 +122,13 @@ void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
     bool links_enabled,
     bool images_enabled,
     read_anything::mojom::Colors color) {
-  line_spacing_ = static_cast<size_t>(line_spacing);
-  letter_spacing_ = static_cast<size_t>(letter_spacing);
+  line_spacing_ = line_spacing;
+  letter_spacing_ = letter_spacing;
   font_name_ = font;
   SetFontSize(font_size);
   links_enabled_ = links_enabled;
   images_enabled_ = images_enabled;
-  color_theme_ = static_cast<size_t>(color);
+  color_theme_ = color;
 }
 
 void ReadAnythingAppModel::Reset(
@@ -673,36 +673,6 @@ ui::AXNode* ReadAnythingAppModel::GetAXNode(
 bool ReadAnythingAppModel::NodeIsContentNode(
     const ui::AXNodeID& ax_node_id) const {
   return base::Contains(content_node_ids_, ax_node_id);
-}
-
-double ReadAnythingAppModel::GetLetterSpacingValue(
-    read_anything::mojom::LetterSpacing letter_spacing) const {
-  switch (letter_spacing) {
-    case read_anything::mojom::LetterSpacing::kTightDeprecated:
-      return -0.05;
-    case read_anything::mojom::LetterSpacing::kStandard:
-      return 0;
-    case read_anything::mojom::LetterSpacing::kWide:
-      return 0.05;
-    case read_anything::mojom::LetterSpacing::kVeryWide:
-      return 0.1;
-  }
-}
-
-double ReadAnythingAppModel::GetLineSpacingValue(
-    read_anything::mojom::LineSpacing line_spacing) const {
-  switch (line_spacing) {
-    case read_anything::mojom::LineSpacing::kTightDeprecated:
-      return 1.0;
-    case read_anything::mojom::LineSpacing::kStandard:
-      // This value needs to be at least 1.35 to avoid cutting off descenders
-      // with the highlight with larger fonts such as Poppins.
-      return 1.35;
-    case read_anything::mojom::LineSpacing::kLoose:
-      return 1.5;
-    case read_anything::mojom::LineSpacing::kVeryLoose:
-      return 2.0;
-  }
 }
 
 void ReadAnythingAppModel::AdjustTextSize(int increment) {

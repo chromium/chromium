@@ -19,7 +19,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator_delegate.h"
-#import "ios/chrome/browser/page_info/about_this_site_service_factory.h"
+#import "ios/chrome/browser/page_info/model/about_this_site_service_factory.h"
 #import "ios/chrome/browser/page_info/ui_bundled/features.h"
 #import "ios/chrome/browser/page_info/ui_bundled/page_info_about_this_site_mediator.h"
 #import "ios/chrome/browser/page_info/ui_bundled/page_info_history_mediator.h"

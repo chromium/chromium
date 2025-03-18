@@ -102,6 +102,16 @@ WITH
   steps_with_ordering AS (
     SELECT
       *,
+      -- Partition the steps so that, if the same step (for the same graphics
+      -- pipeline) was emitted more than once (e.g. due to b:390610512), the
+      -- step ends up in the same partition as all its duplicates. This will
+      -- enable us to deduplicate the steps later.
+      -- If there are multiple STEP_DRAW_AND_SWAP or multiple
+      -- STEP_SURFACE_AGGREGATION steps, we assume that all duplicates except
+      -- the last one were cancelled, so we only care about the last
+      -- STEP_DRAW_AND_SWAP/STEP_SURFACE_AGGREGATION step. We don't have any
+      -- preference for other steps but, for the sake of determinism and
+      -- consistency, let's always pick the last step.
       row_number() OVER (PARTITION BY display_trace_id, step, utid ORDER BY ts DESC) AS ordering_within_partition
     FROM steps_with_potential_duplicates
   )

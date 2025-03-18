@@ -262,9 +262,7 @@ const AccountId& UserManagerImpl::GetLastSessionActiveAccountId() const {
 }
 
 void UserManagerImpl::UserLoggedIn(const AccountId& account_id,
-                                   const std::string& username_hash,
-                                   bool browser_restart,
-                                   bool is_child) {
+                                   const std::string& username_hash) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!last_session_active_account_id_initialized_) {

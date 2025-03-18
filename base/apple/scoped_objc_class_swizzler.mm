@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 
 namespace base::apple {
 
@@ -59,8 +60,8 @@ void ScopedObjCClassSwizzler::Init(Class target,
   const char* new_types = method_getTypeEncoding(new_selector_impl_);
   DCHECK(old_types);
   DCHECK(new_types);
-  DCHECK_EQ(0, strcmp(old_types, new_types));
-  if (!old_types || !new_types || strcmp(old_types, new_types)) {
+  DCHECK_EQ(0, UNSAFE_TODO(strcmp(old_types, new_types)));
+  if (!old_types || !new_types || UNSAFE_TODO(strcmp(old_types, new_types))) {
     old_selector_impl_ = new_selector_impl_ = nullptr;
     return;
   }

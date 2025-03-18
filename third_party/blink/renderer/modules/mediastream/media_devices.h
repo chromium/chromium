@@ -215,7 +215,9 @@ class MODULES_EXPORT MediaDevices final
 #endif
 
   SEQUENCE_CHECKER(sequence_checker_);
-  bool stopped_;
+  // True if the associated execution context is alive and valid, reset
+  // immediately before the execution context is destroyed.
+  bool is_execution_context_active_;
   // Async runner may be null when there is no valid execution context.
   // No async work may be posted in this scenario.
   TaskHandle dispatch_scheduled_events_task_handle_;

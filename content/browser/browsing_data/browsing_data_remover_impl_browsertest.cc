@@ -17,7 +17,10 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/back_forward_cache_test_util.h"
 #include "content/browser/browsing_data/shared_storage_clear_site_data_tester.h"
+#include "content/browser/preloading/prefetch/prefetch_document_manager.h"
+#include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -31,6 +34,7 @@
 #include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/prefetch_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -1041,6 +1045,118 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplPrerenderingBrowserTest,
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderFinalStatus::kBrowsingDataRemoved, 1);
+}
+
+class BrowsingDataRemoverImplPrefetchBrowserTest
+    : public BrowsingDataRemoverImplBrowserTest {
+ public:
+  BrowsingDataRemoverImplPrefetchBrowserTest() = default;
+
+  void StartPrefetch(const GURL& url, Shell* shell) {
+    auto* prefetch_document_manager =
+        PrefetchDocumentManager::GetOrCreateForCurrentDocument(
+            shell->web_contents()->GetPrimaryMainFrame());
+    auto candidate = blink::mojom::SpeculationCandidate::New();
+    candidate->url = url;
+    candidate->action = blink::mojom::SpeculationAction::kPrefetch;
+    candidate->eagerness = blink::mojom::SpeculationEagerness::kEager;
+    candidate->referrer = Referrer::SanitizeForRequest(
+        url, blink::mojom::Referrer(
+                 shell->web_contents()->GetURL(),
+                 network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin));
+    std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+    candidates.push_back(std::move(candidate));
+    prefetch_document_manager->ProcessCandidates(candidates);
+  }
+
+  ~BrowsingDataRemoverImplPrefetchBrowserTest() override = default;
+};
+
+IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplPrefetchBrowserTest,
+                       ClearCacheCancelsPrefetch) {
+  GURL initial_url = ssl_server().GetURL("/empty.html");
+  GURL prefetch_url = ssl_server().GetURL("/title1.html");
+
+  // 1) Navigate to the initial url.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  test::TestPrefetchWatcher test_prefetch_watcher;
+
+  // 2) Start prefetching the prefetch_url.
+  StartPrefetch(prefetch_url, shell());
+
+  // 3) Wait for the prefetch_url to finish prefetching.
+  test_prefetch_watcher.WaitUntilPrefetchResponseCompleted(
+      static_cast<RenderFrameHostImpl*>(
+          shell()->web_contents()->GetPrimaryMainFrame())
+          ->GetDocumentToken(),
+      prefetch_url);
+
+  // 4) Remove the browsing data with DATA_TYPE_CACHE.
+  auto filter = BrowsingDataFilterBuilder::Create(
+      BrowsingDataFilterBuilder::Mode::kDelete);
+  filter->AddRegisterableDomain(ssl_server().base_url().host());
+  RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_CACHE,
+                          std::move(filter));
+
+  // 5) Verify that the prefetch failed due to removing browsing data.
+  histogram_tester().ExpectUniqueSample(
+      "Preloading.Prefetch.PrefetchStatus",
+      PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplPrefetchBrowserTest,
+                       ClearCacheCancelsPrefetchMultipleOrigins) {
+  // Test prefetch cancellation for two different origins.
+  // As part of the Clear Browsing Data trigger, prefetches that have
+  // referral origins in the BrowsingDataFilterBuilder should be canceled.
+  GURL referral_url1 = ssl_server().GetURL("/empty.html");
+  GURL prefetch_url1 = ssl_server().GetURL("/title1.html");
+
+  GURL referral_url2 = ssl_server().GetURL("a.test", "/title1.html");
+  GURL prefetch_url2 = ssl_server().GetURL("a.test", "/empty.html");
+
+  // 1) Navigate to the referral url for origin 1.
+  ASSERT_TRUE(NavigateToURL(shell(), referral_url1));
+
+  // 2) Open a new tab and navigate to the referral url for origin 2.
+  Shell* new_shell =
+      Shell::CreateNewWindow(shell()->web_contents()->GetBrowserContext(),
+                             GURL(url::kAboutBlankURL), nullptr, gfx::Size());
+
+  ASSERT_TRUE(NavigateToURL(new_shell, referral_url2));
+
+  test::TestPrefetchWatcher test_prefetch_watcher;
+
+  // 3) Start prefetching the first url and wait for it to finish prefetching.
+  StartPrefetch(prefetch_url1, shell());
+
+  test_prefetch_watcher.WaitUntilPrefetchResponseCompleted(
+      static_cast<RenderFrameHostImpl*>(
+          shell()->web_contents()->GetPrimaryMainFrame())
+          ->GetDocumentToken(),
+      prefetch_url1);
+
+  // 4) Start prefetching the second url and wait for it to finish prefetching.
+  StartPrefetch(prefetch_url2, new_shell);
+
+  test_prefetch_watcher.WaitUntilPrefetchResponseCompleted(
+      static_cast<RenderFrameHostImpl*>(
+          new_shell->web_contents()->GetPrimaryMainFrame())
+          ->GetDocumentToken(),
+      prefetch_url2);
+
+  // 5) Remove the browsing data with DATA_TYPE_CACHE.
+  // Mode::kPreserve + no origins/domains = delete everything.
+  auto filter = BrowsingDataFilterBuilder::Create(
+      BrowsingDataFilterBuilder::Mode::kPreserve);
+  RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_CACHE,
+                          std::move(filter));
+
+  // 6) Verify that both prefetches failed due to removing browsing data.
+  histogram_tester().ExpectUniqueSample(
+      "Preloading.Prefetch.PrefetchStatus",
+      PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved, 2);
 }
 
 }  // namespace content

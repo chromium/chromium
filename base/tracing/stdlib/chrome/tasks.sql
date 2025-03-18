@@ -243,14 +243,20 @@ WITH
       ts,
       dur
     FROM java_slices_with_trimmed_names
+    -- The names below correspond respectively to:
+    -- * AndroidX.
+    -- * Other non-Chrome UI libraries.
+    -- * Generic Chrome frameworks.
+    -- * Non-specific Chrome slices.
+    -- * Screenshots custom annotations.
+    -- * Non-bytecode generated slices.
     WHERE
-      NOT name IN (-- AndroidX.
-      "FitWindowsFrameLayout", "FitWindowsLinearLayout", "ContentFrameLayout", "CoordinatorLayout", -- Other non-Chrome UI libraries.
-      "ComponentHost", -- Generic Chrome frameworks.
-      "CompositorView:finalizeLayers", "CompositorViewHolder", "CompositorViewHolder:layout", "CompositorViewHolder:updateContentViewChildrenDimension", "CoordinatorLayoutForPointer", "OptimizedFrameLayout", "ViewResourceAdapter:getBitmap", "ViewResourceFrameLayout", -- Non-specific Chrome slices.
-      "AppCompatImageButton", "ScrollingBottomViewResourceFrameLayout", -- Screenshots get their custom annotations below.
-      "ViewResourceAdapter:captureWithHardwareDraw", "ViewResourceAdapter:captureWithSoftwareDraw", -- Non-bytecode generated slices.
-      "LayoutDriver:onUpdate")
+      NOT name IN ("FitWindowsFrameLayout", "FitWindowsLinearLayout", "ContentFrameLayout", "CoordinatorLayout")
+      AND NOT name IN ("ComponentHost")
+      AND NOT name IN ("CompositorView:finalizeLayers", "CompositorViewHolder", "CompositorViewHolder:layout", "CompositorViewHolder:updateContentViewChildrenDimension", "CoordinatorLayoutForPointer", "OptimizedFrameLayout", "ViewResourceAdapter:getBitmap", "ViewResourceFrameLayout")
+      AND NOT name IN ("AppCompatImageButton", "ScrollingBottomViewResourceFrameLayout")
+      AND NOT name IN ("ViewResourceAdapter:captureWithHardwareDraw", "ViewResourceAdapter:captureWithSoftwareDraw")
+      AND NOT name IN ("LayoutDriver:onUpdate")
   )
 SELECT
   s1.*,

@@ -60,7 +60,7 @@ UIImage* kPrimaryAccountAvatar = [[UIImage alloc] init];
 @synthesize primaryAccountEmail = _primaryAccountEmail;
 @synthesize primaryAccountAvatar = _primaryAccountAvatar;
 @synthesize primaryAccountUserFullName = _primaryAccountUserFullName;
-@synthesize managementState = _managementState;
+@synthesize managementDescription = _managementDescription;
 
 - (instancetype)init {
   self = [super init];
@@ -70,7 +70,7 @@ UIImage* kPrimaryAccountAvatar = [[UIImage alloc] init];
     _primaryAccountEmail = kPrimaryIdentity.userEmail;
     _primaryAccountAvatar = kPrimaryAccountAvatar;
     _primaryAccountUserFullName = kPrimaryIdentity.userFullName;
-    _managementState.user_level_domain = "acme.com";
+    _managementDescription = @"managementDescription";
   }
   return self;
 }

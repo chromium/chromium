@@ -8,13 +8,16 @@
 #include <glib-object.h>
 #include <glib.h>
 
-#include <type_traits>
+#include <optional>
+#include <string>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
+#include "remoting/host/linux/gdbus_fd_list.h"
 #include "remoting/host/linux/gvariant_ref.h"
 #include "ui/base/glib/scoped_gobject.h"
 
@@ -50,35 +53,7 @@ void GDBusConnectionRef::CreateForSystemBus(CreateCallback callback) {
 
 // static
 void GDBusConnectionRef::CreateForBus(GBusType bus, CreateCallback callback) {
-  g_bus_get(
-      bus, nullptr,
-      [](GObject* source, GAsyncResult* result, gpointer user_data) {
-        std::unique_ptr<CreateCallback> callback(
-            static_cast<CreateCallback*>(user_data));
-        GError* error = nullptr;
-        GDBusConnection* connection = g_bus_get_finish(result, &error);
-        if (connection) {
-          std::move(*callback).Run(
-              base::ok(GDBusConnectionRef(TakeGObject(connection))));
-        } else {
-          std::move(*callback).Run(base::unexpected(error->message));
-          g_error_free(error);
-        }
-      },
-      new CreateCallback(
-          base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                             std::move(callback))));
-}
-
-void GDBusConnectionRef::CallInternal(const char* bus_name,
-                                      const char* object_path,
-                                      const char* interface_name,
-                                      const char* method_name,
-                                      const GVariantRef<"r">& arguments,
-                                      CallCallback<GVariantRef<"r">> callback,
-                                      GDBusCallFlags flags,
-                                      gint timeout_msec) const {
-  auto* bound_callback = new CallCallback<GVariantRef<"r">>(base::BindPostTask(
+  auto* bound_callback = new CreateCallback(base::BindPostTask(
       base::SequencedTaskRunner::GetCurrentDefault(), std::move(callback)));
 
   // May run on a different sequence.
@@ -87,21 +62,61 @@ void GDBusConnectionRef::CallInternal(const char* bus_name,
     auto callback =
         base::WrapUnique(static_cast<decltype(bound_callback)>(user_data));
     GError* error = nullptr;
-    GVariant* variant = g_dbus_connection_call_finish(G_DBUS_CONNECTION(source),
-                                                      result, &error);
+    GDBusConnection* connection = g_bus_get_finish(result, &error);
     // Will post back to the proper sequence thanks to BindPostTask above.
-    if (variant != nullptr) {
-      std::move(*callback).Run(GVariantRef<"r">::TakeUnchecked(variant));
+    if (connection) {
+      std::move(*callback).Run(
+          base::ok(GDBusConnectionRef(TakeGObject(connection))));
     } else {
       std::move(*callback).Run(base::unexpected(error->message));
       g_error_free(error);
     }
   };
 
-  g_dbus_connection_call(connection_, bus_name, object_path, interface_name,
-                         method_name, arguments.raw(), G_VARIANT_TYPE_TUPLE,
-                         flags, timeout_msec, nullptr, on_complete,
-                         bound_callback);
+  g_bus_get(bus, nullptr, on_complete, bound_callback);
+}
+
+void GDBusConnectionRef::CallInternal(const char* bus_name,
+                                      gvariant::ObjectPathCStr object_path,
+                                      const char* interface_name,
+                                      const char* method_name,
+                                      const GVariantRef<"r">& arguments,
+                                      GDBusFdList fds,
+                                      CallFdCallback<GVariantRef<"r">> callback,
+                                      GDBusCallFlags flags,
+                                      gint timeout_msec) const {
+  auto* bound_callback =
+      new CallFdCallback<GVariantRef<"r">>(base::BindPostTask(
+          base::SequencedTaskRunner::GetCurrentDefault(), std::move(callback)));
+
+  // May run on a different sequence.
+  auto on_complete = [](GObject* source, GAsyncResult* result,
+                        gpointer user_data) {
+    auto callback =
+        base::WrapUnique(static_cast<decltype(bound_callback)>(user_data));
+    GUnixFDList* fd_list = nullptr;
+    GError* error = nullptr;
+    GVariant* variant = g_dbus_connection_call_with_unix_fd_list_finish(
+        G_DBUS_CONNECTION(source), &fd_list, result, &error);
+    GDBusFdList out_fds;
+    if (fd_list != nullptr) {
+      out_fds = GDBusFdList::StealFromGUnixFDList(fd_list);
+      g_object_unref(fd_list);
+    }
+    // Will post back to the proper sequence thanks to BindPostTask above.
+    if (variant != nullptr) {
+      std::move(*callback).Run(std::pair(
+          GVariantRef<"r">::TakeUnchecked(variant), std::move(out_fds)));
+    } else {
+      std::move(*callback).Run(base::unexpected(error->message));
+      g_error_free(error);
+    }
+  };
+
+  g_dbus_connection_call_with_unix_fd_list(
+      connection_, bus_name, object_path.c_str(), interface_name, method_name,
+      arguments.raw(), G_VARIANT_TYPE_TUPLE, flags, timeout_msec,
+      std::move(fds).IntoGUnixFDList(), nullptr, on_complete, bound_callback);
 }
 
 GDBusConnectionRef::SignalSubscription::~SignalSubscription() {
@@ -111,7 +126,7 @@ GDBusConnectionRef::SignalSubscription::~SignalSubscription() {
 GDBusConnectionRef::SignalSubscription::SignalSubscription(
     GDBusConnectionRef connection,
     const char* sender,
-    const char* object_path,
+    std::optional<gvariant::ObjectPathCStr> object_path,
     const char* interface_name,
     const char* signal_name,
     DetailedSignalCallback<GVariantRef<"r">> callback)
@@ -141,8 +156,9 @@ GDBusConnectionRef::SignalSubscription::SignalSubscription(
   };
 
   subscription_id_ = g_dbus_connection_signal_subscribe(
-      connection_.raw(), sender, interface_name, signal_name, object_path,
-      nullptr, G_DBUS_SIGNAL_FLAGS_NONE, on_signal, bound_callback, free_func);
+      connection_.raw(), sender, interface_name, signal_name,
+      object_path ? object_path->c_str() : nullptr, nullptr,
+      G_DBUS_SIGNAL_FLAGS_NONE, on_signal, bound_callback, free_func);
 }
 
 void GDBusConnectionRef::SignalSubscription::OnSignal(

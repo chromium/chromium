@@ -18,8 +18,6 @@
 #include <sys/mman.h>
 
 #include "base/containers/contains.h"
-#include "base/memory/ref_counted.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/not_fatal_until.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/trace_event/trace_event.h"
@@ -383,8 +381,6 @@ const scoped_refptr<FrameResource>& V4L2Buffer::GetFrameResource() {
 // in order to ensure the list remains alive as long as they need it.
 class V4L2BuffersList : public base::RefCountedThreadSafe<V4L2BuffersList> {
  public:
-  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
-
   V4L2BuffersList() = default;
 
   V4L2BuffersList(const V4L2BuffersList&) = delete;
@@ -1214,7 +1210,7 @@ size_t V4L2Queue::AllocateBuffers(size_t count,
 
   memory_ = memory;
 
-  free_buffers_ = base::MakeRefCounted<V4L2BuffersList>();
+  free_buffers_ = new V4L2BuffersList();
 
   // Now query all buffer information.
   for (size_t i = 0; i < reqbufs.count; i++) {

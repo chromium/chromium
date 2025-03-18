@@ -19,24 +19,17 @@ namespace blink {
 class CSSFontVariationSettingsNonInterpolableValue final
     : public NonInterpolableValue {
  public:
-  ~CSSFontVariationSettingsNonInterpolableValue() final = default;
-
-  static scoped_refptr<CSSFontVariationSettingsNonInterpolableValue> Create(
-      Vector<uint32_t> tags) {
-    return base::AdoptRef(
-        new CSSFontVariationSettingsNonInterpolableValue(std::move(tags)));
+  explicit CSSFontVariationSettingsNonInterpolableValue(Vector<uint32_t>&& tags)
+      : tags_(tags) {
+    DCHECK_GT(tags_.size(), 0u);
   }
+  ~CSSFontVariationSettingsNonInterpolableValue() final = default;
 
   const Vector<uint32_t>& Tags() const { return tags_; }
 
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  explicit CSSFontVariationSettingsNonInterpolableValue(Vector<uint32_t> tags)
-      : tags_(std::move(tags)) {
-    DCHECK_GT(tags_.size(), 0u);
-  }
-
   const Vector<uint32_t> tags_;
 };
 
@@ -115,7 +108,8 @@ static InterpolationValue ConvertFontVariationSettings(
   }
   return InterpolationValue(
       numbers,
-      CSSFontVariationSettingsNonInterpolableValue::Create(std::move(tags)));
+      MakeGarbageCollected<CSSFontVariationSettingsNonInterpolableValue>(
+          std::move(tags)));
 }
 
 InterpolationValue

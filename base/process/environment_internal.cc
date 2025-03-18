@@ -87,7 +87,8 @@ base::HeapArray<char*> AlterEnvironment(const char* const* const env,
     // The string storage goes after the array of pointers.
     char* storage_data =
         reinterpret_cast<char*>(&result[result_indices.size() + 1]);
-    memcpy(storage_data, value_storage.data(), value_storage.size());
+    UNSAFE_TODO(
+        memcpy(storage_data, value_storage.data(), value_storage.size()));
 
     // Fill array of pointers at the beginning of the result.
     for (size_t i = 0; i < result_indices.size(); i++) {

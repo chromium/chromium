@@ -1698,6 +1698,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3964661563329879394">{COUNT,plural, =0{Ükski}=1{1 saidilt }other{# saidilt }}</translation>
 <translation id="3965672182149944205">Kas salvestada aadress?</translation>
 <translation id="3966044442021752214">Toote ohutus</translation>
+<translation id="3969869202926863008">Juurdepääs kohalikule võrgule</translation>
 <translation id="397105322502079400">Arvutamine ...</translation>
 <translation id="3973234410852337861">Host <ph name="HOST_NAME" /> on blokeeritud</translation>
 <translation id="3975852104434126461">Autotööstus</translation>
@@ -2054,6 +2055,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="460848736049414407">Administraator on blokeerinud</translation>
 <translation id="4610279718074907952">See sait on omaniku <ph name="SET_OWNER" /> määratud grupis, mis näeb teie tegevusi</translation>
 <translation id="46128681529823442">Jalgpallivarustus</translation>
+<translation id="4612904677925722054">See sait võib sisaldada täiskasvanutele mõeldud sisu. Veebisaidi külastamiseks vajad vanema või eestkostja luba.</translation>
 <translation id="4619564267100705184">Kinnitage, et see olete teie</translation>
 <translation id="4622292761762557753">Kanna ikkagi üle</translation>
 <translation id="4622647778991854660">Märguanded saate lubada märguandekeskuses. Avage <ph name="LINK" />.</translation>
@@ -2652,6 +2654,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5660122698869360728">Uus nutikas kaust, mis aitab teil salvestada kõik oma ostulehed ühte kohta, jälgib automaatselt hindu, hangib hinnastatistikat ja teeb muudki.</translation>
 <translation id="5663955426505430495">Seadme administraator on installinud laiendused, mis hõlmavad lisafunktsioone. Laiendustel on juurdepääs teie mõningatele andmetele.</translation>
 <translation id="5667827081946850877">Audioraamatud</translation>
+<translation id="5674082555327905359">Saab paluda teie kohalikus võrgus mis tahes seadmega ühenduse loomist</translation>
 <translation id="5675650730144413517">See leht ei tööta</translation>
 <translation id="5675809467256309336">Elektrooniline ja tantsumuusika</translation>
 <translation id="5675959228867414813">Kuva kuupäeva järgi</translation>
@@ -2925,6 +2928,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6159908896951210943">Ametlik</translation>
 <translation id="6160391204859821737">Reklaamiprivaatsusfunktsiooni sisselülitamine</translation>
 <translation id="6162403104168428984">Kas värskendada aadressi?</translation>
+<translation id="6164605812717770913">Vanem või eestkostja on otsustanud, et sa ei tohi seda saiti külastada. Võid paluda tal selle deblokeerida.</translation>
 <translation id="6165508094623778733">Lisateave</translation>
 <translation id="6167577165590485365">Viimane toomiskatse:</translation>
 <translation id="617256461084925519">Google Chrome üritab teie isikut kinnitada, et teie makseteave sisestada.</translation>
@@ -3016,6 +3020,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6321917430147971392">Kontrollige DNS-i seadeid</translation>
 <translation id="6322182122604171028">Funktsiooni Windows Hello ei saa kasutada</translation>
 <translation id="6326947323444967009">iOS-i seadetes Chrome'i süsteemi vaikebrauseriks määramine</translation>
+<translation id="6327065120806001832">juurdepääs kohalikule võrgule</translation>
 <translation id="6328639280570009161">Proovige keelata võrguprognoos</translation>
 <translation id="6335029926534404762">Spordijalatsid</translation>
 <translation id="6337133576188860026">Vabastab alla <ph name="SIZE" />. Mõne saidi laadimine võib järgmisel külastusel rohkem aega võtta.</translation>

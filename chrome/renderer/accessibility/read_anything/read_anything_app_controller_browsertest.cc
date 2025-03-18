@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "chrome/common/read_anything/read_anything_util.h"
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
@@ -341,41 +342,43 @@ TEST_F(ReadAnythingAppControllerTest, IsReadAloudEnabled) {
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnLetterSpacingChange_ValidChange) {
-  controller().OnLetterSpacingChange(2);
-  EXPECT_CALL(page_handler_,
-              OnLetterSpaceChange(read_anything::mojom::LetterSpacing::kWide))
-      .Times(1);
-  ASSERT_EQ(controller().LetterSpacing(), 2);
+  static constexpr auto kLetterSpacing =
+      read_anything::mojom::LetterSpacing::kWide;
+  controller().OnLetterSpacingChange(base::to_underlying(kLetterSpacing));
+  EXPECT_CALL(page_handler_, OnLetterSpaceChange(kLetterSpacing)).Times(1);
+  ASSERT_EQ(controller().LetterSpacing(), base::to_underlying(kLetterSpacing));
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnLetterSpacingChange_InvalidChange) {
-  controller().OnLetterSpacingChange(10);
+  controller().OnLetterSpacingChange(
+      base::to_underlying(read_anything::mojom::LetterSpacing::kMaxValue) + 1);
   EXPECT_CALL(page_handler_, OnLetterSpaceChange).Times(0);
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnLineSpacingChange_ValidChange) {
-  controller().OnLineSpacingChange(3);
-  EXPECT_CALL(page_handler_,
-              OnLineSpaceChange(read_anything::mojom::LineSpacing::kVeryLoose))
-      .Times(1);
-  ASSERT_EQ(controller().LineSpacing(), 3);
+  static constexpr auto kLineSpacing =
+      read_anything::mojom::LineSpacing::kVeryLoose;
+  controller().OnLineSpacingChange(base::to_underlying(kLineSpacing));
+  EXPECT_CALL(page_handler_, OnLineSpaceChange(kLineSpacing)).Times(1);
+  ASSERT_EQ(controller().LineSpacing(), base::to_underlying(kLineSpacing));
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnLineSpacingChange_InvalidChange) {
-  controller().OnLineSpacingChange(10);
+  controller().OnLineSpacingChange(
+      base::to_underlying(read_anything::mojom::LineSpacing::kMaxValue) + 1);
   EXPECT_CALL(page_handler_, OnLineSpaceChange).Times(0);
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnThemeChange_ValidChange) {
-  controller().OnThemeChange(3);
-  EXPECT_CALL(page_handler_,
-              OnColorChange(read_anything::mojom::Colors::kYellow))
-      .Times(1);
-  ASSERT_EQ(controller().ColorTheme(), 3);
+  static constexpr auto kColor = read_anything::mojom::Colors::kYellow;
+  controller().OnThemeChange(base::to_underlying(kColor));
+  EXPECT_CALL(page_handler_, OnColorChange(kColor)).Times(1);
+  ASSERT_EQ(controller().ColorTheme(), base::to_underlying(kColor));
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnThemeChange_InvalidChange) {
-  controller().OnThemeChange(10);
+  controller().OnThemeChange(
+      base::to_underlying(read_anything::mojom::Colors::kMaxValue) + 1);
   EXPECT_CALL(page_handler_, OnColorChange).Times(0);
 }
 

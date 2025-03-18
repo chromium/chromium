@@ -115,6 +115,9 @@ public class AccessibilityNodeInfoUtils {
                 && !node.getStateDescription().toString().isEmpty()) {
             builder.append(" stateDescription:\"").append(node.getStateDescription()).append("\"");
         }
+        if (node.getContainerTitle() != null && !node.getContainerTitle().toString().isEmpty()) {
+            builder.append(" containerTitle:\"").append(node.getContainerTitle()).append("\"");
+        }
 
         // Boolean properties - Only print when set to true except for enabled and visibleToUser,
         // which are both mostly true, so only print when they are false.

@@ -1221,7 +1221,7 @@ Status WritePrefsFile(const std::string& template_string,
   std::string prefs_str;
   base::JSONWriter::Write(*prefs, &prefs_str);
   VLOG(0) << "Populating " << path.BaseName().value()
-          << " file: " << PrettyPrintValue(base::Value(prefs->Clone()));
+          << " file: " << PrettyPrintValue(*prefs);
   return base::WriteFile(path, prefs_str)
              ? Status(kOk)
              : Status(kUnknownError, "failed to write prefs file");

@@ -835,7 +835,7 @@ void XRSession::ExecuteVideoFrameCallbacks(double timestamp) {
 int XRSession::requestAnimationFrame(V8XRFrameRequestCallback* callback) {
   DVLOG(3) << __func__;
 
-  TRACE_EVENT0("gpu", __func__);
+  TRACE_EVENT0("gpu", "requestAnimationFrame");
   // Don't allow any new frame requests once the session is ended.
   if (ended_)
     return 0;
@@ -1158,7 +1158,7 @@ void XRSession::OnEnvironmentProviderError() {
 void XRSession::ProcessAnchorsData(
     const device::mojom::blink::XRAnchorsData* tracked_anchors_data,
     double timestamp) {
-  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("xr.debug"), __func__);
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("xr.debug"), "ProcessAnchorsData");
 
   if (!tracked_anchors_data) {
     DVLOG(3) << __func__ << ": tracked_anchors_data is null";
@@ -1724,7 +1724,7 @@ void XRSession::UpdatePresentationFrameState(
     device::mojom::blink::XRFrameDataPtr frame_data,
     int16_t frame_id,
     bool emulated_position) {
-  TRACE_EVENT0("gpu", __func__);
+  TRACE_EVENT0("gpu", "UpdatePresentationFrameState");
   DVLOG(2) << __func__ << " : frame_data valid? " << (frame_data ? true : false)
            << ", emulated_position=" << emulated_position
            << ", frame_id=" << frame_id;
@@ -1981,7 +1981,7 @@ void XRSession::OnFrame(
     const gpu::SyncToken& output_sync_token,
     scoped_refptr<gpu::ClientSharedImage> camera_image_shared_image,
     const gpu::SyncToken& camera_image_sync_token) {
-  TRACE_EVENT0("gpu", __func__);
+  TRACE_EVENT0("gpu", "OnFrame");
   DVLOG(2) << __func__ << ": ended_=" << ended_
            << ", pending_frame_=" << pending_frame_;
   // Don't process any outstanding frames once the session is ended.

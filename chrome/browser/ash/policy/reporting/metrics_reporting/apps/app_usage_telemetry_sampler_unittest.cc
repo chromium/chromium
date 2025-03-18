@@ -28,6 +28,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/protos/app_types.pb.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -58,9 +59,8 @@ class AppUsageTelemetrySamplerTest : public ::testing::Test {
     AccountId account_id = AccountId::FromUserEmail(kTestUserEmail);
     const ::user_manager::User* const user =
         fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
-                                     /*browser_restart=*/false,
-                                     /*is_child=*/false);
+    fake_user_manager_->UserLoggedIn(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
     fake_user_manager_->SimulateUserProfileLoad(account_id);
     profile_ = std::make_unique<TestingProfile>();
     ::ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(

@@ -125,7 +125,8 @@ TEST_F(DawnCachingInterfaceTest, UnableToCreateBackend) {
 TEST_F(DawnCachingInterfaceTest, StoreTriggersHostSide) {
   auto dawn_caching_interface = factory_.CreateInstance(
       handle_, base::BindRepeating(&MockDecoderClient::CacheBlob,
-                                   base::Unretained(&decoder_client_mock_)));
+                                   base::Unretained(&decoder_client_mock_),
+                                   gpu::GpuDiskCacheType::kDawnWebGPU));
 
   EXPECT_CALL(decoder_client_mock_,
               CacheBlob(gpu::GpuDiskCacheType::kDawnWebGPU, std::string(kKey),

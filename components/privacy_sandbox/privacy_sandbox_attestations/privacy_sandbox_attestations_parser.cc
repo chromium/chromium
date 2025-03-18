@@ -68,7 +68,7 @@ void InsertAPI(
 namespace privacy_sandbox {
 
 std::optional<PrivacySandboxAttestationsMap> ParseAttestationsFromString(
-    std::string& input) {
+    const std::string& input) {
   PrivacySandboxAttestationsProto proto;
 
   // Parse the istream into a proto for the attestations message format.

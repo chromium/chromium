@@ -22,13 +22,10 @@ namespace blink {
 
 class SVGTransformNonInterpolableValue : public NonInterpolableValue {
  public:
+  explicit SVGTransformNonInterpolableValue(
+      Vector<SVGTransformType>&& transform_types)
+      : transform_types_(transform_types) {}
   ~SVGTransformNonInterpolableValue() override = default;
-
-  static scoped_refptr<SVGTransformNonInterpolableValue> Create(
-      Vector<SVGTransformType>& transform_types) {
-    return base::AdoptRef(
-        new SVGTransformNonInterpolableValue(transform_types));
-  }
 
   const Vector<SVGTransformType>& TransformTypes() const {
     return transform_types_;
@@ -37,10 +34,6 @@ class SVGTransformNonInterpolableValue : public NonInterpolableValue {
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  SVGTransformNonInterpolableValue(Vector<SVGTransformType>& transform_types) {
-    transform_types_.swap(transform_types);
-  }
-
   Vector<SVGTransformType> transform_types_;
 };
 
@@ -253,7 +246,8 @@ InterpolationValue SVGTransformListInterpolationType::MaybeConvertSVGValue(
     transform_types.push_back(transform_type);
   }
   return InterpolationValue(
-      result, SVGTransformNonInterpolableValue::Create(transform_types));
+      result, MakeGarbageCollected<SVGTransformNonInterpolableValue>(
+                  std::move(transform_types)));
 }
 
 InterpolationValue SVGTransformListInterpolationType::MaybeConvertSingle(
@@ -301,8 +295,9 @@ InterpolationValue SVGTransformListInterpolationType::MaybeConvertSingle(
     }
   }
 
-  return InterpolationValue(interpolable_list,
-                            SVGTransformNonInterpolableValue::Create(types));
+  return InterpolationValue(
+      interpolable_list,
+      MakeGarbageCollected<SVGTransformNonInterpolableValue>(std::move(types)));
 }
 
 SVGPropertyBase* SVGTransformListInterpolationType::AppliedSVGValue(

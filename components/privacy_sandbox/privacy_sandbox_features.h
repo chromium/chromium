@@ -108,11 +108,6 @@ BASE_DECLARE_FEATURE(kDisablePrivacySandboxPrompts);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxFirstPartySetsUI);
 
-// Populates First Party Sets information with sample membership information,
-// for testing purposes only.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-extern const base::FeatureParam<bool> kPrivacySandboxFirstPartySetsUISampleSets;
-
 // Enables enforcement of Privacy Sandbox Enrollment/Attestations.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kEnforcePrivacySandboxAttestations);

@@ -7,10 +7,12 @@
 #include <memory>
 
 #include "base/files/file_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
+#include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "extensions/browser/extension_registry.h"
@@ -52,11 +54,13 @@ class ExtensionMigratorTest : public ExtensionServiceTestBase {
   }
 
   void AddMigratorProvider() {
-    service()->AddProviderForTesting(std::make_unique<ExternalProviderImpl>(
-        service(), new ExtensionMigrator(profile(), kOldId, kNewId), profile(),
-        mojom::ManifestLocation::kExternalPref,
-        mojom::ManifestLocation::kExternalPrefDownload,
-        Extension::FROM_WEBSTORE | Extension::WAS_INSTALLED_BY_DEFAULT));
+    ExternalProviderManager::Get(profile())->AddProviderForTesting(
+        std::make_unique<ExternalProviderImpl>(
+            ExternalProviderManager::Get(profile()),
+            base::MakeRefCounted<ExtensionMigrator>(profile(), kOldId, kNewId),
+            profile(), mojom::ManifestLocation::kExternalPref,
+            mojom::ManifestLocation::kExternalPrefDownload,
+            Extension::FROM_WEBSTORE | Extension::WAS_INSTALLED_BY_DEFAULT));
   }
 
   scoped_refptr<const Extension> AddExtension(

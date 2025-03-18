@@ -4,12 +4,15 @@
 
 package org.chromium.components.page_info;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.content_settings.PrefNames.IN_CONTEXT_COOKIE_CONTROLS_OPENED;
 
 import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteDataCleaner;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
@@ -28,20 +31,21 @@ import java.util.Collection;
 import java.util.List;
 
 /** Class for controlling the page info tracking protection section for 3PCD 100% launch. */
+@NullMarked
 public class PageInfoTrackingProtectionLaunchController extends PageInfoPreferenceSubpageController
         implements CookieControlsObserver {
     private final PageInfoMainController mMainController;
     private final PageInfoRowView mRowView;
     private final String mFullUrl;
     private final String mTitle;
-    private CookieControlsBridge mBridge;
-    private PageInfoTrackingProtectionLaunchSettings mSubPage;
+    private @Nullable CookieControlsBridge mBridge;
+    private @Nullable PageInfoTrackingProtectionLaunchSettings mSubPage;
 
     private boolean mCookieControlsVisible;
     private boolean mProtectionsOn;
-    private List<TrackingProtectionFeature> mFeatures;
+    private @Nullable List<TrackingProtectionFeature> mFeatures;
     private long mExpiration;
-    private Website mWebsite;
+    private @Nullable Website mWebsite;
     private boolean mBlockAll3pc;
     private boolean mIsIncognito;
     private boolean mFixedExpirationForTesting;
@@ -87,33 +91,35 @@ public class PageInfoTrackingProtectionLaunchController extends PageInfoPreferen
     }
 
     @Override
-    public View createViewForSubpage(ViewGroup parent) {
+    public @Nullable View createViewForSubpage(ViewGroup parent) {
         assert mSubPage == null;
         if (!canCreateSubpageFragment()) return null;
 
         mSubPage = new PageInfoTrackingProtectionLaunchSettings();
         View view = addSubpageFragment(mSubPage);
+        var delegate = getDelegate();
         PageInfoTrackingProtectionLaunchSettings.PageInfoTrackingProtectionLaunchViewParams params =
                 new PageInfoTrackingProtectionLaunchSettings
-                        .PageInfoTrackingProtectionLaunchViewParams();
-        params.thirdPartyCookieBlockingEnabled = getDelegate().cookieControlsShown();
-        params.onThirdPartyCookieToggleChanged = this::onThirdPartyCookieToggleChanged;
-        params.onClearCallback = this::onClearCookiesClicked;
-        params.onCookieSettingsLinkClicked = getDelegate()::showTrackingProtectionSettings;
-        params.onFeedbackLinkClicked = getDelegate()::showCookieFeedback;
-        params.disableCookieDeletion = isDeletionDisabled();
-        params.hostName = mMainController.getURL().getHost();
-        params.blockAll3pc = mBlockAll3pc;
-        params.isIncognito = mIsIncognito;
-        params.fixedExpirationForTesting = mFixedExpirationForTesting;
+                        .PageInfoTrackingProtectionLaunchViewParams(
+                        /* thirdPartyCookieBlockingEnabled= */ delegate.cookieControlsShown(),
+                        /* onThirdPartyCookieToggleChanged= */ this
+                                ::onThirdPartyCookieToggleChanged,
+                        /* onClearCallback= */ this::onClearCookiesClicked,
+                        /* onCookieSettingsLinkClicked= */ delegate::showTrackingProtectionSettings,
+                        /* disableCookieDeletion= */ isDeletionDisabled(),
+                        /* hostName= */ mMainController.getURL().getHost(),
+                        /* blockAll3pc= */ mBlockAll3pc,
+                        /* isIncognito= */ mIsIncognito,
+                        /* fixedExpirationForTesting= */ mFixedExpirationForTesting);
         mSubPage.setParams(params);
+        assert mFeatures != null;
         mSubPage.setTrackingProtectionStatus(
                 mCookieControlsVisible, mProtectionsOn, mExpiration, mFeatures);
 
         SiteSettingsCategory storageCategory =
                 SiteSettingsCategory.createFromType(
                         mMainController.getBrowserContext(), SiteSettingsCategory.Type.USE_STORAGE);
-        new WebsitePermissionsFetcher(getDelegate().getSiteSettingsDelegate())
+        new WebsitePermissionsFetcher(delegate.getSiteSettingsDelegate())
                 .fetchPreferencesForCategoryAndPopulateRwsInfo(
                         storageCategory, this::onStorageFetched);
 
@@ -123,6 +129,7 @@ public class PageInfoTrackingProtectionLaunchController extends PageInfoPreferen
     private void onStorageFetched(Collection<Website> result) {
         String origin = Origin.createOrThrow(mFullUrl).toString();
         WebsiteAddress address = WebsiteAddress.create(origin);
+        assert address != null;
 
         mWebsite =
                 SingleWebsiteSettings.mergePermissionAndStorageInfoForTopLevelOrigin(
@@ -226,6 +233,7 @@ public class PageInfoTrackingProtectionLaunchController extends PageInfoPreferen
     }
 
     void destroy() {
+        assumeNonNull(mBridge);
         mBridge.onUiClosing();
         mBridge.destroy();
         mBridge = null;

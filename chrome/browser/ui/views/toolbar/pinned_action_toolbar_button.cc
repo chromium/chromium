@@ -64,9 +64,9 @@ PinnedActionToolbarButton::PinnedActionToolbarButton(
               kPinnedActionToolbarButtonElementId);
   ConfigureInkDropForToolbar(this);
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::VH(0, GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN)));
+  SetProperty(views::kMarginsKey,
+              gfx::Insets::TLBR(
+                  0, 0, 0, GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN)));
   set_drag_controller(container);
   GetViewAccessibility().SetDescription(
       std::u16string(), ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
@@ -136,6 +136,19 @@ void PinnedActionToolbarButton::SetPinned(bool pinned) {
     return;
   }
   pinned_ = pinned;
+  // The divider between the pinned and unpinned section should not have extra
+  // margin added on either end. Therefore, all pinned buttons should have
+  // their margin applied on the left, and all unpinned buttons should have
+  // their margin applied on the right.
+  if (pinned_) {
+    SetProperty(views::kMarginsKey,
+                gfx::Insets::TLBR(
+                    0, GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN), 0, 0));
+  } else {
+    SetProperty(views::kMarginsKey,
+                gfx::Insets::TLBR(
+                    0, 0, 0, GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN)));
+  }
   NotifyViewControllerCallback();
 }
 

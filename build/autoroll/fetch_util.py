@@ -8,11 +8,18 @@ import pathlib
 import os
 import subprocess
 import zipfile
+import re
 
 _SRC_PATH = pathlib.Path(__file__).resolve().parents[2]
 _FETCH_ALL_PATH = _SRC_PATH / 'third_party/android_deps/fetch_all.py'
 _HASH_LENGTH = 15
 _SKIP_FILES = ('OWNERS', 'cipd.yaml')
+
+_DEFAULT_GENERATED_DISCLAIMER = '''\
+// **IMPORTANT**: build.gradle is generated and any changes would be overridden
+//                by the autoroller. Please update build.gradle.template
+//                instead.
+'''
 
 
 def generate_version_map_str(bom_path, with_hash=False):
@@ -54,13 +61,23 @@ def fill_template(template_path, output_path, **kwargs):
   for key, value in kwargs.items():
     replace_string = '{{' + key + '}}'
     if not replace_string in content:
-      raise Exception(
-          f'Replace text {replace_string} not found in {template_path}')
+      raise Exception(f'Replace text {replace_string} '
+                      f'not found in {template_path}')
     try:
       content = content.replace(replace_string, value)
     except Exception as e:
       raise e from Exception(
           f'Failed to replace {repr(replace_string)} with {repr(value)}')
+
+  content = content.replace(r'{{generated_disclaimer}}',
+                            _DEFAULT_GENERATED_DISCLAIMER)
+
+  unreplaced_variable_re = re.compile(r'\{\{(.+)\}\}')
+  if matches := unreplaced_variable_re.findall(content):
+    unreplaced_variables = ', '.join(repr(match) for match in matches)
+    raise Exception('Found unreplaced variables '
+                    f'[{unreplaced_variables}] in {template_path}')
+
   pathlib.Path(output_path).write_text(content)
 
 

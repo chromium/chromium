@@ -20,19 +20,16 @@ namespace {
 // Platform-specific parameter defaults.
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-// Average 1M bytes per sample.
-constexpr int kDefaultSamplingRateBytes = 1'000'000;
-
 // Default on iOS is equal to mean value of process uptime. Android is
 // more similar to iOS than to Desktop.
 constexpr base::TimeDelta kDefaultCollectionInterval = base::Minutes(30);
 #else
-// Average 10M bytes per sample.
-constexpr int kDefaultSamplingRateBytes = 10'000'000;
-
 // Default on desktop is once per day.
 constexpr base::TimeDelta kDefaultCollectionInterval = base::Days(1);
 #endif
+
+// Average 10M bytes per sample.
+constexpr int kDefaultSamplingRateBytes = 10'000'000;
 
 // The chance that this client will report heap samples through a metrics
 // provider if it's on the stable channel.

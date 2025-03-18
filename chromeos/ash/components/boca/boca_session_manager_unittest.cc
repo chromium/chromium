@@ -173,9 +173,8 @@ class BocaSessionManagerTestBase : public testing::Test {
 
     // Sign in test user with user 1.
     user_manager_->UserLoggedIn(
-        account_id1, user_manager::TestHelper::GetFakeUsernameHash(account_id1),
-        /*browser_restart=*/false,
-        /*is_child=*/false);
+        account_id1,
+        user_manager::TestHelper::GetFakeUsernameHash(account_id1));
     wifi_device_path_ =
         cros_network_config_helper_.network_state_helper().ConfigureWiFi(
             shill::kStateIdle);
@@ -1164,9 +1163,7 @@ TEST_F(BocaSessionManagerTest, SwitchBetweenAccountShouldTriggerSessionReload) {
   // tracking.
   EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(0);
   auto* user_manager = user_manager::UserManager::Get();
-  user_manager->UserLoggedIn(account_id, username_hash,
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
+  user_manager->UserLoggedIn(account_id, username_hash);
   testing::Mock::VerifyAndClearExpectations(session_client_impl());
 
   // Account_id mismatch, should not load.

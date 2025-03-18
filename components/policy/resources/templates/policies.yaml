@@ -1343,6 +1343,8 @@ policies:
   1342: ClassManagementSendingContentEnabled
   1343: ClassManagementViewScreenEnabled
   1344: KioskChromeAppsForceAllowed
+  1345: ReduceAcceptLanguageEnabled
+  1346: GenAIInlineImageSettings
 
 atomic_groups:
   1: Homepage

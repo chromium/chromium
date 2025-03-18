@@ -1555,7 +1555,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                     UNFOLD_LATENCY_BEGIN_TIMESTAMP, getOnPauseBeforeFoldRecreateTimestampMs());
         }
         outState.putBoolean(IS_FROM_RECREATING, mIsRecreating);
-        mRootUiCoordinator.onSaveInstanceState(outState, mIsRecreatingForTabletModeChange);
+        mRootUiCoordinator.onSaveInstanceState(outState);
     }
 
     /**
@@ -2799,9 +2799,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             mIsTabReparentingPrepared = true;
             if (!isFinishing()) {
                 mIsRecreatingForTabletModeChange = tabletMode.changed;
-                if (mIsRecreatingForTabletModeChange) {
-                    mRootUiCoordinator.prepareUiState();
-                }
+                mRootUiCoordinator.prepareUiState();
                 // Store the OnPause timestamp before recreation to capture unfold latency metric
                 // only if the activity is currently not in stopped state, to not capture the time
                 // when system was suspended. Hence, unfolding instances where Chrome wasn't in

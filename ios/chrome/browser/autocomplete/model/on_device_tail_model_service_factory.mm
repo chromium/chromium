@@ -7,9 +7,11 @@
 #import <memory>
 
 #import "base/no_destructor.h"
+#import "components/omnibox/browser/omnibox_field_trial.h"
 #import "components/omnibox/browser/on_device_tail_model_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
@@ -38,6 +40,10 @@ OnDeviceTailModelServiceFactory::~OnDeviceTailModelServiceFactory() = default;
 std::unique_ptr<KeyedService>
 OnDeviceTailModelServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
+  const std::string locale = GetApplicationContext()->GetApplicationLocale();
+  if (!OmniboxFieldTrial::IsOnDeviceTailSuggestEnabled(locale)) {
+    return nullptr;
+  }
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   OptimizationGuideService* optimization_guide =
       OptimizationGuideServiceFactory::GetForProfile(profile);

@@ -77,7 +77,6 @@
   NSString* _primaryAccountDisplayedEmail;
   NSString* _primaryAccountDisplayedUserFullName;
   UIImage* _primaryAccountDisplayedAvatar;
-  BOOL _primaryAccountDisplayedManaged;
 }
 
 - (instancetype)initWithSyncService:(syncer::SyncService*)syncService
@@ -182,8 +181,9 @@
       _primaryIdentity, IdentityAvatarSize::Large);
 }
 
-- (ManagementState)managementState {
-  return GetManagementState(_identityManager, _authenticationService, _prefs);
+- (NSString*)managementDescription {
+  return GetManagementDescription(
+      GetManagementState(_identityManager, _authenticationService, _prefs));
 }
 
 - (AccountErrorUIInfo*)accountErrorUIInfo {
@@ -558,9 +558,7 @@
 - (BOOL)primaryAccountInfoChanged {
   if (_primaryAccountDisplayedAvatar != self.primaryAccountAvatar ||
       _primaryAccountDisplayedUserFullName != self.primaryAccountUserFullName ||
-      _primaryAccountDisplayedEmail != self.primaryAccountEmail ||
-      _primaryAccountDisplayedManaged !=
-          self.managementState.is_profile_managed()) {
+      _primaryAccountDisplayedEmail != self.primaryAccountEmail) {
     [self recordPrimaryAccountDisplayedInfo];
     return YES;
   }
@@ -572,7 +570,6 @@
   _primaryAccountDisplayedEmail = self.primaryAccountEmail;
   _primaryAccountDisplayedUserFullName = self.primaryAccountUserFullName;
   _primaryAccountDisplayedAvatar = self.primaryAccountAvatar;
-  _primaryAccountDisplayedManaged = self.managementState.is_profile_managed();
 }
 
 // Returns whether this mediator is disconnected

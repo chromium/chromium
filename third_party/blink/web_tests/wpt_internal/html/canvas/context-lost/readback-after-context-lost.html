@@ -1,0 +1,24 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/html/canvas/resources/canvas-promise-test.js"></script>
+<script>
+
+assert_true(!!window.chrome && !!chrome.gpuBenchmarking,
+            'This test requires chrome.gpuBenchmarking.');
+
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = 'red';
+  ctx.fillRect(0, 0, 100, 100);
+
+  chrome.gpuBenchmarking.terminateGpuProcessNormally();
+
+  assert_array_equals(
+      ctx.getImageData(2, 2, 1, 1).data, [0, 0, 0, 0],
+      'Canvas should be blank if the GPU process dies.');
+
+}, 'Test reading back the canvas after the GPU process dies.',
+   {testTypes: MAIN_THREAD_CANVAS_TEST_TYPES});
+
+</script>

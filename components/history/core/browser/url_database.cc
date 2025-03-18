@@ -55,7 +55,7 @@ URLDatabase::~URLDatabase() = default;
 bool URLDatabase::FillURLRow(sql::Statement& s, URLRow* i) {
   DCHECK(i);
 
-  GURL url(s.ColumnString(1));
+  GURL url(s.ColumnStringView(1));
   if (!url.is_valid()) {
     return false;
   }
@@ -214,7 +214,7 @@ bool URLDatabase::URLTableContainsAutoincrement() {
   if (!statement.Step())
     return false;
 
-  std::string urls_schema = statement.ColumnString(0);
+  std::string_view urls_schema = statement.ColumnStringView(0);
   // We check if the whole schema contains "AUTOINCREMENT", since
   // "AUTOINCREMENT" only can be used for "INTEGER PRIMARY KEY", so we assume no
   // other columns could contain "AUTOINCREMENT".

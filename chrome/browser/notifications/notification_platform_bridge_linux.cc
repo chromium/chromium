@@ -292,18 +292,21 @@ void CallMethod(dbus::ObjectProxy* proxy,
           [](const std::string& interface, const std::string& method,
              base::OnceCallback<void(bool, Rets...)> cb,
              dbus::Response* response) {
-            dbus::MessageReader reader(response);
-            bool success = true;
+            bool success = false;
             std::tuple<Rets...> rets;
-            std::apply(
-                [&](auto&&... args) {
-                  ((success = success && args.Read(&reader)), ...);
-                },
-                rets);
-            if (reader.HasMoreData()) {
-              LOG(ERROR) << interface << "." << method
-                         << ": Failed to read all response parameters.";
-              success = false;
+            if (response) {
+              dbus::MessageReader reader(response);
+              success = true;
+              std::apply(
+                  [&](auto&&... args) {
+                    ((success = success && args.Read(&reader)), ...);
+                  },
+                  rets);
+              if (reader.HasMoreData()) {
+                LOG(ERROR) << interface << "." << method
+                           << ": Failed to read all response parameters.";
+                success = false;
+              }
             }
             std::apply(
                 [&](auto&&... args) {

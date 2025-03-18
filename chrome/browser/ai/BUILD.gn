@@ -122,6 +122,7 @@ source_set("test_support") {
   public_deps = [
     "//chrome/browser/optimization_guide",
     "//chrome/test:test_support",
+    "//components/component_updater:test_support",
     "//components/optimization_guide/core:test_support",
     "//testing/gmock:gmock",
     "//testing/gtest:gtest",
@@ -143,7 +144,6 @@ source_set("unit_tests") {
     ":ai",
     ":ai_model_download_progress_manager",
     ":test_support",
-    "//components/component_updater:test_support",
     "//components/optimization_guide/core:test_support",
   ]
 }

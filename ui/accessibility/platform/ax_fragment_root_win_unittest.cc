@@ -796,14 +796,10 @@ TEST_F(AXFragmentRootTest, DetectEventListenersForProperties) {
   base::win::ScopedSafearray property_ids(
       ::SafeArrayCreateVector(VT_I4, 0, /*cElements=*/2));
 
-  // Put first property.
+  // Put properties in the SAFEARRAY.
   {
     ASSERT_OK_AND_ASSIGN(auto lock, property_ids.CreateLockScope<VT_I4>());
     lock[0] = UIA_NamePropertyId;
-  }
-  // Put second property.
-  {
-    ASSERT_OK_AND_ASSIGN(auto lock, property_ids.CreateLockScope<VT_I4>());
     lock[1] = UIA_ControlTypePropertyId;
   }
 

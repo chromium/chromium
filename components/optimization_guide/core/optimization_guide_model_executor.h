@@ -15,6 +15,7 @@
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
+#include "services/on_device_model/public/cpp/capabilities.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
 namespace optimization_guide {
@@ -124,6 +125,10 @@ struct SessionConfigParams {
     kAlwaysDisable,
   };
   LoggingMode logging_mode = LoggingMode::kDefault;
+
+  // Capabilities that are enabled for this session when using on-device
+  // execution.
+  on_device_model::Capabilities capabilities;
 };
 
 // Reasons why the on-device model was not available for use.
@@ -326,6 +331,10 @@ class OptimizationGuideModelExecutor {
   virtual void RemoveOnDeviceModelAvailabilityChangeObserver(
       optimization_guide::ModelBasedCapabilityKey feature,
       OnDeviceModelAvailabilityObserver* observer) {}
+
+  // Returns the capabilities for the on-device model, or empty capabilities if
+  // no model is available.
+  virtual on_device_model::Capabilities GetOnDeviceCapabilities();
 };
 
 }  // namespace optimization_guide

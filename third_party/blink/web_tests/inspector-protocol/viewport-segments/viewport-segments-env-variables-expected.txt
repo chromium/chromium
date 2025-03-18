@@ -1,0 +1,68 @@
+Test the Viewport Segments Environment Variables.
+Initial layout for viewport size : 800x600
+getComputedStyle(target).marginTop :
+1px
+getComputedStyle(target).marginRight :
+1px
+getComputedStyle(target).marginBottom :
+1px
+getComputedStyle(target).marginLeft :
+1px
+getComputedStyle(target).width :
+1px
+getComputedStyle(target).height :
+1px
+getComputedStyle(target).opacity :
+0.1
+matchMedia('(horizontal-viewport-segments: 2)').matches :
+false
+Media Query change event horizontal matches: true
+Horizontal layout
+getComputedStyle(target).marginTop :
+0px
+getComputedStyle(target).marginRight :
+405px
+getComputedStyle(target).marginBottom :
+600px
+getComputedStyle(target).marginLeft :
+395px
+getComputedStyle(target).width :
+10px
+getComputedStyle(target).height :
+600px
+getComputedStyle(target).opacity :
+0.2
+matchMedia('(vertical-viewport-segments: 2)').matches :
+false
+Media Query change event vertical matches: true
+Vertical layout
+getComputedStyle(target).marginTop :
+295px
+getComputedStyle(target).marginRight :
+800px
+getComputedStyle(target).marginBottom :
+305px
+getComputedStyle(target).marginLeft :
+0px
+getComputedStyle(target).width :
+800px
+getComputedStyle(target).height :
+10px
+getComputedStyle(target).opacity :
+0.3
+Clearing the display feature should revert to the initial layout
+getComputedStyle(target).marginTop :
+1px
+getComputedStyle(target).marginRight :
+1px
+getComputedStyle(target).marginBottom :
+1px
+getComputedStyle(target).marginLeft :
+1px
+getComputedStyle(target).width :
+1px
+getComputedStyle(target).height :
+1px
+getComputedStyle(target).opacity :
+0.1
+

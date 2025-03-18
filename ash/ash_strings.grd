@@ -5055,9 +5055,6 @@ No devices connected.
       <message name="IDS_ASH_LOGIN_POD_PIN_PLACEHOLDER" desc="Text to display as placeholder in the password field when pin is the only auth method.">
         PIN
       </message>
-      <message name="IDS_ASH_LOGIN_POD_PASSWORD_PIN_PLACEHOLDER" desc="Text to display as placeholder in the password field when both password and pin are allowed.">
-        PIN or password
-      </message>
       <message name="IDS_ASH_LOGIN_POD_PASSWORD_PIN_INPUT_ACCESSIBLE_NAME" desc="The accessible name of the pin input field used for PIN Auto-submit">
         Enter your PIN
       </message>
@@ -5077,9 +5074,6 @@ No devices connected.
       </message>
       <message name="IDS_ASH_LOGIN_SWITCH_TO_PIN" desc="Text to display on the button that is used for switching between PIN and password authentication">
         Switch to PIN
-      </message>
-      <message name="IDS_ASH_LOGIN_ERROR_AUTHENTICATING" desc="Couldn't sign in because PIN or password is invalid">
-        Your PIN or password couldn't be verified. Try again.
       </message>
       <message name="IDS_ASH_LOGIN_ERROR_AUTHENTICATING_PIN" desc="Couldn't sign in because PIN is invalid">
         Your PIN couldn't be verified. Try again.
@@ -6883,6 +6877,37 @@ Here are some things you can try to get started.
 
       <!-- Scanner -->
       <!-- TODO: crbug.com/375967525 - Finalize these strings and mark them as translateable -->
+      <message name="IDS_ASH_SCANNER_DISCLAIMER_TITLE" desc="Text shown as the title of the suggested actions when searching your screen disclaimer view.">
+        A few things to keep in mind
+      </message>
+      <message name="IDS_ASH_SCANNER_DISCLAIMER_PARAGRAPH_ONE" desc="Text shown as the first paragraph of the suggested actions when searching your screen disclaimer view.">
+        When you use suggested actions such as “add to Calendar” or “create Google Docs,” the content from the selected area is sent to Google servers to suggest actions, subject to <ph name="LINK_TO_SERVICE_TERMS">$1<ex>Google's Terms of Service and Privacy Policy</ex></ph>. Don't include anything personal, sensitive, or confidential.
+      </message>
+      <message name="IDS_ASH_SCANNER_DISCLAIMER_PARAGRAPH_TWO" desc="Text shown as the second paragraph of the suggested actions when searching your screen disclaimer view.">
+        Generative AI can make mistakes, including about people, so double-check it.
+      </message>
+      <message name="IDS_ASH_SCANNER_DISCLAIMER_PARAGRAPH_THREE" desc="Text shown as the third paragraph of the suggested actions when searching your screen disclaimer view.">
+        You can turn off this feature at any time in Settings. <ph name="LINK_TO_LEARN_MORE">$1<ex>Learn more</ex></ph>
+      </message>
+      <message name="IDS_ASH_SCANNER_DISCLAIMER_ACCEPT" desc="Text shown as the accept button of the suggested actions when searching your screen disclaimer view.">
+        Got it
+      </message>
+      <message name="IDS_ASH_SCANNER_DISCLAIMER_DECLINE" desc="Text shown as the decline button of the suggested actions when searching your screen disclaimer view.">
+        No thanks
+      </message>
+      <message name="IDS_ASH_SCANNER_DISCLAIMER_LEARN_MORE_LINK_TEXT" desc="The linked &quot;Learn more&quot; text in the suggested actions when searching your screen disclaimer view.">
+        Learn more
+      </message>
+      <message name="IDS_ASH_SCANNER_DISCLAIMER_TERMS_LINK_TEXT" desc="The linked Google terms of service and privacy policy text in the suggested actions when searching your screen disclaimer view.">
+        Google's Terms of Service and Privacy Policy
+      </message>
+      <message name="IDS_ASH_SCANNER_DISCLAIMER_REMINDER_TITLE" desc="Text shown as the title of the suggested actions when searching your screen disclaimer view when the disclaimer is shown as a reminder to the user.">
+        A reminder about suggested actions
+      </message>
+      <message name="IDS_ASH_SCANNER_DISCLAIMER_REMINDER_ACCEPT" desc="Text shown as the accept button of the suggested actions when searching your screen disclaimer view when the disclaimer is shown as a reminder to the user.">
+        OK
+      </message>
+
       <message name="IDS_ASH_SCANNER_SMART_ACTIONS_BUTTON_LABEL" desc="The label on a button that can be clicked to show more actions based on the contents of a screenshot. Example actions include creating a new doc or adding a detected event to the user's calendar.">
         More actions
       </message>

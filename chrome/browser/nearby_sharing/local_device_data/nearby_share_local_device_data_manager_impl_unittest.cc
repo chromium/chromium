@@ -24,6 +24,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "components/user_manager/user.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -121,10 +122,7 @@ class NearbyShareLocalDeviceDataManagerImplTest
         user_manager::UserType::kRegular);
     fake_user_manager_->UserLoggedIn(
         user_->GetAccountId(),
-        user_manager::FakeUserManager::GetFakeUsernameHash(
-            user_->GetAccountId()),
-        /*browser_restart=*/false,
-        /*is_child=*/false);
+        user_manager::TestHelper::GetFakeUsernameHash(user_->GetAccountId()));
     RegisterNearbySharingPrefs(pref_service_.registry());
     fake_user_manager_->OnUserProfileCreated(user_->GetAccountId(),
                                              &pref_service_);

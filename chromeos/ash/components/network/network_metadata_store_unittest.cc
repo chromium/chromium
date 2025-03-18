@@ -36,6 +36,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -209,10 +210,7 @@ class NetworkMetadataStoreNoLoginTest : public ::testing::Test {
   void LoginUser(const user_manager::User* user) {
     fake_user_manager_->UserLoggedIn(
         user->GetAccountId(),
-        user_manager::FakeUserManager::GetFakeUsernameHash(
-            user->GetAccountId()),
-        /*browser_restart=*/true,
-        /*is_child=*/false);
+        user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
     fake_user_manager_->SwitchActiveUser(user->GetAccountId());
   }
 

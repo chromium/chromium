@@ -58,7 +58,7 @@ bool IsWprintfFormatPortable(const wchar_t* format) {
           return false;
         }
 
-        if (wcschr(L"diouxXeEfgGaAcspn%", *position)) {
+        if (UNSAFE_TODO(wcschr(L"diouxXeEfgGaAcspn%", *position))) {
           // Portable, keep scanning the rest of the format string.
           in_specification = false;
         }
@@ -310,11 +310,11 @@ std::u16string FormatBytesUnlocalized(int64_t bytes) {
 
   char buf[64];
   if (bytes != 0 && dimension > 0 && unit_amount < 100) {
-    base::snprintf(buf, std::size(buf), "%.1lf%s", unit_amount,
-                   UNSAFE_TODO(kByteStringsUnlocalized[dimension]));
+    UNSAFE_TODO(base::snprintf(buf, std::size(buf), "%.1lf%s", unit_amount,
+                               kByteStringsUnlocalized[dimension]));
   } else {
-    base::snprintf(buf, std::size(buf), "%.0lf%s", unit_amount,
-                   UNSAFE_TODO(kByteStringsUnlocalized[dimension]));
+    UNSAFE_TODO(base::snprintf(buf, std::size(buf), "%.0lf%s", unit_amount,
+                               kByteStringsUnlocalized[dimension]));
   }
 
   return ASCIIToUTF16(buf);

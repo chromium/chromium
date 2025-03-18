@@ -14,6 +14,8 @@ mojom("crostini_installer_types_mojom") {
 
 static_library("crostini") {
   sources = [
+    "baguette_download.cc",
+    "baguette_download.h",
     "baguette_installer.cc",
     "baguette_installer.h",
     "crostini_disk.cc",
@@ -237,6 +239,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "baguette_download_unittest.cc",
     "crostini_disk_unittest.cc",
     "crostini_export_import_unittest.cc",
     "crostini_features_unittest.cc",

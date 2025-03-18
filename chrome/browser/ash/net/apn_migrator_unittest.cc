@@ -32,6 +32,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -105,10 +106,7 @@ class ApnMigratorTest : public testing::Test {
     fake_user_manager_->AddGaiaUser(account_id,
                                     user_manager::UserType::kRegular);
     fake_user_manager_->UserLoggedIn(
-        account_id,
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
-        /*browser_restart=*/false,
-        /*is_child=*/false);
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
 
     managed_cellular_pref_handler_ =
         base::WrapUnique(new testing::NiceMock<MockManagedCellularPrefHandler>);

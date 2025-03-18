@@ -22,7 +22,7 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
-#import "ios/chrome/browser/shared/public/commands/price_notifications_commands.h"
+#import "ios/chrome/browser/shared/public/commands/price_tracked_items_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -171,7 +171,7 @@ using base::UserMetricsAction;
       break;
     case PopupMenuActionPriceNotifications:
       RecordAction(UserMetricsAction("MobileMenuPriceNotifications"));
-      [self.dispatcher showPriceNotificationsWithCurrentPage];
+      [self.dispatcher showPriceTrackedItemsWithCurrentPage];
       break;
     default:
       NOTREACHED() << "Unexpected identifier";

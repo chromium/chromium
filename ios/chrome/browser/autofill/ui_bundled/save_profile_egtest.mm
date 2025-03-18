@@ -38,11 +38,17 @@ namespace {
 
 // URLs of the test pages.
 constexpr char kProfileForm[] = "/autofill_smoke_test.html";
+constexpr char kXframeFormPage[] = "/xhr_xframe_submit.html";
 
 // Ids of fields in the form.
 constexpr char kFormElementName[] = "form_name";
 constexpr char kFormElementEmail[] = "form_email";
 constexpr char kFormElementSubmit[] = "submit_profile";
+
+// Minimal cooldown period to wait for between typing characters. The bare
+// minimum should be the frame rate, something aroung 17ms (1/60hz), but we
+// prefer giving extra buffer as there are probably other latencies.
+constexpr base::TimeDelta kTypingCoolDownPeriod = base::Milliseconds(50);
 
 // Email value used by the tests.
 constexpr char kEmail[] = "foo1@gmail.com";
@@ -123,6 +129,34 @@ id<GREYMatcher> EditProfileBottomSheet() {
   return grey_accessibilityID(kEditProfileBottomSheetViewIdentfier);
 }
 
+// Slowly type characters using the keyboard by waiting between each tap.
+void SlowlyTypeText(NSString* text) {
+  for (NSUInteger i = 0; i < [text length]; ++i) {
+    // Wait some time before typing the character.
+    base::test::ios::SpinRunLoopWithMinDelay(kTypingCoolDownPeriod);
+    // Type a single character so the user input can be effective.
+    [ChromeEarlGrey
+        simulatePhysicalKeyboardEvent:[text
+                                          substringWithRange:NSMakeRange(i, 1)]
+                                flags:0];
+  }
+  // Give some cooldown period so the character has the time to be typed
+  // before doing something else on the page.
+  base::test::ios::SpinRunLoopWithMinDelay(kTypingCoolDownPeriod);
+}
+
+void TypeTextInXframeField(NSString* fieldID, NSString* text) {
+  // Focus on the field that corresponds to `fieldID` to pop up the keyboard.
+  NSString* script = [NSString
+      stringWithFormat:@"document.querySelector('iframe')"
+                        ".contentDocument.getElementById('%@').focus()",
+                       fieldID];
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:script];
+
+  // Type the `text` on the field.
+  SlowlyTypeText(text);
+}
+
 }  // namespace
 
 @interface SaveProfileEGTest : ChromeTestCase
@@ -165,6 +199,13 @@ id<GREYMatcher> EditProfileBottomSheet() {
     config.features_enabled.push_back(kAutofillStickyInfobarIos);
   }
 
+  if ([self isRunningTest:@selector
+            (testUserData_AccountSave_AutofillAcrossIframe_XHR)]) {
+    config.features_enabled.push_back(
+        autofill::features::kAutofillAcrossIframesIos);
+    config.features_enabled.push_back(kAutofillFixXhrForXframe);
+  }
+
   return config;
 }
 
@@ -182,6 +223,32 @@ id<GREYMatcher> EditProfileBottomSheet() {
 
   [ChromeEarlGrey tapWebStateElementWithID:@"fill_profile_president"];
   [ChromeEarlGrey tapWebStateElementWithID:@"submit_profile"];
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
+}
+
+// Triggers the save infobar via XHR submission.
+- (void)triggerSaveInfobarViaXHRSubmission {
+  // Load the xframe address form page.
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kXframeFormPage)];
+
+  // Ensure there are no saved profiles at this point - make sure we start from
+  // a clean slate.
+  GREYAssertEqual(0U, [AutofillAppInterface profilesCount],
+                  @"There should be no saved profile.");
+
+  // Manually type the text in the fields so profile saving can be triggered
+  // when autofill across iframes is enabled which require manually editing the
+  // fields.
+  TypeTextInXframeField(@"form_name", @"User");
+  TypeTextInXframeField(@"form_address", @"1234 Pkw Ave");
+  TypeTextInXframeField(@"form_city", @"MuteCity");
+  TypeTextInXframeField(@"form_zip", @"12345");
+
+  // Trigger XHR submission in the child frame using the dedicated button in the
+  // main frame.
+  [ChromeEarlGrey tapWebStateElementWithID:@"do-xhr-submit"];
+
   [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
 }
 
@@ -332,6 +399,32 @@ id<GREYMatcher> EditProfileBottomSheet() {
 
   [[EarlGrey selectElementWithMatcher:footerMatcher]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Save the profile.
+  [[EarlGrey selectElementWithMatcher:ModalButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Ensure profile is saved locally.
+  GREYAssertEqual(1U, [AutofillAppInterface profilesCount],
+                  @"Profile should have been saved.");
+
+  [SigninEarlGrey signOut];
+}
+
+// Test that the profile can be saved for the edge case where the address form
+// is hosted in a frame and is submitted there via XHR - when autofill across
+// iframes is enabled.
+- (void)testUserData_AccountSave_AutofillAcrossIframe_XHR {
+  // Sign-in so the profile can be saved into the account.
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+
+  // Trigger the save infobar via XHR submission in the child frame.
+  [self triggerSaveInfobarViaXHRSubmission];
+
+  // Accept the banner to save the profile.
+  [[EarlGrey selectElementWithMatcher:BannerButtonMatcher()]
+      performAction:grey_tap()];
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:NO];
 
   // Save the profile.
   [[EarlGrey selectElementWithMatcher:ModalButtonMatcher()]

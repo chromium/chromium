@@ -168,7 +168,7 @@ bool HistorySyncMetadataDatabase::GetAllEntityMetadata(
   while (s.Step()) {
     std::string storage_key =
         StorageKeyFromMicrosSinceWindowsEpoch(s.ColumnInt64(0));
-    std::string serialized_metadata = s.ColumnString(1);
+    std::string_view serialized_metadata = s.ColumnStringView(1);
     auto entity_metadata = std::make_unique<sync_pb::EntityMetadata>();
     if (!entity_metadata->ParseFromString(serialized_metadata)) {
       DLOG(WARNING) << "Failed to deserialize HISTORY data type "

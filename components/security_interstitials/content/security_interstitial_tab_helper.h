@@ -92,6 +92,11 @@ class SecurityInterstitialTabHelper
   bool IsInterstitialCommittedForFrame(
       content::FrameTreeNodeId frame_tree_node_id) const;
 
+  // Returns the blocking document for `frame_tree_node_id` if its interstitial
+  // has been committed.
+  security_interstitials::SecurityInterstitialPage* GetBlockingPageForFrame(
+      content::FrameTreeNodeId frame_tree_node_id);
+
   // Returns the blocking document for the main frame if its interstitial has
   // been committed.
   security_interstitials::SecurityInterstitialPage*
@@ -103,8 +108,8 @@ class SecurityInterstitialTabHelper
 
   // Retrieves the blocking page for the target frame for which a Mojo command
   // is being processed, or returns nullptr if there is no such blocking page.
-  // Calling this method when a Mojo command is not on the stack will result in
-  // a crash.
+  // Calling this method when a Mojo command is not on the stack will result
+  // in a crash.
   SecurityInterstitialPage* GetBlockingPageForCurrentTargetFrame();
 
   SecurityInterstitialPage* GetBlockingPageForMainFrame() const;
@@ -139,16 +144,16 @@ class SecurityInterstitialTabHelper
   // Keeps track of blocking documents for pending navigations that have
   // encountered certificate errors in this WebContents. This map is keyed by
   // navigation ID rather than FrameTreeNodeId because there may be multiple
-  // pending navigations per frame at the same time. When a navigation commits,
-  // the corresponding blocking document is moved out and stored in
+  // pending navigations per frame at the same time. When a navigation
+  // commits, the corresponding blocking document is moved out and stored in
   // |blocking_documents_for_committed_navigations_|.
   std::map<int64_t,
            std::unique_ptr<security_interstitials::SecurityInterstitialPage>>
       blocking_documents_for_pending_navigations_;
 
   // Keeps track of the blocking document for each frame that has a committed
-  // navigation. The value is replaced (if the new committed navigation for that
-  // frame has a blocking document).
+  // navigation. The value is replaced (if the new committed navigation for
+  // that frame has a blocking document).
   std::map<content::FrameTreeNodeId,
            std::unique_ptr<security_interstitials::SecurityInterstitialPage>>
       blocking_documents_for_committed_navigations_;

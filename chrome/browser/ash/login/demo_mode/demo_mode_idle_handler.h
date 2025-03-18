@@ -9,8 +9,11 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_window_closer.h"
+#include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/files_cleanup_handler.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 
@@ -23,7 +26,15 @@ class IdleDetector;
 // and wait for next user.
 class DemoModeIdleHandler : public ui::UserActivityObserver {
  public:
-  explicit DemoModeIdleHandler(DemoModeWindowCloser* window_closer);
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called on local files is cleaned up complete.
+    virtual void OnLocalFilesCleanupCompleted() = 0;
+  };
+
+  DemoModeIdleHandler(
+      DemoModeWindowCloser* window_closer,
+      scoped_refptr<base::SequencedTaskRunner> blocking_task_runner);
   DemoModeIdleHandler(const DemoModeIdleHandler&) = delete;
   DemoModeIdleHandler& operator=(const DemoModeIdleHandler&) = delete;
   ~DemoModeIdleHandler() override;
@@ -31,12 +42,28 @@ class DemoModeIdleHandler : public ui::UserActivityObserver {
   // ui::UserActivityObserver:
   void OnUserActivity(const ui::Event* event) override;
 
+  // Adds an observer to the observer list.
+  void AddObserver(Observer* observer);
+
+  // Removes an observer from the observer list.
+  void RemoveObserver(Observer* observer);
+
+  void SetIdleTimeoutForTest(std::optional<base::TimeDelta> timeout);
+
  private:
+  // Called on idle timeout reaches. Could be invoked on non-UI thread when
+  // using `base::TestMockTimeTaskRunner` for test.
   void OnIdle();
+
+  // Cleans up everything under "MyFiles" and reset "Downloads" folder to
+  // empty.
+  void CleanupLocalFiles();
+  // Populates demo files after cleanup.
+  void OnLocalFilesCleanupCompleted(
+      const std::optional<std::string>& error_message);
 
   // True when the device is not idle.
   bool is_user_active_ = false;
-
 
   // Detect idle when attract loop is not playing. If the attract loop is well
   // function and it is not playing, it indicates that a user is actively engage
@@ -46,8 +73,15 @@ class DemoModeIdleHandler : public ui::UserActivityObserver {
   // Not owned:
   raw_ptr<DemoModeWindowCloser> window_closer_;
 
+  // Cleaner for `MyFiles` directory:
+  chromeos::FilesCleanupHandler file_cleaner_;
+
+  std::optional<base::TimeDelta> idle_time_out_for_test_;
+
   base::ScopedObservation<ui::UserActivityDetector, ui::UserActivityObserver>
       user_activity_observer_{this};
+
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<DemoModeIdleHandler> weak_ptr_factory_{this};
 };

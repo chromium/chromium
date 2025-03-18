@@ -440,6 +440,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Лозинка је сачувана на Google налогу, {EMAIL}}one{Лозинке су сачуване на Google налогу, {EMAIL}}few{Лозинке су сачуване на Google налогу, {EMAIL}}other{Лозинке су сачуване на Google налогу, {EMAIL}}}</translation>
 <translation id="2791174088547598693">Додај лозинку…</translation>
 <translation id="2797302972324086597">Позивни број за земљу</translation>
+<translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} фајл}one{{COUNT} фајл}few{{COUNT} фајла}other{{COUNT} фајлова}}</translation>
 <translation id="2816489851009559785">Мени → Подешавања → Подразумевани прегледач</translation>
 <translation id="2818821771744632548">Одјављени сте са налога <ph name="USER_NAME" /> у склопу ресетовања iPhone-а. Да бисте се поново пријавили, додирните Настави испод.</translation>
 <translation id="2819667972867209401">Када је укључено, подаци се чувају на Google налогу. Када је искључено, подаци се чувају само на овом уређају и бришу се ако се одјавите.</translation>

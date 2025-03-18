@@ -6,30 +6,24 @@
 
 namespace media {
 
-StableVideoDecoderFactoryProcessService::
-    StableVideoDecoderFactoryProcessService(
-        mojo::PendingReceiver<stable::mojom::StableVideoDecoderFactoryProcess>
-            receiver)
+OOPVideoDecoderFactoryProcessService::OOPVideoDecoderFactoryProcessService(
+    mojo::PendingReceiver<mojom::VideoDecoderFactoryProcess> receiver)
     : receiver_(this, std::move(receiver)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-StableVideoDecoderFactoryProcessService::
-    ~StableVideoDecoderFactoryProcessService() {
+OOPVideoDecoderFactoryProcessService::~OOPVideoDecoderFactoryProcessService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void StableVideoDecoderFactoryProcessService::
-    InitializeStableVideoDecoderFactory(
-        const gpu::GpuFeatureInfo& gpu_feature_info,
-        mojo::PendingReceiver<stable::mojom::StableVideoDecoderFactory>
-            receiver) {
+void OOPVideoDecoderFactoryProcessService::InitializeVideoDecoderFactory(
+    const gpu::GpuFeatureInfo& gpu_feature_info,
+    mojo::PendingReceiver<mojom::InterfaceFactory> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // The browser process ensures this is called only once.
   DCHECK(!factory_);
-  factory_ =
-      std::make_unique<StableVideoDecoderFactoryService>(gpu_feature_info);
+  factory_ = std::make_unique<OOPVideoDecoderFactoryService>(gpu_feature_info);
 
   // base::Unretained(this) is safe here because the disconnection callback
   // won't run beyond the lifetime of |factory_| which is fully owned by
@@ -37,11 +31,11 @@ void StableVideoDecoderFactoryProcessService::
   factory_->BindReceiver(
       std::move(receiver),
       base::BindOnce(
-          &StableVideoDecoderFactoryProcessService::OnFactoryDisconnected,
+          &OOPVideoDecoderFactoryProcessService::OnFactoryDisconnected,
           base::Unretained(this)));
 }
 
-void StableVideoDecoderFactoryProcessService::OnFactoryDisconnected() {
+void OOPVideoDecoderFactoryProcessService::OnFactoryDisconnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // This should cause the termination of the utility process that *|this| lives

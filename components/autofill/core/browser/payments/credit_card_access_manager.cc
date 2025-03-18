@@ -747,7 +747,7 @@ void CreditCardAccessManager::OnCvcAuthenticationComplete(
     // filling.
     GetOrCreateFidoAuthenticator()->Authorize(GetWeakPtr(),
                                               response.card_authorization_token,
-                                              request_options.Clone());
+                                              std::move(request_options));
 #endif
   }
   if (ShouldOfferFidoOptInDialog(response)) {

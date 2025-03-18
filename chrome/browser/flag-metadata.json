@@ -69,6 +69,20 @@
     "expiry_milestone": 133
   },
   {
+    "name": "adjust-can-create-canvas2d-resource-provider",
+    "owners": [
+      "blundell@chromium.org",
+      "jpgravel@chromium.org" ],
+    "expiry_milestone": 140
+  },
+  {
+    "name": "adjust-get-or-create-2dcanvas-provider",
+    "owners": [
+      "blundell@chromium.org",
+      "jpgravel@chromium.org" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "ai-settings-enterprise-disabled-ui",
     "owners": [
       "dullweber@chromium.org",
@@ -4925,6 +4939,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "group-promo-prototype",
+    "owners": [ "ssid@chromium.org", "yuezhanggg@chromium.org"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "growth-campaigns",
     "owners": [ "llin@google.com", "cros-growth@google.com" ],
     "expiry_milestone": 140
@@ -5509,6 +5528,13 @@
       "name": "ipp-first-setup-for-usb-printers",
       "owners": [ "pawliczek@chromium.org", "project-bolton@google.com" ],
       "expiry_milestone": 140
+  },
+  {
+    "name": "is-paintable-checks-resource-provider",
+    "owners": [
+      "blundell@chromium.org",
+      "jpgravel@chromium.org" ],
+    "expiry_milestone": 140
   },
   {
       "name": "is-secure-payment-confirmation-available-api",
@@ -6434,6 +6460,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "offline-items-in-notifications",
+    "owners": ["nwokedi@chromium.org"],
+    "expiry_milestone": 138
+  },
+  {
     "name": "offline-pages-live-page-sharing",
     "owners": [ "sclittle@chromium.org", "srsudar@chromium.org", "offline-dev@chromium.org" ],
     "expiry_milestone": 86
@@ -7266,11 +7297,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "product-specifications-multi-specifics",
-    "owners": [ "davidjm@chromium.org", "chrome-shopping-eng@google.com" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "productivity-launcher",
     "owners": [ "cros-system-ui-eng@google.com" ],
     "expiry_milestone": 106
@@ -7858,6 +7884,14 @@
       "scalable-iph-eng@google.com"
     ],
     "expiry_milestone": 125
+  },
+  {
+    "name": "scanner-disclaimer-debug-override",
+    "owners": [
+      "mlcui@google.com",
+      "//ash/scanner/OWNERS"
+    ],
+    "expiry_milestone": 140
   },
   {
     "name": "scheduler-configuration",
@@ -9264,16 +9298,6 @@
     "name": "wayland-ui-scaling",
     "owners": [ "nickdiego@igalia.com", "fangzhoug@chromium.org", "thomasanderson@chromium.org"],
     "expiry_milestone": 141
-  },
-  {
-    "name": "web-app-user-display-mode-sync-browser-mitigation",
-    "owners": [ "alancutter@chromium.org", "pwa-team@google.com" ],
-    "expiry_milestone": 132
-  },
-  {
-    "name": "web-app-user-display-mode-sync-standalone-mitigation",
-    "owners": [ "alancutter@chromium.org", "pwa-team@google.com" ],
-    "expiry_milestone": 132
   },
   {
     "name": "web-authentication-align-error-type-for-payment-credential-create",

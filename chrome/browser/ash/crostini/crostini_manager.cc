@@ -296,7 +296,8 @@ class CrostiniManager::CrostiniRestarter
 
   // Public function - Restart();
   void ContinueRestart();
-  void LoadComponentFinished(CrostiniResult result);
+  void LoadComponentFinished(std::optional<base::ScopedFD> disk_image,
+                             CrostiniResult result);
   void OnBaguetteLoaded(CrostiniResult result);
 
   void CreateDiskImageFinished(int64_t disk_size_bytes,
@@ -322,7 +323,8 @@ class CrostiniManager::CrostiniRestarter
 
   void LogRestarterResult(const RestartRequest& request, CrostiniResult result);
 
-  void OnConciergeAvailable(bool service_available);
+  void OnConciergeAvailable(std::optional<base::ScopedFD> disk_iamge,
+                            bool service_available);
 
   base::OneShotTimer stage_timeout_timer_;
   base::TimeTicks stage_start_;
@@ -708,11 +710,12 @@ void CrostiniManager::CrostiniRestarter::ContinueRestart() {
   } else {
     crostini_manager_->InstallTermina(
         base::BindOnce(&CrostiniRestarter::LoadComponentFinished,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr(), std::nullopt));
   }
 }
 
 void CrostiniManager::CrostiniRestarter::LoadComponentFinished(
+    std::optional<base::ScopedFD> disk_image,
     CrostiniResult result) {
   if (ReturnEarlyIfNeeded()) {
     return;
@@ -728,10 +731,11 @@ void CrostiniManager::CrostiniRestarter::LoadComponentFinished(
   // Ensure concierge is ready to serve requests
   GetConciergeClient()->WaitForServiceToBeAvailable(
       base::BindOnce(&CrostiniManager::CrostiniRestarter::OnConciergeAvailable,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(disk_image)));
 }
 
 void CrostiniManager::CrostiniRestarter::OnConciergeAvailable(
+    std::optional<base::ScopedFD> disk_image,
     bool service_is_available) {
   if (!service_is_available) {
     LOG(ERROR) << "vm_concierge service is not available";
@@ -745,7 +749,7 @@ void CrostiniManager::CrostiniRestarter::OnConciergeAvailable(
   // path so we can pass it to StartTerminaVm.
   StartStage(mojom::InstallerState::kCreateDiskImage);
   crostini_manager_->CreateDiskImage(
-      container_id_.vm_name,
+      container_id_.vm_name, std::move(disk_image),
       vm_tools::concierge::StorageLocation::STORAGE_CRYPTOHOME_ROOT,
       disk_size_bytes,
       base::BindOnce(&CrostiniRestarter::CreateDiskImageFinished,
@@ -1285,7 +1289,9 @@ CrostiniManager* CrostiniManager::GetForProfile(Profile* profile) {
 }
 
 CrostiniManager::CrostiniManager(Profile* profile)
-    : profile_(profile), owner_id_(CryptohomeIdForProfile(profile)) {
+    : profile_(profile),
+      owner_id_(CryptohomeIdForProfile(profile)),
+      baguette_installer_(profile_, *profile_->GetPrefs()) {
   DCHECK(!profile_->IsOffTheRecord());
   GetCiceroneClient()->AddObserver(this);
   GetConciergeClient()->AddVmObserver(this);
@@ -1333,6 +1339,8 @@ CrostiniManager::CrostiniManager(Profile* profile)
       RegisterContainerTerminal(container);
     }
   }
+  // TODO(crbug.com/377377749): only instantiate baguette_installer_ if we care
+  // about baguette?
 }
 
 CrostiniManager::~CrostiniManager() {
@@ -1457,15 +1465,16 @@ void CrostiniManager::MaybeUpdateCrostiniAfterChecks() {
   }
 }
 
-void CrostiniManager::InstallBaguette(CrostiniResultCallback callback) {
+void CrostiniManager::InstallBaguette(BaguetteImageCallback callback) {
   if (install_baguette_never_completes_for_testing_) {
     LOG(ERROR)
         << "Dropping InstallBaguette request. This is only used in tests.";
     return;
   }
   baguette_installer_.Install(base::BindOnce(
-      [](CrostiniResultCallback callback,
-         BaguetteInstaller::InstallResult result) {
+      [](BaguetteImageCallback callback,
+         BaguetteInstaller::InstallResult result,
+         std::optional<base::ScopedFD> fd) {
         CrostiniResult res;
         if (result == BaguetteInstaller::InstallResult::Success) {
           res = CrostiniResult::SUCCESS;
@@ -1485,7 +1494,7 @@ void CrostiniManager::InstallBaguette(CrostiniResultCallback callback) {
           NOTREACHED()
               << "Got unexpected value of BaguetteInstaller::InstallResult";
         }
-        std::move(callback).Run(res);
+        std::move(callback).Run(std::move(fd), res);
       },
       std::move(callback)));
 }
@@ -1533,6 +1542,7 @@ void CrostiniManager::UninstallTermina(BoolCallback callback) {
 
 void CrostiniManager::CreateDiskImage(
     const std::string& vm_name,
+    std::optional<base::ScopedFD> disk_image,
     vm_tools::concierge::StorageLocation storage_location,
     int64_t disk_size_bytes,
     CreateDiskImageCallback callback) {
@@ -1559,29 +1569,18 @@ void CrostiniManager::CreateDiskImage(
   request.set_disk_size(std::move(disk_size_bytes));
 
   if (base::FeatureList::IsEnabled(ash::features::kCrostiniContainerless)) {
+    if (!disk_image.has_value()) {
+      LOG(ERROR) << "No disk image was provided for baguette installation";
+      std::move(callback).Run(CrostiniResult::UNKNOWN_ERROR, base::FilePath());
+      return;
+    }
+
     request.set_copy_baguette_image(true);
-    auto cb = base::BindPostTaskToCurrentDefault(
+
+    GetConciergeClient()->CreateDiskImageWithFd(
+        std::move(disk_image.value()), std::move(request),
         base::BindOnce(&CrostiniManager::OnCreateDiskImage,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-
-    // Blocking calls may not be made from the main thread, but dbus calls
-    // *MUST* be made from the main thread, so we have to get a bit creative
-    // with our function routing here.
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock()}, base::BindOnce([]() {
-          return base::File(base::FilePath(kBaguettePath),
-                            base::File::FLAG_OPEN | base::File::FLAG_READ);
-        }),
-        base::BindOnce(
-            [](vm_tools::concierge::CreateDiskImageRequest request,
-               chromeos::DBusMethodCallback<
-                   vm_tools::concierge::CreateDiskImageResponse> cb,
-               base::File source_disk) {
-              GetConciergeClient()->CreateDiskImageWithFd(
-                  base::ScopedFD(source_disk.TakePlatformFile()),
-                  std::move(request), std::move(cb));
-            },
-            std::move(request), std::move(cb)));
   } else {
     GetConciergeClient()->CreateDiskImage(
         std::move(request),

@@ -10,8 +10,10 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace {
 
@@ -61,17 +63,16 @@ void ProfilePickerGlicFlowController::OnPickedProfileLoaded(Profile* profile) {
     return;
   }
 
-  // Effectively removes `ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow`
-  // and expects the call in `picked_profile_callback_` to set a new keep alive
-  // if the profile should not be destroyed.
-  ScopedProfileKeepAlive keep_alive(
-      profile, ProfileKeepAliveOrigin::kWaitingForGlicView);
+  loaded_profile_ = profile;
 
-  // Return the loaded `profile` to the caller.
-  std::move(picked_profile_callback_).Run(profile);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(loaded_profile_);
+  if (identity_manager->AreRefreshTokensLoaded()) {
+    ExitFlowWithLoadedProfile();
+    return;
+  }
 
-  // Close the picker.
-  ExitFlow();
+  identity_manager_observation_.Observe(identity_manager);
 }
 
 void ProfilePickerGlicFlowController::Clear() {
@@ -82,4 +83,30 @@ void ProfilePickerGlicFlowController::Clear() {
 void ProfilePickerGlicFlowController::CancelPostSignInFlow() {
   NOTREACHED() << "The glic flow controller is not expected to support this "
                   "part of the flow as it does not support signing in.";
+}
+
+void ProfilePickerGlicFlowController::ExitFlowWithLoadedProfile() {
+  CHECK(loaded_profile_);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(loaded_profile_);
+  CHECK(identity_manager->AreRefreshTokensLoaded());
+
+  // Effectively removes `ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow`
+  // and expects the call in `picked_profile_callback_` to set a new keep alive
+  // if the profile should not be destroyed.
+  ScopedProfileKeepAlive keep_alive(
+      loaded_profile_, ProfileKeepAliveOrigin::kWaitingForGlicView);
+
+  // Return the loaded profile to the caller.
+  std::move(picked_profile_callback_).Run(loaded_profile_);
+  loaded_profile_ = nullptr;
+
+  // Close the picker.
+  ExitFlow();
+}
+
+void ProfilePickerGlicFlowController::OnRefreshTokensLoaded() {
+  CHECK(loaded_profile_);
+  identity_manager_observation_.Reset();
+  ExitFlowWithLoadedProfile();
 }

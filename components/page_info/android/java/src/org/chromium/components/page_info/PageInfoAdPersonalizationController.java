@@ -4,26 +4,29 @@
 
 package org.chromium.components.page_info;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.List;
 
 /** Class for controlling the page info ad personalization section. */
+@NullMarked
 public class PageInfoAdPersonalizationController extends PageInfoPreferenceSubpageController {
     public static final int ROW_ID = View.generateViewId();
-    private static List<String> sTopicsForTesting;
+    private static @Nullable List<String> sTopicsForTesting;
 
     private final PageInfoMainController mMainController;
     private final PageInfoRowView mRowView;
-    private PageInfoAdPersonalizationSettings mSubPage;
+    private @Nullable PageInfoAdPersonalizationSettings mSubPage;
 
     private boolean mHasJoinedUserToInterestGroup;
-    private List<String> mTopics;
+    private @Nullable List<String> mTopics;
 
     public PageInfoAdPersonalizationController(
             PageInfoMainController mainController,
@@ -55,26 +58,24 @@ public class PageInfoAdPersonalizationController extends PageInfoPreferenceSubpa
         mMainController.launchSubpage(this);
     }
 
-    @NonNull
     @Override
     public String getSubpageTitle() {
         return mRowView.getContext().getString(R.string.page_info_ad_privacy_header);
     }
 
     @Override
-    public View createViewForSubpage(ViewGroup parent) {
+    public @Nullable View createViewForSubpage(ViewGroup parent) {
         assert mSubPage == null;
         mSubPage = new PageInfoAdPersonalizationSettings();
         PageInfoAdPersonalizationSettings.Params params =
-                new PageInfoAdPersonalizationSettings.Params();
-        params.hasJoinedUserToInterestGroup = mHasJoinedUserToInterestGroup;
-        params.topicInfo = mTopics;
-        params.onManageInterestsButtonClicked =
-                () -> {
-                    mMainController.recordAction(
-                            PageInfoAction.PAGE_INFO_AD_PERSONALIZATION_SETTINGS_OPENED);
-                    getDelegate().showAdPersonalizationSettings();
-                };
+                new PageInfoAdPersonalizationSettings.Params(
+                        /* hasJoinedUserToInterestGroup= */ mHasJoinedUserToInterestGroup,
+                        /* topicInfo= */ assertNonNull(mTopics),
+                        /* onManageInterestsButtonClicked= */ () -> {
+                            mMainController.recordAction(
+                                    PageInfoAction.PAGE_INFO_AD_PERSONALIZATION_SETTINGS_OPENED);
+                            getDelegate().showAdPersonalizationSettings();
+                        });
         mSubPage.setParams(params);
         return addSubpageFragment(mSubPage);
     }

@@ -123,7 +123,7 @@ public class MostVisitedMediatorUnitTest {
 
         verify(mTileRenderer, atLeastOnce())
                 .renderTileSection(anyList(), eq(mMvTilesLayout), any());
-        verify(mMvTilesLayout).addView(any());
+        verify(mMvTilesLayout).addTile(any());
         verify(mSnapshotTileGridChangedRunnable, atLeastOnce()).run();
     }
 
@@ -350,9 +350,12 @@ public class MostVisitedMediatorUnitTest {
     private void createMediator(boolean isTablet) {
         mMvTilesLayout = Mockito.mock(MostVisitedTilesLayout.class);
 
-        mMvTilesLayout.addView(mTileView);
         when(mMvTilesLayout.getChildCount()).thenReturn(1);
         when(mMvTilesLayout.getChildAt(0)).thenReturn(mTileView);
+        when(mMvTilesLayout.getTileCount()).thenReturn(1);
+        when(mMvTilesLayout.getTileAt(0)).thenReturn(mTileView);
+        mMvTilesLayout.addTile(mTileView);
+
         when(mNoMvPlaceholderStub.inflate()).thenReturn(mNoMvPlaceholder);
 
         mMediator =

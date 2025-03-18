@@ -4778,6 +4778,45 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicOkDnsAlpn) {
               Optional(IsOk()));
 }
 
+// Regression test for crbug.com/403341337. QuicTask should not be started when
+// the corresponding AttemptManager is failing.
+TEST_F(HttpStreamPoolAttemptManagerTest, DontStartQuicAfterFailure) {
+  AddQuicData();
+
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  // Request a stream to create an AttemptManager.
+  StreamRequester requester;
+  requester.set_destination(kDefaultDestination)
+      .set_quic_version(quic_version())
+      .RequestStream(pool());
+  ASSERT_FALSE(requester.result().has_value());
+
+  // Simulate a network change event to fail the AttemptManager.
+  NetworkChangeNotifier::NotifyObserversOfIPAddressChangeForTests();
+  FastForwardUntilNoTasksRemain();
+
+  // Complete the service endpoint resolution. QuicTask should not start.
+  endpoint_request
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CallOnServiceEndpointRequestFinished(OK);
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsError(ERR_NETWORK_CHANGED)));
+  ASSERT_TRUE(pool()
+                  .GetGroupForTesting(requester.GetStreamKey())
+                  ->GetAttemptManagerForTesting()
+                  ->is_failing());
+  ASSERT_FALSE(pool()
+                   .GetGroupForTesting(requester.GetStreamKey())
+                   ->GetAttemptManagerForTesting()
+                   ->GetQuicTaskResultForTesting());
+
+  // Ensure that the attempt manager completes after the request is destroyed.
+  requester.ResetRequest();
+  WaitForAttemptManagerComplete(
+      *pool().GetGroupForTesting(requester.GetStreamKey()));
+}
+
 // Tests that QUIC is not attempted when marked broken.
 TEST_F(HttpStreamPoolAttemptManagerTest, QuicBroken) {
   AlternativeService alternative_service(NextProto::kProtoQUIC,

@@ -165,8 +165,7 @@ TEST_F(CollaborationServiceImplTest, GetServiceStatus_ManagedDevice) {
             CollaborationStatus::kDisabledForPolicy);
 }
 
-// TODO(crbug.com/401348665): Enable entreprise check again after TGSS fix.
-TEST_F(CollaborationServiceImplTest, DISABLED_GetServiceStatus_ManagedAccount) {
+TEST_F(CollaborationServiceImplTest, GetServiceStatus_ManagedAccount) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       data_sharing::features::kDataSharingFeature);

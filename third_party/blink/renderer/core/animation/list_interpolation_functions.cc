@@ -44,8 +44,8 @@ class UnderlyingItemValue : public UnderlyingValue {
         .Get(index_);
   }
   void SetNonInterpolableValue(
-      scoped_refptr<const NonInterpolableValue> non_interpolable_value) final {
-    builder_.Set(index_, std::move(non_interpolable_value));
+      const NonInterpolableValue* non_interpolable_value) final {
+    builder_.Set(index_, non_interpolable_value);
   }
 
  private:
@@ -158,16 +158,16 @@ PairwiseInterpolationValue ListInterpolationFunctions::MaybeMergeSingles(
       MakeGarbageCollected<InterpolableList>(final_length);
   auto* result_end_interpolable_list =
       MakeGarbageCollected<InterpolableList>(final_length);
-  Vector<scoped_refptr<const NonInterpolableValue>>
-      result_non_interpolable_values(final_length);
+  HeapVector<Member<const NonInterpolableValue>> result_non_interpolable_values(
+      final_length);
 
   auto& start_interpolable_list =
       To<InterpolableList>(*start.interpolable_value);
   auto& end_interpolable_list = To<InterpolableList>(*end.interpolable_value);
   const auto* start_non_interpolable_list =
-      To<NonInterpolableList>(start.non_interpolable_value.get());
+      To<NonInterpolableList>(start.non_interpolable_value.Get());
   const auto* end_non_interpolable_list =
-      To<NonInterpolableList>(end.non_interpolable_value.get());
+      To<NonInterpolableList>(end.non_interpolable_value.Get());
   const wtf_size_t start_non_interpolable_length =
       start_non_interpolable_list ? start_non_interpolable_list->length() : 0;
   const wtf_size_t end_non_interpolable_length =
@@ -224,7 +224,8 @@ PairwiseInterpolationValue ListInterpolationFunctions::MaybeMergeSingles(
   return PairwiseInterpolationValue(
       std::move(result_start_interpolable_list),
       std::move(result_end_interpolable_list),
-      NonInterpolableList::Create(std::move(result_non_interpolable_values)));
+      MakeGarbageCollected<NonInterpolableList>(
+          std::move(result_non_interpolable_values)));
 }
 
 static void RepeatToLength(InterpolationValue& value, wtf_size_t length) {
@@ -237,7 +238,7 @@ static void RepeatToLength(InterpolationValue& value, wtf_size_t length) {
     return;
   DCHECK_LT(current_length, length);
   auto* new_interpolable_list = MakeGarbageCollected<InterpolableList>(length);
-  Vector<scoped_refptr<const NonInterpolableValue>> new_non_interpolable_values(
+  HeapVector<Member<const NonInterpolableValue>> new_non_interpolable_values(
       length);
   for (wtf_size_t i = length; i-- > 0;) {
     new_interpolable_list->Set(
@@ -248,8 +249,8 @@ static void RepeatToLength(InterpolationValue& value, wtf_size_t length) {
         non_interpolable_list.Get(i % current_length);
   }
   value.interpolable_value = std::move(new_interpolable_list);
-  value.non_interpolable_value =
-      NonInterpolableList::Create(std::move(new_non_interpolable_values));
+  value.non_interpolable_value = MakeGarbageCollected<NonInterpolableList>(
+      std::move(new_non_interpolable_values));
 }
 
 // This helper function makes value the same length as length_value by
@@ -268,7 +269,7 @@ static void PadToSameLength(InterpolationValue& value,
   DCHECK_LT(current_length, target_length);
   auto* new_interpolable_list =
       MakeGarbageCollected<InterpolableList>(target_length);
-  Vector<scoped_refptr<const NonInterpolableValue>> new_non_interpolable_values(
+  HeapVector<Member<const NonInterpolableValue>> new_non_interpolable_values(
       target_length);
   wtf_size_t index = 0;
   for (; index < current_length; index++) {
@@ -283,8 +284,8 @@ static void PadToSameLength(InterpolationValue& value,
         target_non_interpolable_list.Get(index);
   }
   value.interpolable_value = std::move(new_interpolable_list);
-  value.non_interpolable_value =
-      NonInterpolableList::Create(std::move(new_non_interpolable_values));
+  value.non_interpolable_value = MakeGarbageCollected<NonInterpolableList>(
+      std::move(new_non_interpolable_values));
 }
 
 static bool InterpolableListsAreCompatible(
@@ -451,12 +452,12 @@ NonInterpolableList::AutoBuilder::~AutoBuilder() {
       To<NonInterpolableList>(*underlying_value_.GetNonInterpolableValue());
   DCHECK_EQ(non_interpolable_list.length(), list_.size());
   underlying_value_.SetNonInterpolableValue(
-      NonInterpolableList::Create(std::move(list_)));
+      MakeGarbageCollected<NonInterpolableList>(std::move(list_)));
 }
 
 void NonInterpolableList::AutoBuilder::Set(
     wtf_size_t index,
-    scoped_refptr<const NonInterpolableValue> non_interpolable_value) {
+    const NonInterpolableValue* non_interpolable_value) {
   // Copy list on first call to Set.
   if (!list_.size()) {
     const auto& non_interpolable_list =

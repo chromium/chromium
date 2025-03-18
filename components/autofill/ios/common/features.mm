@@ -32,6 +32,10 @@ BASE_FEATURE(kAutofillFixPaymentSheetSpam,
              base::FEATURE_DISABLED_BY_DEFAULT);
 // LINT.ThenChange(/components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_fix_post_filling_payment_sheet)
 
+BASE_FEATURE(kAutofillFixXhrForXframe,
+             "AutofillFixXhrForXframe",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // LINT.IfChange(autofill_isolated_content_world)
 BASE_FEATURE(kAutofillIsolatedWorldForJavascriptIos,
              "AutofillIsolatedWorldForJavascriptIos",

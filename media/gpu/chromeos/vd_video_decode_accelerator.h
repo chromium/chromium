@@ -25,7 +25,6 @@
 #include "media/gpu/chromeos/vda_video_frame_pool.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
 #include "media/gpu/media_gpu_export.h"
-#include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #include "media/video/video_decode_accelerator.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 

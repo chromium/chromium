@@ -133,14 +133,14 @@ public class TileGroupTest {
         Assert.assertTrue(mMostVisitedSites.isUrlBlocklisted(new GURL(mSiteSuggestionUrls[0])));
 
         // Ensure that the removal is reflected in the ui.
-        Assert.assertEquals(3, getTileLayout().getChildCount());
+        Assert.assertEquals(3, getTileLayout().getTileCount());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mMostVisitedSites.setTileSuggestions(
                             mSiteSuggestionUrls[1], mSiteSuggestionUrls[2]);
                 });
         waitForTileRemoved(siteToDismiss);
-        Assert.assertEquals(2, getTileLayout().getChildCount());
+        Assert.assertEquals(2, getTileLayout().getTileCount());
     }
 
     @Test
@@ -163,9 +163,9 @@ public class TileGroupTest {
         initializeTab();
         GURL url0 = new GURL(mSiteSuggestionUrls[0]);
         SiteSuggestion siteToDismiss = mMostVisitedSites.getCurrentSites().get(0);
-        final ViewGroup tileContainer = getTileLayout();
+        final TilesLinearLayout tileContainer = getTileLayout();
         final View tileView = getNonNullTileViewFor(siteToDismiss);
-        Assert.assertEquals(3, tileContainer.getChildCount());
+        Assert.assertEquals(3, tileContainer.getTileCount());
 
         // Dismiss the tile using the context menu.
         removeTileFromContextMenu(tileView);
@@ -177,7 +177,7 @@ public class TileGroupTest {
                             mSiteSuggestionUrls[1], mSiteSuggestionUrls[2]);
                 });
         waitForTileRemoved(siteToDismiss);
-        Assert.assertEquals(2, tileContainer.getChildCount());
+        Assert.assertEquals(2, tileContainer.getTileCount());
         final View snackbarButton = waitForSnackbar(sActivityTestRule.getActivity());
 
         Assert.assertTrue(mMostVisitedSites.isUrlBlocklisted(url0));
@@ -194,17 +194,16 @@ public class TileGroupTest {
                     mMostVisitedSites.setTileSuggestions(mSiteSuggestionUrls);
                 });
         waitForTileAdded(siteToDismiss);
-        Assert.assertEquals(3, tileContainer.getChildCount());
+        Assert.assertEquals(3, tileContainer.getTileCount());
     }
 
     private MostVisitedTilesLayout getTileLayout() {
         ViewGroup newTabPageLayout = mNtp.getNewTabPageLayout();
         Assert.assertNotNull("Unable to retrieve the NewTabPageLayout.", newTabPageLayout);
 
-        MostVisitedTilesLayout mostVisitedTilesLayout =
-                newTabPageLayout.findViewById(R.id.mv_tiles_layout);
-        Assert.assertNotNull("Unable to retrieve the MvTilesLayout.", mostVisitedTilesLayout);
-        return mostVisitedTilesLayout;
+        MostVisitedTilesLayout mvTilesLayout = newTabPageLayout.findViewById(R.id.mv_tiles_layout);
+        Assert.assertNotNull("Unable to retrieve the MvTilesLayout.", mvTilesLayout);
+        return mvTilesLayout;
     }
 
     private View getTileViewFor(SiteSuggestion suggestion) {

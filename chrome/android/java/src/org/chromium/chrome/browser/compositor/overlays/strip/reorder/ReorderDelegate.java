@@ -729,7 +729,7 @@ public class ReorderDelegate {
                 boolean towardEnd) {
             // Move the tab, then animate the adjacent group indicator sliding.
             int numTabsToSkip =
-                    mTabGroupModelFilter.getRelatedTabCountForRootId(groupTitle.getRootId());
+                    mTabGroupModelFilter.getTabCountForGroup(groupTitle.getTabGroupId());
             int destIndex = towardEnd ? curIndex + 1 + numTabsToSkip : curIndex - numTabsToSkip;
             mModel.moveTab(interactingTab.getTabId(), destIndex);
             animateViewSliding(groupTitle);

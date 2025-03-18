@@ -282,10 +282,9 @@ shared_library_with_jni("libstandalonelibwebviewchromium") {
   deps = [
     ":draw_fn_impl_jni_headers",
     ":webview_instrumentation_test_native_jni_impl",
+    "//android_webview",
     "//android_webview/browser/gfx",
-    "//android_webview/lib",
     "//android_webview/lib:webview_entry_point",
-    "//android_webview/nonembedded",
     "//android_webview/public",
     "//base",
     "//components/android_autofill/browser/test_support:native",

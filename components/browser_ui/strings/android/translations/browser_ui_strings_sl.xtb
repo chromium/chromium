@@ -45,6 +45,7 @@
 <translation id="1652197001188145583">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo uporabo naprav NFC. Če je ta možnost izklopljena, spletna mesta ne smejo uporabljati naprav NFC.</translation>
 <translation id="1660204651932907780">Dovoli spletnim mestom predvajanje zvoka (priporočljivo)</translation>
 <translation id="1677097821151855053">Piškotke in druge podatke spletnega mesta uporabljamo, da si zapomnimo vaše podatke, na primer za prijavo ali osebno prilagajanje oglasov. Če želite upravljati piškotke za vsa spletna mesta, si oglejte <ph name="BEGIN_LINK" />Nastavitve<ph name="END_LINK" />.</translation>
+<translation id="1679305402657584804">Spletna mesta lahko zahtevajo uporabo naprav s tehnologijo NFC</translation>
 <translation id="1686785653877010442">Spletna mesta običajno pošiljajo obvestila, da vas obvestijo glede zadnjih novic ali sporočil v klepetih.</translation>
 <translation id="169515064810179024">Spletnim mestom prepreči dostop do tipal gibanja</translation>
 <translation id="1703666494654169921">Spletnim mestom ni dovoljena uporaba naprav ali podatkov za navidezno resničnost.</translation>
@@ -84,6 +85,7 @@
 <translation id="2185965788978862351">S tem boste izbrisali <ph name="DATASIZE" /> podatkov in piškotkov, ki so jih shranila spletna mesta ali aplikacije na začetnem zaslonu.</translation>
 <translation id="2194856509914051091">Kaj morate upoštevati</translation>
 <translation id="2215727959747642672">Urejanje datotek</translation>
+<translation id="2218389616572918761">Spletna mesta lahko zahtevajo uporabo mikrofona</translation>
 <translation id="2228071138934252756">Če želite aplikaciji <ph name="APP_NAME" /> omogočiti dostop do fotoaparata, fotoaparat vklopite tudi v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Piškotki tretjih oseb so blokirani</translation>
 <translation id="2238944249568001759">Predlagana iskanja na podlagi zadnjega zavihka</translation>
@@ -132,8 +134,10 @@
 <translation id="2726059656860238749">Zaženite Chrome z aktivno naslovno vrstico, da skrajšate čas zagona v napravah nižjega cenovnega razreda.</translation>
 <translation id="2750481671343847896">Spletna mesta lahko prikazujejo pozive za prijavo zunanjih ponudnikov.</translation>
 <translation id="2787357173144933081">Hiter začetek z naslovno vrstico</translation>
+<translation id="2789132527330338807">Spletna mesta lahko zahtevajo ustvarjanje 3D-zemljevida vaše okolice ali spremljanje položaja fotoaparata</translation>
 <translation id="2790501146643349491">Če je ta možnost vklopljena, nedavno zaprta spletna mesta lahko dokončajo pošiljanje in prejemanje podatkov. Če je ta možnost izklopljena, nedavno zaprta spletna mesta ne smejo dokončati pošiljanja ali prejemanja podatkov.</translation>
 <translation id="2795716239552913152">Spletna mesta običajno uporabljajo vašo lokacijo zaradi ustreznih funkcij ali informacij, kot so lokalne novice ali trgovine v bližini.</translation>
+<translation id="2802908157808345702">Spletnim mestom ni dovoljeno pošiljati pojavnih oken in uporabljati preusmeritev</translation>
 <translation id="2814830417943086299">Chrome zdaj prikazuje nedavne zavihke na seznamu aplikacij in v rezultatih iskanja naprave. To lahko kadar koli izklopite v nastavitvah Chroma.</translation>
 <translation id="2822354292072154809">Ali ste prepričani, da želite ponastaviti vsa dovoljenja za spletna mesta za <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Zahtevanje pogleda za mobilno napravo</translation>
@@ -274,6 +278,7 @@
 <translation id="4598549027014564149">Ko uporabljate anonimni način, spletna mesta ne morejo uporabljati piškotkov za ogled dejavnosti brskanja na spletnih mestih, tudi na sorodnih spletnih mestih. Dejavnost brskanja se ne uporablja za stvari, kot je osebno prilagajanje oglasov. Funkcije na nekaterih spletnih mestih morda ne bodo delovale.</translation>
 <translation id="461356340001513807">Omogoča prijavo na spletnih mestih z računom, ki ga imate pri storitvi potrjevanja identitete</translation>
 <translation id="4619615317237390068">Zavihki iz drugih naprav</translation>
+<translation id="4635969503923889910">Spletnim mestom ni dovoljena uporaba naprav s tehnologijo NFC</translation>
 <translation id="4644713492825682049">Izbriši in ponastavi</translation>
 <translation id="4645575059429386691">Upravlja starš</translation>
 <translation id="4670064810192446073">Navidezna resničnost</translation>
@@ -372,6 +377,7 @@
 <translation id="5877248419911025165">Strni vse zahteve</translation>
 <translation id="5884085660368669834">Nastavitve spletnega mesta</translation>
 <translation id="5887687176710214216">Nazadnje obiskano včeraj</translation>
+<translation id="5908617755156109052">Spletnim mestom ni dovoljeno ustvarjanje 3D-zemljevida vaše okolice ali spremljanje položaja fotoaparata</translation>
 <translation id="5916664084637901428">Vklopljeno</translation>
 <translation id="5922853908706496913">Deljenje zaslona</translation>
 <translation id="5922967540311291836">Blokiranje piškotkov tretjih oseb:</translation>
@@ -582,6 +588,7 @@
 <translation id="8676374126336081632">Izbriši vnos</translation>
 <translation id="8681886425883659911">Oglasi so blokirani na spletnih mestih, za katera je znano, da prikazujejo vsiljive ali zavajajoče oglase.</translation>
 <translation id="868929229000858085">Iskanje po stikih</translation>
+<translation id="8707904142362025782">Spletno mesto lahko zahteva uporabo fotoaparata</translation>
 <translation id="8712637175834984815">Razumem</translation>
 <translation id="8715862698998036666">Za izhod iz celozaslonskega načina povlecite z vrha in levega ali desnega roba.</translation>
 <translation id="8719283222052720129">V <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" /> vklopite dovoljenje za aplikacijo <ph name="APP_NAME" />.</translation>

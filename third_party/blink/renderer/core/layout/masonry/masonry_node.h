@@ -32,8 +32,8 @@ class CORE_EXPORT MasonryNode final : public BlockNode {
   // Collects the children of this node, sorts by order property if needed, and
   // resolves the grid line positions of the items based on style. Translates
   // each item's resolved position based on `start_offset`.
-  GridItems* ConstructMasonryItems(const GridLineResolver& line_resolver,
-                                   wtf_size_t start_offset) const;
+  GridItems ConstructMasonryItems(const GridLineResolver& line_resolver,
+                                  wtf_size_t start_offset) const;
 };
 
 template <>

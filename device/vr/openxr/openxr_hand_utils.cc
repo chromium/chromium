@@ -9,6 +9,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/trace_event/trace_event.h"
 #include "device/vr/public/mojom/xr_hand_tracking_data.mojom.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector3d_f.h"
@@ -182,6 +183,7 @@ constexpr std::array<XRFingerMapping, 5> kHandMapping({
 }  // namespace
 
 bool AnonymizeHand(base::span<mojom::XRHandJointDataPtr> hand_data) {
+  TRACE_EVENT0("xr", "AnonymizeHand");
   // First set all of the radii to their intended values.
   for (const auto& joint : hand_data) {
     joint->radius = kJointRadii[static_cast<uint32_t>(joint->joint)];

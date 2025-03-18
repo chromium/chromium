@@ -255,6 +255,7 @@
 #include "chromeos/dbus/tpm_manager/fake_tpm_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -2608,8 +2609,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
   auto* user =
       user_manager->AddUser(AccountId::FromUserEmail("test@example.com"));
-  user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                             /*browser_restart=*/false, /*is_child=*/false);
+  user_manager->UserLoggedIn(
+      user->GetAccountId(),
+      user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
   user_manager::ScopedUserManager user_manager_enabler(std::move(user_manager));
 
   ash::AttestationClient::InitializeFake();

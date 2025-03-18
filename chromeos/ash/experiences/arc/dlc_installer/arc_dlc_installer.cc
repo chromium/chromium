@@ -1,0 +1,150 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
+
+#include <string>
+#include <utility>
+
+#include "ash/constants/ash_features.h"
+#include "base/logging.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_install_hardware_checker.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_install_notification_manager.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_notification_manager_factory.h"
+
+namespace arc {
+
+namespace {
+
+constexpr const char kArcvmDlcId[] = "android-vm-dlc";
+constexpr const char kArcvmBindMountDlcPath[] =
+    "arcvm_2dbind_2dmount_2ddlc_2dpath";
+
+}  // namespace
+
+ArcDlcInstaller::ArcDlcInstaller(
+    std::unique_ptr<ArcDlcNotificationManagerFactory>
+        notification_manager_factory,
+    std::unique_ptr<ArcDlcInstallHardwareChecker> hardware_checker,
+    ash::CrosSettings* cros_settings)
+    : notification_manager_factory_(std::move(notification_manager_factory)),
+      hardware_checker_(std::move(hardware_checker)),
+      cros_settings_(std::move(cros_settings)) {}
+
+ArcDlcInstaller::~ArcDlcInstaller() = default;
+
+void ArcDlcInstaller::PrepareArc(base::OnceCallback<void(bool)> callback) {
+  if (!IsDlcRequired()) {
+    return;
+  }
+
+  hardware_checker_->IsCompatible(
+      base::BindOnce(&ArcDlcInstaller::OnHardwareCheckComplete,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ArcDlcInstaller::OnHardwareCheckComplete(
+    base::OnceCallback<void(bool)> callback,
+    bool is_compatible) {
+  if (!is_compatible) {
+    VLOG(1) << "Device is not compatible for ARC.";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  VLOG(1) << "Device is compatible for ARC. Installing ARCVM DLC.";
+  dlcservice::InstallRequest install_request;
+  install_request.set_id(kArcvmDlcId);
+  MaybeShowDlcInstallNotification(NotificationType::kArcVmPreloadStarted);
+  ash::DlcserviceClient::Get()->Install(
+      install_request,
+      base::BindOnce(&ArcDlcInstaller::OnDlcInstalled,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      base::DoNothing());
+}
+
+bool ArcDlcInstaller::IsDlcRequired() {
+  if (!IsArcVmDlcEnabled()) {
+    return false;
+  }
+
+  if (!ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
+    VLOG(1) << "Device is not managed and cannot install arcvm images.";
+    return false;
+  }
+
+  bool device_flex_arc_preload_enabled_allowed;
+
+  CHECK(cros_settings_->GetBoolean(ash::kDeviceFlexArcPreloadEnabled,
+                                   &device_flex_arc_preload_enabled_allowed));
+
+  if (!device_flex_arc_preload_enabled_allowed) {
+    VLOG(1) << "Reven device cannot install arcvm images because the "
+               "DeviceFlexArcPreloadEnabled policy prevents it.";
+    return false;
+  }
+
+  return true;
+}
+
+void ArcDlcInstaller::MaybeShowDlcInstallNotification(NotificationType type) {
+  if (!arc_dlc_install_notification_manager_) {
+    VLOG(1) << "Notification manager not initialized. Queueing notification.";
+    dlc_install_pending_notifications_.push_back(type);
+    return;
+  }
+  arc_dlc_install_notification_manager_->Show(type);
+}
+
+void ArcDlcInstaller::OnPrimaryUserSessionStarted(const AccountId& account_id) {
+  arc_dlc_install_notification_manager_ =
+      notification_manager_factory_->CreateNotificationManager(account_id);
+
+  for (const auto& notification : dlc_install_pending_notifications_) {
+    arc_dlc_install_notification_manager_->Show(notification);
+  }
+  dlc_install_pending_notifications_.clear();
+}
+
+void ArcDlcInstaller::OnDlcInstalled(
+    base::OnceCallback<void(bool)> callback,
+    const ash::DlcserviceClient::InstallResult& install_result) {
+  if (install_result.error != dlcservice::kErrorNone) {
+    VLOG(1) << "Failed to install ARCVM DLC: " << install_result.error;
+    MaybeShowDlcInstallNotification(NotificationType::kArcVmPreloadFailed);
+    std::move(callback).Run(false);
+    return;
+  }
+  MaybeShowDlcInstallNotification(NotificationType::kArcVmPreloadSucceeded);
+  OnPrepareArcDlc(std::move(callback), true);
+}
+
+const std::vector<NotificationType>&
+ArcDlcInstaller::GetDlcInstallPendingNotificationsForTesting() const {
+  return dlc_install_pending_notifications_;
+}
+
+void ArcDlcInstaller::OnPrepareArcDlc(base::OnceCallback<void(bool)> callback,
+                                      bool result) {
+  if (!result) {
+    LOG(ERROR) << "ARC DLC preparation failed.";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  std::deque<JobDesc> jobs = {
+      JobDesc{kArcvmBindMountDlcPath, UpstartOperation::JOB_STOP_AND_START, {}},
+  };
+
+  ConfigureUpstartJobs(
+      std::move(jobs),
+      base::BindOnce(std::move(callback)));  // Forward the callback
+}
+
+}  // namespace arc

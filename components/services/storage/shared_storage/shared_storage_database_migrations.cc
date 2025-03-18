@@ -175,7 +175,7 @@ bool MigrateToVersion4(sql::Database& db, sql::MetaTable& meta_table) {
 
   while (select_statement.Step()) {
     net::SchemefulSite context_site =
-        net::SchemefulSite::Deserialize(select_statement.ColumnString(1));
+        net::SchemefulSite::Deserialize(select_statement.ColumnStringView(1));
     if (context_site.opaque() ||
         context_site.GetURL().scheme() == url::kFileScheme) {
       continue;
@@ -250,7 +250,7 @@ bool MigrateToVersion3(sql::Database& db, sql::MetaTable& meta_table) {
   while (select_statement.Step()) {
     sql::Statement insert_statement(
         db.GetCachedStatement(SQL_FROM_HERE, kInsertIntoNewValuesSql));
-    insert_statement.BindString(0, select_statement.ColumnString(0));
+    insert_statement.BindString(0, select_statement.ColumnStringView(0));
     insert_statement.BindBlob(1, select_statement.ColumnString16(1));
     insert_statement.BindBlob(2, select_statement.ColumnString16(2));
     insert_statement.BindTime(3, select_statement.ColumnTime(3));

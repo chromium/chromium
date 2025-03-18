@@ -40,6 +40,22 @@ BASE_FEATURE_PARAM(int,
                    "ad-auction-signals-max-size-bytes",
                    10000);
 
+// Serves as killswitch for changing CanCreateCanvasResourceProvider() to
+// create resource provider internally rather than Canvas2DLayerBridge.
+// TODO(crbug.com/40280152): Fix issues between interaction of this code and
+// CanvasRenderingContext2D::Restore() and re-enable.
+BASE_FEATURE(kAdjustCanCreateCanvas2dResourceProvider,
+             "AdjustCanCreateCanvas2dResourceProvider",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Serves as killswitch for changing GetOrCreateCanvasResourceProvider() away
+// from using GetOrCreateCanvas2DLayerBridge() for 2D contexts.
+// TODO(crbug.com/401192130): Resolve crash and re-enable.
+// TODO(crbug.com/40280152): Eliminate post safe-rollout.
+BASE_FEATURE(kAdjustGetOrCreate2DCanvasProvider,
+             "AdjustGetOrCreate2DCanvasProvider",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Avoids copying ResourceRequest::TrustedParams when possible.
 BASE_FEATURE(kAvoidTrustedParamsCopies,
              "AvoidTrustedParamsCopies",
@@ -1183,6 +1199,17 @@ BASE_FEATURE_ENUM_PARAM(IsolateSandboxedIframesGrouping,
                         "grouping",
                         IsolateSandboxedIframesGrouping::kPerOrigin,
                         &isolated_sandboxed_iframes_grouping_types);
+
+// Serves as killswitch for migrating CanvasRenderingContext2D::IsPaintable()
+// from checking the existence of the canvas' Canvas2DLayerBridge to checking
+// for the existence of its resource provider.
+// NOTE: Do not check this feature directly: Check
+// CheckProviderInCanvas2DRenderingContextIsPaintable() instead.
+// TODO(crbug.com/40280152): Fix issues between interaction of this code and
+// CanvasRenderingContext2D::Restore() and re-enable.
+BASE_FEATURE(kIsPaintableChecksResourceProviderInsteadOfBridge,
+             "IsPaintableChecksResourceProviderInsteadOfBridge",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kKalmanDirectionCutOff,
              "KalmanDirectionCutOff",

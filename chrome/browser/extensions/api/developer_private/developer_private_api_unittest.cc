@@ -38,6 +38,7 @@
 #include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/permissions/permissions_test_util.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
@@ -404,9 +405,13 @@ class DeveloperPrivateApiUnitTest : public ExtensionServiceTestWithInstall {
   void SetUp() override;
   void TearDown() override;
 
+  ExternalProviderManager* external_provider_manager() {
+    return ExternalProviderManager::Get(profile());
+  }
+
   void AddMockExternalProvider(
       std::unique_ptr<ExternalProviderInterface> provider) {
-    service()->AddProviderForTesting(std::move(provider));
+    external_provider_manager()->AddProviderForTesting(std::move(provider));
   }
 
   // A wrapper around api_test_utils::RunFunction that runs with
@@ -1528,7 +1533,8 @@ TEST_F(DeveloperPrivateApiUnitTest, RepairPolicyExtension) {
   // Set up a mock provider with a policy extension.
   std::unique_ptr<MockExternalProvider> mock_provider =
       std::make_unique<MockExternalProvider>(
-          service(), mojom::ManifestLocation::kExternalPolicyDownload);
+          external_provider_manager(),
+          mojom::ManifestLocation::kExternalPolicyDownload);
   MockExternalProvider* mock_provider_ptr = mock_provider.get();
   AddMockExternalProvider(std::move(mock_provider));
   mock_provider_ptr->UpdateOrAddExtension(extension_id, "1.0.0.0",
@@ -2202,7 +2208,7 @@ class DeveloperPrivateApiZipFileUnitTest
   void SetUp() override {
     DeveloperPrivateApiUnitTest::SetUp();
     expected_extension_install_directory_ =
-        service()->unpacked_install_directory();
+        registrar()->unpacked_install_directory();
   }
 
  protected:
@@ -2719,7 +2725,8 @@ TEST_F(
   // Set up a mock provider with a policy extension.
   std::unique_ptr<MockExternalProvider> mock_provider =
       std::make_unique<MockExternalProvider>(
-          service(), mojom::ManifestLocation::kExternalPolicyDownload);
+          external_provider_manager(),
+          mojom::ManifestLocation::kExternalPolicyDownload);
   MockExternalProvider* mock_provider_ptr = mock_provider.get();
   AddMockExternalProvider(std::move(mock_provider));
 

@@ -83,10 +83,7 @@ static std::string JNI_AndroidProtocolHandler_GetWellKnownMimeType(
     std::string& path) {
   std::string mime_type;
 
-  std::string ext = base::FilePath(path).Extension();
-
-  if (!ext.empty() &&
-      net::GetWellKnownMimeTypeFromExtension(ext.substr(1), &mime_type)) {
+  if (net::GetWellKnownMimeTypeFromFile(base::FilePath(path), &mime_type)) {
     return mime_type;
   }
 

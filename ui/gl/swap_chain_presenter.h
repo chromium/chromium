@@ -55,8 +55,6 @@ class SwapChainPresenter : public base::PowerStateObserver {
 
   const gfx::Size& content_size() const { return content_size_; }
 
-  void SetFrameRate(float frame_rate);
-
  private:
   // Mapped to DirectCompositonVideoPresentationMode UMA enum.  Do not remove or
   // remap existing entries!
@@ -231,10 +229,6 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // the upscaling because it produces better results.
   bool ShouldUseVideoProcessorScaling();
 
-  // This is called when a new swap chain is created, or when a new frame
-  // rate is received.
-  void SetSwapChainPresentDuration();
-
   // Returns swap chain media for either |swap_chain_| or |decode_swap_chain_|,
   // whichever is currently used.
   Microsoft::WRL::ComPtr<IDXGISwapChainMedia> GetSwapChainMedia() const;
@@ -335,9 +329,6 @@ class SwapChainPresenter : public base::PowerStateObserver {
   bool enable_vp_super_resolution_ = false;
 
   UINT gpu_vendor_id_ = 0;
-
-  // Number of frames per second.
-  float frame_rate_ = 0.f;
 };
 
 }  // namespace gl

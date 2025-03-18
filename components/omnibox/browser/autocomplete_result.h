@@ -180,6 +180,9 @@ class AutocompleteResult {
   void AttachPedalsToMatches(const AutocompleteInput& input,
                              const AutocompleteProviderClient& client);
 
+  // Sets a takeover action on all matches to issue a contextual search.
+  void AttachContextualSearchActionToMatches();
+
   // Sets |has_tab_match| in matches whose URL matches an open tab's URL.
   // Also, fixes up the description if not using another UI element to
   // annotate (e.g. tab switch button). |input| can be null; if provided,

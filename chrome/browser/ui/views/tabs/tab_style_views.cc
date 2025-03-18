@@ -174,8 +174,10 @@ class TabStyleViewsImpl : public TabStyleViews {
                              SkColor stroke_color) const;
   void PaintSeparators(gfx::Canvas* canvas) const;
 
-  bool IsLeftmostSplitTab(const Tab* tab) const;
-  bool IsRightmostSplitTab(const Tab* tab) const;
+  // Returns true if the tab is the first in a set of split tabs.
+  bool IsStartSplitTab(const Tab* tab) const;
+  // Returns true if the tab is the last in a set of split tabs.
+  bool IsEndSplitTab(const Tab* tab) const;
 
   const raw_ptr<const Tab> tab_;
 
@@ -290,10 +292,10 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
     }
 
     if (tab()->split()) {
-      if (IsLeftmostSplitTab(tab())) {
+      if (IsStartSplitTab(tab())) {
         top_right_corner_radius = 0;
         bottom_right_corner_radius = 0;
-      } else if (IsRightmostSplitTab(tab())) {
+      } else if (IsEndSplitTab(tab())) {
         top_left_corner_radius = 0;
         bottom_left_corner_radius = 0;
       }
@@ -302,11 +304,11 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
                                   tab_style()->GetSeparatorSize().width() +
                                   tab_style()->GetSeparatorMargins().right();
 
-      if (!IsLeftmostSplitTab(tab())) {
+      if (!IsStartSplitTab(tab())) {
         left -= separator_width * scale / 2;
       }
 
-      if (!IsRightmostSplitTab(tab())) {
+      if (!IsEndSplitTab(tab())) {
         right += separator_width * scale / 2;
       }
     }
@@ -349,9 +351,9 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
   float tab_right = right - extension;
 
   if (tab()->split()) {
-    if (IsLeftmostSplitTab(tab())) {
+    if (IsStartSplitTab(tab())) {
       tab_right = tab_right + extension;
-    } else if (IsRightmostSplitTab(tab())) {
+    } else if (IsEndSplitTab(tab())) {
       tab_left = tab_left - extension;
     }
   }
@@ -1066,12 +1068,12 @@ void TabStyleViewsImpl::PaintSeparators(gfx::Canvas* canvas) const {
                         tab_style()->GetSeparatorCornerRadius() * scale, flags);
 }
 
-bool TabStyleViewsImpl::IsLeftmostSplitTab(const Tab* tab) const {
+bool TabStyleViewsImpl::IsStartSplitTab(const Tab* tab) const {
   Tab* const split_tab = tab->controller()->GetAdjacentSplitTab(tab);
   return split_tab == tab->controller()->GetAdjacentTab(tab, 1);
 }
 
-bool TabStyleViewsImpl::IsRightmostSplitTab(const Tab* tab) const {
+bool TabStyleViewsImpl::IsEndSplitTab(const Tab* tab) const {
   Tab* const split_tab = tab->controller()->GetAdjacentSplitTab(tab);
   return split_tab == tab->controller()->GetAdjacentTab(tab, -1);
 }

@@ -21,6 +21,8 @@
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
+#include "content/browser/service_worker/service_worker_client.h"
+#include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
@@ -58,14 +60,25 @@ void PrefetchURLLoaderInterceptor::SetPrefetchCompleteCallbackForTesting(
 }
 
 PrefetchURLLoaderInterceptor::PrefetchURLLoaderInterceptor(
+    PrefetchServiceWorkerState expected_service_worker_state,
+    base::WeakPtr<ServiceWorkerMainResourceHandle>
+        service_worker_handle_for_navigation,
     FrameTreeNodeId frame_tree_node_id,
     std::optional<blink::DocumentToken> initiator_document_token,
     base::WeakPtr<PrefetchServingPageMetricsContainer>
         serving_page_metrics_container)
-    : frame_tree_node_id_(frame_tree_node_id),
+    : expected_service_worker_state_(expected_service_worker_state),
+      service_worker_handle_for_navigation_(
+          std::move(service_worker_handle_for_navigation)),
+      frame_tree_node_id_(frame_tree_node_id),
       initiator_document_token_(std::move(initiator_document_token)),
       serving_page_metrics_container_(
-          std::move(serving_page_metrics_container)) {}
+          std::move(serving_page_metrics_container)) {
+  if (!base::FeatureList::IsEnabled(features::kPrefetchServiceWorker)) {
+    CHECK_EQ(expected_service_worker_state_,
+             PrefetchServiceWorkerState::kDisallowed);
+  }
+}
 
 PrefetchURLLoaderInterceptor::~PrefetchURLLoaderInterceptor() = default;
 
@@ -97,7 +110,8 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
       OnGotPrefetchToServe(
           frame_tree_node_id_, tentative_resource_request.url,
           base::BindOnce(&PrefetchURLLoaderInterceptor::OnGetPrefetchComplete,
-                         weak_factory_.GetWeakPtr()),
+                         weak_factory_.GetWeakPtr(),
+                         tentative_resource_request.url),
           std::move(redirect_reader_));
       return;
     }
@@ -123,10 +137,10 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
     return;
   }
 
-  GetPrefetch(
-      tentative_resource_request,
-      base::BindOnce(&PrefetchURLLoaderInterceptor::OnGetPrefetchComplete,
-                     weak_factory_.GetWeakPtr()));
+  GetPrefetch(tentative_resource_request,
+              base::BindOnce(
+                  &PrefetchURLLoaderInterceptor::OnGetPrefetchComplete,
+                  weak_factory_.GetWeakPtr(), tentative_resource_request.url));
 }
 
 void PrefetchURLLoaderInterceptor::GetPrefetch(
@@ -171,11 +185,13 @@ void PrefetchURLLoaderInterceptor::GetPrefetch(
     }();
 
     PrefetchMatchResolver::FindPrefetch(
-        std::move(key), is_nav_prerender, *prefetch_service,
-        serving_page_metrics_container_, std::move(callback));
+        std::move(key), expected_service_worker_state_, is_nav_prerender,
+        *prefetch_service, serving_page_metrics_container_,
+        std::move(callback));
 }
 
 void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
+    GURL navigation_url,
     PrefetchContainer::Reader reader) {
   TRACE_EVENT0("loading",
                "PrefetchURLLoaderInterceptor::OnGetPrefetchComplete");
@@ -184,6 +200,21 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
   if (reader) {
     std::tie(request_handler, client_for_prefetch) =
         reader.CreateRequestHandler();
+  }
+
+  if (expected_service_worker_state_ ==
+          PrefetchServiceWorkerState::kControlled &&
+      request_handler) {
+    // ServiceWorker-controlled prefetch should be always non-redirecting.
+    CHECK(reader.IsEnd());
+
+    if (service_worker_handle_for_navigation_ && client_for_prefetch) {
+      service_worker_handle_for_navigation_->service_worker_client()
+          ->InheritControllerFromPrefetch(*client_for_prefetch, navigation_url);
+    } else {
+      // Do not intercept the request.
+      request_handler = PrefetchRequestHandler();
+    }
   }
 
   if (!request_handler) {
@@ -211,6 +242,8 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
     }
     redirect_reader_ = PrefetchContainer::Reader();
   } else {
+    CHECK_EQ(expected_service_worker_state_,
+             PrefetchServiceWorkerState::kDisallowed);
     redirect_reader_ = std::move(reader);
   }
 

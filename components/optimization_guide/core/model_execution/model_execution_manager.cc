@@ -257,6 +257,13 @@ ModelExecutionManager::StartSession(
                                        std::move(execute_fn), config_params);
 }
 
+on_device_model::Capabilities ModelExecutionManager::GetOnDeviceCapabilities() {
+  if (!on_device_model_service_controller_) {
+    return {};
+  }
+  return on_device_model_service_controller_->GetCapabilities();
+}
+
 void ModelExecutionManager::OnModelExecuteResponse(
     ModelBasedCapabilityKey feature,
     std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request,

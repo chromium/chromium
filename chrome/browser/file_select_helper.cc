@@ -665,7 +665,6 @@ void FileSelectHelper::GetSanitizedFilenameOnUIThread(
 void FileSelectHelper::CheckDownloadRequestWithSafeBrowsing(
     const base::FilePath& default_file_path,
     FileChooserParamsPtr params) {
-  // Download Protection is not supported on Android.
   safe_browsing::SafeBrowsingService* sb_service =
       g_browser_process->safe_browsing_service();
 

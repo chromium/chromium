@@ -13,6 +13,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/extensions/extension_management.h"
+#include "chrome/browser/extensions/managed_installation_mode.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
@@ -68,8 +69,8 @@ bool ExtensionRequestReportGenerator::ShouldUploadExtensionRequest(
     extensions::ExtensionManagement* extension_management) {
   auto mode = extension_management->GetInstallationMode(extension_id,
                                                         webstore_update_url);
-  return (mode == extensions::ExtensionManagement::INSTALLATION_BLOCKED ||
-          mode == extensions::ExtensionManagement::INSTALLATION_REMOVED) &&
+  return (mode == extensions::ManagedInstallationMode::kBlocked ||
+          mode == extensions::ManagedInstallationMode::kRemoved) &&
          !extension_management->IsInstallationExplicitlyBlocked(extension_id);
 }
 

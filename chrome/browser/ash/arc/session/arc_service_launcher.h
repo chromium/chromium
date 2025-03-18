@@ -8,12 +8,12 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "media/media_buildflags.h"
 
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
-#include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 
@@ -26,7 +26,9 @@ class SchedulerConfigurationManagerBase;
 namespace arc {
 
 class ArcDiskSpaceMonitor;
+class ArcDlcInstaller;
 class ArcIconCacheDelegateProvider;
+class ArcLockedFullscreenManager;
 class ArcPlayStoreEnabledPreferenceHandler;
 class ArcServiceManager;
 class ArcSessionManager;
@@ -73,6 +75,12 @@ class ArcServiceLauncher {
   // Ensure all ARC keyed service factories are properly initialised.
   static void EnsureFactoriesBuilt();
 
+  // Accessor for the locked fullscreen manager used by the caller to set up
+  // or tear down ARC while entering or exiting locked fullscreen mode.
+  ArcLockedFullscreenManager* arc_locked_fullscreen_manager() {
+    return arc_locked_fullscreen_manager_.get();
+  }
+
   // Specifies ArcSessionRunner to be passed into ArcSessionManager on its
   // creation. Must be called before ArcServiceLauncher is created,
   // and must not be called twice in a sequence.
@@ -103,6 +111,11 @@ class ArcServiceLauncher {
   bool expanded_property_files_ = false;
 #endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 
+  // Callback invoked after the ARC DLC image has been bind-mounted
+  // successfully. This function is called after OnPrepareArcDlc() has
+  // successfully configured Upstart jobs and bind-mounted the DLC image.
+  void OnDlcImageBindMountArcPath(bool result);
+
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ArcPlayStoreEnabledPreferenceHandler>
@@ -112,14 +125,15 @@ class ArcServiceLauncher {
       arc_icon_cache_delegate_provider_;
   std::unique_ptr<BrowserUrlOpener> arc_net_url_opener_;
   std::unique_ptr<ArcVmDataMigrationNotifier> arc_vm_data_migration_notifier_;
+  std::unique_ptr<ArcLockedFullscreenManager> arc_locked_fullscreen_manager_;
 
   // |scheduler_configuration_manager_| outlives |this|.
   const raw_ptr<ash::SchedulerConfigurationManagerBase>
       scheduler_configuration_manager_;
 
-#if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
+  std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
+
   base::WeakPtrFactory<ArcServiceLauncher> weak_factory_{this};
-#endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 };
 
 }  // namespace arc

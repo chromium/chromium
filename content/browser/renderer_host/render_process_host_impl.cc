@@ -1176,28 +1176,26 @@ void LogDelayReasonForCleanup(
 }
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-RenderProcessHostImpl::StableVideoDecoderFactoryCreationCB&
-GetStableVideoDecoderFactoryCreationCB() {
+RenderProcessHostImpl::VideoDecoderFactoryCreationCB&
+GetVideoDecoderFactoryCreationCB() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   static base::NoDestructor<
-      RenderProcessHostImpl::StableVideoDecoderFactoryCreationCB>
+      RenderProcessHostImpl::VideoDecoderFactoryCreationCB>
       s_callback;
   return *s_callback;
 }
 
-RenderProcessHostImpl::StableVideoDecoderEventCB&
-GetStableVideoDecoderEventCB() {
+RenderProcessHostImpl::VideoDecoderEventCB& GetVideoDecoderEventCB() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  static base::NoDestructor<RenderProcessHostImpl::StableVideoDecoderEventCB>
+  static base::NoDestructor<RenderProcessHostImpl::VideoDecoderEventCB>
       s_callback;
   return *s_callback;
 }
 
-void InvokeStableVideoDecoderEventCB(
-    RenderProcessHostImpl::StableVideoDecoderEvent event) {
+void InvokeVideoDecoderEventCB(RenderProcessHostImpl::VideoDecoderEvent event) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  RenderProcessHostImpl::StableVideoDecoderEventCB& callback =
-      GetStableVideoDecoderEventCB();
+  RenderProcessHostImpl::VideoDecoderEventCB& callback =
+      GetVideoDecoderEventCB();
   if (!callback.is_null()) {
     callback.Run(event);
   }
@@ -1537,9 +1535,9 @@ RenderProcessHostImpl::RenderProcessHostImpl(
                     ChromeTrackEvent::kRenderProcessHost, *this);
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-  stable_video_decoder_trackers_.set_disconnect_handler(base::BindRepeating(
-      &RenderProcessHostImpl::OnStableVideoDecoderDisconnected,
-      instance_weak_factory_.GetWeakPtr()));
+  video_decoder_trackers_.set_disconnect_handler(
+      base::BindRepeating(&RenderProcessHostImpl::OnVideoDecoderDisconnected,
+                          instance_weak_factory_.GetWeakPtr()));
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
   widget_helper_ = new RenderWidgetHelper();
@@ -2253,103 +2251,94 @@ void RenderProcessHostImpl::SetBatterySaverMode(
 }
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-void RenderProcessHostImpl::CreateStableVideoDecoder(
-    mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder> receiver) {
+void RenderProcessHostImpl::CreateOOPVideoDecoder(
+    mojo::PendingReceiver<media::mojom::VideoDecoder> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!stable_video_decoder_factory_remote_.is_bound()) {
-    auto creation_cb = GetStableVideoDecoderFactoryCreationCB();
+  if (!video_decoder_factory_remote_.is_bound()) {
+    auto creation_cb = GetVideoDecoderFactoryCreationCB();
     if (creation_cb.is_null()) {
-      LaunchStableVideoDecoderFactory(
-          stable_video_decoder_factory_remote_.BindNewPipeAndPassReceiver());
+      LaunchOOPVideoDecoderFactory(
+          video_decoder_factory_remote_.BindNewPipeAndPassReceiver());
     } else {
       creation_cb.Run(
-          stable_video_decoder_factory_remote_.BindNewPipeAndPassReceiver());
+          video_decoder_factory_remote_.BindNewPipeAndPassReceiver());
     }
 
-    stable_video_decoder_factory_remote_.set_disconnect_handler(
-        base::BindOnce(&RenderProcessHostImpl::ResetStableVideoDecoderFactory,
+    video_decoder_factory_remote_.set_disconnect_handler(
+        base::BindOnce(&RenderProcessHostImpl::ResetVideoDecoderFactory,
                        instance_weak_factory_.GetWeakPtr()));
-
-    // Version 1 introduced the ability to pass a
-    // mojo::PendingRemote<StableVideoDecoderTracker> to
-    // CreateStableVideoDecoder().
-    stable_video_decoder_factory_remote_.RequireVersion(1u);
   }
 
-  CHECK(stable_video_decoder_factory_remote_.is_bound());
+  CHECK(video_decoder_factory_remote_.is_bound());
 
-  mojo::PendingRemote<media::stable::mojom::StableVideoDecoderTracker>
-      tracker_remote;
-  stable_video_decoder_trackers_.Add(
-      this, tracker_remote.InitWithNewPipeAndPassReceiver());
-  stable_video_decoder_factory_remote_->CreateStableVideoDecoder(
+  mojo::PendingRemote<media::mojom::VideoDecoderTracker> tracker_remote;
+  video_decoder_trackers_.Add(this,
+                              tracker_remote.InitWithNewPipeAndPassReceiver());
+  video_decoder_factory_remote_->CreateVideoDecoderWithTracker(
       std::move(receiver), std::move(tracker_remote));
-  if (stable_video_decoder_factory_reset_timer_.IsRunning()) {
-    // |stable_video_decoder_factory_reset_timer_| has been started to
-    // eventually reset() the |stable_video_decoder_factory_remote_|. Now that
-    // we got a request to create a StableVideoDecoder before the timer
-    // triggered, we can stop it so that the utility process associated with the
-    // |stable_video_decoder_factory_remote_| doesn't die.
-    stable_video_decoder_factory_reset_timer_.Stop();
-    InvokeStableVideoDecoderEventCB(
-        StableVideoDecoderEvent::kFactoryResetTimerStopped);
+  if (video_decoder_factory_reset_timer_.IsRunning()) {
+    // |video_decoder_factory_reset_timer_| has been started to eventually
+    // reset() the |video_decoder_factory_remote_|. Now that we got a request
+    // to create a VideoDecoder before the timer triggered, we can stop it so
+    // that the utility process associated with the
+    // |video_decoder_factory_remote_| doesn't die.
+    video_decoder_factory_reset_timer_.Stop();
+    InvokeVideoDecoderEventCB(VideoDecoderEvent::kFactoryResetTimerStopped);
   }
 }
 
-void RenderProcessHostImpl::OnStableVideoDecoderDisconnected() {
+void RenderProcessHostImpl::OnVideoDecoderDisconnected() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (stable_video_decoder_trackers_.empty()) {
-    // All StableVideoDecoders have disconnected. Let's reset() the
-    // |stable_video_decoder_factory_remote_| so that the corresponding utility
-    // process gets terminated. Note that we don't reset() immediately. Instead,
-    // we wait a little bit in case a request to create another
-    // StableVideoDecoder comes in. That way, we don't unnecessarily tear down
-    // the video decoder process just to create another one almost immediately.
-    // We chose 3 seconds because it seemed "reasonable."
-    constexpr base::TimeDelta kTimeToResetStableVideoDecoderFactory =
+  if (video_decoder_trackers_.empty()) {
+    // All VideoDecoders have disconnected. Let's reset() the
+    // |video_decoder_factory_remote_| so that the corresponding utility process
+    // gets terminated. Note that we don't reset() immediately. Instead, we wait
+    // a little bit in case a request to create another VideoDecoder comes in.
+    // That way, we don't unnecessarily tear down the video decoder process just
+    // to create another one almost immediately. We chose 3 seconds because it
+    // seemed "reasonable."
+    constexpr base::TimeDelta kTimeToResetVideoDecoderFactory =
         base::Seconds(3);
-    stable_video_decoder_factory_reset_timer_.Start(
-        FROM_HERE, kTimeToResetStableVideoDecoderFactory,
-        base::BindOnce(&RenderProcessHostImpl::ResetStableVideoDecoderFactory,
+    video_decoder_factory_reset_timer_.Start(
+        FROM_HERE, kTimeToResetVideoDecoderFactory,
+        base::BindOnce(&RenderProcessHostImpl::ResetVideoDecoderFactory,
                        instance_weak_factory_.GetWeakPtr()));
-    InvokeStableVideoDecoderEventCB(
-        StableVideoDecoderEvent::kAllDecodersDisconnected);
+    InvokeVideoDecoderEventCB(VideoDecoderEvent::kAllDecodersDisconnected);
   }
 }
 
-void RenderProcessHostImpl::ResetStableVideoDecoderFactory() {
+void RenderProcessHostImpl::ResetVideoDecoderFactory() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  stable_video_decoder_factory_remote_.reset();
+  video_decoder_factory_remote_.reset();
 
-  // Note that |stable_video_decoder_trackers_| should be empty if
-  // ResetStableVideoDecoderFactory() was called because
-  // |stable_video_decoder_factory_reset_timer_| fired. Otherwise, there's no
+  // Note that |video_decoder_trackers_| should be empty if
+  // ResetVideoDecoderFactory() was called because
+  // |video_decoder_factory_reset_timer_| fired. Otherwise, there's no
   // guarantee about its contents. For example, maybe
-  // ResetStableVideoDecoderFactory() got called because the video decoder
+  // ResetVideoDecoderFactory() got called because the video decoder
   // process crashed and we got the disconnection notification for
-  // |stable_video_decoder_factory_remote_| before the disconnection
-  // notification for any of the elements in |stable_video_decoder_trackers_|.
-  stable_video_decoder_trackers_.Clear();
+  // |video_decoder_factory_remote_| before the disconnection
+  // notification for any of the elements in |video_decoder_trackers_|.
+  video_decoder_trackers_.Clear();
 
-  if (stable_video_decoder_factory_reset_timer_.IsRunning()) {
-    stable_video_decoder_factory_reset_timer_.Stop();
-    InvokeStableVideoDecoderEventCB(
-        StableVideoDecoderEvent::kFactoryResetTimerStopped);
+  if (video_decoder_factory_reset_timer_.IsRunning()) {
+    video_decoder_factory_reset_timer_.Stop();
+    InvokeVideoDecoderEventCB(VideoDecoderEvent::kFactoryResetTimerStopped);
   }
 }
 
-void RenderProcessHostImpl::SetStableVideoDecoderFactoryCreationCBForTesting(
-    StableVideoDecoderFactoryCreationCB callback) {
+void RenderProcessHostImpl::SetVideoDecoderFactoryCreationCBForTesting(
+    VideoDecoderFactoryCreationCB callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  GetStableVideoDecoderFactoryCreationCB() = callback;
+  GetVideoDecoderFactoryCreationCB() = callback;
 }
 
-void RenderProcessHostImpl::SetStableVideoDecoderEventCBForTesting(
-    StableVideoDecoderEventCB callback) {
+void RenderProcessHostImpl::SetVideoDecoderEventCBForTesting(
+    VideoDecoderEventCB callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  GetStableVideoDecoderEventCB() = callback;
+  GetVideoDecoderEventCB() = callback;
 }
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
@@ -5194,7 +5183,7 @@ void RenderProcessHostImpl::ResetIPC() {
   tracing_registration_.reset();
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-  ResetStableVideoDecoderFactory();
+  ResetVideoDecoderFactory();
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
   // Destroy all embedded CompositorFrameSinks.

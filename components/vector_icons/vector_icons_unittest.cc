@@ -4,6 +4,7 @@
 
 #include "components/vector_icons/vector_icons_unittest.h"
 
+#include "base/compiler_specific.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/vector_icon_utils.h"
@@ -20,8 +21,9 @@ class VectorIconsTest : public ::testing::Test {
     for (size_t i = 0; i < path_elements.size(); ++i) {
       EXPECT_EQ(icon.reps[i].path.size(), path_elements[i].size());
       for (size_t j = 0; j < path_elements[i].size(); ++j) {
-        EXPECT_EQ(0, memcmp(&path_elements[i][j], &icon.reps[i].path[j],
-                            sizeof(gfx::PathElement)));
+        EXPECT_EQ(
+            0, UNSAFE_TODO(memcmp(&path_elements[i][j], &icon.reps[i].path[j],
+                                  sizeof(gfx::PathElement))));
       }
     }
   }

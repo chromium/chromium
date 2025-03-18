@@ -303,7 +303,7 @@ MediaStreamTrackImpl::MediaStreamTrackImpl(
     zoom_level_ = source_device->display_media_info->initial_zoom_level;
   }
 
-  if (video_track) {
+  if (video_track && GetDisplayCaptureType(component_)) {
     video_track->RegisterCaptureSurfaceResolutionChangeCallback(
         WTF::BindRepeating(
             &MediaStreamTrackImpl::MaybeDispatchConfigurationChange,

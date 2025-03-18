@@ -130,7 +130,7 @@ BASE_DECLARE_FEATURE(kAutofillSupportPhoneticNameForJP);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillSupportLastNamePrefix);
 COMPONENT_EXPORT(AUTOFILL)
-extern const base::FeatureParam<int> kNumberOfIgnoredSuggestions;
+BASE_DECLARE_FEATURE(kAutofillThrottleAskForValuesToFill);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAcceptDomMutationAfterAutofillSubmission);
 COMPONENT_EXPORT(AUTOFILL)

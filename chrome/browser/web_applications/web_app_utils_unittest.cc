@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace web_app {
@@ -244,16 +245,18 @@ TEST_F(WebAppUtilsTest, AreWebAppsEnabled) {
   {
     auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
     auto* user = user_manager->AddKioskAppUser(account_id);
-    user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                               /*browser_restart=*/false, /*is_child=*/false);
+    user_manager->UserLoggedIn(
+        user->GetAccountId(),
+        user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
     user_manager::ScopedUserManager enabler(std::move(user_manager));
     EXPECT_FALSE(AreWebAppsEnabled(regular_profile));
   }
   {
     auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
     auto* user = user_manager->AddWebKioskAppUser(account_id);
-    user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                               /*browser_restart=*/false, /*is_child=*/false);
+    user_manager->UserLoggedIn(
+        user->GetAccountId(),
+        user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
     user_manager::ScopedUserManager enabler(std::move(user_manager));
     EXPECT_TRUE(AreWebAppsEnabled(regular_profile));
   }

@@ -26,6 +26,7 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
+#include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/extensions/external_testing_loader.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
@@ -155,6 +156,10 @@ class PreinstalledWebAppMigrationBrowserTest
     extensions::ExtensionBrowserTest::TearDownOnMainThread();
   }
 
+  extensions::ExternalProviderManager* external_provider_manager() {
+    return extensions::ExternalProviderManager::Get(profile());
+  }
+
   std::unique_ptr<net::test_server::HttpResponse> RequestHandlerOverride(
       const net::test_server::HttpRequest& request) {
     std::string request_path = request.GetURL().path();
@@ -174,7 +179,7 @@ class PreinstalledWebAppMigrationBrowserTest
   }
 
   void SetUpExtensionTestExternalProvider() {
-    extension_service().ClearProvidersForTesting();
+    external_provider_manager()->ClearProvidersForTesting();
 
     extension_service().updater()->SetExtensionCacheForTesting(
         test_extension_cache_.get());
@@ -191,9 +196,9 @@ class PreinstalledWebAppMigrationBrowserTest
          kMigrationFlag},
         nullptr);
 
-    extension_service().AddProviderForTesting(
+    external_provider_manager()->AddProviderForTesting(
         std::make_unique<extensions::ExternalProviderImpl>(
-            &extension_service(),
+            external_provider_manager(),
             base::MakeRefCounted<extensions::ExternalTestingLoader>(
                 external_extension_config,
                 base::FilePath(FILE_PATH_LITERAL("//absolute/path"))),
@@ -209,8 +214,9 @@ class PreinstalledWebAppMigrationBrowserTest
 
   void SyncExternalExtensions() {
     base::RunLoop run_loop;
-    extension_service().set_external_updates_finished_callback_for_test(
-        run_loop.QuitWhenIdleClosure());
+    external_provider_manager()
+        ->set_external_updates_finished_callback_for_test(
+            run_loop.QuitWhenIdleClosure());
     extension_service().CheckForExternalUpdates();
     run_loop.Run();
   }
@@ -441,7 +447,6 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
   // Set up pre-migration state.
   {
     ASSERT_FALSE(IsPreinstalledAppInstallFeatureEnabled(kMigrationFlag));
-
     SyncExternalExtensions();
     SyncExternalWebApps(/*expect_install=*/false);
 

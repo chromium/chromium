@@ -87,22 +87,23 @@ bool IsValidDateFormat(std::u16string_view format) {
       [&format, separator = static_cast<const char16_t*>(nullptr)]() mutable {
         if (!separator) {
           for (const char16_t* token :
-               {u" / ", u" . ", u" - ", u"/", u".", u"-", u" "}) {
+               {u" / ", u" . ", u" - ", u"/", u".", u"-", u" ", u""}) {
             if (Consume(format, token)) {
               separator = token;
-              break;
+              return true;
             }
           }
+          NOTREACHED();
         } else {
-          Consume(format, separator);
+          return Consume(format, separator);
         }
       };
 
   // Matches at least one and at most three part, which must be of distinct
   // categories. The parts may be separated by the same separator.
   return consume_any_part() &&
-         (format.empty() || (consume_separator(), consume_any_part())) &&
-         (format.empty() || (consume_separator(), consume_any_part())) &&
+         (format.empty() || (consume_separator() && consume_any_part())) &&
+         (format.empty() || (consume_separator() && consume_any_part())) &&
          format.empty();
 }
 

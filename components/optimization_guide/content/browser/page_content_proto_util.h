@@ -19,6 +19,7 @@ namespace optimization_guide {
 struct RenderFrameInfo {
   content::GlobalRenderFrameHostToken global_frame_token;
   url::Origin source_origin;
+  GURL url;
 };
 
 // Converts the mojom data structure for AIPageContent to its equivalent proto

@@ -1392,14 +1392,15 @@ class LocationBarMediator
                     UrlBar.ScrollType.NO_SCROLL,
                     UrlBarCoordinator.SelectionState.SELECT_END);
             /*
-             When the URL bar text is programmatically set on omnibox state restoration during a
-             device fold transition, {@code AutocompleteEditText#getTextWithoutAutocomplete()}
-             invoked by {@code #forceOnTextChanged()} returns an empty string because {@code
-             AutocompleteEditText#mModel} is not initialized. To trigger the autocomplete system in
-             this case, {@code AutocompleteCoordinator#onTextChanged()} will be directly called on
-             the restored omnibox text input.
+             When the URL bar text is programmatically set on omnibox state restoration, for e.g.
+             during a device fold transition,
+             {@code AutocompleteEditText#getTextWithoutAutocomplete()} invoked by
+             {@code #forceOnTextChanged()} returns an empty string because
+             {@code AutocompleteEditText#mModel} is not initialized. To trigger the autocomplete
+             system in this case, {@code AutocompleteCoordinator#onTextChanged()} will be directly
+             called on the restored omnibox text input.
             */
-            if (reason == OmniboxFocusReason.FOLD_TRANSITION_RESTORATION) {
+            if (reason == OmniboxFocusReason.ACTIVITY_RECREATION_RESTORATION) {
                 mAutocompleteCoordinator.onTextChanged(pastedText);
             } else {
                 forceOnTextChanged();

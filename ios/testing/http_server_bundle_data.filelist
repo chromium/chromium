@@ -72,3 +72,4 @@ data/http_server_files/window_open.html
 data/http_server_files/window_proxy.html
 data/http_server_files/xframe_credit_card.html
 data/http_server_files/xframe_credit_card_throttled.html
+data/http_server_files/xhr_xframe_submit.html

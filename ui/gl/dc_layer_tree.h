@@ -249,8 +249,6 @@ class GL_EXPORT DCLayerTree {
   bool GetAttachedToRootFromPreviousFrameForTesting(size_t index) const;
 #endif  // DCHECK_IS_ON()
 
-  void SetFrameRate(float frame_rate);
-
   const std::unique_ptr<HDRMetadataHelperWin>& GetHDRMetadataHelper() {
     return hdr_metadata_helper_;
   }
@@ -560,9 +558,6 @@ class GL_EXPORT DCLayerTree {
   // A tree that owns all DCOMP visuals for overlays along with attributes
   // required to build DCOMP tree. It's updated for each frame.
   std::unique_ptr<VisualTree> visual_tree_;
-
-  // Number of frames per second.
-  float frame_rate_ = 0.f;
 
   // dealing with hdr metadata
   std::unique_ptr<HDRMetadataHelperWin> hdr_metadata_helper_;

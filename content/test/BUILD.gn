@@ -1872,6 +1872,7 @@ test("content_browsertests") {
     "//ipc:test_sink",
     "//media:media_buildflags",
     "//media:test_support",
+    "//media/midi:midi",
     "//media/webrtc",
     "//mojo/core/embedder",
     "//mojo/core/test:test_support",

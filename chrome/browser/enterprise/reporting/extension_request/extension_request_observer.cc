@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/extensions/managed_installation_mode.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -107,13 +108,13 @@ void ExtensionRequestObserver::ShowNotification(
 
   for (auto request : pending_requests) {
     const std::string& id = request.first;
-    extensions::ExtensionManagement::InstallationMode mode =
+    extensions::ManagedInstallationMode mode =
         extension_management->GetInstallationMode(id, web_store_update_url);
     if ((type == ExtensionRequestNotification::kApproved &&
-         mode == extensions::ExtensionManagement::INSTALLATION_ALLOWED) ||
+         mode == extensions::ManagedInstallationMode::kAllowed) ||
         (type == ExtensionRequestNotification::kForceInstalled &&
-         (mode == extensions::ExtensionManagement::INSTALLATION_FORCED ||
-          mode == extensions::ExtensionManagement::INSTALLATION_RECOMMENDED)) ||
+         (mode == extensions::ManagedInstallationMode::kForced ||
+          mode == extensions::ManagedInstallationMode::kRecommended)) ||
         (type == ExtensionRequestNotification::kRejected &&
          extension_management->IsInstallationExplicitlyBlocked(id))) {
       filtered_extension_ids.push_back(id);

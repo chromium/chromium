@@ -5,9 +5,11 @@
 #include "chromecast/base/hash_util.h"
 
 #include <limits.h>
+
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -30,7 +32,7 @@ uint64_t HashToUInt64(const std::string& value) {
   uint64_t output;
   const std::string sha1hash = base::SHA1HashString(value);
   DCHECK_GE(sha1hash.size(), sizeof(output));
-  memcpy(&output, sha1hash.data(), sizeof(output));
+  UNSAFE_TODO(memcpy(&output, sha1hash.data(), sizeof(output)));
   return output;
 }
 
@@ -38,7 +40,7 @@ uint32_t HashToUInt32(const std::string& value) {
   uint32_t output;
   const std::string sha1hash = base::SHA1HashString(value);
   DCHECK_GE(sha1hash.size(), sizeof(output));
-  memcpy(&output, sha1hash.data(), sizeof(output));
+  UNSAFE_TODO(memcpy(&output, sha1hash.data(), sizeof(output)));
   return output;
 }
 

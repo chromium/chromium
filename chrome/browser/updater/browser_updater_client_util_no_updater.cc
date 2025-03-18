@@ -13,7 +13,7 @@ std::string CurrentlyInstalledVersion() {
   return std::string(version_info::GetVersionNumber());
 }
 
-updater::UpdaterScope GetUpdaterScope() {
+updater::UpdaterScope GetBrowserUpdaterScope() {
   return updater::UpdaterScope::kUser;
 }
 

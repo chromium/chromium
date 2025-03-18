@@ -535,49 +535,6 @@ suite('ExceptionsList', function() {
   });
 });
 
-// TODO(crbug.com/40233724): Remove after crbug/1349370 is launched.
-suite('FirstPartySetsUIDisabled', function() {
-  let page: SettingsCookiesPageElement;
-  let settingsPrefs: SettingsPrefsElement;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      firstPartySetsUIEnabled: false,
-      isAlwaysBlock3pcsIncognitoEnabled: false,
-      // FirstPartySetsUI does not exist in 3PCD.
-      is3pcdCookieSettingsRedesignEnabled: false,
-    });
-    resetRouterForTesting();
-
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    page = document.createElement('settings-cookies-page');
-    page.prefs = settingsPrefs.prefs!;
-    document.body.appendChild(page);
-    flush();
-  });
-
-  teardown(function() {
-    page.remove();
-  });
-
-  test('blockThirdPartyIncognitoSecondBulletPointText', function() {
-    // Confirm the correct string is set.
-    const cookiesPageBlockThirdPartyIncognitoBulTwoLabel =
-        page.shadowRoot!
-            .querySelector<HTMLElement>(
-                '#blockThirdPartyIncognitoBulTwo')!.innerText.trim();
-    assertEquals(
-        loadTimeData.getString('thirdPartyCookiesPageBlockIncognitoBulTwo'),
-        cookiesPageBlockThirdPartyIncognitoBulTwoLabel);
-  });
-});
-
 suite('TrackingProtectionSettings', function() {
   let page: SettingsCookiesPageElement;
   let settingsPrefs: SettingsPrefsElement;

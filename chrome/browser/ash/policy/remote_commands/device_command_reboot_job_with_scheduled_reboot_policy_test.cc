@@ -25,6 +25,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "services/device/public/cpp/test/test_wake_lock_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,8 +51,7 @@ CreateFakeUserManagerForRegularSession(TestingPrefServiceSimple& local_state) {
   const AccountId id =
       AccountId::FromUserEmailGaiaId("user@user.net", GaiaId("fakegaia"));
   manager->AddGaiaUser(id, user_manager::UserType::kRegular);
-  manager->UserLoggedIn(id, /*username_hash=*/id.GetUserEmail(),
-                        /*browser_restart=*/false, /*is_child=*/false);
+  manager->UserLoggedIn(id, user_manager::TestHelper::GetFakeUsernameHash(id));
 
   return manager;
 }

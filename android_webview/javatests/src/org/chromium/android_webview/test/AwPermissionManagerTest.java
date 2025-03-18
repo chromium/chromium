@@ -4,6 +4,7 @@
 
 package org.chromium.android_webview.test;
 
+import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Pair;
@@ -27,6 +28,7 @@ import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.permission.AwPermissionRequest;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.base.BuildInfo;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
@@ -139,6 +141,11 @@ public class AwPermissionManagerTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     @SmallTest
     public void testRequestMultiple() {
+        if (!ContextUtils.getApplicationContext()
+                .getPackageManager()
+                .hasSystemFeature(PackageManager.FEATURE_MIDI)) {
+            return;
+        }
         mPage =
                 mTestWebServer.setResponse(
                         "/permissions",

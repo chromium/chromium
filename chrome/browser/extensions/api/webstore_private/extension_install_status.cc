@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/managed_installation_mode.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
@@ -34,19 +35,19 @@ namespace {
 // wildcard/update_url but blocked by |manifest type| or |required permissions|.
 bool IsExtensionInstallBlockedByPolicy(
     ExtensionManagement* extension_management,
-    ExtensionManagement::InstallationMode mode,
+    ManagedInstallationMode mode,
     const ExtensionId& extension_id,
     const std::string& update_url,
     Manifest::Type manifest_type,
     const PermissionSet& required_permissions) {
   switch (mode) {
-    case ExtensionManagement::INSTALLATION_BLOCKED:
-    case ExtensionManagement::INSTALLATION_REMOVED:
+    case ManagedInstallationMode::kBlocked:
+    case ManagedInstallationMode::kRemoved:
       return true;
-    case ExtensionManagement::INSTALLATION_FORCED:
-    case ExtensionManagement::INSTALLATION_RECOMMENDED:
+    case ManagedInstallationMode::kForced:
+    case ManagedInstallationMode::kRecommended:
       return false;
-    case ExtensionManagement::INSTALLATION_ALLOWED:
+    case ManagedInstallationMode::kAllowed:
       break;
   }
 
@@ -96,13 +97,13 @@ ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
   // function is used by webstore private API only and there may not be any
   // |Extension| instance. Note that we don't handle the case where an offstore
   // extension with an identical ID is installed.
-  ExtensionManagement::InstallationMode mode =
-      extension_management->GetInstallationMode(extension_id,
-                                                update_url.spec());
+  ManagedInstallationMode mode = extension_management->GetInstallationMode(
+      extension_id, update_url.spec());
 
-  if (mode == ExtensionManagement::INSTALLATION_FORCED ||
-      mode == ExtensionManagement::INSTALLATION_RECOMMENDED)
+  if (mode == ManagedInstallationMode::kForced ||
+      mode == ManagedInstallationMode::kRecommended) {
     return kForceInstalled;
+  }
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
 

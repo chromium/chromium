@@ -253,7 +253,7 @@ void PersonalizedRecommendAppsScreen::OnResponseReceived(
   //      server-defined order determines the primary use case for display.
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   const base::Value::List& selected_use_cases_ids =
-      prefs->GetList(prefs::kOobeCategoriesSelected).Clone();
+      prefs->GetList(prefs::kOobeCategoriesSelected);
 
   std::vector<OOBEDeviceUseCase> selected_use_cases;
 

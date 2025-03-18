@@ -139,6 +139,11 @@ bool ShouldInstallOverwriteUserDisplayMode(
 void ApplyUserDisplayModeSyncMitigations(
     const WebAppInstallFinalizer::FinalizeOptions& options,
     WebApp& web_app) {
+  if (WebAppInstallFinalizer::
+          DisableUserDisplayModeSyncMitigationsForTesting()) {
+    return;
+  }
+
   // Guaranteed by EnsureAppsHaveUserDisplayModeForCurrentPlatform().
   CHECK(web_app.sync_proto().has_user_display_mode_cros(),
         base::NotFatalUntil::M125);
@@ -163,11 +168,6 @@ void ApplyUserDisplayModeSyncMitigations(
 
   switch (web_app.sync_proto().user_display_mode_cros()) {
     case sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER:
-      if (!base::FeatureList::IsEnabled(
-              kUserDisplayModeSyncBrowserMitigation)) {
-        return;
-      }
-
       // Pre-M122 CrOS devices use the user_display_mode_default sync field
       // instead of user_display_mode_cros. If user_display_mode_default is ever
       // unset they will fallback to using kStandalone even if
@@ -184,11 +184,6 @@ void ApplyUserDisplayModeSyncMitigations(
       break;
 
     case sync_pb::WebAppSpecifics_UserDisplayMode_STANDALONE: {
-      if (!base::FeatureList::IsEnabled(
-              kUserDisplayModeSyncStandaloneMitigation)) {
-        return;
-      }
-
       // Ensure standalone averse apps don't get defaulted to kStandalone on
       // non-CrOS devices via sync.
       // Example user journey:
@@ -244,6 +239,12 @@ WebAppInstallFinalizer::FinalizeOptions::~FinalizeOptions() = default;
 
 WebAppInstallFinalizer::FinalizeOptions::FinalizeOptions(
     const FinalizeOptions&) = default;
+
+bool& WebAppInstallFinalizer::
+    DisableUserDisplayModeSyncMitigationsForTesting() {
+  static bool disable = false;
+  return disable;
+}
 
 WebAppInstallFinalizer::WebAppInstallFinalizer(Profile* profile)
     : profile_(profile) {}

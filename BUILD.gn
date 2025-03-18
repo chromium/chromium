@@ -1632,6 +1632,7 @@ if (use_blink && !is_cronet_build) {
     ]
     data = [
       "//third_party/blink/web_tests/external/wpt/common/",
+      "//third_party/blink/web_tests/external/wpt/html/canvas/resources/",
       "//third_party/blink/web_tests/external/wpt/resources/",
       "//third_party/blink/web_tests/FlagSpecificConfig",
       "//third_party/blink/web_tests/VirtualTestSuites",

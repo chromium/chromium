@@ -4,6 +4,7 @@
 static MESSAGE_TYPE MsgStream=MSG_STDOUT;
 static RAR_CHARSET RedirectCharset=RCH_DEFAULT;
 static bool ProhibitInput=false;
+static bool ConsoleOutputPresent=false;
 
 static bool StdoutRedirected=false,StderrRedirected=false,StdinRedirected=false;
 
@@ -69,6 +70,8 @@ void ProhibitConsoleInput()
 #ifndef SILENT
 static void cvt_wprintf(FILE *dest,const wchar *fmt,va_list arglist)
 {
+  ConsoleOutputPresent=true;
+  
   // No need for PrintfPrepareFmt here, vwstrprintf calls it.
   std::wstring s=vwstrprintf(fmt,arglist);
 
@@ -406,3 +409,8 @@ void OutComment(const std::wstring &Comment)
   mprintf(L"\n");
 }
 
+
+bool IsConsoleOutputPresent()
+{
+  return ConsoleOutputPresent;
+}

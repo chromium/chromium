@@ -11,7 +11,8 @@
 #include "url/gurl.h"
 
 namespace content {
-  class WebContents;
+class RenderFrameHost;
+class WebContents;
 }
 
 namespace security_interstitials {
@@ -58,6 +59,7 @@ class SecurityInterstitialControllerClient
   // security_interstitials::ControllerClient overrides.
   const std::string GetExtendedReportingPrefName() const override;
   content::WebContents* web_contents() { return &*web_contents_; }
+  content::RenderFrameHost* InterstitialRenderFrameHost() const;
 
  private:
   base::WeakPtr<content::WebContents> web_contents_;

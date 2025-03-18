@@ -74,7 +74,7 @@
 #include "chrome/browser/ui/views/toolbar/home_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
-#include "chrome/browser/ui/views/toolbar/side_by_side_button.h"
+#include "chrome/browser/ui/views/toolbar/split_tabs_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -385,9 +385,9 @@ void ToolbarView::Init() {
   reload_ = container_view_->AddChildView(std::move(reload));
   home_ = container_view_->AddChildView(std::move(home));
   if (base::FeatureList::IsEnabled(features::kSideBySide)) {
-    std::unique_ptr<SideBySideToolbarButton> split =
-        std::make_unique<SideBySideToolbarButton>(browser_);
-    side_by_side_ = container_view_->AddChildView(std::move(split));
+    std::unique_ptr<SplitTabsToolbarButton> split =
+        std::make_unique<SplitTabsToolbarButton>(browser_);
+    split_tabs_ = container_view_->AddChildView(std::move(split));
   }
 
   location_bar_ = container_view_->AddChildView(std::move(location_bar));
@@ -1155,8 +1155,7 @@ views::View* ToolbarView::GetAnchorView(
           action_id.value())) {
     return pinned_toolbar_actions_container_->GetButtonFor(action_id.value());
   }
-  // TODO(crbug.com/386362832): Consider whether we should try anchoring to
-  // the corresponding PageActionView, if any, instead of the location bar.
+
   return location_bar_;
 }
 

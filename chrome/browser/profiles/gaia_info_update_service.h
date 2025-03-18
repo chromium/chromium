@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_downloader.h"
 #include "chrome/browser/profiles/profile_downloader_delegate.h"
+#include "chrome/common/buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -46,6 +47,12 @@ class GAIAInfoUpdateService : public KeyedService,
 
   void UpdateAnyAccount(const AccountInfo& info);
 
+#if BUILDFLAG(ENABLE_GLIC)
+  // Only updates the Glic Eligibility if the refresh tokens are loaded since
+  // the computation of the eligibility depends on it.
+  void UpdateGlicEligibility();
+#endif
+
   // Overridden from signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;
@@ -53,6 +60,9 @@ class GAIAInfoUpdateService : public KeyedService,
   void OnAccountsInCookieUpdated(
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;
+#if BUILDFLAG(ENABLE_GLIC)
+  void OnRefreshTokensLoaded() override;
+#endif
 
   const raw_ptr<Profile> profile_;
   raw_ptr<signin::IdentityManager> identity_manager_;

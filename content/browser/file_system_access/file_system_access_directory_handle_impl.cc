@@ -142,9 +142,8 @@ void FileSystemAccessDirectoryHandleImpl::GetFile(const std::string& basename,
   // before creating the returned handle.
   if (url().virtual_path().IsContentUri()) {
     std::string mime_type;
-    std::string ext = base::FilePath(basename).Extension();
-    if (ext.empty() ||
-        !net::GetWellKnownMimeTypeFromExtension(ext.substr(1), &mime_type)) {
+    if (!net::GetWellKnownMimeTypeFromFile(base::FilePath(basename),
+                                           &mime_type)) {
       mime_type = "application/octet-stream";
     }
     base::ThreadPool::PostTaskAndReplyWithResult(

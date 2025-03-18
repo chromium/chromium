@@ -640,12 +640,11 @@ SetsAndAliases ParseSetsFromStreamInternal(std::istream& input,
   int successfully_parsed_sets = 0;
   int nonfatal_errors = 0;
   for (std::string line; std::getline(input, line);) {
-    std::string_view trimmed = base::TrimWhitespaceASCII(line, base::TRIM_ALL);
-    if (trimmed.empty()) {
+    if (std::ranges::all_of(line, &base::IsWhitespace<char>)) {
       continue;
     }
     std::optional<base::Value> maybe_value = base::JSONReader::Read(
-        trimmed, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+        line, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
     if (!maybe_value.has_value()) {
       if (emit_metrics) {
         base::UmaHistogramBoolean(

@@ -18,6 +18,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/segmentation_platform/embedder/home_modules/constants.h"
 #import "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
+#import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
 #import "components/segmentation_platform/internal/constants.h"
 #import "components/segmentation_platform/internal/database/client_result_prefs.h"
 #import "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
@@ -39,6 +40,67 @@
 namespace segmentation_platform {
 namespace {
 
+// Sets signals relevant for the Price Tracking module
+void ConfigureForPriceTrackingModule(scoped_refptr<InputContext> input_context,
+                                     bool enable = true) {
+  // Required signal for Price Tracking module
+  input_context->metadata_args.emplace(
+      segmentation_platform::kIsNewUser,
+      segmentation_platform::processing::ProcessedValue::FromFloat(0.0f));
+
+  input_context->metadata_args.emplace(
+      segmentation_platform::kIsSynced,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          enable ? 1.0f : 0.0f));
+}
+
+// Sets signals relevant for the Lens ephemeral module
+void ConfigureForLensModule(scoped_refptr<InputContext> input_context,
+                            bool enable = true) {
+  float signal_value = enable ? 1.0f : 0.0f;
+
+  // Required signals for Lens module
+  input_context->metadata_args.emplace(
+      segmentation_platform::kLensNotUsedRecently,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          signal_value));
+  input_context->metadata_args.emplace(
+      segmentation_platform::kLensAllowedByEnterprisePolicy,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          signal_value));
+
+  input_context->metadata_args.emplace(
+      segmentation_platform::tips_manager::signals::kOpenedShoppingWebsite,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          !signal_value));
+  input_context->metadata_args.emplace(
+      segmentation_platform::tips_manager::signals::
+          kOpenedWebsiteInAnotherLanguage,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          !signal_value));
+  input_context->metadata_args.emplace(
+      segmentation_platform::tips_manager::signals::kUsedGoogleTranslation,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          !signal_value));
+}
+
+// Sets signals relevant for the Enhanced Safe Browsing ephemeral module
+void ConfigureForEnhancedSafeBrowsingModule(
+    scoped_refptr<InputContext> input_context,
+    bool enable = true) {
+  float signal_value = enable ? 1.0f : 0.0f;
+
+  // Required signals for Enhanced Safe Browsing module
+  input_context->metadata_args.emplace(
+      segmentation_platform::kLacksEnhancedSafeBrowsing,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          signal_value));
+  input_context->metadata_args.emplace(
+      segmentation_platform::kEnhancedSafeBrowsingAllowedByEnterprisePolicy,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          signal_value));
+}
+
 // Observer that waits for service initialization.
 class WaitServiceInitializedObserver : public ServiceProxy::Observer {
  public:
@@ -55,6 +117,7 @@ class WaitServiceInitializedObserver : public ServiceProxy::Observer {
 };
 
 }  // namespace
+
 class SegmentationPlatformServiceFactoryTest : public PlatformTest {
  public:
   SegmentationPlatformServiceFactoryTest()
@@ -323,30 +386,117 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestIosModuleRankerModel) {
                                "TabResumption", "ParcelTracking", "ShopCard"});
 }
 
-// Tests that the HomeModulesCardRegistry registers the correct cards and the
-// response from the EphemeralHomeModuleBackend returns the correct card.
-TEST_F(SegmentationPlatformServiceFactoryTest, TestEphemeralHomeModuleBackend) {
+// Tests that the EphemeralHomeModuleBackend returns the PriceTracking module
+// when the corresponding signals are present.
+TEST_F(SegmentationPlatformServiceFactoryTest,
+       TestEphemeralHomeModuleBackendForPriceTracking) {
   home_modules::HomeModulesCardRegistry* registry =
       SegmentationPlatformServiceFactory::GetHomeCardRegistryForProfile(
           profile_data_->profile.get());
   ASSERT_TRUE(registry);
-  EXPECT_EQ(1u, registry->get_all_cards_by_priority().size());
+  EXPECT_EQ(3u, registry->get_all_cards_by_priority().size());
 
   PredictionOptions prediction_options;
   prediction_options.on_demand_execution = true;
 
-  auto inputContext = base::MakeRefCounted<InputContext>();
-  inputContext->metadata_args.emplace(
-      segmentation_platform::kIsNewUser,
-      segmentation_platform::processing::ProcessedValue::FromFloat(0));
-  inputContext->metadata_args.emplace(
-      segmentation_platform::kIsSynced,
-      segmentation_platform::processing::ProcessedValue::FromFloat(1));
+  auto input_context = base::MakeRefCounted<InputContext>();
+
+  ConfigureForPriceTrackingModule(input_context, true);
+
+  // Disable other cards to ensure price tracking is shown
+  ConfigureForLensModule(input_context, false);
+  ConfigureForEnhancedSafeBrowsingModule(input_context, false);
 
   std::vector<std::string> result = {
       segmentation_platform::kPriceTrackingNotificationPromo};
   ExpectGetClassificationResult(
-      kEphemeralHomeModuleBackendKey, prediction_options, inputContext,
+      kEphemeralHomeModuleBackendKey, prediction_options, input_context,
+      /*expected_status=*/segmentation_platform::PredictionStatus::kSucceeded,
+      /*expected_labels=*/result);
+}
+
+// Tests that the EphemeralHomeModuleBackend returns the Lens Search module
+// when the corresponding signals are present.
+TEST_F(SegmentationPlatformServiceFactoryTest,
+       TestEphemeralHomeModuleBackendForLensSearch) {
+  home_modules::HomeModulesCardRegistry* registry =
+      SegmentationPlatformServiceFactory::GetHomeCardRegistryForProfile(
+          profile_data_->profile.get());
+  ASSERT_TRUE(registry);
+  EXPECT_EQ(3u, registry->get_all_cards_by_priority().size());
+
+  PredictionOptions prediction_options;
+  prediction_options.on_demand_execution = true;
+
+  auto input_context = base::MakeRefCounted<InputContext>();
+
+  ConfigureForLensModule(input_context, true);
+
+  // Disable other cards to ensure Lens is shown
+  ConfigureForPriceTrackingModule(input_context, false);
+  ConfigureForEnhancedSafeBrowsingModule(input_context, false);
+
+  std::vector<std::string> result = {
+      segmentation_platform::kLensEphemeralModuleSearchVariation};
+  ExpectGetClassificationResult(
+      kEphemeralHomeModuleBackendKey, prediction_options, input_context,
+      /*expected_status=*/segmentation_platform::PredictionStatus::kSucceeded,
+      /*expected_labels=*/result);
+}
+
+// Tests that the EphemeralHomeModuleBackend returns the Enhanced Safe Browsing
+// module when the corresponding signals are present.
+TEST_F(SegmentationPlatformServiceFactoryTest,
+       TestEphemeralHomeModuleBackendForEnhancedSafeBrowsing) {
+  home_modules::HomeModulesCardRegistry* registry =
+      SegmentationPlatformServiceFactory::GetHomeCardRegistryForProfile(
+          profile_data_->profile.get());
+  ASSERT_TRUE(registry);
+  EXPECT_EQ(3u, registry->get_all_cards_by_priority().size());
+
+  PredictionOptions prediction_options;
+  prediction_options.on_demand_execution = true;
+
+  auto input_context = base::MakeRefCounted<InputContext>();
+
+  ConfigureForEnhancedSafeBrowsingModule(input_context, true);
+
+  // Disable other cards to ensure Enhanced Safe Browsing is shown
+  ConfigureForPriceTrackingModule(input_context, false);
+  ConfigureForLensModule(input_context, false);
+
+  std::vector<std::string> result = {
+      segmentation_platform::kEnhancedSafeBrowsingEphemeralModule};
+  ExpectGetClassificationResult(
+      kEphemeralHomeModuleBackendKey, prediction_options, input_context,
+      /*expected_status=*/segmentation_platform::PredictionStatus::kSucceeded,
+      /*expected_labels=*/result);
+}
+
+// Tests priority ordering when multiple cards have their signals enabled.
+TEST_F(SegmentationPlatformServiceFactoryTest,
+       TestEphemeralHomeModuleBackendForPriorityOrdering) {
+  home_modules::HomeModulesCardRegistry* registry =
+      SegmentationPlatformServiceFactory::GetHomeCardRegistryForProfile(
+          profile_data_->profile.get());
+  ASSERT_TRUE(registry);
+  EXPECT_EQ(3u, registry->get_all_cards_by_priority().size());
+
+  PredictionOptions prediction_options;
+  prediction_options.on_demand_execution = true;
+
+  auto input_context = base::MakeRefCounted<InputContext>();
+  // Enable signals for all modules
+  ConfigureForPriceTrackingModule(input_context, true);
+  ConfigureForLensModule(input_context, true);
+  ConfigureForEnhancedSafeBrowsingModule(input_context, true);
+
+  // The highest priority card should be returned first. In this case, Price
+  // Tracking takes precedence over others.
+  std::vector<std::string> result = {
+      segmentation_platform::kPriceTrackingNotificationPromo};
+  ExpectGetClassificationResult(
+      kEphemeralHomeModuleBackendKey, prediction_options, input_context,
       /*expected_status=*/segmentation_platform::PredictionStatus::kSucceeded,
       /*expected_labels=*/result);
 }

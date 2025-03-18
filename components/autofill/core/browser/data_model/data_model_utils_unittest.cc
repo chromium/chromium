@@ -47,6 +47,8 @@ TEST(AutofillDataModelUtils, IsValidDateFormat) {
   EXPECT_FALSE(IsValidDateFormat(u" DD/MM/YYYY"));
   EXPECT_FALSE(IsValidDateFormat(u"DD/MM/YYYY "));
   EXPECT_FALSE(IsValidDateFormat(u"DD_MM_YYYY "));
+  EXPECT_FALSE(IsValidDateFormat(u"DDMM-YYYY"));
+  EXPECT_FALSE(IsValidDateFormat(u"DD-MMYYYY"));
   EXPECT_FALSE(IsValidDateFormat(u"YYDDMMYY"));
   EXPECT_FALSE(IsValidDateFormat(u"YYY"));
   EXPECT_FALSE(IsValidDateFormat(u"Y"));

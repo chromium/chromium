@@ -1337,6 +1337,19 @@ void AutofillAgent::PreviewPasswordGenerationSuggestion(
   password_generation_agent_->PreviewGenerationSuggestion(password);
 }
 
+bool AutofillAgent::ShouldThrottleAskForValuesToFill(FieldRendererId field) {
+  static constexpr base::TimeDelta kThrottle = base::Milliseconds(100);
+  base::TimeTicks now = base::TimeTicks::Now();
+  if (field == last_ask_for_values_to_fill_.field &&
+      now - last_ask_for_values_to_fill_.time < kThrottle &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillThrottleAskForValuesToFill)) {
+    return true;
+  }
+  last_ask_for_values_to_fill_ = {now, field};
+  return false;
+}
+
 void AutofillAgent::ShowSuggestions(
     const WebFormControlElement& element,
     AutofillSuggestionTriggerSource trigger_source,
@@ -1430,13 +1443,20 @@ void AutofillAgent::ShowSuggestionsForContentEditable(
   if (!form) {
     return;
   }
+
   CHECK_EQ(form->fields().size(), 1u);
+  const FormFieldData& field = form->fields()[0];
+
+  if (ShouldThrottleAskForValuesToFill(field.renderer_id())) {
+    return;
+  }
+
   if (auto* autofill_driver = unsafe_autofill_driver()) {
     is_popup_possibly_visible_ = true;
     if (auto* render_frame = unsafe_render_frame()) {
-      autofill_driver->AskForValuesToFill(
-          *form, form->fields()[0].renderer_id(), GetCaretBounds(*render_frame),
-          trigger_source);
+      autofill_driver->AskForValuesToFill(*form, field.renderer_id(),
+                                          GetCaretBounds(*render_frame),
+                                          trigger_source);
     }
   }
 }
@@ -1477,6 +1497,10 @@ void AutofillAgent::QueryAutofillSuggestions(
       !element.GetDocument().IsSecureContext()) {
     LOG(WARNING) << "Autofill suggestions are disabled because the document "
                     "isn't a secure context.";
+    return;
+  }
+
+  if (ShouldThrottleAskForValuesToFill(field->renderer_id())) {
     return;
   }
 

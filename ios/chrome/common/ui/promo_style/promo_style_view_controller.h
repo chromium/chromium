@@ -189,6 +189,12 @@ enum class ActionButtonsVisibility {
 // NO.
 @property(nonatomic, assign) BOOL scrollToEndMandatory;
 
+// Whether the view controller should prefer to compress low resistance subviews
+// (UILayoutPriorityDefaultLow) to keep them in the visible area before making
+// the content scrollable. Must be set before the view is loaded. Defaults to
+// NO.
+@property(nonatomic, assign) BOOL preferToCompressContent;
+
 // The text for the "More" button. Must be set before the view is loaded
 // for views with "scrollToMandatory = YES."
 @property(nonatomic, copy) NSString* readMoreString;

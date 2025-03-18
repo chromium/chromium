@@ -771,7 +771,7 @@ class TabListMediator implements TabListNotificationHandler {
                         onTabAdded(movedTab, /* onlyShowRelatedTabs= */ true);
                         if (mTabGridDialogHandler != null) {
                             mTabGridDialogHandler.updateDialogContent(
-                                    filter.getGroupLastShownTabId(firstTab.getRootId()));
+                                    filter.getGroupLastShownTabId(firstTab.getTabGroupId()));
                         }
                     }
                 }

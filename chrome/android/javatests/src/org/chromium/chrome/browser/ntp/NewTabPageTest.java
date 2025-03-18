@@ -29,7 +29,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
-import android.widget.LinearLayout;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.contrib.RecyclerViewActions;
@@ -78,6 +77,7 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.tile.Tile;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup;
+import org.chromium.chrome.browser.suggestions.tile.TilesLinearLayout;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
@@ -166,7 +166,7 @@ public class NewTabPageTest {
     private TemplateUrlService mTemplateUrlService;
     private NewTabPage mNtp;
     private View mFakebox;
-    private ViewGroup mMvTilesLayout;
+    private TilesLinearLayout mMvTilesLayout;
     private FakeMostVisitedSites mMostVisitedSites;
     private EmbeddedTestServer mTestServer;
     private List<SiteSuggestion> mSiteSuggestions;
@@ -203,7 +203,7 @@ public class NewTabPageTest {
         mNtp = (NewTabPage) mTab.getNativePage();
         mFakebox = mNtp.getView().findViewById(R.id.search_box);
         mMvTilesLayout = mNtp.getView().findViewById(R.id.mv_tiles_layout);
-        Assert.assertEquals(mSiteSuggestions.size(), mMvTilesLayout.getChildCount());
+        Assert.assertEquals(mSiteSuggestions.size(), mMvTilesLayout.getTileCount());
     }
 
     @Test
@@ -299,7 +299,7 @@ public class NewTabPageTest {
                 new Runnable() {
                     @Override
                     public void run() {
-                        View mostVisitedItem = mMvTilesLayout.getChildAt(0);
+                        TileView mostVisitedItem = mMvTilesLayout.getTileAt(0);
                         TouchCommon.singleClickView(mostVisitedItem);
                     }
                 });
@@ -317,7 +317,7 @@ public class NewTabPageTest {
         Assert.assertNotNull(mMvTilesLayout);
         ChromeTabUtils.invokeContextMenuAndOpenInANewTab(
                 mActivityTestRule,
-                mMvTilesLayout.getChildAt(0),
+                mMvTilesLayout.getTileAt(0),
                 ContextMenuManager.ContextMenuItemId.OPEN_IN_NEW_TAB,
                 false,
                 mSiteSuggestions.get(0).url.getSpec());
@@ -334,7 +334,7 @@ public class NewTabPageTest {
 
         ChromeTabUtils.invokeContextMenuAndOpenInANewTab(
                 mActivityTestRule,
-                mMvTilesLayout.getChildAt(0),
+                mMvTilesLayout.getTileAt(0),
                 ContextMenuManager.ContextMenuItemId.OPEN_IN_INCOGNITO_TAB,
                 true,
                 mSiteSuggestions.get(0).url.getSpec());
@@ -350,7 +350,7 @@ public class NewTabPageTest {
     public void testRemoveMostVisitedItem() throws ExecutionException {
         Assert.assertNotNull(mMvTilesLayout);
         SiteSuggestion testSite = mSiteSuggestions.get(0);
-        View mostVisitedItem = mMvTilesLayout.getChildAt(0);
+        View mostVisitedItem = mMvTilesLayout.getTileAt(0);
         ArrayList<View> views = new ArrayList<>();
         mMvTilesLayout.findViewsWithText(views, testSite.title, View.FIND_VIEWS_WITH_TEXT);
         Assert.assertEquals(1, views.size());
@@ -507,7 +507,7 @@ public class NewTabPageTest {
         // and the placeholder has not been inflated yet.
         Assert.assertEquals(View.VISIBLE, logoView.getVisibility());
         Assert.assertEquals(View.VISIBLE, searchBoxView.getVisibility());
-        Assert.assertEquals(8, mMvTilesLayout.getChildCount());
+        Assert.assertEquals(8, mMvTilesLayout.getTileCount());
         Assert.assertNull(mNtp.getView().findViewById(R.id.tile_grid_placeholder));
 
         // When the search provider has no logo and there are no tile suggestions, the placeholder
@@ -535,9 +535,7 @@ public class NewTabPageTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
-                            "The tile grid was not updated.",
-                            mMvTilesLayout.getChildCount(),
-                            is(0));
+                            "The tile grid was not updated.", mMvTilesLayout.getTileCount(), is(0));
                 });
         Assert.assertNotNull(mNtp.getView().findViewById(R.id.tile_grid_placeholder));
         Assert.assertEquals(
@@ -919,11 +917,11 @@ public class NewTabPageTest {
 
         Resources res = mActivityTestRule.getActivity().getResources();
         NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();
-        View mvTilesLayout = ntpLayout.findViewById(org.chromium.chrome.test.R.id.mv_tiles_layout);
+        TilesLinearLayout mvTilesLayout = ntpLayout.findViewById(R.id.mv_tiles_layout);
 
         int expectedTitleTopMargin =
                 res.getDimensionPixelSize(R.dimen.tile_view_title_margin_top_modern);
-        TileView suggestionsTileElement = (TileView) ((LinearLayout) mvTilesLayout).getChildAt(0);
+        TileView suggestionsTileElement = mvTilesLayout.getTileAt(0);
         Assert.assertEquals(
                 "The top margin of the tile element's title is wrong.",
                 expectedTitleTopMargin,

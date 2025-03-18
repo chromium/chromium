@@ -7,8 +7,10 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -19,16 +21,39 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/ash/crostini/baguette_download.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "components/prefs/pref_service.h"
+#include "url/origin.h"
 
 namespace crostini {
 
-BaguetteInstaller::BaguetteInstaller() = default;
+namespace {
+
+base::ScopedFD OpenFdBlocking(base::FilePath image_path) {
+  base::File image(image_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  if (!image.IsValid()) {
+    LOG(ERROR) << "Failed to open image file";
+    return base::ScopedFD();
+  }
+  return base::ScopedFD(image.TakePlatformFile());
+}
+
+}  // namespace
+
+BaguetteInstaller::BaguetteInstaller(Profile* profile, PrefService& local_state)
+    : download_factory_(base::BindRepeating(
+          [](PrefService& local_state) -> std::unique_ptr<BaguetteDownload> {
+            return std::make_unique<SimpleURLLoaderDownload>(local_state);
+          },
+          std::ref(local_state))),
+      profile_(profile) {}
 BaguetteInstaller::~BaguetteInstaller() = default;
 
-void BaguetteInstaller::Install(
-    base::OnceCallback<void(InstallResult)> callback) {
+void BaguetteInstaller::Install(BaguetteInstallerCallback callback) {
   installations_.push_back(std::make_unique<guest_os::GuestOsDlcInstallation>(
       kToolsDlcName,
       base::BindOnce(&BaguetteInstaller::OnInstallDlc,
@@ -37,7 +62,7 @@ void BaguetteInstaller::Install(
 }
 
 void BaguetteInstaller::OnInstallDlc(
-    base::OnceCallback<void(InstallResult)> callback,
+    BaguetteInstallerCallback callback,
     guest_os::GuestOsDlcInstallation::Result result) {
   InstallResult response =
       result
@@ -69,23 +94,91 @@ void BaguetteInstaller::OnInstallDlc(
               })
           .error_or(InstallResult::Success);
 
-  if (response == InstallResult::Success) {
-    // This will eventually download the image from a storage bucket, but for
-    // now we know it should be located in MyFiles/Downloads
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock()}, base::BindOnce([]() {
-          // check for file existence
-          if (!base::PathExists(base::FilePath(kBaguettePath))) {
-            LOG(ERROR) << "Couldn't find " << kBaguettePath;
-            return InstallResult::Failure;
-          }
-          return InstallResult::Success;
-        }),
-        std::move(callback));
-
-  } else {
-    std::move(callback).Run(response);
+  if (response != InstallResult::Success) {
+    std::move(callback).Run(response, {});
+    return;
   }
+
+  GetBaguetteImageUrl(std::move(callback));
+}
+
+void BaguetteInstaller::GetBaguetteImageUrl(
+    BaguetteInstallerCallback callback) {
+  auto* concierge_client = ash::ConciergeClient::Get();
+  concierge_client->WaitForServiceToBeAvailable(
+      base::BindOnce(&BaguetteInstaller::OnConciergeAvailable,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void BaguetteInstaller::OnConciergeAvailable(BaguetteInstallerCallback callback,
+                                             bool service_is_available) {
+  if (!service_is_available) {
+    LOG(ERROR) << "vm_concierge service is unavailable.";
+    std::move(callback).Run(InstallResult::Failure, {});
+  }
+
+  auto* concierge_client = ash::ConciergeClient::Get();
+  concierge_client->GetBaguetteImageUrl(
+      base::BindOnce(&BaguetteInstaller::DownloadBaguetteImage,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void BaguetteInstaller::DownloadBaguetteImage(
+    BaguetteInstallerCallback callback,
+    std::optional<vm_tools::concierge::GetBaguetteImageUrlResponse> response) {
+  if (!response) {
+    LOG(ERROR) << "Failed to get baguette disk image URL from vm_concierge.";
+    std::move(callback).Run(InstallResult::DownloadError, {});
+    return;
+  } else if (response->url().empty()) {
+    LOG(ERROR) << "vm_concierge returned an empty baguette image URL.";
+    std::move(callback).Run(InstallResult::DownloadError, {});
+    return;
+  } else if (response->sha256().empty()) {
+    LOG(ERROR) << "vm_concierge returned an empty baguette image checksum.";
+    std::move(callback).Run(InstallResult::DownloadError, {});
+    return;
+  }
+
+  image_download_ = download_factory_.Run();
+  image_download_->StartDownload(
+      profile_, GURL(response->url()),
+      base::BindOnce(&crostini::BaguetteInstaller::OnDiskImageDownloaded,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     response->sha256()));
+}
+
+void BaguetteInstaller::OnDiskImageDownloaded(
+    BaguetteInstallerCallback callback,
+    std::string expected_hash,
+    base::FilePath path,
+    std::string hash) {
+  if (path.empty()) {
+    LOG(ERROR) << "Error downloading.";
+    std::move(callback).Run(InstallResult::DownloadError, {});
+    return;
+  }
+  if (!base::EqualsCaseInsensitiveASCII(hash, expected_hash)) {
+    LOG(ERROR) << "Downloaded image has incorrect SHA256 hash.";
+    std::move(callback).Run(InstallResult::ChecksumError, {});
+    return;
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()}, base::BindOnce(&OpenFdBlocking, path),
+      base::BindOnce(&BaguetteInstaller::OnOpenFd,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void BaguetteInstaller::OnOpenFd(BaguetteInstallerCallback callback,
+                                 base::ScopedFD image) {
+  if (!image.is_valid()) {
+    LOG(ERROR) << "Unable to open image file.";
+    std::move(callback).Run(InstallResult::Failure, {});
+    return;
+  }
+
+  std::move(callback).Run(InstallResult::Success, std::move(image));
 }
 
 }  // namespace crostini

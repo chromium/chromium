@@ -505,6 +505,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="310900540163454140">Želite izbrisati geslo za <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Označi …</translation>
 <translation id="3119874402040566234">Odjavljeni boste in podatki brskanja bodo izbrisani</translation>
+<translation id="3124568093781685165">Delite gesla z družinskimi člani</translation>
 <translation id="3130863904455712965">Zgodovina in drugo</translation>
 <translation id="313283613037595347">Ustvarjanje novega anonimnega zavihka</translation>
 <translation id="3138611310073113613">Zavrzi izbiro</translation>
@@ -1004,6 +1005,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="5352128922772839949">Shrani datoteko</translation>
 <translation id="5355191726083956201">Izboljšana zaščita je vklopljena</translation>
 <translation id="537853552771686272">Upravljanje tem in spletnih mest, ki vas zanimajo</translation>
+<translation id="5390458669633674385">{count,plural, =1{{count} zaprt}one{{count} zaprt}two{{count} zaprta}few{{count} zaprti}other{{count} zaprtih}}</translation>
 <translation id="5394975111793637642">Skrivanje kartice z mnenji o izdelkih za vas</translation>
 <translation id="5395707839134961196">Skrivanje podrobnosti o iskalniku</translation>
 <translation id="5414763847370083940">Če se cena zniža na katerem koli spletnem mestu, boste prejeli opozorilo.</translation>
@@ -1133,6 +1135,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5897749768294722429">Če se želite hitro vrniti na že obiskana spletna mesta, sinhronizirajte zavihke in zgodovino.</translation>
 <translation id="5898848375214731122">Masa</translation>
 <translation id="5899314093904173337">Če želite deliti z osebami v bližini, naj s fotoaparatom ali aplikacijo za optično branje kod QR optično preberejo to kodo QR</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} nov zavihek}one{{count} nov zavihek}two{{count} nova zavihka}few{{count} novi zavihki}other{{count} novih zavihkov}}</translation>
 <translation id="5911030830365207728">Google Prevajalnik</translation>
 <translation id="5917913282764181683">Samodejni izbris prenosov</translation>
 <translation id="5922999516621365983">Povlecite zavihek sem, če ga želite pripeti.</translation>
@@ -1675,6 +1678,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8131740175452115882">Potrdi</translation>
 <translation id="8132598642024322408">Zdaj: <ph name="PRICE" />, prej: <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Za vsako spletno mesto ali aplikacijo uporabite edinstveno geslo. Če nekdo odkrije znova uporabljeno geslo, lahko z njim dostopa do drugih vaših računov. Kliknite, če želite odpreti spletno mesto in spremeniti gesla.</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} zaprt zavihek}one{{count} zaprt zavihek}two{{count} zaprta zavihka}few{{count} zaprti zavihki}other{{count} zaprtih zavihkov}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 drug}one{# drug}two{# druga}few{# drugi}other{# drugih}}</translation>
 <translation id="8150167929304790980">Celotno ime</translation>
 <translation id="8152331954420209374">Odpiranje Lensa</translation>

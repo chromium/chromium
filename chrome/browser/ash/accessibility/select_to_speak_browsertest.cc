@@ -86,6 +86,17 @@ class SelectToSpeakTest : public AccessibilityFeatureBrowserTest {
     histogram_tester_.ExpectTotalCount(kSpeechDurationMetric, expected_count);
   }
 
+  void TearDownOnMainThread() override {
+    if (console_observer_ && !console_observer_->HasErrorsOrWarnings()) {
+      // In manifest v3, there are errors that get fired during tear down that
+      // can cause tests to flake. To avoid flakiness, we reset the console
+      // observer, but only if there were no errors during the test.
+      console_observer_.reset();
+    }
+
+    AccessibilityFeatureBrowserTest::TearDownOnMainThread();
+  }
+
  protected:
   SelectToSpeakTest() = default;
   ~SelectToSpeakTest() override = default;

@@ -31,7 +31,7 @@ public class SafetyHubAccountPasswordsHasWeakPasswordsModuleHelper
 
     @Override
     public String getTitle() {
-        return mContext.getString(R.string.safety_hub_reused_weak_passwords_title);
+        return mContext.getString(R.string.safety_hub_reused_weak_account_passwords_title);
     }
 
     @Override

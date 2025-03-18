@@ -81,12 +81,6 @@ class SearchEngineChoiceService : public KeyedService {
       bool is_regular_profile,
       const TemplateURLService& template_url_service);
 
-  // Returns the country ID to use in the context of any search engine choice
-  // logic. Can be overridden using `switches::kSearchEngineChoiceCountry`.
-  // See `//components/country_codes` for the Country ID format.
-  // TODO(crbug.com/328040066): Move to `//components/regional_capabilities`.
-  int GetCountryId();
-
   // Returns key information needed to show a search engine choice screen, like
   // the template URLs for the engines to show. See
   // `search_engines::ChoiceScreenData` for more details.

@@ -7058,8 +7058,11 @@
       <message name="IDS_ON_TASK_POD_UNPIN_TAP_STRIP_ACCESSIBLE_NAME" desc="Accessible name for the hide tab strip button in the OnTask pod.">
         Hide tabs
       </message>
-      <message name="IDS_ON_TASK_POD_TOGGLE_SNAP_LOCATION_ACCESSIBLE_NAME" desc="Accessible name for the toggle snap location button in the OnTask pod.">
-        Toggle snap location
+      <message name="IDS_ON_TASK_MOVE_POD_TOP_LEFT_ACCESSIBLE_NAME" desc="Accessible name for the move pod to top left button in the OnTask pod.">
+        Move to top left
+      </message>
+      <message name="IDS_ON_TASK_MOVE_POD_TOP_RIGHT_ACCESSIBLE_NAME" desc="Accessible name for the move pod to top right button in the OnTask pod.">
+        Move to top right
       </message>
 
       <!-- Strings for School Tools -->

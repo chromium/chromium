@@ -231,6 +231,10 @@ void ThreadGroupImpl::Start(
     WorkerEnvironment worker_environment,
     bool synchronous_thread_start_for_testing,
     std::optional<TimeDelta> may_block_threshold) {
+#if DCHECK_IS_ON()
+  DCHECK(!in_start().start_called);
+  in_start().start_called = true;
+#endif
   ThreadGroup::StartImpl(
       max_tasks, max_best_effort_tasks, suggested_reclaim_time,
       service_thread_task_runner, worker_thread_observer, worker_environment,
@@ -926,6 +930,10 @@ void ThreadGroupImpl::EnsureEnoughWorkersLockRequired(
   if (max_tasks_ == 0) {
     return;
   }
+#if DCHECK_IS_ON()
+  // CHECK() that Start() is complete, if workers are to be created.
+  after_start();
+#endif
   if (join_for_testing_started_) [[unlikely]] {
     return;
   }

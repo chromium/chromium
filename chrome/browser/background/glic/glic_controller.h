@@ -25,6 +25,12 @@ class GlicController {
   // Shows the glic UI.
   virtual void Show(mojom::InvocationSource source);
 
+  // Forcibly closes glic UI.
+  virtual void Close();
+
+  // Returns true if the glic UI is visible.
+  virtual bool IsShowing() const;
+
  private:
   // Helper that implements both Toggle and Show.
   void ToggleUI(bool prevent_close, mojom::InvocationSource source);

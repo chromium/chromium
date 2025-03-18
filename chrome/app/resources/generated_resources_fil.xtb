@@ -625,6 +625,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1430915738399379752">I-print</translation>
 <translation id="1431188203598586230">Panghuling update sa software</translation>
 <translation id="1432581352905426595">Pamahalaan ang mga search engine</translation>
+<translation id="1432650420699700107">Puwedeng hilingin ng mga site na kumonekta sa anumang device sa iyong lokal na network</translation>
 <translation id="1433478348197382180">Reading Mode</translation>
 <translation id="1433980411933182122">Pag-startup</translation>
 <translation id="1434696352799406980">Ire-reset nito ang iyong page sa pagsisimula, page ng bagong tab, search engine at mga naka-pin na tab. Idi-disable din nito ang lahat ng extension at iki-clear ang pansamantalang data tulad ng cookies. Hindi iki-clear ang iyong mga bookmark, history at naka-save na password.</translation>
@@ -1346,6 +1347,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1918127774159128277">I-refresh ang Mga Kakayahan ng WiFi Direct</translation>
 <translation id="1918141783557917887">&amp;Mas maliit</translation>
 <translation id="1918281588461452432">Habang nagba-browse ka sa mga site, ine-encrypt ang mga content ng page ng mga ito at sine-save ang mga ito sa iyong device</translation>
+<translation id="1919096511823372013">Maglagay ng mga link, emoji, at higit pa. Puwede ka ring makatanggap ng tulong sa pagsusulat at paggawa ng mga larawan gamit ang Google AI.</translation>
 <translation id="1919872106782726755">Para i-set up ang fingerprint, ipapindot sa iyong anak sensor ng fingerprint sa kanang sulok sa itaas ng keyboard, sa tabi ng Power button. Secure na sino-store ang data ng fingerprint ng iyong anak at hindi ito kailanman lalabas sa <ph name="DEVICE_TYPE" /> na ito.</translation>
 <translation id="192015196730532810">Puwede kang gumawa ng sarili mong grupo ng tab.</translation>
 <translation id="1920314570001095522">Walang maisasaayos na katulad na tab, pero baka magustuhan mo ang mga grupong ito</translation>
@@ -4844,6 +4846,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4364830672918311045">Ipakita ang mga notification</translation>
 <translation id="4367971618859387374">Display name</translation>
 <translation id="4368960422722232719">Ipakita ang paggamit ng memory sa card ng preview na lalabas kapag nag-hover sa tab</translation>
+<translation id="4369151461324628035">Huwag payagan ang mga site na kumonekta sa anumang device sa iyong lokal na network</translation>
 <translation id="4369215744064167350">Inaprubahan ang kahilingan sa website</translation>
 <translation id="4369233657762989723">I-on/i-off ang dictation</translation>
 <translation id="436926121798828366">Puwede mo itong baguhin anumang oras sa <ph name="SETTINGS_LINK" /></translation>
@@ -5397,6 +5400,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4772914216048388646">Maayos</translation>
 <translation id="4773112038801431077">I-upgrade ang Linux</translation>
 <translation id="4773122030389014189">I-share ang grupo ng tab na “<ph name="GROUP_NAME" />”</translation>
+<translation id="4773253008034797668">Pinapayagang kumonekta sa anumang device sa iyong lokal na network</translation>
 <translation id="477548766361111120">Payagan ang extension na basahin at baguhin ang site na ito</translation>
 <translation id="4776311127346151860">Nakakonekta na ang <ph name="DEVICE_NAME" /></translation>
 <translation id="4776594120007763294">Para magdagdag ng page na babasahin sa ibang pagkakataon, i-click ang button</translation>
@@ -7861,6 +7865,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6563002009564846727">Tingnan ang mga in-import na certificate mula sa Windows</translation>
 <translation id="6563055593659435495">Hindi makapagpanatili ng koneksyon sa iyong telepono. Tiyaking nasa malapit at naka-unlock ang iyong telepono, at naka-on ang Bluetooth at Wi-Fi</translation>
 <translation id="6564860838537532172">Kapag naghanap ka sa history ng pag-browse, ipapadala sa Google ang iyong mga paghahanap sa history, content ng page ng pinakamalalapit na tugma, at mga binuong output ng model, at posibleng makita ang mga ito ng mga taong tagasuri para mapahusay ang feature na ito.</translation>
+<translation id="6565144332292237355">Puwedeng gamitin ng mga site ang feature na ito para maghanap ng at kumonekta sa anumang device sa iyong lokal na network</translation>
 <translation id="6569931898053264308">Katamtamang Natipid</translation>
 <translation id="6570622975915850879">Gumamit ng ibang device</translation>
 <translation id="65711204837946324">Kailangan ng pahintulot para i-download</translation>
@@ -8991,6 +8996,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7377451353532943397">Patuloy na i-block ang access sa sensor</translation>
 <translation id="7377481913241237033">Kumonekta gamit ang code</translation>
 <translation id="73786666777299047">Buksan ang Chrome Web Store</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Isa pang gawain sa parehong grupo ng gawain: <ph name="OTHER_TASKS" />}one{<ph name="TASK_ROW" />. # pang gawain sa parehong grupo ng gawain: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. # pang gawain sa parehong grupo ng gawain: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380272457268061606">I-disable ang pag-recover ng lokal na data?</translation>
 <translation id="7380459290951585794">Tiyaking nasa malapit at naka-unlock ang iyong telepono at naka-on ang Bluetooth at Wi-Fi nito</translation>
 <translation id="7380622428988553498">Naglalaman ng mga invalid na character ang pangalan ng device</translation>
@@ -11579,6 +11585,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
       <ph name="LIST_ITEM" />Patakbuhin ang Mga Diagnostic sa Pagkakakonekta ng Chrome
     <ph name="END_LIST" /></translation>
 <translation id="9161172953291434881">Pinagkakatiwalaan mo ba ang site na ito sa iyong data?</translation>
+<translation id="9164418710391288146">Hindi pinapayagang kumonekta sa anumang device sa iyong lokal na network</translation>
 <translation id="9165856803582999927">I-scan ang QR code na ito gamit ang camera sa device kung saan mo gustong gawin at i-save ang iyong passkey para sa <ph name="APP_NAME" /></translation>
 <translation id="916607977885256133">Picture in Picture</translation>
 <translation id="9166253503936244008">I-scan ang QR code na ito gamit ang device na may passkey na gusto mong gamitin para sa <ph name="APP_NAME" /></translation>

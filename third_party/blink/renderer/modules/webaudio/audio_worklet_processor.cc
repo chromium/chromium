@@ -370,8 +370,9 @@ void AudioWorkletProcessor::CopyPortToArrayBuffers(
       auto backing_store = array_buffers[bus_index][channel_index]
                                .Get(isolate)
                                ->GetBackingStore();
-      memcpy(backing_store->Data(), audio_bus->Channel(channel_index)->Data(),
-             bus_length * sizeof(float));
+      UNSAFE_TODO(memcpy(backing_store->Data(),
+                         audio_bus->Channel(channel_index)->Data(),
+                         bus_length * sizeof(float)));
     }
   }
 }
@@ -394,10 +395,11 @@ void AudioWorkletProcessor::CopyArrayBuffersToPort(
       // An ArrayBuffer might be transferred. So we need to check the byte
       // length and silence the output buffer if needed.
       if (backing_store->ByteLength() == bus_length) {
-        memcpy(audio_bus->Channel(channel_index)->MutableData(),
-               backing_store->Data(), bus_length);
+        UNSAFE_TODO(memcpy(audio_bus->Channel(channel_index)->MutableData(),
+                           backing_store->Data(), bus_length));
       } else {
-        memset(audio_bus->Channel(channel_index)->MutableData(), 0, bus_length);
+        UNSAFE_TODO(memset(audio_bus->Channel(channel_index)->MutableData(), 0,
+                           bus_length));
       }
     }
   }
@@ -412,7 +414,8 @@ void AudioWorkletProcessor::ZeroArrayBuffers(
       auto backing_store = array_buffers[bus_index][channel_index]
                                .Get(isolate)
                                ->GetBackingStore();
-      memset(backing_store->Data(), 0, backing_store->ByteLength());
+      UNSAFE_TODO(
+          memset(backing_store->Data(), 0, backing_store->ByteLength()));
     }
   }
 }
@@ -551,8 +554,8 @@ bool AudioWorkletProcessor::CopyParamValueMapToObject(
       return false;
     }
 
-    memcpy(float32_array->Buffer()->GetBackingStore()->Data(),
-           param_array->Data(), array_length * sizeof(float));
+    UNSAFE_TODO(memcpy(float32_array->Buffer()->GetBackingStore()->Data(),
+                       param_array->Data(), array_length * sizeof(float)));
   }
 
   return true;

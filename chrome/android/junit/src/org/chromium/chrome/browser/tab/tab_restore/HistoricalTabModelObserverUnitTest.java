@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -76,7 +75,6 @@ public class HistoricalTabModelObserverUnitTest {
 
         when(mTabGroupModelFilter.isTabGroupHiding(any())).thenReturn(false);
         when(mTabGroupModelFilter.isTabInTabGroup(any())).thenReturn(false);
-        when(mTabGroupModelFilter.getRelatedTabCountForRootId(anyInt())).thenReturn(-1);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getComprehensiveModel()).thenReturn(mTabModel);
         when(mTabModel.getProfile()).thenReturn(mProfile);

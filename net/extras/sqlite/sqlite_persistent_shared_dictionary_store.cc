@@ -1006,7 +1006,7 @@ SQLitePersistentSharedDictionaryStore::Backend::GetOriginsBetweenImpl(
 
   std::set<url::Origin> origins;
   while (statement.Step()) {
-    const std::string frame_origin_string = statement.ColumnString(0);
+    const std::string_view frame_origin_string = statement.ColumnStringView(0);
     origins.insert(url::Origin::Create(GURL(frame_origin_string)));
   }
   return base::ok(std::vector<url::Origin>(origins.begin(), origins.end()));

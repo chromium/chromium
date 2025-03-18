@@ -42,10 +42,13 @@ _PRIMARY_ANDROID_DEPS_DIR = os.path.join(_CHROMIUM_SRC, 'third_party',
 _ADDITIONAL_README_PATHS = 'additional_readme_paths.json'
 
 # Path to Bill of Materials json output by gradle.
-_BOM_PATH = 'bill_of_materials.json'
+_BOM_NAME = 'bill_of_materials.json'
 
 # Path to BUILD.gn file from custom 'android_deps' directory.
 _BUILD_GN = 'BUILD.gn'
+
+# The word DEPS in case we forget how to spell XD.
+_DEPS = 'DEPS'
 
 # Path to build.gradle file relative to custom 'android_deps' directory.
 _BUILD_GRADLE = 'build.gradle'
@@ -72,7 +75,6 @@ _PRIMARY_ANDROID_DEPS_FILES = [
 # Git-controlled files needed by and updated by this tool.
 # Relative to args.android_deps_dir.
 _CUSTOM_ANDROID_DEPS_FILES = [
-    os.path.join('..', '..', 'DEPS'),
     _BUILD_GN,
     _ADDITIONAL_README_PATHS,
     'subprojects.txt',
@@ -531,6 +533,10 @@ def main():
         help='Path to directory containing build.gradle from chromium-dir.',
         default=_PRIMARY_ANDROID_DEPS_DIR)
     parser.add_argument(
+        '--output-subdir',
+        help='Path to subdirectory under --android-deps-dir to output to '
+        'instead.')
+    parser.add_argument(
         '--build-dir',
         help='Path to build directory (default is temporary directory).')
     parser.add_argument('--ignore-licenses',
@@ -563,7 +569,8 @@ def main():
         format='%(levelname).1s %(relativeCreated)6d %(message)s')
     debug = args.verbose_count >= 2
 
-    if 'SWARMING_TASK_ID' not in os.environ and not args.local:
+    if 'SWARMING_TASK_ID' not in os.environ and not (args.local
+                                                     or args.output_subdir):
         logging.warning(
             'Detected not running on a bot. You probably want to use --local')
 
@@ -572,10 +579,15 @@ def main():
             args.android_deps_dir, _BUILD_GRADLE))
     is_primary_android_deps = os.path.samefile(args.android_deps_dir,
                                                _PRIMARY_ANDROID_DEPS_DIR)
-    android_deps_subdir = os.path.relpath(args.android_deps_dir, _CHROMIUM_SRC)
+    android_deps_relpath = os.path.relpath(args.android_deps_dir,
+                                           _CHROMIUM_SRC)
+    output_android_deps_dir = args.android_deps_dir
+    if args.output_subdir:
+        output_android_deps_dir = os.path.join(args.android_deps_dir,
+                                               args.output_subdir)
 
     with BuildDir(args.build_dir) as build_dir:
-        build_android_deps_dir = os.path.join(build_dir, android_deps_subdir)
+        build_android_deps_dir = os.path.join(build_dir, android_deps_relpath)
 
         logging.info('Using build directory: %s', build_dir)
         if args.build_dir:
@@ -593,6 +605,9 @@ def main():
              _CUSTOM_ANDROID_DEPS_FILES,
              src_path_must_exist=is_primary_android_deps)
 
+        CopyFileOrDirectory(os.path.join(_CHROMIUM_SRC, _DEPS),
+                            os.path.join(build_dir, _DEPS))
+
         if args.no_subprojects:
             subprojects = None
         else:
@@ -604,7 +619,7 @@ def main():
                 subproject_subdir = f'subproject_{subproject_name}'
                 Copy(args.android_deps_dir, [original_path],
                      build_android_deps_dir,
-                     [os.path.join(subproject_subdir, 'build.gradle')])
+                     [os.path.join(subproject_subdir, _BUILD_GRADLE)])
                 subproject_subdirs[subproject_name] = subproject_subdir
 
         _GenerateSettingsGradle(
@@ -634,8 +649,8 @@ def main():
         logging.info('# Reformat %s.',
                      os.path.join(args.android_deps_dir, _BUILD_GN))
         gn_path = os.path.relpath(_GN_PATH, _CHROMIUM_SRC)
-        gn_input = os.path.join(
-            os.path.relpath(build_android_deps_dir, _CHROMIUM_SRC), _BUILD_GN)
+
+        gn_input = os.path.join(build_android_deps_dir, _BUILD_GN)
         gn_args = [gn_path, 'format', gn_input]
         try:
             RunCommand(gn_args, print_stdout=debug, cwd=_CHROMIUM_SRC)
@@ -667,7 +682,7 @@ def main():
                             f.write(z.read(_THIRD_PARTY_LICENSE_FILENAME))
 
         logging.info('# Compare CIPD packages.')
-        existing_packages = ParseDeps(args.android_deps_dir, _LIBS_DIR)
+        existing_packages = ParseDeps(output_android_deps_dir, _LIBS_DIR)
         build_packages = ParseDeps(build_android_deps_dir, _LIBS_DIR)
 
         deleted_packages = []
@@ -686,25 +701,25 @@ def main():
         # Copy updated DEPS and BUILD.gn to build directory.
         Copy(build_android_deps_dir,
              _CUSTOM_ANDROID_DEPS_FILES,
-             args.android_deps_dir,
+             output_android_deps_dir,
              _CUSTOM_ANDROID_DEPS_FILES,
              src_path_must_exist=is_primary_android_deps)
 
         # Not all projects (eg: the primary project) output a bill of materials.
         # Thus only copy if it exists.
-        Copy(build_android_deps_dir, [_BOM_PATH],
-             args.android_deps_dir, [_BOM_PATH],
+        Copy(build_android_deps_dir, [_BOM_NAME],
+             output_android_deps_dir, [_BOM_NAME],
              src_path_must_exist=False)
 
         # Delete obsolete or updated package directories.
         for pkg in existing_packages.values():
-            pkg_path = os.path.join(args.android_deps_dir, pkg.path)
+            pkg_path = os.path.join(output_android_deps_dir, pkg.path)
             DeleteDirectory(pkg_path)
 
         # Copy new and updated packages from build directory.
         for pkg in build_packages.values():
             pkg_path = pkg.path
-            dst_pkg_path = os.path.join(args.android_deps_dir, pkg_path)
+            dst_pkg_path = os.path.join(output_android_deps_dir, pkg_path)
             src_pkg_path = os.path.join(build_android_deps_dir, pkg_path)
             CopyFileOrDirectory(src_pkg_path,
                                 dst_pkg_path,

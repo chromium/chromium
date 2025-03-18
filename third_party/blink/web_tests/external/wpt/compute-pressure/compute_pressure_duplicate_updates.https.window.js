@@ -41,7 +41,7 @@ pressure_test(async (t) => {
   });
 
   const syncObserver = new SyncPressureObserver(t);
-  await syncObserver.observer().observe('cpu', {sampleInterval: 100});
+  await syncObserver.observer().observe('cpu', {sampleInterval: 500});
 
   await update_virtual_pressure_source('cpu', 'critical');
   await syncObserver.waitForUpdate();
@@ -56,6 +56,6 @@ pressure_test(async (t) => {
   assert_equals(syncObserver.changes()[2][0].state, 'nominal');
 
   assert_equals(syncObserver.changes().length, 3);
-}, 'Updates should be received even when no changes when sampleInterval is set.');
+}, 'Updates should be received even when no state change, if sampleInterval is set.');
 
 mark_as_done();

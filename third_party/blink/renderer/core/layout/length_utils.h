@@ -64,6 +64,14 @@ LayoutUnit BlockSizeFromAspectRatio(const BoxStrut& border_padding,
 // Used to distinguish between the different length classes.
 enum class LengthTypeInternal { kMin, kMain, kMax };
 
+// How fit-content should resolve if the available-size is indefinite.
+enum class FitContentMode {
+  kNormal,  // fit-content will resolve as min-content for the min-size, and
+            // max-content for the max-size.
+  kMinContribution,  // fit-content will resolve as min-content.
+  kMaxContribution   // fit-content will resolve as max-content.
+};
+
 // Resolve means translate a Length to a LayoutUnit.
 //  - |ConstraintSpace| the information given by the parent, e.g. the
 //    available-size.
@@ -82,6 +90,7 @@ ResolveInlineLengthInternal(const ConstraintSpace&,
                             const Length&,
                             const Length* auto_length,
                             LengthTypeInternal length_type,
+                            FitContentMode fit_content_mode,
                             LayoutUnit override_available_size,
                             CalcSizeKeywordBehavior calc_size_keyword_behavior);
 
@@ -106,11 +115,12 @@ inline LayoutUnit ResolveMinInlineLength(
     MinMaxSizesFunctionRef min_max_sizes_func,
     const Length& length,
     const Length* auto_length = nullptr,
-    LayoutUnit override_available_size = kIndefiniteSize) {
+    LayoutUnit override_available_size = kIndefiniteSize,
+    FitContentMode fit_content_mode = FitContentMode::kNormal) {
   const LayoutUnit result = ResolveInlineLengthInternal(
       constraint_space, style, border_padding, min_max_sizes_func, length,
-      auto_length, LengthTypeInternal::kMin, override_available_size,
-      CalcSizeKeywordBehavior::kAsSpecified);
+      auto_length, LengthTypeInternal::kMin, fit_content_mode,
+      override_available_size, CalcSizeKeywordBehavior::kAsSpecified);
   return result == kIndefiniteSize ? border_padding.InlineSum() : result;
 }
 
@@ -121,10 +131,11 @@ inline LayoutUnit ResolveMaxInlineLength(
     const BoxStrut& border_padding,
     MinMaxSizesFunctionRef min_max_sizes_func,
     const Length& length,
-    LayoutUnit override_available_size = kIndefiniteSize) {
+    LayoutUnit override_available_size = kIndefiniteSize,
+    FitContentMode fit_content_mode = FitContentMode::kNormal) {
   const LayoutUnit result = ResolveInlineLengthInternal(
       constraint_space, style, border_padding, min_max_sizes_func, length,
-      /* auto_length */ nullptr, LengthTypeInternal::kMax,
+      /* auto_length */ nullptr, LengthTypeInternal::kMax, fit_content_mode,
       override_available_size, CalcSizeKeywordBehavior::kAsSpecified);
   return result == kIndefiniteSize ? LayoutUnit::Max() : result;
 }
@@ -142,8 +153,8 @@ inline LayoutUnit ResolveMainInlineLength(
         CalcSizeKeywordBehavior::kAsSpecified) {
   return ResolveInlineLengthInternal(
       constraint_space, style, border_padding, min_max_sizes_func, length,
-      auto_length, LengthTypeInternal::kMain, override_available_size,
-      calc_size_keyword_behavior);
+      auto_length, LengthTypeInternal::kMain, FitContentMode::kNormal,
+      override_available_size, calc_size_keyword_behavior);
 }
 
 // Used for resolving min block lengths, (|ComputedStyle::MinLogicalHeight|).
@@ -288,6 +299,7 @@ MinMaxSizes ComputeMinMaxInlineSizes(
     const Length* auto_min_length,
     MinMaxSizesFunctionRef min_max_sizes_func,
     TransferredSizesMode transferred_sizes_mode = TransferredSizesMode::kNormal,
+    FitContentMode fit_content_mode = FitContentMode::kNormal,
     LayoutUnit override_available_size = kIndefiniteSize);
 
 // Returns block size of the node's border box by resolving the computed value

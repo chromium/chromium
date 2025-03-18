@@ -207,7 +207,8 @@ void IDBValueWrapper::MaybeCompress() {
     // Compression wasn't very successful, but we still allocated a large chunk
     // of memory, so we can repurpose it. This copy saves us from making another
     // allocation later on in `MaybeStoreInBlob()` or `TakeWireBytes()`.
-    memcpy(wire_data_buffer_.data(), wire_data_.data(), wire_data_size);
+    UNSAFE_TODO(
+        memcpy(wire_data_buffer_.data(), wire_data_.data(), wire_data_size));
     wire_data_buffer_.resize(static_cast<wtf_size_t>(wire_data_size));
   }
 

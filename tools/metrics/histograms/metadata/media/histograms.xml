@@ -3592,18 +3592,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.GPU.OutputFormat" enum="OutputFormat"
-    expires_after="2025-07-13">
-  <owner>hitawala@chromium.org</owner>
-  <owner>vasilyt@chromium.org</owner>
-  <owner>shared-image-team@google.com</owner>
-  <summary>
-    Records the format used for creating video frames with GpuMemoryBuffers.
-    Result is an enum that represents OutputFormat in
-    GpuVideoAcceleratorFactoriesImpl. Recorded once per VideoFrame creation.
-  </summary>
-</histogram>
-
 <histogram name="Media.GPU.OutputFormatHardwareGmb" enum="OutputFormat"
     expires_after="2025-07-13">
   <owner>hitawala@chromium.org</owner>
@@ -3960,6 +3948,17 @@ chromium-metrics-reviews@google.com.
     the number of rebuffering events that occured during that playback. Only
     reported when rebuffering happened. Therefore, alway refer to other UMAs
     like `Media.RebuffersCount` when checking this UMA.
+  </summary>
+</histogram>
+
+<histogram name="Media.MediaCodecError.NegativeCodecExceptionErrorCode"
+    units="CodecErrorCode" expires_after="2026-01-15">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Negative error code from a CodecException reported by MediaCodec. Reported
+    whenever MediaCodec returns a CodecException, and the CodecException is
+    unknown and a negative value.
   </summary>
 </histogram>
 
@@ -4471,21 +4470,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Heuristically detects if the user has muted the microphone or not. Measured
     approximately four times per minute while an audio input stream is active.
-  </summary>
-</histogram>
-
-<histogram name="Media.Midi.BackendType" enum="MidiBackendType"
-    expires_after="2025-08-03">
-  <owner>toyoshim@chromium.org</owner>
-  <owner>mjwilson@chromium.org</owner>
-  <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
-  <summary>
-    Reports the MidiManager backend type. This metric is recorded only on
-    Android to understand how many users still depend on the USB MIDI backend
-    that was originally used on pre-M Android devices, but potentially has been
-    used on M+ devices as the Android MIDI API support is optional, and vendors
-    can decide not to support the API. Emitted everytime a manager is created to
-    know the actual usages rather than supporting device ratio.
   </summary>
 </histogram>
 

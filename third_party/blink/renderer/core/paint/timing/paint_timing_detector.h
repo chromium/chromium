@@ -9,7 +9,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
-#include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/paint/timing/lcp_objects.h"
@@ -81,15 +80,6 @@ class CORE_EXPORT PaintTimingDetector
   bool NeedToNotifyInputOrScroll() const;
   void NotifyScroll(mojom::blink::ScrollType);
 
-  // The returned value indicates whether the candidates have changed.
-  bool NotifyMetricsIfLargestImagePaintChanged(
-      base::TimeTicks image_paint_time,
-      uint64_t image_size,
-      ImageRecord* image_record,
-      double image_bpp,
-      std::optional<WebURLRequest::Priority> priority);
-  bool NotifyMetricsIfLargestTextPaintChanged(base::TimeTicks, uint64_t size);
-
   void DidChangePerformanceTiming();
 
   inline static bool IsTracing() {
@@ -155,8 +145,6 @@ class CORE_EXPORT PaintTimingDetector
   // Method called to stop recording the Largest Contentful Paint.
   void OnInputOrScroll();
 
-  bool HasLargestTextPaintChangedForMetrics(base::TimeTicks,
-                                            uint64_t size) const;
   void UpdateMetricsLcp();
   Member<LocalFrameView> frame_view_;
   // This member lives forever because it is also used for Text Element

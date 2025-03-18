@@ -112,7 +112,7 @@ void XRFrameTransport::FrameSubmitMissing(
     device::mojom::blink::XRPresentationProvider* vr_presentation_provider,
     gpu::gles2::GLES2Interface* gl,
     int16_t vr_frame_id) {
-  TRACE_EVENT0("gpu", __FUNCTION__);
+  TRACE_EVENT0("gpu", "FrameSubmitMissing");
   gpu::SyncToken sync_token;
   // https://crbug.com/1132837 : Apparently the GL context is sometimes null
   // when reaching this method. Avoid a crash in that case, but do send the mojo
@@ -127,7 +127,7 @@ void XRFrameTransport::FrameSubmitMissingWebGPU(
     device::mojom::blink::XRPresentationProvider* vr_presentation_provider,
     scoped_refptr<DawnControlClientHolder> dawn_control_client,
     int16_t vr_frame_id) {
-  TRACE_EVENT0("gpu", __FUNCTION__);
+  TRACE_EVENT0("gpu", "FrameSubmitMissingWebGPU");
   gpu::SyncToken sync_token;
 
   if (dawn_control_client) {
@@ -307,7 +307,7 @@ bool XRFrameTransport::FrameSubmitWebGPU(
 }
 
 void XRFrameTransport::OnSubmitFrameTransferred(bool success) {
-  DVLOG(3) << __FUNCTION__;
+  DVLOG(3) << __func__;
   waiting_for_previous_frame_transfer_ = false;
   last_transfer_succeeded_ = success;
 }
@@ -322,7 +322,7 @@ void XRFrameTransport::WaitForPreviousTransfer() {
   TRACE_EVENT0("gpu", "waitForPreviousTransferToFinish");
   while (waiting_for_previous_frame_transfer_) {
     if (!submit_frame_client_receiver_.WaitForIncomingCall()) {
-      DLOG(ERROR) << __FUNCTION__ << ": Failed to receive response";
+      DLOG(ERROR) << __func__ << ": Failed to receive response";
       break;
     }
   }
@@ -330,7 +330,7 @@ void XRFrameTransport::WaitForPreviousTransfer() {
 }
 
 void XRFrameTransport::OnSubmitFrameRendered() {
-  DVLOG(3) << __FUNCTION__;
+  DVLOG(3) << __func__;
   waiting_for_previous_frame_render_ = false;
   if (on_submit_frame_rendered_callback_) {
     on_submit_frame_rendered_callback_.Run();
@@ -343,7 +343,7 @@ base::TimeDelta XRFrameTransport::WaitForPreviousRenderToFinish() {
   base::TimeTicks start = base::TimeTicks::Now();
   while (waiting_for_previous_frame_render_) {
     if (!submit_frame_client_receiver_.WaitForIncomingCall()) {
-      DLOG(ERROR) << __FUNCTION__ << ": Failed to receive response";
+      DLOG(ERROR) << __func__ << ": Failed to receive response";
       break;
     }
   }
@@ -366,7 +366,7 @@ base::TimeDelta XRFrameTransport::WaitForGpuFenceReceived() {
   base::TimeTicks start = base::TimeTicks::Now();
   while (waiting_for_previous_frame_fence_) {
     if (!submit_frame_client_receiver_.WaitForIncomingCall()) {
-      DLOG(ERROR) << __FUNCTION__ << ": Failed to receive response";
+      DLOG(ERROR) << __func__ << ": Failed to receive response";
       break;
     }
   }

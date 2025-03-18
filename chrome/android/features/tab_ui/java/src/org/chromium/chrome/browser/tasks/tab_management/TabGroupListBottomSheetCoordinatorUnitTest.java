@@ -5,7 +5,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -106,13 +105,5 @@ public class TabGroupListBottomSheetCoordinatorUnitTest {
                         any(TabGroupListBottomSheetView.class),
                         eq(true),
                         eq(StateChangeReason.INTERACTION_COMPLETE));
-    }
-
-    @Test
-    public void testOnSheetClosed() {
-        mCoordinator = spy(mCoordinator);
-        TabGroupListBottomSheetCoordinatorDelegate delegate = mCoordinator.createDelegate();
-        delegate.onSheetClosed();
-        verify(mCoordinator).destroy();
     }
 }

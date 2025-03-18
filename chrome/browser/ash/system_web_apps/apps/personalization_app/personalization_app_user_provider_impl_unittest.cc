@@ -36,6 +36,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_image/user_image.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/video_capture_service.h"
@@ -219,9 +220,7 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
     user_manager_->SaveUserDisplayName(
         account_id, base::UTF8ToUTF16(std::string(kFakeTestName)));
     user_manager_->UserLoggedIn(
-        account_id,
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
-        /*browser_restart=*/false, /*is_child=*/false);
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
 
     // Create a profile and set it as User profile.
     profile_ = profile_manager_.CreateTestingProfile(kFakeTestEmail);

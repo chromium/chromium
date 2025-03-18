@@ -27,7 +27,7 @@ class TabMenuModelDelegate;
 class TabMenuModel : public ui::SimpleMenuModel {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAddANoteTabMenuItem);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSideBySideMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSplitTabsMenuItem);
 
   TabMenuModel(ui::SimpleMenuModel::Delegate* delegate,
                TabMenuModelDelegate* tab_menu_model_delegate,

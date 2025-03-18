@@ -42,8 +42,8 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
@@ -147,6 +147,8 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
     private final Context mContext;
     private final Profile mProfile;
     private final SharedPreferencesManager mPreferencesManager;
+    private final BaseNotificationManagerProxy mNotificationManagerProxy =
+            BaseNotificationManagerProxyFactory.create();
 
     /**
      * Constructor.
@@ -168,44 +170,57 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
     }
 
     @Override
-    public boolean canPostNotification() {
+    public void canPostNotification(Callback<Boolean> callback) {
         // Currently we only post notifications for explicit price tracking which is gated by the
         // "shopping list" feature flag. When we start implicit price tracking, we should use a
         // separate flag and add the check on it here.
         if (!areAppNotificationsEnabled()
                 || !CommerceFeatureUtils.isShoppingListEligible(
                         ShoppingServiceFactory.getForProfile(mProfile))) {
-            return false;
+            callback.onResult(false);
+            return;
         }
 
-        NotificationChannel channel = getNotificationChannel();
-        if (channel == null || channel.getImportance() == NotificationManager.IMPORTANCE_NONE) {
-            return false;
-        }
-
-        return true;
+        getNotificationChannel(
+                (channel) -> {
+                    callback.onResult(
+                            channel != null
+                                    && channel.getImportance()
+                                            != NotificationManager.IMPORTANCE_NONE);
+                });
     }
 
     @Override
-    public boolean canPostNotificationWithMetricsRecorded() {
+    public void canPostNotificationWithMetricsRecorded(Callback<Boolean> callback) {
         if (!CommerceFeatureUtils.isShoppingListEligible(
                 ShoppingServiceFactory.getForProfile(mProfile))) {
-            return false;
+            callback.onResult(false);
+            return;
         }
         boolean isSystemNotificationEnabled = areAppNotificationsEnabled();
         RecordHistogram.recordBooleanHistogram(
                 NOTIFICATION_ENABLED_HISTOGRAM, isSystemNotificationEnabled);
-        if (!isSystemNotificationEnabled) return false;
+        if (!isSystemNotificationEnabled) {
+            callback.onResult(false);
+            return;
+        }
 
-        NotificationChannel channel = getNotificationChannel();
-        boolean isChannelCreated = channel != null;
-        RecordHistogram.recordBooleanHistogram(
-                "Commerce.PriceDrop.NotificationChannelCreated", isChannelCreated);
-        if (!isChannelCreated) return false;
-        boolean isChannelBlocked = channel.getImportance() == NotificationManager.IMPORTANCE_NONE;
-        RecordHistogram.recordBooleanHistogram(
-                "Commerce.PriceDrop.NotificationChannelBlocked", isChannelBlocked);
-        return !isChannelBlocked;
+        getNotificationChannel(
+                (channel) -> {
+                    boolean isChannelCreated = channel != null;
+                    RecordHistogram.recordBooleanHistogram(
+                            "Commerce.PriceDrop.NotificationChannelCreated", isChannelCreated);
+                    if (!isChannelCreated) {
+                        callback.onResult(false);
+                        return;
+                    }
+
+                    boolean isChannelBlocked =
+                            channel.getImportance() == NotificationManager.IMPORTANCE_NONE;
+                    RecordHistogram.recordBooleanHistogram(
+                            "Commerce.PriceDrop.NotificationChannelBlocked", isChannelBlocked);
+                    callback.onResult(!isChannelBlocked);
+                });
     }
 
     @Override
@@ -366,10 +381,8 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
 
     @Override
     public void createNotificationChannel() {
-        NotificationChannel channel = getNotificationChannel();
-        if (channel != null) return;
         new ChannelsInitializer(
-                        NotificationManagerProxyImpl.getInstance(),
+                        mNotificationManagerProxy,
                         ChromeChannelDefinitions.getInstance(),
                         mContext.getResources())
                 .ensureInitialized(ChromeChannelDefinitions.ChannelId.PRICE_DROP_DEFAULT);
@@ -402,16 +415,16 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
 
     @Override
     @VisibleForTesting
-    public NotificationChannel getNotificationChannel() {
-        return NotificationManagerProxyImpl.getInstance()
-                .getNotificationChannel(ChromeChannelDefinitions.ChannelId.PRICE_DROP_DEFAULT);
+    public void getNotificationChannel(Callback<NotificationChannel> callback) {
+        mNotificationManagerProxy.getNotificationChannel(
+                ChromeChannelDefinitions.ChannelId.PRICE_DROP_DEFAULT, callback);
     }
 
     /** Delete price drop notification channel for testing. */
     @Override
     public void deleteChannelForTesting() {
-        NotificationManagerProxyImpl.getInstance()
-                .deleteNotificationChannel(ChromeChannelDefinitions.ChannelId.PRICE_DROP_DEFAULT);
+        mNotificationManagerProxy.deleteNotificationChannel(
+                ChromeChannelDefinitions.ChannelId.PRICE_DROP_DEFAULT);
     }
 
     @Override
@@ -506,7 +519,7 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
     }
 
     private static void dismissNotification(int notificationId) {
-        NotificationManagerProxyImpl.getInstance()
+        BaseNotificationManagerProxyFactory.create()
                 .cancel(PriceDropNotifier.NOTIFICATION_TAG, notificationId);
     }
 }

@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 namespace autofill::payments {
 
@@ -74,7 +75,7 @@ class BnplManagerTest : public Test {
   const std::string kAppLocale = "en-GB";
   const std::u16string kLegalMessage = u"LEGAL_MESSAGE";
   const std::string kCurrency = "USD";
-  const GURL kDomain = GURL("https://dummytest.com/");
+  const GURL kDomain = GURL("https://dummytest.com/somepathforurl");
   const uint64_t kAmount = 1'000'000;
 
   void SetUp() override {
@@ -390,7 +391,8 @@ TEST_F(
           FieldsAre(kBillingCustomerNumber,
                     base::NumberToString(
                         linked_issuer.payment_instrument()->instrument_id()),
-                    _, kDomain, kAmount, kCurrency),
+                    _, url::Origin::Create(GURL(kDomain)).GetURL(), kAmount,
+                    kCurrency),
           /*callback=*/_))
       .Times(1);
 
@@ -425,7 +427,8 @@ TEST_F(
           FieldsAre(kBillingCustomerNumber,
                     base::NumberToString(
                         linked_issuer.payment_instrument()->instrument_id()),
-                    kRiskData, kDomain, kAmount, kCurrency),
+                    kRiskData, url::Origin::Create(GURL(kDomain)).GetURL(),
+                    kAmount, kCurrency),
           /*callback=*/_))
       .Times(1);
 
@@ -1004,7 +1007,8 @@ TEST_F(BnplManagerTest, CreateBnplPaymentInstrument_Success) {
   EXPECT_CALL(*payments_network_interface_,
               GetBnplPaymentInstrumentForFetchingUrl(
                   FieldsAre(kBillingCustomerNumber, kInstrumentId, kRiskData,
-                            kDomain, kAmount, kCurrency),
+                            url::Origin::Create(GURL(kDomain)).GetURL(),
+                            kAmount, kCurrency),
                   _))
       .Times(1);
 

@@ -8,6 +8,7 @@
 #include "components/permissions/android/permission_prompt/permission_dialog_delegate.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
+#include "components/permissions/permissions_client.h"
 #include "components/resources/android/theme_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
@@ -186,8 +187,9 @@ EmbeddedPermissionPromptAndroid::GetAnnotatedMessageText() const {
           /*bolded_ranges=*/{});
     case Variant::kOsSystemSettings:
       return PermissionRequest::AnnotatedMessageText(
-          l10n_util::GetStringFUTF16(IDS_PERMISSION_OFF_FOR_CHROME,
-                                     GetPermissionNameTextFragment()),
+          l10n_util::GetStringFUTF16(
+              IDS_PERMISSION_OFF_FOR_CHROME, GetPermissionNameTextFragment(),
+              PermissionsClient::Get()->GetClientApplicationName()),
           /*bolded_ranges=*/{});
     case Variant::kPreviouslyDenied:
       return PermissionRequest::AnnotatedMessageText(

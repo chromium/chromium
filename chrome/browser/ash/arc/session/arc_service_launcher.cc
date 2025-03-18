@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -25,6 +27,7 @@
 #include "chrome/browser/ash/arc/auth/arc_auth_service.h"
 #include "chrome/browser/ash/arc/bluetooth/arc_bluetooth_bridge.h"
 #include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
+#include "chrome/browser/ash/arc/dlc_installer/arc_dlc_notification_manager_factory_impl.h"
 #include "chrome/browser/ash/arc/enterprise/arc_enterprise_reporting_service.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service_factory.h"
 #include "chrome/browser/ash/arc/error_notification/arc_error_notification_bridge.h"
@@ -39,6 +42,7 @@
 #include "chrome/browser/ash/arc/instance_throttle/arc_instance_throttle.h"
 #include "chrome/browser/ash/arc/intent_helper/arc_settings_service.h"
 #include "chrome/browser/ash/arc/intent_helper/chrome_arc_intent_helper_delegate.h"
+#include "chrome/browser/ash/arc/locked_fullscreen/arc_locked_fullscreen_manager.h"
 #include "chrome/browser/ash/arc/metrics/arc_metrics_service_proxy.h"
 #include "chrome/browser/ash/arc/nearby_share/arc_nearby_share_bridge.h"
 #include "chrome/browser/ash/arc/net/browser_url_opener_impl.h"
@@ -69,7 +73,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/common/channel_info.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_launch_notifier.h"
 #include "chromeos/ash/experiences/arc/appfuse/arc_appfuse_bridge.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
@@ -80,6 +86,8 @@
 #include "chromeos/ash/experiences/arc/compat_mode/arc_resize_lock_manager.h"
 #include "chromeos/ash/experiences/arc/crash_collector/arc_crash_collector_bridge.h"
 #include "chromeos/ash/experiences/arc/disk_space/arc_disk_space_bridge.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_install_hardware_checker.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/ime/arc_ime_service.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_icon_cache_delegate.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
@@ -108,6 +116,7 @@
 #include "chromeos/ash/experiences/arc/video/gpu_arc_video_service_host.h"
 #include "chromeos/ash/experiences/arc/volume_mounter/arc_volume_mounter_bridge.h"
 #include "chromeos/ash/experiences/arc/wake_lock/arc_wake_lock_bridge.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_member.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
@@ -175,7 +184,11 @@ ArcServiceLauncher::ArcServiceLauncher(
           CreateArcSessionManager(arc_service_manager_->arc_bridge_service(),
                                   chrome::GetChannel(),
                                   scheduler_configuration_manager)),
-      scheduler_configuration_manager_(scheduler_configuration_manager) {
+      scheduler_configuration_manager_(scheduler_configuration_manager),
+      arc_dlc_installer_(std::make_unique<ArcDlcInstaller>(
+          std::make_unique<ArcDlcNotificationManagerFactoryImpl>(),
+          std::make_unique<ArcDlcInstallHardwareChecker>(),
+          ash::CrosSettings::Get())) {
   DCHECK(g_arc_service_launcher == nullptr);
   g_arc_service_launcher = this;
 
@@ -216,8 +229,25 @@ void ArcServiceLauncher::Initialize() {
     CheckArcvmDlcImageStatus();
   }
 
-  arc_session_manager_->ExpandPropertyFilesAndReadSalt();
+  if (!arc::IsArcVmDlcEnabled()) {
+    arc_session_manager_->ExpandPropertyFilesAndReadSalt();
+    return;
+  }
+
+  // This should not be called for the board where ARC+DLC is not supported.
+  arc_dlc_installer_->PrepareArc(
+      base::BindOnce(&ArcServiceLauncher::OnDlcImageBindMountArcPath,
+                     weak_factory_.GetWeakPtr()));
+
 #endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
+}
+
+void ArcServiceLauncher::OnDlcImageBindMountArcPath(bool result) {
+  if (!result) {
+    LOG(ERROR) << "Failed to bind mount the ARC DLC image.";
+    return;
+  }
+  arc_session_manager_->ExpandPropertyFilesAndReadSalt();
 }
 
 void ArcServiceLauncher::MaybeSetProfile(Profile* profile) {
@@ -244,6 +274,10 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   DCHECK(arc_service_manager_);
   DCHECK(arc_session_manager_);
 
+  // Initialize the locked fullscreen manager with the primary user profile.
+  arc_locked_fullscreen_manager_ =
+      std::make_unique<ArcLockedFullscreenManager>(profile);
+
   // We usually want to configure swap exactly once for the session. We wait for
   // after the user profile is prepared to make sure policy has been loaded. The
   // function IsArcPlayStoreEnabledForProfile has many conditionals, but the
@@ -265,6 +299,16 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
 
   std::string user_id_hash =
       ash::ProfileHelper::GetUserIdHashFromProfile(profile);
+
+  const AccountId* account_id = ash::AnnotatedAccountId::Get(profile);
+
+  // Profile set up for the test is no properly initialized, so AccountId is not
+  // annotated.
+  if (account_id) {
+    arc_dlc_installer_->OnPrimaryUserSessionStarted(*account_id);
+  } else {
+    CHECK_IS_TEST();
+  }
 
   // Instantiate ARC related BrowserContextKeyedService classes which need
   // to be running at the beginning of the container run.
@@ -400,6 +444,7 @@ void ArcServiceLauncher::Shutdown() {
   arc_session_manager_->Shutdown();
   arc_net_url_opener_.reset();
   arc_icon_cache_delegate_provider_.reset();
+  arc_dlc_installer_.reset();
 }
 
 void ArcServiceLauncher::ResetForTesting() {
@@ -414,6 +459,13 @@ void ArcServiceLauncher::ResetForTesting() {
   arc_session_manager_ = CreateArcSessionManager(
       arc_service_manager_->arc_bridge_service(), chrome::GetChannel(),
       scheduler_configuration_manager_);
+
+  // Recreate arc_dlc_installer_ after shutdown because browser_test will run
+  // ResetForTesting and then do the OnPrimaryUserProfilePrepared.
+  arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>(
+      std::make_unique<ArcDlcNotificationManagerFactoryImpl>(),
+      std::make_unique<ArcDlcInstallHardwareChecker>(),
+      ash::CrosSettings::Get());
 }
 
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)

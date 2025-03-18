@@ -8,14 +8,17 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_bubble_delegate.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_bubble_observer.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_tab_helper.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/performance_controls/memory_saver_resource_view.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -141,10 +144,17 @@ views::BubbleDialogModelHost* MemorySaverBubbleView::ShowBubble(
   auto bubble_unique = std::make_unique<views::BubbleDialogModelHost>(
       std::move(dialog_model), anchor_view, views::BubbleBorder::TOP_RIGHT);
   auto* bubble = bubble_unique.get();
-  bubble->SetHighlightedButton(
-      BrowserView::GetBrowserViewForBrowser(browser)
-          ->toolbar_button_provider()
-          ->GetPageActionIconView(PageActionIconType::kMemorySaver));
+  auto* const toolbar_button_provider =
+      BrowserView::GetBrowserViewForBrowser(browser)->toolbar_button_provider();
+  views::Button* highlighted_button;
+  if (base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+    highlighted_button =
+        toolbar_button_provider->GetPageActionView(kActionShowMemorySaverChip);
+  } else {
+    highlighted_button = toolbar_button_provider->GetPageActionIconView(
+        PageActionIconType::kMemorySaver);
+  }
+  bubble->SetHighlightedButton(highlighted_button);
 
   views::Widget* const widget =
       views::BubbleDialogDelegate::CreateBubble(std::move(bubble_unique));
