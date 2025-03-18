@@ -1079,20 +1079,13 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
     if (space.IsFixedBlockSize()) {
       replaced_block = space.AvailableSize().block_size;
       DCHECK_GE(*replaced_block, 0);
-    } else if (!block_length.HasAutoOrContentOrIntrinsic() ||
-               (space.IsBlockAutoBehaviorStretch() &&
-                space.AvailableSize().block_size != kIndefiniteSize)) {
-      const Length& block_length_to_resolve =
-          block_length.HasAuto() ? Length::FillAvailable() : block_length;
-
-      const LayoutUnit main_percentage_resolution_size =
-          space.PercentageResolutionBlockSize();
+    } else {
+      const Length& auto_block_length = space.IsBlockAutoBehaviorStretch()
+                                            ? Length::FillAvailable()
+                                            : Length::Auto();
       const LayoutUnit block_size = ResolveMainBlockLength(
-          space, style, border_padding, block_length_to_resolve,
-          /* auto_length*/ nullptr,
-          /* intrinsic_size */ kIndefiniteSize,
-          /* override_available_size */ kIndefiniteSize,
-          &main_percentage_resolution_size);
+          space, style, border_padding, block_length, &auto_block_length,
+          /* intrinsic_size */ kIndefiniteSize);
       if (block_size != kIndefiniteSize) {
         DCHECK_GE(block_size, LayoutUnit());
         replaced_block = block_min_max_sizes.ClampSizeToMinAndMax(block_size);
@@ -1175,12 +1168,10 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
     if (space.IsFixedInlineSize()) {
       replaced_inline = space.AvailableSize().inline_size;
       DCHECK_GE(*replaced_inline, 0);
-    } else if (!inline_length.HasAuto() ||
-               (space.IsInlineAutoBehaviorStretch() &&
-                space.AvailableSize().inline_size != kIndefiniteSize)) {
+    } else {
       const Length& auto_length = space.IsInlineAutoBehaviorStretch()
                                       ? Length::FillAvailable()
-                                      : Length::FitContent();
+                                      : Length::Auto();
       const LayoutUnit inline_size =
           ResolveMainInlineLength(space, style, border_padding, MinMaxSizesFunc,
                                   inline_length, &auto_length);
