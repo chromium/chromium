@@ -10385,6 +10385,7 @@ if (!is_android) {
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/autofill/payments:test_support_ui",
       "//chrome/browser/ui/signin",
+      "//chrome/browser/ui/views/page_action:page_action",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/webui",
       "//chrome/browser/ui/webui/signin",
