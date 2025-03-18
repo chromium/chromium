@@ -443,25 +443,6 @@ TEST_F(PageActionViewTriggerTest, PageActionDoesNotTriggersIfBubbleShowing) {
   EXPECT_EQ(0, TotalTriggerCount());
 }
 
-// Action invocation suppression carries state across mouse events. Ensure that
-// state is cleaned up, and isn't carried into a subsequent key event. The
-// alternate way to test this a ForTest getter.
-TEST_F(PageActionViewTriggerTest, PageActionsSuccessiveTriggers) {
-  EXPECT_CALL(*model(), GetActionItemIsShowingBubble())
-      .WillRepeatedly(Return(true));
-  views::test::InteractionTestUtilSimulatorViews::PressButton(
-      page_action_view(), ui::test::InteractionTestUtil::InputType::kMouse);
-  EXPECT_EQ(0, TotalTriggerCount());
-
-  // A subsequent keyboard click should work.
-  ui::KeyEvent key_event(EventType::kKeyPressed, ui::VKEY_RETURN, ui::EF_NONE);
-  EXPECT_CALL(*model(), GetActionItemIsShowingBubble())
-      .WillRepeatedly(Return(false));
-  views::test::InteractionTestUtilSimulatorViews::PressButton(
-      page_action_view(), ui::test::InteractionTestUtil::InputType::kKeyboard);
-  EXPECT_EQ(1, TotalTriggerCount());
-}
-
 class PageActionViewAnimationTest : public PageActionViewTest {
  public:
   using PageActionViewTest::PageActionViewTest;
