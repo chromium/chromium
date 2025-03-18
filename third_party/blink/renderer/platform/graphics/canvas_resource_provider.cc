@@ -216,21 +216,6 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     }
   }
 
-  // BitmapGpuChannelLostObserver implementation.
-  void OnGpuChannelLost() override { resource_host()->NotifyGpuContextLost(); }
-
-  base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
-      shared_image_interface_provider_;
-
-  bool IsSoftwareSharedImageGpuChannelLost() const override {
-    if (!is_software_) {
-      return false;
-    }
-
-    return !shared_image_interface_provider_ ||
-           !shared_image_interface_provider_->SharedImageInterface();
-  }
-
   CanvasResourceProviderSharedImage(
       gfx::Size size,
       viz::SharedImageFormat format,
@@ -274,6 +259,15 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     // that may have a reference in skia.
     if (is_accelerated_ && !use_oop_rasterization_)
       FlushGrContext();
+  }
+
+  bool IsSoftwareSharedImageGpuChannelLost() const override {
+    if (!is_software_) {
+      return false;
+    }
+
+    return !shared_image_interface_provider_ ||
+           !shared_image_interface_provider_->SharedImageInterface();
   }
 
   bool IsAccelerated() const final { return is_accelerated_; }
@@ -777,6 +771,9 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
   }
 
  private:
+  // BitmapGpuChannelLostObserver implementation.
+  void OnGpuChannelLost() override { resource_host()->NotifyGpuContextLost(); }
+
   bool IsResourceUsable(CanvasResource* resource) final {
     // The only resources that should be coming in here are
     // CanvasResourceSharedImage instances, since that is the only type of
@@ -812,6 +809,8 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     }
   }
 
+  base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
+      shared_image_interface_provider_;
   const bool is_accelerated_;
   gpu::SharedImageUsageSet shared_image_usage_flags_;
   bool current_resource_has_write_access_ = false;
