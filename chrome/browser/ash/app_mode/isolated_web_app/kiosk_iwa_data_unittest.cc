@@ -14,6 +14,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
 #include "components/policy/core/common/device_local_account_type.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -59,33 +60,35 @@ class FakeKioskAppDataDelegate : public KioskAppDataDelegate {
 class KioskIwaDataTest : public testing::Test {
  protected:
   FakeKioskAppDataDelegate delegate_;
+  TestingPrefServiceSimple local_state_;
 };
 
 TEST_F(KioskIwaDataTest, CreateFailWithEmptyBundleId) {
   constexpr char kEmptyId[] = "";
-  auto iwa_data = KioskIwaData::Create(GetTestUserId(), kEmptyId,
+  auto iwa_data = KioskIwaData::Create(local_state_, GetTestUserId(), kEmptyId,
                                        GURL(kTestUpdateUrl), delegate_);
   EXPECT_EQ(iwa_data, nullptr);
 }
 
 TEST_F(KioskIwaDataTest, CreateFailWithBadBundleId) {
   constexpr char kBadWebBundleId[] = "abcd";
-  auto iwa_data = KioskIwaData::Create(GetTestUserId(), kBadWebBundleId,
-                                       GURL(kTestUpdateUrl), delegate_);
+  auto iwa_data =
+      KioskIwaData::Create(local_state_, GetTestUserId(), kBadWebBundleId,
+                           GURL(kTestUpdateUrl), delegate_);
   EXPECT_EQ(iwa_data, nullptr);
 }
 
 TEST_F(KioskIwaDataTest, CreateFailWithEmptyUrl) {
   const GURL kEmptyUrl;
-  auto iwa_data = KioskIwaData::Create(GetTestUserId(), kTestWebBundleId,
-                                       kEmptyUrl, delegate_);
+  auto iwa_data = KioskIwaData::Create(local_state_, GetTestUserId(),
+                                       kTestWebBundleId, kEmptyUrl, delegate_);
   EXPECT_EQ(iwa_data, nullptr);
 }
 
 TEST_F(KioskIwaDataTest, CreateFailWithBadUrl) {
   const GURL kBadUrl("http:://update.json");
-  auto iwa_data = KioskIwaData::Create(GetTestUserId(), kTestWebBundleId,
-                                       kBadUrl, delegate_);
+  auto iwa_data = KioskIwaData::Create(local_state_, GetTestUserId(),
+                                       kTestWebBundleId, kBadUrl, delegate_);
   EXPECT_EQ(iwa_data, nullptr);
 }
 
@@ -96,8 +99,9 @@ TEST_F(KioskIwaDataTest, CreateSuccess) {
       web_app::GenerateAppId("", kExpectedOrigin.GetURL());
   const std::string kExpectedDefaultName = "iwa.com/path/";
 
-  auto iwa_data = KioskIwaData::Create(GetTestUserId(), kTestWebBundleId,
-                                       GURL(kTestUpdateUrl), delegate_);
+  auto iwa_data =
+      KioskIwaData::Create(local_state_, GetTestUserId(), kTestWebBundleId,
+                           GURL(kTestUpdateUrl), delegate_);
   ASSERT_NE(iwa_data, nullptr);
   EXPECT_EQ(iwa_data->origin(), kExpectedOrigin);
   EXPECT_EQ(iwa_data->app_id(), kExpectedWebAppId);

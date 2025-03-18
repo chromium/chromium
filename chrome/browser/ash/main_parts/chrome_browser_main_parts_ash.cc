@@ -981,8 +981,9 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
                      chromeos::version_loader::VERSION_FULL),
       base::BindOnce(&ChromeOSVersionCallback));
 
-  kiosk_controller_ =
-      std::make_unique<KioskControllerImpl>(user_manager::UserManager::Get());
+  kiosk_controller_ = std::make_unique<KioskControllerImpl>(
+      CHECK_DEREF(g_browser_process->local_state()),
+      user_manager::UserManager::Get());
 
   ambient_client_ = std::make_unique<AmbientClientImpl>();
 
