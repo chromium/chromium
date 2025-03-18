@@ -6,6 +6,7 @@
 #define UI_OZONE_PLATFORM_WAYLAND_COMMON_WAYLAND_OVERLAY_CONFIG_H_
 
 #include <memory>
+#include <variant>
 
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_fence.h"
@@ -36,7 +37,7 @@ struct WaylandOverlayConfig {
   // Specifies how the buffer is to be transformed during composition.
   // Note: A |gfx::OverlayTransform| transforms the buffer within its bounds and
   // does not affect |bounds_rect|.
-  absl::variant<gfx::OverlayTransform, gfx::Transform> transform =
+  std::variant<gfx::OverlayTransform, gfx::Transform> transform =
       gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE;
 
   // Specifies if alpha blending, with premultiplied alpha should be applied at

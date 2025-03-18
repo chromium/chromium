@@ -8,12 +8,12 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <variant>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/views/animation/animation_key.h"
@@ -165,14 +165,14 @@ class VIEWS_EXPORT AnimationSequenceBlock {
 
  private:
   using AnimationValue =
-      absl::variant<gfx::Rect,
-                    float,
-                    SkColor4f,
-                    gfx::RoundedCornersF,
-                    gfx::LinearGradient,
-                    bool,
-                    gfx::Transform,
-                    std::unique_ptr<ui::InterpolatedTransform>>;
+      std::variant<gfx::Rect,
+                   float,
+                   SkColor4f,
+                   gfx::RoundedCornersF,
+                   gfx::LinearGradient,
+                   bool,
+                   gfx::Transform,
+                   std::unique_ptr<ui::InterpolatedTransform>>;
 
   // Data for the animation of a given AnimationKey.
   struct Element {

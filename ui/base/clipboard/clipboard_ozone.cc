@@ -14,6 +14,7 @@
 #include <optional>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -34,7 +35,6 @@
 #include "base/types/variant_util.h"
 #include "build/build_config.h"
 #include "clipboard_util.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_constants.h"
@@ -645,7 +645,7 @@ void ClipboardOzone::WritePortableTextRepresentation(ClipboardBuffer buffer,
     return;
   }
 
-  const auto& text_data = absl::get<TextData>(text_iter->second.data);
+  const auto& text_data = std::get<TextData>(text_iter->second.data);
   if (text_data.data.empty()) {
     return;
   }

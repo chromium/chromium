@@ -7,8 +7,8 @@
 
 #include <optional>
 #include <string>
+#include <variant>
 
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
@@ -62,7 +62,7 @@ class COMPONENT_EXPORT(COLOR) ColorVariant {
   std::string ToString() const;
 
  private:
-  absl::variant<ColorId, SkColor> color_variant_ = gfx::kPlaceholderColor;
+  std::variant<ColorId, SkColor> color_variant_ = gfx::kPlaceholderColor;
 };
 
 }  // namespace ui

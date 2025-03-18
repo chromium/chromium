@@ -11,6 +11,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -422,7 +423,7 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // Runs a close callback, ensuring that at most one close callback is run
   // if `callback` is a OnceClosure or returns true.
   bool RunCloseCallback(
-      absl::variant<base::OnceClosure, base::RepeatingCallback<bool()>>&
+      std::variant<base::OnceClosure, base::RepeatingCallback<bool()>>&
           callback);
 
   // The margins between the content and the inside of the border.
@@ -448,9 +449,9 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
       observer_list_;
 
   // Callbacks for the dialog's actions:
-  absl::variant<base::OnceClosure, base::RepeatingCallback<bool()>>
+  std::variant<base::OnceClosure, base::RepeatingCallback<bool()>>
       accept_callback_;
-  absl::variant<base::OnceClosure, base::RepeatingCallback<bool()>>
+  std::variant<base::OnceClosure, base::RepeatingCallback<bool()>>
       cancel_callback_;
   base::OnceClosure close_callback_;
 

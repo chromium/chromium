@@ -4,8 +4,9 @@
 
 #include "ui/views/controls/menu/menu_separator.h"
 
+#include <variant>
+
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
