@@ -1257,24 +1257,50 @@ size_t BackForwardCacheImpl::EnforceCacheSizeLimitInternal(
     size_t limit,
     BackForwardCacheMetrics::NotRestoredReason reason) {
   size_t count = 0;
-  for (auto& stored_entry : entries_) {
-    if (stored_entry->render_frame_host()
-            ->is_evicted_from_back_forward_cache()) {
+  for (auto stored_entry_iter = entries_.begin();
+       stored_entry_iter != entries_.end(); stored_entry_iter++) {
+    Entry* stored_entry = stored_entry_iter->get();
+    RenderFrameHostImpl* rfh = stored_entry->render_frame_host();
+    // Skip the entry if it's already evicted.
+    if (rfh->is_evicted_from_back_forward_cache()) {
       continue;
     }
+    // Skip the entry if it doesn't have foregrounded progress and the eviction
+    // is against foreground limit.
     if (reason ==
             BackForwardCacheMetrics::NotRestoredReason::kForegroundCacheLimit &&
         !HasForegroundedProcess(*stored_entry)) {
       continue;
     }
+    // Skip the entry if any of the RenderViewHosts in this Entry haven't
+    // received the BFCache acknowledgement yet. The current method will be
+    // called again once the acknowledgements are all received later.
+    // Note: this only applies to the case where the latest entry triggers the
+    // cache limit, for the pruning case, the entry will be counted and might be
+    // evicted.
     if (reason !=
             BackForwardCacheMetrics::NotRestoredReason::kCacheLimitPruned &&
         !AllRenderViewHostsReceivedAckFromRenderer(*stored_entry)) {
       continue;
     }
     if (++count > limit) {
-      stored_entry->render_frame_host()->EvictFromBackForwardCacheWithReason(
-          reason);
+      if (base::FeatureList::IsEnabled(kBackForwardCachePrioritizedEntry)) {
+        // If it's not a pruning process that will clear all the entries, we
+        // should handle the latest prioritized entry outside the limit
+        // specially and keep it not-evicted.
+        if (limit > 0 &&
+            GetContentClient()->browser()->ShouldPrioritizeForBackForwardCache(
+                rfh->GetBrowserContext(), rfh->GetLastCommittedURL())) {
+          // If the prioritized_entry_ is already taken by some other entry, we
+          // have to evict the current one.
+          if (prioritized_entry_ == entries_.end() ||
+              prioritized_entry_ == stored_entry_iter) {
+            prioritized_entry_ = stored_entry_iter;
+            continue;
+          }
+        }
+      }
+      rfh->EvictFromBackForwardCacheWithReason(reason);
     }
   }
   return count;
@@ -1307,6 +1333,9 @@ std::unique_ptr<BackForwardCacheImpl::Entry> BackForwardCacheImpl::RestoreEntry(
                       entry);
 
   entry->SetStoredPageDelegate(nullptr);
+  if (prioritized_entry_ == matching_entry) {
+    prioritized_entry_ = entries_.end();
+  }
   entries_.erase(matching_entry);
   RemoveProcessesForEntry(*entry);
   base::TimeTicks start_time = page_restore_params->navigation_start;
@@ -1566,6 +1595,9 @@ void BackForwardCacheImpl::DestroyEvictedFrames() {
 
   std::erase_if(entries_, [this](std::unique_ptr<Entry>& entry) {
     if (entry->render_frame_host()->is_evicted_from_back_forward_cache()) {
+      if (prioritized_entry_->get() == entry.get()) {
+        prioritized_entry_ = entries_.end();
+      }
       RemoveProcessesForEntry(*entry);
       return true;
     }
