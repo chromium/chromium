@@ -173,9 +173,8 @@ constexpr CGFloat preferredCornerRadius = 20;
 
 // Returns the user email.
 - (NSString*)userEmail {
-  ProfileIOS* profile = self.browser->GetProfile();
   AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForProfile(profile);
+      AuthenticationServiceFactory::GetForProfile(self.profile);
   id<SystemIdentity> authenticatedIdentity =
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
 
@@ -248,11 +247,10 @@ constexpr CGFloat preferredCornerRadius = 20;
               kIOSProactivePasswordGenerationBottomSheet)) {
     return;
   }
-  ProfileIOS* profile = self.browser->GetProfile();
-  if (!profile) {
+  if (!self.profile) {
     return;
   }
-  PrefService* prefService = profile->GetPrefs();
+  PrefService* prefService = self.profile->GetPrefs();
   if (prefService) {
     const int newDismissCount =
         prefService->GetInteger(
