@@ -5,6 +5,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
 
 #include <tuple>
+#include <variant>
 
 #include "base/feature_list.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -37,13 +38,13 @@ std::map<T, TestCaseItemValue> UnpackKeys(
 
   for (const auto& [test_key, value] : test_key_to_test_value) {
     // If test_key is a single key, set the value in the map directly.
-    if (absl::holds_alternative<T>(test_key)) {
-      auto key = absl::get<T>(test_key);
+    if (std::holds_alternative<T>(test_key)) {
+      auto key = std::get<T>(test_key);
       EXPECT_EQ(0u, unpacked_map.count(key))
           << "Duplicate test key " << static_cast<int>(key);
       unpacked_map[key] = value;
     } else {
-      auto keys = absl::get<MultipleKeys<T>>(test_key);
+      auto keys = std::get<MultipleKeys<T>>(test_key);
       for (auto key : keys) {
         EXPECT_EQ(0u, unpacked_map.count(key))
             << "Duplicate test key " << static_cast<int>(key);
@@ -57,8 +58,8 @@ std::map<T, TestCaseItemValue> UnpackKeys(
 
 template <typename T>
 T GetItemValue(const TestCaseItemValue& value) {
-  EXPECT_TRUE(absl::holds_alternative<T>(value));
-  return absl::get<T>(value);
+  EXPECT_TRUE(std::holds_alternative<T>(value));
+  return std::get<T>(value);
 }
 
 template <typename V, typename K>

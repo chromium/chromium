@@ -5,6 +5,7 @@
 #include "components/viz/service/display/overlay_strategy_underlay_cast.h"
 
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/containers/adapters.h"
@@ -189,7 +190,7 @@ void OverlayStrategyUnderlayCast::CommitCandidate(
   DCHECK(GetVideoGeometrySetter());
   GetVideoGeometrySetter()->SetVideoGeometry(
       proposed_candidate.candidate.display_rect,
-      absl::get<gfx::OverlayTransform>(proposed_candidate.candidate.transform),
+      std::get<gfx::OverlayTransform>(proposed_candidate.candidate.transform),
       VideoHoleDrawQuad::MaterialCast(*proposed_candidate.quad_iter)
           ->overlay_plane_id);
 

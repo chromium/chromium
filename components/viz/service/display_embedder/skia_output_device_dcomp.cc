@@ -7,6 +7,7 @@
 #include <memory>
 #include <tuple>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/debug/alias.h"
@@ -271,8 +272,8 @@ void SkiaOutputDeviceDComp::ScheduleOverlays(
         dc_layer.resource_size_in_pixels.height());
 
     params.quad_rect = gfx::ToRoundedRect(dc_layer.display_rect);
-    CHECK(absl::holds_alternative<gfx::Transform>(dc_layer.transform));
-    params.transform = absl::get<gfx::Transform>(dc_layer.transform);
+    CHECK(std::holds_alternative<gfx::Transform>(dc_layer.transform));
+    params.transform = std::get<gfx::Transform>(dc_layer.transform);
     params.clip_rect = dc_layer.clip_rect;
     params.opacity = dc_layer.opacity;
     params.rounded_corner_bounds = dc_layer.rounded_corners;

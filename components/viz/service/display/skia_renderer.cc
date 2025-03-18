@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
@@ -2899,7 +2900,7 @@ void SkiaRenderer::ScheduleOverlays() {
 #if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
     BUILDFLAG(USE_V4L2_CODEC)
     if (overlay.needs_detiling) {
-      if (!absl::holds_alternative<gfx::OverlayTransform>(overlay.transform)) {
+      if (!std::holds_alternative<gfx::OverlayTransform>(overlay.transform)) {
         LOG(ERROR) << "Unsupported transform on tiled protected content.";
         continue;
       }
@@ -2912,7 +2913,7 @@ void SkiaRenderer::ScheduleOverlays() {
       skia_output_surface_->DetileOverlay(
           overlay.mailbox, overlay.resource_size_in_pixels, lock.sync_token(),
           detiled_image, overlay.display_rect, overlay.uv_rect,
-          absl::get<gfx::OverlayTransform>(overlay.transform), is_10bit);
+          std::get<gfx::OverlayTransform>(overlay.transform), is_10bit);
       overlay.uv_rect = gfx::RectF(
           static_cast<float>(overlay.display_rect.width()) /
               static_cast<float>(kMaxProtectedContentWidth),
@@ -4126,7 +4127,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
   overlay->uv_rect = gfx::RectF(filter_bounds.size());
   overlay->uv_rect.InvScale(buffer_size.width(), buffer_size.height());
 
-  if (absl::holds_alternative<gfx::OverlayTransform>(overlay->transform)) {
+  if (std::holds_alternative<gfx::OverlayTransform>(overlay->transform)) {
     // When using an OverlayTransform, the transform should be baked into the
     // display_rect.
     overlay->display_rect =

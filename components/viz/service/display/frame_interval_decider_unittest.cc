@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <variant>
 
 #include "base/containers/flat_map.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -30,13 +31,13 @@ using Result = FrameIntervalDecider::Result;
 constexpr base::TimeTicks kNow = base::TimeTicks() + base::Seconds(1234);
 
 void ExpectResult(Result result, FrameIntervalClass frame_interval_class) {
-  ASSERT_TRUE(absl::holds_alternative<FrameIntervalClass>(result));
-  EXPECT_EQ(frame_interval_class, absl::get<FrameIntervalClass>(result));
+  ASSERT_TRUE(std::holds_alternative<FrameIntervalClass>(result));
+  EXPECT_EQ(frame_interval_class, std::get<FrameIntervalClass>(result));
 }
 
 void ExpectResult(Result result, base::TimeDelta interval) {
-  ASSERT_TRUE(absl::holds_alternative<base::TimeDelta>(result));
-  EXPECT_EQ(interval, absl::get<base::TimeDelta>(result));
+  ASSERT_TRUE(std::holds_alternative<base::TimeDelta>(result));
+  EXPECT_EQ(interval, std::get<base::TimeDelta>(result));
 }
 
 class TestFrameIntervalMatcher : public FrameIntervalMatcher {

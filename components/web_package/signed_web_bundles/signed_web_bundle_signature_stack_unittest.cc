@@ -5,6 +5,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack.h"
 
 #include <array>
+#include <variant>
 
 #include "base/containers/span.h"
 #include "base/test/gmock_expected_support.h"
@@ -110,7 +111,7 @@ TEST(SignedWebBundleSignatureStack,
   EXPECT_EQ(result.size(), 1u);
 
   auto* ed25519_signature_info_ptr =
-      absl::get_if<web_package::SignedWebBundleSignatureInfoEd25519>(
+      std::get_if<web_package::SignedWebBundleSignatureInfoEd25519>(
           &result.entries()[0].signature_info());
   ASSERT_TRUE(ed25519_signature_info_ptr);
 

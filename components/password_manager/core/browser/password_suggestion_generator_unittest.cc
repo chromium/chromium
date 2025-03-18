@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/password_suggestion_generator.h"
 
+#include <variant>
 #include <vector>
 
 #include "base/base64.h"
@@ -106,9 +107,9 @@ Matcher<Suggestion> EqualsManualFallbackSuggestion(
     const std::u16string& username_label,
     Suggestion::Icon icon,
     bool is_acceptable,
-    absl::variant<gfx::Image,
-                  Suggestion::CustomIconUrl,
-                  Suggestion::FaviconDetails> custom_icon,
+    std::variant<gfx::Image,
+                 Suggestion::CustomIconUrl,
+                 Suggestion::FaviconDetails> custom_icon,
     const Suggestion::Payload& payload) {
   return AllOf(
       EqualsSuggestion(id, main_text, icon),
@@ -144,13 +145,13 @@ Matcher<Suggestion> EqualsManagePasswordsSuggestion(
 
 MATCHER_P(SuggestionHasFaviconDetails, favicon_details, "") {
   const auto* arg_favicon_details =
-      absl::get_if<Suggestion::FaviconDetails>(&arg.custom_icon);
+      std::get_if<Suggestion::FaviconDetails>(&arg.custom_icon);
   return arg_favicon_details && *arg_favicon_details == favicon_details;
 }
 
 MATCHER(FaviconCanBeRequestedFromGoogle, "") {
   const auto* arg_favicon_details =
-      absl::get_if<Suggestion::FaviconDetails>(&arg.custom_icon);
+      std::get_if<Suggestion::FaviconDetails>(&arg.custom_icon);
   EXPECT_TRUE(!!arg_favicon_details);
   return arg_favicon_details &&
          arg_favicon_details->can_be_requested_from_google;

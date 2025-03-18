@@ -9,6 +9,7 @@
 #include <limits>
 #include <optional>
 #include <utility>
+#include <variant>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -1189,7 +1190,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
 
   const SubtreeCaptureId subtree_id =
       IsSubtreeCapture(target_->sub_target)
-          ? absl::get<SubtreeCaptureId>(target_->sub_target)
+          ? std::get<SubtreeCaptureId>(target_->sub_target)
           : SubtreeCaptureId();
 
   resolved_target_->RequestCopyOfOutput(

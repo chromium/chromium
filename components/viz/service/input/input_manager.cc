@@ -4,6 +4,8 @@
 
 #include "components/viz/service/input/input_manager.h"
 
+#include <variant>
+
 #if BUILDFLAG(IS_ANDROID)
 #include <android/looper.h>
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -587,10 +589,10 @@ void InputManager::CreateOrReuseAndroidInputReceiver(
   auto surface_record =
       gpu::GpuSurfaceLookup::GetInstance()->AcquireJavaSurface(surface_handle);
 
-  CHECK(absl::holds_alternative<gl::ScopedJavaSurface>(
+  CHECK(std::holds_alternative<gl::ScopedJavaSurface>(
       surface_record.surface_variant));
   gl::ScopedJavaSurface& scoped_java_surface =
-      absl::get<gl::ScopedJavaSurface>(surface_record.surface_variant);
+      std::get<gl::ScopedJavaSurface>(surface_record.surface_variant);
 
   gl::ScopedANativeWindow window(scoped_java_surface);
   scoped_refptr<gfx::SurfaceControl::Surface> parent_input_surface =
