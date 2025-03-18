@@ -310,7 +310,7 @@ Process::Priority GetProcessPriorityCGroup(std::string_view cgroup_contents) {
     if (fields.size() != 3U) {
       NOTREACHED();
     }
-    if (fields[2] == kBackground) {
+    if (fields[2] == kBackgroundExperiment || fields[2] == kBackground) {
       return Process::Priority::kBestEffort;
     }
   }
