@@ -207,6 +207,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
             loadTimeData.getBoolean('enableActInFocusedTab'),
         loggingEnabled: loadTimeData.getBoolean('loggingEnabled'),
         fitWindow: initialState.sizingMode === WebClientSizingMode.kFitWindow,
+        dragResizeEnabled: loadTimeData.getBoolean('enableDragToResizePanel'),
       }),
     };
   }
@@ -325,6 +326,10 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     this.embedder.onGuestResizeRequest(request.size);
     return await this.handler.resizeWidget(
         request.size, timeDeltaFromClient(request.options?.durationMs));
+  }
+
+  glicBrowserEnableDragResize(request: {enabled: boolean}) {
+    return this.handler.enableDragResize(request.enabled);
   }
 
   async glicBrowserCaptureScreenshot(_request: void, extras: ResponseExtras):

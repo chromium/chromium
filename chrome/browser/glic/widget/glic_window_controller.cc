@@ -921,6 +921,16 @@ void GlicWindowController::Resize(const gfx::Size& size,
   }
 }
 
+void GlicWindowController::ShouldEnableDragResize(bool enabled) {
+  if (!GetGlicWidget()) {
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kGlicUserResize)) {
+    GetGlicWidget()->widget_delegate()->SetCanResize(enabled);
+  }
+}
+
 gfx::Size GlicWindowController::GetSize() {
   if (!GetGlicWidget()) {
     return gfx::Size();
