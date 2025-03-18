@@ -659,9 +659,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
                        ShouldReloadDataOnBrowserRestart) {
+  const std::string collaboration_id = "collaboration";
   ASSERT_TRUE(SetupClients());
-  RegisterCollaboration(syncer::CollaborationId("collaboration"));
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  GetFakeServer()->AddCollaboration(collaboration_id);
+  RegisterCollaboration(syncer::CollaborationId(collaboration_id));
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   ASSERT_THAT(GetAllTabGroups(), SizeIs(1));
   EXPECT_THAT(
