@@ -40,6 +40,7 @@ class VIZ_SERVICE_EXPORT RenderInputRouterSupportBase
   };
 
   virtual bool IsRenderInputRouterSupportChildFrame() const = 0;
+  virtual void NotifySiteIsMobileOptimized(bool is_mobile_optimized) = 0;
 
   // StylusInterface implementation.
   bool ShouldInitiateStylusWriting() override;
