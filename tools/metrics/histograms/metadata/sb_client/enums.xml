@@ -235,6 +235,7 @@ chromium-metrics-reviews@google.com.
   <int value="37" label="LOCAL_DECRYPTION_PROMPT"/>
   <int value="38" label="LOCAL_DECRYPTION_FAILED"/>
   <int value="39" label="IMMEDIATE_DEEP_SCAN"/>
+  <int value="40" label="IGNORED_VERDICT"/>
 </enum>
 
 <enum name="SBClientDownloadCheckResult">

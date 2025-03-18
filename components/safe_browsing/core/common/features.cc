@@ -239,8 +239,11 @@ BASE_FEATURE(kMaliciousApkDownloadCheck,
              "MaliciousApkDownloadCheck",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-constexpr base::FeatureParam<bool> kMaliciousApkDownloadCheckTelemetryOnly{
-    &kMaliciousApkDownloadCheck, "telemetry_only", /*default_value=*/false};
+BASE_FEATURE_PARAM(bool,
+                   kMaliciousApkDownloadCheckTelemetryOnly,
+                   &kMaliciousApkDownloadCheck,
+                   "telemetry_only",
+                   /*default_value=*/false);
 
 BASE_FEATURE_PARAM(int,
                    kMaliciousApkDownloadCheckSamplePercentage,

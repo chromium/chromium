@@ -233,7 +233,7 @@ BASE_DECLARE_FEATURE(kMaliciousApkDownloadCheck);
 // telemetry-only, and only for Enhanced Protection users. If false (default),
 // then ClientDownloadRequests for APK downloads on Android are active for all
 // Safe Browsing-enabled users, and may show warnings.
-extern const base::FeatureParam<bool> kMaliciousApkDownloadCheckTelemetryOnly;
+BASE_DECLARE_FEATURE_PARAM(bool, kMaliciousApkDownloadCheckTelemetryOnly);
 
 // Sampling percentage for ClientDownloadRequests for APK downloads on Android.
 // If this parameter is N, then a given (supported) download has a N% chance of
