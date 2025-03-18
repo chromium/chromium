@@ -37,10 +37,9 @@ NavigationPredictorPreconnectClient::NavigationPredictorPreconnectClient(
       current_visibility_(web_contents->GetVisibility()) {}
 
 NavigationPredictorPreconnectClient::~NavigationPredictorPreconnectClient() {
-  NavigationPredictorKeyedService* navigation_predictor_service =
-      GetNavigationPredictorKeyedService();
-  if (navigation_predictor_service) {
-    navigation_predictor_service->OnWebContentsDestroyed(web_contents());
+  auto* search_engine_preconnector = GetSearchEnginePreconnector();
+  if (search_engine_preconnector) {
+    search_engine_preconnector->OnWebContentsDestroyed(web_contents());
   }
 }
 
@@ -51,15 +50,23 @@ NavigationPredictorPreconnectClient::GetNavigationPredictorKeyedService()
       Profile::FromBrowserContext(browser_context_));
 }
 
+SearchEnginePreconnector*
+NavigationPredictorPreconnectClient::GetSearchEnginePreconnector() {
+  auto* navigation_predictor_service = GetNavigationPredictorKeyedService();
+  if (navigation_predictor_service) {
+    return navigation_predictor_service->search_engine_preconnector();
+  }
+  return nullptr;
+}
+
 void NavigationPredictorPreconnectClient::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  // Notify navigation predictor service of any same-document navigations that
+  // Notify search engine preconnector of any same-document navigations that
   // may be captured here. Same-document navigations imply that user is
   // interacting with the browser app.
-  NavigationPredictorKeyedService* navigation_predictor_service =
-      GetNavigationPredictorKeyedService();
-  if (navigation_predictor_service) {
-    navigation_predictor_service->OnWebContentsVisibilityChanged(
+  auto* search_engine_preconnector = GetSearchEnginePreconnector();
+  if (search_engine_preconnector) {
+    search_engine_preconnector->OnWebContentsVisibilityChanged(
         web_contents(), current_visibility_ == content::Visibility::VISIBLE);
   }
 
@@ -102,11 +109,10 @@ void NavigationPredictorPreconnectClient::OnVisibilityChanged(
     content::Visibility visibility) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  NavigationPredictorKeyedService* navigation_predictor_service =
-      GetNavigationPredictorKeyedService();
-  if (navigation_predictor_service) {
-    navigation_predictor_service->OnWebContentsVisibilityChanged(
-        web_contents(), visibility == content::Visibility::VISIBLE);
+  auto* search_engine_preconnector = GetSearchEnginePreconnector();
+  if (search_engine_preconnector) {
+    search_engine_preconnector->OnWebContentsVisibilityChanged(
+        web_contents(), current_visibility_ == content::Visibility::VISIBLE);
   }
 
   // Check for same state.

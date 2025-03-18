@@ -7,6 +7,8 @@
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/default_tick_clock.h"
+#include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_features.h"
@@ -43,6 +45,47 @@ BASE_FEATURE(kPreconnectToSearchWithPrivacyModeEnabled,
              "PreconnectToSearchWithPrivacyModeEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
+
+WebContentVisibilityManager::WebContentVisibilityManager()
+    : tick_clock_(base::DefaultTickClock::GetInstance()) {}
+
+WebContentVisibilityManager::~WebContentVisibilityManager() = default;
+
+void WebContentVisibilityManager::OnWebContentsVisibilityChanged(
+    content::WebContents* web_contents,
+    bool is_in_foreground) {
+  visible_web_contents_.erase(web_contents);
+  last_web_contents_state_change_time_ = tick_clock_->NowTicks();
+  if (is_in_foreground) {
+    visible_web_contents_.insert(web_contents);
+  }
+}
+
+void WebContentVisibilityManager::OnWebContentsDestroyed(
+    content::WebContents* web_contents) {
+  visible_web_contents_.erase(web_contents);
+  last_web_contents_state_change_time_ = tick_clock_->NowTicks();
+}
+
+bool WebContentVisibilityManager::IsBrowserAppLikelyInForeground() const {
+  // If no web contents is in foreground, then allow a very short cool down
+  // period before considering app in background. This cooldown period is
+  // needed since when switching between the tabs, none of the web contents is
+  // in foreground for a very short period.
+  if (visible_web_contents_.empty() &&
+      tick_clock_->NowTicks() - last_web_contents_state_change_time_ >
+          base::Seconds(1)) {
+    return false;
+  }
+
+  return tick_clock_->NowTicks() - last_web_contents_state_change_time_ <=
+         base::Seconds(120);
+}
+
+void WebContentVisibilityManager::SetTickClockForTesting(
+    const base::TickClock* tick_clock) {
+  tick_clock_ = tick_clock;
+}
 
 SearchEnginePreconnector::SearchEnginePreconnector(
     content::BrowserContext* browser_context)
@@ -148,14 +191,6 @@ GURL SearchEnginePreconnector::GetDefaultSearchEngineOriginURL() const {
   if (!search_provider || !search_provider->data().preconnect_to_search_url)
     return GURL();
   return search_provider->GenerateSearchURL({}).DeprecatedGetOriginAsURL();
-}
-
-bool SearchEnginePreconnector::IsBrowserAppLikelyInForeground() const {
-  NavigationPredictorKeyedService* keyed_service =
-      NavigationPredictorKeyedServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context_));
-
-  return keyed_service && keyed_service->IsBrowserAppLikelyInForeground();
 }
 
 int SearchEnginePreconnector::GetPreconnectIntervalSec() const {

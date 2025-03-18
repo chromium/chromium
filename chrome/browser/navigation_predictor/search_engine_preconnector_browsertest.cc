@@ -373,6 +373,7 @@ IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorForegroundBrowserTest,
 
   NavigationPredictorKeyedServiceFactory::GetForProfile(
       Profile::FromBrowserContext(browser()->profile()))
+      ->search_engine_preconnector()
       ->SetTickClockForTesting(&tick_clock_);
 
   if (load_page()) {
