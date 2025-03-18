@@ -7,10 +7,10 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
-#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
 #include "components/prefs/pref_change_registrar.h"
 
 namespace ash {
@@ -94,8 +94,10 @@ class ASH_EXPORT SunfishScannerFeatureWatcher : public SessionObserver {
 
   base::ObserverList<Observer> observers_;
 
+  // Observations:
   PrefChangeRegistrar pref_change_registrar_;
-  raw_ref<SessionControllerImpl> session_controller_;
+  base::ScopedObservation<SessionControllerImpl, SessionObserver>
+      session_controller_observation_{this};
 
   base::WeakPtrFactory<SunfishScannerFeatureWatcher> weak_ptr_factory_{this};
 };
