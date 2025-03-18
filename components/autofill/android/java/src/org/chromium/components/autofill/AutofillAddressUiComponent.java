@@ -8,7 +8,10 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Description of an address editor input field. */
+@NullMarked
 @JNINamespace("autofill")
 public class AutofillAddressUiComponent {
     /** The type of the field, e.g., {@code FieldType.NAME_FULL}. */
