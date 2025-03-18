@@ -223,6 +223,10 @@ void PasswordAutofillManager::DidAcceptSuggestion(
           ->GetWebAuthnCredentialsDelegateForDriver(password_manager_driver_)
           ->LaunchSecurityKeyOrHybridFlow();
       break;
+    case autofill::SuggestionType::kPendingStateSignin:
+      password_client_->TriggerSignIn(
+          signin_metrics::AccessPoint::kAutofillDropdown);
+      break;
     default:
       metrics_util::LogPasswordDropdownItemSelected(
           PasswordDropdownSelectedOption::kPassword,

@@ -285,6 +285,7 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
     case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddressEntry:
     case SuggestionType::kFillAutofillAi:
+    case SuggestionType::kPendingStateSignin:
       NOTREACHED();
   }
   NOTREACHED();

@@ -295,6 +295,11 @@ signin::IdentityManager* WebViewPasswordManagerClient::GetIdentityManager() {
   return identity_manager_;
 }
 
+const signin::IdentityManager*
+WebViewPasswordManagerClient::GetIdentityManager() const {
+  return identity_manager_;
+}
+
 scoped_refptr<network::SharedURLLoaderFactory>
 WebViewPasswordManagerClient::GetURLLoaderFactory() {
   return web_state_->GetBrowserState()->GetSharedURLLoaderFactory();

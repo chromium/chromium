@@ -8,6 +8,8 @@
 
 #include "base/base64.h"
 #include "base/strings/strcat.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/types/expected.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
@@ -21,6 +23,11 @@
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/test/mock_sync_service.h"
@@ -159,6 +166,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               GetWebAuthnCredentialsDelegateForDriver,
               (PasswordManagerDriver*),
               (override));
+  MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const, override));
 
   const MockPasswordFeatureManager* GetPasswordFeatureManager() const override {
     return &feature_manager_;
@@ -168,8 +176,17 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
     return &feature_manager_;
   }
 
+  const signin::IdentityManager* GetIdentityManager() const override {
+    return identity_manager_;
+  }
+
+  void SetIdentityManager(signin::IdentityManager* identity_manager) {
+    identity_manager_ = identity_manager;
+  }
+
  private:
   NiceMock<MockPasswordFeatureManager> feature_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
 };
 
 }  // namespace
@@ -177,9 +194,14 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
 class PasswordSuggestionGeneratorTest : public testing::Test {
  public:
   PasswordSuggestionGeneratorTest() : generator_(&driver(), &client()) {
+    identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>();
+    client_.SetIdentityManager(identity_test_env_->identity_manager());
+
     ON_CALL(client_, GetSyncService).WillByDefault(Return(&sync_service()));
     ON_CALL(client_, GetWebAuthnCredentialsDelegateForDriver)
         .WillByDefault(Return(&credentials_delegate()));
+    ON_CALL(client_, GetLastCommittedURL)
+        .WillByDefault(ReturnRef(kExternalURL));
   }
 
   const gfx::Image& favicon() const { return favicon_; }
@@ -292,9 +314,18 @@ class PasswordSuggestionGeneratorTest : public testing::Test {
         .WillByDefault(Return(true));
   }
 
+  signin::IdentityTestEnvironment* identity_test_env() {
+    return identity_test_env_.get();
+  }
+
+  const GURL kExternalURL{"https://example.com"};
+  const GURL kGaiaURL{"https://accounts.google.com"};
+
  private:
   gfx::Image favicon_;
 
+  base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
   NiceMock<syncer::MockSyncService> mock_sync_service_;
   NiceMock<MockPasswordManagerClient> client_;
   NiceMock<MockWebAuthnCredentialsDelegate> credentials_delegate_;
@@ -1191,5 +1222,113 @@ TEST_F(
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+TEST_F(PasswordSuggestionGeneratorTest,
+       PendingStateSignin_NoSavedCredentials_ExternalURL) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kEnablePendingModePasswordsPromo);
+  ON_CALL(client(), GetLastCommittedURL())
+      .WillByDefault(ReturnRef(kExternalURL));
+
+  EnablePasswordSync();
+
+  AccountInfo account = signin::MakePrimaryAccountAvailable(
+      identity_test_env()->identity_manager(), "example@google.com",
+      signin::ConsentLevel::kSignin);
+  identity_test_env()->SetInvalidRefreshTokenForAccount(account.account_id);
+
+  std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
+      /*fill_data=*/{}, favicon(), /*username_filter=*/u"",
+      OffersGeneration(false), ShowPasswordSuggestions(true),
+      ShowWebAuthnCredentials(false));
+
+  EXPECT_THAT(suggestions,
+              ElementsAre(EqualsSuggestion(
+                  SuggestionType::kPendingStateSignin,
+                  l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_PENDING_STATE),
+                  Suggestion::Icon::kGoogle)));
+}
+
+TEST_F(PasswordSuggestionGeneratorTest,
+       PendingStateSignin_HasSavedCredentials_ExternalURL) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kEnablePendingModePasswordsPromo);
+  ON_CALL(client(), GetLastCommittedURL())
+      .WillByDefault(ReturnRef(kExternalURL));
+
+  EnablePasswordSync();
+
+  AccountInfo account = signin::MakePrimaryAccountAvailable(
+      identity_test_env()->identity_manager(), "example@google.com",
+      signin::ConsentLevel::kSignin);
+  identity_test_env()->SetInvalidRefreshTokenForAccount(account.account_id);
+
+  std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
+      password_form_fill_data(), favicon(), /*username_filter=*/u"",
+      OffersGeneration(false), ShowPasswordSuggestions(true),
+      ShowWebAuthnCredentials(false));
+
+  EXPECT_THAT(
+      suggestions,
+      ElementsAre(
+          EqualsDomainPasswordSuggestion(SuggestionType::kPasswordEntry,
+                                         u"username", password_label(8u),
+                                         /*realm_label=*/u"", favicon()),
+          EqualsSuggestion(SuggestionType::kSeparator),
+          EqualsManagePasswordsSuggestion(),
+          EqualsSuggestion(SuggestionType::kSeparator),
+          EqualsSuggestion(SuggestionType::kPendingStateSignin)));
+}
+
+TEST_F(PasswordSuggestionGeneratorTest,
+       PendingStateSignin_NoSavedCredentials_GaiaURL) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kEnablePendingModePasswordsPromo);
+  EXPECT_CALL(client(), GetLastCommittedURL)
+      .WillRepeatedly(ReturnRef(kGaiaURL));
+
+  EnablePasswordSync();
+
+  AccountInfo account = signin::MakePrimaryAccountAvailable(
+      identity_test_env()->identity_manager(), "example@google.com",
+      signin::ConsentLevel::kSignin);
+  identity_test_env()->SetInvalidRefreshTokenForAccount(account.account_id);
+
+  std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
+      /*fill_data=*/{}, favicon(), /*username_filter=*/u"",
+      OffersGeneration(false), ShowPasswordSuggestions(true),
+      ShowWebAuthnCredentials(false));
+
+  EXPECT_THAT(suggestions, IsEmpty());
+}
+
+TEST_F(PasswordSuggestionGeneratorTest,
+       PendingStateSignin_HasSavedCredentials_GaiaURL) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kEnablePendingModePasswordsPromo);
+  ON_CALL(client(), GetLastCommittedURL).WillByDefault(ReturnRef(kGaiaURL));
+
+  EnablePasswordSync();
+
+  AccountInfo account = signin::MakePrimaryAccountAvailable(
+      identity_test_env()->identity_manager(), "example@google.com",
+      signin::ConsentLevel::kSignin);
+  identity_test_env()->SetInvalidRefreshTokenForAccount(account.account_id);
+
+  std::vector<Suggestion> suggestions = generator().GetSuggestionsForDomain(
+      password_form_fill_data(), favicon(), /*username_filter=*/u"",
+      OffersGeneration(false), ShowPasswordSuggestions(true),
+      ShowWebAuthnCredentials(false));
+
+  EXPECT_THAT(suggestions,
+              ElementsAre(EqualsDomainPasswordSuggestion(
+                              SuggestionType::kPasswordEntry, u"username",
+                              password_label(8u),
+                              /*realm_label=*/u"", favicon()),
+                          EqualsSuggestion(SuggestionType::kSeparator),
+                          EqualsManagePasswordsSuggestion()));
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace password_manager

@@ -182,6 +182,10 @@ class TestPasswordManagerClient : public StubPasswordManagerClient {
     return identity_test_env_.identity_manager();
   }
 
+  const signin::IdentityManager* GetIdentityManager() const override {
+    return identity_test_env_.identity_manager();
+  }
+
   signin::IdentityTestEnvironment& identity_test_env() {
     return identity_test_env_;
   }

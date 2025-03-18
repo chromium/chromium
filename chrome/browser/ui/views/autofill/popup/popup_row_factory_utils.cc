@@ -90,7 +90,8 @@ constexpr auto kPopupItemTypesUsingLeadingIcons = DenseSet<SuggestionType>(
      SuggestionType::kManageAutofillAi, SuggestionType::kManageCreditCard,
      SuggestionType::kManageIban, SuggestionType::kManagePlusAddress,
      SuggestionType::kShowAccountCards, SuggestionType::kUndoOrClear,
-     SuggestionType::kViewPasswordDetails});
+     SuggestionType::kViewPasswordDetails,
+     SuggestionType::kPendingStateSignin});
 
 // Max width for the username and masked password.
 constexpr int kAutofillPopupUsernameMaxWidth = 272;
@@ -275,6 +276,12 @@ std::unique_ptr<PopupRowContentView> CreateFooterPopupRowContentView(
     main_text_label->SetEnabledColor(ui::kColorLabelForegroundSecondary);
   }
   main_text_label->SetEnabled(!suggestion.is_loading);
+
+  if (suggestion.type == SuggestionType::kPendingStateSignin) {
+    main_text_label->SetMultiLine(true);
+    main_text_label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
+  }
+
   view->AddChildView(std::move(main_text_label));
 
   popup_cell_utils::AddSpacerWithSize(*view,
