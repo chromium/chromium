@@ -71,6 +71,11 @@ std::string_view CollaborationServiceJoinEventToString(
       return "TabGroupServiceReady";
     case CollaborationServiceJoinEvent::kAllServicesReadyForFlow:
       return "AllServicesReadyForFlow";
+    case CollaborationServiceJoinEvent::kTimeoutWaitingForServicesReady:
+      return "TimeoutWaitingForServicesReady";
+    case CollaborationServiceJoinEvent::
+        kTimeoutWaitingForSyncAndDataSharingGroup:
+      return "TimeoutWaitingForSyncAndDataSharingGroup";
   }
 }
 

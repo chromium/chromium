@@ -44,7 +44,9 @@ enum class CollaborationServiceJoinEvent {
   kDataSharingServiceReadyObserved = 25,
   kTabGroupServiceReady = 26,
   kAllServicesReadyForFlow = 27,
-  kMaxValue = kAllServicesReadyForFlow,
+  kTimeoutWaitingForServicesReady = 28,
+  kTimeoutWaitingForSyncAndDataSharingGroup = 29,
+  kMaxValue = kTimeoutWaitingForSyncAndDataSharingGroup,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/collaboration_service/enums.xml:CollaborationServiceJoinEvent)
 

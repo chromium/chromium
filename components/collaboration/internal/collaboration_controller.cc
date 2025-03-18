@@ -123,6 +123,11 @@ class ControllerState {
                              ErrorInfo(ErrorInfo::Type::kGenericError));
   }
 
+  virtual void HandleErrorWithMetrics(CollaborationServiceJoinEvent event) {
+    RecordJoinEvent(GetLogger(), event);
+    HandleError();
+  }
+
   virtual void HandleErrorWithType(ErrorInfo::Type type) {
     controller->TransitionTo(StateId::kError, ErrorInfo(type));
   }
@@ -313,8 +318,10 @@ class WaitingForServicesToInitialize
     // Timeout waiting.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&WaitingForServicesToInitialize::HandleError,
-                       weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(
+            &WaitingForServicesToInitialize::HandleErrorWithMetrics,
+            weak_ptr_factory_.GetWeakPtr(),
+            CollaborationServiceJoinEvent::kTimeoutWaitingForServicesReady),
         base::Seconds(5));
     // TODO(crbug.com/392791204): Wait for tab group sync to be ready.
     is_data_sharing_ready_ =
@@ -571,8 +578,11 @@ class WaitingForSyncAndDataSharingGroup
       : ControllerState(id, controller) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&WaitingForSyncAndDataSharingGroup::HandleError,
-                       weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(
+            &WaitingForSyncAndDataSharingGroup::HandleErrorWithMetrics,
+            weak_ptr_factory_.GetWeakPtr(),
+            CollaborationServiceJoinEvent::
+                kTimeoutWaitingForSyncAndDataSharingGroup),
         kTimeoutWaitingForDataSharingGroup);
     tab_group_sync_observer_.Observe(controller->tab_group_sync_service());
     data_sharing_observer_.Observe(controller->data_sharing_service());
