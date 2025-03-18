@@ -19803,21 +19803,6 @@
             ]
         }
     ],
-    "RemoveSearchEngineChoiceAttribution": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "RemoveSearchEngineChoiceAttribution"
-                    ]
-                }
-            ]
-        }
-    ],
     "RenderArcNotificationsByChrome": [
         {
             "platforms": [
