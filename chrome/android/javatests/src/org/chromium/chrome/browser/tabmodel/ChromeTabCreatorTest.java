@@ -23,6 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -65,6 +66,7 @@ public class ChromeTabCreatorTest {
     @Before
     public void setUp() throws Exception {
         mTestServer = sTestServerRule.getServer();
+        IntentUtils.setForceIsTrustedIntentForTesting(/* isTrusted= */ true);
     }
 
     /** Verify that tabs opened in background on low-end are loaded lazily. */
@@ -194,20 +196,18 @@ public class ChromeTabCreatorTest {
                                         .getCurrentTabCreator()
                                         .createNewTab(
                                                 new LoadUrlParams(mTestServer.getURL(TEST_PATH)),
-                                                TabLaunchType.FROM_LINK,
+                                                TabLaunchType.FROM_EXTERNAL_APP,
                                                 null,
                                                 createIntent(/* tabIndex= */ 0)); // At the start.
-                        // TODO(skym): These checks are accidentally backwards. This test does not
-                        // actually work.
-                        assertNotEquals(
+                        assertEquals(
                                 "The second/last tab should be the first in the list.",
                                 0,
                                 indexOf(tabTwo));
-                        assertNotEquals(
+                        assertEquals(
                                 "The current tab should now be the second in the list.",
                                 1,
                                 indexOf(currentTab));
-                        assertNotEquals(
+                        assertEquals(
                                 "The first tab should now be the third in the list.",
                                 2,
                                 indexOf(tabOne));
