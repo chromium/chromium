@@ -4,7 +4,11 @@
 
 #include "ash/scanner/scanner_disclaimer.h"
 
+#include <string>
+
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
@@ -20,12 +24,37 @@ constexpr const char* AckPrefForEntryPoint(ScannerEntryPoint entry_point) {
   }
 }
 
+// Returns the type of disclaimer that should override
+// `GetScannerDisclaimerType` for debug purposes, or `kNone` if none exists.
+ScannerDisclaimerType DebugOverrideDisclaimerType() {
+  std::string debug_switch =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kScannerDisclaimerDebugOverride);
+
+  if (debug_switch == switches::kScannerDisclaimerDebugOverrideFull) {
+    return ScannerDisclaimerType::kFull;
+  }
+
+  if (debug_switch == switches::kScannerDisclaimerDebugOverrideReminder) {
+    return ScannerDisclaimerType::kReminder;
+  }
+
+  return ScannerDisclaimerType::kNone;
+}
+
 }  // namespace
 
 ScannerDisclaimerType GetScannerDisclaimerType(const PrefService& prefs,
                                                ScannerEntryPoint entry_point) {
+  // Always show the full disclaimer - even if there is a debug override - if
+  // the user has not consented yet.
   if (!prefs.GetBoolean(prefs::kSunfishConsentDisclaimerAccepted)) {
     return ScannerDisclaimerType::kFull;
+  }
+
+  if (ScannerDisclaimerType debug_override = DebugOverrideDisclaimerType();
+      debug_override != ScannerDisclaimerType::kNone) {
+    return debug_override;
   }
 
   if (!prefs.GetBoolean(AckPrefForEntryPoint(entry_point))) {
