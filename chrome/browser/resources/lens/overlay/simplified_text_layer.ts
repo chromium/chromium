@@ -43,6 +43,7 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
 
   static override get properties() {
     return {
+      hasCopiedText: {type: Boolean, reflect: true},
       highlightedLines: {type: Array},
     };
   }
@@ -55,6 +56,9 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
     return getHtml.bind(this)();
   }
 
+  // Whether the user has copied text pertaining to the newest region selection
+  // made.
+  protected hasCopiedText = false;
   // The currently selected lines.
   protected highlightedLines: HighlightedLine[] = [];
 
@@ -151,6 +155,7 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
   }
 
   onSelectionStart(): void {
+    this.hasCopiedText = false;
     this.highlightedLines = [];
     this.fire('hide-selected-region-context-menu');
   }
@@ -383,6 +388,7 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
     if (startIndex < 0 || endIndex < 0) {
       return;
     }
+    this.hasCopiedText = true;
 
     if (this.regionTextResponse) {
       callback(/*textStartIndex=*/ 0,
