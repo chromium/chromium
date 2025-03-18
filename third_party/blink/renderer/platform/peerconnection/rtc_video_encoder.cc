@@ -2982,16 +2982,22 @@ void RTCVideoEncoder::UpdateEncoderInfo(
        base::FeatureList::IsEnabled(
            features::kRtcVideoEncoderConvertSimulcastToSvc));
   encoder_info_.is_qp_trusted = media_enc_info.reports_average_qp;
-  if (media::VideoCodecProfileToVideoCodec(profile_) ==
-          media::VideoCodec::kHEVC &&
-      encoder_info_.is_qp_trusted) {
-    // Thresholds based on local QP and PSNR measurements.
-    constexpr int kH265QpThresholdLow = 29;
-    constexpr int kH265QpThresholdHigh = 36;
-    encoder_info_.scaling_settings = VideoEncoder::ScalingSettings(
-        kH265QpThresholdLow, kH265QpThresholdHigh);
-  } else {
-    encoder_info_.scaling_settings = VideoEncoder::ScalingSettings::kOff;
+  encoder_info_.scaling_settings = VideoEncoder::ScalingSettings::kOff;
+  if (encoder_info_.is_qp_trusted) {
+    if (media::VideoCodecProfileToVideoCodec(profile_) ==
+        media::VideoCodec::kHEVC) {
+      // Thresholds based on local QP and PSNR measurements.
+      constexpr int kH265QpThresholdLow = 29;
+      constexpr int kH265QpThresholdHigh = 36;
+      encoder_info_.scaling_settings = VideoEncoder::ScalingSettings(
+          kH265QpThresholdLow, kH265QpThresholdHigh);
+    } else if (media::VideoCodecProfileToVideoCodec(profile_) ==
+               media::VideoCodec::kAV1) {
+      constexpr int kAV1QindexLow = 145;
+      constexpr int kAV1QindexHigh = 205;
+      encoder_info_.scaling_settings =
+          VideoEncoder::ScalingSettings(kAV1QindexLow, kAV1QindexHigh);
+    }
   }
   encoder_info_.requested_resolution_alignment =
       media_enc_info.requested_resolution_alignment;
