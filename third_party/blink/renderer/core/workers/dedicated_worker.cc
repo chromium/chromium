@@ -290,8 +290,9 @@ void DedicatedWorker::Start() {
 
     mojo::PendingRemote<mojom::blink::BlobURLToken> blob_url_token;
     if (script_request_url_.ProtocolIs("blob")) {
-      GetExecutionContext()->GetPublicURLManager().ResolveForWorkerScriptFetch(
-          script_request_url_, blob_url_token.InitWithNewPipeAndPassReceiver());
+      GetExecutionContext()->GetPublicURLManager().ResolveAsBlobURLToken(
+          script_request_url_, blob_url_token.InitWithNewPipeAndPassReceiver(),
+          /*is_top_level_navigation=*/false);
     }
 
     factory_client_->CreateWorkerHost(
