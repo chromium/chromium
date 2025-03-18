@@ -7473,12 +7473,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-    {"cct-before-unload", flag_descriptions::kCCTBeforeUnloadName,
-     flag_descriptions::kCCTBeforeUnloadDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kCCTBeforeUnload)},
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
     {"cct-ephemeral-mode", flag_descriptions::kCCTEphemeralModeName,
      flag_descriptions::kCCTEphemeralModeDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kCCTEphemeralMode)},

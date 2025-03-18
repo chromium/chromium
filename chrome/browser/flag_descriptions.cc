@@ -4335,10 +4335,6 @@ const char kCCTAuthTabEnableHttpsRedirectsName[] =
 const char kCCTAuthTabEnableHttpsRedirectsDescription[] =
     "Enables HTTPS redirect scheme in Auth Tab";
 
-const char kCCTBeforeUnloadName[] = "CCT before unload";
-const char kCCTBeforeUnloadDescription[] =
-    "Kill switch for new CCT before unload behavior during back press";
-
 const char kCCTEphemeralMediaViewerExperimentName[] =
     "Ephemeral CCT for Media Viewer";
 const char kCCTEphemeralMediaViewerExperimentDescription[] =

@@ -258,7 +258,6 @@ public abstract class ChromeFeatureList {
     public static final String CCT_AUTH_TAB_ENABLE_HTTPS_REDIRECTS =
             "CCTAuthTabEnableHttpsRedirects";
     public static final String CCT_AUTO_TRANSLATE = "CCTAutoTranslate";
-    public static final String CCT_BEFORE_UNLOAD = "CCTBeforeUnload";
     public static final String CCT_BLOCK_TOUCHES_DURING_ENTER_ANIMATION =
             "CCTBlockTouchesDuringEnterAnimation";
     public static final String CCT_CLIENT_DATA_HEADER = "CCTClientDataHeader";
