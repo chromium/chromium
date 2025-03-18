@@ -4418,6 +4418,11 @@
       status: "stable",
     },
     {
+      // crbug.com/396666438
+      name: "TextOffsetMapCrashFix",
+      status: "stable",
+    },
+    {
       name: "TimerThrottlingForBackgroundTabs",
       public: true,
       status: "stable",
