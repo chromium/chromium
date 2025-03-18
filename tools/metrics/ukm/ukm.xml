@@ -7202,6 +7202,9 @@ be describing additional metrics about the same event.
     We consider a non-user-initiated navigation to be a client bounce if it
     navigates the page away within a short period of time without any user
     activation/interaction. Recorded when client bounce occurs.
+
+    The event is associated with the UKM source ID from the navigation ID of the
+    most recent primary page navigation since M135.
   </summary>
   <metric name="UserActivation.10s">
     <summary>
@@ -7264,11 +7267,11 @@ be describing additional metrics about the same event.
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     Recorded when the source registration is processed by Attribution Reporting
-    API. The event is associated with the UKM source ID of the most recently
-    navigated primary page as a workaround for prerendered pages. For ongoing
-    navigation, the UKM source ID would be obtained from the navigation handle
-    to avoid the timing issue as the cached UKM source ID would not be updated
-    until the navigation completes.
+    API. The event is associated with the UKM source ID from the navigation ID
+    of the most recent primary page navigation as a workaround for prerendered
+    pages. For ongoing navigation, the UKM source ID would be obtained from the
+    navigation handle to avoid the timing issue as the cached UKM source ID
+    would not be updated until the navigation completes.
   </summary>
   <metric name="StoreSourceResult" enum="ConversionStorageSourceStatus">
     <summary>
@@ -7283,11 +7286,11 @@ be describing additional metrics about the same event.
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     Recorded when the trigger registration is processed by Attribution Reporting
-    API. The event is associated with the UKM source ID of the most recently
-    navigated primary page as a workaround for prerendered pages. For ongoing
-    navigation, the UKM source ID would be obtained from the navigation handle
-    to avoid the timing issue as the cached UKM source ID would not be updated
-    until the navigation completes.
+    API. he event is associated with the UKM source ID from the navigation ID of
+    the most recent primary page navigation as a workaround for prerendered
+    pages. For ongoing navigation, the UKM source ID would be obtained from the
+    navigation handle to avoid the timing issue as the cached UKM source ID
+    would not be updated until the navigation completes.
   </summary>
   <metric name="CreateAggregatableReportStatus"
       enum="ConversionCreateAggregatableReportStatus">
