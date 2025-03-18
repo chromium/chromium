@@ -5,13 +5,14 @@
 #ifndef ASH_SYSTEM_FOCUS_MODE_SOUNDS_FOCUS_MODE_SOUNDS_VIEW_H_
 #define ASH_SYSTEM_FOCUS_MODE_SOUNDS_FOCUS_MODE_SOUNDS_VIEW_H_
 
+#include <variant>
+
 #include "ash/ash_export.h"
 #include "ash/style/error_message_toast.h"
 #include "ash/style/rounded_container.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
 #include "base/containers/flat_set.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
@@ -65,7 +66,7 @@ class ASH_EXPORT FocusModeSoundsView
     constexpr std::partial_ordering operator<=>(const ToastData& other) const;
 
     focus_mode_util::SoundType source;
-    absl::variant<int, std::u16string> message;
+    std::variant<int, std::u16string> message;
     ErrorMessageToast::ButtonActionType action_type;
     bool fatal;
   };

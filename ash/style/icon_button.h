@@ -6,11 +6,11 @@
 #define ASH_STYLE_ICON_BUTTON_H_
 
 #include <optional>
+#include <variant>
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/third_party/icu/icu_utf.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
@@ -110,7 +110,7 @@ class ASH_EXPORT IconButton : public views::ImageButton {
     Type type_;
     raw_ptr<const gfx::VectorIcon> icon_;
     std::optional<base_icu::UChar32> character_;
-    absl::variant<int, std::u16string> accessible_name_;
+    std::variant<int, std::u16string> accessible_name_;
     bool is_togglable_;
     bool has_border_;
     std::optional<int> view_id_;

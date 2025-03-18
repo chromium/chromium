@@ -5,6 +5,7 @@
 #include "ash/test/ash_test_util.h"
 
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "ash/frame/non_client_frame_view_ash.h"
@@ -280,17 +281,17 @@ views::MenuItemView* WaitForMenuItemWithLabel(const std::u16string& label) {
 }
 
 chromeos::MultitaskMenu* ShowAndWaitMultitaskMenuForWindow(
-    absl::variant<aura::Window*, chromeos::FrameSizeButton*>
+    std::variant<aura::Window*, chromeos::FrameSizeButton*>
         window_or_size_button,
     chromeos::MultitaskMenuEntryType entry_type) {
   // If a size button object is passed, use that. Otherwise retrieve it from the
   // non client frame view ash.
   chromeos::FrameSizeButton* size_button = nullptr;
-  if (absl::holds_alternative<chromeos::FrameSizeButton*>(
+  if (std::holds_alternative<chromeos::FrameSizeButton*>(
           window_or_size_button)) {
-    size_button = absl::get<chromeos::FrameSizeButton*>(window_or_size_button);
+    size_button = std::get<chromeos::FrameSizeButton*>(window_or_size_button);
   } else {
-    aura::Window* window = absl::get<aura::Window*>(window_or_size_button);
+    aura::Window* window = std::get<aura::Window*>(window_or_size_button);
     CHECK(window);
     auto* frame_view = NonClientFrameViewAsh::Get(window);
     if (!frame_view) {
