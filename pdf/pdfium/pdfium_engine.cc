@@ -2284,10 +2284,6 @@ void PDFiumEngine::SetReadOnly(bool read_only) {
   ClearTextSelection();
 }
 
-bool PDFiumEngine::IsTagged() const {
-  return FPDFCatalog_IsTagged(doc());
-}
-
 void PDFiumEngine::SetDocumentLayout(DocumentLayout::PageSpread page_spread) {
   SaveSelection();
   desired_layout_options_.set_page_spread(page_spread);
