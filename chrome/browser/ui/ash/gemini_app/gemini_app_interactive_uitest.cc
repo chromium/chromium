@@ -6,6 +6,8 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
+#include <variant>
 #include <vector>
 
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
@@ -302,8 +304,8 @@ class GeminiAppInteractiveUiTestBase
     // `InteractiveBrowserTestT<>::SetUpOnMainThread()` so that the interactive
     // browser test base class will successfully set the context widget for the
     // test sequence. The context widget will be associated with the browser.
-    if (absl::holds_alternative<ash::LoggedInUserMixin>(user_session_mixin_)) {
-      absl::get<ash::LoggedInUserMixin>(user_session_mixin_).LogInUser();
+    if (std::holds_alternative<ash::LoggedInUserMixin>(user_session_mixin_)) {
+      std::get<ash::LoggedInUserMixin>(user_session_mixin_).LogInUser();
     }
 
     InteractiveBrowserTestT<
@@ -334,16 +336,16 @@ class GeminiAppInteractiveUiTestBase
  private:
   // Creates the appropriate guest or logged-in user session mixin based on
   // the presence of `login_type`.
-  absl::variant<ash::GuestSessionMixin, ash::LoggedInUserMixin>
+  std::variant<ash::GuestSessionMixin, ash::LoggedInUserMixin>
   CreateUserSessionMixin(
       std::optional<ash::LoggedInUserMixin::LogInType> login_type) {
     if (!login_type) {
-      return absl::variant<ash::GuestSessionMixin, ash::LoggedInUserMixin>(
-          absl::in_place_type_t<ash::GuestSessionMixin>(), &mixin_host_);
+      return std::variant<ash::GuestSessionMixin, ash::LoggedInUserMixin>(
+          std::in_place_type_t<ash::GuestSessionMixin>(), &mixin_host_);
     }
 
-    return absl::variant<ash::GuestSessionMixin, ash::LoggedInUserMixin>(
-        absl::in_place_type_t<ash::LoggedInUserMixin>(), &mixin_host_,
+    return std::variant<ash::GuestSessionMixin, ash::LoggedInUserMixin>(
+        std::in_place_type_t<ash::LoggedInUserMixin>(), &mixin_host_,
         /*test_base=*/this, embedded_test_server(), login_type.value());
   }
 
@@ -352,7 +354,7 @@ class GeminiAppInteractiveUiTestBase
 
   // Used to manage either a guest or logged-in user session based on test
   // parameterization.
-  absl::variant<ash::GuestSessionMixin, ash::LoggedInUserMixin>
+  std::variant<ash::GuestSessionMixin, ash::LoggedInUserMixin>
       user_session_mixin_;
 
   // Used to enable the Gemini app preinstallation.

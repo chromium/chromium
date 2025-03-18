@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -28,7 +29,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
@@ -392,7 +392,7 @@ void IsolatedWebAppInstallerViewController::OnGetMetadataProgressUpdated(
 
 void IsolatedWebAppInstallerViewController::OnInstallabilityChecked(
     InstallabilityChecker::Result result) {
-  absl::visit(InstallabilityCheckedVisitor(*model_, *this), result);
+  std::visit(InstallabilityCheckedVisitor(*model_, *this), result);
 }
 
 void IsolatedWebAppInstallerViewController::OnInstallProgressUpdated(

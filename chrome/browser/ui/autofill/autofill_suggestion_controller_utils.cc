@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
 
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/functional/overloaded.h"
@@ -115,7 +116,7 @@ bool IsStandaloneSuggestionType(SuggestionType type) {
 
 content::RenderFrameHost* GetRenderFrameHost(
     AutofillSuggestionDelegate& delegate) {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [](AutofillDriver* driver) {
             return static_cast<ContentAutofillDriver*>(driver)

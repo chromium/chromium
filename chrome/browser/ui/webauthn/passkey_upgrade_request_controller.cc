@@ -9,6 +9,7 @@
 #include <string>
 #include <tuple>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -44,7 +45,6 @@
 #include "content/public/browser/web_contents.h"
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_discovery_factory.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 using RenderFrameHost = content::RenderFrameHost;
 
@@ -152,7 +152,7 @@ void PasskeyUpgradeRequestController::ContinuePendingUpgradeRequest() {
 void PasskeyUpgradeRequestController::OnGetPasswordStoreResultsOrErrorFrom(
     password_manager::PasswordStoreInterface* store,
     password_manager::LoginsResultOrError results_or_error) {
-  if (absl::holds_alternative<password_manager::PasswordStoreBackendError>(
+  if (std::holds_alternative<password_manager::PasswordStoreBackendError>(
           results_or_error)) {
     FIDO_LOG(EVENT) << "Passkey upgrade failed due to password store error";
     SignalRequestFailure(RequestError::kPasswordStoreError);

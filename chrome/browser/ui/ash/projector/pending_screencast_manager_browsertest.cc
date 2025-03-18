@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/ash/projector/pending_screencast_manager.h"
 
 #include <memory>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/projector_app/projector_app_client.h"
@@ -43,7 +44,6 @@
 #include "content/public/test/browser_test.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace ash {
 namespace {

@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check_op.h"
@@ -39,7 +40,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
@@ -542,10 +542,10 @@ bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
   PersonalDataManager* pdm = PersonalDataManagerFactory::GetForBrowserContext(
       web_contents_->GetBrowserContext());
 
-  if (absl::holds_alternative<Suggestion::Guid>(payload)) {
+  if (std::holds_alternative<Suggestion::Guid>(payload)) {
     if (const CreditCard* credit_card =
             pdm->payments_data_manager().GetCreditCardByGUID(
-                absl::get<Suggestion::Guid>(payload).value())) {
+                std::get<Suggestion::Guid>(payload).value())) {
       if (!CreditCard::IsLocalCard(credit_card)) {
         return false;
       }
@@ -561,10 +561,10 @@ bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
     return false;
   }
 
-  if (absl::holds_alternative<Suggestion::AutofillProfilePayload>(payload)) {
+  if (std::holds_alternative<Suggestion::AutofillProfilePayload>(payload)) {
     if (const AutofillProfile* profile =
             pdm->address_data_manager().GetProfileByGUID(
-                absl::get<Suggestion::AutofillProfilePayload>(payload)
+                std::get<Suggestion::AutofillProfilePayload>(payload)
                     .guid.value())) {
       if (title) {
         std::u16string street_address = profile->GetRawInfo(ADDRESS_HOME_CITY);

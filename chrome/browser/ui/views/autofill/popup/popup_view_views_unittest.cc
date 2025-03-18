@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -48,7 +49,6 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
@@ -309,12 +309,12 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
 
  protected:
   views::View& GetRowViewAt(size_t index) {
-    return *absl::visit([](views::View* view) { return view; },
-                        test_api(view()).rows()[index]);
+    return *std::visit([](views::View* view) { return view; },
+                       test_api(view()).rows()[index]);
   }
 
   PopupRowView& GetPopupRowViewAt(size_t index) {
-    return *absl::get<PopupRowView*>(test_api(view()).rows()[index]);
+    return *std::get<PopupRowView*>(test_api(view()).rows()[index]);
   }
 
   size_t GetNumberOfRows() { return test_api(view()).rows().size(); }
@@ -1332,7 +1332,7 @@ TEST_F(PopupViewViewsTest, ChildWidgetRetriggersMouseMovesToParent) {
 
   ASSERT_EQ(view().GetSelectedCell(), std::nullopt);
 
-  PopupRowView* row = absl::get<PopupRowView*>(test_api(view()).rows()[0]);
+  PopupRowView* row = std::get<PopupRowView*>(test_api(view()).rows()[0]);
 
   // Mouse move inside parent, selection by MOUSE_ENTERED is expected.
   generator().MoveMouseTo(row->GetBoundsInScreen().CenterPoint());
@@ -1995,7 +1995,7 @@ TEST_F(PopupViewViewsTest, WarningOnShowA11yFocus) {
 
   ASSERT_EQ(1u, test_api(view()).rows().size());
   auto* const* row_view =
-      absl::get_if<PopupWarningView*>(&test_api(view()).rows()[0]);
+      std::get_if<PopupWarningView*>(&test_api(view()).rows()[0]);
   ASSERT_TRUE(row_view);
 
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kFocus, *row_view));

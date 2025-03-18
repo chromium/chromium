@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -51,7 +52,6 @@
 #include "components/user_education/views/new_badge_label.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
@@ -358,7 +358,7 @@ std::unique_ptr<views::View> CreatePasswordSubtextView(
 std::unique_ptr<views::View> GetPasswordIconView(
     const Suggestion& suggestion,
     PasswordFaviconLoader* favicon_loader) {
-  if (!absl::holds_alternative<Suggestion::FaviconDetails>(
+  if (!std::holds_alternative<Suggestion::FaviconDetails>(
           suggestion.custom_icon)) {
     return popup_cell_utils::GetIconImageView(suggestion);
   }
@@ -375,7 +375,7 @@ std::unique_ptr<views::View> GetPasswordIconView(
       gfx::Size(kCustomIconSize, kCustomIconSize), std::move(placeholder_icon),
       base::BindOnce(
           &PasswordFaviconLoader::Load, base::Unretained(favicon_loader),
-          absl::get<Suggestion::FaviconDetails>(suggestion.custom_icon)));
+          std::get<Suggestion::FaviconDetails>(suggestion.custom_icon)));
 }
 
 std::unique_ptr<PopupRowContentView> CreatePasswordPopupRowContentView(
