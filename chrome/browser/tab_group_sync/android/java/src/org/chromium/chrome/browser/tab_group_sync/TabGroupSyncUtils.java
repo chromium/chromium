@@ -165,8 +165,7 @@ public final class TabGroupSyncUtils {
      */
     public static long getTabGroupLastAccessTime(
             Token tabGroupId, TabGroupModelFilter tabGroupModelFilter) {
-        int rootId = tabGroupModelFilter.getRootIdFromTabGroupId(tabGroupId);
-        List<Tab> tabs = tabGroupModelFilter.getRelatedTabListForRootId(rootId);
+        List<Tab> tabs = tabGroupModelFilter.getTabsInGroup(tabGroupId);
         long mostRecentAccessTime = 0;
         for (Tab tab : tabs) {
             mostRecentAccessTime = Math.max(mostRecentAccessTime, tab.getTimestampMillis());

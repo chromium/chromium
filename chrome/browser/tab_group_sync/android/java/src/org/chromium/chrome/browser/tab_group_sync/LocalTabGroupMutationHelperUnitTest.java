@@ -122,7 +122,8 @@ public class LocalTabGroupMutationHelperUnitTest {
         List<Tab> tabs = new ArrayList<>();
         tabs.add(mTab1);
         Mockito.doReturn(TOKEN_1).when(mTab1).getTabGroupId();
-        when(mTabGroupModelFilter.getRelatedTabListForRootId(eq(ROOT_ID_1))).thenReturn(tabs);
+        when(mTabGroupModelFilter.getTabsInGroup(eq(TOKEN_1))).thenReturn(tabs);
+        when(mTabGroupModelFilter.tabGroupExists(TOKEN_1)).thenReturn(true);
     }
 
     private Tab prepareTab(int tabId, int rootId) {
@@ -359,7 +360,7 @@ public class LocalTabGroupMutationHelperUnitTest {
 
     @Test
     public void testCloseTabGroup() {
-        mTabModel.addTab(TAB_ID_1);
+        addOneTab();
         mLocalMutationHelper.closeTabGroup(LOCAL_TAB_GROUP_ID_1, ClosingSource.CLOSED_BY_USER);
         verify(mTabRemover).forceCloseTabs(argThat(params -> params.saveToTabRestoreService));
         verify(mTabGroupSyncService)
@@ -369,7 +370,7 @@ public class LocalTabGroupMutationHelperUnitTest {
 
     @Test
     public void testCloseTabGroup_Collaboration() {
-        mTabModel.addTab(TAB_ID_1);
+        addOneTab();
         SavedTabGroup savedTabGroup =
                 createOneSavedTabGroup(LOCAL_TAB_GROUP_ID_1, new Integer[] {TAB_ID_1});
         savedTabGroup.collaborationId = COLLABORATION_ID;
