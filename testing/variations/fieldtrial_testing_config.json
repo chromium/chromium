@@ -3562,6 +3562,21 @@
             ]
         }
     ],
+    "BrowserDynamicCodeDisabled": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BrowserDynamicCodeDisabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "BrowserSignalsReportingEnabled": [
         {
             "platforms": [
