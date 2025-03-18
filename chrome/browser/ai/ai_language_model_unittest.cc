@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
 #include "base/test/mock_callback.h"
@@ -299,7 +300,8 @@ class AILanguageModelTest : public AITestUtils::AITestBase,
           *metadata.mutable_max_sampling_params() = sampling_params;
           optimization_guide::proto::Any any;
           any.set_value(metadata.SerializeAsString());
-          any.set_type_url("type.googleapis.com/" + metadata.GetTypeName());
+          any.set_type_url(
+              base::StrCat({"type.googleapis.com/", metadata.GetTypeName()}));
           return any;
         });
   }

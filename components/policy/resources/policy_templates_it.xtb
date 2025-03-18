@@ -3910,6 +3910,7 @@ Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istan
 
 Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="3845318141474759319">Consenti Sfondo AI generativa senza migliorare i modelli di AI</translation>
+<translation id="3849923496599301707">Forza autorizzazione app di Chrome in modalità kiosk</translation>
 <translation id="3851443303439635700">Controlla la soglia di nidificazione prima della quale la funzione JavaScript setTimeout() inizia a essere bloccata</translation>
 <translation id="3854609566862485607">Questa policy consente di controllare un'etichetta personalizzata utilizzata per identificare i profili gestiti. Per i profili gestiti, questa etichetta viene mostrata accanto all'avatar nella barra degli strumenti. L'etichetta personalizzata non viene tradotta.
 
@@ -5552,6 +5553,11 @@ Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istan
 <translation id="5041315457555330432">Consenti a <ph name="PRODUCT_NAME" /> di connettersi solo a dispositivi su indirizzi IP privati, a meno che la funzionalità CastAllowAllIPs non sia attiva.</translation>
 <translation id="504689994545234073">Attiva l'archiviazione locale dei file degli utenti</translation>
 <translation id="5048890362473520096">Attiva sandbox LPAC per i servizi di stampa</translation>
+<translation id="5049989450078943331">Se questo criterio viene impostato su True, le app di Chrome possono continuare a essere eseguite in una sessione Kiosk, indipendentemente dall'abilitazione predefinita delle app di Chrome.
+
+Se il criterio non viene configurato o se viene impostato su False, verrà usato il comportamento predefinito definito sul dispositivo.
+
+Se si tenta di avviare un'app Chrome disabilitata, all'utente viene mostrato un messaggio che spiega perché l'app non è stata avviata e che suggerisce di contattare il reparto IT.</translation>
 <translation id="5055474681190962362">Il giorno del mese [1-31] in cui dovrebbe essere eseguito il riavvio, nel fuso orario locale del dispositivo. Questa policy viene usata soltanto se il valore della policy "frequency" è "MONTHLY". Se questo numero supera il numero di giorni massimo presente in un mese specifico, verrà scelto l'ultimo giorno del mese.</translation>
 <translation id="5055513974503523022">Sfondo AI generativa per videoconferenze consente agli utenti di esprimersi utilizzando le funzionalità di AI generativa per creare sfondi personalizzati per le videoconferenze su <ph name="PRODUCT_OS_NAME" />.
 
@@ -6433,6 +6439,7 @@ Se la policy viene impostata su un elenco non vuoto ed è presente un'estensione
 Se la policy non viene configurata o se viene impostato un elenco vuoto, all'utente verranno mostrate finestre di dialogo per la conferma della scansione quando vengono chiamate le funzioni <ph name="GET_SCANNER_LIST_FUNCTION" /> o <ph name="START_SCAN_FUNCTION" />.</translation>
 <translation id="5599461642204007579">Impostazioni di gestione di <ph name="MS_AD_NAME" /></translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5605676983184673391">Consenti l'esecuzione di app di Chrome nelle sessioni kiosk.</translation>
 <translation id="5607021831414604820">Attiva i report sullo stato di archiviazione del dispositivo</translation>
 <translation id="5608114828230655271">Comportamento predefinito del dispositivo</translation>
 <translation id="561001683838346956">Questa policy è stata rimossa nella versione 124 di <ph name="PRODUCT_NAME" />. A partire da quella versione, gli hash non sicuri sono sempre non consentiti. Nelle versioni precedenti, questa policy controllava se il browser consentiva hash non sicuri precedenti durante la procedura di TLS handshake.
@@ -6555,6 +6562,7 @@ Visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-pa
 
 Tieni presente che questa policy si applica solo se l'origine è autorizzata a utilizzare l'API Direct Sockets.
 Per maggiori dettagli, consulta <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> e <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="566569751231933416">Usa il comportamento predefinito.</translation>
 <translation id="5666457529647159548">Consenti agli utenti di gestire i certificati client installati.</translation>
 <translation id="5670249935663090320">Se la policy viene attivata o se non viene configurata, si attiva <ph name="PRODUCT_NAME" /> e gli utenti possono avviarlo dal menu delle app, dai menu contestuali delle pagine, dai controlli multimediali nei siti web compatibili con Google Cast e (se presente) dall'icona Trasmetti nella barra degli strumenti.
 

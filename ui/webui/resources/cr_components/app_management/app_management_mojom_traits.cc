@@ -5,6 +5,7 @@
 #include "ui/webui/resources/cr_components/app_management/app_management_mojom_traits.h"
 
 #include <utility>
+#include <variant>
 
 namespace mojo {
 
@@ -182,9 +183,9 @@ bool EnumTraits<TriState, apps::TriState>::FromMojom(TriState input,
 PermissionValueDataView::Tag
 UnionTraits<PermissionValueDataView, apps::Permission::PermissionValue>::GetTag(
     const apps::Permission::PermissionValue& r) {
-  if (absl::holds_alternative<bool>(r)) {
+  if (std::holds_alternative<bool>(r)) {
     return PermissionValueDataView::Tag::kBoolValue;
-  } else if (absl::holds_alternative<apps::TriState>(r)) {
+  } else if (std::holds_alternative<apps::TriState>(r)) {
     return PermissionValueDataView::Tag::kTristateValue;
   }
   NOTREACHED();

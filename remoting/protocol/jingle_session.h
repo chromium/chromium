@@ -18,6 +18,7 @@
 #include "crypto/rsa_private_key.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/datagram_channel_factory.h"
+#include "remoting/protocol/errors.h"
 #include "remoting/protocol/jingle_messages.h"
 #include "remoting/protocol/session.h"
 #include "remoting/protocol/session_config.h"
@@ -111,8 +112,9 @@ class JingleSession : public Session {
   void OnAuthenticatorStateChangeAfterAccepted();
 
   // Called from OnAccept() to initialize session config. If initialization
-  // fails, |error_details| will be updated.
+  // fails, |error_*| will be updated.
   bool InitializeConfigFromDescription(const ContentDescription* description,
+                                       ErrorCode& error_code,
                                        std::string& error_details,
                                        base::Location& error_location);
 

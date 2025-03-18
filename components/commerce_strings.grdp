@@ -329,6 +329,9 @@
     <message name="IDS_DISCOUNT_USE_THIS_CODE_AT_CHECKOUT_WITH_EXPIRATION_DATE" desc="Text shown in the discount dialog to tell users where to use the discount code and the discount expiration date.">
       Use this code at checkout. Valid until <ph name="DATE">$1<ex>2023-01-01</ex></ph>.
     </message>
+    <message name="IDS_DISCOUNT_USE_THIS_CODE_AT_CHECKOUT" desc="Text shown in the discount dialog to tell users where to use the discount code.">
+      Use this code at checkout.
+    </message>
     <message name="IDS_DISCOUNT_EXPIRATION_DATE" desc="Text shown in the discount dialog to tell users the discount expiration date.">
       Valid until <ph name="DATE">$1<ex>2023-01-01</ex></ph>.
     </message>

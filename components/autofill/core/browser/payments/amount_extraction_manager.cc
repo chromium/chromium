@@ -100,6 +100,14 @@ bool AmountExtractionManager::ShouldTriggerAmountExtraction(
   if (context.filling_product != FillingProduct::kCreditCard) {
     return false;
   }
+  if constexpr (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+                BUILDFLAG(IS_CHROMEOS)) {
+    if (base::FeatureList::IsEnabled(
+            ::autofill::features::
+                kAutofillEnableAmountExtractionDesktopLogging)) {
+      return true;
+    }
+  }
   // If the webpage is not in the amount extraction allowlist, do not trigger
   // the search.
   if (!IsUrlEligibleForAmountExtraction()) {
@@ -153,9 +161,10 @@ bool AmountExtractionManager::IsUrlEligibleForAmountExtractionForTesting()
 void AmountExtractionManager::OnCheckoutAmountReceived(
     base::TimeTicks search_request_start_timestamp,
     const std::string& extracted_amount) {
-  autofill_metrics::LogAmountExtractionLatency(
-      base::TimeTicks::Now() - search_request_start_timestamp,
-      !extracted_amount.empty());
+  base::TimeDelta latency =
+      base::TimeTicks::Now() - search_request_start_timestamp;
+  autofill_metrics::LogAmountExtractionLatency(latency,
+                                               !extracted_amount.empty());
   autofill_metrics::LogAmountExtractionResult(
       extracted_amount.empty()
           ? autofill_metrics::AmountExtractionResult::kAmountNotFound
@@ -174,6 +183,18 @@ void AmountExtractionManager::OnCheckoutAmountReceived(
                                       ->GetPaymentsBnplManager()) {
     bnpl_manager->OnAmountExtractionReturned(parsed_extracted_amount);
   }
+  if constexpr (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+                BUILDFLAG(IS_CHROMEOS)) {
+    if (base::FeatureList::IsEnabled(
+            ::autofill::features::
+                kAutofillEnableAmountExtractionDesktopLogging)) {
+      VLOG(3) << "The result of amount extraction on domain "
+              << autofill_manager_->client()
+                     .GetLastCommittedPrimaryMainFrameOrigin()
+              << " is " << extracted_amount << " with latency of "
+              << latency.InMilliseconds() << " milliseconds.";
+    }
+  }
 }
 
 void AmountExtractionManager::OnTimeoutReached() {
@@ -186,6 +207,17 @@ void AmountExtractionManager::OnTimeoutReached() {
   autofill_metrics::LogAmountExtractionResult(
       autofill_metrics::AmountExtractionResult::kTimeout);
   // TODO(crbug.com/378517983): Add BNPL flow action logic here.
+  if constexpr (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+                BUILDFLAG(IS_CHROMEOS)) {
+    if (base::FeatureList::IsEnabled(
+            ::autofill::features::
+                kAutofillEnableAmountExtractionDesktopLogging)) {
+      VLOG(3) << "The amount extraction on domain "
+              << autofill_manager_->client()
+                     .GetLastCommittedPrimaryMainFrameOrigin()
+              << " reached a timeout.";
+    }
+  }
 }
 
 bool AmountExtractionManager::IsUrlEligibleForAmountExtraction() const {

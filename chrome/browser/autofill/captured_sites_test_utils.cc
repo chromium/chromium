@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/base_switches.h"
@@ -309,12 +310,12 @@ struct AllowNull {
 std::optional<std::string> FindPopulateString(
     const base::Value::Dict& container,
     std::string_view key_name,
-    absl::variant<std::string_view, AllowNull> key_descriptor) {
+    std::variant<std::string_view, AllowNull> key_descriptor) {
   const std::string* value = container.FindString(key_name);
   if (!value) {
-    if (absl::holds_alternative<std::string_view>(key_descriptor)) {
+    if (std::holds_alternative<std::string_view>(key_descriptor)) {
       ADD_FAILURE() << "Failed to extract '"
-                    << absl::get<std::string_view>(key_descriptor)
+                    << std::get<std::string_view>(key_descriptor)
                     << "' string from container!";
     }
     return std::nullopt;
@@ -326,12 +327,12 @@ std::optional<std::string> FindPopulateString(
 std::optional<std::vector<std::string>> FindPopulateStringVector(
     const base::Value::Dict& container,
     std::string_view key_name,
-    absl::variant<std::string_view, AllowNull> key_descriptor) {
+    std::variant<std::string_view, AllowNull> key_descriptor) {
   const base::Value::List* list = container.FindList(key_name);
   if (!list) {
-    if (absl::holds_alternative<std::string_view>(key_descriptor)) {
+    if (std::holds_alternative<std::string_view>(key_descriptor)) {
       ADD_FAILURE() << "Failed to extract '"
-                    << absl::get<std::string_view>(key_descriptor)
+                    << std::get<std::string_view>(key_descriptor)
                     << "' strings from container!";
     }
     return std::nullopt;
@@ -340,9 +341,9 @@ std::optional<std::vector<std::string>> FindPopulateStringVector(
   std::vector<std::string> strings;
   for (const base::Value& item : *list) {
     if (!item.is_string()) {
-      if (absl::holds_alternative<std::string_view>(key_descriptor)) {
+      if (std::holds_alternative<std::string_view>(key_descriptor)) {
         ADD_FAILURE() << "Failed to extract element of '"
-                      << absl::get<std::string_view>(key_descriptor)
+                      << std::get<std::string_view>(key_descriptor)
                       << "' vector from container!";
       }
       return std::nullopt;

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
@@ -229,8 +230,8 @@ TestingProfile::TestingProfile(
 #if BUILDFLAG(IS_CHROMEOS)
     std::unique_ptr<policy::UserCloudPolicyManagerAsh> policy_manager,
 #else
-    absl::variant<std::unique_ptr<policy::UserCloudPolicyManager>,
-                  std::unique_ptr<policy::ProfileCloudPolicyManager>>
+    std::variant<std::unique_ptr<policy::UserCloudPolicyManager>,
+                 std::unique_ptr<policy::ProfileCloudPolicyManager>>
         policy_manager,
 #endif  // BUILDFLAG(IS_CHROMEOS)
     std::unique_ptr<policy::PolicyService> policy_service,
@@ -258,14 +259,14 @@ TestingProfile::TestingProfile(
 #if BUILDFLAG(IS_CHROMEOS)
   user_cloud_policy_manager_ = std::move(policy_manager);
 #else
-  if (absl::holds_alternative<std::unique_ptr<policy::UserCloudPolicyManager>>(
+  if (std::holds_alternative<std::unique_ptr<policy::UserCloudPolicyManager>>(
           policy_manager)) {
     user_cloud_policy_manager_ =
-        std::move(absl::get<std::unique_ptr<policy::UserCloudPolicyManager>>(
+        std::move(std::get<std::unique_ptr<policy::UserCloudPolicyManager>>(
             policy_manager));
   } else {
     profile_cloud_policy_manager_ =
-        std::move(absl::get<std::unique_ptr<policy::ProfileCloudPolicyManager>>(
+        std::move(std::get<std::unique_ptr<policy::ProfileCloudPolicyManager>>(
             policy_manager));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -289,7 +290,7 @@ TestingProfile::TestingProfile(
 
   // Set any testing factories prior to initializing the services.
   for (auto& f : testing_factories) {
-    absl::visit(
+    std::visit(
         [this](auto& p) {
           p.first->SetTestingFactory(this, std::move(p.second));
         },
@@ -1159,8 +1160,8 @@ std::unique_ptr<TestingProfile> TestingProfile::Builder::Build() {
   build_called_ = true;
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  absl::variant<std::unique_ptr<policy::UserCloudPolicyManager>,
-                std::unique_ptr<policy::ProfileCloudPolicyManager>>
+  std::variant<std::unique_ptr<policy::UserCloudPolicyManager>,
+               std::unique_ptr<policy::ProfileCloudPolicyManager>>
       policy_manager;
   if (user_cloud_policy_manager_) {
     DCHECK(!profile_cloud_policy_manager_);

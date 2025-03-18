@@ -4,6 +4,8 @@
 
 #include "chrome/browser/devtools/protocol/page_handler.h"
 
+#include <variant>
+
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
@@ -227,20 +229,20 @@ void PageHandler::PrintToPDF(std::optional<bool> landscape,
     return;
   }
 
-  absl::variant<printing::mojom::PrintPagesParamsPtr, std::string>
+  std::variant<printing::mojom::PrintPagesParamsPtr, std::string>
       print_pages_params = print_to_pdf::GetPrintPagesParams(
           web_contents_->GetPrimaryMainFrame()->GetLastCommittedURL(),
           landscape, display_header_footer, print_background, scale,
           paper_width, paper_height, margin_top, margin_bottom, margin_left,
           margin_right, header_template, footer_template, prefer_css_page_size,
           generate_tagged_pdf, generate_document_outline);
-  if (absl::holds_alternative<std::string>(print_pages_params)) {
+  if (std::holds_alternative<std::string>(print_pages_params)) {
     callback->sendFailure(protocol::Response::InvalidParams(
-        absl::get<std::string>(print_pages_params)));
+        std::get<std::string>(print_pages_params)));
     return;
   }
 
-  DCHECK(absl::holds_alternative<printing::mojom::PrintPagesParamsPtr>(
+  DCHECK(std::holds_alternative<printing::mojom::PrintPagesParamsPtr>(
       print_pages_params));
 
   bool return_as_stream =
@@ -255,8 +257,8 @@ void PageHandler::PrintToPDF(std::optional<bool> landscape,
           web_contents_.get())) {
     print_manager->PrintToPdf(
         web_contents_->GetPrimaryMainFrame(), page_ranges.value_or(""),
-        std::move(absl::get<printing::mojom::PrintPagesParamsPtr>(
-            print_pages_params)),
+        std::move(
+            std::get<printing::mojom::PrintPagesParamsPtr>(print_pages_params)),
         base::BindOnce(&PageHandler::OnPDFCreated,
                        weak_ptr_factory_.GetWeakPtr(), return_as_stream,
                        std::move(callback)));
@@ -269,8 +271,8 @@ void PageHandler::PrintToPDF(std::optional<bool> landscape,
           ActivePrintManager::FromWebContents(web_contents_.get())) {
     print_manager->PrintToPdf(
         web_contents_->GetPrimaryMainFrame(), page_ranges.value_or(""),
-        std::move(absl::get<printing::mojom::PrintPagesParamsPtr>(
-            print_pages_params)),
+        std::move(
+            std::get<printing::mojom::PrintPagesParamsPtr>(print_pages_params)),
         base::BindOnce(&PageHandler::OnPDFCreated,
                        weak_ptr_factory_.GetWeakPtr(), return_as_stream,
                        std::move(callback)));

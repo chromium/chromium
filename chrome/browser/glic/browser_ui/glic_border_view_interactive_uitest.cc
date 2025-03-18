@@ -142,6 +142,13 @@ class GlicBorderViewUiTest : public test::InteractiveGlicTest {
                                 kCloseWindowButton, kClickFn));
   }
 
+  void ClickGlicButtonInBrowser(Browser* browser) {
+    RunTestSequence(InContext(browser->window()->GetElementContext(),
+                              PressButton(kGlicButtonElementId)),
+                    CheckControllerHasWidget(true),
+                    CheckControllerWidgetMode(GlicWindowMode::kAttached));
+  }
+
  private:
   base::test::ScopedFeatureList features_;
 };
@@ -337,8 +344,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedTabChange) {
   EXPECT_FALSE(border->IsShowing());
 }
 
-// Disabled due to brittleness; see https://crrev.com/c/6289227.
-IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_FocusedWindowChange) {
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, FocusedWindowChange) {
   auto* border = browser()->window()->AsBrowserView()->glic_border();
   ASSERT_TRUE(border);
   auto tester = std::make_unique<TesterImpl>(border);
@@ -355,24 +361,36 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, DISABLED_FocusedWindowChange) {
   EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
   EXPECT_NEAR(border->emphasis_for_testing(), 1.f, kFloatComparisonTolerance);
 
+  Browser* new_browser = nullptr;
   GlicBorderView* new_border = nullptr;
   std::unique_ptr<TesterImpl> new_tester;
   {
     SCOPED_TRACE("Wait for new window to become active");
-    auto* new_browser = CreateBrowser(browser()->GetProfile());
+    new_browser = CreateBrowser(browser()->GetProfile());
     new_border = new_browser->window()->AsBrowserView()->glic_border();
     new_tester = std::make_unique<TesterImpl>(new_border);
     views::test::WaitForWidgetActive(new_browser->GetBrowserView().GetWidget(),
                                      /*active=*/true);
-    new_tester->WaitForAnimationStart();
   }
-  ASSERT_TRUE(new_border);
-  EXPECT_TRUE(new_border->IsShowing());
-  // The first `OnAnimationStep()` on the defocused border starts the ramp
-  // down sequence. After 0.5s, the ramp down has finished.
-  tester->AdvanceTimeAndTickAnimation(base::TimeDelta());
-  tester->AdvanceTimeAndTickAnimation(base::Seconds(0.5));
+
+  // Flush out the ramp down animation in the old browser window.
+  tester->WaitForRampDownStarted();
+  tester->FinishRampDown();
   EXPECT_FALSE(border->IsShowing());
+  // After the new window has become active, the animation is not showing in
+  // either browser windows because the glic window is attached to the old
+  // browser window while the user focuses on the new browser window.
+  ASSERT_TRUE(new_border);
+  EXPECT_FALSE(new_border->IsShowing());
+
+  // Click the glic button in the new browser's tab strip. Allows the glic
+  // window to be attached to the new browser window, where we play the border
+  // animation.
+  ClickGlicButtonInBrowser(new_browser);
+
+  EXPECT_FALSE(border->IsShowing());
+  new_tester->WaitForAnimationStart();
+  EXPECT_TRUE(new_border->IsShowing());
 
   // T=0 in the new window.
   new_tester->AdvanceTimeAndTickAnimation(base::TimeDelta());

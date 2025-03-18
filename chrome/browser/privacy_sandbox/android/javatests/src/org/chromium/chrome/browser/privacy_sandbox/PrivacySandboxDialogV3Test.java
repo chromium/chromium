@@ -341,6 +341,48 @@ public final class PrivacySandboxDialogV3Test {
 
     @Test
     @SmallTest
+    public void testEeaConsentOnlyPrivacyPolicyShownWhenClicked() {
+        launchDialog(PrivacySandboxDialogV3.PrivacySandboxDialogType.EEA_CONSENT);
+        onView(withId(R.id.privacy_sandbox_consent_title)).check(matches(isDisplayed()));
+        onView(withId(R.id.more_button)).inRoot(isDialog()).check(matches(isDisplayed()));
+        // Open the privacy policy.
+        onView(withId(R.id.learn_more_text)).inRoot(isDialog()).perform(clickOnClickableSpan(0));
+        // Check that only the privacy policy is visible.
+        onView(withId(R.id.privacy_policy_view)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withId(R.id.more_button)).inRoot(isDialog()).check(matches(not(isDisplayed())));
+        onView(withId(R.id.bottom_fade)).inRoot(isDialog()).check(matches(not(isDisplayed())));
+        onView(withId(R.id.action_buttons)).inRoot(isDialog()).check(matches(not(isDisplayed())));
+        onView(withId(R.id.privacy_sandbox_dialog_view))
+                .inRoot(isDialog())
+                .check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @SmallTest
+    public void testEeaConsentActionButtonIsStickyAfterVisitingPrivacyPolicy() {
+        launchDialog(PrivacySandboxDialogV3.PrivacySandboxDialogType.EEA_CONSENT);
+        onView(withId(R.id.privacy_sandbox_consent_title)).check(matches(isDisplayed()));
+        onView(withId(R.id.more_button)).inRoot(isDialog()).check(matches(isDisplayed()));
+        // Scroll to the button to show the action buttons.
+        clickMoreButtonAndScrollToBottomIfNeeded();
+        onView(withId(R.id.action_buttons)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withId(R.id.more_button)).inRoot(isDialog()).check(matches(not(isDisplayed())));
+        onView(withId(R.id.bottom_fade)).inRoot(isDialog()).check(matches(not(isDisplayed())));
+        // Open the privacy policy view.
+        onView(withId(R.id.learn_more_text)).inRoot(isDialog()).perform(clickOnClickableSpan(0));
+        // Check that the policy policy page is shown and click the back button.
+        onView(withId(R.id.privacy_policy_view)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withId(R.id.privacy_policy_back_button)).inRoot(isDialog()).perform(click());
+        // Check that the more button and fade are not shown.
+        onView(withId(R.id.more_button)).inRoot(isDialog()).check(matches(not(isDisplayed())));
+        onView(withId(R.id.bottom_fade)).inRoot(isDialog()).check(matches(not(isDisplayed())));
+        // Scroll to the top of the dialog and confirm the action button is shown.
+        onView(withId(R.id.privacy_sandbox_consent_title)).inRoot(isDialog()).perform(scrollTo());
+        onView(withId(R.id.action_buttons)).inRoot(isDialog()).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
     public void testEEAConsentDropdown() {
         launchDialog(PrivacySandboxDialogV3.PrivacySandboxDialogType.EEA_CONSENT);
         onView(withId(R.id.dropdown_element)).inRoot(isDialog()).perform(scrollTo());
@@ -476,5 +518,47 @@ public final class PrivacySandboxDialogV3Test {
         onView(withId(R.id.dropdown_container))
                 .inRoot(isDialog())
                 .check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @SmallTest
+    public void testEeaNoticeOnlyPrivacyPolicyShownWhenClicked() {
+        launchDialog(PrivacySandboxDialogV3.PrivacySandboxDialogType.EEA_NOTICE);
+        onView(withId(R.id.privacy_sandbox_notice_title)).check(matches(isDisplayed()));
+        onView(withId(R.id.more_button)).inRoot(isDialog()).check(matches(isDisplayed()));
+        // Open the privacy policy.
+        onView(withId(R.id.learn_more_text)).inRoot(isDialog()).perform(clickOnClickableSpan(0));
+        // Check that only the privacy policy is visible.
+        onView(withId(R.id.privacy_policy_view)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withId(R.id.more_button)).inRoot(isDialog()).check(matches(not(isDisplayed())));
+        onView(withId(R.id.bottom_fade)).inRoot(isDialog()).check(matches(not(isDisplayed())));
+        onView(withId(R.id.action_buttons)).inRoot(isDialog()).check(matches(not(isDisplayed())));
+        onView(withId(R.id.privacy_sandbox_dialog_view))
+                .inRoot(isDialog())
+                .check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @SmallTest
+    public void testEeaNoticeActionButtonIsStickyAfterVisitingPrivacyPolicy() {
+        launchDialog(PrivacySandboxDialogV3.PrivacySandboxDialogType.EEA_NOTICE);
+        onView(withId(R.id.privacy_sandbox_notice_title)).check(matches(isDisplayed()));
+        onView(withId(R.id.more_button)).inRoot(isDialog()).check(matches(isDisplayed()));
+        // Scroll to the button to show the action buttons.
+        clickMoreButtonAndScrollToBottomIfNeeded();
+        onView(withId(R.id.action_buttons)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withId(R.id.more_button)).inRoot(isDialog()).check(matches(not(isDisplayed())));
+        onView(withId(R.id.bottom_fade)).inRoot(isDialog()).check(matches(not(isDisplayed())));
+        // Open the privacy policy view.
+        onView(withId(R.id.learn_more_text)).inRoot(isDialog()).perform(clickOnClickableSpan(0));
+        // Check that the policy policy page is shown and click the back button.
+        onView(withId(R.id.privacy_policy_view)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withId(R.id.privacy_policy_back_button)).inRoot(isDialog()).perform(click());
+        // Check that the more button and fade are not shown.
+        onView(withId(R.id.more_button)).inRoot(isDialog()).check(matches(not(isDisplayed())));
+        onView(withId(R.id.bottom_fade)).inRoot(isDialog()).check(matches(not(isDisplayed())));
+        // Scroll to the top of the dialog and confirm the action button is shown.
+        onView(withId(R.id.privacy_sandbox_notice_title)).inRoot(isDialog()).perform(scrollTo());
+        onView(withId(R.id.action_buttons)).inRoot(isDialog()).check(matches(isDisplayed()));
     }
 }

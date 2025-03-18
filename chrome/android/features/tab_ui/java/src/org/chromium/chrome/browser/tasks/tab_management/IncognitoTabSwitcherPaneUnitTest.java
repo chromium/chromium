@@ -44,6 +44,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.hub.DisplayButtonData;
@@ -61,6 +62,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 
 import java.util.function.DoubleConsumer;
 
@@ -210,7 +212,9 @@ public class IncognitoTabSwitcherPaneUnitTest {
     }
 
     @Test
+    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
     public void testIncognitoReauthCallback() {
+        assertNull(mIncognitoTabSwitcherPane.getHubSearchEnabledStateSupplier().get());
         checkNewTabButton(/* enabled= */ false);
 
         mIncognitoReauthControllerSupplier.set(mIncognitoReauthController);
@@ -238,6 +242,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
         mIncognitoTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
         verify(coordinator).resetWithTabList(null);
         checkNewTabButton(/* enabled= */ false);
+        assertFalse(mIncognitoTabSwitcherPane.getHubSearchEnabledStateSupplier().get());
 
         when(mIncognitoReauthController.isIncognitoReauthPending()).thenReturn(false);
         when(mIncognitoReauthController.isReauthPageShowing()).thenReturn(false);
@@ -246,6 +251,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
         verify(coordinator, times(2)).setInitialScrollIndexOffset();
         verify(coordinator).requestAccessibilityFocusOnCurrentTab();
         checkNewTabButton(/* enabled= */ true);
+        assertTrue(mIncognitoTabSwitcherPane.getHubSearchEnabledStateSupplier().get());
 
         // Check not called again
         mIncognitoTabSwitcherPane.notifyLoadHint(LoadHint.WARM);
@@ -256,6 +262,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
         verify(coordinator, times(3)).setInitialScrollIndexOffset();
         verify(coordinator, times(2)).requestAccessibilityFocusOnCurrentTab();
         checkNewTabButton(/* enabled= */ true);
+        assertTrue(mIncognitoTabSwitcherPane.getHubSearchEnabledStateSupplier().get());
 
         when(mIncognitoTabModel.isActiveModel()).thenReturn(false);
         callback.onIncognitoReauthSuccess();

@@ -454,7 +454,6 @@ public abstract class ChromeFeatureList {
     public static final String PRIVACY_SANDBOX_ADS_NOTICE_CCT = "PrivacySandboxAdsNoticeCCT";
     public static final String PRIVACY_SANDBOX_EQUALIZED_PROMPT_BUTTONS =
             "PrivacySandboxEqualizedPromptButtons";
-    public static final String PRIVACY_SANDBOX_FPS_UI = "PrivacySandboxFirstPartySetsUI";
     public static final String PRIVACY_SANDBOX_RELATED_WEBSITE_SETS_UI =
             "PrivacySandboxRelatedWebsiteSetsUi";
     public static final String PRIVACY_SANDBOX_SETTINGS_4 = "PrivacySandboxSettings4";
@@ -861,7 +860,9 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sTestDefaultDisabled =
             newCachedFlag(TEST_DEFAULT_DISABLED, false);
     public static final CachedFlag sTestDefaultEnabled = newCachedFlag(TEST_DEFAULT_ENABLED, true);
-    public static final CachedFlag sTraceBinderIpc = newCachedFlag(TRACE_BINDER_IPC, false);
+    public static final CachedFlag sTraceBinderIpc =
+            newCachedFlag(
+                    TRACE_BINDER_IPC, /* defaultValue= */ false, /* defaultValueInTests= */ true);
     public static final CachedFlag sUseChimeAndroidSdk =
             newCachedFlag(USE_CHIME_ANDROID_SDK, false);
     public static final CachedFlag sUseLibunwindstackNativeUnwinderAndroid =

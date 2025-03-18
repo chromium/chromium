@@ -4,6 +4,8 @@
 
 #include "chrome/browser/enterprise/connectors/analysis/analysis_service_settings.h"
 
+#include <variant>
+
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
@@ -21,7 +23,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include <initializer_list>
@@ -733,7 +734,7 @@ class AnalysisServiceSettingsTest : public testing::TestWithParam<TestParam> {
           GURL(GetServiceProviderConfig()
                    ->at("google")
                    .analysis->region_urls[static_cast<size_t>(data_region())]);
-      absl::get<CloudAnalysisSettings>(
+      std::get<CloudAnalysisSettings>(
           GetParam().expected_settings->cloud_or_local_settings)
           .analysis_url = regionalized_url;
       CloudAnalysisSettings cloud_settings;
@@ -984,7 +985,7 @@ class AnalysisServiceSourceDestinationSettingsTest
           GURL(GetServiceProviderConfig()
                    ->at("google")
                    .analysis->region_urls[static_cast<int>(data_region())]);
-      absl::get<CloudAnalysisSettings>(
+      std::get<CloudAnalysisSettings>(
           GetParam().expected_settings->cloud_or_local_settings)
           .analysis_url = regionalized_url;
       CloudAnalysisSettings cloud_settings;

@@ -258,4 +258,12 @@ BASE_FEATURE(kWebViewInterceptedCookieHeader,
 BASE_FEATURE(kWebViewInterceptedCookieHeaderReadWrite,
              "WebViewInterceptedCookieHeaderReadWrite",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, if the developer hasn't overridden shouldInterceptRequest
+// (or provided the async version), we short circuit (return no response)
+// on the IO thread instead of calling the (empty) method on a background
+// thread.
+BASE_FEATURE(kWebViewShortCircuitShouldInterceptRequest,
+             "WebViewShortCircuitShouldInterceptRequest",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace android_webview::features

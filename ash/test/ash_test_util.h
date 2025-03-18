@@ -7,11 +7,11 @@
 
 #include <cstddef>
 #include <string_view>
+#include <variant>
 
 #include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/image/image_skia.h"
@@ -91,7 +91,7 @@ views::MenuItemView* WaitForMenuItemWithLabel(const std::u16string& label);
 // therefore their own size button. We use that if it is passed, otherwise try
 // to fetch the size button from the non client frame view ash.
 chromeos::MultitaskMenu* ShowAndWaitMultitaskMenuForWindow(
-    absl::variant<aura::Window*, chromeos::FrameSizeButton*>
+    std::variant<aura::Window*, chromeos::FrameSizeButton*>
         window_or_size_button,
     chromeos::MultitaskMenuEntryType entry_type =
         chromeos::MultitaskMenuEntryType::kFrameSizeButtonHover);

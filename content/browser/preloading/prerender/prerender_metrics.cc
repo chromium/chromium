@@ -7,6 +7,7 @@
 #include <cmath>
 #include <memory>
 #include <optional>
+#include <variant>
 
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
@@ -156,7 +157,7 @@ PrerenderCancellationReason::BuildForMojoBinderPolicy(
 
 const std::vector<PrerenderMismatchedHeaders>*
 PrerenderCancellationReason::GetPrerenderMismatchedHeaders() const {
-  return absl::get_if<std::vector<PrerenderMismatchedHeaders>>(&explanation_);
+  return std::get_if<std::vector<PrerenderMismatchedHeaders>>(&explanation_);
 }
 
 // static
@@ -197,36 +198,36 @@ void PrerenderCancellationReason::ReportMetrics(
     const std::string& histogram_suffix) const {
   switch (final_status_) {
     case PrerenderFinalStatus::kInactivePageRestriction:
-      CHECK(absl::holds_alternative<uint64_t>(explanation_));
+      CHECK(std::holds_alternative<uint64_t>(explanation_));
       base::UmaHistogramSparse(
           "Prerender.CanceledForInactivePageRestriction."
           "DisallowActivationReason" +
               histogram_suffix,
-          absl::get<uint64_t>(explanation_));
+          std::get<uint64_t>(explanation_));
       break;
     case PrerenderFinalStatus::kMojoBinderPolicy:
-      CHECK(absl::holds_alternative<std::string>(explanation_));
-      RecordPrerenderCancelledInterface(absl::get<std::string>(explanation_),
+      CHECK(std::holds_alternative<std::string>(explanation_));
+      RecordPrerenderCancelledInterface(std::get<std::string>(explanation_),
                                         histogram_suffix);
       break;
     case PrerenderFinalStatus::kDidFailLoad:
-      CHECK(absl::holds_alternative<int32_t>(explanation_));
-      RecordDidFailLoadErrorType(absl::get<int32_t>(explanation_),
+      CHECK(std::holds_alternative<int32_t>(explanation_));
+      RecordDidFailLoadErrorType(std::get<int32_t>(explanation_),
                                  histogram_suffix);
       break;
     case PrerenderFinalStatus::kActivationNavigationParameterMismatch:
-      CHECK(absl::holds_alternative<std::vector<PrerenderMismatchedHeaders>>(
+      CHECK(std::holds_alternative<std::vector<PrerenderMismatchedHeaders>>(
                 explanation_) ||
-            absl::holds_alternative<absl::monostate>(explanation_));
+            std::holds_alternative<std::monostate>(explanation_));
       if (auto* mismatched_headers =
-              absl::get_if<std::vector<PrerenderMismatchedHeaders>>(
+              std::get_if<std::vector<PrerenderMismatchedHeaders>>(
                   &explanation_)) {
         ReportAllPrerenderMismatchedHeaders(*mismatched_headers,
                                             histogram_suffix);
       }
       break;
     default:
-      CHECK(absl::holds_alternative<absl::monostate>(explanation_));
+      CHECK(std::holds_alternative<std::monostate>(explanation_));
       // Other types need not to report.
       break;
   }
@@ -236,7 +237,7 @@ std::optional<std::string>
 PrerenderCancellationReason::DisallowedMojoInterface() const {
   switch (final_status_) {
     case PrerenderFinalStatus::kMojoBinderPolicy:
-      return absl::get<std::string>(explanation_);
+      return std::get<std::string>(explanation_);
     default:
       return std::nullopt;
   }

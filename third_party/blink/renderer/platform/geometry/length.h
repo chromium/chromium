@@ -222,13 +222,6 @@ class PLATFORM_EXPORT Length {
   }
   static Length Flex(float value) { return Length(value, kFlex); }
 
-  // FIXME: Make this private (if possible) or at least rename it
-  // (http://crbug.com/432707).
-  inline float Value() const {
-    DCHECK(!IsCalculated());
-    return GetFloatValue();
-  }
-
   int IntValue() const {
     if (IsCalculated()) {
       NOTREACHED();
@@ -241,9 +234,12 @@ class PLATFORM_EXPORT Length {
     DCHECK_EQ(GetType(), kFixed);
     return GetFloatValue();
   }
-
   float Percent() const {
     DCHECK_EQ(GetType(), kPercent);
+    return GetFloatValue();
+  }
+  float Flex() const {
+    DCHECK_EQ(GetType(), kFlex);
     return GetFloatValue();
   }
 
@@ -366,12 +362,6 @@ class PLATFORM_EXPORT Length {
     return BlendSameTypes(from, progress, range);
   }
 
-  float GetFloatValue() const {
-    DCHECK(!IsNone());
-    DCHECK(!IsCalculated());
-    return value_;
-  }
-
   float NonNanCalculatedValue(float max_value, const EvaluationInput&) const;
 
   Length SubtractFromOneHundredPercent() const;
@@ -383,6 +373,12 @@ class PLATFORM_EXPORT Length {
   WTF::String ToString() const;
 
  private:
+  float GetFloatValue() const {
+    DCHECK(!IsNone());
+    DCHECK(!IsCalculated());
+    return value_;
+  }
+
   Length BlendMixedTypes(const Length& from, double progress, ValueRange) const;
 
   Length BlendSameTypes(const Length& from, double progress, ValueRange) const;

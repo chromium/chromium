@@ -47,9 +47,13 @@ class PasswordCheckupLauncherHelperImpl : public PasswordCheckupLauncherHelper {
       std::string& checkupUrl,
       const base::android::JavaRef<jobject>& activity) override;
 
-  // Opens the safety check menu in Chrome Settings.
+  // Opens the old safety check UI in Chrome Settings.
   void LaunchSafetyCheck(JNIEnv* env,
                          ui::WindowAndroid* windowAndroid) override;
+
+  // Opens the new safety check UI (also known as Safety Hub) in Chrome
+  // Settings.
+  void LaunchSafetyHub(JNIEnv* env, ui::WindowAndroid* windowAndroid) override;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_CHECKUP_LAUNCHER_HELPER_IMPL_H_

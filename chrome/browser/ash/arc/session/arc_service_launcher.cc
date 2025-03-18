@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 
-#include <memory>
 #include <string>
 #include <utility>
 
@@ -42,7 +41,6 @@
 #include "chrome/browser/ash/arc/instance_throttle/arc_instance_throttle.h"
 #include "chrome/browser/ash/arc/intent_helper/arc_settings_service.h"
 #include "chrome/browser/ash/arc/intent_helper/chrome_arc_intent_helper_delegate.h"
-#include "chrome/browser/ash/arc/locked_fullscreen/arc_locked_fullscreen_manager.h"
 #include "chrome/browser/ash/arc/metrics/arc_metrics_service_proxy.h"
 #include "chrome/browser/ash/arc/nearby_share/arc_nearby_share_bridge.h"
 #include "chrome/browser/ash/arc/net/browser_url_opener_impl.h"
@@ -273,10 +271,6 @@ void ArcServiceLauncher::MaybeSetProfile(Profile* profile) {
 void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   DCHECK(arc_service_manager_);
   DCHECK(arc_session_manager_);
-
-  // Initialize the locked fullscreen manager with the primary user profile.
-  arc_locked_fullscreen_manager_ =
-      std::make_unique<ArcLockedFullscreenManager>(profile);
 
   // We usually want to configure swap exactly once for the session. We wait for
   // after the user profile is prepared to make sure policy has been loaded. The

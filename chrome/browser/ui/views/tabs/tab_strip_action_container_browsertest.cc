@@ -394,6 +394,11 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                        LogsWhenGlicNudgeButtonClicked) {
   ShowTabStripNudgeButton(GlicNudgeButton());
 
+  tab_strip_action_container()
+      ->animation_session_for_testing()
+      ->ResetAnimationForTesting(1);
+  tab_strip_action_container()->GetWidget()->LayoutRootViewIfNecessary();
+
   OnButtonClicked(GlicNudgeButton());
   auto* const glic_keyed_service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(

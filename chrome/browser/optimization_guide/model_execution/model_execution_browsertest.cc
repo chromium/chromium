@@ -4,6 +4,7 @@
 
 #include "base/feature_list.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/task/current_thread.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -74,8 +75,8 @@ proto::ExecuteResponse BuildComposeResponse(const std::string& output) {
   compose_response.set_output(output);
   proto::ExecuteResponse execute_response;
   proto::Any* any_metadata = execute_response.mutable_response_metadata();
-  any_metadata->set_type_url("type.googleapis.com/" +
-                             compose_response.GetTypeName());
+  any_metadata->set_type_url(
+      base::StrCat({"type.googleapis.com/", compose_response.GetTypeName()}));
   compose_response.SerializeToString(any_metadata->mutable_value());
   auto response_data = ParsedAnyMetadata<proto::ComposeResponse>(*any_metadata);
   EXPECT_TRUE(response_data);

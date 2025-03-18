@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/download/download_bubble_row_list_view_info.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_primary_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_list_view.h"
-#include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/link.h"
 

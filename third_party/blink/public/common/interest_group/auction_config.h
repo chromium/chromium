@@ -19,7 +19,6 @@
 #include "base/values.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size.h"
@@ -471,7 +470,7 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
   // will be sent to V1 trusted seller signals server.
   std::optional<bool> send_creative_scanning_metadata;
 
-  static_assert(__LINE__ == 474, R"(
+  static_assert(__LINE__ == 473, R"(
 If modifying AuctionConfig fields, please make sure to also modify:
 
 * third_party/blink/public/mojom/interest_group/interest_group_types.mojom

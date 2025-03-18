@@ -69,7 +69,6 @@
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/feature_switch.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "ui/accessibility/ax_node_data.h"

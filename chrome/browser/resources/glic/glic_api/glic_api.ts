@@ -150,6 +150,9 @@ export declare interface GlicBrowserHost {
   resizeWindow(width: number, height: number, options?: ResizeWindowOptions):
       Promise<void>;
 
+  /** Sets the state of the panel's user drag-to-resize capability. */
+  enableDragResize?(enabled: boolean): Promise<void>;
+
   /**
    * Returns true if the web client should resize its content to fit the
    * window.

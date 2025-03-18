@@ -166,6 +166,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1505542291183484463">Laattamuotoisen ikkunan koon siirtäminen alaspäin</translation>
 <translation id="1510238584712386396">Käynnistysohjelma</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Näytä ilmoitusasetukset. Ilmoitukset on poistettu 1 sovelluksen käytöstä.}other{Näytä ilmoitusasetukset. Ilmoitukset on poistettu # sovelluksen käytöstä.}}</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">Akku <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> täyteen lataukseen</translation>
 <translation id="1525508553941733066">HYLKÄÄ</translation>
 <translation id="1526448108126799339">Avaa uusi välilehti uudessa ikkunassa</translation>
@@ -345,7 +346,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2201071101391734388">Viimeisin kuva <ph name="INDEX" />/<ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Tiivistä Google Tasks</translation>
 <translation id="2208323208084708176">Yhtenäisen työpöydän tila</translation>
-<translation id="2220572644011485463">PIN-koodi tai salasana</translation>
 <translation id="2222841058024245321">Työpöytä 7</translation>
 <translation id="2223384056430485343">Jaetulla näytöllä</translation>
 <translation id="2224075387478458881">Näytön tallentajan käyttöä ei sallita, kun suojattua sisältöä on nähtävissä</translation>
@@ -1829,7 +1829,6 @@ Uusi asennus</translation>
 <translation id="7000027735917578303">Windowsin ja työpöytien asetukset</translation>
 <translation id="7004910047186208204">Yhdistä mobiiliverkkoon</translation>
 <translation id="7005239792648594238">Aloita avaamalla sovellus</translation>
-<translation id="7007983414944123363">PIN-koodiasi tai salasanaasi ei voitu vahvistaa. Yritä uudelleen.</translation>
 <translation id="7014684956566476813">Yhdistetty laitteeseen nimeltä <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Palaa kello <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Työpöytä 6</translation>
@@ -2465,6 +2464,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="9168436347345867845">Myöhemmin</translation>
 <translation id="9178475906033259337">Näytetään 1 tulos haulla <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Tämän ominaisuuden avulla kaikkia kirjautuneita käyttäjätilejä voi käyttää ilman salasanaa. Käytä tätä ominaisuutta vain luotettavien tilien kanssa.</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183456764293710005">Koko näytön suurennus</translation>
 <translation id="9192133205265227850">Ota "<ph name="DEVICE_NAME" />" käyttöön</translation>
 <translation id="9193626018745640770">Suoratoistetaan tuntemattomaan vastaanottimeen</translation>

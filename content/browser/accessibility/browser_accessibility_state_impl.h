@@ -16,6 +16,7 @@
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/render_widget_host.h"
 #include "ui/accessibility/ax_mode.h"
+#include "ui/accessibility/platform/assistive_tech.h"
 #include "ui/accessibility/platform/ax_platform.h"
 
 namespace content {
@@ -78,7 +79,7 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   void ResetAccessibilityMode() override;
   // These methods indicate the presence of AXMode::kAllProperties, which is
   // a misnomer because it is used by many clients, and not just screen readers.
-  // Methods with "KnownAssistiveTech" in the name deal with actual
+  // Methods with "AssistiveTech" in the name deal with actual
   // screen reader usage.
   // TODO(accessibility) Rename these methods to fix the misnomer.
   void OnScreenReaderDetected() override;
@@ -86,18 +87,15 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // Some platforms have a strong signal indicating the presence of a
   // screen reader and can call in to let us know when one has
   // been enabled/disabled.
-  void SetKnownScreenReaderAppActive(bool is_active) override;
   // Other platforms require looking through running processes or modules
   // attached to the process, for the name of known assistive tech such as
-  // screen readers, which takes time.
-  virtual void UpdateKnownAssistiveTechSlow();
+  // screen readers, which takes time, and must override RefreshAssistiveTech().
+  void SetScreenReaderAppActive(bool is_active) override;
   // Any currently running assistive tech that should prevent accessibility from
   // being auto-disabled.
-  AssistiveTech ActiveKnownAssistiveTech() override;
-  bool IsKnownScreenReaderActiveSlow() override;
+  ui::AssistiveTech ActiveAssistiveTech() const override;
   bool IsAccessibleBrowser() override;
   void AddUIThreadHistogramCallback(base::OnceClosure callback) override;
-  void AddOtherThreadHistogramCallback(base::OnceClosure callback) override;
   void UpdateUniqueUserHistograms() override;
   void UpdateHistogramsForTesting() override;
   void SetPerformanceFilteringAllowed(bool enabled) override;
@@ -149,20 +147,19 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // Two variants - one for things that must be run on the UI thread, and
   // another that can be run on another thread.
   virtual void UpdateHistogramsOnUIThread();
-  virtual void UpdateHistogramsOnOtherThread();
 
-  // The presence of an AssistiveTech is still unknown.
-  // Well be updated via SetKnownScreenReaderAppActive() or
-  // UpdateKnownAssistiveTechSlow().
-  bool awaiting_known_assistive_tech_computation_ = true;
+  // Notifies the instance that `assistive_tech` is the most significant of any
+  // assistive technologies discovered. AXPlatform observers are notified if
+  // `assistive_tech` differs from the most recent discovery. Called by
+  // subclasses when they detect a the presence of assistive tech via
+  // platform-specific means.
+  void OnAssistiveTechFound(ui::AssistiveTech assistive_tech);
 
  private:
   // Called by `OnScreenReaderStopped` as a delayed task. If accessibility
   // support has not been re-enabled by the time the delay has expired, we clear
   // `process_accessibility_mode_` so that all WebContentses are updated.
   void MaybeResetAccessibilityMode();
-
-  void OnOtherThreadDone();
 
   void UpdateAccessibilityActivityTask();
 
@@ -179,16 +176,20 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
                                    ui::AXMode old_mode,
                                    ui::AXMode new_mode);
 
+  // Refreshes the instance's notion of active assistive technologies.
+  // Implementations must call `OnAssistiveTechFound()` with the results of any
+  // discovery. Does nothing by default.
+  virtual void RefreshAssistiveTech() {}
+
   // The process's single AXPlatform instance.
   ui::AXPlatform ax_platform_;
 
   base::TimeDelta histogram_delay_;
 
   std::vector<base::OnceClosure> ui_thread_histogram_callbacks_;
-  std::vector<base::OnceClosure> other_thread_histogram_callbacks_;
 
   bool ui_thread_done_ = false;
-  bool other_thread_done_ = false;
+
   base::RepeatingClosure background_thread_done_callback_;
 
   // Whether there is a pending task to run UpdateAccessibilityActivityTask.

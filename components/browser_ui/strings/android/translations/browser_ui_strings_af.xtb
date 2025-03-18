@@ -45,6 +45,7 @@
 <translation id="1652197001188145583">Wanneer dit aan is, kan werwe vra om NFC-toestelle te gebruik. Wanneer dit af is, kan werwe nie NFC-toestelle gebruik nie.</translation>
 <translation id="1660204651932907780">Laat werwe toe om klank te speel (aanbeveel)</translation>
 <translation id="1677097821151855053">Webkoekies en ander werfdata word gebruik om jou te onthou, byvoorbeeld om jou aan te meld of om advertensies te personaliseer. Sien <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" /> om webkoekies vir alle werwe te bestuur.</translation>
+<translation id="1679305402657584804">Werwe kan vra om NFC-toestelle te gebruik</translation>
 <translation id="1686785653877010442">Werwe stuur gewoonlik kennisgewings om jou in te lig oor brekende nuus of kletsboodskappe.</translation>
 <translation id="169515064810179024">Blokkeer werwe om toegang tot bewegingsensors te kry</translation>
 <translation id="1703666494654169921">Moenie werwe toelaat om virtuelerealiteittoestelle of data te gebruik nie</translation>
@@ -84,6 +85,7 @@
 <translation id="2185965788978862351">Dit sal <ph name="DATASIZE" /> se data en webkoekies uitvee wat deur werwe of deur apps op jou tuisskerm geberg is.</translation>
 <translation id="2194856509914051091">Dinge om in ag te neem</translation>
 <translation id="2215727959747642672">Lêerwysiging</translation>
+<translation id="2218389616572918761">Werwe kan vir jou mikrofoon vra</translation>
 <translation id="2228071138934252756">Om <ph name="APP_NAME" /> toegang tot jou kamera te gee, moet jy kamera ook in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aanskakel.</translation>
 <translation id="2235344399760031203">Derdepartywebkoekies word geblokkeer</translation>
 <translation id="2238944249568001759">Voorgestelde soektogte op grond van jou jongste oortjie</translation>
@@ -132,8 +134,10 @@
 <translation id="2726059656860238749">Begin Chrome met die Omnibox gefokus, wat aanskakelingtyd op goedkoper toestelle verminder.</translation>
 <translation id="2750481671343847896">Werwe kan vir jou aanmeldporboodskappe van identiteitsdienste af wys.</translation>
 <translation id="2787357173144933081">Kitsaktiveer Omnibox</translation>
+<translation id="2789132527330338807">Werwe kan vra om ’n 3D-kaart van jou omgewing te skep of jou kameraposisie na te spoor</translation>
 <translation id="2790501146643349491">Wanneer dit aan is, kan werwe wat onlangs toegemaak is data klaar stuur en ontvang. Wanneer dit af is, kan werwe wat onlangs toegemaak is nie data klaar stuur en ontvang nie.</translation>
 <translation id="2795716239552913152">Werwe gebruik gewoonlik jou ligging vir relevante kenmerke, soos plaaslike nuus of nabygeleë winkels</translation>
+<translation id="2802908157808345702">Moenie werwe toelaat om opspringers te stuur en herleidings te gebruik nie</translation>
 <translation id="2814830417943086299">Chrome wys nou jou onlangse oortjies in jou toestel se applys en soekresultate. Jy kan dit enige tyd in Chrome-instellings afskakel.</translation>
 <translation id="2822354292072154809">Is jy seker jy wil alle werftoestemmings vir <ph name="CHOSEN_OBJECT_NAME" /> terugstel?</translation>
 <translation id="2850913818900871965">Versoek mobiele aansig</translation>
@@ -274,6 +278,7 @@
 <translation id="4598549027014564149">Terwyl jy in Incognitomodus is, kan werwe nie jou webkoekies gebruik om jou blaai-aktiwiteit op werwe, selfs verwante werwe, te sien nie. Jou blaai-aktiwiteit word nie gebruik vir dinge soos om advertensies te personaliseer nie. Kenmerke op sommige werwe sal dalk nie werk nie.</translation>
 <translation id="461356340001513807">Jy kan by webwerwe aanmeld met die rekening wat jy by ’n identiteitdiens het</translation>
 <translation id="4619615317237390068">Oortjies van ander toestelle af</translation>
+<translation id="4635969503923889910">Moenie werwe toelaat om NFC-toestelle te gebruik nie</translation>
 <translation id="4644713492825682049">Vee uit en stel terug</translation>
 <translation id="4645575059429386691">Deur jou ouer bestuur</translation>
 <translation id="4670064810192446073">Virtuele realiteit</translation>
@@ -372,6 +377,7 @@
 <translation id="5877248419911025165">Vou alle versoeke in</translation>
 <translation id="5884085660368669834">Werfvoorkeur</translation>
 <translation id="5887687176710214216">Gister laas besoek</translation>
+<translation id="5908617755156109052">Moenie werwe toelaat om ’n 3D-kaart van jou omgewing te skep of jou kameraposisie na te spoor nie</translation>
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5922853908706496913">Deel tans jou skerm</translation>
 <translation id="5922967540311291836">Blokkeer derdepartywebkoekies:</translation>
@@ -582,6 +588,7 @@
 <translation id="8676374126336081632">Vee invoer uit</translation>
 <translation id="8681886425883659911">Advertensies word geblokkeer op werwe wat bekend is daarvoor dat hulle indringerige of misleidende advertensies wys</translation>
 <translation id="868929229000858085">Deursoek jou kontakte</translation>
+<translation id="8707904142362025782">Werwe kan vir jou kamera vra</translation>
 <translation id="8712637175834984815">Het dit</translation>
 <translation id="8715862698998036666">Sleep van bo af en swiep van die linker- of regterrand af om volskerm te verlaat.</translation>
 <translation id="8719283222052720129">Skakel toestemming vir <ph name="APP_NAME" /> in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aan.</translation>

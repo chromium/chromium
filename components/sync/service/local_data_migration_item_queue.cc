@@ -14,7 +14,7 @@ namespace syncer {
 namespace {
 
 // The time limit for activating the data type is set to 50 minutes, as this is
-// in line with the `AutofillSigninPromoTabHelper` waiting for a sign in event.
+// in line with the `SigninPromoTabHelper` waiting for a sign in event.
 constexpr base::TimeDelta kTimeLimitForActivatingDataType = base::Minutes(50);
 
 // Removes items which had been added to the queue before the time limit
@@ -122,8 +122,6 @@ void LocalDataMigrationItemQueue::OnStateChanged(SyncService* sync_service) {
   }
 
   switch (sync_service->GetTransportState()) {
-    // TODO(crbug.com/386754137): Reconsider the intended behavior in these two
-    // cases.
     case SyncService::TransportState::DISABLED:
     case SyncService::TransportState::PAUSED: {
       items_.clear();

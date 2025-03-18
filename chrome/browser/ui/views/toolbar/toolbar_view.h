@@ -45,7 +45,6 @@ class AvatarToolbarButton;
 class BatterySaverButton;
 class BrowserAppMenuButton;
 class Browser;
-class DownloadToolbarButtonView;
 class ExtensionsToolbarButton;
 class ExtensionsToolbarContainer;
 class ChromeLabsButton;
@@ -155,9 +154,6 @@ class ToolbarView : public views::AccessiblePaneView,
   ChromeLabsButton* chrome_labs_button() const { return chrome_labs_button_; }
   ChromeLabsModel* chrome_labs_model() const {
     return chrome_labs_model_.get();
-  }
-  DownloadToolbarButtonView* download_button() const {
-    return download_button_;
   }
   ExtensionsToolbarContainer* extensions_container() const {
     return extensions_container_;
@@ -312,7 +308,6 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<AvatarToolbarButton> avatar_ = nullptr;
   raw_ptr<MediaToolbarButtonView> media_button_ = nullptr;
   raw_ptr<BrowserAppMenuButton> app_menu_button_ = nullptr;
-  raw_ptr<DownloadToolbarButtonView> download_button_ = nullptr;
   raw_ptr<views::View> new_tab_button_ = nullptr;
 
   const raw_ptr<Browser> browser_;

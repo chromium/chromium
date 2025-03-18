@@ -221,8 +221,7 @@ std::string DescriptionForNSEvent(NSEvent* event) {
       [self voiceOverStateChanged:[newValueNumber boolValue]];
       content::BrowserAccessibilityState* browser_ax_state =
           content::BrowserAccessibilityState::GetInstance();
-      browser_ax_state->SetKnownScreenReaderAppActive(
-          [newValueNumber boolValue]);
+      browser_ax_state->SetScreenReaderAppActive([newValueNumber boolValue]);
     }
 
     return;

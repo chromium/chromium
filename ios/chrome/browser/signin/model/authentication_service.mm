@@ -298,13 +298,11 @@ bool AuthenticationService::ShouldClearDataForSignedInPeriodOnSignOut() const {
   // met:
   // 1. `kClearDeviceDataOnSignOutForManagedUsers` feaature is enabled).
   // 2. The user is signed in with a managed account.
-  // 3. The user is no longer using sync-the-feature.
-  // 4. The app management configuration key is present.
+  // 3. The app management configuration key is present.
   // Note: data will be cleared from the time of sign-in in this case.
   return base::FeatureList::IsEnabled(
              kClearDeviceDataOnSignOutForManagedUsers) &&
          HasPrimaryIdentityManaged(signin::ConsentLevel::kSignin) &&
-         !HasPrimaryIdentity(signin::ConsentLevel::kSync) &&
          !IsApplicationManagedByMDM();
 }
 
@@ -351,9 +349,6 @@ void AuthenticationService::SignIn(id<SystemIdentity> identity,
   // mismatch between the old and the new authenticated accounts.
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     DCHECK(identity_manager_->GetPrimaryAccountMutator());
-    // Initial sign-in to Chrome does not automatically turn on Sync features.
-    // The Sync service will be enabled in a separate request to
-    // `GrantSyncConsent`.
     signin::PrimaryAccountMutator::PrimaryAccountError error =
         identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
             account_id, signin::ConsentLevel::kSignin, access_point);
@@ -442,9 +437,6 @@ void AuthenticationService::SignOut(
   const bool is_migrated_from_syncing =
       browser_sync::WasPrimaryAccountMigratedFromSyncingToSignedIn(
           identity_manager_, pref_service_);
-  // Get first setup complete value before stopping the sync service.
-  const bool is_initial_sync_feature_setup_complete =
-      sync_service_->GetUserSettings()->IsInitialSyncFeatureSetupComplete();
   const bool should_clear_data_for_signed_in_period =
       ShouldClearDataForSignedInPeriodOnSignOut();
 
@@ -463,17 +455,11 @@ void AuthenticationService::SignOut(
   base::OnceClosure callback_closure =
       completion ? base::BindOnce(completion) : base::DoNothing();
 
-  if (base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts) &&
-      is_managed) {
-    if (completion) {
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, std::move(callback_closure));
-    }
-    return;
-  }
-
-  if ((is_managed && is_initial_sync_feature_setup_complete) ||
-      (is_managed && is_migrated_from_syncing)) {
+  // Note: Once `kSeparateProfilesForManagedAccounts` is launched, the "clear
+  // browsing data" cases are only reachable for managed accounts that were
+  // already signed in before that feature was enabled. Once those users have
+  // been migrated, this code can be cleaned up.
+  if (is_managed && is_migrated_from_syncing) {
     // If `is_clear_data_feature_for_managed_users_enabled` is false, browsing
     // data for managed account needs to be cleared only if sync has started at
     // least once. This also includes the case where a previously-syncing user

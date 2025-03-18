@@ -981,9 +981,6 @@ public final class ProductionSupportedFlagList {
                 CcFeatures.THROTTLE_FRAME_RATE_ON_MANY_DID_NOT_PRODUCE_FRAME,
                 "Reduce frame rate when pixels aren't updated for many frames"),
         Flag.baseFeature(
-                "MojoMessageAlwaysUseLatestVersion",
-                "Performance experiment to always use the latest (largest) message version."),
-        Flag.baseFeature(
                 BlinkFeatures.BF_CACHE_OPEN_BROADCAST_CHANNEL,
                 "Start putting pages with broadcast channel into bfcache."),
         Flag.baseFeature(
@@ -1059,6 +1056,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BlinkFeatures.FENCED_FRAMES_API_CHANGES,
                 "Enable Fenced Frames HTML Element extra APIs."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_SHORT_CIRCUIT_SHOULD_INTERCEPT_REQUEST,
+                "Short circuit shouldInterceptRequest calls when they're not overridden.")
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

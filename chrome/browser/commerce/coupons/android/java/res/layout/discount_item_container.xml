@@ -37,7 +37,8 @@ found in the LICENSE file.
                 android:id="@+id/expiry_time"
                 android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
     </LinearLayout>
 
     <!-- Copy button -->

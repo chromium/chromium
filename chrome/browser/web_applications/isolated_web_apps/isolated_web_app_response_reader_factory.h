@@ -20,7 +20,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class Profile;
 

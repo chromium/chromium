@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_MANDATORY_REAUTH_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_MANDATORY_REAUTH_MANAGER_H_
 
+#include <variant>
+
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
@@ -49,7 +51,7 @@ class MandatoryReauthManager {
   virtual ~MandatoryReauthManager();
 
   static NonInteractivePaymentMethodType GetNonInteractivePaymentMethodType(
-      absl::variant<CreditCard::RecordType, Iban::RecordType> record_type);
+      std::variant<CreditCard::RecordType, Iban::RecordType> record_type);
 
   // Helper method to get all NonInteractivePaymentMethodType for testing
   // purpose.

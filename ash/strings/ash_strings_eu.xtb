@@ -166,6 +166,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1505542291183484463">Aldatu leiho-lauzaren tamaina beherantz</translation>
 <translation id="1510238584712386396">Abiarazlea</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Erakutsi jakinarazpen-ezarpenak. Aplikazio batean desaktibatuta daude jakinarazpenak.}other{Erakutsi jakinarazpen-ezarpenak. # aplikaziotan desaktibatuta daude jakinarazpenak.}}</translation>
+<translation id="1521655867290435174">Google Kalkulu-orriak</translation>
 <translation id="1523032696246003">Bateria: % <ph name="BATTERY_PERCENTAGE" /> | <ph name="TIME" /> guztiz kargatu arte</translation>
 <translation id="1525508553941733066">BAZTERTU</translation>
 <translation id="1526448108126799339">Ireki beste fitxa bat beste leiho batean</translation>
@@ -345,7 +346,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2201071101391734388">Azkenaldiko <ph name="TOTAL_COUNT" /> argazkietatik <ph name="INDEX" />garrena.</translation>
 <translation id="2201687081523799384">Tolestu Google Zereginak</translation>
 <translation id="2208323208084708176">Mahaigain bateratuko modua</translation>
-<translation id="2220572644011485463">PINa edo pasahitza</translation>
 <translation id="2222841058024245321">7. lan-eremua</translation>
 <translation id="2223384056430485343">Pantaila zatituan</translation>
 <translation id="2224075387478458881">Ezin da pantaila grabatu eduki babestua ikusgai dagoenean</translation>
@@ -1830,7 +1830,6 @@ Berriki instalatu da</translation>
 <translation id="7000027735917578303">Leihoen eta lan-eremuen ezarpenak</translation>
 <translation id="7004910047186208204">Erabili datu-konexioa</translation>
 <translation id="7005239792648594238">Erabiltzen hasteko, ireki aplikazio bat</translation>
-<translation id="7007983414944123363">Ezin izan da egiaztatu PINa edo pasahitza. Saiatu berriro.</translation>
 <translation id="7014684956566476813">Konektatu da <ph name="DEVICE_NAME" /> izeneko gailu batera</translation>
 <translation id="7015766095477679451">Itzuli ordu honetan: <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">6. lan-eremua</translation>
@@ -2467,6 +2466,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="9168436347345867845">Geroago</translation>
 <translation id="9178475906033259337">"<ph name="QUERY" />" bilaketaren emaitza bat dago ikusgai</translation>
 <translation id="9179259655489829027">Saioa hasita daukan edozein erabiltzaile bizkor atzitzea baimentzen dizu eginbideak, pasahitza idatzi beharrik gabe. Erabili eginbide hau kontu fidagarriekin soilik.</translation>
+<translation id="9183302530794969518">Google Dokumentuak</translation>
 <translation id="9183456764293710005">Pantaila osoko lupa</translation>
 <translation id="9192133205265227850">Erabili "<ph name="DEVICE_NAME" />"</translation>
 <translation id="9193626018745640770">Hargailu ezezagun batera igortzen</translation>

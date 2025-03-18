@@ -33,7 +33,6 @@
 #include "content/common/features.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 #include "third_party/blink/public/common/font_unique_name_lookup/font_unique_name_table.pb.h"
 #include "third_party/blink/public/common/font_unique_name_lookup/icu_fold_case_util.h"
 #include "ui/gfx/win/direct_write.h"

@@ -3228,6 +3228,13 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Returns true if subframe zoom should be enabled for one or more features in
   // a higher layer.
   virtual bool ShouldEnableSubframeZoom();
+
+  // Returns true if the given `url` should be prioritized for BFCache.
+  // Depending on the corresponding feature flag values, the prioritized page
+  // might be kept in BFCache even when it exceeds the entries limit.
+  virtual bool ShouldPrioritizeForBackForwardCache(
+      BrowserContext* browser_context,
+      const GURL& url);
 };
 
 }  // namespace content

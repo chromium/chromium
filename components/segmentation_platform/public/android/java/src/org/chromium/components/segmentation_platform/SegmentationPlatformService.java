@@ -58,4 +58,21 @@ public interface SegmentationPlatformService {
      * @param callback Callback with the list of input keys.
      */
     void getInputKeysForModel(String segmentationKey, Callback<Set<String>> callback);
+
+    /**
+     * Called to trigger training data collection.
+     *
+     * @param segmentId Id associated with the segment to collect training data for.
+     * @param requestId Id associated with a |getClassificationResult| call.
+     * @param ukmSourceId Used to attach the training data to the right URL.
+     * @param param Used to pass one additional output feature to be uploaded as training data. It
+     *     is recommended that the additional feature is also recorded as UMA histogram.
+     * @param callback Callback containing the status of the training data collection.
+     */
+    void collectTrainingData(
+            int segmentId,
+            long requestId,
+            long ukmSourceId,
+            TrainingLabels param,
+            Callback<Boolean> callback);
 }

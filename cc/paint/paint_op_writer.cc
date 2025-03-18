@@ -789,7 +789,31 @@ void PaintOpWriter::Write(const PaintShader* shader,
   // Explicitly don't write the cached_shader_ because that can be regenerated
   // using other fields.
 
-  Write(shader->sksl_command_);
+  uint32_t effect_id = shader->sk_runtime_effect_id_;
+  WriteSimple(effect_id);
+  auto* cache = options_.paint_cache;
+  CHECK(cache);
+  auto entry_state = PaintCacheEntryState::kEmpty;
+  if (effect_id != 0u) {
+    auto cache_id = static_cast<PaintCacheId>(effect_id);
+    if (cache->Get(PaintCacheDataType::kSkRuntimeEffect, cache_id)) {
+      // Cached.
+      entry_state = PaintCacheEntryState::kCached;
+    } else {
+      // Tell the service to cache.
+      // Use the size of the string as an estimation to the SkRuntimeEffect.
+      // This is intentional as only browser UI is submitting the shader
+      // commands, and there is no cache budget contention on the browser
+      // UI side.
+      size_t effect_size = SerializedSize(shader->sksl_command_);
+      cache->Put(PaintCacheDataType::kSkRuntimeEffect, cache_id, effect_size);
+      entry_state = PaintCacheEntryState::kInlined;
+    }
+  }
+  Write(static_cast<uint32_t>(entry_state));
+  if (entry_state == PaintCacheEntryState::kInlined) {
+    Write(shader->sksl_command_);
+  }
   Write(shader->scalar_uniforms_);
   Write(shader->float2_uniforms_);
   Write(shader->float4_uniforms_);

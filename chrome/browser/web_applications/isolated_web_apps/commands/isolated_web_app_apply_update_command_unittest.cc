@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string_view>
+#include <variant>
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -43,7 +44,6 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/url_constants.h"
 
@@ -134,7 +134,7 @@ class IsolatedWebAppApplyUpdateCommandTest : public WebAppTest {
 
     // Create a dummy bundle at the expected path.
     base::FilePath installed_path =
-        absl::get<IwaStorageOwnedBundle>(installed_location_.variant())
+        std::get<IwaStorageOwnedBundle>(installed_location_.variant())
             .GetPath(profile()->GetPath());
     base::CreateDirectory(installed_path.DirName());
     base::WriteFile(installed_path, "");
@@ -196,7 +196,7 @@ class IsolatedWebAppApplyUpdateCommandTest : public WebAppTest {
         web_app->isolation_data()->location();
     const base::FilePath iwa_base_dir =
         profile()->GetPath().Append(kIwaDirName);
-    absl::visit(
+    std::visit(
         base::Overloaded{
             [&](const IwaStorageOwnedBundle& bundle) {
               // Only installed app can be located in the IWA directory.

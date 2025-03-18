@@ -21,6 +21,7 @@
 #include <tuple>
 #include <unordered_map>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "autofill_client.h"
@@ -151,7 +152,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/rect.h"
@@ -169,7 +169,7 @@ namespace {
 
 FillDataType GetFillDataTypeFromFillingPayload(
     const FillingPayload& filling_payload) {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [](const AutofillProfile*) { return FillDataType::kAutofillProfile; },
           [](const CreditCard*) { return FillDataType::kCreditCard; },
@@ -285,6 +285,7 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
     case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddressEntry:
     case SuggestionType::kFillAutofillAi:
+    case SuggestionType::kPendingStateSignin:
       NOTREACHED();
   }
   NOTREACHED();
@@ -556,7 +557,7 @@ bool WasEmailOverrideAppliedOnSuggestions(
   return std::ranges::any_of(
       address_suggestions, [](const Suggestion& suggestion) {
         const Suggestion::AutofillProfilePayload* profile_payload =
-            absl::get_if<Suggestion::AutofillProfilePayload>(
+            std::get_if<Suggestion::AutofillProfilePayload>(
                 &suggestion.payload);
         return profile_payload && !profile_payload->email_override.empty();
       });
@@ -1937,7 +1938,7 @@ void BrowserAutofillManager::DidShowSuggestions(
         continue;
       }
       const Suggestion::AutofillProfilePayload& profile_used_payload =
-          absl::get<Suggestion::AutofillProfilePayload>(suggestion.payload);
+          std::get<Suggestion::AutofillProfilePayload>(suggestion.payload);
       const AutofillProfile* profile_used =
           client()
               .GetPersonalDataManager()
@@ -2269,7 +2270,7 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
                       safe_field_ids, skip_reasons, filling_payload, is_refill);
   client().DidFillForm(trigger_source, is_refill);
 
-  absl::visit(
+  std::visit(
       base::Overloaded{[&](const AutofillProfile* profile) {
                          LogAndRecordProfileFill(
                              form_structure, trigger_autofill_field,
@@ -2306,7 +2307,7 @@ void BrowserAutofillManager::AppendFillLogEvents(
     bool is_refill) {
   std::string country_code;
   if (const AutofillProfile* const* address =
-          absl::get_if<const AutofillProfile*>(&filling_payload)) {
+          std::get_if<const AutofillProfile*>(&filling_payload)) {
     country_code =
         base::UTF16ToUTF8((*address)->GetRawInfo(ADDRESS_HOME_COUNTRY));
   }
@@ -3041,30 +3042,30 @@ void BrowserAutofillManager::LogEventCountsUMAMetric(
   for (const auto& autofill_field : form_structure) {
     for (const auto& log_event : autofill_field->field_log_events()) {
       static_assert(
-          absl::variant_size<AutofillField::FieldLogEventType>() == 10,
+          std::variant_size<AutofillField::FieldLogEventType>() == 10,
           "When adding new variants check that this function does not "
           "need to be updated.");
-      if (absl::holds_alternative<AskForValuesToFillFieldLogEvent>(log_event)) {
+      if (std::holds_alternative<AskForValuesToFillFieldLogEvent>(log_event)) {
         ++num_ask_for_values_to_fill_event;
-      } else if (absl::holds_alternative<TriggerFillFieldLogEvent>(log_event)) {
+      } else if (std::holds_alternative<TriggerFillFieldLogEvent>(log_event)) {
         ++num_trigger_fill_event;
-      } else if (absl::holds_alternative<FillFieldLogEvent>(log_event)) {
+      } else if (std::holds_alternative<FillFieldLogEvent>(log_event)) {
         ++num_fill_event;
-      } else if (absl::holds_alternative<TypingFieldLogEvent>(log_event)) {
+      } else if (std::holds_alternative<TypingFieldLogEvent>(log_event)) {
         ++num_typing_event;
-      } else if (absl::holds_alternative<HeuristicPredictionFieldLogEvent>(
+      } else if (std::holds_alternative<HeuristicPredictionFieldLogEvent>(
                      log_event)) {
         ++num_heuristic_prediction_event;
-      } else if (absl::holds_alternative<AutocompleteAttributeFieldLogEvent>(
+      } else if (std::holds_alternative<AutocompleteAttributeFieldLogEvent>(
                      log_event)) {
         ++num_autocomplete_attribute_event;
-      } else if (absl::holds_alternative<ServerPredictionFieldLogEvent>(
+      } else if (std::holds_alternative<ServerPredictionFieldLogEvent>(
                      log_event)) {
         ++num_server_prediction_event;
-      } else if (absl::holds_alternative<RationalizationFieldLogEvent>(
+      } else if (std::holds_alternative<RationalizationFieldLogEvent>(
                      log_event)) {
         ++num_rationalization_event;
-      } else if (absl::holds_alternative<AblationFieldLogEvent>(log_event)) {
+      } else if (std::holds_alternative<AblationFieldLogEvent>(log_event)) {
         ++num_ablation_event;
       } else {
         NOTREACHED();

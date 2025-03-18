@@ -1506,8 +1506,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         params.cookieControlsMode = getCookieControlsMode();
         params.cookieControlsModeEnforced = mCategory.isManaged();
         params.isIncognitoModeEnabled = getSiteSettingsDelegate().isIncognitoModeEnabled();
-        params.isPrivacySandboxFirstPartySetsUiEnabled =
-                getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUiFeatureEnabled();
         params.isRelatedWebsiteSetsDataAccessEnabled =
                 getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled();
         params.isAlwaysBlock3pcsIncognitoEnabled =

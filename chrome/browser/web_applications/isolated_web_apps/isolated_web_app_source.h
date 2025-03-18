@@ -7,12 +7,12 @@
 
 #include <iosfwd>
 #include <type_traits>
+#include <variant>
 
 #include "base/files/file_path.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/origin.h"
 
 namespace web_app {
@@ -281,7 +281,7 @@ std::ostream& operator<<(std::ostream& os,
 
 class IwaSource {
  public:
-  using Variant = absl::variant<IwaSourceBundle, IwaSourceProxy>;
+  using Variant = std::variant<IwaSourceBundle, IwaSourceProxy>;
 
   template <typename V>
   // NOLINTNEXTLINE(google-explicit-constructor)
@@ -314,7 +314,7 @@ class IwaSourceWithMode {
  public:
   friend class IwaSource;
 
-  using Variant = absl::variant<IwaSourceBundleWithMode, IwaSourceProxy>;
+  using Variant = std::variant<IwaSourceBundleWithMode, IwaSourceProxy>;
 
   static IwaSourceWithMode FromStorageLocation(
       const base::FilePath& profile_dir,
@@ -360,12 +360,12 @@ class IwaSourceDevMode {
  public:
   friend class IwaSourceWithMode;
 
-  using Variant = absl::variant<IwaSourceBundleDevMode, IwaSourceProxy>;
+  using Variant = std::variant<IwaSourceBundleDevMode, IwaSourceProxy>;
 
   // Attempt to convert the provided `storage_location` into an instance of
   // `IwaSourceDevMode`. Will fail with an unexpected if the storage location is
   // not a dev mode storage location.
-  static base::expected<IwaSourceDevMode, absl::monostate> FromStorageLocation(
+  static base::expected<IwaSourceDevMode, std::monostate> FromStorageLocation(
       const base::FilePath& profile_dir,
       const IsolatedWebAppStorageLocation& storage_location);
 
@@ -403,12 +403,12 @@ class IwaSourceProdMode {
 
   // Even though there is just one type in the variant, we use a variant for
   // consistency.
-  using Variant = absl::variant<IwaSourceBundleProdMode>;
+  using Variant = std::variant<IwaSourceBundleProdMode>;
 
   // Attempt to convert the provided `storage_location` into an instance of
   // `IwaSourceProdMode`. Will fail with an unexpected if the storage location
   // is not a prod mode storage location.
-  static base::expected<IwaSourceProdMode, absl::monostate> FromStorageLocation(
+  static base::expected<IwaSourceProdMode, std::monostate> FromStorageLocation(
       const base::FilePath& profile_dir,
       const IsolatedWebAppStorageLocation& storage_location);
 
@@ -446,7 +446,7 @@ class IwaSourceWithModeAndFileOp {
   friend class IwaSourceWithMode;
 
   using Variant =
-      absl::variant<IwaSourceBundleWithModeAndFileOp, IwaSourceProxy>;
+      std::variant<IwaSourceBundleWithModeAndFileOp, IwaSourceProxy>;
 
   template <typename V>
   // NOLINTNEXTLINE(google-explicit-constructor)
@@ -484,7 +484,7 @@ class IwaSourceDevModeWithFileOp {
   friend class IwaSourceWithModeAndFileOp;
 
   using Variant =
-      absl::variant<IwaSourceBundleDevModeWithFileOp, IwaSourceProxy>;
+      std::variant<IwaSourceBundleDevModeWithFileOp, IwaSourceProxy>;
 
   template <typename V>
   // NOLINTNEXTLINE(google-explicit-constructor)
@@ -517,7 +517,7 @@ class IwaSourceProdModeWithFileOp {
 
   // Even though there is just one type in the variant, we use a variant for
   // consistency.
-  using Variant = absl::variant<IwaSourceBundleProdModeWithFileOp>;
+  using Variant = std::variant<IwaSourceBundleProdModeWithFileOp>;
 
   template <typename V>
   // NOLINTNEXTLINE(google-explicit-constructor)

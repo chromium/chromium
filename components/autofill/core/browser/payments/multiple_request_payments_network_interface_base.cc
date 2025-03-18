@@ -136,9 +136,9 @@ const RequestId& MultipleRequestPaymentsNetworkInterfaceBase::RequestOperation::
 
 void MultipleRequestPaymentsNetworkInterfaceBase::RequestOperation::
     AccessTokenFetchFinished(
-        const absl::variant<GoogleServiceAuthError, std::string>& result) {
-  if (absl::holds_alternative<GoogleServiceAuthError>(result)) {
-    GoogleServiceAuthError error = absl::get<GoogleServiceAuthError>(result);
+        const std::variant<GoogleServiceAuthError, std::string>& result) {
+  if (std::holds_alternative<GoogleServiceAuthError>(result)) {
+    GoogleServiceAuthError error = std::get<GoogleServiceAuthError>(result);
     VLOG(1) << "Unhandled access token error: " << error.ToString();
     if (simple_url_loader_) {
       simple_url_loader_.reset();
@@ -147,7 +147,7 @@ void MultipleRequestPaymentsNetworkInterfaceBase::RequestOperation::
     return;
   }
 
-  auto access_token = absl::get<std::string>(result);
+  auto access_token = std::get<std::string>(result);
   SetAccessTokenAndStartRequest(access_token);
 }
 

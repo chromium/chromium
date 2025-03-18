@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "ash/public/cpp/message_center_ash.h"
@@ -23,7 +24,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace ash::settings {
 
@@ -223,7 +223,7 @@ TEST_F(AppNotificationHandlerTest, TestAppListUpdated) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(observer()->app_list_changed(), 1);
   EXPECT_EQ("arcAppWithNotifications", observer()->recently_updated_app()->id);
-  EXPECT_TRUE(absl::get<bool>(
+  EXPECT_TRUE(std::get<bool>(
       observer()->recently_updated_app()->notification_permission->value));
 
   CreateAndStoreFakeApp("webAppWithNotifications", apps::AppType::kWeb,
@@ -233,7 +233,7 @@ TEST_F(AppNotificationHandlerTest, TestAppListUpdated) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(observer()->app_list_changed(), 2);
   EXPECT_EQ("webAppWithNotifications", observer()->recently_updated_app()->id);
-  EXPECT_TRUE(absl::holds_alternative<bool>(
+  EXPECT_TRUE(std::holds_alternative<bool>(
       observer()->recently_updated_app()->notification_permission->value));
 
   CreateAndStoreFakeApp("arcAppWithCamera", apps::AppType::kArc,
@@ -261,7 +261,7 @@ TEST_F(AppNotificationHandlerTest, TestAppListUpdated) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(observer()->app_list_changed(), 3);
   EXPECT_EQ("arcAppWithNotifications", observer()->recently_updated_app()->id);
-  EXPECT_FALSE(absl::get<bool>(
+  EXPECT_FALSE(std::get<bool>(
       observer()->recently_updated_app()->notification_permission->value));
 
   CreateAndStoreFakeApp("webAppWithNotifications", apps::AppType::kWeb,
@@ -271,7 +271,7 @@ TEST_F(AppNotificationHandlerTest, TestAppListUpdated) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(observer()->app_list_changed(), 4);
   EXPECT_EQ("webAppWithNotifications", observer()->recently_updated_app()->id);
-  EXPECT_FALSE(absl::get<bool>(
+  EXPECT_FALSE(std::get<bool>(
       observer()->recently_updated_app()->notification_permission->value));
 }
 

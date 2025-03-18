@@ -17,7 +17,6 @@ static_library("isolated_web_app") {
   ]
   public_deps = []
   deps = [
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/chromeos/app_mode",
     "//chrome/browser/web_applications",

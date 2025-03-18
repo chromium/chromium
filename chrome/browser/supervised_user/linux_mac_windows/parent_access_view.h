@@ -16,6 +16,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -103,6 +104,7 @@ class ParentAccessView : public views::View,
   content::WebContents* GetWebViewContents();
   // views::WidgetObserver implementation:
   void OnWidgetClosing(views::Widget* widget) override;
+  void OnWidgetThemeChanged(views::Widget* widget) override;
 
   // views::View override:
   void ChildPreferredSizeChanged(View* child) override;
@@ -114,6 +116,8 @@ class ParentAccessView : public views::View,
                              const gfx::Size& new_size) override;
 
   void ShowWebViewAndDestroyTimeoutObserver();
+
+  void UpdateDialogBorder();
 
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 

@@ -18,14 +18,17 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.DialogTitle;
 
+import org.chromium.base.Token;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
 import org.chromium.chrome.tab_ui.R;
@@ -70,7 +73,7 @@ public class TabGroupVisualDataDialogManager {
     private ModalDialogManagerObserver mModalDialogManagerObserver;
     private View mCustomView;
     private TabGroupVisualDataTextInputLayout mTextInputLayout;
-    private String mDefaultGroupTitle;
+    private String mInitialGroupTitle;
     private ColorPickerCoordinator mColorPickerCoordinator;
     private @TabGroupColorId int mDefaultColorId;
 
@@ -100,12 +103,12 @@ public class TabGroupVisualDataDialogManager {
     /**
      * Construct and show the modal dialog for setting tab group visual data.
      *
-     * @param rootId The destination root id when modifying a tab group.
+     * @param tabGroupId The destination tab group id when modifying a tab group.
      * @param filter The current TabGroupModelFilter that this group is modified on.
      * @param dialogController The dialog controller for the modal dialog's actions.
      */
     public void showDialog(
-            int rootId,
+            Token tabGroupId,
             TabGroupModelFilter filter,
             ModalDialogProperties.Controller dialogController) {
         // If the model is not null, it indicates a chained double show attempt is occurring.
@@ -114,6 +117,11 @@ public class TabGroupVisualDataDialogManager {
         if (mModel != null) {
             return;
         }
+
+        assert tabGroupId != null;
+
+        int rootId = filter.getRootIdFromTabGroupId(tabGroupId);
+        assert rootId != Tab.INVALID_TAB_ID;
 
         mCustomView =
                 LayoutInflater.from(mContext).inflate(R.layout.tab_group_visual_data_dialog, null);
@@ -124,10 +132,10 @@ public class TabGroupVisualDataDialogManager {
         // Set the description text to be displayed on the dialog underneath the title.
         setDescriptionText(filter);
 
-        // Create the default group title to be displayed in the edit text box.
-        createDefaultGroupTitle(rootId, filter);
+        // Set the default or current title to be displayed in the edit text box.
+        mInitialGroupTitle = TabGroupTitleUtils.getDisplayableTitle(mContext, filter, tabGroupId);
         AppCompatEditText editTextView = mCustomView.findViewById(R.id.title_input_text);
-        editTextView.setText(mDefaultGroupTitle);
+        editTextView.setText(mInitialGroupTitle);
 
         List<Integer> colors = TabGroupColorUtils.getTabGroupColorIdList();
         // TODO(b/330597857): Allow a dynamic incognito setting for the color picker.
@@ -203,8 +211,8 @@ public class TabGroupVisualDataDialogManager {
     }
 
     /** Get the default group title displayed on show dialog. */
-    public String getDefaultGroupTitle() {
-        return mDefaultGroupTitle;
+    public String getInitialGroupTitle() {
+        return mInitialGroupTitle;
     }
 
     /** Get the default group color displayed on show dialog. */
@@ -214,24 +222,6 @@ public class TabGroupVisualDataDialogManager {
 
     public @TabGroupColorId int getCurrentColorId() {
         return mColorPickerCoordinator.getSelectedColorSupplier().get();
-    }
-
-    private void createDefaultGroupTitle(int rootId, TabGroupModelFilter filter) {
-        int tabCount = filter.getRelatedTabCountForRootId(rootId);
-        String defaultGroupTitle =
-                mContext.getResources()
-                        .getQuantityString(
-                                R.plurals.bottom_tab_grid_title_placeholder, tabCount, tabCount);
-
-        if (mDialogType == DialogType.TAB_GROUP_CREATION) {
-            mDefaultGroupTitle = defaultGroupTitle;
-        } else if (mDialogType == DialogType.TAB_GROUP_EDIT) {
-            mDefaultGroupTitle = filter.getTabGroupTitle(rootId);
-
-            if (mDefaultGroupTitle == null) {
-                mDefaultGroupTitle = defaultGroupTitle;
-            }
-        }
     }
 
     private void setDescriptionText(TabGroupModelFilter filter) {

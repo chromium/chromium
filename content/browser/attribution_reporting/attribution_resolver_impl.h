@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/sequence_checker.h"
@@ -26,7 +27,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/storage_partition.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
 class FilePath;
@@ -125,10 +125,10 @@ class CONTENT_EXPORT AttributionResolverImpl : public AttributionResolver {
     AttributionReport replaced_report;
   };
 
-  using ReplaceReportResult = absl::variant<ReplaceReportError,
-                                            AddNewReport,
-                                            DropNewReport,
-                                            ReplaceOldReport>;
+  using ReplaceReportResult = std::variant<ReplaceReportError,
+                                           AddNewReport,
+                                           DropNewReport,
+                                           ReplaceOldReport>;
 
   [[nodiscard]] ReplaceReportResult MaybeReplaceLowerPriorityEventLevelReport(
       const AttributionReport& report,

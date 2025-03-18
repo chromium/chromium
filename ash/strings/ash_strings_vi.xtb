@@ -166,6 +166,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1505542291183484463">Đổi kích thước cửa sổ trong bố cục ô xếp hướng xuống dưới</translation>
 <translation id="1510238584712386396">Trình chạy</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Hiển thị tùy chọn cài đặt thông báo. Các thông báo hiện đang tắt cho một ứng dụng}other{Hiển thị tùy chọn cài đặt thông báo. Các thông báo hiện đang tắt cho # ứng dụng}}</translation>
+<translation id="1521655867290435174">Google Trang tính</translation>
 <translation id="1523032696246003"><ph name="BATTERY_PERCENTAGE" />% pin | Còn <ph name="TIME" /> cho đến khi pin đầy</translation>
 <translation id="1525508553941733066">LOẠI BỎ</translation>
 <translation id="1526448108126799339">Mở thẻ mới trong cửa sổ mới</translation>
@@ -345,7 +346,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2201071101391734388">Ảnh gần đây <ph name="INDEX" /> trong tổng số <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Thu gọn Google Tasks</translation>
 <translation id="2208323208084708176">Chế độ màn hình đồng nhất</translation>
-<translation id="2220572644011485463">Mã PIN hoặc mật khẩu</translation>
 <translation id="2222841058024245321">Không gian làm việc 7</translation>
 <translation id="2223384056430485343">Ở chế độ chia đôi màn hình</translation>
 <translation id="2224075387478458881">Không thể sử dụng chức năng ghi màn hình khi có nội dung được bảo vệ</translation>
@@ -1829,7 +1829,6 @@ Mới cài đặt</translation>
 <translation id="7000027735917578303">Chế độ cài đặt cửa sổ và không gian làm việc</translation>
 <translation id="7004910047186208204">Kết nối với dữ liệu di động</translation>
 <translation id="7005239792648594238">Mở một ứng dụng để bắt đầu</translation>
-<translation id="7007983414944123363">Hệ thống chưa xác minh được mã PIN hoặc mật khẩu của bạn. Hãy thử lại.</translation>
 <translation id="7014684956566476813">Đã kết nối với thiết bị có tên <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Quay lại lúc <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Không gian làm việc 6</translation>
@@ -1943,6 +1942,7 @@ Mới cài đặt</translation>
 <translation id="742594950370306541">Máy ảnh đang được sử dụng.</translation>
 <translation id="742608627846767349">Xin chào!</translation>
 <translation id="743058460480092004">Máy ảnh và micrô đang được sử dụng.</translation>
+<translation id="7440404390546433462">Google Tìm kiếm</translation>
 <translation id="7441711280402516925">Đang phát · Chuyển sang thẻ</translation>
 <translation id="7453330308669753048">Đã xoá kết quả khỏi nhật ký tìm kiếm</translation>
 <translation id="7459485586006128091">Điểm phát sóng đã tắt do lỗi nội bộ. Hãy thử kết nối lại sau vài phút.</translation>
@@ -2466,6 +2466,7 @@ Mới cài đặt</translation>
 <translation id="9168436347345867845">Thực hiện sau</translation>
 <translation id="9178475906033259337">Đang hiển thị 1 kết quả cho <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Tính năng này cho phép bạn truy cập nhanh vào bất kỳ người dùng đã đăng nhập nào mà không cần mật khẩu. Chỉ sử dụng tính năng này với các tài khoản mà bạn tin tưởng.</translation>
+<translation id="9183302530794969518">Google Tài liệu</translation>
 <translation id="9183456764293710005">Phóng to toàn màn hình</translation>
 <translation id="9192133205265227850">Sử dụng "<ph name="DEVICE_NAME" />"</translation>
 <translation id="9193626018745640770">Đang truyền trên bộ thu không xác định</translation>

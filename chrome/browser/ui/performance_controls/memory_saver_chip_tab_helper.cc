@@ -74,7 +74,8 @@ MemorySaverChipTabHelper::MemorySaverChipTabHelper(
   if (UserPerformanceTuningManager::HasInstance()) {
     user_performance_tuning_manager_observation_.Observe(
         UserPerformanceTuningManager::GetInstance());
-    OnMemorySaverModeChanged();
+    is_memory_saver_mode_enabled_ =
+        UserPerformanceTuningManager::GetInstance()->IsMemorySaverModeActive();
   } else {
     // Some unit tests don't have a UserPerformanceTuningManager.
     CHECK_IS_TEST();

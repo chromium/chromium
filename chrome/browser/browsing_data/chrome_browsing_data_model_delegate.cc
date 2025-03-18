@@ -5,6 +5,7 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_model_delegate.h"
 
 #include <memory>
+#include <variant>
 
 #include "base/barrier_callback.h"
 #include "base/functional/callback_helpers.h"
@@ -131,7 +132,7 @@ void ChromeBrowsingDataModelDelegate::RemoveDataKey(
           static_cast<BrowsingDataModel::StorageType>(StorageType::kTopics))) {
     // Topics can be deleted but not queried from disk as the creating origins
     // are hashed before being saved.
-    const url::Origin* origin = absl::get_if<url::Origin>(&data_key);
+    const url::Origin* origin = std::get_if<url::Origin>(&data_key);
     auto* browsing_topics_service =
         browsing_topics::BrowsingTopicsServiceFactory::GetForProfile(profile_);
     browsing_topics_service->ClearTopicsDataForOrigin(*origin);
@@ -140,7 +141,7 @@ void ChromeBrowsingDataModelDelegate::RemoveDataKey(
   if (storage_types.Has(static_cast<BrowsingDataModel::StorageType>(
           StorageType::kMediaDeviceSalt))) {
     if (const blink::StorageKey* storage_key =
-            absl::get_if<blink::StorageKey>(&data_key)) {
+            std::get_if<blink::StorageKey>(&data_key)) {
       RemoveMediaDeviceSalt(*storage_key, concurrent.CreateClosure());
     }
   }
@@ -149,7 +150,7 @@ void ChromeBrowsingDataModelDelegate::RemoveDataKey(
           StorageType::kFederatedIdentity))) {
     if (const webid::FederatedIdentityDataModel::DataKey*
             federated_identity_data_key =
-                absl::get_if<webid::FederatedIdentityDataModel::DataKey>(
+                std::get_if<webid::FederatedIdentityDataModel::DataKey>(
                     &data_key)) {
       RemoveFederatedIdentityData(*federated_identity_data_key,
                                   concurrent.CreateClosure());
@@ -159,8 +160,8 @@ void ChromeBrowsingDataModelDelegate::RemoveDataKey(
 #if !BUILDFLAG(IS_ANDROID)
   if (storage_types.Has(static_cast<BrowsingDataModel::StorageType>(
           StorageType::kIsolatedWebApp))) {
-    CHECK(absl::holds_alternative<url::Origin>(data_key));
-    const url::Origin& origin = *absl::get_if<url::Origin>(&data_key);
+    CHECK(std::holds_alternative<url::Origin>(data_key));
+    const url::Origin& origin = *std::get_if<url::Origin>(&data_key);
 
     web_app::RemoveIsolatedWebAppBrowsingData(profile_, origin,
                                               concurrent.CreateClosure());
@@ -176,25 +177,25 @@ ChromeBrowsingDataModelDelegate::GetDataOwner(
     BrowsingDataModel::StorageType storage_type) const {
   switch (static_cast<StorageType>(storage_type)) {
     case StorageType::kIsolatedWebApp:
-      CHECK(absl::holds_alternative<url::Origin>(data_key))
+      CHECK(std::holds_alternative<url::Origin>(data_key))
           << "Unsupported IWA DataKey type: " << data_key.index();
-      return absl::get<url::Origin>(data_key);
+      return std::get<url::Origin>(data_key);
 
     case StorageType::kTopics:
-      CHECK(absl::holds_alternative<url::Origin>(data_key))
+      CHECK(std::holds_alternative<url::Origin>(data_key))
           << "Unsupported Topics DataKey type: " << data_key.index();
-      return absl::get<url::Origin>(data_key).host();
+      return std::get<url::Origin>(data_key).host();
 
     case StorageType::kMediaDeviceSalt:
-      CHECK(absl::holds_alternative<blink::StorageKey>(data_key))
+      CHECK(std::holds_alternative<blink::StorageKey>(data_key))
           << "Unsupported MediaDeviceSalt DataKey type: " << data_key.index();
-      return absl::get<blink::StorageKey>(data_key).origin().host();
+      return std::get<blink::StorageKey>(data_key).origin().host();
 
     case StorageType::kFederatedIdentity:
-      CHECK(absl::holds_alternative<webid::FederatedIdentityDataModel::DataKey>(
+      CHECK(std::holds_alternative<webid::FederatedIdentityDataModel::DataKey>(
           data_key))
           << "Unsupported FederatedIdentity DataKey type: " << data_key.index();
-      return absl::get<webid::FederatedIdentityDataModel::DataKey>(data_key)
+      return std::get<webid::FederatedIdentityDataModel::DataKey>(data_key)
           .relying_party_embedder()
           .host();
 

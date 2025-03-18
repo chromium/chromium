@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_SUGGESTION_BUTTON_ACTION_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_SUGGESTION_BUTTON_ACTION_H_
 
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include <variant>
 
 namespace autofill {
 
@@ -36,7 +36,7 @@ enum class AutofillAiSuggestionButtonAction {
 //   enum class kMySuggestionButtonAction { kUpvote, kDownvote };
 // - Add the type as a variant to `SuggestionButtonAction`.
 using SuggestionButtonAction =
-    absl::variant<absl::monostate, AutofillAiSuggestionButtonAction>;
+    std::variant<std::monostate, AutofillAiSuggestionButtonAction>;
 
 }  // namespace autofill
 

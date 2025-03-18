@@ -43,6 +43,8 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kFormsPredictionsMqlsLogging);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kFormsAnnotationsMqlsLogging);
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+BASE_DECLARE_FEATURE(kPasswordChangeSubmissionMqlsLogging);
 }  // namespace features
 
 void RegisterGenAiFeatures(PrefRegistrySimple* registry);

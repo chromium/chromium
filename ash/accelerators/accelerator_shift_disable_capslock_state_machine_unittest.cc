@@ -4,6 +4,8 @@
 
 #include "ash/accelerators/accelerator_shift_disable_capslock_state_machine.h"
 
+#include <variant>
+
 #include "ash/test/ash_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,7 +28,7 @@ class MockInputController : public ui::StubInputController {
 const bool kKeysPressed = true;
 const bool kNoKeysPressed = false;
 
-using EventTypeVariant = absl::variant<ui::MouseEvent, ui::KeyEvent, bool>;
+using EventTypeVariant = std::variant<ui::MouseEvent, ui::KeyEvent, bool>;
 using ShiftDisableState =
     AcceleratorShiftDisableCapslockStateMachine::ShiftDisableState;
 
@@ -55,10 +57,10 @@ ui::KeyEvent KeyRelease(ui::KeyboardCode key_code) {
 }
 
 ui::Event& GetEventFromVariant(EventTypeVariant& event) {
-  if (absl::holds_alternative<ui::MouseEvent>(event)) {
-    return absl::get<ui::MouseEvent>(event);
+  if (std::holds_alternative<ui::MouseEvent>(event)) {
+    return std::get<ui::MouseEvent>(event);
   } else {
-    return absl::get<ui::KeyEvent>(event);
+    return std::get<ui::KeyEvent>(event);
   }
 }
 
@@ -142,9 +144,9 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(AcceleratorShiftDisableCapslockStateMachineTest, StateTest) {
   for (auto& event : events_) {
-    if (absl::holds_alternative<bool>(event)) {
+    if (std::holds_alternative<bool>(event)) {
       ON_CALL(*input_controller_, AreAnyKeysPressed())
-          .WillByDefault(testing::Return(absl::get<bool>(event)));
+          .WillByDefault(testing::Return(std::get<bool>(event)));
       continue;
     }
 

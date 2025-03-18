@@ -164,6 +164,10 @@ struct ContextMenuData {
   // TextFragmentAnchor.
   bool opened_from_highlight = false;
 
+  // True when the context menu was opened from an element with the
+  // `interesttarget` attribute.
+  bool opened_from_interest_target = false;
+
   // The type of the form control element on which the context menu is invoked,
   // if any.
   std::optional<mojom::FormControlType> form_control_type;

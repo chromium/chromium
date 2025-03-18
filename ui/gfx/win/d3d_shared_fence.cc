@@ -8,6 +8,8 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 
+#include <dxgi1_6.h>
+
 namespace gfx {
 
 namespace {
@@ -90,6 +92,7 @@ scoped_refptr<D3DSharedFence> D3DSharedFence::CreateFromD3D11Fence(
 // static
 bool D3DSharedFence::IsSupported(ID3D11Device* d3d11_device) {
   DCHECK(d3d11_device);
+  // Check for ID3D11Device5:
   Microsoft::WRL::ComPtr<ID3D11Device5> d3d11_device5;
   HRESULT hr = d3d11_device->QueryInterface(IID_PPV_ARGS(&d3d11_device5));
   if (FAILED(hr)) {
@@ -97,7 +100,30 @@ bool D3DSharedFence::IsSupported(ID3D11Device* d3d11_device) {
              << logging::SystemErrorCodeToString(hr);
     return false;
   }
-  return true;
+
+  // Check for IDXGIAdapter4:
+  Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
+  hr = d3d11_device->QueryInterface(IID_PPV_ARGS(&dxgi_device));
+  CHECK_EQ(hr, S_OK);
+
+  Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
+  hr = dxgi_device->GetAdapter(&dxgi_adapter);
+  CHECK_EQ(hr, S_OK);
+
+  Microsoft::WRL::ComPtr<IDXGIAdapter4> dxgi_adapter4;
+  hr = dxgi_adapter.As(&dxgi_adapter4);
+  if (FAILED(hr)) {
+    DVLOG(1) << "Failed to get IDXGIAdapter4: "
+             << logging::SystemErrorCodeToString(hr);
+    return false;
+  }
+
+  DXGI_ADAPTER_DESC3 adapter_desc;
+  hr = dxgi_adapter4->GetDesc3(&adapter_desc);
+  CHECK_EQ(hr, S_OK);
+
+  // The adapter must support monitored fences.
+  return adapter_desc.Flags & DXGI_ADAPTER_FLAG3_SUPPORT_MONITORED_FENCES;
 }
 
 // static

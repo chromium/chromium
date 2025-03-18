@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import <string>
+#include <variant>
 #import <vector>
 
 #import "base/containers/contains.h"
@@ -748,9 +749,9 @@ TEST_F(AutofillAcrossIframesTest, WithChildFrames) {
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       kWaitForJSCompletionTimeout, ^bool {
         local_token1 = registrar->LookupChildFrame(
-            absl::get<RemoteFrameToken>(remote_token1.token));
+            std::get<RemoteFrameToken>(remote_token1.token));
         local_token2 = registrar->LookupChildFrame(
-            absl::get<RemoteFrameToken>(remote_token2.token));
+            std::get<RemoteFrameToken>(remote_token2.token));
         return local_token1.has_value() && local_token2.has_value();
       }));
 
@@ -874,7 +875,7 @@ TEST_F(AutofillAcrossIframesTest, Resolve) {
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       kWaitForJSCompletionTimeout, ^bool {
         return registrar
-            ->LookupChildFrame(absl::get<RemoteFrameToken>(remote_token.token))
+            ->LookupChildFrame(std::get<RemoteFrameToken>(remote_token.token))
             .has_value();
       }));
 
@@ -918,7 +919,7 @@ TEST_F(AutofillAcrossIframesTest, SetAndGetParent) {
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       kWaitForJSCompletionTimeout, ^bool {
         return registrar
-            ->LookupChildFrame(absl::get<RemoteFrameToken>(remote_token.token))
+            ->LookupChildFrame(std::get<RemoteFrameToken>(remote_token.token))
             .has_value();
       }));
 
@@ -1731,7 +1732,7 @@ TEST_F(AutofillAcrossIframesTest, FrameDoubleRegistration_Notify) {
   registrar_scoped_observation.Observe(registrar());
 
   RemoteFrameToken stolen_remote_token =
-      absl::get<RemoteFrameToken>(form.child_frames()[0].token);
+      std::get<RemoteFrameToken>(form.child_frames()[0].token);
   std::optional<LocalFrameToken> attacked_frame =
       registrar()->LookupChildFrame(stolen_remote_token);
   ASSERT_TRUE(attacked_frame);
@@ -2071,11 +2072,11 @@ TEST_F(AutofillAcrossIframesFillSecurityTest, XoriginTrigger_NestedFrame) {
 
   // Inject the frame holding the expiry date.
   InjectNewIframe(
-      absl::get<RemoteFrameToken>(browser_form.child_frames()[2].token),
+      std::get<RemoteFrameToken>(browser_form.child_frames()[2].token),
       test_server_, "/cf3a");
   // Inject the frame holding the cvc number.
   InjectNewIframe(
-      absl::get<RemoteFrameToken>(browser_form.child_frames()[3].token),
+      std::get<RemoteFrameToken>(browser_form.child_frames()[3].token),
       test_server1, "/cf4a");
 
   // Fill and verify that all the fields are filled.

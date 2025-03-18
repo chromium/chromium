@@ -43,7 +43,7 @@
   // one so the user can add credit cards.
   autofill::PersonalDataManager* personalDataManager =
       autofill::PersonalDataManagerFactory::GetForProfile(
-          self.browser->GetProfile()->GetOriginalProfile());
+          self.profile->GetOriginalProfile());
 
   _mediator = [[AutofillAddCreditCardMediator alloc]
          initWithDelegate:self

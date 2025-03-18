@@ -1484,6 +1484,13 @@ struct EnumTraits<remoting::mojom::ProtocolErrorCode,
         return remoting::mojom::ProtocolErrorCode::kLoginScreenNotSupported;
       case ::remoting::protocol::ErrorCode::SESSION_POLICIES_CHANGED:
         return remoting::mojom::ProtocolErrorCode::kSessionPoliciesChanged;
+      case ::remoting::protocol::ErrorCode::UNEXPECTED_AUTHENTICATOR_ERROR:
+        return remoting::mojom::ProtocolErrorCode::
+            kUnexpectedAuthenticatorError;
+      case ::remoting::protocol::ErrorCode::INVALID_STATE:
+        return remoting::mojom::ProtocolErrorCode::kInvalidState;
+      case ::remoting::protocol::ErrorCode::INVALID_ARGUMENT:
+        return remoting::mojom::ProtocolErrorCode::kInvalidArgument;
     }
 
     NOTREACHED();
@@ -1567,6 +1574,15 @@ struct EnumTraits<remoting::mojom::ProtocolErrorCode,
         return true;
       case remoting::mojom::ProtocolErrorCode::kSessionPoliciesChanged:
         *out = ::remoting::protocol::ErrorCode::SESSION_POLICIES_CHANGED;
+        return true;
+      case remoting::mojom::ProtocolErrorCode::kUnexpectedAuthenticatorError:
+        *out = ::remoting::protocol::ErrorCode::UNEXPECTED_AUTHENTICATOR_ERROR;
+        return true;
+      case remoting::mojom::ProtocolErrorCode::kInvalidState:
+        *out = ::remoting::protocol::ErrorCode::INVALID_STATE;
+        return true;
+      case remoting::mojom::ProtocolErrorCode::kInvalidArgument:
+        *out = ::remoting::protocol::ErrorCode::INVALID_ARGUMENT;
         return true;
     }
 

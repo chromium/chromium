@@ -58,7 +58,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)

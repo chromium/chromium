@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/path_service.h"
@@ -30,7 +31,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "pdf/pdf_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -66,7 +66,7 @@ void PDFExtensionTestBase::SetUpOnMainThread() {
 }
 
 void PDFExtensionTestBase::TearDownOnMainThread() {
-  factory_ = absl::monostate();
+  factory_ = std::monostate();
   ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
   extensions::ExtensionApiTest::TearDownOnMainThread();
 }
@@ -225,7 +225,7 @@ TestGuestViewManager* PDFExtensionTestBase::GetGuestViewManagerForProfile(
   if (!profile) {
     profile = browser()->profile();
   }
-  return absl::get<std::unique_ptr<guest_view::TestGuestViewManagerFactory>>(
+  return std::get<std::unique_ptr<guest_view::TestGuestViewManagerFactory>>(
              factory_)
       ->GetOrCreateTestGuestViewManager(
           profile,
@@ -235,14 +235,14 @@ TestGuestViewManager* PDFExtensionTestBase::GetGuestViewManagerForProfile(
 pdf::TestPdfViewerStreamManager*
 PDFExtensionTestBase::GetTestPdfViewerStreamManager(
     content::WebContents* contents) {
-  return absl::get<std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>(
+  return std::get<std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>(
              factory_)
       ->GetTestPdfViewerStreamManager(contents);
 }
 
 void PDFExtensionTestBase::CreateTestPdfViewerStreamManager(
     content::WebContents* contents) {
-  absl::get<std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>(factory_)
+  std::get<std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>(factory_)
       ->CreatePdfViewerStreamManager(contents);
 }
 

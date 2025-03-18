@@ -15,6 +15,8 @@
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -36,6 +38,10 @@ class GraduationAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
   void SetUpOnMainThread() override {
     ash::SystemWebAppIntegrationTest::SetUpOnMainThread();
     logged_in_user_mixin_.LogInUser();
+    SetGraduationEnablement(/*is_enabled=*/true);
+    WaitForTestSystemAppInstall();
+    web_app::test::WaitUntilReady(
+        web_app::WebAppProvider::GetForTest(profile()));
   }
 
   void SetGraduationEnablement(bool is_enabled) {
@@ -57,8 +63,6 @@ class GraduationAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
 };
 
 IN_PROC_BROWSER_TEST_P(GraduationAppIntegrationTest, InstallGraduationApp) {
-  SetGraduationEnablement(/*is_enabled=*/true);
-
   const GURL url(ash::graduation::kChromeUIGraduationAppURL);
 
   // Install all enabled SWAs and validate that the Graduation App has the
@@ -68,13 +72,9 @@ IN_PROC_BROWSER_TEST_P(GraduationAppIntegrationTest, InstallGraduationApp) {
 }
 
 IN_PROC_BROWSER_TEST_P(GraduationAppIntegrationTest, RecordMetricsOnLaunch) {
-  SetGraduationEnablement(/*is_enabled=*/true);
-
   histogram_tester().ExpectUniqueSample(kFromChromeInternalHistogramName,
                                         apps::DefaultAppName::kGraduationApp,
                                         0);
-
-  WaitForTestSystemAppInstall();
 
   const GURL url(ash::graduation::kChromeUIGraduationAppURL);
   content::TestNavigationObserver observer(url);

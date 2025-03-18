@@ -90,10 +90,6 @@ void LegacyRenderWidgetHostHWND::UpdateParent(HWND new_parent) {
   // call altogether.
   const HWND current_parent = GetParent();
   if (current_parent != new_parent) {
-    if (auto* event_target = GetWindowEventTarget(current_parent)) {
-      event_target->HandleParentChanged();
-    }
-
     ::SetParent(hwnd(), new_parent);
 
     CreateDirectManipulationHelper();

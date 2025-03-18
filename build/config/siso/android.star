@@ -243,26 +243,8 @@ def __step_config(ctx, step_config):
                 "*.sql",
             ],
             "canonicalize_dir": True,
-            "remote": remote_run,
-            "platform_ref": "large",
-            "timeout": "10m",
-        },
-        {
-            "name": "android/trace_references",
-            "command_prefix": "python3 ../../build/android/gyp/tracereferences.py",
-            "handler": "android_trace_references",
-            "exclude_input_patterns": [
-                "*.a",
-                "*.cc",
-                "*.h",
-                "*.inc",
-                "*.info",
-                "*.o",
-                "*.pak",
-                "*.sql",
-            ],
-            "canonicalize_dir": True,
-            "remote": remote_run,
+            # Speculatively disabling for https://crbug.com/398058215
+            "remote": False,
             "platform_ref": "large",
             "timeout": "10m",
         },
@@ -436,55 +418,6 @@ def __android_proguard_handler(ctx, cmd):
         outputs = cmd.outputs + outputs,
     )
 
-def __android_trace_references_handler(ctx, cmd):
-    # Sample command:
-    # python3 ../../build/android/gyp/tracereferences.py \
-    #   --depfile gen/chrome/android/monochrome_public_bundle__dex.d \
-    #   --tracerefs-json gen/chrome/android/monochrome_public_bundle__dex.tracerefs.json \
-    #   --stamp obj/chrome/android/monochrome_public_bundle__dex.tracereferences.stamp --warnings-as-errors
-    # Sample tracerefs.json:
-    # {
-    #   "r8jar": "../../third_party/r8/cipd/lib/r8.jar",
-    #   "libs": [
-    #     "../../clank/third_party/android_system_sdk/src/android_system.jar",
-    #     "../../third_party/android_sdk/xr_extensions/com.android.extensions.xr.jar",
-    #     "obj/third_party/android_sdk/window_extensions/androidx_window_extensions_java.javac.jar"
-    #   ],
-    #   "jobs": [
-    #     {
-    #       "name": "",
-    #       "jars": [
-    #         "obj/chrome/android/monochrome_public_bundle__base_bundle_module/monochrome_public_bundle__base_bundle_module.r8dex.jar",
-    #         "obj/chrome/android/monochrome_public_bundle__chrome_bundle_module/monochrome_public_bundle__chrome_bundle_module.r8dex.jar",
-    #         "obj/chrome/android/monochrome_public_bundle__dev_ui_bundle_module/monochrome_public_bundle__dev_ui_bundle_module.r8dex.jar",
-    #         "obj/chrome/android/monochrome_public_bundle__stack_unwinder_bundle_module/monochrome_public_bundle__stack_unwinder_bundle_module.r8dex.jar",
-    #         "obj/chrome/android/monochrome_public_bundle__test_dummy_bundle_module/monochrome_public_bundle__test_dummy_bundle_module.r8dex.jar"
-    #       ]
-    #     },
-    #     {
-    #       "name": "base",
-    #       "jars": [
-    #         "obj/chrome/android/monochrome_public_bundle__base_bundle_module/monochrome_public_bundle__base_bundle_module.r8dex.jar"
-    #       ]
-    #     }
-    #   ]
-    # }
-    inputs = []
-    for i, arg in enumerate(cmd.args):
-        if arg == "--tracerefs-json":
-            tracerefs_json = json.decode(str(ctx.fs.read(ctx.fs.canonpath(cmd.args[i + 1]))))
-            break
-
-    for lib in tracerefs_json.get("libs", []):
-        inputs.append(ctx.fs.canonpath(lib))
-    for job in tracerefs_json.get("jobs", []):
-        for jar in job.get("jars", ""):
-            inputs.append(ctx.fs.canonpath(jar))
-
-    ctx.actions.fix(
-        inputs = cmd.inputs + inputs,
-    )
-
 def __android_turbine_handler(ctx, cmd):
     inputs = []
     for i, arg in enumerate(cmd.args):
@@ -557,7 +490,6 @@ __handlers = {
     "android_compile_resources": __android_compile_resources_handler,
     "android_dex": __android_dex_handler,
     "android_proguard": __android_proguard_handler,
-    "android_trace_references": __android_trace_references_handler,
     "android_turbine": __android_turbine_handler,
     "android_write_build_config": __android_write_build_config_handler,
 }

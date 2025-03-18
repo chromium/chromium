@@ -52,7 +52,7 @@ void NegotiatingClientAuthenticator::ProcessMessage(
   if (method != current_method_) {
     if (method_set_by_host_) {
       state_ = REJECTED;
-      rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
+      rejection_reason_ = RejectionReason::INVALID_STATE;
       rejection_details_ = RejectionDetails(
           "The host must not change methods after it has picked one.");
       std::move(resume_callback).Run();
@@ -61,7 +61,7 @@ void NegotiatingClientAuthenticator::ProcessMessage(
     if (method == AuthenticationMethod::INVALID ||
         !base::Contains(methods_, method)) {
       state_ = REJECTED;
-      rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
+      rejection_reason_ = RejectionReason::INVALID_STATE;
       rejection_details_ = RejectionDetails(
           "The host must pick a method that is valid and supported by the "
           "client.");

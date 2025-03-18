@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 
 #include <algorithm>
+#include <variant>
 
 #include "base/containers/contains.h"
 #include "base/containers/enum_set.h"
@@ -23,7 +24,6 @@
 #include "services/webnn/public/mojom/features.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_arg_min_max_options.h"
@@ -2881,7 +2881,7 @@ MLOperand* MLGraphBuilder::resample2d(ScriptState* script_state,
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
 
   const std::string label = options->label().Utf8();
-  absl::variant<base::span<const float>, base::span<const uint32_t>>
+  std::variant<base::span<const float>, base::span<const uint32_t>>
       scales_or_sizes;
   Vector<float> default_scales = {1.0, 1.0};
   if (options->hasSizes()) {

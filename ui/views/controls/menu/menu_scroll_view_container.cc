@@ -8,12 +8,12 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <variant>
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -114,7 +114,7 @@ class MenuScrollButton : public View {
         ui::NativeTheme::kMenuItemBackground, ui::NativeTheme::kNormal,
         GetLocalBounds(),
         ui::NativeTheme::ExtraParams(
-            absl::in_place_type<ui::NativeTheme::MenuItemExtraParams>));
+            std::in_place_type<ui::NativeTheme::MenuItemExtraParams>));
 
     // Then the arrow.
     const int x = width() / 2;

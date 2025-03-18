@@ -45,6 +45,7 @@
 <translation id="1652197001188145583">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt atļauju izmantot NFC ierīces. Kad šis slēdzis ir izslēgts, vietnes nevar izmantot NFC ierīces.</translation>
 <translation id="1660204651932907780">Atļaut vietnēm atskaņot skaņu (ieteicams)</translation>
 <translation id="1677097821151855053">Sīkfaili un citi vietnes dati tiek izmantoti, lai saglabātu jūsu datus un tos izmantotu, piemēram, kad pierakstāties, vai reklāmu personalizēšanai. Lai pārvaldītu visu vietņu sīkfailus, pārejiet uz sadaļu <ph name="BEGIN_LINK" />Iestatījumi<ph name="END_LINK" />.</translation>
+<translation id="1679305402657584804">Atļaut vietnēm izmantot NFC ierīces</translation>
 <translation id="1686785653877010442">Vietnēs parasti tiek sūtīti paziņojumi, lai informētu par svarīgiem jaunumiem vai tērzēšanas ziņojumiem.</translation>
 <translation id="169515064810179024">Bloķēt vietņu piekļuvi kustību sensoriem</translation>
 <translation id="1703666494654169921">Neļaut vietnēm izmantot jūsu virtuālās realitātes ierīces vai datus</translation>
@@ -84,6 +85,7 @@
 <translation id="2185965788978862351">Tiks izdzēsti dati un sīkfaili <ph name="DATASIZE" /> apjomā, ko vietnes vai lietotnes glabā jūsu sākuma ekrānā.</translation>
 <translation id="2194856509914051091">Svarīgi apsvērumi</translation>
 <translation id="2215727959747642672">Faila rediģēšana</translation>
+<translation id="2218389616572918761">Atļaut vietnēm piekļūt mikrofonam</translation>
 <translation id="2228071138934252756">Lai atļautu lietotnei <ph name="APP_NAME" /> piekļūt jūsu kamerai, ieslēdziet kameru arī <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Trešo pušu sīkfaili ir bloķēti</translation>
 <translation id="2238944249568001759">Pamatojoties uz jūsu pēdējo cilni, ieteiktie meklēšanas vaicājumi</translation>
@@ -132,8 +134,10 @@
 <translation id="2726059656860238749">Varat palaist Chrome ar fokusētu universālo lodziņu, samazinot palaišanas laiku zemākas veiktspējas ierīcēs.</translation>
 <translation id="2750481671343847896">Vietnēs drīkst rādīt pierakstīšanās uzvednes, ko nodrošina identitātes pakalpojumi.</translation>
 <translation id="2787357173144933081">Ātrāk palaist universālo lodziņu</translation>
+<translation id="2789132527330338807">Atļaut vietnēm izveidot jūsu apkārtnes 3D karti vai izsekot kameras pozīciju</translation>
 <translation id="2790501146643349491">Kad šis slēdzis ir ieslēgts, nesen aizvērtās vietnes var pabeigt datu sūtīšanu un saņemšanu. Kad šis slēdzis ir izslēgts, nesen aizvērtās vietnes nevar pabeigt datu sūtīšanu vai saņemšanu.</translation>
 <translation id="2795716239552913152">Parasti vietnēs atrašanās vietas dati tiek izmantoti, lai nodrošinātu atbilstošas funkcijas vai informāciju, piemēram, vietējās ziņas vai informāciju par tuvumā esošajiem veikaliem.</translation>
+<translation id="2802908157808345702">Neļaut vietnēm sūtīt uznirstošos elementus un izmantot novirzīšanu</translation>
 <translation id="2814830417943086299">Tagad Chrome rāda jūsu nesen atvērtās cilnes ierīces lietotņu sarakstā un meklēšanas rezultātos. Chrome iestatījumos varat jebkurā laikā izslēgt šo funkciju.</translation>
 <translation id="2822354292072154809">Vai tiešām vēlaties atiestatīt visas vietņu atļaujas, kas piešķirtas šim objektam: <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Pieprasiet skatu mobilajā ierīcē</translation>
@@ -274,6 +278,7 @@
 <translation id="4598549027014564149">Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbības vietnēs, pat saistītajās vietnēs. Jūsu pārlūkošanas darbības netiek izmantotas, piemēram, reklāmu personalizēšanai. Noteiktās vietnēs funkcijas var nedarboties.</translation>
 <translation id="461356340001513807">Ļauj jums pierakstīties vietnēs, izmantojot kontu, kuram darbojas identitātes pakalpojums.</translation>
 <translation id="4619615317237390068">Cilnes no citām ierīcēm</translation>
+<translation id="4635969503923889910">Neļaut vietnēm izmantot NFC ierīces</translation>
 <translation id="4644713492825682049">Dzēst un atiestatīt</translation>
 <translation id="4645575059429386691">Pārvalda viens no jūsu vecākiem</translation>
 <translation id="4670064810192446073">Virtuālā realitāte</translation>
@@ -372,6 +377,7 @@
 <translation id="5877248419911025165">Sakļaut visus pieprasījumus</translation>
 <translation id="5884085660368669834">Vietnes preference</translation>
 <translation id="5887687176710214216">Pēdējoreiz apmeklēta vakar</translation>
+<translation id="5908617755156109052">Neļaut vietnēm izveidot jūsu apkārtnes 3D karti vai izsekot kameras pozīciju</translation>
 <translation id="5916664084637901428">Iesl.</translation>
 <translation id="5922853908706496913">Notiek jūsu ekrāna kopīgošana</translation>
 <translation id="5922967540311291836">Bloķēt trešo pušu sīkfailus:</translation>
@@ -582,6 +588,7 @@
 <translation id="8676374126336081632">Notīrīt ievadi</translation>
 <translation id="8681886425883659911">Reklāmas tiek bloķētas vietnēs, kurās ir konstatēta traucējošu vai maldinošu reklāmu rādīšana</translation>
 <translation id="868929229000858085">Meklējiet kontaktpersonas</translation>
+<translation id="8707904142362025782">Atļaut vietnēm piekļūt kamerai</translation>
 <translation id="8712637175834984815">Sapratu!</translation>
 <translation id="8715862698998036666">Lai izietu no pilnekrāna režīma, velciet no augšas un no ekrāna kreisās vai labās malas.</translation>
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" /> ieslēdziet atļauju lietotnei <ph name="APP_NAME" />.</translation>

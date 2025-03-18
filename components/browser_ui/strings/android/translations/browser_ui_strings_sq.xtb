@@ -45,6 +45,7 @@
 <translation id="1652197001188145583">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të përdorin pajisjet me NFC. Kur cilësimi është joaktiv, sajtet nuk mund të përdorin pajisjet me NFC.</translation>
 <translation id="1660204651932907780">Lejo që sajtet të luajnë tinguj (rekomandohet)</translation>
 <translation id="1677097821151855053">Kukit dhe të dhënat e tjera të sajtit përdoren për të të kujtuar ty, për shembull për të të identifikuar ose për të personalizuar reklamat. Për të menaxhuar kukit për të gjitha sajtet, shiko <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" />.</translation>
+<translation id="1679305402657584804">Sajtet mund të kërkojnë që të përdorin pajisjet me NFC</translation>
 <translation id="1686785653877010442">Sajtet zakonisht dërgojnë njoftime për të të njoftuar rreth lajmeve të fundit ose mesazheve të bisedës.</translation>
 <translation id="169515064810179024">Bllokojua faqeve hapjen e sensorëve të lëvizjes</translation>
 <translation id="1703666494654169921">Mos lejo që sajtet të përdorin të dhënat ose pajisjet e realitetit virtual</translation>
@@ -84,6 +85,7 @@
 <translation id="2185965788978862351">Kjo do të fshijë <ph name="DATASIZE" /> të dhëna dhe kuki të ruajtura nga sajtet ose nga aplikacionet në ekranin bazë.</translation>
 <translation id="2194856509914051091">Gjëra për t'u pasur parasysh</translation>
 <translation id="2215727959747642672">Modifikimi i skedarëve</translation>
+<translation id="2218389616572918761">Sajtet mund të kërkojnë që të përdorin mikrofonin</translation>
 <translation id="2228071138934252756">Për të lejuar që <ph name="APP_NAME" /> të ketë qasje te kamera jote, aktivizo gjithashtu kamerën në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Kukit e palëve të treta janë bllokuar</translation>
 <translation id="2238944249568001759">Kërkimet e sugjeruara bazuar në skedën tënde të fundit</translation>
@@ -132,8 +134,10 @@
 <translation id="2726059656860238749">Hap Chrome me fokusin tek omnibox-i, duke zvogëluar kohën e nisjes në pajisjet e nivelit të ulët.</translation>
 <translation id="2750481671343847896">Sajtet mund të shfaqin kërkesat për identifikim nga shërbimet e identitetit.</translation>
 <translation id="2787357173144933081">Nis me shpejti omnibox-in</translation>
+<translation id="2789132527330338807">Sajtet mund të kërkojnë të krijojnë një hartë 3D të ambientit tënd rrethues ose të monitorojnë pozicionin e kamerës</translation>
 <translation id="2790501146643349491">Kur cilësimi është aktiv, sajtet e mbyllura së fundi mund të përfundojnë dërgimin dhe marrjen e të dhënave. Kur cilësimi është joaktiv, sajtet e mbyllura së fundi nuk mund të përfundojnë dërgimin ose marrjen e të dhënave.</translation>
 <translation id="2795716239552913152">Sajtet përdorin zakonisht vendndodhjen tënde për veçori ose informacione përkatëse, si p.sh. lajmet lokale ose dyqanet në afërsi</translation>
+<translation id="2802908157808345702">Mos lejo që sajtet të dërgojnë dritare kërcyese apo të përdorin ridrejtimet</translation>
 <translation id="2814830417943086299">Chrome tani shfaq skedat e tua të fundit në listën e aplikacioneve dhe rezultatet e kërkimit të pajisjes sate. Mund ta çaktivizosh këtë në çdo kohë te cilësimet e Chrome.</translation>
 <translation id="2822354292072154809">Je i sigurt që dëshiron t'i rivendosësh të gjitha lejet e sajtit për <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Kërko pamjen për celular</translation>
@@ -274,6 +278,7 @@
 <translation id="4598549027014564149">Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit e tua për të parë aktivitetin e shfletimit nëpër sajte të ndryshme, as edhe në sajtet e ngjashme. Aktiviteti yt i shfletimit nuk përdoret për gjëra të tilla si p.sh. personalizimi i reklamave. Veçoritë në disa sajte mund të mos funksionojnë.</translation>
 <translation id="461356340001513807">Të lejon që të identifikohesh në uebsajte duke përdorur llogarinë që ke me një shërbim identiteti</translation>
 <translation id="4619615317237390068">Skedat nga pajisjet e tjera</translation>
+<translation id="4635969503923889910">Mos lejo që sajtet të përdorin pajisjet me NFC</translation>
 <translation id="4644713492825682049">Fshi dhe rivendos</translation>
 <translation id="4645575059429386691">Menaxhohet nga prindi yt</translation>
 <translation id="4670064810192446073">Realiteti virtual</translation>
@@ -372,6 +377,7 @@
 <translation id="5877248419911025165">Palos të gjitha kërkesat</translation>
 <translation id="5884085660368669834">Preferenca e sajtit</translation>
 <translation id="5887687176710214216">Vizituar së fundi dje</translation>
+<translation id="5908617755156109052">Mos lejo që sajtet të krijojnë një hartë 3D të ambientit tënd rrethues apo të monitorojnë pozicionin e kamerës</translation>
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="5922853908706496913">Po ndan ekranin tënd</translation>
 <translation id="5922967540311291836">Blloko kukit e palëve të treta</translation>
@@ -582,6 +588,7 @@
 <translation id="8676374126336081632">Pastro hyrjen</translation>
 <translation id="8681886425883659911">Reklama që janë bllokuar në sajte që dihet se shfaqin reklama ndërhyrëse ose mashtruese</translation>
 <translation id="868929229000858085">Kërko te kontaktet e tua</translation>
+<translation id="8707904142362025782">Sajtet mund të kërkojnë që të përdorin kamerën</translation>
 <translation id="8712637175834984815">E kuptova</translation>
 <translation id="8715862698998036666">Zvarrit nga pjesa e sipërme ose rrëshqit shpejt nga skaji i majtë ose i djathtë për të dalë nga ekrani i plotë.</translation>
 <translation id="8719283222052720129">Aktivizo lejen për <ph name="APP_NAME" /> në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>

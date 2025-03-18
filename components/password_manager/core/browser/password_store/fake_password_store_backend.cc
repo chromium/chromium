@@ -8,6 +8,7 @@
 #include <iterator>
 #include <optional>
 #include <utility>
+#include <variant>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -29,13 +30,13 @@ void InjectAffiliationAndBrandingInformation(
     LoginsOrErrorReply callback,
     LoginsResultOrError forms_or_error) {
   if (!match_helper ||
-      absl::holds_alternative<PasswordStoreBackendError>(forms_or_error) ||
-      absl::get<LoginsResult>(forms_or_error).empty()) {
+      std::holds_alternative<PasswordStoreBackendError>(forms_or_error) ||
+      std::get<LoginsResult>(forms_or_error).empty()) {
     std::move(callback).Run(std::move(forms_or_error));
     return;
   }
   match_helper->InjectAffiliationAndBrandingInformation(
-      std::move(absl::get<LoginsResult>(forms_or_error)), std::move(callback));
+      std::move(std::get<LoginsResult>(forms_or_error)), std::move(callback));
 }
 
 }  // namespace

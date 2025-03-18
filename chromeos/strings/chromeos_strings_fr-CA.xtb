@@ -513,7 +513,6 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="3373141842870501561">Fond d'écran Earth Flow</translation>
 <translation id="33736539805963175">Un arrière-plan <ph name="LETTERS_COLOR" /> avec la lettre <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Exclusif</translation>
-<translation id="3395147534045164351">Basculer l'emplacement de l'aperçu</translation>
 <translation id="3404249063913988450">Activer l'écran de veille</translation>
 <translation id="3413935475507503304">Pour lancer la mise à jour, cliquez sur Suivant.</translation>
 <translation id="3428551088151258685">extérieur</translation>
@@ -1395,6 +1394,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="7388345524791662148">Plus d'options pour <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Pavé tactile intégré</translation>
 <translation id="7397270852490618635">Désactiver le thème clair</translation>
+<translation id="7400166052988585408">Votre enseignant verrouillera votre écran dans <ph name="NUM_SECONDS" /> secondes</translation>
 <translation id="7401543881546089382">Supprimer le raccourci</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> est prêt à être mis à jour</translation>
 <translation id="741244894080940828">conversion</translation>

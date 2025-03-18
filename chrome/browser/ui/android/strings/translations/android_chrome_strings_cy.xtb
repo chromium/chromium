@@ -432,7 +432,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2981364137500752533">Gallwch gael hyd at 5 ffenestr.</translation>
 <translation id="2983102365694924129">Yn seiliedig ar eich gweithgarwch ar wefan. Mae'r gosodiad hwn wedi'i ddiffodd.</translation>
 <translation id="2984978667043170458">Cynnwys testun o'i amgylch mewn chwiliadau Google</translation>
-<translation id="2988638966064514052">Cryfhau eich cyfrineiriau</translation>
 <translation id="2989523299700148168">Ymwelwyd yn ddiweddar</translation>
 <translation id="2992473221983447149">Disgrifiadau lluniau</translation>
 <translation id="2996291259634659425">Crëwch gyfrinymadrodd</translation>
@@ -548,7 +547,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3557336313807607643">Ychwanegu at gysylltiadau</translation>
 <translation id="3563767357928833671">Dangosir cynnwys y clipfwrdd</translation>
 <translation id="3566639033325271639">Diweddaru'r gosodiadau</translation>
-<translation id="3568945271227339929">Dim cyfrineiriau sydd wedi'u darganfod</translation>
 <translation id="3575464060651642446">Wrthi'n gwirio cyfrineiriau ar y ddyfais hon…</translation>
 <translation id="3577473026931028326">Aeth rhywbeth o'i le. Rhowch gynnig arall arni.</translation>
 <translation id="3577558748185201054">Rheoli eich diddordebau a'ch dewisiadau</translation>
@@ -1055,7 +1053,6 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="5958275228015807058">Gallwch ddod o hyd i'ch ffeiliau a'ch tudalennau yn Lawrlwythiadau</translation>
 <translation id="5958994127112619898">Symleiddio'r dudalen</translation>
 <translation id="5962718611393537961">Tapiwch i grebachu</translation>
-<translation id="5964180026566797835">Methu â gwirio cyfrineiriau</translation>
 <translation id="5964869237734432770">Stopio disgrifio lluniau</translation>
 <translation id="5977976211062815271">Ar y ddyfais hon</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 dudalen ar eich rhestr ddarllen}zero{# tudalen ar eich rhestr ddarllen}two{# dudalen ar eich rhestr ddarllen}few{# tudalen ar eich rhestr ddarllen}many{# tudalen ar eich rhestr ddarllen}other{# tudalen ar eich rhestr ddarllen}}</translation>
@@ -1099,6 +1096,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="6150320133806434356">Cadwyd nod tudalen</translation>
 <translation id="6150706324143004339">I ddefnyddio a chadw data Chrome yn eich Cyfrif Google, diweddarwch Chrome</translation>
 <translation id="6154478581116148741">Trowch y clo sgrîn ymlaen yn y Gosodiadau i allforio'ch cyfrineiriau o'r ddyfais hon</translation>
+<translation id="6156323911414505561">Dangos y bar nodau tudalen</translation>
 <translation id="6162892189396105610">Yn rhaglwytho tudalennau y mae Chrome yn credu eich bod yn debygol o ymweld â nhw.</translation>
 <translation id="6170675927290506430">Ewch i osodiadau hysbysiad</translation>
 <translation id="6186394685773237175">Heb ganfod unrhyw gyfrineiriau sydd dan fygythiad</translation>

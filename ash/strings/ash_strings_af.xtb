@@ -166,6 +166,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1505542291183484463">Verander grootte van geteëlde venster afwaarts</translation>
 <translation id="1510238584712386396">Lanseerder</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Wys kennisgewinginstellings. Kennisgewings is af vir 'n program}other{Wys kennisgewinginstellings. Kennisgewings is af vir # programme}}</translation>
+<translation id="1521655867290435174">Google Blaaie</translation>
 <translation id="1523032696246003">Battery <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> tot vol</translation>
 <translation id="1525508553941733066">MAAK TOE</translation>
 <translation id="1526448108126799339">Maak nuwe oortjie in nuwe venster oop</translation>
@@ -345,7 +346,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2201071101391734388">Onlangse foto <ph name="INDEX" /> van <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Vou Google Take in</translation>
 <translation id="2208323208084708176">Verenigde werkskermmodus</translation>
-<translation id="2220572644011485463">PIN of wagwoord</translation>
 <translation id="2222841058024245321">Lessenaar 7</translation>
 <translation id="2223384056430485343">In ’n verdeelde skerm</translation>
 <translation id="2224075387478458881">Skermopname word nie toegelaat wanneer beskermde inhoud sigbaar is nie</translation>
@@ -1830,7 +1830,6 @@ Nuwe installasie</translation>
 <translation id="7000027735917578303">Windows- en lessenaarinstellings</translation>
 <translation id="7004910047186208204">Koppel aan mobiele data</translation>
 <translation id="7005239792648594238">Maak ’n program oop om te begin</translation>
-<translation id="7007983414944123363">Jou PIN of wagwoord kon nie geverifieer word nie. Probeer weer.</translation>
 <translation id="7014684956566476813">Gekoppel aan 'n toestel genaamd <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Kom terug om <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Lessenaar 6</translation>
@@ -2467,6 +2466,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="9168436347345867845">Doen dit later</translation>
 <translation id="9178475906033259337">Wys tans 1 resultaat vir <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Met hierdie kenmerk kan jy vinnig toegang tot enige aangemelde gebruiker kry sonder dat 'n wagwoord nodig is. Gebruik hierdie kenmerk net met rekeninge wat jy vertrou.</translation>
+<translation id="9183302530794969518">Google Dokumente</translation>
 <translation id="9183456764293710005">Volskermvergrootglas</translation>
 <translation id="9192133205265227850">Gebruik "<ph name="DEVICE_NAME" />"</translation>
 <translation id="9193626018745640770">Saai tans op 'n onbekende ontvanger uit</translation>

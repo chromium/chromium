@@ -9728,6 +9728,7 @@ from previous Chrome versions.
       label="AutofillEnableCardBenefitsForAmericanExpress:enabled"/>
   <int value="-1707563271" label="LauncherLocalImageSearchRelevance:disabled"/>
   <int value="-1706483123" label="VmStatusPage:enabled"/>
+  <int value="-1705594316" label="EnablePendingModePasswordsPromo:enabled"/>
   <int value="-1704858964" label="DefaultSiteInstanceGroups:disabled"/>
   <int value="-1704630681" label="MediaAppPdfA11yOcr:enabled"/>
   <int value="-1704472714" label="UseMessagesGoogleComDomain:disabled"/>
@@ -16957,6 +16958,8 @@ from previous Chrome versions.
   <int value="1121848336" label="UseNetworkFrameworkForLocalDiscovery:enabled"/>
   <int value="1121879933" label="CrosPrivacyHubAppPermissions:enabled"/>
   <int value="1122217615" label="PasswordGenerationBottomSheet:enabled"/>
+  <int value="1122327201"
+      label="MediaFoundationCameraUsageMonitoring:disabled"/>
   <int value="1122820469" label="ArcImageCopyPasteCompat:enabled"/>
   <int value="1122825280" label="FontationsFontBackend:enabled"/>
   <int value="1123140537" label="tab-link-drag-drop:disabled"/>
@@ -17370,6 +17373,7 @@ from previous Chrome versions.
   <int value="1281379527" label="AmbientSubpageUIChange:enabled"/>
   <int value="1281399380" label="NetworkServiceSandbox:disabled"/>
   <int value="1281471853" label="UseButtonTranslateBubbleUI:disabled"/>
+  <int value="1281582408" label="EnablePendingModePasswordsPromo:disabled"/>
   <int value="1282551250" label="IgnoreHoverEventAnr:enabled"/>
   <int value="1282810683" label="DirectSocketsInSharedWorkers:enabled"/>
   <int value="1283205498" label="FasterSplitScreenSetup:disabled"/>
@@ -18127,6 +18131,7 @@ from previous Chrome versions.
   <int value="1563267770"
       label="FencedFramesReportingAttestationsChanges:disabled"/>
   <int value="1565467134" label="AccessibilityShakeToLocate:enabled"/>
+  <int value="1565630921" label="MediaFoundationCameraUsageMonitoring:enabled"/>
   <int value="1567695310" label="CrostiniBullseyeUpgrade:disabled"/>
   <int value="1567839560"
       label="ChromeHomePersonalizedOmniboxSuggestions:disabled"/>

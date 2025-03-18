@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chromeos/ash/components/telemetry_extension/events/telemetry_event_service_ash.h"
@@ -65,6 +66,7 @@ class TelemetryExtensionEventManagerTest : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
+    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
     fake_events_service_factory_.SetCreateInstanceResponse(
         std::make_unique<FakeEventsService>());

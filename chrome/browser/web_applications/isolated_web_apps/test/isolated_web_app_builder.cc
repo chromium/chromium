@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <variant>
 
 #include "base/base_paths.h"
 #include "base/containers/to_value_list.h"
@@ -51,7 +52,6 @@
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "skia/ext/codec_utils.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
@@ -175,7 +175,7 @@ base::expected<IsolatedWebAppUrlInfo, std::string> Install(
 
 web_package::SignedWebBundleId CreateSignedWebBundleIdFromKeyPair(
     const web_package::test::KeyPair& key_pair) {
-  return absl::visit(
+  return std::visit(
       [](const auto& key_pair) {
         return web_package::SignedWebBundleId::CreateForPublicKey(
             key_pair.public_key);
@@ -437,7 +437,7 @@ scoped_refptr<net::HttpResponseHeaders>
 IsolatedWebAppBuilder::Resource::headers(std::string_view resource_path) const {
   scoped_refptr<net::HttpResponseHeaders> http_headers;
 
-  if (const base::FilePath* path = absl::get_if<base::FilePath>(&body_)) {
+  if (const base::FilePath* path = std::get_if<base::FilePath>(&body_)) {
     base::FilePath headers_path(
         path->AddExtension(net::test_server::kMockHttpHeadersExtension));
     if (base::PathExists(headers_path)) {
@@ -463,13 +463,13 @@ IsolatedWebAppBuilder::Resource::headers(std::string_view resource_path) const {
 
   if (!has_content_type) {
     base::FilePath file_path =
-        absl::visit(base::Overloaded{
-                        [&](const std::string&) {
-                          return base::FilePath::FromUTF8Unsafe(resource_path);
-                        },
-                        [&](const base::FilePath& path) { return path; },
-                    },
-                    body_);
+        std::visit(base::Overloaded{
+                       [&](const std::string&) {
+                         return base::FilePath::FromUTF8Unsafe(resource_path);
+                       },
+                       [&](const base::FilePath& path) { return path; },
+                   },
+                   body_);
     std::string content_type = net::test_server::GetContentType(file_path);
     if (content_type.empty()) {
       LOG(WARNING) << "Could not infer the Content-Type of " << file_path
@@ -483,15 +483,15 @@ IsolatedWebAppBuilder::Resource::headers(std::string_view resource_path) const {
 }
 
 std::string IsolatedWebAppBuilder::Resource::body() const {
-  return absl::visit(base::Overloaded{
-                         [&](const std::string& content) { return content; },
-                         [&](const base::FilePath& path) {
-                           std::string content;
-                           CHECK(base::ReadFileToString(path, &content));
-                           return content;
-                         },
-                     },
-                     body_);
+  return std::visit(base::Overloaded{
+                        [&](const std::string& content) { return content; },
+                        [&](const base::FilePath& path) {
+                          std::string content;
+                          CHECK(base::ReadFileToString(path, &content));
+                          return content;
+                        },
+                    },
+                    body_);
 }
 
 IsolatedWebAppBuilder::IsolatedWebAppBuilder(

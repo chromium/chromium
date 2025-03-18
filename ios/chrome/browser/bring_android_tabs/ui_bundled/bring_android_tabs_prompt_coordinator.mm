@@ -28,8 +28,8 @@ void SetModalPresentationStyle(UIViewController* view_controller) {
   presentation_controller.widthFollowsPreferredContentSizeWhenEdgeAttached =
       YES;
   presentation_controller.detents = @[
-    UISheetPresentationControllerDetent.mediumDetent,
-    UISheetPresentationControllerDetent.largeDetent,
+    [UISheetPresentationControllerDetent mediumDetent],
+    [UISheetPresentationControllerDetent largeDetent],
   ];
   presentation_controller.preferredCornerRadius = kHalfSheetCornerRadius;
 }
@@ -44,8 +44,7 @@ void SetModalPresentationStyle(UIViewController* view_controller) {
 
 - (void)start {
   BringAndroidTabsToIOSService* service =
-      BringAndroidTabsToIOSServiceFactory::GetForProfileIfExists(
-          self.browser->GetProfile());
+      BringAndroidTabsToIOSServiceFactory::GetForProfileIfExists(self.profile);
   _mediator = [[BringAndroidTabsPromptMediator alloc]
       initWithBringAndroidTabsService:service
                             URLLoader:UrlLoadingBrowserAgent::FromBrowser(

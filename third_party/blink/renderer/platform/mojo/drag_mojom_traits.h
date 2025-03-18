@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <optional>
+#include <variant>
 #include <vector>
 
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -16,7 +17,6 @@
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/bindings/union_traits.h"
 #include "services/network/public/mojom/referrer_policy.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/data_transfer/data_transfer.mojom-shared.h"
 #include "third_party/blink/public/mojom/drag/drag.mojom-shared.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom-blink.h"
@@ -90,19 +90,19 @@ struct PLATFORM_EXPORT
     UnionTraits<blink::mojom::DragItemDataView, blink::WebDragData::Item> {
   static const blink::WebDragData::StringItem& string(
       const blink::WebDragData::Item& item) {
-    return absl::get<blink::WebDragData::StringItem>(item);
+    return std::get<blink::WebDragData::StringItem>(item);
   }
   static const blink::WebDragData::FilenameItem& file(
       const blink::WebDragData::Item& item) {
-    return absl::get<blink::WebDragData::FilenameItem>(item);
+    return std::get<blink::WebDragData::FilenameItem>(item);
   }
   static const blink::WebDragData::BinaryDataItem& binary(
       const blink::WebDragData::Item& item) {
-    return absl::get<blink::WebDragData::BinaryDataItem>(item);
+    return std::get<blink::WebDragData::BinaryDataItem>(item);
   }
   static const blink::WebDragData::FileSystemFileItem& file_system_file(
       const blink::WebDragData::Item& item) {
-    return absl::get<blink::WebDragData::FileSystemFileItem>(item);
+    return std::get<blink::WebDragData::FileSystemFileItem>(item);
   }
   static bool Read(blink::mojom::DragItemDataView data,
                    blink::WebDragData::Item* out);

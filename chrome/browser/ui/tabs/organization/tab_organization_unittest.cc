@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <variant>
 
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
@@ -448,22 +449,20 @@ TEST_F(TabOrganizationTest, TabOrganizationChangingCurrentName) {
   std::u16string name_0 = u"name_0";
   std::u16string name_1 = u"name_1";
   TabOrganization organization({}, {name_0, name_1});
-  EXPECT_TRUE(absl::holds_alternative<size_t>(organization.current_name()));
-  EXPECT_EQ(static_cast<int>(absl::get<size_t>(organization.current_name())),
-            0);
+  EXPECT_TRUE(std::holds_alternative<size_t>(organization.current_name()));
+  EXPECT_EQ(static_cast<int>(std::get<size_t>(organization.current_name())), 0);
   EXPECT_EQ(organization.GetDisplayName(), name_0);
 
   organization.SetCurrentName(1u);
-  EXPECT_TRUE(absl::holds_alternative<size_t>(organization.current_name()));
-  EXPECT_EQ(static_cast<int>(absl::get<size_t>(organization.current_name())),
-            1);
+  EXPECT_TRUE(std::holds_alternative<size_t>(organization.current_name()));
+  EXPECT_EQ(static_cast<int>(std::get<size_t>(organization.current_name())), 1);
   EXPECT_EQ(organization.GetDisplayName(), name_1);
 
   std::u16string custom_name = u"custom_name";
   organization.SetCurrentName(custom_name);
   EXPECT_TRUE(
-      absl::holds_alternative<std::u16string>(organization.current_name()));
-  EXPECT_EQ((absl::get<std::u16string>(organization.current_name())),
+      std::holds_alternative<std::u16string>(organization.current_name()));
+  EXPECT_EQ((std::get<std::u16string>(organization.current_name())),
             custom_name);
   EXPECT_EQ(organization.GetDisplayName(), custom_name);
 }

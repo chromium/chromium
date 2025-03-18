@@ -224,6 +224,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     if (!state.actInFocusedTabEnabled) {
       (this as GlicBrowserHost).actInFocusedTab = undefined;
     }
+
+    if (!state.dragResizeEnabled) {
+      (this as GlicBrowserHost).enableDragResize = undefined;
+    }
   }
 
   webClientInitialized(
@@ -316,6 +320,11 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   }): Promise<void> {
     return this.sender.requestWithResponse(
         'glicBrowserResizeWindow', {size: {width, height}, options});
+  }
+
+  enableDragResize(enabled: boolean): Promise<void> {
+    return this.sender.requestWithResponse(
+        'glicBrowserEnableDragResize', {enabled});
   }
 
   async captureScreenshot(): Promise<Screenshot> {

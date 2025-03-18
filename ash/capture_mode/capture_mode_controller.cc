@@ -83,6 +83,7 @@
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/url_util.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -146,6 +147,7 @@ constexpr char kUsesDefaultCapturePathPrefName[] =
     "ash.capture_mode.uses_default_capture_path";
 
 constexpr char kShareToYouTubeURL[] = "https://youtube.com/upload";
+constexpr char kLensWebQFMetadataURL[] = "https://lens.google.com/qfmetadata";
 
 // TODO: crbug.com/388287849 - Clear this pref.
 // The name of a boolean pref that determines whether we can show the demo tools
@@ -182,6 +184,23 @@ constexpr int kNoMessage = -1;
 // The default HTTP status code we set if the response header does not contain
 // a successful status code.
 constexpr int kHttpPostFailNoConnection = -1;
+
+// The expected message id for the query forumlation metadata response body.
+constexpr char kQFMetadataResponseMessageId[] =
+    "fetch_query_formulation_metadata_response";
+
+// Query Formulation Metadata Response constants.
+constexpr int kQFMetadataResponseMinSize = 3;
+constexpr int kQFMetadataResponseFieldMessageIdIdx = 0;
+constexpr int kQFMetadataResponseFieldDetectedText = 2;
+constexpr int kDetectedTextFieldTextLayout = 0;
+constexpr int kTextLayoutFieldParagraphs = 0;
+constexpr int kParagraphMinSize = 2;
+constexpr int kParagraphFieldLines = 1;
+constexpr int kLineFieldWords = 0;
+constexpr int kWordMinSize = 3;
+constexpr int kWordFieldPlainText = 1;
+constexpr int kWordFieldTextSeparator = 2;
 
 // TODO: crbug.com/399425007 - Properly define this annotation.
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
@@ -2145,7 +2164,7 @@ void CaptureModeController::OnImageCapturedForSearch(
   if (features::IsSunfishLensWebEnabled()) {
     const gfx::Image image = gfx::Image::CreateFrom1xBitmap(bitmap);
     delegate_->GetPrimaryAccountAccessToken(base::BindRepeating(
-        &CaptureModeController::OnPrimaryAccountAccessTokenAvailable,
+        &CaptureModeController::OnAccessTokenAvailableForImageSearch,
         weak_ptr_factory_.GetWeakPtr(), image, image_search_token));
     return;
   }
@@ -2164,7 +2183,7 @@ void CaptureModeController::OnImageCapturedForSearch(
 
 // TODO: crbug.com/395939382 - Implement the resource request once a valid
 // `access_token` is returned.
-void CaptureModeController::OnPrimaryAccountAccessTokenAvailable(
+void CaptureModeController::OnAccessTokenAvailableForImageSearch(
     const gfx::Image& original_image,
     base::WeakPtr<BaseCaptureModeSession> image_search_token,
     const std::string& access_token) {
@@ -2240,14 +2259,45 @@ void CaptureModeController::OnPrimaryAccountAccessTokenAvailable(
 
   simple_url_loader_ptr->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
-      base::BindOnce(&CaptureModeController::OnDispatchComplete,
+      base::BindOnce(&CaptureModeController::OnDispatchCompleteForImageSearch,
                      weak_ptr_factory_.GetWeakPtr(),
-                     simple_url_loader_ptr->GetWeakPtr(), image_search_token));
+                     simple_url_loader_ptr->GetWeakPtr(), image_search_token,
+                     access_token));
 }
 
-void CaptureModeController::OnDispatchComplete(
+void CaptureModeController::OnAccessTokenAvailableForCopyText(
+    std::string vsr_id,
+    base::WeakPtr<BaseCaptureModeSession> image_search_token,
+    const std::string& access_token) {
+  // Create a new GET request for the text metadata.
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->headers.SetHeader(
+      net::HttpRequestHeaders::kAuthorization,
+      base::StringPrintf("Bearer %s", access_token.c_str()));
+
+  GURL text_url(kLensWebQFMetadataURL);
+  text_url = net::AppendOrReplaceQueryParameter(text_url, "vsrid", vsr_id);
+  resource_request->url = text_url;
+
+  std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
+      network::SimpleURLLoader::Create(std::move(resource_request),
+                                       kTrafficAnnotation);
+  network::SimpleURLLoader* simple_url_loader_ptr = simple_url_loader.get();
+  uploads_in_progress_.insert(uploads_in_progress_.begin(),
+                              std::move(simple_url_loader));
+
+  simple_url_loader_ptr->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+      url_loader_factory_.get(),
+      base::BindOnce(&CaptureModeController::OnDispatchCompleteForCopyText,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     simple_url_loader_ptr->GetWeakPtr(), image_search_token,
+                     access_token));
+}
+
+void CaptureModeController::OnDispatchCompleteForImageSearch(
     base::WeakPtr<const network::SimpleURLLoader> url_loader,
     base::WeakPtr<BaseCaptureModeSession> image_search_token,
+    const std::string& access_token,
     std::unique_ptr<std::string> response_body) {
   absl::Cleanup deferred_runner = [this, url_loader]() {
     uploads_in_progress_.remove_if(base::MatchesUniquePtr(url_loader.get()));
@@ -2278,7 +2328,163 @@ void CaptureModeController::OnDispatchComplete(
 
   // Pass in an empty image, as the Lens Web API uses its own thumbnail from the
   // image we uploaded previously.
-  ShowSearchResultsPanel(gfx::ImageSkia(), simple_url_loader->GetFinalURL());
+  const GURL final_url = simple_url_loader->GetFinalURL();
+  ShowSearchResultsPanel(gfx::ImageSkia(), final_url);
+
+  // No other actions to take if we are not using the Lens Web API for Copy
+  // Text.
+  if (!features::IsSunfishLensWebCopyTextEnabled()) {
+    return;
+  }
+
+  // Get the vsr ID from the redirect URL so it can be used again in the
+  // /qfmetadata request.
+  std::string vsr_id;
+  if (!net::GetValueForKeyInQuery(final_url, "vsrid", &vsr_id)) {
+    return;
+  }
+
+  // Get a new access token, as they are short lived and we don't want to risk
+  // the original expiring.
+  delegate_->GetPrimaryAccountAccessToken(base::BindRepeating(
+      &CaptureModeController::OnAccessTokenAvailableForCopyText,
+      weak_ptr_factory_.GetWeakPtr(), vsr_id, image_search_token));
+}
+
+void CaptureModeController::OnDispatchCompleteForCopyText(
+    base::WeakPtr<const network::SimpleURLLoader> url_loader,
+    base::WeakPtr<BaseCaptureModeSession> image_search_token,
+    const std::string& access_token,
+    std::unique_ptr<std::string> response_body) {
+  absl::Cleanup deferred_runner = [this, url_loader]() {
+    uploads_in_progress_.remove_if(base::MatchesUniquePtr(url_loader.get()));
+  };
+
+  if (!image_search_token || !response_body) {
+    return;
+  }
+
+  // Response body that has a form of JSON contains protection characters
+  // against XSSI that have to be removed. See go/xssi.
+  std::string json_data = std::move(*response_body);
+  json_data =
+      json_data.substr(std::min(json_data.find('\n'), json_data.size()));
+
+  data_decoder::DataDecoder::ParseJsonIsolated(
+      json_data, base::BindOnce(&CaptureModeController::OnJsonParsed,
+                                weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CaptureModeController::OnJsonParsed(
+    data_decoder::DataDecoder::ValueOrError result) {
+  if (!result.has_value() || !result->is_list() || result->GetList().empty()) {
+    return;
+  }
+
+  const base::Value::List* metadata_response = result->GetList()[0].GetIfList();
+  if (!metadata_response ||
+      metadata_response->size() < kQFMetadataResponseMinSize) {
+    return;
+  }
+
+  // Verify we have the right type of response message.
+  const std::string* message_id =
+      (*metadata_response)[kQFMetadataResponseFieldMessageIdIdx].GetIfString();
+  if (!message_id || (*message_id) != kQFMetadataResponseMessageId) {
+    return;
+  }
+
+  // Deconstruct the metadata response in order to build our string for Copy
+  // Text. See `FetchQueryFormulationMetadataResponse` in
+  // `google3/google/internal/lens/frontend/api/v1/service.proto` for details.
+
+  const base::Value::List* detected_text =
+      (*metadata_response)[kQFMetadataResponseFieldDetectedText].GetIfList();
+  if (!detected_text || detected_text->empty()) {
+    return;
+  }
+
+  const base::Value::List* text_layout =
+      (*detected_text)[kDetectedTextFieldTextLayout].GetIfList();
+  if (!text_layout || text_layout->empty()) {
+    return;
+  }
+
+  const base::Value::List* paragraph_list =
+      (*text_layout)[kTextLayoutFieldParagraphs].GetIfList();
+  if (!paragraph_list || paragraph_list->empty()) {
+    return;
+  }
+
+  // Begin constructing the extracted text by looping through a sequence of
+  // paragraphs, lines, and words.
+  std::string extracted_text;
+  for (int i = 0; i < static_cast<int>(paragraph_list->size()); i++) {
+    const base::Value::List* paragraph = (*paragraph_list)[i].GetIfList();
+    if (!paragraph || paragraph->size() < kParagraphMinSize) {
+      continue;
+    }
+
+    const base::Value::List* line_list =
+        (*paragraph)[kParagraphFieldLines].GetIfList();
+    if (!line_list || line_list->empty()) {
+      continue;
+    }
+
+    // Add an extra newline between each paragraph (i.e., before each
+    // paragraph after the first).
+    if (i > 0) {
+      extracted_text += "\n";
+    }
+
+    for (int j = 0; j < static_cast<int>(line_list->size()); j++) {
+      const base::Value::List* line = (*line_list)[j].GetIfList();
+      if (!line || line->empty()) {
+        continue;
+      }
+
+      const base::Value::List* word_list = (*line)[kLineFieldWords].GetIfList();
+      if (!word_list || word_list->empty()) {
+        continue;
+      }
+
+      // Add a newline between each line (i.e., before each line after the
+      // first).
+      if (j > 0) {
+        extracted_text += "\n";
+      }
+
+      for (const base::Value& word_value : *word_list) {
+        const base::Value::List* word = word_value.GetIfList();
+        if (!word || word->size() < kWordMinSize) {
+          continue;
+        }
+
+        const std::string* plain_text =
+            (*word)[kWordFieldPlainText].GetIfString();
+        if (!plain_text) {
+          continue;
+        }
+
+        extracted_text += *plain_text;
+
+        // Add the text separator if it exists.
+        const std::string* separator =
+            (*word)[kWordFieldTextSeparator].GetIfString();
+        if (!separator) {
+          continue;
+        }
+
+        extracted_text += *separator;
+      }
+    }
+  }
+
+  if (extracted_text.empty()) {
+    return;
+  }
+
+  AddCopyTextButton(extracted_text);
 }
 
 void CaptureModeController::OnTextDetectionComplete(

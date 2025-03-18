@@ -45,6 +45,7 @@
 <translation id="1652197001188145583">Lorsque cette option est activée, les sites peuvent demander à utiliser des appareils NFC. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser d'appareil NFC.</translation>
 <translation id="1660204651932907780">Autoriser le son des sites (recommandé)</translation>
 <translation id="1677097821151855053">Les cookies et les autres données des sites servent à se souvenir de vous (par exemple, pour vous permettre de vous connecter ou pour personnaliser les annonces). Pour gérer les cookies pour l'ensemble des sites, accédez aux <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
+<translation id="1679305402657584804">Les sites peuvent demander à utiliser des appareils NFC</translation>
 <translation id="1686785653877010442">Les sites envoient généralement des notifications pour vous transmettre des alertes info ou vous informer que vous avez reçu un message dans un chat.</translation>
 <translation id="169515064810179024">Empêcher les sites d'accéder à vos capteurs de mouvement</translation>
 <translation id="1703666494654169921">Ne pas autoriser les sites à utiliser des données ni des appareils de réalité virtuelle</translation>
@@ -84,6 +85,7 @@
 <translation id="2185965788978862351">Cela supprimera <ph name="DATASIZE" /> de données et cookies stockés par des sites ou des applis sur votre écran d'accueil.</translation>
 <translation id="2194856509914051091">Éléments à prendre en compte</translation>
 <translation id="2215727959747642672">Modification de fichier</translation>
+<translation id="2218389616572918761">Les sites peuvent demander à utiliser votre micro</translation>
 <translation id="2228071138934252756">Pour autoriser <ph name="APP_NAME" /> à accéder à votre caméra, activez-la également dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Cookies tiers bloqués</translation>
 <translation id="2238944249568001759">Suggestions de recherches basées sur votre dernier onglet</translation>
@@ -132,8 +134,10 @@
 <translation id="2726059656860238749">Lancer Chrome avec l'omnibox sélectionné pour réduire le temps de démarrage sur les appareils bas de gamme.</translation>
 <translation id="2750481671343847896">Les sites peuvent afficher les invites de connexion des services d'identité.</translation>
 <translation id="2787357173144933081">Démarrer l'omnibox directement</translation>
+<translation id="2789132527330338807">Les sites peuvent demander à créer un plan 3D de votre environnement ou à suivre la position de la caméra</translation>
 <translation id="2790501146643349491">Lorsque cette option est activée, les sites fermés récemment peuvent terminer l'envoi et la réception de données. Lorsqu'elle est désactivée, les sites fermés récemment ne peuvent pas terminer l'envoi ni la réception de données.</translation>
 <translation id="2795716239552913152">Les sites utilisent généralement votre position pour proposer des fonctionnalités ou des informations pertinentes, comme la météo locale ou des magasins à proximité</translation>
+<translation id="2802908157808345702">Ne pas autoriser les sites à envoyer des pop-ups ni à utiliser des redirections</translation>
 <translation id="2814830417943086299">Chrome affiche désormais vos onglets récents dans la liste d'applis et les résultats de recherche de votre appareil. Vous pouvez désactiver cette option à tout moment dans les paramètres de Chrome.</translation>
 <translation id="2822354292072154809">Voulez-vous vraiment réinitialiser toutes les autorisations du site pour <ph name="CHOSEN_OBJECT_NAME" /> ?</translation>
 <translation id="2850913818900871965">Demander l'affichage sur mobile</translation>
@@ -274,6 +278,7 @@
 <translation id="4598549027014564149">En mode navigation privée, les sites ne peuvent pas utiliser vos cookies pour voir votre activité de navigation sur l'ensemble des sites, même sur les sites associés. Votre activité de navigation n'est pas utilisée pour personnaliser les annonces, par exemple. Il est possible que les fonctionnalités de certains sites ne fonctionnent pas.</translation>
 <translation id="461356340001513807">Permet de vous connecter à des sites Web avec votre compte enregistré auprès d'un service d'identité</translation>
 <translation id="4619615317237390068">Onglets d'autres appareils</translation>
+<translation id="4635969503923889910">Ne pas autoriser les sites à utiliser des appareils NFC</translation>
 <translation id="4644713492825682049">Supprimer et réinitialiser</translation>
 <translation id="4645575059429386691">Géré par ton parent</translation>
 <translation id="4670064810192446073">Réalité virtuelle</translation>
@@ -372,6 +377,7 @@
 <translation id="5877248419911025165">Réduire toutes les demandes</translation>
 <translation id="5884085660368669834">Préférence liée au site</translation>
 <translation id="5887687176710214216">Dernière visite : hier</translation>
+<translation id="5908617755156109052">Ne pas autoriser les sites à créer un plan 3D de votre environnement ni à suivre la position de la caméra</translation>
 <translation id="5916664084637901428">Activé</translation>
 <translation id="5922853908706496913">Partage de votre écran…</translation>
 <translation id="5922967540311291836">Bloquer les cookies tiers :</translation>
@@ -582,6 +588,7 @@
 <translation id="8676374126336081632">Effacer la saisie</translation>
 <translation id="8681886425883659911">Les annonces sont bloquées sur les sites connus pour afficher des annonces intrusives ou trompeuses</translation>
 <translation id="868929229000858085">Rechercher des contacts</translation>
+<translation id="8707904142362025782">Le site peut demander à utiliser votre caméra</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8715862698998036666">Faites glisser votre doigt du haut vers le bas et balayez l'écran depuis le bord gauche ou droit pour quitter le plein écran.</translation>
 <translation id="8719283222052720129">Activez l'autorisation pour <ph name="APP_NAME" /> dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>

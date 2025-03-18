@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/test/scoped_feature_list.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/pdf/test_pdf_viewer_stream_manager.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 
 class GURL;
@@ -140,9 +140,9 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
   void ValidateFrameTree(content::WebContents* contents);
 
   base::test::ScopedFeatureList feature_list_;
-  absl::variant<absl::monostate,
-                std::unique_ptr<guest_view::TestGuestViewManagerFactory>,
-                std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>
+  std::variant<std::monostate,
+               std::unique_ptr<guest_view::TestGuestViewManagerFactory>,
+               std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>
       factory_;
 };
 

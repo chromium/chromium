@@ -4,6 +4,8 @@
 
 #include "media/formats/hls/playlist.h"
 
+#include <variant>
+
 #include "media/formats/hls/items.h"
 #include "media/formats/hls/playlist_common.h"
 #include "media/formats/hls/quirks.h"
@@ -45,7 +47,7 @@ ParseStatus::Or<Playlist::Identification> Playlist::IdentifyPlaylist(
     }
 
     auto item = std::move(item_result).value();
-    if (auto* tag = absl::get_if<TagItem>(&item)) {
+    if (auto* tag = std::get_if<TagItem>(&item)) {
       // We can't make any assumptions on unknown tags
       if (!tag->GetName().has_value()) {
         continue;

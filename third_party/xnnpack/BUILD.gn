@@ -5331,6 +5331,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
+      "src/src/f32-gemm/gen/f32-gemm-10x8-minmax-fma3-broadcast.c",
       "src/src/f32-gemm/gen/f32-gemm-1x16-minmax-fma3-broadcast.c",
       "src/src/f32-gemm/gen/f32-gemm-1x16s4-minmax-fma3-broadcast.c",
       "src/src/f32-gemm/gen/f32-gemm-1x8-minmax-fma3-broadcast.c",
@@ -5364,6 +5365,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
+      "src/src/f32-gemm/gen/f32-gemm-10x8-minmax-fma3-broadcast.c",
       "src/src/f32-gemm/gen/f32-gemm-1x16-minmax-fma3-broadcast.c",
       "src/src/f32-gemm/gen/f32-gemm-1x16s4-minmax-fma3-broadcast.c",
       "src/src/f32-gemm/gen/f32-gemm-1x8-minmax-fma3-broadcast.c",
@@ -5856,6 +5858,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
+      "src/src/f32-igemm/gen/f32-igemm-10x8-minmax-fma3-broadcast.c",
       "src/src/f32-igemm/gen/f32-igemm-1x16-minmax-fma3-broadcast.c",
       "src/src/f32-igemm/gen/f32-igemm-1x16s4-minmax-fma3-broadcast.c",
       "src/src/f32-igemm/gen/f32-igemm-1x8-minmax-fma3-broadcast.c",
@@ -5889,6 +5892,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
+      "src/src/f32-igemm/gen/f32-igemm-10x8-minmax-fma3-broadcast.c",
       "src/src/f32-igemm/gen/f32-igemm-1x16-minmax-fma3-broadcast.c",
       "src/src/f32-igemm/gen/f32-igemm-1x16s4-minmax-fma3-broadcast.c",
       "src/src/f32-igemm/gen/f32-igemm-1x8-minmax-fma3-broadcast.c",

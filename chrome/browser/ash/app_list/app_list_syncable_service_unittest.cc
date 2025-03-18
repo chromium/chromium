@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <utility>
+#include <variant>
 
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/constants/ash_features.h"
@@ -39,7 +40,6 @@
 #include "components/sync/test/sync_change_processor_wrapper_for_test.h"
 #include "extensions/common/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 using crx_file::id_util::GenerateId;
 using testing::ElementsAre;
@@ -3880,9 +3880,9 @@ TEST_F(AppListSyncableServiceAppPreloadTest, LauncherOrdering) {
     std::vector<std::string> result;
     for (const auto& item : ordered) {
       std::string first =
-          absl::holds_alternative<std::string>(item.first)
-              ? absl::get<std::string>(item.first)
-              : absl::get<apps::PackageId>(item.first).ToString();
+          std::holds_alternative<std::string>(item.first)
+              ? std::get<std::string>(item.first)
+              : std::get<apps::PackageId>(item.first).ToString();
       result.push_back(first + "=" + item.second.ToDebugString());
     }
     return result;
@@ -3893,25 +3893,24 @@ TEST_F(AppListSyncableServiceAppPreloadTest, LauncherOrdering) {
       ordinals_to_string(),
       ElementsAreArray({
           "chromeapp:mgndgikekgjfcpckkfioiadnlibdjbkf=n",
-          "system:lacros-chrome=t",
-          "chromeapp:cnbgggchhmkkdmeppjobngjoejnihlei=w",
-          "system:file_manager=x",
-          "web:https://mail.google.com/mail/?usp=installed_webapp=y",
-          "web:https://docs.google.com/document/?usp=installed_webapp=yn",
-          "web:https://docs.google.com/presentation/?usp=installed_webapp=z",
-          "web:https://docs.google.com/spreadsheets/?usp=installed_webapp=zm",
-          "web:https://drive.google.com/?lfhs=2=zs",
-          "web:https://www.youtube.com/?feature=ytca=zv",
-          "system:camera=zx",
-          "system:settings=zy",
-          "system:help=zyn",
-          "system:app_mall=zz",
-          "system:media=zzm",
-          "system:projector=zzs",
-          "system:print_management=zzv",
-          "system:scanning=zzx",
-          "system:shortcut_customization=zzy",
-          "system:terminal=zzyn",
+          "chromeapp:cnbgggchhmkkdmeppjobngjoejnihlei=t",
+          "system:file_manager=w",
+          "web:https://mail.google.com/mail/?usp=installed_webapp=x",
+          "web:https://docs.google.com/document/?usp=installed_webapp=y",
+          "web:https://docs.google.com/presentation/?usp=installed_webapp=yn",
+          "web:https://docs.google.com/spreadsheets/?usp=installed_webapp=z",
+          "web:https://drive.google.com/?lfhs=2=zm",
+          "web:https://www.youtube.com/?feature=ytca=zs",
+          "system:camera=zv",
+          "system:settings=zx",
+          "system:help=zy",
+          "system:app_mall=zyn",
+          "system:media=zz",
+          "system:projector=zzm",
+          "system:print_management=zzs",
+          "system:scanning=zzv",
+          "system:shortcut_customization=zzx",
+          "system:terminal=zzy",
       }));
   EXPECT_EQ(app_list_syncable_service()->GetOemFolderNameForTest(),
             "OEM folder");
@@ -3932,7 +3931,6 @@ TEST_F(AppListSyncableServiceAppPreloadTest, LauncherOrdering) {
       // app1 should come before chrome.
       {p("chromeapp:app1"), {type_app, 1}},
       {p("chromeapp:mgndgikekgjfcpckkfioiadnlibdjbkf"), {type_chrome, 2}},
-      {p("system:lacros-chrome"), {type_chrome, 2}},
       // OEM folder name should get set as 'aps-oem-folder'.
       // aps-oem-folder, aps-folder, and app2 should come after chrome.
       {"aps-oem-folder", {type_oem_folder, 3}},
@@ -3966,33 +3964,32 @@ TEST_F(AppListSyncableServiceAppPreloadTest, LauncherOrdering) {
           "chromeapp:folderapp1=n",
           "chromeapp:oem1=n",
           "chromeapp:mgndgikekgjfcpckkfioiadnlibdjbkf=n",
-          "system:lacros-chrome=t",
-          "chromeapp:oem2=t",
+          "aps-oem-folder=q",
+          "aps-folder=r",
+          "chromeapp:app2=s",
           "chromeapp:folderapp2=t",
-          "aps-oem-folder=u",  // folders and app2 after chrome.
-          "aps-folder=v",
-          "chromeapp:app2=vn",
-          "chromeapp:cnbgggchhmkkdmeppjobngjoejnihlei=w",
-          "system:file_manager=x",  // file-manager unchanged.
-          "web:https://mail.google.com/mail/?usp=installed_webapp=y",
-          "web:https://docs.google.com/document/?usp=installed_webapp=yn",
-          "web:https://docs.google.com/presentation/?usp=installed_webapp=z",
-          "web:https://docs.google.com/spreadsheets/?usp=installed_webapp=zm",
-          "web:https://drive.google.com/?lfhs=2=zs",
-          "web:https://www.youtube.com/?feature=ytca=zv",
-          "system:camera=zx",
-          "system:settings=zy",
-          "chromeapp:app3=zyg",  // app3 after settings.
-          "chromeapp:app4=zyj",  // app4 after settings, not after file_manager.
-          "system:help=zyn",
-          "system:app_mall=zz",
-          "system:media=zzm",
-          "system:projector=zzs",
-          "system:print_management=zzv",
-          "system:scanning=zzx",
-          "system:shortcut_customization=zzy",
-          "system:terminal=zzyn",
-          "chromeapp:app5=zzz",  // app5 after terminal, last item.
+          "chromeapp:oem2=t",  // folders and app2 after chrome.
+          "chromeapp:cnbgggchhmkkdmeppjobngjoejnihlei=t",
+          "system:file_manager=w",  // file-manager unchanged.
+          "web:https://mail.google.com/mail/?usp=installed_webapp=x",
+          "web:https://docs.google.com/document/?usp=installed_webapp=y",
+          "web:https://docs.google.com/presentation/?usp=installed_webapp=yn",
+          "web:https://docs.google.com/spreadsheets/?usp=installed_webapp=z",
+          "web:https://drive.google.com/?lfhs=2=zm",
+          "web:https://www.youtube.com/?feature=ytca=zs",
+          "system:camera=zv",
+          "system:settings=zx",
+          "chromeapp:app3=zxn",  // app3 after settings.
+          "chromeapp:app4=zxt",  // app4 after settings, not after file_manager.
+          "system:help=zy",
+          "system:app_mall=zyn",
+          "system:media=zz",
+          "system:projector=zzm",
+          "system:print_management=zzs",
+          "system:scanning=zzv",
+          "system:shortcut_customization=zzx",
+          "system:terminal=zzy",
+          "chromeapp:app5=zzyn",  // app5 after terminal, last item.
       }));
   EXPECT_EQ(app_list_syncable_service()->GetOemFolderNameForTest(),
             "aps-oem-folder");
@@ -4041,9 +4038,9 @@ TEST_F(AppListSyncableServiceAppPreloadTest, LauncherOrdering) {
               ElementsAreArray({
                   "app1|app1||h",
                   "dceacbkfkmllgmjmbhgkpjegnodmildf|Hosted App||n",
-                  "ddb1da55-d478-4243-8642-56d3041f0263|aps-oem-folder||u",
+                  "ddb1da55-d478-4243-8642-56d3041f0263|aps-oem-folder||q",
                   "emfkafnhnpcmabnnkckkchdilgeoekbo|Packaged App 1||h",
-                  "folder:aps-folder|aps-folder||v",
+                  "folder:aps-folder|aps-folder||r",
                   "folderapp1|folderapp1|folder:aps-folder|n",
                   "jlklkagmeajbjiobondfhiekepofmljl|Packaged App 2||e",
                   "oem1|oem1|ddb1da55-d478-4243-8642-56d3041f0263|n",

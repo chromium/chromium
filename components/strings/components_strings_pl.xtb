@@ -316,7 +316,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1532118530259321453">Komunikat z bieżącej strony</translation>
 <translation id="1533966801397200693">Profil, na którym jesteś zalogowany(-a), jest profilem zarządzanym. Administrator może zdalnie wprowadzać zmiany w ustawieniach profilu, analizować informacje o przeglądarce za pomocą raportów i wykonywać inne niezbędne zadania. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Przetłumacz stronę</translation>
-<translation id="1538295100801850685">Ulepszenia prognoz</translation>
 <translation id="1539840569003678498">Wysłanie raportu:</translation>
 <translation id="1542105669288201090">Edukacja biznesowa</translation>
 <translation id="1545757265410828525">Historia cen</translation>
@@ -1157,7 +1156,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3052868890529250114">Zazwyczaj łączysz się z witrynami w bezpieczny sposób, ale tym razem w Chrome nie udało się użyć bezpiecznego połączenia. Osoba przeprowadzająca atak może próbować podsłuchać lub zmodyfikować Twoje połączenie sieciowe. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji o tym ostrzeżeniu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> taniej o <ph name="PRICE_DROP" /></translation>
 <translation id="3061707000357573562">Zastosowanie poprawki do usługi</translation>
-<translation id="306198082577913404">Włącz ulepszenia podpowiedzi</translation>
 <translation id="3062655045399308513">Usuń dane przeglądania…</translation>
 <translation id="3063453392496098461">Nie udało się zainstalować usług VPN działających w tle.</translation>
 <translation id="306573536155379004">Gra się rozpoczęła.</translation>
@@ -2325,7 +2323,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5097099694988056070">Statystyki na temat sprzętu, np. użycie procesora czy pamięci RAM</translation>
 <translation id="5097468150760963273">27 x 39 cali</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome potrzebuje dostępu do uprawnienia <ph name="PERMISSION" /> na Twoim urządzeniu</translation>
 <translation id="510644072453496781">Karton (koniec)</translation>
 <translation id="5106648964679263509">Karta wirtualna dla: <ph name="BNPL_ISSUER_NAME" /> została wypełniona</translation>
 <translation id="5108881358339761672">Strona nie jest bezpieczna</translation>
@@ -4054,7 +4051,6 @@ Dodatkowe informacje:
 <translation id="8134058435519644366">Rekrutacja i zatrudnianie</translation>
 <translation id="8135546115396015134">lewy klawisz</translation>
 <translation id="8137456439814903304">Energetyka i usługi komunalne</translation>
-<translation id="81474145143203755">Aby używać tego uprawnienia (<ph name="PERMISSION" />) w tej witrynie, pozwól Chrome na dostęp</translation>
 <translation id="8148608574971654810">Wersja pliku PDF:</translation>
 <translation id="8149426793427495338">Twój komputer przeszedł w tryb uśpienia.</translation>
 <translation id="8150722005171944719">Nie można odczytać pliku <ph name="URL" />. Być może został usunięty lub uprawnienia dostępu uniemożliwiają jego odczyt.</translation>

@@ -8,12 +8,12 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_owner.h"
@@ -268,58 +268,57 @@ void AnimationSequenceBlock::TerminateBlock() {
     std::unique_ptr<ui::LayerAnimationElement> element;
     switch (pair.first.property) {
       case ui::LayerAnimationElement::TRANSFORM:
-        if (absl::holds_alternative<std::unique_ptr<ui::InterpolatedTransform>>(
+        if (std::holds_alternative<std::unique_ptr<ui::InterpolatedTransform>>(
                 pair.second.animation_value_)) {
           element =
               ui::LayerAnimationElement::CreateInterpolatedTransformElement(
-                  absl::get<std::unique_ptr<ui::InterpolatedTransform>>(
+                  std::get<std::unique_ptr<ui::InterpolatedTransform>>(
                       std::move(pair.second.animation_value_)),
                   duration);
         } else {
-          DCHECK(absl::holds_alternative<gfx::Transform>(
+          DCHECK(std::holds_alternative<gfx::Transform>(
               pair.second.animation_value_));
           element = ui::LayerAnimationElement::CreateTransformElement(
-              absl::get<gfx::Transform>(
-                  std::move(pair.second.animation_value_)),
+              std::get<gfx::Transform>(std::move(pair.second.animation_value_)),
               duration);
         }
         break;
       case ui::LayerAnimationElement::BOUNDS:
         element = ui::LayerAnimationElement::CreateBoundsElement(
-            absl::get<gfx::Rect>(pair.second.animation_value_), duration);
+            std::get<gfx::Rect>(pair.second.animation_value_), duration);
         break;
       case ui::LayerAnimationElement::OPACITY:
         element = ui::LayerAnimationElement::CreateOpacityElement(
-            absl::get<float>(pair.second.animation_value_), duration);
+            std::get<float>(pair.second.animation_value_), duration);
         break;
       case ui::LayerAnimationElement::VISIBILITY:
         element = ui::LayerAnimationElement::CreateVisibilityElement(
-            absl::get<bool>(pair.second.animation_value_), duration);
+            std::get<bool>(pair.second.animation_value_), duration);
         break;
       case ui::LayerAnimationElement::BRIGHTNESS:
         element = ui::LayerAnimationElement::CreateBrightnessElement(
-            absl::get<float>(pair.second.animation_value_), duration);
+            std::get<float>(pair.second.animation_value_), duration);
         break;
       case ui::LayerAnimationElement::GRAYSCALE:
         element = ui::LayerAnimationElement::CreateGrayscaleElement(
-            absl::get<float>(pair.second.animation_value_), duration);
+            std::get<float>(pair.second.animation_value_), duration);
         break;
       case ui::LayerAnimationElement::COLOR:
         element = ui::LayerAnimationElement::CreateColorElement(
-            absl::get<SkColor4f>(pair.second.animation_value_), duration);
+            std::get<SkColor4f>(pair.second.animation_value_), duration);
         break;
       case ui::LayerAnimationElement::CLIP:
         element = ui::LayerAnimationElement::CreateClipRectElement(
-            absl::get<gfx::Rect>(pair.second.animation_value_), duration);
+            std::get<gfx::Rect>(pair.second.animation_value_), duration);
         break;
       case ui::LayerAnimationElement::ROUNDED_CORNERS:
         element = ui::LayerAnimationElement::CreateRoundedCornersElement(
-            absl::get<gfx::RoundedCornersF>(pair.second.animation_value_),
+            std::get<gfx::RoundedCornersF>(pair.second.animation_value_),
             duration);
         break;
       case ui::LayerAnimationElement::GRADIENT_MASK:
         element = ui::LayerAnimationElement::CreateGradientMaskElement(
-            absl::get<gfx::LinearGradient>(pair.second.animation_value_),
+            std::get<gfx::LinearGradient>(pair.second.animation_value_),
             duration);
         break;
       default:

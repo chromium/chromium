@@ -316,7 +316,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1532118530259321453">Cette page indique</translation>
 <translation id="1533966801397200693">Le profil auquel vous êtes connecté est un profil géré. Votre administrateur peut modifier à distance les paramètres de votre profil, analyser les rapports d'informations sur le navigateur et effectuer d'autres tâches nécessaires. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Traduire la page</translation>
-<translation id="1538295100801850685">Améliorations des prédictions</translation>
 <translation id="1539840569003678498">Rapport envoyé :</translation>
 <translation id="1542105669288201090">Études de commerce</translation>
 <translation id="1545757265410828525">Historique des prix</translation>
@@ -345,7 +344,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1569694109004336106">Google Chrome tente d'activer Windows Hello pour saisir les mots de passe.</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> pouces</translation>
 <translation id="1574714699824202614">Validation du mode de paiement</translation>
-<translation id="1576277203042721907">Shopping Insights</translation>
+<translation id="1576277203042721907">Informations d'achat</translation>
 <translation id="1579189948231786790">Ce site est bloqué par votre organisation</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1581172376168798878">N'expire pas</translation>
@@ -1157,7 +1156,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3052868890529250114">La connexion aux sites est généralement sécurisée, mais Chrome n'a pas pu utiliser de connexion sécurisée cette fois-ci. Il est possible qu'un pirate informatique tente d'espionner vos activités en ligne ou de modifier votre connexion réseau. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus sur cet avertissement<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> : prix en baisse (-<ph name="PRICE_DROP" />)</translation>
 <translation id="3061707000357573562">Service d'application de correctifs</translation>
-<translation id="306198082577913404">Activer les améliorations de prédiction</translation>
 <translation id="3062655045399308513">Supprimer les données de navigation...</translation>
 <translation id="3063453392496098461">Échec de l'installation des services d'arrière-plan VPN.</translation>
 <translation id="306573536155379004">Le jeu a commencé.</translation>
@@ -2325,7 +2323,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5097099694988056070">Statistiques concernant l'appareil, telles que l'utilisation du processeur et de la RAM</translation>
 <translation id="5097468150760963273">27 x 39 pouces</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome a besoin d'accéder à l'<ph name="PERMISSION" /> de votre appareil</translation>
 <translation id="510644072453496781">Carton (morceau)</translation>
 <translation id="5106648964679263509">Carte virtuelle pour <ph name="BNPL_ISSUER_NAME" /> renseignée</translation>
 <translation id="5108881358339761672">Site non sécurisé</translation>
@@ -3895,7 +3892,7 @@ Informations supplémentaires :
 <translation id="782886543891417279">Pour utiliser ce réseau Wi-Fi (<ph name="WIFI_NAME" />), il est possible que vous deviez vous rendre sur la page de connexion correspondante.</translation>
 <translation id="7831993212387676366">Qu'est-ce que la liste d'achats ?</translation>
 <translation id="7840103971441592723">La capture d'écran a démarré</translation>
-<translation id="784137052867620416">Shopping Insights</translation>
+<translation id="784137052867620416">Informations d'achat</translation>
 <translation id="7841633276323004751">Liste des modes de paiement disponibles pour effectuer le paiement. Clavier masqué.</translation>
 <translation id="7842611866969435396">C'est parti</translation>
 <translation id="784404208867107517">Historique par groupe</translation>
@@ -4055,7 +4052,6 @@ Informations supplémentaires :
 <translation id="8134058435519644366">Recrutement et gestion du personnel</translation>
 <translation id="8135546115396015134">touche gauche</translation>
 <translation id="8137456439814903304">Énergie et services publics</translation>
-<translation id="81474145143203755">Pour lui permettre d'utiliser votre <ph name="PERMISSION" /> sur ce site, autorisez Chrome à y accéder</translation>
 <translation id="8148608574971654810">Version PDF :</translation>
 <translation id="8149426793427495338">Votre ordinateur s'est mis en veille.</translation>
 <translation id="8150722005171944719">Le fichier disponible à l'adresse <ph name="URL" /> n'est pas lisible. Il est possible qu'il ait été supprimé ou déplacé, ou que les autorisations associées empêchent d'y accéder.</translation>

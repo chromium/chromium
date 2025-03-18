@@ -5,8 +5,9 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_SEND_RESULT_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_SEND_RESULT_H_
 
+#include <variant>
+
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
 
@@ -51,7 +52,7 @@ struct CONTENT_EXPORT SendResult {
 
   Status status() const;
 
-  using Result = absl::variant<Sent, Dropped, AssemblyFailure>;
+  using Result = std::variant<Sent, Dropped, AssemblyFailure>;
   Result result;
 };
 

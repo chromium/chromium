@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_flow_controller.h"
 
 #include <string>
+#include <variant>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -500,16 +501,16 @@ void ProfilePickerFlowController::SwitchToDiceSignIn(
 
   base::FilePath profile_path;
   // Split the variant information from `profile_info`.
-  absl::visit(base::Overloaded{
-                  [&suggested_profile_color =
-                       suggested_profile_color_](std::optional<SkColor> color) {
-                    suggested_profile_color = color;
-                  },
-                  [&profile_path](base::FilePath profile_path_info) {
-                    profile_path = profile_path_info;
-                  },
-              },
-              profile_info);
+  std::visit(base::Overloaded{
+                 [&suggested_profile_color =
+                      suggested_profile_color_](std::optional<SkColor> color) {
+                   suggested_profile_color = color;
+                 },
+                 [&profile_path](base::FilePath profile_path_info) {
+                   profile_path = profile_path_info;
+                 },
+             },
+             profile_info);
 
   SwitchToIdentityStepsFromAccountSelection(std::move(switch_finished_callback),
                                             kAccessPoint,

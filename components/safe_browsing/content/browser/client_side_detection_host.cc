@@ -166,6 +166,27 @@ void RecordAsyncCheckTriggerForceRequestResult(
       result);
 }
 
+bool ShouldShowWarning(bool is_phishing,
+                       std::optional<IntelligentScanVerdict> verdict) {
+  if (is_phishing) {
+    return true;
+  }
+
+  if (!verdict.has_value() ||
+      *verdict ==
+          IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_UNSPECIFIED ||
+      *verdict == IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE) {
+    return false;
+  }
+
+  return (base::FeatureList::IsEnabled(
+              kClientSideDetectionShowScamVerdictWarning) &&
+          *verdict == IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1) ||
+         (base::FeatureList::IsEnabled(
+              kClientSideDetectionShowLlamaScamVerdictWarning) &&
+          *verdict == IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2);
+}
+
 }  // namespace
 
 typedef base::OnceCallback<void(bool, bool, std::optional<bool>)>
@@ -1268,18 +1289,11 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(
                                   IntelligentScanVerdict_MAX + 1);
   }
 
-  bool should_show_warning =
-      base::FeatureList::IsEnabled(kClientSideDetectionShowScamVerdictWarning)
-          ? (is_phishing ||
-             (intelligent_scan_verdict.has_value() &&
-              intelligent_scan_verdict !=
-                  IntelligentScanVerdict::
-                      INTELLIGENT_SCAN_VERDICT_UNSPECIFIED &&
-              intelligent_scan_verdict !=
-                  IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE))
-          : is_phishing;
-
-  if (should_show_warning) {
+  // We will only show the warning if |is_phishing| is true, or while the
+  // feature is enabled, the intelligent scan verdict matches the corresponding
+  // feature. When a feature is cleaned up, remove the feature enabled check
+  // alongside the corresponding IntelligentScanVerdict.
+  if (ShouldShowWarning(is_phishing, intelligent_scan_verdict)) {
     if (!is_from_cache && did_match_high_confidence_allowlist.has_value()) {
       base::UmaHistogramBoolean(
           "SBClientPhishing.HighConfidenceAllowlistMatchOnServerVerdictPhishy",

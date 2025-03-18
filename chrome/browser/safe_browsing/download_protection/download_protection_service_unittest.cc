@@ -29,6 +29,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -5517,38 +5518,43 @@ struct UrlOverrideTestCase {
   const char* expected_url = nullptr;
 };
 
-// Tests for Android download protection logic, parameterized the Safe Browsing
-// state, and the service override URL to use.
+// Tests for Android download protection logic, parameterized by whether Android
+// download protection is in telemetry-only mode, and the Safe Browsing state,
+// and the service override URL to use.
 // These tests use the real RemoteDatabaseManager rather than a mock.
 class AndroidDownloadProtectionTest
     : public DownloadProtectionServiceTestBase</*ShouldSetDbManager=*/false>,
       public testing::WithParamInterface<
-          std::tuple<SafeBrowsingState, UrlOverrideTestCase>> {
+          std::tuple<bool, SafeBrowsingState, UrlOverrideTestCase>> {
  public:
   using Outcome =
       DownloadProtectionMetricsData::AndroidDownloadProtectionOutcome;
 
   AndroidDownloadProtectionTest() {
-    if (!GetUrlOverrideString()) {
-      feature_list_.InitAndEnableFeature(kMaliciousApkDownloadCheck);
-      return;
+    base::FieldTrialParams params = {
+        {std::string(kMaliciousApkDownloadCheckTelemetryOnly.name),
+         IsTelemetryOnlyMode() ? "true" : "false"}};
+    if (GetUrlOverrideString()) {
+      params.insert(
+          {std::string(kMaliciousApkDownloadCheckServiceUrlOverride.name),
+           std::string(GetUrlOverrideString())});
     }
-    feature_list_.InitAndEnableFeatureWithParameters(
-        kMaliciousApkDownloadCheck,
-        {{kMaliciousApkDownloadCheckServiceUrlOverride.name,
-          std::string(GetUrlOverrideString())}});
+    feature_list_.InitAndEnableFeatureWithParameters(kMaliciousApkDownloadCheck,
+                                                     params);
   }
 
-  SafeBrowsingState GetSafeBrowsingState() const { return get<0>(GetParam()); }
+  bool IsTelemetryOnlyMode() const { return std::get<0>(GetParam()); }
+
+  SafeBrowsingState GetSafeBrowsingState() const { return get<1>(GetParam()); }
 
   const char* GetUrlOverrideString() const {
-    return get<1>(GetParam()).override_string;
+    return get<2>(GetParam()).override_string;
   }
 
   // Calling this function requires that the test has an override URL.
   GURL GetExpectedDownloadRequestUrl() const {
     CHECK(GetUrlOverrideString());
-    if (const char* expected = get<1>(GetParam()).expected_url;
+    if (const char* expected = get<2>(GetParam()).expected_url;
         expected != nullptr) {
       return GURL{expected};
     }
@@ -5572,6 +5578,7 @@ class AndroidDownloadProtectionTest
       case SafeBrowsingState::NO_SAFE_BROWSING:
         return false;
       case SafeBrowsingState::STANDARD_PROTECTION:
+        return !IsTelemetryOnlyMode();
       case SafeBrowsingState::ENHANCED_PROTECTION:
         return true;
     }
@@ -5584,6 +5591,12 @@ class AndroidDownloadProtectionTest
   void ExpectHistogramUniqueSample(Outcome outcome) {
     histograms_->ExpectUniqueSample(kAndroidDownloadProtectionOutcomeHistogram,
                                     outcome, 1);
+  }
+
+  void OverrideNextShouldSample(bool should_sample) {
+    static_cast<DownloadProtectionDelegateAndroid*>(
+        download_service_->delegate())
+        ->SetNextShouldSampleForTesting(should_sample);
   }
 
   void ExpectNoCheckClientDownload(download::DownloadItem* item) {
@@ -5639,6 +5652,8 @@ class AndroidDownloadProtectionTest
           base::DoNothing()) {
     // Response to any requests will be DANGEROUS.
     PrepareResponse(ClientDownloadResponse::DANGEROUS, net::HTTP_OK, net::OK);
+    // Override the random sampling.
+    OverrideNextShouldSample(true);
 
     ResetHistogramTester();
     {
@@ -5661,7 +5676,9 @@ class AndroidDownloadProtectionTest
     // The histogram is logged when the item goes out of scope.
 
     if (ShouldAndroidDownloadProtectionBeActive()) {
-      EXPECT_TRUE(IsResult(DownloadCheckResult::DANGEROUS));
+      EXPECT_TRUE(IsResult(IsTelemetryOnlyMode()
+                               ? DownloadCheckResult::UNKNOWN
+                               : DownloadCheckResult::DANGEROUS));
       EXPECT_TRUE(GetClientDownloadRequest()->has_download_type());
       EXPECT_EQ(GetClientDownloadRequest()->download_type(),
                 ClientDownloadRequest::ANDROID_APK);
@@ -5684,12 +5701,14 @@ const SafeBrowsingState kSafeBrowsingStates[] = {
     SafeBrowsingState::ENHANCED_PROTECTION,
 };
 
-// The parameter indicates: the Safe Browsing state of the profile, the service
-// URL override.
+// The parameter indicates: whether Android download protection is in
+// telemetry-only mode; the Safe Browsing state of the profile; the service URL
+// override.
 INSTANTIATE_TEST_SUITE_P(
     /* No label */,
     AndroidDownloadProtectionTest,
-    testing::Combine(testing::ValuesIn(kSafeBrowsingStates),
+    testing::Combine(testing::Bool(),
+                     testing::ValuesIn(kSafeBrowsingStates),
                      testing::Values(UrlOverrideTestCase{})));
 
 const char kDefaultAndroidDownloadRequestUrl[] =
@@ -5700,7 +5719,8 @@ using AndroidDownloadProtectionTestWithOverrideUrl =
 INSTANTIATE_TEST_SUITE_P(
     WithOverrideUrl,
     AndroidDownloadProtectionTestWithOverrideUrl,
-    testing::Combine(testing::ValuesIn(kSafeBrowsingStates),
+    testing::Combine(testing::Bool(),
+                     testing::ValuesIn(kSafeBrowsingStates),
                      testing::ValuesIn<UrlOverrideTestCase>({
                          // Valid URL overrides.
                          {"https://foo.googleapis.com/path"},
@@ -5864,6 +5884,24 @@ TEST_P(AndroidDownloadProtectionTest, IsSupportedDownloadFalse) {
         item_display_name_not_apk, final_path_));
   }
   ExpectHistogramUniqueSample(Outcome::kDownloadNotSupportedType);
+
+  ResetHistogramTester();
+  {
+    // An otherwise eligible item that is just not sampled.
+    NiceMockDownloadItem item_eligible;
+    OverrideNextShouldSample(false);
+    content::DownloadItemUtils::AttachInfoForTesting(&item_eligible, profile(),
+                                                     nullptr);
+    PrepareBasicDownloadItemWithContentUri(
+        &item_eligible,
+        /*url_chain_items=*/{"https://evil.com/bla.apk"},
+        /*referrer_url=*/"",
+        /*display_name=*/base::FilePath(FILE_PATH_LITERAL("a.apk")));
+
+    EXPECT_FALSE(
+        download_service_->IsSupportedDownload(item_eligible, final_path_));
+  }
+  ExpectHistogramUniqueSample(Outcome::kNotSampled);
 }
 
 // Tests that CheckClientDownload is called even if the download is not a

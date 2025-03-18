@@ -1249,7 +1249,7 @@
         "bn"
       ],
       "layouts": [
-        "us"
+        "us(noop-altgr)"
       ]
     },
     {
@@ -1259,7 +1259,7 @@
         "gu"
       ],
       "layouts": [
-        "us"
+        "us(noop-altgr)"
       ]
     },
     {
@@ -1281,7 +1281,7 @@
         "hi"
       ],
       "layouts": [
-        "us"
+        "us(noop-altgr)"
       ]
     },
     {
@@ -1311,7 +1311,7 @@
         "ta"
       ],
       "layouts": [
-        "us"
+        "us(noop-altgr)"
       ]
     },
     {
@@ -1321,7 +1321,7 @@
         "ta"
       ],
       "layouts": [
-        "us"
+        "us(noop-altgr)"
       ]
     },
     {
@@ -1371,7 +1371,7 @@
         "am"
       ],
       "layouts": [
-        "us"
+        "us(noop-altgr)"
       ]
     },
     {
@@ -1381,7 +1381,7 @@
         "th"
       ],
       "layouts": [
-        "us"
+        "us(noop-altgr)"
       ]
     },
     {
@@ -1411,7 +1411,7 @@
         "fa"
       ],
       "layouts": [
-        "us"
+        "us(noop-altgr)"
       ]
     },
     {
@@ -1473,7 +1473,7 @@
         "lo"
       ],
       "layouts": [
-        "us"
+        "us(noop-altgr)"
       ]
     },
     {
@@ -1503,7 +1503,7 @@
         "km"
       ],
       "layouts": [
-        "us"
+        "us(noop-altgr)"
       ]
     },
     {
@@ -1523,7 +1523,7 @@
         "si"
       ],
       "layouts": [
-        "us"
+        "us(noop-altgr)"
       ]
     },
     {
@@ -1563,7 +1563,7 @@
         "ru"
       ],
       "layouts": [
-        "us"
+        "us(noop-altgr)"
       ]
     },
     {
@@ -1573,7 +1573,7 @@
         "ru"
       ],
       "layouts": [
-        "us"
+        "us(noop-altgr)"
       ]
     }
   ],

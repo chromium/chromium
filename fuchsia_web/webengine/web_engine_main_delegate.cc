@@ -5,6 +5,7 @@
 #include "fuchsia_web/webengine/web_engine_main_delegate.h"
 
 #include <utility>
+#include <variant>
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
@@ -115,7 +116,7 @@ std::optional<int> WebEngineMainDelegate::PreBrowserMain() {
   return std::nullopt;
 }
 
-absl::variant<int, content::MainFunctionParams>
+std::variant<int, content::MainFunctionParams>
 WebEngineMainDelegate::RunProcess(
     const std::string& process_type,
     content::MainFunctionParams main_function_params) {

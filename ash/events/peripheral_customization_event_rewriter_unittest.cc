@@ -28,7 +28,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/accelerators/ash/quick_insert_event_property.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/base_event_utils.h"

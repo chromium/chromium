@@ -973,38 +973,21 @@ TEST_F(CloudBinaryUploadServiceTest, TestMaxParallelRequestsFlag) {
   EXPECT_EQ(5UL, CloudBinaryUploadService::GetParallelActiveRequestsMax());
 
   {
-    base::test::ScopedCommandLine scoped_command_line;
-    scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
-        "wp-max-parallel-active-requests", "10");
-    EXPECT_EQ(10UL, CloudBinaryUploadService::GetParallelActiveRequestsMax());
-  }
-
-  {
-    base::test::ScopedCommandLine scoped_command_line;
-    scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
-        "wp-max-parallel-active-requests", "100");
-    EXPECT_EQ(100UL, CloudBinaryUploadService::GetParallelActiveRequestsMax());
-  }
-
-  {
-    base::test::ScopedCommandLine scoped_command_line;
-    scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
-        "wp-max-parallel-active-requests", "0");
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        enterprise_connectors::kEnableAsyncUploadAfterVerdict,
+        {{enterprise_connectors::kParallelContentAnalysisRequestCount.name,
+          base::ToString(0)}});
     EXPECT_EQ(5UL, CloudBinaryUploadService::GetParallelActiveRequestsMax());
   }
 
   {
-    base::test::ScopedCommandLine scoped_command_line;
-    scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
-        "wp-max-parallel-active-requests", "foo");
-    EXPECT_EQ(5UL, CloudBinaryUploadService::GetParallelActiveRequestsMax());
-  }
-
-  {
-    base::test::ScopedCommandLine scoped_command_line;
-    scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
-        "wp-max-parallel-active-requests", "-1");
-    EXPECT_EQ(5UL, CloudBinaryUploadService::GetParallelActiveRequestsMax());
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        enterprise_connectors::kEnableAsyncUploadAfterVerdict,
+        {{enterprise_connectors::kParallelContentAnalysisRequestCount.name,
+          base::ToString(15UL)}});
+    EXPECT_EQ(15UL, CloudBinaryUploadService::GetParallelActiveRequestsMax());
   }
 }
 

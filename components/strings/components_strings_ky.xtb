@@ -316,7 +316,6 @@
 <translation id="1532118530259321453">Бул баракча мындай дейт:</translation>
 <translation id="1533966801397200693">Башкарылган профилге кирип турасыз. Администратор профилиңиздин параметрлерин алыстан өзгөртүп, отчёттор аркылуу серепчи тууралуу маалыматты талдап жана башка тапшырмаларды аткара алат. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Баракты которуу</translation>
-<translation id="1538295100801850685">Божомолдоону жакшыртуу</translation>
 <translation id="1539840569003678498">Кабар жөнөтүлдү:</translation>
 <translation id="1542105669288201090">Ишкердик боюнча билим берүү</translation>
 <translation id="1545757265410828525">Баалар таржымалы</translation>
@@ -1157,7 +1156,6 @@
 <translation id="3052868890529250114">Адатта сайттарга коопсуз туташасыз, бирок Chrome бул жолу коопсуз туташууну колдоно алган жок. Чабуулчу тармак туташууңузга көз салып же өзгөртүүгө аракет кылышы мүмкүн. <ph name="BEGIN_LEARN_MORE_LINK" />Бул эскертүү жөнүндө кеңири маалымат алыңыз<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> <ph name="PRICE_DROP" /> арзандайт</translation>
 <translation id="3061707000357573562">Оңдоо кызматы</translation>
-<translation id="306198082577913404">Божомолдоону жакшыртууну күйгүзүү</translation>
 <translation id="3062655045399308513">Серептөө дайындарын өчүрүү…</translation>
 <translation id="3063453392496098461">VPN'дин фондогу кызматтары орнотулган жок.</translation>
 <translation id="306573536155379004">Оюн башталды.</translation>
@@ -2324,7 +2322,6 @@
 <translation id="5097099694988056070">Процессордун же оперативдик эстутумдун колдонулушу сыяктуу түзмөктүн статистикасы</translation>
 <translation id="5097468150760963273">27 x 39 дюйм</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome'го түзмөгүңүздөгү <ph name="PERMISSION" /> колдонууга уруксат бериңиз</translation>
 <translation id="510644072453496781">Картон (аягы)</translation>
 <translation id="5106648964679263509"><ph name="BNPL_ISSUER_NAME" /> үчүн виртуалдык карта толтурулду</translation>
 <translation id="5108881358339761672">Сайт кооптуу</translation>
@@ -4052,7 +4049,6 @@
 <translation id="8134058435519644366">Жумушка алуу жана кадрлар менен камсыз кылуу</translation>
 <translation id="8135546115396015134">сол баскычты</translation>
 <translation id="8137456439814903304">Энергетика жана коммуналдык кызматтар</translation>
-<translation id="81474145143203755">Бул сайтта <ph name="PERMISSION" /> колдонуу үчүн Chrome'го аны колдонууга уруксат беришиңиз керек</translation>
 <translation id="8148608574971654810">PDF версиясы:</translation>
 <translation id="8149426793427495338">Компьютериңиз уктап калды.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> дарегиндеги файл окулбайт. Ал чыгарылып салынган, жылдырылган же файл уруксаттарынан улам аны окуу мүмкүн эмес.</translation>

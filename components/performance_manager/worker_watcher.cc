@@ -6,6 +6,7 @@
 
 #include <map>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check_op.h"
@@ -175,7 +176,7 @@ void WorkerWatcher::OnWorkerCreated(
       dedicated_worker_token, std::move(worker_node));
   DCHECK(insertion_result.second);
 
-  absl::visit(
+  std::visit(
       base::Overloaded(
           [&,
            this](const content::GlobalRenderFrameHostId& render_frame_host_id) {
@@ -201,7 +202,7 @@ void WorkerWatcher::OnBeforeWorkerDestroyed(
 
   // First disconnect the creator's node from this worker node.
 
-  absl::visit(
+  std::visit(
       base::Overloaded(
           [&,
            this](const content::GlobalRenderFrameHostId& render_frame_host_id) {
@@ -390,7 +391,7 @@ void WorkerWatcher::OnControlleeAdded(
     int64_t version_id,
     const std::string& client_uuid,
     const content::ServiceWorkerClientInfo& client_info) {
-  absl::visit(
+  std::visit(
       base::Overloaded(
           [&, this](content::GlobalRenderFrameHostId render_frame_host_id) {
             // For window clients, it is necessary to wait until the navigation
@@ -468,7 +469,7 @@ void WorkerWatcher::OnControlleeRemoved(int64_t version_id,
   if (!worker_node)
     return;
 
-  absl::visit(
+  std::visit(
       base::Overloaded(
           [&, this](content::GlobalRenderFrameHostId render_frame_host_id) {
             RemoveFrameClientConnection(worker_node, render_frame_host_id);
@@ -758,7 +759,7 @@ void WorkerWatcher::ConnectAllServiceWorkerClients(
     return;
 
   for (const auto& kv : it->second) {
-    absl::visit(
+    std::visit(
         base::Overloaded(
             [&, this](content::GlobalRenderFrameHostId render_frame_host_id) {
               AddFrameClientConnection(service_worker_node,
@@ -785,7 +786,7 @@ void WorkerWatcher::DisconnectAllServiceWorkerClients(
     return;
 
   for (const auto& kv : it->second) {
-    absl::visit(
+    std::visit(
         base::Overloaded(
             [&, this](
                 const content::GlobalRenderFrameHostId& render_frame_host_id) {

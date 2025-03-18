@@ -200,6 +200,10 @@ struct UntrustworthyContextMenuParams {
   // See TextFragmentAnchor.
   bool opened_from_highlight;
 
+  // Whether the context menu was opened from an element with the
+  // `interesttarget` attribute.
+  bool opened_from_interest_target;
+
   // The type of the form control element on which the context menu is invoked,
   // if any.
   FormControlType? form_control_type;

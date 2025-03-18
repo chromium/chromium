@@ -200,7 +200,6 @@
 #include "chrome/browser/universal_web_contents_observers.h"
 #include "chrome/browser/usb/chrome_usb_delegate.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/webapps/web_app_offline.h"
 #include "chrome/browser/webauthn/chrome_web_authentication_delegate_base.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
@@ -551,6 +550,8 @@
 #include "chrome/browser/preloading/preview/preview_navigation_throttle.h"
 #include "chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_response_capture_navigation_throttle.h"
 #include "chrome/browser/web_applications/isolated_web_apps/chrome_content_browser_client_isolated_web_apps_part.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_throttle.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -5681,6 +5682,12 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
           handle),
       &throttles);
 
+#if !BUILDFLAG(IS_ANDROID)
+  MaybeAddThrottle(
+      web_app::IsolatedWebAppThrottle::MaybeCreateThrottleFor(handle),
+      &throttles);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   return throttles;
 }
 
@@ -9012,3 +9019,14 @@ ChromeContentBrowserClient::MaybeOverrideLocalURLCrossOriginEmbedderPolicy(
   return pdf_embedder->GetCrossOriginEmbedderPolicy();
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
+
+bool ChromeContentBrowserClient::ShouldPrioritizeForBackForwardCache(
+    content::BrowserContext* browser_context,
+    const GURL& url) {
+  if (!browser_context) {
+    return false;
+  }
+  return TemplateURLServiceFactory::GetForProfile(
+             Profile::FromBrowserContext(browser_context))
+      ->IsSearchResultsPageFromDefaultSearchProvider(url);
+}

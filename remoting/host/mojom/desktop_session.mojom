@@ -571,6 +571,9 @@ enum ProtocolErrorCode {
   kNoCommonAuthMethod = 22,
   kLoginScreenNotSupported = 23,
   kSessionPoliciesChanged = 24,
+  kUnexpectedAuthenticatorError = 25,
+  kInvalidState = 26,
+  kInvalidArgument = 27,
 };
 
 // Provides the desktop integration process with a mechanism for controlling the

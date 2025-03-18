@@ -4,6 +4,7 @@
 
 #include "components/autofill/content/renderer/form_autofill_util.h"
 
+#include <variant>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -1619,7 +1620,7 @@ TEST_P(FieldFramesTest, ExtractFormData_ExtractFieldsAndFrames) {
     SCOPED_TRACE(testing::Message() << "Checking the " << i
                                     << "th frame (id = " << frame.id << ")");
     auto is_empty = [](auto token) { return token.is_empty(); };
-    EXPECT_FALSE(absl::visit(is_empty, form_data->child_frames()[i].token));
+    EXPECT_FALSE(std::visit(is_empty, form_data->child_frames()[i].token));
     EXPECT_EQ(form_data->child_frames()[i].token, GetFrameToken(doc, frame.id));
     EXPECT_EQ(form_data->child_frames()[i].predecessor, preceding_field_index);
     ++i;

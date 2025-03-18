@@ -323,6 +323,11 @@ BASE_FEATURE(kGlicDevelopmentSyncGoogleCookies,
 const base::FeatureParam<bool> kGlicStatusIconOpenMenuWithSecondaryClick{
     &kGlic, "open-status-icon-menu-with-secondary-click", true};
 
+// Controls whether the simplified version of the border should be used.
+BASE_FEATURE(kGlicForceSimplifiedBorder,
+             "GlicForceSimplifiedBorder",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<int> kGlicPreLoadingTimeMs{
     &kGlic, "glic-pre-loading-time-ms", 200};
 

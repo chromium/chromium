@@ -75,10 +75,6 @@ suite('FontMenu', () => {
       await updateFonts(['font 1']);
       assertEquals(1, fontMenuOptions.length);
 
-      // initial-count in the dom-repeat for the fonts menu limits the
-      // size of the font menu, so adding more than 8 fonts is difficult to
-      // test. If more than 8 fonts are added on the actual menu, we can
-      // increase the initial-count.
       await updateFonts([
         'font 1',
         'font 2',

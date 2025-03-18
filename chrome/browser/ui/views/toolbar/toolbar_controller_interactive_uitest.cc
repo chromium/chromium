@@ -4,6 +4,7 @@
 
 #include <optional>
 #include <sstream>
+#include <variant>
 
 #include "base/functional/overloaded.h"
 #include "base/strings/stringprintf.h"
@@ -147,7 +148,7 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
               responsive_elements = get_responsive_elements();
           for (const auto& el : responsive_elements) {
             if (const auto* info =
-                    absl::get_if<ToolbarController::ElementIdInfo>(
+                    std::get_if<ToolbarController::ElementIdInfo>(
                         &el.overflow_id)) {
               if (info->overflow_identifier == id) {
                 return true;
@@ -166,7 +167,7 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
               responsive_elements = get_responsive_elements();
           for (const auto& el : responsive_elements) {
             if (const auto* action =
-                    absl::get_if<actions::ActionId>(&el.overflow_id)) {
+                    std::get_if<actions::ActionId>(&el.overflow_id)) {
               if (*action == id) {
                 return true;
               }
@@ -248,26 +249,26 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
   }
 
   auto ActivateMenuItemWithElementId(
-      absl::variant<ui::ElementIdentifier, actions::ActionId> id) {
+      std::variant<ui::ElementIdentifier, actions::ActionId> id) {
     return Do([=, this]() {
       const std::vector<ToolbarController::ResponsiveElementInfo>&
           responsive_elements = get_responsive_elements();
       int command_id = -1;
       for (size_t i = 0; i < responsive_elements.size(); ++i) {
         const auto& overflow_id = responsive_elements[i].overflow_id;
-        absl::visit(
+        std::visit(
             base::Overloaded(
                 [&](ToolbarController::ElementIdInfo overflow_id) {
-                  if (absl::holds_alternative<ui::ElementIdentifier>(id) &&
+                  if (std::holds_alternative<ui::ElementIdentifier>(id) &&
                       overflow_id.overflow_identifier ==
-                          absl::get<ui::ElementIdentifier>(id)) {
+                          std::get<ui::ElementIdentifier>(id)) {
                     command_id = i;
                     return;
                   }
                 },
                 [&](actions::ActionId overflow_id) {
-                  if (absl::holds_alternative<actions::ActionId>(id) &&
-                      overflow_id == absl::get<actions::ActionId>(id)) {
+                  if (std::holds_alternative<actions::ActionId>(id) &&
+                      overflow_id == std::get<actions::ActionId>(id)) {
                     command_id = i;
                     return;
                   }
@@ -618,7 +619,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
 IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
                        EveryElementHasActionMetricName) {
   for (auto& it : ToolbarController::GetDefaultResponsiveElements(browser())) {
-    absl::visit(
+    std::visit(
         base::Overloaded(
             [](actions::ActionId id) {
               EXPECT_NE(

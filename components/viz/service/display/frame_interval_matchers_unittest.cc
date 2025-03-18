@@ -5,6 +5,7 @@
 #include "components/viz/service/display/frame_interval_matchers.h"
 
 #include <optional>
+#include <variant>
 
 #include "base/time/time.h"
 #include "perfetto/test/traced_value_test_support.h"
@@ -26,16 +27,16 @@ void ExpectResult(const std::optional<Result> result_opt,
                   FrameIntervalClass frame_interval_class) {
   ASSERT_TRUE(result_opt.has_value());
   const Result& result = result_opt.value();
-  ASSERT_TRUE(absl::holds_alternative<FrameIntervalClass>(result));
-  EXPECT_EQ(frame_interval_class, absl::get<FrameIntervalClass>(result));
+  ASSERT_TRUE(std::holds_alternative<FrameIntervalClass>(result));
+  EXPECT_EQ(frame_interval_class, std::get<FrameIntervalClass>(result));
 }
 
 void ExpectResult(const std::optional<Result> result_opt,
                   base::TimeDelta interval) {
   ASSERT_TRUE(result_opt.has_value());
   const Result& result = result_opt.value();
-  ASSERT_TRUE(absl::holds_alternative<base::TimeDelta>(result));
-  EXPECT_EQ(interval, absl::get<base::TimeDelta>(result));
+  ASSERT_TRUE(std::holds_alternative<base::TimeDelta>(result));
+  EXPECT_EQ(interval, std::get<base::TimeDelta>(result));
 }
 
 void ExpectNullResult(const std::optional<Result> result_opt) {

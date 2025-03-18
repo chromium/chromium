@@ -27,7 +27,7 @@
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_factory.h"
-#import "ios/chrome/browser/intents/intents_donation_helper.h"
+#import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/web_location_bar.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"

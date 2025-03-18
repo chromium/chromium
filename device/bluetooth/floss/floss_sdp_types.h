@@ -5,11 +5,11 @@
 #define DEVICE_BLUETOOTH_FLOSS_FLOSS_SDP_TYPES_H_
 
 #include <string>
+#include <variant>
 
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace floss {
 
@@ -85,14 +85,14 @@ struct DEVICE_BLUETOOTH_EXPORT BtSdpDipRecord {
   bool primary_record;
 };
 
-using BtSdpRecord = absl::variant<BtSdpHeaderOverlay,
-                                  BtSdpMasRecord,
-                                  BtSdpMnsRecord,
-                                  BtSdpPseRecord,
-                                  BtSdpPceRecord,
-                                  BtSdpOpsRecord,
-                                  BtSdpSapRecord,
-                                  BtSdpDipRecord>;
+using BtSdpRecord = std::variant<BtSdpHeaderOverlay,
+                                 BtSdpMasRecord,
+                                 BtSdpMnsRecord,
+                                 BtSdpPseRecord,
+                                 BtSdpPceRecord,
+                                 BtSdpOpsRecord,
+                                 BtSdpSapRecord,
+                                 BtSdpDipRecord>;
 std::optional<floss::BtSdpHeaderOverlay> DEVICE_BLUETOOTH_EXPORT
 GetHeaderOverlayFromSdpRecord(const floss::BtSdpRecord& record);
 

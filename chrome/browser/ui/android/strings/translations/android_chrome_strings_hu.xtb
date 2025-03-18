@@ -432,7 +432,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2981364137500752533">Legfeljebb öt ablak lehet nyitva.</translation>
 <translation id="2983102365694924129">A webhelyen végzett tevékenységei alapján. Ez a beállítás ki van kapcsolva.</translation>
 <translation id="2984978667043170458">Környező szöveget is tartalmazó keresés a Google Kereső használatakor</translation>
-<translation id="2988638966064514052">Tegye erősebbé jelszavait</translation>
 <translation id="2989523299700148168">Legutóbb látogatott</translation>
 <translation id="2992473221983447149">Képleírások</translation>
 <translation id="2996291259634659425">Összetett jelszó létrehozása</translation>
@@ -548,7 +547,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3557336313807607643">Hozzáadás a névjegyekhez</translation>
 <translation id="3563767357928833671">A vágólap tartalma látható</translation>
 <translation id="3566639033325271639">Beállítások módosítása</translation>
-<translation id="3568945271227339929">Nincsenek olyan jelszavak, amelyekhez illetéktelenül fértek hozzá</translation>
 <translation id="3575464060651642446">Jelszavak ellenőrzése ezen az eszközön…</translation>
 <translation id="3577473026931028326">Hiba történt. Próbálja újra.</translation>
 <translation id="3577558748185201054">Érdeklődési körök és preferenciák kezelése</translation>
@@ -1055,7 +1053,6 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5958275228015807058">A fájlokat és oldalakat a Letöltések között találja meg</translation>
 <translation id="5958994127112619898">Oldal leegyszerűsítése</translation>
 <translation id="5962718611393537961">Koppintson az összecsukáshoz</translation>
-<translation id="5964180026566797835">Nem lehet ellenőrizni a jelszavakat</translation>
 <translation id="5964869237734432770">Képleírások leállítása</translation>
 <translation id="5977976211062815271">Ezen az eszközön</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 oldal az olvasólistán}other{# oldal az olvasólistán}}</translation>
@@ -1099,6 +1096,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="6150320133806434356">A könyvjelző mentése megtörtént</translation>
 <translation id="6150706324143004339">Ha Chrome-adatokat szeretne használni és tárolni Google-fiókjában, frissítse a Chrome-ot</translation>
 <translation id="6154478581116148741">Kapcsolja be a képernyőzárat a Beállítások menüben, hogy exportálhassa az ezen az eszközön tárolt jelszavait</translation>
+<translation id="6156323911414505561">Könyvjelzősáv megjelenítése</translation>
 <translation id="6162892189396105610">Azoknak az oldalaknak az előtöltése, amelyeket a Chrome szerint Ön valószínűleg felkeres.</translation>
 <translation id="6170675927290506430">Ugrás az értesítési beállításokhoz</translation>
 <translation id="6186394685773237175">Nincs nyilvánosságra került jelszó</translation>

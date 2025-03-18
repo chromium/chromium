@@ -1045,7 +1045,7 @@ public class FeedSurfaceCoordinator
     /**
      * @return The {@link View} for this class.
      */
-    // TODO(crbug.com/327387704): Remove after uno phase 2 follow-up launch.
+    // TODO(crbug.com/352735671): Remove after uno phase 2 follow-up launch.
     @Deprecated
     View getSigninPromoView() {
         assert !ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP);

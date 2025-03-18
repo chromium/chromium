@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -15,7 +16,6 @@
 #include "base/sequence_checker.h"
 #include "components/policy/policy_export.h"
 #include "components/prefs/persistent_pref_store.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 // For more imformation about this file please read
 // //components/policy/core/common/management/management_service.md
@@ -85,7 +85,7 @@ class POLICY_EXPORT ManagementStatusProvider {
   const std::string& cache_pref_name() const { return cache_pref_name_; }
 
  private:
-  absl::variant<PrefService*, scoped_refptr<PersistentPrefStore>> cache_ =
+  std::variant<PrefService*, scoped_refptr<PersistentPrefStore>> cache_ =
       nullptr;
   const std::string cache_pref_name_;
 };

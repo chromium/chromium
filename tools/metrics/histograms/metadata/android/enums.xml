@@ -1243,6 +1243,8 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Query tiles NTP omnibox tapped."/>
   <int value="14" label="Focus restored on fold configuration change."/>
   <int value="15" label="Drag and drop on the omnibox."/>
+  <int value="16" label="Tapped after default focus with hardware keyboard."/>
+  <int value="17" label="Focus restored on activity recreation."/>
 </enum>
 
 <enum name="OmniboxSuggestionUiType">
@@ -1430,17 +1432,6 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Hit, last prefetch matches navigation"/>
   <int value="1" label="Miss, last prefetch does not match navigation"/>
   <int value="2" label="No prefetch"/>
-</enum>
-
-<enum name="SecondaryActivity">
-  <int value="0" label="Download"/>
-  <int value="1" label="Bookmark"/>
-  <int value="2" label="FirstRun"/>
-  <int value="3" label="LightWeightFirstRun"/>
-  <int value="4" label="History"/>
-  <int value="5" label="Settings"/>
-  <int value="6" label="BookmarkFolderPicker"/>
-  <int value="7" label="SigninAndHistorySync"/>
 </enum>
 
 <enum name="SecureCookieAction">
@@ -2324,6 +2315,12 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Text dark, night mode undefined"/>
   <int value="7" label="Text dark, night mode on"/>
   <int value="8" label="Text dark, night mode off"/>
+</enum>
+
+<enum name="WebViewShouldInterceptRequestOverridden">
+  <int value="0" label="shouldInterceptRequest is not overridden."/>
+  <int value="1" label="shouldInterceptRequest is overridden."/>
+  <int value="2" label="Error while determining if it was overridden."/>
 </enum>
 
 <enum name="WebViewStartupCallSite">

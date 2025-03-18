@@ -63,11 +63,10 @@ TEST_F(BrowserAccessibilityStateImplTest,
   EXPECT_EQ(ui::AXPlatform::GetInstance().GetMode(), ui::AXMode());
 
   // Enable accessibility based on usage of accessibility APIs.
-  // This is screen reader mode, but doesn't mean a screen reader is running.
-  state_->OnScreenReaderDetected();
+  state_->EnableAccessibility();
   // Indicate that an actual screen reader is not running (a screen reader
   // will prevent auto-disable from taking place).
-  state_->SetKnownScreenReaderAppActive(false);
+  state_->SetScreenReaderAppActive(false);
   EXPECT_TRUE(state_->IsAccessibleBrowser());
   EXPECT_EQ(ui::AXPlatform::GetInstance().GetMode(), ui::kAXModeComplete);
 
@@ -99,11 +98,10 @@ TEST_F(BrowserAccessibilityStateImplTest,
   EXPECT_EQ(ui::AXPlatform::GetInstance().GetMode(), ui::AXMode());
 
   // Enable accessibility based on usage of accessibility APIs.
-  // This is screen reader mode, but doesn't mean a screen reader is running.
   state_->OnScreenReaderDetected();
   // Indicate that an actual screen reader is not running (a screen reader
   // will prevent auto-disable from taking place).
-  state_->SetKnownScreenReaderAppActive(false);
+  state_->SetScreenReaderAppActive(false);
   EXPECT_TRUE(state_->IsAccessibleBrowser());
   EXPECT_EQ(ui::AXPlatform::GetInstance().GetMode(), ui::kAXModeComplete);
 

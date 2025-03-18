@@ -308,7 +308,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PerformanceMonitor.UsageScenario.LongInterval"
     enum="PerformanceMonitor.UsageScenario.LongInterval"
-    expires_after="2025-07-13">
+    expires_after="2025-09-14">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -672,7 +672,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BatteryDischargeRate" units="mW"
-    expires_after="2025-07-13">
+    expires_after="2025-09-14">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -902,7 +902,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BatterySaver.UserBrightenedSec" units="seconds"
-    expires_after="2025-07-13">
+    expires_after="2025-09-14">
   <owner>cwd@google.com</owner>
   <owner>chromeos-bsm@google.com</owner>
   <summary>
@@ -932,7 +932,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.CpuTimeSecondsPerProcessType" enum="ProcessType2"
-    expires_after="2025-07-13">
+    expires_after="2025-09-14">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -1223,7 +1223,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.ForegroundBatteryDrain.30Seconds{Exclusive}" units="uAh"
-    expires_after="2025-07-13">
+    expires_after="2025-09-14">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -1265,7 +1265,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.ForegroundBatteryDrain{Exclusive}" units="0.1 mAh"
-    expires_after="2025-07-13">
+    expires_after="2025-09-14">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -1483,7 +1483,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram base="true" name="Power.Mac" units="mW" expires_after="2025-07-13">
+<histogram base="true" name="Power.Mac" units="mW" expires_after="2025-09-14">
   <owner>olivierli@chromium.org</owner>
   <owner>markchang@chromium.org</owner>
   <summary>

@@ -316,7 +316,6 @@
 <translation id="1532118530259321453">ଏହି ପୃଷ୍ଠା ଏହା କୁହେ</translation>
 <translation id="1533966801397200693">ଆପଣ ସାଇନ ଇନ କରିଥିବା ପ୍ରୋଫାଇଲ ଏକ ପରିଚାଳିତ ପ୍ରୋଫାଇଲ ଅଟେ। ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ରିମୋଟ ଭାବେ ଆପଣଙ୍କର ପ୍ରୋଫାଇଲ ସେଟିଂସରେ ପରିବର୍ତ୍ତନ କରିପାରିବେ, ରିପୋର୍ଟିଂ ମାଧ୍ୟମରେ ବ୍ରାଉଜର ବିଷୟରେ ସୂଚନାକୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ଏବଂ ଅନ୍ୟ ଜରୁରୀ ଟାସ୍କଗୁଡ଼ିକୁ କରିପାରିବେ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">ପୃଷ୍ଠାକୁ ଅନୁବାଦ କରନ୍ତୁ</translation>
-<translation id="1538295100801850685">ପୂର୍ବାନୁମାନ ଉନ୍ନତି</translation>
 <translation id="1539840569003678498">ରିପୋର୍ଟ ପଠାଯାଇଛି:</translation>
 <translation id="1542105669288201090">ବିଜିନେସ ଶିକ୍ଷା</translation>
 <translation id="1545757265410828525">ମୂଲ୍ୟ ଇତିହାସ</translation>
@@ -605,6 +604,7 @@
 <translation id="2040894699575719559">ଲୋକେସନକୁ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="2041788246978549610">ଉପଲବ୍ଧ ଥିବା (<ph name="MICS_COUNT" />) ମାଇକ୍ରୋଫୋନ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="2042213636306070719">ଟ୍ରେ 7</translation>
+<translation id="2043896419861982462">ସମୟ ଅନୁସାରେ ପେମେଣ୍ଟ ବିକଳ୍ପ ଲୁଚାଇବାକୁ, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="2045871135676061132">ଏନଭେଲପ ପର୍ସନାଲ</translation>
 <translation id="2046951263634619614">ବହି ରିଟେଲର</translation>
 <translation id="2048261947532620704">ପୃଷ୍ଠାକୁ ଅନୁବାଦ କରାଯାଉଛି</translation>
@@ -762,6 +762,7 @@
 <translation id="2293443924986248631">ଯେତେବେଳେ ଚାଲୁ ଥାଏ, ସାଇଟଗୁଡ଼ିକ ସମଗ୍ର ୱେବରେ ଆପଣଙ୍କୁ ଟ୍ରାକ୍ କରୁଥିବା କୁକୀଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିପାରିବ ନାହିଁ। କିଛି ସାଇଟରେ ଫିଚରଗୁଡ଼ିକ ଠିକ୍ ଭାବେ କାମ କରିନପାରେ।</translation>
 <translation id="2295831393422400053">"ମୋତେ ଲେଖିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ"କୁ ବ୍ୟବହାର କରିବା ପାଇଁ "ସର୍ଚ୍ଚ ଏବଂ ବ୍ରାଉଜିଂକୁ ଆହୁରି ଭଲ କରନ୍ତୁ" ସେଟିଂ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="2296244067976588032">ପାସକୀ • iCloud Keychain</translation>
+<translation id="2296331629987861142">ସହଜ ଇନଷ୍ଟଲମେଣ୍ଟରେ ପେମେଣ୍ଟ କରନ୍ତୁ (ଯୋଗ୍ୟତା ଉପରେ ନିର୍ଭର କରେ, ଫି ଲାଗୁ ହୁଏ)</translation>
 <translation id="2300306941146563769">ଅପଲୋଡ୍ କରାଯାଇନାହିଁ</translation>
 <translation id="2301098101308036335">କେଉଁ ୱେବସାଇଟଗୁଡ଼ିକୁ ଭିଜିଟ କରାଯାଇଛି ଏବଂ କେତେବେଳେ ସେଗୁଡ଼ିକୁ ଭିଜିଟ କରାଯାଇଛି।</translation>
 <translation id="230286397113210245">'ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋ ଖୋଲନ୍ତୁ' ବଟନ, ପ୍ରାଇଭେଟ ଭାବେ ବ୍ରାଉଜ କରିବା ପାଇଁ ଏକ ନୂଆ ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋ ଖୋଲିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
@@ -1021,6 +1022,7 @@
 <translation id="2775884851269838147">ପ୍ରଥମରେ ପ୍ରିଣ୍ଟ ହୋଇଥିବା ପୃଷ୍ଠା</translation>
 <translation id="2781185443919227679">ବେଳାଭୂମି ଏବଂ ଦ୍ୱୀପପୁଞ୍ଜ</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781799097551205934">ଚେକଆଉଟ ପାଇଁ ପ୍ରସ୍ତୁତ ହେଉଛି</translation>
 <translation id="2782088940970074970">କାର ଭଡ଼ା</translation>
 <translation id="278436560439594386">ହୋମ ଉପକରଣଗୁଡ଼ିକ</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
@@ -1048,6 +1050,7 @@
 <translation id="2859383374160668142">ଆପଣ ଟ୍ରାକ କରୁଥିବା ପ୍ରଡକ୍ଟଗୁଡ଼ିକ ପାଇଁ ଯେ କୌଣସି ସମୟରେ ମୂଲ୍ୟ ହ୍ରାସ ଭ୍ୟୁ କରିପାରିବେ।</translation>
 <translation id="2859806420264540918">ଏହି ସାଇଟ୍ ଅନଧିକାର ପ୍ରବେଶ କରିଥିବା କିମ୍ବା ବିଭ୍ରାନ୍ତିକର ବିଜ୍ଞାପନ ପ୍ରଦର୍ଶନ କରୁଛି।</translation>
 <translation id="28618371182701850">ଇଲେକ୍ଟ୍ରିକ ଏବଂ ପ୍ଲଗ-ଇନ ଗାଡ଼ି</translation>
+<translation id="287387905105155974">ସହାୟତା ବବଲ</translation>
 <translation id="28761159517501904">ମୁଭିଗୁଡ଼ିକ</translation>
 <translation id="2876489322757410363">ଏକ ଏକ୍ସଟର୍ନଲ୍ ଆପ୍ଲିକେସନ୍ ମାଧ୍ୟମରେ ପେମେଣ୍ଟ କରିବାକୁ ଇନକଗ୍ନିଟୋ ମୋଡରୁ ବାହାରି ଯାଉଛନ୍ତି। ଜାରି ରଖିବେ?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ସେଟିଂସରେ ଆପଣଙ୍କ ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପରିଚାଳନା କରିବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
@@ -1107,6 +1110,7 @@
 <translation id="2959274854674276289">ନିରାମିଷ ପାକପ୍ରଣାଳୀ</translation>
 <translation id="2961809451460302960">ଜୀବନ ବୀମା</translation>
 <translation id="2962073860865348475">12 x 18 ଇଞ୍ଚ</translation>
+<translation id="2965779286557330949">କେବଳ ଆଉ କିଛି ସେକେଣ୍ଡ...</translation>
 <translation id="2967082089043584472"><ph name="SET" />ରେ ଯୋଗ କରାଯାଇଛି</translation>
 <translation id="2967098518029543669">ଏହାକୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ କରନ୍ତୁ</translation>
 <translation id="297173220375858963">ଡେସ୍କଟପ ପବ୍ଲିସିଂ</translation>
@@ -1157,7 +1161,6 @@
 <translation id="3052868890529250114">ଆପଣ ସାଧାରଣତଃ ସାଇଟଗୁଡ଼ିକ ସହ ସୁରକ୍ଷିତ ଭାବେ କନେକ୍ଟ କରନ୍ତି କିନ୍ତୁ Chrome ଏହି ଥର ଏକ ସୁରକ୍ଷିତ କନେକ୍ସନ ବ୍ୟବହାର କରିପାରିଲା ନାହିଁ। ଜଣେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କ ନେଟୱାର୍କ କନେକ୍ସନ ଉପରେ ଗୋପନରେ ନଜର ରଖିବା କିମ୍ବା ସେଥିରେ ପରିବର୍ତ୍ତନ କରିବାକୁ ଚେଷ୍ଟା କରୁଥାଇପାରନ୍ତି। <ph name="BEGIN_LEARN_MORE_LINK" />ଏହି ଚେତାବନୀ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />ର ମୂଲ୍ୟ <ph name="PRICE_DROP" /> କମ୍ ହୋଇଛି</translation>
 <translation id="3061707000357573562">ପ୍ୟାଚ୍ ସେବା</translation>
-<translation id="306198082577913404">ପୂର୍ବାନୁମାନ ଉନ୍ନତିକୁ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="3062655045399308513">ବ୍ରାଉଜିଂ ଡାଟାକୁ ଡିଲିଟ କରନ୍ତୁ...</translation>
 <translation id="3063453392496098461">VPN ବେକଗ୍ରାଉଣ୍ଡ ସେବାଗୁଡ଼ିକର ଇନଷ୍ଟଲେସନ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="306573536155379004">ଗେମ୍ ଆରମ୍ଭ ହୋଇଛି।</translation>
@@ -1479,6 +1482,7 @@
 <translation id="3600106876108433070">କମ୍ପାରିଜନ ଟେବୁଲ ବିଷୟରେ ଜାଣନ୍ତୁ</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">'Google ଗୋପନୀୟତା ସେଟିଂସକୁ ପରିଚାଳନା କରନ୍ତୁ' ବଟନ, ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟର ଗୋପନୀୟତା ସେଟିଂସକୁ ଭିଜିଟ କରିବା ପାଇଁ ଏହାକୁ ସକ୍ରିୟ କରନ୍ତୁ</translation>
+<translation id="3602695245205338770">ସମୟ ପ୍ରଦାନକାରୀ ଅନୁସାରେ ଏକ ପେମେଣ୍ଟ ବାଛନ୍ତୁ</translation>
 <translation id="3603507503523709">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ଆପ୍ଲିକେସନ୍ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="3605899229568538311">5 x 5 ଇଞ୍ଚ</translation>
 <translation id="3606917451836803637">ଟିଭି ଶୋ ଏବଂ ପ୍ରୋଗ୍ରାମଗୁଡ଼ିକ</translation>
@@ -2272,6 +2276,7 @@
 <translation id="5001526427543320409">ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକ</translation>
 <translation id="5002932099480077015">ଯଦି ସକ୍ଷମ ଥାଏ, ତେବେ Chrome ଦ୍ରୁତତର ଫର୍ମ ପୂରଣ ପାଇଁ ଆପଣଙ୍କ କାର୍ଡର ଏକ କପି ଏହି ଡିଭାଇସ୍‌ରେ ଷ୍ଟୋର୍ କରିବ।</translation>
 <translation id="5007392906805964215">ସମୀକ୍ଷା କରନ୍ତୁ</translation>
+<translation id="5010599530303458903">ମାସିକ କିମ୍ବା 4 ସୁଧ-ମୁକ୍ତ ଇନଷ୍ଟଲମେଣ୍ଟରେ ପେମେଣ୍ଟ କରନ୍ତୁ (ଯୋଗ୍ୟତା ଉପରେ ନିର୍ଭର କରେ)</translation>
 <translation id="5011561501798487822">ଚିହ୍ନଟ କରାଯାଇଥିବା ଭାଷା</translation>
 <translation id="5015510746216210676">ମେସିନ୍ ନାମ:</translation>
 <translation id="5017554619425969104">ଆପଣ କପି କରିଥିବା ଟେକ୍ସଟ୍</translation>
@@ -2322,7 +2327,6 @@
 <translation id="5097099694988056070">ଡିଭାଇସ୍ ପରିସଂଖ୍ୟାନ ଯେପରି CPU/RAMର ବ୍ୟବହାର</translation>
 <translation id="5097468150760963273">27 x 39 ଇଞ୍ଚ</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome ଆପଣଙ୍କ ଡିଭାଇସର <ph name="PERMISSION" />କୁ ଆକ୍ସେସ ଆବଶ୍ୟକ କରେ</translation>
 <translation id="510644072453496781">କାର୍ଡବୋର୍ଡ (ଏଣ୍ଡ)</translation>
 <translation id="5106648964679263509"><ph name="BNPL_ISSUER_NAME" /> ପାଇଁ ଭର୍ଚୁଆଲ କାର୍ଡ ପୂରଣ ହୋଇଛି</translation>
 <translation id="5108881358339761672">ସାଇଟ୍ ସୁରକ୍ଷିତ ନୁହେଁ</translation>
@@ -2849,6 +2853,7 @@
 <translation id="604124094241169006">ସ୍ୱଚାଳିତ</translation>
 <translation id="6041777658117377052">ଚେମ୍ବରର ତାପମାତ୍ରା</translation>
 <translation id="6042308850641462728">ଅଧିକ</translation>
+<translation id="6043357981274314628">ହୋଇଗଲା!</translation>
 <translation id="6044573915096792553">ଆକାର 12</translation>
 <translation id="6045164183059402045">ଇମ୍ପୋଜିସନ୍ ଟେମ୍ପଲେଟ୍</translation>
 <translation id="6047927260846328439">ଏହି ବିଷୟବସ୍ତୁ ଆପଣଙ୍କୁ ଧୋକା ଦେଇ ସଫ୍ଟୱେର୍ ଇନ୍‍ଷ୍ଟଲ୍‌ କରାଇବା କିମ୍ବା ବ୍ୟକ୍ତିଗତ ସୂଚନା ପ୍ରକାଶ କରାଇବାକୁ ଚେଷ୍ଟା କରିପାରେ। <ph name="BEGIN_LINK" />ଯେକୌଣସି ଉପାୟରେ ଦେଖାନ୍ତୁ<ph name="END_LINK" /></translation>
@@ -3234,6 +3239,7 @@
 <translation id="6706005862292023715">ପରଦା ଏବଂ ଝରକା ପାଇଁ ସାଜସଜ୍ଜା ସାମଗ୍ରୀ</translation>
 <translation id="6706210727756204531">ସ୍କୋପ୍</translation>
 <translation id="6706678697074905703">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଏହି IBANକୁ ସେଭ କରାଯାଇପାରିଲା ନାହିଁ। ଏହା ପରିବର୍ତ୍ତେ ଏହାକୁ ଏହି ଡିଭାଇସରେ Chromeରେ ସେଭ କରାଯାଇଛି।</translation>
+<translation id="6707388108229299854">ଆପଣଙ୍କ ସମସ୍ତ ଡିଭାଇସରେ ଏହି ଠିକଣା ପାଇବା ପାଇଁ ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="6709133671862442373">News</translation>
 <translation id="6710213216561001401">ପୂର୍ବବର୍ତ୍ତୀ</translation>
 <translation id="6710594484020273272">&lt;ସର୍ଚ୍ଚ ଶବ୍ଦ ଟାଇପ କରନ୍ତୁ&gt;</translation>
@@ -3911,6 +3917,7 @@
 <translation id="7887885240995164102">ପିକଚର୍-ଇନ୍-ପିକଚର୍ ଲେଖନ୍ତୁ</translation>
 <translation id="7888575728750733395">ପ୍ରିଣ୍ଟ ରେଣ୍ଡରିଂ ଇଣ୍ଟେଣ୍ଟ</translation>
 <translation id="7890748547282909375">ସ୍କ୍ରିନସଟ ସେଭ କରିବା ପାଇଁ Microsoft OneDriveରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
+<translation id="7892865709991296481">ପେମେଣ୍ଟ ସେଟିଂସ</translation>
 <translation id="7894280532028510793">ଯଦି ବନାନ ସଠିକ୍ ଅଛି, ତେବେ <ph name="BEGIN_LINK" />ନେଟୱାର୍କ ଡାଏଗ୍ନୋଷ୍ଟିକ୍ସ ଚଲାଇବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="7901831439558593470">ଏନଭେଲପ 7 x 9 in</translation>
 <translation id="7905064834449738336">ଆପଣ ଏକ ପାସୱାର୍ଡ ବ୍ୟବହାର କରିବା ସମୟରେ, ଯଦି ଏହାକୁ ଅନଲାଇନରେ ପବ୍ଲିସ କରାଯାଇଛି ତେବେ Chromium ଆପଣଙ୍କୁ ଚେତାବନୀ ଦିଏ। ଏହା କରିବା ସମୟରେ, ଆପଣଙ୍କ ପାସୱାର୍ଡ ଏବଂ ୟୁଜରନେମଗୁଡ଼ିକୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇଥାଏ, ତେଣୁ Google ସମେତ କୌଣସି ବ୍ୟକ୍ତି ସେଗୁଡ଼ିକୁ ପଢ଼ିପାରିବେ ନାହିଁ।</translation>
@@ -4048,7 +4055,6 @@
 <translation id="8134058435519644366">ନିଯୁକ୍ତି ଓ କର୍ମଚାରୀ</translation>
 <translation id="8135546115396015134">ବାମ କୀ</translation>
 <translation id="8137456439814903304">ଏନର୍ଜି ଏବଂ ୟୁଟିଲିଟିଗୁଡ଼ିକ</translation>
-<translation id="81474145143203755">ଏହି ସାଇଟରେ ଆପଣଙ୍କ <ph name="PERMISSION" />କୁ ବ୍ୟବହାର କରିବା ପାଇଁ Chromeକୁ ଆକ୍ସେସ ଦିଅନ୍ତୁ</translation>
 <translation id="8148608574971654810">PDF ସଂସ୍କରଣ:</translation>
 <translation id="8149426793427495338">ଆପଣଙ୍କର କମ୍ପୁଟର୍‌ ନିଷ୍କ୍ରିୟ ହୋ‍ଇଯାଇଛି।</translation>
 <translation id="8150722005171944719"><ph name="URL" />ରେ ଫାଇଲ୍‍ଟି ପଠନଯୋଗ୍ୟ ନୁହେଁ।  ହୁଏତ ଏହା କାଢ଼ି ଦିଆଯାଇଛି, ଘୁଞ୍ଚାଯାଇଛି କିମ୍ବା ଫାଇଲ୍ ଅନୁମତିର ଆକ୍ସେସ୍‍କୁ ପ୍ରତିବନ୍ଧିତ କରାଯାଇଛି।</translation>

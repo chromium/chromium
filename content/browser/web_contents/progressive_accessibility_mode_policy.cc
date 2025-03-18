@@ -6,6 +6,7 @@
 
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/visibility.h"
+#include "ui/accessibility/platform/assistive_tech.h"
 
 namespace content {
 
@@ -15,11 +16,23 @@ namespace {
 // is a screen reader.
 bool ScreenReaderInUse() {
   auto assistive_tech =
-      BrowserAccessibilityState::GetInstance()->ActiveKnownAssistiveTech();
-  // kNone -- some software not known to be a screen reader.
-  // kZoomText -- not a screen reader.
-  return assistive_tech != BrowserAccessibilityState::kNone &&
-         assistive_tech != BrowserAccessibilityState::kZoomText;
+      BrowserAccessibilityState::GetInstance()->ActiveAssistiveTech();
+  if (assistive_tech == ui::AssistiveTech::kUnknown) {
+    // On some operating systems, we don't know if a screen reader is running
+    // until some expensive operations are performed off-thread.
+    // Report a false-positive in this case (assume there is a screen reader),
+    // as this is less disruptive for the user than a false-negative
+    // if it turns out to be incorrect, since disable-on-hide can
+    // begin operating once a definitive signal is available.
+    return true;
+  }
+
+  // For the most part, screen readers either don't interact well with
+  // ProgressiveAccessibility or need more testing before we allow it to be
+  // used with them. We need to make sure the user doesn't lose their place
+  // when the accessibility tree is rebuilt, and that the screen reader doesn't
+  // hold onto objects from dropped trees, causing leaks.
+  return ui::IsScreenReader(assistive_tech);
 }
 
 }  // namespace

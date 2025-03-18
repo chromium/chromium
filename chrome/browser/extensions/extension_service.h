@@ -389,8 +389,10 @@ class ExtensionService : public ExtensionServiceInterface,
 
   bool block_extensions() const { return block_extensions_; }
 
+  // TODO(crbug.com/404561030): Delete this accessor and use
+  // DelayedInstallManager::Get() instead.
   DelayedInstallManager* delayed_install_manager() {
-    return &delayed_install_manager_;
+    return delayed_install_manager_;
   }
 
   Profile* profile() { return profile_; }
@@ -636,8 +638,7 @@ class ExtensionService : public ExtensionServiceInterface,
   base::ScopedObservation<CWSInfoService, CWSInfoService::Observer>
       cws_info_service_observation_{this};
 
-  // Depends on `extension_registrar` so must come after it.
-  DelayedInstallManager delayed_install_manager_;
+  raw_ptr<DelayedInstallManager> delayed_install_manager_;
 
   PrefChangeRegistrar pref_change_registrar_;
 

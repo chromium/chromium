@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <set>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -72,7 +73,6 @@
 #include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/constants.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using syncer::SyncChange;
@@ -1978,8 +1978,8 @@ void AppListSyncableService::SetOemFolderNameFromAppPreloadService(
   constexpr auto oem_type =
       apps::proto::AppPreloadListResponse_LauncherType_LAUNCHER_TYPE_FOLDER_OEM;
   for (auto const& [item, data] : root_folder->second) {
-    if (data.type == oem_type && absl::holds_alternative<std::string>(item)) {
-      oem_folder_name_ = absl::get<std::string>(item);
+    if (data.type == oem_type && std::holds_alternative<std::string>(item)) {
+      oem_folder_name_ = std::get<std::string>(item);
       return;
     }
   }

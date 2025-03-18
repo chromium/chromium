@@ -48,9 +48,8 @@ class PriceInsightsHandlerBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<PriceInsightsHandler> handler_;
 };
 
-// The feedback dialog on CrOS & LaCrOS happens at the system level,
-// which cannot be easily tested here. LaCrOS has a separate feedback
-// browser test which gives us some coverage.
+// The feedback dialog on CrOS happens at the system level, which cannot be
+// easily tested here.
 #if !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(PriceInsightsHandlerBrowserTest, TestShowFeedback) {

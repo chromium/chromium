@@ -4,13 +4,15 @@
 
 #include "ui/gfx/overlay_plane_data.h"
 
+#include <variant>
+
 namespace gfx {
 
 OverlayPlaneData::OverlayPlaneData() = default;
 
 OverlayPlaneData::OverlayPlaneData(
     int z_order,
-    absl::variant<gfx::OverlayTransform, gfx::Transform> plane_transform,
+    std::variant<gfx::OverlayTransform, gfx::Transform> plane_transform,
     const RectF& display_bounds,
     const RectF& crop_rect,
     bool enable_blend,

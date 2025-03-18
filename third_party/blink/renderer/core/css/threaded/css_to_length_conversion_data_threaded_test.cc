@@ -48,7 +48,7 @@ TSAN_TEST(CSSToLengthConversionDataThreadedTest, ConversionEm) {
         3.14, CSSPrimitiveValue::UnitType::kEms);
 
     Length length = value.ConvertToLength(conversion_data);
-    EXPECT_EQ(length.Value(), 50.24f);
+    EXPECT_EQ(length.Pixels(), 50.24f);
   });
 }
 
@@ -70,7 +70,7 @@ TSAN_TEST(CSSToLengthConversionDataThreadedTest, ConversionPixel) {
         44, CSSPrimitiveValue::UnitType::kPixels);
 
     Length length = value.ConvertToLength(conversion_data);
-    EXPECT_EQ(length.Value(), 44);
+    EXPECT_EQ(length.Pixels(), 44);
   });
 }
 
@@ -92,7 +92,7 @@ TSAN_TEST(CSSToLengthConversionDataThreadedTest, ConversionViewport) {
         1, CSSPrimitiveValue::UnitType::kViewportWidth);
 
     Length length = value.ConvertToLength(conversion_data);
-    EXPECT_EQ(length.Value(), 0);
+    EXPECT_EQ(length.Pixels(), 0);
   });
 }
 
@@ -114,7 +114,7 @@ TSAN_TEST(CSSToLengthConversionDataThreadedTest, ConversionRem) {
         *CSSNumericLiteralValue::Create(1, CSSPrimitiveValue::UnitType::kRems);
 
     Length length = value.ConvertToLength(conversion_data);
-    EXPECT_EQ(length.Value(), 16);
+    EXPECT_EQ(length.Pixels(), 16);
   });
 }
 

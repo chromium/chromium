@@ -8,11 +8,11 @@
 #include <compare>
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/memory/weak_ptr.h"
 #include "components/performance_manager/public/browser_child_process_host_id.h"
 #include "components/performance_manager/public/render_process_host_id.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
 class BrowserChildProcessHost;
@@ -111,7 +111,7 @@ class ProcessContext {
   // Compare ProcessContexts by process host id.
   constexpr friend std::weak_ordering operator<=>(const ProcessContext& a,
                                                   const ProcessContext& b) {
-    // absl::variant doesn't define <=>.
+    // std::variant doesn't define <=>.
     if (a.id_ < b.id_) {
       return std::weak_ordering::less;
     }
@@ -139,9 +139,9 @@ class ProcessContext {
                 "empty structs should always compare equal");
 
   using AnyProcessHostId =
-      absl::variant<BrowserProcessTag,
-                    performance_manager::RenderProcessHostId,
-                    performance_manager::BrowserChildProcessHostId>;
+      std::variant<BrowserProcessTag,
+                   performance_manager::RenderProcessHostId,
+                   performance_manager::BrowserChildProcessHostId>;
 
   ProcessContext(AnyProcessHostId id,
                  base::WeakPtr<performance_manager::ProcessNode> weak_node);

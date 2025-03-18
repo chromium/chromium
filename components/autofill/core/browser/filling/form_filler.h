@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_FORM_FILLER_H_
 
 #include <string>
+#include <variant>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -36,7 +37,7 @@ enum class RefillTriggerReason {
   kMaxValue = kExpirationDateFormatted
 };
 
-using FillingPayload = absl::
+using FillingPayload = std::
     variant<const AutofillProfile*, const CreditCard*, const EntityInstance*>;
 
 // Helper class responsible for [re]filling forms and fields.
@@ -193,7 +194,7 @@ class FormFiller {
     // function: This contains actual objects because this needs to survive
     // potential storage mutation, and this only contains payloads that support
     // refills.
-    absl::variant<CreditCard, AutofillProfile> profile_or_credit_card;
+    std::variant<CreditCard, AutofillProfile> profile_or_credit_card;
     // Possible identifiers of the field that was focused when the form was
     // initially filled. A refill shall be triggered from the same field.
     const FieldGlobalId filled_field_id;

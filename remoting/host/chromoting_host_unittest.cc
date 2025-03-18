@@ -571,7 +571,8 @@ TEST_F(ChromotingHostTest, DISABLED_OnSessionRouteChange) {
 }
 
 TEST_F(ChromotingHostTest, ExtraSessionPoliciesValidator) {
-  SessionPolicies session_policies{.host_username_match_required = true};
+  SessionPolicies session_policies;
+  session_policies.host_username_match_required = true;
   local_session_policies_provider_.set_local_policies(session_policies);
   base::MockCallback<ChromotingHost::SessionPoliciesValidator> mock_validator;
   EXPECT_CALL(mock_validator, Run(session_policies))

@@ -13,11 +13,16 @@
 }
 
 .highlighted-line {
-  background-color: white;
+  background-color: var(--color-text-highlight);
   border-radius: 2px;
   opacity: 60%;
   position: absolute;
   z-index: 1;
+}
+
+:host([has-copied-text]) .highlighted-line {
+  background-color: var(--color-text-highlight-copied);
+  transition: background-color 200ms cubic-bezier(0.3, 0, 1, 1);
 }
 
 /* Set styles for high contrast mode in Windows. */

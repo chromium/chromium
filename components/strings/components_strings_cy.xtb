@@ -316,7 +316,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1532118530259321453">Dywed y dudalen hon</translation>
 <translation id="1533966801397200693">Mae'r proffil rydych wedi mewngofnodi iddo yn broffil a reolir. Gall eich gweinyddwr wneud newidiadau i'ch gosodiadau proffil o bell, dadansoddi gwybodaeth am y porwr trwy adrodd, a chyflawni tasgau angenrheidiol eraill. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Cyfieithu'r dudalen</translation>
-<translation id="1538295100801850685">Gwelliannau rhagfynegi</translation>
 <translation id="1539840569003678498">Anfonwyd yr adroddiad:</translation>
 <translation id="1542105669288201090">Addysg Busnes</translation>
 <translation id="1545757265410828525">Hanes prisiau</translation>
@@ -1157,7 +1156,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3052868890529250114">Rydych chi fel arfer yn cysylltu â gwefannau yn ddiogel, ond ni allai Chrome ddefnyddio cysylltiad diogel y tro hwn. Mae'n bosib bod ymosodwr yn ceisio clustfeinio neu addasu eich cysylltiad rhwydwaith. <ph name="BEGIN_LEARN_MORE_LINK" />Dysgu rhagor am y rhybudd hwn<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Gostyngiad pris o <ph name="PRICE_DROP" /> ar <ph name="PRODUCT_NAME" /></translation>
 <translation id="3061707000357573562">Gwasanaeth Trwsio</translation>
-<translation id="306198082577913404">Troi gwelliannau rhagfynegiad ymlaen</translation>
 <translation id="3062655045399308513">Dileu Data Pori...</translation>
 <translation id="3063453392496098461">Wedi methu â gosod gwasanaethau cefndir VPN.</translation>
 <translation id="306573536155379004">Mae'r gêm wedi cychwyn.</translation>
@@ -2325,7 +2323,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5097099694988056070">Ystadegau'r ddyfais megis defnydd o CPU/RAM</translation>
 <translation id="5097468150760963273">27 x 39 modfedd</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Mae angen mynediad at <ph name="PERMISSION" /> eich dyfais ar Chrome</translation>
 <translation id="510644072453496781">Cardfwrdd (Diwedd)</translation>
 <translation id="5106648964679263509">Cerdyn rhithwir ar gyfer <ph name="BNPL_ISSUER_NAME" /> wedi'i lenwi</translation>
 <translation id="5108881358339761672">Nid yw'r gwefan yn ddiogel</translation>
@@ -4052,7 +4049,6 @@ Manylion ychwanegol:
 <translation id="8134058435519644366">Recriwtio a Staffio</translation>
 <translation id="8135546115396015134">bysell chwith</translation>
 <translation id="8137456439814903304">Ynni a Chyfleustodau</translation>
-<translation id="81474145143203755">I ddefnyddio'ch <ph name="PERMISSION" /> ar y wefan hon, rhowch fynediad i Chrome</translation>
 <translation id="8148608574971654810">Fersiwn y PDF:</translation>
 <translation id="8149426793427495338">Aeth eich cyfrifiadur i gysgu.</translation>
 <translation id="8150722005171944719">Nid oes modd darllen y ffeil yn <ph name="URL" />.  Mae'n bosib ei bod wedi cael ei thynnu, ei symud neu gallai caniatadau ffeil rwystro mynediad iddi.</translation>

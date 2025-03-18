@@ -19,6 +19,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.text.ChromeClickableSpan;
@@ -27,21 +28,27 @@ import org.chromium.ui.text.SpanApplier;
 /** Controller for the dialog offering the users to download the auto-exported passwords CSV. */
 @NullMarked
 class PasswordCsvDownloadDialogController {
+    private static final String HELP_ARTICLE_LINK =
+            "https://support.google.com/chrome/?p=password_manager_update";
     private final FragmentActivity mActivity;
     private final PasswordCsvDownloadDialogFragment mFragment;
     private final boolean mIsGooglePlayServicesAvailable;
+    private final SettingsCustomTabLauncher mSettingsCustomTabLauncher;
 
     PasswordCsvDownloadDialogController(
             FragmentActivity activity,
             boolean isGooglePlayServicesAvailable,
             Runnable onExportClicked,
-            Runnable onCancel) {
+            Runnable onCancel,
+            SettingsCustomTabLauncher settingsCustomTabLauncher) {
         mActivity = activity;
         mIsGooglePlayServicesAvailable = isGooglePlayServicesAvailable;
+        mSettingsCustomTabLauncher = settingsCustomTabLauncher;
         View dialogView =
                 LayoutInflater.from(mActivity)
                         .inflate(R.layout.password_csv_download_dialog_view, null);
         mFragment = new PasswordCsvDownloadDialogFragment();
+
         initialize(dialogView, onExportClicked, onCancel);
     }
 
@@ -111,6 +118,6 @@ class PasswordCsvDownloadDialogController {
     }
 
     private void helpLinkClicked(View unusedView) {
-        // TODO(crbug.com/378653384): Open the help article.
+        mSettingsCustomTabLauncher.openUrlInCct(mActivity, HELP_ARTICLE_LINK);
     }
 }

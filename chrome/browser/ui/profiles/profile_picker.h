@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_PROFILES_PROFILE_PICKER_H_
 
 #include <optional>
+#include <variant>
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -14,7 +15,6 @@
 #include "base/time/time.h"
 #include "build/buildflag.h"
 #include "components/signin/public/base/signin_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -203,7 +203,7 @@ class ProfilePicker {
   // Helper struct to allow passing different profile information for sign in:
   // - An optional color for a new profile.
   // - A file path for an existing profile.
-  using ProfileInfo = absl::variant<std::optional<SkColor>, base::FilePath>;
+  using ProfileInfo = std::variant<std::optional<SkColor>, base::FilePath>;
 
   // Starts the Dice sign-in flow. The layout of the window gets updated for the
   // sign-in flow while the profiles are created/loaded.

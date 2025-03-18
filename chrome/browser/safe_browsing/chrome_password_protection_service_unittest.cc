@@ -27,6 +27,7 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/test_signin_client_builder.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -1863,6 +1864,9 @@ TEST_F(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
 
 TEST_F(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
        VerifyPhishGuardDialogOpensSafetyCheckMenuForBothStoresSyncing) {
+  feature_list_.InitWithFeatures(
+      {}, {/*disabled_features=*/features::kSafetyHubLocalPasswordsModule});
+
   service_->ConfigService(/*is_incognito=*/false,
                           /*is_extended_reporting=*/true);
   std::vector<password_manager::MatchingReusedCredential> credentials;
@@ -1879,6 +1883,31 @@ TEST_F(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
 
   EXPECT_CALL(*mock_checkup_launcher_,
               LaunchSafetyCheck(_, web_contents()->GetTopLevelNativeWindow()));
+
+  SimulateChangePasswordDialogAction(/*is_syncing=*/true);
+}
+
+TEST_F(PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest,
+       VerifyPhishGuardDialogOpensSafetyHubMenuForBothStoresSyncing) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kSafetyHubLocalPasswordsModule}, {});
+
+  service_->ConfigService(/*is_incognito=*/false,
+                          /*is_extended_reporting=*/true);
+  std::vector<password_manager::MatchingReusedCredential> credentials;
+  credentials.emplace_back(
+      "http://example.test", GURL("http://example.test/"), u"user",
+      password_manager::PasswordForm::Store::kAccountStore);
+  credentials.emplace_back(
+      "http://2.example.test", GURL("http://example.test/"), u"user",
+      password_manager::PasswordForm::Store::kProfileStore);
+
+  service_->set_saved_passwords_matching_reused_credentials(credentials);
+
+  SetUpSyncService(/*is_syncing_passwords=*/true);
+
+  EXPECT_CALL(*mock_checkup_launcher_,
+              LaunchSafetyHub(_, web_contents()->GetTopLevelNativeWindow()));
 
   SimulateChangePasswordDialogAction(/*is_syncing=*/true);
 }

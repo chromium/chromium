@@ -34,6 +34,7 @@ class MockPasswordCheckupLauncherHelper : public PasswordCheckupLauncherHelper {
               LaunchSafetyCheck,
               (JNIEnv*, ui::WindowAndroid*),
               (override));
+  MOCK_METHOD(void, LaunchSafetyHub, (JNIEnv*, ui::WindowAndroid*), (override));
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_MOCK_PASSWORD_CHECKUP_LAUNCHER_HELPER_H_

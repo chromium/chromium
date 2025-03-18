@@ -194,16 +194,9 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
           SharedGpuContext::ContextProviderWrapper(), this);
     }
     if (!provider) {
-      // If PassThrough failed, try a SharedImage with usage display enabled,
-      // and if WebGLImageChromium is enabled, add concurrent read write and
-      // usage scanout (overlay).
+      // If PassThrough failed, try a SharedImage with usage display enabled.
       gpu::SharedImageUsageSet shared_image_usage_flags =
           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-      if (using_webgl_image_chromium) {
-        shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
-        shared_image_usage_flags |=
-            gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
-      }
       provider = CanvasResourceProvider::CreateSharedImageProvider(
           Size(), format, alpha_type, color_space, kShouldInitialize,
           SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,

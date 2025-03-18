@@ -19,6 +19,7 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
+#include "third_party/skia/include/effects/SkRuntimeEffect.h"
 #include "ui/gfx/geometry/size_f.h"
 
 class SkShader;
@@ -128,7 +129,9 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
   //
   // NOTE:
   // - This is only intended for trusted shader (e.g., shaders that are part of
-  //   the Chromium binary).
+  //   the Chromium binary). GPU service has security constraints to prevent the
+  //   PaintShader being deserialized if it is not serialized from the browser
+  //   thread.
   // - Not using flat_map because SkString does not have built-in comparator.
   template <typename ValueType>
   struct Uniform {
@@ -208,6 +211,8 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
     DCHECK(id_ == kInvalidRecordShaderId || shader_type_ == Type::kPaintRecord);
     return id_;
   }
+
+  uint32_t sk_runtime_effect_id() const { return sk_runtime_effect_id_; }
 
  private:
   friend class PaintFlags;
@@ -320,9 +325,6 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
 
   // The command to be (de)serialized for `Type::kSkSLCommand`. Remains empty
   // for other shader types.
-  //
-  // TODO(https://crbug.com/384532231): Consider cashing the Skia shader for
-  // performance.
   SkString sksl_command_;
 
   // Uniforms for `sksl_command_`. The keys of the map are the variable name of
@@ -331,6 +333,14 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
   std::vector<Float2Uniform> float2_uniforms_;
   std::vector<Float4Uniform> float4_uniforms_;
   std::vector<IntUniform> int_uniforms_;
+
+  // Unique ID for `Type::kSkSLCommand`. Remains 0u for other types.
+  uint32_t sk_runtime_effect_id_ = 0u;
+
+  // Does not participate in de/serialization. In software rasterization it is
+  // set when the PaintShader object is created; in hardware rasterization, it
+  // is set when the PaintShader is deserialized.
+  sk_sp<SkRuntimeEffect> cached_sk_runtime_effect_ = nullptr;
 };
 
 }  // namespace cc

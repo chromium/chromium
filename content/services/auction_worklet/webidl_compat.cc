@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <initializer_list>
+#include <variant>
 
 #include "base/check.h"
 #include "base/functional/callback.h"
@@ -63,12 +64,12 @@ std::string IdlConvert::Status::ConvertToErrorString(
     case Type::kSuccess:
       NOTREACHED();
     case Type::kTimeout:
-      return absl::get<Timeout>(value_).timeout_message;
+      return std::get<Timeout>(value_).timeout_message;
     case Type::kErrorMessage:
-      return absl::get<std::string>(value_);
+      return std::get<std::string>(value_);
     case Type::kException:
       return AuctionV8Helper::FormatExceptionMessage(
-          isolate->GetCurrentContext(), absl::get<Exception>(value_).message);
+          isolate->GetCurrentContext(), std::get<Exception>(value_).message);
   }
 }
 
@@ -81,7 +82,7 @@ void IdlConvert::Status::PropagateErrorsToV8(AuctionV8Helper* v8_helper) {
       // override the timeout.
       break;
     case Type::kErrorMessage: {
-      std::string message = absl::get<std::string>(value_);
+      std::string message = std::get<std::string>(value_);
       // Remove any trailing period since v8 will add one.
       if (base::EndsWith(message, ".")) {
         message.pop_back();
@@ -92,7 +93,7 @@ void IdlConvert::Status::PropagateErrorsToV8(AuctionV8Helper* v8_helper) {
     }
     case Type::kException: {
       v8_helper->isolate()->ThrowException(
-          absl::get<Exception>(value_).exception);
+          std::get<Exception>(value_).exception);
       break;
     }
   }
@@ -264,7 +265,7 @@ IdlConvert::Status IdlConvert::Convert(
     std::string_view error_prefix,
     std::initializer_list<std::string_view> error_subject,
     v8::Local<v8::Value> value,
-    absl::variant<int32_t, v8::Local<v8::BigInt>>& out) {
+    std::variant<int32_t, v8::Local<v8::BigInt>>& out) {
   // A union that has both a BigInt and a normal number follows special rules
   // to disambiguate.
   //
@@ -272,11 +273,11 @@ IdlConvert::Status IdlConvert::Convert(
   if (value->IsBigInt()) {
     out.emplace<v8::Local<v8::BigInt>>();
     return IdlConvert::Convert(isolate, error_prefix, error_subject, value,
-                               absl::get<v8::Local<v8::BigInt>>(out));
+                               std::get<v8::Local<v8::BigInt>>(out));
   } else if (value->IsNumber()) {
     out.emplace<int32_t>();
     return IdlConvert::Convert(isolate, error_prefix, error_subject, value,
-                               absl::get<int32_t>(out));
+                               std::get<int32_t>(out));
   } else {
     v8::TryCatch try_catch(isolate);
     v8::Local<v8::Numeric> num_value;
@@ -290,7 +291,7 @@ IdlConvert::Status IdlConvert::Convert(
     } else {
       out.emplace<int32_t>();
       return IdlConvert::Convert(isolate, error_prefix, error_subject,
-                                 num_value, absl::get<int32_t>(out));
+                                 num_value, std::get<int32_t>(out));
     }
   }
 }

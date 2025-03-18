@@ -26,7 +26,7 @@ specific_include_rules = {
     "+ios/chrome/browser/crash_report/model",
     "+ios/chrome/browser/credential_provider/model",
     "+ios/chrome/browser/data_sharing/model",
-    "+ios/chrome/browser/device_reauth",
+    "+ios/chrome/browser/device_reauth/model",
     "+ios/chrome/browser/device_sharing/model",
     "+ios/chrome/browser/discover_feed/model",
     "+ios/chrome/browser/dom_distiller/model",

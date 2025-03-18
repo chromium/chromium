@@ -432,7 +432,6 @@
 <translation id="2981364137500752533">คุณมีหน้าต่างได้ไม่เกิน 5 รายการ</translation>
 <translation id="2983102365694924129">อิงตามกิจกรรมของคุณในเว็บไซต์ การตั้งค่านี้ปิดอยู่</translation>
 <translation id="2984978667043170458">รวมข้อความที่อยู่โดยรอบในการค้นหาบน Google</translation>
-<translation id="2988638966064514052">เสริมความรัดกุมให้รหัสผ่าน</translation>
 <translation id="2989523299700148168">เข้าชมล่าสุด</translation>
 <translation id="2992473221983447149">คำอธิบายรูปภาพ</translation>
 <translation id="2996291259634659425">สร้างรหัสผ่าน</translation>
@@ -548,7 +547,6 @@
 <translation id="3557336313807607643">เพิ่มในรายชื่อติดต่อ</translation>
 <translation id="3563767357928833671">เนื้อหาในคลิปบอร์ดแสดงขึ้น</translation>
 <translation id="3566639033325271639">อัปเดตการตั้งค่า</translation>
-<translation id="3568945271227339929">ไม่มีรหัสผ่านที่ถูกละเมิด</translation>
 <translation id="3575464060651642446">กำลังตรวจสอบรหัสผ่านในอุปกรณ์นี้…</translation>
 <translation id="3577473026931028326">เกิดข้อผิดพลาด ลองใหม่</translation>
 <translation id="3577558748185201054">จัดการความสนใจและความต้องการของคุณ</translation>
@@ -1055,7 +1053,6 @@
 <translation id="5958275228015807058">หาไฟล์และหน้าในโฟลเดอร์ดาวน์โหลด</translation>
 <translation id="5958994127112619898">ลดความซับซ้อนของหน้า</translation>
 <translation id="5962718611393537961">แตะเพื่อยุบ</translation>
-<translation id="5964180026566797835">ตรวจสอบรหัสผ่านไม่ได้</translation>
 <translation id="5964869237734432770">หยุดรับคำอธิบายรูปภาพ</translation>
 <translation id="5977976211062815271">ในอุปกรณ์นี้</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 หน้าในเรื่องรออ่านของคุณ}other{# หน้าในเรื่องรออ่านของคุณ}}</translation>
@@ -1099,6 +1096,7 @@
 <translation id="6150320133806434356">บันทึกบุ๊กมาร์กแล้ว</translation>
 <translation id="6150706324143004339">โปรดอัปเดต Chrome เพื่อใช้และบันทึกข้อมูล Chrome ในบัญชี Google</translation>
 <translation id="6154478581116148741">เปิดล็อกหน้าจอใน "การตั้งค่า" เพื่อส่งออกรหัสผ่านจากอุปกรณ์นี้</translation>
+<translation id="6156323911414505561">แสดงแถบบุ๊กมาร์ก</translation>
 <translation id="6162892189396105610">โหลดหน้าที่ Chrome คิดว่าคุณอาจจะเข้าชมไว้ล่วงหน้า</translation>
 <translation id="6170675927290506430">ไปที่การตั้งค่าการแจ้งเตือน</translation>
 <translation id="6186394685773237175">ไม่พบรหัสผ่านที่ไม่รัดกุม</translation>

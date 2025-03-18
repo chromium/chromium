@@ -269,16 +269,6 @@ BASE_FEATURE(kV8IntelJCCErratumMitigation,
 
 // JavaScript language features.
 
-// Enables the iterator helpers proposal.
-BASE_FEATURE(kJavaScriptIteratorHelpers,
-             ("kJavaScriptIteratorHelpers"),
-             kFeatureDefaultStateControlledByV8);
-
-// Enables the Promise.withResolvers proposal.
-BASE_FEATURE(kJavaScriptPromiseWithResolvers,
-             ("JavaScriptPromiseWithResolvers"),
-             kFeatureDefaultStateControlledByV8);
-
 // Enables the RegExp modifiers proposal.
 BASE_FEATURE(kJavaScriptRegExpModifiers,
              ("JavaScriptRegExpModifiers"),
@@ -287,11 +277,6 @@ BASE_FEATURE(kJavaScriptRegExpModifiers,
 // Enables the `with` syntax for the Import Attributes proposal.
 BASE_FEATURE(kJavaScriptImportAttributes,
              ("JavaScriptImportAttributes"),
-             kFeatureDefaultStateControlledByV8);
-
-// Enables the set methods proposal.
-BASE_FEATURE(kJavaScriptSetMethods,
-             ("JavaScriptSetMethods"),
              kFeatureDefaultStateControlledByV8);
 
 // Enables the RegExp duplicate named capture groups proposal.

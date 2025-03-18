@@ -73,6 +73,7 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kViewPasswordDetails:
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
+    case SuggestionType::kPendingStateSignin:
       return FillingProduct::kPassword;
     case SuggestionType::kComposeDisable:
     case SuggestionType::kComposeGoToSettings:

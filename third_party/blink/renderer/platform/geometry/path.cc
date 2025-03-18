@@ -33,14 +33,12 @@
 
 #include <algorithm>
 
-#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
-#include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/geometry/skia_geometry_utils.h"
 #include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/skia/include/pathops/SkPathOps.h"
-#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -62,101 +60,6 @@ bool PathQuadIntersection(const SkPath& path, const gfx::QuadF& quad) {
     return false;
   }
   return !intersection.isEmpty();
-}
-
-gfx::Vector2dF SuperellipseAt(float s, float t) {
-  float n = std::pow(2, s);
-  float x = std::pow(t, 1 / n);
-  float y = std::pow(1 - t, 1 / n);
-  return gfx::Vector2dF(x, y);
-}
-
-// Given a superellipse with the supplied curvature in the coordinate space
-// -1,-1,1,1, returns 3 vectors (2 control points and the end point)
-// of a bezier curve, going from t=0 (0, 1) clockwise to t=0.5 (45 degrees),
-// and following the path of the superellipse with a small margin of error.
-// TODO(fserb) document how this works.
-std::array<gfx::Vector2dF, 3> ApproximateSuperellipseOctantAsBezierCurve(
-    float curvature) {
-  static constexpr std::array<double, 7> p = {
-      1.2430920942724248, 2.010479023614843,  0.32922901179443753,
-      0.2823023142212073, 1.3473704261055421, 2.9149468637949814,
-      0.9106507102917086};
-
-  DCHECK_GT(curvature, 0);
-  const float s = std::log2(curvature);
-  const float abs_s = std::abs(s);
-  const float slope =
-      p[0] + (p[6] - p[0]) * 0.5 * (1 + std::tanh(p[5] * (abs_s - p[1])));
-  const float base = 1 / (1 + std::exp(-slope * (0 - p[1])));
-  const float logistic = 1 / (1 + std::exp(-slope * (abs_s - p[1])));
-
-  const float a = (logistic - base) / (1 - base);
-  const float b = p[2] * std::exp(-p[3] * std::pow(abs_s, p[4]));
-
-  gfx::Vector2dF P1(a, 1);
-  gfx::Vector2dF P3 = SuperellipseAt(abs_s, 0.5);
-
-  if (s < 0) {
-    P1 = gfx::Vector2dF(1 - P1.y(), 1 - P1.x());
-    P3 = gfx::Vector2dF(1 - P3.y(), 1 - P3.x());
-  }
-
-  gfx::Vector2dF P2(P3.x() - b, P3.y() + b);
-  return {P1, P2, P3};
-}
-
-// Returns the vertices of a corner rect, rotated so they start at the
-// innermost corner, and continue clockwise.
-std::array<gfx::PointF, 4> RotatedRect(const gfx::RectF& rect, size_t rotate) {
-  std::array<gfx::PointF, 4> points{rect.origin(), rect.top_right(),
-                                    rect.bottom_right(), rect.bottom_left()};
-  std::rotate(points.begin(), points.begin() + rotate, points.end());
-  return points;
-}
-
-// Adds a curved corner to a path. The vertex argument is the 4 points
-// of the corner rectangle, starting from the beginning of the corner
-// and continuing clockwise.
-void AddCornerShape(SkPath& path,
-                    const std::array<gfx::PointF, 4>& vertex,
-                    float curvature) {
-  if (curvature == ContouredRect::CornerCurvature::kBevel) {
-    path.lineTo(gfx::PointFToSkPoint(vertex.at(2)));
-  } else if (curvature <= 0.001) {
-    // Notch or very close to it, draw two lines.
-    path.lineTo(gfx::PointFToSkPoint(vertex.at(3)));
-    path.lineTo(gfx::PointFToSkPoint(vertex.at(2)));
-  } else if (curvature == ContouredRect::CornerCurvature::kRound) {
-    path.conicTo(gfx::PointFToSkPoint(vertex.at(1)),
-                 gfx::PointFToSkPoint(vertex.at(2)), SK_ScalarRoot2Over2);
-  } else {
-    // Approximate one octant (1/8th) of the superellipse as a
-    // cubic bezier curve, and draw it twice, transposed, meeting at the t=0.5
-    // point.
-    std::array<gfx::Vector2dF, 3> control_points_a =
-        ApproximateSuperellipseOctantAsBezierCurve(curvature);
-
-    std::array<gfx::Vector2dF, 2> control_points_b = {
-        TransposeVector2d(control_points_a.at(1)),
-        TransposeVector2d(control_points_a.at(0)),
-    };
-
-    auto map_point = [&](gfx::Vector2dF v) {
-      return gfx::PointFToSkPoint(
-          vertex.at(3) +
-          gfx::ScaleVector2d(vertex.at(1) - vertex.at(0), v.x()) +
-          gfx::ScaleVector2d(vertex.at(1) - vertex.at(2), v.y()));
-    };
-
-    path.cubicTo(map_point(control_points_a.at(0)),
-                 map_point(control_points_a.at(1)),
-                 map_point(control_points_a.at(2)));
-
-    path.cubicTo(map_point(control_points_b.at(0)),
-                 map_point(control_points_b.at(1)),
-                 gfx::PointFToSkPoint(vertex.at(2)));
-  }
 }
 
 }  // namespace
@@ -562,13 +465,6 @@ void Path::AddRect(const gfx::RectF& rect) {
   path_.addRect(gfx::RectFToSkRect(rect), SkPathDirection::kCW, 0);
 }
 
-void Path::AddRect(const gfx::PointF& origin,
-                   const gfx::PointF& opposite_point) {
-  path_.addRect(SkRect::MakeLTRB(origin.x(), origin.y(), opposite_point.x(),
-                                 opposite_point.y()),
-                SkPathDirection::kCW, 0);
-}
-
 void Path::AddEllipse(const gfx::PointF& p,
                       float radius_x,
                       float radius_y,
@@ -594,55 +490,27 @@ void Path::AddEllipse(const gfx::PointF& p,
   Transform(ellipse_transform);
 }
 
-void Path::AddEllipse(const gfx::PointF& center,
-                      float radius_x,
-                      float radius_y) {
-  // Start at 3 o'clock, add clock-wise.
-  path_.addOval(SkRect::MakeLTRB(center.x() - radius_x, center.y() - radius_y,
-                                 center.x() + radius_x, center.y() + radius_y),
-                SkPathDirection::kCW, 1);
+Path Path::MakeRect(const gfx::RectF& rect) {
+  return PathBuilder().AddRect(rect).Finalize();
 }
 
-void Path::AddRoundedRect(const FloatRoundedRect& rect, bool clockwise) {
-  if (rect.IsEmpty()) {
-    return;
-  }
-
-  path_.addRRect(SkRRect(rect),
-                 clockwise ? SkPathDirection::kCW : SkPathDirection::kCCW,
-                 /* start at upper-left after corner radius */ 0);
+Path Path::MakeRect(const gfx::PointF& origin,
+                    const gfx::PointF& opposite_point) {
+  return PathBuilder().AddRect(origin, opposite_point).Finalize();
 }
 
-void Path::AddContouredRect(const ContouredRect& contoured_rect) {
-  const FloatRoundedRect& rect = contoured_rect.AsRoundedRect();
-  if (contoured_rect.HasRoundCurvature()) {
-    AddRoundedRect(rect);
-    return;
-  }
+Path Path::MakeContouredRect(const ContouredRect& crect) {
+  return PathBuilder().AddContouredRect(crect).Finalize();
+}
 
-  const ContouredRect::CornerCurvature& curvature =
-      contoured_rect.GetCornerCurvature();
+Path Path::MakeRoundedRect(const FloatRoundedRect& rrect) {
+  return PathBuilder().AddRoundedRect(rrect).Finalize();
+}
 
-  enum CornerRotation : size_t { TopRight, BottomRight, BottomLeft, TopLeft };
-
-  path_.moveTo(gfx::PointFToSkPoint(rect.TopLeftCorner().top_right()));
-
-  path_.lineTo(gfx::PointFToSkPoint((rect.TopRightCorner().origin())));
-  AddCornerShape(path_,
-                 RotatedRect(rect.TopRightCorner(), CornerRotation::TopRight),
-                 curvature.TopRight());
-  path_.lineTo(gfx::PointFToSkPoint((rect.BottomRightCorner().top_right())));
-  AddCornerShape(
-      path_, RotatedRect(rect.BottomRightCorner(), CornerRotation::BottomRight),
-      curvature.BottomRight());
-  path_.lineTo(gfx::PointFToSkPoint(rect.BottomLeftCorner().bottom_right()));
-  AddCornerShape(
-      path_, RotatedRect(rect.BottomLeftCorner(), CornerRotation::BottomLeft),
-      curvature.BottomLeft());
-  path_.lineTo(gfx::PointFToSkPoint(rect.TopLeftCorner().bottom_left()));
-  AddCornerShape(path_,
-                 RotatedRect(rect.TopLeftCorner(), CornerRotation::TopLeft),
-                 curvature.TopLeft());
+Path Path::MakeEllipse(const gfx::PointF& center,
+                       float radius_x,
+                       float radius_y) {
+  return PathBuilder().AddEllipse(center, radius_x, radius_y).Finalize();
 }
 
 void Path::AddPath(const Path& src, const AffineTransform& transform) {

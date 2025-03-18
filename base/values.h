@@ -19,6 +19,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/base_export.h"
@@ -29,8 +30,6 @@
 #include "base/containers/span.h"
 #include "base/trace_event/base_tracing_forward.h"
 #include "base/value_iterators.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace base {
 
@@ -952,7 +951,7 @@ class BASE_EXPORT GSL_OWNER Value {
 
   template <typename Visitor>
   auto Visit(Visitor&& visitor) const {
-    return absl::visit(std::forward<Visitor>(visitor), data_);
+    return std::visit(std::forward<Visitor>(visitor), data_);
   }
 
  private:
@@ -1016,20 +1015,20 @@ class BASE_EXPORT GSL_OWNER Value {
   };
 
   // Internal constructors, allowing the simplify the implementation of Clone().
-  explicit Value(absl::monostate);
+  explicit Value(std::monostate);
   explicit Value(DoubleStorage storage);
 
   // A helper for static functions used for cloning a Value or a ValueView.
   class CloningHelper;
 
-  absl::variant<absl::monostate,
-                bool,
-                int,
-                DoubleStorage,
-                std::string,
-                BlobStorage,
-                Dict,
-                List>
+  std::variant<std::monostate,
+               bool,
+               int,
+               DoubleStorage,
+               std::string,
+               BlobStorage,
+               Dict,
+               List>
       data_;
 };
 
@@ -1042,8 +1041,8 @@ class BASE_EXPORT GSL_OWNER Value {
 // `std::string`, `Value::BlobStorage`, `Value::Dict`, `Value::List`, or
 // `Value`) MUST remain live as long as there is a `ValueView` referencing it.
 //
-// While it might be nice to just use the `absl::variant` type directly, the
-// need to use `std::reference_wrapper` makes it clunky. `absl::variant` and
+// While it might be nice to just use the `std::variant` type directly, the
+// need to use `std::reference_wrapper` makes it clunky. `std::variant` and
 // `std::reference_wrapper` both support implicit construction, but C++ only
 // allows at most one user-defined conversion in an implicit conversion
 // sequence. If this adapter and its implicit constructors did not exist,
@@ -1057,7 +1056,7 @@ class BASE_EXPORT GSL_POINTER ValueView {
   ValueView(const T*) = delete;
   ValueView(int value) : data_view_(value) {}
   ValueView(double value)
-      : data_view_(absl::in_place_type_t<Value::DoubleStorage>(), value) {}
+      : data_view_(std::in_place_type_t<Value::DoubleStorage>(), value) {}
   ValueView(std::string_view value) : data_view_(value) {}
   ValueView(const char* value) : ValueView(std::string_view(value)) {}
   ValueView(const std::string& value) : ValueView(std::string_view(value)) {}
@@ -1074,7 +1073,7 @@ class BASE_EXPORT GSL_POINTER ValueView {
   // to be a general replacement of `Value`.
   template <typename Visitor>
   auto Visit(Visitor&& visitor) const {
-    return absl::visit(std::forward<Visitor>(visitor), data_view_);
+    return std::visit(std::forward<Visitor>(visitor), data_view_);
   }
 
   // Returns a clone of the underlying Value.
@@ -1082,14 +1081,14 @@ class BASE_EXPORT GSL_POINTER ValueView {
 
  private:
   using ViewType =
-      absl::variant<absl::monostate,
-                    bool,
-                    int,
-                    Value::DoubleStorage,
-                    std::string_view,
-                    std::reference_wrapper<const Value::BlobStorage>,
-                    std::reference_wrapper<const Value::Dict>,
-                    std::reference_wrapper<const Value::List>>;
+      std::variant<std::monostate,
+                   bool,
+                   int,
+                   Value::DoubleStorage,
+                   std::string_view,
+                   std::reference_wrapper<const Value::BlobStorage>,
+                   std::reference_wrapper<const Value::Dict>,
+                   std::reference_wrapper<const Value::List>>;
 
  public:
   using DoubleStorageForTest = Value::DoubleStorage;

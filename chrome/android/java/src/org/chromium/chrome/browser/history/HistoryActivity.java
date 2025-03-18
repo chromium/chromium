@@ -14,7 +14,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
-import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
@@ -57,8 +56,7 @@ public class HistoryActivity extends SnackbarActivity {
         ViewGroup contentView = mHistoryManager.getView();
         setContentView(contentView);
         if (showAppFilter) createBottomSheetController(contentView);
-        BackPressHelper.create(
-                this, getOnBackPressedDispatcher(), mHistoryManager, SecondaryActivity.HISTORY);
+        BackPressHelper.create(this, getOnBackPressedDispatcher(), mHistoryManager);
     }
 
     private void createBottomSheetController(ViewGroup contentView) {

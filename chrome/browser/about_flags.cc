@@ -5005,6 +5005,13 @@ const FeatureEntry kFeatureEntries[] = {
                                     kMediaFoundationClearStrategyVariations,
                                     "MediaFoundationClearRendering")},
     {
+        "enable-media-foundation-camera-usage-monitoring",
+        flag_descriptions::kMediaFoundationCameraUsageMonitoringName,
+        flag_descriptions::kMediaFoundationCameraUsageMonitoringDescription,
+        kOsWin,
+        FEATURE_VALUE_TYPE(features::kMediaFoundationCameraUsageMonitoring),
+    },
+    {
         "enable-waitable-swap-chain",
         flag_descriptions::kUseWaitableSwapChainName,
         flag_descriptions::kUseWaitableSwapChainDescription,
@@ -11193,11 +11200,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"cros-mall-url", flag_descriptions::kCrosMallUrlName,
      flag_descriptions::kCrosMallUrlDescription, kOsCrOS,
      STRING_VALUE_TYPE(ash::switches::kMallUrl, "")},
-
-    {"overlay-scrollbars-os-settings",
-     flag_descriptions::kOverlayScrollbarsOSSettingsName,
-     flag_descriptions::kOverlayScrollbarsOSSettingsDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kOverlayScrollbarsOSSetting)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     {"autofill-enable-card-benefits-iph",
@@ -11594,6 +11596,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableSnackbarInSettingsDescription,
      kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(switches::kEnableSnackbarInSettings)},
+    {"enable-pending-mode-passwords-promo",
+     flag_descriptions::kEnablePendingModePasswordsPromoName,
+     flag_descriptions::kEnablePendingModePasswordsPromoDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(switches::kEnablePendingModePasswordsPromo)},
 #if BUILDFLAG(IS_ANDROID)
     {"new-etc1-encoder", flag_descriptions::kNewEtc1EncoderName,
      flag_descriptions::kNewEtc1EncoderDescription, kOsAndroid,

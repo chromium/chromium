@@ -105,7 +105,6 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 #include "chrome/browser/ui/views/color_provider_browser_helper.h"
-#include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
 #include "chrome/browser/ui/views/download/download_in_progress_dialog_view.h"
 #include "chrome/browser/ui/views/download/download_shelf_view.h"
@@ -3472,19 +3471,11 @@ views::View* BrowserView::GetLensOverlayView() {
 }
 
 DownloadBubbleUIController* BrowserView::GetDownloadBubbleUIController() {
-  if (base::FeatureList::IsEnabled(features::kPinnableDownloadsButton)) {
     if (auto* download_controller =
             browser_->GetFeatures().download_toolbar_ui_controller()) {
       return download_controller->bubble_controller();
     }
     return nullptr;
-  }
-  DCHECK(toolbar_button_provider_);
-  if (auto* download_button = toolbar_button_provider_->GetDownloadButton()) {
-    return static_cast<DownloadToolbarButtonView*>(download_button)
-        ->bubble_controller();
-  }
-  return nullptr;
 }
 
 void BrowserView::ConfirmBrowserCloseWithPendingDownloads(
@@ -5050,8 +5041,7 @@ void BrowserView::AddedToWidget() {
     SetToolbarButtonProvider(toolbar_);
   }
 
-  if (download::IsDownloadBubbleEnabled() &&
-      base::FeatureList::IsEnabled(features::kPinnableDownloadsButton)) {
+  if (download::IsDownloadBubbleEnabled()) {
     browser_->GetFeatures().download_toolbar_ui_controller()->Init();
   }
 

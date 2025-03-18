@@ -4,6 +4,8 @@
 
 #include "content/browser/webid/digital_credentials/cross_device_transaction_impl.h"
 
+#include <variant>
+
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_logging_settings.h"
@@ -34,7 +36,7 @@ MATCHER_P(ContainsError, expected_error, "") {
     return false;
   }
   const auto* error =
-      absl::get_if<std::remove_const_t<decltype(expected_error)>>(&arg.error());
+      std::get_if<std::remove_const_t<decltype(expected_error)>>(&arg.error());
   if (!error) {
     *result_listener << "error of unexpected type";
     return false;

@@ -69,7 +69,7 @@
                            gridMediatorDelegate:delegate])) {
     _browser = browser->AsWeakPtr();
     _incognitoEnabled = !IsIncognitoModeDisabled(
-        self.browser->GetProfile()->GetOriginalProfile()->GetPrefs());
+        self.profile->GetOriginalProfile()->GetPrefs());
   }
   return self;
 }
@@ -119,8 +119,7 @@
       [IncognitoReauthSceneAgent agentFromScene:self.browser->GetSceneState()];
 
   feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForProfile(
-          self.browser->GetProfile());
+      feature_engagement::TrackerFactory::GetForProfile(self.profile);
 
   _mediator =
       [[IncognitoGridMediator alloc] initWithModeHolder:self.modeHolder];
@@ -133,7 +132,7 @@
   self.gridContainerViewController = container;
 
   _tabContextMenuHelper = [[TabContextMenuHelper alloc]
-             initWithProfile:self.browser->GetProfile()
+             initWithProfile:self.profile
       tabContextMenuDelegate:self.tabContextMenuDelegate];
 
   if (_incognitoEnabled) {

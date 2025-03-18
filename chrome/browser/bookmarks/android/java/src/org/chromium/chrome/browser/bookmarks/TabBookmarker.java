@@ -21,6 +21,8 @@ import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
+import java.util.Objects;
+
 /**
  * Helper class for managing the UI flow for bookmarking the active tab and kicking off the backend.
  * Shows a snackbar if a new bookmark was added. If the bookmark already exists, kicks off edit
@@ -162,8 +164,7 @@ public class TabBookmarker {
                             (currentBookmarkItem == null) ? null : currentBookmarkItem.getId();
                     // Add offline page for a new bookmark.
                     if (newBookmarkId != null
-                            && currentBookmarkId != null
-                            && !newBookmarkId.equals(currentBookmarkId)) {
+                            && !Objects.equals(newBookmarkId, currentBookmarkId)) {
                         OfflinePageUtils.saveBookmarkOffline(newBookmarkId, tabToBookmark);
                     }
                 },

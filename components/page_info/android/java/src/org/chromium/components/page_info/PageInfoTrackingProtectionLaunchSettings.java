@@ -297,9 +297,8 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
             return false;
         }
 
-        assert getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUiFeatureEnabled()
-                        && getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled()
-                : "First Party Sets UI and access should be enabled to show FPS info.";
+        assert getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled()
+                : "RWS access should be enabled to show info.";
 
         mRwsInUse.setVisible(true);
         mRwsInUse.setTitle(R.string.cookie_info_rws_title);

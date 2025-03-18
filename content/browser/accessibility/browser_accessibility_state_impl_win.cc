@@ -11,7 +11,6 @@
 
 #include <windows.h>  // Must be in front of other Windows header files.
 
-#include <psapi.h>
 #include <stddef.h>
 
 #include <memory>
@@ -21,6 +20,7 @@
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
+#include "base/task/thread_pool.h"
 #include "base/win/registry.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
@@ -36,6 +36,80 @@ namespace {
 
 const wchar_t kNarratorRegistryKey[] = L"Software\\Microsoft\\Narrator\\NoRoam";
 const wchar_t kNarratorRunningStateValueName[] = L"RunningState";
+
+static constexpr uint32_t kJaws = 0x01 << 0;
+static constexpr uint32_t kNvda = 0x01 << 1;
+static constexpr uint32_t kNarrator = 0x01 << 2;
+static constexpr uint32_t kSupernova = 0x01 << 3;
+static constexpr uint32_t kZdsr = 0x01 << 4;
+static constexpr uint32_t kZoomtext = 0x01 << 5;
+static constexpr uint32_t kUia = 0x01 << 6;  // API support, not a specific AT.
+static constexpr uint32_t kStickyKeys = 0x01 << 7;
+
+// Returns a bitfield indicating the set of assistive techs that are active.
+uint32_t DiscoverAssistiveTech() {
+  uint32_t discovered_ats = 0;
+
+  // NOTE: this method is run from another thread to reduce jank, since
+  // there's no guarantee these system calls will return quickly. Code that
+  // needs to run in the UI thread can be run in
+  // UpdateHistogramsOnUIThread instead.
+
+  STICKYKEYS sticky_keys = {.cbSize = sizeof(STICKYKEYS)};
+  SystemParametersInfo(SPI_GETSTICKYKEYS, 0, &sticky_keys, 0);
+  if (sticky_keys.dwFlags & SKF_STICKYKEYSON) {
+    discovered_ats |= kStickyKeys;
+  }
+
+  // Narrator detection. Narrator is not injected in process so it needs to be
+  // detected in a different way.
+  DWORD narrator_value = 0;
+  if (base::win::RegKey(HKEY_CURRENT_USER, kNarratorRegistryKey,
+                        KEY_QUERY_VALUE)
+          .ReadValueDW(kNarratorRunningStateValueName, &narrator_value) &&
+      narrator_value) {
+    discovered_ats |= kNarrator;
+  }
+
+  std::vector<HMODULE> snapshot;
+  if (!base::win::GetLoadedModulesSnapshot(::GetCurrentProcess(), &snapshot)) {
+    return discovered_ats;
+  }
+  TCHAR filename[MAX_PATH];
+  for (HMODULE module : snapshot) {
+    auto name_length =
+        ::GetModuleFileName(module, filename, std::size(filename));
+    if (name_length == 0 || name_length >= std::size(filename)) {
+      continue;
+    }
+    std::string module_name(base::FilePath(filename).BaseName().AsUTF8Unsafe());
+    if (base::EqualsCaseInsensitiveASCII(module_name, "fsdomsrv.dll")) {
+      discovered_ats |= kJaws;
+    }
+    if (base::EqualsCaseInsensitiveASCII(module_name,
+                                         "vbufbackend_gecko_ia2.dll") ||
+        base::EqualsCaseInsensitiveASCII(module_name, "nvdahelperremote.dll")) {
+      discovered_ats |= kNarrator;
+    }
+    if (base::EqualsCaseInsensitiveASCII(module_name, "dolwinhk.dll")) {
+      discovered_ats |= kSupernova;
+    }
+    if (base::EqualsCaseInsensitiveASCII(module_name, "outhelper.dll") ||
+        base::EqualsCaseInsensitiveASCII(module_name, "outhelper_x64.dll")) {
+      discovered_ats |= kZdsr;  // Zhengdu screen reader.
+    }
+    if (base::EqualsCaseInsensitiveASCII(module_name, "zslhook.dll") ||
+        base::EqualsCaseInsensitiveASCII(module_name, "zslhook64.dll")) {
+      discovered_ats |= kZoomtext;
+    }
+    if (base::EqualsCaseInsensitiveASCII(module_name, "uiautomation.dll") ||
+        base::EqualsCaseInsensitiveASCII(module_name, "uiautomationcore.dll")) {
+      discovered_ats |= kUia;
+    }
+  }
+
+  return discovered_ats;
+}
 
 // Enables accessibility based on clues that indicate accessibility API usage.
 class WindowsAccessibilityEnabler
@@ -158,23 +232,20 @@ class BrowserAccessibilityStateImplWin : public BrowserAccessibilityStateImpl {
   BrowserAccessibilityStateImplWin();
 
  protected:
+  void RefreshAssistiveTech() override;
   void InitBackgroundTasks() override;
   void UpdateUniqueUserHistograms() override;
   ui::AXPlatform::ProductStrings GetProductStrings() override;
   void OnUiaProviderRequested(bool uia_provider_enabled) override;
-  void UpdateKnownAssistiveTechSlow() override;
-  BrowserAccessibilityState::AssistiveTech ActiveKnownAssistiveTech() override;
 
  private:
+  void OnDiscoveredAssistiveTech(uint32_t discovered_ats);
+
   std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
 
-  bool is_jaws_active_ = false;
-  bool is_narrator_active_ = false;
-  bool is_nvda_active_ = false;
-  bool is_supernova_active_ = false;
-  bool is_zdsr_active_ = false;
-  bool is_zoomtext_active_ = false;
-  bool is_uia_active_ = false;
+  // The presence of an AssistiveTech is currently being recomputed.
+  // Will be updated via DiscoverAssistiveTech().
+  bool awaiting_known_assistive_tech_computation_ = false;
 };
 
 BrowserAccessibilityStateImplWin::BrowserAccessibilityStateImplWin() {
@@ -189,99 +260,39 @@ void BrowserAccessibilityStateImplWin::InitBackgroundTasks() {
       base::BindRepeating(&OnWndProc));
 }
 
-void BrowserAccessibilityStateImplWin::UpdateKnownAssistiveTechSlow() {
-  // NOTE: this method is run from another thread to reduce jank, since
-  // there's no guarantee these system calls will return quickly. Code that
-  // needs to run in the UI thread can be run in
-  // UpdateHistogramsOnUIThread instead.
+void BrowserAccessibilityStateImplWin::RefreshAssistiveTech() {
+  if (!awaiting_known_assistive_tech_computation_) {
+    awaiting_known_assistive_tech_computation_ = true;
+    // Using base::Unretained() instead of a weak pointer as the lifetime of
+    // this is tied to BrowserMainLoop.
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&DiscoverAssistiveTech),
+        base::BindOnce(
+            &BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech,
+            base::Unretained(this)));
+  }
+}
 
-  // Old screen reader metric: does not indicate the use of a screen reader,
-  // just kExtendedProperties mode, which is used by many clients.
-  // Instead of this, use specific metrics below, e.g. WinJAWS, WinNVDA.
-  // TODO(accessibility) Remove this, which is redundant with
-  // PerformanceManager.Experimental.HasAccessibilityModeFlag.
-  ui::AXMode mode =
-      BrowserAccessibilityStateImpl::GetInstance()->GetAccessibilityMode();
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinScreenReader2",
-                        mode.has_mode(ui::AXMode::kExtendedProperties));
+void BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech(
+    uint32_t discovered_ats) {
+  awaiting_known_assistive_tech_computation_ = false;
 
-  STICKYKEYS sticky_keys = {0};
-  sticky_keys.cbSize = sizeof(STICKYKEYS);
-  SystemParametersInfo(SPI_GETSTICKYKEYS, 0, &sticky_keys, 0);
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinJAWS", (discovered_ats & kJaws) != 0);
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinNarrator",
+                        (discovered_ats & kNarrator) != 0);
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinNVDA", (discovered_ats & kNvda) != 0);
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinSupernova",
+                        (discovered_ats & kZdsr) != 0);
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinZDSR",
+                        (discovered_ats & kZoomtext) != 0);
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinZoomText",
+                        (discovered_ats & kJaws) != 0);
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinAPIs.UIAutomation",
+                        (discovered_ats & kUia) != 0);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinStickyKeys",
-                        0 != (sticky_keys.dwFlags & SKF_STICKYKEYSON));
+                        (discovered_ats & kStickyKeys) != 0);
 
-  // Get the file paths of all DLLs loaded.
-  HANDLE process = GetCurrentProcess();
-  HMODULE* modules = nullptr;
-  DWORD bytes_required;
-  if (!EnumProcessModules(process, modules, 0, &bytes_required)) {
-    return;
-  }
-
-  auto buffer = base::HeapArray<uint8_t>::WithSize(bytes_required);
-  modules = reinterpret_cast<HMODULE*>(buffer.data());
-  DWORD ignore;
-  if (!EnumProcessModules(process, modules, bytes_required, &ignore)) {
-    return;
-  }
-
-  is_jaws_active_ = false;
-  is_narrator_active_ = false;
-  is_nvda_active_ = false;
-  is_supernova_active_ = false;
-  is_zdsr_active_ = false;
-  is_zoomtext_active_ = false;
-  is_uia_active_ = false;
-
-  // Look for DLLs of assistive technology known to work with Chrome.
-  size_t module_count = bytes_required / sizeof(HMODULE);
-  for (size_t i = 0; i < module_count; i++) {
-    TCHAR filename[MAX_PATH];
-    GetModuleFileName(modules[i], filename, std::size(filename));
-    std::string module_name(base::FilePath(filename).BaseName().AsUTF8Unsafe());
-    if (base::EqualsCaseInsensitiveASCII(module_name, "fsdomsrv.dll")) {
-      is_jaws_active_ = true;
-    }
-    if (base::EqualsCaseInsensitiveASCII(module_name,
-                                         "vbufbackend_gecko_ia2.dll") ||
-        base::EqualsCaseInsensitiveASCII(module_name, "nvdahelperremote.dll")) {
-      is_nvda_active_ = true;
-    }
-    if (base::EqualsCaseInsensitiveASCII(module_name, "dolwinhk.dll")) {
-      is_supernova_active_ = true;
-    }
-    if (base::EqualsCaseInsensitiveASCII(module_name, "outhelper.dll") ||
-        base::EqualsCaseInsensitiveASCII(module_name, "outhelper_x64.dll")) {
-      is_zdsr_active_ = true;  // Zhengdu screen reader.
-    }
-    if (base::EqualsCaseInsensitiveASCII(module_name, "zslhook.dll") ||
-        base::EqualsCaseInsensitiveASCII(module_name, "zslhook64.dll")) {
-      is_zoomtext_active_ = true;
-    }
-    if (base::EqualsCaseInsensitiveASCII(module_name, "uiautomation.dll") ||
-        base::EqualsCaseInsensitiveASCII(module_name, "uiautomationcore.dll")) {
-      is_uia_active_ = true;
-    }
-  }
-
-  // Narrator detection. Narrator is not injected in process so it needs to be
-  // detected in a different way.
-  DWORD narrator_value = 0;
-  base::win::RegKey narrator_key(HKEY_CURRENT_USER, kNarratorRegistryKey,
-                                 KEY_READ);
-  if (narrator_key.Valid()) {
-    narrator_key.ReadValueDW(kNarratorRunningStateValueName, &narrator_value);
-  }
-  is_narrator_active_ = narrator_value != 0;
-
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinJAWS", is_jaws_active_);
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinNarrator", is_narrator_active_);
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinNVDA", is_nvda_active_);
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinSupernova", is_supernova_active_);
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinZDSR", is_zdsr_active_);
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinZoomText", is_zoomtext_active_);
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinAPIs.UIAutomation", is_uia_active_);
   static auto* ax_jaws_crash_key = base::debug::AllocateCrashKeyString(
       "ax_jaws", base::debug::CrashKeySize::Size32);
   static auto* ax_narrator_crash_key = base::debug::AllocateCrashKeyString(
@@ -297,68 +308,79 @@ void BrowserAccessibilityStateImplWin::UpdateKnownAssistiveTechSlow() {
   static auto* ax_uia_crash_key = base::debug::AllocateCrashKeyString(
       "ax_ui_automation", base::debug::CrashKeySize::Size32);
 
-  if (is_jaws_active_) {
-    base::debug::SetCrashKeyString(ax_jaws_crash_key, "true");
-  } else {
-    base::debug::ClearCrashKeyString(ax_jaws_crash_key);
-  }
-
-  if (is_narrator_active_) {
-    base::debug::SetCrashKeyString(ax_narrator_crash_key, "true");
-  } else {
-    base::debug::ClearCrashKeyString(ax_narrator_crash_key);
-  }
-
-  if (is_nvda_active_) {
-    base::debug::SetCrashKeyString(ax_nvda_crash_key, "true");
-  } else {
-    base::debug::ClearCrashKeyString(ax_nvda_crash_key);
-  }
-
-  if (is_supernova_active_) {
-    base::debug::SetCrashKeyString(ax_supernova_crash_key, "true");
-  } else {
-    base::debug::ClearCrashKeyString(ax_supernova_crash_key);
-  }
-
-  if (is_zdsr_active_) {
-    base::debug::SetCrashKeyString(ax_zdsr_crash_key, "true");
-  } else {
-    base::debug::ClearCrashKeyString(ax_zdsr_crash_key);
-  }
-
-  if (is_zoomtext_active_) {
-    base::debug::SetCrashKeyString(ax_zoomtext_crash_key, "true");
-  } else {
-    base::debug::ClearCrashKeyString(ax_zoomtext_crash_key);
-  }
-
-  if (is_uia_active_) {
+  // API support library, not an actual AT.
+  if (discovered_ats & kUia) {
     base::debug::SetCrashKeyString(ax_uia_crash_key, "true");
   } else {
     base::debug::ClearCrashKeyString(ax_uia_crash_key);
   }
 
-  awaiting_known_assistive_tech_computation_ = false;
+  // More than one type of assistive tech can be running at the same time.
+  // Will prefer to report screen reader over other types of assistive tech,
+  // because screen readers have the strongest effect on the user experience.
+  ui::AssistiveTech most_important_assistive_tech = ui::AssistiveTech::kNone;
+
+  if (discovered_ats & kZoomtext) {
+    base::debug::SetCrashKeyString(ax_zoomtext_crash_key, "true");
+    most_important_assistive_tech = ui::AssistiveTech::kZoomText;
+  } else {
+    base::debug::ClearCrashKeyString(ax_zoomtext_crash_key);
+  }
+
+  if (discovered_ats & kJaws) {
+    base::debug::SetCrashKeyString(ax_jaws_crash_key, "true");
+    most_important_assistive_tech = ui::AssistiveTech::kJaws;
+  } else {
+    base::debug::ClearCrashKeyString(ax_jaws_crash_key);
+  }
+
+  if (discovered_ats & kNarrator) {
+    most_important_assistive_tech = ui::AssistiveTech::kNarrator;
+    base::debug::SetCrashKeyString(ax_narrator_crash_key, "true");
+  } else {
+    base::debug::ClearCrashKeyString(ax_narrator_crash_key);
+  }
+
+  if (discovered_ats & kNvda) {
+    most_important_assistive_tech = ui::AssistiveTech::kNvda;
+    base::debug::SetCrashKeyString(ax_nvda_crash_key, "true");
+  } else {
+    base::debug::ClearCrashKeyString(ax_nvda_crash_key);
+  }
+
+  if (discovered_ats & kSupernova) {
+    base::debug::SetCrashKeyString(ax_supernova_crash_key, "true");
+    most_important_assistive_tech = ui::AssistiveTech::kSupernova;
+  } else {
+    base::debug::ClearCrashKeyString(ax_supernova_crash_key);
+  }
+
+  if (discovered_ats & kZdsr) {
+    base::debug::SetCrashKeyString(ax_zdsr_crash_key, "true");
+    most_important_assistive_tech = ui::AssistiveTech::kSupernova;
+  } else {
+    base::debug::ClearCrashKeyString(ax_zdsr_crash_key);
+  }
+
+  OnAssistiveTechFound(most_important_assistive_tech);
 }
 
 void BrowserAccessibilityStateImplWin::UpdateUniqueUserHistograms() {
   BrowserAccessibilityStateImpl::UpdateUniqueUserHistograms();
 
-  ui::AXMode mode = GetAccessibilityMode();
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinScreenReader2.EveryReport",
-                        mode.has_mode(ui::AXMode::kExtendedProperties));
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinJAWS.EveryReport", is_jaws_active_);
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinNVDA.EveryReport", is_nvda_active_);
+  ui::AssistiveTech assistive_tech = ActiveAssistiveTech();
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinJAWS.EveryReport",
+                        assistive_tech == ui::AssistiveTech::kJaws);
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinNVDA.EveryReport",
+                        assistive_tech == ui::AssistiveTech::kNvda);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinSupernova.EveryReport",
-                        is_supernova_active_);
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinZDSR.EveryReport", is_zdsr_active_);
+                        assistive_tech == ui::AssistiveTech::kSupernova);
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinZDSR.EveryReport",
+                        assistive_tech == ui::AssistiveTech::kZdsr);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinZoomText.EveryReport",
-                        is_zoomtext_active_);
+                        assistive_tech == ui::AssistiveTech::kZoomText);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinNarrator.EveryReport",
-                        is_narrator_active_);
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinAPIS.UIAutomation.EveryReport",
-                        is_uia_active_);
+                        assistive_tech == ui::AssistiveTech::kNarrator);
 }
 
 ui::AXPlatform::ProductStrings
@@ -381,32 +403,6 @@ void BrowserAccessibilityStateImplWin::OnUiaProviderRequested(
     bool uia_provider_enabled) {
   CHECK_DEREF(CHECK_DEREF(GetContentClient()).browser())
       .OnUiaProviderRequested(uia_provider_enabled);
-}
-
-BrowserAccessibilityState::AssistiveTech
-BrowserAccessibilityStateImplWin::ActiveKnownAssistiveTech() {
-  if (awaiting_known_assistive_tech_computation_) {
-    return kUnknown;
-  }
-  if (is_jaws_active_) {
-    return kJaws;
-  }
-  if (is_narrator_active_) {
-    return kNarrator;
-  }
-  if (is_nvda_active_) {
-    return kNvda;
-  }
-  if (is_supernova_active_) {
-    return kSupernova;
-  }
-  if (is_zdsr_active_) {
-    return kZdsr;  // Zhengdu screen reader.
-  }
-  if (is_zoomtext_active_) {
-    return kZoomText;
-  }
-  return kNone;
 }
 
 // static

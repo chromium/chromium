@@ -19,7 +19,6 @@
 #include "media/base/decoder_buffer.h"
 #include "media/parsers/vp8_parser.h"
 #include "media/parsers/vp9_parser.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/libgav1/src/src/buffer_pool.h"
 #include "third_party/libgav1/src/src/decoder_state.h"
 #include "third_party/libgav1/src/src/obu_parser.h"

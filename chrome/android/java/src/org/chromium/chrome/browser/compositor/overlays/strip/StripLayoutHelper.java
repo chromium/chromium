@@ -2971,8 +2971,7 @@ public class StripLayoutHelper
         builder.append(groupDescription);
 
         // 2. Retrieve the grouped tabs and append the tab titles.
-        List<Tab> relatedTabs =
-                mTabGroupModelFilter.getRelatedTabListForRootId(groupTitle.getRootId());
+        List<Tab> relatedTabs = mTabGroupModelFilter.getTabsInGroup(groupTitle.getTabGroupId());
         int relatedTabsCount = relatedTabs.size();
         if (relatedTabsCount > 0) {
             final String contentDescriptionSeparator = " - ";

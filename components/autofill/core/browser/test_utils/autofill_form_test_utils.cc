@@ -146,6 +146,9 @@ FormFieldData GetFormFieldData(const FieldDescription& fd) {
         fd.checked ? FormFieldData::CheckStatus::kChecked
                    : FormFieldData::CheckStatus::kCheckableButUnchecked);
   }
+  if (fd.form_control_ax_id) {
+    ff.set_form_control_ax_id(*fd.form_control_ax_id);
+  }
   CHECK(!fd.checked ||
         ff.form_control_type() == FormControlType::kInputCheckbox ||
         ff.form_control_type() == FormControlType::kInputRadio)

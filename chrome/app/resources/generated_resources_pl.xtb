@@ -1337,6 +1337,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1918127774159128277">Odśwież funkcje Wi-Fi Direct</translation>
 <translation id="1918141783557917887">&amp;Mniejszy</translation>
 <translation id="1918281588461452432">Gdy przeglądasz strony, ich zawartość jest szyfrowana i zapisywana na Twoim urządzeniu</translation>
+<translation id="1919096511823372013">Wstawiaj linki, emotikony i inne elementy. Możesz też korzystać z pomocy AI od Google podczas pisania i tworzenia obrazów.</translation>
 <translation id="1919872106782726755">Aby skonfigurować odcisk palca, poproś dziecko, aby dotknęło czytnika linii papilarnych w prawym górnym rogu klawiatury, obok przycisku zasilania. Odciski palców Twojego dziecka są przechowywane w bezpieczny sposób i wyłącznie na tym urządzeniu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="192015196730532810">Możesz utworzyć własną grupę kart.</translation>
 <translation id="1920314570001095522">Nie ma podobnych kart do uporządkowania, ale mogą Ci się spodobać te grupy</translation>
@@ -8956,6 +8957,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7377451353532943397">Nadal blokuj dostęp do czujników</translation>
 <translation id="7377481913241237033">Połącz przy użyciu kodu</translation>
 <translation id="73786666777299047">Otwórz Chrome Web Store</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Inne zadanie w tej samej grupie zadań: <ph name="OTHER_TASKS" />}few{<ph name="TASK_ROW" />. # inne zadania w tej samej grupie zadań: <ph name="OTHER_TASKS" />}many{<ph name="TASK_ROW" />. # innych zadań w tej samej grupie zadań: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. # innego zadania w tej samej grupie zadań: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380272457268061606">Wyłączyć odzyskiwanie danych lokalnych?</translation>
 <translation id="7380459290951585794">Sprawdź, czy telefon jest w pobliżu, jest odblokowany i ma włączone Bluetooth oraz Wi-Fi</translation>
 <translation id="7380622428988553498">Nazwa urządzenia zawiera niedozwolone znaki</translation>

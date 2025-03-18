@@ -40,7 +40,7 @@ float FloatValueForLength(const Length& length,
                           const EvaluationInput& input) {
   switch (length.GetType()) {
     case Length::kFixed:
-      return length.GetFloatValue();
+      return length.Pixels();
     case Length::kPercent:
       return ClampTo<float>(maximum_value * length.Percent() / 100.0f);
     case Length::kFillAvailable:

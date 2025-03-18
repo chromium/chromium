@@ -13,6 +13,7 @@
 #include <random>
 #include <set>
 #include <stack>
+#include <utility>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -36,7 +37,6 @@
 #include "partition_alloc/partition_address_space.h"
 #include "partition_alloc/partition_alloc_constants.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/os_metrics.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace ash {
 namespace memory {

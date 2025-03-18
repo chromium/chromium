@@ -4,6 +4,8 @@
 
 #include "components/mirroring/service/captured_audio_input.h"
 
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -19,7 +21,6 @@
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 using ::testing::InvokeWithoutArgs;
 

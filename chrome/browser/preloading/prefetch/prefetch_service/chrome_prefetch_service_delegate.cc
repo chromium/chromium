@@ -6,6 +6,9 @@
 
 #include "chrome/browser/battery/battery_saver.h"
 #include "chrome/browser/data_saver/data_saver.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/preloading/prefetch/prefetch_service/prefetch_origin_decider.h"
 #include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
@@ -116,6 +119,20 @@ bool ChromePrefetchServiceDelegate::IsContaminationExempt(
   return template_url_service &&
          template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
              referring_url);
+}
+
+bool ChromePrefetchServiceDelegate::IsContaminationExemptPerOrigin(
+    const url::Origin& referring_origin) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(chrome::android::kCCTNavigationalPrefetch)) {
+    TemplateURLService* template_url_service =
+        TemplateURLServiceFactory::GetForProfile(profile_);
+    return template_url_service &&
+           template_url_service->GetDefaultSearchProviderOrigin() ==
+               referring_origin;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+  return false;
 }
 
 void ChromePrefetchServiceDelegate::OnPrefetchLikely(

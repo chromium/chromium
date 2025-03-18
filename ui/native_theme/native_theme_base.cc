@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <variant>
 
 #include "base/check.h"
 #include "base/command_line.h"
@@ -236,51 +237,50 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
     // Please keep these in the order of NativeTheme::Part.
     case kCheckbox:
       PaintCheckbox(canvas, color_provider, state, rect,
-                    absl::get<ButtonExtraParams>(extra), color_scheme,
+                    std::get<ButtonExtraParams>(extra), color_scheme,
                     accent_color_opaque);
       break;
 #if BUILDFLAG(IS_LINUX)
     case kFrameTopArea:
       PaintFrameTopArea(canvas, state, rect,
-                        absl::get<FrameTopAreaExtraParams>(extra),
-                        color_scheme);
+                        std::get<FrameTopAreaExtraParams>(extra), color_scheme);
       break;
 #endif
     case kInnerSpinButton:
       PaintInnerSpinButton(canvas, color_provider, state, rect,
-                           absl::get<InnerSpinButtonExtraParams>(extra),
+                           std::get<InnerSpinButtonExtraParams>(extra),
                            color_scheme, in_forced_colors);
       break;
     case kMenuList:
       PaintMenuList(canvas, color_provider, state, rect,
-                    absl::get<MenuListExtraParams>(extra), color_scheme);
+                    std::get<MenuListExtraParams>(extra), color_scheme);
       break;
     case kMenuPopupBackground:
       PaintMenuPopupBackground(canvas, color_provider, rect.size(),
-                               absl::get<MenuBackgroundExtraParams>(extra),
+                               std::get<MenuBackgroundExtraParams>(extra),
                                color_scheme);
       break;
     case kMenuPopupSeparator:
       PaintMenuSeparator(canvas, color_provider, state, rect,
-                         absl::get<MenuSeparatorExtraParams>(extra));
+                         std::get<MenuSeparatorExtraParams>(extra));
       break;
     case kMenuItemBackground:
       PaintMenuItemBackground(canvas, color_provider, state, rect,
-                              absl::get<MenuItemExtraParams>(extra),
+                              std::get<MenuItemExtraParams>(extra),
                               color_scheme);
       break;
     case kProgressBar:
       PaintProgressBar(canvas, color_provider, state, rect,
-                       absl::get<ProgressBarExtraParams>(extra), color_scheme,
+                       std::get<ProgressBarExtraParams>(extra), color_scheme,
                        accent_color_opaque);
       break;
     case kPushButton:
       PaintButton(canvas, color_provider, state, rect,
-                  absl::get<ButtonExtraParams>(extra), color_scheme);
+                  std::get<ButtonExtraParams>(extra), color_scheme);
       break;
     case kRadio:
       PaintRadio(canvas, color_provider, state, rect,
-                 absl::get<ButtonExtraParams>(extra), color_scheme,
+                 std::get<ButtonExtraParams>(extra), color_scheme,
                  accent_color_opaque);
       break;
     case kScrollbarDownArrow:
@@ -290,19 +290,19 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
       if (scrollbar_button_length_ > 0) {
         PaintArrowButton(canvas, color_provider, rect, part, state,
                          color_scheme, in_forced_colors,
-                         absl::get<ScrollbarArrowExtraParams>(extra));
+                         std::get<ScrollbarArrowExtraParams>(extra));
       }
       break;
     case kScrollbarHorizontalThumb:
     case kScrollbarVerticalThumb:
       PaintScrollbarThumb(canvas, color_provider, part, state, rect,
-                          absl::get<ScrollbarThumbExtraParams>(extra),
+                          std::get<ScrollbarThumbExtraParams>(extra),
                           color_scheme);
       break;
     case kScrollbarHorizontalTrack:
     case kScrollbarVerticalTrack:
       PaintScrollbarTrack(canvas, color_provider, part, state,
-                          absl::get<ScrollbarTrackExtraParams>(extra), rect,
+                          std::get<ScrollbarTrackExtraParams>(extra), rect,
                           color_scheme, in_forced_colors);
       break;
     case kScrollbarHorizontalGripper:
@@ -312,17 +312,17 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
       break;
     case kScrollbarCorner:
       PaintScrollbarCorner(canvas, color_provider, state, rect,
-                           absl::get<ScrollbarTrackExtraParams>(extra),
+                           std::get<ScrollbarTrackExtraParams>(extra),
                            color_scheme);
       break;
     case kSliderTrack:
       PaintSliderTrack(canvas, color_provider, state, rect,
-                       absl::get<SliderExtraParams>(extra), color_scheme,
+                       std::get<SliderExtraParams>(extra), color_scheme,
                        accent_color_opaque);
       break;
     case kSliderThumb:
       PaintSliderThumb(canvas, color_provider, state, rect,
-                       absl::get<SliderExtraParams>(extra), color_scheme,
+                       std::get<SliderExtraParams>(extra), color_scheme,
                        accent_color_opaque);
       break;
     case kTabPanelBackground:
@@ -330,7 +330,7 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
       break;
     case kTextField:
       PaintTextField(canvas, color_provider, state, rect,
-                     absl::get<TextFieldExtraParams>(extra), color_scheme);
+                     std::get<TextFieldExtraParams>(extra), color_scheme);
       break;
     case kTrackbarThumb:
     case kTrackbarTrack:

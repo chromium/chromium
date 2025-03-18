@@ -432,7 +432,6 @@
 <translation id="2981364137500752533">আপোনাৰ ৫ খনলৈকে ৱিণ্ড’ থাকিব পাৰে।</translation>
 <translation id="2983102365694924129">এটা ছাইটত আপোনাৰ কাৰ্যকলাপৰ ওপৰত ভিত্তি কৰি। এই ছেটিংটো অফ হৈ আছে।</translation>
 <translation id="2984978667043170458">Googleত কৰা সন্ধানত আশে-পাশে থকা পাঠ ব্যৱহাৰ কৰক</translation>
-<translation id="2988638966064514052">আপোনাৰ পাছৱর্ডসমূহ অধিক শক্তিশালী কৰক</translation>
 <translation id="2989523299700148168">শেহতীয়াকৈ চোৱা</translation>
 <translation id="2992473221983447149">প্ৰতিচ্ছবিৰ বিৱৰণ</translation>
 <translation id="2996291259634659425">পাছফ্ৰেজ সৃষ্টি কৰক</translation>
@@ -548,7 +547,6 @@
 <translation id="3557336313807607643">সর্ম্পকসূচীত যোগ কৰক</translation>
 <translation id="3563767357928833671">ক্লিপব'ৰ্ডৰ সমল দেখুওৱা হৈছে</translation>
 <translation id="3566639033325271639">ছেটিং আপডে’ট কৰক</translation>
-<translation id="3568945271227339929">কোনো পাছৱৰ্ড হেক হোৱা নাই</translation>
 <translation id="3575464060651642446">এই ডিভাইচত পাছৱৰ্ডসমূহ পৰীক্ষা কৰি থকা হৈছে…</translation>
 <translation id="3577473026931028326">কিবা ভুল হ’ল। পুনৰ চেষ্টা কৰক।</translation>
 <translation id="3577558748185201054">আপোনাৰ আগ্ৰহ আৰু পছন্দসমূহ পৰিচালনা কৰক</translation>
@@ -1055,7 +1053,6 @@
 <translation id="5958275228015807058">আপোনাৰ ফাইল আৰু পৃষ্ঠাসমূহ ডাউনল'ড-ত পাওক</translation>
 <translation id="5958994127112619898">পৃষ্ঠাখন সৰল কৰক</translation>
 <translation id="5962718611393537961">সংকোচন কৰিবলৈ টিপক</translation>
-<translation id="5964180026566797835">পাছৱৰ্ড পৰীক্ষা কৰিব নোৱাৰি</translation>
 <translation id="5964869237734432770">প্ৰতিচ্ছবিৰ বিৱৰণ বন্ধ কৰক</translation>
 <translation id="5977976211062815271">এই ডিভাইচটোত</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{আপোনাৰ পঢ়াৰ সূচীত থকা ১ খন পৃষ্ঠা}one{আপোনাৰ পঢ়াৰ সূচীত থকা # খন পৃষ্ঠা}other{আপোনাৰ পঢ়াৰ সূচীত থকা # খন পৃষ্ঠা}}</translation>
@@ -1099,6 +1096,7 @@
 <translation id="6150320133806434356">বুকমাৰ্ক ছেভ কৰা হৈছে</translation>
 <translation id="6150706324143004339">আপোনাৰ Google একাউণ্টত Chromeৰ ডেটা ব্যৱহাৰ আৰু ছেভ কৰিবলৈ Chrome আপডে’ট কৰক</translation>
 <translation id="6154478581116148741">এই ডিভাইচটোৰ পৰা আপোনাৰ পাছৱৰ্ডসমূহ ৰপ্তানি কৰিবলৈ ছেটিংসমূহ-লৈ গৈ স্ক্রীণ লক অন কৰক</translation>
+<translation id="6156323911414505561">বুকমাৰ্কৰ বাৰ দেখুৱাওক</translation>
 <translation id="6162892189396105610">Chromeএ যিবোৰ পৃষ্ঠালৈ আপুনি যোৱাৰ সম্ভাৱনা আছে বুলি ভাবে সেইসমূহ আগতীয়াকৈ ল’ড কৰে।</translation>
 <translation id="6170675927290506430">জাননীৰ ছেটিঙলৈ যাওক</translation>
 <translation id="6186394685773237175">হেক হোৱা কোনো পাছৱর্ড পোৱা নাই</translation>

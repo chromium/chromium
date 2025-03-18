@@ -53,7 +53,7 @@ inline LayoutUnit MinimumValueForLength(const Length& length,
                                         LayoutUnit maximum_value,
                                         const EvaluationInput& input = {}) {
   if (length.IsFixed()) [[likely]] {
-    return LayoutUnit(length.Value());
+    return LayoutUnit(length.Pixels());
   }
 
   return MinimumValueForLengthInternal(length, maximum_value, input);

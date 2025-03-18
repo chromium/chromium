@@ -430,25 +430,6 @@ void BrowserAccessibilityStateImplAndroid::OnContrastLevelChanged(
   native_theme->NotifyOnNativeThemeUpdated();
 }
 
-void BrowserAccessibilityStateImplAndroid::UpdateHistogramsOnOtherThread() {
-  BrowserAccessibilityStateImpl::UpdateHistogramsOnOtherThread();
-
-  // NOTE: this method is run from another thread to reduce jank, since
-  // there's no guarantee these system calls will return quickly. Be careful
-  // not to add any code that isn't safe to run from a non-main thread!
-  DCHECK(!BrowserThread::CurrentlyOn(BrowserThread::UI));
-
-  // Old screen reader metric: does not indicate the use of a screen reader,
-  // just kExtendedProperties mode, which is used by many clients.
-  // TODO(accessibility) Add metric for Talkback usage and remove this
-  // metric, which is redundant with
-  // PerformanceManager.Experimental.HasAccessibilityModeFlag.
-  ui::AXMode mode =
-      BrowserAccessibilityStateImpl::GetInstance()->GetAccessibilityMode();
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.Android.ScreenReader",
-                        mode.has_mode(ui::AXMode::kExtendedProperties));
-}
-
 void BrowserAccessibilityStateImplAndroid::UpdateUniqueUserHistograms() {
   BrowserAccessibilityStateImpl::UpdateUniqueUserHistograms();
 
@@ -461,33 +442,24 @@ void BrowserAccessibilityStateImplAndroid::UpdateUniqueUserHistograms() {
   UMA_HISTOGRAM_BOOLEAN("Accessibility.Android.ScreenReader.EveryReport",
                         mode.has_mode(ui::AXMode::kExtendedProperties));
   UMA_HISTOGRAM_BOOLEAN("Accessibility.Android.Talkback.EveryReport",
-                        is_talkback_active_);
+                        ActiveAssistiveTech() == ui::AssistiveTech::kTalkback);
 }
 
-void BrowserAccessibilityStateImplAndroid::SetKnownScreenReaderAppActive(
-    bool is_known_screen_reader_running) {
+void BrowserAccessibilityStateImplAndroid::SetScreenReaderAppActive(
+    bool is_active) {
   static auto* ax_talkback_crash_key = base::debug::AllocateCrashKeyString(
       "ax_talkback", base::debug::CrashKeySize::Size32);
 
-  if (is_known_screen_reader_running) {
+  if (is_active) {
     base::debug::SetCrashKeyString(ax_talkback_crash_key, "true");
-  } else if (is_talkback_active_) {
+  } else {
     base::debug::ClearCrashKeyString(ax_talkback_crash_key);
   }
 
-  is_talkback_active_ = is_known_screen_reader_running;
-  awaiting_known_assistive_tech_computation_ = false;
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.Android.Talkback", is_active);
 
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.Android.Talkback",
-                        is_known_screen_reader_running);
-}
-
-BrowserAccessibilityState::AssistiveTech
-BrowserAccessibilityStateImplAndroid::ActiveKnownAssistiveTech() {
-  if (awaiting_known_assistive_tech_computation_) {
-    return kUnknown;
-  }
-  return is_talkback_active_ ? kTalkback : kNone;
+  OnAssistiveTechFound(is_active ? ui::AssistiveTech::kTalkback
+                                 : ui::AssistiveTech::kNone);
 }
 
 // static

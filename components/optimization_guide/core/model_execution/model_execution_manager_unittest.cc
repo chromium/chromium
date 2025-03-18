@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -46,8 +47,8 @@ proto::ExecuteResponse BuildComposeResponse(const std::string& output) {
   compose_response.set_output(output);
   proto::ExecuteResponse execute_response;
   proto::Any* any_metadata = execute_response.mutable_response_metadata();
-  any_metadata->set_type_url("type.googleapis.com/" +
-                             compose_response.GetTypeName());
+  any_metadata->set_type_url(
+      base::StrCat({"type.googleapis.com/", compose_response.GetTypeName()}));
   execute_response.set_server_execution_id("test_id");
   compose_response.SerializeToString(any_metadata->mutable_value());
   return execute_response;

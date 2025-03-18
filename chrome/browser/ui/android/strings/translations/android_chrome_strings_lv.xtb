@@ -432,7 +432,6 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="2981364137500752533">Varat atvērt ne vairāk kā 5 logus.</translation>
 <translation id="2983102365694924129">Pamatā ir jūsu darbības vietnē. Šis iestatījums ir izslēgts.</translation>
 <translation id="2984978667043170458">Iekļaut apkārtējo tekstu Google meklēšanā</translation>
-<translation id="2988638966064514052">Uzlabojiet paroļu drošumu</translation>
 <translation id="2989523299700148168">Nesen apmeklētās</translation>
 <translation id="2992473221983447149">Attēlu apraksti</translation>
 <translation id="2996291259634659425">Ieejas frāzes izveide</translation>
@@ -548,7 +547,6 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3557336313807607643">Pievienot kontaktpersonām</translation>
 <translation id="3563767357928833671">Tiek rādīts starpliktuves saturs</translation>
 <translation id="3566639033325271639">Atjaunināt iestatījumus</translation>
-<translation id="3568945271227339929">Nav uzlauztu paroļu</translation>
 <translation id="3575464060651642446">Notiek paroļu pārbaude šajā ierīcē…</translation>
 <translation id="3577473026931028326">Radās kļūda. Mēģiniet vēlreiz.</translation>
 <translation id="3577558748185201054">Pārvaldiet savas intereses un preferences.</translation>
@@ -1055,7 +1053,6 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="5958275228015807058">Atrodiet savus failus un lapas sadaļā Lejupielādes</translation>
 <translation id="5958994127112619898">Vienkāršot lapu</translation>
 <translation id="5962718611393537961">Pieskarties, lai sakļautu</translation>
-<translation id="5964180026566797835">Nevar pārbaudīt paroles</translation>
 <translation id="5964869237734432770">Atspējot attēlu aprakstus</translation>
 <translation id="5977976211062815271">Šajā ierīcē</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{Jūsu lasīšanas sarakstā ir 1 lapa.}zero{Jūsu lasīšanas sarakstā ir # lapas.}one{Jūsu lasīšanas sarakstā ir # lapa.}other{Jūsu lasīšanas sarakstā ir # lapas.}}</translation>
@@ -1099,6 +1096,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="6150320133806434356">Grāmatzīme ir saglabāta</translation>
 <translation id="6150706324143004339">Lai izmantotu un saglabātu Chrome datus savā Google kontā, atjauniniet pārlūku Chrome</translation>
 <translation id="6154478581116148741">Lai eksportētu paroles no šīs ierīces, sadaļā “Iestatījumi” ieslēdziet ekrāna bloķēšanu.</translation>
+<translation id="6156323911414505561">Rādīt grāmatzīmju joslu</translation>
 <translation id="6162892189396105610">Tiek iepriekš ielādētas lapas, ko jūs varētu apmeklēt saskaņā ar Chrome pieejamajiem datiem.</translation>
 <translation id="6170675927290506430">Pāriet uz paziņojumu iestatījumiem</translation>
 <translation id="6186394685773237175">Netika atrasta neviena uzlauzta parole.</translation>

@@ -166,7 +166,6 @@ import org.chromium.chrome.browser.tab.TabUtils.UseDesktopUserAgentCaller;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabCreatorManagerSupplier;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelInitializer;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -284,9 +283,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     private final UnownedUserDataSupplier<TabModelSelector> mTabModelSelectorSupplier =
             new TabModelSelectorSupplier();
 
-    /** Used to access the {@link TabCreatorManager} from {@link WindowAndroid}. */
-    private final UnownedUserDataSupplier<TabCreatorManager> mTabCreatorManagerSupplier =
-            new TabCreatorManagerSupplier();
+    /** Used to hold a mutable reference to a {@link TabCreatorManager}. */
+    private final ObservableSupplierImpl<TabCreatorManager> mTabCreatorManagerSupplier =
+            new ObservableSupplierImpl<>();
 
     protected final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeControllerSupplier =
             new ObservableSupplierImpl<>();
@@ -563,7 +562,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     private void setupUnownedUserDataSuppliers() {
         mShareDelegateSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
         mTabModelSelectorSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
-        mTabCreatorManagerSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
         mManualFillingComponentSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
         mBrowserControlsManagerSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
         // BrowserControlsManager is ready immediately.
@@ -1555,7 +1553,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                     UNFOLD_LATENCY_BEGIN_TIMESTAMP, getOnPauseBeforeFoldRecreateTimestampMs());
         }
         outState.putBoolean(IS_FROM_RECREATING, mIsRecreating);
-        mRootUiCoordinator.onSaveInstanceState(outState, mIsRecreatingForTabletModeChange);
+        mRootUiCoordinator.onSaveInstanceState(outState);
     }
 
     /**
@@ -2799,9 +2797,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             mIsTabReparentingPrepared = true;
             if (!isFinishing()) {
                 mIsRecreatingForTabletModeChange = tabletMode.changed;
-                if (mIsRecreatingForTabletModeChange) {
-                    mRootUiCoordinator.prepareUiState();
-                }
+                mRootUiCoordinator.prepareUiState();
                 // Store the OnPause timestamp before recreation to capture unfold latency metric
                 // only if the activity is currently not in stopped state, to not capture the time
                 // when system was suspended. Hence, unfolding instances where Chrome wasn't in

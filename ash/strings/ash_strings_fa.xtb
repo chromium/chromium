@@ -166,6 +166,7 @@
 <translation id="1505542291183484463">تغییر اندازه کاشی پنجره به‌سمت پایین</translation>
 <translation id="1510238584712386396">راه‌انداز</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{نشان دادن تنظیمات اعلان. اعلان‌های یک برنامه خاموش است}one{نشان دادن تنظیمات اعلان. اعلان‌های # برنامه خاموش است}other{نشان دادن تنظیمات اعلان. اعلان‌های # برنامه خاموش است}}</translation>
+<translation id="1521655867290435174">‏کاربرگ‌نگار Google</translation>
 <translation id="1523032696246003">باتری <ph name="BATTERY_PERCENTAGE" />٪ | <ph name="TIME" /> مانده تا شارژ کامل</translation>
 <translation id="1525508553941733066">رد کردن</translation>
 <translation id="1526448108126799339">باز کردن برگه جدید در پنجره جدید</translation>
@@ -345,7 +346,6 @@
 <translation id="2201071101391734388">عکس اخیر <ph name="INDEX" /> از <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">‏جمع کردن Google Tasks</translation>
 <translation id="2208323208084708176">حالت میز کار یکپارچه</translation>
-<translation id="2220572644011485463">پین یا گذرواژه</translation>
 <translation id="2222841058024245321">میز کار ۷</translation>
 <translation id="2223384056430485343">در صفحهٔ دونیمه</translation>
 <translation id="2224075387478458881">ضبط صفحه‌نمایش هنگامی که محتوای محافظت‌شده نمایان باشد مجاز نیست</translation>
@@ -1829,7 +1829,6 @@
 <translation id="7000027735917578303">تنظیمات پنجره‌ها و میزکارها</translation>
 <translation id="7004910047186208204">اتصال به شبکه داده تلفن همراه</translation>
 <translation id="7005239792648594238">برای شروع کار، برنامه‌ای را باز کنید</translation>
-<translation id="7007983414944123363">نمی‌توان پین یا گذرواژه را تأیید کرد. دوباره امتحان کنید.</translation>
 <translation id="7014684956566476813">متصل به دستگاهی با نام <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">ساعت <ph name="COME_BACK_TIME" /> دوباره برگردید.</translation>
 <translation id="70168403932084660">میز کار ۶</translation>
@@ -2465,6 +2464,7 @@
 <translation id="9168436347345867845">بعداً انجام شود</translation>
 <translation id="9178475906033259337">نمایش ۱ نتیجه برای <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">این ویژگی امکان می‌دهد بدون نیاز به گذرواژه، به هر کاربری که به سیستم واردشده به‌سرعت دسترسی داشته باشید. تنها برای حساب‌های مورد اعتمادتان از این ویژگی استفاده کنید.</translation>
+<translation id="9183302530794969518">‏سندنگار Google</translation>
 <translation id="9183456764293710005">ذره‌بین تمام‌صفحه</translation>
 <translation id="9192133205265227850">استفاده از «<ph name="DEVICE_NAME" />»</translation>
 <translation id="9193626018745640770">درحال پخش محتوا به گیرنده ناشناس</translation>

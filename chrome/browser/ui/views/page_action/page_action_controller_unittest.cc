@@ -451,7 +451,13 @@ TEST_F(PageActionControllerMockModelTest, ShowSuggestionChip) {
 
   EXPECT_CALL(models().Get(kActionItemId), SetShowSuggestionChip(_, true))
       .Times(1);
+  EXPECT_CALL(models().Get(kActionItemId), SetShouldAnimateChip(_, true)).Times(1);
   controller().ShowSuggestionChip(kActionItemId);
+
+  EXPECT_CALL(models().Get(kActionItemId), SetShowSuggestionChip(_, true))
+      .Times(1);
+  EXPECT_CALL(models().Get(kActionItemId), SetShouldAnimateChip(_, false)).Times(1);
+  controller().ShowSuggestionChip(kActionItemId, {.should_animate = false});
 
   EXPECT_CALL(models().Get(kActionItemId), SetShowSuggestionChip(_, false))
       .Times(1);

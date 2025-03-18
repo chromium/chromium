@@ -7,6 +7,7 @@
 #include <atomic>
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/check_op.h"
 #include "base/containers/heap_array.h"
@@ -27,7 +28,6 @@
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "mojo/public/cpp/system/wait.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/v8_compile_hints_histograms.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
@@ -158,13 +158,13 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
           // the client once the streaming completes.
           Vector<char> copy_for_decoder;
           copy_for_decoder.AppendSpan(base::as_chars(buffer));
-          if (absl::holds_alternative<ScriptDecoder*>(script_decoder_)) {
-            absl::get<ScriptDecoder*>(script_decoder_)
+          if (std::holds_alternative<ScriptDecoder*>(script_decoder_)) {
+            std::get<ScriptDecoder*>(script_decoder_)
                 ->DidReceiveData(std::move(copy_for_decoder));
           } else {
-            CHECK(absl::holds_alternative<ScriptDecoderWithClient*>(
+            CHECK(std::holds_alternative<ScriptDecoderWithClient*>(
                 script_decoder_));
-            absl::get<ScriptDecoderWithClient*>(script_decoder_)
+            std::get<ScriptDecoderWithClient*>(script_decoder_)
                 ->DidReceiveData(std::move(copy_for_decoder),
                                  /*send_to_client=*/true);
           }
@@ -323,7 +323,7 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
   base::HeapArray<uint8_t> initial_data_;
 
   mojo::ScopedDataPipeConsumerHandle data_pipe_;
-  absl::variant<ScriptDecoderWithClient*, ScriptDecoder*> script_decoder_;
+  std::variant<ScriptDecoderWithClient*, ScriptDecoder*> script_decoder_;
 };
 
 std::tuple<ScriptStreamer*, ScriptStreamer::NotStreamingReason>
@@ -1107,10 +1107,10 @@ BuildCompileHintsForStreaming(
               : nullptr,
           metadata && V8CodeCache::HasHotTimestamp(*metadata, encoding));
   if (metadata) {
-    absl::variant<Vector<uint8_t>, mojo_base::BigBuffer> drained_data =
+    std::variant<Vector<uint8_t>, mojo_base::BigBuffer> drained_data =
         std::move(*metadata).DrainSerializedData();
-    CHECK(absl::holds_alternative<mojo_base::BigBuffer>(drained_data));
-    big_buffer = std::move(absl::get<mojo_base::BigBuffer>(drained_data));
+    CHECK(std::holds_alternative<mojo_base::BigBuffer>(drained_data));
+    big_buffer = std::move(std::get<mojo_base::BigBuffer>(drained_data));
   }
   return result;
 }
@@ -1747,10 +1747,10 @@ BackgroundResourceScriptStreamer::BackgroundProcessor::
     }
   }
   // Keep the buffer alive while V8 reads from it.
-  absl::variant<Vector<uint8_t>, mojo_base::BigBuffer> drained_data =
+  std::variant<Vector<uint8_t>, mojo_base::BigBuffer> drained_data =
       std::move(*metadata).DrainSerializedData();
-  CHECK(absl::holds_alternative<mojo_base::BigBuffer>(drained_data));
-  cached_metadata_ = std::move(absl::get<mojo_base::BigBuffer>(drained_data));
+  CHECK(std::holds_alternative<mojo_base::BigBuffer>(drained_data));
+  cached_metadata_ = std::move(std::get<mojo_base::BigBuffer>(drained_data));
   return task;
 }
 

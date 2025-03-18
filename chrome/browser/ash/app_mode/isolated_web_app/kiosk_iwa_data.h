@@ -20,6 +20,8 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+class PrefService;
+
 namespace ash {
 
 class KioskAppDataDelegate;
@@ -29,12 +31,14 @@ class KioskIwaData : public KioskAppDataBase {
   // Size of a kiosk IWA icon in pixels.
   static constexpr int kIconSize = 128;
 
-  static std::unique_ptr<KioskIwaData> Create(const std::string& user_id,
+  static std::unique_ptr<KioskIwaData> Create(PrefService& local_state,
+                                              const std::string& user_id,
                                               const std::string& web_bundle_id,
                                               const GURL& update_manifest_url,
                                               KioskAppDataDelegate& delegate);
 
-  KioskIwaData(const std::string& user_id,
+  KioskIwaData(PrefService& local_state,
+               const std::string& user_id,
                const web_app::IsolatedWebAppUrlInfo& iwa_info,
                const GURL& update_manifest_url,
                KioskAppDataDelegate& delegate);
@@ -65,6 +69,7 @@ class KioskIwaData : public KioskAppDataBase {
   void OnIconLoadDone(std::optional<gfx::ImageSkia> icon);
 
  private:
+  const raw_ref<PrefService> local_state_;
   const web_app::IsolatedWebAppUrlInfo iwa_info_;
   const GURL update_manifest_url_;
   const raw_ref<KioskAppDataDelegate> delegate_;

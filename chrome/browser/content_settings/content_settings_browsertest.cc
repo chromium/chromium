@@ -4,6 +4,8 @@
 
 #include "components/content_settings/core/common/content_settings.h"
 
+#include <variant>
+
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
@@ -111,7 +113,7 @@ net::CookieList ExtractCookiesFromModel(BrowsingDataModel* model) {
   net::CookieList result;
   for (const auto& [owner, key, details] : *model) {
     if (const net::CanonicalCookie* cookie =
-            absl::get_if<net::CanonicalCookie>(&key.get())) {
+            std::get_if<net::CanonicalCookie>(&key.get())) {
       result.push_back(*cookie);
     }
   }

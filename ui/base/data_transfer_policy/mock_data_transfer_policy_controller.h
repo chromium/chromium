@@ -5,9 +5,10 @@
 #ifndef UI_BASE_DATA_TRANSFER_POLICY_MOCK_DATA_TRANSFER_POLICY_CONTROLLER_H_
 #define UI_BASE_DATA_TRANSFER_POLICY_MOCK_DATA_TRANSFER_POLICY_CONTROLLER_H_
 
+#include <variant>
+
 #include "base/files/file_path.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 
@@ -35,7 +36,7 @@ class MockDataTransferPolicyController : public DataTransferPolicyController {
       PasteIfAllowed,
       (base::optional_ref<const ui::DataTransferEndpoint> data_src,
        base::optional_ref<const ui::DataTransferEndpoint> data_dst,
-       (absl::variant<size_t, std::vector<base::FilePath>> pasted_content),
+       (std::variant<size_t, std::vector<base::FilePath>> pasted_content),
        content::RenderFrameHost* rfh,
        base::OnceCallback<void(bool)> callback),
       (override));

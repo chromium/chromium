@@ -365,7 +365,7 @@ ExistingUserController::ExistingUserController()
       pin_salt_storage_(std::make_unique<quick_unlock::PinSaltStorage>()) {
   HttpAuthDialog::AddObserver(this);
 
-  enable_ash_httpauth_ = HttpAuthDialog::Enable();
+  enable_system_httpauth_ = HttpAuthDialog::Enable();
   show_user_names_subscription_ = cros_settings_->AddSettingsObserver(
       kAccountsPrefShowUserNamesOnSignIn,
       base::BindRepeating(&ExistingUserController::DeviceSettingsChanged,

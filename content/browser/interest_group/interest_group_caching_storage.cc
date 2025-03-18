@@ -363,6 +363,23 @@ void InterestGroupCachingStorage::RecordDebugReportCooldown(
       .WithArgs(origin, cooldown_start, cooldown_type);
 }
 
+void InterestGroupCachingStorage::RecordViewClick(
+    network::AdAuctionEventRecord event_record) {
+  // Cached interest groups containing stale view / click counts are
+  // intentionally not evicted -- views especially occur frequently, and would
+  // result in many evictions, limiting the usefulness of this cache. So, for
+  // performance, it is better to return view / click data that's slightly
+  // stale.
+  //
+  // TODO(crbug.com/394108643): Cap the time duration of this staleness with a
+  // new timer that evicts groups loaded more than say 120 seconds ago. Without
+  // this, in the rare case that auctions that each load a given IG are running
+  // constantly, back-to-back, the view click data for that IG could become
+  // arbitrarily stale.
+  interest_group_storage_.AsyncCall(&InterestGroupStorage::RecordViewClick)
+      .WithArgs(std::move(event_record));
+}
+
 void InterestGroupCachingStorage::UpdateKAnonymity(
     const blink::InterestGroupKey& interest_group_key,
     const std::vector<std::string>& positive_hashed_keys,

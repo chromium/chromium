@@ -243,7 +243,7 @@ void MessageEvent::initMessageEvent(
     const String& origin,
     const String& last_event_id,
     EventTarget* source,
-    MessagePortArray* ports,
+    GCedMessagePortArray* ports,
     UserActivation* user_activation,
     mojom::blink::DelegatedCapability delegated_capability) {
   if (IsBeingDispatched())
@@ -273,7 +273,7 @@ void MessageEvent::initMessageEvent(const AtomicString& type,
                                     const String& origin,
                                     const String& last_event_id,
                                     EventTarget* source,
-                                    MessagePortArray* ports) {
+                                    GCedMessagePortArray* ports) {
   if (IsBeingDispatched())
     return;
 
@@ -350,7 +350,7 @@ MessagePortArray MessageEvent::ports() {
   // Avoid copying once we can make sure that the binding layer won't
   // modify the content.
   is_ports_dirty_ = false;
-  return ports_ ? *ports_ : MessagePortArray();
+  return ports_ ? MessagePortArray(*ports_) : MessagePortArray();
 }
 
 bool MessageEvent::IsOriginCheckRequiredToAccessData() const {

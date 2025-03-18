@@ -398,6 +398,8 @@ class CONTENT_EXPORT StoragePartitionImpl
           methods_with_options,
       const std::optional<std::string>& with_lock,
       OnSharedStorageHeaderReceivedCallback callback) override;
+  void OnAdAuctionEventRecordHeaderReceived(
+      network::AdAuctionEventRecord event_record) override;
 
   SharedStorageHeaderObserver* shared_storage_header_observer() {
     return shared_storage_header_observer_.get();

@@ -4,6 +4,8 @@
 
 #include "content/browser/worker_host/worker_script_fetcher.h"
 
+#include <variant>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
@@ -497,7 +499,7 @@ void WorkerScriptFetcher::CreateScriptLoader(
   // the closest ancestor's frame is gone, `wc_getter` will returns nullptr,
   // and `WebEngineContentBrowserClient::CreateURLLoaderThrottles()` also
   // returns {}.
-  if (absl::holds_alternative<blink::DedicatedWorkerToken>(worker_token)) {
+  if (std::holds_alternative<blink::DedicatedWorkerToken>(worker_token)) {
     frame_tree_node_id = ancestor_render_frame_host.GetFrameTreeNodeId();
     wc_getter = base::BindRepeating(&WebContents::FromFrameTreeNodeId,
                                     frame_tree_node_id);

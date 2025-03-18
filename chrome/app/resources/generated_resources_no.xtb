@@ -624,6 +624,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1430915738399379752">Skriv ut</translation>
 <translation id="1431188203598586230">Siste programvareoppdatering</translation>
 <translation id="1432581352905426595">Administrer søkemotorer</translation>
+<translation id="1432650420699700107">Nettsteder kan be om å få koble til enheter på det lokale nettverket ditt</translation>
 <translation id="1433478348197382180">Lesemodus</translation>
 <translation id="1433980411933182122">Oppstart</translation>
 <translation id="1434696352799406980">Dette tilbakestiller oppstartssiden, nye faner, søkemotoren og eventuelle festede faner. I tillegg slår det av alle utvidelser og fjerner midlertidige data, for eksempel informasjonskapsler. Bokmerker, loggoppføringer og lagrede passord slettes ikke.</translation>
@@ -4835,6 +4836,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4364830672918311045">Vis varsler</translation>
 <translation id="4367971618859387374">Visningsnavn</translation>
 <translation id="4368960422722232719">Vis minnebruk på forhåndsvisningskortet som vises når markøren holdes over faner</translation>
+<translation id="4369151461324628035">Ikke la nettsteder koble til enheter på det lokale nettverket</translation>
 <translation id="4369215744064167350">Nettstedsforespørselen er godkjent</translation>
 <translation id="4369233657762989723">Diktering på/av</translation>
 <translation id="436926121798828366">Du kan når som helst endre dette i <ph name="SETTINGS_LINK" />.</translation>
@@ -5388,6 +5390,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4772914216048388646">Ryddig</translation>
 <translation id="4773112038801431077">Oppgrader Linux</translation>
 <translation id="4773122030389014189">Del fanegruppen «<ph name="GROUP_NAME" />»</translation>
+<translation id="4773253008034797668">Nettsteder som får lov til å koble til enheter på det lokale nettverket</translation>
 <translation id="477548766361111120">La utvidelsen lese og endre dette nettstedet</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> er tilkoblet</translation>
 <translation id="4776594120007763294">For å legge til en side for senere lesning, klikk på knappen</translation>
@@ -7849,6 +7852,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6563002009564846727">Se importerte sertifikater fra Windows</translation>
 <translation id="6563055593659435495">Kan ikke opprette forbindelse med telefonen din. Sørg for at telefonen er i nærheten, at den er opplåst, og at Bluetooth og wifi er slått på.</translation>
 <translation id="6564860838537532172">Når du søker i nettleserloggen, blir søkene i loggen din, innholdet på sidene med de beste treffene og genererte utdata fra modellen sendt til Google og kan bli sett av menneskelige evaluerere i arbeidet med å forbedre denne funksjonen.</translation>
+<translation id="6565144332292237355">Nettsteder kan bruke denne funksjonen for å se etter og koble til enheter på det lokale nettverket ditt</translation>
 <translation id="6569931898053264308">Middels store besparelser</translation>
 <translation id="6570622975915850879">Bruk en annen enhet</translation>
 <translation id="65711204837946324">Trenger tillatelse for å laste ned</translation>
@@ -11230,7 +11234,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8944099748578356325">bruke opp batteriet raskere (for øyeblikket <ph name="BATTERY_PERCENTAGE" /> %)</translation>
 <translation id="8944633700466246631">Opprett en sekssifret PIN-kode for gjenoppretting for Google Passordlagring</translation>
 <translation id="8945274638472141382">Ikonstørrelse</translation>
-<translation id="8945508919180478719">Mikrofon i studiostil</translation>
+<translation id="8945508919180478719">Studiomikrofon</translation>
 <translation id="8946359700442089734">Feilsøkingsfunksjonene ble ikke påslått på denne <ph name="IDS_SHORT_PRODUCT_NAME" />-enheten.</translation>
 <translation id="8946954897220903437">Skjul alle forespørsler i adressefeltet</translation>
 <translation id="894763922177556086">God</translation>
@@ -11562,6 +11566,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
       <ph name="LIST_ITEM" />kjøre Tilkoblingsdiagnostikk for Chrome
     <ph name="END_LIST" /></translation>
 <translation id="9161172953291434881">Vil du gi dette nettstedet tilgang til dataene dine?</translation>
+<translation id="9164418710391288146">Nettsteder som ikke får lov til å koble til enheter på det lokale nettverket</translation>
 <translation id="9165856803582999927">Skann denne QR-koden med kameraet på enheten der du vil opprette og lagre passnøkkelen for <ph name="APP_NAME" /></translation>
 <translation id="916607977885256133">Bilde i bilde</translation>
 <translation id="9166253503936244008">Skann denne QR-koden med enheten som har tilgangsnøkkelen du vil bruke for <ph name="APP_NAME" /></translation>

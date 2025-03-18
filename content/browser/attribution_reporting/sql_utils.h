@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -20,7 +21,6 @@
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom-forward.h"
 
 namespace attribution_reporting {
@@ -125,7 +125,7 @@ std::string SerializeAttributionScopesData(
     const attribution_reporting::AttributionScopesData&);
 
 base::expected<std::optional<attribution_reporting::AttributionScopesData>,
-               absl::monostate>
+               std::monostate>
 DeserializeAttributionScopesData(sql::Statement&, int col);
 
 std::string SerializeAggregatableNamedBudgets(

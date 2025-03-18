@@ -5,12 +5,12 @@
 #include "media/formats/hls/audio_rendition.h"
 
 #include <optional>
+#include <variant>
 
 #include "base/types/pass_key.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/quirks.h"
 #include "media/formats/hls/tags.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace media::hls {
 
@@ -43,7 +43,7 @@ AudioRenditionGroup::AudioRenditionGroup(base::PassKey<MultivariantPlaylist>,
 
 AudioRenditionGroup::~AudioRenditionGroup() = default;
 
-ParseStatus::Or<absl::monostate> AudioRenditionGroup::AddRendition(
+ParseStatus::Or<std::monostate> AudioRenditionGroup::AddRendition(
     base::PassKey<MultivariantPlaylist>,
     XMediaTag tag,
     const GURL& playlist_uri) {
@@ -115,7 +115,7 @@ ParseStatus::Or<absl::monostate> AudioRenditionGroup::AddRendition(
     }
   }
 
-  return absl::monostate();
+  return std::monostate();
 }
 
 }  // namespace media::hls

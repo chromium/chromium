@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <queue>
+#include <variant>
 
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
@@ -512,7 +513,7 @@ void PasteIfAllowedByPolicy(
   }
 #else
   if (ui::DataTransferPolicyController::HasInstance()) {
-    absl::variant<size_t, std::vector<base::FilePath>> pasted_content;
+    std::variant<size_t, std::vector<base::FilePath>> pasted_content;
     if (clipboard_paste_data.file_paths.empty()) {
       DCHECK(metadata.size.has_value());
       pasted_content = *metadata.size;

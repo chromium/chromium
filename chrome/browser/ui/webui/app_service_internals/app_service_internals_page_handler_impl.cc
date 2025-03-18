@@ -22,7 +22,6 @@
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"

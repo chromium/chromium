@@ -4,11 +4,12 @@
 
 #include "base/mac/code_signature.h"
 
+#include <variant>
+
 #include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/mac/info_plist_data.h"
 #include "base/strings/sys_string_conversions.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 using base::apple::ScopedCFTypeRef;
 
@@ -19,22 +20,22 @@ namespace {
 // Return a dictionary of attributes suitable for looking up `process` with
 // `SecCodeCopyGuestWithAttributes`.
 ScopedCFTypeRef<CFDictionaryRef> AttributesForGuestValidation(
-    absl::variant<audit_token_t, pid_t> process,
+    std::variant<audit_token_t, pid_t> process,
     SignatureValidationType validation_type,
     std::string_view info_plist_xml) {
   ScopedCFTypeRef<CFMutableDictionaryRef> attributes(
       CFDictionaryCreateMutable(nullptr, 3, &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
 
-  if (audit_token_t* token = absl::get_if<audit_token_t>(&process)) {
+  if (audit_token_t* token = std::get_if<audit_token_t>(&process)) {
     ScopedCFTypeRef<CFDataRef> audit_token_cf(CFDataCreate(
         nullptr, reinterpret_cast<const UInt8*>(token), sizeof(audit_token_t)));
     CFDictionarySetValue(attributes.get(), kSecGuestAttributeAudit,
                          audit_token_cf.get());
   } else {
-    CHECK(absl::holds_alternative<pid_t>(process));
+    CHECK(std::holds_alternative<pid_t>(process));
     ScopedCFTypeRef<CFNumberRef> pid_cf(
-        CFNumberCreate(nullptr, kCFNumberIntType, &absl::get<pid_t>(process)));
+        CFNumberCreate(nullptr, kCFNumberIntType, &std::get<pid_t>(process)));
     CFDictionarySetValue(attributes.get(), kSecGuestAttributePid, pid_cf.get());
   }
 

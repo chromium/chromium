@@ -5,17 +5,12 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_GRAPHITE_CACHE_CONTROLLER_H_
 #define GPU_COMMAND_BUFFER_SERVICE_GRAPHITE_CACHE_CONTROLLER_H_
 
-#include <memory>
-
+#include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "gpu/gpu_gles2_export.h"
-
-namespace base {
-class RetainingOneShotTimer;
-}  // namespace base
 
 namespace skgpu::graphite {
 class Context;
@@ -59,10 +54,15 @@ class GPU_GLES2_EXPORT GraphiteCacheController final
   friend class base::RefCounted<GraphiteCacheController>;
   ~GraphiteCacheController();
 
+  void ScheduleCleanUpAllResources(uint32_t idle_id);
+  void MaybeCleanUpAllResources(uint32_t posted_idle_id);
+  void CleanUpAllResourcesImpl();
+
   const raw_ptr<skgpu::graphite::Recorder> recorder_;
   const raw_ptr<skgpu::graphite::Context> context_;
   const raw_ptr<DawnContextProvider> dawn_context_provider_;
-  std::unique_ptr<base::RetainingOneShotTimer> timer_;
+
+  base::CancelableOnceClosure idle_cleanup_cb_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

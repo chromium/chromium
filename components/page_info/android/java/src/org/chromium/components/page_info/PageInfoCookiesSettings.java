@@ -351,10 +351,8 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
             return false;
         }
 
-        // TODO(crbug.com/399857405): Clean up FPS UI feature once RWS implementation is done.
-        assert getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUiFeatureEnabled()
-                        && getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled()
-                : "Related Website Sets UI and access should be enabled to show RWS info.";
+        assert getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled()
+                : "RWS access should be enabled to show info.";
 
         mRwsInUse.setVisible(true);
         mRwsInUse.setTitle(R.string.cookie_info_rws_title);

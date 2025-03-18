@@ -28,10 +28,29 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="CrasDlcType">
-  <variant name="IntelligoBeamforming" summary="the intelligo beamforming DLC"/>
-  <variant name="NcAp" summary="the AP Noise Cancellation DLC"/>
-  <variant name="Nuance" summary="the nuance DLC"/>
-  <variant name="SrBt" summary="the Bluetooth Super Resolution DLC"/>
+  <variant name="intelligo-beamforming-dlc"
+      summary="the intelligo beamforming DLC for omniknight"/>
+  <variant name="intelligo-beamforming-dlc-jubilant"
+      summary="the intelligo beamforming DLC for jubilant"/>
+  <variant name="intelligo-beamforming-dlc-jubileum"
+      summary="the intelligo beamforming DLC for jubileum"/>
+  <variant name="intelligo-beamforming-dlc-kanix"
+      summary="the intelligo beamforming DLC for kanix"/>
+  <variant name="intelligo-beamforming-dlc-riven"
+      summary="the intelligo beamforming DLC for riven"/>
+  <variant name="intelligo-beamforming-dlc-rudriks"
+      summary="the intelligo beamforming DLC for rudriks"/>
+  <variant name="intelligo-beamforming-dlc-rull"
+      summary="the intelligo beamforming DLC for roric, rull"/>
+  <variant name="intelligo-beamforming-dlc-rynax"
+      summary="the intelligo beamforming DLC for rynax"/>
+  <variant name="IntelligoBeamforming"
+      summary="the intelligo beamforming DLC (legacy)"/>
+  <variant name="nc-ap-dlc" summary="the AP Noise Cancellation DLC"/>
+  <variant name="NcAp" summary="the AP Noise Cancellation DLC (legacy)"/>
+  <variant name="Nuance" summary="the nuance DLC (legacy)"/>
+  <variant name="sr-bt-dlc" summary="the Bluetooth Super Resolution DLC"/>
+  <variant name="SrBt" summary="the Bluetooth Super Resolution DLC (legacy)"/>
 </variants>
 
 <!--
@@ -136,14 +155,14 @@ This collects each top-level device metric type. For example,
   </summary>
 </histogram>
 
-<histogram name="Cras.ApNcRuntime" units="seconds" expires_after="2025-07-13">
+<histogram name="Cras.ApNcRuntime" units="seconds" expires_after="2025-09-14">
   <owner>hunghsienchen@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>Tracks the runtime of the APM when AP NC is active.</summary>
 </histogram>
 
 <histogram name="Cras.ApNcStartStatus" enum="CrasApNcStartStatus"
-    expires_after="2025-07-13">
+    expires_after="2025-09-14">
   <owner>hunghsienchen@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
@@ -823,7 +842,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.RtcRuntime.{InDevice}.{OutDevice}" units="seconds"
-    expires_after="2025-07-13">
+    expires_after="2025-09-14">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
@@ -1134,7 +1153,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.StreamRuntime{Cras_Direction}" units="seconds"
-    expires_after="2025-07-13">
+    expires_after="2025-09-14">
 <!-- Name completed by histogram_suffixes
      name="Cras.Direction" and
      name="Cras.ClientType" and
@@ -1209,7 +1228,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.UnderrunsPerDevice{Device}" units="count"
-    expires_after="2025-07-13">
+    expires_after="2025-09-14">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -18,7 +19,6 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom-blink.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
@@ -265,7 +265,7 @@ bool UnionTraits<blink::mojom::DragItemDataView, blink::WebDragData::Item>::
 blink::mojom::DragItemDataView::Tag
 UnionTraits<blink::mojom::DragItemDataView, blink::WebDragData::Item>::GetTag(
     const blink::WebDragData::Item& item) {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [](const blink::WebDragData::StringItem&) {
             return blink::mojom::DragItemDataView::Tag::kString;

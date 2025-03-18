@@ -36,21 +36,21 @@ inline void InlineSizesFromStyle(const ComputedStyle& style,
       is_parallel ? style.LogicalMaxWidth() : style.LogicalMaxHeight();
   bool is_content_box = style.BoxSizing() == EBoxSizing::kContentBox;
   if (length.IsFixed()) {
-    *inline_size = LayoutUnit(length.Value());
+    *inline_size = LayoutUnit(length.Pixels());
     if (is_content_box)
       *inline_size = **inline_size + inline_border_padding;
     else
       *inline_size = std::max(**inline_size, inline_border_padding);
   }
   if (min_length.IsFixed()) {
-    *min_inline_size = LayoutUnit(min_length.Value());
+    *min_inline_size = LayoutUnit(min_length.Pixels());
     if (is_content_box)
       *min_inline_size = **min_inline_size + inline_border_padding;
     else
       *min_inline_size = std::max(**min_inline_size, inline_border_padding);
   }
   if (max_length.IsFixed()) {
-    *max_inline_size = LayoutUnit(max_length.Value());
+    *max_inline_size = LayoutUnit(max_length.Pixels());
     if (is_content_box)
       *max_inline_size = **max_inline_size + inline_border_padding;
     else

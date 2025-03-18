@@ -12,8 +12,6 @@
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -56,9 +54,8 @@ class DemoModeIdleHandlerTest : public ChromeAshTestBase {
 
     // OK to unretained `this` since the life cycle of `demo_mode_idle_handler_`
     // is the same as the tests.
-    demo_mode_idle_handler_ = std::make_unique<DemoModeIdleHandler>(
-        window_closer_.get(),
-        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
+    demo_mode_idle_handler_ =
+        std::make_unique<DemoModeIdleHandler>(window_closer_.get());
   }
   ~DemoModeIdleHandlerTest() override = default;
 

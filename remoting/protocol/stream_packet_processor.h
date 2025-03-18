@@ -8,14 +8,11 @@
 #include <stdint.h>
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/webrtc/rtc_base/async_packet_socket.h"
 
 namespace net {
 class IOBufferWithSize;
 }  // namespace net
-
-namespace rtc {
-struct PacketTimeUpdateParams;
-}  // namespace rtc
 
 namespace remoting::protocol {
 

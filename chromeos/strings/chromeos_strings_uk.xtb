@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">Фоновий малюнок "Поверхня землі"</translation>
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> фон із літерою "<ph name="LETTERS_LETTER" />"</translation>
 <translation id="3383623117265110236">Ексклюзивно</translation>
-<translation id="3395147534045164351">Змінити місце прив’язки</translation>
 <translation id="3404249063913988450">Активувати заставку</translation>
 <translation id="3413935475507503304">Щоб оновити, натисніть "Далі".</translation>
 <translation id="3428551088151258685">просто неба</translation>
@@ -1395,6 +1394,7 @@
 <translation id="7388345524791662148">Інші опції для запису "<ph name="RECORDING_NAME" />"</translation>
 <translation id="7388959671917308825">Вбудована сенсорна панель</translation>
 <translation id="7397270852490618635">Вимкнути світлу тему</translation>
+<translation id="7400166052988585408">Викладач заблокує ваш екран через <ph name="NUM_SECONDS" /> с</translation>
 <translation id="7401543881546089382">Видалити комбінацію клавіш</translation>
 <translation id="7405493795721832710">Пристрій <ph name="DEVICE_NAME" /> готовий до оновлення</translation>
 <translation id="741244894080940828">конвертація</translation>

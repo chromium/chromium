@@ -324,6 +324,9 @@ extern const char kEnableDrDcDescription[];
 extern const char kEnableSnackbarInSettingsName[];
 extern const char kEnableSnackbarInSettingsDescription[];
 
+extern const char kEnablePendingModePasswordsPromoName[];
+extern const char kEnablePendingModePasswordsPromoDescription[];
+
 extern const char kUseAndroidStagingSmdsName[];
 extern const char kUseAndroidStagingSmdsDescription[];
 
@@ -3180,6 +3183,9 @@ extern const char kMediaFoundationClearDescription[];
 extern const char kMediaFoundationClearStrategyName[];
 extern const char kMediaFoundationClearStrategyDescription[];
 
+extern const char kMediaFoundationCameraUsageMonitoringName[];
+extern const char kMediaFoundationCameraUsageMonitoringDescription[];
+
 extern const char kRawAudioCaptureName[];
 extern const char kRawAudioCaptureDescription[];
 
@@ -4726,11 +4732,6 @@ extern const char kEnableCertManagementV2UIWriteDescription[];
 extern const char kEnableCertManagementV2UIEditCertsName[];
 extern const char kEnableCertManagementV2UIEditCertsDescription[];
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
-
-#if BUILDFLAG(IS_CHROMEOS)
-extern const char kOverlayScrollbarsOSSettingsName[];
-extern const char kOverlayScrollbarsOSSettingsDescription[];
-#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kEnablePolicyPromotionBannerName[];

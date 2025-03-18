@@ -62,7 +62,7 @@ class CORE_EXPORT PaintLayerPaintOrderIterator {
 
   PaintLayer* Next();
 
-  const HeapVector<Member<PaintLayer>>*
+  const GCedHeapVector<Member<PaintLayer>>*
   LayersPaintingOverlayOverflowControlsAfter(const PaintLayer* layer) const {
     return root_->stacking_node_
                ? root_->stacking_node_

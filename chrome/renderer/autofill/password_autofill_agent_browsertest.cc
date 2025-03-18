@@ -47,6 +47,7 @@
 #include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/test/browser_test_utils.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -2425,6 +2426,9 @@ TEST_F(PasswordAutofillAgentTest,
 
 TEST_F(PasswordAutofillAgentTest,
        NoPopupOnPasswordFieldWithoutSuggestionsByDefault) {
+  scoped_feature_list_.InitAndDisableFeature(
+      ::switches::kEnablePendingModePasswordsPromo);
+
   ClearUsernameAndPasswordFieldValues();
   UpdateRendererIDsInFillData();
 
@@ -2436,6 +2440,9 @@ TEST_F(PasswordAutofillAgentTest,
 // Passwords fields should never trigger the popup on password passwords fields
 // without suggestions since it would not be helpful.
 TEST_F(PasswordAutofillAgentTest, NoPopupOnPasswordFieldWithoutSuggestions) {
+  scoped_feature_list_.InitAndDisableFeature(
+      ::switches::kEnablePendingModePasswordsPromo);
+
   ClearUsernameAndPasswordFieldValues();
   UpdateRendererIDsInFillData();
 
@@ -2445,6 +2452,38 @@ TEST_F(PasswordAutofillAgentTest, NoPopupOnPasswordFieldWithoutSuggestions) {
 
   CheckSuggestionsNotShown();
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// when kEnablePendingModePasswordsPromo is enabled users in pending state will
+// be shown a suggestion to "verify it's you" even when there are no passwords
+TEST_F(PasswordAutofillAgentTest,
+       PopupOnPasswordFieldWithoutSuggestionsByDefault) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ::switches::kEnablePendingModePasswordsPromo);
+
+  ClearUsernameAndPasswordFieldValues();
+  UpdateRendererIDsInFillData();
+
+  EXPECT_CALL(fake_driver_, ShowPasswordSuggestions)
+      .Times(NumShowSuggestionsCalls());
+
+  ASSERT_TRUE(SimulateElementClick(kPasswordName));
+}
+
+TEST_F(PasswordAutofillAgentTest, PopupOnPasswordFieldWithoutSuggestions) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ::switches::kEnablePendingModePasswordsPromo);
+
+  ClearUsernameAndPasswordFieldValues();
+  UpdateRendererIDsInFillData();
+
+  password_autofill_agent_->InformNoSavedCredentials();
+
+  EXPECT_CALL(fake_driver_, ShowPasswordSuggestions)
+      .Times(NumShowSuggestionsCalls());
+  ASSERT_TRUE(SimulateElementClick(kPasswordName));
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // Tests the autosuggestions that are given when the element is clicked.
 // Specifically, tests when the user clicks on the username element after page

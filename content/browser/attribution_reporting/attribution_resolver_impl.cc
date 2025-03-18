@@ -11,6 +11,7 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -46,7 +47,6 @@
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.h"
 #include "content/browser/attribution_reporting/stored_source.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
@@ -155,20 +155,20 @@ void RecordDebugKeyUsage(const AttributionReport& report) {
 
 CreateReportResult::EventLevelSuccess* GetSuccessResult(
     CreateReportResult::EventLevel& result) {
-  return absl::get_if<CreateReportResult::EventLevelSuccess>(&result);
+  return std::get_if<CreateReportResult::EventLevelSuccess>(&result);
 }
 
 CreateReportResult::AggregatableSuccess* GetSuccessResult(
     CreateReportResult::Aggregatable& result) {
-  return absl::get_if<CreateReportResult::AggregatableSuccess>(&result);
+  return std::get_if<CreateReportResult::AggregatableSuccess>(&result);
 }
 
 bool IsInternalError(const CreateReportResult::EventLevel& result) {
-  return absl::holds_alternative<CreateReportResult::InternalError>(result);
+  return std::holds_alternative<CreateReportResult::InternalError>(result);
 }
 
 bool IsInternalError(const CreateReportResult::Aggregatable& result) {
-  return absl::holds_alternative<CreateReportResult::InternalError>(result);
+  return std::holds_alternative<CreateReportResult::InternalError>(result);
 }
 
 std::optional<CreateReportResult::Aggregatable> MergeResult(
@@ -209,7 +209,7 @@ StoreSourceResult AttributionResolverImpl::StoreSource(StorableSource source) {
   const base::Time source_time = base::Time::Now();
 
   const auto make_result = [&](StoreSourceResult::Result&& result) {
-    if (absl::holds_alternative<StoreSourceResult::InternalError>(result)) {
+    if (std::holds_alternative<StoreSourceResult::InternalError>(result)) {
       is_noised = false;
       destination_limit.reset();
     }
@@ -784,7 +784,7 @@ CreateReportResult AttributionResolverImpl::MaybeCreateAndStoreReport(
   // clean sources.
   if (!GetSuccessResult(*event_level_result) &&
       !GetSuccessResult(*aggregatable_result) &&
-      !absl::holds_alternative<CreateReportResult::NeverAttributedSource>(
+      !std::holds_alternative<CreateReportResult::NeverAttributedSource>(
           *event_level_result)) {
     if (!transaction->Commit()) {
       return assemble_report_result(CreateReportResult::InternalError(),
@@ -804,7 +804,7 @@ CreateReportResult AttributionResolverImpl::MaybeCreateAndStoreReport(
   // |RateLimitTable::ClearDataForSourceIds()| here.
 
   // Reports which are dropped do not need to make any further changes.
-  if (absl::holds_alternative<CreateReportResult::NeverAttributedSource>(
+  if (std::holds_alternative<CreateReportResult::NeverAttributedSource>(
           *event_level_result) &&
       !GetSuccessResult(*aggregatable_result)) {
     if (!transaction->Commit()) {
@@ -1009,7 +1009,7 @@ bool AttributionResolverImpl::GenerateNullAggregatableReportsAndStoreReports(
   std::optional<base::Time> attributed_source_time;
 
   if (new_aggregatable_report) {
-    const auto* data = absl::get_if<AttributionReport::AggregatableData>(
+    const auto* data = std::get_if<AttributionReport::AggregatableData>(
         &new_aggregatable_report->data());
     DCHECK(data);
     DCHECK(!data->is_null());
@@ -1322,7 +1322,7 @@ AttributionResolverImpl::MaybeReplaceLowerPriorityEventLevelReport(
   DCHECK_GE(num_attributions, 0);
 
   const auto* data =
-      absl::get_if<AttributionReport::EventLevelData>(&report.data());
+      std::get_if<AttributionReport::EventLevelData>(&report.data());
   DCHECK(data);
 
   // TODO(crbug.com/40287976): The logic in this method doesn't properly handle
@@ -1386,7 +1386,7 @@ AttributionResolverImpl::MaybeStoreEventLevelReport(
     CreateReportResult::EventLevelSuccess success) {
   AttributionReport& report = success.new_report;
   const auto* event_level_data =
-      absl::get_if<AttributionReport::EventLevelData>(&report.data());
+      std::get_if<AttributionReport::EventLevelData>(&report.data());
   DCHECK(event_level_data);
 
   if (source.active_state() ==
@@ -1407,7 +1407,7 @@ AttributionResolverImpl::MaybeStoreEventLevelReport(
     return transaction->Commit() ? result : CreateReportResult::InternalError();
   };
 
-  std::optional<CreateReportResult::EventLevel> result = absl::visit(
+  std::optional<CreateReportResult::EventLevel> result = std::visit(
       base::Overloaded{
           [](ReplaceReportError)
               -> std::optional<CreateReportResult::EventLevel> {

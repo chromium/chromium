@@ -4,6 +4,8 @@
 
 #include "content/public/app/content_main_delegate.h"
 
+#include <variant>
+
 #include "base/check.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
@@ -19,7 +21,7 @@ std::optional<int> ContentMainDelegate::BasicStartupComplete() {
   return std::nullopt;
 }
 
-absl::variant<int, MainFunctionParams> ContentMainDelegate::RunProcess(
+std::variant<int, MainFunctionParams> ContentMainDelegate::RunProcess(
     const std::string& process_type,
     MainFunctionParams main_function_params) {
   return std::move(main_function_params);

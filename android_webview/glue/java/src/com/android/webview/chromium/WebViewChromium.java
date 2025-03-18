@@ -2234,6 +2234,7 @@ class WebViewChromium
             mAwContents.cancelAllPrerendering();
             mSharedWebViewChromium.setWebViewClient(client);
             mContentsClientAdapter.setWebViewClient(mSharedWebViewChromium.getWebViewClient());
+            mAwContents.onWebViewClientUpdated(client);
             if (client != null) {
                 ApiImplementationLogger.logWebViewClientImplementation(client);
             }

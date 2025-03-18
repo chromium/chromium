@@ -214,10 +214,7 @@ void PageInfoCookiesContentView::SetCookieInfo(
       IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT,
       cookie_info.allowed_sites_count));
 
-  bool is_rws_allowed = base::FeatureList::IsEnabled(
-                            privacy_sandbox::kPrivacySandboxFirstPartySetsUI) &&
-                        cookie_info.rws_info;
-  SetRwsCookiesInfo(cookie_info.rws_info, is_rws_allowed);
+  SetRwsCookiesInfo(cookie_info.rws_info);
 
   PreferredSizeChanged();
   if (!initialized_callback_.is_null()) {
@@ -361,9 +358,8 @@ void PageInfoCookiesContentView::OnToggleButtonPressed() {
 }
 
 void PageInfoCookiesContentView::SetRwsCookiesInfo(
-    std::optional<CookiesRwsInfo> rws_info,
-    bool is_rws_allowed) {
-  if (is_rws_allowed) {
+    std::optional<CookiesRwsInfo> rws_info) {
+  if (rws_info.has_value()) {
     InitRwsButton(rws_info->is_managed);
     rws_button_->SetVisible(true);
 
@@ -388,7 +384,7 @@ void PageInfoCookiesContentView::SetRwsCookiesInfo(
   if (!rws_histogram_recorded_) {
     rws_histogram_recorded_ = true;
     base::UmaHistogramBoolean("Security.PageInfo.Cookies.HasFPSInfo",
-                              is_rws_allowed);
+                              rws_info.has_value());
   }
 }
 

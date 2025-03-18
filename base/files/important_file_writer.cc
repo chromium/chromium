@@ -17,6 +17,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 
 #include "base/check_op.h"
 #include "base/critical_closure.h"
@@ -445,14 +446,14 @@ void ImportantFileWriter::ScheduleWriteWithBackgroundDataSerializer(
 
 void ImportantFileWriter::DoScheduledWrite() {
   // One of the serializers should be set.
-  DCHECK(!absl::holds_alternative<absl::monostate>(serializer_));
+  DCHECK(!std::holds_alternative<std::monostate>(serializer_));
 
   const TimeTicks serialization_start = TimeTicks::Now();
   BackgroundDataProducerCallback data_producer_for_background_sequence;
 
-  if (absl::holds_alternative<DataSerializer*>(serializer_)) {
+  if (std::holds_alternative<DataSerializer*>(serializer_)) {
     std::optional<std::string> data;
-    data = absl::get<DataSerializer*>(serializer_)->SerializeData();
+    data = std::get<DataSerializer*>(serializer_)->SerializeData();
     if (!data) {
       DLOG(WARNING) << "Failed to serialize data to be saved in "
                     << path_.value();
@@ -466,7 +467,7 @@ void ImportantFileWriter::DoScheduledWrite() {
         std::move(data).value());
   } else {
     data_producer_for_background_sequence =
-        absl::get<BackgroundDataSerializer*>(serializer_)
+        std::get<BackgroundDataSerializer*>(serializer_)
             ->GetSerializedDataProducerForBackgroundSequence();
 
     DCHECK(data_producer_for_background_sequence);
@@ -492,7 +493,7 @@ void ImportantFileWriter::RegisterOnNextWriteCallbacks(
 
 void ImportantFileWriter::ClearPendingWrite() {
   timer().Stop();
-  serializer_.emplace<absl::monostate>();
+  serializer_.emplace<std::monostate>();
 }
 
 void ImportantFileWriter::SetTimerForTesting(OneShotTimer* timer_override) {

@@ -507,6 +507,13 @@ const char kEnableSnackbarInSettingsDescription[] =
     "setting that controls whether a user gets signed in to Chrome when "
     "signing in to Google Services.";
 
+const char kEnablePendingModePasswordsPromoName[] =
+    "Pending Mode Passwords Promo";
+const char kEnablePendingModePasswordsPromoDescription[] =
+    "Enables an autofill promo on passwords when the user is is pending state. "
+    "The promo prompts the user to signin to access passwords saved in their "
+    "account";
+
 const char kTextBasedAudioDescriptionName[] = "Enable audio descriptions.";
 const char kTextBasedAudioDescriptionDescription[] =
     "When enabled, HTML5 video elements with a 'descriptions' WebVTT track "
@@ -5423,6 +5430,12 @@ const char kMediaFoundationClearStrategyDescription[] =
     "current operating conditions. Other options will result in a default "
     "rendering strategy.";
 
+const char kMediaFoundationCameraUsageMonitoringName[] =
+    "Media Foundation Camera Usage Monitoring";
+const char kMediaFoundationCameraUsageMonitoringDescription[] =
+    "Enables the use of Media Foundation for camera usage monitoring. "
+    "This allows detecting if a camera is being used by another application.";
+
 const char kRawAudioCaptureName[] = "Raw audio capture";
 const char kRawAudioCaptureDescription[] =
     "Enable/Disable the usage of WASAPI raw audio capture. When enabled, the "
@@ -8001,12 +8014,6 @@ const char kEnablePolicyPromotionBannerName[] =
 const char kEnablePolicyPromotionBannerDescription[] =
     "Enables showing the policy promotion banner on chrome://policy page.";
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_CHROMEOS)
-const char kOverlayScrollbarsOSSettingsName[] = "Overlay Scrollbar OS Settings";
-const char kOverlayScrollbarsOSSettingsDescription[] =
-    "Enable the OS settings for overlay scrollbars on ChromeOS.";
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 const char kSupervisedUserBlockInterstitialV3Name[] =
     "Enable URL filter interstitial V3";

@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 
+#include <variant>
 #include <vector>
 
 #include "base/strings/string_number_conversions.h"
@@ -458,7 +459,7 @@ TEST_P(PaymentsSyncBridgeUtilCardCategoryBenefitsTest, VerifyBenefitCategory) {
     //  This call is correct only because we know that the
     // `CreditCardCategoryBenefit` alternative is active at index 0
     CreditCardCategoryBenefit* category_benefit_alternative =
-        absl::get_if<CreditCardCategoryBenefit>(&benefits[0]);
+        std::get_if<CreditCardCategoryBenefit>(&benefits[0]);
     EXPECT_EQ(GetCardBenefitCategory(),
               category_benefit_alternative->benefit_category());
   }
@@ -924,7 +925,7 @@ TEST_F(PaymentsSyncBridgeUtilTest, SetAutofillWalletSpecificsFromCardBenefit) {
     }
 
     // Check benefit common fields are set correctly.
-    CreditCardBenefitBase& benefit_base = absl::visit(
+    CreditCardBenefitBase& benefit_base = std::visit(
         [](auto& benefit) -> CreditCardBenefitBase& { return benefit; },
         *target_benefit);
 

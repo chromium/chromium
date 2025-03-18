@@ -432,7 +432,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2981364137500752533">Je kunt maximaal 5 vensters hebben.</translation>
 <translation id="2983102365694924129">Gebaseerd op je activiteit op een site. Deze instelling staat uit.</translation>
 <translation id="2984978667043170458">Omringende tekst opnemen in Google-zoekopdrachten</translation>
-<translation id="2988638966064514052">Je wachtwoorden sterker maken</translation>
 <translation id="2989523299700148168">Onlangs bezocht</translation>
 <translation id="2992473221983447149">Afbeeldingsbeschrijvingen</translation>
 <translation id="2996291259634659425">Wachtwoordzin maken</translation>
@@ -548,7 +547,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3557336313807607643">Toevoegen aan contacten</translation>
 <translation id="3563767357928833671">Content van klembord getoond</translation>
 <translation id="3566639033325271639">Instellingen updaten</translation>
-<translation id="3568945271227339929">Geen gehackte wachtwoorden</translation>
 <translation id="3575464060651642446">Wachtwoorden op dit apparaat checken…</translation>
 <translation id="3577473026931028326">Er is iets misgegaan. Probeer het opnieuw.</translation>
 <translation id="3577558748185201054">Beheer je interesses en voorkeuren</translation>
@@ -1055,7 +1053,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5958275228015807058">Vind je bestanden en pagina's in Downloads</translation>
 <translation id="5958994127112619898">Pagina vereenvoudigen</translation>
 <translation id="5962718611393537961">Tik om samen te vouwen</translation>
-<translation id="5964180026566797835">Kan wachtwoorden niet checken</translation>
 <translation id="5964869237734432770">Afbeeldingsbeschrijvingen stoppen</translation>
 <translation id="5977976211062815271">Op dit apparaat</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 pagina op je leeslijst}other{# pagina's op je leeslijst}}</translation>
@@ -1099,6 +1096,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="6150320133806434356">Bookmark opgeslagen</translation>
 <translation id="6150706324143004339">Update Chrome om Chrome-gegevens te gebruiken en op te slaan in je Google-account</translation>
 <translation id="6154478581116148741">Zet de schermvergrendeling aan via Instellingen om je wachtwoorden te exporteren vanaf dit apparaat</translation>
+<translation id="6156323911414505561">Bookmarkbalk tonen</translation>
 <translation id="6162892189396105610">Pagina's waarvan Chrome denkt dat je ze waarschijnlijk gaat bezoeken, worden vooraf geladen.</translation>
 <translation id="6170675927290506430">Naar instellingen voor meldingen</translation>
 <translation id="6186394685773237175">Geen gehackte wachtwoorden gevonden</translation>

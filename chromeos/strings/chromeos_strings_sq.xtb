@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">Imazhi i sfondit për rrjedhën e tokës</translation>
 <translation id="33736539805963175">Sfondi (<ph name="LETTERS_COLOR" />) me shkronjën <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Ekskluzive</translation>
-<translation id="3395147534045164351">Aktivizo/çaktivizo vendndodhjen e zhvendosjes</translation>
 <translation id="3404249063913988450">Aktivizo mbrojtësin e ekranit</translation>
 <translation id="3413935475507503304">Kliko "Para" për të vazhduar me përditësimin.</translation>
 <translation id="3428551088151258685">në ambient të jashtëm</translation>
@@ -1395,6 +1394,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="7388345524791662148">Më shumë opsione për "<ph name="RECORDING_NAME" />"</translation>
 <translation id="7388959671917308825">Blloku me prekje i integruar</translation>
 <translation id="7397270852490618635">Çaktivizo temën e ndriçuar</translation>
+<translation id="7400166052988585408">Mësuesi yt do të kyçë ekranin tënd pas <ph name="NUM_SECONDS" /> sekondash</translation>
 <translation id="7401543881546089382">Fshi shkurtoren</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> është gati për t'u përditësuar</translation>
 <translation id="741244894080940828">konvertimi</translation>

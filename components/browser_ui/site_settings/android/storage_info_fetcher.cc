@@ -11,7 +11,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom-forward.h"
 
 using content::BrowserContext;
 using content::BrowserThread;
@@ -80,7 +79,7 @@ void StorageInfoFetcher::OnUsageClearedInternal(
     blink::mojom::QuotaStatusCode code) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  quota_manager_->ResetUsageTracker(blink::mojom::StorageType::kTemporary);
+  quota_manager_->ResetUsageTracker();
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,

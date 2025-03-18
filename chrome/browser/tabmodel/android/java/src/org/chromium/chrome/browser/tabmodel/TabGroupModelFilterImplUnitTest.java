@@ -2069,45 +2069,6 @@ public class TabGroupModelFilterImplUnitTest {
     }
 
     @Test
-    public void testGetRelatedTabCountForRootId() {
-        // This behavior makes no sense as it is an invalid ID.
-        assertEquals(
-                "Should have 1 related tab.",
-                1,
-                mTabGroupModelFilter.getRelatedTabCountForRootId(Tab.INVALID_TAB_ID));
-        // This behavior makes no sense as the tab does not exist.
-        assertEquals(
-                "Should have 1 related tab.",
-                1,
-                mTabGroupModelFilter.getRelatedTabCountForRootId(NON_EXISTANT_TAB_ID));
-
-        assertEquals(
-                "Should have 1 related tab.",
-                1,
-                mTabGroupModelFilter.getRelatedTabCountForRootId(TAB1_ROOT_ID));
-        assertEquals(
-                "Should have 2 related tabs.",
-                2,
-                mTabGroupModelFilter.getRelatedTabCountForRootId(TAB2_ROOT_ID));
-        assertEquals(
-                "Should have 2 related tabs.",
-                2,
-                mTabGroupModelFilter.getRelatedTabCountForRootId(TAB3_ROOT_ID));
-        assertEquals(
-                "Should have 1 related tab.",
-                1,
-                mTabGroupModelFilter.getRelatedTabCountForRootId(TAB4_ROOT_ID));
-        assertEquals(
-                "Should have 2 related tabs.",
-                2,
-                mTabGroupModelFilter.getRelatedTabCountForRootId(TAB5_ROOT_ID));
-        assertEquals(
-                "Should have 2 related tabs.",
-                2,
-                mTabGroupModelFilter.getRelatedTabCountForRootId(TAB6_ROOT_ID));
-    }
-
-    @Test
     public void testGetTabCountForGroup() {
         assertEquals(
                 "Should have 0 grouped tabs.",

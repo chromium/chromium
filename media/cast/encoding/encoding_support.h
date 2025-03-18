@@ -31,6 +31,10 @@ bool IsHardwareEnabled(
     const std::vector<media::VideoEncodeAccelerator::SupportedProfile>&
         profiles);
 
+// Should be called before calling DenyListHardwareCodec() to ensure that we
+// don't attempt to disable the codec multiple times.
+bool IsHardwareDenyListed(VideoCodec codec);
+
 // Call to disable a hardware codec using a singleton.
 void DenyListHardwareCodec(VideoCodec codec);
 

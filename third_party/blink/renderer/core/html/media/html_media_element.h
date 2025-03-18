@@ -29,6 +29,7 @@
 
 #include <memory>
 #include <optional>
+#include <variant>
 
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -36,7 +37,6 @@
 #include "base/timer/elapsed_timer.h"
 #include "media/mojo/mojom/media_player.mojom-blink.h"
 #include "media/renderers/remote_playback_client_wrapper.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/media/display_type.h"
 #include "third_party/blink/public/platform/web_audio_source_provider_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
@@ -195,7 +195,7 @@ class CORE_EXPORT HTMLMediaElement
   }
 
   using SrcObjectVariant =
-      absl::variant<MediaStreamDescriptor*, MediaSourceHandle*>;
+      std::variant<MediaStreamDescriptor*, MediaSourceHandle*>;
   void SetSrcObjectVariant(SrcObjectVariant src_object_variant);
   SrcObjectVariant GetSrcObjectVariant() const;
 

@@ -934,7 +934,7 @@ public class FeedSurfaceMediator
      * @return Whether the SignPromo should be visible.
      */
     private boolean shouldShowSigninPromo() {
-        // TODO(crbug.com/327387704): Move SignInPromo.shouldCreatePromo inside FeedSigninPromo
+        // TODO(crbug.com/352735671): Move SignInPromo.shouldCreatePromo inside FeedSigninPromo
         //  after phase 2 follow-up launch.
         boolean shouldCreatePromo = SignInPromo.shouldCreatePromo();
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {

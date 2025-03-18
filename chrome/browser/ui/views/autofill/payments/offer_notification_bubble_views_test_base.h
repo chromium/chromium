@@ -98,7 +98,7 @@ class OfferNotificationBubbleViewsTestBase
 
   OfferNotificationBubbleViews* GetOfferNotificationBubbleViews();
 
-  OfferNotificationIconView* GetOfferNotificationIconView();
+  IconLabelBubbleView* GetOfferNotificationPageActionView();
 
   bool IsIconVisible();
 

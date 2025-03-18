@@ -5413,7 +5413,6 @@ class MockWindowEventTarget : public ui::WindowEventTarget {
     return S_OK;
   }
 
-  void HandleParentChanged() override {}
   void ApplyPinchZoomScale(float scale) override {}
   void ApplyPinchZoomBegin() override {}
   void ApplyPinchZoomEnd() override {}

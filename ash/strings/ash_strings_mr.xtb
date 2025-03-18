@@ -166,6 +166,7 @@
 <translation id="1505542291183484463">विंडोच्या टाइलचा आकार खालच्या दिशेने बदला</translation>
 <translation id="1510238584712386396">लाँचर</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{सूचना सेटिंग्ज दाखवा. ॲपसाठी सूचना बंद आहेत}other{सूचना सेटिंग्ज दाखवा. # ॲप्ससाठी सूचना बंद आहेत}}</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">बॅटरी <ph name="BATTERY_PERCENTAGE" />% | पूर्ण होण्यासाठी <ph name="TIME" /></translation>
 <translation id="1525508553941733066">डिसमिस करा</translation>
 <translation id="1526448108126799339">नवीन विंडोमध्ये नवीन टॅब उघडा</translation>
@@ -345,7 +346,6 @@
 <translation id="2201071101391734388"><ph name="TOTAL_COUNT" /> पैकी <ph name="INDEX" /> अलीकडील फोटो.</translation>
 <translation id="2201687081523799384">Google Tasks कोलॅप्स करा</translation>
 <translation id="2208323208084708176">एकीकृत डेस्कटॉप मोड</translation>
-<translation id="2220572644011485463">पिन किंवा पासवर्ड</translation>
 <translation id="2222841058024245321">डेस्‍क ७</translation>
 <translation id="2223384056430485343">स्प्लिट स्क्रीनमध्ये</translation>
 <translation id="2224075387478458881">सुरक्षित आशय दृश्यमान असेल तेव्हा स्क्रीन रेकॉर्डिंगला अनुमती नाही</translation>
@@ -1829,7 +1829,6 @@
 <translation id="7000027735917578303">Windows आणि डेस्‍क सेटिंग्ज</translation>
 <translation id="7004910047186208204">मोबाइल डेटाशी कनेक्ट करा</translation>
 <translation id="7005239792648594238">सुरुवात करण्यासाठी अ‍ॅप उघडा</translation>
-<translation id="7007983414944123363">तुमच्या पिन किंवा पासवर्डची पडताळणी करता आली नाही. पुन्हा प्रयत्न करा.</translation>
 <translation id="7014684956566476813"><ph name="DEVICE_NAME" /> नावाच्या डिव्‍हाइसशी कनेक्ट केले</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> वाजता परत या.</translation>
 <translation id="70168403932084660">डेस्‍क ६</translation>
@@ -2466,6 +2465,7 @@
 <translation id="9168436347345867845">ते नंतर करा</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> साठी एक परिणाम दाखवत आहे</translation>
 <translation id="9179259655489829027">हे वैशिष्ट्य तुम्हाला पासवर्ड शिवाय कोणत्याही साइन-इन केलेल्या वापरकर्त्यास जलदपणे ॲक्सेस करण्याची परवानगी  देते. तुमचा विश्वास असलेल्या खात्यांसाठीच फक्त या वैशिष्ट्याचा वापर करा.</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183456764293710005">फुल-स्क्रीन मॅग्निफायर</translation>
 <translation id="9192133205265227850">"<ph name="DEVICE_NAME" />" वापरा</translation>
 <translation id="9193626018745640770">एका अज्ञात मिळवणाऱ्यावर कास्ट करत आहे</translation>

@@ -50,7 +50,7 @@ source_set("home") {
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_scene_agent",
-    "//ios/chrome/browser/intents:intents_donation_helper",
+    "//ios/chrome/browser/intents/model:model_donation_helper",
     "//ios/chrome/browser/keyboard/ui_bundled",
     "//ios/chrome/browser/menu/ui_bundled",
     "//ios/chrome/browser/metrics/model:metrics_internal",

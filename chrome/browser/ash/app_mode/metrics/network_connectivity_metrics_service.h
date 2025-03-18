@@ -5,9 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_MODE_METRICS_NETWORK_CONNECTIVITY_METRICS_SERVICE_H_
 #define CHROME_BROWSER_ASH_APP_MODE_METRICS_NETWORK_CONNECTIVITY_METRICS_SERVICE_H_
 
-#include <utility>
-
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
@@ -22,6 +20,7 @@ extern const char kKioskNetworkDropsPerSessionHistogram[];
 // drop events.
 class NetworkConnectivityMetricsService : public NetworkStateHandlerObserver {
  public:
+  explicit NetworkConnectivityMetricsService(PrefService& local_state);
   NetworkConnectivityMetricsService();
   NetworkConnectivityMetricsService(NetworkConnectivityMetricsService&) =
       delete;
@@ -29,14 +28,9 @@ class NetworkConnectivityMetricsService : public NetworkStateHandlerObserver {
       const NetworkConnectivityMetricsService&) = delete;
   ~NetworkConnectivityMetricsService() override;
 
-  static std::unique_ptr<NetworkConnectivityMetricsService> CreateForTesting(
-      PrefService* pref);
-
   bool is_online() const { return is_online_; }
 
  private:
-  explicit NetworkConnectivityMetricsService(PrefService* prefs);
-
   // NetworkStateHandlerObserver:
   void NetworkConnectionStateChanged(const NetworkState* network) override;
 
@@ -46,7 +40,7 @@ class NetworkConnectivityMetricsService : public NetworkStateHandlerObserver {
   // Report a number of network connectivity drops during the previous session.
   void ReportPreviousSessionNetworkDrops();
 
-  raw_ptr<PrefService> prefs_;
+  const raw_ref<PrefService> local_state_;
   bool is_online_;
   int network_drops_ = 0;
 

@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -265,7 +266,7 @@ actions::ActionItem* LensOverlayEntryPointController::GetToolbarEntrypoint() {
 }
 
 void LensOverlayEntryPointController::UpdatePageActionState() {
-  if (!base::FeatureList::IsEnabled(::features::kPageActionsMigration)) {
+  if (!IsPageActionMigrated(PageActionIconType::kLensOverlay)) {
     return;
   }
   // This may not have been initialized (e.g. for non-normal browser types).
@@ -291,7 +292,6 @@ void LensOverlayEntryPointController::UpdatePageActionState() {
 
   if (!ShouldShowPageAction(active_tab)) {
     page_action_controller->Hide(page_action_id);
-    page_action_controller->HideSuggestionChip(page_action_id);
     return;
   }
 
@@ -301,7 +301,10 @@ void LensOverlayEntryPointController::UpdatePageActionState() {
       l10n_util::GetStringUTF16(IDS_CONTENT_LENS_OVERLAY_ENTRYPOINT_LABEL));
 
   page_action_controller->Show(page_action_id);
-  page_action_controller->ShowSuggestionChip(page_action_id);
+  page_action_controller->ShowSuggestionChip(page_action_id,
+                                             {
+                                                 .should_animate = false,
+                                             });
 }
 
 bool LensOverlayEntryPointController::IsOverlayActive() {

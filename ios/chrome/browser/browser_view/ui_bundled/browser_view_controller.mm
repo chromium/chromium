@@ -37,7 +37,7 @@
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_view.h"
-#import "ios/chrome/browser/intents/intents_donation_helper.h"
+#import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/main_content/ui_bundled/main_content_ui.h"
 #import "ios/chrome/browser/main_content/ui_bundled/main_content_ui_broadcasting_util.h"
 #import "ios/chrome/browser/main_content/ui_bundled/main_content_ui_state.h"
@@ -1725,12 +1725,14 @@ enum HeaderBehaviour {
 
   self.fullscreenController->BrowserTraitCollectionChangedBegin();
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
   // TODO(crbug.com/41198852): - traitCollectionDidChange: is not always
   // forwarded because in some cases the presented view controller isn't a child
   // of the BVC in the view controller hierarchy (some intervening object isn't
   // a view controller).
   [self.presentedViewController
       traitCollectionDidChange:previousTraitCollection];
+#endif
 
   if (self.currentWebState) {
     UIEdgeInsets contentPadding =

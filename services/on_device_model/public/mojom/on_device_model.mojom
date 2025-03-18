@@ -126,6 +126,16 @@ struct SessionParams {
 
   // The capabilities to enable for this session.
   Capabilities capabilities;
+
+  // These params control the output sampling. Higher `top_k` means more tokens
+  // are considered, higher `temperature` means less likely tokens are more
+  // probable.
+  // `top_k` should be a value from 1 to the max top K value the model was
+  // initialized with.
+  [MinVersion=1] uint32 top_k;
+  // `temperature` should be a value greater than 0.0. Values above 1.0 may give
+  // poor results.
+  [MinVersion=1] float temperature;
 };
 
 // The set of tokens that can be added as part of an input.
@@ -193,14 +203,9 @@ struct GenerateOptions {
   // sequence length.
   uint32 max_output_tokens = 0;
 
-  // These params control the output sampling. Higher `top_k` means more tokens
-  // are considered, higher `temperature` means less likely tokens are more
-  // probable.
-  // `top_k` should be a value from 1 to the max top K value the model was
-  // initialized with.
+  // Deprecated: use SessionParams.top_k instead.
   uint32? top_k;
-  // `temperature` should be a value greater than 0.0. Values above 1.0 may give
-  // poor results.
+  // Deprecated: use SessionParams.temperature instead.
   float? temperature;
 };
 

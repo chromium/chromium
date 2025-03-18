@@ -297,6 +297,10 @@ public class HubToolbarView extends LinearLayout {
         mHubSearchAnimatorHandler.startAnimation(hubSearchTransitionAnimation);
     }
 
+    void setHubSearchEnabledState(boolean enabled) {
+        mSearchBoxTextView.setEnabled(enabled);
+    }
+
     void setApplyDelayForSearchBoxAnimation(boolean applyDelay) {
         mApplyDelayForSearchBoxAnimation = applyDelay;
     }

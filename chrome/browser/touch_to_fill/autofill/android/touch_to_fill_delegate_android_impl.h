@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_TOUCH_TO_FILL_AUTOFILL_ANDROID_TOUCH_TO_FILL_DELEGATE_ANDROID_IMPL_H_
 #define CHROME_BROWSER_TOUCH_TO_FILL_AUTOFILL_ANDROID_TOUCH_TO_FILL_DELEGATE_ANDROID_IMPL_H_
 
+#include <variant>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
@@ -131,7 +132,7 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
   void CreditCardSuggestionSelected(std::string unique_id,
                                     bool is_virtual) override;
   void IbanSuggestionSelected(
-      absl::variant<Iban::Guid, Iban::InstrumentId> backend_id) override;
+      std::variant<Iban::Guid, Iban::InstrumentId> backend_id) override;
   void OnDismissed(bool dismissed_by_user) override;
 
   void LogMetricsAfterSubmission(const FormStructure& submitted_form) override;
@@ -149,14 +150,14 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
 
   struct DryRunResult {
     DryRunResult(TriggerOutcome outcome,
-                 absl::variant<std::vector<CreditCard>, std::vector<Iban>>
+                 std::variant<std::vector<CreditCard>, std::vector<Iban>>
                      items_to_suggest);
     DryRunResult(DryRunResult&&);
     DryRunResult& operator=(DryRunResult&&);
     ~DryRunResult();
 
     TriggerOutcome outcome;
-    absl::variant<std::vector<CreditCard>, std::vector<Iban>> items_to_suggest;
+    std::variant<std::vector<CreditCard>, std::vector<Iban>> items_to_suggest;
   };
 
   // Checks all preconditions for showing the TTF, that is, for calling

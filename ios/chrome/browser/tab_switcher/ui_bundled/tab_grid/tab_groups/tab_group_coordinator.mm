@@ -106,7 +106,7 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 
 - (void)start {
   [self setUpViewController];
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   Browser* browser = self.browser;
 
   tab_groups::TabGroupSyncService* tabGroupSyncService =
@@ -268,7 +268,7 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 
 - (void)gridViewController:(BaseGridViewController*)gridViewController
        didSelectItemWithID:(web::WebStateID)itemID {
-  BOOL incognito = self.browser->GetProfile()->IsOffTheRecord();
+  BOOL incognito = self.profile->IsOffTheRecord();
   if ([_mediator isItemWithIDSelected:itemID]) {
     if (incognito) {
       base::RecordAction(base::UserMetricsAction(
@@ -380,14 +380,13 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
     (BaseGridViewController*)gridViewController {
   collaboration::messaging::MessagingBackendService* messagingService =
       collaboration::messaging::MessagingBackendServiceFactory::GetForProfile(
-          self.browser->GetProfile());
+          self.profile);
   if (!_tabGroup || !messagingService) {
     return;
   }
 
   tab_groups::TabGroupSyncService* tabGroupSyncService =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          self.browser->GetProfile());
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(self.profile);
   std::optional<tab_groups::SavedTabGroup> group =
       tabGroupSyncService->GetGroup(_tabGroup->tab_group_id());
   if (!group.has_value() || !group->collaboration_id().has_value()) {
@@ -490,7 +489,7 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
   // Initialize the `_viewController`.
   _viewController = [[TabGroupViewController alloc]
       initWithHandler:handler
-            incognito:self.browser->GetProfile()->IsOffTheRecord()
+            incognito:self.profile->IsOffTheRecord()
              tabGroup:_tabGroup];
   _viewController.gridViewController.delegate = self;
   _viewController.presentationHandler = self;
@@ -502,8 +501,7 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 // coordinator if necessary.
 - (void)startUserEducationIfNeeded {
   tab_groups::TabGroupSyncService* syncService =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          self.browser->GetProfile());
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(self.profile);
 
   if (!tab_groups::utils::IsTabGroupShared(_tabGroup, syncService)) {
     return;

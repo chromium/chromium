@@ -269,17 +269,15 @@ TableTypes::Row ComputeMinimumRowBlockSize(
       cell_css_percent = cell_specified_block_length.Percent();
     } else if (cell_specified_block_length.IsFixed()) {
       // NOTE: Ignore min/max-height for determining the |cell_css_block_size|.
-      BoxStrut cell_padding = ComputePadding(cell_space, cell_style);
-      BoxStrut border_padding = cell_borders + cell_padding;
+      const LayoutUnit border_padding =
+          (cell_borders + ComputePadding(cell_space, cell_style)).BlockSum();
+      const LayoutUnit size(cell_specified_block_length.Pixels());
       // https://quirks.spec.whatwg.org/#the-table-cell-height-box-sizing-quirk
       if (cell.GetDocument().InQuirksMode() ||
           cell_style.BoxSizing() == EBoxSizing::kBorderBox) {
-        cell_css_block_size =
-            std::max(border_padding.BlockSum(),
-                     LayoutUnit(cell_specified_block_length.Value()));
+        cell_css_block_size = std::max(border_padding, size);
       } else {
-        cell_css_block_size = border_padding.BlockSum() +
-                              LayoutUnit(cell_specified_block_length.Value());
+        cell_css_block_size = border_padding + size;
       }
     }
 
@@ -312,7 +310,7 @@ TableTypes::Row ComputeMinimumRowBlockSize(
   } else if (row_specified_block_length.IsFixed()) {
     is_constrained = true;
     max_cell_block_size = std::max(
-        LayoutUnit(row_specified_block_length.Value()), max_cell_block_size);
+        LayoutUnit(row_specified_block_length.Pixels()), max_cell_block_size);
   }
 
   const LayoutUnit row_block_size =
@@ -1559,8 +1557,8 @@ void ComputeSectionMinimumRowBlockSizes(
       section.Style().LogicalHeight();
   // TODO(1105272) Handle section_specified_block_length.IsCalculated()
   if (section_specified_block_length.IsFixed()) {
-    LayoutUnit section_fixed_block_size =
-        LayoutUnit(section_specified_block_length.Value());
+    const LayoutUnit section_fixed_block_size(
+        section_specified_block_length.Pixels());
     if (section_fixed_block_size > section_block_size) {
       DistributeSectionFixedBlockSizeToRows(
           start_row, current_row - start_row, section_fixed_block_size,

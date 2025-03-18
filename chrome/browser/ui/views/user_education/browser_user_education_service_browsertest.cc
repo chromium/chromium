@@ -37,7 +37,6 @@
 #include "components/user_education/common/user_education_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interaction_sequence.h"
 

@@ -29,6 +29,7 @@
 #include <algorithm>
 #include <limits>
 #include <utility>
+#include <variant>
 
 #include "base/auto_reset.h"
 #include "base/debug/crash_logging.h"
@@ -885,10 +886,10 @@ void HTMLMediaElement::SetSrcObjectVariant(
   DVLOG(1) << __func__ << "(" << *this << ")";
   src_object_stream_descriptor_ = nullptr;
   src_object_media_source_handle_ = nullptr;
-  if (auto** desc = absl::get_if<MediaStreamDescriptor*>(&src_object_variant)) {
+  if (auto** desc = std::get_if<MediaStreamDescriptor*>(&src_object_variant)) {
     src_object_stream_descriptor_ = *desc;
   } else if (auto** handle =
-                 absl::get_if<MediaSourceHandle*>(&src_object_variant)) {
+                 std::get_if<MediaSourceHandle*>(&src_object_variant)) {
     src_object_media_source_handle_ = *handle;
   }
 

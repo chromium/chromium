@@ -4,6 +4,8 @@
 
 #include "chrome/browser/media/router/providers/cast/cast_media_controller.h"
 
+#include <utility>
+
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/rand_util.h"
@@ -13,7 +15,6 @@
 #include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"
 #include "components/media_router/common/providers/cast/channel/cast_message_util.h"
 #include "components/media_router/common/providers/cast/channel/enum_table.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 using cast_channel::V2MessageType;
 

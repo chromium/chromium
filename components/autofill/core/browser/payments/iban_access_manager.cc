@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 
+#include <variant>
+
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
@@ -37,7 +39,7 @@ void IbanAccessManager::FetchValue(const Suggestion::Payload& payload,
   // If `Guid` has a value then that means that it's a local IBAN suggestion.
   // In this case, retrieving the complete IBAN value requires accessing the
   // saved IBAN from the PersonalDataManager.
-  if (const Suggestion::Guid* guid = absl::get_if<Suggestion::Guid>(&payload)) {
+  if (const Suggestion::Guid* guid = std::get_if<Suggestion::Guid>(&payload)) {
     const Iban* iban = GetPaymentsDataManager().GetIbanByGUID(guid->value());
     if (iban) {
       Iban iban_copy = *iban;
@@ -60,7 +62,7 @@ void IbanAccessManager::FetchValue(const Suggestion::Payload& payload,
     return;
   }
 
-  int64_t instrument_id = absl::get<Suggestion::InstrumentId>(payload).value();
+  int64_t instrument_id = std::get<Suggestion::InstrumentId>(payload).value();
 
   // The suggestion is now presumed to be a masked server IBAN.
   // If there are no server IBANs in the PersonalDataManager that have the same

@@ -5,6 +5,7 @@
 #include "chrome/browser/devtools/protocol/autofill_handler.h"
 
 #include <optional>
+#include <variant>
 
 #include "base/check_deref.h"
 #include "base/memory/scoped_refptr.h"
@@ -222,7 +223,7 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
     const autofill::FillingPayload& filling_payload) {
   // We only care about address forms that were filled.
   if (action_persistence != autofill::mojom::ActionPersistence::kFill ||
-      !absl::holds_alternative<const autofill::AutofillProfile*>(
+      !std::holds_alternative<const autofill::AutofillProfile*>(
           filling_payload)) {
     return;
   }
@@ -230,7 +231,7 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
   autofill::FormStructure& form_structure =
       CHECK_DEREF(manager.FindCachedFormById(form));
   const autofill::AutofillProfile* profile_used_to_fill_form =
-      absl::get<const autofill::AutofillProfile*>(filling_payload);
+      std::get<const autofill::AutofillProfile*>(filling_payload);
 
   auto field_id_to_form_field_data =
       base::MakeFlatMap<autofill::FieldGlobalId,

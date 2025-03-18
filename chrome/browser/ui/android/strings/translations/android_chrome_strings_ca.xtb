@@ -432,7 +432,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2981364137500752533">Pots tenir fins a 5 finestres.</translation>
 <translation id="2983102365694924129">Segons la teva activitat en un lloc web. Aquesta opció de configuració està desactivada.</translation>
 <translation id="2984978667043170458">Inclou el text del voltant a les cerques de Google</translation>
-<translation id="2988638966064514052">Reforça les teves contrasenyes</translation>
 <translation id="2989523299700148168">Visitats últimament</translation>
 <translation id="2992473221983447149">Descripcions d'imatges</translation>
 <translation id="2996291259634659425">Creeu una frase de contrasenya</translation>
@@ -548,7 +547,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3557336313807607643">Afegeix als contactes</translation>
 <translation id="3563767357928833671">Es mostren els continguts del porta-retalls</translation>
 <translation id="3566639033325271639">Actualitza la configuració</translation>
-<translation id="3568945271227339929">No hi ha cap contrasenya en perill</translation>
 <translation id="3575464060651642446">S'estan comprovant les contrasenyes en aquest dispositiu…</translation>
 <translation id="3577473026931028326">S'ha produït un error. Torna-ho a provar.</translation>
 <translation id="3577558748185201054">Gestiona els teus interessos i les teves preferències</translation>
@@ -1055,7 +1053,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5958275228015807058">Trobaràs els teus fitxers i les teves pàgines a Baixades</translation>
 <translation id="5958994127112619898">Simplifica la pàgina</translation>
 <translation id="5962718611393537961">Toca per replegar</translation>
-<translation id="5964180026566797835">No es poden comprovar les contrasenyes</translation>
 <translation id="5964869237734432770">Atura descripcions d'imatges</translation>
 <translation id="5977976211062815271">En aquest dispositiu</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 pàgina a la teva llista de lectura}other{# pàgines a la teva llista de lectura}}</translation>
@@ -1099,6 +1096,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="6150320133806434356">Adreça d'interès desada</translation>
 <translation id="6150706324143004339">Per utilitzar i desar les dades de Chrome al teu Compte de Google, actualitza Chrome</translation>
 <translation id="6154478581116148741">Activa el bloqueig de pantalla a Configuració per exportar les teves contrasenyes d'aquest dispositiu</translation>
+<translation id="6156323911414505561">Mostra la barra d'adreces d'interès</translation>
 <translation id="6162892189396105610">Carrega prèviament les pàgines que Chrome considera que és possible que visitis.</translation>
 <translation id="6170675927290506430">Ves a la configuració de notificacions</translation>
 <translation id="6186394685773237175">No s'ha trobat cap contrasenya en perill</translation>

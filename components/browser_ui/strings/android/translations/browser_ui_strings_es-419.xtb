@@ -45,6 +45,7 @@
 <translation id="1652197001188145583">Cuando esta opción está activada, los sitios pueden solicitar permiso para usar dispositivos NFC. Cuando está desactivada, los sitios no pueden usar dispositivos NFC.</translation>
 <translation id="1660204651932907780">Permitir que los sitios reproduzcan sonido (recomendado)</translation>
 <translation id="1677097821151855053">Se utilizan cookies y otros datos del sitio para recordar tu información y actividad. De esta manera, podrás acceder a tu cuenta y ver anuncios personalizados, entre otras cosas. Para administrar las cookies de todos los sitios, visita la <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
+<translation id="1679305402657584804">Permitir que los sitios soliciten permiso para usar dispositivos NFC</translation>
 <translation id="1686785653877010442">Por lo general, los sitios envían notificaciones sobre noticias de último momento o mensajes de chat.</translation>
 <translation id="169515064810179024">Impedir que los sitios accedan a los sensores de movimiento</translation>
 <translation id="1703666494654169921">No permitir que los sitios usen datos ni dispositivos de realidad virtual</translation>
@@ -84,6 +85,7 @@
 <translation id="2185965788978862351">Esta acción borrará <ph name="DATASIZE" /> de datos y cookies almacenados por los sitios o las apps que aparecen en la pantalla principal.</translation>
 <translation id="2194856509914051091">Aspectos para tener en cuenta</translation>
 <translation id="2215727959747642672">Edición de archivos</translation>
+<translation id="2218389616572918761">Permitir que los sitios soliciten el uso de tu micrófono</translation>
 <translation id="2228071138934252756">Para permitir que <ph name="APP_NAME" /> acceda a tu cámara, actívala también en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Se bloquearon las cookies de terceros</translation>
 <translation id="2238944249568001759">Búsquedas sugeridas en base a tu última pestaña</translation>
@@ -132,8 +134,10 @@
 <translation id="2726059656860238749">Inicia Chrome con el cuadro multifunción enfocado, lo que reduce el tiempo de inicio en dispositivos de gama baja.</translation>
 <translation id="2750481671343847896">Los sitios pueden mostrarte mensajes de acceso de servicios de identidad.</translation>
 <translation id="2787357173144933081">Inicia el cuadro multifunción</translation>
+<translation id="2789132527330338807">Los sitios pueden solicitar permiso para crear un mapa 3D de tu entorno o hacer un seguimiento de la posición de la cámara</translation>
 <translation id="2790501146643349491">Cuando esta opción está activada, los sitios cerrados recientemente pueden terminar de enviar y recibir datos. Cuando está desactivada, los sitios cerrados recientemente no pueden terminar de enviar ni recibir datos.</translation>
 <translation id="2795716239552913152">Por lo general, los sitios utilizan tu ubicación para mostrar información o habilitar funciones relevantes, como noticias locales o tiendas cercanas.</translation>
+<translation id="2802908157808345702">No permitir que los sitios envíen ventanas emergentes ni utilicen redireccionamientos</translation>
 <translation id="2814830417943086299">Ahora, Chrome muestra tus pestañas recientes en la lista de apps y en los resultados de la búsqueda de tu dispositivo. Puedes desactivar esta opción en cualquier momento en la configuración de Chrome.</translation>
 <translation id="2822354292072154809">¿Confirmas que quieres restablecer todos los permisos de sitios para <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Solicitar la vista para dispositivos móviles</translation>
@@ -274,6 +278,7 @@
 <translation id="4598549027014564149">Cuando está activado el modo Incógnito, los sitios no pueden usar tus cookies para ver tu actividad de navegación en sitios, ni siquiera en sitios relacionados. Tu actividad de navegación no se usa, por ejemplo, para personalizar anuncios. Es posible que algunas funciones no puedan utilizarse en algunos sitios.</translation>
 <translation id="461356340001513807">Te permite acceder a sitios web a través de una cuenta con un servicio de identidad</translation>
 <translation id="4619615317237390068">Pestañas de otros dispositivos</translation>
+<translation id="4635969503923889910">No permitir que los sitios usen dispositivos NFC</translation>
 <translation id="4644713492825682049">Borrar y restablecer</translation>
 <translation id="4645575059429386691">Administrado por tus padres</translation>
 <translation id="4670064810192446073">Realidad virtual</translation>
@@ -372,6 +377,7 @@
 <translation id="5877248419911025165">Contraer todas las solicitudes</translation>
 <translation id="5884085660368669834">Preferencia de sitio</translation>
 <translation id="5887687176710214216">Última visita: ayer</translation>
+<translation id="5908617755156109052">No permitir que los sitios creen un mapa 3D de tu entorno ni hagan un seguimiento de la posición de la cámara</translation>
 <translation id="5916664084637901428">Activado</translation>
 <translation id="5922853908706496913">Compartiendo tu pantalla</translation>
 <translation id="5922967540311291836">Bloquear cookies de terceros:</translation>
@@ -582,6 +588,7 @@
 <translation id="8676374126336081632">Borrar entrada</translation>
 <translation id="8681886425883659911">Se bloquean los anuncios en sitios conocidos por mostrar anuncios intrusivos o engañosos</translation>
 <translation id="868929229000858085">Busca entre tus contactos</translation>
+<translation id="8707904142362025782">Permitir que el sitio solicite el uso de la cámara</translation>
 <translation id="8712637175834984815">Entendido</translation>
 <translation id="8715862698998036666">Arrastra el dedo desde la parte superior y deslízalo desde el borde izquierdo o derecho para salir del modo de pantalla completa.</translation>
 <translation id="8719283222052720129">Activa el permiso para <ph name="APP_NAME" /> en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>

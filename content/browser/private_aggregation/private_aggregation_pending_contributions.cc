@@ -14,6 +14,7 @@
 #include <set>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -23,7 +24,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
@@ -367,14 +367,14 @@ PrivateAggregationPendingContributions&
 PrivateAggregationPendingContributions::Wrapper::GetPendingContributions() {
   CHECK(base::FeatureList::IsEnabled(
       blink::features::kPrivateAggregationApiErrorReporting));
-  return absl::get<0>(contributions_);
+  return std::get<0>(contributions_);
 }
 
 std::vector<blink::mojom::AggregatableReportHistogramContribution>&
 PrivateAggregationPendingContributions::Wrapper::GetContributionsVector() {
   CHECK(!base::FeatureList::IsEnabled(
       blink::features::kPrivateAggregationApiErrorReporting));
-  return absl::get<1>(contributions_);
+  return std::get<1>(contributions_);
 }
 
 }  // namespace content

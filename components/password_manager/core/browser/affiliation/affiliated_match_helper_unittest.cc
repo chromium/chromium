@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -361,7 +362,7 @@ TEST_F(AffiliatedMatchHelperTest, InjectAffiliationAndBrandingInformation) {
   match_helper()->InjectAffiliationAndBrandingInformation(std::move(forms),
                                                           mock_reply.Get());
 
-  auto result_forms = std::move(absl::get<std::vector<PasswordForm>>(result));
+  auto result_forms = std::move(std::get<std::vector<PasswordForm>>(result));
 
   ASSERT_EQ(expected_form_count, result_forms.size());
   EXPECT_THAT(result_forms[0].affiliated_web_realm,

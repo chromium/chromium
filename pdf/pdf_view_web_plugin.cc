@@ -2820,7 +2820,7 @@ AccessibilityDocInfo PdfViewWebPlugin::GetAccessibilityDocInfo() const {
   AccessibilityDocInfo doc_info;
   doc_info.page_count = engine_->GetNumberOfPages();
   if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfTags)) {
-    doc_info.is_tagged = engine_->IsTagged();
+    doc_info.is_tagged = engine_->IsPDFDocTagged();
   }
   doc_info.text_accessible =
       engine_->HasPermission(DocumentPermission::kCopyAccessible);

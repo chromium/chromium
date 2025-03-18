@@ -166,6 +166,7 @@
 <translation id="1505542291183484463">ടൈൽ ചെയ്ത, വലുപ്പം‌ മാറ്റിയ വിൻഡോ താഴേക്ക് നീക്കുക</translation>
 <translation id="1510238584712386396">ലോഞ്ചർ</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{അറിയിപ്പ് ക്രമീകരണം കാണിക്കുക. ഒരു ആപ്പിന് അറിയിപ്പുകൾ ഓഫാണ്}other{അറിയിപ്പ് ക്രമീകരണം കാണിക്കുക. # ആപ്പുകൾക്ക് അറിയിപ്പുകൾ ഓഫാണ്}}</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003"><ph name="BATTERY_PERCENTAGE" />% ബാറ്ററി | ഫുൾ ആവാൻ <ph name="TIME" /> എടുക്കും</translation>
 <translation id="1525508553941733066">ഡിസ്മിസ്സ് ചെയ്യുക</translation>
 <translation id="1526448108126799339">പുതിയ വിൻഡോയിൽ പുതിയ ടാബ് തുറക്കുക</translation>
@@ -240,6 +241,8 @@
 <translation id="1755556344721611131">Diagnostics ആപ്പ്</translation>
 <translation id="1756833229520115364">ടെംപ്ലേറ്റ് സംരക്ഷിക്കാനാകുന്നില്ല. നിരവധി വിൻഡോകളും ടാബുകളും.</translation>
 <translation id="1757857692711134412">സൂര്യാസ്തമയം വരെ ഓഫാണ്</translation>
+<translation id="1763084151787818322">മറ്റ് പ്രവർത്തനങ്ങൾ</translation>
+<translation id="1768138163688567246">'എന്റെ സ്ക്രീൻ തിരയുക' അടയ്ക്കുക</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + പീരിയഡ് കീബോർഡ് കുറുക്കുവഴി മാറിയിട്ടുണ്ട്. Insert കീ ഉപയോഗിക്കാൻ, <ph name="LAUNCHER_KEY_NAME" /> കീ+ Shift + Backspace അമർത്തുക.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />-ാം വരിയിലെ <ph name="COLUMN_NUMBER" />-ാം കോളത്തിലേക്ക് നീക്കി.</translation>
 <translation id="1771761307086386028">വലത്തോട്ട് സ്ക്രോൾ ചെയ്യുക</translation>
@@ -345,7 +348,6 @@
 <translation id="2201071101391734388">അടുത്തിടെയുള്ള <ph name="TOTAL_COUNT" /> ഫോട്ടോകളിൽ <ph name="INDEX" />-മത്തേത്.</translation>
 <translation id="2201687081523799384">Google Tasks ചുരുക്കുക</translation>
 <translation id="2208323208084708176">ഏകീകൃത ഡെസ്‌ക്‌ടോപ്പ് മോഡ്</translation>
-<translation id="2220572644011485463">പിൻ അല്ലെങ്കിൽ പാസ്‌വേഡ്</translation>
 <translation id="2222841058024245321">ഡെസ്ക് 7</translation>
 <translation id="2223384056430485343">സ്ക്രീൻ വിഭജന മോഡിൽ</translation>
 <translation id="2224075387478458881">പരിരക്ഷിത ഉള്ളടക്കം ദൃശ്യമായിരിക്കുമ്പോൾ സ്ക്രീൻ റെക്കോർഡിംഗ് അനുവദനീയമല്ല</translation>
@@ -1829,7 +1831,6 @@
 <translation id="7000027735917578303">വിന്‍ഡോകളുടെയും ഡെസ്ക്കുകളുടെയും ക്രമീകരണം</translation>
 <translation id="7004910047186208204">മൊബൈൽ ഡാറ്റയിലേക്ക് കണക്റ്റ് ചെയ്യുക</translation>
 <translation id="7005239792648594238">ആരംഭിക്കാൻ ഒരു ആപ്പ് തുറക്കുക</translation>
-<translation id="7007983414944123363">നിങ്ങളുടെ പിൻ അല്ലെങ്കിൽ പാസ്‌വേഡ് പരിശോധിച്ചുറപ്പിക്കാനായില്ല. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="7014684956566476813"><ph name="DEVICE_NAME" /> എന്ന് പേരുള്ള ഉപകരണത്തിലേക്ക് കണക്റ്റ് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" />-ന് തിരികെ വരിക.</translation>
 <translation id="70168403932084660">ഡെസ്ക് 6</translation>
@@ -1944,6 +1945,7 @@
 <translation id="742594950370306541">ക്യാമറ ഉപയോഗത്തിലാണ്.</translation>
 <translation id="742608627846767349">ഗുഡ്മോണിംഗ്,</translation>
 <translation id="743058460480092004">ക്യാമറയും മൈക്രോഫോണും ഉപയോഗത്തിലാണ്.</translation>
+<translation id="7440404390546433462">Google Search</translation>
 <translation id="7441711280402516925">പ്ലേ ചെയ്യുന്നു · ടാബിലേക്ക് മാറുക</translation>
 <translation id="7453330308669753048">തിരയൽ ചരിത്ര ഫലം നീക്കം ചെയ്തു</translation>
 <translation id="7459485586006128091">ആന്തരിക പിശകിനെ തുടർന്ന്, ഹോട്ട്‌സ്പോട്ട് ഓഫാക്കി. അൽപ്പ സമയത്തിന് ശേഷം വീണ്ടും കണക്റ്റ് ചെയ്യാൻ ശ്രമിക്കുക.</translation>
@@ -2467,6 +2469,7 @@
 <translation id="9168436347345867845">ഇത് പിന്നീട് ചെയ്യുക</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> എന്നതിനുള്ള ഒരു ഫലം കാണിക്കുന്നു</translation>
 <translation id="9179259655489829027">സൈൻ ഇൻ ചെയ്‌ത ഏതൊരു ഉപയോക്താവിനെ പാസ്‌വേഡ് ഇല്ലാതെ തന്നെ വേഗത്തിൽ ആക്‌സസ് ചെയ്യാൻ ഈ ഫീച്ചർ നിങ്ങളെ അനുവദിക്കുന്നു. നിങ്ങൾക്ക് വിശ്വാസമുള്ള അക്കൗണ്ടുകളിൽ മാത്രം ഈ ഫീച്ചർ ഉപയോഗിക്കുക.</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183456764293710005">പൂർണ്ണ സ്ക്രീൻ മാഗ്നിഫയർ</translation>
 <translation id="9192133205265227850">"<ph name="DEVICE_NAME" />" ഉപയോഗിക്കുക</translation>
 <translation id="9193626018745640770">ഒരു അജ്ഞാത റിസീവറിൽ കാസ്‌റ്റ് ചെയ്യുന്നു</translation>

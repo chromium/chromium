@@ -17,7 +17,6 @@
 #include "components/tpcd/metadata/browser/parser.h"
 #include "components/tpcd/metadata/common/manager_base.h"
 #include "net/base/features.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 using PatternSourcePredicate = base::RepeatingCallback<bool(
     const ContentSettingsPattern& primary_pattern,

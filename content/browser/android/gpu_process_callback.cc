@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <utility>
+#include <variant>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/android/unguessable_token_android.h"
@@ -12,7 +13,6 @@
 #include "content/common/android/surface_wrapper.h"
 #include "content/public/browser/browser_thread.h"
 #include "gpu/ipc/common/gpu_surface_tracker.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/GpuProcessCallback_jni.h"
@@ -38,7 +38,7 @@ JNI_GpuProcessCallback_GetViewSurface(
   base::android::ScopedJavaLocalRef<jobject> j_surface_wrapper;
   auto surface_record =
       gpu::GpuSurfaceTracker::GetInstance()->AcquireJavaSurface(surface_id);
-  absl::visit(
+  std::visit(
       base::Overloaded{[&](gl::ScopedJavaSurface&& scoped_java_surface) {
                          if (!scoped_java_surface.IsEmpty()) {
                            if (surface_record.host_input_token) {

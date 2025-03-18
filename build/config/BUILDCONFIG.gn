@@ -315,6 +315,7 @@ is_ios = current_os == "ios"
 is_linux = current_os == "linux"
 is_mac = current_os == "mac"
 is_nacl = current_os == "nacl"
+is_wasm = current_os == "emscripten"
 is_watchos = current_os == "watchos"
 is_win = current_os == "win" || current_os == "winuwp"
 

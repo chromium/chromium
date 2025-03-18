@@ -14,6 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_manager.h"
@@ -301,7 +302,8 @@ AILanguageModel::~AILanguageModel() = default;
 PromptApiMetadata AILanguageModel::ParseMetadata(
     const optimization_guide::proto::Any& any) {
   PromptApiMetadata metadata;
-  if (any.type_url() == "type.googleapis.com/" + metadata.GetTypeName()) {
+  if (any.type_url() ==
+      base::StrCat({"type.googleapis.com/", metadata.GetTypeName()})) {
     metadata.ParseFromString(any.value());
   }
   return metadata;
@@ -367,7 +369,7 @@ void AILanguageModel::InitializeContextWithInitialPrompts(
     // than the limit.
     std::move(callback).Run(
         base::unexpected(
-            blink::mojom::AIManagerCreateClientError::kInitialPromptsTooLarge),
+            blink::mojom::AIManagerCreateClientError::kInitialInputTooLarge),
         /*info=*/nullptr);
     return;
   }
@@ -585,13 +587,9 @@ void AILanguageModel::Prompt(
     append_options->input->pieces.push_back(ml::Token::kModel);
     session_->GetSession().Append(std::move(append_options),
                                   std::move(context_remote));
-    auto generate_options = on_device_model::mojom::GenerateOptions::New();
-    const optimization_guide::SamplingParams sampling_param =
-        session_->GetSamplingParams();
-    generate_options->top_k = sampling_param.top_k;
-    generate_options->temperature = sampling_param.temperature;
-    session_->GetSession().Generate(std::move(generate_options),
-                                    std::move(response_remote));
+    session_->GetSession().Generate(
+        on_device_model::mojom::GenerateOptions::New(),
+        std::move(response_remote));
     return;
   }
 

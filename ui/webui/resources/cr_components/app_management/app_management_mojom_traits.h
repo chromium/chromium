@@ -5,10 +5,11 @@
 #ifndef UI_WEBUI_RESOURCES_CR_COMPONENTS_APP_MANAGEMENT_APP_MANAGEMENT_MOJOM_TRAITS_H_
 #define UI_WEBUI_RESOURCES_CR_COMPONENTS_APP_MANAGEMENT_APP_MANAGEMENT_MOJOM_TRAITS_H_
 
+#include <variant>
+
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/run_on_os_login_types.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
 
 namespace mojo {
@@ -78,16 +79,16 @@ struct UnionTraits<PermissionValueDataView, apps::Permission::PermissionValue> {
   static void SetToNull(apps::Permission::PermissionValue* out) {}
 
   static bool bool_value(const apps::Permission::PermissionValue& r) {
-    if (absl::holds_alternative<bool>(r)) {
-      return absl::get<bool>(r);
+    if (std::holds_alternative<bool>(r)) {
+      return std::get<bool>(r);
     }
     return false;
   }
 
   static apps::TriState tristate_value(
       const apps::Permission::PermissionValue& r) {
-    if (absl::holds_alternative<apps::TriState>(r)) {
-      return absl::get<apps::TriState>(r);
+    if (std::holds_alternative<apps::TriState>(r)) {
+      return std::get<apps::TriState>(r);
     }
     return apps::TriState::kBlock;
   }

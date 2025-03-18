@@ -11,8 +11,10 @@
 #include "base/functional/callback.h"
 #include "base/types/pass_key.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace credential_management {
+using StoreCallback = base::OnceCallback<void()>;
 using GetCallback = base::OnceCallback<void(
     password_manager::CredentialManagerError,
     const std::optional<password_manager::CredentialInfo>&)>;
@@ -30,8 +32,14 @@ class ThirdPartyCredentialManagerBridge {
 
     // Creates the JNI bridge.
     virtual void CreateBridge(ThirdPartyCredentialManagerBridge* bridge) = 0;
+
     // Gets a credential from the Android Credential Manager.
     virtual void Get(const std::string& origin) = 0;
+
+    // Stores a credential to the Android Credential Manager.
+    virtual void Store(const std::string& username,
+                       const std::string& password,
+                       const std::string& origin) = 0;
   };
 
   ThirdPartyCredentialManagerBridge();
@@ -46,7 +54,7 @@ class ThirdPartyCredentialManagerBridge {
 
   ~ThirdPartyCredentialManagerBridge();
 
-  void Create(GetCallback callback);
+  void Create(absl::variant<GetCallback, StoreCallback> callback);
 
   void Get(const std::string& origin);
   void OnPasswordCredentialReceived(
@@ -56,8 +64,15 @@ class ThirdPartyCredentialManagerBridge {
       const base::android::JavaParamRef<jstring>& j_origin);
   void OnGetPasswordCredentialError(JNIEnv* env);
 
+  void Store(const std::string& username,
+             const std::string& password,
+             const std::string& origin);
+  void OnCreateCredentialResponse(JNIEnv* env, jboolean success);
+
  private:
-  GetCallback callback_;
+  // TODO(crbug.com/404505860): Pass the callback to Java instead of having it
+  // as a member.
+  absl::variant<GetCallback, StoreCallback> callback_;
   // Forwards all requests to JNI. Can be replaced in tests.
   std::unique_ptr<JniDelegate> jni_delegate_;
 };

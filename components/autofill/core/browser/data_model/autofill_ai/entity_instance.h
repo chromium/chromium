@@ -7,6 +7,7 @@
 
 #include <ostream>
 #include <string>
+#include <variant>
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
@@ -24,7 +25,6 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/is_required.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -71,7 +71,7 @@ class EntityTable;
 class AttributeInstance final {
   using StateInfo = base::StrongAlias<class StateInfoTag, std::u16string>;
   using InfoStructure =
-      absl::variant<CountryInfo, DateInfo, NameInfo, StateInfo, std::u16string>;
+      std::variant<CountryInfo, DateInfo, NameInfo, StateInfo, std::u16string>;
 
  public:
   // Transparent less-than relation based on the AttributeType.

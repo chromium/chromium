@@ -292,30 +292,6 @@ TEST_P(QuotaDatabaseTest, UpdateBucket) {
   EXPECT_EQ(queried_bucket.persistent, updated_bucket.persistent);
 }
 
-TEST_P(QuotaDatabaseTest, GetOrCreateBucketDeprecated) {
-  auto db = CreateDatabase(use_in_memory_db());
-  EXPECT_TRUE(EnsureOpened(db.get()));
-  StorageKey storage_key =
-      StorageKey::CreateFromStringForTesting("http://google/");
-
-  ASSERT_OK_AND_ASSIGN(BucketInfo created_bucket,
-                       db->GetOrCreateBucketDeprecated(
-                           {storage_key, kDefaultBucketName}, kSync));
-  ASSERT_GT(created_bucket.id.value(), 0);
-  ASSERT_EQ(created_bucket.name, kDefaultBucketName);
-  ASSERT_EQ(created_bucket.storage_key, storage_key);
-  ASSERT_EQ(created_bucket.type, kSync);
-
-  // Should return the same bucket when querying again.
-  ASSERT_OK_AND_ASSIGN(BucketInfo retrieved_bucket,
-                       db->GetOrCreateBucketDeprecated(
-                           {storage_key, kDefaultBucketName}, kSync));
-  ASSERT_EQ(retrieved_bucket.id, created_bucket.id);
-  ASSERT_EQ(retrieved_bucket.name, created_bucket.name);
-  ASSERT_EQ(retrieved_bucket.storage_key, created_bucket.storage_key);
-  ASSERT_EQ(retrieved_bucket.type, created_bucket.type);
-}
-
 TEST_P(QuotaDatabaseTest, GetBucket) {
   auto db = CreateDatabase(use_in_memory_db());
   EXPECT_TRUE(EnsureOpened(db.get()));

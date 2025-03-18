@@ -44,6 +44,7 @@
 #include "net/http/alternative_service.h"
 #include "net/storage_access_api/status.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-test-utils.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
@@ -111,7 +112,15 @@ std::string GetCookiesDirect(WebContentsImpl* tab, const GURL& url) {
 
 }  // namespace
 
-class CookieBrowserTest : public ContentBrowserTest {
+class CookieBrowserTest : public ContentBrowserTest,
+                          public ::testing::WithParamInterface<bool> {
+ public:
+  CookieBrowserTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        network::features::kGetCookiesOnSet, GetParam());
+  }
+  ~CookieBrowserTest() override = default;
+
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(
@@ -122,11 +131,21 @@ class CookieBrowserTest : public ContentBrowserTest {
     // Support multiple sites on the test server.
     host_resolver()->AddRule("*", "127.0.0.1");
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+INSTANTIATE_TEST_SUITE_P(,
+                         CookieBrowserTest,
+                         ::testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "GetOnSetEnabled"
+                                             : "GetOnSetDisabled";
+                         });
 
 // Exercises basic cookie operations via javascript, including an http page
 // interacting with secure cookies.
-IN_PROC_BROWSER_TEST_F(CookieBrowserTest, Cookies) {
+IN_PROC_BROWSER_TEST_P(CookieBrowserTest, Cookies) {
   SetupCrossSiteRedirector(embedded_test_server());
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -187,8 +206,8 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, Cookies) {
   // Non-TLS page writes not-secure cookie.
   EXPECT_TRUE(ExecJs(web_contents_http->GetPrimaryMainFrame(),
                      "document.cookie = 'B=2';"));
-  EXPECT_EQ("B=2", GetCookieFromJS(web_contents_https->GetPrimaryMainFrame()));
   EXPECT_EQ("B=2", GetCookieFromJS(web_contents_http->GetPrimaryMainFrame()));
+  EXPECT_EQ("B=2", GetCookieFromJS(web_contents_https->GetPrimaryMainFrame()));
 
   // TLS page writes secure cookie.
   EXPECT_TRUE(ExecJs(web_contents_https->GetPrimaryMainFrame(),
@@ -207,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, Cookies) {
 }
 
 // Ensure "priority" cookie option is settable via document.cookie.
-IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CookiePriority) {
+IN_PROC_BROWSER_TEST_P(CookieBrowserTest, CookiePriority) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   struct {
@@ -234,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CookiePriority) {
 
 // SameSite cookies (that aren't marked as http-only) should be available to
 // JavaScript.
-IN_PROC_BROWSER_TEST_F(CookieBrowserTest, SameSiteCookies) {
+IN_PROC_BROWSER_TEST_P(CookieBrowserTest, SameSiteCookies) {
   // Must use HTTPS because SameSite=None cookies must be Secure.
   net::EmbeddedTestServer server(net::EmbeddedTestServer::TYPE_HTTPS);
   server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
@@ -291,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, SameSiteCookies) {
   EXPECT_EQ("none=1", GetCookieFromJS(b_iframe));
 }
 
-IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CookieTruncatingCharFromJavascript) {
+IN_PROC_BROWSER_TEST_P(CookieBrowserTest, CookieTruncatingCharFromJavascript) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   ASSERT_TRUE(
@@ -327,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CookieTruncatingCharFromJavascript) {
   EXPECT_EQ("", GetCookieFromJS(frame));
 }
 
-IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CookieTruncatingCharFromHeaders) {
+IN_PROC_BROWSER_TEST_P(CookieBrowserTest, CookieTruncatingCharFromHeaders) {
   std::string cookie_string;
   embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
       [&](const net::test_server::HttpRequest& request)
@@ -385,13 +404,14 @@ class RestrictedCookieManagerInterceptor
       const net::SiteForCookies& site_for_cookies,
       const url::Origin& top_frame_origin,
       net::StorageAccessApiStatus storage_access_api_status,
+      bool get_version_shared_memory,
       bool apply_devtools_overrides,
       const std::string& cookie,
       SetCookieFromStringCallback callback) override {
     GetForwardingInterface()->SetCookieFromString(
         URLToUse(url), site_for_cookies, top_frame_origin,
-        storage_access_api_status, apply_devtools_overrides, std::move(cookie),
-        std::move(callback));
+        storage_access_api_status, get_version_shared_memory,
+        apply_devtools_overrides, std::move(cookie), std::move(callback));
   }
 
   void GetCookiesString(const GURL& url,
@@ -468,7 +488,7 @@ class CookieStoreContentBrowserClient
 // for wrong URLs are rejected.
 // TODO(crbug.com/41453892): This should actually result in renderer
 // kills.
-IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CrossSiteCookieSecurityEnforcement) {
+IN_PROC_BROWSER_TEST_P(CookieBrowserTest, CrossSiteCookieSecurityEnforcement) {
   // The code under test is only active under site isolation.
   if (!AreAllSitesIsolatedForTesting()) {
     return;
@@ -535,7 +555,7 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CrossSiteCookieSecurityEnforcement) {
       v.DepictFrameTree(tab->GetPrimaryFrameTree().root()));
 }
 
-IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CookieNotReadableAfterExpiry) {
+IN_PROC_BROWSER_TEST_P(CookieBrowserTest, CookieNotReadableAfterExpiry) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL http_url = embedded_test_server()->GetURL("example.test", "/empty.html");
@@ -561,7 +581,7 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CookieNotReadableAfterExpiry) {
 
 // Cookies for an eTLD should be stored (via JS) if they match the URL host,
 // even if they begin with `.` or have non-canonical capitalization.
-IN_PROC_BROWSER_TEST_F(CookieBrowserTest, ETldDomainCookies) {
+IN_PROC_BROWSER_TEST_P(CookieBrowserTest, ETldDomainCookies) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // This test uses `gov.br` as an example of an eTLD.
@@ -594,7 +614,7 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, ETldDomainCookies) {
 
 // Cookies for an eTLD should be stored (via header) if they match the URL host,
 // even if they begin with `.` or have non-canonical capitalization.
-IN_PROC_BROWSER_TEST_F(CookieBrowserTest, ETldDomainCookiesHeader) {
+IN_PROC_BROWSER_TEST_P(CookieBrowserTest, ETldDomainCookiesHeader) {
   std::string got_cookie_on_request;
   std::string set_cookie_on_response;
   embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(

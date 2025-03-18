@@ -132,8 +132,11 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         Activity activity = window.getActivity().get();
 
         final boolean isDragDropEnabled = ContextMenuUtils.isDragDropEnabled(activity);
+        final boolean isInterestTarget = params.getOpenedFromInterestTarget();
         final boolean usePopupWindow =
-                isDragDropEnabled || ContextMenuUtils.isMouseOrHighlightPopup(params);
+                isDragDropEnabled
+                        || ContextMenuUtils.isMouseOrHighlightPopup(params)
+                        || isInterestTarget;
 
         final View layout =
                 LayoutInflater.from(activity)
@@ -149,6 +152,35 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                         mTopContentOffsetPx,
                         usePopupWindow,
                         layout);
+        boolean shouldRemoveScrim = ContextMenuUtils.isPopupSupported(activity);
+
+        // If this is an interesttarget element, the top (or left) half of the
+        // screen should be left open for the site to locate its hovercard.
+        // TODO(masonf): Still left to do:
+        //  1. For larger screens, simply provide a rectangular area around the
+        //     tapped screen location, and let the context menu position itself
+        //     relative to that.
+        //  2. Expose the available space back to Blink as env() variables.
+        if (isInterestTarget) {
+            var displayMetrics = activity.getResources().getDisplayMetrics();
+            var displayWidth = displayMetrics.widthPixels;
+            var displayHeight = displayMetrics.heightPixels;
+            if (displayWidth < displayHeight) {
+                // Portrait - leave the top half of the screen available to the
+                // site.
+                rect = new Rect(0, 0, displayWidth, displayHeight / 2);
+            } else {
+                // Landscape - leave the left half of the screen available to
+                // the site.
+                // TODO(masonf) Since the context menu is wider than half the
+                // width of the screen, the context menu will be simply shown at
+                // the top left. Likely the context menu needs to be made
+                // narrower in this case.
+                rect = new Rect(0, 0, displayWidth / 2, displayHeight);
+            }
+            // Remove the darkened "scrim" behind the context menu.
+            shouldRemoveScrim = true;
+        }
 
         int dialogTopMarginPx = ContextMenuDialog.NO_CUSTOM_MARGIN;
         int dialogBottomMarginPx = ContextMenuDialog.NO_CUSTOM_MARGIN;
@@ -204,6 +236,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                         layout,
                         menu,
                         usePopupWindow,
+                        shouldRemoveScrim,
                         dialogTopMarginPx,
                         dialogBottomMarginPx,
                         popupMargin,
@@ -352,6 +385,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
             View layout,
             View menuView,
             boolean isPopup,
+            boolean shouldRemoveScrim,
             int topMarginPx,
             int bottomMarginPx,
             @Nullable Integer popupMargin,
@@ -359,7 +393,6 @@ public class ContextMenuCoordinator implements ContextMenuUi {
             @Nullable View dragDispatchingTargetView,
             Rect rect) {
         // TODO(sinansahin): Refactor ContextMenuDialog as well.
-        boolean shouldRemoveScrim = ContextMenuUtils.isPopupSupported(activity);
         final ContextMenuDialog dialog =
                 new ContextMenuDialog(
                         activity,

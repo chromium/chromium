@@ -26,7 +26,6 @@
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 using testing::_;

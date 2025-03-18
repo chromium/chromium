@@ -1,7 +1,7 @@
 include_rules = [
     "+components/lens/lens_metrics.h",
     "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
-    "+ios/chrome/browser/intents/intents_donation_helper.h",
+    "+ios/chrome/browser/intents/model/intents_donation_helper.h",
     "+ios/chrome/browser/search_engines/model/template_url_service_factory.h",
     "+ios/chrome/browser/signin/model",
     "+ios/chrome/browser/tips_manager/model",

@@ -316,7 +316,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1532118530259321453">This page says</translation>
 <translation id="1533966801397200693">The profile that you're signed in to is a managed profile. Your administrator can make changes to your profile settings remotely, analyse information about the browser through reporting and perform other necessary tasks. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Translate page</translation>
-<translation id="1538295100801850685">Prediction improvements</translation>
 <translation id="1539840569003678498">Report sent:</translation>
 <translation id="1542105669288201090">Business Education</translation>
 <translation id="1545757265410828525">Price history</translation>
@@ -1157,7 +1156,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3052868890529250114">You usually connect to sites securely, but Chrome couldn't use a secure connection this time. An attacker might be trying to eavesdrop or modify your network connection. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more about this warning<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> price drop on <ph name="PRODUCT_NAME" /></translation>
 <translation id="3061707000357573562">Patch Service</translation>
-<translation id="306198082577913404">Turn on prediction improvements</translation>
 <translation id="3062655045399308513">Delete browsing data…</translation>
 <translation id="3063453392496098461">VPN background services installation failed.</translation>
 <translation id="306573536155379004">Game started.</translation>
@@ -2325,7 +2323,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5097099694988056070">Device statistics such as CPU/RAM usage</translation>
 <translation id="5097468150760963273">27 in x 39 in</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome needs access to your device's <ph name="PERMISSION" /></translation>
 <translation id="510644072453496781">Cardboard (end)</translation>
 <translation id="5106648964679263509">Virtual card for <ph name="BNPL_ISSUER_NAME" /> filled</translation>
 <translation id="5108881358339761672">Site is not secure</translation>
@@ -4054,7 +4051,6 @@ Additional details:
 <translation id="8134058435519644366">Recruitment and Staffing</translation>
 <translation id="8135546115396015134">left key</translation>
 <translation id="8137456439814903304">Energy and utilities</translation>
-<translation id="81474145143203755">To use your <ph name="PERMISSION" /> on this site, give Chrome access</translation>
 <translation id="8148608574971654810">PDF version:</translation>
 <translation id="8149426793427495338">Your computer went to sleep.</translation>
 <translation id="8150722005171944719">The file at <ph name="URL" /> is not readable.  It may have been removed, moved or file permissions may be preventing access.</translation>

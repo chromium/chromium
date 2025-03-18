@@ -504,6 +504,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="310900540163454140">Supprimer le mot de passe pour <ph name="WEBSITE" /> ?</translation>
 <translation id="3112556859945124369">Marquer…</translation>
 <translation id="3119874402040566234">Vous allez être déconnecté et vos données de navigation seront supprimées</translation>
+<translation id="3124568093781685165">Partagez vos mots de passe avec votre famille</translation>
 <translation id="3130863904455712965">Historique et plus</translation>
 <translation id="313283613037595347">Créer un onglet de navigation privée</translation>
 <translation id="3138611310073113613">Supprimer la sélection</translation>
@@ -1003,6 +1004,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="5352128922772839949">Enregistrer le fichier</translation>
 <translation id="5355191726083956201">La protection renforcée est activée</translation>
 <translation id="537853552771686272">Gérez les thèmes et les sites qui vous intéressent</translation>
+<translation id="5390458669633674385">{count,plural, =1{{count} fermé}one{{count} fermé}other{{count} fermés}}</translation>
 <translation id="5394975111793637642">Masquer la carte "Avis sur les produits pour vous"</translation>
 <translation id="5395707839134961196">Masquer les informations sur le moteur de recherche</translation>
 <translation id="5414763847370083940">Vous recevrez une alerte si le prix baisse sur un site.</translation>
@@ -1132,6 +1134,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5897749768294722429">Pour revenir rapidement aux sites que vous avez consultés, synchronisez vos onglets et votre historique.</translation>
 <translation id="5898848375214731122">Masse</translation>
 <translation id="5899314093904173337">Pour partager un contenu avec des personnes à proximité, laissez-les scanner ce QR code avec leur appareil photo ou leur application de lecture de QR codes</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} nouvel onglet}one{{count} nouvel onglet}other{{count} nouveaux onglets}}</translation>
 <translation id="5911030830365207728">Google Traduction</translation>
 <translation id="5917913282764181683">Supprimer automatiquement vos téléchargements</translation>
 <translation id="5922999516621365983">Faites glisser l'onglet ici pour l'épingler.</translation>
@@ -1674,6 +1677,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8131740175452115882">Confirmer</translation>
 <translation id="8132598642024322408"><ph name="PRICE" /> (précédemment à <ph name="PREVIOUS_PRICE" />).</translation>
 <translation id="813370552429173916">Choisissez un mot de passe différent pour chaque site ou appli. Si quelqu'un découvre un mot de passe réutilisé, il pourra s'en servir pour accéder à vos autres comptes. Cliquez pour ouvrir le site Web et modifier le mot de passe immédiatement.</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} onglet fermé}one{{count} onglet fermé}other{{count} onglets fermés}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 autre}one{# autre}other{# autres}}</translation>
 <translation id="8150167929304790980">Nom complet</translation>
 <translation id="8152331954420209374">Accéder à Lens</translation>

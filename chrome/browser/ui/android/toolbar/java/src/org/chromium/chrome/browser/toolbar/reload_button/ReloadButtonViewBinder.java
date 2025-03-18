@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.toolbar.reload_button;
 
 import android.annotation.SuppressLint;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ImageButton;
+
+import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.Nullable;
@@ -40,6 +43,13 @@ class ReloadButtonViewBinder {
             button.getDrawable().setLevel(model.get(ReloadButtonProperties.DRAWABLE_LEVEL));
         } else if (key == ReloadButtonProperties.IS_ENABLED) {
             button.setEnabled(model.get(ReloadButtonProperties.IS_ENABLED));
+        } else if (key == ReloadButtonProperties.IS_VISIBLE) {
+            button.setVisibility(
+                    model.get(ReloadButtonProperties.IS_VISIBLE) ? View.VISIBLE : View.GONE);
+        } else if (key == ReloadButtonProperties.ALPHA) {
+            button.setAlpha(model.get(ReloadButtonProperties.ALPHA));
+        } else if (key == ReloadButtonProperties.TINT_LIST) {
+            ImageViewCompat.setImageTintList(button, model.get(ReloadButtonProperties.TINT_LIST));
         } else if (key == ReloadButtonProperties.LONG_CLICK_LISTENER) {
             final var listener = model.get(ReloadButtonProperties.LONG_CLICK_LISTENER);
             button.setOnLongClickListener(

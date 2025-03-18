@@ -13,7 +13,6 @@
 #include "base/sync_socket.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/system/platform_handle.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace media {
 

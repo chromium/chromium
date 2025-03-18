@@ -432,7 +432,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2981364137500752533">Bạn có thể mở tối đa 5 cửa sổ.</translation>
 <translation id="2983102365694924129">Dựa vào hoạt động của bạn trên một trang web. Chế độ cài đặt này đang tắt.</translation>
 <translation id="2984978667043170458">Bao gồm văn bản xung quanh trong các lượt tìm kiếm của Google</translation>
-<translation id="2988638966064514052">Tăng độ mạnh của mật khẩu</translation>
 <translation id="2989523299700148168">Đã truy cập gần đây</translation>
 <translation id="2992473221983447149">Nội dung mô tả hình ảnh</translation>
 <translation id="2996291259634659425">Tạo cụm mật khẩu</translation>
@@ -548,7 +547,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3557336313807607643">Thêm vào danh bạ</translation>
 <translation id="3563767357928833671">Đã hiện nội dung của bảng nhớ tạm</translation>
 <translation id="3566639033325271639">Cập nhật chế độ cài đặt</translation>
-<translation id="3568945271227339929">Không có mật khẩu nào bị lộ</translation>
 <translation id="3575464060651642446">Đang kiểm tra mật khẩu trên thiết bị này…</translation>
 <translation id="3577473026931028326">Đã xảy ra lỗi. Hãy thử lại.</translation>
 <translation id="3577558748185201054">Quản lý mối quan tâm và lựa chọn ưu tiên của bạn</translation>
@@ -1055,7 +1053,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5958275228015807058">Tìm tệp và trang của bạn trong Tệp đã tải xuống</translation>
 <translation id="5958994127112619898">Đơn giản hóa trang</translation>
 <translation id="5962718611393537961">Nhấn để thu gọn</translation>
-<translation id="5964180026566797835">Không thể kiểm tra mật khẩu</translation>
 <translation id="5964869237734432770">Dừng lấy nội dung mô tả hình ảnh</translation>
 <translation id="5977976211062815271">Trên thiết bị này</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 trang trên danh sách đọc của bạn}other{# trang trên danh sách đọc của bạn}}</translation>
@@ -1099,6 +1096,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="6150320133806434356">Đã lưu dấu trang</translation>
 <translation id="6150706324143004339">Cập nhật Chrome để lưu dữ liệu Chrome vào Tài khoản Google và sử dụng dữ liệu đó</translation>
 <translation id="6154478581116148741">Bật khóa màn hình trong Cài đặt để xuất mật khẩu của bạn từ thiết bị này</translation>
+<translation id="6156323911414505561">Hiển thị thanh dấu trang</translation>
 <translation id="6162892189396105610">Chrome sẽ tải trước các trang mà trình duyệt cho rằng bạn có thể sẽ truy cập.</translation>
 <translation id="6170675927290506430">Chuyển đến phần cài đặt thông báo</translation>
 <translation id="6186394685773237175">Không phát hiện thấy mật khẩu nào bị lộ</translation>

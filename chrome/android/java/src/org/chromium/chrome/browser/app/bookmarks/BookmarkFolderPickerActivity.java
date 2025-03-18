@@ -13,7 +13,6 @@ import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.SynchronousInitializationActivity;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
-import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkAddNewFolderCoordinator;
 import org.chromium.chrome.browser.bookmarks.BookmarkFolderPickerCoordinator;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
@@ -100,11 +99,7 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
                                 shoppingService),
                         shoppingService);
 
-        BackPressHelper.create(
-                this,
-                getOnBackPressedDispatcher(),
-                mCoordinator,
-                SecondaryActivity.BOOKMARK_FOLDER_PICKER);
+        BackPressHelper.create(this, getOnBackPressedDispatcher(), mCoordinator);
 
         Toolbar toolbar = mCoordinator.getToolbar();
         setSupportActionBar(toolbar);

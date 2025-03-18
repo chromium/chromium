@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -247,7 +248,7 @@ TEST_F(CALayerOverlayTest, ThreeDTransform) {
   gfx::Transform expected_transform;
   expected_transform.RotateAboutXAxis(45.f);
   gfx::Transform actual_transform(
-      absl::get<gfx::Transform>(ca_layer_list.back().transform));
+      std::get<gfx::Transform>(ca_layer_list.back().transform));
   EXPECT_EQ(expected_transform.ToString(), actual_transform.ToString());
 }
 

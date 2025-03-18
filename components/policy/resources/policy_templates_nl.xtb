@@ -177,6 +177,11 @@ Als je het beleid toepast, kunnen gebruikers de hardware op <ph name="PRODUCT_OS
       Bepaalt de periode waarna de schermbeveiliging zichtbaar is in het inlogvenster voor apparaten in de winkelmodus.
 
       De beleidswaarde moet worden opgegeven in milliseconden.</translation>
+<translation id="1141534298047883088">Als je het beleid instelt, bepaal je daarmee of de apparaten van geselecteerde gebruikers zich binnen een beheerd netwerk moeten bevinden om deel uit te maken van de <ph name="CLASS_TOOLS_NAME" />-lesgroep.
+
+   Als de waarde is ingesteld op Waar, moeten ze zich op een beheerd netwerk bevinden.
+
+   Als je het beleid instelt op Onwaar of niet instelt, kunnen ze deelnemen zonder dat ze zich binnen een beheerd netwerk bevinden.</translation>
 <translation id="1143257335984030879">Dit beleid bepaalt de beschikbaarheid van de functie voor boodschappenlijstjes.
       Als je dit beleid toepast, krijgen gebruikers een UI te zien om de prijs te volgen van het product dat op de huidige pagina wordt getoond. Het gevolgde product wordt in het zijvenster met bookmarks getoond.
       Als je dit beleid toepast of niet instelt, is de functie voor boodschappenlijstjes beschikbaar voor gebruikers.
@@ -205,6 +210,7 @@ Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer i
             * digest
             * ntlm
             Als je deze optie leeg laat, kunnen alle 3 de schema's worden gebruikt.</translation>
+<translation id="1153098295759945906">Gebruikers kunnen geen van de <ph name="CLASS_TOOLS_NAME" /> gebruiken en kunnen niet worden toegevoegd aan een <ph name="CLASS_TOOLS_NAME" />-sessie.</translation>
 <translation id="1153306961094113710">Foutopsporing op afstand toestaan</translation>
 <translation id="115699958189272121"><ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" />-gebeurtenissen rapporteren</translation>
 <translation id="1157003104143964656">Met deze instelling kun je onderschepping bij inloggen aan- of uitzetten.
@@ -876,6 +882,7 @@ Als je dit beleid niet instelt, krijgen gebruikers een waarschuwing (in plaats v
 
       Opmerking: Er zijn afzonderlijke instellingen voor wanneer het apparaat op netstroom of op de batterij werkt.</translation>
 <translation id="1607734317623618500">Kiosk-web-app kan offline worden gebruikt</translation>
+<translation id="1608268562678058028">Voorkomen dat docenten content naar schermen van leerlingen sturen en deze content vergrendelen</translation>
 <translation id="1608755754295374538">URL's die zonder prompt toegang krijgen tot apparaten voor het vastleggen van audio</translation>
 <translation id="1608901087213748889">Hiermee wordt een actie gestart als de computer inactief is.
 
@@ -1233,6 +1240,7 @@ Dit beleid is altijd van kracht voor <ph name="PRODUCT_OS_NAME" />.</translation
 Als je dit beleid instelt, hoeven gebruikers in de vermelde domeinen geen nieuw afzonderlijk profiel te maken.
 
 Dit beleid kan worden ingesteld op een lege tekenreeks, zodat alle gebruikers die inloggen bij hun account een nieuw afzonderlijk profiel moeten maken.</translation>
+<translation id="1895698360618946084">Functie voor integratie met <ph name="CLASS_TOOLS_NAME" /> Google Classroom instellen</translation>
 <translation id="1897095538209040086">Als je het beleid toepast of niet instelt, houdt <ph name="PRODUCT_NAME" /> minstens één tabblad open nadat er is overgeschakeld naar een alternatieve browser.
 
 Als je het beleid niet toepast, sluit <ph name="PRODUCT_NAME" /> het tabblad nadat er is overgeschakeld naar een alternatieve browser, ook als dit het laatste tabblad was. Hierdoor wordt <ph name="PRODUCT_NAME" /> volledig gesloten.</translation>
@@ -1740,6 +1748,11 @@ Als je dit beleid niet instelt of niet toepast, is bestandsoverdracht niet toege
 <translation id="2246565294817797392">Afgekapte cookies blokkeren</translation>
 <translation id="2246621891161157804">Toestaan dat Chrome navigatie naar externe protocollen in iframes in sandboxes blokkeert</translation>
 <translation id="224750967938323855">Geen synchronisatietoestemming weergeven tijdens het inloggen</translation>
+<translation id="2250738397312289836">Als je het beleid instelt, bepaal je daarmee of geselecteerde docenten content naar schermen van leerlingen kunnen sturen en deze content kunnen vergrendelen.
+
+  Als dit is ingesteld op Waar of niet is ingesteld, kunnen ze content sturen en vergrendelen.
+
+  Als je het beleid instelt op Onwaar, hebben ze geen toegang tot de functie.</translation>
 <translation id="2252400912879027343">WebSQL in niet-beveiligde contexten blijft beschikbaar tot M109 en is niet meer beschikbaar vanaf M110.</translation>
 <translation id="225340736558643885">Waarschuwingen voor onveilige formulieren aanzetten</translation>
 <translation id="2258126710006312594">Toestaan dat gebruikers met externe toegang bestanden overzetten van/naar de host</translation>
@@ -1866,6 +1879,7 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 
           Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.</translation>
 <translation id="2336822410658374491">Toegang tot het contextmenu van de standaard zoekprovider uitzetten</translation>
+<translation id="233726003666026610">Instellingen voor voorgestelde groepen</translation>
 <translation id="2337859888277013371">Niet toestaan dat de Back-Forward Cache wordt gebruikt</translation>
 <translation id="2341509917222115272">Als je dit beleid toepast of niet instelt, kunnen gebruikers clients en hosts koppelen op het moment dat verbinding wordt gemaakt, zodat er niet elke keer een pincode hoeft te worden opgegeven.
 
@@ -2354,6 +2368,7 @@ Het systeem vraagt AAAA-records alleen op indien bereikbaar voor een algemene IP
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige site-URL-patronen. Jokertekens, <ph name="WILDCARD_VALUE" />, zijn toegestaan. Dit beleid zoekt alleen overeenkomsten op basis van de herkomst, dus elk pad in het URL-patroon wordt genegeerd.
 
       Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> van toepassing op de site (als dit is ingesteld), anders worden de standaardinstellingen van de browser gevolgd en kunnen gebruikers per site kiezen of ze dit recht willen verlenen.</translation>
+<translation id="272712253546233296">Docenten toestaan om op afstand de schermen van leerlingen te bekijken</translation>
 <translation id="2727844239611930002">Sta <ph name="PRODUCT_NAME" /> toe te bepalen of de <ph name="PRIVACY_SANDBOX_NAME" />-prompt wordt getoond.</translation>
 <translation id="2729889068935597630">Dit beleid definieert de standaardinstelling voor alle gedekte generatieve AI-functies. Als je dit beleid bijvoorbeeld instelt op de waarde 1, is 1 de standaardinstelling voor alle gedekte generatieve AI-functies. Dit heeft geen invloed op handmatig ingestelde beleidswaarden. Raadpleeg de lijst met gedekte functies op https://support.google.com/chrome/a?p=generative_ai_settings.
 
@@ -3316,8 +3331,14 @@ Als je het beleid niet instelt, is <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLI
 URL-patronen mogen geen conflict vormen met <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" />. Geen van beide beleidsregels krijgt voorrang als een URL met beide overeenkomt.
 
 Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
+<translation id="3475567950961265791">Als je het beleid instelt, bepaal je daarmee of de geselecteerde docenten op afstand de schermen van leerlingen kunnen bekijken.
+
+   Als je dit instelt op Waar of niet instelt, kunnen ze de schermen van leerlingen bekijken.
+
+   Als je het beleid instelt op Onwaar, hebben ze geen toegang tot de functie.</translation>
 <translation id="3478024346823118645">Gebruikersgegevens wissen bij uitloggen</translation>
 <translation id="3478406829037689272">Uitgebreide Safe Browsing-scans van downloads aanzetten</translation>
+<translation id="3480403794500220210">Docenten toestaan klassenlijsten in Google Classroom te gebruiken</translation>
 <translation id="3480961938508521469">De batterij volledig opladen met een normale snelheid.</translation>
 <translation id="348110646151632565">Zet de toegankelijkheidsfunctie 'Selecteer om voor te lezen' op het inlogscherm aan.
 
@@ -4221,6 +4242,7 @@ Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns vo
 <translation id="4158531549614162499">Google Drive-synchronisatie via mobiele verbindingen aanzetten</translation>
 <translation id="4160962198980004898">Bron van MAC-adres van apparaat wanneer het is gedockt</translation>
 <translation id="4161019158509414446">Beheert het beleid voor de functie Gerelateerde websitesets.</translation>
+<translation id="4161996763955215788">Niet vereisen dat de apparaten van gebruikers zich binnen een beheerd netwerk bevinden om deel uit te maken van de <ph name="CLASS_TOOLS_NAME" />-lesgroep</translation>
 <translation id="4164511138197196839">Als je dit beleid toepast, worden extensies waarvan de publicatie ongedaan is gemaakt in de Chrome Web Store uitgezet in <ph name="PRODUCT_NAME" />.
 Dit beleid geldt alleen voor extensies die zijn geïnstalleerd en geüpdatet via de Chrome Web Store.
 
@@ -4353,6 +4375,11 @@ Dit beleid is verwijderd in <ph name="PRODUCT_NAME" /> versie 113 voor <ph name=
 <translation id="4245159233848584683">Als je het beleid toepast of niet instelt, toont <ph name="PRODUCT_OS_NAME" /> een netwerkconfiguratieprompt als een apparaat offline is en een lokaal account op het apparaat is ingesteld voor automatisch inloggen zonder vertraging.
 
 Als je het beleid niet toepast, wordt in plaats daarvan een foutmelding getoond.</translation>
+<translation id="424605961245122145">Als je het beleid instelt, bepaal je daarmee of docenten leerlingen contact kunnen opnemen met leerlingen via een klassenlijst in Google Classroom. Zie <ph name="GOOGLE_CLASSROOM_LINK" />.
+
+    Als de waarde is ingesteld op Waar of niet is ingesteld, kunnen ze de klassenlijst van Google Classroom gebruiken.
+
+    Als je het beleid instelt op Onwaar, hebben ze geen toegang tot de functie.</translation>
 <translation id="4248277954659222481">Automatisch afspelen van media toestaan op een toelatingslijst met URL-patronen</translation>
 <translation id="4250680216510889253">Nee</translation>
 <translation id="4251370222792468420">Chrome probeert bepaalde typen subresources met gemengde content (HTTP op een HTTPS-site) te upgraden op iOS.
@@ -4687,6 +4714,7 @@ Dit beleid heeft geen effect als je het toepast, leeg laat of niet instelt.</tra
 <translation id="4508728400492074981">Beheert het beleid voor de functie First-Party Sets.</translation>
 <translation id="4510131075424939993">Geef een saltwaarde op om te gebruiken in <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> bij de evaluatie van identiteitsgegevens</translation>
 <translation id="4510923771103268849">De gebruiker heeft toestemming voor roottoegang tot Crostini-containers</translation>
+<translation id="4511848671760711978">Voorkomen dat docenten op afstand de schermen van leerlingen kunnen bekijken</translation>
 <translation id="4512407512989846472">Staat toe dat het kopiëren naar het klembord voor gespecificeerde URL's wordt geblokkeerd</translation>
 <translation id="4513691822411041977">Het gebruik van SafeSearch op Google Zoeken of de beperkte modus van YouTube niet afdwingen</translation>
 <translation id="4515404363392014383">Safe Browsing voor vertrouwde bronnen aanzetten</translation>
@@ -5108,6 +5136,7 @@ Als je het beleid instelt op False, wordt het standaardgedrag gebruikt.</transla
 <translation id="4826326557828204741">Actie die moet worden ondernomen wanneer de vertraging voor inactief wordt bereikt bij gebruik op accuvermogen</translation>
 <translation id="4826701474986856664">Het scherm van de sensor voor menselijke aanwezigheid tonen tijdens het inloggen</translation>
 <translation id="4826977043372474305">Wifi-inloggegevens van de kiosk worden opgeslagen op kioskniveau</translation>
+<translation id="4827191685269660892"><ph name="CLASS_TOOLS_NAME" />-functie voor het sturen van content instellen</translation>
 <translation id="4827727182370777723">Standaardinstelling voor het recht voor lokale lettertypen</translation>
 <translation id="482803100714220060">Volledige URL's tonen</translation>
 <translation id="4832852360828533362">Gebruikers- en apparaatrapporten</translation>
@@ -5729,6 +5758,7 @@ Opmerking: Deze functie is nog niet algemeen beschikbaar, dus als je deze aanzet
 <translation id="5252995168844634755">Als je het beleid instelt op True, wordt 'Geïntegreerde desktop' aangezet, waarmee apps kunnen worden getoond over meerdere schermen. Gebruikers kunnen 'Geïntegreerde desktop' uitzetten voor afzonderlijke schermen.
 
       Als je het beleid instelt op False of niet instelt, wordt 'Geïntegreerde desktop' uitgezet. Gebruikers kunnen deze functie dan niet aanzetten.</translation>
+<translation id="5255030951930491102"><ph name="CLASS_TOOLS_NAME" /> configureren</translation>
 <translation id="5255162913209987122">Kan worden aanbevolen</translation>
 <translation id="525543707238275321">Rapportage van CPU-informatie van apparaat uitzetten</translation>
 <translation id="5255790642269910630">Als je het beleid instelt, wordt elk scherm naar de aangegeven stand gedraaid: elke keer dat er opnieuw wordt opgestart en de eerste keer dat het scherm wordt verbonden nadat de beleidswaarde is gewijzigd. Gebruikers kunnen na inloggen de rotatie van het scherm wijzigen op de pagina met instellingen, maar de rotatie wordt bij de volgende keer opnieuw opstarten weer teruggezet. Dit beleid is van toepassing op primaire en secundaire schermen.
@@ -5916,6 +5946,7 @@ Vanaf <ph name="PRODUCT_NAME" /> versie 92 wordt dit beleid ook ondersteund in d
 <translation id="5373552304217872025">Als je dit beleid instelt op waar of niet instelt, staan <ph name="PRODUCT_NAME" /> en <ph name="LACROS_NAME" /> toe dat er een nieuwe persoon wordt toegevoegd via gebruikersbeheer.
 
       Als je dit beleid instelt op onwaar, staan <ph name="PRODUCT_NAME" /> en <ph name="LACROS_NAME" /> niet toe dat er een nieuwe persoon wordt toegevoegd via gebruikersbeheer.</translation>
+<translation id="5376378981585287162">Bestaande lokale bestanden verwijderen (ondersteund vanaf versie 136)</translation>
 <translation id="5377606826822211923">Het gebruik van Android-apps van niet-vertrouwde bronnen beheren voor de gebruiker</translation>
 <translation id="5377826248281933035">Dit beleid biedt een lijst met sites die gebruikers snel kunnen zoeken met snelkoppelingen in de adresbalk. Gebruikers kunnen een zoekopdracht starten door de snelkoppeling of @snelkoppeling (bijvoorbeeld @werk), gevolgd door de spatiebalk of Tab, in de adresbalk te typen.
 
@@ -5967,6 +5998,7 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 <translation id="5395778184390568113">De sneltoets beheren die wordt gebruikt om de 'six pack'-toetsen voor Home/End te activeren</translation>
 <translation id="5396322417222266779">Toestaan dat de gebruiker systeemsneltoetsen aanpast</translation>
 <translation id="5398387276166014955">Toestaan dat code van derden wordt geïnjecteerd in Chrome</translation>
+<translation id="5401574762248900530"><ph name="CLASS_TOOLS_NAME" />-functie om schermen te bekijken instellen</translation>
 <translation id="5401696449591951427"><ph name="CHROME_DEVICES_LINK" /> aanzetten</translation>
 <translation id="5404749470367600971">Filters voor toegankelijkheidsprestaties toestaan.</translation>
 <translation id="5405289061476885481">Hiermee configureer je welke toetsenbordindelingen zijn toegestaan voor het inlogscherm van <ph name="PRODUCT_OS_NAME" />.
@@ -6348,6 +6380,7 @@ Als dit beleid is ingesteld voor de <ph name="PRODUCT_OS_NAME" />-kiosk, wordt d
 
       Dit beleid is alleen beschikbaar voor gebruikers die een Chrome Enterprise Premium-licentie hebben.</translation>
 <translation id="5625771176514429288">Chrome-apps kunnen op deze platforms worden uitgevoerd.</translation>
+<translation id="5627270992026554674">Niet toestaan dat docenten de klassenlijst van Google Classroom gebruiken</translation>
 <translation id="5630352020869108293">De laatste sessie herstellen</translation>
 <translation id="5633871703004128675">Toegankelijkheidsfunctie voor markering van het caret-teken aanzetten</translation>
 <translation id="5634032995857968056">De sandbox voor de app-container van het weergaveprogramma aanzetten</translation>
@@ -6582,6 +6615,17 @@ Je kunt meer accountbeperkingen toevoegen met het beleid <ph name="MICROSOFT_ONE
 <translation id="5836064773277134605">Het UDP-poortbereik beperken dat voor de host voor externe toegang wordt gebruikt</translation>
 <translation id="583627479140113555">Import van opgeslagen wachtwoorden bij eerste uitvoering aanzetten</translation>
 <translation id="5838452040629810808">Cursormarkering aanzetten</translation>
+<translation id="5839430986743008680">Met dit beleid bepaal je of groepen op basis van vergelijkbare content worden voorgesteld voor <ph name="PRODUCT_OS_NAME" />. Content kan browsertabbladen en apps omvatten. Er worden groepen voorgesteld als gebruikers inloggen. Voorgestelde bureaus voor een groep zijn beschikbaar tijdens een sessie.
+
+0 = Hiermee wordt toegestaan dat de functie wordt gebruikt en dat Google relevante gegevens gebruikt om de AI-modellen te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer, bronmateriaal en geschreven feedback zijn, afhankelijk van de functie. De gegevens kunnen ook door mensen worden beoordeeld om AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+
+1 = Hiermee wordt toegestaan dat de functie wordt gebruikt, maar wordt niet toegestaan dat Google modellen verbetert met content van gebruikers (waaronder prompts, invoer, uitvoer, bronmateriaal en geschreven feedback). 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd door <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd door <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Hiermee wordt de functie niet toegestaan.
+
+Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="5841157246593092717">Bepaalt of <ph name="UNLOAD_EVENT_NAME" />-gebeurtenishandlers kunnen worden uitgezet.</translation>
 <translation id="5842283830553218200">Standaard wordt het nieuwe gedrag voor de verzending van gebeurtenissen voor uitgezette bedieningselementen op formulieren gebruikt.</translation>
 <translation id="5843736977964493779">Het <ph name="CLOUD_UPLOAD_NAME" />-proces niet toestaan voor <ph name="MICROSOFT_ONE_DRIVE_NAME" /> en <ph name="MICROSOFT_365_NAME" /></translation>
@@ -6810,6 +6854,7 @@ Dit beleid is alleen van toepassing op nieuwe verbindingspogingen en maakt besta
 <translation id="5997846976342452720">Aangeven of de plug-inzoeker moet worden uitgezet (beëindigd)</translation>
 <translation id="5998198091336830580">Dit beleid maakt deel uit van de volgende atomische groep (alleen beleidsregels van de bron met de hoogste prioriteit in de groep worden toegepast):</translation>
 <translation id="6001621991816939414">Downloadgeschiedenis wissen</translation>
+<translation id="600340336794837950">Gebruikers kunnen deelnemen aan en worden toegevoegd aan een <ph name="CLASS_TOOLS_NAME" />-sessie. Docenten kunnen content naar deze gebruikers sturen.</translation>
 <translation id="600402562436559989">Toestaan dat wifi-netwerkconfiguraties worden gesynchroniseerd tussen <ph name="PRODUCT_OS_NAME" />-apparaten en een verbonden Android-telefoon</translation>
 <translation id="6004575267180297869">
       Geeft aan of WebAssembly-modules cross-origin kunnen worden verstuurd naar een ander venster of een andere werkrol. Het cross-origin delen van WebAssembly-modules wordt beëindigd als onderdeel van de activiteiten om document.domain te beëindigen, zie https://github.com/mikewest/deprecating-document-domain. Dit beleid staat toe dat het cross-origin delen van WebAssembly-modules opnieuw mogelijk wordt gemaakt om een langere overgangsperiode te bieden voor het beëindigingsproces.
@@ -7760,6 +7805,7 @@ Wijzigingen in het beleid zijn alleen van toepassing als ARC niet actief is, bij
       - Als je dit beleid niet toepast, moeten beheerders dit laten weten aan eindgebruikers van het apparaat.</translation>
 <translation id="6605778633186421420">Support voor compressiefunctie voor woordenboekoverdracht aanzetten</translation>
 <translation id="6607983779935460461">Ondersteuning voor gegevens-URL's voor SVGUseElement.</translation>
+<translation id="660893824005096050">Docenten toestaan transcripties naar leerlingen te sturen</translation>
 <translation id="6609867253856597039">Gebruikerservaring voor uitgezette functies instellen</translation>
 <translation id="6614557704487944013">Toestaan dat gebruikers de <ph name="LACROS_NAME" />-browser gebruiken</translation>
 <translation id="6614648642325603511">Het algoritme om sleutelparen te genereren. De EC-optie wordt ondersteund vanaf versie 132.</translation>
@@ -8269,6 +8315,13 @@ Dit beleid wordt in de toekomst verwijderd nadat de functie voor afdrukstuurprog
 
       Als dit beleid niet wordt ingesteld, wordt HTTP/0.9 uitgezet op niet-standaardpoorten.</translation>
 <translation id="6969332115615661188">Video-invoer uitzetten</translation>
+<translation id="696985172258622870">Bepaalt de migratie van lokale bestanden naar de cloud.
+Geldt alleen voor SkyVault-gebruikers, d.w.z. als LocalUserFilesAllowed is ingesteld op False. Anders wordt dit genegeerd.
+
+Als je dit beleid instelt op google_drive, worden lokale bestanden verplaatst naar Google Drive en worden lokale mappen verborgen.
+Als je dit beleid instelt op microsoft_onedrive, worden lokale bestanden verplaatst naar OneDrive en worden lokale mappen verborgen.
+Als je dit beleid instelt op alleen lezen of niet instelt, blijven lokale bestanden in de modus Alleen lezen staan.
+Als je dit beleid instelt op verwijderen, worden bestaande lokale bestanden verwijderd.</translation>
 <translation id="6969949359984470271">Kiosk-web-app kan niet offline worden gebruikt</translation>
 <translation id="6972540544240464302">Geselecteerde taakplannerconfiguratie</translation>
 <translation id="6975533677426693807">Pdf-bestanden altijd openen met de interne pdf-viewer</translation>
@@ -9450,6 +9503,7 @@ Zet het beleid alleen uit als je een oplossing voor beveiliging van eindpunten g
       Als je het beleid niet instelt, vragen websites om toegang maar kunnen gebruikers deze instelling wijzigen.
 
       Dit beleid kan via het beleid <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> en <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> worden overschreven voor specifieke <ph name="URL_LABEL" />-patronen.</translation>
+<translation id="7950451717181391167">Als je het beleid instelt, bepaal je daarmee of gebruikers <ph name="CLASS_TOOLS_NAME" /> gebruiken om content te sturen/krijgen, ondertiteling te sturen/krijgen als leerlingen of docenten, of dat tools voor lesgroepbeheer zijn uitgezet voor gebruikers.</translation>
 <translation id="7952007677054834789">Hiermee wordt geconfigureerd welke pagina's worden geladen bij het opstarten, wat de standaard homepage is en welke pagina standaard wordt gebruikt voor nieuwe tabbladen in <ph name="PRODUCT_NAME" />. Ook verhinder je hiermee dat gebruikers deze pagina's kunnen wijzigen.
 
       De instellingen voor de homepage worden alleen volledig voor de gebruiker vergrendeld als je de pagina 'Nieuw tabblad' als de homepage selecteert of als je zelf een URL voor de homepage specificeert. Als je geen URL voor de homepage opgeeft, kan de gebruiker nog steeds de pagina 'Nieuw tabblad' als homepage instellen door 'chrome://newtab' op te geven.
@@ -9584,6 +9638,7 @@ Het gebruik van <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> of <ph name="LA
 <translation id="80453040817068401">De <ph name="LACROS_NAME" />-browser beschikbaar maken</translation>
 <translation id="804619600634661088">Het gebruik van foutopsporing op afstand toestaan</translation>
 <translation id="8047600674992048328">Voor de gebruiker zichtbare naam voor deze configuratie</translation>
+<translation id="804935152359592405">Netwerkbeperking voor <ph name="CLASS_TOOLS_NAME" /> instellen</translation>
 <translation id="8050080920415773384">Systeemeigen printer</translation>
 <translation id="8056237304861875584">Toestaan dat Phone Hub-taakvoortzetting wordt aangezet.</translation>
 <translation id="8056273037819805106">De inloggegevens van <ph name="PRODUCT_OS_NAME" /> worden gebruikt voor netwerkverificatie van een beheerde proxy.</translation>
@@ -10062,6 +10117,7 @@ Certificaten moeten base64-gecodeerd zijn.</translation>
 <translation id="8393850527597048037">Alleen platform</translation>
 <translation id="8395350646076131800">Time-out van de screensaver voor het vergrendelscherm.</translation>
 <translation id="8395749934754392549">Beheert instellingen voor de Android-container (ARC) en Android-apps.</translation>
+<translation id="8397522492225967301">Toestaan dat docenten content naar schermen van leerlingen sturen en deze content vergrendelen</translation>
 <translation id="8398952282584132331">Privacyscherm aanzetten</translation>
 <translation id="8399825694820904218">Als je het beleid instelt op een getal, toont <ph name="PRODUCT_NAME" /> gedurende dat aantal milliseconden een melding en wordt daarna de alternatieve browser geopend.
 
@@ -10093,6 +10149,11 @@ Als je dit beleid instelt op <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_
       Als dit beleid niet is ingesteld, heeft de Event.path API de standaardstatus: beschikbaar vóór M109 en niet beschikbaar in M109 t/m 114.
 
       Dit beleid wordt na Chrome 115 verwijderd.</translation>
+<translation id="8413397475489512035">Als je het beleid instelt, bepaal je daarmee of docenten de functie voor ondertiteling kunnen gebruiken.
+
+   Als de waarde is ingesteld op Waar of niet is ingesteld, kunnen geselecteerde docenten ondertiteling voor doven en slechthorenden voor hun stem toevoegen en de transcriptie naar leerlingen sturen.
+
+   Als je het beleid instelt op Onwaar, hebben ze geen toegang tot de functie.</translation>
 <translation id="841395160262233331">De Launcher-/zoektoets kan het gedrag van functietoetsen niet wijzigen en deze instelling kan niet worden gewijzigd door gebruikers.</translation>
 <translation id="8415953438346821074">Als je deze instelling aanzet, worden de instellingen die zijn opgeslagen in <ph name="PRODUCT_NAME" />-profielen, zoals bookmarks, gegevens voor automatisch invullen en wachtwoorden, ook geschreven naar een bestand dat is opgeslagen in de map voor roaming-gebruikersprofielen of op een locatie die de beheerder heeft opgegeven via het beleid <ph name="ROAMING_PROFILE_LOCATION_POLICY_NAME" />. Als je dit beleid toepast, wordt cloudsynchronisatie uitgezet.
 
@@ -10103,6 +10164,7 @@ Als je dit beleid instelt op <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_
 
       Als je dit beleid niet instelt, is de standaardsnelheid van 15 minuten van toepassing.</translation>
 <translation id="8420426128163801949">Gebruikers toestaan bluetooth aan of uit te zetten</translation>
+<translation id="8421202694245456861"><ph name="CLASS_TOOLS_NAME" />-functie voor ondertiteling instellen</translation>
 <translation id="8422658829373743789">Het nieuwe gedrag beheren voor de verzending van gebeurtenissen voor uitgezette bedieningselementen op formulieren</translation>
 <translation id="8423237137411858515">Lokale bestanden in de modus Alleen lezen houden</translation>
 <translation id="8424255554404582727">Standaard displayrotatie instellen, wordt telkens toegepast na opnieuw opstarten</translation>
@@ -10883,6 +10945,7 @@ Als je dit beleid niet instelt, wordt het nieuwe gedrag gebruikt, net als bij de
 <translation id="8976248126101463034">Gnubby-verificatie toestaan voor hosts voor externe toegang</translation>
 <translation id="8976531594979650914">Standaardprinter van systeem gebruiken als standaard</translation>
 <translation id="8977192934280677167">Toegang toestaan tot standaard zoekprovider in contextmenu</translation>
+<translation id="8979452496746546475">Voorkomen dat docenten transcripties naar leerlingen sturen</translation>
 <translation id="8983537551095611459">De lijst met extensie-ID's instellen die zijn vrijgesteld van de opschoonprocedure voor beperkte beheerde gastsessies</translation>
 <translation id="8983539044126123594">Inloggen met extra Google-accounts aanzetten</translation>
 <translation id="8985219286836584291">Rapportage van systeeminformatie van apparaat aanzetten</translation>
@@ -11270,6 +11333,7 @@ De standaardinstelling is RollbackDisabled.</translation>
 <translation id="966425658642788645">Standaardgedrag toepassen</translation>
 <translation id="971677226939413180">Optie 'Afdrukken als afbeelding' niet beschikbaar voor gebruikersselectie.</translation>
 <translation id="974349541138387272">URI-template van gewenste DNS-over-HTTPS-resolver opgeven</translation>
+<translation id="976415389478739655">Vereisen dat de apparaten van gebruikers zich binnen een beheerd netwerk bevinden om deel uit te maken van de klas <ph name="CLASS_TOOLS_NAME" /></translation>
 <translation id="978619365985286086">Instellingen voor tools voor lesgroepbeheer</translation>
 <translation id="978658824596356870">24-uurs klok</translation>
 <translation id="979467274961593903">Het gebruik van foutopsporing op afstand niet toestaan</translation>

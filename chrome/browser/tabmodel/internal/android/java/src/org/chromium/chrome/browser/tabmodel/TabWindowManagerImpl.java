@@ -23,6 +23,7 @@ import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TimeUtils;
+import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.BuildConfig;
@@ -443,7 +444,7 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
     }
 
     @Override
-    public List<Tab> getGroupedTabsByWindow(int windowId, int rootId, boolean isIncognito) {
+    public List<Tab> getGroupedTabsByWindow(int windowId, Token tabGroupId, boolean isIncognito) {
         @Nullable TabModelSelector tabModelSelector = getTabModelSelectorById(windowId);
         if (tabModelSelector == null) return null;
 
@@ -454,7 +455,7 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
                         .getTabGroupModelFilter(isIncognito);
         if (tabGroupModelFilter == null) return null;
 
-        return tabGroupModelFilter.getRelatedTabListForRootId(rootId);
+        return tabGroupModelFilter.getTabsInGroup(tabGroupId);
     }
 
     @Override

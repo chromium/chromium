@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_service/app_install/app_install_service_ash.h"
 
 #include <algorithm>
+#include <variant>
 
 #include "ash/constants/ash_features.h"
 #include "base/debug/stack_trace.h"
@@ -32,7 +33,6 @@
 #include "components/user_manager/user_manager.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace apps {
@@ -280,9 +280,9 @@ void AppInstallServiceAsh::ShowDialogAndInstall(
   }
 
   // The install dialog is only used for web apps currently.
-  CHECK(absl::holds_alternative<WebAppInstallData>(data->app_type_data));
+  CHECK(std::holds_alternative<WebAppInstallData>(data->app_type_data));
   const WebAppInstallData& web_app_data =
-      absl::get<WebAppInstallData>(data->app_type_data);
+      std::get<WebAppInstallData>(data->app_type_data);
 
   if (expected_package_id.package_type() == PackageType::kWebsite) {
     // kWebsite packages will end up installed as a regular kWeb app. Pass a
@@ -361,10 +361,10 @@ void AppInstallServiceAsh::PerformInstall(
     AppInstallSurface surface,
     AppInstallData data,
     base::OnceCallback<void(bool)> install_callback) {
-  if (absl::holds_alternative<AndroidAppInstallData>(data.app_type_data)) {
+  if (std::holds_alternative<AndroidAppInstallData>(data.app_type_data)) {
     arc_app_installer_.InstallApp(surface, std::move(data),
                                   std::move(install_callback));
-  } else if (absl::holds_alternative<WebAppInstallData>(data.app_type_data)) {
+  } else if (std::holds_alternative<WebAppInstallData>(data.app_type_data)) {
     web_app_installer_.InstallApp(surface, std::move(data),
                                   std::move(install_callback));
   } else {

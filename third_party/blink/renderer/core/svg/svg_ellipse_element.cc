@@ -80,7 +80,8 @@ Path SVGEllipseElement::AsPath() const {
 
   gfx::PointF center =
       PointForLengthPair(style.Cx(), style.Cy(), viewport_resolver, style);
-  path.AddEllipse(center, radii.x(), radii.y());
+  path = Path::MakeEllipse(center, radii.x(), radii.y());
+
   return path;
 }
 

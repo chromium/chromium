@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
@@ -228,7 +229,7 @@ void UtilityProcessHost::SetAllowGpuClient() {
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 void UtilityProcessHost::AddFileToPreload(
     std::string key,
-    absl::variant<base::FilePath, base::ScopedFD> file) {
+    std::variant<base::FilePath, base::ScopedFD> file) {
   DCHECK_EQ(file_data_->files_to_preload.count(key), 0u);
   file_data_->files_to_preload.insert({std::move(key), std::move(file)});
 }

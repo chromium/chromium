@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_tester.h"
-#include "base/memory/raw_ptr.h"
 
 #include <memory>
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
@@ -24,7 +24,6 @@
 #include "content/public/test/test_renderer_host.h"
 #include "net/base/ip_endpoint.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "url/gurl.h"

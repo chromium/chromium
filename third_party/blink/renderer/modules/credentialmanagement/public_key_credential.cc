@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/credentialmanagement/public_key_credential.h"
 
 #include <utility>
+#include <variant>
 
 #include "base/functional/overloaded.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-shared.h"
@@ -238,12 +239,12 @@ v8::Local<v8::Object> PublicKeyCredential::toJSON(
   // return a RegistrationResponseJSON, and in the latter an
   // AuthenticationResponseJSON.  We can't reflect the type of `response_`
   // though, so we serialize it to JSON first and branch on the result type.
-  absl::variant<AuthenticatorAssertionResponseJSON*,
-                AuthenticatorAttestationResponseJSON*>
+  std::variant<AuthenticatorAssertionResponseJSON*,
+               AuthenticatorAttestationResponseJSON*>
       response_json = response_->toJSON();
 
   v8::Local<v8::Value> result;
-  absl::visit(
+  std::visit(
       base::Overloaded{
           [&](AuthenticatorAttestationResponseJSON* attestation_response) {
             auto* registration_response = RegistrationResponseJSON::Create();

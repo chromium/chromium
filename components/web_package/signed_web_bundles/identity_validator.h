@@ -12,7 +12,6 @@
 #include "base/types/expected.h"
 #include "base/version.h"
 #include "components/web_package/signed_web_bundles/types.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace web_package {
 

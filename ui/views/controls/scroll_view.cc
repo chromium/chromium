@@ -5,6 +5,7 @@
 #include "ui/views/controls/scroll_view.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
@@ -67,10 +68,10 @@ class ScrollCornerView : public View {
   void OnPaint(gfx::Canvas* canvas) override {
 #if BUILDFLAG(IS_APPLE)
     ui::NativeTheme::ExtraParams params(
-        absl::in_place_type<ui::NativeTheme::ScrollbarExtraParams>);
+        std::in_place_type<ui::NativeTheme::ScrollbarExtraParams>);
 #else
     ui::NativeTheme::ExtraParams params(
-        absl::in_place_type<ui::NativeTheme::ScrollbarTrackExtraParams>);
+        std::in_place_type<ui::NativeTheme::ScrollbarTrackExtraParams>);
 #endif
     GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(),
                             ui::NativeTheme::kScrollbarCorner,

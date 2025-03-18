@@ -8,6 +8,7 @@
 
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/containers/flat_set.h"
 #include "base/test/values_test_util.h"
@@ -262,7 +263,7 @@ TEST(AttributionReportTest, NullAggregatableReport) {
             GURL("https://report.test/.well-known/attribution-reporting/"
                  "report-aggregate-attribution"));
 
-  auto& data = absl::get<AttributionReport::AggregatableData>(report.data());
+  auto& data = std::get<AttributionReport::AggregatableData>(report.data());
   data.SetAssembledReport(
       AggregatableReport({AggregatableReport::AggregationServicePayload(
                              /*payload=*/kABCD1234AsBytes,
@@ -303,7 +304,7 @@ TEST(AttributionReportTest, ReportBody_AggregatableAttributionReport) {
                   /*bucket=*/1, /*value=*/2, /*filtering_id=*/std::nullopt)})
           .BuildAggregatableAttribution();
 
-  auto& data = absl::get<AttributionReport::AggregatableData>(report.data());
+  auto& data = std::get<AttributionReport::AggregatableData>(report.data());
   data.SetAssembledReport(
       AggregatableReport({AggregatableReport::AggregationServicePayload(
                              /*payload=*/kABCD1234AsBytes,

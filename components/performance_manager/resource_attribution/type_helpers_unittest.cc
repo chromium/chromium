@@ -6,12 +6,12 @@
 
 #include <optional>
 #include <type_traits>
+#include <variant>
 #include <vector>
 
 #include "base/types/optional_ref.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace resource_attribution::internal {
 
@@ -60,13 +60,13 @@ template <typename T>
 }
 
 TEST(ResourceAttrTypeHelpersTest, IsVariantAlternativeEmptyVariant) {
-  using Tester = VariantTester<absl::variant<>>;
+  using Tester = VariantTester<std::variant<>>;
   EXPECT_FALSE(Tester::IsVariantAlternativeValue<int>());
   EXPECT_FALSE(Tester::ConditionallyEnabled<int>());
 }
 
 TEST(ResourceAttrTypeHelpersTest, IsVariantAlternativeSingleAlternative) {
-  using Tester = VariantTester<absl::variant<int>>;
+  using Tester = VariantTester<std::variant<int>>;
   EXPECT_TRUE(Tester::IsVariantAlternativeValue<int>());
   EXPECT_TRUE(Tester::ConditionallyEnabled<int>());
   EXPECT_FALSE(Tester::IsVariantAlternativeValue<double>());
@@ -74,7 +74,7 @@ TEST(ResourceAttrTypeHelpersTest, IsVariantAlternativeSingleAlternative) {
 }
 
 TEST(ResourceAttrTypeHelpersTest, IsVariantAlternativeManyAlternatives) {
-  using Tester = VariantTester<absl::variant<int, double>>;
+  using Tester = VariantTester<std::variant<int, double>>;
   EXPECT_TRUE(Tester::IsVariantAlternativeValue<int>());
   EXPECT_TRUE(Tester::ConditionallyEnabled<int>());
   EXPECT_TRUE(Tester::IsVariantAlternativeValue<double>());
@@ -84,25 +84,25 @@ TEST(ResourceAttrTypeHelpersTest, IsVariantAlternativeManyAlternatives) {
 }
 
 TEST(ResourceAttrTypeHelpersTest, IsVariantAlternativeWithMonostate) {
-  using Tester = VariantTester<absl::variant<absl::monostate, int>>;
+  using Tester = VariantTester<std::variant<std::monostate, int>>;
   EXPECT_TRUE(Tester::IsVariantAlternativeValue<int>());
   EXPECT_TRUE(Tester::ConditionallyEnabled<int>());
   EXPECT_FALSE(Tester::IsVariantAlternativeValue<double>());
   EXPECT_FALSE(Tester::ConditionallyEnabled<double>());
 }
 
-// Can't test GetAsOptional() with absl::variant<> because it can't be
+// Can't test GetAsOptional() with std::variant<> because it can't be
 // instantiated.
 
 TEST(ResourceAttrTypeHelpersTest, GetAsOptionalSingleAlternative) {
-  absl::variant<int> v;
+  std::variant<int> v;
   EXPECT_EQ(GetAsOptional<int>(v), 0);
   v = 1;
   EXPECT_EQ(GetAsOptional<int>(v), 1);
 }
 
 TEST(ResourceAttrTypeHelpersTest, GetAsOptionalManyAlternatives) {
-  absl::variant<int, double> v;
+  std::variant<int, double> v;
   EXPECT_EQ(GetAsOptional<int>(v), 0);
   EXPECT_EQ(GetAsOptional<double>(v), std::nullopt);
   v = 1;
@@ -114,7 +114,7 @@ TEST(ResourceAttrTypeHelpersTest, GetAsOptionalManyAlternatives) {
 }
 
 TEST(ResourceAttrTypeHelpersTest, GetAsOptionalWithMonostate) {
-  absl::variant<absl::monostate, int> v;
+  std::variant<std::monostate, int> v;
   EXPECT_EQ(GetAsOptional<int>(v), std::nullopt);
   v = 1;
   EXPECT_EQ(GetAsOptional<int>(v), 1);
@@ -124,7 +124,7 @@ TEST(ResourceAttrTypeHelpersTest, GetAsOptionalWithMonostate) {
 // all comparators, so need to match against the contained values.
 
 TEST(ResourceAttrTypeHelpersTest, VariantVectorSingleAlternative) {
-  using TestVariant = absl::variant<int>;
+  using TestVariant = std::variant<int>;
   std::vector<TestVariant> vs;
   EXPECT_FALSE(VariantVectorContains<int>(vs));
   EXPECT_FALSE(GetFromVariantVector<int>(vs).has_value());
@@ -140,7 +140,7 @@ TEST(ResourceAttrTypeHelpersTest, VariantVectorSingleAlternative) {
 }
 
 TEST(ResourceAttrTypeHelpersTest, VariantVectorManyAlternatives) {
-  using TestVariant = absl::variant<int, double>;
+  using TestVariant = std::variant<int, double>;
   std::vector<TestVariant> vs;
   EXPECT_FALSE(VariantVectorContains<int>(vs));
   EXPECT_FALSE(GetFromVariantVector<int>(vs).has_value());
@@ -168,7 +168,7 @@ TEST(ResourceAttrTypeHelpersTest, VariantVectorManyAlternatives) {
 }
 
 TEST(ResourceAttrTypeHelpersTest, VariantVectorWithMonostate) {
-  using TestVariant = absl::variant<absl::monostate, int>;
+  using TestVariant = std::variant<std::monostate, int>;
   std::vector<TestVariant> vs;
   EXPECT_FALSE(VariantVectorContains<int>(vs));
   EXPECT_FALSE(GetFromVariantVector<int>(vs).has_value());
@@ -182,7 +182,7 @@ TEST(ResourceAttrTypeHelpersTest, VariantVectorWithMonostate) {
 }
 
 TEST(ResourceAttrTypeHelpersTest, VariantVectorConst) {
-  using TestVariant = absl::variant<const int, double>;
+  using TestVariant = std::variant<const int, double>;
   std::vector<TestVariant> mutable_vec{1, 2.3};
   const std::vector<TestVariant> const_vec = {1, 2.3};
 
@@ -212,23 +212,23 @@ TEST(ResourceAttrTypeHelpersTest, VariantVectorConst) {
       TestOptionalConstRef(GetFromVariantVector<const double>(const_vec), 2.3));
 }
 
-// Can't test comparators with absl::variant<> because it can't be
+// Can't test comparators with std::variant<> because it can't be
 // instantiated.
 
 TEST(ResourceAttrTypeHelpersTest, VariantComparatorsSingleAlternative) {
-  using TestVariant = absl::variant<int>;
+  using TestVariant = std::variant<int>;
   TestVariant v = 1;
 
   // Make sure the overloaded comparators don't interfere with the default
   // variant comparators.
-  EXPECT_EQ(v, absl::variant<int>(1));
-  EXPECT_NE(v, absl::variant<int>(-1));
-  EXPECT_LT(v, absl::variant<int>(2));
-  EXPECT_LE(v, absl::variant<int>(2));
-  EXPECT_LE(v, absl::variant<int>(1));
-  EXPECT_GT(v, absl::variant<int>(0));
-  EXPECT_GE(v, absl::variant<int>(0));
-  EXPECT_GE(v, absl::variant<int>(1));
+  EXPECT_EQ(v, std::variant<int>(1));
+  EXPECT_NE(v, std::variant<int>(-1));
+  EXPECT_LT(v, std::variant<int>(2));
+  EXPECT_LE(v, std::variant<int>(2));
+  EXPECT_LE(v, std::variant<int>(1));
+  EXPECT_GT(v, std::variant<int>(0));
+  EXPECT_GE(v, std::variant<int>(0));
+  EXPECT_GE(v, std::variant<int>(1));
 
   // Only == and != are defined for variants and their alternative types, and
   // only for variants in the resource_attriution namespace. The rich EXPECT_EQ
@@ -240,7 +240,7 @@ TEST(ResourceAttrTypeHelpersTest, VariantComparatorsSingleAlternative) {
 }
 
 TEST(ResourceAttrTypeHelpersTest, VariantComparatorsManyAlternatives) {
-  using TestVariant = absl::variant<int, double>;
+  using TestVariant = std::variant<int, double>;
   TestVariant v_int = 1;
   TestVariant v_double = 1.0;
 

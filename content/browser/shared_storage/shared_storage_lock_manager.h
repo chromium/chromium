@@ -48,6 +48,7 @@ class CONTENT_EXPORT SharedStorageLockManager
       const url::Origin& shared_storage_origin,
       AccessScope scope,
       FrameTreeNodeId main_frame_id,
+      std::optional<int> worklet_id,
       SharedStorageUpdateCallback callback);
 
   // First, acquires the batch-level lock if requested (`with_lock` is present).
@@ -61,6 +62,7 @@ class CONTENT_EXPORT SharedStorageLockManager
       const url::Origin& shared_storage_origin,
       AccessScope scope,
       FrameTreeNodeId main_frame_id,
+      std::optional<int> worklet_id,
       SharedStorageUpdateCallback callback);
 
   // blink::mojom::LockRequest
@@ -143,6 +145,7 @@ class CONTENT_EXPORT SharedStorageLockManager
       const url::Origin& shared_storage_origin,
       AccessScope scope,
       FrameTreeNodeId main_frame_id,
+      std::optional<int> worklet_id,
       SharedStorageUpdateCallback callback,
       std::optional<int> batch_update_id);
 
@@ -151,6 +154,7 @@ class CONTENT_EXPORT SharedStorageLockManager
       url::Origin shared_storage_origin,
       AccessScope scope,
       FrameTreeNodeId main_frame_id,
+      std::optional<int> worklet_id,
       SharedStorageUpdateCallback callback,
       std::optional<int> batch_update_id,
       mojo::AssociatedRemote<blink::mojom::LockHandle> lock_handle,
@@ -162,6 +166,7 @@ class CONTENT_EXPORT SharedStorageLockManager
       url::Origin shared_storage_origin,
       AccessScope scope,
       FrameTreeNodeId main_frame_id,
+      std::optional<int> worklet_id,
       SharedStorageUpdateCallback callback,
       mojo::AssociatedRemote<blink::mojom::LockHandle> lock_handle,
       mojo::Remote<blink::mojom::LockManager> lock_manager);

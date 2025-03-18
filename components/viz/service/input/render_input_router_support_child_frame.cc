@@ -23,6 +23,11 @@ RenderInputRouterSupportChildFrame::RenderInputRouterSupportChildFrame(
   UpdateFrameSinkIdRegistration();
 }
 
+bool RenderInputRouterSupportChildFrame::IsRenderInputRouterSupportChildFrame()
+    const {
+  return true;
+}
+
 const LocalSurfaceId& RenderInputRouterSupportChildFrame::GetLocalSurfaceId()
     const {
   // Not needed on Viz.

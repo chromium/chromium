@@ -22,6 +22,14 @@ std::ostream& operator<<(std::ostream& os, const std::optional<T>& opt) {
 
 }  // namespace
 
+SessionPolicies::SessionPolicies() = default;
+SessionPolicies::~SessionPolicies() = default;
+
+SessionPolicies::SessionPolicies(const SessionPolicies&) = default;
+SessionPolicies& SessionPolicies::operator=(const SessionPolicies&) = default;
+SessionPolicies::SessionPolicies(SessionPolicies&&) = default;
+SessionPolicies& SessionPolicies::operator=(SessionPolicies&&) = default;
+
 bool SessionPolicies::operator==(const SessionPolicies&) const = default;
 
 std::ostream& operator<<(std::ostream& os,

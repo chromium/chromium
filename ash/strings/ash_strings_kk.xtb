@@ -166,6 +166,7 @@
 <translation id="1505542291183484463">Терезе өлшемін төмен қарай қабаттастырмай өзгерту</translation>
 <translation id="1510238584712386396">Іске қосу құрылғысы</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Хабарландыру параметрлерін көрсету. Қолданбаның хабарландырулары өшірулі}other{Хабарландыру параметрлерін көрсету. # қолданбаның хабарландырулары өшірулі}}</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">Батарея заряды: <ph name="BATTERY_PERCENTAGE" />% | Толуға <ph name="TIME" /> қалды</translation>
 <translation id="1525508553941733066">ЖАБУ</translation>
 <translation id="1526448108126799339">Жаңа қойындыны жаңа терезеде ашу</translation>
@@ -345,7 +346,6 @@
 <translation id="2201071101391734388">Соңғы фото: <ph name="INDEX" />/<ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Google Tasks интерфейсін жию</translation>
 <translation id="2208323208084708176">Бірыңғай жұмыс үстелі режимі</translation>
-<translation id="2220572644011485463">PIN коды немесе құпия сөз</translation>
 <translation id="2222841058024245321">7-ші жұмыс үстелі</translation>
 <translation id="2223384056430485343">Бөлінген экранда</translation>
 <translation id="2224075387478458881">Қорғалған контент көрініп тұрғанда, экранды жазуға болмайды.</translation>
@@ -1829,7 +1829,6 @@
 <translation id="7000027735917578303">Windows және жұмыс үстелі параметрлері</translation>
 <translation id="7004910047186208204">Мобильдік интернетке қосылу</translation>
 <translation id="7005239792648594238">Іске қосу үшін қолданбаны ашыңыз.</translation>
-<translation id="7007983414944123363">PIN кодыңыз не құпия сөзіңіз расталмады. Қайталап көріңіз.</translation>
 <translation id="7014684956566476813">"<ph name="DEVICE_NAME" />" деп аталатын құрылғыға қосылды.</translation>
 <translation id="7015766095477679451">Сағат <ph name="COME_BACK_TIME" /> болғанда, қайта қолданып көріңіз.</translation>
 <translation id="70168403932084660">6-шы жұмыс үстелі</translation>
@@ -1943,6 +1942,7 @@
 <translation id="742594950370306541">Камера пайдаланылуда.</translation>
 <translation id="742608627846767349">Қайырлы таң!</translation>
 <translation id="743058460480092004">Камера және микрофон пайдаланылуда.</translation>
+<translation id="7440404390546433462">Google Search</translation>
 <translation id="7441711280402516925">Ойнатылып жатыр · Қойындыға ауысу</translation>
 <translation id="7453330308669753048">Іздеу тарихы нәтижесі өшірілді.</translation>
 <translation id="7459485586006128091">Ішкі қатеге байланысты хотспот өшірілді. Бірнеше минуттан кейін қайта қосылып көріңіз.</translation>
@@ -2466,6 +2466,7 @@
 <translation id="9168436347345867845">Кейінірек</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> бойынша 1 нәтиже көрсетілуде</translation>
 <translation id="9179259655489829027">Бұл функция аккаунтқа кірген кез келген пайдаланушыға құпия сөзсіз жылдам кіруге мүмкіндік береді. Оны тек сенімді аккаунттармен пайдаланыңыз.</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183456764293710005">Толық экран ұлғайтқышы</translation>
 <translation id="9192133205265227850">"<ph name="DEVICE_NAME" />" құрылғысын пайдаланыңыз.</translation>
 <translation id="9193626018745640770">Белгісіз қабылдағышта трансляциялауда</translation>
