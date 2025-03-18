@@ -153,6 +153,13 @@ class VIZ_SERVICE_EXPORT InputManager
   bool ReturnInputBackToBrowser();
 
  private:
+  // Recreates RenderInputRouterSupport in cases where Viz receives a
+  // |CreateCompositorFrameSink| call before |CreateRootCompositorFrameSink|
+  // call which can cause incorrect construction of type
+  // RenderInputRouterSupportAndroid as RenderInputRouterSupportChildFrame.
+  void MaybeRecreateRootRenderInputRouterSupports(
+      const FrameSinkId& root_frame_sink_id);
+
   std::unique_ptr<RenderInputRouterSupportBase> MakeRenderInputRouterSupport(
       input::RenderInputRouter* rir,
       const FrameSinkId& frame_sink_id);

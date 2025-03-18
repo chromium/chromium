@@ -162,6 +162,9 @@ void InputManager::OnCreateCompositorFrameSink(
   TRACE_EVENT("viz", "InputManager::OnCreateCompositorFrameSink",
               "config_is_null", !render_input_router_config, "frame_sink_id",
               frame_sink_id);
+  if (is_root) {
+    MaybeRecreateRootRenderInputRouterSupports(frame_sink_id);
+  }
 #if BUILDFLAG(IS_ANDROID)
   if (create_input_receiver) {
     CHECK(is_root);
@@ -415,25 +418,14 @@ void InputManager::StateOnTouchTransfer(
       support_android_interface = nullptr;
   if (iter != frame_sink_metadata_map_.end()) {
     RenderInputRouterSupportBase* support_base = iter->second.rir_support.get();
-    CHECK(support_base);
-    // TODO(401012917): Convert this to CHECK once the underlying reason for
-    // crash is fixed.
-    if (!support_base->IsRenderInputRouterSupportChildFrame()) {
-      auto* support_android = static_cast<RenderInputRouterSupportAndroid*>(
-          iter->second.rir_support.get());
-      support_android_interface = support_android->GetWeakPtr();
-      UMA_HISTOGRAM_ENUMERATION(
-          kStateProcessingResultHistogram,
-          InputOnVizStateProcessingResult::kProcessedSuccessfully);
-    } else {
-      UMA_HISTOGRAM_ENUMERATION(
-          kStateProcessingResultHistogram,
-          InputOnVizStateProcessingResult::kFrameSinkIdCorrespondsToChildView);
-      // Crash here so that the RenderInputRouterSupport gets created correctly
-      // on restart. Not crashing here means web contents becomes unresponsive
-      // since the sequence would just dropped later on.
-      NOTREACHED();
-    }
+    CHECK(support_base &&
+          !support_base->IsRenderInputRouterSupportChildFrame());
+    auto* support_android = static_cast<RenderInputRouterSupportAndroid*>(
+        iter->second.rir_support.get());
+    support_android_interface = support_android->GetWeakPtr();
+    UMA_HISTOGRAM_ENUMERATION(
+        kStateProcessingResultHistogram,
+        InputOnVizStateProcessingResult::kProcessedSuccessfully);
   } else {
     UMA_HISTOGRAM_ENUMERATION(
         kStateProcessingResultHistogram,
@@ -532,6 +524,26 @@ bool InputManager::ReturnInputBackToBrowser() {
   // `ReturnInputBackToBrowser` is only being called from Android specific
   // usecases currently with InputVizard.
   NOTREACHED();
+}
+
+void InputManager::MaybeRecreateRootRenderInputRouterSupports(
+    const FrameSinkId& root_frame_sink_id) {
+  TRACE_EVENT_INSTANT(
+      "input", "InputManager::MaybeRecreateRootRenderInputRouterSupports");
+
+  auto children = frame_sink_manager_->GetChildrenByParent(root_frame_sink_id);
+  for (auto& frame_sink_id : children) {
+    auto iter = frame_sink_metadata_map_.find(frame_sink_id);
+    // Only attempt to recreate RenderInputRouterSupport for `frame_sink_id`
+    // associated with layer tree frame sinks.
+    if (iter != frame_sink_metadata_map_.end() &&
+        iter->second.rir_support->IsRenderInputRouterSupportChildFrame()) {
+      iter->second.rir_support.reset();
+      auto* rir = rir_map_.find(frame_sink_id)->second.get();
+      iter->second.rir_support =
+          MakeRenderInputRouterSupport(rir, frame_sink_id);
+    }
+  }
 }
 
 std::unique_ptr<RenderInputRouterSupportBase>
