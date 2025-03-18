@@ -501,6 +501,7 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kVirtualCreditCardEntry:
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
+    case SuggestionType::kPendingStateSignin:
       return false;
   }
 }

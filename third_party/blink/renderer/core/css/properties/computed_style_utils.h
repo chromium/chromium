@@ -48,7 +48,8 @@ class CORE_EXPORT ComputedStyleUtils {
     if (length.IsAuto()) {
       return CSSIdentifierValue::Create(CSSValueID::kAuto);
     }
-    return ZoomAdjustedPixelValue(length.Value(), style);
+    DCHECK(length.IsFixed());
+    return ZoomAdjustedPixelValue(length.Pixels(), style);
   }
 
   static const CSSValue* ValueForColor(const StyleColor&,

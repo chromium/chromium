@@ -4,6 +4,8 @@
 
 #include "chrome/browser/apps/app_service/app_install/web_app_installer.h"
 
+#include <variant>
+
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -473,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest, InstallWebsite) {
       "Example App", "website:https://www.example.com/",
       "https://www.example.com/manifest.json", "/manifest.json");
   // Unset user_window_override to request UserDisplayMode::kBrowser.
-  absl::get<WebAppInstallData>(data.app_type_data).open_as_window = false;
+  std::get<WebAppInstallData>(data.app_type_data).open_as_window = false;
 
   base::test::TestFuture<bool> result;
   installer.InstallApp(AppInstallSurface::kAppInstallUriUnknown, data,
@@ -510,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
       "Example App", "website:https://www.example.com/",
       "https://www.example.com/manifest.json", "/manifest.json");
   // Unset user_window_override to request UserDisplayMode::kStandalone.
-  absl::get<WebAppInstallData>(data.app_type_data).open_as_window = true;
+  std::get<WebAppInstallData>(data.app_type_data).open_as_window = true;
 
   base::test::TestFuture<bool> result;
   installer.InstallApp(AppInstallSurface::kAppInstallUriUnknown, data,

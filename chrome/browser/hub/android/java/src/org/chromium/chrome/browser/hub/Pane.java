@@ -88,4 +88,8 @@ public interface Pane extends BackPressHandler {
     @NonNull
     HubLayoutAnimatorProvider createHideHubLayoutAnimatorProvider(
             @NonNull HubContainerView hubContainerView);
+
+    /** Returns whether to enable the state of hub search. */
+    @NonNull
+    ObservableSupplier<Boolean> getHubSearchEnabledStateSupplier();
 }

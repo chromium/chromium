@@ -4,6 +4,8 @@
 
 #include "media/filters/fake_video_decoder.h"
 
+#include <variant>
+
 #include "base/location.h"
 #include "base/task/bind_post_task.h"
 #include "media/base/test_helpers.h"
@@ -135,7 +137,7 @@ void FakeVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   if (buffer->end_of_stream()) {
     if (buffer->next_config()) {
       eos_next_configs_.emplace_back(
-          absl::get<VideoDecoderConfig>(*buffer->next_config()));
+          std::get<VideoDecoderConfig>(*buffer->next_config()));
 
       if (enable_eliding_eos_) {
         DCHECK(held_decode_callbacks_.empty());

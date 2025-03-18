@@ -316,7 +316,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1532118530259321453">På denne siden står det</translation>
 <translation id="1533966801397200693">Profilen du er logget på, er en administrert profil. Administratoren din kan gjøre endringer i profilinnstillingene dine eksternt, analysere informasjon om nettleseren gjennom rapportering og utføre andre nødvendige oppgaver. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Oversett siden</translation>
-<translation id="1538295100801850685">Forslagsforbedringer</translation>
 <translation id="1539840569003678498">Rapporten er sendt:</translation>
 <translation id="1542105669288201090">Bedriftsutdanning</translation>
 <translation id="1545757265410828525">Prishistorikk</translation>
@@ -1157,7 +1156,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3052868890529250114">Du pleier å ha en sikker tilkobling til nettsteder, men Chrome kunne ikke bruke en sikker tilkobling denne gangen. Det kan hende at angripere prøver å tyvlytte på eller modifisere nettverkstilkoblingen din. <ph name="BEGIN_LEARN_MORE_LINK" />Finn ut mer om denne advarselen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> avslag på <ph name="PRODUCT_NAME" /></translation>
 <translation id="3061707000357573562">Feilrettingstjeneste</translation>
-<translation id="306198082577913404">Slå på forslagsforbedringer</translation>
 <translation id="3062655045399308513">Slett nettlesingsdata…</translation>
 <translation id="3063453392496098461">Installasjonen av VPN-bakgrunnstjenester mislyktes.</translation>
 <translation id="306573536155379004">Spillet er startet.</translation>
@@ -1698,6 +1696,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3964661563329879394">{COUNT,plural, =0{Ingen}=1{Fra 1 nettsted }other{Fra # nettsteder }}</translation>
 <translation id="3965672182149944205">Vil du lagre adressen?</translation>
 <translation id="3966044442021752214">Produktsikkerhet</translation>
+<translation id="3969869202926863008">Lokal nettverkstilgang</translation>
 <translation id="397105322502079400">Beregner …</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> er blokkert</translation>
 <translation id="3975852104434126461">Bilindustri</translation>
@@ -2054,6 +2053,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="460848736049414407">Blokkert av administrator</translation>
 <translation id="4610279718074907952">Dette nettstedet er med i en gruppe som er definert av <ph name="SET_OWNER" /> og kan se aktiviteten din</translation>
 <translation id="46128681529823442">Fotballutstyr</translation>
+<translation id="4612904677925722054">Dette nettstedet kan ha innhold for voksne. En forelder eller foresatt må gi deg lov til å besøke dette nettstedet.</translation>
 <translation id="4619564267100705184">Bekreft at det er deg</translation>
 <translation id="4622292761762557753">Overfør likevel</translation>
 <translation id="4622647778991854660">Slå på varsler i varselsenteret. Åpne <ph name="LINK" />.</translation>
@@ -2325,7 +2325,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5097099694988056070">enhetsstatistikk, som prosessor- og minnebruk</translation>
 <translation id="5097468150760963273">27 x 39 tommer</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome trenger tilgang til enhetens <ph name="PERMISSION" /></translation>
 <translation id="510644072453496781">Kartong (ende)</translation>
 <translation id="5106648964679263509">Virtuelt kort for <ph name="BNPL_ISSUER_NAME" /> er fylt ut</translation>
 <translation id="5108881358339761672">Nettstedet er ikke sikkert</translation>
@@ -2652,6 +2651,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5660122698869360728">En ny smart mappe du kan bruke til å lagre alle handlesidene dine på ett sted, slik at du kan spore priser automatisk, få prisstatistikk med mer.</translation>
 <translation id="5663955426505430495">Enhetsadministratoren har installert utvidelser for tilleggsfunksjoner. Utvidelsene har tilgang til noen av dataene dine.</translation>
 <translation id="5667827081946850877">Lydbøker</translation>
+<translation id="5674082555327905359">Kan be om å få koble til enheter på det lokale nettverket</translation>
 <translation id="5675650730144413517">Denne siden fungerer ikke</translation>
 <translation id="5675809467256309336">Dance og elektronisk musikk</translation>
 <translation id="5675959228867414813">Vis etter dato</translation>
@@ -2925,6 +2925,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6159908896951210943">Formell</translation>
 <translation id="6160391204859821737">Slå på funksjonen for annonsepersonvern</translation>
 <translation id="6162403104168428984">Vil du oppdatere adressen?</translation>
+<translation id="6164605812717770913">En forelder eller foresatt har sagt at du ikke kan besøke dette nettstedet. Du kan be hen om å oppheve blokkeringen.</translation>
 <translation id="6165508094623778733">Finn ut mer</translation>
 <translation id="6167577165590485365">Forrige forsøk på henting:</translation>
 <translation id="617256461084925519">Google Chrome prøver å bekrefte at det er deg, så den kan fylle ut betalingsopplysningene dine.</translation>
@@ -3016,6 +3017,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6321917430147971392">Kontroller DNS-innstillingene dine</translation>
 <translation id="6322182122604171028">Kunne ikke bruke Windows Hello</translation>
 <translation id="6326947323444967009">Angi Chrome som systemets standardnettleser i iOS-innstillingene</translation>
+<translation id="6327065120806001832">lokal nettverkstilgang</translation>
 <translation id="6328639280570009161">Prøv å slå av nettverksforutsigelse</translation>
 <translation id="6335029926534404762">Treningssko</translation>
 <translation id="6337133576188860026">Frigjør mindre enn <ph name="SIZE" />. Det kan hende enkelte nettsteder lastes inn tregere neste gang du besøker dem.</translation>
@@ -4053,7 +4055,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8134058435519644366">Rekruttering og bemanning</translation>
 <translation id="8135546115396015134">venstretast</translation>
 <translation id="8137456439814903304">Energi og infrastruktur</translation>
-<translation id="81474145143203755">For å bruke <ph name="PERMISSION" /> på dette nettstedet, gi Chrome tilgang</translation>
 <translation id="8148608574971654810">PDF-versjon:</translation>
 <translation id="8149426793427495338">Datamaskinen din gikk inn i hvilemodus.</translation>
 <translation id="8150722005171944719">Kunne ikke lese filen på <ph name="URL" /> Den kan ha blitt fjernet eller flyttet. Det kan også være filtillatelser som forhindrer tilgang.</translation>

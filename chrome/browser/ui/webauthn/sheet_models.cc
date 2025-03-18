@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -35,7 +36,6 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/pin.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -56,11 +56,11 @@ constexpr int kGpmArbitraryPinMinLength = 4;
 
 bool IsLocalPasskeyOrEnclaveAuthenticatorOrPassword(
     const AuthenticatorRequestDialogModel::Mechanism& mech) {
-  return (absl::holds_alternative<CredentialMech>(mech.type) &&
-          absl::get<CredentialMech>(mech.type).value().source !=
+  return (std::holds_alternative<CredentialMech>(mech.type) &&
+          std::get<CredentialMech>(mech.type).value().source !=
               device::AuthenticatorType::kPhone) ||
-         absl::holds_alternative<EnclaveMech>(mech.type) ||
-         absl::holds_alternative<PasswordMech>(mech.type);
+         std::holds_alternative<EnclaveMech>(mech.type) ||
+         std::holds_alternative<PasswordMech>(mech.type);
 }
 
 // Possibly returns a resident key warning if the model indicates that it's
@@ -1457,12 +1457,12 @@ AuthenticatorMultiSourcePickerSheetModel::
           // happens when Chrome does not have permission to enumerate
           // credentials from iCloud Keychain. Thus this generic option is the
           // only way for the user to trigger it.
-          absl::holds_alternative<ICloudKeychainMech>(mech.type)) {
+          std::holds_alternative<ICloudKeychainMech>(mech.type)) {
         primary_passkey_indices_.push_back(i);
       } else {
         secondary_passkey_indices_.push_back(i);
       }
-      if (absl::holds_alternative<PasswordMech>(mech.type)) {
+      if (std::holds_alternative<PasswordMech>(mech.type)) {
         has_passwords_ = true;
       }
     }
@@ -1478,8 +1478,8 @@ AuthenticatorMultiSourcePickerSheetModel::
   for (size_t i = 0; i < dialog_model->mechanisms.size(); ++i) {
     const AuthenticatorRequestDialogModel::Mechanism& mech =
         dialog_model->mechanisms[i];
-    if (absl::holds_alternative<CredentialMech>(mech.type) &&
-        absl::get<CredentialMech>(mech.type).value().source ==
+    if (std::holds_alternative<CredentialMech>(mech.type) &&
+        std::get<CredentialMech>(mech.type).value().source ==
             device::AuthenticatorType::kPhone) {
       // There should not be any phone passkeys if the phone name is empty.
       CHECK(phone_name);
@@ -1500,9 +1500,9 @@ bool AuthenticatorMultiSourcePickerSheetModel::IsManageDevicesButtonVisible()
   // that goes to the settings page to manage them.
   return std::ranges::any_of(
       dialog_model()->mechanisms, [](const Mechanism& mech) {
-        return absl::holds_alternative<Mechanism::Phone>(mech.type) ||
-               (absl::holds_alternative<Mechanism::Credential>(mech.type) &&
-                absl::get<Mechanism::Credential>(mech.type).value().source ==
+        return std::holds_alternative<Mechanism::Phone>(mech.type) ||
+               (std::holds_alternative<Mechanism::Credential>(mech.type) &&
+                std::get<Mechanism::Credential>(mech.type).value().source ==
                     device::AuthenticatorType::kPhone);
       });
 }

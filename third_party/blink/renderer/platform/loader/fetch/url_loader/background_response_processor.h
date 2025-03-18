@@ -7,12 +7,12 @@
 
 #include <memory>
 #include <optional>
+#include <variant>
 #include <vector>
 
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -32,7 +32,7 @@ namespace blink {
 class BLINK_PLATFORM_EXPORT BackgroundResponseProcessor {
  public:
   using BodyVariant =
-      absl::variant<mojo::ScopedDataPipeConsumerHandle, SegmentedBuffer>;
+      std::variant<mojo::ScopedDataPipeConsumerHandle, SegmentedBuffer>;
   class Client {
    public:
     virtual ~Client() = default;

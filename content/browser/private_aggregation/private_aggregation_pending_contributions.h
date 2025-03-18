@@ -12,12 +12,12 @@
 #include <optional>
 #include <set>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 #include "base/numerics/safe_conversions.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 
@@ -286,7 +286,7 @@ class CONTENT_EXPORT PrivateAggregationPendingContributions::Wrapper {
   GetContributionsVector();
 
  private:
-  absl::variant<
+  std::variant<
       PrivateAggregationPendingContributions,
       std::vector<blink::mojom::AggregatableReportHistogramContribution>>
       contributions_;

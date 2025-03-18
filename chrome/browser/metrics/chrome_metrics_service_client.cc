@@ -207,7 +207,6 @@
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/metrics/family_link_user_metrics_provider.h"
 #include "chrome/browser/signin/chrome_signin_and_sync_status_metrics_provider.h"
-#include "components/metrics/content/accessibility_metrics_provider.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
@@ -937,9 +936,6 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
 #if !BUILDFLAG(IS_CHROMEOS)
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<ChromeSigninAndSyncStatusMetricsProvider>());
-  // ChromeOS uses ChromeOSMetricsProvider for accessibility metrics provider.
-  metrics_service_->RegisterMetricsProvider(
-      std::make_unique<metrics::AccessibilityMetricsProvider>());
   // ChromeOS uses ChromeOSFamilyLinkUserMetricsProvider to categorize the user
   // based on Family Link user type.
   metrics_service_->RegisterMetricsProvider(

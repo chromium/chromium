@@ -24,6 +24,13 @@
 // The coordinator that was started, if any.
 @property(class, readonly) ChromeCoordinator* coordinator;
 
+// The last URL loaded with the URLLoadingBrowserAgent. Blank if none have been
+// loaded.
+@property(class, readonly) NSURL* lastURLLoaded;
+
+// YES if the last URL loaded was in incognito.
+@property(class, readonly) BOOL lastURLLoadedInIncognito;
+
 // Returns YES if the selector was previously dispatched and recorded.
 + (BOOL)selectorWasDispatched:(NSString*)selectorString;
 
@@ -36,6 +43,7 @@
 // Methods to start coordinators.
 + (void)startEnhancedSafeBrowsingPromoCoordinator;
 + (void)startLensPromoCoordinator;
++ (void)startHistoryCoordinator;
 + (void)startPopupMenuCoordinator;
 
 // Stops the currently started coordinator.

@@ -49,20 +49,20 @@ const StylePath* GetPath(const CSSProperty& property,
 // Set the property to the given path() value.
 void SetPath(const CSSProperty& property,
              ComputedStyleBuilder& builder,
-             scoped_refptr<blink::StylePath> path) {
+             blink::StylePath* path) {
   switch (property.PropertyID()) {
     case CSSPropertyID::kD:
-      builder.SetD(std::move(path));
+      builder.SetD(path);
       return;
     case CSSPropertyID::kOffsetPath:
       // TODO(sakhapov): handle coord box.
       builder.SetOffsetPath(MakeGarbageCollected<ShapeOffsetPathOperation>(
-          std::move(path), CoordBox::kBorderBox));
+          path, CoordBox::kBorderBox));
       return;
     case CSSPropertyID::kClipPath:
       // TODO(pdr): Handle geometry box.
       builder.SetClipPath(MakeGarbageCollected<ShapeClipPathOperation>(
-          std::move(path), GeometryBox::kBorderBox));
+          path, GeometryBox::kBorderBox));
       return;
     default:
       NOTREACHED();
@@ -105,18 +105,22 @@ InterpolationValue CSSPathInterpolationType::MaybeConvertInitial(
 
 class InheritedPathChecker : public CSSInterpolationType::CSSConversionChecker {
  public:
-  InheritedPathChecker(const CSSProperty& property,
-                       scoped_refptr<const StylePath> style_path)
-      : property_(property), style_path_(std::move(style_path)) {}
+  InheritedPathChecker(const CSSProperty& property, const StylePath* style_path)
+      : property_(property), style_path_(style_path) {}
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(style_path_);
+    CSSInterpolationType::CSSConversionChecker::Trace(visitor);
+  }
 
  private:
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
-    return GetPath(property_, *state.ParentStyle()) == style_path_.get();
+    return GetPath(property_, *state.ParentStyle()) == style_path_.Get();
   }
 
   const CSSProperty& property_;
-  const scoped_refptr<const StylePath> style_path_;
+  const Member<const StylePath> style_path_;
 };
 
 InterpolationValue CSSPathInterpolationType::MaybeConvertInherit(

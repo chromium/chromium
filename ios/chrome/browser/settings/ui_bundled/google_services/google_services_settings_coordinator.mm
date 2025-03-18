@@ -89,8 +89,8 @@ using signin_metrics::PromoAction;
   self.viewController = viewController;
   self.mediator = [[GoogleServicesSettingsMediator alloc]
       initWithIdentityManager:IdentityManagerFactory::GetForProfile(
-                                  self.browser->GetProfile())
-              userPrefService:self.browser->GetProfile()->GetPrefs()
+                                  self.profile)
+              userPrefService:self.profile->GetPrefs()
              localPrefService:GetApplicationContext()->GetLocalState()];
   self.mediator.consumer = viewController;
   self.mediator.authService = self.authService;
@@ -145,8 +145,7 @@ using signin_metrics::PromoAction;
 #pragma mark - Properties
 
 - (AuthenticationService*)authService {
-  return AuthenticationServiceFactory::GetForProfile(
-      self.browser->GetProfile());
+  return AuthenticationServiceFactory::GetForProfile(self.profile);
 }
 
 - (GoogleServicesSettingsViewController*)googleServicesSettingsViewController {
@@ -155,7 +154,7 @@ using signin_metrics::PromoAction;
 }
 
 - (signin::IdentityManager*)identityManager {
-  return IdentityManagerFactory::GetForProfile(self.browser->GetProfile());
+  return IdentityManagerFactory::GetForProfile(self.profile);
 }
 
 #pragma mark - GoogleServicesSettingsCommandHandler
@@ -165,7 +164,7 @@ using signin_metrics::PromoAction;
                            (signin_ui::SignoutCompletionCallback)completion {
   DCHECK(completion);
   syncer::SyncService* syncService =
-      SyncServiceFactory::GetForProfile(self.browser->GetProfile());
+      SyncServiceFactory::GetForProfile(self.profile);
   BOOL isSyncConsentGiven =
       syncService &&
       syncService->GetUserSettings()->IsInitialSyncFeatureSetupComplete();

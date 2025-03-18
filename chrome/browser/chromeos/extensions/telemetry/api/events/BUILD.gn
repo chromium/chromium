@@ -146,6 +146,7 @@ source_set("unit_tests") {
     ":test_support",
     "//chrome/browser/chromeos/extensions/telemetry/api/common:common",
     "//chrome/browser/ui",
+    "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/common",
     "//chrome/common/chromeos/extensions",
     "//chrome/common/chromeos/extensions/api",

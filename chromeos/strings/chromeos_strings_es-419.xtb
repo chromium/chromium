@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">Fondo de pantalla Flujo de la Tierra</translation>
 <translation id="33736539805963175">Fondo <ph name="LETTERS_COLOR" /> con la letra <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Exclusivo</translation>
-<translation id="3395147534045164351">Activar o desactivar la ubicación de ajuste</translation>
 <translation id="3404249063913988450">Habilitar el protector de pantalla</translation>
 <translation id="3413935475507503304">Para continuar con la actualización, haz clic en Siguiente.</translation>
 <translation id="3428551088151258685">al aire libre</translation>
@@ -1395,6 +1394,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="7388345524791662148">Más opciones para <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Panel táctil integrado</translation>
 <translation id="7397270852490618635">Desactivar el tema claro</translation>
+<translation id="7400166052988585408">Tu profesor bloqueará tu pantalla dentro de <ph name="NUM_SECONDS" /> segundos</translation>
 <translation id="7401543881546089382">Eliminar acceso directo</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> está listo para actualizarse</translation>
 <translation id="741244894080940828">conversión</translation>

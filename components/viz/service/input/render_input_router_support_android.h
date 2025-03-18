@@ -45,12 +45,17 @@ class VIZ_SERVICE_EXPORT RenderInputRouterSupportAndroid
 
   ~RenderInputRouterSupportAndroid() override;
 
-  // |emit_histograms|: Whether to emit tool type and OS touch latency
-  // histograms, for the events forwarded from Browser we wouldn't want to emit
-  // histograms for them since Browser code would have already emitted them.
+  // RenderInputRouterSupportAndroidInterface implementation.
+  //  |emit_histograms|: Whether to emit tool type and OS touch latency
+  //  histograms, for the events forwarded from Browser we wouldn't want to emit
+  //  histograms for them since Browser code would have already emitted them.
   bool OnTouchEvent(const ui::MotionEventAndroid& event,
                     bool emit_histograms) override;
   bool ShouldRouteEvents() const;
+
+  // RenderInputRouterSupportBase implementation.
+  bool IsRenderInputRouterSupportChildFrame() const override;
+  void NotifySiteIsMobileOptimized(bool is_mobile_optimized) override;
 
   // ui::GestureProviderClient implementation.
   void OnGestureEvent(const ui::GestureEventData& gesture) override;

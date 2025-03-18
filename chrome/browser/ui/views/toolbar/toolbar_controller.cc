@@ -7,6 +7,7 @@
 #include <optional>
 #include <ranges>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 #include "base/containers/adapters.h"
@@ -111,7 +112,7 @@ ToolbarController::ElementIdInfo::ElementIdInfo(
       observed_identifier(observed_identifier) {}
 
 ToolbarController::ResponsiveElementInfo::ResponsiveElementInfo(
-    absl::variant<ElementIdInfo, actions::ActionId> overflow_id,
+    std::variant<ElementIdInfo, actions::ActionId> overflow_id,
     bool is_section_end)
     : overflow_id(overflow_id), is_section_end(is_section_end) {}
 
@@ -139,10 +140,10 @@ ToolbarController::ToolbarController(
   }
 
   for (auto& responsive_element : responsive_elements_) {
-    if (absl::holds_alternative<actions::ActionId>(
+    if (std::holds_alternative<actions::ActionId>(
             responsive_element.overflow_id)) {
       actions::ActionId action_id =
-          absl::get<actions::ActionId>(responsive_element.overflow_id);
+          std::get<actions::ActionId>(responsive_element.overflow_id);
       actions::ActionItem* action_item =
           pinned_actions_delegate_->GetActionItemFor(action_id);
 
@@ -158,7 +159,7 @@ ToolbarController::ToolbarController(
   for (const auto& element : responsive_elements) {
     const auto& overflow_id = element.overflow_id;
 
-    absl::visit(
+    std::visit(
         base::Overloaded{
             [](actions::ActionId id) { return; },
             [&](ToolbarController::ElementIdInfo id) {
@@ -245,8 +246,7 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
         }
       }
       auto& last_element = elements.back();
-      if (absl::holds_alternative<actions::ActionId>(
-              last_element.overflow_id)) {
+      if (std::holds_alternative<actions::ActionId>(last_element.overflow_id)) {
         last_element.is_section_end = true;
       }
     }
@@ -300,10 +300,9 @@ ToolbarController::GetDefaultOverflowOrder() {
 // Every activate identifier should have an action name in order to emit
 // metrics. Please update action names in actions.xml to match this map.
 std::string ToolbarController::GetActionNameFromElementIdentifier(
-    absl::variant<ui::ElementIdentifier, actions::ActionId> identifier) {
-  static const base::NoDestructor<
-      base::flat_map<absl::variant<ui::ElementIdentifier, actions::ActionId>,
-                     std::string_view>>
+    std::variant<ui::ElementIdentifier, actions::ActionId> identifier) {
+  static const base::NoDestructor<base::flat_map<
+      std::variant<ui::ElementIdentifier, actions::ActionId>, std::string_view>>
       identifier_to_action_name_map({
           {kToolbarAvatarButtonElementId, "AvatarButton"},
           {kToolbarChromeLabsButtonElementId, "ChromeLabsButton"},
@@ -437,7 +436,7 @@ bool ToolbarController::ShouldShowOverflowButton(gfx::Size available_size) {
 
   for (const auto& element : responsive_elements_) {
     // Skip if it's an ActionId because it's already checked.
-    if (absl::holds_alternative<actions::ActionId>(element.overflow_id)) {
+    if (std::holds_alternative<actions::ActionId>(element.overflow_id)) {
       continue;
     }
     if (IsOverflowed(element, &proposed_layout)) {
@@ -453,7 +452,7 @@ bool ToolbarController::InOverflowMode() const {
 
 std::u16string ToolbarController::GetMenuText(
     const ResponsiveElementInfo& element_info) const {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [this](actions::ActionId id) {
             return std::u16string(
@@ -467,7 +466,7 @@ std::u16string ToolbarController::GetMenuText(
 
 std::optional<ui::ImageModel> ToolbarController::GetMenuIcon(
     const ResponsiveElementInfo& element_info) const {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [this](actions::ActionId id) {
             // Resize the vector icon to `kDefaultIconSize`.
@@ -477,9 +476,9 @@ std::optional<ui::ImageModel> ToolbarController::GetMenuIcon(
                 pinned_icon_image.IsVectorIcon()) {
               ui::VectorIconModel vector_icon_model =
                   pinned_icon_image.GetVectorIcon();
-                return std::make_optional(ui::ImageModel::FromVectorIcon(
-                    *vector_icon_model.vector_icon(), vector_icon_model.color(),
-                    ui::SimpleMenuModel::kDefaultIconSize));
+              return std::make_optional(ui::ImageModel::FromVectorIcon(
+                  *vector_icon_model.vector_icon(), vector_icon_model.color(),
+                  ui::SimpleMenuModel::kDefaultIconSize));
             } else {
               return std::make_optional(pinned_icon_image);
             }
@@ -531,7 +530,7 @@ ToolbarController::GetOverflowedElements() {
 bool ToolbarController::IsOverflowed(
     const ResponsiveElementInfo& element,
     const views::ProposedLayout* proposed_layout) const {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [&](actions::ActionId id) {
             CHECK(!proposed_layout);
@@ -575,10 +574,10 @@ ToolbarController::GetResponsiveElementsWithOrderedActions() const {
       [&ordered_pinned_action_ids](
           const ToolbarController::ResponsiveElementInfo& a,
           const ToolbarController::ResponsiveElementInfo& b) -> bool {
-    CHECK(absl::holds_alternative<actions::ActionId>(a.overflow_id));
-    CHECK(absl::holds_alternative<actions::ActionId>(b.overflow_id));
-    actions::ActionId a_action_id = absl::get<actions::ActionId>(a.overflow_id);
-    actions::ActionId b_action_id = absl::get<actions::ActionId>(b.overflow_id);
+    CHECK(std::holds_alternative<actions::ActionId>(a.overflow_id));
+    CHECK(std::holds_alternative<actions::ActionId>(b.overflow_id));
+    actions::ActionId a_action_id = std::get<actions::ActionId>(a.overflow_id);
+    actions::ActionId b_action_id = std::get<actions::ActionId>(b.overflow_id);
 
     for (int ordered_pinned_action_id : ordered_pinned_action_ids) {
       if (a_action_id == ordered_pinned_action_id) {
@@ -594,7 +593,7 @@ ToolbarController::GetResponsiveElementsWithOrderedActions() const {
   size_t element_index = 0;
   while (element_index < ordered_responsive_elements.size()) {
     // If the element is not an Action, continue
-    if (!absl::holds_alternative<actions::ActionId>(
+    if (!std::holds_alternative<actions::ActionId>(
             ordered_responsive_elements[element_index].overflow_id)) {
       element_index++;
       continue;
@@ -605,7 +604,7 @@ ToolbarController::GetResponsiveElementsWithOrderedActions() const {
     // will all be Actions and need to be sorted.
     size_t next_non_action_element_index = element_index + 1;
     while (next_non_action_element_index < ordered_responsive_elements.size() &&
-           absl::holds_alternative<actions::ActionId>(
+           std::holds_alternative<actions::ActionId>(
                ordered_responsive_elements[next_non_action_element_index]
                    .overflow_id)) {
       next_non_action_element_index++;
@@ -650,7 +649,7 @@ ToolbarController::CreateOverflowMenuModel() {
 }
 
 bool ToolbarController::IsCommandIdEnabled(int command_id) const {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [this](actions::ActionId id) {
             return pinned_actions_delegate_->GetActionItemFor(id)->GetEnabled();
@@ -665,8 +664,8 @@ bool ToolbarController::IsCommandIdEnabled(int command_id) const {
 
 void ToolbarController::ExecuteCommand(int command_id, int event_flags) {
   const auto& element_info = responsive_elements_.at(command_id);
-  absl::variant<ui::ElementIdentifier, actions::ActionId> action_key;
-  absl::visit(
+  std::variant<ui::ElementIdentifier, actions::ActionId> action_key;
+  std::visit(
       base::Overloaded{
           [&, this](actions::ActionId id) {
             pinned_actions_delegate_->GetActionItemFor(id)->InvokeAction(
@@ -726,9 +725,9 @@ void ToolbarController::ShowStatusIndicator() {
     status_rect.set_origin(gfx::Point(new_x, new_y));
     status_indicator->SetBoundsRect(status_rect);
 
-    if (absl::holds_alternative<actions::ActionId>(
+    if (std::holds_alternative<actions::ActionId>(
             responsive_elements_.at(menu_item->GetCommand()).overflow_id)) {
-      actions::ActionId action_id = absl::get<actions::ActionId>(
+      actions::ActionId action_id = std::get<actions::ActionId>(
           responsive_elements_.at(menu_item->GetCommand()).overflow_id);
       actions::ActionItem* action_item =
           pinned_actions_delegate_->GetActionItemFor(action_id);
@@ -758,9 +757,9 @@ void ToolbarController::ActionItemChanged(actions::ActionItem* action_item) {
   std::optional<int> command_id = std::nullopt;
   for (size_t i = 0; i < responsive_elements_.size(); ++i) {
     const auto& element = responsive_elements_[i];
-    if (absl::holds_alternative<actions::ActionId>(element.overflow_id)) {
+    if (std::holds_alternative<actions::ActionId>(element.overflow_id)) {
       actions::ActionId element_action_id =
-          absl::get<actions::ActionId>(element.overflow_id);
+          std::get<actions::ActionId>(element.overflow_id);
       if (element_action_id == action_item->GetActionId().value()) {
         command_id = static_cast<int>(i);
         break;

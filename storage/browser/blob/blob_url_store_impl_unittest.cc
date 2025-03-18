@@ -513,7 +513,7 @@ TEST_P(BlobURLStoreImplTestP, ResolveForNavigation) {
 
   base::RunLoop loop0;
   mojo::Remote<blink::mojom::BlobURLToken> token_remote;
-  url_store.ResolveForNavigation(
+  url_store.ResolveAsBlobURLToken(
       kValidUrl, token_remote.BindNewPipeAndPassReceiver(),
       /*is_top_level_navigation=*/false,
       base::BindOnce(

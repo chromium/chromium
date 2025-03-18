@@ -22,14 +22,15 @@ import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -40,6 +41,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -83,18 +85,20 @@ public class BookmarkPersonalizedSigninPromoTest {
     public final RuleChain chain =
             RuleChain.outerRule(mAccountManagerTestRule).around(mBookmarkTestRule);
 
-    @Mock private SyncService mSyncService;
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
+    @Mock private SyncService mSyncService;
 
     @After
     public void tearDown() {
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
-        BookmarkPromoHeader.forcePromoVisibilityForTesting(null);
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_BOOKMARKS_DECLINED);
+        ChromeSharedPreferences.getInstance()
+                .removeKey(
+                        ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
+                                SigninPreferencesManager.SigninPromoAccessPointId.BOOKMARKS));
     }
 
     @Test
@@ -114,7 +118,7 @@ public class BookmarkPersonalizedSigninPromoTest {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);
 
-        showBookmarkManagerAndCheckSigninPromoIsDisplayed(/* checkHistogram= */ false);
+        showBookmarkManagerAndCheckSigninPromoIsDisplayed();
     }
 
     @Test
@@ -137,7 +141,7 @@ public class BookmarkPersonalizedSigninPromoTest {
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);
         when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.READING_LIST));
 
-        showBookmarkManagerAndCheckSigninPromoIsDisplayed(/* checkHistogram= */ false);
+        showBookmarkManagerAndCheckSigninPromoIsDisplayed();
     }
 
     @Test
@@ -148,7 +152,7 @@ public class BookmarkPersonalizedSigninPromoTest {
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);
         when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.BOOKMARKS));
 
-        showBookmarkManagerAndCheckSigninPromoIsDisplayed(/* checkHistogram= */ false);
+        showBookmarkManagerAndCheckSigninPromoIsDisplayed();
     }
 
     // Get the activity that hosts the bookmark UI - on phones, this is a BookmarkActivity, on
@@ -161,14 +165,10 @@ public class BookmarkPersonalizedSigninPromoTest {
         }
     }
 
-    // TODO(crbug.com/327387704): Once we implement the correct impression recording, always check
-    // histograms.
-    private void showBookmarkManagerAndCheckSigninPromoIsDisplayed(boolean checkHistogram) {
+    private void showBookmarkManagerAndCheckSigninPromoIsDisplayed() {
         var shownHistogram = HistogramWatcher.newSingleRecordWatcher(SHOWN_HISTOGRAM_NAME, 1);
         mBookmarkTestRule.showBookmarkManager(sActivityTestRule.getActivity());
-        if (checkHistogram) {
-            shownHistogram.assertExpected();
-        }
+        shownHistogram.assertExpected();
 
         // TODO(https://cbug.com/1383638): If this stops the flakes, consider removing
         // activeInRecyclerView.

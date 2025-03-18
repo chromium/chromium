@@ -111,9 +111,10 @@ ContextMenuNativeDelegateImpl::ContextMenuNativeDelegateImpl(
 void ContextMenuNativeDelegateImpl::StartDownload(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    jboolean jis_link) {
+    const GURL& url,
+    jboolean jis_media) {
   DownloadControllerBase::Get()->StartContextMenuDownload(
-      *context_menu_params_, web_contents_, jis_link);
+      url, *context_menu_params_, web_contents_, jis_media);
 }
 
 void ContextMenuNativeDelegateImpl::SearchForImage(

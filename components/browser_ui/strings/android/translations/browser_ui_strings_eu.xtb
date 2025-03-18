@@ -45,6 +45,7 @@
 <translation id="1652197001188145583">Aktibatuta dagoenean, webguneek NFC bidezko gailuak erabiltzeko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dute erabili NFC bidezko gailurik.</translation>
 <translation id="1660204651932907780">Baimendu webguneei soinua erreproduzitzea (gomendatua)</translation>
 <translation id="1677097821151855053">Cookieak eta webguneko beste datu batzuk zu gogoratzeko erabiltzen dira; adibidez, saioa hasteko edo iragarkiak pertsonalizatzeko. Webgune guztietako cookieak kudeatzeko, ikusi <ph name="BEGIN_LINK" />Ezarpenak<ph name="END_LINK" /> atala.</translation>
+<translation id="1679305402657584804">Webguneek NFC bidezko gailuak erabiltzeko baimena eska dezakete</translation>
 <translation id="1686785653877010442">Webguneek jakinarazpenak bidali ohi dituzte azken orduko albiste edo txat-mezuen berri emateko.</translation>
 <translation id="169515064810179024">Ez utzi webguneei mugimendu-sentsoreak atzitzen</translation>
 <translation id="1703666494654169921">Ez eman errealitate birtualeko gailuak edo datuak erabiltzeko baimena webguneei</translation>
@@ -84,6 +85,7 @@
 <translation id="2185965788978862351">Webguneek edo orri nagusiko aplikazioek gorde dituzten datu eta cookieen <ph name="DATASIZE" /> ezabatuko dira.</translation>
 <translation id="2194856509914051091">Kontuan hartu beharrekoak</translation>
 <translation id="2215727959747642672">Fitxategiak editatzeko aukera</translation>
+<translation id="2218389616572918761">Webguneek zure mikrofonoa erabiltzeko baimena eska dezakete</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> aplikazioari kamera erabiltzeko baimena emateko, kamera erabiltzeko baimena aktibatu behar duzu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Hirugarrenen cookieak blokeatu dira</translation>
 <translation id="2238944249568001759">Azken fitxaren arabera iradokitako bilaketak</translation>
@@ -132,8 +134,10 @@
 <translation id="2726059656860238749">Chrome exekutatzean, eduki arakatzaileko barra fokuratuta, gama baxuko gailuetan abiarazte-denbora txikiagotzeko.</translation>
 <translation id="2750481671343847896">Identitate-zerbitzuek saioa hasteko bidalitako onarpen-mezuak blokea ditzakete webguneek.</translation>
 <translation id="2787357173144933081">Abiarazi bizkor arakatzaileko barra</translation>
+<translation id="2789132527330338807">Webguneek zure ingurunearen 3D-ko mapa bat sortzeko edo kameraren posizioaren jarraipena egiteko baimena eska dezakete</translation>
 <translation id="2790501146643349491">Aktibatuta dagoenean, berriki itxitako webguneek datuak bidaltzen eta jasotzen amai dezakete. Desaktibatuta dagoenean, berriki itxitako webguneek ezin dute amaitu datuak bidaltzen eta jasotzen.</translation>
 <translation id="2795716239552913152">Webguneek kokapena erabili ohi dute eginbide edo informazio egokia eskaintzeko, hala nola tokiko albisteak edo inguruan dauden dendak</translation>
+<translation id="2802908157808345702">Ez eman leiho gainerakorrak bidaltzeko eta birbideratzeak erabiltzeko baimena webguneei</translation>
 <translation id="2814830417943086299">Orain, azkenaldiko fitxak gailuko aplikazioen zerrendan eta bilaketa-emaitzetan erakusten ditu Chrome-k. Aukera hori desaktibatzeko, joan Chrome-ren ezarpenetara.</translation>
 <translation id="2822354292072154809">Ziur <ph name="CHOSEN_OBJECT_NAME" /> objektuaren webgune-baimen guztiak berrezarri nahi dituzula?</translation>
 <translation id="2850913818900871965">Eskatu mugikorretarako ikuspegia</translation>
@@ -274,6 +278,7 @@
 <translation id="4598549027014564149">Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatze-jarduerak ikusteko, erlazionatutako webguneak badira ere. Arakatze-jarduerak ez dira erabiltzen iragarkiak pertsonalizatzeko, ezta antzeko jardueretarako ere. Baliteke webgune batzuetako eginbideek ez funtzionatzea.</translation>
 <translation id="461356340001513807">Aukera honi esker, identitate-zerbitzu bateko kontuaren bidez webguneetan saioa has dezakezu</translation>
 <translation id="4619615317237390068">Beste gailu batzuetako fitxak</translation>
+<translation id="4635969503923889910">Ez eman NFC bidezko gailuak erabiltzeko baimena webguneei</translation>
 <translation id="4644713492825682049">Ezabatu eta berrezarri</translation>
 <translation id="4645575059429386691">Gurasoek kudeatuta</translation>
 <translation id="4670064810192446073">Errealitate birtuala</translation>
@@ -372,6 +377,7 @@
 <translation id="5877248419911025165">Tolestu eskaera guztiak</translation>
 <translation id="5884085660368669834">Webgunerako hobespena</translation>
 <translation id="5887687176710214216">Atzo bisitatu zenuen azkenengoz</translation>
+<translation id="5908617755156109052">Ez eman zure ingurunearen 3D-ko mapa bat sortzeko edo kameraren posizioaren jarraipena egiteko baimena webguneei</translation>
 <translation id="5916664084637901428">Aktibatuta</translation>
 <translation id="5922853908706496913">Pantaila partekatzen</translation>
 <translation id="5922967540311291836">Blokeatu hirugarrenen cookieak:</translation>
@@ -582,6 +588,7 @@
 <translation id="8676374126336081632">Garbitu idatzitakoa</translation>
 <translation id="8681886425883659911">Iragarki oztopatzaileak edo engainagarriak erakusten dituzten webguneak blokeatzen dira</translation>
 <translation id="868929229000858085">Bilatu kontaktuak</translation>
+<translation id="8707904142362025782">Webguneek zure kamera erabiltzeko baimena eska dezakete</translation>
 <translation id="8712637175834984815">Ados</translation>
 <translation id="8715862698998036666">Pantaila osoko ikuspegitik irteteko, arrastatu goitik eta pasatu hatza ezkerreko edo eskuineko ertzetik.</translation>
 <translation id="8719283222052720129">Aktibatu <ph name="APP_NAME" /> aplikaziorako baimena <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>

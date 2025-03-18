@@ -6,15 +6,15 @@
 #define COMPONENTS_PLUS_ADDRESSES_SETTINGS_PLUS_ADDRESS_SETTING_SYNC_UTIL_H_
 
 #include <string_view>
+#include <variant>
 
 #include "components/sync/protocol/plus_address_setting_specifics.pb.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace plus_addresses {
 
 sync_pb::PlusAddressSettingSpecifics CreateSettingSpecifics(
     std::string_view name,
-    absl::variant<bool, const char*, int32_t> value);
+    std::variant<bool, const char*, int32_t> value);
 
 }  // namespace plus_addresses
 

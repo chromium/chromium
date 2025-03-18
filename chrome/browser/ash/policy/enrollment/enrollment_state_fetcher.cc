@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 #include <tuple>
+#include <variant>
 
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
@@ -39,7 +40,6 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/private_membership/src/private_membership_rlwe.pb.h"
 
 using private_membership::rlwe::RlwePlaintextId;
@@ -77,7 +77,7 @@ std::string_view AutoEnrollmentStateToUmaSuffix(AutoEnrollmentState state) {
     }
   }
 
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [](AutoEnrollmentSafeguardTimeoutError) {
             return kUMASuffixConnectionError;
@@ -918,7 +918,7 @@ class EnrollmentStateFetcherImpl::Sequence {
     ReportStepDurationAndResetTimer(kUMASuffixOPRFRequest);
     if (!result.has_value()) {
       StorePsmError(local_state_);
-      if (absl::holds_alternative<AutoEnrollmentPsmError>(result.error())) {
+      if (std::holds_alternative<AutoEnrollmentPsmError>(result.error())) {
         return ReportResult(AutoEnrollmentResult::kNoEnrollment);
       }
 
@@ -934,7 +934,7 @@ class EnrollmentStateFetcherImpl::Sequence {
 
     if (!result.has_value()) {
       StorePsmError(local_state_);
-      if (absl::holds_alternative<AutoEnrollmentPsmError>(result.error())) {
+      if (std::holds_alternative<AutoEnrollmentPsmError>(result.error())) {
         return ReportResult(AutoEnrollmentResult::kNoEnrollment);
       }
 

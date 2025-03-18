@@ -21,7 +21,7 @@ source_set("coordinator") {
     "//components/segmentation_platform/embedder/home_modules/tips_manager:signal_constants",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/feature_engagement/model",
-    "//ios/chrome/browser/intents:intents_donation_helper",
+    "//ios/chrome/browser/intents/model:model_donation_helper",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/application_context",

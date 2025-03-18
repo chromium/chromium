@@ -30,6 +30,7 @@
 #include <cassert>
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"
@@ -277,14 +278,14 @@ void Resource::MarkClientFinished(ResourceClient* client) {
 }
 
 void Resource::AppendData(
-    absl::variant<SegmentedBuffer, base::span<const char>> data) {
+    std::variant<SegmentedBuffer, base::span<const char>> data) {
   DCHECK(!IsCacheValidator());
   DCHECK(!ErrorOccurred());
-  if (absl::holds_alternative<SegmentedBuffer>(data)) {
-    AppendDataImpl(std::move(absl::get<SegmentedBuffer>(data)));
+  if (std::holds_alternative<SegmentedBuffer>(data)) {
+    AppendDataImpl(std::move(std::get<SegmentedBuffer>(data)));
   } else {
-    CHECK(absl::holds_alternative<base::span<const char>>(data));
-    AppendDataImpl(absl::get<base::span<const char>>(data));
+    CHECK(std::holds_alternative<base::span<const char>>(data));
+    AppendDataImpl(std::get<base::span<const char>>(data));
   }
 }
 

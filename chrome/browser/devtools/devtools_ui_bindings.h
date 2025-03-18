@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/containers/unique_ptr_adapters.h"
@@ -297,21 +298,21 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
       int stream_id,
       const std::string& request,
       base::TimeDelta delay,
-      absl::variant<network::ResourceRequest, std::string>
+      std::variant<network::ResourceRequest, std::string>
           resource_request_or_error);
   void OnAidaConversationResponse(
       DispatchCallback callback,
       int stream_id,
       const std::string request,
       base::TimeDelta delay,
-      absl::variant<network::ResourceRequest, std::string>
+      std::variant<network::ResourceRequest, std::string>
           resource_request_or_error,
       base::TimeTicks start_time,
       const base::Value* response);
   void OnRegisterAidaClientEventRequest(
       DispatchCallback callback,
       const std::string& request,
-      absl::variant<network::ResourceRequest, std::string>
+      std::variant<network::ResourceRequest, std::string>
           resource_request_or_error);
   void OnAidaClientResponse(
       DispatchCallback callback,

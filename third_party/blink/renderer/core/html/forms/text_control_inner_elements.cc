@@ -184,7 +184,7 @@ const ComputedStyle* TextControlInnerEditorElement::CustomStyleForLayoutObject(
     // TODO(tkent): This should be done during layout.
     if (logical_height.HasPercent() ||
         (logical_height.IsFixed() &&
-         logical_height.GetFloatValue() > computed_line_height)) {
+         logical_height.Pixels() > computed_line_height)) {
       style_builder.SetLineHeight(
           ComputedStyleInitialValues::InitialLineHeight());
     }

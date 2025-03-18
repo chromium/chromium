@@ -228,7 +228,15 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   // Raises the surface containing `webcontents_id` and focuses the WebContents
   // as if a user had interacted directly with it. This is useful if you want
   // the WebContents to e.g. respond to accelerators.
-  [[nodiscard]] StepBuilder FocusWebContents(
+  //
+  // Note that this is shorthand for:
+  //  - WaitForWebContentsPainted(webcontents_id)
+  //  - ActivateSurface(webcontents_id)
+  //  - FocusElement(webcontents_id)
+  //
+  // The last is there to prevent any input from being swallowed before it is
+  // sent to the contents.
+  [[nodiscard]] MultiStep FocusWebContents(
       ui::ElementIdentifier webcontents_id);
 
   // Waits for the given `state_change` in `webcontents_id`. The sequence will

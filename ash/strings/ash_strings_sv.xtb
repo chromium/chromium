@@ -166,6 +166,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1505542291183484463">Flytta storleksändrat rutat fönster nedåt</translation>
 <translation id="1510238584712386396">Starttangent</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Visa aviseringsinställningar. Aviseringar har inaktiverats för 1 app}other{Visa aviseringsinställningar. Aviseringar har inaktiverats för # appar}}</translation>
+<translation id="1521655867290435174">Google Kalkylark</translation>
 <translation id="1523032696246003">Batteri <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> tills batteriet är fulladdat</translation>
 <translation id="1525508553941733066">IGNORERA</translation>
 <translation id="1526448108126799339">Öppna en ny flik i ett nytt fönster</translation>
@@ -345,7 +346,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2201071101391734388">Foto <ph name="INDEX" /> av <ph name="TOTAL_COUNT" /> nya foton.</translation>
 <translation id="2201687081523799384">Komprimera Google Tasks</translation>
 <translation id="2208323208084708176">Enhetligt skrivbordsläge</translation>
-<translation id="2220572644011485463">Pinkod eller lösenord</translation>
 <translation id="2222841058024245321">Skrivbord 7</translation>
 <translation id="2223384056430485343">På delad skärm</translation>
 <translation id="2224075387478458881">Skärminspelning tillåts inte när skyddat innehåll är synligt</translation>
@@ -1829,7 +1829,6 @@ Nyligen installerad</translation>
 <translation id="7000027735917578303">Inställningar för fönster och skrivbord</translation>
 <translation id="7004910047186208204">Anslut till mobildata</translation>
 <translation id="7005239792648594238">Öppna en app för att komma igång</translation>
-<translation id="7007983414944123363">Det gick inte att verifiera pinkoden eller lösenordet. Försök igen.</translation>
 <translation id="7014684956566476813">Ansluten till enheten <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Prova igen klockan <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Skrivbord 7</translation>
@@ -2466,6 +2465,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="9168436347345867845">Gör det senare</translation>
 <translation id="9178475906033259337">1 resultat visas för <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Med den här funktionen kan du snabbt öppna en inloggad användare utan att behöva ange lösenordet. Använd bara den här funktionen med konton som du litar på.</translation>
+<translation id="9183302530794969518">Google Dokument</translation>
 <translation id="9183456764293710005">Helskärmsförstoring</translation>
 <translation id="9192133205265227850">Använd <ph name="DEVICE_NAME" /></translation>
 <translation id="9193626018745640770">Castar till en okänd mottagare</translation>

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_RESOURCE_CONTEXTS_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_RESOURCE_CONTEXTS_H_
 
+#include <variant>
+
 #include "base/types/strong_alias.h"
 #include "base/types/variant_util.h"
 #include "components/performance_manager/public/resource_attribution/frame_context.h"
@@ -13,7 +15,6 @@
 #include "components/performance_manager/public/resource_attribution/process_context.h"
 #include "components/performance_manager/public/resource_attribution/type_helpers.h"
 #include "components/performance_manager/public/resource_attribution/worker_context.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace resource_attribution {
 
@@ -60,17 +61,17 @@ namespace resource_attribution {
 //   OriginInBrowsingInstanceContexts at different points in time).
 
 // A variant holding any type of resource context.
-using ResourceContext = absl::variant<FrameContext,
-                                      PageContext,
-                                      ProcessContext,
-                                      WorkerContext,
-                                      OriginInBrowsingInstanceContext>;
+using ResourceContext = std::variant<FrameContext,
+                                     PageContext,
+                                     ProcessContext,
+                                     WorkerContext,
+                                     OriginInBrowsingInstanceContext>;
 
 // Returns true iff `context` currently holds a resource context of type T.
 template <typename T,
           internal::EnableIfIsVariantAlternative<T, ResourceContext> = true>
 constexpr bool ContextIs(const ResourceContext& context) {
-  return absl::holds_alternative<T>(context);
+  return std::holds_alternative<T>(context);
 }
 
 // If `context` currently holds a resource context of type T, returns a
@@ -78,7 +79,7 @@ constexpr bool ContextIs(const ResourceContext& context) {
 template <typename T,
           internal::EnableIfIsVariantAlternative<T, ResourceContext> = true>
 constexpr const T& AsContext(const ResourceContext& context) {
-  return absl::get<T>(context);
+  return std::get<T>(context);
 }
 
 // If `context` currently holds a resource context of type T, returns a

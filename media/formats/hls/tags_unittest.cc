@@ -9,6 +9,7 @@
 #include <optional>
 #include <string_view>
 #include <utility>
+#include <variant>
 
 #include "base/location.h"
 #include "base/strings/string_number_conversions.h"
@@ -117,7 +118,7 @@ void RunTagIdenficationTest(
   ASSERT_TRUE(item_result.has_value()) << from.ToString();
 
   auto item = std::move(item_result).value();
-  auto* tag = absl::get_if<TagItem>(&item);
+  auto* tag = std::get_if<TagItem>(&item);
   ASSERT_NE(tag, nullptr) << from.ToString();
   EXPECT_EQ(tag->GetName(), name) << from.ToString();
   EXPECT_EQ(tag->GetContent().has_value(), expected_content.has_value())

@@ -763,7 +763,7 @@ void ServiceWorkerContainer::DispatchMessageEvent(
 
   auto msg =
       BlinkTransferableMessage::FromTransferableMessage(std::move(message));
-  MessagePortArray* ports =
+  GCedMessagePortArray* ports =
       MessagePort::EntanglePorts(*GetExecutionContext(), std::move(msg.ports));
   ServiceWorker* service_worker =
       ServiceWorker::From(GetExecutionContext(), std::move(source));

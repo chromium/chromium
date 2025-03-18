@@ -7,8 +7,9 @@
     dp.Page.addScriptToEvaluateOnNewDocument({source: 'debugger'}),
     dp.Page.addScriptToEvaluateOnNewDocument({source: ''}), // The page handler might attempt to evaluate this on a disposed V8 session
     dp.Debugger.enable(),
-    dp.Page.reload(),
   ]);
+
+  await dp.Page.reload(),
 
   await dp.Debugger.oncePaused();
   await session.disconnect();

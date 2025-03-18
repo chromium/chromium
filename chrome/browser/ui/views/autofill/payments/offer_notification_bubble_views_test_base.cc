@@ -9,10 +9,13 @@
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -210,19 +213,20 @@ OfferNotificationBubbleViewsTestBase::GetOfferNotificationBubbleViews() {
       controller->GetOfferNotificationBubbleView());
 }
 
-OfferNotificationIconView*
-OfferNotificationBubbleViewsTestBase::GetOfferNotificationIconView() {
+IconLabelBubbleView*
+OfferNotificationBubbleViewsTestBase::GetOfferNotificationPageActionView() {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  PageActionIconView* icon =
-      browser_view->toolbar_button_provider()->GetPageActionIconView(
-          PageActionIconType::kPaymentsOfferNotification);
-  DCHECK(browser_view->GetLocationBarView()->Contains(icon));
-  return static_cast<OfferNotificationIconView*>(icon);
+  if (base::FeatureList::IsEnabled(::features::kPageActionsMigration)) {
+    return browser_view->toolbar_button_provider()->GetPageActionView(
+        kActionOffersAndRewardsForPage);
+  }
+  return browser_view->toolbar_button_provider()->GetPageActionIconView(
+      PageActionIconType::kPaymentsOfferNotification);
 }
 
 bool OfferNotificationBubbleViewsTestBase::IsIconVisible() {
-  return GetOfferNotificationIconView() &&
-         GetOfferNotificationIconView()->GetVisible();
+  return GetOfferNotificationPageActionView() &&
+         GetOfferNotificationPageActionView()->GetVisible();
 }
 
 content::WebContents*

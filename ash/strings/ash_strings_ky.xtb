@@ -166,6 +166,7 @@
 <translation id="1505542291183484463">Көп терезе режиминде терезени ылдый тартуу</translation>
 <translation id="1510238584712386396">Жүргүзгүч</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Билдирмелердин параметрлерин көрсөтүү. Колдонмонун билдирмелери өчүк}other{Билдирмелердин параметрлерин көрсөтүү. # колдонмонун билдирмелери өчүк}}</translation>
+<translation id="1521655867290435174">Google Таблицалары</translation>
 <translation id="1523032696246003">Батареянын кубаты: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> кийин толот</translation>
 <translation id="1525508553941733066">ЭТИБАРГА АЛБОО</translation>
 <translation id="1526448108126799339">Жаңы өтмөктү жаңы терезеде ачуу</translation>
@@ -345,7 +346,6 @@
 <translation id="2201071101391734388">Акыркы сүрөт (<ph name="TOTAL_COUNT" /> ичинен <ph name="INDEX" />).</translation>
 <translation id="2201687081523799384">Google Tasks'ты жыйыштыруу</translation>
 <translation id="2208323208084708176">Биргелешкен иш тактасы режими</translation>
-<translation id="2220572644011485463">PIN же сырсөз</translation>
 <translation id="2222841058024245321">7-иш такта</translation>
 <translation id="2223384056430485343">Бөлүнгөн экранда</translation>
 <translation id="2224075387478458881">Корголгон мазмун көрүнүп турганда экрандагыны жаздырып алууга болбойт</translation>
@@ -1829,7 +1829,6 @@
 <translation id="7000027735917578303">Терезелер менен иш такталардын параметрлери</translation>
 <translation id="7004910047186208204">Мобилдик трафикке туташуу</translation>
 <translation id="7005239792648594238">Баштоо үчүн колдонмону ачыңыз</translation>
-<translation id="7007983414944123363">PIN кодуңуз же сырсөзүңүз ырасталган жок. Кайталап көрүңүз.</translation>
 <translation id="7014684956566476813"><ph name="DEVICE_NAME" /> деп аталган түзмөккө туташты</translation>
 <translation id="7015766095477679451">Саат <ph name="COME_BACK_TIME" /> болгондо кайтып келиңиз.</translation>
 <translation id="70168403932084660">6-иш такта</translation>
@@ -2466,6 +2465,7 @@
 <translation id="9168436347345867845">Азыр эмес</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> сурамы боюнча 1 натыйжа көрсөтүлүүдө</translation>
 <translation id="9179259655489829027">Бул функция менен аккаунтка кирген бардык колдонуучуларга сырсөзсүз оңой өтө аласыз. Бул функцияны ишенимдүү аккаунттар менен гана колдонуңуз.</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183456764293710005">Толук экран лупасы</translation>
 <translation id="9192133205265227850">"<ph name="DEVICE_NAME" />" түзмөгүн колдонуңуз</translation>
 <translation id="9193626018745640770">Белгисиз алуучуга чыгарылууда</translation>

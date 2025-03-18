@@ -184,7 +184,7 @@ void Spake2Authenticator::ProcessMessageInternal(
   if (!DecodeBinaryValueFromXml(message, kCertificateTag, &cert_present,
                                 &remote_cert_)) {
     state_ = REJECTED;
-    rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
+    rejection_reason_ = RejectionReason::INVALID_ARGUMENT;
     rejection_details_ = RejectionDetails(
         "Failed to decode the remote certificate in the incoming message.");
     return;
@@ -193,7 +193,7 @@ void Spake2Authenticator::ProcessMessageInternal(
   // Client always expects certificate in the first message.
   if (!is_host_ && remote_cert_.empty()) {
     state_ = REJECTED;
-    rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
+    rejection_reason_ = RejectionReason::INVALID_STATE;
     rejection_details_ = RejectionDetails("No valid host certificate.");
     return;
   }
@@ -208,7 +208,7 @@ void Spake2Authenticator::ProcessMessageInternal(
                                 &verification_hash_present,
                                 &verification_hash)) {
     state_ = REJECTED;
-    rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
+    rejection_reason_ = RejectionReason::INVALID_ARGUMENT;
     rejection_details_ = RejectionDetails(
         "Failed to decode the spake message or the verification hash in the "
         "incoming message.");
@@ -219,7 +219,7 @@ void Spake2Authenticator::ProcessMessageInternal(
   if (auth_key_.empty()) {
     if (!spake_message_present) {
       state_ = REJECTED;
-      rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
+      rejection_reason_ = RejectionReason::INVALID_ARGUMENT;
       rejection_details_ = RejectionDetails("<spake-message> not found.");
       return;
     }
@@ -246,7 +246,7 @@ void Spake2Authenticator::ProcessMessageInternal(
         CalculateVerificationHash(!is_host_, remote_id_, local_id_);
   } else if (spake_message_present) {
     state_ = REJECTED;
-    rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
+    rejection_reason_ = RejectionReason::INVALID_STATE;
     rejection_details_ =
         RejectionDetails("Received duplicate <spake-message>.");
     return;
@@ -254,7 +254,7 @@ void Spake2Authenticator::ProcessMessageInternal(
 
   if (spake_message_sent_ && !verification_hash_present) {
     state_ = REJECTED;
-    rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
+    rejection_reason_ = RejectionReason::INVALID_STATE;
     rejection_details_ =
         RejectionDetails("Didn't receive <verification-hash> when expected.");
     return;

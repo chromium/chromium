@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {MappedOptionalContainer, StringDictType, TestNode} from './web_ui_mojo_ts_test_mapped_types.js';
-import {OptionalNumericsStruct, TestEnum, WebUITsMojoTestCache} from './web_ui_ts_test.test-mojom-webui.js';
+import {MojoResultTestCallbackRouter, MojoResultTestReceiver, MojoResultTestRemote, OptionalNumericsStruct, Result, TestEnum, WebUITsMojoTestCache} from './web_ui_ts_test.test-mojom-webui.js';
 import {StringWrapper} from './web_ui_ts_test_types.test-mojom-webui.js';
 
 const TEST_DATA: Array<{url: string, contents: string}> = [
@@ -285,6 +285,109 @@ async function doTest(): Promise<boolean> {
         withValues, result.result,
         `unexpected object ${JSON.stringify(result.result)}, expected: ${
             JSON.stringify(withValues)}`);
+  }
+
+  // Loopback test for result types.
+  {
+    // Test general success case.
+    const listener = {
+      testResult:
+          (():
+               Promise<Result> => {
+                 return Promise.resolve({secretMessage: `it's all for naught`});
+               })
+    };
+    const service = new MojoResultTestReceiver(listener);
+    const client: MojoResultTestRemote = service.$.bindNewPipeAndPassRemote();
+
+    await client.testResult().then(result => {
+      assert(
+          result.secretMessage === `it's all for naught`,
+          `got unexpected msg: ${JSON.stringify(result)}`);
+    });
+  }
+
+  {
+    // Tests listener pattern.
+    const callbacks = new MojoResultTestCallbackRouter();
+    const client = callbacks.$.bindNewPipeAndPassRemote();
+    callbacks.testResult.addListener(
+        () => Promise.resolve({secretMessage: 'I listen'}));
+
+    await client.testResult().then(result => {
+      assert(
+          result.secretMessage === 'I listen',
+          `got unexpected msg: ${JSON.stringify(result)}`);
+    });
+  }
+
+  {
+    // Tests rejection.
+    const callbacks = new MojoResultTestCallbackRouter();
+    const client = callbacks.$.bindNewPipeAndPassRemote();
+    callbacks.testResult.addListener(
+        () => Promise.reject(new Error('cannot go on')));
+
+    await client.testResult()
+        .then(() => {
+          assert(false, 'should have failed');
+        })
+        .catch((error: Error) => {
+          assert(error.message === 'cannot go on', JSON.stringify(error));
+        });
+  }
+
+  {
+    // Tests loose js error encoding for JsError.
+    const callbacks = new MojoResultTestCallbackRouter();
+    const client = callbacks.$.bindNewPipeAndPassRemote();
+    callbacks.testResult.addListener(
+        () => Promise.reject({message: 'cannot go on'}));
+
+    await client.testResult()
+        .then(() => {
+          assert(false, 'should have failed');
+        })
+        .catch((error: Error) => {
+          assert(error.message === 'cannot go on', JSON.stringify(error));
+        });
+  }
+
+  {
+    // Tests throwing.
+    const callbacks = new MojoResultTestCallbackRouter();
+    const client = callbacks.$.bindNewPipeAndPassRemote();
+    callbacks.testResult.addListener(() => {
+      throw new Error('oh noes');
+    });
+
+    await client.testResult()
+        .then(() => {
+          assert(false, 'should have failed');
+        })
+        .catch((error: Error) => {
+          assert(error.message === 'oh noes', JSON.stringify(error));
+        });
+  }
+
+  {
+    // Tests unknown object to JsError mapping.
+    class Potato {}
+    const callbacks = new MojoResultTestCallbackRouter();
+    const client = callbacks.$.bindNewPipeAndPassRemote();
+    callbacks.testResult.addListener(() => {
+      throw new Potato();
+    });
+
+    await client.testResult()
+        .then(() => {
+          assert(false, 'should have failed');
+        })
+        .catch((error: Error) => {
+          assert(
+              error.message === 'unknown error has occured',
+              JSON.stringify(error));
+        });
   }
   return true;
 }

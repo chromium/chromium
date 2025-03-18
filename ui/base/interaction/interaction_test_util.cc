@@ -7,6 +7,8 @@
 #include <array>
 #include <functional>
 
+#include "ui/base/interaction/element_tracker.h"
+
 namespace ui::test {
 
 namespace {
@@ -66,13 +68,27 @@ ActionResult InteractionTestUtil::Simulator::ActivateSurface(
   return ActionResult::kNotAttempted;
 }
 
+ActionResult InteractionTestUtil::Simulator::FocusElement(
+    TrackedElement* element) {
+  return ActionResult::kNotAttempted;
+}
+
 #if !BUILDFLAG(IS_IOS)
+
 ActionResult InteractionTestUtil::Simulator::SendAccelerator(
     TrackedElement* element,
     Accelerator accelerator) {
   return ActionResult::kNotAttempted;
 }
-#endif
+
+ActionResult InteractionTestUtil::Simulator::SendKeyPress(
+    TrackedElement* element,
+    KeyboardCode key,
+    int flags) {
+  return ActionResult::kNotAttempted;
+}
+
+#endif  // !BUILDFLAG(IS_IOS)
 
 ActionResult InteractionTestUtil::Simulator::Confirm(TrackedElement* element) {
   return ActionResult::kNotAttempted;
@@ -121,13 +137,25 @@ ActionResult InteractionTestUtil::ActivateSurface(TrackedElement* element) {
   return Simulate(simulators_, &Simulator::ActivateSurface, element);
 }
 
+ActionResult InteractionTestUtil::FocusElement(TrackedElement* element) {
+  return Simulate(simulators_, &Simulator::FocusElement, element);
+}
+
 #if !BUILDFLAG(IS_IOS)
+
 ActionResult InteractionTestUtil::SendAccelerator(TrackedElement* element,
                                                   Accelerator accelerator) {
   return Simulate(simulators_, &Simulator::SendAccelerator, element,
                   accelerator);
 }
-#endif
+
+ActionResult InteractionTestUtil::SendKeyPress(TrackedElement* element,
+                                               KeyboardCode key,
+                                               int flags) {
+  return Simulate(simulators_, &Simulator::SendKeyPress, element, key, flags);
+}
+
+#endif  // !BUILDFLAG(IS_IOS)
 
 ActionResult InteractionTestUtil::Confirm(TrackedElement* element) {
   return Simulate(simulators_, &Simulator::Confirm, element);

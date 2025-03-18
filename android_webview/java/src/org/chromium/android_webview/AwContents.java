@@ -47,6 +47,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.view.textclassifier.TextClassifier;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebViewClient;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntDef;
@@ -697,6 +698,11 @@ public class AwContents implements SmartClipProvider {
         mShouldInterceptRequestMediator.setAsyncCallback(null);
     }
 
+    @AnyThread
+    public void onWebViewClientUpdated(WebViewClient client) {
+        mShouldInterceptRequestMediator.onWebViewClientUpdated(client);
+    }
+
     // --------------------------------------------------------------------------------------------
     private class AwContentsShouldInterceptRequestMediator extends ShouldInterceptRequestMediator {
         // All methods are called on the background thread.
@@ -1087,6 +1093,7 @@ public class AwContents implements SmartClipProvider {
             mIoThreadClient =
                     new AwContentsIoThreadClientImpl(
                             mSettings,
+                            mContentsClient,
                             mShouldInterceptRequestMediator,
                             () -> mBrowserContext.getCookieManager().acceptCookie());
             mInterceptNavigationDelegate = new InterceptNavigationDelegateImpl();
@@ -1104,8 +1111,10 @@ public class AwContents implements SmartClipProvider {
             mSettings.setZoomListener(zoomListener);
             mDefaultVideoPosterRequestHandler =
                     new DefaultVideoPosterRequestHandler(mContentsClient);
-            mSettings.setDefaultVideoPosterUrl(
-                    mDefaultVideoPosterRequestHandler.getDefaultVideoPosterUrl());
+            String defaultVideoPosterUrl =
+                    mDefaultVideoPosterRequestHandler.getDefaultVideoPosterUrl();
+            mSettings.setDefaultVideoPosterUrl(defaultVideoPosterUrl);
+            mShouldInterceptRequestMediator.setNoSkipUrl(defaultVideoPosterUrl);
             mScrollOffsetManager =
                     dependencyFactory.createScrollOffsetManager(
                             new AwScrollOffsetManagerDelegate());

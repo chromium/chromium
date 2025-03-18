@@ -16,6 +16,7 @@
 #include <type_traits>
 #include <unordered_set>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check_op.h"
@@ -41,7 +42,6 @@
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/host_resolver_source.h"
 #include "net/log/net_log.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/scheme_host_port.h"
 
 namespace net {
@@ -176,13 +176,13 @@ bool IsValidHostname(std::string_view hostname) {
 }
 
 const std::string& GetHostname(
-    const absl::variant<url::SchemeHostPort, std::string>& host) {
+    const std::variant<url::SchemeHostPort, std::string>& host) {
   const std::string* hostname;
-  if (absl::holds_alternative<url::SchemeHostPort>(host)) {
-    hostname = &absl::get<url::SchemeHostPort>(host).host();
+  if (std::holds_alternative<url::SchemeHostPort>(host)) {
+    hostname = &std::get<url::SchemeHostPort>(host).host();
   } else {
-    DCHECK(absl::holds_alternative<std::string>(host));
-    hostname = &absl::get<std::string>(host);
+    DCHECK(std::holds_alternative<std::string>(host));
+    hostname = &std::get<std::string>(host);
   }
 
   DCHECK(IsValidHostname(*hostname));
@@ -216,7 +216,7 @@ enum HostCache::SetOutcome : int {
   MAX_SET_OUTCOME
 };
 
-HostCache::Key::Key(absl::variant<url::SchemeHostPort, std::string> host,
+HostCache::Key::Key(std::variant<url::SchemeHostPort, std::string> host,
                     DnsQueryType dns_query_type,
                     HostResolverFlags host_resolver_flags,
                     HostResolverSource host_resolver_source,
@@ -227,8 +227,9 @@ HostCache::Key::Key(absl::variant<url::SchemeHostPort, std::string> host,
       host_resolver_source(host_resolver_source),
       network_anonymization_key(network_anonymization_key) {
   DCHECK(IsValidHostname(GetHostname(this->host)));
-  if (absl::holds_alternative<url::SchemeHostPort>(this->host))
-    DCHECK(absl::get<url::SchemeHostPort>(this->host).IsValid());
+  if (std::holds_alternative<url::SchemeHostPort>(this->host)) {
+    DCHECK(std::get<url::SchemeHostPort>(this->host).IsValid());
+  }
 }
 
 HostCache::Key::Key() = default;
@@ -996,13 +997,13 @@ void HostCache::GetList(base::Value::List& entry_list,
 
     base::Value::Dict entry_dict = entry.GetAsValue(include_staleness);
 
-    const auto* host = absl::get_if<url::SchemeHostPort>(&key.host);
+    const auto* host = std::get_if<url::SchemeHostPort>(&key.host);
     if (host) {
       entry_dict.Set(kSchemeKey, host->scheme());
       entry_dict.Set(kHostnameKey, host->host());
       entry_dict.Set(kPortKey, host->port());
     } else {
-      entry_dict.Set(kHostnameKey, absl::get<std::string>(key.host));
+      entry_dict.Set(kHostnameKey, std::get<std::string>(key.host));
     }
 
     entry_dict.Set(kDnsQueryTypeKey,
@@ -1039,7 +1040,7 @@ bool HostCache::RestoreFromListValue(const base::Value::List& old_cache) {
 
     // Use presence of scheme to determine host type.
     const std::string* scheme_ptr = entry_dict.FindString(kSchemeKey);
-    absl::variant<url::SchemeHostPort, std::string> host;
+    std::variant<url::SchemeHostPort, std::string> host;
     if (scheme_ptr) {
       std::optional<int> port = entry_dict.FindInt(kPortKey);
       if (!port || !base::IsValueInRangeForNumericType<uint16_t>(port.value()))

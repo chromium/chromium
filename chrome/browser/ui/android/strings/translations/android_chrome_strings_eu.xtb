@@ -432,7 +432,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2981364137500752533">5 leiho ireki ditzakezu gehienez.</translation>
 <translation id="2983102365694924129">Webgune batean egin dituzun jardueretan oinarrituta. Desaktibatuta dago ezarpena.</translation>
 <translation id="2984978667043170458">Gehitu inguruko testua Google-ko bilaketetan</translation>
-<translation id="2988638966064514052">Sendotu pasahitzak</translation>
 <translation id="2989523299700148168">Erabilitako azkenak</translation>
 <translation id="2992473221983447149">Irudi-azalpenak</translation>
 <translation id="2996291259634659425">Sortu pasaesaldia</translation>
@@ -548,7 +547,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="3557336313807607643">Gehitu kontaktuetan</translation>
 <translation id="3563767357928833671">Ezarri dira ikusgai arbeleko edukiak</translation>
 <translation id="3566639033325271639">Eguneratu ezarpenak</translation>
-<translation id="3568945271227339929">Ez dago pasahitzik arriskuan</translation>
 <translation id="3575464060651642446">Gailuko pasahitzak egiaztatzen…</translation>
 <translation id="3577473026931028326">Arazoren bat izan da. Saiatu berriro.</translation>
 <translation id="3577558748185201054">Kudeatu zure interesak eta hobespenak</translation>
@@ -1055,7 +1053,6 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="5958275228015807058">Bilatu Deskargak atalean dituzun fitxategiak eta orriak</translation>
 <translation id="5958994127112619898">Sinplifikatu orria</translation>
 <translation id="5962718611393537961">Sakatu tolesteko</translation>
-<translation id="5964180026566797835">Ezin dira egiaztatu pasahitzak</translation>
 <translation id="5964869237734432770">Gelditu irudi-deskribapenak</translation>
 <translation id="5977976211062815271">Gailu honetakoak</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 orri dago irakurketa-zerrendan}other{# orri daude irakurketa-zerrendan}}</translation>
@@ -1099,6 +1096,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="6150320133806434356">Gorde da laster-marka</translation>
 <translation id="6150706324143004339">Chrome-ko datuak Google-ko kontuan gordetzeko eta erabiltzeko, eguneratu Chrome</translation>
 <translation id="6154478581116148741">Gailu honetako pasahitzak esportatzeko, aktibatu pantailaren blokeoa Ezarpenak atalean</translation>
+<translation id="6156323911414505561">Erakutsi laster-marken barra</translation>
 <translation id="6162892189396105610">Aurrez kargatzen dira Chrome-ren ustez bisitatuko dituzun orriak.</translation>
 <translation id="6170675927290506430">Joan jakinarazpen-ezarpenetara</translation>
 <translation id="6186394685773237175">Ez da aurkitu arriskuan dagoen pasahitzik</translation>

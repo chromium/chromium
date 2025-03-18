@@ -5,13 +5,13 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 
 #include <string>
+#include <variant>
 
 #include "base/functional/callback.h"
 #include "base/functional/overloaded.h"
 #include "base/json/values_util.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace web_app {
 
@@ -82,26 +82,26 @@ bool IsolatedWebAppStorageLocation::operator==(
     const IsolatedWebAppStorageLocation& other) const = default;
 
 bool IsolatedWebAppStorageLocation::dev_mode() const {
-  return absl::visit(base::Overloaded{[](const auto& location) {
-                       return location.dev_mode();
-                     }},
-                     variant_);
+  return std::visit(base::Overloaded{[](const auto& location) {
+                      return location.dev_mode();
+                    }},
+                    variant_);
 }
 
 base::Value IsolatedWebAppStorageLocation::ToDebugValue() const {
   base::Value::Dict value;
-  absl::visit(base::Overloaded{
-                  [&value](const OwnedBundle& bundle) {
-                    value.Set("owned_bundle", bundle.ToDebugValue());
-                  },
-                  [&value](const UnownedBundle& bundle) {
-                    value.Set("unowned_bundle", bundle.ToDebugValue());
-                  },
-                  [&value](const Proxy& proxy) {
-                    value.Set("proxy", proxy.ToDebugValue());
-                  },
-              },
-              variant_);
+  std::visit(base::Overloaded{
+                 [&value](const OwnedBundle& bundle) {
+                   value.Set("owned_bundle", bundle.ToDebugValue());
+                 },
+                 [&value](const UnownedBundle& bundle) {
+                   value.Set("unowned_bundle", bundle.ToDebugValue());
+                 },
+                 [&value](const Proxy& proxy) {
+                   value.Set("proxy", proxy.ToDebugValue());
+                 },
+             },
+             variant_);
   return base::Value(std::move(value));
 }
 

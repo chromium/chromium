@@ -166,6 +166,10 @@ BASE_FEATURE(kEnableImprovedGuestProfileMenu,
              "EnableImprovedGuestProfileMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnablePendingModePasswordsPromo,
+             "EnablePendingModePasswordsPromo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_IOS)
 
 BASE_FEATURE(kEnableIdentityInAuthError,

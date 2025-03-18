@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -29,7 +30,6 @@
 #else
 #include "media/parsers/h265_nalu_parser.h"
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace media {
 namespace mp4 {
@@ -286,17 +286,17 @@ bool HEVCDecoderConfigurationRecord::ParseInternal(BufferReader* reader,
           break;
         }
         for (const auto& sei_msg : sei.msgs) {
-          absl::visit(base::Overloaded{
-                          [](const H265SEIAlphaChannelInfo& info) {},
-                          [&](const H265SEIContentLightLevelInfo& info) {
-                            hdr_metadata.cta_861_3 = info.ToGfx();
-                          },
-                          [&](const H265SEIMasteringDisplayInfo& info) {
-                            hdr_metadata.smpte_st_2086 = info.ToGfx();
-                          },
-                          [](absl::monostate) {},
-                      },
-                      sei_msg);
+          std::visit(base::Overloaded{
+                         [](const H265SEIAlphaChannelInfo& info) {},
+                         [&](const H265SEIContentLightLevelInfo& info) {
+                           hdr_metadata.cta_861_3 = info.ToGfx();
+                         },
+                         [&](const H265SEIMasteringDisplayInfo& info) {
+                           hdr_metadata.smpte_st_2086 = info.ToGfx();
+                         },
+                         [](std::monostate) {},
+                     },
+                     sei_msg);
         }
         break;
       }

@@ -579,6 +579,25 @@ void Shell::RegisterProtocolHandler(RenderFrameHost* requesting_frame,
     registry->OnAcceptRegisterProtocolHandler(handler);
   }
 }
+
+void Shell::UnregisterProtocolHandler(RenderFrameHost* requesting_frame,
+                                      const std::string& protocol,
+                                      const GURL& url,
+                                      bool user_gesture) {
+  BrowserContext* context = requesting_frame->GetBrowserContext();
+  if (context->IsOffTheRecord()) {
+    return;
+  }
+
+  custom_handlers::ProtocolHandler handler =
+      custom_handlers::ProtocolHandler::CreateProtocolHandler(
+          protocol, url, GetProtocolHandlerSecurityLevel(requesting_frame));
+  custom_handlers::ProtocolHandlerRegistry* registry = custom_handlers::
+      SimpleProtocolHandlerRegistryFactory::GetForBrowserContext(context, true);
+  CHECK(registry);
+
+  registry->RemoveHandler(handler);
+}
 #endif
 
 void Shell::RequestPointerLock(WebContents* web_contents,

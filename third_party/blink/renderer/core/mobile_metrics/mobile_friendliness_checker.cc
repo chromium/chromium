@@ -124,7 +124,7 @@ void MobileFriendlinessChecker::NotifyPaintBegin() {
     if (viewport.max_width.IsFixed()) {
       // Convert value from Blink space to device-independent pixels.
       viewport_hardcoded_width_ =
-          viewport.max_width.GetFloatValue() / viewport_scalar_;
+          viewport.max_width.Pixels() / viewport_scalar_;
     }
 
     if (viewport.zoom_is_explicit)

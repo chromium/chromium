@@ -60,6 +60,8 @@ source_set("public") {
       "android/prediction_options_android.h",
       "android/segmentation_platform_conversion_bridge.cc",
       "android/segmentation_platform_conversion_bridge.h",
+      "android/training_labels_android.cc",
+      "android/training_labels_android.h",
     ]
     deps += [ ":jni_headers" ]
   }
@@ -117,6 +119,7 @@ if (is_android) {
       "android/java/src/org/chromium/components/segmentation_platform/SegmentSelectionResult.java",
       "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformConversionBridge.java",
       "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformService.java",
+      "android/java/src/org/chromium/components/segmentation_platform/TrainingLabels.java",
     ]
 
     deps = [
@@ -166,6 +169,7 @@ if (is_android) {
       "android/java/src/org/chromium/components/segmentation_platform/InputContext.java",
       "android/java/src/org/chromium/components/segmentation_platform/PredictionOptions.java",
       "android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformConversionBridge.java",
+      "android/java/src/org/chromium/components/segmentation_platform/TrainingLabels.java",
     ]
   }
 

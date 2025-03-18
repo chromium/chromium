@@ -166,17 +166,7 @@ const CGFloat kSymbolSize = 22;
       [_delegate didEditAutofillProfileFromSettings];
     }
   }
-
-  [self loadModel];
-  [self.handler reconfigureCells];
-  if (_showMigrateToAccountSection &&
-      base::FeatureList::IsEnabled(
-          kAutofillDynamicallyLoadsFieldsForAddressInput)) {
-    [self reconfigureCellsForItems:
-              [self.tableViewModel
-                  itemsInSectionWithIdentifier:
-                      AutofillProfileDetailsSectionIdentifierMigrationButton]];
-  }
+  [self reloadData];
 }
 
 - (BOOL)editButtonEnabled {

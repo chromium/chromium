@@ -432,7 +432,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2981364137500752533">Možete da imate najviše 5 prozora.</translation>
 <translation id="2983102365694924129">Na osnovu vaše aktivnosti na sajtu. Ovo podešavanje je isključeno.</translation>
 <translation id="2984978667043170458">Uvrsti okolni tekst u Google pretrage</translation>
-<translation id="2988638966064514052">Ojačajte lozinke</translation>
 <translation id="2989523299700148168">Nedavno posećeno</translation>
 <translation id="2992473221983447149">Opisi slika</translation>
 <translation id="2996291259634659425">Napravite pristupnu frazu</translation>
@@ -548,7 +547,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3557336313807607643">Dodaj u kontakte</translation>
 <translation id="3563767357928833671">Prikazan je sadržaj privremene memorije</translation>
 <translation id="3566639033325271639">Ažuriraj podešavanja</translation>
-<translation id="3568945271227339929">Nema ugroženih lozinki</translation>
 <translation id="3575464060651642446">Proveravaju se lozinke na ovom uređaju…</translation>
 <translation id="3577473026931028326">Došlo je do greške. Probajte ponovo.</translation>
 <translation id="3577558748185201054">Upravljajte interesovanjima i podešavanjima</translation>
@@ -1055,7 +1053,6 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="5958275228015807058">Pronađite datoteke i stranice u Preuzimanjima</translation>
 <translation id="5958994127112619898">Pojednostavi stranicu</translation>
 <translation id="5962718611393537961">Dodirnite da biste skupili</translation>
-<translation id="5964180026566797835">Provera lozinki nije uspela</translation>
 <translation id="5964869237734432770">Zaustavi opise slika</translation>
 <translation id="5977976211062815271">Na ovom uređaju</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 stranica na listi za čitanje}one{# stranica na listi za čitanje}few{# stranice na listi za čitanje}other{# stranica na listi za čitanje}}</translation>
@@ -1099,6 +1096,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="6150320133806434356">Obeleživač je sačuvan</translation>
 <translation id="6150706324143004339">Da biste koristili i čuvali Chrome podatke na Google nalogu, ažurirajte Chrome</translation>
 <translation id="6154478581116148741">Uključite otključavanje ekrana u Podešavanjima da biste izvezli lozinke sa uređaja</translation>
+<translation id="6156323911414505561">Prikaži traku sa obeleživačima</translation>
 <translation id="6162892189396105610">Predučitava stranice za koje Chrome smatra da ćete ih verovatno posetiti.</translation>
 <translation id="6170675927290506430">Idi u podešavanja obaveštenja</translation>
 <translation id="6186394685773237175">Nije pronađena nijedna ugrožena lozinka</translation>

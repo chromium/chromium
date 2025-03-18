@@ -14,6 +14,7 @@
 #include <tuple>
 #include <unordered_map>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -393,20 +394,20 @@ class RenderFrameHostOrProxy {
 
  private:
   RenderFrameProxyHost* GetProxy() {
-    if (auto** proxy = absl::get_if<RenderFrameProxyHost*>(&frame_or_proxy_)) {
+    if (auto** proxy = std::get_if<RenderFrameProxyHost*>(&frame_or_proxy_)) {
       return *proxy;
     }
     return nullptr;
   }
 
   RenderFrameHostImpl* GetFrame() {
-    if (auto** frame = absl::get_if<RenderFrameHostImpl*>(&frame_or_proxy_)) {
+    if (auto** frame = std::get_if<RenderFrameHostImpl*>(&frame_or_proxy_)) {
       return *frame;
     }
     return nullptr;
   }
 
-  absl::variant<absl::monostate, RenderFrameHostImpl*, RenderFrameProxyHost*>
+  std::variant<std::monostate, RenderFrameHostImpl*, RenderFrameProxyHost*>
       frame_or_proxy_;
 };
 

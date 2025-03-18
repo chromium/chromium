@@ -667,11 +667,6 @@ bool TemplateURLService::BothPolicySetKeywordsNotOverriden(
          !turl_without_at->featured_by_policy();
 }
 
-void TemplateURLService::AddMatchingKeywords(const std::u16string& prefix,
-                                             TemplateURLVector* matches) {
-  AddMatchingKeywordsHelper(keyword_to_turl_, prefix, matches);
-}
-
 TemplateURL* TemplateURLService::GetTemplateURLForKeyword(
     const std::u16string& keyword) {
   return const_cast<TemplateURL*>(
@@ -3230,27 +3225,22 @@ void TemplateURLService::MaybeSetIsActiveSearchEngines(
   }
 }
 
-template <typename Container>
-void TemplateURLService::AddMatchingKeywordsHelper(
-    const Container& keyword_to_turl,
-    const std::u16string& prefix,
-    TemplateURLVector* matches) {
+void TemplateURLService::AddMatchingKeywords(const std::u16string& prefix,
+                                             TemplateURLVector* matches) {
   // Sanity check args.
-  if (prefix.empty()) {
+  if (prefix.empty() || !matches) {
     return;
   }
-  DCHECK(matches);
 
   // Find matching keyword range.  Searches the element map for keywords
   // beginning with |prefix| and stores the endpoints of the resulting set in
   // |match_range|.
   const auto match_range(std::equal_range(
-      keyword_to_turl.begin(), keyword_to_turl.end(),
-      typename Container::value_type(prefix, nullptr), LessWithPrefix()));
+      keyword_to_turl_.begin(), keyword_to_turl_.end(),
+      typename KeywordToTURL::value_type(prefix, nullptr), LessWithPrefix()));
 
   // Add to vector of matching keywords.
-  for (typename Container::const_iterator i(match_range.first);
-       i != match_range.second; ++i) {
+  for (auto i = match_range.first; i != match_range.second; ++i) {
     if (i->second->url_ref().SupportsReplacement(search_terms_data())) {
       matches->push_back(i->second);
     }

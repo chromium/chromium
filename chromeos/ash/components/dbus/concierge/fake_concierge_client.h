@@ -245,7 +245,6 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
   int modify_fake_power_config_call_count() const {
     return modify_fake_power_config_call_count_;
   }
-  int mute_vm_audio_call_count() const { return mute_vm_audio_call_count_; }
 
   void set_vm_started_signal_connected(bool connected) {
     is_vm_started_signal_connected_ = connected;
@@ -462,7 +461,6 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
   int reclaim_vm_memory_call_count_ = 0;
   int list_vms_call_count_ = 0;
   int modify_fake_power_config_call_count_ = 0;
-  int mute_vm_audio_call_count_ = 0;
 
   bool is_vm_started_signal_connected_ = true;
   bool is_vm_stopped_signal_connected_ = true;

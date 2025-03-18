@@ -166,6 +166,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1505542291183484463">Endre vindusstørrelse feltvis nedover</translation>
 <translation id="1510238584712386396">Appoversikt</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Vis innstillinger for varsler. Varsler er slått av for en app}other{Vis innstillinger for varsler. Varsler er slått av for # apper}}</translation>
+<translation id="1521655867290435174">Google Regneark</translation>
 <translation id="1523032696246003">Batteri <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> til batteriet er fullt</translation>
 <translation id="1525508553941733066">AVVIS</translation>
 <translation id="1526448108126799339">Åpne ny fane i et nytt vindu</translation>
@@ -345,7 +346,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2201071101391734388">Nylig bilde <ph name="INDEX" /> av <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Skjul Google Huskeliste</translation>
 <translation id="2208323208084708176">Enhetlig skrivebordsmodus</translation>
-<translation id="2220572644011485463">PIN-kode eller passord</translation>
 <translation id="2222841058024245321">Skrivebord 7</translation>
 <translation id="2223384056430485343">På delt skjerm</translation>
 <translation id="2224075387478458881">Skjermopptak tillates ikke når beskyttet innhold er synlig</translation>
@@ -933,7 +933,7 @@ Koble enheten til strøm.</translation>
 <translation id="4146671046252289537">Flytt til slutten av neste ord</translation>
 <translation id="4146833061457621061">Spill av musikk</translation>
 <translation id="4150201353443180367">Skjerm</translation>
-<translation id="4151054805501931758">Retusjer portrettet</translation>
+<translation id="4151054805501931758">Portrettretusjering</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" /> % batteri gjenstår (ca. <ph name="TIME_LEFT" />).
 Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4158003972857765638">Organiser på et nytt skrivebord</translation>
@@ -1829,7 +1829,6 @@ Nylig installert</translation>
 <translation id="7000027735917578303">Innstillinger for vinduer og skrivebord</translation>
 <translation id="7004910047186208204">Koble til mobildata</translation>
 <translation id="7005239792648594238">Åpne en app for å komme i gang</translation>
-<translation id="7007983414944123363">PIN-koden eller passordet kunne ikke verifiseres. Prøv på nytt.</translation>
 <translation id="7014684956566476813">Koblet til enheten <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Kom tilbake <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Skrivebord 6</translation>
@@ -2403,7 +2402,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8938800817013097409">USB-C-enhet (høyre port på baksiden)</translation>
 <translation id="8939855324412367560">Innenheten for lyd er «<ph name="INPUT_DEVICE_NAME" />», og utenheten for lyd er «<ph name="OUTPUT_DEVICE_NAME" />». Gå til innstillingene for å endre dette.</translation>
 <translation id="8940956008527784070">Lavt batterinivå (<ph name="PERCENTAGE" /> %)</translation>
-<translation id="8945508919180478719">Mikrofon i studiostil</translation>
+<translation id="8945508919180478719">Studiomikrofon</translation>
 <translation id="894774083269346314">Det er ikke merket av for <ph name="PROFILE_NAME" /> (<ph name="EMAIL" />).</translation>
 <translation id="8949925099261528566">Tilkoblet – ingen internettilgang</translation>
 <translation id="8951539504029375108">Kun godkjente Thunderbolt-enheter er kompatible med Chromebooken din</translation>
@@ -2466,6 +2465,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="9168436347345867845">Gjør det senere</translation>
 <translation id="9178475906033259337">Viser 1 resultat for <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Med denne funksjonen får du rask tilgang til påloggede brukere uten å måtte skrive inn passord. Du bør bare bruke denne funksjonen med kontoer du stoler på.</translation>
+<translation id="9183302530794969518">Google Dokumenter</translation>
 <translation id="9183456764293710005">Lupe for hele skjermen</translation>
 <translation id="9192133205265227850">Bruk «<ph name="DEVICE_NAME" />»</translation>
 <translation id="9193626018745640770">Caster på en ukjent mottaker</translation>

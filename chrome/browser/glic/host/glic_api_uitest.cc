@@ -42,7 +42,8 @@ class GlicApiTest : public test::InteractiveGlicTest {
         "test",
         ::testing::UnitTest::GetInstance()->current_test_info()->name());
 
-    features_.InitWithFeatures({features::kGlicScrollTo}, {});
+    features_.InitWithFeatures(
+        {features::kGlicScrollTo, features::kGlicUserResize}, {});
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ::switches::kGlicHostLogging);
     SetGlicPagePath("/glic/test.html");
@@ -192,6 +193,20 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testCanAttachPanel) {
                                  GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest();
   // TODO(harringtond): Test case where the canAttachPanel returns false.
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testEnableDragResize) {
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+  ExecuteJsTest();
+  RunTestSequence(InAnyContext(ExpectUserCanResize(true)));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testDisableDragResize) {
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+  ExecuteJsTest();
+  RunTestSequence(InAnyContext(ExpectUserCanResize(false)));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetFocusedTabStateV2) {

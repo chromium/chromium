@@ -183,6 +183,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   void OnVideoEncoderStatus(const media::cast::FrameSenderConfig& config,
                             media::cast::OperationalStatus status);
 
+  // Callback by MirroringGpuFactoriesFactory to indicate that the
+  // GPU factory was lost (and must be replaced).
+  void OnGpuFactoryContextLost(const media::cast::FrameSenderConfig& config);
+
   // Callback by media::cast::VideoSender to report resource utilization.
   void ProcessFeedback(const media::VideoCaptureFeedback& feedback);
 
@@ -220,6 +224,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
 
   // Called to provide Open Screen with access to this host's network proxy.
   network::mojom::NetworkContext* GetNetworkContext();
+
+  // Called to disable the given hardware codec for the remainder of the
+  // session, if it has not already been disabled.
+  void MaybeDenylistHardwareCodecAndRenegotiate(media::VideoCodec codec);
 
   // Provided by client.
   const mojom::SessionParameters session_params_;

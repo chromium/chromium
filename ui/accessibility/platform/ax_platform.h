@@ -12,6 +12,7 @@
 #include "base/scoped_observation_traits.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_mode.h"
+#include "ui/accessibility/platform/assistive_tech.h"
 
 namespace ui {
 
@@ -90,6 +91,21 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
   // process-wide accessibility mode.
   void NotifyModeAdded(AXMode mode);
 
+  // Notify observers that an assistive technology was launched or exited.
+  // Note: in some cases we do not yet have a perfect signal when the user
+  // quits their assistive tech, so in that case the tool will continue to
+  // appear to be present.
+  // The only known assistive tech that this affects currently is JAWS.
+  // TODO(crbug.com/402069423) Improve JAWS exit detection.
+  void NotifyAssistiveTechChanged(AssistiveTech assistive_tech);
+
+  // The current active assistive tech, such as a screen reader, where a
+  // detection algorithm has been implemented.
+  AssistiveTech active_assistive_tech() const { return active_assistive_tech_; }
+
+  // Is the current active assistive tech a screen reader.
+  bool IsScreenReaderActive();
+
   // Notifies the delegate that an accessibility API has been used.
   void NotifyAccessibilityApiUsage() { delegate_->OnAccessibilityApiUsage(); }
 
@@ -141,6 +157,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
 
   // Keeps track of whether caret browsing is enabled.
   bool caret_browsing_enabled_ = false;
+
+  // Keeps track of the active AssistiveTech.
+  AssistiveTech active_assistive_tech_ = AssistiveTech::kUnknown;
 
   // The embedder's delegate.
   const raw_ref<Delegate> delegate_;

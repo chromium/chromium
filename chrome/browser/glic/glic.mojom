@@ -327,6 +327,9 @@ interface WebClientHandler {
   // when it's created later.
   ResizeWidget(gfx.mojom.Size size, mojo_base.mojom.TimeDelta duration) => ();
 
+  // Allows the panel hosting the WebUI be manually resizable by user-dragging.
+  EnableDragResize(bool enabled);
+
   // Returns the screenshot result or error reason. 'screenshot' is null when an
   // error occurs during capture. This can also fail if the user cancels the
   // screen picker dialog.

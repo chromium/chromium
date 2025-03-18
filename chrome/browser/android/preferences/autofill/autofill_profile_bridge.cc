@@ -14,6 +14,8 @@
 #include "chrome/browser/browser_process.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
+#include "components/autofill/core/browser/ui/addresses/android/autofill_address_editor_ui_info_android.h"
+#include "components/autofill/core/browser/ui/addresses/android/autofill_address_ui_component_android.h"
 #include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_field.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_metadata.h"
@@ -91,20 +93,12 @@ static void JNI_AutofillProfileBridge_GetRequiredFields(
                                             j_required_fields_list);
 }
 
-static std::string JNI_AutofillProfileBridge_GetAddressUiComponents(
-    JNIEnv* env,
-    std::string& country_code,
-    std::string& language_code,
-    jint j_validation_type,
-    const JavaParamRef<jobject>& j_id_list,
-    const JavaParamRef<jobject>& j_name_list,
-    const JavaParamRef<jobject>& j_required_list,
-    const JavaParamRef<jobject>& j_length_list) {
+static AutofillAddressEditorUiInfoAndroid
+JNI_AutofillProfileBridge_GetAddressEditorUiInfo(JNIEnv* env,
+                                                 std::string& country_code,
+                                                 std::string& language_code,
+                                                 jint j_validation_type) {
   std::string best_language_tag;
-  std::vector<int> component_ids;
-  std::vector<std::string> component_labels;
-  std::vector<int> component_required;
-  std::vector<int> component_length;
   Localization localization;
   localization.SetGetter(l10n_util::GetStringUTF8);
 
@@ -123,33 +117,24 @@ static std::string JNI_AutofillProfileBridge_GetAddressUiComponents(
 
   AddressValidationType validation_type =
       static_cast<AddressValidationType>(j_validation_type);
+  std::vector<AutofillAddressUiComponentAndroid> components;
+  components.reserve(ui_components.size());
   for (const auto& ui_component : ui_components) {
-    component_ids.push_back(ui_component.field);
-    component_labels.push_back(ui_component.name);
-    component_length.push_back(ui_component.length_hint ==
-                               autofill::AutofillAddressUIComponent::HINT_LONG);
-
+    bool is_required = false;
     switch (validation_type) {
       case AddressValidationType::kPaymentRequest:
-        component_required.push_back(
-            i18n::IsFieldRequired(ui_component.field, country_code));
+        is_required = i18n::IsFieldRequired(ui_component.field, country_code);
         break;
       case AddressValidationType::kAccount:
-        component_required.push_back(
-            country.IsAddressFieldRequired(ui_component.field));
+        is_required = country.IsAddressFieldRequired(ui_component.field);
     }
+    components.emplace_back(
+        ui_component.field, ui_component.name, is_required,
+        ui_component.length_hint ==
+            autofill::AutofillAddressUIComponent::HINT_LONG);
   }
 
-  Java_AutofillProfileBridge_intArrayToList(
-      env, ToJavaIntArray(env, component_ids), j_id_list);
-  Java_AutofillProfileBridge_stringArrayToList(
-      env, ToJavaArrayOfStrings(env, component_labels), j_name_list);
-  Java_AutofillProfileBridge_intArrayToList(
-      env, ToJavaIntArray(env, component_required), j_required_list);
-  Java_AutofillProfileBridge_intArrayToList(
-      env, ToJavaIntArray(env, component_length), j_length_list);
-
-  return best_language_tag;
+  return AutofillAddressEditorUiInfoAndroid(best_language_tag, components);
 }
 
 }  // namespace autofill

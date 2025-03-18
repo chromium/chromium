@@ -24,6 +24,9 @@ class TargetImpl {
   methodWithReservedNameParameter(arguments_) {
     return Promise.resolve({arguments: arguments_});
   }
+  testResult(success) {
+    return success ? Promise.resolve(true) : Promise.reject(-1);
+  }
 }
 
 promise_test(() => {
@@ -219,3 +222,32 @@ promise_test(() => {
   remote.$.close();
   return disconnectPromise;
 }, 'InterfaceTarget connection error handler runs when set on an InterfaceCallbackRouter object');
+
+promise_test(() => {
+  let impl = new TargetImpl;
+  let remote = impl.target.$.bindNewPipeAndPassRemote();
+  return remote.testResult(true).then((result) => {
+    assert_equals(result, true);
+  });
+}, 'result type promise resolves');
+
+promise_test(() => {
+  let router = new TestMessageTargetCallbackRouter;
+  let remote = router.$.bindNewPipeAndPassRemote();
+  router.testResult.addListener((success) => Promise.resolve(success));
+  return remote.testResult(true).then(result => {
+    assert_equals(result, true);
+  });
+}, 'result type promise resolves using callback router');
+
+promise_test(() => {
+  let impl = new TargetImpl;
+  let remote = impl.target.$.bindNewPipeAndPassRemote();
+  return remote.testResult(false)
+      .then(() => {
+        return Promise.reject('should have rejected');
+      })
+      .catch((result) => {
+        assert_equals(result, -1);
+      });
+}, 'result type promise rejects');

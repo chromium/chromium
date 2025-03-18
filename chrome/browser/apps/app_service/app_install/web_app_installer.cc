@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_service/app_install/web_app_installer.h"
 
 #include <memory>
+#include <variant>
 
 #include "base/barrier_callback.h"
 #include "base/metrics/histogram_functions.h"
@@ -103,12 +104,12 @@ WebAppInstaller::~WebAppInstaller() = default;
 void WebAppInstaller::InstallApp(AppInstallSurface surface,
                                  AppInstallData data,
                                  WebAppInstalledCallback callback) {
-  CHECK(absl::holds_alternative<WebAppInstallData>(data.app_type_data));
+  CHECK(std::holds_alternative<WebAppInstallData>(data.app_type_data));
 
   // Retrieve web manifest
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url =
-      absl::get<WebAppInstallData>(data.app_type_data).proxied_manifest_url;
+      std::get<WebAppInstallData>(data.app_type_data).proxied_manifest_url;
 
   if (!resource_request->url.is_valid()) {
     LOG(ERROR) << "Manifest URL for " << data.name
@@ -165,7 +166,7 @@ void WebAppInstaller::OnManifestRetrieved(
   webapps::AppId expected_app_id =
       web_app::GenerateAppIdFromManifestId(GURL(data.package_id.identifier()));
 
-  auto& web_app_data = absl::get<WebAppInstallData>(data.app_type_data);
+  auto& web_app_data = std::get<WebAppInstallData>(data.app_type_data);
 
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
 

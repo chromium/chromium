@@ -11,7 +11,6 @@ found in the LICENSE file.
     android:id="@+id/privacy_sandbox_dialog"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="52dp"
     android:orientation="vertical">
 
    <androidx.constraintlayout.widget.ConstraintLayout

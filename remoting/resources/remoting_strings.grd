@@ -805,8 +805,19 @@
       <message desc="Message displayed before sharing computer when admin initiated the connection remotely" name="IDS_SHARE_CONFIRM_DIALOG_MESSAGE_ADMIN_INITIATED">
         <ph name="CLIENT_USERNAME">{0}<ex>client@email.com</ex></ph> has requested access to see your screen and control your keyboard and mouse. Press ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE">{1}<ex>cancel</ex></ph>'' if you are not expecting this request. Otherwise select ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM">{2}<ex>share</ex></ph>'' to allow the connection when ready.
       </message>
+      <message desc="Message displayed before sharing computer when admin initiated the connection remotely and the notification will show a countdown before the it can be automatically accepted." name="IDS_SHARE_CONFIRM_DIALOG_MESSAGE_ADMIN_INITIATED_CRD_UNATTENDED">
+        <ph name="CLIENT_USERNAME">{0}<ex>client@email.com</ex></ph> has requested access to see your screen and control your keyboard and mouse. Would you like to share your device?
+      </message>
+      <message desc="Message displayed in dialog before sharing computer when admin initiated connection remotely and notification will be automatically accepted after a countdown." name="IDS_CRD_AUTO_ACCEPT_COUNTDOWN">
+        {0, plural,
+          =1 {If you don’t take action, your device will automatically start sharing in # second.}
+          other {If you don’t take action, your device will automatically start sharing in # seconds.}}
+      </message>
       <message desc="Label for the button to accept sharing the computer in 'It2Me' mode." meaning="Accept share request." name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" >
         Share
+      </message>
+      <message desc="Label for the button to accept sharing the computer in 'It2Me' mode in the case when the notification can be automatically accepted with a countdown." meaning="Accept share request." name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM_CRD_UNATTENDED" >
+        Share device
       </message>
       <message desc="Label for the button to decline sharing the computer in 'It2Me' mode." name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" >
         Cancel

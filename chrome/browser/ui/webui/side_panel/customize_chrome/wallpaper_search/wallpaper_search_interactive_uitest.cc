@@ -5,6 +5,7 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -303,8 +304,8 @@ class WallpaperSearchOptimizationGuideInteractiveTest
                 response.SerializeToString(&serialized_metadata);
                 optimization_guide::proto::Any result;
                 result.set_value(serialized_metadata);
-                result.set_type_url("type.googleapis.com/" +
-                                    response.GetTypeName());
+                result.set_type_url(base::StrCat(
+                    {"type.googleapis.com/", response.GetTypeName()}));
 
                 std::move(done_callback_arg)
                     .Run(optimization_guide::

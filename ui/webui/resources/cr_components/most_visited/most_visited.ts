@@ -155,28 +155,28 @@ export class MostVisitedElement extends MostVisitedElementBase {
     };
   }
 
-  theme: MostVisitedTheme|null = null;
-  reflowOnOverflow: boolean = false;
-  singleRow: boolean = false;
-  protected useWhiteTileIcon_: boolean = false;
-  protected columnCount_: number = 3;
-  protected rowCount_: number = 1;
-  protected customLinksEnabled_: boolean = false;
-  protected dialogTileTitle_: string = '';
-  protected dialogTileUrl_: string = '';
-  protected dialogTileUrlInvalid_: boolean = false;
-  protected dialogTitle_: string = '';
-  protected dialogSaveDisabled_: boolean = true;
-  private dialogShortcutAlreadyExists_: boolean = false;
-  protected dialogTileUrlError_: string = '';
-  protected isDark_: boolean = false;
-  private reordering_: boolean = false;
-  private maxTiles_: number = 0;
-  private maxVisibleTiles_: number = 0;
-  protected showAdd_: boolean = false;
-  private maxVisibleColumnCount_: number = 0;
-  protected tiles_: MostVisitedTile[] = [];
-  protected visible_: boolean = false;
+  accessor theme: MostVisitedTheme|null = null;
+  accessor reflowOnOverflow: boolean = false;
+  accessor singleRow: boolean = false;
+  protected accessor useWhiteTileIcon_: boolean = false;
+  protected accessor columnCount_: number = 3;
+  protected accessor rowCount_: number = 1;
+  protected accessor customLinksEnabled_: boolean = false;
+  protected accessor dialogTileTitle_: string = '';
+  protected accessor dialogTileUrl_: string = '';
+  protected accessor dialogTileUrlInvalid_: boolean = false;
+  protected accessor dialogTitle_: string = '';
+  protected accessor dialogSaveDisabled_: boolean = true;
+  private accessor dialogShortcutAlreadyExists_: boolean = false;
+  protected accessor dialogTileUrlError_: string = '';
+  protected accessor isDark_: boolean = false;
+  private accessor reordering_: boolean = false;
+  private accessor maxTiles_: number = 0;
+  private accessor maxVisibleTiles_: number = 0;
+  protected accessor showAdd_: boolean = false;
+  private accessor maxVisibleColumnCount_: number = 0;
+  protected accessor tiles_: MostVisitedTile[] = [];
+  protected accessor visible_: boolean = false;
   private adding_: boolean = false;
   private callbackRouter_: MostVisitedPageCallbackRouter;
   private pageHandler_: MostVisitedPageHandlerRemote;
@@ -192,7 +192,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
   private preconnectTimer_: null|ReturnType<typeof setTimeout> = null;
   private dragImage_: HTMLImageElement;
 
-  private info_: MostVisitedInfo|null = null;
+  private accessor info_: MostVisitedInfo|null = null;
 
   private get tileElements_() {
     return Array.from(

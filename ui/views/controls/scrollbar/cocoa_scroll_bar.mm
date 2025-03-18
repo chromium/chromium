@@ -4,11 +4,12 @@
 
 #import "ui/views/controls/scrollbar/cocoa_scroll_bar.h"
 
+#import <variant>
+
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/paint/paint_shader.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -105,7 +106,7 @@ gfx::Size CocoaScrollBarThumb::CalculatePreferredSize(
 
 void CocoaScrollBarThumb::OnPaint(gfx::Canvas* canvas) {
   auto params = cocoa_scroll_bar_->GetPainterParams();
-  auto& scrollbar = absl::get<ui::NativeTheme::ScrollbarExtraParams>(params);
+  auto& scrollbar = std::get<ui::NativeTheme::ScrollbarExtraParams>(params);
   // Set the hover state based only on the thumb.
   scrollbar.is_hovering = IsStateHovered() || IsStatePressed();
   ui::NativeTheme::Part thumb_part =
@@ -215,7 +216,7 @@ void CocoaScrollBar::OnPaint(gfx::Canvas* canvas) {
     return;
   }
   auto params = GetPainterParams();
-  auto& scrollbar = absl::get<ui::NativeTheme::ScrollbarExtraParams>(params);
+  auto& scrollbar = std::get<ui::NativeTheme::ScrollbarExtraParams>(params);
   // Transparency of the track is handled by the View opacity, so always draw
   // using the non-overlay path.
   scrollbar.is_overlay = false;

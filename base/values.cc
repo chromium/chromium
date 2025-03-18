@@ -7,12 +7,14 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <compare>
 #include <memory>
 #include <optional>
 #include <ostream>
 #include <string_view>
 #include <tuple>
 #include <utility>
+#include <variant>
 
 #include "base/bit_cast.h"
 #include "base/check.h"
@@ -28,7 +30,6 @@
 #include "base/trace_event/base_tracing.h"
 #include "base/tracing_buildflags.h"
 #include "base/types/to_address.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
 #include "base/trace_event/memory_usage_estimator.h"  // no-presubmit-check
@@ -110,7 +111,7 @@ class Value::CloningHelper {
   // Returns a new Value object using the contents of the |storage| variant.
   template <typename Storage>
   static Value Clone(const Storage& storage) {
-    return absl::visit(
+    return std::visit(
         [](const auto& member) {
           const auto& value = UnwrapReference(member);
           using T = std::decay_t<decltype(value)>;
@@ -178,7 +179,7 @@ Value::Value(bool value) : data_(value) {}
 Value::Value(int value) : data_(value) {}
 
 Value::Value(double value)
-    : data_(absl::in_place_type_t<DoubleStorage>(), value) {}
+    : data_(std::in_place_type_t<DoubleStorage>(), value) {}
 
 Value::Value(std::string_view value) : Value(std::string(value)) {}
 
@@ -193,13 +194,13 @@ Value::Value(std::string&& value) noexcept : data_(std::move(value)) {
 }
 
 Value::Value(const std::vector<char>& value)
-    : data_(absl::in_place_type_t<BlobStorage>(), value.begin(), value.end()) {}
+    : data_(std::in_place_type_t<BlobStorage>(), value.begin(), value.end()) {}
 
 Value::Value(base::span<const uint8_t> value)
-    : data_(absl::in_place_type_t<BlobStorage>(), value.size()) {
+    : data_(std::in_place_type_t<BlobStorage>(), value.size()) {
   // This is 100x faster than using the "range" constructor for a 512k blob:
   // crbug.com/1343636
-  std::ranges::copy(value, absl::get<BlobStorage>(data_).data());
+  std::ranges::copy(value, std::get<BlobStorage>(data_).data());
 }
 
 Value::Value(BlobStorage&& value) noexcept : data_(std::move(value)) {}
@@ -208,7 +209,7 @@ Value::Value(Dict&& value) noexcept : data_(std::move(value)) {}
 
 Value::Value(List&& value) noexcept : data_(std::move(value)) {}
 
-Value::Value(absl::monostate) {}
+Value::Value(std::monostate) {}
 
 Value::Value(DoubleStorage storage) : data_(std::move(storage)) {}
 
@@ -248,50 +249,50 @@ std::optional<double> Value::GetIfDouble() const {
 }
 
 const std::string* Value::GetIfString() const {
-  return absl::get_if<std::string>(&data_);
+  return std::get_if<std::string>(&data_);
 }
 
 std::string* Value::GetIfString() {
-  return absl::get_if<std::string>(&data_);
+  return std::get_if<std::string>(&data_);
 }
 
 const Value::BlobStorage* Value::GetIfBlob() const {
-  return absl::get_if<BlobStorage>(&data_);
+  return std::get_if<BlobStorage>(&data_);
 }
 
 Value::BlobStorage* Value::GetIfBlob() {
-  return absl::get_if<BlobStorage>(&data_);
+  return std::get_if<BlobStorage>(&data_);
 }
 
 const DictValue* Value::GetIfDict() const {
-  return absl::get_if<Dict>(&data_);
+  return std::get_if<Dict>(&data_);
 }
 
 DictValue* Value::GetIfDict() {
-  return absl::get_if<Dict>(&data_);
+  return std::get_if<Dict>(&data_);
 }
 
 const ListValue* Value::GetIfList() const {
-  return absl::get_if<List>(&data_);
+  return std::get_if<List>(&data_);
 }
 
 ListValue* Value::GetIfList() {
-  return absl::get_if<List>(&data_);
+  return std::get_if<List>(&data_);
 }
 
 bool Value::GetBool() const {
   DCHECK(is_bool());
-  return absl::get<bool>(data_);
+  return std::get<bool>(data_);
 }
 
 int Value::GetInt() const {
   DCHECK(is_int());
-  return absl::get<int>(data_);
+  return std::get<int>(data_);
 }
 
 double Value::GetDouble() const {
   if (is_double()) {
-    return absl::get<DoubleStorage>(data_);
+    return std::get<DoubleStorage>(data_);
   }
   CHECK(is_int());
   return GetInt();
@@ -299,42 +300,42 @@ double Value::GetDouble() const {
 
 const std::string& Value::GetString() const {
   DCHECK(is_string());
-  return absl::get<std::string>(data_);
+  return std::get<std::string>(data_);
 }
 
 std::string& Value::GetString() {
   DCHECK(is_string());
-  return absl::get<std::string>(data_);
+  return std::get<std::string>(data_);
 }
 
 const Value::BlobStorage& Value::GetBlob() const {
   DCHECK(is_blob());
-  return absl::get<BlobStorage>(data_);
+  return std::get<BlobStorage>(data_);
 }
 
 Value::BlobStorage& Value::GetBlob() {
   DCHECK(is_blob());
-  return absl::get<BlobStorage>(data_);
+  return std::get<BlobStorage>(data_);
 }
 
 const DictValue& Value::GetDict() const {
   DCHECK(is_dict());
-  return absl::get<Dict>(data_);
+  return std::get<Dict>(data_);
 }
 
 DictValue& Value::GetDict() {
   DCHECK(is_dict());
-  return absl::get<Dict>(data_);
+  return std::get<Dict>(data_);
 }
 
 const ListValue& Value::GetList() const {
   DCHECK(is_list());
-  return absl::get<List>(data_);
+  return std::get<List>(data_);
 }
 
 ListValue& Value::GetList() {
   DCHECK(is_list());
-  return absl::get<List>(data_);
+  return std::get<List>(data_);
 }
 
 std::string Value::TakeString() && {
@@ -933,26 +934,12 @@ bool operator==(const DictValue& lhs, const DictValue& rhs) {
                             deref_2nd);
 }
 
-bool operator!=(const DictValue& lhs, const DictValue& rhs) {
-  return !(lhs == rhs);
-}
-
-bool operator<(const DictValue& lhs, const DictValue& rhs) {
-  auto deref_2nd = [](const auto& p) { return std::tie(p.first, *p.second); };
-  return std::ranges::lexicographical_compare(lhs.storage_, rhs.storage_, {},
-                                              deref_2nd, deref_2nd);
-}
-
-bool operator>(const DictValue& lhs, const DictValue& rhs) {
-  return rhs < lhs;
-}
-
-bool operator<=(const DictValue& lhs, const DictValue& rhs) {
-  return !(rhs < lhs);
-}
-
-bool operator>=(const DictValue& lhs, const DictValue& rhs) {
-  return !(lhs < rhs);
+std::partial_ordering operator<=>(const DictValue& lhs, const DictValue& rhs) {
+  return std::lexicographical_compare_three_way(
+      lhs.storage_.begin(), lhs.storage_.end(), rhs.storage_.begin(),
+      rhs.storage_.end(), [](const auto& a, const auto& b) {
+        return std::tie(a.first, *a.second) <=> std::tie(b.first, *b.second);
+      });
 }
 
 // static
@@ -1295,76 +1282,33 @@ ListValue::ListValue(const std::vector<Value>& storage) {
   }
 }
 
-bool operator==(const ListValue& lhs, const ListValue& rhs) {
-  return lhs.storage_ == rhs.storage_;
+// This can't be declared in the header because of a circular dependency between
+// ListValue::operator<=> and Value::operator<=>.
+std::partial_ordering operator<=>(const ListValue& lhs,
+                                  const ListValue& rhs) = default;
+
+bool Value::operator==(bool rhs) const {
+  return is_bool() && GetBool() == rhs;
 }
 
-bool operator!=(const ListValue& lhs, const ListValue& rhs) {
-  return !(lhs == rhs);
+bool Value::operator==(int rhs) const {
+  return is_int() && GetInt() == rhs;
 }
 
-bool operator<(const ListValue& lhs, const ListValue& rhs) {
-  return lhs.storage_ < rhs.storage_;
+bool Value::operator==(double rhs) const {
+  return is_double() && GetDouble() == rhs;
 }
 
-bool operator>(const ListValue& lhs, const ListValue& rhs) {
-  return rhs < lhs;
+bool Value::operator==(std::string_view rhs) const {
+  return is_string() && GetString() == rhs;
 }
 
-bool operator<=(const ListValue& lhs, const ListValue& rhs) {
-  return !(rhs < lhs);
+bool Value::operator==(const DictValue& rhs) const {
+  return is_dict() && GetDict() == rhs;
 }
 
-bool operator>=(const ListValue& lhs, const ListValue& rhs) {
-  return !(lhs < rhs);
-}
-
-bool operator==(const Value& lhs, const Value& rhs) {
-  return lhs.data_ == rhs.data_;
-}
-
-bool operator!=(const Value& lhs, const Value& rhs) {
-  return !(lhs == rhs);
-}
-
-bool operator<(const Value& lhs, const Value& rhs) {
-  return lhs.data_ < rhs.data_;
-}
-
-bool operator>(const Value& lhs, const Value& rhs) {
-  return rhs < lhs;
-}
-
-bool operator<=(const Value& lhs, const Value& rhs) {
-  return !(rhs < lhs);
-}
-
-bool operator>=(const Value& lhs, const Value& rhs) {
-  return !(lhs < rhs);
-}
-
-bool operator==(const Value& lhs, bool rhs) {
-  return lhs.is_bool() && lhs.GetBool() == rhs;
-}
-
-bool operator==(const Value& lhs, int rhs) {
-  return lhs.is_int() && lhs.GetInt() == rhs;
-}
-
-bool operator==(const Value& lhs, double rhs) {
-  return lhs.is_double() && lhs.GetDouble() == rhs;
-}
-
-bool operator==(const Value& lhs, std::string_view rhs) {
-  return lhs.is_string() && lhs.GetString() == rhs;
-}
-
-bool operator==(const Value& lhs, const DictValue& rhs) {
-  return lhs.is_dict() && lhs.GetDict() == rhs;
-}
-
-bool operator==(const Value& lhs, const ListValue& rhs) {
-  return lhs.is_list() && lhs.GetList() == rhs;
+bool Value::operator==(const ListValue& rhs) const {
+  return is_list() && GetList() == rhs;
 }
 
 size_t Value::EstimateMemoryUsage() const {
@@ -1392,7 +1336,7 @@ std::string Value::DebugString() const {
 void Value::WriteIntoTrace(perfetto::TracedValue context) const {
   Visit([&](const auto& member) {
     using T = std::decay_t<decltype(member)>;
-    if constexpr (std::is_same_v<T, absl::monostate>) {
+    if constexpr (std::is_same_v<T, std::monostate>) {
       std::move(context).WriteString("<none>");
     } else if constexpr (std::is_same_v<T, bool>) {
       std::move(context).WriteBoolean(member);

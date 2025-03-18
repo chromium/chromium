@@ -5433,7 +5433,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
 
   // Verify the histogram recorded the new byte size.
   histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ByPageContentType.Pdf.DocumentSize",
+      "Lens.Overlay.ByPageContentType.Pdf.DocumentSize2",
       /*expected_count=*/2);
   // Verify the histogram two documents of one page.
   histogram_tester.ExpectBucketCount(
@@ -5623,7 +5623,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
       /*sample*/ true,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ByPageContentType.Pdf.DocumentSize",
+      "Lens.Overlay.ByPageContentType.Pdf.DocumentSize2",
       /*expected_count=*/1);
   histogram_tester.ExpectUniqueSample(
       "Lens.Overlay.ByPageContentType.Pdf.PageCount", /*sample*/ 1,
@@ -6276,15 +6276,15 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // testing on is so small it rounds to 0 KB.
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return histogram_tester.GetBucketCount(
-               "Lens.Overlay.ByPageContentType.Html.DocumentSize", 0) == 2;
+               "Lens.Overlay.ByPageContentType.Html.DocumentSize2", 0) == 2;
   }));
 
   // Verify the size histograms recorded the new bytes.
   histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ByPageContentType.PlainText.DocumentSize",
+      "Lens.Overlay.ByPageContentType.PlainText.DocumentSize2",
       /*expected_count=*/2);
   histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ByPageContentType.Html.DocumentSize",
+      "Lens.Overlay.ByPageContentType.Html.DocumentSize2",
       /*expected_count=*/2);
   histogram_tester.ExpectTotalCount(
       "Lens.Overlay.ContextualSearchBox.ByPageContentType.PlainText."
@@ -6405,10 +6405,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       /*sample*/ true,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ByPageContentType.PlainText.DocumentSize",
+      "Lens.Overlay.ByPageContentType.PlainText.DocumentSize2",
       /*expected_count=*/1);
   histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ByPageContentType.Html.DocumentSize",
+      "Lens.Overlay.ByPageContentType.Html.DocumentSize2",
       /*expected_count=*/1);
 
   // Verify UKM metrics were recorded.

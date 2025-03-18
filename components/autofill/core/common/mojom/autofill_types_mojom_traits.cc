@@ -4,12 +4,13 @@
 
 #include "components/autofill/core/common/mojom/autofill_types_mojom_traits.h"
 
+#include <variant>
+
 #include "base/i18n/rtl.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/html_field_types.h"
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "url/mojom/origin_mojom_traits.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
@@ -76,13 +77,15 @@ autofill::mojom::SectionValueDataView::Tag
 UnionTraits<autofill::mojom::SectionValueDataView,
             autofill::Section::SectionValue>::
     GetTag(const autofill::Section::SectionValue& r) {
-  if (absl::holds_alternative<autofill::Section::Default>(r))
+  if (std::holds_alternative<autofill::Section::Default>(r)) {
     return autofill::mojom::SectionValueDataView::Tag::kDefaultSection;
-  if (absl::holds_alternative<autofill::Section::Autocomplete>(r)) {
+  }
+  if (std::holds_alternative<autofill::Section::Autocomplete>(r)) {
     return autofill::mojom::SectionValueDataView::Tag::kAutocomplete;
   }
-  if (absl::holds_alternative<autofill::Section::FieldIdentifier>(r))
+  if (std::holds_alternative<autofill::Section::FieldIdentifier>(r)) {
     return autofill::mojom::SectionValueDataView::Tag::kFieldIdentifier;
+  }
 
   NOTREACHED();
 }

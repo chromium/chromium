@@ -8,10 +8,10 @@
 #include <iosfwd>
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "components/services/app_service/public/cpp/package_id.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 namespace apps {
@@ -133,10 +133,10 @@ struct AppInstallData {
 
   GURL install_url;
 
-  absl::variant<AndroidAppInstallData,
-                WebAppInstallData,
-                GeForceNowAppInstallData,
-                SteamAppInstallData>
+  std::variant<AndroidAppInstallData,
+               WebAppInstallData,
+               GeForceNowAppInstallData,
+               SteamAppInstallData>
       app_type_data;
 };
 

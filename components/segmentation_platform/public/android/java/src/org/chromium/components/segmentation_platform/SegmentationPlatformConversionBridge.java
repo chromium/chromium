@@ -25,7 +25,7 @@ public class SegmentationPlatformConversionBridge {
 
     @CalledByNative
     private static ClassificationResult createClassificationResult(
-            int status, String[] orderedLabels) {
-        return new ClassificationResult(status, orderedLabels);
+            int status, String[] orderedLabels, long requestId) {
+        return new ClassificationResult(status, orderedLabels, requestId);
     }
 }

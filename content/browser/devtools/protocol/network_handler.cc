@@ -10,6 +10,7 @@
 #include <memory>
 #include <string_view>
 #include <utility>
+#include <variant>
 
 #include "base/barrier_closure.h"
 #include "base/base64.h"
@@ -367,7 +368,7 @@ void DeleteFilteredCookies(
   }
 }
 
-absl::variant<net::CookieSourceScheme, Response> GetSourceSchemeFromProtocol(
+std::variant<net::CookieSourceScheme, Response> GetSourceSchemeFromProtocol(
     const std::string& source_scheme) {
   if (source_scheme == Network::CookieSourceSchemeEnum::Unset) {
     return net::CookieSourceScheme::kUnset;
@@ -379,7 +380,7 @@ absl::variant<net::CookieSourceScheme, Response> GetSourceSchemeFromProtocol(
   return Response::InvalidParams("Invalid cookie source scheme");
 }
 
-absl::variant<int, Response> GetCookieSourcePort(int source_port) {
+std::variant<int, Response> GetCookieSourcePort(int source_port) {
   // Only {url::PORT_UNSPECIFIED, [1,65535]} are valid.
   if (source_port == url::PORT_UNSPECIFIED ||
       (source_port >= 1 && source_port <= 65535)) {
@@ -391,7 +392,7 @@ absl::variant<int, Response> GetCookieSourcePort(int source_port) {
 
 }  // namespace
 
-absl::variant<std::unique_ptr<net::CanonicalCookie>, Response>
+std::variant<std::unique_ptr<net::CanonicalCookie>, Response>
 MakeCookieFromProtocolValues(
     const std::string& name,
     const std::string& value,
@@ -489,11 +490,11 @@ MakeCookieFromProtocolValues(
   if (source_scheme.has_value()) {
     auto cookie_source_scheme_or_error =
         GetSourceSchemeFromProtocol(source_scheme.value());
-    if (absl::holds_alternative<Response>(cookie_source_scheme_or_error)) {
-      return absl::get<Response>(std::move(cookie_source_scheme_or_error));
+    if (std::holds_alternative<Response>(cookie_source_scheme_or_error)) {
+      return std::get<Response>(std::move(cookie_source_scheme_or_error));
     }
     net::CookieSourceScheme cookie_source_scheme =
-        absl::get<net::CookieSourceScheme>(cookie_source_scheme_or_error);
+        std::get<net::CookieSourceScheme>(cookie_source_scheme_or_error);
     if (cookie->SecureAttribute() &&
         cookie_source_scheme == net::CookieSourceScheme::kNonSecure) {
       return Response::InvalidParams(
@@ -508,10 +509,10 @@ MakeCookieFromProtocolValues(
   // keep the value that was implied from `url` via CreateSanitizedCookie.
   if (source_port.has_value()) {
     auto cookie_source_port_or_error = GetCookieSourcePort(source_port.value());
-    if (absl::holds_alternative<Response>(cookie_source_port_or_error)) {
-      return absl::get<Response>(std::move(cookie_source_port_or_error));
+    if (std::holds_alternative<Response>(cookie_source_port_or_error)) {
+      return std::get<Response>(std::move(cookie_source_port_or_error));
     }
-    int port_value = absl::get<int>(cookie_source_port_or_error);
+    int port_value = std::get<int>(cookie_source_port_or_error);
 
     // If the url has a port specified it must match the source_port value.
     // Otherwise this set cookie request is considered malformed.
@@ -1745,12 +1746,12 @@ void NetworkHandler::SetCookie(
       expires.value_or(-1), priority.value_or(""), source_scheme, source_port,
       partition_key);
 
-  if (absl::holds_alternative<Response>(cookie_or_error)) {
-    callback->sendFailure(absl::get<Response>(std::move(cookie_or_error)));
+  if (std::holds_alternative<Response>(cookie_or_error)) {
+    callback->sendFailure(std::get<Response>(std::move(cookie_or_error)));
     return;
   }
   std::unique_ptr<net::CanonicalCookie> cookie =
-      absl::get<std::unique_ptr<net::CanonicalCookie>>(
+      std::get<std::unique_ptr<net::CanonicalCookie>>(
           std::move(cookie_or_error));
 
   net::CookieOptions options;
@@ -1803,13 +1804,13 @@ void NetworkHandler::SetCookies(
         cookie->GetHttpOnly(false), cookie->GetSameSite(""),
         cookie->GetExpires(-1), cookie->GetPriority(""), source_scheme,
         source_port, partition_key);
-    if (absl::holds_alternative<Response>(net_cookie_or_error)) {
+    if (std::holds_alternative<Response>(net_cookie_or_error)) {
       // TODO: Investiage whether we can report the error as a protocol error
       // (this might be a breaking CDP change).
       std::move(callback).Run(false);
       return;
     }
-    net_cookies.push_back(absl::get<std::unique_ptr<net::CanonicalCookie>>(
+    net_cookies.push_back(std::get<std::unique_ptr<net::CanonicalCookie>>(
         std::move(net_cookie_or_error)));
   }
 

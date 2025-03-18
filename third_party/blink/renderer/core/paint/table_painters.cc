@@ -437,7 +437,7 @@ void TablePainter::PaintBoxDecorationBackground(
   }
 
   // Optimization: only traverse colgroups with backgrounds.
-  const TableColumnGeometries* column_geometries_original =
+  const GCedTableColumnGeometries* column_geometries_original =
       fragment_.TableColumnGeometries();
   TableColumnGeometries column_geometries_with_background;
   if (column_geometries_original) {

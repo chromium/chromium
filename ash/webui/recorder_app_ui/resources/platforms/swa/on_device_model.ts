@@ -158,8 +158,8 @@ abstract class OnDeviceModel<T> implements Model<T> {
     session.generate(
       {
         maxOutputTokens: 0,
-        topK: 1,
-        temperature: 0,
+        topK: null,
+        temperature: null,
       },
       responseRouter.$.bindNewPipeAndPassRemote(),
     );

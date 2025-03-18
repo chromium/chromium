@@ -333,6 +333,17 @@ class InteractiveGlicTestT : public T {
         "attached to the other browser");
   }
 
+  auto ExpectUserCanResize(bool expect_resize) {
+    return Api::CheckResult(
+        [this]() {
+          return window_controller()
+              .GetGlicWidget()
+              ->widget_delegate()
+              ->CanResize();
+        },
+        expect_resize, "ExpectUserCanResize");
+  }
+
   glic::GlicTestEnvironment& glic_test_environment() {
     return *glic_test_environment_;
   }

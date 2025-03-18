@@ -233,8 +233,7 @@ public class CustomTabActivityNavigationController
         RecordUserAction.record("CustomTabs.SystemBack");
         if (mTabProvider.getTab() == null) return false;
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_BEFORE_UNLOAD)
-                && mTabController.onlyOneTabRemaining()) {
+        if (mTabController.onlyOneTabRemaining()) {
             finishActivity(separateTask);
             return true;
         }

@@ -6,11 +6,11 @@ package org.chromium.components.collaboration.messaging.bridge;
 
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.collaboration.messaging.ActivityLogItem;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
 import org.chromium.components.collaboration.messaging.InstantMessage;
@@ -34,6 +34,7 @@ import java.util.Optional;
  * call these methods directly.
  */
 @JNINamespace("collaboration::messaging::android")
+@NullMarked
 class ConversionUtils {
     @CalledByNative
     private static MessageAttribution createAttributionFrom(

@@ -83,7 +83,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
       "Signin_AccountSettings_GoogleActivityControlsClicked"));
 
   AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
+      AuthenticationServiceFactory::GetForProfile(self.profile);
   id<SystemIdentity> identity =
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   _dismissWebAndAppSettingDetailsCallback =
@@ -99,7 +99,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
       "Signin_AccountSettings_LinkedGoogleServicesClicked"));
 
   AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
+      AuthenticationServiceFactory::GetForProfile(self.profile);
   id<SystemIdentity> identity =
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   _dismissLinkedGoogleServicesSettingsDetailsCallback =

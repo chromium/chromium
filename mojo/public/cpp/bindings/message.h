@@ -36,9 +36,6 @@ class AssociatedGroupController;
 using ReportBadMessageCallback =
     base::OnceCallback<void(std::string_view error)>;
 
-COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
-BASE_DECLARE_FEATURE(kMojoMessageAlwaysUseLatestVersion);
-
 // Message is a holder for the data and handles to be sent over a MessagePipe.
 // Message owns its data and handles, but a consumer of Message is free to
 // mutate the data and handles. The message's data is comprised of a header

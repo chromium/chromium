@@ -5796,53 +5796,23 @@ void AXNodeObject::AddNodeChildren() {
   if (IsA<HTMLFrameElementBase>(GetNode()))
     return;
 
-  // If node is a ReadingFlowContainer or if its closest layout parent is
-  // ReadingFlowContainer (i.e. node has display: contents), then we should
-  // follow reading-flow order. The same children will be added as in the simple
-  // case using only LayoutTreeBuilderTraversal children, with no additions or
-  // removals, but in the order defined in CSS.
+  // If node has reading flow children, then we should reading-flow order.
   // Note that this is only used for the case where the element is a
   // reading-flow container, and not for the case where the element is a
   // reading-flow item.
-  Element* element = GetElement();
-  Element* closest_layout_parent =
-      element && element->HasDisplayContentsStyle()
-          ? LayoutTreeBuilderTraversal::LayoutParentElement(*element)
-          : element;
-  if (closest_layout_parent &&
-      closest_layout_parent->IsReadingFlowContainer()) {
+  HeapVector<Member<Node>> reading_flow_children;
+  if (Element* element = GetElement()) {
+    reading_flow_children = element->ReadingFlowChildren();
+  }
+  if (!reading_flow_children.empty()) {
     HeapHashSet<Member<Node>> ax_children_added;
-    // Add all reading flow items first, in the reading flow order.
-    for (Node* reading_flow_item :
-         closest_layout_parent->GetLayoutBox()->ReadingFlowNodes()) {
+    // Add reading flow siblings in order.
+    for (Node* reading_flow_item : reading_flow_children) {
       if (IsAddedOnlyViaSpecialTraversal(reading_flow_item)) {
         continue;
       }
-
-      // reading_flow_item or its parent (for example, display: contents) might
-      // be a child of element. Loop the parents and only add the node if its
-      // LayoutTreeBuilderTraversal::Parent is this element.
-      do {
-        auto* parent = LayoutTreeBuilderTraversal::Parent(*reading_flow_item);
-        if (parent == element) {
-          if (ax_children_added.insert(reading_flow_item).is_new_entry) {
-            AddNodeChild(reading_flow_item);
-          }
-          break;
-        }
-        reading_flow_item = DynamicTo<Element>(parent);
-        // If parent is the reading flow container, then we have traversed all
-        // potential parents and there is no reading flow item to add.
-      } while (reading_flow_item && reading_flow_item != closest_layout_parent);
-    }
-    // Add all non-reading flow items at the end of the reading flow.
-    for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*node_); child;
-         child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
-      if (IsAddedOnlyViaSpecialTraversal(child)) {
-        continue;
-      }
-      if (ax_children_added.insert(child).is_new_entry) {
-        AddNodeChild(child);
+      if (ax_children_added.insert(reading_flow_item).is_new_entry) {
+        AddNodeChild(reading_flow_item);
       }
     }
 #if DCHECK_IS_ON()

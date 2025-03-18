@@ -58,15 +58,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
       const GURL& url,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
       ResolveAsURLLoaderFactoryCallback callback) override;
-  void ResolveForNavigation(
+  void ResolveAsBlobURLToken(
       const GURL& url,
       mojo::PendingReceiver<blink::mojom::BlobURLToken> token,
       bool is_top_level_navigation,
-      ResolveForNavigationCallback callback) override;
-  void ResolveForWorkerScriptFetch(
-      const GURL& url,
-      mojo::PendingReceiver<blink::mojom::BlobURLToken> token,
-      ResolveForNavigationCallback callback) override;
+      ResolveAsBlobURLTokenCallback callback) override;
 
  private:
   // Checks if the passed in url is a valid blob url for this blob url store.

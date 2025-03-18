@@ -69,6 +69,7 @@ class PdfOcrController : public KeyedService
 #if !BUILDFLAG(IS_CHROMEOS)
   // ui::AXModeObserver:
   void OnAXModeAdded(ui::AXMode mode) override;
+  void OnAssistiveTechChanged(ui::AssistiveTech assistive_tech) override;
 #endif
 
  private:

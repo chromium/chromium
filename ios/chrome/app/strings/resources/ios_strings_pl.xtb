@@ -440,6 +440,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="2789552044937754463">{COUNT,plural, =1{Hasło zostało zapisane na Twoim koncie Google {EMAIL}}few{Hasła zostały zapisane na Twoim koncie Google {EMAIL}}many{Hasła zostały zapisane na Twoim koncie Google {EMAIL}}other{Hasła zostały zapisane na Twoim koncie Google {EMAIL}}}</translation>
 <translation id="2791174088547598693">Dodaj hasło…</translation>
 <translation id="2797302972324086597">Kod kraju</translation>
+<translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} plik}few{{COUNT} pliki}many{{COUNT} plików}other{{COUNT} pliku}}</translation>
 <translation id="2816489851009559785">Menu → Ustawienia → Domyślna przeglądarka</translation>
 <translation id="2818821771744632548">W ramach resetowania iPhone'a nastąpiło wylogowanie z konta <ph name="USER_NAME" />. Aby ponownie się zalogować, kliknij „Dalej” poniżej.</translation>
 <translation id="2819667972867209401">Gdy ta opcja jest włączona, dane są zapisywane na Twoim koncie Google. Gdy jest wyłączona, dane są zapisywane tylko na tym urządzeniu i są usuwane po wylogowaniu.</translation>
@@ -504,6 +505,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="310900540163454140">Usunąć hasło użytkownika w aplikacji <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Oznacz…</translation>
 <translation id="3119874402040566234">Nastąpi wylogowanie, a dane przeglądania zostaną usunięte</translation>
+<translation id="3124568093781685165">Udostępniaj hasła członkom grupy rodzinnej</translation>
 <translation id="3130863904455712965">Historia i inne elementy</translation>
 <translation id="313283613037595347">Utwórz nową kartę incognito.</translation>
 <translation id="3138611310073113613">Odrzuć wybór</translation>
@@ -1003,6 +1005,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="5352128922772839949">Zapisz plik</translation>
 <translation id="5355191726083956201">Włączona jest silniejsza ochrona</translation>
 <translation id="537853552771686272">Zarządzaj tematami i witrynami, które Cię interesują</translation>
+<translation id="5390458669633674385">{count,plural, =1{Zamknięto {count}}few{Zamknięto {count}}many{Zamknięto {count}}other{Zamknięto {count}}}</translation>
 <translation id="5394975111793637642">Ukryj opinie o produktach na swojej karcie</translation>
 <translation id="5395707839134961196">Ukryj szczegóły wyszukiwarki</translation>
 <translation id="5414763847370083940">Otrzymasz alert, jeśli cena w którejkolwiek witrynie spadnie.</translation>
@@ -1132,6 +1135,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5897749768294722429">Aby szybko wracać do odwiedzonych stron, włącz synchronizację kart i historii.</translation>
 <translation id="5898848375214731122">Masa</translation>
 <translation id="5899314093904173337">Aby udostępnić ten kod QR osobom w pobliżu, pozwól im go zeskanować za pomocą aparatu lub aplikacji do skanowania kodów QR</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} nowa karta}few{{count} nowe karty}many{{count} nowych kart}other{{count} nowej karty}}</translation>
 <translation id="5911030830365207728">Tłumacz Google</translation>
 <translation id="5917913282764181683">Automatycznie usuwaj pobrane pliki</translation>
 <translation id="5922999516621365983">Przeciągnij kartę tutaj, żeby ją przypiąć.</translation>
@@ -1674,6 +1678,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8131740175452115882">Potwierdź</translation>
 <translation id="8132598642024322408">Teraz <ph name="PRICE" />, wcześniej <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Na każdej stronie i w każdej aplikacji używaj innego, unikalnego hasła. Gdyby ktoś zdobył użyte wielokrotnie hasło, mógłby je wykorzystać do zalogowania się również na inne Twoje konta. Kliknij, aby otworzyć stronę i od razu zmienić hasło.</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} zamknięta karta}few{{count} zamknięte karty}many{{count} zamkniętych kart}other{{count} zamkniętej karty}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 inny element}few{# inne elementy}many{# innych elementów}other{# innego elementu}}</translation>
 <translation id="8150167929304790980">Imię i nazwisko</translation>
 <translation id="8152331954420209374">Przejdź do Obiektywu</translation>

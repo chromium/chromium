@@ -30,6 +30,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -56,6 +57,7 @@ import java.util.Collections;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabGroupVisualDataDialogManagerUnitTest {
+    private static final Token TAB_GROUP_ID = new Token(34L, 378L);
     private static final int TAB1_ID = 456;
     private static final String TAB_GROUP_CREATION_DIALOG_SHOWN =
             EventConstants.TAB_GROUP_CREATION_DIALOG_SHOWN;
@@ -103,7 +105,7 @@ public class TabGroupVisualDataDialogManagerUnitTest {
     })
     public void testVisualDataDialogDelegate_showDialog() {
         mTabGroupVisualDataDialogManager.showDialog(
-                TAB1_ID, mTabGroupModelFilter, mDialogController);
+                TAB_GROUP_ID, mTabGroupModelFilter, mDialogController);
         verify(mModalDialogManager).showDialog(mModelCaptor.capture(), eq(ModalDialogType.APP));
 
         PropertyModel model = mModelCaptor.getValue();
@@ -130,9 +132,9 @@ public class TabGroupVisualDataDialogManagerUnitTest {
         // Mock a double trigger for the creation dialog observer method for the same group action,
         // but show dialog is only called once.
         mTabGroupVisualDataDialogManager.showDialog(
-                TAB1_ID, mTabGroupModelFilter, mDialogController);
+                TAB_GROUP_ID, mTabGroupModelFilter, mDialogController);
         mTabGroupVisualDataDialogManager.showDialog(
-                TAB1_ID, mTabGroupModelFilter, mDialogController);
+                TAB_GROUP_ID, mTabGroupModelFilter, mDialogController);
         verify(mModalDialogManager, times(1))
                 .showDialog(mModelCaptor.capture(), eq(ModalDialogType.APP));
     }
@@ -150,7 +152,7 @@ public class TabGroupVisualDataDialogManagerUnitTest {
                 .shouldTriggerHelpUi(TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE);
 
         mTabGroupVisualDataDialogManager.showDialog(
-                TAB1_ID, mTabGroupModelFilter, mDialogController);
+                TAB_GROUP_ID, mTabGroupModelFilter, mDialogController);
         verify(mModalDialogManager).showDialog(mModelCaptor.capture(), eq(ModalDialogType.APP));
 
         PropertyModel model = mModelCaptor.getValue();
@@ -177,7 +179,7 @@ public class TabGroupVisualDataDialogManagerUnitTest {
         when(mSyncService.getActiveDataTypes()).thenReturn(Collections.emptySet());
 
         mTabGroupVisualDataDialogManager.showDialog(
-                TAB1_ID, mTabGroupModelFilter, mDialogController);
+                TAB_GROUP_ID, mTabGroupModelFilter, mDialogController);
         verify(mModalDialogManager).showDialog(mModelCaptor.capture(), eq(ModalDialogType.APP));
 
         PropertyModel model = mModelCaptor.getValue();
@@ -210,7 +212,7 @@ public class TabGroupVisualDataDialogManagerUnitTest {
                 .thenReturn(Collections.singleton(DataType.SAVED_TAB_GROUP));
 
         mTabGroupVisualDataDialogManager.showDialog(
-                TAB1_ID, mTabGroupModelFilter, mDialogController);
+                TAB_GROUP_ID, mTabGroupModelFilter, mDialogController);
         verify(mModalDialogManager).showDialog(mModelCaptor.capture(), eq(ModalDialogType.APP));
 
         PropertyModel model = mModelCaptor.getValue();

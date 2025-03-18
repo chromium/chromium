@@ -12,6 +12,7 @@
 #include <string_view>
 #include <type_traits>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -867,15 +868,15 @@ TEST_P(InstallIsolatedWebAppCommandHelperRelocationTest, NormalFlow) {
                                            future.GetCallback());
   RelocationResult result = future.Take();
   ASSERT_TRUE(result.has_value());
-  absl::visit(VerifyRelocationVisitor{profile_dir_, bundle, GetParam()},
-              result->variant());
+  std::visit(VerifyRelocationVisitor{profile_dir_, bundle, GetParam()},
+             result->variant());
 
   // Check that cleanup works.
   base::test::TestFuture<void> cleanup_future;
   CleanupLocationIfOwned(profile_dir_, result.value(),
                          cleanup_future.GetCallback());
   ASSERT_TRUE(cleanup_future.Wait());
-  absl::visit(VerifyCleanupVisitor{profile_dir_}, result->variant());
+  std::visit(VerifyCleanupVisitor{profile_dir_}, result->variant());
 }
 
 INSTANTIATE_TEST_SUITE_P(

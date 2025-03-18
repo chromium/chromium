@@ -9,6 +9,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -434,7 +435,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   // A form_id means that the user last interacted with a FormElement.
   // A field_id means that the user last interacted with a formless control.
   void UpdateLastInteractedElement(
-      absl::variant<FormRendererId, FieldRendererId> element_id);
+      std::variant<FormRendererId, FieldRendererId> element_id);
 
   // Called when current form is no longer submittable, submitted_forms_ is
   // cleared in this method.

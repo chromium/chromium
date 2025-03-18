@@ -26,6 +26,8 @@ found in the LICENSE file.
       <include name="IDR_GLIC_PROFILE_LOGO" file="glic_profile_logo.svg" type="BINDATA" compress="brotli" />
       <include name="IDR_GLIC_PROFILE_BANNER_BOTTOM_LEFT" file="glic_profile_banner_bottom_left.svg" type="BINDATA" compress="brotli" />
       <include name="IDR_GLIC_PROFILE_BANNER_TOP_RIGHT" file="glic_profile_banner_top_right.svg" type="BINDATA" compress="brotli" />
+      <include name="IDR_GLIC_PROFILE_BANNER_BOTTOM_LEFT_LIGHT" file="glic_profile_banner_bottom_left_light.svg" type="BINDATA" compress="brotli" />
+      <include name="IDR_GLIC_PROFILE_BANNER_TOP_RIGHT_LIGHT" file="glic_profile_banner_top_right_light.svg" type="BINDATA" compress="brotli" />
       <include name="IDR_GLIC_PROFILE_BRANDING_CSS" file="glic_profile_branding.css" type="BINDATA" compress="brotli" />
     </includes>
 

@@ -59,6 +59,7 @@
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/interest_group_storage.h"
+#include "content/browser/interest_group/privacy_sandbox_coordinator_test_util.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/browser/interest_group/test_same_process_auction_process_manager.h"
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
@@ -158,8 +159,8 @@ constexpr char kBAndAKeyPath[] = "/interest_group/b_and_a_keys.json";
 // Returns kTestBaPublicKey as a JSON response to be returned by kBAndAKeyPath.
 std::string JSONSerializedKeys() {
   base::Value::Dict key;
-  key.Set("key", base::Base64Encode(kTestBaPublicKey));
-  key.Set("id", "12345678-9abc-def0-1234-56789abcdef0");
+  key.Set("key", base::Base64Encode(kTestPrivacySandboxCoordinatorPublicKey));
+  key.Set("id", kTestPrivacySandboxCoordinatorIdString);
   base::Value::List keys;
   keys.Append(std::move(key));
   base::Value::Dict outer;
@@ -12373,15 +12374,14 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
   ASSERT_TRUE(result.has_value());
   ASSERT_FALSE(result->request.empty());
 
-  auto key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
-                        0x12, EVP_HPKE_DHKEM_X25519_HKDF_SHA256,
-                        EVP_HPKE_HKDF_SHA256, EVP_HPKE_AES_256_GCM)
-                        .value();
+  auto key_config =
+      quiche::ObliviousHttpHeaderKeyConfig::Create(
+          kTestPrivacySandboxCoordinatorId, EVP_HPKE_DHKEM_X25519_HKDF_SHA256,
+          EVP_HPKE_HKDF_SHA256, EVP_HPKE_AES_256_GCM)
+          .value();
   auto ohttp_gateway =
       quiche::ObliviousHttpGateway::Create(
-          std::string(reinterpret_cast<const char*>(&kTestBaPrivateKey[0]),
-                      sizeof(kTestBaPrivateKey)),
-          key_config)
+          GetTestPrivacySandboxCoordinatorPrivateKey(), key_config)
           .value();
   EXPECT_EQ(0x00, result->request[0]);
   auto request = ohttp_gateway.DecryptObliviousHttpRequest(
@@ -12462,15 +12462,14 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayloadWithDebugReportLockout) {
   ASSERT_TRUE(result.has_value());
   ASSERT_FALSE(result->request.empty());
 
-  auto key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
-                        0x12, EVP_HPKE_DHKEM_X25519_HKDF_SHA256,
-                        EVP_HPKE_HKDF_SHA256, EVP_HPKE_AES_256_GCM)
-                        .value();
+  auto key_config =
+      quiche::ObliviousHttpHeaderKeyConfig::Create(
+          kTestPrivacySandboxCoordinatorId, EVP_HPKE_DHKEM_X25519_HKDF_SHA256,
+          EVP_HPKE_HKDF_SHA256, EVP_HPKE_AES_256_GCM)
+          .value();
   auto ohttp_gateway =
       quiche::ObliviousHttpGateway::Create(
-          std::string(reinterpret_cast<const char*>(&kTestBaPrivateKey[0]),
-                      sizeof(kTestBaPrivateKey)),
-          key_config)
+          GetTestPrivacySandboxCoordinatorPrivateKey(), key_config)
           .value();
   EXPECT_EQ(0x00, result->request[0]);
   auto request = ohttp_gateway.DecryptObliviousHttpRequest(
@@ -12519,15 +12518,14 @@ TEST_F(AdAuctionServiceImplBAndATest,
   ASSERT_TRUE(result.has_value());
   ASSERT_FALSE(result->request.empty());
 
-  auto key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
-                        0x12, EVP_HPKE_DHKEM_X25519_HKDF_SHA256,
-                        EVP_HPKE_HKDF_SHA256, EVP_HPKE_AES_256_GCM)
-                        .value();
+  auto key_config =
+      quiche::ObliviousHttpHeaderKeyConfig::Create(
+          kTestPrivacySandboxCoordinatorId, EVP_HPKE_DHKEM_X25519_HKDF_SHA256,
+          EVP_HPKE_HKDF_SHA256, EVP_HPKE_AES_256_GCM)
+          .value();
   auto ohttp_gateway =
       quiche::ObliviousHttpGateway::Create(
-          std::string(reinterpret_cast<const char*>(&kTestBaPrivateKey[0]),
-                      sizeof(kTestBaPrivateKey)),
-          key_config)
+          GetTestPrivacySandboxCoordinatorPrivateKey(), key_config)
           .value();
   EXPECT_EQ(0x00, result->request[0]);
   auto request = ohttp_gateway.DecryptObliviousHttpRequest(
@@ -12581,15 +12579,14 @@ TEST_F(AdAuctionServiceImplBAndATest,
   ASSERT_TRUE(result.has_value());
   ASSERT_FALSE(result->request.empty());
 
-  auto key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
-                        0x12, EVP_HPKE_DHKEM_X25519_HKDF_SHA256,
-                        EVP_HPKE_HKDF_SHA256, EVP_HPKE_AES_256_GCM)
-                        .value();
+  auto key_config =
+      quiche::ObliviousHttpHeaderKeyConfig::Create(
+          kTestPrivacySandboxCoordinatorId, EVP_HPKE_DHKEM_X25519_HKDF_SHA256,
+          EVP_HPKE_HKDF_SHA256, EVP_HPKE_AES_256_GCM)
+          .value();
   auto ohttp_gateway =
       quiche::ObliviousHttpGateway::Create(
-          std::string(reinterpret_cast<const char*>(&kTestBaPrivateKey[0]),
-                      sizeof(kTestBaPrivateKey)),
-          key_config)
+          GetTestPrivacySandboxCoordinatorPrivateKey(), key_config)
           .value();
   EXPECT_EQ(0x00, result->request[0]);
   auto request = ohttp_gateway.DecryptObliviousHttpRequest(
@@ -12685,15 +12682,14 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayloadWithKAnon) {
   ASSERT_TRUE(result.has_value());
   ASSERT_FALSE(result->request.empty());
 
-  auto key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
-                        0x12, EVP_HPKE_DHKEM_X25519_HKDF_SHA256,
-                        EVP_HPKE_HKDF_SHA256, EVP_HPKE_AES_256_GCM)
-                        .value();
+  auto key_config =
+      quiche::ObliviousHttpHeaderKeyConfig::Create(
+          kTestPrivacySandboxCoordinatorId, EVP_HPKE_DHKEM_X25519_HKDF_SHA256,
+          EVP_HPKE_HKDF_SHA256, EVP_HPKE_AES_256_GCM)
+          .value();
   auto ohttp_gateway =
       quiche::ObliviousHttpGateway::Create(
-          std::string(reinterpret_cast<const char*>(&kTestBaPrivateKey[0]),
-                      sizeof(kTestBaPrivateKey)),
-          key_config)
+          GetTestPrivacySandboxCoordinatorPrivateKey(), key_config)
           .value();
   EXPECT_EQ(0x00, result->request[0]);
   auto request = ohttp_gateway.DecryptObliviousHttpRequest(

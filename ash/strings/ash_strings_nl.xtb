@@ -166,6 +166,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1505542291183484463">Venster met tegels voor formaat aanpassen naar beneden verplaatsen</translation>
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Instellingen voor meldingen tonen. Meldingen staan uit voor een app}other{Instellingen voor meldingen tonen. Meldingen staan uit voor # apps}}</translation>
+<translation id="1521655867290435174">Google Spreadsheets</translation>
 <translation id="1523032696246003">Batterij: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> tot vol</translation>
 <translation id="1525508553941733066">SLUITEN</translation>
 <translation id="1526448108126799339">Nieuw tabblad openen in een nieuw venster</translation>
@@ -345,7 +346,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2201071101391734388">Recente foto <ph name="INDEX" /> van <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Google Tasks samenvouwen</translation>
 <translation id="2208323208084708176">Samengestelde desktopmodus</translation>
-<translation id="2220572644011485463">Pincode of wachtwoord</translation>
 <translation id="2222841058024245321">Bureau 7</translation>
 <translation id="2223384056430485343">In een gesplitst scherm</translation>
 <translation id="2224075387478458881">Schermopname is niet toegestaan als er beschermde content zichtbaar is</translation>
@@ -1829,7 +1829,6 @@ Nieuwe installatie</translation>
 <translation id="7000027735917578303">Instellingen voor vensters en bureaus</translation>
 <translation id="7004910047186208204">Verbinding maken via mobiele data</translation>
 <translation id="7005239792648594238">Open een app om aan de slag te gaan</translation>
-<translation id="7007983414944123363">Je pincode of wachtwoord kan niet worden geverifieerd. Probeer het opnieuw.</translation>
 <translation id="7014684956566476813">Verbonden met een apparaat met de naam <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Kom terug om <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Bureau 6</translation>
@@ -2466,6 +2465,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="9168436347345867845">Later doen</translation>
 <translation id="9178475906033259337">1 resultaat bekijken voor <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Met deze functie kun je snel zonder wachtwoord toegang krijgen tot iedere ingelogde gebruiker. Gebruik deze functie alleen met accounts die je vertrouwt.</translation>
+<translation id="9183302530794969518">Google Documenten</translation>
 <translation id="9183456764293710005">Vergrootglas voor volledig scherm</translation>
 <translation id="9192133205265227850"><ph name="DEVICE_NAME" /> gebruiken</translation>
 <translation id="9193626018745640770">Casten naar een onbekende ontvanger</translation>

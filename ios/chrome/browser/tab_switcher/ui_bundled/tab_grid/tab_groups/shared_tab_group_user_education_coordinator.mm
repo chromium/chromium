@@ -111,8 +111,8 @@ UIImage* TabGroupImage(UITraitCollection* trait_collection) {
       confirmationAlert.sheetPresentationController;
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
   presentationController.detents = @[
-    UISheetPresentationControllerDetent.mediumDetent,
-    UISheetPresentationControllerDetent.largeDetent
+    [UISheetPresentationControllerDetent mediumDetent],
+    [UISheetPresentationControllerDetent largeDetent]
   ];
   presentationController.preferredCornerRadius = 20;
   confirmationAlert.view.accessibilityIdentifier =

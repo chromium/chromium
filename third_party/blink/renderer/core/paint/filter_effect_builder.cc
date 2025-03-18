@@ -460,7 +460,7 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
       }
       case FilterOperation::OperationType::kBlur: {
         float pixel_radius =
-            To<BlurFilterOperation>(*op).StdDeviation().GetFloatValue();
+            To<BlurFilterOperation>(*op).StdDeviation().Pixels();
         pixel_radius *= shorthand_scale_;
         filters.AppendBlurFilter(pixel_radius);
         break;

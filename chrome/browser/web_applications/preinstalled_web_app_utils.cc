@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string_view>
+#include <variant>
 
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
@@ -425,11 +426,11 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
     WebAppInstallInfoFactoryOrError offline_manifest_result =
         ParseOfflineManifest(file_utils, dir, file, *value);
     if (std::string* error =
-            absl::get_if<std::string>(&offline_manifest_result)) {
+            std::get_if<std::string>(&offline_manifest_result)) {
       return std::move(*error);
     }
     options.app_info_factory =
-        std::move(absl::get<WebAppInstallInfoFactory>(offline_manifest_result));
+        std::move(std::get<WebAppInstallInfoFactory>(offline_manifest_result));
   }
 
   if (options.only_use_app_info_factory && !options.app_info_factory) {

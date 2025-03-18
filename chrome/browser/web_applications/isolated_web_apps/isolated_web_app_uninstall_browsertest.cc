@@ -5,6 +5,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -138,7 +139,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppUninstallBrowserTest, Succeeds) {
   ASSERT_TRUE(web_app_before);
   ASSERT_TRUE(web_app_before->isolation_data().has_value());
 
-  absl::visit(
+  std::visit(
       base::Overloaded{[&](const IwaStorageOwnedBundle& location) {
                          // Verify that .swbn file was copied to the profile
                          // directory.

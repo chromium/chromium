@@ -16,7 +16,7 @@
 <translation id="1006873397406093306">此扩展程序可读取和更改您的网站数据。您可以控制此扩展程序能访问哪些网站。</translation>
 <translation id="1007057452468855774">开启 Google Play 商店</translation>
 <translation id="1008186147501209563">导出书签</translation>
-<translation id="1008261151167010035"><ph name="BRAND" />会记住您的登录方式，并在可能的情况下自动为您登录。关闭此功能后，您每次登录时，系统都会要求您确认。</translation>
+<translation id="1008261151167010035"><ph name="BRAND" />会记住您的登录信息，并在情况允许时为您自动登录。若关闭此功能，系统每次都会请您确认是否登录。</translation>
 <translation id="1008557486741366299">以后再说</translation>
 <translation id="100881991356161927">网站名称</translation>
 <translation id="1009663062402466586">游戏控件现已可供使用</translation>
@@ -624,6 +624,7 @@
 <translation id="1430915738399379752">打印</translation>
 <translation id="1431188203598586230">最后一次软件更新</translation>
 <translation id="1432581352905426595">管理搜索引擎</translation>
+<translation id="1432650420699700107">网站可以请求连接到本地网络上的任何设备</translation>
 <translation id="1433478348197382180">阅读模式</translation>
 <translation id="1433980411933182122">启动</translation>
 <translation id="1434696352799406980">这将重置您的启动页、“打开新的标签页”页面、搜索引擎和固定标签页，同时还会停用所有扩展程序并清除临时数据（例如 Cookie）。但是，系统不会清除您的书签、历史记录和保存的密码。</translation>
@@ -1328,6 +1329,7 @@
 <translation id="1918127774159128277">刷新 Wi-Fi 直连功能</translation>
 <translation id="1918141783557917887">缩小(&amp;S)</translation>
 <translation id="1918281588461452432">当您浏览网站时，网页内容会加密并保存到您的设备上</translation>
+<translation id="1919096511823372013">插入链接、表情符号等内容。您还可以借助 Google AI 进行写作和创建图片。</translation>
 <translation id="1919872106782726755">若要设置指纹，请让您的孩子轻触键盘右上角的指纹传感器（位于电源按钮旁边）。您孩子的指纹数据会安全地存储在此 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="192015196730532810">您可以创建自己的标签页分组。</translation>
 <translation id="1920314570001095522">没有类似的标签页可供整理，但您可以考虑使用这些分组</translation>
@@ -3396,7 +3398,7 @@
 <translation id="338583716107319301">分隔符</translation>
 <translation id="3385916046075724800">您的标签页分组现在会自动保存。</translation>
 <translation id="3387023983419383865">、</translation>
-<translation id="3387588771342841525">当此设置处于开启状态时，密码会保存到 <ph name="EMAIL" /> 中。当此设置处于关闭状态时，密码只会保存在此设备上。</translation>
+<translation id="3387588771342841525">开启此设置，密码会保存到 <ph name="EMAIL" /> 中；关闭设置，密码只会保存在此设备上。</translation>
 <translation id="3387614642886316601">使用增强的“拼写检查”功能</translation>
 <translation id="3387829698079331264">不允许以下网站了解您何时在主动使用设备</translation>
 <translation id="3388094447051599208">出纸盘快满了</translation>
@@ -4398,7 +4400,7 @@
 <translation id="4047726037116394521">转到主屏幕</translation>
 <translation id="4048295959689903187">选择音频输出</translation>
 <translation id="4048384495227695211">在文件夹中显示 <ph name="FILE_NAME" /></translation>
-<translation id="404894744863342743">用完下载的文件后，请将其删除，以防使用此设备的他人看到您的密码。</translation>
+<translation id="404894744863342743">下载的文件使用完毕后，请及时删除，以防其他使用此设备的人看到您的密码。</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{有 # 个联系人不可用。如需使用“附近分享”功能与这个联系人分享内容，请将其 Google 账号所关联的电子邮件地址添加到您的通讯录中。}other{有 # 个联系人不可用。如需使用“附近分享”功能与这些联系人分享内容，请将其 Google 账号所关联的电子邮件地址添加到您的通讯录中。}}</translation>
 <translation id="4050225813016893843">身份验证方法</translation>
 <translation id="4050379682069019014">“<ph name="MAIN_GESTURE" />”可能与“<ph name="CONFLICTING_GESTURE" />”有相似之处。如果可能，请尝试选择其他手势。</translation>
@@ -4819,6 +4821,7 @@
 <translation id="4364830672918311045">显示通知</translation>
 <translation id="4367971618859387374">显示名称</translation>
 <translation id="4368960422722232719">在标签页的悬停预览卡片上显示内存用量</translation>
+<translation id="4369151461324628035">不允许网站连接到本地网络上的任何设备</translation>
 <translation id="4369215744064167350">网站请求已获批准</translation>
 <translation id="4369233657762989723">语音输入开/关</translation>
 <translation id="436926121798828366">您随时可在<ph name="SETTINGS_LINK" />中更改此设置</translation>
@@ -5372,6 +5375,7 @@
 <translation id="4772914216048388646">有序</translation>
 <translation id="4773112038801431077">升级 Linux</translation>
 <translation id="4773122030389014189">分享标签页分组“<ph name="GROUP_NAME" />”</translation>
+<translation id="4773253008034797668">允许连接到本地网络上的任何设备</translation>
 <translation id="477548766361111120">允许扩展程序读取和更改此网站的数据</translation>
 <translation id="4776311127346151860">已连接<ph name="DEVICE_NAME" /></translation>
 <translation id="4776594120007763294">如需添加某个页面以供日后阅读，请点击此按钮</translation>
@@ -7831,6 +7835,7 @@
 <translation id="6563002009564846727">查看从 Windows 导入的证书</translation>
 <translation id="6563055593659435495">无法保持与手机的连接。请确保手机就在附近、处于解锁状态，且已开启蓝牙和 Wi-Fi。</translation>
 <translation id="6564860838537532172">当您搜索浏览记录时，您的历史搜索、最匹配的网页内容以及生成的模型输出会发送给 Google，并且可能由人工审核员查看，以改进此功能。</translation>
+<translation id="6565144332292237355">网站可以使用此功能查找并连接到本地网络上的任何设备</translation>
 <translation id="6569931898053264308">节省适量内存</translation>
 <translation id="6570622975915850879">换部设备</translation>
 <translation id="65711204837946324">需有下载权限</translation>
@@ -8959,6 +8964,7 @@
 <translation id="7377451353532943397">继续禁止使用传感器</translation>
 <translation id="7377481913241237033">利用代码连接</translation>
 <translation id="73786666777299047">打开 Chrome 应用商店</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />。同一任务分组中的其他任务：<ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />。同一任务分组中的其他 # 个任务：<ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380272457268061606">停用“本地数据恢复”？</translation>
 <translation id="7380459290951585794">请确保您的手机就在附近、处于解锁状态，且已开启蓝牙和 Wi-Fi</translation>
 <translation id="7380622428988553498">设备名称包含无效字符</translation>
@@ -10033,7 +10039,7 @@
 <translation id="8110489095782891123">正在下载联系人列表…</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" /> 麦克风使用权限</translation>
 <translation id="8116972784401310538">书签管理器(&amp;B)</translation>
-<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" />会记住您的登录方式，并在可能的情况下自动为您登录。关闭此功能后，您每次登录时，系统都会要求您确认。</translation>
+<translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" />会记住您的登录信息，并在情况允许时为您自动登录。若关闭此功能，系统每次都会请您确认是否登录。</translation>
 <translation id="8118362518458010043">已被 Chrome 停用。此扩展程序可能不安全。</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# 个书签}other{# 个书签}}</translation>
 <translation id="8118488170956489476">您的<ph name="BEGIN_LINK" />浏览器由所属组织管理<ph name="END_LINK" /></translation>
@@ -11544,6 +11550,7 @@
       <ph name="LIST_ITEM" />运行 Chrome 连接诊断工具
     <ph name="END_LIST" /></translation>
 <translation id="9161172953291434881">您是否信任此网站处理您的数据？</translation>
+<translation id="9164418710391288146">不得连接到本地网络上的任何设备</translation>
 <translation id="9165856803582999927">使用设备的摄像头扫描此二维码，即可在此设备上为 <ph name="APP_NAME" /> 创建并保存通行密钥</translation>
 <translation id="916607977885256133">画中画</translation>
 <translation id="9166253503936244008">通过您要用于<ph name="APP_NAME" />的通行密钥所在的设备，扫描此二维码</translation>

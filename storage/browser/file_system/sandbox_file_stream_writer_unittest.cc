@@ -165,7 +165,7 @@ class SandboxFileStreamWriterTest : public FileStreamWriterTest {
         future;
     quota_manager_->GetUsageAndQuota(
         blink::StorageKey::CreateFromStringForTesting(kURLOrigin),
-        blink::mojom::StorageType::kTemporary, future.GetCallback());
+        future.GetCallback());
 
     quota_usage_and_info info;
     info.status = future.Get<0>();

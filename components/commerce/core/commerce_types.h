@@ -44,7 +44,8 @@ enum class DiscountClusterType {
 enum class DiscountType {
   kUnspecified = 0,
   kFreeListingWithCode = 1,
-  kMaxValue = kFreeListingWithCode,
+  kCrawledPromotion = 2,
+  kMaxValue = kCrawledPromotion,
 };
 
 // Information returned by the discount APIs.
@@ -63,7 +64,7 @@ struct DiscountInfo {
   std::optional<std::string> discount_code;
   uint64_t id = 0;
   bool is_merchant_wide = false;
-  double expiry_time_sec = 0;
+  std::optional<double> expiry_time_sec;
   uint64_t offer_id = 0;
 };
 

@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">Жер тушкагазы</translation>
 <translation id="33736539805963175"><ph name="LETTERS_LETTER" /> тамгасы менен <ph name="LETTERS_COLOR" /> фону</translation>
 <translation id="3383623117265110236">Эксклюзивдүү</translation>
-<translation id="3395147534045164351">Жерди байланыштырууну өчүрүү/күйгүзүү</translation>
 <translation id="3404249063913988450">Көшөгөнү иштетүү</translation>
 <translation id="3413935475507503304">Жаңыртуу үчүн "Кийинки" баскычын басыңыз.</translation>
 <translation id="3428551088151258685">ачык абада</translation>
@@ -1395,6 +1394,7 @@
 <translation id="7388345524791662148"><ph name="RECORDING_NAME" />: башка параметрлери</translation>
 <translation id="7388959671917308825">Кыстарылган сенсордук такта</translation>
 <translation id="7397270852490618635">Жарык теманы өчүрүү</translation>
+<translation id="7400166052988585408">Мугалим бул экранды <ph name="NUM_SECONDS" /> секунддан кийин кулпулайт</translation>
 <translation id="7401543881546089382">Кыска жолду жок кылуу</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> жаңыртууга даяр</translation>
 <translation id="741244894080940828">которуу</translation>

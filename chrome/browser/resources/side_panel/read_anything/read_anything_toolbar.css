@@ -7,8 +7,8 @@
  * #import=//resources/cr_elements/cr_icons_lit.css.js
  * #import=//resources/cr_elements/cr_shared_vars.css.js
  * #import=//resources/cr_elements/md_select_lit.css.js
- * #import=./toolbar_styles_shared_lit.css.js
- * #include=toolbar-styles-shared-lit md-select-lit cr-icons-lit
+ * #import=./toolbar_styles_shared.css.js
+ * #include=toolbar-styles-shared md-select-lit cr-icons-lit
  * #scheme=relative
  * #css_wrapper_metadata_end */
 

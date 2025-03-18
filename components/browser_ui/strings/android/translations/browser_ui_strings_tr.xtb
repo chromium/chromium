@@ -45,6 +45,7 @@
 <translation id="1652197001188145583">Bu düğme açıkken siteler NFC cihazları kullanmak isteyebilir. Düğme kapalıyken siteler NFC cihazları kullanamaz.</translation>
 <translation id="1660204651932907780">Sitelerin ses çalmasına izin ver (önerilir)</translation>
 <translation id="1677097821151855053">Çerezler ve diğer site verileri sizi hatırlamamız için kullanılır, örneğin oturumunuzu açmak veya reklamları kişiselleştirmek için. Çerezlerin tüm siteler için nasıl yönetileceğini <ph name="BEGIN_LINK" />Ayarlar<ph name="END_LINK" /> bölümünden öğrenebilirsiniz.</translation>
+<translation id="1679305402657584804">Siteler, NFC cihazlarını kullanmak isteyebilir</translation>
 <translation id="1686785653877010442">Siteler genellikle son dakika haberleri veya sohbet mesajları konusunda sizi bilgilendirmek için bildirim gönderir.</translation>
 <translation id="169515064810179024">Sitelerin hareket sensörlerine erişimini engelle</translation>
 <translation id="1703666494654169921">Sitelerin sanal gerçeklik cihazlarını veya verileri kullanmasına izin verme</translation>
@@ -84,6 +85,7 @@
 <translation id="2185965788978862351">Bu işlem, Ana ekranınızdaki siteler veya uygulamalar tarafından depolanan <ph name="DATASIZE" /> boyutunda veriyi ve çerezi temizleyecek.</translation>
 <translation id="2194856509914051091">Dikkate alınması gereken noktalar</translation>
 <translation id="2215727959747642672">Dosya düzenleme</translation>
+<translation id="2218389616572918761">Siteler mikrofonunuzu kullanmak isteyebilir</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> uygulamasının kameranıza erişebilmesi için <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'nda da kamerayı açın.</translation>
 <translation id="2235344399760031203">Üçüncü taraf çerezleri engelleniyor</translation>
 <translation id="2238944249568001759">Son sekmenize göre önerilen aramalar</translation>
@@ -132,8 +134,10 @@
 <translation id="2726059656860238749">Chrome'u çok amaçlı adres çubuğu odaklı başlatın. Böylece, düşük özellikli cihazlarda başlatma süresi kısalır.</translation>
 <translation id="2750481671343847896">Siteler, kimlik hizmetlerinden gelen oturum açma istemlerini gösterebilir.</translation>
 <translation id="2787357173144933081">Çok amaçlı adres çubuğuna hızlı başlangıç</translation>
+<translation id="2789132527330338807">Siteler, çevrenizin 3D haritasını oluşturmak veya kameranızın konumunu takip etmek isteyebilir</translation>
 <translation id="2790501146643349491">Bu düğme açıkken yeni kapatılan siteler veri gönderip alma işlemini bitirebilir. Düğme kapalıyken yeni kapatılan siteler veri gönderip alma işlemini bitiremez.</translation>
 <translation id="2795716239552913152">Yerel haberler veya yakındaki mağazalar gibi alakalı özellikleri ya da bilgileri sunmak için siteler genellikle konumunuzu kullanır</translation>
+<translation id="2802908157808345702">Sitelerin pop-up'lar göndermesine veya yönlendirmeler kullanmasına izin verme</translation>
 <translation id="2814830417943086299">Chrome artık son sekmelerinizi cihazınızın uygulama listesinde ve arama sonuçlarında gösteriyor. Bu özelliği Chrome ayarlarından istediğiniz zaman kapatabilirsiniz.</translation>
 <translation id="2822354292072154809"><ph name="CHOSEN_OBJECT_NAME" /> için tüm site izinlerini sıfırlamak istediğinizden emin misiniz?</translation>
 <translation id="2850913818900871965">Mobil cihaz görünümü iste</translation>
@@ -274,6 +278,7 @@
 <translation id="4598549027014564149">Gizli moddayken siteler, alakalı siteler de dahil olmak üzere farklı sitelerde tarama etkinliğinizi görmek için çerezlerinizi kullanamaz. Tarama etkinliğiniz reklam kişiselleştirme gibi işlemler için kullanılmaz. Bazı sitelerdeki özellikler çalışmayabilir.</translation>
 <translation id="461356340001513807">Bir kimlik hizmetindeki hesabınızı kullanarak web sitelerinde oturum açmanızı sağlar</translation>
 <translation id="4619615317237390068">Diğer cihazlardan sekmeler</translation>
+<translation id="4635969503923889910">Sitelerin, NFC cihazlarını kullanmasına izin verme</translation>
 <translation id="4644713492825682049">Sil ve sıfırla</translation>
 <translation id="4645575059429386691">Ebeveyniniz tarafından yönetiliyor</translation>
 <translation id="4670064810192446073">Sanal gerçeklik</translation>
@@ -372,6 +377,7 @@
 <translation id="5877248419911025165">Tüm istekleri daralt</translation>
 <translation id="5884085660368669834">Site tercihi</translation>
 <translation id="5887687176710214216">En son dün ziyaret edildi</translation>
+<translation id="5908617755156109052">Sitelerin, çevremin 3D haritasını oluşturmasına veya kameramın konumunu takip etmesine izin verme</translation>
 <translation id="5916664084637901428">Açık</translation>
 <translation id="5922853908706496913">Ekranınız paylaşılıyor</translation>
 <translation id="5922967540311291836">Üçüncü taraf çerezlerini engelle:</translation>
@@ -582,6 +588,7 @@
 <translation id="8676374126336081632">Girişi temizle</translation>
 <translation id="8681886425883659911">Araya giren veya yanıltıcı reklamlar gösterdiği bilinen sitelerdeki reklamlar engellenir</translation>
 <translation id="868929229000858085">Kişilerinizde arama yapın</translation>
+<translation id="8707904142362025782">Site, kameranızı kullanmak isteyebilir</translation>
 <translation id="8712637175834984815">Anladım</translation>
 <translation id="8715862698998036666">Tam ekrandan çıkmak için yukarıdan sürükleyip sol veya sağ kenardan kaydırın.</translation>
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'ında <ph name="APP_NAME" /> için izni açın.</translation>

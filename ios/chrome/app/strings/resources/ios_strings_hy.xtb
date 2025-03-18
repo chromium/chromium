@@ -504,6 +504,7 @@
 <translation id="310900540163454140">Ջնջե՞լ <ph name="WEBSITE" />-ի գաղտնաբառը</translation>
 <translation id="3112556859945124369">Նշել…</translation>
 <translation id="3119874402040566234">Դուք դուրս կգաք հաշվից, իսկ այցելությունների պատմությունը կջնջվի</translation>
+<translation id="3124568093781685165">Կիսվեք ձեր գաղտնաբառերով ընտանիքի անդամների հետ</translation>
 <translation id="3130863904455712965">Պատմություն և այլ տվյալներ</translation>
 <translation id="313283613037595347">Ստեղծել նոր ինկոգնիտո ներդիր</translation>
 <translation id="3138611310073113613">Չեղարկել ընտրությունը</translation>
@@ -1003,6 +1004,7 @@
 <translation id="5352128922772839949">Պահել ֆայլը</translation>
 <translation id="5355191726083956201">Բարելավված պաշտպանությունը միացված է</translation>
 <translation id="537853552771686272">Կառավարեք ձեզ հետաքրքրող թեմաներն ու կայքերը</translation>
+<translation id="5390458669633674385">{count,plural, =1{{count}-ը փակված է}one{{count}-ը փակված է}other{{count}-ը փակված է}}</translation>
 <translation id="5394975111793637642">Թաքցնել ապրանքի կարծիքները ձեր քարտի համար</translation>
 <translation id="5395707839134961196">Թաքցնել որոնողական համակարգի մանրամասները</translation>
 <translation id="5414763847370083940">Դուք ծանուցում կստանաք, երբ որևէ կայքում գնիջեցում լինի։</translation>
@@ -1132,6 +1134,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5897749768294722429">Համաժամացրեք ձեր ներդիրները և պատմությունը, որպեսզի արագ վերադառնաք ձեր այցելած կայքեր։</translation>
 <translation id="5898848375214731122">Զանգված</translation>
 <translation id="5899314093904173337">Մոտակայքում գտնվող մարդկանց հետ կիսվելու համար խնդրեք նրանց սկանավորել այս QR կոդը տեսախցիկի կամ QR սկաների հավելվածի միջոցով</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} նոր ներդիր}one{{count} նոր ներդիր}other{{count} նոր ներդիր}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5917913282764181683">Ավտոմատ կերպով ջնջեք ձեր ներբեռնումները</translation>
 <translation id="5922999516621365983">Ներդիրն ամրացնելու համար քաշեք այն այստեղ։</translation>
@@ -1674,6 +1677,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8131740175452115882">Հաստատել</translation>
 <translation id="8132598642024322408">Նոր գինը՝ <ph name="PRICE" />, նախկին գինը՝ <ph name="PREVIOUS_PRICE" />։</translation>
 <translation id="813370552429173916">Յուրաքանչյուր կայքի կամ հավելվածի համար օգտագործեք չկրկնվող գաղտնաբառեր։ Եթե ինչ-որ մեկին հասանելի դառնա կրկնվող գաղտնաբառը, նա կկարողանա մտնել ձեր մյուս հաշիվները։ Սեղմեք՝ կայքը բացելու և գաղտնաբառերը փոխելու համար։</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} փակված ներդիր}one{{count} փակված ներդիր}other{{count} փակված ներդիր}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 այլ}one{# այլ}other{# այլ}}</translation>
 <translation id="8150167929304790980">Անուն, ազգանուն</translation>
 <translation id="8152331954420209374">Բացել Տեսապակին</translation>

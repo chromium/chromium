@@ -42,22 +42,14 @@ _CONFIG = [
         'allowed': [
             # absl
             'absl::Cleanup',
-            'absl::get',
-            'absl::get_if',
-            'absl::holds_alternative',
-            'absl::in_place',
-            'absl::in_place_type',
             'absl::int128',
             'absl::Int128High64',
             'absl::Int128Low64',
             'absl::MakeInt128',
             'absl::MakeUint128',
-            'absl::monostate',
             'absl::uint128',
             'absl::Uint128High64',
             'absl::Uint128Low64',
-            'absl::variant',
-            'absl::visit',
 
             # //base constructs that are allowed everywhere
             'base::(byte_)?span_from_ref',
@@ -353,6 +345,16 @@ _CONFIG = [
             'base::UnsafeSharedMemoryRegion',
             'base::WritableSharedMemoryMapping',
             'base::subtle::SharedAtomic',
+
+            # Std.
+            'std::get',
+            'std::get_if',
+            'std::holds_alternative',
+            'std::in_place',
+            'std::in_place_type',
+            'std::monostate',
+            'std::variant',
+            'std::visit',
 
             # tracing
             'perfetto::.+',

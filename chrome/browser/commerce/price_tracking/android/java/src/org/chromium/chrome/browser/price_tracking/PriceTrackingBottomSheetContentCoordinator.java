@@ -24,7 +24,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class PriceTrackingBottomSheetContentCoordinator
         implements CommerceBottomSheetContentProvider {
     private Context mContext;
-    private Tab mTab;
     private View mPriceTrackingContentContainer;
     private PriceTrackingBottomSheetContentMediator mMediator;
 
@@ -33,7 +32,6 @@ public class PriceTrackingBottomSheetContentCoordinator
             @NonNull Supplier<Tab> tabSupplier,
             @NonNull PriceInsightsDelegate priceInsightsDelegate) {
         mContext = context;
-        mTab = tabSupplier.get();
         mPriceTrackingContentContainer =
                 LayoutInflater.from(mContext)
                         .inflate(R.layout.price_tracking_layout_v2, /* root= */ null);
@@ -45,7 +43,7 @@ public class PriceTrackingBottomSheetContentCoordinator
                 PriceTrackingBottomSheetContentViewBinder::bind);
         mMediator =
                 new PriceTrackingBottomSheetContentMediator(
-                        context, mTab, propertyModel, priceInsightsDelegate);
+                        context, tabSupplier, propertyModel, priceInsightsDelegate);
     }
 
     @Override
@@ -66,6 +64,7 @@ public class PriceTrackingBottomSheetContentCoordinator
         return new PropertyModel.Builder(CommerceBottomSheetContentProperties.ALL_KEYS)
                 .with(CommerceBottomSheetContentProperties.TYPE, ContentType.PRICE_TRACKING)
                 .with(CommerceBottomSheetContentProperties.HAS_TITLE, false)
+                .with(CommerceBottomSheetContentProperties.HAS_CUSTOM_PADDING, false)
                 .with(
                         CommerceBottomSheetContentProperties.CUSTOM_VIEW,
                         mPriceTrackingContentContainer)

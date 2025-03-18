@@ -259,7 +259,9 @@ public class TabDragSourceTest {
                 "Global state tabBeingDragged not set.",
                 mTabBeingDragged,
                 ((ChromeTabDropDataAndroid) DragDropGlobalState.getForTesting().getData()).tab);
-        assertNull("Shadow view should be null.", mSourceInstance.getShadowViewForTesting());
+        assertNotNull(
+                "Shadow view should not be null for XR Device.",
+                mSourceInstance.getShadowViewForTesting());
         XrUtils.resetXrDeviceForTesting();
     }
 
@@ -435,9 +437,9 @@ public class TabDragSourceTest {
     public void test_onProvideShadowMetrics_WithDesiredStartPosition_ReturnsSuccess() {
         XrUtils.setXrDeviceForTesting(true);
         // Prepare
-        final float dragStartXPosition = 90f;
-        final float dragStartYPosition = 45f;
-        final PointF dragStartPoint = new PointF(dragStartXPosition, dragStartYPosition);
+        final float dragStartXPosition = 480f;
+        final PointF dragStartPoint = new PointF(dragStartXPosition, 0f);
+        final Resources resources = ContextUtils.getApplicationContext().getResources();
         // Call startDrag to set class variables.
         mSourceInstance.startTabDragAction(
                 mTabsToolbarView, mTabBeingDragged, dragStartPoint, TAB_POSITION_X, TAB_WIDTH);
@@ -454,11 +456,15 @@ public class TabDragSourceTest {
         // Validate anchor.
         assertEquals(
                 "Drag shadow x position is incorrect.",
-                Math.round(dragStartXPosition),
+                Math.round(
+                        dragStartXPosition
+                                - TAB_POSITION_X * resources.getDisplayMetrics().density),
                 dragAnchor.x);
         assertEquals(
                 "Drag shadow y position is incorrect.",
-                Math.round(dragStartYPosition),
+                Math.round(
+                        resources.getDimension(R.dimen.tab_grid_card_header_height) / 2
+                                + resources.getDimension(R.dimen.tab_grid_card_margin)),
                 dragAnchor.y);
         XrUtils.resetXrDeviceForTesting();
     }

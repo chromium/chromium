@@ -735,6 +735,13 @@ TEST_F(UDPSocketTest, CloseWithPendingRead) {
 // http://goo.gl/jjAk9
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(UDPSocketTest, JoinMulticastGroup) {
+#if BUILDFLAG(IS_MAC)
+  // See https://crbug.com/354933441
+  if (base::mac::MacOSMajorVersion() == 15) {
+    GTEST_SKIP() << "Disabled on macOS Sequoia.";
+  }
+#endif
+
   const char kGroup[] = "237.132.100.17";
 
   IPAddress group_ip;

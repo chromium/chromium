@@ -316,7 +316,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1532118530259321453">Hierdie bladsy sê</translation>
 <translation id="1533966801397200693">Die profiel waarmee jy aangemeld is, is ’n bestuurde profiel. Jou administrateur kan oor ’n afstand veranderinge aan jou profielinstellings maak, inligting oor die blaaier ontleed deur middel van verslagdoening, en ander nodige take uitvoer. <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Vertaal bladsy</translation>
-<translation id="1538295100801850685">Voorspellingverbeterings</translation>
 <translation id="1539840569003678498">Verslag is gestuur:</translation>
 <translation id="1542105669288201090">Besigheidonderrig</translation>
 <translation id="1545757265410828525">Prysgeskiedenis</translation>
@@ -1157,7 +1156,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3052868890529250114">Jy verbind gewoonlik veilig aan werwe, maar Chrome kon nie hierdie keer ’n veilige verbinding gebruik nie. ’n Aanvaller probeer dalk afluister of jou netwerkverbinding wysig. <ph name="BEGIN_LEARN_MORE_LINK" />Kry meer inligting oor hierdie waarskuwing<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Prysverlaging van <ph name="PRICE_DROP" /> op <ph name="PRODUCT_NAME" /></translation>
 <translation id="3061707000357573562">Regstellingdiens</translation>
-<translation id="306198082577913404">Skakel voorspellingverbeterings aan</translation>
 <translation id="3062655045399308513">Vee blaaierdata uit ...</translation>
 <translation id="3063453392496098461">Installasie van VPN-agtergronddienste het misluk.</translation>
 <translation id="306573536155379004">Speletjie het begin.</translation>
@@ -2325,7 +2323,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5097099694988056070">Toestelstatistieke, soos CPU- of RAM-gebruik</translation>
 <translation id="5097468150760963273">27x39 dm.</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome benodig toegang tot jou toestel se <ph name="PERMISSION" /></translation>
 <translation id="510644072453496781">Karton (punt)</translation>
 <translation id="5106648964679263509">Virtuele kaart is ingevul vir <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="5108881358339761672">Werf is nie veilig nie</translation>
@@ -4053,7 +4050,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8134058435519644366">Werwing en personeel</translation>
 <translation id="8135546115396015134">linkersleutel</translation>
 <translation id="8137456439814903304">Energie- en munisipale dienste</translation>
-<translation id="81474145143203755">Gee vir Chrome toegang sodat jy jou <ph name="PERMISSION" /> op hierdie werf kan gebruik</translation>
 <translation id="8148608574971654810">PDF-weergawe:</translation>
 <translation id="8149426793427495338">Jou rekenaar het gaan slaap.</translation>
 <translation id="8150722005171944719">Die lêer by <ph name="URL" /> is nie leesbaar nie. Dit is dalk verwyder, geskuif of lêertoestemmings kan dalk toegang verhinder.</translation>

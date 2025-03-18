@@ -267,6 +267,8 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
      ImageSizeMetricRange},
     {"gpu/gl", "CommandBuffer", MetricSize::kLarge, kEffectiveSize,
      EmitTo::kSizeInUkmAndUma, &Memory_Experimental::SetCommandBuffer},
+    {"gpu/shader_cache/graphite_cache", "Gpu.GraphiteShaderCache",
+     MetricSize::kSmall, kEffectiveSize, EmitTo::kSizeInUmaOnly, nullptr},
     {"gpu/gr_shader_cache", "Gpu.GrShaderCache", MetricSize::kSmall,
      kEffectiveSize, EmitTo::kSizeInUmaOnly, nullptr},
     {"gpu/mapped_memory", "GpuMappedMemory", MetricSize::kSmall, kEffectiveSize,

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/password_manager/android/password_access_loss_warning_startup_launcher.h"
 
+#include <variant>
+
 #include "base/notreached.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -26,12 +28,12 @@ void PasswordAccessLossWarningStartupLauncher::
     OnGetPasswordStoreResultsOrErrorFrom(
         password_manager::PasswordStoreInterface* store,
         password_manager::LoginsResultOrError results_or_error) {
-  if (absl::holds_alternative<password_manager::PasswordStoreBackendError>(
+  if (std::holds_alternative<password_manager::PasswordStoreBackendError>(
           results_or_error)) {
     return;
   }
   password_manager::LoginsResult passwords =
-      std::move(absl::get<password_manager::LoginsResult>(results_or_error));
+      std::move(std::get<password_manager::LoginsResult>(results_or_error));
   if (passwords.empty()) {
     return;
   }

@@ -432,7 +432,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2981364137500752533">Você pode ter até cinco janelas.</translation>
 <translation id="2983102365694924129">Com base na sua atividade em um site. Esta configuração está desativada.</translation>
 <translation id="2984978667043170458">Incluir o texto ao redor nas pesquisas do Google</translation>
-<translation id="2988638966064514052">Use senhas mais fortes</translation>
 <translation id="2989523299700148168">Visitados recentemente</translation>
 <translation id="2992473221983447149">Descrições de imagens</translation>
 <translation id="2996291259634659425">Criar senha longa</translation>
@@ -548,7 +547,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3557336313807607643">Adicionar aos contatos</translation>
 <translation id="3563767357928833671">Conteúdo da área de transferência exibido</translation>
 <translation id="3566639033325271639">Atualizar configurações</translation>
-<translation id="3568945271227339929">Nenhuma senha comprometida</translation>
 <translation id="3575464060651642446">Verificando as senhas neste dispositivo…</translation>
 <translation id="3577473026931028326">Algo deu errado. Tente novamente.</translation>
 <translation id="3577558748185201054">Gerencie seus interesses e suas preferências</translation>
@@ -1056,7 +1054,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5958275228015807058">Encontre seus arquivos e páginas em Downloads</translation>
 <translation id="5958994127112619898">Página simplificada</translation>
 <translation id="5962718611393537961">Toque para recolher</translation>
-<translation id="5964180026566797835">Não é possível verificar as senhas</translation>
 <translation id="5964869237734432770">Parar descrição de imagens</translation>
 <translation id="5977976211062815271">Neste dispositivo</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 página na sua Lista de leitura}one{# página na sua Lista de leitura}other{# páginas na sua Lista de leitura}}</translation>
@@ -1100,6 +1097,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="6150320133806434356">Favorito salvo</translation>
 <translation id="6150706324143004339">Atualize o Chrome para usar e salvar dados dele na sua Conta do Google</translation>
 <translation id="6154478581116148741">Ative o bloqueio da tela em Configurações para exportar suas senhas deste dispositivo</translation>
+<translation id="6156323911414505561">Mostrar barra de favoritos</translation>
 <translation id="6162892189396105610">Pré-carrega páginas que o Chrome acredita que você irá acessar.</translation>
 <translation id="6170675927290506430">Acessar configurações de notificação</translation>
 <translation id="6186394685773237175">Não foram encontradas senhas comprometidas</translation>

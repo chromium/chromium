@@ -61,6 +61,35 @@ class EslintTsTest(unittest.TestCase):
     _EXPECTED_STRING = "@typescript-eslint/require-await"
     self.assertTrue(_EXPECTED_STRING in str(context.exception))
 
+  def testWebUiEslintPlugin_LitErrors(self):
+    with self.assertRaises(RuntimeError) as context:
+      self._run_test(["with_webui_plugin_lit_violations.ts"])
+
+    _EXPECTED_STRING = "@webui-eslint/lit-property-accessor"
+    self.assertTrue(_EXPECTED_STRING in str(context.exception))
+    errors = [
+        "Missing 'accessor' keyword when declaring Litreactive property 'prop2'",
+        "Unnecessary 'accessor' keyword when declaring regular (non Lit reactive) property 'prop3'",
+        "Missing 'accessor' keyword when declaring Litreactive property 'prop1'",
+        "Unnecessary 'accessor' keyword when declaring regular (non Lit reactive) property 'prop4'",
+    ]
+    for e in errors:
+      self.assertTrue(e in str(context.exception))
+
+  def testWebUiEslintPlugin_PolymerErrors(self):
+    with self.assertRaises(RuntimeError) as context:
+      self._run_test(["with_webui_plugin_polymer_violations.ts"])
+
+    _EXPECTED_STRING = "@webui-eslint/polymer-property-declare"
+    errors = [
+        "Missing 'declare' keyword when declaring Polymer property 'prop2'",
+        "Unnecessary 'declare' keyword when declaring regular (non Polymer) property 'prop3'",
+        "Missing 'declare' keyword when declaring Polymer property 'prop1'",
+        "Unnecessary 'declare' keyword when declaring regular (non Polymer) property 'prop4'",
+    ]
+    for e in errors:
+      self.assertTrue(e in str(context.exception))
+
 
 if __name__ == "__main__":
   unittest.main()

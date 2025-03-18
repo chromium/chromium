@@ -10,6 +10,7 @@
 #include <set>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/auto_reset.h"
@@ -33,9 +34,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
-#include "chrome/browser/web_applications/callback_utils.h"
-#include "chrome/browser/web_applications/web_app_management_type.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 // TODO(crbug.com/40251079): Remove or at least isolate circular dependencies on
 // app service by moving this code to //c/b/web_applications/adjustments, or
 // flip entire dependency so web_applications depends on app_service.
@@ -43,6 +41,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"  // nogncheck
 #include "chrome/browser/apps/user_type_filter.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/callback_utils.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
@@ -54,6 +53,8 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -68,7 +69,6 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/common/constants.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device_event_observer.h"
 #include "ui/events/devices/touchscreen_device.h"
@@ -186,10 +186,10 @@ ParsedConfigs ParseConfigsBlocking(LoadedConfigs loaded_configs) {
         ParseConfig(*file_utils, loaded_config.file.DirName(),
                     loaded_config.file, loaded_config.contents);
     if (ExternalInstallOptions* options =
-            absl::get_if<ExternalInstallOptions>(&parse_result)) {
+            std::get_if<ExternalInstallOptions>(&parse_result)) {
       result.options_list.push_back(std::move(*options));
     } else {
-      result.errors.push_back(std::move(absl::get<std::string>(parse_result)));
+      result.errors.push_back(std::move(std::get<std::string>(parse_result)));
       VLOG(1) << result.errors.back();
     }
   }

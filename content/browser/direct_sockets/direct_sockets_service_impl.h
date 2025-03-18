@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_DIRECT_SOCKETS_DIRECT_SOCKETS_SERVICE_IMPL_H_
 #define CONTENT_BROWSER_DIRECT_SOCKETS_DIRECT_SOCKETS_SERVICE_IMPL_H_
 
+#include <variant>
+
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/child_process_id.h"
@@ -13,7 +15,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/address_list.h"
 #include "net/dns/public/host_resolver_results.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom.h"
 
 namespace network {
@@ -32,9 +33,9 @@ class SharedWorkerHost;
 class CONTENT_EXPORT DirectSocketsServiceImpl
     : public blink::mojom::DirectSocketsService {
  public:
-  using Context = absl::variant<const raw_ptr<RenderFrameHost>,
-                                base::WeakPtr<SharedWorkerHost>,
-                                base::WeakPtr<ServiceWorkerVersion>>;
+  using Context = std::variant<const raw_ptr<RenderFrameHost>,
+                               base::WeakPtr<SharedWorkerHost>,
+                               base::WeakPtr<ServiceWorkerVersion>>;
 
   ~DirectSocketsServiceImpl() override;
 

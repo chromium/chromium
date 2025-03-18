@@ -21,6 +21,7 @@
 #include <sstream>
 #include <string>
 #include <utility>
+#include <variant>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
@@ -57,10 +58,10 @@ std::string ErrorPathToString(const std::string& policy_name,
   std::stringstream error_path_string{policy_name};
   error_path_string << policy_name;
   for (auto& entry : error_path) {
-    if (absl::holds_alternative<int>(entry)) {
-      error_path_string << "[" << absl::get<int>(entry) << "]";
-    } else if (absl::holds_alternative<std::string>(entry)) {
-      error_path_string << "." << absl::get<std::string>(entry);
+    if (std::holds_alternative<int>(entry)) {
+      error_path_string << "[" << std::get<int>(entry) << "]";
+    } else if (std::holds_alternative<std::string>(entry)) {
+      error_path_string << "." << std::get<std::string>(entry);
     }
   }
   return error_path_string.str();

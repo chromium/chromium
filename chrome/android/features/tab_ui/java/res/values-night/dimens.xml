@@ -8,6 +8,4 @@ found in the LICENSE file.
 <resources>
     <!-- Tab hover card dimensions -->
     <dimen name="tab_hover_card_bg_color_elev">@dimen/default_elevation_5</dimen>
-
-    <dimen name="tab_strip_favicon_background_elevation">@dimen/default_elevation_6</dimen>
 </resources>

@@ -30,6 +30,7 @@ GL_APICALL void         GL_APIENTRY glCreateTransferCacheEntryINTERNAL (GLuint e
 GL_APICALL void         GL_APIENTRY glDeleteTransferCacheEntryINTERNAL (GLuint entry_type, GLuint entry_id);
 GL_APICALL void         GL_APIENTRY glUnlockTransferCacheEntryINTERNAL (GLuint entry_type, GLuint entry_id);
 GL_APICALL void         GL_APIENTRY glDeletePaintCachePathsINTERNAL (GLsizeiNotNegative n, const GLuint* ids);
+GL_APICALL void         GL_APIENTRY glDeletePaintCacheEffectsINTERNAL (GLsizeiNotNegative n, const GLuint* ids);
 GL_APICALL void         GL_APIENTRY glClearPaintCacheINTERNAL (void);
 
 // TOOD(backer): Remove GL encoding. These are not GL functions.

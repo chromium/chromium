@@ -9,6 +9,7 @@
 #include <iterator>
 #include <optional>
 #include <ranges>
+#include <variant>
 
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
@@ -134,7 +135,7 @@ bool IsAutofillAiPrediction(const FieldPrediction& prediction) {
 // `event2` is not supposed to be added.
 bool AreCollapsibleLogEvents(const AutofillField::FieldLogEventType& event1,
                              const AutofillField::FieldLogEventType& event2) {
-  return absl::visit(
+  return std::visit(
       [](const auto& e1, const auto& e2) {
         if constexpr (std::is_same_v<decltype(e1), decltype(e2)>) {
           return AreCollapsible(e1, e2);

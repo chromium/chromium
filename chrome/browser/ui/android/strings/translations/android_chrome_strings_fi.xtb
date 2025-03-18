@@ -432,7 +432,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2981364137500752533">Sinulla voi olla enintään viisi ikkunaa.</translation>
 <translation id="2983102365694924129">Perustuu toimintaasi sivustolla. Tämä asetus on poissa päältä.</translation>
 <translation id="2984978667043170458">Sisällytä ympäröivä teksti Google-hakuihin</translation>
-<translation id="2988638966064514052">Vahvista salasanojasi</translation>
 <translation id="2989523299700148168">Viimeksi käytetyt</translation>
 <translation id="2992473221983447149">Kuvien kuvaukset</translation>
 <translation id="2996291259634659425">Luo tunnuslause</translation>
@@ -548,7 +547,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="3557336313807607643">Lisää yhteystietoihin</translation>
 <translation id="3563767357928833671">Leikepöydän sisältö näytetään</translation>
 <translation id="3566639033325271639">Päivitä asetukset</translation>
-<translation id="3568945271227339929">Ei vaarantuneita salasanoja</translation>
 <translation id="3575464060651642446">Tarkistetaan salasanoja tällä laitteella…</translation>
 <translation id="3577473026931028326">Jotain meni pieleen. Yritä uudelleen.</translation>
 <translation id="3577558748185201054">Ylläpidä kiinnostuksen kohteita ja valintoja</translation>
@@ -1055,7 +1053,6 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="5958275228015807058">Löydät tiedostosi ja sivusi Latauksista</translation>
 <translation id="5958994127112619898">Yksinkertaista sivua</translation>
 <translation id="5962718611393537961">Tiivistä napauttamalla.</translation>
-<translation id="5964180026566797835">Salasanojen tarkistaminen ei onnistu</translation>
 <translation id="5964869237734432770">Lopeta kuvaselitykset</translation>
 <translation id="5977976211062815271">Tällä laitteella</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 sivu lukulistallasi}other{# sivua lukulistallasi}}</translation>
@@ -1099,6 +1096,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="6150320133806434356">Kirjanmerkki tallennettu</translation>
 <translation id="6150706324143004339">Chrome-datan käyttö ja tallennus Google-tilillä edellyttää Chromen päivittämistä</translation>
 <translation id="6154478581116148741">Ota näytön lukitus käyttöön asetuksista viedäksesi salasanoja laitteelta.</translation>
+<translation id="6156323911414505561">Näytä kirjanmerkkipalkki</translation>
 <translation id="6162892189396105610">Esilataa sivuja, joita Chromen mukaan avaat todennäköisesti.</translation>
 <translation id="6170675927290506430">Siirry ilmoitusasetuksiin</translation>
 <translation id="6186394685773237175">Vaarantuneita salasanoja ei löytynyt</translation>

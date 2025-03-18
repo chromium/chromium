@@ -9,6 +9,7 @@
 #include <optional>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "ash/constants/web_app_id_constants.h"
@@ -574,7 +575,7 @@ std::optional<GURL> WebAppRegistrar::GetAppPinnedHomeTabUrl(
       return std::nullopt;
 
     if (web_app->tab_strip() &&
-        absl::holds_alternative<blink::Manifest::HomeTabParams>(
+        std::holds_alternative<blink::Manifest::HomeTabParams>(
             web_app->tab_strip().value().home_tab)) {
       return GetAppStartUrl(app_id);
     }

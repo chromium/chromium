@@ -45,6 +45,7 @@
 <translation id="1652197001188145583">Lapho ivuliwe, amasayithi angacela ukusebenzisa amadivayisi e-NFC. Lapho ivaliwe, amasayithi awakwazi ukusebenzisa amadivayisi e-NFC.</translation>
 <translation id="1660204651932907780">Vumela amasayithi ukuthi adlale umsindo (kunconyiwe)</translation>
 <translation id="1677097821151855053">Amakhukhi nenye idatha yesayithi kusetshenziselwa ukukukhumbula, ngokwesibonelo ukungenisa ngemvume noma ukwenza izikhangiso zibe ngezakho. Ukuze uphathe amakhukhi awo wonke amasayithi, bona okuthi<ph name="BEGIN_LINK" />Amasethingi<ph name="END_LINK" />.</translation>
+<translation id="1679305402657584804">Amasayithi angacela ukusebenzisa amadivayisi e-NFC</translation>
 <translation id="1686785653877010442">Ngokuvamile amasayithi athumela izaziso ukukwazisa ngezindaba eziphambili noma ngemiyalezo yengxoxo</translation>
 <translation id="169515064810179024">Vimbela amasayithi kusukela ekufinyeleleni kuzinzwa zokunyakaza</translation>
 <translation id="1703666494654169921">Ungavumeli amasayithi asebenzise amadivayisi wento engekho ngokoqobo noma idatha</translation>
@@ -84,6 +85,7 @@
 <translation id="2185965788978862351">Lokhu kuzosusa idata engu-<ph name="DATASIZE" /> yamakhukhi agcinwe ngamasayithi noma ama-app Kusikrini sakho sasekhaya.</translation>
 <translation id="2194856509914051091">Izinto okufanele uzicabangele</translation>
 <translation id="2215727959747642672">Ukuhlelwa kwefayela</translation>
+<translation id="2218389616572918761">Amasayithi angacela imakrofoni yakho</translation>
 <translation id="2228071138934252756">Ukuze uvumele i-<ph name="APP_NAME" /> ifinyelele ikhamera yakho, vula nekhamera <ph name="BEGIN_LINK" />Kumasethingi e-Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Amakhukhi enkampani yangaphandle avinjiwe</translation>
 <translation id="2238944249568001759">Usesho oluphakanyisiwe ngokususelwe kuthebhu yakho yokugcina</translation>
@@ -132,8 +134,10 @@
 <translation id="2726059656860238749">Qalisa iChrome ugxilise i-Omnibox, wehlise isikhathi sokuqalisa kumadivayisi anesimo esiphansi.</translation>
 <translation id="2750481671343847896">Amasayithi angabonisa imiyalo yokungena ngemvume kusukela kumasevisi kamazisi.</translation>
 <translation id="2787357173144933081">Qala kabusha i-Omnibox</translation>
+<translation id="2789132527330338807">Isayithi lingacela ukusungula imephu ye-3D yezindawo zakho eziseduze noma ilandelele ukuma kwekhamera</translation>
 <translation id="2790501146643349491">Lapho ivuliwe, amasayithi asanda kuvalwa angaqedela ukuthumela nokwamukela idatha. Lapho ivaliwe, amasayithi asanda kuvalwa awakwazi ukuqedela ukuthumela noma ukwamukela idatha.</translation>
 <translation id="2795716239552913152">Amasayithi avamise ukusebenzisa indawo yakho ngezici ezihambisanayo noma ulwazi, njengezindaba zasendaweni noma izitolo eziseduze</translation>
+<translation id="2802908157808345702">Ungavumeli amasayithi ukuthi athumele okwesikhashana aphinde asebenzise ukuqondiswa kabusha</translation>
 <translation id="2814830417943086299">IChrome manje ibonisa amathebhu akho akamuva ohlwini lwe-app yedivayisi yakho nemiphumela yosesho. Lokhu ungakuvala noma nini kumasethingi eChrome.</translation>
 <translation id="2822354292072154809">Ingabe uqinisekile ukuthi ufuna ukusetha kabusha zonke izimvume zesayithi le-<ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Cela ukubuka kweselula</translation>
@@ -274,6 +278,7 @@
 <translation id="4598549027014564149">Ngenkathi uku-Incognito, amasayithi awakwazi ukusebenzisa amakhukhi akho ukuze abone umsebenzi wakho wokubhrawuza kuwo wonke amasayithi, ngisho namasayithi ahlobene. Umsebenzi wakho wokubhrawuza awusetshenziselwa izinto ezifana nokwenza izikhangiso ziqondane nomuntu siqu. Izakhi ezikwamanye amasayithi zingase zingasebenzi.</translation>
 <translation id="461356340001513807">Ikuvumela ukuba ungene ngemvume kumawebhusayithi usebenzisa i-akhawunti onayo enesevisi ehlonzayo</translation>
 <translation id="4619615317237390068">Amathebhu kusuka kwamanye amadivayisi</translation>
+<translation id="4635969503923889910">Ungavumeli amasayithi ukuthi asebenzise amadivayisi e-NFC</translation>
 <translation id="4644713492825682049">Sula futhi setha kabusha</translation>
 <translation id="4645575059429386691">Kuphethwe umzali wakho</translation>
 <translation id="4670064810192446073">Into engekho ngokoqobo</translation>
@@ -372,6 +377,7 @@
 <translation id="5877248419911025165">Goqa zonke izicelo</translation>
 <translation id="5884085660368669834">Okuncanyelwayo kwesayithi</translation>
 <translation id="5887687176710214216">Kugcine ukuvakashelwa izolo</translation>
+<translation id="5908617755156109052">Ungavumeli amasayithi ukuthi asungule imephu ye-3D yezindawo zakho eziseduze noma ulandelele ukuma kwekhamera</translation>
 <translation id="5916664084637901428">Vuliwe</translation>
 <translation id="5922853908706496913">Yabelana ngesikrini sakho</translation>
 <translation id="5922967540311291836">Vimba amakhukhi angahlangene ngqo:</translation>
@@ -582,6 +588,7 @@
 <translation id="8676374126336081632">Sula okokufaka</translation>
 <translation id="8681886425883659911">Izikhangiso zivinjelwe kumasayithi aziwa ngokubonisa izikhangiso ezizivelelayo noma ezidukisayo</translation>
 <translation id="868929229000858085">Sesha oxhumana nabo</translation>
+<translation id="8707904142362025782">Isayithi lingacela ikhamera yakho</translation>
 <translation id="8712637175834984815">Ngiyitholile</translation>
 <translation id="8715862698998036666">Hudula ukusuka phezulu bese uswayipha ukusuka kwesokunxele noma kwesokudla ukuze uphume esikrinini esigcwele.</translation>
 <translation id="8719283222052720129">Vula imvume ye-<ph name="APP_NAME" /> <ph name="BEGIN_LINK" />Kumasethingi e-Android<ph name="END_LINK" />.</translation>

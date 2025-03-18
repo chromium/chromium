@@ -432,7 +432,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="2981364137500752533">Możesz mieć maksymalnie 5 okien.</translation>
 <translation id="2983102365694924129">Na podstawie Twojej aktywności w witrynie. To ustawienie jest wyłączone.</translation>
 <translation id="2984978667043170458">Podczas wyszukiwania słów w Google uwzględniaj otaczający je tekst</translation>
-<translation id="2988638966064514052">Wzmocnij swoje hasła</translation>
 <translation id="2989523299700148168">Ostatnio odwiedzone</translation>
 <translation id="2992473221983447149">Opisy obrazów</translation>
 <translation id="2996291259634659425">Utwórz hasło wielowyrazowe</translation>
@@ -548,7 +547,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="3557336313807607643">Dodaj do kontaktów</translation>
 <translation id="3563767357928833671">Widoczna jest zawartość schowka</translation>
 <translation id="3566639033325271639">Zaktualizuj ustawienia</translation>
-<translation id="3568945271227339929">Brak przejętych haseł</translation>
 <translation id="3575464060651642446">Sprawdzam hasła na tym urządzeniu…</translation>
 <translation id="3577473026931028326">Coś poszło nie tak. Spróbuj ponownie.</translation>
 <translation id="3577558748185201054">Zarządzaj zainteresowaniami i preferencjami</translation>
@@ -1055,7 +1053,6 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5958275228015807058">Znajdź pliki i strony w Pobranych plikach</translation>
 <translation id="5958994127112619898">Uprość stronę</translation>
 <translation id="5962718611393537961">Kliknij, by zwinąć</translation>
-<translation id="5964180026566797835">Nie można sprawdzić haseł</translation>
 <translation id="5964869237734432770">Wstrzymaj opisy obrazów</translation>
 <translation id="5977976211062815271">Na tym urządzeniu</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 strona na Twojej liście Do przeczytania}few{# strony na Twojej liście Do przeczytania}many{# stron na Twojej liście Do przeczytania}other{# strony na Twojej liście Do przeczytania}}</translation>
@@ -1099,6 +1096,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="6150320133806434356">Zakładka została zapisana</translation>
 <translation id="6150706324143004339">Zaktualizuj Chrome, aby móc zapisywać dane Chrome na koncie Google i ich używać</translation>
 <translation id="6154478581116148741">Włącz blokadę ekranu w ustawieniach, by wyeksportować hasła z urządzenia</translation>
+<translation id="6156323911414505561">Pokaż pasek zakładek</translation>
 <translation id="6162892189396105610">Wczytuje strony, w przypadku których Chrome przewiduje, że je odwiedzisz.</translation>
 <translation id="6170675927290506430">Otwórz ustawienia powiadomień</translation>
 <translation id="6186394685773237175">Nie znaleziono przejętych haseł</translation>

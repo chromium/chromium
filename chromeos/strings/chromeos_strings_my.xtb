@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">ပြတ်ရွေ့သွားသည့်မြေ နောက်ခံ</translation>
 <translation id="33736539805963175"><ph name="LETTERS_LETTER" /> စာလုံးဖြင့် <ph name="LETTERS_COLOR" /> နောက်ခံ</translation>
 <translation id="3383623117265110236">အထူးသီးသန့်</translation>
-<translation id="3395147534045164351">လျှပ်တစ်ပြက်ပုံရိုက်သည့် နေရာပြောင်းရန်</translation>
 <translation id="3404249063913988450">စခရင်နားချိန်ပုံ ဖွင့်ရန်</translation>
 <translation id="3413935475507503304">ရှေ့ဆက်၍ အပ်ဒိတ်လုပ်ရန် ‘ရှေ့သို့’ ကို နှိပ်ပါ။</translation>
 <translation id="3428551088151258685">အိမ်ပြင်ပ</translation>
@@ -1395,6 +1394,7 @@
 <translation id="7388345524791662148"><ph name="RECORDING_NAME" /> အတွက် နောက်ထပ်ရွေးစရာများ</translation>
 <translation id="7388959671917308825">အသင့်ပါတာ့ချ်ပက်</translation>
 <translation id="7397270852490618635">လင်းသည့် အပြင်အဆင် ပိတ်ရန်</translation>
+<translation id="7400166052988585408">ဆရာက သင့်စခရင်ကို <ph name="NUM_SECONDS" /> စက္ကန့်အကြာတွင် လော့ခ်ချပါမည်</translation>
 <translation id="7401543881546089382">ဖြတ်လမ်းကို ဖျက်ရန်</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> ကို အပ်ဒိတ်လုပ်ရန် အသင့်ဖြစ်ပါပြီ</translation>
 <translation id="741244894080940828">ပြောင်းလဲခြင်း</translation>

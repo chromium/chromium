@@ -11,6 +11,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -782,8 +783,8 @@ TEST_F(EnclaveAuthenticatorRequestDelegateTest,
     test_sync_service->GetUserSettings()->SetSelectedType(
         syncer::UserSelectableType::kPasswords, test.is_syncing_passwords);
 
-    absl::variant<crypto::ScopedNullUnexportableKeyProvider,
-                  crypto::ScopedMockUnexportableKeyProvider>
+    std::variant<crypto::ScopedNullUnexportableKeyProvider,
+                 crypto::ScopedMockUnexportableKeyProvider>
         unexportable_key_provider;
     if (test.has_unexportable_keys) {
       unexportable_key_provider

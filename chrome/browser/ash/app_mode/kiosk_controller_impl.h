@@ -27,6 +27,8 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"
 
+class PrefService;
+
 namespace ash {
 
 class AppLaunchSplashScreen;
@@ -36,7 +38,8 @@ class KioskLaunchController;
 class KioskControllerImpl : public KioskController,
                             public user_manager::UserManager::Observer {
  public:
-  explicit KioskControllerImpl(user_manager::UserManager* user_manager);
+  KioskControllerImpl(PrefService& local_state,
+                      user_manager::UserManager* user_manager);
   KioskControllerImpl(const KioskControllerImpl&) = delete;
   KioskControllerImpl& operator=(const KioskControllerImpl&) = delete;
   ~KioskControllerImpl() override;
@@ -95,6 +98,8 @@ class KioskControllerImpl : public KioskController,
   void AppendIsolatedWebApps(std::vector<KioskApp>& apps) const;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  const raw_ref<PrefService> local_state_;
 
   KioskIwaManager GUARDED_BY_CONTEXT(sequence_checker_) iwa_manager_;
   WebKioskAppManager GUARDED_BY_CONTEXT(sequence_checker_) web_app_manager_;

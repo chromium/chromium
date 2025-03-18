@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -156,9 +157,9 @@ base::Value::Dict UpdateVersionInfo(const ServiceWorkerVersionInfo& version) {
   for (auto& it : version.clients) {
     base::Value::Dict client;
     client.Set("client_id", it.first);
-    if (absl::holds_alternative<GlobalRenderFrameHostId>(it.second)) {
-      RenderFrameHost* render_frame_host = RenderFrameHost::FromID(
-          absl::get<GlobalRenderFrameHostId>(it.second));
+    if (std::holds_alternative<GlobalRenderFrameHostId>(it.second)) {
+      RenderFrameHost* render_frame_host =
+          RenderFrameHost::FromID(std::get<GlobalRenderFrameHostId>(it.second));
       if (render_frame_host) {
         client.Set("url", render_frame_host->GetLastCommittedURL().spec());
       }

@@ -87,8 +87,11 @@ SessionImpl::SessionImpl(
       sampling_params_(ResolveSamplingParams(config_params, on_device_opts)) {
   if (on_device_opts && on_device_opts->ShouldUse()) {
     LogSessionCreation(on_device_opts->logger.get(), feature_);
+    // TODO(crbug.com/403383823): Consider removing `sampling_params_` from
+    // `SessionImpl` in favor of querying them from `on_device_context_`.
+    on_device_opts->sampling_params = sampling_params_;
     on_device_context_ =
-        std::make_unique<OnDeviceContext>(std::move(*on_device_opts), feature_);
+        std::make_unique<OnDeviceContext>(*std::move(on_device_opts), feature_);
     // Prewarm the initial session to make sure the service is started.
     on_device_context_->GetOrCreateSession();
   }
@@ -211,7 +214,7 @@ void SessionImpl::ExecuteModel(
       base::BindOnce(&SessionImpl::OnDeviceExecutionTerminated,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  on_device_execution_->BeginExecution(*on_device_context_, sampling_params_);
+  on_device_execution_->BeginExecution(*on_device_context_);
 }
 
 void SessionImpl::OnDeviceExecutionTerminated(bool healthy) {

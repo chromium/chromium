@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/loader/web_bundle/script_web_bundle.h"
 
+#include <variant>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/unguessable_token.h"
 #include "components/web_package/web_bundle_utils.h"
@@ -45,15 +47,16 @@ class ScriptWebBundle::ReleaseResourceTask {
   Persistent<ScriptWebBundle> script_web_bundle_;
 };
 
-absl::variant<ScriptWebBundle*, ScriptWebBundleError>
+std::variant<ScriptWebBundle*, ScriptWebBundleError>
 ScriptWebBundle::CreateOrReuseInline(ScriptElementBase& element,
                                      const String& source_text) {
   Document& document = element.GetDocument();
   auto rule_or_error = ScriptWebBundleRule::ParseJson(
       source_text, document.BaseURL(), document.GetExecutionContext());
-  if (absl::holds_alternative<ScriptWebBundleError>(rule_or_error))
-    return absl::get<ScriptWebBundleError>(rule_or_error);
-  auto& rule = absl::get<ScriptWebBundleRule>(rule_or_error);
+  if (std::holds_alternative<ScriptWebBundleError>(rule_or_error)) {
+    return std::get<ScriptWebBundleError>(rule_or_error);
+  }
+  auto& rule = std::get<ScriptWebBundleRule>(rule_or_error);
 
   ResourceFetcher* resource_fetcher = document.Fetcher();
   if (!resource_fetcher) {

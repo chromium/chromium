@@ -423,7 +423,8 @@ TEST_F(IpProtectionProbabilisticRevealTokenManagerTest,
   EXPECT_EQ(serialized_point_ex, serialized_point_com);
 }
 
-// Verify RequestTokens() posts next fetch task at next epoch start.
+// Verify RequestTokens() posts next fetch task after next epoch start and
+// before token expiration.
 TEST_F(IpProtectionProbabilisticRevealTokenManagerTest, RefetchSuccess) {
   const base::Time first_batch_expiration = base::Time::Now() + base::Hours(8);
   const base::Time first_batch_next_start = base::Time::Now() + base::Hours(4);
@@ -454,6 +455,14 @@ TEST_F(IpProtectionProbabilisticRevealTokenManagerTest, RefetchSuccess) {
   EXPECT_THAT(first_batch_points, testing::Contains(point))
       << "GetToken() returned a token that is not in the current batch.";
 
+  // Expect no re-fetch before the next epoch start.
+  task_environment_.FastForwardBy(first_batch_next_start - base::Seconds(1) -
+                                  base::Time::Now());
+  histogram_tester_.ExpectUniqueSample(
+      kGetTokensResultHistogram,
+      TryGetProbabilisticRevealTokensStatus::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount(kGetTokensRequestTimeHistogram, 1);
+
   SetIssuer(/*private_key=*/77777,
             /*num_tokens=*/27,
             /*expiration=*/base::Time::Now() + base::Hours(16),
@@ -462,7 +471,7 @@ TEST_F(IpProtectionProbabilisticRevealTokenManagerTest, RefetchSuccess) {
   const std::vector<ProbabilisticRevealToken> second_batch_tokens =
       fetcher_ptr_->Issuer()->Tokens();
 
-  task_environment_.FastForwardBy(first_batch_next_start - base::Time::Now());
+  task_environment_.FastForwardBy(first_batch_expiration - base::Time::Now());
 
   // check that GetToken() returns a token that is in the second batch
   // by decrypting token returned by `GetToken()` and checking whether
@@ -620,25 +629,20 @@ TEST_F(IpProtectionProbabilisticRevealTokenManagerTest,
       {TryGetProbabilisticRevealTokensStatus::kResponseParsingFailed, net::OK,
        /*try_again_after=*/std::nullopt});
 
-  // Check that fetching triggered at next start.
-  task_environment_.FastForwardBy(next_start - base::Time::Now());
-  EXPECT_EQ(fetcher_ptr_->NumCalls(), std::size_t(2));
-  histogram_tester_.ExpectBucketCount(
-      kGetTokensResultHistogram,
-      TryGetProbabilisticRevealTokensStatus::kResponseParsingFailed, 1);
-  histogram_tester_.ExpectBucketCount(
-      kGetTokensResultHistogram,
-      TryGetProbabilisticRevealTokensStatus::kSuccess, 1);
-  histogram_tester_.ExpectTotalCount(kGetTokensRequestTimeHistogram, 1);
+  // Check that fetching triggered before expiration.
+  task_environment_.FastForwardBy(expiration - base::Minutes(10) -
+                                  base::Time::Now());
 
-  // Check that manager re-tried fetching in an hour.
-  task_environment_.FastForwardBy(base::Hours(1) - base::Seconds(1));
-  EXPECT_EQ(fetcher_ptr_->NumCalls(), std::size_t(2));
-  task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(fetcher_ptr_->NumCalls(), std::size_t(3));
-  histogram_tester_.ExpectBucketCount(
+  size_t num_calls_at_expiration = fetcher_ptr_->NumCalls();
+  int32_t parsing_error_count_at_expiration = histogram_tester_.GetBucketCount(
       kGetTokensResultHistogram,
-      TryGetProbabilisticRevealTokensStatus::kResponseParsingFailed, 2);
+      TryGetProbabilisticRevealTokensStatus::kResponseParsingFailed);
+
+  // Fetch should have been called at least one more time (could be more
+  // depending on the random time chosen between next epoch start and
+  // expiration).
+  EXPECT_GE(num_calls_at_expiration, std::size_t(2));
+  EXPECT_GE(parsing_error_count_at_expiration, 1);
   histogram_tester_.ExpectBucketCount(
       kGetTokensResultHistogram,
       TryGetProbabilisticRevealTokensStatus::kSuccess, 1);
@@ -656,8 +660,19 @@ TEST_F(IpProtectionProbabilisticRevealTokenManagerTest,
   EXPECT_THAT(first_batch_points, testing::Contains(point))
       << "GetToken() returned a token that is not in the current batch.";
 
-  // Tokens expire as expected
-  task_environment_.FastForwardBy(expiration - base::Time::Now());
+  // Check that manager re-tried fetching once more after an hour.
+  task_environment_.FastForwardBy(base::Hours(1));
+  EXPECT_EQ(fetcher_ptr_->NumCalls(), num_calls_at_expiration + 1);
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                kGetTokensResultHistogram,
+                TryGetProbabilisticRevealTokensStatus::kResponseParsingFailed),
+            parsing_error_count_at_expiration + 1);
+  histogram_tester_.ExpectBucketCount(
+      kGetTokensResultHistogram,
+      TryGetProbabilisticRevealTokensStatus::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount(kGetTokensRequestTimeHistogram, 1);
+
+  // First batch of tokens is now expired, and no re-fetch has succeeded.
   EXPECT_FALSE(manager_->IsTokenAvailable());
   EXPECT_FALSE(manager_->GetToken("ip", "protection"));
 }

@@ -4,6 +4,8 @@
 
 #include "components/browsing_data/content/browsing_data_model.h"
 
+#include <variant>
+
 #include "base/barrier_closure.h"
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
@@ -385,7 +387,7 @@ class OriginOwnershipDelegate final : public BrowsingDataModel::Delegate {
   std::optional<BrowsingDataModel::DataOwner> GetDataOwner(
       const BrowsingDataModel::DataKey& data_key,
       BrowsingDataModel::StorageType storage_type) const override {
-    const url::Origin* origin = absl::get_if<url::Origin>(&data_key);
+    const url::Origin* origin = std::get_if<url::Origin>(&data_key);
     if (origin && origin->host() == origin_owned_host_) {
       return *origin;
     }

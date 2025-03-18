@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <optional>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -52,7 +53,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/actions/actions.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/time_format.h"
@@ -74,11 +74,11 @@ void InvokeAction(actions::ActionId id, actions::ActionItem* scope) {
 // Returns the current browser window, regardless of whether this instance is
 // tab-scoped or window-scoped.
 BrowserWindowInterface* GetBrowserWindowInterface(
-    absl::variant<BrowserWindowInterface*, tabs::TabInterface*> interface) {
-  if (absl::holds_alternative<BrowserWindowInterface*>(interface)) {
-    return absl::get<BrowserWindowInterface*>(interface);
+    std::variant<BrowserWindowInterface*, tabs::TabInterface*> interface) {
+  if (std::holds_alternative<BrowserWindowInterface*>(interface)) {
+    return std::get<BrowserWindowInterface*>(interface);
   }
-  return absl::get<tabs::TabInterface*>(interface)->GetBrowserWindowInterface();
+  return std::get<tabs::TabInterface*>(interface)->GetBrowserWindowInterface();
 }
 
 class HistoryClustersSidePanelContextMenu
@@ -86,7 +86,7 @@ class HistoryClustersSidePanelContextMenu
       public ui::SimpleMenuModel::Delegate {
  public:
   HistoryClustersSidePanelContextMenu(
-      absl::variant<BrowserWindowInterface*, tabs::TabInterface*> interface,
+      std::variant<BrowserWindowInterface*, tabs::TabInterface*> interface,
       GURL url)
       : ui::SimpleMenuModel(this), interface_(interface), url_(std::move(url)) {
     AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
@@ -101,7 +101,7 @@ class HistoryClustersSidePanelContextMenu
                         IDS_HISTORY_CLUSTERS_COPY_LINK);
   }
   HistoryClustersSidePanelContextMenu(
-      absl::variant<BrowserWindowInterface*, tabs::TabInterface*> interface,
+      std::variant<BrowserWindowInterface*, tabs::TabInterface*> interface,
       std::string query)
       : ui::SimpleMenuModel(this), interface_(interface), query_(query) {
     AddItemWithStringId(IDC_CUT, IDS_HISTORY_CLUSTERS_CUT);
@@ -178,7 +178,7 @@ class HistoryClustersSidePanelContextMenu
  private:
   // Exactly one of `browser_window_interface_` and `tab_interface_` will be
   // non-nullptr.
-  absl::variant<BrowserWindowInterface*, tabs::TabInterface*> interface_;
+  std::variant<BrowserWindowInterface*, tabs::TabInterface*> interface_;
   std::string query_;
   GURL url_;
 };

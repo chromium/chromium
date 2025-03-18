@@ -10,11 +10,15 @@ import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 
+import androidx.credentials.CreateCredentialResponse;
+import androidx.credentials.CreatePasswordRequest;
+import androidx.credentials.CreatePasswordResponse;
 import androidx.credentials.CredentialManager;
 import androidx.credentials.CredentialManagerCallback;
 import androidx.credentials.GetCredentialRequest;
 import androidx.credentials.GetCredentialResponse;
 import androidx.credentials.PasswordCredential;
+import androidx.credentials.exceptions.CreateCredentialException;
 import androidx.credentials.exceptions.GetCredentialException;
 
 import org.junit.Before;
@@ -45,6 +49,7 @@ public class ThirdPartyCredentialManagerBridgeTest {
     @Mock private ThirdPartyCredentialManagerBridge.Natives mReceiverBridgeJniMock;
     @Mock private CredentialManager mCredentialManager;
     @Mock private GetCredentialException mGetCredentialException;
+    @Mock private CreateCredentialException mCreateCredentialException;
 
     private ThirdPartyCredentialManagerBridge mBridge;
 
@@ -60,7 +65,7 @@ public class ThirdPartyCredentialManagerBridgeTest {
         PasswordCredential passwordCredential = new PasswordCredential(USERNAME, PASSWORD);
         GetCredentialResponse response = new GetCredentialResponse(passwordCredential);
 
-        doAnswer(invocation -> respondToCallback(invocation, response, null))
+        doAnswer(invocation -> respondToGetCallback(invocation, response, null))
                 .when(mCredentialManager)
                 .getCredentialAsync(
                         any(Context.class),
@@ -85,7 +90,7 @@ public class ThirdPartyCredentialManagerBridgeTest {
 
     @Test
     public void testOnGetCredentialErrorCalled() {
-        doAnswer(invocation -> respondToCallback(invocation, null, mGetCredentialException))
+        doAnswer(invocation -> respondToGetCallback(invocation, null, mGetCredentialException))
                 .when(mCredentialManager)
                 .getCredentialAsync(
                         any(Context.class),
@@ -106,7 +111,56 @@ public class ThirdPartyCredentialManagerBridgeTest {
         verify(mReceiverBridgeJniMock).onGetPasswordCredentialError(FAKE_RECEIVER_BRIDGE_POINTER);
     }
 
-    private Object respondToCallback(
+    @Test
+    public void testOnCreateCredentialSucceeds() {
+        CreateCredentialResponse response = new CreatePasswordResponse();
+        doAnswer(invocation -> respondToStoreCallback(invocation, response, null))
+                .when(mCredentialManager)
+                .createCredentialAsync(
+                        any(Context.class),
+                        any(CreatePasswordRequest.class),
+                        any(),
+                        any(Executor.class),
+                        any(CredentialManagerCallback.class));
+
+        mBridge.store(USERNAME, PASSWORD, ORIGIN);
+
+        verify(mCredentialManager)
+                .createCredentialAsync(
+                        any(Context.class),
+                        any(CreatePasswordRequest.class),
+                        any(),
+                        any(Executor.class),
+                        any(CredentialManagerCallback.class));
+        verify(mReceiverBridgeJniMock)
+                .onCreateCredentialResponse(FAKE_RECEIVER_BRIDGE_POINTER, true);
+    }
+
+    @Test
+    public void testonCreateCredentialFails() {
+        doAnswer(invocation -> respondToStoreCallback(invocation, null, mCreateCredentialException))
+                .when(mCredentialManager)
+                .createCredentialAsync(
+                        any(Context.class),
+                        any(CreatePasswordRequest.class),
+                        any(),
+                        any(Executor.class),
+                        any(CredentialManagerCallback.class));
+
+        mBridge.store(USERNAME, PASSWORD, ORIGIN);
+
+        verify(mCredentialManager)
+                .createCredentialAsync(
+                        any(Context.class),
+                        any(CreatePasswordRequest.class),
+                        any(),
+                        any(Executor.class),
+                        any(CredentialManagerCallback.class));
+        verify(mReceiverBridgeJniMock)
+                .onCreateCredentialResponse(FAKE_RECEIVER_BRIDGE_POINTER, false);
+    }
+
+    private Object respondToGetCallback(
             InvocationOnMock invocation,
             GetCredentialResponse response,
             GetCredentialException exception) {
@@ -114,6 +168,26 @@ public class ThirdPartyCredentialManagerBridgeTest {
                 (Executor) invocation.getArgument(3); // Get the Executor for the callback.
         CredentialManagerCallback<GetCredentialResponse, GetCredentialException> callback =
                 (CredentialManagerCallback<GetCredentialResponse, GetCredentialException>)
+                        invocation.getArgument(4); // Get the callback argument.
+        executor.execute(
+                () -> {
+                    if (response != null) {
+                        callback.onResult(response);
+                    } else {
+                        callback.onError(exception);
+                    }
+                });
+        return null;
+    }
+
+    private Object respondToStoreCallback(
+            InvocationOnMock invocation,
+            CreateCredentialResponse response,
+            CreateCredentialException exception) {
+        Executor executor =
+                (Executor) invocation.getArgument(3); // Get the Executor for the callback.
+        CredentialManagerCallback<CreateCredentialResponse, CreateCredentialException> callback =
+                (CredentialManagerCallback<CreateCredentialResponse, CreateCredentialException>)
                         invocation.getArgument(4); // Get the callback argument.
         executor.execute(
                 () -> {

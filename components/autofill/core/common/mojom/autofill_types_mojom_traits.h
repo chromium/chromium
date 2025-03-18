@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/i18n/rtl.h"
@@ -32,12 +33,12 @@ namespace mojo {
 template <>
 struct StructTraits<autofill::mojom::FrameTokenDataView, autofill::FrameToken> {
   static const base::UnguessableToken& token(const autofill::FrameToken& r) {
-    return absl::visit([](const auto& t) -> const auto& { return t.value(); },
-                       r);
+    return std::visit([](const auto& t) -> const auto& { return t.value(); },
+                      r);
   }
 
   static bool is_local(const autofill::FrameToken& r) {
-    return absl::holds_alternative<autofill::LocalFrameToken>(r);
+    return std::holds_alternative<autofill::LocalFrameToken>(r);
   }
 
   static bool Read(autofill::mojom::FrameTokenDataView data,
@@ -100,18 +101,18 @@ struct UnionTraits<autofill::mojom::SectionValueDataView,
       const autofill::Section::SectionValue& r);
 
   static bool default_section(const autofill::Section::SectionValue& r) {
-    DCHECK(absl::holds_alternative<autofill::Section::Default>(r));
+    DCHECK(std::holds_alternative<autofill::Section::Default>(r));
     return true;
   }
 
   static const autofill::Section::Autocomplete& autocomplete(
       const autofill::Section::SectionValue& r) {
-    return absl::get<autofill::Section::Autocomplete>(r);
+    return std::get<autofill::Section::Autocomplete>(r);
   }
 
   static const autofill::Section::FieldIdentifier& field_identifier(
       const autofill::Section::SectionValue& r) {
-    return absl::get<autofill::Section::FieldIdentifier>(r);
+    return std::get<autofill::Section::FieldIdentifier>(r);
   }
 
   static bool Read(autofill::mojom::SectionValueDataView data,

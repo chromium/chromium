@@ -9,7 +9,6 @@
 #include "base/test/task_environment.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/shell/browser/shell_content_browser_client.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
 

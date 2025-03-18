@@ -37,6 +37,7 @@ struct TableColumnGeometry {
 };
 
 using TableColumnGeometries = HeapVector<TableColumnGeometry>;
+using GCedTableColumnGeometries = GCedHeapVector<TableColumnGeometry>;
 
 // Column locations are used for collapsed-border painting.
 struct CollapsedTableBordersGeometry {

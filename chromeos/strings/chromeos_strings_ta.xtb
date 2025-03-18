@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">எர்த் ஃப்ளோ வால்பேப்பர்</translation>
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> பின்னணியில் <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">பிரத்தியேகமானவை</translation>
-<translation id="3395147534045164351">ஸ்னாப் இடத்தை மாற்றும்</translation>
 <translation id="3404249063913988450">ஸ்கிரீன் சேவரை இயக்குதல்</translation>
 <translation id="3413935475507503304">புதுப்பிப்பைத் தொடர, அடுத்து என்பதைக் கிளிக் செய்யவும்.</translation>
 <translation id="3428551088151258685">வெளிப்புற</translation>
@@ -1395,6 +1394,7 @@
 <translation id="7388345524791662148"><ph name="RECORDING_NAME" />க்கான கூடுதல் விருப்பங்கள்</translation>
 <translation id="7388959671917308825">உள்ளமைந்த டச்பேட்</translation>
 <translation id="7397270852490618635">லைட் தீமினை முடக்குதல்</translation>
+<translation id="7400166052988585408">உங்கள் ஆசிரியர் <ph name="NUM_SECONDS" /> வினாடிகளில் உங்கள் திரையைப் பூட்டுவார்</translation>
 <translation id="7401543881546089382">ஷார்ட்கட்டை அகற்றவும்</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> புதுப்பிக்கப்படத் தயாராக உள்ளது</translation>
 <translation id="741244894080940828">கன்வெர்ஷன்</translation>

@@ -27,27 +27,10 @@ export enum FeedbackType {
 }
 
 /**
- * Keep in sync with MediaRouterCastFeedbackEvent in enums.xml.
- */
-export enum FeedbackEvent {
-  OPENED = 0,
-  SENDING = 1,
-  RESENDING = 2,
-  SUCCEEDED = 3,
-  FAILED = 4,
-  MAX_VALUE = 4,
-}
-
-/**
  * See
  * https://docs.google.com/document/d/1c20VYdwpUPyBRQeAS0CMr6ahwWnb0s26gByomOwqDjk
  */
 export interface FeedbackUiBrowserProxy {
-  /**
-   * Records an event using Chrome Metrics.
-   */
-  recordEvent(event: FeedbackEvent): void;
-
   /**
    * Proxy for chrome.feedbackPrivate.sendFeedback().
    */
@@ -56,12 +39,6 @@ export interface FeedbackUiBrowserProxy {
 }
 
 export class FeedbackUiBrowserProxyImpl implements FeedbackUiBrowserProxy {
-  recordEvent(event: FeedbackEvent) {
-    chrome.send(
-        'metricsHandler:recordInHistogram',
-        ['MediaRouter.Cast.Feedback.Event', event, FeedbackEvent.MAX_VALUE]);
-  }
-
   sendFeedback(info: chrome.feedbackPrivate.FeedbackInfo) {
     return chrome.feedbackPrivate.sendFeedback(
         info, /*loadSystemInfo=*/ undefined, /*formOpenTime=*/ undefined);
@@ -158,8 +135,6 @@ export class CastFeedbackUiElement extends CrLitElement {
     chrome.feedbackPrivate.getUserEmail(email => {
       this.userEmail_ = email;
     });
-
-    this.browserProxy_.recordEvent(FeedbackEvent.OPENED);
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -250,7 +225,7 @@ export class CastFeedbackUiElement extends CrLitElement {
       };
     }
 
-    this.updateSendDialog_(FeedbackEvent.SENDING, 'sending', false);
+    this.updateSendDialog_('sending', false);
     this.$.sendDialog.showModal();
     this.trySendFeedback_(feedback, 0, 0);
   }
@@ -266,15 +241,15 @@ export class CastFeedbackUiElement extends CrLitElement {
       this.browserProxy_.sendFeedback(feedback).then(result => {
         if (result.status === chrome.feedbackPrivate.Status.SUCCESS) {
           this.feedbackSent = true;
-          this.updateSendDialog_(FeedbackEvent.SUCCEEDED, 'sendSuccess', true);
+          this.updateSendDialog_('sendSuccess', true);
         } else if (failureCount < this.maxResendAttempts) {
-          this.updateSendDialog_(FeedbackEvent.RESENDING, 'resending', false);
+          this.updateSendDialog_('resending', false);
           const sendDuration = Date.now() - sendStartTime;
           this.trySendFeedback_(
               feedback, failureCount + 1,
               Math.max(0, this.resendDelayMs - sendDuration));
         } else {
-          this.updateSendDialog_(FeedbackEvent.FAILED, 'sendFail', true);
+          this.updateSendDialog_('sendFail', true);
         }
       });
     }, delayMs);
@@ -283,9 +258,7 @@ export class CastFeedbackUiElement extends CrLitElement {
   /**
    * Updates the status of the "send" dialog and records the event.
    */
-  private updateSendDialog_(
-      event: FeedbackEvent, stringKey: string, isInteractive: boolean) {
-    this.browserProxy_.recordEvent(event);
+  private updateSendDialog_(stringKey: string, isInteractive: boolean) {
     this.sendDialogText_ = loadTimeData.getString(stringKey);
     this.sendDialogIsInteractive_ = isInteractive;
   }

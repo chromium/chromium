@@ -105,8 +105,7 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
 
   //  Checks if `rws_button_` should be initiated and if so does it and sets its
   //  info.
-  void SetRwsCookiesInfo(std::optional<CookiesRwsInfo> rws_info,
-                         bool is_rws_allowed);
+  void SetRwsCookiesInfo(std::optional<CookiesRwsInfo> rws_info);
 
   // Ensures the related website sets information UI is present, with
   // placeholder information if necessary.

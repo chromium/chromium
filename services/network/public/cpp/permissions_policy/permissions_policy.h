@@ -244,21 +244,11 @@ class COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM) PermissionsPolicy {
   // has expressly opted into. In this scenario, the caller could have just as
   // easily created an x-origin iframe with allow=feature, and since the
   // recipient origin has opted in, they would have called the feature in said
-  // iframe. If true, the feature must be defined in `defined_opt_in_features_`.
+  // iframe. If true, the feature must be defined in `kDefinedOptInFeatures`.
   bool IsFeatureEnabledForOrigin(
       network::mojom::PermissionsPolicyFeature feature,
       const url::Origin& origin,
       bool override_default_policy_to_all = false) const;
-
-  // Returns whether or not the given feature is enabled by this policy for a
-  // subresource request, given the ongoing request/redirect origin.
-  // TODO(crbug.com/400996803): Move this to the request object.
-  bool IsFeatureEnabledForSubresourceRequest(
-      network::mojom::PermissionsPolicyFeature feature,
-      const url::Origin& origin,
-      bool browsing_topics,
-      bool shared_storage_writable_eligible,
-      bool ad_auction_headers) const;
 
   const Allowlist GetAllowlistForDevTools(
       network::mojom::PermissionsPolicyFeature feature) const;
@@ -302,10 +292,6 @@ class COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM) PermissionsPolicy {
   friend class PermissionsPolicyTest;
   friend struct mojo::StructTraits<network::mojom::PermissionsPolicyDataView,
                                    network::PermissionsPolicy>;
-
-  // List of features that have an explicit opt-in mechanism.
-  static const network::mojom::PermissionsPolicyFeature
-      defined_opt_in_features_[];
 
   struct AllowlistsAndReportingEndpoints {
     std::map<network::mojom::PermissionsPolicyFeature, Allowlist> allowlists_;
@@ -374,15 +360,6 @@ class COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM) PermissionsPolicy {
       const network::PermissionsPolicyFeatureList& features,
       base::span<const network::mojom::PermissionsPolicyFeature>
           effective_enabled_permissions);
-
-  // Returns whether or not the given feature is enabled by this policy for a
-  // specific origin given a set of opt-in features. The opt-in features cannot
-  // override an explicit policy but can override the default policy.
-  bool IsFeatureEnabledForOriginImpl(
-      network::mojom::PermissionsPolicyFeature feature,
-      const url::Origin& origin,
-      const std::set<network::mojom::PermissionsPolicyFeature>& opt_in_features)
-      const;
 
   // If the feature is in the declared policy, returns whether the given origin
   // exists in its declared allowlist; otherwise, returns the value from

@@ -5,6 +5,8 @@
 #ifndef BASE_THREADING_SEQUENCE_LOCAL_STORAGE_MAP_H_
 #define BASE_THREADING_SEQUENCE_LOCAL_STORAGE_MAP_H_
 
+#include <variant>
+
 #include "base/auto_reset.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
@@ -105,7 +107,7 @@ class BASE_EXPORT SequenceLocalStorageMap {
     }
   };
 
-  // There's no need for a tagged union (absl::variant) since the value
+  // There's no need for a tagged union (std::variant) since the value
   // type is implicitly determined by T being stored.
   union Value {
     ExternalValue external_value;

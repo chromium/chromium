@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/mediarecorder/key_frame_request_processor.h"
+
+#include <variant>
+
 #include "base/functional/overloaded.h"
 #include "base/logging.h"
 
@@ -19,7 +22,7 @@ void KeyFrameRequestProcessor::OnKeyFrame(base::TimeTicks now) {
 bool KeyFrameRequestProcessor::OnFrameAndShouldRequestKeyFrame(
     base::TimeTicks now) {
   frame_counter_++;
-  bool request_keyframe = absl::visit(
+  bool request_keyframe = std::visit(
       base::Overloaded{[&](uint64_t count) {
                          return frame_counter_ >
                                 last_key_frame_received_.frame_counter + count;

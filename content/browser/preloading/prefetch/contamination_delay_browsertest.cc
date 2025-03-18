@@ -25,6 +25,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/prefetch_test_util.h"
 #include "content/shell/browser/shell.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -217,6 +218,48 @@ IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest, IgnoresIfExempt) {
   EXPECT_THAT(swap_observer.Get().type(),
               ::testing::AnyOf(BrowsingContextGroupSwapType::kNoSwap,
                                BrowsingContextGroupSwapType::kProactiveSwap));
+}
+
+IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest,
+                       IgnoresIfExempt_BrowserInitiated) {
+  url::Origin referring_origin = url::Origin::Create(
+      embedded_test_server()->GetURL("referrer.localhost", "/title1.html"));
+  GURL prefetch_url =
+      embedded_test_server()->GetURL("prefetch.localhost", "/delayed");
+
+  auto* prefetch_service = PrefetchService::GetFromFrameTreeNodeId(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId());
+  // TODO(crbug.com/40946257): Currently `OnPrefetchLikely` will never be called
+  // for browser-initiated triggers, so we set `num_on_prefetch_likely_calls` to
+  // 0 here, and instead use `TestPrefetchWatcher` to confirm whether prefetch
+  // is actually triggered.
+  auto owned_delegate = std::make_unique<MockPrefetchServiceDelegate>(
+      /*num_on_prefetch_likely_calls=*/0);
+  EXPECT_CALL(*owned_delegate, IsContaminationExemptPerOrigin(referring_origin))
+      .WillRepeatedly(testing::Return(true));
+  prefetch_service->SetPrefetchServiceDelegateForTesting(
+      std::move(owned_delegate));
+
+  auto test_prefetch_watcher = std::make_unique<test::TestPrefetchWatcher>();
+  auto handle = shell()->web_contents()->StartPrefetch(
+      prefetch_url, /*use_prefetch_proxy=*/false, blink::mojom::Referrer(),
+      referring_origin, /*no_vary_search_hint=*/std::nullopt,
+      content::PreloadPipelineInfo::Create(
+          /*planned_max_preloading_type=*/content::PreloadingType::kPrefetch),
+      /*attempt=*/nullptr, /*holdback_status_override=*/std::nullopt);
+  test_prefetch_watcher->WaitUntilPrefetchResponseCompleted(std::nullopt,
+                                                            prefetch_url);
+
+  BrowsingContextGroupSwapObserver swap_observer(shell()->web_contents());
+  base::ElapsedTimer timer;
+  ASSERT_TRUE(NavigateToURL(shell(), prefetch_url));
+  EXPECT_TRUE(test_prefetch_watcher->PrefetchUsedInLastNavigation());
+  EXPECT_LT(timer.Elapsed(), response_delay());
+  EXPECT_THAT(swap_observer.Get().type(),
+              ::testing::AnyOf(BrowsingContextGroupSwapType::kNoSwap,
+                               BrowsingContextGroupSwapType::kProactiveSwap));
+  test_prefetch_watcher.reset();
+  handle.reset();
 }
 
 IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest, DelayAfterRedirect) {

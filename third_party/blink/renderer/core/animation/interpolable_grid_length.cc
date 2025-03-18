@@ -56,7 +56,7 @@ InterpolableGridLength* InterpolableGridLength::Create(
   InterpolableGridLengthType type = GetInterpolableGridLengthType(length);
   InterpolableValue* value = nullptr;
   if (length.IsFlex()) {
-    value = MakeGarbageCollected<InterpolableNumber>(length.GetFloatValue());
+    value = MakeGarbageCollected<InterpolableNumber>(length.Flex());
   } else {
     value = InterpolableLength::MaybeConvertLength(
         length, property, zoom,

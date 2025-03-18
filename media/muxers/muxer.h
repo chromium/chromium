@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <variant>
 
 #include "base/time/time.h"
 #include "media/base/audio_encoder.h"
@@ -58,7 +59,7 @@ class MEDIA_EXPORT Muxer {
   struct MEDIA_EXPORT EncodedFrame {
     EncodedFrame();
     EncodedFrame(
-        absl::variant<AudioParameters, VideoParameters> params,
+        std::variant<AudioParameters, VideoParameters> params,
         std::optional<media::AudioEncoder::CodecDescription> codec_description,
         scoped_refptr<DecoderBuffer> data);
     EncodedFrame(EncodedFrame&&);
@@ -67,7 +68,7 @@ class MEDIA_EXPORT Muxer {
     ~EncodedFrame();
     // Parameters for frame. Presence of either indicates the type of data
     // below.
-    absl::variant<AudioParameters, VideoParameters> params;
+    std::variant<AudioParameters, VideoParameters> params;
     // Codec description for data.
     std::optional<media::AudioEncoder::CodecDescription> codec_description;
     // Audio or Video frame data.

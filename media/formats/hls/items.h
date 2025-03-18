@@ -5,11 +5,12 @@
 #ifndef MEDIA_FORMATS_HLS_ITEMS_H_
 #define MEDIA_FORMATS_HLS_ITEMS_H_
 
+#include <variant>
+
 #include "media/base/media_export.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/source_string.h"
 #include "media/formats/hls/tag_name.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace media::hls {
 
@@ -70,7 +71,7 @@ struct UriItem {
   SourceString content;
 };
 
-using GetNextLineItemResult = absl::variant<TagItem, UriItem>;
+using GetNextLineItemResult = std::variant<TagItem, UriItem>;
 
 // Returns the next line-level item from the source text. Automatically skips
 // empty lines.

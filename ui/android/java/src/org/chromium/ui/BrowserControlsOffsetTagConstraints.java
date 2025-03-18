@@ -28,6 +28,29 @@ public final class BrowserControlsOffsetTagConstraints {
         mBottomControlsConstraints = bottomControlsConstraints;
     }
 
+    // TODO(peilinwang) remove this after fixing invalid constraints.
+    public void assertAndFixConstraints(String callsite) {
+        if (mTopControlsConstraints != null && !mTopControlsConstraints.isValid()) {
+            assert false
+                    : callsite + "Top constraints invalid: " + mTopControlsConstraints.toString();
+            mTopControlsConstraints.reset();
+        }
+
+        if (mContentConstraints != null && !mContentConstraints.isValid()) {
+            assert false
+                    : callsite + "Content constraints invalid: " + mContentConstraints.toString();
+            mContentConstraints.reset();
+        }
+
+        if (mBottomControlsConstraints != null && !mBottomControlsConstraints.isValid()) {
+            assert false
+                    : callsite
+                            + "Bottom constraints invalid: "
+                            + mBottomControlsConstraints.toString();
+            mBottomControlsConstraints.reset();
+        }
+    }
+
     @CalledByNative
     public @Nullable OffsetTagConstraints getTopControlsConstraints() {
         return mTopControlsConstraints;

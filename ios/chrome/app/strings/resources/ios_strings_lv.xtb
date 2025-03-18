@@ -504,6 +504,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="310900540163454140">Vai dzēst paroli <ph name="WEBSITE" /> kontam?</translation>
 <translation id="3112556859945124369">Atzīmēt…</translation>
 <translation id="3119874402040566234">Jūs tiksiet izrakstīts, un pārlūkošanas dati tiks dzēsti</translation>
+<translation id="3124568093781685165">Kopīgojiet savas paroles ar ģimenes locekļiem</translation>
 <translation id="3130863904455712965">Vēsture un cits saturs</translation>
 <translation id="313283613037595347">Izveidot jaunu inkognito cilni</translation>
 <translation id="3138611310073113613">Atmest atlasi</translation>
@@ -1003,6 +1004,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="5352128922772839949">Saglabāt failu</translation>
 <translation id="5355191726083956201">Uzlabota aizsardzība ir ieslēgta</translation>
 <translation id="537853552771686272">Pārvaldiet tēmas un vietnes, kas jūs interesē</translation>
+<translation id="5390458669633674385">{count,plural, =1{{count} aizvērta cilne}zero{{count} aizvērtu ciļņu}one{{count} aizvērta cilne}other{{count} aizvērtas cilnes}}</translation>
 <translation id="5394975111793637642">Paslēpt kartīti “Jums ieteiktās produktu atsauksmes”</translation>
 <translation id="5395707839134961196">Paslēpt meklētājprogrammas informāciju</translation>
 <translation id="5414763847370083940">Jūs saņemsiet brīdinājumu, ja kādā vietnē tiks konstatēts cenas kritums.</translation>
@@ -1132,6 +1134,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="5897749768294722429">Sinhronizējiet cilnes un vēsturi, lai ātri atgrieztos iepriekš apmeklētajās vietnēs</translation>
 <translation id="5898848375214731122">Masa</translation>
 <translation id="5899314093904173337">Lai kopīgotu saturu ar tuvumā esošajiem cilvēkiem, ļaujiet viņiem skenēt šo kvadrātkodu, izmantojot kameru vai kvadrātkodu skenēšanas lietotni.</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} jauna cilne}zero{{count} jaunu ciļņu}one{{count} jauna cilne}other{{count} jaunas cilnes}}</translation>
 <translation id="5911030830365207728">Google tulkotājs</translation>
 <translation id="5917913282764181683">Lejupielāžu automātiska dzēšana</translation>
 <translation id="5922999516621365983">Velciet cilni šeit, lai to piespraustu.</translation>
@@ -1674,6 +1677,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8131740175452115882">Apstiprināt</translation>
 <translation id="8132598642024322408">Pašreizējā cena: <ph name="PRICE" />; iepriekšējā cena: <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Katrā vietnē vai lietotnē izmantojiet unikālu paroli. Ja kāds uzzinās jūsu atkārtoti izmantoto paroli, šī persona var piekļūt citiem jūsu kontiem ar šo paroli. Noklikšķiniet, lai atvērtu vietni un mainītu paroli tūlīt.</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} aizvērta cilne}zero{{count} aizvērtu ciļņu}one{{count} aizvērta cilne}other{{count} aizvērtas cilnes}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{vēl 1 datu veids}zero{vēl # datu veidu}one{vēl # datu veids}other{vēl # datu veidi}}</translation>
 <translation id="8150167929304790980">It means name of a subject, not personal name.</translation>
 <translation id="8152331954420209374">Pāriet uz Lens</translation>

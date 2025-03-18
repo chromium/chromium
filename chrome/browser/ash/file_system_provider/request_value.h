@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_REQUEST_VALUE_H_
 
 #include <string>
+#include <variant>
 
 #include "chrome/common/extensions/api/file_system_provider_internal.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace ash::file_system_provider {
 
@@ -61,87 +61,87 @@ class RequestValue {
   const extensions::api::file_system_provider_internal::
       UnmountRequestedSuccess::Params*
       unmount_success_params() const {
-    return absl::get_if<extensions::api::file_system_provider_internal::
-                            UnmountRequestedSuccess::Params>(&data_);
+    return std::get_if<extensions::api::file_system_provider_internal::
+                           UnmountRequestedSuccess::Params>(&data_);
   }
 
   const extensions::api::file_system_provider_internal::
       GetMetadataRequestedSuccess::Params*
       get_metadata_success_params() const {
-    return absl::get_if<extensions::api::file_system_provider_internal::
-                            GetMetadataRequestedSuccess::Params>(&data_);
+    return std::get_if<extensions::api::file_system_provider_internal::
+                           GetMetadataRequestedSuccess::Params>(&data_);
   }
 
   const extensions::api::file_system_provider_internal::
       GetActionsRequestedSuccess::Params*
       get_actions_success_params() const {
-    return absl::get_if<extensions::api::file_system_provider_internal::
-                            GetActionsRequestedSuccess::Params>(&data_);
+    return std::get_if<extensions::api::file_system_provider_internal::
+                           GetActionsRequestedSuccess::Params>(&data_);
   }
 
   const extensions::api::file_system_provider_internal::
       ReadDirectoryRequestedSuccess::Params*
       read_directory_success_params() const {
-    return absl::get_if<extensions::api::file_system_provider_internal::
-                            ReadDirectoryRequestedSuccess::Params>(&data_);
+    return std::get_if<extensions::api::file_system_provider_internal::
+                           ReadDirectoryRequestedSuccess::Params>(&data_);
   }
 
   const extensions::api::file_system_provider_internal::
       ReadFileRequestedSuccess::Params*
       read_file_success_params() const {
-    return absl::get_if<extensions::api::file_system_provider_internal::
-                            ReadFileRequestedSuccess::Params>(&data_);
+    return std::get_if<extensions::api::file_system_provider_internal::
+                           ReadFileRequestedSuccess::Params>(&data_);
   }
 
   const extensions::api::file_system_provider_internal::
       OpenFileRequestedSuccess::Params*
       open_file_success_params() const {
-    return absl::get_if<extensions::api::file_system_provider_internal::
-                            OpenFileRequestedSuccess::Params>(&data_);
+    return std::get_if<extensions::api::file_system_provider_internal::
+                           OpenFileRequestedSuccess::Params>(&data_);
   }
 
   const extensions::api::file_system_provider_internal::
       OperationRequestedSuccess::Params*
       operation_success_params() const {
-    return absl::get_if<extensions::api::file_system_provider_internal::
-                            OperationRequestedSuccess::Params>(&data_);
+    return std::get_if<extensions::api::file_system_provider_internal::
+                           OperationRequestedSuccess::Params>(&data_);
   }
 
   const extensions::api::file_system_provider_internal::
       OperationRequestedError::Params*
       operation_error_params() const {
-    return absl::get_if<extensions::api::file_system_provider_internal::
-                            OperationRequestedError::Params>(&data_);
+    return std::get_if<extensions::api::file_system_provider_internal::
+                           OperationRequestedError::Params>(&data_);
   }
 
   const std::string* testing_params() const {
-    return absl::get_if<std::string>(&data_);
+    return std::get_if<std::string>(&data_);
   }
 
   bool is_valid() const {
-    return !absl::holds_alternative<absl::monostate>(data_);
+    return !std::holds_alternative<std::monostate>(data_);
   }
 
  private:
   // A variant holding the possible types of data held as a value.
-  absl::variant<absl::monostate,
-                extensions::api::file_system_provider_internal::
-                    UnmountRequestedSuccess::Params,
-                extensions::api::file_system_provider_internal::
-                    GetMetadataRequestedSuccess::Params,
-                extensions::api::file_system_provider_internal::
-                    GetActionsRequestedSuccess::Params,
-                extensions::api::file_system_provider_internal::
-                    ReadDirectoryRequestedSuccess::Params,
-                extensions::api::file_system_provider_internal::
-                    ReadFileRequestedSuccess::Params,
-                extensions::api::file_system_provider_internal::
-                    OpenFileRequestedSuccess::Params,
-                extensions::api::file_system_provider_internal::
-                    OperationRequestedSuccess::Params,
-                extensions::api::file_system_provider_internal::
-                    OperationRequestedError::Params,
-                std::string>
+  std::variant<std::monostate,
+               extensions::api::file_system_provider_internal::
+                   UnmountRequestedSuccess::Params,
+               extensions::api::file_system_provider_internal::
+                   GetMetadataRequestedSuccess::Params,
+               extensions::api::file_system_provider_internal::
+                   GetActionsRequestedSuccess::Params,
+               extensions::api::file_system_provider_internal::
+                   ReadDirectoryRequestedSuccess::Params,
+               extensions::api::file_system_provider_internal::
+                   ReadFileRequestedSuccess::Params,
+               extensions::api::file_system_provider_internal::
+                   OpenFileRequestedSuccess::Params,
+               extensions::api::file_system_provider_internal::
+                   OperationRequestedSuccess::Params,
+               extensions::api::file_system_provider_internal::
+                   OperationRequestedError::Params,
+               std::string>
       data_;
 };
 

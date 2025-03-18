@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -822,7 +823,7 @@ gfx::Image LoadTestPNG(const base::FilePath& path) {
   return gfx::Image::CreateFrom1xPNGBytes(base::as_byte_span(png_data));
 }
 
-using FaviconOptions = absl::variant<absl::monostate, SkColor, base::FilePath>;
+using FaviconOptions = std::variant<std::monostate, SkColor, base::FilePath>;
 
 using ManifestConfig = std::tuple<
     /*app_name=*/std::optional<std::u16string>,
@@ -852,10 +853,9 @@ class UniversalInstallComboTest
          std::get<0>(config) ? base::UTF16ToUTF8(std::get<0>(config).value())
                              : "Absent",
          "_Favicon",
-         absl::holds_alternative<absl::monostate>(std::get<1>(config))
-             ? "Absent"
-         : absl::holds_alternative<SkColor>(std::get<1>(config))
-             ? ui::SkColorName(absl::get<SkColor>(std::get<1>(config)))
+         std::holds_alternative<std::monostate>(std::get<1>(config)) ? "Absent"
+         : std::holds_alternative<SkColor>(std::get<1>(config))
+             ? ui::SkColorName(std::get<SkColor>(std::get<1>(config)))
              : "IconPathSpecified",
          "_StartUrl", std::get<2>(config) ? "Specified" : "Absent",
          "_ManifestId", std::get<3>(config) ? "Specified" : "Absent",
@@ -871,17 +871,17 @@ class UniversalInstallComboTest
   }
   std::optional<SkColor> GetFaviconColor() {
     auto param = std::get<1>(GetParam());
-    if (!absl::holds_alternative<SkColor>(param)) {
+    if (!std::holds_alternative<SkColor>(param)) {
       return std::nullopt;
     }
-    return absl::get<SkColor>(param);
+    return std::get<SkColor>(param);
   }
   std::optional<std::string> GetFaviconFilePath() {
     auto param = std::get<1>(GetParam());
-    if (!absl::holds_alternative<base::FilePath>(param)) {
+    if (!std::holds_alternative<base::FilePath>(param)) {
       return std::nullopt;
     }
-    base::FilePath file_path = absl::get<base::FilePath>(param);
+    base::FilePath file_path = std::get<base::FilePath>(param);
     return file_path.AsUTF8Unsafe();
   }
 
@@ -1151,7 +1151,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(
         testing::Values(u"AppName", std::nullopt),
         testing::Values(FaviconOptions(SK_ColorBLUE),
-                        absl::monostate()
+                        std::monostate()
 #if BUILDFLAG(IS_MAC)
                             ,
                         FaviconOptions(base::FilePath(FILE_PATH_LITERAL(

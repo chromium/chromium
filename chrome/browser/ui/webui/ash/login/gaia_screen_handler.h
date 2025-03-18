@@ -477,7 +477,7 @@ class GaiaScreenHandler final
   base::CancelableOnceCallback<void()> update_state_callback_;
   base::CancelableOnceCallback<void()> connecting_callback_;
 
-  std::unique_ptr<HttpAuthDialog::ScopedEnabler> enable_ash_httpauth_;
+  std::unique_ptr<HttpAuthDialog::ScopedEnabler> enable_system_httpauth_;
 
   // Whether we're currently ignoring network state updates because a proxy auth
   // UI pending (or we're waiting for a grace period after the proxy auth UI is

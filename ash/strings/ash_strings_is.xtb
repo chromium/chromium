@@ -166,6 +166,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1505542291183484463">Stærð gluggaramma breytt niður</translation>
 <translation id="1510238584712386396">Ræsiforrit</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Sýna tilkynningastillingar. Slökkt er á tilkynningum fyrir forrit}one{Sýna tilkynningastillingar. Slökkt er á tilkynningum fyrir # forrit}other{Sýna tilkynningastillingar. Slökkt er á tilkynningum fyrir # forrit}}</translation>
+<translation id="1521655867290435174">Google töflureiknar</translation>
 <translation id="1523032696246003">Rafhlaða <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> að fullri hleðslu</translation>
 <translation id="1525508553941733066">LOKA</translation>
 <translation id="1526448108126799339">Opna nýjan flipa í nýjum glugga</translation>
@@ -345,7 +346,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2201071101391734388">Nýleg mynd <ph name="INDEX" /> af <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Draga saman Google-verkefni</translation>
 <translation id="2208323208084708176">Sameinuð skjáborðsstilling</translation>
-<translation id="2220572644011485463">PIN-númer eða aðgangsorð</translation>
 <translation id="2222841058024245321">Skrifborð 7</translation>
 <translation id="2223384056430485343">Í skjáskiptingu</translation>
 <translation id="2224075387478458881">Skjáupptaka er óheimil á meðan varið efni er sýnilegt</translation>
@@ -1829,7 +1829,6 @@ Ný uppsetning</translation>
 <translation id="7000027735917578303">Stillingar glugga og skrifborðs</translation>
 <translation id="7004910047186208204">Tengjast við farsímagögn</translation>
 <translation id="7005239792648594238">Opnaðu forrit til að hefjast handa</translation>
-<translation id="7007983414944123363">Ekki tókst að staðfesta PIN-númerið eða aðgangsorðið. Reyndu aftur.</translation>
 <translation id="7014684956566476813">Tengdist tækinu <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Komdu aftur klukkan <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Skrifborð 6</translation>
@@ -2466,6 +2465,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="9168436347345867845">Gera þetta seinna</translation>
 <translation id="9178475906033259337">Birtir eina niðurstöðu fyrir „<ph name="QUERY" />“</translation>
 <translation id="9179259655489829027">Þessi eiginleiki veitir þér fljótlegan aðgang að hvaða innskráða notanda sem er án þess að aðgangsorðs sé krafist. Notaðu þennan eiginleika aðeins með reikningum sem þú treystir.</translation>
+<translation id="9183302530794969518">Google-skjöl</translation>
 <translation id="9183456764293710005">Stækkun á öllum skjánum</translation>
 <translation id="9192133205265227850">Nota „<ph name="DEVICE_NAME" />“</translation>
 <translation id="9193626018745640770">Sendir út í óþekkt tæki</translation>

@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -23,7 +24,6 @@
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace ash::quick_start {
 
@@ -83,13 +83,13 @@ class TargetDeviceBootstrapController
   using ConnectionClosedReason =
       TargetDeviceConnectionBroker::ConnectionClosedReason;
 
-  using Payload = absl::variant<absl::monostate,
-                                ErrorCode,
-                                QRCode,
-                                PinString,
-                                EmailString,
-                                mojom::WifiCredentials,
-                                GaiaCredentials>;
+  using Payload = std::variant<std::monostate,
+                               ErrorCode,
+                               QRCode,
+                               PinString,
+                               EmailString,
+                               mojom::WifiCredentials,
+                               GaiaCredentials>;
 
   struct Status {
     Status();

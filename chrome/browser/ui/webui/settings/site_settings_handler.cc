@@ -9,6 +9,7 @@
 #include <set>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/barrier_closure.h"
@@ -106,7 +107,6 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "storage/common/file_system/file_system_util.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -603,7 +603,7 @@ GroupingKey GroupingKey::Deserialize(const std::string& serialized) {
   return GroupingKey::Create(url::Origin::Create(url));
 }
 
-GroupingKey::GroupingKey(const absl::variant<std::string, url::Origin>& value)
+GroupingKey::GroupingKey(const std::variant<std::string, url::Origin>& value)
     : value_(value) {}
 
 GroupingKey::GroupingKey(const GroupingKey& other) = default;
@@ -611,33 +611,33 @@ GroupingKey& GroupingKey::operator=(const GroupingKey& other) = default;
 GroupingKey::~GroupingKey() = default;
 
 std::string GroupingKey::Serialize() const {
-  return absl::visit(base::Overloaded{[](const std::string& etld_plus1) {
-                                        return kGroupingKeyEtldPrefix +
-                                               etld_plus1;
-                                      },
-                                      [](const url::Origin& origin) {
-                                        return kGroupingKeyOriginPrefix +
-                                               origin.GetURL().spec();
-                                      }},
-                     value_);
+  return std::visit(base::Overloaded{[](const std::string& etld_plus1) {
+                                       return kGroupingKeyEtldPrefix +
+                                              etld_plus1;
+                                     },
+                                     [](const url::Origin& origin) {
+                                       return kGroupingKeyOriginPrefix +
+                                              origin.GetURL().spec();
+                                     }},
+                    value_);
 }
 
 std::optional<std::string> GroupingKey::GetEtldPlusOne() const {
-  if (absl::holds_alternative<std::string>(value_)) {
-    return absl::get<std::string>(value_);
+  if (std::holds_alternative<std::string>(value_)) {
+    return std::get<std::string>(value_);
   }
   return std::nullopt;
 }
 
 std::optional<url::Origin> GroupingKey::GetOrigin() const {
-  if (absl::holds_alternative<url::Origin>(value_)) {
-    return absl::get<url::Origin>(value_);
+  if (std::holds_alternative<url::Origin>(value_)) {
+    return std::get<url::Origin>(value_);
   }
   return std::nullopt;
 }
 
 url::Origin GroupingKey::ToOrigin() const {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{[](const std::string& etld_plus1) {
                          return ConvertEtldToOrigin(etld_plus1,
                                                     /*secure=*/false);
@@ -2386,7 +2386,7 @@ void SiteSettingsHandler::GetHostCookies(
         host_cookie_map) {
   for (const auto& [owner, key, details] : *browsing_data_model_) {
     const net::CanonicalCookie* cookie =
-        absl::get_if<net::CanonicalCookie>(&key.get());
+        std::get_if<net::CanonicalCookie>(&key.get());
     // Skip data keys that don't have cookies.
     if (!cookie) {
       continue;

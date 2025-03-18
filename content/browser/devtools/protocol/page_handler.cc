@@ -10,6 +10,7 @@
 #include <sstream>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -130,7 +131,7 @@ std::optional<std::vector<uint8_t>> EncodeBitmapAsWebp(int quality,
   return gfx::WebpCodec::Encode(bitmap, quality);
 }
 
-absl::variant<protocol::Response, BitmapEncoder>
+std::variant<protocol::Response, BitmapEncoder>
 GetEncoder(const std::string& format, int quality, bool optimize_for_speed) {
   if (quality < 0 || quality > 100) {
     quality = kDefaultScreenshotQuality;
@@ -675,8 +676,8 @@ Response PageHandler::Disable() {
   if (!pending_dialog_.is_null()) {
     ResponseOrWebContents result = GetWebContentsForTopLevelActiveFrame();
     // Only a top level frame can have a dialog.
-    DCHECK(absl::holds_alternative<WebContentsImpl*>(result));
-    WebContentsImpl* web_contents = absl::get<WebContentsImpl*>(result);
+    DCHECK(std::holds_alternative<WebContentsImpl*>(result));
+    WebContentsImpl* web_contents = std::get<WebContentsImpl*>(result);
     // Leave dialog hanging if there is a manager that can take care of it,
     // cancel and send ack otherwise.
     bool has_dialog_manager =
@@ -1220,8 +1221,8 @@ void PageHandler::CaptureScreenshot(
       GetEncoder(format.value_or(Page::CaptureScreenshot::FormatEnum::Png),
                  quality.value_or(kDefaultScreenshotQuality),
                  optimize_for_speed.value_or(false));
-  if (absl::holds_alternative<Response>(encoder)) {
-    callback->sendFailure(absl::get<Response>(encoder));
+  if (std::holds_alternative<Response>(encoder)) {
+    callback->sendFailure(std::get<Response>(encoder));
     return;
   }
 
@@ -1235,7 +1236,7 @@ void PageHandler::CaptureScreenshot(
   }
 
   auto pending_request = std::make_unique<PendingScreenshotRequest>(
-      std::move(capturer_handle), std::move(absl::get<BitmapEncoder>(encoder)),
+      std::move(capturer_handle), std::move(std::get<BitmapEncoder>(encoder)),
       std::move(callback));
 
   // We don't support clip/emulation when capturing from window, bail out.
@@ -1381,10 +1382,11 @@ Response PageHandler::StartScreencast(std::optional<std::string> format,
       GetEncoder(format.value_or(Page::CaptureScreenshot::FormatEnum::Png),
                  quality.value_or(kDefaultScreenshotQuality),
                  /* optimize_for_speed= */ true);
-  if (absl::holds_alternative<Response>(encoder))
-    return absl::get<Response>(encoder);
+  if (std::holds_alternative<Response>(encoder)) {
+    return std::get<Response>(encoder);
+  }
 
-  screencast_encoder_ = absl::get<BitmapEncoder>(encoder);
+  screencast_encoder_ = std::get<BitmapEncoder>(encoder);
 
   screencast_max_width_ = max_width.value_or(-1);
   screencast_max_height_ = max_height.value_or(-1);
@@ -1430,8 +1432,9 @@ Response PageHandler::HandleJavaScriptDialog(
     bool accept,
     std::optional<std::string> prompt_text) {
   ResponseOrWebContents result = GetWebContentsForTopLevelActiveFrame();
-  if (absl::holds_alternative<Response>(result))
-    return absl::get<Response>(result);
+  if (std::holds_alternative<Response>(result)) {
+    return std::get<Response>(result);
+  }
 
   if (pending_dialog_.is_null())
     return Response::InvalidParams("No dialog is showing");
@@ -1443,7 +1446,7 @@ Response PageHandler::HandleJavaScriptDialog(
   std::move(pending_dialog_).Run(accept, prompt_override);
 
   // Clean up the dialog UI if any.
-  WebContentsImpl* web_contents = absl::get<WebContentsImpl*>(result);
+  WebContentsImpl* web_contents = std::get<WebContentsImpl*>(result);
   if (web_contents->GetDelegate()) {
     JavaScriptDialogManager* manager =
         web_contents->GetDelegate()->GetJavaScriptDialogManager(web_contents);
@@ -1643,10 +1646,11 @@ void PageHandler::ScreenshotCaptured(
 Response PageHandler::StopLoading() {
   ResponseOrWebContents result = GetWebContentsForTopLevelActiveFrame();
 
-  if (absl::holds_alternative<Response>(result))
-    return absl::get<Response>(result);
+  if (std::holds_alternative<Response>(result)) {
+    return std::get<Response>(result);
+  }
 
-  WebContentsImpl* web_contents = absl::get<WebContentsImpl*>(result);
+  WebContentsImpl* web_contents = std::get<WebContentsImpl*>(result);
   web_contents->Stop();
   return Response::Success();
 }
@@ -1655,10 +1659,11 @@ Response PageHandler::SetWebLifecycleState(const std::string& state) {
   // Inactive pages(e.g., a prerendered or back-forward cached page) should not
   // affect the state.
   ResponseOrWebContents result = GetWebContentsForTopLevelActiveFrame();
-  if (absl::holds_alternative<Response>(result))
-    return absl::get<Response>(result);
+  if (std::holds_alternative<Response>(result)) {
+    return std::get<Response>(result);
+  }
 
-  WebContentsImpl* web_contents = absl::get<WebContentsImpl*>(result);
+  WebContentsImpl* web_contents = std::get<WebContentsImpl*>(result);
   if (state == Page::SetWebLifecycleState::StateEnum::Frozen) {
     // TODO(fmeawad): Instead of forcing a visibility change, only allow
     // freezing a page if it was already hidden.

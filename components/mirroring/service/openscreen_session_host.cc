@@ -45,6 +45,7 @@
 #include "media/base/audio_capturer_source.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
 #include "media/capture/video_capture_types.h"
 #include "media/cast/common/openscreen_conversion_helpers.h"
@@ -462,13 +463,12 @@ void OpenscreenSessionHost::OnNegotiated(
         metrics_provider_pending_remote.InitWithNewPipeAndPassReceiver());
 
     media::GpuVideoAcceleratorFactories* gpu_factories = nullptr;
-    if (video_config->use_hardware_encoder) {
+    if (base::FeatureList::IsEnabled(media::kCastStreamingMediaVideoEncoder) &&
+        video_config->use_hardware_encoder) {
       gpu_factories_factory_ = std::make_unique<MirroringGpuFactoriesFactory>(
           cast_environment_, *gpu_,
-          base::BindRepeating(
-              &OpenscreenSessionHost::OnVideoEncoderStatus,
-              weak_factory_.GetWeakPtr(), *video_config,
-              media::cast::OperationalStatus::STATUS_CODEC_RUNTIME_ERROR));
+          base::BindRepeating(&OpenscreenSessionHost::OnGpuFactoryContextLost,
+                              weak_factory_.GetWeakPtr(), *video_config));
       gpu_factories = &gpu_factories_factory_->GetInstance();
     }
 
@@ -911,23 +911,32 @@ void OpenscreenSessionHost::OnVideoEncoderStatus(
       // If we used a hardware encoder and it failed, denylist it for the rest
       // of the browsing session and try renegotiating.
       if (config.use_hardware_encoder) {
-        PauseCapturingVideo();
         CHECK_EQ(state_, State::kMirroring);
-
-        media::cast::encoding_support::DenyListHardwareCodec(
-            config.video_codec());
-        StopStreaming();
-        Negotiate();
-
-        base::UmaHistogramEnumeration(
-            "MediaRouter.MirroringService.DisabledHardwareCodecAndRenegotiated",
-            config.video_codec());
+        MaybeDenylistHardwareCodecAndRenegotiate(config.video_codec());
         return;
       }
 
       ReportAndLogError(SessionError::ENCODING_ERROR, AsErrorMessage(status));
       break;
   }
+}
+
+void OpenscreenSessionHost::OnGpuFactoryContextLost(
+    const media::cast::FrameSenderConfig& config) {
+  // If we used a hardware encoder and it failed, denylist it for the rest
+  // of the browsing session and try renegotiating.
+  CHECK(config.use_hardware_encoder);
+  CHECK_EQ(state_, State::kMirroring);
+
+  // The factory's instance is no longer valid.
+  // TODO(crbug.com/402802379): instead of deleting the factory, we could just
+  // call GetInstance again and do a partial re-setup of the video stream stack.
+  gpu_factories_factory_.reset();
+  base::UmaHistogramEnumeration(
+      "MediaRouter.MirroringService.GpuFactoryContextLost",
+      config.video_codec());
+
+  MaybeDenylistHardwareCodecAndRenegotiate(config.video_codec());
 }
 
 void OpenscreenSessionHost::SetTargetPlayoutDelay(
@@ -1189,6 +1198,20 @@ base::Value::Dict OpenscreenSessionHost::GetMirroringStats() const {
 void OpenscreenSessionHost::SetSenderStatsForTest(
     const openscreen::cast::SenderStats& test_stats) {
   stats_client_->OnStatisticsUpdated(test_stats);
+}
+
+void OpenscreenSessionHost::MaybeDenylistHardwareCodecAndRenegotiate(
+    media::VideoCodec codec) {
+  // Only denylist and restart negotiation for this hardware codec once.
+  if (!media::cast::encoding_support::IsHardwareDenyListed(codec)) {
+    media::cast::encoding_support::DenyListHardwareCodec(codec);
+    StopStreaming();
+    Negotiate();
+    base::UmaHistogramEnumeration(
+        "MediaRouter.MirroringService."
+        "DisabledHardwareCodecAndRenegotiated",
+        codec);
+  }
 }
 
 }  // namespace mirroring

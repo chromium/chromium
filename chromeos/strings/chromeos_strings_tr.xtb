@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">Toprak akışı duvar kağıdı</translation>
 <translation id="33736539805963175"><ph name="LETTERS_LETTER" /> harfini içeren <ph name="LETTERS_COLOR" /> arka plan</translation>
 <translation id="3383623117265110236">Özel</translation>
-<translation id="3395147534045164351">Konum tutturmayı aç/kapat</translation>
 <translation id="3404249063913988450">Ekran koruyucuyu etkinleştir</translation>
 <translation id="3413935475507503304">Güncelleme işlemine devam etmek için İleri'yi tıklayın.</translation>
 <translation id="3428551088151258685">dış mekan</translation>
@@ -1395,6 +1394,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="7388345524791662148"><ph name="RECORDING_NAME" /> için diğer seçenekler</translation>
 <translation id="7388959671917308825">Yerleşik dokunmatik alan</translation>
 <translation id="7397270852490618635">Açık temayı kapat</translation>
+<translation id="7400166052988585408">Öğretmeniniz ekranınızı <ph name="NUM_SECONDS" /> saniye içinde kilitleyecek</translation>
 <translation id="7401543881546089382">Kısayolu sil</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> güncellenmeye hazır</translation>
 <translation id="741244894080940828">dönüştürme</translation>

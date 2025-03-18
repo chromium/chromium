@@ -9,9 +9,14 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/install_gate.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
+
+namespace content {
+class BrowserContext;
+}
 
 namespace extensions {
 class ExtensionPrefs;
@@ -21,16 +26,17 @@ class InstallGate;
 // Manages a set of extension installs delayed for various reasons.  The reason
 // for delayed install is stored in ExtensionPrefs. These are not part of
 // ExtensionRegistry because they are not yet installed.
-class DelayedInstallManager {
+class DelayedInstallManager : public KeyedService {
  public:
-  DelayedInstallManager(ExtensionPrefs* extension_prefs,
-                        ExtensionRegistrar* extension_registrar);
+  explicit DelayedInstallManager(content::BrowserContext* context);
   DelayedInstallManager(const DelayedInstallManager&) = delete;
   DelayedInstallManager& operator=(const DelayedInstallManager&) = delete;
-  ~DelayedInstallManager();
+  ~DelayedInstallManager() override;
 
-  // Avoids dangling pointers during keyed service two-phase shutdown.
-  void Shutdown();
+  static DelayedInstallManager* Get(content::BrowserContext* context);
+
+  // KeyedService:
+  void Shutdown() override;
 
   // Returns true if an extension is in the delayed install set.
   bool Contains(const ExtensionId& id) const;

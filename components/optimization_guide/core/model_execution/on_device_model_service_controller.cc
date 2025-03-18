@@ -198,6 +198,10 @@ OnDeviceModelServiceController::CreateSession(
   opts.logger = optimization_guide_logger;
   if (config_params) {
     opts.capabilities = config_params->capabilities;
+    // TODO: can this be required?
+    if (config_params->sampling_params) {
+      opts.sampling_params = *config_params->sampling_params;
+    }
   }
 
   return std::make_unique<SessionImpl>(

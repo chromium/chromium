@@ -7,12 +7,12 @@
 
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "components/page_content_annotations/core/page_content_annotation_type.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace page_content_annotations {
 
@@ -117,7 +117,7 @@ class PageContentAnnotationsResult {
   PageContentAnnotationsResult();
 
   // The page content annotation of this result.
-  absl::variant<void* /*Unknown*/, ContentVisibilityScore> result_;
+  std::variant<void* /*Unknown*/, ContentVisibilityScore> result_;
 };
 
 }  // namespace page_content_annotations

@@ -7,10 +7,10 @@
 
 #include <stdint.h>
 
-#include "device/vr/android/cardboard/scoped_cardboard_objects.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include <variant>
 
 #include "base/component_export.h"
+#include "device/vr/android/cardboard/scoped_cardboard_objects.h"
 
 namespace device {
 
@@ -53,8 +53,7 @@ class COMPONENT_EXPORT(VR_CARDBOARD) CardboardDeviceParams {
   // launched. Meant to be used for testing purposes only.
   static bool use_cardboard_v1_device_params_for_testing_;
 
-  absl::variant<uint8_t*, OwnedCardboardParams> encoded_device_params_ =
-      nullptr;
+  std::variant<uint8_t*, OwnedCardboardParams> encoded_device_params_ = nullptr;
   int size_ = 0;
 };
 

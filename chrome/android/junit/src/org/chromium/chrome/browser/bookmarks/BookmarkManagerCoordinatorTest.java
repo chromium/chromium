@@ -57,8 +57,7 @@ import org.chromium.ui.base.TestActivity;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     ChromeSwitches.DISABLE_NATIVE_INITIALIZATION
 })
-// TODO(crbug.com/327387704): Add tests with this flag enabled.
-@Features.DisableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
+@Features.EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
 public class BookmarkManagerCoordinatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -141,8 +140,6 @@ public class BookmarkManagerCoordinatorTest {
     @Test
     public void testCreateView() {
         FrameLayout parent = new FrameLayout(mActivity);
-        assertNotNull(mCoordinator.buildPersonalizedPromoView(parent));
-        assertNotNull(mCoordinator.buildLegacyPromoView(parent));
         assertNotNull(mCoordinator.buildSectionHeaderView(parent));
         assertNotNull(BookmarkManagerCoordinator.buildDividerView(parent));
         assertNotNull(BookmarkManagerCoordinator.buildCompactImprovedBookmarkRow(parent));

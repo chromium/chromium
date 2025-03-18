@@ -21,7 +21,6 @@
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/mock_quota_manager.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/origin.h"
 
 namespace storage {
@@ -106,9 +105,6 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
   blink::StorageKey last_notified_storage_key() const {
     return last_notified_storage_key_;
   }
-  blink::mojom::StorageType last_notified_type() const {
-    return last_notified_type_;
-  }
 
   int notify_bucket_accessed_count() const { return bucket_accessed_count_; }
   int notify_bucket_modified_count() const { return bucket_modified_count_; }
@@ -129,8 +125,6 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
   base::Lock lock_;
 
   blink::StorageKey last_notified_storage_key_;
-  blink::mojom::StorageType last_notified_type_ =
-      blink::mojom::StorageType::kUnknown;
 
   int bucket_accessed_count_ = 0;
   int bucket_modified_count_ = 0;

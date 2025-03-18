@@ -13,6 +13,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -38,7 +39,6 @@
 #include "net/http/structured_headers.h"
 #include "services/network/public/mojom/attribution.mojom.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -58,7 +58,7 @@ constexpr char kResponseKey[] = "response";
 constexpr char kResponsesKey[] = "responses";
 constexpr char kTimestampKey[] = "timestamp";
 
-using Context = absl::variant<std::string_view, size_t>;
+using Context = std::variant<std::string_view, size_t>;
 using ContextPath = std::vector<Context>;
 
 std::string TimeAsUnixMillisecondString(base::Time time) {
@@ -90,11 +90,11 @@ std::ostream& operator<<(std::ostream& out, const ContextPath& path) {
   }
 
   for (Context context : path) {
-    absl::visit(base::Overloaded{
-                    [&](std::string_view key) { out << "[\"" << key << "\"]"; },
-                    [&](size_t index) { out << '[' << index << ']'; },
-                },
-                context);
+    std::visit(base::Overloaded{
+                   [&](std::string_view key) { out << "[\"" << key << "\"]"; },
+                   [&](size_t index) { out << '[' << index << ']'; },
+               },
+               context);
   }
   return out;
 }

@@ -14,6 +14,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check_deref.h"
@@ -2252,7 +2253,7 @@ void AutofillAgent::ResetLastInteractedElements() {
 }
 
 void AutofillAgent::UpdateLastInteractedElement(
-    absl::variant<FormRendererId, FieldRendererId> element_id) {
+    std::variant<FormRendererId, FieldRendererId> element_id) {
   form_tracker_->UpdateLastInteractedElement(element_id);
 }
 

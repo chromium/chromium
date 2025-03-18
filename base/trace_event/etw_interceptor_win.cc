@@ -7,6 +7,7 @@
 #include <array>
 #include <optional>
 #include <type_traits>
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -14,7 +15,6 @@
 #include "base/strings/string_tokenizer.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/perfetto/protos/perfetto/common/interceptor_descriptor.gen.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/debug_annotation.pbzero.h"
@@ -188,7 +188,7 @@ class TlmFieldDebugAnnotation final : public TlmFieldBase {
   uint8_t data_desc_count_ = 1;
   uint8_t in_type_ = 2 /* TlgInANSISTRING */;
   uint8_t out_type_ = 0;
-  absl::variant<std::string, uint64_t, int64_t, bool, double> value_;
+  std::variant<std::string, uint64_t, int64_t, bool, double> value_;
 };
 
 TlmFieldDebugAnnotation::TlmFieldDebugAnnotation(
@@ -233,7 +233,7 @@ TlmFieldDebugAnnotation& TlmFieldDebugAnnotation::operator=(
 
 void TlmFieldDebugAnnotation::FillEventDescriptor(
     EVENT_DATA_DESCRIPTOR* descriptors) const noexcept {
-  absl::visit(
+  std::visit(
       [&]<typename T>(const T& arg) {
         using Traits = EventDataDescTraits<T>;
         EventDataDescCreate(&descriptors[0], Traits::GetAddress(arg),

@@ -49,8 +49,8 @@ export class ManagedDialogElement extends ManagedDialogElementBase {
     };
   }
 
-  override title: string = '';
-  body: string = '';
+  override accessor title: string = '';
+  accessor body: string = '';
 
   protected onOkClick_() {
     this.$.dialog.close();

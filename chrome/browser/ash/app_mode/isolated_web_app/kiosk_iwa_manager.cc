@@ -17,6 +17,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_data.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
@@ -29,6 +30,7 @@
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/device_local_account_type.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "url/origin.h"
 
 namespace ash {
@@ -68,7 +70,8 @@ KioskIwaManager* KioskIwaManager::Get() {
   return g_kiosk_iwa_manager_instance;
 }
 
-KioskIwaManager::KioskIwaManager() {
+KioskIwaManager::KioskIwaManager(PrefService& local_state)
+    : local_state_(local_state) {
   CHECK(!g_kiosk_iwa_manager_instance);  // Only one instance is allowed.
   g_kiosk_iwa_manager_instance = this;
   UpdateAppsFromPolicy();
@@ -217,8 +220,9 @@ void KioskIwaManager::ProcessDeviceLocalAccount(
   const std::string& web_bundle_id = account.kiosk_iwa_info.web_bundle_id();
   const GURL update_manifest_url(account.kiosk_iwa_info.update_manifest_url());
 
-  auto new_iwa_data = KioskIwaData::Create(account.user_id, web_bundle_id,
-                                           update_manifest_url, *this);
+  auto new_iwa_data =
+      KioskIwaData::Create(local_state_.get(), account.user_id, web_bundle_id,
+                           update_manifest_url, *this);
 
   if (!new_iwa_data) {
     LOG(WARNING) << "Cannot create Kiosk IWA data for account "

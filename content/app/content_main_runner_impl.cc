@@ -14,6 +14,7 @@
 #include <string_view>
 #include <tuple>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/allocator/allocator_check.h"
@@ -686,9 +687,9 @@ NO_STACK_PROTECTOR int RunZygote(ContentMainDelegate* delegate) {
   }
 
   auto exit_code = delegate->RunProcess(process_type, std::move(main_params));
-  DCHECK(absl::holds_alternative<int>(exit_code));
-  DCHECK_GE(absl::get<int>(exit_code), 0);
-  return absl::get<int>(exit_code);
+  DCHECK(std::holds_alternative<int>(exit_code));
+  DCHECK_GE(std::get<int>(exit_code), 0);
+  return std::get<int>(exit_code);
 }
 #endif  // BUILDFLAG(USE_ZYGOTE)
 
@@ -709,11 +710,11 @@ int RunBrowserProcessMain(MainFunctionParams main_function_params,
     InstallConsoleControlHandler(/*is_browser_process=*/true);
 #endif
   auto exit_code = delegate->RunProcess("", std::move(main_function_params));
-  if (absl::holds_alternative<int>(exit_code)) {
-    DCHECK_GE(absl::get<int>(exit_code), 0);
-    return absl::get<int>(exit_code);
+  if (std::holds_alternative<int>(exit_code)) {
+    DCHECK_GE(std::get<int>(exit_code), 0);
+    return std::get<int>(exit_code);
   }
-  return BrowserMain(std::move(absl::get<MainFunctionParams>(exit_code)));
+  return BrowserMain(std::move(std::get<MainFunctionParams>(exit_code)));
 }
 
 // Run the FooMain() for a given process type.
@@ -772,12 +773,12 @@ NO_STACK_PROTECTOR int RunOtherNamedProcessTypeMain(
     if (process_type == kMainFunctions[i].name) {
       auto exit_code =
           delegate->RunProcess(process_type, std::move(main_function_params));
-      if (absl::holds_alternative<int>(exit_code)) {
-        DCHECK_GE(absl::get<int>(exit_code), 0);
-        return absl::get<int>(exit_code);
+      if (std::holds_alternative<int>(exit_code)) {
+        DCHECK_GE(std::get<int>(exit_code), 0);
+        return std::get<int>(exit_code);
       }
       return kMainFunctions[i].function(
-          std::move(absl::get<MainFunctionParams>(exit_code)));
+          std::move(std::get<MainFunctionParams>(exit_code)));
     }
   }
 
@@ -791,9 +792,9 @@ NO_STACK_PROTECTOR int RunOtherNamedProcessTypeMain(
   // If it's a process we don't know about, the embedder should know.
   auto exit_code =
       delegate->RunProcess(process_type, std::move(main_function_params));
-  DCHECK(absl::holds_alternative<int>(exit_code));
-  DCHECK_GE(absl::get<int>(exit_code), 0);
-  return absl::get<int>(exit_code);
+  DCHECK(std::holds_alternative<int>(exit_code));
+  DCHECK_GE(std::get<int>(exit_code), 0);
+  return std::get<int>(exit_code);
 }
 
 // static

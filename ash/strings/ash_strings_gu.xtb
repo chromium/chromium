@@ -166,6 +166,7 @@
 <translation id="1505542291183484463">windowના કદમાં વધઘટ કરીને નીચેની તરફ ટાઇલ કરી</translation>
 <translation id="1510238584712386396">લૉન્ચર</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{નોટિફિકેશનની સેટિંગ બતાવો. ઍપ માટે નોટિફિકેશન બંધ છે}one{નોટિફિકેશનની સેટિંગ બતાવો. # ઍપ માટે નોટિફિકેશન બંધ છે}other{નોટિફિકેશનની સેટિંગ બતાવો. # ઍપ માટે નોટિફિકેશન બંધ છે}}</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">બૅટરી <ph name="BATTERY_PERCENTAGE" />% | પૂર્ણ ચાર્જ થવા માટે <ph name="TIME" /> બાકી</translation>
 <translation id="1525508553941733066">છોડી દો</translation>
 <translation id="1526448108126799339">નવા ટૅબને નવી વિંડોમાં ખોલો</translation>
@@ -345,7 +346,6 @@
 <translation id="2201071101391734388">તાજેતરના <ph name="TOTAL_COUNT" /> ફોટામાંથી <ph name="INDEX" /> નંબરનો ફોટો.</translation>
 <translation id="2201687081523799384">Google Tasksને નાનું કરો</translation>
 <translation id="2208323208084708176">એકીકૃત ડેસ્કટૉપ મોડ</translation>
-<translation id="2220572644011485463">PIN અથવા પાસવર્ડ</translation>
 <translation id="2222841058024245321">ડેસ્ક 7</translation>
 <translation id="2223384056430485343">સ્ક્રીનને વિભાજિત કરવાના મોડમાં</translation>
 <translation id="2224075387478458881">સંરક્ષિત કન્ટેન્ટ દેખાય ત્યારે સ્ક્રીન રેકોર્ડિંગની મંજૂરી નથી</translation>
@@ -1829,7 +1829,6 @@
 <translation id="7000027735917578303">Windows અને ડેસ્કના સેટિંગ</translation>
 <translation id="7004910047186208204">મોબાઇલ ડેટા સાથે કનેક્ટ કરો</translation>
 <translation id="7005239792648594238">શરૂ કરવા માટે ઍપ ખોલો</translation>
-<translation id="7007983414944123363">તમારો પિન કે પાસવર્ડ ચકાસી શકાયો નથી. ફરી પ્રયાસ કરો.</translation>
 <translation id="7014684956566476813"><ph name="DEVICE_NAME" /> નામના ડિવાઇસ સાથે કનેક્ટેડ</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> વાગ્યે પાછા આવો.</translation>
 <translation id="70168403932084660">ડેસ્ક 6</translation>
@@ -2466,6 +2465,7 @@
 <translation id="9168436347345867845">આ પછીથી કરો</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> માટે 1 પરિણામ બતાવી રહ્યાં છીએ</translation>
 <translation id="9179259655489829027">આ સુવિધા તમને પાસવર્ડની જરૂર વગર ઝડપથી કોઈ સાઇન-ઇન થયેલ વપરાશકર્તાને ઍક્સેસ કરવાની પરવાનગી આપે છે. માત્ર તમે જેના પર વિશ્વાસ કરતા હો તે એકાઉન્ટ સાથે જ આ સુવિધાનો ઉપયોગ કરો.</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183456764293710005">પૂર્ણ-સ્ક્રીન મૅગ્નિફાયર</translation>
 <translation id="9192133205265227850">"<ph name="DEVICE_NAME" />"નો ઉપયોગ કરો</translation>
 <translation id="9193626018745640770">અજાણ્યા પ્રાપ્તકર્તા પર કાસ્ટ કરી રહ્યાં છીએ</translation>

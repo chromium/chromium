@@ -171,7 +171,10 @@ source_set("unit_tests") {
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
-  sources = [ "history_ui_egtest.mm" ]
+  sources = [
+    "history_system_egtest.mm",
+    "history_ui_egtest.mm",
+  ]
   deps = [
     ":constants",
     "//base",

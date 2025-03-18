@@ -62,6 +62,13 @@ export class InkSizeSelectorElement extends InkSizeSelectorElementBase {
     };
   }
 
+  override focus() {
+    const selectedButton = this.shadowRoot.querySelector<HTMLElement>(
+        'cr-icon-button[data-selected="true"]');
+    assert(selectedButton);
+    selectedButton.focus();
+  }
+
   currentSize: number = 0;
   currentType: AnnotationBrushType = AnnotationBrushType.PEN;
 

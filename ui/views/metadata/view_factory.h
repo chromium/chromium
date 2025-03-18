@@ -13,13 +13,13 @@
 #include <string_view>
 #include <type_traits>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/macros/concat.h"
 #include "base/macros/remove_parens.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/base_type_conversion.h"
 #include "ui/views/metadata/view_factory_internal.h"
@@ -38,15 +38,15 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
  private:
   using OwnedPtr = std::unique_ptr<ViewClass_>;
   using Ptr = raw_ptr<ViewClass_>;
-  using ViewStorage = absl::variant<OwnedPtr, Ptr>;
+  using ViewStorage = std::variant<OwnedPtr, Ptr>;
 
  public:
   explicit BaseViewBuilderT(OwnedPtr view = std::make_unique<ViewClass_>())
       : view_(std::move(view)) {
-    CHECK(absl::get<OwnedPtr>(view_));
+    CHECK(std::get<OwnedPtr>(view_));
   }
   explicit BaseViewBuilderT(ViewClass_* view) : view_(view) {
-    CHECK(absl::get<Ptr>(view_));
+    CHECK(std::get<Ptr>(view_));
   }
 
   // Implicit conversion from Builder<Derived> to Builder<Base>.
@@ -56,9 +56,9 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
                  typename BaseViewBuilderT<OtherBuilder>::ViewClass_*,
                  ViewClass_*>)
   BaseViewBuilderT(BaseViewBuilderT<OtherBuilder>&& other)
-      : view_(absl::visit(
-            [](auto&& view) { return ViewStorage(std::move(view)); },
-            std::move(other.view_))),
+      : view_(
+            std::visit([](auto&& view) { return ViewStorage(std::move(view)); },
+                       std::move(other.view_))),
         configure_callbacks_(
             ConvertCallbacks(std::move(other.configure_callbacks_))),
         after_build_callbacks_(
@@ -166,7 +166,7 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
 
   template <typename ViewPtr>
   Builder& CopyAddressTo(ViewPtr* view_address) & {
-    *view_address = absl::visit([](auto& view) { return view.get(); }, view_);
+    *view_address = std::visit([](auto& view) { return view.get(); }, view_);
     return *static_cast<Builder*>(this);
   }
 
@@ -215,9 +215,9 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
   }
 
   [[nodiscard]] OwnedPtr Build() && {
-    CHECK(absl::holds_alternative<OwnedPtr>(view_))
+    CHECK(std::holds_alternative<OwnedPtr>(view_))
         << "Use `BuildChildren()` on `Builder`s of non-owned `View`s.";
-    auto view = absl::get<OwnedPtr>(std::move(view_));
+    auto view = std::get<OwnedPtr>(std::move(view_));
     SetProperties(view.get());
     DoCustomConfigure(view.get());
     CreateChildren(view.get());
@@ -226,9 +226,9 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
   }
 
   void BuildChildren() && {
-    CHECK(absl::holds_alternative<Ptr>(view_))
+    CHECK(std::holds_alternative<Ptr>(view_))
         << "Use `Build()` on `Builder`s of owned `View`s.";
-    auto view = absl::get<Ptr>(view_);
+    auto view = std::get<Ptr>(view_);
     SetProperties(view);
     DoCustomConfigure(view);
     CreateChildren(view);

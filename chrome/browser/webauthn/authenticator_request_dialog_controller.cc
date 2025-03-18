@@ -15,6 +15,7 @@
 #include <string_view>
 #include <tuple>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/base64.h"
@@ -79,7 +80,6 @@
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/pin.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
@@ -748,7 +748,7 @@ void AuthenticatorRequestDialogController::
     Mechanism& mechanism =
         model_->mechanisms[*model_->priority_mechanism_index];
     const Mechanism::Credential* cred =
-        absl::get_if<Mechanism::Credential>(&mechanism.type);
+        std::get_if<Mechanism::Credential>(&mechanism.type);
 
     // If the authenticator will show its own confirmation then we don't want to
     // duplicate it.
@@ -780,13 +780,13 @@ void AuthenticatorRequestDialogController::
          (cred->value().source == AuthenticatorType::kEnclave &&
           !enclave_will_do_uv))) {
       SetCurrentStep(Step::kSelectPriorityMechanism);
-    } else if (absl::holds_alternative<Mechanism::Password>(mechanism.type)) {
+    } else if (std::holds_alternative<Mechanism::Password>(mechanism.type)) {
       SetCurrentStep(Step::kSelectPriorityMechanism);
     } else if (cred != nullptr || !hints_.transport.has_value() ||
                transport_availability_.request_type !=
                    FidoRequestType::kGetAssertion ||
                !StartGuidedFlowForHint(*hints_.transport)) {
-      if (absl::holds_alternative<Mechanism::Enclave>(mechanism.type)) {
+      if (std::holds_alternative<Mechanism::Enclave>(mechanism.type)) {
         device::enclave::RecordEvent(
             device::enclave::Event::kMakeCredentialPriorityShown);
         enclave_was_priority_mechanism_ = true;
@@ -833,8 +833,8 @@ void AuthenticatorRequestDialogController::
                                        FidoRequestType::kGetAssertion) {
           for (size_t i = 0; i < model_->mechanisms.size(); ++i) {
             const auto& type = model_->mechanisms[i].type;
-            if (absl::holds_alternative<Mechanism::Credential>(type) &&
-                absl::get<Mechanism::Credential>(type)->source ==
+            if (std::holds_alternative<Mechanism::Credential>(type) &&
+                std::get<Mechanism::Credential>(type)->source ==
                     AuthenticatorType::kEnclave) {
               model_->priority_mechanism_index = i;
               SetCurrentStep(Step::kSelectPriorityMechanism);
@@ -849,14 +849,14 @@ void AuthenticatorRequestDialogController::
           // passkeys, jump to the first one of them.
           for (auto& mechanism : model_->mechanisms) {
             const auto& type = mechanism.type;
-            if (absl::holds_alternative<Mechanism::Credential>(type)) {
-              if (absl::get<Mechanism::Credential>(type)->source ==
+            if (std::holds_alternative<Mechanism::Credential>(type)) {
+              if (std::get<Mechanism::Credential>(type)->source ==
                   AuthenticatorType::kEnclave) {
                 CHECK(enclave_will_do_uv);
                 mechanism.callback.Run();
                 return;
               }
-              if (absl::get<Mechanism::Credential>(type)->source ==
+              if (std::get<Mechanism::Credential>(type)->source ==
                   AuthenticatorType::kPhone) {
                 SetCurrentStep(Step::kPhoneConfirmationSheet);
                 return;
@@ -871,9 +871,9 @@ void AuthenticatorRequestDialogController::
     // extra step. Jump to Windows instead.
     if (transport_availability_.has_win_native_api_authenticator &&
         std::ranges::all_of(model_->mechanisms, [](const auto& mech) {
-          return absl::holds_alternative<Mechanism::WindowsAPI>(mech.type) ||
-                 (absl::holds_alternative<Mechanism::Credential>(mech.type) &&
-                  absl::get<Mechanism::Credential>(mech.type).value().source ==
+          return std::holds_alternative<Mechanism::WindowsAPI>(mech.type) ||
+                 (std::holds_alternative<Mechanism::Credential>(mech.type) &&
+                  std::get<Mechanism::Credential>(mech.type).value().source ==
                       AuthenticatorType::kWinNative);
         })) {
       ephemeral_state_.did_invoke_platform_despite_no_priority_mechanism_ =
@@ -887,7 +887,7 @@ void AuthenticatorRequestDialogController::
         // If there were any matches, ignore a hint and show the user the list.
         std::ranges::any_of(model_->mechanisms,
                             [](const auto& mech) {
-                              return absl::get_if<Mechanism::Credential>(
+                              return std::get_if<Mechanism::Credential>(
                                   &mech.type);
                             }) ||
         !StartGuidedFlowForHint(*hints_.transport)) {
@@ -903,7 +903,7 @@ bool AuthenticatorRequestDialogController::StartGuidedFlowForHint(
           ->GetOriginalProfile();
   const auto mechanism_is_transport = [](const Mechanism& mech,
                                          AuthenticatorTransport transport) {
-    const auto* mech_transport = absl::get_if<Mechanism::Transport>(&mech.type);
+    const auto* mech_transport = std::get_if<Mechanism::Transport>(&mech.type);
     return mech_transport && mech_transport->value() == transport;
   };
 
@@ -914,19 +914,19 @@ bool AuthenticatorRequestDialogController::StartGuidedFlowForHint(
       [this, mechanism_is_transport, transport, profile](const auto& mech) {
         switch (transport) {
           case AuthenticatorTransport::kUsbHumanInterfaceDevice:
-            return absl::get_if<Mechanism::WindowsAPI>(&mech.type) ||
+            return std::get_if<Mechanism::WindowsAPI>(&mech.type) ||
                    mechanism_is_transport(
                        mech, AuthenticatorTransport::kUsbHumanInterfaceDevice);
           case AuthenticatorTransport::kHybrid:
             return (WebAuthnApiSupportsHybrid() &&
-                    absl::get_if<Mechanism::WindowsAPI>(&mech.type)) ||
-                   absl::get_if<Mechanism::AddPhone>(&mech.type);
+                    std::get_if<Mechanism::WindowsAPI>(&mech.type)) ||
+                   std::get_if<Mechanism::AddPhone>(&mech.type);
           case AuthenticatorTransport::kInternal:
             return enclave_enabled_status_ !=
                        EnclaveEnabledStatus::kEnabledAndReauthNeeded &&
-                   (absl::get_if<Mechanism::WindowsAPI>(&mech.type) ||
-                    absl::get_if<Mechanism::ICloudKeychain>(&mech.type) ||
-                    (absl::get_if<Mechanism::Enclave>(&mech.type) &&
+                   (std::get_if<Mechanism::WindowsAPI>(&mech.type) ||
+                    std::get_if<Mechanism::ICloudKeychain>(&mech.type) ||
+                    (std::get_if<Mechanism::Enclave>(&mech.type) &&
                      CanDefaultToEnclave(profile)) ||
                     mechanism_is_transport(mech,
                                            AuthenticatorTransport::kInternal));
@@ -1257,13 +1257,13 @@ void AuthenticatorRequestDialogController::OnUserConsentDenied() {
         model_->priority_mechanism_index.has_value()) {
       const auto& priority_type =
           model_->mechanisms[*model_->priority_mechanism_index].type;
-      if (absl::holds_alternative<Mechanism::Credential>(priority_type)) {
+      if (std::holds_alternative<Mechanism::Credential>(priority_type)) {
         const Mechanism::CredentialInfo* cred_info =
-            &absl::get<Mechanism::Credential>(priority_type).value();
+            &std::get<Mechanism::Credential>(priority_type).value();
         if (cred_info->source == AuthenticatorType::kICloudKeychain) {
           did_trigger_automatically = true;
         }
-      } else if (absl::holds_alternative<Mechanism::ICloudKeychain>(
+      } else if (std::holds_alternative<Mechanism::ICloudKeychain>(
                      priority_type)) {
         did_trigger_automatically = true;
       }
@@ -1303,19 +1303,19 @@ bool AuthenticatorRequestDialogController::OnWinUserCancelled() {
   // UI and there are other options in Chrome's UI.
   bool enclave_is_option =
       std::ranges::any_of(model_->mechanisms, [](const Mechanism& m) {
-        return absl::holds_alternative<Mechanism::Enclave>(m.type);
+        return std::holds_alternative<Mechanism::Enclave>(m.type);
       });
   bool phone_is_option =
       !WebAuthnApiSupportsHybrid() &&
       std::ranges::any_of(model_->mechanisms, [](const Mechanism& m) -> bool {
-        return absl::holds_alternative<Mechanism::Phone>(m.type) ||
-               absl::holds_alternative<Mechanism::AddPhone>(m.type);
+        return std::holds_alternative<Mechanism::Phone>(m.type) ||
+               std::holds_alternative<Mechanism::AddPhone>(m.type);
       });
   bool have_other_option = enclave_is_option || phone_is_option;
   bool windows_was_priority =
       ephemeral_state_.did_invoke_platform_despite_no_priority_mechanism_ ||
       (model_->priority_mechanism_index &&
-       absl::holds_alternative<Mechanism::WindowsAPI>(
+       std::holds_alternative<Mechanism::WindowsAPI>(
            model_->mechanisms[*model_->priority_mechanism_index].type));
   if (have_other_option && windows_was_priority) {
     StartOver();
@@ -2422,9 +2422,9 @@ AuthenticatorRequestDialogController::IndexOfGetAssertionPriorityMechanism() {
 
     for (size_t i = 0; i < model_->mechanisms.size(); ++i) {
       const auto& type = model_->mechanisms[i].type;
-      if (absl::holds_alternative<Mechanism::Credential>(type)) {
+      if (std::holds_alternative<Mechanism::Credential>(type)) {
         const Mechanism::CredentialInfo* cred_info =
-            &absl::get<Mechanism::Credential>(type).value();
+            &std::get<Mechanism::Credential>(type).value();
 
         if (!best_cred.has_value()) {
           best_cred = std::make_pair(i, cred_info);
@@ -2436,7 +2436,7 @@ AuthenticatorRequestDialogController::IndexOfGetAssertionPriorityMechanism() {
         } else {
           multiple_distinct_creds = true;
         }
-      } else if (absl::holds_alternative<Mechanism::Password>(type)) {
+      } else if (std::holds_alternative<Mechanism::Password>(type)) {
         has_password = true;
       }
     }
@@ -2534,7 +2534,7 @@ AuthenticatorRequestDialogController::IndexOfMakeCredentialPriorityMechanism() {
 
   for (const auto& priority_mechanism : priority_list) {
     // A phone should never be triggered immediately.
-    CHECK(!absl::holds_alternative<Mechanism::Phone>(priority_mechanism));
+    CHECK(!std::holds_alternative<Mechanism::Phone>(priority_mechanism));
 
     for (size_t i = 0; i < model_->mechanisms.size(); i++) {
       if (priority_mechanism == model_->mechanisms[i].type) {

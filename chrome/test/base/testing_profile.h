@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -29,7 +30,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_controller_delegate.h"
 #include "extensions/buildflags/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -80,7 +80,7 @@ class TestingProfile : public Profile {
   // Default constructor that cannot be used with multi-profiles.
   TestingProfile();
 
-  // Wrapper over absl::variant to help type deduction when calling
+  // Wrapper over std::variant to help type deduction when calling
   // AddTestingFactories(). See example call in the method's comment.
   struct TestingFactory {
     TestingFactory(
@@ -93,7 +93,7 @@ class TestingProfile : public Profile {
     TestingFactory& operator=(TestingFactory&&);
     ~TestingFactory();
 
-    absl::variant<
+    std::variant<
         std::pair<BrowserContextKeyedServiceFactory*,
                   BrowserContextKeyedServiceFactory::TestingFactory>,
         std::pair<RefcountedBrowserContextKeyedServiceFactory*,
@@ -309,8 +309,8 @@ class TestingProfile : public Profile {
 #if BUILDFLAG(IS_CHROMEOS)
       std::unique_ptr<policy::UserCloudPolicyManagerAsh> policy_manager,
 #else
-      absl::variant<std::unique_ptr<policy::UserCloudPolicyManager>,
-                    std::unique_ptr<policy::ProfileCloudPolicyManager>>
+      std::variant<std::unique_ptr<policy::UserCloudPolicyManager>,
+                   std::unique_ptr<policy::ProfileCloudPolicyManager>>
           policy_manager,
 #endif  // BUILDFLAG(IS_CHROMEOS)
       std::unique_ptr<policy::PolicyService> policy_service,

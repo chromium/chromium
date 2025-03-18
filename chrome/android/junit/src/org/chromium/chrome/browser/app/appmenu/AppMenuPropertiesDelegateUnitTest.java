@@ -60,6 +60,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.ai.AiAssistantService;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl.MenuGroup;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
@@ -1451,24 +1452,10 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY)
-    public void testAiWebMenuItem() {
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
-        setUpMocksForPageMenu();
-
-        Menu menu = createTestMenu();
-        mAppMenuPropertiesDelegate.prepareMenu(menu, null);
-
-        assertTrue(
-                "AI Web menu item should be visible",
-                menu.findItem(R.id.ai_web_menu_id).isVisible());
-        assertFalse(
-                "AI PDF menu item should not be visible",
-                menu.findItem(R.id.ai_pdf_menu_id).isVisible());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY)
     public void testAiWebMenuItem_shouldAppearOnWebPages() {
+        var aiAssistantService = mock(AiAssistantService.class);
+        AiAssistantService.setInstanceForTesting(aiAssistantService);
+        when(aiAssistantService.canShowAiForTab(any(), eq(mTab))).thenReturn(true);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
         setUpMocksForPageMenu();
 
@@ -1486,6 +1473,9 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY)
     public void testAiPdfMenuItem_shouldAppearOnPdfPages() {
+        var aiAssistantService = mock(AiAssistantService.class);
+        AiAssistantService.setInstanceForTesting(aiAssistantService);
+        when(aiAssistantService.canShowAiForTab(any(), eq(mTab))).thenReturn(true);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1_WITH_PDF_PATH);
         var pdfNativePage = mock(PdfPage.class);
         when(mTab.getNativePage()).thenReturn(pdfNativePage);

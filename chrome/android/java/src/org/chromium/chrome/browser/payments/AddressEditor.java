@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.autofill.editors.EditorDialogViewBinder;
 import org.chromium.chrome.browser.autofill.editors.EditorFieldValidator;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldItem;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType;
+import org.chromium.components.autofill.AutofillAddressEditorUiInfo;
 import org.chromium.components.autofill.AutofillAddressUiComponent;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.FieldType;
@@ -61,7 +62,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -87,7 +87,7 @@ public class AddressEditor extends EditorBase<AutofillAddress>
     @Nullable private PropertyModel mPhoneField;
     @Nullable private PropertyModel mAdminAreaField;
     private @ItemType int mAdminAreaFieldType;
-    @Nullable private List<AutofillAddressUiComponent> mAddressUiComponents;
+    @Nullable private AutofillAddressEditorUiInfo mEditorUiInfo;
     private boolean mAdminAreasLoaded;
     private String mRecentlySelectedCountry;
     private Callback<AutofillAddress> mDoneCallback;
@@ -350,10 +350,10 @@ public class AddressEditor extends EditorBase<AutofillAddress>
         profile.setInfo(FieldType.PHONE_HOME_WHOLE_NUMBER, mPhoneField.get(VALUE));
 
         // Autofill profile bridge normalizes the language code for the autofill profile.
-        profile.setLanguageCode(mAutofillProfileBridge.getCurrentBestLanguageCode());
+        profile.setLanguageCode(mEditorUiInfo.getBestLanguageTag());
 
         // Collect data from all visible fields and store it in the autofill profile.
-        for (AutofillAddressUiComponent component : mAddressUiComponents) {
+        for (AutofillAddressUiComponent component : mEditorUiInfo.getComponents()) {
             PropertyModel fieldModel =
                     component.id == FieldType.ADDRESS_HOME_STATE
                             ? mAdminAreaField
@@ -464,17 +464,17 @@ public class AddressEditor extends EditorBase<AutofillAddress>
     }
 
     /**
-     * Adds fields to the editor model based on the country and language code of
-     * the profile that's being edited.
+     * Adds fields to the editor model based on the country and language code of the profile that's
+     * being edited.
      */
     private void addAddressFieldsToEditor(String countryCode, String languageCode) {
         ListModel<FieldItem> editorFields = new ListModel<>();
-        mAddressUiComponents =
-                mAutofillProfileBridge.getAddressUiComponents(
+        mEditorUiInfo =
+                mAutofillProfileBridge.getAddressEditorUiInfo(
                         countryCode, languageCode, AddressValidationType.PAYMENT_REQUEST);
         // In terms of order, country must be the first field.
         editorFields.add(new FieldItem(DROPDOWN, mCountryField, /* isFullLine= */ true));
-        for (AutofillAddressUiComponent component : mAddressUiComponents) {
+        for (AutofillAddressUiComponent component : mEditorUiInfo.getComponents()) {
             final PropertyModel field;
             final @ItemType int fieldType;
             if (component.id == FieldType.ADDRESS_HOME_STATE) {

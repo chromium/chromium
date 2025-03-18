@@ -432,7 +432,6 @@
 <translation id="2981364137500752533">Môžete mať maximálne päť okien.</translation>
 <translation id="2983102365694924129">Založené na vašej aktivite na webe. Toto nastavenie je vypnuté.</translation>
 <translation id="2984978667043170458">Zahŕňať okolitý text vo vyhľadávaniach na Googli</translation>
-<translation id="2988638966064514052">Vytvorte si silnejšie heslá</translation>
 <translation id="2989523299700148168">Nedávno navštívené</translation>
 <translation id="2992473221983447149">Popisy obrázkov</translation>
 <translation id="2996291259634659425">Vytvorenie prístupovej frázy</translation>
@@ -548,7 +547,6 @@
 <translation id="3557336313807607643">Pridať do kontaktov</translation>
 <translation id="3563767357928833671">Zobrazuje sa obsah schránky</translation>
 <translation id="3566639033325271639">Aktualizovať nastavenia</translation>
-<translation id="3568945271227339929">Žiadne prelomené heslá</translation>
 <translation id="3575464060651642446">Kontrolujú sa heslá v tomto zariadení…</translation>
 <translation id="3577473026931028326">Vyskytol sa problém. Skúste to znova.</translation>
 <translation id="3577558748185201054">Spravujte svoje záujmy a predvoľby</translation>
@@ -1055,7 +1053,6 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5958275228015807058">Nájdite stiahnuté súbory a stránky</translation>
 <translation id="5958994127112619898">Zjednodušiť stránku</translation>
 <translation id="5962718611393537961">Klepnutím zbaliť</translation>
-<translation id="5964180026566797835">Heslá sa nedajú skontrolovať</translation>
 <translation id="5964869237734432770">Zastaviť popisy obrázkov</translation>
 <translation id="5977976211062815271">V tomto zariadení</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 stránka vo vašom čitateľskom zozname}few{# stránky vo vašom čitateľskom zozname}many{# pages on your reading list}other{# stránok vo vašom čitateľskom zozname}}</translation>
@@ -1099,6 +1096,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="6150320133806434356">Záložka bola uložená</translation>
 <translation id="6150706324143004339">Ak chcete používať a ukladať údaje Chromu vo svojom účte Google, aktualizujte Chrome</translation>
 <translation id="6154478581116148741">Ak chcete exportovať heslá z tohto zariadenia, zapnite v Nastaveniach zámku obrazovky</translation>
+<translation id="6156323911414505561">Zobrazovať panel so záložkami</translation>
 <translation id="6162892189396105610">Prednačítava stránky, ktoré podľa Chromu pravdepodobne navštívite.</translation>
 <translation id="6170675927290506430">Prejsť do nastavení upozornení</translation>
 <translation id="6186394685773237175">Nezistili sa žiadne prelomené heslá</translation>

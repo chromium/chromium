@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <utility>
+#include <variant>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -23,7 +24,6 @@
 #include "device/fido/enclave/types.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/public_key_credential_descriptor.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace device::enclave {
 
@@ -342,8 +342,8 @@ void EnclaveAuthenticator::ProcessMakeCredentialResponse(
   auto parse_result = ParseMakeCredentialResponse(
       std::move(response), pending_make_credential_request_->request,
       *ui_request_->key_version, ui_request_->up_and_uv_bits);
-  if (absl::holds_alternative<ErrorResponse>(parse_result)) {
-    auto& error_details = absl::get<ErrorResponse>(parse_result);
+  if (std::holds_alternative<ErrorResponse>(parse_result)) {
+    auto& error_details = std::get<ErrorResponse>(parse_result);
     ProcessErrorResponse(error_details);
     return;
   }
@@ -353,8 +353,8 @@ void EnclaveAuthenticator::ProcessMakeCredentialResponse(
         .Run(PINValidationResult::kSuccess);
   }
   auto& success_result =
-      absl::get<std::pair<AuthenticatorMakeCredentialResponse,
-                          sync_pb::WebauthnCredentialSpecifics>>(parse_result);
+      std::get<std::pair<AuthenticatorMakeCredentialResponse,
+                         sync_pb::WebauthnCredentialSpecifics>>(parse_result);
   std::move(ui_request_->save_passkey_callback)
       .Run(std::move(success_result.second));
   RecordRequestResult("MakeCredential", EnclaveRequestResult::kSuccess);
@@ -391,8 +391,8 @@ void EnclaveAuthenticator::ProcessGetAssertionResponse(
   const std::string& cred_id_str = ui_request_->entity->credential_id();
   auto parse_result = ParseGetAssertionResponse(
       std::move(response), base::as_byte_span(cred_id_str));
-  if (absl::holds_alternative<ErrorResponse>(parse_result)) {
-    auto& error_details = absl::get<ErrorResponse>(parse_result);
+  if (std::holds_alternative<ErrorResponse>(parse_result)) {
+    auto& error_details = std::get<ErrorResponse>(parse_result);
     ProcessErrorResponse(error_details);
     return;
   }
@@ -402,22 +402,22 @@ void EnclaveAuthenticator::ProcessGetAssertionResponse(
   }
   std::vector<AuthenticatorGetAssertionResponse> responses;
   responses.emplace_back(
-      std::move(absl::get<AuthenticatorGetAssertionResponse>(parse_result)));
+      std::move(std::get<AuthenticatorGetAssertionResponse>(parse_result)));
   RecordRequestResult("GetAssertion", EnclaveRequestResult::kSuccess);
   CompleteGetAssertionRequest(GetAssertionStatus::kSuccess,
                               std::move(responses));
 }
 
 void EnclaveAuthenticator::CompleteRequestWithError(
-    absl::variant<GetAssertionStatus, MakeCredentialStatus> error) {
-  if (absl::holds_alternative<GetAssertionStatus>(error)) {
+    std::variant<GetAssertionStatus, MakeCredentialStatus> error) {
+  if (std::holds_alternative<GetAssertionStatus>(error)) {
     CHECK(pending_get_assertion_request_);
-    CompleteGetAssertionRequest(absl::get<GetAssertionStatus>(error), {});
+    CompleteGetAssertionRequest(std::get<GetAssertionStatus>(error), {});
     return;
   }
 
   CHECK(pending_make_credential_request_);
-  CompleteMakeCredentialRequest(absl::get<MakeCredentialStatus>(error),
+  CompleteMakeCredentialRequest(std::get<MakeCredentialStatus>(error),
                                 std::nullopt);
 }
 

@@ -440,6 +440,7 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="2789552044937754463">{COUNT,plural, =1{Parola s-a salvat în Contul Google, {EMAIL}}few{Parolele s-au salvat în Contul Google, {EMAIL}}other{Parolele s-au salvat în Contul Google, {EMAIL}}}</translation>
 <translation id="2791174088547598693">Adaugă parola…</translation>
 <translation id="2797302972324086597">Cod de țară</translation>
+<translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} fișier}few{{COUNT} fișiere}other{{COUNT} de fișiere}}</translation>
 <translation id="2816489851009559785">Meniu → Setări → Browser prestabilit</translation>
 <translation id="2818821771744632548">Te-ai deconectat de la contul <ph name="USER_NAME" /> în cadrul procesului de resetare a dispozitivului iPhone. Pentru a te conecta din nou, atinge Continuă mai jos.</translation>
 <translation id="2819667972867209401">Când opțiunea este activată, datele se salvează în Contul Google. Când este dezactivată, datele se salvează numai pe acest dispozitiv și se șterg dacă te deconectezi.</translation>

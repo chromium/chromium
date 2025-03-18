@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <tuple>
+#include <variant>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -1680,38 +1681,38 @@ class ArcSessionManagerArcAlwaysStartTest : public ArcSessionManagerTest {
 };
 
 ArcProvisioningResult CreateProvisioningResult(
-    const absl::variant<arc::mojom::GeneralSignInError,
-                        arc::mojom::GMSSignInError,
-                        arc::mojom::GMSCheckInError,
-                        arc::mojom::CloudProvisionFlowError,
-                        ArcStopReason,
-                        ChromeProvisioningTimeout>& error) {
-  if (absl::holds_alternative<arc::mojom::GeneralSignInError>(error)) {
+    const std::variant<arc::mojom::GeneralSignInError,
+                       arc::mojom::GMSSignInError,
+                       arc::mojom::GMSCheckInError,
+                       arc::mojom::CloudProvisionFlowError,
+                       ArcStopReason,
+                       ChromeProvisioningTimeout>& error) {
+  if (std::holds_alternative<arc::mojom::GeneralSignInError>(error)) {
     return ArcProvisioningResult(arc::mojom::ArcSignInResult::NewError(
         arc::mojom::ArcSignInError::NewGeneralError(
-            absl::get<arc::mojom::GeneralSignInError>(error))));
+            std::get<arc::mojom::GeneralSignInError>(error))));
   }
 
-  if (absl::holds_alternative<arc::mojom::GMSSignInError>(error)) {
+  if (std::holds_alternative<arc::mojom::GMSSignInError>(error)) {
     return ArcProvisioningResult(arc::mojom::ArcSignInResult::NewError(
         arc::mojom::ArcSignInError::NewSignInError(
-            absl::get<arc::mojom::GMSSignInError>(error))));
+            std::get<arc::mojom::GMSSignInError>(error))));
   }
 
-  if (absl::holds_alternative<arc::mojom::GMSCheckInError>(error)) {
+  if (std::holds_alternative<arc::mojom::GMSCheckInError>(error)) {
     return ArcProvisioningResult(arc::mojom::ArcSignInResult::NewError(
         arc::mojom::ArcSignInError::NewCheckInError(
-            absl::get<arc::mojom::GMSCheckInError>(error))));
+            std::get<arc::mojom::GMSCheckInError>(error))));
   }
 
-  if (absl::holds_alternative<arc::mojom::CloudProvisionFlowError>(error)) {
+  if (std::holds_alternative<arc::mojom::CloudProvisionFlowError>(error)) {
     return ArcProvisioningResult(arc::mojom::ArcSignInResult::NewError(
         arc::mojom::ArcSignInError::NewCloudProvisionFlowError(
-            absl::get<arc::mojom::CloudProvisionFlowError>(error))));
+            std::get<arc::mojom::CloudProvisionFlowError>(error))));
   }
 
-  if (absl::holds_alternative<ArcStopReason>(error)) {
-    return ArcProvisioningResult(absl::get<ArcStopReason>(error));
+  if (std::holds_alternative<ArcStopReason>(error)) {
+    return ArcProvisioningResult(std::get<ArcStopReason>(error));
   }
 
   return ArcProvisioningResult(ChromeProvisioningTimeout{});
@@ -1719,12 +1720,12 @@ ArcProvisioningResult CreateProvisioningResult(
 
 struct ProvisioningErrorDisplayTestParam {
   // The reason for arc instance stopping.
-  absl::variant<arc::mojom::GeneralSignInError,
-                arc::mojom::GMSSignInError,
-                arc::mojom::GMSCheckInError,
-                arc::mojom::CloudProvisionFlowError,
-                ArcStopReason,
-                ChromeProvisioningTimeout>
+  std::variant<arc::mojom::GeneralSignInError,
+               arc::mojom::GMSSignInError,
+               arc::mojom::GMSCheckInError,
+               arc::mojom::CloudProvisionFlowError,
+               ArcStopReason,
+               ChromeProvisioningTimeout>
       error;
 
   // The error sent to arc support host.
@@ -2161,12 +2162,12 @@ struct ArcSessionRetryTestParam {
   // Whether data is removed on error.
   bool data_removed;
 
-  absl::variant<arc::mojom::GeneralSignInError,
-                arc::mojom::GMSSignInError,
-                arc::mojom::GMSCheckInError,
-                arc::mojom::CloudProvisionFlowError,
-                ArcStopReason,
-                ChromeProvisioningTimeout>
+  std::variant<arc::mojom::GeneralSignInError,
+               arc::mojom::GMSSignInError,
+               arc::mojom::GMSCheckInError,
+               arc::mojom::CloudProvisionFlowError,
+               ArcStopReason,
+               ChromeProvisioningTimeout>
       error;
 };
 

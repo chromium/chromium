@@ -978,7 +978,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.NetworkErrorShown.{OOBEScreenShownBeforeNetworkError}"
-    enum="NetworkErrorType" expires_after="2025-07-13">
+    enum="NetworkErrorType" expires_after="2025-09-14">
   <owner>achuith@google.com</owner>
   <owner>cros-oobe@google.com</owner>
   <summary>
@@ -1072,7 +1072,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.PerksDiscoveryScreen.ErrorReason"
-    enum="PerksDiscoveryErrorReason" expires_after="2025-07-13">
+    enum="PerksDiscoveryErrorReason" expires_after="2025-09-14">
   <owner>bchikhaoui@google.com</owner>
   <owner>bohdanty@google.com</owner>
   <owner>cros-oobe@google.com</owner>
@@ -1084,7 +1084,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.PerksDiscoveryScreen.Selected.{PerksID}" enum="Boolean"
-    expires_after="2025-07-13">
+    expires_after="2025-09-14">
   <owner>bchikhaoui@google.com</owner>
   <owner>bohdanty@google.com</owner>
   <owner>cros-oobe@google.com</owner>
@@ -1096,7 +1096,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.PerksDiscoveryScreen.SelectedPerksCount" units="perks"
-    expires_after="2025-07-13">
+    expires_after="2025-09-14">
   <owner>bchikhaoui@google.com</owner>
   <owner>bohdanty@google.com</owner>
   <owner>cros-oobe@google.com</owner>
@@ -1297,7 +1297,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OOBE.StepCompletionTimeByExitReason.{OOBEScreenName_ExitReason}"
-    units="ms" expires_after="2025-07-13">
+    units="ms" expires_after="2025-09-14">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>Time spent on specific OOBE screen grouped by exit reason.</summary>
@@ -1479,7 +1479,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.UpdateScreen.StageTime.{UpdateStage}" units="ms"
-    expires_after="2025-07-13">
+    expires_after="2025-09-14">
   <owner>dkuzmin@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>

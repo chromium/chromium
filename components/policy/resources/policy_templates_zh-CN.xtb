@@ -499,6 +499,7 @@
       这适用于内存压力和高效率模式舍弃。
       系统会卸载已舍弃的页面并完全回收其资源。与该页面关联的标签页会保留在标签栏中，但切换到它会触发完全重新加载。
       </translation>
+<translation id="1386369130542976774">指定 ChromeOS 设备每周哪些时段无法使用</translation>
 <translation id="138847842893090358">报告操作系统更新状态</translation>
 <translation id="1389138080311956934">尽可能节省内存。</translation>
 <translation id="1390529781843037070">如果此政策已启用或未设置，用户便可通过 <ph name="PRODUCT_NAME" /> 的打印对话框使用 <ph name="CLOUD_PRINT_NAME" />进行打印<ph name="PRODUCT_NAME" /> 可以将文档提交到 <ph name="CLOUD_PRINT_NAME" />进行打印。这不会妨碍用户在网站上提交打印任务。
@@ -4060,6 +4061,16 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
       如果此政策设为 true，系统将会启用 TLS 中的 3DES 加密套件。如果此政策设为 false，系统则会停用 TLS 中的 3DES 加密套件。如果此政策未设置，3DES 加密套件会默认处于停用状态。此政策可用于暂时保持与过时服务器的兼容性。这只是一种权宜之计，正确的做法是重新配置服务器。
       </translation>
+<translation id="4016078577612157250">指定 ChromeOS 设备每周哪些时段无法使用。
+
+在受限时段内，所有正在进行的会话都会关闭，用户也无法登录。
+
+注意事项：
+
+* 不支持重叠的时段。
+* 设备限制时间表使用设备的时区。
+* 如需阻止用户修改其设备时区，请使用 SystemTimezone。
+* 如需阻止用户修改其设备时间，请使用 SystemFeaturesDisableList 停用 Crosh，并使用 URLBlocklist 屏蔽 chrome://set-time。</translation>
 <translation id="4016367078069682737">此政策已从 M61 中移除。
 
       此政策用于指定内置了 ecryptfs 且需改用 ext4 加密机制的设备的行为方式。

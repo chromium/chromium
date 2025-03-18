@@ -152,7 +152,6 @@ class AwContentsIoThreadClient {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
-  base::android::ScopedJavaGlobalRef<jobject> bg_thread_client_object_;
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_ =
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
 };

@@ -184,7 +184,7 @@ void ImageElementTiming::NotifyImagePaintedInternal(
                                 : image_string;
   if (!element_timings_) {
     element_timings_ =
-        MakeGarbageCollected<HeapVector<Member<ElementTimingInfo>>>();
+        MakeGarbageCollected<GCedHeapVector<Member<ElementTimingInfo>>>();
   }
   element_timings_->emplace_back(MakeGarbageCollected<ElementTimingInfo>(
       image_url, intersection_rect, load_time, attr,
@@ -198,8 +198,8 @@ OptionalPaintTimingCallback ImageElementTiming::TakePaintTimingCallback() {
 
   return BindOnce(
       [](WindowPerformance* performance,
-         HeapVector<Member<ElementTimingInfo>>* images, const base::TimeTicks&,
-         const DOMPaintTimingInfo& paint_timing_info) {
+         GCedHeapVector<Member<ElementTimingInfo>>* images,
+         const base::TimeTicks&, const DOMPaintTimingInfo& paint_timing_info) {
         if (!performance) {
           return;
         }

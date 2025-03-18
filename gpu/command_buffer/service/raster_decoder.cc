@@ -782,6 +782,9 @@ class RasterDecoderImpl final : public RasterDecoder,
   void DeletePaintCachePathsINTERNALHelper(
       GLsizei n,
       const volatile GLuint* paint_cache_ids);
+  void DeletePaintCacheEffectsINTERNALHelper(
+      GLsizei n,
+      const volatile GLuint* paint_cache_ids);
   void DoClearPaintCacheINTERNAL();
 
 #if defined(NDEBUG)
@@ -2790,6 +2793,19 @@ void RasterDecoderImpl::DeletePaintCachePathsINTERNALHelper(
   }
 
   paint_cache_->Purge(cc::PaintCacheDataType::kPath, n, paint_cache_ids);
+}
+
+void RasterDecoderImpl::DeletePaintCacheEffectsINTERNALHelper(
+    GLsizei n,
+    const volatile GLuint* paint_cache_ids) {
+  if (!use_gpu_raster_) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION,
+                       "glDeletePaintCacheEntriesINTERNAL",
+                       "No chromium raster support");
+    return;
+  }
+  paint_cache_->Purge(cc::PaintCacheDataType::kSkRuntimeEffect, n,
+                      paint_cache_ids);
 }
 
 void RasterDecoderImpl::DoClearPaintCacheINTERNAL() {

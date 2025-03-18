@@ -178,6 +178,11 @@ signin::IdentityManager* StubPasswordManagerClient::GetIdentityManager() {
   return nullptr;
 }
 
+const signin::IdentityManager* StubPasswordManagerClient::GetIdentityManager()
+    const {
+  return nullptr;
+}
+
 scoped_refptr<network::SharedURLLoaderFactory>
 StubPasswordManagerClient::GetURLLoaderFactory() {
   return nullptr;

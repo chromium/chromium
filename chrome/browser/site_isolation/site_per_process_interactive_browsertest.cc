@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <variant>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -63,7 +64,6 @@
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "extensions/browser/guest_view/mime_handler_view/test_mime_handler_view_guest.h"
 #include "pdf/pdf_features.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace {
@@ -1568,7 +1568,7 @@ class SitePerProcessInteractivePDFTest
 
   void TearDownOnMainThread() override {
     test_guest_view_manager_ = nullptr;
-    factory_ = absl::monostate();
+    factory_ = std::monostate();
     SitePerProcessInteractiveBrowserTest::TearDownOnMainThread();
   }
 
@@ -1580,14 +1580,14 @@ class SitePerProcessInteractivePDFTest
   }
 
   pdf::TestPdfViewerStreamManager* GetTestPdfViewerStreamManager() const {
-    return absl::get<std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>(
+    return std::get<std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>(
                factory_)
         ->GetTestPdfViewerStreamManager(
             browser()->tab_strip_model()->GetActiveWebContents());
   }
 
   void CreateTestPdfViewerStreamManager() const {
-    absl::get<std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>(factory_)
+    std::get<std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>(factory_)
         ->CreatePdfViewerStreamManager(
             browser()->tab_strip_model()->GetActiveWebContents());
   }
@@ -1611,9 +1611,9 @@ class SitePerProcessInteractivePDFTest
   }
 
  private:
-  absl::variant<absl::monostate,
-                std::unique_ptr<guest_view::TestGuestViewManagerFactory>,
-                std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>
+  std::variant<std::monostate,
+               std::unique_ptr<guest_view::TestGuestViewManagerFactory>,
+               std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>
       factory_;
   raw_ptr<guest_view::TestGuestViewManager> test_guest_view_manager_;
 };

@@ -43,7 +43,7 @@ gfx::PointF SVGPathBuilder::SmoothControl(bool is_compatible_segment) const {
 }
 
 void SVGPathBuilder::EmitClose() {
-  path_.CloseSubpath();
+  path_builder_.Close();
 
   // At the end of the [closepath] command, the new current
   // point is set to the initial point of the current subpath.
@@ -52,19 +52,19 @@ void SVGPathBuilder::EmitClose() {
 }
 
 void SVGPathBuilder::EmitMoveTo(const gfx::PointF& p) {
-  path_.MoveTo(p);
+  path_builder_.MoveTo(p);
 
   subpath_point_ = p;
   current_point_ = p;
 }
 
 void SVGPathBuilder::EmitLineTo(const gfx::PointF& p) {
-  path_.AddLineTo(p);
+  path_builder_.LineTo(p);
   current_point_ = p;
 }
 
 void SVGPathBuilder::EmitQuadTo(const gfx::PointF& c0, const gfx::PointF& p) {
-  path_.AddQuadCurveTo(c0, p);
+  path_builder_.QuadTo(c0, p);
   last_control_point_ = c0;
   current_point_ = p;
 }
@@ -82,7 +82,7 @@ void SVGPathBuilder::EmitSmoothQuadTo(const gfx::PointF& p) {
 void SVGPathBuilder::EmitCubicTo(const gfx::PointF& c0,
                                  const gfx::PointF& c1,
                                  const gfx::PointF& p) {
-  path_.AddBezierCurveTo(c0, c1, p);
+  path_builder_.CubicTo(c0, c1, p);
   last_control_point_ = c1;
   current_point_ = p;
 }
@@ -103,7 +103,7 @@ void SVGPathBuilder::EmitArcTo(const gfx::PointF& p,
                                float rotate,
                                bool large_arc,
                                bool sweep) {
-  path_.AddArcTo(p, radius_x, radius_y, rotate, large_arc, sweep);
+  path_builder_.ArcTo(p, radius_x, radius_y, rotate, large_arc, sweep);
   current_point_ = p;
 }
 

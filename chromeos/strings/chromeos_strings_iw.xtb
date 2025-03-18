@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">הטפט של זרימה בכדור הארץ</translation>
 <translation id="33736539805963175">האות <ph name="LETTERS_LETTER" /> על רקע בצבע <ph name="LETTERS_COLOR" /></translation>
 <translation id="3383623117265110236">בלעדי</translation>
-<translation id="3395147534045164351">הפעלה או השבתה של "הצמדת מיקום"</translation>
 <translation id="3404249063913988450">הפעלת שומר המסך</translation>
 <translation id="3413935475507503304">צריך ללחוץ על 'הבא' כדי להמשיך בעדכון.</translation>
 <translation id="3428551088151258685">בחוץ</translation>
@@ -929,6 +928,7 @@
 <translation id="5286263799730375393">צבע התאורה האחורית</translation>
 <translation id="5292579816060236070">טפט הזריחה</translation>
 <translation id="5294769550414936029">גרסה <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">החלפת המצב של הגישה למצלמה</translation>
 <translation id="5300814202279832142">העברת חלון לשולחן עבודה וירטואלי</translation>
 <translation id="5302048478445481009">שפה</translation>
 <translation id="5303837385540978511">טפט בלעדי ל-<ph name="PRODUCT_NAME" /></translation>
@@ -1395,6 +1395,7 @@
 <translation id="7388345524791662148">אפשרויות נוספות של <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">לוח מגע מובנה</translation>
 <translation id="7397270852490618635">השבתת העיצוב הבהיר</translation>
+<translation id="7400166052988585408">המסך שלך יינעל על ידי המורה בעוד <ph name="NUM_SECONDS" /> שניות</translation>
 <translation id="7401543881546089382">מחק קיצור דרך</translation>
 <translation id="7405493795721832710">המכשיר <ph name="DEVICE_NAME" /> מוכן לעדכון</translation>
 <translation id="741244894080940828">המרה</translation>

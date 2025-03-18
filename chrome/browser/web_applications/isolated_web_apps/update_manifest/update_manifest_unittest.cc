@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/json/json_reader.h"
 #include "base/test/gmock_expected_support.h"
@@ -15,7 +16,6 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace web_app {
 namespace {
@@ -41,8 +41,7 @@ TEST(UpdateChannel, DefaultChannel) {
 using UpdateChannelCreateInvalidTest = testing::TestWithParam<std::string>;
 
 TEST_P(UpdateChannelCreateInvalidTest, Check) {
-  EXPECT_THAT(UpdateChannel::Create(GetParam()),
-              ErrorIs(Eq(absl::monostate())));
+  EXPECT_THAT(UpdateChannel::Create(GetParam()), ErrorIs(Eq(std::monostate())));
 }
 
 INSTANTIATE_TEST_SUITE_P(

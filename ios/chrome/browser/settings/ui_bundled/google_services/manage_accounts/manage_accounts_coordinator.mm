@@ -103,7 +103,7 @@ using signin_metrics::PromoAction;
 
 - (void)start {
   base::RecordAction(base::UserMetricsAction("Signin_AccountsTableView_Open"));
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   _mediator = [[ManageAccountsMediator alloc]
       initWithAccountManagerService:ChromeAccountManagerServiceFactory::
                                         GetForProfile(profile)
@@ -319,9 +319,8 @@ using signin_metrics::PromoAction;
 - (void)removeAccountDialogConfirmedWithIdentity:(id<SystemIdentity>)identity {
   [self dismissConfirmRemoveIdentityAlertCoordinator];
 
-  ProfileIOS* profile = self.browser->GetProfile();
   NSArray<id<SystemIdentity>>* identitiesOnDevice =
-      signin::GetIdentitiesOnDevice(profile);
+      signin::GetIdentitiesOnDevice(self.profile);
   if (![identitiesOnDevice containsObject:identity]) {
     // If the identity was removed by another way (another window, another app
     // or by gaia), there is nothing to do.
@@ -351,9 +350,8 @@ using signin_metrics::PromoAction;
 - (void)forgetIdentityDone {
   _UIBlocker.reset();
   [_viewController allowUserInteraction];
-  ProfileIOS* profile = self.browser->GetProfile();
-  if (!AuthenticationServiceFactory::GetForProfile(profile)->HasPrimaryIdentity(
-          signin::ConsentLevel::kSignin)) {
+  if (!AuthenticationServiceFactory::GetForProfile(self.profile)
+           ->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     // If there is no signed-in account after identity removal, then the primary
     // identity was removed, and there is no signed-in account at this stage.
     [self closeSettings];
@@ -402,10 +400,8 @@ using signin_metrics::PromoAction;
   if (!success) {
     return;
   }
-  ProfileIOS* profile = self.browser->GetProfile();
-  CHECK(
-      !AuthenticationServiceFactory::GetForProfile(profile)->HasPrimaryIdentity(
-          signin::ConsentLevel::kSignin));
+  CHECK(!AuthenticationServiceFactory::GetForProfile(self.profile)
+             ->HasPrimaryIdentity(signin::ConsentLevel::kSignin));
   [self closeSettings];
 }
 

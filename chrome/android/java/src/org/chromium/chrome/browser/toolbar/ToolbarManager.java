@@ -907,7 +907,8 @@ public class ToolbarManager
                             ignoreCache -> {
                                 setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
                                 mToolbarTabController.stopOrReloadCurrentTab(ignoreCache);
-                            });
+                            },
+                            browsingModeThemeColorProvider);
         }
 
         mToolbarLongPressMenuHandler =

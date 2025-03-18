@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <variant>
 
 #include "build/build_config.h"
 #include "components/memory_system/memory_system.h"
@@ -37,7 +38,7 @@ class ShellMainDelegate : public ContentMainDelegate {
   bool ShouldCreateFeatureList(InvokedIn invoked_in) override;
   bool ShouldInitializeMojo(InvokedIn invoked_in) override;
   void PreSandboxStartup() override;
-  absl::variant<int, MainFunctionParams> RunProcess(
+  std::variant<int, MainFunctionParams> RunProcess(
       const std::string& process_type,
       MainFunctionParams main_function_params) override;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

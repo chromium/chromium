@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] canvas 1
-  assert_equals: \n<canvas width="50" height="25" style="width: auto" data-expected-width="50" data-expected-height="50"></canvas>\nheight expected 50 but got 25
-Harness: the test ran to completion.
-

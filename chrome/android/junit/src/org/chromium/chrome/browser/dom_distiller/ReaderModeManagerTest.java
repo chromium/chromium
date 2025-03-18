@@ -27,14 +27,20 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.DistillationStatus;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider.DistillabilityObserver;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageScopeType;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -51,21 +57,17 @@ public class ReaderModeManagerTest {
     private static final GURL MOCK_DISTILLER_URL = new GURL("chrome-distiller://url");
     private static final GURL MOCK_URL = JUnitTestGURLs.GOOGLE_URL_CAT;
 
+    @Mock private Profile mProfile;
     @Mock private Tab mTab;
-
     @Mock private MockWebContents mWebContents;
-
     @Mock private TabDistillabilityProvider mDistillabilityProvider;
-
     @Mock private NavigationController mNavController;
-
     @Mock private DomDistillerTabUtils.Natives mDistillerTabUtilsJniMock;
-
     @Mock private DomDistillerUrlUtils.Natives mDistillerUrlUtilsJniMock;
-
     @Mock private NavigationHandle mNavigationHandle;
-
     @Mock private MessageDispatcher mMessageDispatcher;
+    @Mock private UserPrefs.Natives mUserPrefsJniMock;
+    @Mock private PrefService mPrefService;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     private TabObserver mTabObserver;
@@ -85,8 +87,8 @@ public class ReaderModeManagerTest {
         org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtilsJni.setInstanceForTesting(
                 mDistillerTabUtilsJniMock);
         DomDistillerUrlUtilsJni.setInstanceForTesting(mDistillerUrlUtilsJniMock);
-
-        DomDistillerTabUtils.setExcludeMobileFriendlyForTesting(true);
+        DomDistillerTabUtils.setDistillerHeuristicsForTesting(
+                DistillerHeuristicsType.ADABOOST_MODEL);
 
         mUserDataHost = new UserDataHost();
         mUserDataHost.setUserData(TabDistillabilityProvider.USER_DATA_KEY, mDistillabilityProvider);
@@ -95,8 +97,12 @@ public class ReaderModeManagerTest {
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.getUrl()).thenReturn(MOCK_URL);
         when(mTab.getContext()).thenReturn(ApplicationProvider.getApplicationContext());
+        when(mTab.getProfile()).thenReturn(mProfile);
         when(mWebContents.getNavigationController()).thenReturn(mNavController);
         when(mNavController.getUseDesktopUserAgent()).thenReturn(false);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
+        when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
+        when(mPrefService.getBoolean(Pref.READER_FOR_ACCESSIBILITY)).thenReturn(false);
 
         when(mDistillerUrlUtilsJniMock.isDistilledPage(MOCK_DISTILLER_URL.getSpec()))
                 .thenReturn(true);
@@ -273,6 +279,61 @@ public class ReaderModeManagerTest {
                 "Distillation should not be possible.",
                 DistillationStatus.NOT_POSSIBLE,
                 mManager.getDistillationStatus());
+    }
+
+    @Test
+    @Feature("ReaderMode")
+    public void testDistillationMetricsOnDistillabilityResult() {
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                ReaderModeManager.ACCESSIBILITY_SETTING_HISTOGRAM, false)
+                        .expectBooleanRecord(
+                                ReaderModeManager.DISTILLABLE_MOBILE_PAGE_EXCLUDED_HISTOGRAM, false)
+                        .expectBooleanRecord(
+                                ReaderModeManager.PAGE_DISTILLABLE_RESULT_HISTOGRAM, true)
+                        .build();
+        mDistillabilityObserver.onIsPageDistillableResult(
+                mTab,
+                /* isDistillable= */ true,
+                /* isLast= */ true,
+                /* isMobileOptimized= */ false);
+        watcher.assertExpected();
+    }
+
+    @Test
+    @Feature("ReaderMode")
+    public void testDistillationMetricsOnDistillabilityResult_mobilePageExcluded() {
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                ReaderModeManager.ACCESSIBILITY_SETTING_HISTOGRAM, false)
+                        .expectBooleanRecord(
+                                ReaderModeManager.DISTILLABLE_MOBILE_PAGE_EXCLUDED_HISTOGRAM, true)
+                        .expectBooleanRecord(
+                                ReaderModeManager.PAGE_DISTILLABLE_RESULT_HISTOGRAM, false)
+                        .build();
+        mDistillabilityObserver.onIsPageDistillableResult(
+                mTab, /* isDistillable= */ true, /* isLast= */ true, /* isMobileOptimized= */ true);
+        watcher.assertExpected();
+    }
+
+    @Test
+    @Feature("ReaderMode")
+    public void testDistillationMetricsOnDistillabilityResult_mobilePageNotExcluded() {
+        when(mPrefService.getBoolean(Pref.READER_FOR_ACCESSIBILITY)).thenReturn(true);
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                ReaderModeManager.ACCESSIBILITY_SETTING_HISTOGRAM, true)
+                        .expectBooleanRecord(
+                                ReaderModeManager.DISTILLABLE_MOBILE_PAGE_EXCLUDED_HISTOGRAM, false)
+                        .expectBooleanRecord(
+                                ReaderModeManager.PAGE_DISTILLABLE_RESULT_HISTOGRAM, true)
+                        .build();
+        mDistillabilityObserver.onIsPageDistillableResult(
+                mTab, /* isDistillable= */ true, /* isLast= */ true, /* isMobileOptimized= */ true);
+        watcher.assertExpected();
     }
 
     /**

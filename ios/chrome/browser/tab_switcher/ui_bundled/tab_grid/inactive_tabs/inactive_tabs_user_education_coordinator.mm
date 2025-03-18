@@ -102,7 +102,7 @@ UIImage* ConfirmationAlertImage() {
 - (void)start {
   [super start];
 
-  PrefService* prefs = self.browser->GetProfile()->GetPrefs();
+  PrefService* prefs = self.profile->GetPrefs();
 
   _confirmationAlert = [[ConfirmationAlertViewController alloc] init];
   _confirmationAlert.titleString = base::SysUTF16ToNSString(
@@ -131,8 +131,8 @@ UIImage* ConfirmationAlertImage() {
       _confirmationAlert.sheetPresentationController;
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
   presentationController.detents = @[
-    UISheetPresentationControllerDetent.mediumDetent,
-    UISheetPresentationControllerDetent.largeDetent
+    [UISheetPresentationControllerDetent mediumDetent],
+    [UISheetPresentationControllerDetent largeDetent]
   ];
   presentationController.preferredCornerRadius = 20;
   _confirmationAlert.view.accessibilityIdentifier =

@@ -37,7 +37,7 @@ LayoutUnit ComputeMargin(const Length& length,
         static_cast<int>(reference_length * length.Percent() / 100.0));
   }
   DCHECK(length.IsFixed());
-  return LayoutUnit(length.Value() * zoom);
+  return LayoutUnit(length.Pixels() * zoom);
 }
 
 PhysicalBoxStrut ResolveMargin(const Vector<Length>& margin,

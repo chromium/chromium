@@ -166,6 +166,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1505542291183484463">Zmień rozmiar okna kafelkowego w dół</translation>
 <translation id="1510238584712386396">Menu z aplikacjami</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Pokaż ustawienia powiadomień. Jedna aplikacja ma wyłączone powiadomienia.}few{Pokaż ustawienia powiadomień. # aplikacje mają wyłączone powiadomienia.}many{Pokaż ustawienia powiadomień. # aplikacji ma wyłączone powiadomienia.}other{Pokaż ustawienia powiadomień. # aplikacji ma wyłączone powiadomienia.}}</translation>
+<translation id="1521655867290435174">Arkusze Google</translation>
 <translation id="1523032696246003">Bateria: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> do pełnego naładowania</translation>
 <translation id="1525508553941733066">ZAMKNIJ</translation>
 <translation id="1526448108126799339">Otwórz nową kartę w nowym oknie</translation>
@@ -345,7 +346,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2201071101391734388">Najnowsze zdjęcie <ph name="INDEX" /> z <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Zwiń Listę zadań Google</translation>
 <translation id="2208323208084708176">Tryb ujednoliconego pulpitu</translation>
-<translation id="2220572644011485463">Kod PIN lub hasło</translation>
 <translation id="2222841058024245321">Biurko 7</translation>
 <translation id="2223384056430485343">Na podzielonym ekranie</translation>
 <translation id="2224075387478458881">Gdy widoczne są treści chronione, nagrywanie ekranu jest niedozwolone</translation>
@@ -1828,7 +1828,6 @@ Brak połączonych urządzeń.</translation>
 <translation id="7000027735917578303">Ustawienia okien i biurek</translation>
 <translation id="7004910047186208204">Połącz z siecią komórkową</translation>
 <translation id="7005239792648594238">Aby rozpocząć, otwórz aplikację</translation>
-<translation id="7007983414944123363">Nie udało się zweryfikować Twojego kodu PIN ani hasła. Spróbuj ponownie.</translation>
 <translation id="7014684956566476813">Połączono z urządzeniem o nazwie <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Możesz wrócić o <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Biurko 6</translation>
@@ -1942,6 +1941,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="742594950370306541">Aparat jest używany.</translation>
 <translation id="742608627846767349">Dzień dobry,</translation>
 <translation id="743058460480092004">Aparat i mikrofon są używane.</translation>
+<translation id="7440404390546433462">Wyszukiwarka Google</translation>
 <translation id="7441711280402516925">Odtwarzam · Przełącz na kartę</translation>
 <translation id="7453330308669753048">Wynik historii wyszukiwania został usunięty</translation>
 <translation id="7459485586006128091">Hotspot został wyłączony z powodu błędu wewnętrznego. Za kilka minut spróbuj jeszcze raz nawiązać połączenie.</translation>
@@ -2465,6 +2465,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="9168436347345867845">Później</translation>
 <translation id="9178475906033259337">Wyświetlam 1 wynik dla zapytania <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Ta funkcja umożliwia szybki dostęp do każdego konta zalogowanego użytkownika bez konieczności podawania hasła. Używaj jej tylko w przypadku kont, którym ufasz.</translation>
+<translation id="9183302530794969518">Dokumenty Google</translation>
 <translation id="9183456764293710005">Lupa pełnego ekranu</translation>
 <translation id="9192133205265227850">Użyj urządzenia „<ph name="DEVICE_NAME" />”</translation>
 <translation id="9193626018745640770">Przesyłam do nieznanego odbiornika</translation>

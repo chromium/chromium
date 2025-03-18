@@ -710,10 +710,20 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendTransformedString(
         mapping_builder_.AppendIdentityMapping(i - identity_start);
         identity_start = kNotFound;
       }
-      mapping_builder_.AppendVariableMapping(len, 1u);
+      unsigned zero_length = 0;
+      for (++i; i < size; ++i) {
+        if (transformed.LengthMap()[i] != 0) {
+          --i;
+          break;
+        }
+        ++zero_length;
+      }
+      mapping_builder_.AppendVariableMapping(len, 1u + zero_length);
     } else if (len == 0u) {
-      // LengthMap starts with 0, or 2+ is followed by 0.  They should not
-      // happen.
+      // LengthMap should not start with 0.
+      CHECK_NE(i, 0u);
+      // 2+ followed by zeros should be handled in the above block. So we
+      // handle only 1, 0, ... here.
       CHECK_NE(identity_start, kNotFound);
       if (i - identity_start > 1) {
         mapping_builder_.AppendIdentityMapping(i - identity_start - 1);

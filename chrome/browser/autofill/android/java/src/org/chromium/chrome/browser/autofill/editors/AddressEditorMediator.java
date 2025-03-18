@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.Del
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownKeyValue;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldItem;
+import org.chromium.components.autofill.AutofillAddressEditorUiInfo;
 import org.chromium.components.autofill.AutofillAddressUiComponent;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.FieldType;
@@ -94,7 +95,7 @@ class AddressEditorMediator {
     private final PropertyModel mPhoneField;
     private final PropertyModel mEmailField;
 
-    private List<AutofillAddressUiComponent> mVisibleEditorFields;
+    private AutofillAddressEditorUiInfo mEditorUiInfo;
     @Nullable private String mCustomDoneButtonText;
     private boolean mAllowDelete;
 
@@ -274,7 +275,7 @@ class AddressEditorMediator {
      * Creates a list of editor based on the country and language code of the profile that's being
      * edited.
      *
-     * For example, "US" will not add dependent locality to the list. A "JP" address will start
+     * <p>For example, "US" will not add dependent locality to the list. A "JP" address will start
      * with a person's full name or with a prefecture name, depending on whether the language code
      * is "ja-Latn" or "ja".
      *
@@ -283,14 +284,14 @@ class AddressEditorMediator {
      */
     private ListModel<FieldItem> buildEditorFieldList(String countryCode, String languageCode) {
         ListModel<FieldItem> editorFields = new ListModel<>();
-        mVisibleEditorFields =
-                mAutofillProfileBridge.getAddressUiComponents(
+        mEditorUiInfo =
+                mAutofillProfileBridge.getAddressEditorUiInfo(
                         countryCode, languageCode, AddressValidationType.ACCOUNT);
 
         // In terms of order, country must be the first field.
         editorFields.add(new FieldItem(DROPDOWN, mCountryField, /* isFullLine= */ true));
 
-        for (AutofillAddressUiComponent component : mVisibleEditorFields) {
+        for (AutofillAddressUiComponent component : mEditorUiInfo.getComponents()) {
             PropertyModel field = getFieldForFieldType(component.id);
 
             // Labels depend on country, e.g., state is called province in some countries. These are
@@ -370,10 +371,10 @@ class AddressEditorMediator {
         }
 
         // Autofill profile bridge normalizes the language code for the autofill profile.
-        profile.setLanguageCode(mAutofillProfileBridge.getCurrentBestLanguageCode());
+        profile.setLanguageCode(mEditorUiInfo.getBestLanguageTag());
 
         // Collect data from all visible fields and store it in the autofill profile.
-        for (AutofillAddressUiComponent component : mVisibleEditorFields) {
+        for (AutofillAddressUiComponent component : mEditorUiInfo.getComponents()) {
             if (component.id != FieldType.ADDRESS_HOME_COUNTRY) {
                 assert mAddressFields.containsKey(component.id);
                 profile.setInfo(component.id, mAddressFields.get(component.id).get(VALUE));

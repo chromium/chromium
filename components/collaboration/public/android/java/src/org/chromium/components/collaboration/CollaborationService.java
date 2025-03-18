@@ -67,7 +67,7 @@ public interface CollaborationService {
      *     found.
      */
     @MemberRole
-    int getCurrentUserRoleForGroup(String collaborationId);
+    int getCurrentUserRoleForGroup(@Nullable String collaborationId);
 
     /**
      * Synchronously get group data for a given group id.
@@ -75,7 +75,7 @@ public interface CollaborationService {
      * @param collaborationId The collaboration group id.
      * @return The {@link GroupData} of the group.
      */
-    @Nullable GroupData getGroupData(String collaborationId);
+    @Nullable GroupData getGroupData(@Nullable String collaborationId);
 
     /**
      * Attempt to leave a collaboration group.

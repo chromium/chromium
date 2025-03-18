@@ -166,6 +166,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1505542291183484463">Colocar ventá de cambio de tamaño de mosaico cara abaixo</translation>
 <translation id="1510238584712386396">Menú de aplicacións</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostrar a configuración de notificacións. Están desactivadas para unha aplicación}other{Mostrar a configuración de notificacións. Están desactivadas para # aplicacións}}</translation>
+<translation id="1521655867290435174">Follas de cálculo de Google</translation>
 <translation id="1523032696246003">Batería: <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> para completar a carga</translation>
 <translation id="1525508553941733066">IGNORAR</translation>
 <translation id="1526448108126799339">Abrir pestana nova nunha ventá nova</translation>
@@ -345,7 +346,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2201071101391734388">Foto recente <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Contraer Tarefas de Google</translation>
 <translation id="2208323208084708176">Modo de escritorio unificado</translation>
-<translation id="2220572644011485463">PIN ou contrasinal</translation>
 <translation id="2222841058024245321">Escritorio 7</translation>
 <translation id="2223384056430485343">Nunha pantalla dividida</translation>
 <translation id="2224075387478458881">Non se pode gravar a pantalla cando nela se mostra contido protexido</translation>
@@ -1830,7 +1830,6 @@ Nova instalación</translation>
 <translation id="7000027735917578303">Configuración de ventás e escritorios</translation>
 <translation id="7004910047186208204">Conéctate aos datos móbiles</translation>
 <translation id="7005239792648594238">Abre unha aplicación para comezar</translation>
-<translation id="7007983414944123363">Non se puido verificar o teu PIN ou contrasinal. Téntao de novo.</translation>
 <translation id="7014684956566476813">Conexión establecida cun dispositivo chamado "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7015766095477679451">Volve á seguinte hora: <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Escritorio 6</translation>
@@ -2467,6 +2466,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="9168436347345867845">Configurar máis tarde</translation>
 <translation id="9178475906033259337">Mostrando 1 resultado para "<ph name="QUERY" />"</translation>
 <translation id="9179259655489829027">Con esta función podes acceder rapidamente a calquera usuario que teña a sesión iniciada sen necesidade de introducir un contrasinal. Utiliza esta función só con contas nas que confíes.</translation>
+<translation id="9183302530794969518">Documentos de Google</translation>
 <translation id="9183456764293710005">Lupa de pantalla completa</translation>
 <translation id="9192133205265227850">Usa <ph name="DEVICE_NAME" /></translation>
 <translation id="9193626018745640770">Estase emitindo contido a un receptor descoñecido</translation>

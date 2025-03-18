@@ -432,7 +432,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2981364137500752533">Teil võib olla kuni viis akent.</translation>
 <translation id="2983102365694924129">Põhinevad teie tegevusel konkreetsel saidil. See seade on välja lülitatud.</translation>
 <translation id="2984978667043170458">Kaasa ümbritsev tekst Google'i otsingutesse</translation>
-<translation id="2988638966064514052">Tugevdage oma paroole</translation>
 <translation id="2989523299700148168">Hiljuti külastatud</translation>
 <translation id="2992473221983447149">Piltide kirjeldused</translation>
 <translation id="2996291259634659425">Parooli loomine</translation>
@@ -548,7 +547,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3557336313807607643">Lisa kontaktidesse</translation>
 <translation id="3563767357928833671">Lõikelaua sisu on kuvatud</translation>
 <translation id="3566639033325271639">Seadete värskendamine</translation>
-<translation id="3568945271227339929">Ükski parool ei ole ohus</translation>
 <translation id="3575464060651642446">Selles seadmes paroolide kontrollimine…</translation>
 <translation id="3577473026931028326">Midagi läks valesti. Proovige uuesti.</translation>
 <translation id="3577558748185201054">Hallake oma huvisid ja eelistusi</translation>
@@ -1055,7 +1053,6 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="5958275228015807058">Leidke oma failid ja lehed jaotisest Allalaadimised</translation>
 <translation id="5958994127112619898">Lihtsusta leht</translation>
 <translation id="5962718611393537961">Ahendamiseks puudutage</translation>
-<translation id="5964180026566797835">Ei saa paroole kontrollida</translation>
 <translation id="5964869237734432770">Piltide kirjelduste peatam.</translation>
 <translation id="5977976211062815271">Selles seadmes</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 leht teie lugemisloendis}other{# lehte teie lugemisloendis}}</translation>
@@ -1099,6 +1096,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="6150320133806434356">Järjehoidja salvestatud</translation>
 <translation id="6150706324143004339">Chrome’i andmete kasutamiseks ja salvestamiseks oma Google’i kontole värskendage Chrome'i</translation>
 <translation id="6154478581116148741">Seadmes olevate paroolide eksportimiseks lülitage seadetes ekraanilukk sisse.</translation>
+<translation id="6156323911414505561">Kuva järjehoidjariba</translation>
 <translation id="6162892189396105610">Eellaadib lehed, mida Chrome'i arvates tõenäoliselt külastate.</translation>
 <translation id="6170675927290506430">Avage märguannete seaded</translation>
 <translation id="6186394685773237175">Ohustatud paroole ei leitud</translation>

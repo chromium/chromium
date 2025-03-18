@@ -155,6 +155,7 @@ class WPTResult(Result):
                  test_type: Optional[str] = None,
                  baseline: Optional[List[TestharnessLine]] = None,
                  no_expectations: bool = False,
+                 sanitizer_mode: bool = False,
                  **kwargs):
         super().__init__(*args, **kwargs)
         self.testharness_results = []
@@ -162,6 +163,8 @@ class WPTResult(Result):
         self._baseline = baseline or []
         self.image_diff_stats = None
         self.no_expectations = no_expectations
+        # Do not compare baseline when run with sanitizer enabled
+        self.sanitizer_mode = sanitizer_mode
         # TODO(crbug.com/41494889): Populate `self.failure_reason` like
         # `run_web_tests.py` does to help LUCI cluster failures.
 
@@ -171,7 +174,9 @@ class WPTResult(Result):
 
     @functools.cached_property
     def can_have_subtests(self) -> bool:
-        return self.test_type in {'testharness', 'wdspec'}
+        return not self.sanitizer_mode and self.test_type in {
+            'testharness', 'wdspec'
+        }
 
     def _maybe_add_testharness_result(self,
                                       status: str,
@@ -638,7 +643,8 @@ class WPTResultsProcessor:
             test_type=self.get_test_type(test),
             expected=expected,
             baseline=baseline,
-            no_expectations=self.port.get_option('no_expectations'))
+            no_expectations=self.port.get_option('no_expectations'),
+            sanitizer_mode=self.port.get_option('enable_sanitizer'))
 
     def get_path_from_test_root(self, test: str) -> str:
         wpt_dir, url_from_wpt_dir = self.port.split_wpt_dir(test)

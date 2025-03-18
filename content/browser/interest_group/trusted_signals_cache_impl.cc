@@ -1135,7 +1135,8 @@ void TrustedSignalsCacheImpl::GetCoordinatorKey(FetchMap::iterator fetch_it) {
   // request body, or the information needed to create it, while waiting for the
   // key to be received.
   get_coordinator_key_callback_.Run(
-      fetch_it->first.script_origin(), fetch_it->first.coordinator,
+      url::Origin::Create(fetch_it->first.trusted_signals_url()),
+      fetch_it->first.coordinator,
       base::BindOnce(&TrustedSignalsCacheImpl::OnCoordinatorKeyReceived,
                      fetch_it->second.weak_ptr_factory.GetWeakPtr(), fetch_it));
 }

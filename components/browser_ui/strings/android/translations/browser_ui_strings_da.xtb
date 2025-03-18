@@ -45,6 +45,7 @@
 <translation id="1652197001188145583">Når dette er slået til, kan websites anmode om tilladelse til at bruge NFC-enheder. Når dette er slået fra, kan websites ikke bruge NFC-enheder.</translation>
 <translation id="1660204651932907780">Tillad, at websites afspiller lyd (anbefales)</translation>
 <translation id="1677097821151855053">Cookies og andre websitedata bruges til at huske dig, f.eks. for at logge dig ind eller give dig personligt tilpassede annoncer. Gå til <ph name="BEGIN_LINK" />Indstillinger<ph name="END_LINK" /> for at administrere cookies for alle websites.</translation>
+<translation id="1679305402657584804">Websites kan anmode om tilladelse til at bruge NFC-enheder</translation>
 <translation id="1686785653877010442">Websites sender normalt notifikationer for at informere dig om de seneste nyheder eller chatbeskeder.</translation>
 <translation id="169515064810179024">Bloker adgang til bevægelsessensorer på websites</translation>
 <translation id="1703666494654169921">Tillad ikke, at websites bruger virtual reality-enheder eller -data</translation>
@@ -84,6 +85,7 @@
 <translation id="2185965788978862351">Denne handling sletter <ph name="DATASIZE" /> data og cookies, som er gemt af websites eller apps på din startside.</translation>
 <translation id="2194856509914051091">Vigtige oplysninger</translation>
 <translation id="2215727959747642672">Filredigering</translation>
+<translation id="2218389616572918761">Websites kan anmode om adgang til din mikrofon</translation>
 <translation id="2228071138934252756">Aktivér også dit kamera i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> adgang til kameraet.</translation>
 <translation id="2235344399760031203">Tredjepartscookies er blokeret</translation>
 <translation id="2238944249568001759">Foreslåede søgninger baseret på din seneste fane</translation>
@@ -132,8 +134,10 @@
 <translation id="2726059656860238749">Åbn Chrome med omnifeltet i fokus, hvilket reducerer opstartstiden på mindre avancerede enheder.</translation>
 <translation id="2750481671343847896">Websites kan vise loginmeddelelser fra identitetstjenester.</translation>
 <translation id="2787357173144933081">Åbn omnifeltet</translation>
+<translation id="2789132527330338807">Websites kan anmode om at oprette et 3D-kort over dine omgivelser eller registrere kamerapositionen</translation>
 <translation id="2790501146643349491">Når dette er slået til, kan nyligt lukkede websites gennemføre afsendelse og modtagelse af data. Når dette er slået fra, kan nyligt lukkede websites ikke sende eller modtage data.</translation>
 <translation id="2795716239552913152">Websites bruger normalt din lokation til relevante formål eller oplysninger om lokale nyheder eller butikker i nærheden</translation>
+<translation id="2802908157808345702">Tillad ikke, at websites sender pop op-vinduer og anvender omdirigeringer</translation>
 <translation id="2814830417943086299">Chrome viser nu dine seneste faner på din enheds appliste og i søgeresultaterne. Du kan til enhver tid deaktivere dette i Chrome-indstillingerne.</translation>
 <translation id="2822354292072154809">Er du sikker på, at du vil nulstille alle websitetilladelser for <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Anmod om mobilvenlig visning</translation>
@@ -274,6 +278,7 @@
 <translation id="4598549027014564149">Når du er i inkognitotilstand, kan websites ikke bruge dine cookies til at se din browseraktivitet på websites, heller ikke på relaterede websites. Din browseraktivitet bruges f.eks. ikke til at personligt tilpasse annoncer. Funktionerne på visse websites virker muligvis ikke.</translation>
 <translation id="461356340001513807">Tillader, at du logger ind på websites med den konto, du har hos en identitetstjeneste</translation>
 <translation id="4619615317237390068">Faner fra andre enheder</translation>
+<translation id="4635969503923889910">Tillad ikke, at websites anvender NFC-enheder</translation>
 <translation id="4644713492825682049">Slet og gendan</translation>
 <translation id="4645575059429386691">Administreret af en af dine forældre</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
@@ -372,6 +377,7 @@
 <translation id="5877248419911025165">Skjul alle anmodninger</translation>
 <translation id="5884085660368669834">Websitepræference</translation>
 <translation id="5887687176710214216">Senest besøgt i går</translation>
+<translation id="5908617755156109052">Tillad ikke, at websites kan oprette et 3D-kort over dine omgivelser eller registrere kamerapositionen</translation>
 <translation id="5916664084637901428">Til</translation>
 <translation id="5922853908706496913">Deling af din skærm</translation>
 <translation id="5922967540311291836">Bloker tredjepartscookies:</translation>
@@ -582,6 +588,7 @@
 <translation id="8676374126336081632">Ryd indtastning</translation>
 <translation id="8681886425883659911">Annoncer blokeres på websites, som er kendt for at vise påtrængende eller vildledende annoncer</translation>
 <translation id="868929229000858085">Søg blandt dine kontakter</translation>
+<translation id="8707904142362025782">Websitet kan anmode om adgang til dit kamera</translation>
 <translation id="8712637175834984815">Forstået</translation>
 <translation id="8715862698998036666">Træk fra toppen af skærmen, og stryg fra venstre eller højre kant for at afslutte fuld skærm.</translation>
 <translation id="8719283222052720129">Aktivér tilladelse for <ph name="APP_NAME" /> i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" />.</translation>

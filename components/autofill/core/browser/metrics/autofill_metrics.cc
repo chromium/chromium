@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -1492,9 +1493,9 @@ const std::string PaymentsRpcResultToMetricsSuffix(PaymentsRpcResult result) {
 
 // static
 std::string AutofillMetrics::GetHistogramStringForCardType(
-    absl::variant<PaymentsRpcCardType, CreditCard::RecordType> card_type) {
-  if (absl::holds_alternative<PaymentsRpcCardType>(card_type)) {
-    switch (absl::get<PaymentsRpcCardType>(card_type)) {
+    std::variant<PaymentsRpcCardType, CreditCard::RecordType> card_type) {
+  if (std::holds_alternative<PaymentsRpcCardType>(card_type)) {
+    switch (std::get<PaymentsRpcCardType>(card_type)) {
       case PaymentsRpcCardType::kServerCard:
         return ".ServerCard";
       case PaymentsRpcCardType::kVirtualCard:
@@ -1503,8 +1504,8 @@ std::string AutofillMetrics::GetHistogramStringForCardType(
         DUMP_WILL_BE_NOTREACHED();
         break;
     }
-  } else if (absl::holds_alternative<CreditCard::RecordType>(card_type)) {
-    switch (absl::get<CreditCard::RecordType>(card_type)) {
+  } else if (std::holds_alternative<CreditCard::RecordType>(card_type)) {
+    switch (std::get<CreditCard::RecordType>(card_type)) {
       case CreditCard::RecordType::kFullServerCard:
       case CreditCard::RecordType::kMaskedServerCard:
         return ".ServerCard";

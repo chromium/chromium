@@ -168,7 +168,6 @@ SyncFileSystemGetUsageAndQuotaFunction::Run() {
           &storage::QuotaManager::GetUsageAndQuotaForWebApps, quota_manager,
           blink::StorageKey::CreateFirstParty(
               url::Origin::Create(source_url())),
-          storage::FileSystemTypeToQuotaStorageType(file_system_url.type()),
           BindOnce(&SyncFileSystemGetUsageAndQuotaFunction::DidGetUsageAndQuota,
                    this)));
 

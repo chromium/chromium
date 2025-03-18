@@ -485,58 +485,14 @@ InteractiveBrowserTestApi::NavigateWebContents(
   return steps;
 }
 
-InteractiveBrowserTestApi::StepBuilder
+InteractiveBrowserTestApi::MultiStep
 InteractiveBrowserTestApi::FocusWebContents(
     ui::ElementIdentifier webcontents_id) {
-  RequireInteractiveTest();
-  StepBuilder builder;
-  builder.SetElementID(webcontents_id);
-  builder.SetContext(kDefaultWebContentsContextMode);
-  builder.SetDescription("FocusWebContents()");
-  builder.SetStartCallback(base::BindLambdaForTesting(
-      [this](ui::InteractionSequence* seq, ui::TrackedElement* el) {
-        auto* const tracked_el = AsInstrumentedWebContents(el);
-        if (!tracked_el) {
-          LOG(ERROR) << "Element is not an instrumented WebContents.";
-          seq->FailForTesting();
-          return;
-        }
-
-        // If the surface is in a window it needs to be brought to the front.
-        const auto result = test_util().ActivateSurface(el);
-        test_impl().HandleActionResult(seq, el, "ActivateSurface", result);
-        if (result != ui::test::ActionResult::kSucceeded) {
-          return;
-        }
-
-        auto* const contents = tracked_el->web_contents();
-        if (!contents) {
-          LOG(ERROR) << "WebContents not present.";
-          seq->FailForTesting();
-          return;
-        }
-
-        // Focus the renderer.
-        if (!contents->GetRenderWidgetHostView()) {
-          LOG(ERROR) << "No render widget host.";
-          seq->FailForTesting();
-          return;
-        }
-        contents->GetRenderWidgetHostView()->Focus();
-
-        // Prepare the renderer for input.
-        if (!contents->GetPrimaryMainFrame()) {
-          LOG(ERROR) << "No main frame.";
-          seq->FailForTesting();
-          return;
-        }
-        content::UpdateUserActivationStateInterceptor
-            user_activation_interceptor(contents->GetPrimaryMainFrame());
-        user_activation_interceptor.UpdateUserActivationState(
-            blink::mojom::UserActivationUpdateType::kNotifyActivation,
-            blink::mojom::UserActivationNotificationType::kTest);
-      }));
-  return builder;
+  auto steps = InAnyContext(WaitForWebContentsPainted(webcontents_id),
+                            ActivateSurface(webcontents_id),
+                            FocusElement(webcontents_id));
+  AddDescriptionPrefix(steps, "FocusWebContents()");
+  return steps;
 }
 
 // static

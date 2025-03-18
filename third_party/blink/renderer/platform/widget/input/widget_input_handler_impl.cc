@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/widget/input/widget_input_handler_impl.h"
 
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/feature_list.h"
@@ -63,14 +64,14 @@ WidgetInputHandlerImpl::~WidgetInputHandlerImpl() = default;
 void WidgetInputHandlerImpl::SetReceiver(
     mojo::PendingReceiver<mojom::blink::WidgetInputHandler>
         interface_receiver) {
-  if (absl::holds_alternative<Receiver>(receiver_)) {
-    auto& receiver = absl::get<Receiver>(receiver_);
+  if (std::holds_alternative<Receiver>(receiver_)) {
+    auto& receiver = std::get<Receiver>(receiver_);
     receiver.Bind(std::move(interface_receiver));
     receiver.set_disconnect_handler(base::BindOnce(
         &WidgetInputHandlerImpl::Release, base::Unretained(this)));
   } else {
-    CHECK(absl::holds_alternative<DirectReceiver>(receiver_));
-    auto& receiver = absl::get<DirectReceiver>(receiver_);
+    CHECK(std::holds_alternative<DirectReceiver>(receiver_));
+    auto& receiver = std::get<DirectReceiver>(receiver_);
     receiver.Bind(std::move(interface_receiver));
     receiver.set_disconnect_handler(base::BindOnce(
         &WidgetInputHandlerImpl::Release, base::Unretained(this)));

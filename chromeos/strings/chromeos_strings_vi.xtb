@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">Hình nền Dòng chảy của đất</translation>
 <translation id="33736539805963175">Nền <ph name="LETTERS_COLOR" /> có chữ <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Dành riêng</translation>
-<translation id="3395147534045164351">Bật/tắt tính năng chụp nhanh thông tin vị trí</translation>
 <translation id="3404249063913988450">Bật trình bảo vệ màn hình</translation>
 <translation id="3413935475507503304">Để tiếp tục cập nhật, hãy nhấp vào Tiếp theo.</translation>
 <translation id="3428551088151258685">ngoài trời</translation>
@@ -929,6 +928,7 @@
 <translation id="5286263799730375393">màu đèn nền</translation>
 <translation id="5292579816060236070">Hình nền Bình minh</translation>
 <translation id="5294769550414936029">phiên bản <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">bật/tắt quyền truy cập vào camera</translation>
 <translation id="5300814202279832142">Di chuyển cửa sổ đến không gian làm việc</translation>
 <translation id="5302048478445481009">Ngôn ngữ</translation>
 <translation id="5303837385540978511">Hình nền dành riêng cho <ph name="PRODUCT_NAME" /></translation>
@@ -1044,6 +1044,7 @@
 <translation id="5896602941605730551">Phát</translation>
 <translation id="5901630391730855834">Vàng</translation>
 <translation id="5903200662178656908">Thiết bị là một bộ chuột và bàn phím.</translation>
+<translation id="5903822368221507416">Ẩn thẻ</translation>
 <translation id="5904994456462260490">Thêm APN mới</translation>
 <translation id="590746845088109442">mèo</translation>
 <translation id="5907649332524363701">màu phím</translation>

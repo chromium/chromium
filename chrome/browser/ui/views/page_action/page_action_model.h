@@ -40,6 +40,9 @@ class PageActionModelInterface {
                                 bool requested) = 0;
   virtual void SetShowSuggestionChip(base::PassKey<PageActionController>,
                                      bool show) = 0;
+  // Indicates whether suggestion chips should animate in/out.
+  virtual void SetShouldAnimateChip(base::PassKey<PageActionController>,
+                                    bool animate) = 0;
   virtual void SetTabActive(base::PassKey<PageActionController>,
                             bool is_active) = 0;
   virtual void SetHasPinnedIcon(base::PassKey<PageActionController>,
@@ -56,6 +59,7 @@ class PageActionModelInterface {
 
   virtual bool GetVisible() const = 0;
   virtual bool GetShowSuggestionChip() const = 0;
+  virtual bool GetShouldAnimateChip() const = 0;
   virtual const ui::ImageModel& GetImage() const = 0;
   virtual const std::u16string& GetText() const = 0;
   virtual const std::u16string& GetTooltipText() const = 0;
@@ -81,6 +85,8 @@ class PageActionModel : public PageActionModelInterface {
                         bool requested) override;
   void SetShowSuggestionChip(base::PassKey<PageActionController>,
                              bool show) override;
+  void SetShouldAnimateChip(base::PassKey<PageActionController>,
+                            bool animate) override;
   void SetTabActive(base::PassKey<PageActionController>,
                     bool is_active) override;
   void SetHasPinnedIcon(base::PassKey<PageActionController>,
@@ -101,6 +107,7 @@ class PageActionModel : public PageActionModelInterface {
   // The model distills all visibility properties into a single result.
   bool GetVisible() const override;
   bool GetShowSuggestionChip() const override;
+  bool GetShouldAnimateChip() const override;
 
   const ui::ImageModel& GetImage() const override;
   const std::u16string& GetText() const override;
@@ -124,6 +131,9 @@ class PageActionModel : public PageActionModelInterface {
   // Represents whether the page action associated with this model should show
   // as suggestion chip.
   bool show_suggestion_chip_ = false;
+
+  // Represents whether suggestion chips should animate in/out.
+  bool should_animate_ = true;
 
   // Properties taken from ActionItem.
   bool action_item_enabled_ = false;

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/eche_app/eche_app_notification_controller.h"
 
+#include <variant>
+
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/webui/eche_app_ui/eche_alert_generator.h"
@@ -68,9 +70,9 @@ void EcheAppNotificationController::LaunchTryAgain() {
 void EcheAppNotificationController::ShowNotificationFromWebUI(
     const std::optional<std::u16string>& title,
     const std::optional<std::u16string>& message,
-    absl::variant<LaunchAppHelper::NotificationInfo::NotificationType,
-                  mojom::WebNotificationType> type) {
-  auto web_type = absl::get<mojom::WebNotificationType>(type);
+    std::variant<LaunchAppHelper::NotificationInfo::NotificationType,
+                 mojom::WebNotificationType> type) {
+  auto web_type = std::get<mojom::WebNotificationType>(type);
   PA_LOG(INFO) << "ShowNotificationFromWebUI web_type: " << web_type;
   if (title && message) {
     if (web_type == mojom::WebNotificationType::CONNECTION_FAILED ||

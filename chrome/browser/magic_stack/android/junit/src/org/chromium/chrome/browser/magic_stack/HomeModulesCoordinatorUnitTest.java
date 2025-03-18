@@ -481,7 +481,8 @@ public class HomeModulesCoordinatorUnitTest {
                         any(), any(), any(), mClassificationResultCaptor.capture());
         String[] orderedLabels = {"SingleTab", "TabResumption"};
         ClassificationResult result =
-                new ClassificationResult(PredictionStatus.SUCCEEDED, orderedLabels);
+                new ClassificationResult(
+                        PredictionStatus.SUCCEEDED, orderedLabels, /* requestId= */ 0);
         mClassificationResultCaptor.getValue().onResult(result);
     }
 }

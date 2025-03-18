@@ -1724,6 +1724,7 @@ public class TabListMediatorUnitTest {
         createTabGroup(Arrays.asList(mTab2), TAB2_ID, TAB_GROUP_ID);
 
         mTabGroupModelFilter.setTabGroupTitle(TAB2_ID, CUSTOMIZED_DIALOG_TITLE1);
+        when(mTabGroupModelFilter.tabGroupExists(TAB_GROUP_ID)).thenReturn(false);
         mTabModelObserverCaptor.getValue().willCloseTab(mTab2, true);
 
         assertThat(mModelList.size(), equalTo(1));
@@ -4402,9 +4403,10 @@ public class TabListMediatorUnitTest {
         when(mIncognitoTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
         when(mIncognitoTabGroupModelFilter.getGroupLastShownTabId(TAB_GROUP_ID))
                 .thenReturn(TAB1_ID);
+        when(mIncognitoTabGroupModelFilter.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
         mMediator.onMenuItemClicked(R.id.ungroup_tab, TAB_GROUP_ID, /* collaborationId= */ null);
         verify(mIncognitoTabUngrouper)
-                .ungroupTabs(TAB1_ID, /* trailing= */ true, /* allowDialog= */ true);
+                .ungroupTabs(TAB_GROUP_ID, /* trailing= */ true, /* allowDialog= */ true);
     }
 
     @Test
@@ -4670,6 +4672,7 @@ public class TabListMediatorUnitTest {
         mModelList.get(0).model.set(TabProperties.USE_SHRINK_CLOSE_ANIMATION, true);
         var callback = mMediator.getOnMaybeTabClosedCallback(TAB1_ID);
 
+        when(mTabGroupModelFilter.tabGroupExists(TAB_GROUP_ID)).thenReturn(false);
         mTabModelObserverCaptor.getValue().willCloseTab(mTab1, /* didCloseAlone= */ false);
         mTabModelObserverCaptor.getValue().willCloseTab(newTab, /* didCloseAlone= */ false);
 
@@ -5017,6 +5020,7 @@ public class TabListMediatorUnitTest {
     private void createTabGroup(
             List<Tab> tabs, int rootId, Token tabGroupId, @Nullable Integer index) {
         when(mTabGroupModelFilter.getTabCountForGroup(tabGroupId)).thenReturn(tabs.size());
+        when(mTabGroupModelFilter.tabGroupExists(tabGroupId)).thenReturn(true);
         when(mTabGroupModelFilter.getTabGroupIdFromRootId(rootId)).thenReturn(tabGroupId);
         when(mTabGroupModelFilter.getRootIdFromTabGroupId(tabGroupId)).thenReturn(rootId);
         List<Integer> tabIds = tabs.stream().map(Tab::getId).collect(Collectors.toList());

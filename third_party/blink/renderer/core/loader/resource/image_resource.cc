@@ -28,6 +28,7 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -446,11 +447,11 @@ scoped_refptr<const SharedBuffer> ImageResource::ResourceBuffer() const {
 }
 
 void ImageResource::AppendData(
-    absl::variant<SegmentedBuffer, base::span<const char>> data) {
+    std::variant<SegmentedBuffer, base::span<const char>> data) {
   // We don't have a BackgroundResponseProcessor for ImageResources. So this
   // method must be called with a `span<const char>` data.
-  CHECK(absl::holds_alternative<base::span<const char>>(data));
-  base::span<const char> span = absl::get<base::span<const char>>(data);
+  CHECK(std::holds_alternative<base::span<const char>>(data));
+  base::span<const char> span = std::get<base::span<const char>>(data);
   external_memory_accounter_.Increase(v8::Isolate::GetCurrent(), span.size());
   if (multipart_parser_) {
     multipart_parser_->AppendData(span);

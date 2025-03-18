@@ -15,6 +15,7 @@
 #include <tuple>
 #include <type_traits>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -98,7 +99,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "net/cookies/cookie_partition_key.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
@@ -1118,9 +1118,9 @@ void WebAppPublisherHelper::SetPermission(const std::string& app_id,
   }
 
   if (permission->permission_type == apps::PermissionType::kFileHandling) {
-    if (absl::holds_alternative<bool>(permission->value)) {
+    if (std::holds_alternative<bool>(permission->value)) {
       provider_->scheduler().PersistFileHandlersUserChoice(
-          app_id, absl::get<bool>(permission->value), base::DoNothing());
+          app_id, std::get<bool>(permission->value), base::DoNothing());
     }
     return;
   }
@@ -1137,9 +1137,9 @@ void WebAppPublisherHelper::SetPermission(const std::string& app_id,
     return;
   }
 
-  DCHECK(absl::holds_alternative<apps::TriState>(permission->value));
+  DCHECK(std::holds_alternative<apps::TriState>(permission->value));
   ContentSetting permission_value = CONTENT_SETTING_DEFAULT;
-  switch (absl::get<apps::TriState>(permission->value)) {
+  switch (std::get<apps::TriState>(permission->value)) {
     case apps::TriState::kAllow:
       permission_value = CONTENT_SETTING_ALLOW;
       break;

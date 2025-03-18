@@ -166,6 +166,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1505542291183484463">I-resize ang naka-tile na window pababa</translation>
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Ipakita ang mga setting ng notification. Naka-off ang mga notification para sa isang app}one{Ipakita ang mga setting ng notification. Naka-off ang mga notification para sa # app}other{Ipakita ang mga setting ng notification. Naka-off ang mga notification para sa # na app}}</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003"><ph name="BATTERY_PERCENTAGE" />% ng baterya | <ph name="TIME" /> bago mapuno</translation>
 <translation id="1525508553941733066">I-DISMISS</translation>
 <translation id="1526448108126799339">Buksan ang bagong tab sa bagong window</translation>
@@ -345,7 +346,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2201071101391734388">Kamakailang larawan <ph name="INDEX" /> ng <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">I-collapse ang Google Tasks</translation>
 <translation id="2208323208084708176">Unified desktop mode</translation>
-<translation id="2220572644011485463">PIN o password</translation>
 <translation id="2222841058024245321">Desk 7</translation>
 <translation id="2223384056430485343">Sa isang split screen</translation>
 <translation id="2224075387478458881">Hindi pinapayagan ang pag-record ng screen kapag may nakikitang protektadong content</translation>
@@ -1829,7 +1829,6 @@ Kaka-install lang</translation>
 <translation id="7000027735917578303">Mga setting ng mga window at desk</translation>
 <translation id="7004910047186208204">Kumonekta sa mobile data</translation>
 <translation id="7005239792648594238">Magbukas ng app para magsimula</translation>
-<translation id="7007983414944123363">Hindi ma-verify ang iyong PIN o password. Subukan ulit.</translation>
 <translation id="7014684956566476813">Nakakonekta sa isang device na may pangalang <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Bumalik nang <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Desk 6</translation>
@@ -2465,6 +2464,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="9168436347345867845">Gawin ito sa ibang pagkakataon</translation>
 <translation id="9178475906033259337">Ipinapakita ang 1 resulta para sa <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Nagbibigay-daan sa iyo ang feature na ito para mabilis na ma-access ang anumang na-sign in na user nang hindi nangangailangan ng password. Gamitin lang ang feature na ito sa mga account na iyong pinagkakatiwalaan.</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183456764293710005">Pang-magnify ng Full-screen</translation>
 <translation id="9192133205265227850">Gamitin ang "<ph name="DEVICE_NAME" />"</translation>
 <translation id="9193626018745640770">Nagka-cast sa isang hindi pa natutukoy na tagatanggap</translation>

@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/observer_list_threadsafe.h"
@@ -47,7 +48,7 @@ class TransientDeviceIds;
 // duplicates. This is because there's no tracking between when listeners were
 // registered and the state of initialization, and the fact that platforms
 // behave differently in how these notifications are provided.
-class StorageMonitor {
+class COMPONENT_EXPORT(STORAGE_MONITOR) StorageMonitor {
  public:
   // This interface is provided to generators of storage notifications.
   class Receiver {

@@ -411,6 +411,14 @@ void AddTypedURLToClient(const GURL& url, base::Time visitTimestamp) {
                           history::SOURCE_BROWSED, false);
 }
 
+void SetPageTitle(const GURL& url, const std::u16string& title) {
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
+  history::HistoryService* historyService =
+      ios::HistoryServiceFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS);
+  historyService->SetPageTitle(url, title);
+}
+
 void AddHistoryVisitToFakeSyncServer(const GURL& url) {
   sync_pb::EntitySpecifics entitySpecifics;
   sync_pb::HistorySpecifics* history = entitySpecifics.mutable_history();

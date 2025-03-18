@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">Fondo de pantalla Fluxo da Terra</translation>
 <translation id="33736539805963175">Fondo de cor <ph name="LETTERS_COLOR" /> coa letra <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Exclusivos</translation>
-<translation id="3395147534045164351">Activar ou desactivar a localización de axuste</translation>
 <translation id="3404249063913988450">Activar protector de pantalla</translation>
 <translation id="3413935475507503304">Para continuar coa actualización, fai clic en Seguinte.</translation>
 <translation id="3428551088151258685">exterior</translation>
@@ -1395,6 +1394,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="7388345524791662148">Máis opcións aplicables a <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Panel táctil integrado</translation>
 <translation id="7397270852490618635">Quitar tema claro</translation>
+<translation id="7400166052988585408">A persoa que dá a clase bloqueará a túa pantalla dentro de <ph name="NUM_SECONDS" /> segundos</translation>
 <translation id="7401543881546089382">Eliminar atallo</translation>
 <translation id="7405493795721832710">Xa podes actualizar <ph name="DEVICE_NAME" /></translation>
 <translation id="741244894080940828">conversión</translation>

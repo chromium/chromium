@@ -24,20 +24,14 @@ class BrowserAccessibilityStateImplAndroid
   void RecordAccessibilityServiceInfoHistograms() override;
 
   // BrowserAccessibilityState implementation.
-  void SetKnownScreenReaderAppActive(bool is_active) override;
+  void SetScreenReaderAppActive(bool is_active) override;
 
  protected:
-  void UpdateHistogramsOnOtherThread() override;
-  void UpdateUniqueUserHistograms() override;
   void RecordAccessibilityServiceStatsHistogram(int event_type_mask,
                                                 int feedback_type_mask,
                                                 int flags_mask,
                                                 int capabilities_mask,
                                                 std::string histogram);
-  AssistiveTech ActiveKnownAssistiveTech() override;
-
- private:
-  bool is_talkback_active_ = false;
 };
 
 }  // namespace content

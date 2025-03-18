@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">Bakgrund med jorden</translation>
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> bakgrund med bokstaven <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Exklusivt</translation>
-<translation id="3395147534045164351">Aktivera/inaktivera positionsfästning</translation>
 <translation id="3404249063913988450">Aktivera skärmsläckare</translation>
 <translation id="3413935475507503304">Klicka på Nästa om du vill fortsätta med uppdateringen.</translation>
 <translation id="3428551088151258685">utomhus</translation>
@@ -1395,6 +1394,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="7388345524791662148">Fler alternativ för <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Inbyggd styrplatta</translation>
 <translation id="7397270852490618635">Inaktivera ljust tema</translation>
+<translation id="7400166052988585408">Din lärare kommer att låsa din skärm om <ph name="NUM_SECONDS" /> sekunder</translation>
 <translation id="7401543881546089382">Ta bort genväg</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> är redo att uppdateras</translation>
 <translation id="741244894080940828">Räkna om</translation>

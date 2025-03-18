@@ -769,9 +769,8 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest
       public testing::WithParamInterface<CookieBlocking3pcdStatus> {
  public:
   PageInfoBubbleViewCookiesSubpageBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {privacy_sandbox::kPrivacySandboxFirstPartySetsUI},
-        {content_settings::features::kTrackingProtection3pcd});
+    feature_list_.InitAndDisableFeature(
+        content_settings::features::kTrackingProtection3pcd);
   }
 
   static base::Time GetReferenceTime() {

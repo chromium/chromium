@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_SIGNIN_USER_POLICY_OIDC_SIGNIN_SERVICE_H_
 #define CHROME_BROWSER_ENTERPRISE_SIGNIN_USER_POLICY_OIDC_SIGNIN_SERVICE_H_
 
+#include <variant>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
@@ -58,7 +60,7 @@ class UserPolicyOidcSigninService : public UserPolicySigninServiceBase,
       Profile* profile,
       PrefService* local_state,
       DeviceManagementService* device_management_service,
-      absl::variant<UserCloudPolicyManager*, ProfileCloudPolicyManager*>
+      std::variant<UserCloudPolicyManager*, ProfileCloudPolicyManager*>
           policy_manager,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory);

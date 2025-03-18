@@ -45,6 +45,7 @@
 <translation id="1652197001188145583">Když je tato možnost zapnutá, weby mohou žádat o použití zařízení NFC. Když je vypnutá, weby zařízení NFC používat nemohou.</translation>
 <translation id="1660204651932907780">Povolit webům přehrávat zvuky (doporučeno)</translation>
 <translation id="1677097821151855053">Soubory cookie a další data webů slouží k tomu, aby si vás web zapamatoval, například pro účely přihlášení nebo personalizace reklam. Chcete-li spravovat cookies pro všechny weby, přejděte do <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" />.</translation>
+<translation id="1679305402657584804">Weby můžou žádat o použití zařízení NFC</translation>
 <translation id="1686785653877010442">Weby obvykle zasílají oznámení, kterými vás informují o mimořádných zprávách nebo zprávách v chatu.</translation>
 <translation id="169515064810179024">Blokovat webům přístup k senzorům pohybu</translation>
 <translation id="1703666494654169921">Nepovolovat webům používání zařízení nebo dat pro virtuální realitu</translation>
@@ -84,6 +85,7 @@
 <translation id="2185965788978862351">Tímto vymažete <ph name="DATASIZE" /> dat a souborů cookie, které uložily weby nebo aplikace na ploše.</translation>
 <translation id="2194856509914051091">Co je třeba zvážit</translation>
 <translation id="2215727959747642672">Úprava souborů</translation>
+<translation id="2218389616572918761">Weby můžou žádat o přístup k mikrofonu</translation>
 <translation id="2228071138934252756">Pokud aplikaci <ph name="APP_NAME" /> chcete umožnit přístup k fotoaparátu, zapněte fotoaparát také v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Soubory cookie třetích stran jsou blokovány</translation>
 <translation id="2238944249568001759">Navrhovaná vyhledávání na základě poslední karty</translation>
@@ -132,8 +134,10 @@
 <translation id="2726059656860238749">Spouštět Chrome s vybraným omniboxem a zkrátit tak dobu spouštění na zařízeních nižší třídy.</translation>
 <translation id="2750481671343847896">Weby mohou zobrazovat výzvy k přihlášení od služeb zjišťujících identitu</translation>
 <translation id="2787357173144933081">Spouštět v omniboxu</translation>
+<translation id="2789132527330338807">Weby můžou žádat o vytvoření 3D mapy okolí nebo sledování polohy kamery</translation>
 <translation id="2790501146643349491">Když je tato možnost zapnutá, nedávno zavřené weby mohou dokončit odesílání a přijímání dat. Když je vypnutá, nedávno zavřené weby nemohou dokončit odesílání nebo přijímání dat.</translation>
 <translation id="2795716239552913152">Weby obvykle používají polohu pro související funkce nebo informace, jako jsou místní zprávy nebo obchody v okolí</translation>
+<translation id="2802908157808345702">Nepovolovat webům zobrazovat vyskakovací okna ani používat přesměrování</translation>
 <translation id="2814830417943086299">Chrome teď zobrazuje vaše nedávné karty v seznamu aplikací v zařízení a ve výsledcích vyhledávání. Tuto funkci můžete v nastavení Chromu kdykoli vypnout.</translation>
 <translation id="2822354292072154809">Opravdu chcete resetovat všechna oprávnění webů pro objekt <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Požadovat mobilní zobrazení</translation>
@@ -274,6 +278,7 @@
 <translation id="4598549027014564149">V anonymním režimu weby nemohou používat soubory cookie ke sledování vaší aktivity prohlížení na webech, a to ani na souvisejících webech. Vaše aktivita prohlížení se nepoužívá například k personalizaci reklam. Některé weby mohou přestat fungovat.</translation>
 <translation id="461356340001513807">Umožňuje přihlašovat se na weby pomocí účtu služby identity</translation>
 <translation id="4619615317237390068">Karty z ostatních zařízení</translation>
+<translation id="4635969503923889910">Nepovolovat webům používat zařízení NFC</translation>
 <translation id="4644713492825682049">Vymazat a resetovat</translation>
 <translation id="4645575059429386691">Spravováno vaším rodičem</translation>
 <translation id="4670064810192446073">Virtuální realita</translation>
@@ -372,6 +377,7 @@
 <translation id="5877248419911025165">Sbalit všechny žádosti</translation>
 <translation id="5884085660368669834">Nastavení webu</translation>
 <translation id="5887687176710214216">Naposledy navštíveno včera</translation>
+<translation id="5908617755156109052">Nepovolovat webům vytvářet 3D mapu okolí ani sledovat polohu kamery</translation>
 <translation id="5916664084637901428">Zapnuto</translation>
 <translation id="5922853908706496913">Sdílíte obrazovku</translation>
 <translation id="5922967540311291836">Blokovat soubory cookie třetích stran:</translation>
@@ -582,6 +588,7 @@
 <translation id="8676374126336081632">Vymazat vstup</translation>
 <translation id="8681886425883659911">Na webech, o kterých je známo, že zobrazují rušivé nebo zavádějící reklamy, jsou reklamy blokovány</translation>
 <translation id="868929229000858085">Vyhledat v kontaktech</translation>
+<translation id="8707904142362025782">Web může požádat o přístup ke kameře</translation>
 <translation id="8712637175834984815">Hotovo</translation>
 <translation id="8715862698998036666">Celou obrazovku ukončíte přetažením shora a přejetím z levého nebo pravého okraje.</translation>
 <translation id="8719283222052720129">Zapněte v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" /> oprávnění pro aplikaci <ph name="APP_NAME" />.</translation>

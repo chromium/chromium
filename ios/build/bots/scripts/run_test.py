@@ -669,7 +669,9 @@ class RunnerInstallXcodeTest(test_runner_test.TestCase):
   @mock.patch(
       'xcode_util.install_xcode', autospec=True, return_value=(False, True))
   @mock.patch('xcode_util.move_runtime', autospec=True)
-  def test_report_extended_properties(self, mock_move_runtime, mock_install,
+  @mock.patch('shutil.rmtree')
+  def test_report_extended_properties(self, mock_rmtree, mock_move_runtime,
+                                      mock_install,
                                       mock_construct_runtime_cache_folder,
                                       mock_tr, _1, _2, _3, _4):
     self.runner.args.version = None
@@ -688,6 +690,7 @@ class RunnerInstallXcodeTest(test_runner_test.TestCase):
       exception_str = str(exception.stacktrace[-1]).rstrip()
       if 'Xcode' in exception_str:
         self.assertEqual(expected_exception_str, exception_str)
+    mock_rmtree.assert_called_with('test/xcode/path')
 
 
 if __name__ == '__main__':

@@ -9,6 +9,7 @@
 
 #include <string_view>
 #include <utility>
+#include <variant>
 
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
@@ -668,18 +669,18 @@ void Server::FuseFileMapEntry::DoWrite2(const Write2RequestProto& request,
 void Server::FuseFileMapEntry::Do(PendingOp& op,
                                   base::WeakPtr<Server> weak_ptr_server,
                                   uint64_t fuse_handle) {
-  if (absl::holds_alternative<PendingFlush>(op)) {
-    PendingFlush& pending = absl::get<PendingFlush>(op);
+  if (std::holds_alternative<PendingFlush>(op)) {
+    PendingFlush& pending = std::get<PendingFlush>(op);
     DoFlush(pending.first,
             base::BindOnce(&Server::OnFlush, weak_ptr_server, fuse_handle,
                            std::move(pending.second)));
-  } else if (absl::holds_alternative<PendingRead2>(op)) {
-    PendingRead2& pending = absl::get<PendingRead2>(op);
+  } else if (std::holds_alternative<PendingRead2>(op)) {
+    PendingRead2& pending = std::get<PendingRead2>(op);
     DoRead2(pending.first,
             base::BindOnce(&Server::OnRead2, weak_ptr_server, fuse_handle,
                            std::move(pending.second)));
-  } else if (absl::holds_alternative<PendingWrite2>(op)) {
-    PendingWrite2& pending = absl::get<PendingWrite2>(op);
+  } else if (std::holds_alternative<PendingWrite2>(op)) {
+    PendingWrite2& pending = std::get<PendingWrite2>(op);
     DoWrite2(pending.first,
              base::BindOnce(&Server::OnWrite2, weak_ptr_server, fuse_handle,
                             std::move(pending.second)));
@@ -888,15 +889,15 @@ void Server::Close2(const Close2RequestProto& request_proto,
   fuse_file_map_.erase(iter);
 
   for (auto& pending_op : pending_ops) {
-    if (absl::holds_alternative<PendingRead2>(pending_op)) {
+    if (std::holds_alternative<PendingRead2>(pending_op)) {
       Read2ResponseProto read2_response_proto;
       read2_response_proto.set_posix_error_code(EBUSY);
-      std::move(absl::get<PendingRead2>(pending_op).second)
+      std::move(std::get<PendingRead2>(pending_op).second)
           .Run(read2_response_proto);
-    } else if (absl::holds_alternative<PendingWrite2>(pending_op)) {
+    } else if (std::holds_alternative<PendingWrite2>(pending_op)) {
       Write2ResponseProto write2_response_proto;
       write2_response_proto.set_posix_error_code(EBUSY);
-      std::move(absl::get<PendingWrite2>(pending_op).second)
+      std::move(std::get<PendingWrite2>(pending_op).second)
           .Run(write2_response_proto);
     } else {
       NOTREACHED();

@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/active_style_sheets.h"
+#include "third_party/blink/renderer/core/css/quiet_mutation_scope.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -75,6 +76,7 @@ class CORE_EXPORT InspectorGhostRules {
 
   void ActivateTreeScope(TreeScope&);
 
+  QuietMutationScope quiet_mutation_scope_;
   HeapHashSet<Member<CSSStyleSheet>> affected_stylesheets_;
   HeapHashSet<Member<CSSNestedDeclarationsRule>> inserted_rules_;
   // The inner CSSStyleRule for each item in `inserted_rules_`.

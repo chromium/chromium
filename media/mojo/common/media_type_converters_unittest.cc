@@ -14,6 +14,7 @@
 #include <string.h>
 
 #include <memory>
+#include <variant>
 
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_decoder_config.h"
@@ -126,7 +127,7 @@ TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_EOS_Video_NextConfig) {
   // Compare.
   EXPECT_TRUE(result->end_of_stream());
   ASSERT_TRUE(result->next_config());
-  EXPECT_TRUE(absl::get<VideoDecoderConfig>(*result->next_config())
+  EXPECT_TRUE(std::get<VideoDecoderConfig>(*result->next_config())
                   .Matches(TestVideoConfig::Normal()));
 }
 
@@ -142,7 +143,7 @@ TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_EOS_Audio_NextConfig) {
   // Compare.
   EXPECT_TRUE(result->end_of_stream());
   ASSERT_TRUE(result->next_config());
-  EXPECT_TRUE(absl::get<AudioDecoderConfig>(*result->next_config())
+  EXPECT_TRUE(std::get<AudioDecoderConfig>(*result->next_config())
                   .Matches(TestAudioConfig::Normal()));
 }
 

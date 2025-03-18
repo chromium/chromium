@@ -65,7 +65,7 @@ public class AwServiceWorkerController {
         }
 
         @Override
-        public ShouldInterceptRequestMediator getShouldInterceptRequestMediator() {
+        public ShouldInterceptRequestMediator getShouldInterceptRequestMediator(String url) {
             return mShouldInterceptRequestMediator;
         }
 

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tabmodel;
 import android.app.Activity;
 import android.util.Pair;
 
+import org.chromium.base.Token;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -133,11 +134,11 @@ public interface TabWindowManager {
 
     /**
      * @param windowId The ID of the window that holds the tab group.
-     * @param rootId The root ID of the tab group.
+     * @param tabGroupId The tab group ID of the tab group.
      * @param isIncognito Whether the grouped tabs are incognito tabs.
      * @return A list of tabs associated with the root ID, or {@code null} if no tabs are found.
      */
-    List<Tab> getGroupedTabsByWindow(int windowId, int rootId, boolean isIncognito);
+    List<Tab> getGroupedTabsByWindow(int windowId, Token tabGroupId, boolean isIncognito);
 
     /**
      * Finds the {@link TabModelSelector} bound to an Activity instance of a given index.

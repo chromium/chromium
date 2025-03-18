@@ -180,7 +180,7 @@
   [_dispatcher
       openURLInNewTab:[OpenNewTabCommand
                           commandWithURLFromChrome:url.gurl
-                                       inIncognito:self.browser->GetProfile()
+                                       inIncognito:self.profile
                                                        ->IsOffTheRecord()]];
 }
 

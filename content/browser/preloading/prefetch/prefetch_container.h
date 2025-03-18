@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <utility>
+#include <variant>
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -203,8 +204,8 @@ class CONTENT_EXPORT PrefetchContainer {
     const GURL& url() const { return url_; }
 
     Key WithNewUrl(const GURL& new_url) const {
-      return absl::visit([&](const auto& e) { return Key(e, new_url); },
-                         referring_document_token_or_nik_);
+      return std::visit([&](const auto& e) { return Key(e, new_url); },
+                        referring_document_token_or_nik_);
     }
 
     bool NonUrlPartIsSame(const Key& other) const {
@@ -216,7 +217,7 @@ class CONTENT_EXPORT PrefetchContainer {
     friend CONTENT_EXPORT std::ostream& operator<<(std::ostream& ostream,
                                                    const Key& prefetch_key);
 
-    absl::variant<std::optional<blink::DocumentToken>, net::NetworkIsolationKey>
+    std::variant<std::optional<blink::DocumentToken>, net::NetworkIsolationKey>
         referring_document_token_or_nik_;
     GURL url_;
   };

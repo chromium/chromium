@@ -6,9 +6,9 @@
 #define UI_VIEWS_ANIMATION_INK_DROP_HOST_H_
 
 #include <memory>
+#include <variant>
 
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -262,7 +262,7 @@ class VIEWS_EXPORT InkDropHost {
   float ink_drop_visible_opacity_ = 0.175f;
 
   // The color of the ripple and hover.
-  absl::variant<SkColor, ui::ColorId, base::RepeatingCallback<SkColor()>>
+  std::variant<SkColor, ui::ColorId, base::RepeatingCallback<SkColor()>>
       ink_drop_base_color_ = gfx::kPlaceholderColor;
 
   // TODO(pbos): Audit call sites to make sure highlight opacity is either

@@ -8,7 +8,6 @@
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -54,12 +53,8 @@ class DownloadBubbleRowViewTest : public TestWithBrowserView {
         .WillByDefault(ReturnRef(GURL::EmptyGURL()));
 
     DownloadBubbleNavigationHandler* navigation_handler;
-    if (base::FeatureList::IsEnabled(features::kPinnableDownloadsButton)) {
       navigation_handler =
           browser()->GetFeatures().download_toolbar_ui_controller();
-    } else {
-      navigation_handler = browser_view()->toolbar()->download_button();
-    }
     DownloadBubbleUIController* controller =
         browser_view()->GetDownloadBubbleUIController();
 

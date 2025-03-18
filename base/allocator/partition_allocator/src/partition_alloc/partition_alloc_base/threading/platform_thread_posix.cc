@@ -20,7 +20,6 @@
 
 #if PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
 #include <sys/syscall.h>
-
 #include <atomic>
 #endif
 
@@ -116,6 +115,8 @@ PlatformThreadId PlatformThread::CurrentId() {
   return gettid();
 #elif PA_BUILDFLAG(IS_FUCHSIA)
   return zx_thread_self();
+#elif PA_BUILDFLAG(IS_ASMJS)
+  return pthread_self();
 #elif PA_BUILDFLAG(IS_SOLARIS) || PA_BUILDFLAG(IS_QNX)
   return pthread_self();
 #elif PA_BUILDFLAG(IS_POSIX) && PA_BUILDFLAG(IS_AIX)

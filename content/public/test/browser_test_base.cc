@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/base_switches.h"
@@ -662,8 +663,8 @@ void BrowserTestBase::SetUp() {
                                     TestTimeouts::action_max_timeout());
     // Passing "" as the process type to indicate the browser process.
     auto exit_code = delegate->RunProcess("", std::move(params));
-    DCHECK(absl::holds_alternative<int>(exit_code));
-    DCHECK_EQ(absl::get<int>(exit_code), 0);
+    DCHECK(std::holds_alternative<int>(exit_code));
+    DCHECK_EQ(std::get<int>(exit_code), 0);
 
     // Waits for Java to finish initialization, then we can run the test.
     loop.Run();

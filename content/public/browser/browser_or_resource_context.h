@@ -6,11 +6,11 @@
 #define CONTENT_PUBLIC_BROWSER_BROWSER_OR_RESOURCE_CONTEXT_H_
 
 #include <cstddef>
+#include <variant>
 
 #include "base/memory/raw_ref.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
 
@@ -42,7 +42,7 @@ class CONTENT_EXPORT BrowserOrResourceContext final {
 
   // Returns true if `this` is not null.
   explicit operator bool() const {
-    return !absl::holds_alternative<absl::monostate>(storage_);
+    return !std::holds_alternative<std::monostate>(storage_);
   }
 
   // To be called only on the UI thread. Will CHECK() if `this` does not hold a
@@ -50,7 +50,7 @@ class CONTENT_EXPORT BrowserOrResourceContext final {
   // TODO(dcheng): Change this to return a ref.
   BrowserContext* ToBrowserContext() const {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    return &*absl::get<raw_ref<BrowserContext, DanglingUntriaged>>(storage_);
+    return &*std::get<raw_ref<BrowserContext, DanglingUntriaged>>(storage_);
   }
 
   // To be called only on the UI thread. Will CHECK() if `this` does not hold a
@@ -58,14 +58,14 @@ class CONTENT_EXPORT BrowserOrResourceContext final {
   // TODO(dcheng): Change this to return a ref.
   ResourceContext* ToResourceContext() const {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
-    return &*absl::get<raw_ref<ResourceContext, DanglingUntriaged>>(storage_);
+    return &*std::get<raw_ref<ResourceContext, DanglingUntriaged>>(storage_);
   }
 
  private:
-  // `absl::monostate` corresponds to the null state.
-  absl::variant<absl::monostate,
-                raw_ref<BrowserContext, DanglingUntriaged>,
-                raw_ref<ResourceContext, DanglingUntriaged>>
+  // `std::monostate` corresponds to the null state.
+  std::variant<std::monostate,
+               raw_ref<BrowserContext, DanglingUntriaged>,
+               raw_ref<ResourceContext, DanglingUntriaged>>
       storage_;
 };
 

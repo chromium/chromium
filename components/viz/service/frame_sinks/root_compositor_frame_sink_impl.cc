@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -715,7 +716,7 @@ void RootCompositorFrameSinkImpl::FrameIntervalDeciderResultCallback(
     FrameIntervalDecider::Result result,
     FrameIntervalMatcherType matcher_type) {
 #if BUILDFLAG(IS_ANDROID)
-  base::TimeDelta interval = absl::visit(
+  base::TimeDelta interval = std::visit(
       base::Overloaded(
           [](FrameIntervalDecider::FrameIntervalClass frame_interval_class) {
             switch (frame_interval_class) {
@@ -732,7 +733,7 @@ void RootCompositorFrameSinkImpl::FrameIntervalDeciderResultCallback(
           [](base::TimeDelta interval) { return interval; }),
       result);
 #else
-  base::TimeDelta interval = absl::visit(
+  base::TimeDelta interval = std::visit(
       base::Overloaded(
           [](FrameIntervalDecider::FrameIntervalClass frame_interval_class) {
             switch (frame_interval_class) {

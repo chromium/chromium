@@ -18,6 +18,7 @@
 #include <tuple>
 #include <unordered_set>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check_op.h"
@@ -117,7 +118,6 @@
 #include "net/log/net_log_with_source.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/url_request/url_request_context.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
 
@@ -519,7 +519,7 @@ HostResolverManager::CreateNetworkBoundHostResolverManager(
 
 std::unique_ptr<HostResolver::ResolveHostRequest>
 HostResolverManager::CreateRequest(
-    absl::variant<url::SchemeHostPort, HostPortPair> host,
+    std::variant<url::SchemeHostPort, HostPortPair> host,
     NetworkAnonymizationKey network_anonymization_key,
     NetLogWithSource net_log,
     std::optional<ResolveHostParameters> optional_parameters,

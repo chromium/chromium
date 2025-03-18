@@ -7,7 +7,7 @@
 
 namespace base {
 
-// absl::visit() needs to be called with a functor object, such as
+// std::visit() needs to be called with a functor object, such as
 //
 //  struct Visitor {
 //    std::string operator()(const PackageA& source) {
@@ -19,12 +19,12 @@ namespace base {
 //    }
 //  };
 //
-//  absl::variant<PackageA, PackageB> var = PackageA();
-//  return absl::visit(Visitor(), var);
+//  std::variant<PackageA, PackageB> var = PackageA();
+//  return std::visit(Visitor(), var);
 //
 // `Overloaded` enables the above code to be written as:
 //
-//  absl::visit(
+//  std::visit(
 //     Overloaded{
 //         [](const PackageA& pack) { return "PackageA"; },
 //         [](const PackageB& pack) { return "PackageB"; },

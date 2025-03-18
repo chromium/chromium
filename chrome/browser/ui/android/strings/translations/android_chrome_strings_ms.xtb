@@ -432,7 +432,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2981364137500752533">Anda boleh membuka sehingga 5 tetingkap.</translation>
 <translation id="2983102365694924129">Berdasarkan aktiviti anda pada laman. Tetapan ini dimatikan.</translation>
 <translation id="2984978667043170458">Sertakan teks sekitar dalam carian Google</translation>
-<translation id="2988638966064514052">Kukuhkan kata laluan anda</translation>
 <translation id="2989523299700148168">Dilawati baru-baru ini</translation>
 <translation id="2992473221983447149">Perihalan imej</translation>
 <translation id="2996291259634659425">Buat ungkapan laluan</translation>
@@ -548,7 +547,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3557336313807607643">Tambahkan pada kenalan</translation>
 <translation id="3563767357928833671">Kandungan papan keratan dipaparkan</translation>
 <translation id="3566639033325271639">Kemas kini tetapan</translation>
-<translation id="3568945271227339929">Tiada kata laluan yang terjejas</translation>
 <translation id="3575464060651642446">Menyemak kata laluan pada peranti ini…</translation>
 <translation id="3577473026931028326">Kesilapan telah berlaku. Cuba lagi.</translation>
 <translation id="3577558748185201054">Urus minat dan pilihan anda</translation>
@@ -1055,7 +1053,6 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="5958275228015807058">Cari fail dan halaman anda dalam Muat Turun</translation>
 <translation id="5958994127112619898">Ringkaskan halaman</translation>
 <translation id="5962718611393537961">Ketik untuk runtuhkan</translation>
-<translation id="5964180026566797835">Tidak dapat menyemak kata laluan</translation>
 <translation id="5964869237734432770">Hentikan perihalan imej</translation>
 <translation id="5977976211062815271">Pada peranti ini</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 halaman pada senarai bacaan anda}other{# halaman pada senarai bacaan anda}}</translation>
@@ -1099,6 +1096,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="6150320133806434356">Penanda halaman disimpan</translation>
 <translation id="6150706324143004339">Untuk menggunakan dan menyimpan data Chrome dalam Google Account anda, kemas kinikan Chrome</translation>
 <translation id="6154478581116148741">Hidupkan kunci skrin dalam Tetapan untuk mengeksport kata laluan anda daripada peranti ini</translation>
+<translation id="6156323911414505561">Tunjukkan bar penanda halaman</translation>
 <translation id="6162892189396105610">Mempramuat halaman yang diramal oleh Chrome akan anda lawati.</translation>
 <translation id="6170675927290506430">Akses tetapan pemberitahuan</translation>
 <translation id="6186394685773237175">Tiada kata laluan yang terjejas ditemukan</translation>

@@ -10,6 +10,7 @@
 #include <iosfwd>
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -21,7 +22,6 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -72,7 +72,7 @@ struct AttributionSimulationEvent {
     int64_t request_id;
   };
 
-  using Data = absl::variant<StartRequest, Response, EndRequest>;
+  using Data = std::variant<StartRequest, Response, EndRequest>;
 
   base::Time time;
   Data data;

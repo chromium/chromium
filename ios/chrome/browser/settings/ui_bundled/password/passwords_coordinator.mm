@@ -130,7 +130,7 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForProfile(profile);
 

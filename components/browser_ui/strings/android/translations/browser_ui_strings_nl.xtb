@@ -45,6 +45,7 @@
 <translation id="1652197001188145583">Als deze optie aanstaat, kunnen sites vragen of ze NFC-apparaten mogen gebruiken. Staat de optie uit, dan kunnen sites geen NFC-apparaten gebruiken.</translation>
 <translation id="1660204651932907780">Toestaan dat sites geluid afspelen (aanbevolen)</translation>
 <translation id="1677097821151855053">Cookies en andere sitegegevens worden gebruikt om je te onthouden, bijvoorbeeld voor inloggen of gepersonaliseerde advertenties. Ga naar <ph name="BEGIN_LINK" />Instellingen<ph name="END_LINK" /> om de cookies voor alle sites te beheren.</translation>
+<translation id="1679305402657584804">Sites kunnen vragen of ze NFC-apparaten mogen gebruiken</translation>
 <translation id="1686785653877010442">Sites sturen meestal meldingen om je op de hoogte te houden van actueel nieuws of nieuwe chatberichten.</translation>
 <translation id="169515064810179024">Sites geen toegang tot bewegingssensoren geven</translation>
 <translation id="1703666494654169921">Niet toestaan dat sites virtualreality-apparaten of -gegevens gebruiken</translation>
@@ -84,6 +85,7 @@
 <translation id="2185965788978862351">Hiermee verwijder je <ph name="DATASIZE" /> aan gegevens en cookies die zijn opgeslagen door sites of apps op je startscherm.</translation>
 <translation id="2194856509914051091">Overwegingen</translation>
 <translation id="2215727959747642672">Bestanden bewerken</translation>
+<translation id="2218389616572918761">Sites kunnen om je microfoon vragen</translation>
 <translation id="2228071138934252756">Als je <ph name="APP_NAME" /> toegang wilt geven tot je camera, moet je de camera ook aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Cookies van derden worden geblokkeerd</translation>
 <translation id="2238944249568001759">Voorgestelde zoekopdrachten op basis van je laatste tabblad</translation>
@@ -132,8 +134,10 @@
 <translation id="2726059656860238749">Start Chrome met de Omnibox gefocust om de opstarttijd op basisapparaten te verkorten.</translation>
 <translation id="2750481671343847896">Sites kunnen inlogprompts van identiteitsservices tonen.</translation>
 <translation id="2787357173144933081">Omnibox voor een goede start</translation>
+<translation id="2789132527330338807">Sites kunnen vragen of ze een 3D-kaart van je omgeving mogen maken of de camerapositie mogen volgen</translation>
 <translation id="2790501146643349491">Als deze optie aanstaat, kunnen recent gesloten sites het sturen en ontvangen van gegevens afronden. Staat de optie uit, dan kunnen recent gesloten sites het sturen of ontvangen van gegevens niet afronden.</translation>
 <translation id="2795716239552913152">Sites gebruiken je locatie meestal voor relevante functies of informatie, zoals lokaal nieuws of winkels in de buurt</translation>
+<translation id="2802908157808345702">Niet toestaan dat sites pop-ups sturen en omleidingen gebruiken</translation>
 <translation id="2814830417943086299">Chrome toont je recente tabbladen nu in de app-lijst en zoekresultaten van je apparaat. Je kunt dit altijd uitzetten in de Chrome-instellingen.</translation>
 <translation id="2822354292072154809">Weet je zeker dat je alle siterechten voor <ph name="CHOSEN_OBJECT_NAME" /> wilt resetten?</translation>
 <translation id="2850913818900871965">Mobiele weergave opvragen</translation>
@@ -274,6 +278,7 @@
 <translation id="4598549027014564149">Als je de incognitomodus gebruikt, kunnen sites je cookies niet gebruiken om je browse-activiteit op sites te bekijken (ook niet op gerelateerde sites). Je browse-activiteit wordt bijvoorbeeld niet gebruikt om advertenties te personaliseren. Functies op bepaalde sites werken misschien niet.</translation>
 <translation id="461356340001513807">Hiermee kun je inloggen bij websites met het account dat je hebt bij een identiteitsservice</translation>
 <translation id="4619615317237390068">Tabbladen van andere apparaten</translation>
+<translation id="4635969503923889910">Niet toestaan dat sites NFC-apparaten gebruiken</translation>
 <translation id="4644713492825682049">Verwijderen en resetten</translation>
 <translation id="4645575059429386691">Beheerd door je ouder</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
@@ -372,6 +377,7 @@
 <translation id="5877248419911025165">Alle verzoeken samenvouwen</translation>
 <translation id="5884085660368669834">Sitevoorkeur</translation>
 <translation id="5887687176710214216">Laatst bezocht: gisteren</translation>
+<translation id="5908617755156109052">Niet toestaan dat sites een 3D-kaart van je omgeving maken of de camerapositie volgen</translation>
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5922853908706496913">Je scherm delen</translation>
 <translation id="5922967540311291836">Cookies van derden blokkeren:</translation>
@@ -582,6 +588,7 @@
 <translation id="8676374126336081632">Invoer wissen</translation>
 <translation id="8681886425883659911">Advertenties worden geblokkeerd op sites waarvan bekend is dat ze opdringerige of misleidende advertenties tonen</translation>
 <translation id="868929229000858085">Zoek in je contacten</translation>
+<translation id="8707904142362025782">Sites kunnen om je camera vragen</translation>
 <translation id="8712637175834984815">Begrepen</translation>
 <translation id="8715862698998036666">Sleep vanaf de bovenkant en swipe vanaf de linker- of rechterrand om het volledige scherm te sluiten.</translation>
 <translation id="8719283222052720129">Verleen <ph name="APP_NAME" /> rechten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>

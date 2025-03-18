@@ -88,8 +88,11 @@ interface SharedStorageWorkletServiceClient {
   SharedStorageKeys(pending_remote<SharedStorageEntriesListener> listener);
 
   // Returns (potentially in batches) the [key, value] pairs of the
-  // shared storage.
-  SharedStorageEntries(pending_remote<SharedStorageEntriesListener> listener);
+  // shared storage. If `values_only` is true, notifies the browser that
+  // the renderer will only be using the values from the [key, value] pairs.
+  SharedStorageEntries(
+      pending_remote<SharedStorageEntriesListener> listener,
+      bool values_only);
 
   // Handle sharedStorage.length(): get the number of keys.
   SharedStorageLength()

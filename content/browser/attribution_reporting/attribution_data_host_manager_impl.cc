@@ -13,6 +13,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -76,7 +77,6 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/attribution_utils.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
@@ -2396,7 +2396,7 @@ void AttributionDataHostManagerImpl::MaybeLogAuditIssueAndReportHeaderError(
   auto&& [header, reporting_origin, reporting_url, report_header_errors,
           registration_type] = std::move(pending_decode);
 
-  AttributionReportingIssueType issue_type = absl::visit(
+  AttributionReportingIssueType issue_type = std::visit(
       base::Overloaded{
           [](SourceRegistrationError error) {
             attribution_reporting::RecordSourceRegistrationError(error);

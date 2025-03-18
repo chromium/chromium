@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">Pozadinska slika sa Zemljom</translation>
 <translation id="33736539805963175">Pozadina u boji "<ph name="LETTERS_COLOR" />" sa slovom <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Ekskluzivno</translation>
-<translation id="3395147534045164351">Uključivanje/isključivanje lokacije prilagođavanja</translation>
 <translation id="3404249063913988450">Omogućite čuvara ekrana</translation>
 <translation id="3413935475507503304">Da nastavite s ažuriranjem, kliknite na Naprijed.</translation>
 <translation id="3428551088151258685">na otvorenom</translation>
@@ -1396,7 +1395,7 @@ Preuzmite model transkripcija (do 100 MB) da dobijete ove transkripcije.</trans
 <translation id="7388345524791662148">Više opcija za snimak <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Ugrađena dodirna podloga</translation>
 <translation id="7397270852490618635">Isključi svijetlu temu</translation>
-<translation id="7400166052988585408">Nastavnik će zaključati tvoj zaslon za <ph name="NUM_SECONDS" /> s</translation>
+<translation id="7400166052988585408">Nastavnik će zaključati ekran za <ph name="NUM_SECONDS" /> s</translation>
 <translation id="7401543881546089382">Izbriši prečac</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> je spreman za ažuriranje</translation>
 <translation id="741244894080940828">pretvaranje</translation>

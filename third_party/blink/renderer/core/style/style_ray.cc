@@ -12,17 +12,6 @@
 
 namespace blink {
 
-scoped_refptr<StyleRay> StyleRay::Create(
-    float angle,
-    RaySize size,
-    bool contain,
-    const BasicShapeCenterCoordinate& center_x,
-    const BasicShapeCenterCoordinate& center_y,
-    bool has_explicit_center) {
-  return base::AdoptRef(new StyleRay(angle, size, contain, center_x, center_y,
-                                     has_explicit_center));
-}
-
 StyleRay::StyleRay(float angle,
                    RaySize size,
                    bool contain,

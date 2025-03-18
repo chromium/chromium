@@ -87,10 +87,13 @@ LineSegment EllipseShape::GetExcludedInterval(LayoutUnit logical_top,
 }
 
 void EllipseShape::BuildDisplayPaths(DisplayPaths& paths) const {
-  paths.shape.AddEllipse(center_, radius_x_, radius_y_);
+  DCHECK(paths.shape.IsEmpty());
+  DCHECK(paths.margin_shape.IsEmpty());
+
+  paths.shape = Path::MakeEllipse(center_, radius_x_, radius_y_);
   if (ShapeMargin()) {
-    paths.margin_shape.AddEllipse(center_, radius_x_ + ShapeMargin(),
-                                  radius_y_ + ShapeMargin());
+    paths.margin_shape = Path::MakeEllipse(center_, radius_x_ + ShapeMargin(),
+                                           radius_y_ + ShapeMargin());
   }
 }
 

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.hub;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.ACTION_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.COLOR_SCHEME;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.HUB_SEARCH_ENABLED_STATE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_BUTTON_LOOKUP_CALLBACK;
@@ -118,6 +119,8 @@ public class HubToolbarMediator {
     // changes in the returned panes or suppliers.
     private final @NonNull List<Runnable> mRemoveReferenceButtonObservers = new ArrayList<>();
     private final @NonNull Callback<Pane> mOnFocusedPaneChange = this::onFocusedPaneChange;
+    private final @NonNull Callback<Boolean> mOnHubSearchEnabledStateChange =
+            this::onHubSearchEnabledStateChange;
 
     private @Nullable PaneButtonLookup mPaneButtonLookup;
 
@@ -151,6 +154,10 @@ public class HubToolbarMediator {
             mCachedPaneSwitcherButtonData.add(new Pair<>(paneId, currentButtonData));
 
             mRemoveReferenceButtonObservers.add(() -> supplier.removeObserver(observer));
+
+            if (OmniboxFeatures.sAndroidHubSearch.isEnabled()) {
+                pane.getHubSearchEnabledStateSupplier().addObserver(mOnHubSearchEnabledStateChange);
+            }
         }
         ObservableSupplier<Pane> focusedPaneSupplier = paneManager.getFocusedPaneSupplier();
         focusedPaneSupplier.addObserver(mOnFocusedPaneChange);
@@ -183,6 +190,13 @@ public class HubToolbarMediator {
         mPaneManager.getFocusedPaneSupplier().removeObserver(mOnFocusedPaneChange);
         if (OmniboxFeatures.sAndroidHubSearch.isEnabled()) {
             mContext.unregisterComponentCallbacks(mComponentCallbacks);
+
+            for (@PaneId int paneId : mPaneManager.getPaneOrderController().getPaneOrder()) {
+                @Nullable Pane pane = mPaneManager.getPaneForId(paneId);
+                if (pane == null) continue;
+                pane.getHubSearchEnabledStateSupplier()
+                        .removeObserver(mOnHubSearchEnabledStateChange);
+            }
         }
     }
 
@@ -292,6 +306,10 @@ public class HubToolbarMediator {
             }
             index++;
         }
+    }
+
+    private void onHubSearchEnabledStateChange(boolean enabled) {
+        mPropertyModel.set(HUB_SEARCH_ENABLED_STATE, enabled);
     }
 
     private FullButtonData wrapButtonData(

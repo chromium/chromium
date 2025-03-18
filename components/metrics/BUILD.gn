@@ -410,9 +410,6 @@ if (!is_cronet_build) {
   if (use_blink) {
     static_library("content") {
       sources = [
-        # ChromeOS accessibility metrics provider is in chromeos_metrics_provider.
-        "content/accessibility_metrics_provider.cc",
-        "content/accessibility_metrics_provider.h",
         "content/content_stability_metrics_provider.cc",
         "content/content_stability_metrics_provider.h",
         "content/dwa_web_contents_observer.cc",

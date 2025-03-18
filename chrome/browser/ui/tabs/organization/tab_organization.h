@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/tab_groups/tab_group_id.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class TabOrganization : public TabData::Observer {
  public:
@@ -24,7 +24,7 @@ class TabOrganization : public TabData::Observer {
 
   // Used to display the current name of the organization by either indexing
   // into the names_ list (the size_t) or providing a custom name |u16string|.
-  using CurrentName = absl::variant<size_t, std::u16string>;
+  using CurrentName = std::variant<size_t, std::u16string>;
 
   class Observer {
    public:

@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -29,11 +30,11 @@ class TestPortableDeviceWatcherWin;
 // This is a singleton class instantiated by StorageMonitorWin. This class is
 // created, destroyed and operates on the UI thread, except for long running
 // tasks it spins off to a SequencedTaskRunner.
-class PortableDeviceWatcherWin {
+class COMPONENT_EXPORT(STORAGE_MONITOR) PortableDeviceWatcherWin {
  public:
   typedef std::vector<std::wstring> StorageObjectIDs;
 
-  struct DeviceStorageObject {
+  struct COMPONENT_EXPORT(STORAGE_MONITOR) DeviceStorageObject {
     DeviceStorageObject(const std::wstring& temporary_id,
                         const std::string& persistent_id);
 
@@ -50,7 +51,7 @@ class PortableDeviceWatcherWin {
   typedef std::vector<DeviceStorageObject> StorageObjects;
 
   // Struct to store attached MTP device details.
-  struct DeviceDetails {
+  struct COMPONENT_EXPORT(STORAGE_MONITOR) DeviceDetails {
     DeviceDetails();
     DeviceDetails(const DeviceDetails& other);
     ~DeviceDetails();

@@ -8,6 +8,7 @@
 #include <sync/sync.h>
 
 #include <cstdint>
+#include <variant>
 
 #include "base/containers/adapters.h"
 #include "base/containers/fixed_flat_set.h"
@@ -412,8 +413,8 @@ std::optional<bool> WaylandFrameManager::ApplySurfaceConfigure(
       config.surface_scale_factor / window_->latched_state().ui_scale;
 
   surface->set_buffer_transform(
-      absl::holds_alternative<gfx::OverlayTransform>(config.transform)
-          ? absl::get<gfx::OverlayTransform>(config.transform)
+      std::holds_alternative<gfx::OverlayTransform>(config.transform)
+          ? std::get<gfx::OverlayTransform>(config.transform)
           : gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE);
   surface->set_surface_buffer_scale(surface_buffer_scale);
   surface->set_buffer_crop(config.crop_rect);

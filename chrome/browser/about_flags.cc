@@ -5005,6 +5005,13 @@ const FeatureEntry kFeatureEntries[] = {
                                     kMediaFoundationClearStrategyVariations,
                                     "MediaFoundationClearRendering")},
     {
+        "enable-media-foundation-camera-usage-monitoring",
+        flag_descriptions::kMediaFoundationCameraUsageMonitoringName,
+        flag_descriptions::kMediaFoundationCameraUsageMonitoringDescription,
+        kOsWin,
+        FEATURE_VALUE_TYPE(features::kMediaFoundationCameraUsageMonitoring),
+    },
+    {
         "enable-waitable-swap-chain",
         flag_descriptions::kUseWaitableSwapChainName,
         flag_descriptions::kUseWaitableSwapChainDescription,
@@ -7466,12 +7473,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-    {"cct-before-unload", flag_descriptions::kCCTBeforeUnloadName,
-     flag_descriptions::kCCTBeforeUnloadDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kCCTBeforeUnload)},
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
     {"cct-ephemeral-mode", flag_descriptions::kCCTEphemeralModeName,
      flag_descriptions::kCCTEphemeralModeDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kCCTEphemeralMode)},
@@ -7537,6 +7538,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"cct-nested-security-icon", flag_descriptions::kCCTNestedSecurityIconName,
      flag_descriptions::kCCTNestedSecurityIconDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kCCTNestedSecurityIcon)},
+    {"cct-toolbar-refactor", flag_descriptions::kCCTToolbarRefactorName,
+     flag_descriptions::kCCTToolbarRefactorDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kCCTToolbarRefactor)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -11193,11 +11197,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"cros-mall-url", flag_descriptions::kCrosMallUrlName,
      flag_descriptions::kCrosMallUrlDescription, kOsCrOS,
      STRING_VALUE_TYPE(ash::switches::kMallUrl, "")},
-
-    {"overlay-scrollbars-os-settings",
-     flag_descriptions::kOverlayScrollbarsOSSettingsName,
-     flag_descriptions::kOverlayScrollbarsOSSettingsDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kOverlayScrollbarsOSSetting)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     {"autofill-enable-card-benefits-iph",
@@ -11387,6 +11386,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"glic-detached", flag_descriptions::kGlicDetachedName,
      flag_descriptions::kGlicDetachedDescription, kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(features::kGlicDetached)},
+    {"glic-user-resize", flag_descriptions::kGlicUserResizeName,
+     flag_descriptions::kGlicUserResizeDescription, kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(features::kGlicUserResize)},
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -11594,6 +11596,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableSnackbarInSettingsDescription,
      kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(switches::kEnableSnackbarInSettings)},
+    {"enable-pending-mode-passwords-promo",
+     flag_descriptions::kEnablePendingModePasswordsPromoName,
+     flag_descriptions::kEnablePendingModePasswordsPromoDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(switches::kEnablePendingModePasswordsPromo)},
 #if BUILDFLAG(IS_ANDROID)
     {"new-etc1-encoder", flag_descriptions::kNewEtc1EncoderName,
      flag_descriptions::kNewEtc1EncoderDescription, kOsAndroid,

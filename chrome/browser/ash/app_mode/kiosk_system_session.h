@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_network_state_observer.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/chromeos/app_mode/kiosk_browser_session.h"
 #include "chrome/browser/profiles/profile.h"
 
+class PrefService;
 class PrefRegistrySimple;
 
 namespace ash {
@@ -30,7 +32,8 @@ class NetworkConnectivityMetricsService;
 // Example services are accessibility, metrics and browser crash recovery.
 class KioskSystemSession {
  public:
-  KioskSystemSession(Profile* profile,
+  KioskSystemSession(PrefService& local_state,
+                     Profile* profile,
                      const KioskAppId& kiosk_app_id,
                      const std::optional<std::string>& app_name = std::nullopt);
   KioskSystemSession(const KioskSystemSession&) = delete;
@@ -77,6 +80,8 @@ class KioskSystemSession {
   void SetRebootAfterUpdateIfNecessary();
 
   Profile* profile() const;
+
+  const raw_ref<PrefService> local_state_;
 
   // Owned by `ProfileManager`.
   raw_ptr<Profile> profile_ = nullptr;

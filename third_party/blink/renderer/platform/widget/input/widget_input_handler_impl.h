@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_WIDGET_INPUT_HANDLER_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_WIDGET_INPUT_HANDLER_IMPL_H_
 
+#include <variant>
+
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -13,7 +15,6 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/direct_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 
@@ -109,7 +110,7 @@ class WidgetInputHandlerImpl : public mojom::blink::WidgetInputHandler {
 
   using Receiver = mojo::Receiver<mojom::blink::WidgetInputHandler>;
   using DirectReceiver = mojo::DirectReceiver<mojom::blink::WidgetInputHandler>;
-  absl::variant<absl::monostate, Receiver, DirectReceiver> receiver_;
+  std::variant<std::monostate, Receiver, DirectReceiver> receiver_;
 
   base::WeakPtrFactory<WidgetInputHandlerImpl> weak_ptr_factory_{this};
 };

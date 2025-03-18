@@ -18,14 +18,13 @@
 namespace content {
 class WebContents;
 }
-
+class OptimizationGuideKeyedService;
 namespace password_manager {
 class PasswordFormManager;
 class PasswordManagerDriver;
 }  // namespace password_manager
 
 namespace optimization_guide {
-class ModelQualityLogEntry;
 }
 
 // Helper class which submits a form and verifies submission result. Upon
@@ -102,7 +101,11 @@ class ChangeFormSubmissionVerifier {
   void OnExecutionResponseCallback(
       optimization_guide::OptimizationGuideModelExecutionResult
           execution_result,
-      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
+      std::unique_ptr<
+          optimization_guide::proto::PasswordChangeSubmissionLoggingData>
+          logging_data);
+
+  OptimizationGuideKeyedService* GetOptimizationService();
 
   base::OneShotTimer timeout_timer_;
   base::WeakPtr<content::WebContents> web_contents_;

@@ -128,9 +128,6 @@ namespace {
 const char kCacheKey[] = "key";
 const char kCacheValue[] = "cached value";
 
-const blink::mojom::StorageType kTemporary =
-    blink::mojom::StorageType::kTemporary;
-
 const storage::QuotaClientType kClientFile =
     storage::QuotaClientType::kFileSystem;
 
@@ -895,7 +892,7 @@ storage::BucketInfo AddQuotaManagedBucket(
     const std::string& bucket_name,
     base::Time modified = base::Time::Now()) {
   storage::BucketInfo bucket =
-      manager->CreateBucket({storage_key, bucket_name}, kTemporary);
+      manager->CreateBucket({storage_key, bucket_name});
   manager->AddBucket(bucket, {kClientFile}, modified);
   EXPECT_TRUE(manager->BucketHasData(bucket, kClientFile));
   return bucket;

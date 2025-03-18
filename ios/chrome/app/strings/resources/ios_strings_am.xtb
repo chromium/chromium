@@ -504,6 +504,7 @@
 <translation id="310900540163454140">የ<ph name="WEBSITE" /> የይለፍ ቃል ይሰረዝ?</translation>
 <translation id="3112556859945124369">ምልክት አድርግበት…</translation>
 <translation id="3119874402040566234">እርስዎ ዘግተው እንዲወጡ ይደረጋሉ እና የአሰሳ ውሂብዎ ይሰረዛል</translation>
+<translation id="3124568093781685165">ከቤተሰብዎ ጋር የይለፍ ቃላትን ያጋሩ</translation>
 <translation id="3130863904455712965">ታሪክ እና ተጨማሪ</translation>
 <translation id="313283613037595347">አዲስ ማንነት የማያሳውቅ ትር ፍጠር።</translation>
 <translation id="3138611310073113613">ምርጫ አስወግድ</translation>
@@ -1003,6 +1004,7 @@
 <translation id="5352128922772839949">ፋይል አስቀምጥ</translation>
 <translation id="5355191726083956201">የተሻሻለ ጥበቃ በርቷል</translation>
 <translation id="537853552771686272">የሚፈልጓቸውን ርዕሶች እና ጣቢያዎች በሚከተለው ያስተዳድሩ</translation>
+<translation id="5390458669633674385">{count,plural, =1{{count} ተዘግቷል}one{{count} ተዘግቷል}other{{count} ተዘግተዋል}}</translation>
 <translation id="5394975111793637642">ለእርስዎ ካርድ የምርት ግምገማዎችን ይደብቁ</translation>
 <translation id="5395707839134961196">የፍለጋ ፕሮግራም ዝርዝሮችን ይደብቁ</translation>
 <translation id="5414763847370083940">በማንኛውም ጣቢያ ላይ ዋጋው ከቀነሰ ማንቂያ ያገኛሉ።</translation>
@@ -1132,6 +1134,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="5897749768294722429">ወደጎበኟቸው ጣቢያዎች በቶሎ ለመመለስ የእርስዎን ትሮች እና ታሪክ ያስምሩ።</translation>
 <translation id="5898848375214731122">ክብደት</translation>
 <translation id="5899314093904173337">በአቅራቢያ ካሉ ሰዎች ጋር ለማጋራት ይህን የQR ኮድ በእነሱ ካሜራ ወይም የQR ቃኚ መተግበሪያ እንዲቃኙ ይፍቀዱላቸው</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} አዲስ ትር}one{{count} አዲስ ትር}other{{count} አዲስ ትሮች}}</translation>
 <translation id="5911030830365207728">Google ትርጉም</translation>
 <translation id="5917913282764181683">ውርዶችዎን በራስ-ሰር ሰርዝ</translation>
 <translation id="5922999516621365983">ትርን ለመሰካት ወደዚህ ይጎትቱት።</translation>
@@ -1674,6 +1677,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8131740175452115882">አረጋግጥ</translation>
 <translation id="8132598642024322408">አሁን <ph name="PRICE" /> <ph name="PREVIOUS_PRICE" /> ነበር።</translation>
 <translation id="813370552429173916">ለእያንዳንዱ ጣቢያ ወይም መተግበሪያ ልዩ የይለፍ ቃል ይጠቀሙ። የሆነ ሰው ዳግም ጥቅም ላይ የዋለ የይለፍ ቃል ቢያገኝ ሌሎች መለያዎችዎን ለመድረስ ጥቅም ላይ ሊውል ይችላል። ድር ጣቢያውን ለመክፈት እና አሁን ለመለወጥ ጠቅ ያድርጉ።</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} የተዘጋ ትር}one{{count} የተዘጋ ትር}other{{count} የተዘጉ ትሮች}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 ሌላ}one{# ሌላ}other{# ሌሎች}}</translation>
 <translation id="8150167929304790980">ሙሉ ስም</translation>
 <translation id="8152331954420209374">ወደ ሌንስ ሂድ</translation>

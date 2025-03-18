@@ -10,6 +10,7 @@
 #include "device/fido/enclave/enclave_protocol_utils.h"
 
 #include <array>
+#include <variant>
 
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
@@ -240,7 +241,7 @@ ErrorResponse::ErrorResponse(ErrorResponse&) = default;
 
 ErrorResponse::ErrorResponse(ErrorResponse&&) = default;
 
-absl::variant<AuthenticatorGetAssertionResponse, ErrorResponse>
+std::variant<AuthenticatorGetAssertionResponse, ErrorResponse>
 ParseGetAssertionResponse(cbor::Value response_value,
                           base::span<const uint8_t> credential_id) {
   if (!response_value.is_array() || response_value.GetArray().empty()) {
@@ -312,9 +313,9 @@ ParseGetAssertionResponse(cbor::Value response_value,
   return std::move(*response);
 }
 
-absl::variant<std::pair<AuthenticatorMakeCredentialResponse,
-                        sync_pb::WebauthnCredentialSpecifics>,
-              ErrorResponse>
+std::variant<std::pair<AuthenticatorMakeCredentialResponse,
+                       sync_pb::WebauthnCredentialSpecifics>,
+             ErrorResponse>
 ParseMakeCredentialResponse(cbor::Value response_value,
                             const CtapMakeCredentialRequest& request,
                             int32_t wrapped_secret_version,

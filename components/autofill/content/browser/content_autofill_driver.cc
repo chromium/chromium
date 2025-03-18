@@ -8,6 +8,7 @@
 #include <functional>
 #include <type_traits>
 #include <utility>
+#include <variant>
 
 #include "base/barrier_callback.h"
 #include "base/functional/callback.h"
@@ -381,13 +382,13 @@ AutofillManager& ContentAutofillDriver::GetAutofillManager() {
 
 std::optional<LocalFrameToken> ContentAutofillDriver::Resolve(
     FrameToken query) {
-  if (absl::holds_alternative<LocalFrameToken>(query)) {
-    return absl::get<LocalFrameToken>(query);
+  if (std::holds_alternative<LocalFrameToken>(query)) {
+    return std::get<LocalFrameToken>(query);
   }
-  DCHECK(absl::holds_alternative<RemoteFrameToken>(query));
+  DCHECK(std::holds_alternative<RemoteFrameToken>(query));
   content::RenderProcessHost* rph = render_frame_host_->GetProcess();
   blink::RemoteFrameToken blink_remote_token(
-      absl::get<RemoteFrameToken>(query).value());
+      std::get<RemoteFrameToken>(query).value());
   content::RenderFrameHost* remote_rfh =
       content::RenderFrameHost::FromPlaceholderToken(rph->GetDeprecatedID(),
                                                      blink_remote_token);

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <string_view>
+#include <variant>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -23,7 +24,6 @@
 #include "net/dns/host_resolver_cache.h"
 #include "net/dns/host_resolver_internal_result.h"
 #include "net/dns/public/util.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace net {
 

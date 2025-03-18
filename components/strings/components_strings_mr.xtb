@@ -316,7 +316,6 @@
 <translation id="1532118530259321453">या पेजचे म्हणणे हे आहे की</translation>
 <translation id="1533966801397200693">तुम्ही साइन इन केलेली प्रोफाइल ही व्यवस्थापित केलेली प्रोफाइल आहे. तुमचा अ‍ॅडमिनिस्ट्रेटर हा तुमच्या प्रोफाइल सेटिंग्जमध्ये रिमोट पद्धतीने बदल करू शकतो, तक्रारीद्वारे ब्राउझरशी संबंधित माहितीचे विश्लेषण करू शकतो आणि इतर आवश्यक टास्क करू शकतो. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">पेजचे भाषांतर करायचे आहे</translation>
-<translation id="1538295100801850685">पूर्वानुमानामधील सुधारणा</translation>
 <translation id="1539840569003678498">अहवाल पाठवला:</translation>
 <translation id="1542105669288201090">व्यावसायिक शिक्षण</translation>
 <translation id="1545757265410828525">किमतीचा इतिहास</translation>
@@ -1157,7 +1156,6 @@
 <translation id="3052868890529250114">तुम्ही सामान्यपणे साइटशी सुरक्षितरीत्या कनेक्ट करता, पण Chrome ला या वेळी सुरक्षित कनेक्शन वापरता आले नाही. हल्लेखोर हा तुमच्या नेटवर्क कनेक्शनवरील माहिती चोरण्याचा किंवा त्यामध्ये फेरबदल करण्याचा प्रयत्न करत असू शकतो. <ph name="BEGIN_LEARN_MORE_LINK" />या चेतावणीबद्दल अधिक जाणून घ्या<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> पासून किमतीमध्ये <ph name="PRICE_DROP" /> घसरण</translation>
 <translation id="3061707000357573562">पॅच सेवा</translation>
-<translation id="306198082577913404">पूर्वानुमानामधील सुधारणा सुरू करा</translation>
 <translation id="3062655045399308513">ब्राउझिंग डेटा हटवा...</translation>
 <translation id="3063453392496098461">VPN बॅकग्राउंड सेवांचे इंस्टॉलेशन करता आले नाही.</translation>
 <translation id="306573536155379004">गेमला सुरुवात झाली.</translation>
@@ -2324,7 +2322,6 @@
 <translation id="5097099694988056070">CPU/RAM वापर यासारखी डिव्हाइस आकडेवारी</translation>
 <translation id="5097468150760963273">27 x 39 in</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome ला तुमच्या डिव्हाइसच्या <ph name="PERMISSION" /> चा अ‍ॅक्सेस आवश्यक आहे</translation>
 <translation id="510644072453496781">कार्डबोर्ड (एंड)</translation>
 <translation id="5106648964679263509">व्हर्चुअल कार्ड <ph name="BNPL_ISSUER_NAME" /> साठी भरले आहे</translation>
 <translation id="5108881358339761672">साइट सुरक्षित नाही</translation>
@@ -4054,7 +4051,6 @@
 <translation id="8134058435519644366">भरती आणि कर्मचारी नेमणूक</translation>
 <translation id="8135546115396015134">लेफ्ट की</translation>
 <translation id="8137456439814903304">ऊर्जा आणि सुविधा पुरवठादार</translation>
-<translation id="81474145143203755">या साइटवर तुमचा <ph name="PERMISSION" /> वापरण्यासाठी, Chrome ला अ‍ॅक्सेस द्या</translation>
 <translation id="8148608574971654810">पीडीएफ आवृत्ती:</translation>
 <translation id="8149426793427495338">तुमचा कॉंप्युटर निष्क्रीय झाला.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> येथील फाइल वाचनीय नाही. ती काढून टाकलेली, हलविलेली असू शकते किंवा फाइल परवानग्या ॲक्सेस प्रतिबंधित करत असू शकतात.</translation>

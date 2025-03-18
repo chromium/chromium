@@ -5,6 +5,7 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 
 #include <list>
+#include <variant>
 #include <vector>
 
 #include "base/auto_reset.h"
@@ -703,12 +704,12 @@ PageSpecificContentSettings::GetDelegateForWebContents(
 // static
 void PageSpecificContentSettings::StorageAccessed(
     StorageType storage_type,
-    absl::variant<content::GlobalRenderFrameHostToken,
-                  content::GlobalRenderFrameHostId> frame_id,
+    std::variant<content::GlobalRenderFrameHostToken,
+                 content::GlobalRenderFrameHostId> frame_id,
     const blink::StorageKey& storage_key,
     bool blocked_by_policy) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  content::RenderFrameHost* rfh = absl::visit(
+  content::RenderFrameHost* rfh = std::visit(
       base::Overloaded{
           [](const content::GlobalRenderFrameHostToken& frame_token) {
             return content::RenderFrameHost::FromFrameToken(frame_token);
@@ -1188,13 +1189,13 @@ void PageSpecificContentSettings::OnBrowsingDataAccessed(
   // TODO(njeunje): Look into populating an actual url for this access details.
   // Could be obtained from the `data_key`.
   GURL accessing_url =
-      absl::holds_alternative<blink::StorageKey>(data_key)
-          ? absl::get<blink::StorageKey>(data_key).origin().GetURL()
+      std::holds_alternative<blink::StorageKey>(data_key)
+          ? std::get<blink::StorageKey>(data_key).origin().GetURL()
           : GURL();
 
   // Session storage uses a different DataKey than other storage types.
   if (storage_type == BrowsingDataModel::StorageType::kSessionStorage) {
-    accessing_url = absl::get<content::SessionStorageUsageInfo>(data_key)
+    accessing_url = std::get<content::SessionStorageUsageInfo>(data_key)
                         .storage_key.origin()
                         .GetURL();
   }

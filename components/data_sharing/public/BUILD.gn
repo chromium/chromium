@@ -66,6 +66,27 @@ static_library("features") {
   public_deps = [ "//base" ]
 }
 
+source_set("data_type_controller") {
+  visibility = [
+    "//components/browser_sync",
+    "//components/saved_tab_groups/public:data_type_controller",
+  ]
+
+  sources = [
+    "data_type_controller/collaboration_group_data_type_controller.cc",
+    "data_type_controller/collaboration_group_data_type_controller.h",
+    "data_type_controller/managed_account_precondition_checker.cc",
+    "data_type_controller/managed_account_precondition_checker.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/signin/public/identity_manager",
+    "//components/sync/base",
+    "//components/sync/service",
+  ]
+}
+
 if (is_android) {
   android_library("public_java") {
     sources = [

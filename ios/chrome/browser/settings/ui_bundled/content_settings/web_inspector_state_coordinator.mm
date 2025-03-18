@@ -35,7 +35,7 @@
 
 - (void)start {
   self.mediator = [[WebInspectorStateMediator alloc]
-      initWithUserPrefService:self.browser->GetProfile()->GetPrefs()];
+      initWithUserPrefService:self.profile->GetPrefs()];
 
   self.viewController = [[WebInspectorStateTableViewController alloc]
       initWithStyle:ChromeTableViewStyle()];

@@ -8,6 +8,7 @@
 #include <iterator>
 #include <memory>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check_deref.h"
@@ -365,15 +366,15 @@ void FormFetcherImpl::OnGetPasswordStoreResultsOrErrorFrom(
   // store.
   if (store == client_->GetProfilePasswordStore()) {
     profile_store_backend_error_.reset();
-    if (absl::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
+    if (std::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
       profile_store_backend_error_ =
-          absl::get<PasswordStoreBackendError>(results_or_error);
+          std::get<PasswordStoreBackendError>(results_or_error);
     }
   } else if (store == client_->GetAccountPasswordStore()) {
     account_store_backend_error_.reset();
-    if (absl::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
+    if (std::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
       account_store_backend_error_ =
-          absl::get<PasswordStoreBackendError>(results_or_error);
+          std::get<PasswordStoreBackendError>(results_or_error);
     }
   }
 
