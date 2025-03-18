@@ -59,7 +59,7 @@
   sheetPresentationController.widthFollowsPreferredContentSizeWhenEdgeAttached =
       YES;
   sheetPresentationController.detents = @[
-    UISheetPresentationControllerDetent.mediumDetent,
+    [UISheetPresentationControllerDetent mediumDetent],
   ];
 
   [self.baseViewController presentViewController:navigationController
