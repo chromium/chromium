@@ -490,18 +490,13 @@ void FileSystemAccessFileHandleImpl::DidGetMetaDataForBlob(
   std::string uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   std::string content_type;
 
-  base::FilePath::StringType extension =
-      base::FilePath::FromUTF8Unsafe(display_name_).Extension();
-  if (!extension.empty()) {
-    std::string mime_type;
-    // TODO(crbug.com/41458368): Using GetMimeTypeFromExtension and
-    // including platform defined mime type mappings might be nice/make sense,
-    // however that method can potentially block and thus can't be called from
-    // the IO thread.
-    if (net::GetWellKnownMimeTypeFromExtension(extension.substr(1),
-                                               &mime_type)) {
-      content_type = std::move(mime_type);
-    }
+  // TODO(crbug.com/41458368): Using GetMimeTypeFromExtension and including
+  // platform defined mime type mappings might be nice/make sense, however that
+  // method can potentially block and thus can't be called from the IO thread.
+  std::string mime_type;
+  if (net::GetWellKnownMimeTypeFromFile(
+          base::FilePath::FromUTF8Unsafe(display_name_), &mime_type)) {
+    content_type = std::move(mime_type);
   }
   // TODO(crbug.com/41458368): Consider some kind of fallback type when
   // the above mime type detection fails.

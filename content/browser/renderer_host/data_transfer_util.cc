@@ -106,21 +106,18 @@ FileSystemFileInfosToDragItemFileSystemFilePtr(
 
     std::string content_type;
 
-    base::FilePath::StringType extension = file_system_url.path().Extension();
-    if (!extension.empty()) {
-      std::string mime_type;
-      // TODO(crbug.com/40291155): Historically for blobs created from
-      // file system URLs we've only considered well known content types to
-      // avoid leaking the presence of locally installed applications when
-      // creating blobs from files in the sandboxed file system. However, since
-      // this code path should only deal with real/"trusted" paths, we could
-      // consider taking platform defined mime type mappings into account here
-      // as well. Note that the approach used here must not block or else it
-      // can't be called from the UI thread (for example, calls to
-      // GetMimeTypeFromExtension can block).
-      if (net::GetWellKnownMimeTypeFromExtension(extension.substr(1),
-                                                 &mime_type))
-        content_type = std::move(mime_type);
+    std::string mime_type;
+    // TODO(crbug.com/40291155): Historically for blobs created from
+    // file system URLs we've only considered well known content types to
+    // avoid leaking the presence of locally installed applications when
+    // creating blobs from files in the sandboxed file system. However, since
+    // this code path should only deal with real/"trusted" paths, we could
+    // consider taking platform defined mime type mappings into account here
+    // as well. Note that the approach used here must not block or else it
+    // can't be called from the UI thread (for example, calls to
+    // GetMimeTypeFromExtension can block).
+    if (net::GetWellKnownMimeTypeFromFile(file_system_url.path(), &mime_type)) {
+      content_type = std::move(mime_type);
     }
     // TODO(crbug.com/41458368): Consider some kind of fallback type when
     // the above mime type detection fails.
