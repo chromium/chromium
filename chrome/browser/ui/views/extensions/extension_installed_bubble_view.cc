@@ -64,12 +64,13 @@ int GetRightColumnWidth() {
              : kRightColumnWidth;
 }
 
-views::Label* CreateLabel(const std::u16string& text) {
-  views::Label* label = new views::Label(text);
-  label->SetMultiLine(true);
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SizeToFit(GetRightColumnWidth());
-  return label;
+std::unique_ptr<views::Label> CreateLabel(const std::u16string& text) {
+  return views::Builder<views::Label>()
+    .SetText(text)
+    .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+    .SetMultiLine(true)
+    .SizeToFit(GetRightColumnWidth())
+    .Build();
 }
 
 views::View* AnchorViewForBrowser(const ExtensionInstalledBubbleModel* model,
@@ -205,7 +206,7 @@ void ExtensionInstalledBubbleView::Init() {
   SetLayoutManager(std::move(layout));
 
   if (model_->show_how_to_use()) {
-    AddChildViewRaw(CreateLabel(model_->GetHowToUseText()));
+    AddChildView(CreateLabel(model_->GetHowToUseText()));
   }
 
   if (model_->show_key_binding()) {
@@ -216,7 +217,7 @@ void ExtensionInstalledBubbleView::Init() {
   }
 
   if (model_->show_how_to_manage()) {
-    AddChildViewRaw(CreateLabel(
+    AddChildView(CreateLabel(
         l10n_util::GetStringUTF16(IDS_EXTENSION_INSTALLED_MANAGE_INFO)));
   }
 }
