@@ -148,6 +148,13 @@ class GraphBuilderOrt {
       std::string_view input,
       base::span<const uint32_t> shape);
 
+  // A helper function used to handle the bias of recurrent network operators
+  // (GRU, LSTM, etc.).
+  [[nodiscard]] base::expected<std::string, mojom::ErrorPtr>
+  CreateOrReshapeBias(const std::optional<uint32_t>& bias_id,
+                      OperandDataType input_data_type,
+                      const std::vector<uint32_t>& bias_dims);
+
   std::string PrependTranspose(std::string_view input,
                                base::span<const uint32_t> permutation);
 
@@ -243,6 +250,11 @@ class GraphBuilderOrt {
   void AddLogicalNotOperation(const mojom::ElementWiseUnary& logical_not);
   void AddLeakyReluOperation(const mojom::LeakyRelu& leaky_relu);
   void AddMatMulOperation(const mojom::Matmul& matmul);
+  template <typename LstmType>
+    requires(std::is_same_v<LstmType, mojom::Lstm> ||
+             std::is_same_v<LstmType, mojom::LstmCell>)
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddLstmOperation(
+      const LstmType& lstm);
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddPadOperation(
       const mojom::Pad& pad);
   void AddPool2dOperation(const mojom::Pool2d& pool2d);

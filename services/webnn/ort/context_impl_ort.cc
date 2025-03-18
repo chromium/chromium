@@ -333,8 +333,8 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*leaky_relu_input=*/
        {DataTypeConstraint::kFloat16To32, kMaxRank},
        /*linear_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
-       /*lstm_input=*/{},
-       /*lstm_cell_input=*/{},
+       /*lstm_input=*/DataTypeConstraint::kFloat16To32,
+       /*lstm_cell_input=*/DataTypeConstraint::kFloat16To32,
        /*matmul_input=*/
        {DataTypeConstraint::kFloat16To32Ints32To64, kMaxRank},
        // TODO: Support more data types including int4.

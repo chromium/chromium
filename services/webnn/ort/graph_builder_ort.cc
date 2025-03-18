@@ -85,6 +85,7 @@ constexpr char kOpTypeHardSigmoid[] = "HardSigmoid";
 constexpr char kOpTypeInstanceNormalization[] = "InstanceNormalization";
 constexpr char kOpTypeLayerNormalization[] = "LayerNormalization";
 constexpr char kOpTypeLeakyRelu[] = "LeakyRelu";
+constexpr char kOpTypeLstm[] = "LSTM";
 constexpr char kOpTypeMatMul[] = "MatMul";
 constexpr char kOpTypePad[] = "Pad";
 
@@ -284,6 +285,44 @@ const std::string GetRecurrentNetworkDirection(
     default:
       NOTREACHED() << "Unsupported recurrent network activation direction.";
   }
+}
+
+[[nodiscard]] base::expected<std::string, mojom::ErrorPtr>
+GraphBuilderOrt::CreateOrReshapeBias(const std::optional<uint32_t>& bias_id,
+                                     OperandDataType input_data_type,
+                                     const std::vector<uint32_t>& bias_dims) {
+  std::string bias;
+  if (bias_id.has_value()) {
+    bias = GetOperandNameById(bias_id.value());
+    // Reshape only when needed. (gruCell, lstmCell)
+    const std::vector<uint32_t>& bias_shape =
+        GetOperand(bias_id.value()).descriptor.shape();
+    if (bias_shape.size() != bias_dims.size()) {
+      ASSIGN_OR_RETURN(bias, PrependReshape(bias, bias_dims));
+    }
+  } else {
+    // Create all zero bias.
+    switch (input_data_type) {
+      case OperandDataType::kFloat16: {
+        std::array<uint16_t, 1> bias_value = {fp16_ieee_from_fp32_value(0.0f)};
+        ASSIGN_OR_RETURN(const std::string bias_scalar,
+                         CreateInitializer<uint16_t>({}, bias_value));
+        ASSIGN_OR_RETURN(bias, PrependExpand(bias_scalar, bias_dims));
+        break;
+      }
+      case OperandDataType::kFloat32: {
+        std::array<float, 1> bias_value = {0.0f};
+        ASSIGN_OR_RETURN(const std::string bias_scalar,
+                         CreateInitializer<float>({}, bias_value));
+        ASSIGN_OR_RETURN(bias, PrependExpand(bias_scalar, bias_dims));
+        break;
+      }
+      default:
+        NOTREACHED() << "[WebNN] Recurrent network operators only support "
+                        "float32 and float16 data type.";
+    }
+  }
+  return bias;
 }
 
 template <typename DataType>
@@ -1533,81 +1572,20 @@ GraphBuilderOrt::AddGruOperation(const GruType& gru) {
   uint32_t checked_three_times_hidden_size = hidden_size * 3;
   std::vector<uint32_t> bias_dims = {num_directions,
                                      checked_three_times_hidden_size};
-  std::string bias = "";
   if (!gru.bias_operand_id.has_value() &&
       !gru.recurrent_bias_operand_id.has_value()) {
     // When both bias and currentBias are not present, set ONNX gru input "B" as
     // not specified.
-    inputs.push_back(bias.c_str());
+    inputs.push_back("");
   } else {
     const OperandDataType input_data_type =
         GetOperand(gru.input_operand_id).descriptor.data_type();
-    if (gru.bias_operand_id.has_value()) {
-      bias = GetOperandNameById(gru.bias_operand_id.value());
-      if constexpr (std::is_same_v<GruType, mojom::GruCell>) {
-        // Reshape the bias into a 2-D tensor, since the GRU of ONNX requires
-        // the bias shape to be [num_directions, 6*hidden_size]. For gruCell,
-        // `num_directions` is equal to 1.
-        ASSIGN_OR_RETURN(bias, PrependReshape(bias, bias_dims));
-      }
-    } else {
-      switch (input_data_type) {
-        case OperandDataType::kFloat16: {
-          std::array<uint16_t, 1> bias_value = {
-              fp16_ieee_from_fp32_value(0.0f)};
-          ASSIGN_OR_RETURN(const std::string bias_saclar,
-                           CreateInitializer<uint16_t>({}, bias_value));
-          ASSIGN_OR_RETURN(bias, PrependExpand(bias_saclar, bias_dims));
-          break;
-        }
-        case OperandDataType::kFloat32: {
-          std::array<float, 1> bias_value = {0.0f};
-          ASSIGN_OR_RETURN(const std::string bias_saclar,
-                           CreateInitializer<float>({}, bias_value));
-          ASSIGN_OR_RETURN(bias, PrependExpand(bias_saclar, bias_dims));
-          break;
-        }
-        default:
-          NOTREACHED()
-              << "[WebNN] GRU only supports float32 and float16 data type.";
-      }
-    }
-    std::string recurrent_bias;
-    if (gru.recurrent_bias_operand_id.has_value()) {
-      recurrent_bias =
-          GetOperandNameById(gru.recurrent_bias_operand_id.value());
-      if constexpr (std::is_same_v<GruType, mojom::GruCell>) {
-        // Reshape the recurrentBias into a 2-D tensor, since the GRU of ONNX
-        // requires the bias shape to be [num_directions, 6*hidden_size]. For
-        // gruCell, `num_directions` is equal to 1.
-        ASSIGN_OR_RETURN(recurrent_bias,
-                         PrependReshape(recurrent_bias, bias_dims));
-      }
-    } else {
-      switch (input_data_type) {
-        case OperandDataType::kFloat16: {
-          std::array<uint16_t, 1> recurrent_bias_value = {
-              fp16_ieee_from_fp32_value(0.0f)};
-          ASSIGN_OR_RETURN(
-              const std::string recurrent_bias_saclar,
-              CreateInitializer<uint16_t>({}, recurrent_bias_value));
-          ASSIGN_OR_RETURN(recurrent_bias,
-                           PrependExpand(recurrent_bias_saclar, bias_dims));
-          break;
-        }
-        case OperandDataType::kFloat32: {
-          std::array<float, 1> recurrent_bias_value = {0.0f};
-          ASSIGN_OR_RETURN(const std::string recurrent_bias_saclar,
-                           CreateInitializer<float>({}, recurrent_bias_value));
-          ASSIGN_OR_RETURN(recurrent_bias,
-                           PrependExpand(recurrent_bias_saclar, bias_dims));
-          break;
-        }
-        default:
-          NOTREACHED()
-              << "[WebNN] GRU only supports float32 and float16 data type.";
-      }
-    }
+    ASSIGN_OR_RETURN(
+        const std::string bias,
+        CreateOrReshapeBias(gru.bias_operand_id, input_data_type, bias_dims));
+    ASSIGN_OR_RETURN(const std::string recurrent_bias,
+                     CreateOrReshapeBias(gru.recurrent_bias_operand_id,
+                                         input_data_type, bias_dims));
     // Concat bias and recurrent_bias
     std::string concatenated_bias = GenerateNextOperandName();
     std::array<const char*, 2> bias_inputs = {bias.c_str(),
@@ -1626,8 +1604,7 @@ GraphBuilderOrt::AddGruOperation(const GruType& gru) {
 
   // `sequence_lens` is an optional tensor specifying lengths of the sequences
   // in a batch.
-  std::string sequence_lens = "";
-  inputs.push_back(sequence_lens.c_str());
+  inputs.push_back("");
 
   std::string hidden_state;
   if constexpr (std::is_same_v<GruType, mojom::Gru>) {
@@ -1680,16 +1657,16 @@ GraphBuilderOrt::AddGruOperation(const GruType& gru) {
   attributes.push_back(model_editor_.CreateAttribute(
       /*name=*/"linear_before_reset", linear_before_reset));
 
-  std::string output_Y, output_Y_h;
+  std::string output, output_hidden;
   if constexpr (std::is_same_v<GruType, mojom::Gru>) {
-    output_Y_h = GetOperandNameById(gru.output_operand_ids[0]);
+    output_hidden = GetOperandNameById(gru.output_operand_ids[0]);
     if (gru.return_sequence) {
-      output_Y = GetOperandNameById(gru.output_operand_ids[1]);
+      output = GetOperandNameById(gru.output_operand_ids[1]);
     }
   } else {
-    output_Y_h = GenerateNextOperandName();
+    output_hidden = GenerateNextOperandName();
   }
-  std::array<const char*, 2> outputs = {output_Y.c_str(), output_Y_h.c_str()};
+  std::array<const char*, 2> outputs = {output.c_str(), output_hidden.c_str()};
   model_editor_.AddNode(kOpTypeGru, node, inputs, outputs,
                         std::move(attributes));
   if constexpr (std::is_same_v<GruType, mojom::GruCell>) {
@@ -1699,8 +1676,9 @@ GraphBuilderOrt::AddGruOperation(const GruType& gru) {
     const std::vector<uint32_t>& output_shape =
         GetOperand(gru.output_operand_id).descriptor.shape();
     CHECK_EQ(output_shape.size(), 2u);
-    RETURN_IF_ERROR(AppendReshape(
-        output_Y_h, GetOperandNameById(gru.output_operand_id), output_shape));
+    RETURN_IF_ERROR(AppendReshape(output_hidden,
+                                  GetOperandNameById(gru.output_operand_id),
+                                  output_shape));
   }
 
   return base::ok();
@@ -2028,6 +2006,212 @@ GraphBuilderOrt::AddLinearOperation(const mojom::Linear& linear) {
   const std::string output = GetOperandNameById(linear.output_operand_id);
   std::array<const char*, 1> outputs = {output.c_str()};
   model_editor_.AddNode(kOpTypeAdd, add_node, add_inputs, outputs);
+
+  return base::ok();
+}
+
+template <typename LstmType>
+  requires(std::is_same_v<LstmType, mojom::Lstm> ||
+           std::is_same_v<LstmType, mojom::LstmCell>)
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderOrt::AddLstmOperation(const LstmType& lstm) {
+  const std::string node = GenerateNextOperationName(lstm.label);
+  std::string input = GetOperandNameById(lstm.input_operand_id);
+  std::string weight = GetOperandNameById(lstm.weight_operand_id);
+  std::string recurrent_weight =
+      GetOperandNameById(lstm.recurrent_weight_operand_id);
+  if constexpr (std::is_same_v<LstmType, mojom::LstmCell>) {
+    const std::vector<uint32_t>& input_shape =
+        GetOperand(lstm.input_operand_id).descriptor.shape();
+    CHECK_EQ(input_shape.size(), 2u);
+    ASSIGN_OR_RETURN(
+        input,
+        // Reshape the input into a 3-D tensor, since the LSTM of ONNX requires
+        // the input shape to be [seq_length, batch_size, input_size]. For
+        // lstmCell, `seq_length` is equal to 1.
+        PrependReshape(input, {1, input_shape[0], input_shape[1]}));
+    const std::vector<uint32_t>& weight_shape =
+        GetOperand(lstm.weight_operand_id).descriptor.shape();
+    CHECK_EQ(weight_shape.size(), 2u);
+    ASSIGN_OR_RETURN(
+        weight,
+        // Reshape the weight into a 3-D tensor, since the LSTM of ONNX requires
+        // the weight shape to be [num_directions, 4*hidden_size, input_size].
+        // For lstmCell, `num_directions` is equal to 1.
+        PrependReshape(weight, {1, weight_shape[0], weight_shape[1]}));
+    const std::vector<uint32_t>& recurrent_weight_shape =
+        GetOperand(lstm.recurrent_weight_operand_id).descriptor.shape();
+    CHECK_EQ(recurrent_weight_shape.size(), 2u);
+    ASSIGN_OR_RETURN(
+        recurrent_weight,
+        // Reshape the recurrentWeight into a 3-D tensor, since the LSTM of ONNX
+        // requires the recurrent weight shape to be [num_directions,
+        // 4*hidden_size, hidden_size]. For lstmCell, `num_directions` is equal
+        // to 1.
+        PrependReshape(recurrent_weight, {1, recurrent_weight_shape[0],
+                                          recurrent_weight_shape[1]}));
+  }
+  std::vector<const char*> inputs = {input.c_str(), weight.c_str(),
+                                     recurrent_weight.c_str()};
+  uint32_t num_directions = 1;
+  if constexpr (std::is_same_v<LstmType, mojom::Lstm>) {
+    num_directions =
+        lstm.direction == mojom::RecurrentNetworkDirection::kBoth ? 2 : 1;
+  }
+  const uint32_t hidden_size = lstm.hidden_size;
+  // Already checked that hidden_size * 4 is safe in the model validation.
+  uint32_t checked_four_times_hidden_size = hidden_size * 4;
+  std::vector<uint32_t> bias_dims = {num_directions,
+                                     checked_four_times_hidden_size};
+  if (!lstm.bias_operand_id.has_value() &&
+      !lstm.recurrent_bias_operand_id.has_value()) {
+    // When both bias and currentBias are not present, set ONNX LSTM input "B"
+    // as not specified.
+    inputs.push_back("");
+  } else {
+    const OperandDataType input_data_type =
+        GetOperand(lstm.input_operand_id).descriptor.data_type();
+    ASSIGN_OR_RETURN(
+        const std::string bias,
+        CreateOrReshapeBias(lstm.bias_operand_id, input_data_type, bias_dims));
+    ASSIGN_OR_RETURN(const std::string recurrent_bias,
+                     CreateOrReshapeBias(lstm.recurrent_bias_operand_id,
+                                         input_data_type, bias_dims));
+    // Concat bias and recurrent_bias
+    std::string concatenated_bias = GenerateNextOperandName();
+    std::array<const char*, 2> bias_inputs = {bias.c_str(),
+                                              recurrent_bias.c_str()};
+    std::array<const char*, 1> bias_outputs = {concatenated_bias.c_str()};
+    // The bias tensor of ONNX has shape [num_directions, 8*hidden_size]
+    std::vector<ScopedOrtOpAttr> concat_attributes;
+    concat_attributes.reserve(1);
+    concat_attributes.push_back({model_editor_.CreateAttribute(
+        /*name=*/"axis", static_cast<int64_t>(1))});
+    model_editor_.AddNode(
+        kOpTypeConcat, GenerateNextOperationName("inserted_concat"),
+        bias_inputs, bias_outputs, std::move(concat_attributes));
+    inputs.push_back(concatenated_bias.c_str());
+  }
+
+  // `sequence_lens` is an optional tensor specifying lengths of the sequences
+  // in a batch.
+  inputs.push_back("");
+
+  std::string hidden_state, cell_state;
+  if constexpr (std::is_same_v<LstmType, mojom::Lstm>) {
+    if (lstm.initial_hidden_state_operand_id.has_value()) {
+      hidden_state =
+          GetOperandNameById(lstm.initial_hidden_state_operand_id.value());
+    }
+    if (lstm.initial_cell_state_operand_id.has_value()) {
+      cell_state =
+          GetOperandNameById(lstm.initial_cell_state_operand_id.value());
+    }
+  } else {
+    hidden_state = GetOperandNameById(lstm.hidden_state_operand_id);
+    const std::vector<uint32_t>& hidden_state_shape =
+        GetOperand(lstm.hidden_state_operand_id).descriptor.shape();
+    CHECK_EQ(hidden_state_shape.size(), 2u);
+    // Reshape the hiddenState into a 3-D tensor, since the LSTM of ONNX
+    // requires the initial_h shape to be [num_directions, batch_size,
+    // hidden_size]. For lstmCell, `num_directions` is equal to 1.
+    ASSIGN_OR_RETURN(hidden_state,
+                     PrependReshape(hidden_state, {1, hidden_state_shape[0],
+                                                   hidden_state_shape[1]}));
+
+    cell_state = GetOperandNameById(lstm.cell_state_operand_id);
+    const std::vector<uint32_t>& cell_state_shape =
+        GetOperand(lstm.cell_state_operand_id).descriptor.shape();
+    CHECK_EQ(cell_state_shape.size(), 2u);
+    // Reshape the cellState into a 3-D tensor, since the LSTM of ONNX
+    // requires the initial_c shape to be [num_directions, batch_size,
+    // hidden_size]. For lstmCell, `num_directions` is equal to 1.
+    ASSIGN_OR_RETURN(cell_state,
+                     PrependReshape(cell_state, {1, cell_state_shape[0],
+                                                 cell_state_shape[1]}));
+  }
+  inputs.push_back(hidden_state.c_str());
+  inputs.push_back(cell_state.c_str());
+
+  std::string peephole_weight;
+  if (lstm.peephole_weight_operand_id.has_value()) {
+    peephole_weight =
+        GetOperandNameById(lstm.peephole_weight_operand_id.value());
+    if constexpr (std::is_same_v<LstmType, mojom::LstmCell>) {
+      // Reshape the peepholeWeight into a 2-D tensor, since the LSTM of ONNX
+      // requires the peephole shape to be [num_directions, 3*hidden_size]. For
+      // lstmCell, `num_directions` is equal to 1.
+      const std::vector<uint32_t>& peephole_weight_shape =
+          GetOperand(lstm.peephole_weight_operand_id.value())
+              .descriptor.shape();
+      CHECK_EQ(peephole_weight_shape.size(), 1u);
+      ASSIGN_OR_RETURN(
+          peephole_weight,
+          PrependReshape(peephole_weight, {1, peephole_weight_shape[0]}));
+    }
+  }
+  inputs.push_back(peephole_weight.c_str());
+
+  std::vector<ScopedOrtOpAttr> attributes;
+  attributes.reserve(3);
+  std::string direction = "forward";
+  if constexpr (std::is_same_v<LstmType, mojom::Lstm>) {
+    direction = GetRecurrentNetworkDirection(lstm.direction);
+  }
+  attributes.push_back(
+      model_editor_.CreateAttribute(/*name=*/"direction", direction.c_str()));
+
+  const std::vector<std::string> activations = GetRecurrentNetworkActivations(
+      lstm.activations, direction == "bidirectional");
+  std::vector<const char*> activations_c_str;
+  for (const auto& activation : activations) {
+    activations_c_str.push_back(activation.c_str());
+  }
+  attributes.push_back(model_editor_.CreateAttribute(
+      /*name=*/"activations", activations_c_str));
+
+  attributes.push_back(model_editor_.CreateAttribute(
+      /*name=*/"hidden_size", base::checked_cast<int64_t>(hidden_size)));
+
+  // TODO(https://github.com/shiyi9801/chromium/issues/195): Support ifgo
+  // layout.
+  if (lstm.layout != mojom::LstmWeightLayout::kIofg) {
+    return NewNotSupportedError(
+        "[WebNN] The lstm weight layout (ifgo) is not supported.");
+  }
+
+  std::string output, output_hidden, output_cell;
+  if constexpr (std::is_same_v<LstmType, mojom::Lstm>) {
+    CHECK_GE(lstm.output_operand_ids.size(), 2u);
+    output_hidden = GetOperandNameById(lstm.output_operand_ids[0]);
+    output_cell = GetOperandNameById(lstm.output_operand_ids[1]);
+    if (lstm.return_sequence) {
+      CHECK_EQ(lstm.output_operand_ids.size(), 3u);
+      output = GetOperandNameById(lstm.output_operand_ids[2]);
+    }
+  } else {
+    output_hidden = GenerateNextOperandName();
+    output_cell = GenerateNextOperandName();
+  }
+  std::array<const char*, 3> outputs = {output.c_str(), output_hidden.c_str(),
+                                        output_cell.c_str()};
+  model_editor_.AddNode(kOpTypeLstm, node, inputs, outputs,
+                        std::move(attributes));
+  if constexpr (std::is_same_v<LstmType, mojom::LstmCell>) {
+    // Reshape the Y_h and Y_c of shape [num_directions, batch_size,
+    // hidden_size] back to a 2-D tensor, since the lstmCell of WebNN requires
+    // the output shapes to be [batchSize, hiddenSize].
+    const std::vector<uint32_t>& output_shape =
+        GetOperand(lstm.output_operand_ids[0]).descriptor.shape();
+    CHECK_EQ(output_shape.size(), 2u);
+    CHECK_EQ(lstm.output_operand_ids.size(), 2u);
+    RETURN_IF_ERROR(AppendReshape(
+        output_hidden, GetOperandNameById(lstm.output_operand_ids[0]),
+        output_shape));
+    RETURN_IF_ERROR(AppendReshape(
+        output_cell, GetOperandNameById(lstm.output_operand_ids[1]),
+        output_shape));
+  }
 
   return base::ok();
 }
@@ -2770,6 +2954,14 @@ GraphBuilderOrt::BuildModel() {
         RETURN_IF_ERROR(AddLinearOperation(*operation->get_linear()));
         break;
       }
+      case mojom::Operation::Tag::kLstm: {
+        RETURN_IF_ERROR(AddLstmOperation(*operation->get_lstm()));
+        break;
+      }
+      case mojom::Operation::Tag::kLstmCell: {
+        RETURN_IF_ERROR(AddLstmOperation(*operation->get_lstm_cell()));
+        break;
+      }
       case mojom::Operation::Tag::kMatmul: {
         AddMatMulOperation(*operation->get_matmul());
         break;
@@ -2867,9 +3059,8 @@ GraphBuilderOrt::BuildModel() {
         AddWhereOperation(*operation->get_where());
         break;
       }
-      case mojom::Operation::Tag::kLstm:
-      case mojom::Operation::Tag::kLstmCell:
-        return NewNotSupportedError("op is not supported.");
+      default:
+        NOTREACHED() << "[WebNN] Unsupported operation.";
     }
   }
   // Add outputs.
