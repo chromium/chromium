@@ -35,7 +35,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="SensitiveContent.SensitiveTabSwitchingAnimations"
-    enum="TabSwitchingAnimation" expires_after="2025-07-06">
+    enum="TabSwitchingAnimation" expires_after="2025-09-14">
   <owner>theocristea@google.com</owner>
   <owner>jkeitel@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
