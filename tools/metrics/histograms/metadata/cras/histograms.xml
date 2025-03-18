@@ -28,10 +28,29 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="CrasDlcType">
-  <variant name="IntelligoBeamforming" summary="the intelligo beamforming DLC"/>
-  <variant name="NcAp" summary="the AP Noise Cancellation DLC"/>
-  <variant name="Nuance" summary="the nuance DLC"/>
-  <variant name="SrBt" summary="the Bluetooth Super Resolution DLC"/>
+  <variant name="intelligo-beamforming-dlc"
+      summary="the intelligo beamforming DLC for omniknight"/>
+  <variant name="intelligo-beamforming-dlc-jubilant"
+      summary="the intelligo beamforming DLC for jubilant"/>
+  <variant name="intelligo-beamforming-dlc-jubileum"
+      summary="the intelligo beamforming DLC for jubileum"/>
+  <variant name="intelligo-beamforming-dlc-kanix"
+      summary="the intelligo beamforming DLC for kanix"/>
+  <variant name="intelligo-beamforming-dlc-riven"
+      summary="the intelligo beamforming DLC for riven"/>
+  <variant name="intelligo-beamforming-dlc-rudriks"
+      summary="the intelligo beamforming DLC for rudriks"/>
+  <variant name="intelligo-beamforming-dlc-rull"
+      summary="the intelligo beamforming DLC for roric, rull"/>
+  <variant name="intelligo-beamforming-dlc-rynax"
+      summary="the intelligo beamforming DLC for rynax"/>
+  <variant name="IntelligoBeamforming"
+      summary="the intelligo beamforming DLC (legacy)"/>
+  <variant name="nc-ap-dlc" summary="the AP Noise Cancellation DLC"/>
+  <variant name="NcAp" summary="the AP Noise Cancellation DLC (legacy)"/>
+  <variant name="Nuance" summary="the nuance DLC (legacy)"/>
+  <variant name="sr-bt-dlc" summary="the Bluetooth Super Resolution DLC"/>
+  <variant name="SrBt" summary="the Bluetooth Super Resolution DLC (legacy)"/>
 </variants>
 
 <!--
