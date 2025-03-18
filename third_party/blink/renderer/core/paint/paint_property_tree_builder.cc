@@ -239,7 +239,7 @@ class FragmentPaintPropertyTreeBuilder {
       std::optional<gfx::Vector2d>& paint_offset_translation,
       PhysicalOffset& extra_sticky_offset);
   ALWAYS_INLINE void UpdateStickyTranslation(
-      const PhysicalOffset& extra_sticky_offset);
+      const PhysicalOffset& sticky_offset);
   ALWAYS_INLINE void UpdateAnchorPositionScrollTranslation();
 
   void UpdateIndividualTransform(
@@ -758,16 +758,15 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation(
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation(
-    const PhysicalOffset& extra_sticky_offset) {
+    const PhysicalOffset& sticky_offset) {
   DCHECK(properties_);
 
   if (NeedsPaintPropertyUpdate()) {
     if (NeedsStickyTranslation(object_)) {
       const auto& box_model = To<LayoutBoxModelObject>(object_);
-      auto total_offset =
-          extra_sticky_offset + box_model.StickyPositionOffset();
-      TransformPaintPropertyNode::State state{
-          {gfx::Transform::MakeTranslation(ToRoundedVector2d(total_offset))}};
+      auto rounded_sticky_offset = ToRoundedVector2d(sticky_offset);
+      TransformPaintPropertyNode::State state{{gfx::Transform::MakeTranslation(
+          ToRoundedVector2d(rounded_sticky_offset))}};
       state.direct_compositing_reasons =
           full_context_.direct_compositing_reasons &
           CompositingReason::kStickyPosition;
@@ -825,17 +824,22 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation(
               gfx::RectF(layout_constraint
                              ->scroll_container_relative_containing_block_rect);
 
-          constraint->pixel_snap_offset = gfx::Vector2dF(extra_sticky_offset);
+          constraint->pixel_snap_offset = gfx::Vector2dF(
+              sticky_offset - PhysicalOffset(rounded_sticky_offset));
           // gfx::Vector2dF rounds differently than PhysicalOffset at
           // half-integral negative values. This hack works around that
           // situation.
           // See https://issues.chromium.org/issues/401693546#comment6
+          //
+          // TODO(crbug.com/404418768 ): Remove this in favor of applying the
+          // same rounding logic (round up instead of away from 0) for our
+          // floating point rounding.
           float adjustment_left = 0.0;
           float adjustment_top = 0.0;
-          if (extra_sticky_offset.left == LayoutUnit(-0.5)) {
+          if (constraint->pixel_snap_offset.x() == -0.5) {
             adjustment_left = 0.001;
           }
-          if (extra_sticky_offset.top == LayoutUnit(-0.5)) {
+          if (constraint->pixel_snap_offset.y() == -0.5) {
             adjustment_top = 0.001;
           }
           constraint->pixel_snap_offset +=
@@ -3303,14 +3307,17 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
 
 void FragmentPaintPropertyTreeBuilder::UpdateForObjectLocation(
     std::optional<gfx::Vector2d>& paint_offset_translation,
-    PhysicalOffset& extra_sticky_offset) {
+    PhysicalOffset& sticky_offset) {
   context_.old_paint_offset = fragment_data_.PaintOffset();
   UpdatePaintOffset();
   UpdateForPaintOffsetTranslation(paint_offset_translation);
 
   if (NeedsStickyTranslation(object_)) {
-    extra_sticky_offset = context_.current.paint_offset;
-    ResetPaintOffset();
+    const auto& box_model = To<LayoutBoxModelObject>(object_);
+    sticky_offset =
+        context_.current.paint_offset + box_model.StickyPositionOffset();
+    ResetPaintOffset(sticky_offset -
+                     PhysicalOffset(ToRoundedVector2d(sticky_offset)));
   }
 
   PhysicalOffset paint_offset_delta =
@@ -3385,8 +3392,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
   // This is not in FindObjectPropertiesNeedingUpdateScope because paint offset
   // can change without NeedsPaintPropertyUpdate.
   std::optional<gfx::Vector2d> paint_offset_translation;
-  PhysicalOffset extra_sticky_offset;
-  UpdateForObjectLocation(paint_offset_translation, extra_sticky_offset);
+  PhysicalOffset sticky_offset;
+  UpdateForObjectLocation(paint_offset_translation, sticky_offset);
   if (&fragment_data_ == &object_.FirstFragment())
     SetNeedsPaintPropertyUpdateIfNeeded();
 
@@ -3406,7 +3413,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
 #endif
 
   if (properties_) {
-    UpdateStickyTranslation(extra_sticky_offset);
+    UpdateStickyTranslation(sticky_offset);
     UpdateAnchorPositionScrollTranslation();
     if (object_.IsSVGChild()) {
       // TODO(crbug.com/1278452): Merge SVG handling into the primary codepath.
