@@ -5344,18 +5344,6 @@ const char kTranslateOpenSettingsDescription[] =
     "Add an option to the translate bubble menu to open language settings.";
 #endif
 
-const char kUserDisplayModeSyncBrowserMitigationName[] =
-    "Web App User Display Mode Sync Browser Mitigation";
-const char kUserDisplayModeSyncBrowserMitigationDescription[] =
-    "Enables a mitigation during web app install on CrOS for syncing "
-    "user_display_mode: kBrowser to non-CrOS devices.";
-
-const char kUserDisplayModeSyncStandaloneMitigationName[] =
-    "Web App User Display Mode Sync Standalone Mitigation";
-const char kUserDisplayModeSyncStandaloneMitigationDescription[] =
-    "Enables a mitigation during web app install on CrOS for syncing "
-    "user_display_mode: kStandalone to non-CrOS devices.";
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 const char kWasmTtsComponentUpdaterEnabledName[] =
     "Enable Wasm TTS Extension Component";

@@ -9300,16 +9300,6 @@
     "expiry_milestone": 141
   },
   {
-    "name": "web-app-user-display-mode-sync-browser-mitigation",
-    "owners": [ "alancutter@chromium.org", "pwa-team@google.com" ],
-    "expiry_milestone": 132
-  },
-  {
-    "name": "web-app-user-display-mode-sync-standalone-mitigation",
-    "owners": [ "alancutter@chromium.org", "pwa-team@google.com" ],
-    "expiry_milestone": 132
-  },
-  {
     "name": "web-authentication-align-error-type-for-payment-credential-create",
     "owners": ["smcgruer@chromium.org", "chrome-payments-team@google.com" ],
     "expiry_milestone": 140

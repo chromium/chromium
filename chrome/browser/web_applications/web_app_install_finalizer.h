@@ -104,6 +104,8 @@ class WebAppInstallFinalizer {
     bool skip_origin_association_validation = false;
   };
 
+  static bool& DisableUserDisplayModeSyncMitigationsForTesting();
+
   explicit WebAppInstallFinalizer(Profile* profile);
   WebAppInstallFinalizer(const WebAppInstallFinalizer&) = delete;
   WebAppInstallFinalizer& operator=(const WebAppInstallFinalizer&) = delete;

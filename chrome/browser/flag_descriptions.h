@@ -3142,12 +3142,6 @@ extern const char kTranslateOpenSettingsName[];
 extern const char kTranslateOpenSettingsDescription[];
 #endif
 
-extern const char kUserDisplayModeSyncBrowserMitigationName[];
-extern const char kUserDisplayModeSyncBrowserMitigationDescription[];
-
-extern const char kUserDisplayModeSyncStandaloneMitigationName[];
-extern const char kUserDisplayModeSyncStandaloneMitigationDescription[];
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 extern const char kWasmTtsComponentUpdaterEnabledName[];
 extern const char kWasmTtsComponentUpdaterEnabledDescription[];

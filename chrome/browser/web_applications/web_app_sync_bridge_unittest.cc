@@ -34,6 +34,7 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -1594,15 +1595,16 @@ class WebAppSyncBridgeTest_UserDisplayModeSplit
     });
   }
 
-  WebAppSyncBridgeTest_UserDisplayModeSplit() {
+  WebAppSyncBridgeTest_UserDisplayModeSplit()
 #if BUILDFLAG(IS_CHROMEOS)
-    scoped_feature_list_.InitWithFeatureStates({
-        // UDM mitigations mess with the installed local state, disable them so
-        // the state matches the intention of the test.
-        {kUserDisplayModeSyncBrowserMitigation, false},
-        {kUserDisplayModeSyncStandaloneMitigation, false},
-    });
+      // UDM mitigations mess with the installed local state, disable them so
+      // the state matches the intention of the test.
+      : disable_user_display_mode_sync_mitigations_for_testing_(
+            &WebAppInstallFinalizer::
+                DisableUserDisplayModeSyncMitigationsForTesting(),
+            true)
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  {
   }
 
   ~WebAppSyncBridgeTest_UserDisplayModeSplit() override = default;
@@ -1660,7 +1662,9 @@ class WebAppSyncBridgeTest_UserDisplayModeSplit
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+#if BUILDFLAG(IS_CHROMEOS)
+  base::AutoReset<bool> disable_user_display_mode_sync_mitigations_for_testing_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 TEST_P(WebAppSyncBridgeTest_UserDisplayModeSplit, SyncUpdateToUserDisplayMode) {

@@ -67,7 +67,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/unexpire_flags.h"
 #include "chrome/browser/unexpire_flags_gen.h"
-#include "chrome/browser/web_applications/features.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/browser/webauthn/webauthn_switches.h"
 #include "chrome/common/buildflags.h"
@@ -5388,18 +5387,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDesktopPWAsSyncChangesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kWebAppDontAddExistingAppsToSync)},
 #endif  // !BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(IS_CHROMEOS)
-    {"web-app-user-display-mode-sync-browser-mitigation",
-     flag_descriptions::kUserDisplayModeSyncBrowserMitigationName,
-     flag_descriptions::kUserDisplayModeSyncBrowserMitigationDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(web_app::kUserDisplayModeSyncBrowserMitigation)},
-    {"web-app-user-display-mode-sync-standalone-mitigation",
-     flag_descriptions::kUserDisplayModeSyncStandaloneMitigationName,
-     flag_descriptions::kUserDisplayModeSyncStandaloneMitigationDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(web_app::kUserDisplayModeSyncStandaloneMitigation)},
-#endif  // BUILDFLAG(IS_CHROMEOS)
     {"use-sync-sandbox", flag_descriptions::kSyncSandboxName,
      flag_descriptions::kSyncSandboxDescription, kOsAll,
      SINGLE_VALUE_TYPE_AND_VALUE(
