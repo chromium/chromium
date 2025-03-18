@@ -22,9 +22,10 @@ class MockDownloadController : public DownloadControllerBase {
 
   // DownloadControllerBase implementation.
   void OnDownloadStarted(download::DownloadItem* download_item) override;
-  void StartContextMenuDownload(const content::ContextMenuParams& params,
+  void StartContextMenuDownload(const GURL& url,
+                                const content::ContextMenuParams& params,
                                 content::WebContents* web_contents,
-                                bool is_link) override;
+                                bool is_media) override;
   void AcquireFileAccessPermission(
       const content::WebContents::Getter& wc_getter,
       AcquireFileAccessPermissionCallback callback) override;

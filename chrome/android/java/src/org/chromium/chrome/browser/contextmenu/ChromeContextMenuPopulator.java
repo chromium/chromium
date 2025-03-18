@@ -599,14 +599,14 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             if (mIsDownloadRestrictedByPolicy) {
                 showDownloadRestrictedToast();
             } else if (mItemDelegate.startDownload(mParams.getSrcUrl(), false)) {
-                mNativeDelegate.startDownload(false);
+                mNativeDelegate.startDownload(mParams.getSrcUrl(), true);
             }
         } else if (itemId == R.id.contextmenu_save_video) {
             recordContextMenuSelection(ContextMenuUma.Action.SAVE_VIDEO);
             if (mIsDownloadRestrictedByPolicy) {
                 showDownloadRestrictedToast();
             } else if (mItemDelegate.startDownload(mParams.getSrcUrl(), false)) {
-                mNativeDelegate.startDownload(false);
+                mNativeDelegate.startDownload(mParams.getSrcUrl(), true);
             }
         } else if (itemId == R.id.contextmenu_save_link_as) {
             recordContextMenuSelection(ContextMenuUma.Action.SAVE_LINK);
@@ -614,7 +614,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             if (mIsDownloadRestrictedByPolicy) {
                 showDownloadRestrictedToast();
             } else if (mItemDelegate.startDownload(url, true)) {
-                mNativeDelegate.startDownload(true);
+                mNativeDelegate.startDownload(url, false);
             }
         } else if (itemId == R.id.contextmenu_share_link) {
             recordContextMenuSelection(ContextMenuUma.Action.SHARE_LINK);

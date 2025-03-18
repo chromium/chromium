@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "url/gurl.h"
+
 namespace content {
 class WebContents;
 struct ContextMenuParams;
@@ -15,10 +17,11 @@ struct ContextMenuParams;
 namespace download {
 
 // Starts a download for the given ContextMenuParams.
-void CreateContextMenuDownload(content::WebContents* web_contents,
+void CreateContextMenuDownload(const GURL& url,
+                               content::WebContents* web_contents,
                                const content::ContextMenuParams& params,
                                const std::string& origin,
-                               bool is_link);
+                               bool is_media);
 
 }  // namespace download
 
