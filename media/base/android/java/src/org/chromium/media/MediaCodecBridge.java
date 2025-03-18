@@ -21,6 +21,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -172,6 +173,11 @@ class MediaCodecBridge {
                 return MediaCodecStatus.RECLAIMED;
             default:
                 Log.e(TAG, "Unknown CodecException error: " + e.getErrorCode());
+                if (e.getErrorCode() < 0) {
+                    RecordHistogram.recordSparseHistogram(
+                            "Media.MediaCodecError.NegativeCodecExceptionErrorCode",
+                            e.getErrorCode());
+                }
                 return MediaCodecStatus.UNKNOWN_CODEC_EXCEPTION;
         }
     }

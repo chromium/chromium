@@ -3951,6 +3951,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.MediaCodecError.NegativeCodecExceptionErrorCode"
+    units="CodecErrorCode" expires_after="2026-01-15">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Negative error code from a CodecException reported by MediaCodec. Reported
+    whenever MediaCodec returns a CodecException, and the CodecException is
+    unknown and a negative value.
+  </summary>
+</histogram>
+
 <histogram name="Media.MediaCodecError.{VideoCodec}.{Secure}"
     enum="MediaCodecError" expires_after="2026-01-15">
   <owner>jrummell@chromium.org</owner>
