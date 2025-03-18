@@ -5586,6 +5586,12 @@ class AndroidDownloadProtectionTest
                                     outcome, 1);
   }
 
+  void OverrideNextShouldSample(bool should_sample) {
+    static_cast<DownloadProtectionDelegateAndroid*>(
+        download_service_->delegate())
+        ->SetNextShouldSampleForTesting(should_sample);
+  }
+
   void ExpectNoCheckClientDownload(download::DownloadItem* item) {
     EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(_, _))
         .Times(0);
@@ -5639,6 +5645,8 @@ class AndroidDownloadProtectionTest
           base::DoNothing()) {
     // Response to any requests will be DANGEROUS.
     PrepareResponse(ClientDownloadResponse::DANGEROUS, net::HTTP_OK, net::OK);
+    // Override the random sampling.
+    OverrideNextShouldSample(true);
 
     ResetHistogramTester();
     {
@@ -5864,6 +5872,24 @@ TEST_P(AndroidDownloadProtectionTest, IsSupportedDownloadFalse) {
         item_display_name_not_apk, final_path_));
   }
   ExpectHistogramUniqueSample(Outcome::kDownloadNotSupportedType);
+
+  ResetHistogramTester();
+  {
+    // An otherwise eligible item that is just not sampled.
+    NiceMockDownloadItem item_eligible;
+    OverrideNextShouldSample(false);
+    content::DownloadItemUtils::AttachInfoForTesting(&item_eligible, profile(),
+                                                     nullptr);
+    PrepareBasicDownloadItemWithContentUri(
+        &item_eligible,
+        /*url_chain_items=*/{"https://evil.com/bla.apk"},
+        /*referrer_url=*/"",
+        /*display_name=*/base::FilePath(FILE_PATH_LITERAL("a.apk")));
+
+    EXPECT_FALSE(
+        download_service_->IsSupportedDownload(item_eligible, final_path_));
+  }
+  ExpectHistogramUniqueSample(Outcome::kNotSampled);
 }
 
 // Tests that CheckClientDownload is called even if the download is not a

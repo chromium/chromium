@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
+#include "base/rand_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/android/download_protection_metrics_data.h"
 #include "chrome/browser/safe_browsing/download_protection/check_client_download_request.h"
@@ -67,6 +68,21 @@ bool IsAndroidDownloadProtectionEnabledForDownloadProfile(
         item, Outcome::kDownloadProtectionDisabled);
   }
   return enabled;
+}
+
+// Implements random sampling of a percentage of eligible downloads.
+bool ShouldSample() {
+  int sample_percentage = kMaliciousApkDownloadCheckSamplePercentage.Get();
+  // If sample_percentage param is misconfigured, don't apply sampling.
+  if (sample_percentage < 0 || sample_percentage > 100) {
+    sample_percentage = 100;
+  }
+  // Avoid the syscall if possible.
+  if (sample_percentage >= 100) {
+    CHECK_EQ(sample_percentage, 100);
+    return true;
+  }
+  return base::RandDouble() * 100 < sample_percentage;
 }
 
 Outcome ConvertDownloadCheckResultReason(DownloadCheckResultReason reason) {
@@ -133,7 +149,12 @@ bool DownloadProtectionDelegateAndroid::IsSupportedDownload(
     return false;
   }
 
-  return true;
+  bool should_sample = should_sample_override_.value_or(ShouldSample());
+  if (!should_sample) {
+    DownloadProtectionMetricsData::SetOutcome(&item, Outcome::kNotSampled);
+  }
+  should_sample_override_ = std::nullopt;
+  return should_sample;
 }
 
 const GURL& DownloadProtectionDelegateAndroid::GetDownloadRequestUrl() const {
@@ -188,6 +209,11 @@ float DownloadProtectionDelegateAndroid::GetUnsupportedFileSampleRate(
     const base::FilePath& filename) const {
   // "Light" pings for a sample of unsupported files is disabled on Android.
   return 0.0;
+}
+
+void DownloadProtectionDelegateAndroid::SetNextShouldSampleForTesting(
+    bool should_sample) {
+  should_sample_override_ = should_sample;
 }
 
 }  // namespace safe_browsing

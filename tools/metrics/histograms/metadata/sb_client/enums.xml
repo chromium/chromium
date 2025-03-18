@@ -189,6 +189,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="ClientDownloadRequest not sent: Local file"/>
   <int value="10"
       label="ClientDownloadRequest not sent: Service misconfigured"/>
+  <int value="11" label="ClientDownloadRequest not sent: Not sampled"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/safe_browsing/android/download_protection_metrics_data.h:AndroidDownloadProtectionOutcome) -->
