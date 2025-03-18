@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.sensitive_content.SensitiveContentFeatures;
 
 import java.lang.annotation.Retention;
@@ -98,6 +99,10 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                     coordinator.requestAccessibilityFocusOnCurrentTab();
 
                     setNewTabButtonEnabledState(/* enabled= */ true);
+
+                    if (OmniboxFeatures.sAndroidHubSearch.isEnabled()) {
+                        mHubSearchEnabledStateSupplier.set(true);
+                    }
                 }
 
                 @Override
@@ -276,6 +281,10 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
         if (isNotVisibleOrSelected || incognitoReauthShowing) {
             coordinator.resetWithTabList(null);
             cancelWaitForTabStateInitializedTimer();
+
+            if (OmniboxFeatures.sAndroidHubSearch.isEnabled() && incognitoReauthShowing) {
+                mHubSearchEnabledStateSupplier.set(false);
+            }
         } else {
             // TODO(crbug.com/373850469): Add unit tests when robolectric supports Android V.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
