@@ -7,11 +7,12 @@
 
 #include <jni.h>
 
+#include <variant>
+
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
 #include "base/types/pass_key.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace credential_management {
 using StoreCallback = base::OnceCallback<void()>;
@@ -54,7 +55,7 @@ class ThirdPartyCredentialManagerBridge {
 
   ~ThirdPartyCredentialManagerBridge();
 
-  void Create(absl::variant<GetCallback, StoreCallback> callback);
+  void Create(std::variant<GetCallback, StoreCallback> callback);
 
   void Get(const std::string& origin);
   void OnPasswordCredentialReceived(
@@ -72,7 +73,7 @@ class ThirdPartyCredentialManagerBridge {
  private:
   // TODO(crbug.com/404505860): Pass the callback to Java instead of having it
   // as a member.
-  absl::variant<GetCallback, StoreCallback> callback_;
+  std::variant<GetCallback, StoreCallback> callback_;
   // Forwards all requests to JNI. Can be replaced in tests.
   std::unique_ptr<JniDelegate> jni_delegate_;
 };
