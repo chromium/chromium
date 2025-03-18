@@ -8,6 +8,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.Nullable;
+
 /**
  * Delegate for handling callbacks. All methods are called on the IO thread.
  *
@@ -41,8 +43,13 @@ public abstract class AwContentsIoThreadClient {
     @CalledByNative
     public abstract boolean getSafeBrowsingEnabled();
 
+    /** May return {@code null} when calling shouldInterceptRequest can be skipped. */
     @CalledByNative
-    public abstract ShouldInterceptRequestMediator getShouldInterceptRequestMediator();
+    @Nullable
+    public abstract ShouldInterceptRequestMediator getShouldInterceptRequestMediator(String url);
+
+    @CalledByNative
+    public void onLoadResource(String url) {}
 
     @NativeMethods
     interface Natives {

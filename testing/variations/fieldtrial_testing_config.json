@@ -26402,6 +26402,21 @@
             ]
         }
     ],
+    "WebViewShortCircuitShouldInterceptRequest": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebViewShortCircuitShouldInterceptRequest"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewSurfaceControl": [
         {
             "platforms": [

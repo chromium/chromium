@@ -7368,6 +7368,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.ShouldInterceptRequest.DidOverride"
+    enum="WebViewShouldInterceptRequestOverridden" expires_after="2026-03-01">
+  <owner>peconn@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Whether a WebViewClient passed into setWebViewClient has overridden the
+    shouldInterceptRequest method. Recorded when setWebViewClient is called.
+  </summary>
+</histogram>
+
 <histogram
     name="Android.WebView.ShouldInterceptRequest.GetCookieHeader.PostMojo.TimeToRun"
     units="ms" expires_after="2025-11-20">
@@ -7396,6 +7406,19 @@ chromium-metrics-reviews@google.com.
     &quot;Android.WebView.ShouldInterceptRequest.InterceptionType2&quot;,
     however that histogram further broke down the &quot;intercepted ==
     true&quot; case by which URL scheme was used for the URL.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.ShouldInterceptRequest.IsRequestSkipped"
+    enum="Boolean" expires_after="2026-03-01">
+  <owner>peconn@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Whether WebView skipped running shouldInterceptRequest because the embedder
+    hadn't overridden it (and hadn't provided the async version either).
+
+    This is logged in the shouldInterceptRequest flow before jumping onto the
+    background thread.
   </summary>
 </histogram>
 

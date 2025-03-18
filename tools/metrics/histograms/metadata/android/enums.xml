@@ -2328,6 +2328,12 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Text dark, night mode off"/>
 </enum>
 
+<enum name="WebViewShouldInterceptRequestOverridden">
+  <int value="0" label="shouldInterceptRequest is not overridden."/>
+  <int value="1" label="shouldInterceptRequest is overridden."/>
+  <int value="2" label="Error while determining if it was overridden."/>
+</enum>
+
 <enum name="WebViewStartupCallSite">
   <int value="0" label="getAwTracingController"/>
   <int value="1" label="getAwProxyController"/>
