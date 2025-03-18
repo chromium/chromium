@@ -13,6 +13,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
@@ -284,9 +285,9 @@ TEST_F(SharingDeviceRegistrationImplTest, RegisterDeviceTest_Success) {
   RegisterDeviceSync();
 
   std::set<sync_pb::SharingSpecificFields::EnabledFeatures> enabled_features =
-      GetExpectedEnabledFeatures(/*supports_vapid=*/true);
+      GetExpectedEnabledFeatures(/*supports_vapid=*/false);
   syncer::DeviceInfo::SharingInfo expected_sharing_info(
-      {kVapidFCMToken, kDevicep256dh, kDeviceAuthSecret},
+      /*vapid_target_info=*/{},
       {kSenderIdFCMToken, kSenderIdP256dh, kSenderIdAuthSecret},
       /*chime_representative_target_id=*/std::string(), enabled_features);
 
@@ -300,35 +301,12 @@ TEST_F(SharingDeviceRegistrationImplTest, RegisterDeviceTest_Success) {
 
   // Device should be re-registered with the new FCM token.
   syncer::DeviceInfo::SharingInfo expected_synced_sharing_info_2(
-      {kVapidFCMToken2, kDevicep256dh2, kDeviceAuthSecret2},
+      /*vapid_target_info=*/{},
       {kSenderIdFCMToken, kSenderIdP256dh, kSenderIdAuthSecret},
       /*chime_representative_target_id=*/std::string(), enabled_features);
 
   EXPECT_EQ(SharingDeviceRegistrationResult::kSuccess, result_);
   EXPECT_EQ(expected_synced_sharing_info_2, local_sharing_info_);
-  EXPECT_TRUE(fcm_registration_);
-}
-
-TEST_F(SharingDeviceRegistrationImplTest, RegisterDeviceTest_Vapid_Only) {
-  // Make sync unavailable to force using vapid.
-  test_sync_service_.SetFailedDataTypes({syncer::SHARING_MESSAGE});
-  SetInstanceIDFCMResult(instance_id::InstanceID::Result::SUCCESS);
-  SetInstanceIDFCMToken(kVapidFCMToken);
-  fake_device_info_sync_service_.GetDeviceInfoTracker()->Add(
-      fake_device_info_sync_service_.GetLocalDeviceInfoProvider()
-          ->GetLocalDeviceInfo());
-
-  RegisterDeviceSync();
-
-  std::set<sync_pb::SharingSpecificFields::EnabledFeatures> enabled_features =
-      GetExpectedEnabledFeatures(/*supports_vapid=*/true);
-  syncer::DeviceInfo::SharingInfo expected_sharing_info(
-      {kVapidFCMToken, kDevicep256dh, kDeviceAuthSecret},
-      syncer::DeviceInfo::SharingTargetInfo(),
-      /*chime_representative_target_id=*/std::string(), enabled_features);
-
-  EXPECT_EQ(SharingDeviceRegistrationResult::kSuccess, result_);
-  EXPECT_EQ(expected_sharing_info, local_sharing_info_);
   EXPECT_TRUE(fcm_registration_);
 }
 
@@ -424,9 +402,9 @@ TEST_F(SharingDeviceRegistrationImplTest, UnregisterDeviceTest_Success) {
 
   // Device should be registered with the new FCM token.
   std::set<sync_pb::SharingSpecificFields::EnabledFeatures> enabled_features =
-      GetExpectedEnabledFeatures(/*supports_vapid=*/true);
+      GetExpectedEnabledFeatures(/*supports_vapid=*/false);
   syncer::DeviceInfo::SharingInfo expected_sharing_info(
-      {kVapidFCMToken2, kDevicep256dh, kDeviceAuthSecret},
+      /*vapid_target_info=*/{},
       {kSenderIdFCMToken, kSenderIdP256dh, kSenderIdAuthSecret},
       /*chime_representative_target_id=*/std::string(), enabled_features);
 
