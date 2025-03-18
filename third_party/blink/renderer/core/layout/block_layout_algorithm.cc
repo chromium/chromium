@@ -2368,6 +2368,16 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
                                    inline_child_layout_context);
     }
 
+    // If a kNeedsLineClampRelayout layout result was not handled in
+    // HandleNonSuccessfulLayoutResult, it needs to be propagated upwards until
+    // the BFC root.
+    if (layout_result->Status() == LayoutResult::kNeedsLineClampRelayout) {
+      DCHECK_EQ(line_clamp_data_.data.state,
+                LineClampData::kMeasureLinesUntilBfcOffset);
+      container_builder_.SetLinesUntilClamp(layout_result->LinesUntilClamp());
+      return LayoutResult::kNeedsLineClampRelayout;
+    }
+
     DCHECK_EQ(layout_result->Status(), LayoutResult::kSuccess);
 
     // We stored this in a local variable, so it better not have changed.
