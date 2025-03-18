@@ -3471,6 +3471,39 @@ even if they fit the naming pattern. -->
   <token key="ReportDelay" variants="ReportDelay"/>
 </histogram>
 
+<histogram
+    name="DomDistiller.Android.OnDistillableResult.AccessibilitySettingEnabled"
+    enum="Boolean" expires_after="2025-08-24">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <summary>
+    Records whether the reader mode accessibility setting is enabled. Recorded
+    when ReaderModeManager gets a distillation result.
+  </summary>
+</histogram>
+
+<histogram
+    name="DomDistiller.Android.OnDistillableResult.DistillableMobilePageExcluded"
+    enum="Boolean" expires_after="2025-08-24">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <summary>
+    Records whether current page was excluded because it was found to be mobile
+    friendly. Recorded when ReaderModeManager gets a distillation result.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.Android.OnDistillableResult.PageDistillable"
+    enum="Boolean" expires_after="2025-08-24">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <summary>
+    Records whether current page is considered distillable. This is different
+    from the triggering model result because it also includes android business
+    logic. Recorded when ReaderModeManager gets a distillation result.
+  </summary>
+</histogram>
+
 <histogram name="DomDistiller.Android.ReaderModeEnabledInAccessibilitySettings"
     enum="Boolean" expires_after="2025-09-07">
   <owner>wylieb@google.com</owner>
@@ -3503,6 +3536,8 @@ even if they fit the naming pattern. -->
 <histogram name="DomDistiller.ReaderShownForPageLoad" enum="Boolean"
     expires_after="2025-08-10">
   <owner>mdjones@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
   <summary>
     Records if the panel became visible at any point after a page was navigated.
   </summary>
@@ -3511,6 +3546,8 @@ even if they fit the naming pattern. -->
 <histogram name="DomDistiller.Time.ViewingReaderModePage" units="ms"
     expires_after="2025-08-24">
   <owner>mdjones@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
   <summary>
     Records the amount of time a user spent on a Reader Mode Page.
   </summary>
