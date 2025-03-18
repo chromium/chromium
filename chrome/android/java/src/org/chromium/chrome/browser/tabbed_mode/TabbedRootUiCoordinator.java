@@ -173,7 +173,6 @@ import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.loading.LoadingFullscreenCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.collaboration.CollaborationService;
-import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.search_engines.SearchEnginesFeatures;
@@ -1350,13 +1349,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     private void initCollaborationDelegatesOnProfile(Profile profile) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) return;
+
         // We must use the original non-OTR profile here.
         Profile originalProfile = profile.getOriginalProfile();
 
         CollaborationService collaborationService =
                 CollaborationServiceFactory.getForProfile(originalProfile);
-        @NonNull ServiceStatus serviceStatus = collaborationService.getServiceStatus();
-        if (!serviceStatus.isAllowedToJoin()) return;
 
         mDataSharingTabManager.initWithProfile(
                 originalProfile,
