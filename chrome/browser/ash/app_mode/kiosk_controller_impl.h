@@ -99,6 +99,8 @@ class KioskControllerImpl : public KioskController,
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  const raw_ref<PrefService> local_state_;
+
   KioskIwaManager GUARDED_BY_CONTEXT(sequence_checker_) iwa_manager_;
   WebKioskAppManager GUARDED_BY_CONTEXT(sequence_checker_) web_app_manager_;
   KioskChromeAppManager GUARDED_BY_CONTEXT(sequence_checker_)
