@@ -24,3 +24,9 @@ include_rules = [
   "+chrome/common",
   "+chrome/test",
 ]
+
+specific_include_rules = {
+   'api_guard_delegate_unittest.cc': [
+      '+chrome/browser/web_applications/test/web_app_install_test_utils.h',
+   ],
+}
