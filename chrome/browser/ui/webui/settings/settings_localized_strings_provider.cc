@@ -654,7 +654,8 @@ void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
       {"passwordsDeletionDialogOK",
        IDS_CLEAR_BROWSING_DATA_PASSWORDS_NOTICE_OK},
       {"notificationWarning", IDS_SETTINGS_NOTIFICATION_WARNING},
-  };
+      {"clearBrowsingDataShowMore",
+       IDS_SETTINGS_CLEAR_BROWSING_DATA_SHOW_MORE}};
 
   html_source->AddString(
       "clearGoogleSearchHistoryGoogleDse",

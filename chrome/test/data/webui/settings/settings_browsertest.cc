@@ -697,6 +697,17 @@ IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataTest,
           "runMochaSuite('ClearBrowsingDataForSupervisedUsers')");
 }
 
+class SettingsClearBrowsingDataV2Test : public SettingsBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kDbdRevampDesktop};
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataV2Test,
+                       DeleteBrowsingDataDialog) {
+  RunTest("settings/clear_browsing_data_dialog_v2_test.js", "mocha.run()");
+}
+
 using SettingsCookiesPageTest = SettingsBrowserTest;
 
 // TODO(crbug.com/40889245): fix flakiness on almost all platforms and

@@ -1,9 +1,36 @@
 <style include="settings-shared">
-  /* TODO(crbug.com/397187800): Handle background color for dark mode. */
+  :host {
+    /* TODO(crbug.com/397187800): Handle background color for dark mode. */
+    --dbd-container-color: var(--cr-fallback-color-surface2);
+    --dbd-container-border-radius: 12px;
+    --dbd-container-stacked-border-radius: 4px;
+  }
+
   #checkboxContainer {
-    background-color: var(--cr-fallback-color-surface2);
+    background-color: var(--dbd-container-color);
+    border-radius: var(--dbd-container-border-radius);
     padding: 16px var(--cr-section-padding);
-    border-radius: 12px;
+  }
+
+  #checkboxContainer:has(+ #showMoreButton:not([hidden])) {
+    border-bottom-left-radius: var(--dbd-container-stacked-border-radius);
+    border-bottom-right-radius: var(--dbd-container-stacked-border-radius);
+    border-top-left-radius: var(--dbd-container-border-radius);
+    border-top-right-radius: var(--dbd-container-border-radius);
+    margin-bottom: 2px;
+  }
+
+  #showMoreButton {
+    --cr-button-background-color: var(--dbd-container-color);
+    --cr-button-height: auto;
+    --cr-button-text-color: var(--cr-primary-text-color);
+    border: none;
+    border-bottom-left-radius: var(--dbd-container-border-radius);
+    border-bottom-right-radius: var(--dbd-container-border-radius);
+    border-top-left-radius: var(--dbd-container-stacked-border-radius);
+    border-top-right-radius: var(--dbd-container-stacked-border-radius);
+    padding: var(--cr-section-vertical-padding) 16px;
+    width: 100%;
   }
 
   .checkbox-title {
@@ -47,12 +74,20 @@
         <div class="checkbox-title">$i18n{clearHostedAppData}</div>
       </settings-checkbox>
     </div>
+    <cr-button id="showMoreButton" on-click="onShowMoreClick_"
+        hidden="[[dataTypesExpanded_]]">
+      $i18n{clearBrowsingDataShowMore}
+      <cr-icon icon="cr:expand-more" aria-hidden="true" role="presentation">
+      </cr-icon>
+    </cr-button>
   </div>
   <div slot="button-container">
-    <cr-button class="cancel-button" autofocus on-click="onCancelClick_">
+    <cr-button id="cancelButton" class="cancel-button" autofocus
+        on-click="onCancelClick_">
       $i18n{cancel}
     </cr-button>
-    <cr-button class="action-button" on-click="onClearBrowsingDataClick_">
+    <cr-button id="clearButton" class="action-button"
+        on-click="onClearBrowsingDataClick_">
       $i18n{clearData}
     </cr-button>
   </div>
