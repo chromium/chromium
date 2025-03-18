@@ -51,17 +51,18 @@
     "bases": ["external/wpt/fetch/private-network-access"],
     "args": [
       "--enable-features=PrivateNetworkAccessPermissionPrompt",
+      "--disable-features=LocalNetworkAccessChecks",
       "--enable-blink-features=PrivateNetworkAccessPermissionPrompt"],
     "owners": ["clamy@google.com"],
-    "expires": "Jan 2, 2025"
+    "expires": "May 2, 2025"
   },
   {
     "prefix": "pna-workers-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/fetch/private-network-access"],
-    "args": ["--disable-features=PrivateNetworkAccessForWorkers"],
+    "args": ["--disable-features=LocalNetworkAccessChecks,PrivateNetworkAccessForWorkers"],
     "owners": ["clamy@google.com"],
-    "expires": "Jan 2, 2025"
+    "expires": "May 2, 2025"
   },
   {
     "prefix": "pna-workers-enabled",
@@ -69,25 +70,29 @@
     "bases": ["external/wpt/fetch/private-network-access"],
     "args": [
       "--enable-features=PrivateNetworkAccessForWorkers",
-      "--disable-features=PrivateNetworkAccessForWorkersWarningOnly"],
+      "--disable-features=LocalNetworkAccessChecks,PrivateNetworkAccessForWorkersWarningOnly"],
     "owners": ["clamy@google.com"],
-    "expires": "Jan 2, 2025"
+    "expires": "May 2, 2025"
   },
   {
     "prefix": "pna-navigations-enabled",
     "platforms": ["Linux", "Mac", "win"],
     "bases": ["external/wpt/fetch/private-network-access"],
-    "args": ["--enable-features=PrivateNetworkAccessForNavigations"],
+    "args": [
+      "--enable-features=LocalNetworkAccessChecks,PrivateNetworkAccessForNavigations",
+      "--disable-features=LocalNetworkAccessChecks"],
     "owners": ["clamy@google.com"],
-    "expires": "Jan 2, 2025"
+    "expires": "May 2, 2025"
   },
   {
     "prefix": "pna-navigations-warning",
     "platforms": ["Linux", "Mac", "win"],
     "bases": ["external/wpt/fetch/private-network-access"],
-    "args": ["--enable-features=PrivateNetworkAccessForNavigations,PrivateNetworkAccessForNavigationsWarningOnly"],
+    "args": [
+      "--enable-features=PrivateNetworkAccessForNavigations,PrivateNetworkAccessForNavigationsWarningOnly",
+      "--disable-features=LocalNetworkAccessChecks"],
     "owners": ["clamy@google.com"],
-    "expires": "Jan 2, 2025"
+    "expires": "May 2, 2025"
   },
   {
     "prefix": "gpu",
