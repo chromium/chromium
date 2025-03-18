@@ -102,7 +102,7 @@
 }
 
 - (void)start {
-  ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
+  ProfileIOS* profile = self.profile->GetOriginalProfile();
   drive::DriveService* driveService =
       drive::DriveServiceFactory::GetForProfile(profile);
   signin::IdentityManager* identityManager =
