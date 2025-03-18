@@ -6,10 +6,10 @@
 #define CONTENT_BROWSER_AGENT_CLUSTER_KEY_H_
 
 #include <optional>
+#include <variant>
 
 #include "content/browser/security/coop/cross_origin_isolation_mode.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -103,12 +103,12 @@ class CONTENT_EXPORT AgentClusterKey {
   bool operator<(const AgentClusterKey& b) const;
 
  private:
-  AgentClusterKey(const absl::variant<GURL, url::Origin>& key,
+  AgentClusterKey(const std::variant<GURL, url::Origin>& key,
                   const std::optional<AgentClusterKey::CrossOriginIsolationKey>&
                       isolation_key);
 
   // The key used for the agent cluster. By default, this is a site URL.
-  absl::variant<GURL, url::Origin> key_;
+  std::variant<GURL, url::Origin> key_;
 
   // This is used by DocumentIsolationPolicy to isolate the document in an agent
   // cluster with the appropriate cross-origin isolation status. Setting this to

@@ -12,6 +12,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -63,7 +64,6 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
@@ -442,8 +442,8 @@ class BidderWorkletTest : public testing::Test {
 
   // Because making a vector of move-only values is unwieldy, the test helpers
   // take this variant that's easily constructible from a single bid object.
-  using OneOrManyBids = absl::variant<mojom::BidderWorkletBidPtr,
-                                      std::vector<mojom::BidderWorkletBidPtr>>;
+  using OneOrManyBids = std::variant<mojom::BidderWorkletBidPtr,
+                                     std::vector<mojom::BidderWorkletBidPtr>>;
 
   // Helper that creates and runs a script to validate that `expression`
   // evaluates to true when evaluated in a generateBid() script. Does this by
@@ -539,16 +539,15 @@ class BidderWorkletTest : public testing::Test {
       PrivateAggregationRequests expected_non_kanon_pa_requests = {},
       RealTimeReportingContributions expected_real_time_contributions = {}) {
     std::vector<mojom::BidderWorkletBidPtr> expected_bids;
-    if (absl::holds_alternative<mojom::BidderWorkletBidPtr>(
+    if (std::holds_alternative<mojom::BidderWorkletBidPtr>(
             expected_bid_or_bids)) {
       mojom::BidderWorkletBidPtr expected_bid =
-          absl::get<mojom::BidderWorkletBidPtr>(
-              std::move(expected_bid_or_bids));
+          std::get<mojom::BidderWorkletBidPtr>(std::move(expected_bid_or_bids));
       if (expected_bid) {
         expected_bids.push_back(std::move(expected_bid));
       }
     } else {
-      expected_bids = absl::get<std::vector<mojom::BidderWorkletBidPtr>>(
+      expected_bids = std::get<std::vector<mojom::BidderWorkletBidPtr>>(
           std::move(expected_bid_or_bids));
     }
 

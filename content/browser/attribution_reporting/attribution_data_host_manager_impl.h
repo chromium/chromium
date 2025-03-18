@@ -10,6 +10,7 @@
 
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -35,7 +36,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/http/structured_headers.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-forward.h"
 
@@ -163,7 +163,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
   // info to process them.
   class Registrations;
 
-  using RegistrationsId = absl::
+  using RegistrationsId = std::
       variant<blink::AttributionSrcToken, BeaconId, BackgroundRegistrationsId>;
 
   // attribution_reporting::mojom::DataHost:

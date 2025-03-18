@@ -31,7 +31,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "url/gurl.h"
 #include "url/origin.h"
