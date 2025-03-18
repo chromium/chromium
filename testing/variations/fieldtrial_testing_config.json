@@ -3562,6 +3562,21 @@
             ]
         }
     ],
+    "BrowserDynamicCodeDisabled": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BrowserDynamicCodeDisabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "BrowserSignalsReportingEnabled": [
         {
             "platforms": [
@@ -6572,10 +6587,12 @@
                     ],
                     "min_os_version": "16151.0.0",
                     "hardware_classes": [
+                        "brask",
                         "brya",
                         "corsola",
                         "geralt",
-                        "nissa"
+                        "nissa",
+                        "rex"
                     ]
                 }
             ]
@@ -19781,21 +19798,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "RemoveRendererProcessLimit"
-                    ]
-                }
-            ]
-        }
-    ],
-    "RemoveSearchEngineChoiceAttribution": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "RemoveSearchEngineChoiceAttribution"
                     ]
                 }
             ]

@@ -17,10 +17,6 @@ namespace sync_sessions {
 class SyncSessionsRouterTabHelper;
 }  // namespace sync_sessions
 
-namespace metrics {
-class DwaWebContentsObserver;
-}  // namespace metrics
-
 // This class holds state that is scoped to a tab in Android. It is constructed
 // after the WebContents/tab_helpers, and destroyed before.
 class TabFeaturesAndroid {
@@ -31,7 +27,6 @@ class TabFeaturesAndroid {
  private:
   std::unique_ptr<sync_sessions::SyncSessionsRouterTabHelper>
       sync_sessions_router_;
-  std::unique_ptr<metrics::DwaWebContentsObserver> dwa_web_contents_observer_;
 };
 
 #endif  // CHROME_BROWSER_ANDROID_TAB_FEATURES_ANDROID_H_

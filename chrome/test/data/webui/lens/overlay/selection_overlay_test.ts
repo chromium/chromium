@@ -20,7 +20,7 @@ import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertStri
 import type {MetricsTracker} from 'chrome-untrusted://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome-untrusted://webui-test/metrics_test_support.js';
 import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {fakeScreenshotBitmap, waitForScreenshotRendered} from '../utils/image_utils.js';
 import {assertBoxesWithinThreshold, createObject} from '../utils/object_utils.js';
@@ -1914,6 +1914,21 @@ suite('SelectionOverlay', function() {
           metrics.count(
               'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
               UserAction.kCopyText));
+    });
+
+    test('TextDetectedInRegionEventFired', async () => {
+      await addGenericWordsToPage(
+          callbackRouterRemote, selectionOverlayElement);
+      const textDetectedInRegionEvent =
+          eventToPromise('text-found-in-region', document.body);
+      await simulateDrag(selectionOverlayElement, {x: 0, y: 0}, {x: 50, y: 20});
+      await textDetectedInRegionEvent;
+      await waitAfterNextRender(selectionOverlayElement);
+
+      assertTrue(
+          selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
+      assertTrue(selectionOverlayElement
+                     .getShowDetectedTextContextMenuOptionsForTesting());
     });
   });
 

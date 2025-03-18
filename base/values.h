@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <array>
+#include <compare>
 #include <concepts>
 #include <initializer_list>
 #include <iosfwd>
@@ -224,16 +225,9 @@ class BASE_EXPORT GSL_OWNER ListValue {
  private:
   using ListStorage = std::vector<Value>;
 
-  BASE_EXPORT friend bool operator==(const ListValue& lhs,
-                                     const ListValue& rhs);
-  BASE_EXPORT friend bool operator!=(const ListValue& lhs,
-                                     const ListValue& rhs);
-  BASE_EXPORT friend bool operator<(const ListValue& lhs, const ListValue& rhs);
-  BASE_EXPORT friend bool operator>(const ListValue& lhs, const ListValue& rhs);
-  BASE_EXPORT friend bool operator<=(const ListValue& lhs,
-                                     const ListValue& rhs);
-  BASE_EXPORT friend bool operator>=(const ListValue& lhs,
-                                     const ListValue& rhs);
+  friend bool operator==(const ListValue& lhs, const ListValue& rhs) = default;
+  BASE_EXPORT friend std::partial_ordering operator<=>(const ListValue& lhs,
+                                                       const ListValue& rhs);
 
   explicit ListValue(const std::vector<Value>& storage);
 
@@ -569,14 +563,8 @@ class BASE_EXPORT GSL_OWNER DictValue {
  private:
   BASE_EXPORT friend bool operator==(const DictValue& lhs,
                                      const DictValue& rhs);
-  BASE_EXPORT friend bool operator!=(const DictValue& lhs,
-                                     const DictValue& rhs);
-  BASE_EXPORT friend bool operator<(const DictValue& lhs, const DictValue& rhs);
-  BASE_EXPORT friend bool operator>(const DictValue& lhs, const DictValue& rhs);
-  BASE_EXPORT friend bool operator<=(const DictValue& lhs,
-                                     const DictValue& rhs);
-  BASE_EXPORT friend bool operator>=(const DictValue& lhs,
-                                     const DictValue& rhs);
+  BASE_EXPORT friend std::partial_ordering operator<=>(const DictValue& lhs,
+                                                       const DictValue& rhs);
 
   // TODO(dcheng): Replace with `flat_map<std::string, Value>` once no caller
   // relies on stability of pointers anymore.
@@ -847,94 +835,30 @@ class BASE_EXPORT GSL_OWNER Value {
 
   // Comparison operators so that Values can easily be used with standard
   // library algorithms and associative containers.
-  BASE_EXPORT friend bool operator==(const Value& lhs, const Value& rhs);
-  BASE_EXPORT friend bool operator!=(const Value& lhs, const Value& rhs);
-  BASE_EXPORT friend bool operator<(const Value& lhs, const Value& rhs);
-  BASE_EXPORT friend bool operator>(const Value& lhs, const Value& rhs);
-  BASE_EXPORT friend bool operator<=(const Value& lhs, const Value& rhs);
-  BASE_EXPORT friend bool operator>=(const Value& lhs, const Value& rhs);
+  friend bool operator==(const Value& lhs, const Value& rhs) = default;
+  friend auto operator<=>(const Value& lhs, const Value& rhs) = default;
 
-  BASE_EXPORT friend bool operator==(const Value& lhs, bool rhs);
-  friend bool operator==(bool lhs, const Value& rhs) { return rhs == lhs; }
-  friend bool operator!=(const Value& lhs, bool rhs) { return !(lhs == rhs); }
-  friend bool operator!=(bool lhs, const Value& rhs) { return !(lhs == rhs); }
+  bool operator==(bool rhs) const;
   template <typename T>
-  friend bool operator==(const Value& lhs, const T* rhs) = delete;
-  template <typename T>
-  friend bool operator==(const T* lhs, const Value& rhs) = delete;
-  template <typename T>
-  friend bool operator!=(const Value& lhs, const T* rhs) = delete;
-  template <typename T>
-  friend bool operator!=(const T* lhs, const Value& rhs) = delete;
-  BASE_EXPORT friend bool operator==(const Value& lhs, int rhs);
-  friend bool operator==(int lhs, const Value& rhs) { return rhs == lhs; }
-  friend bool operator!=(const Value& lhs, int rhs) { return !(lhs == rhs); }
-  friend bool operator!=(int lhs, const Value& rhs) { return !(lhs == rhs); }
-  BASE_EXPORT friend bool operator==(const Value& lhs, double rhs);
-  friend bool operator==(double lhs, const Value& rhs) { return rhs == lhs; }
-  friend bool operator!=(const Value& lhs, double rhs) { return !(lhs == rhs); }
-  friend bool operator!=(double lhs, const Value& rhs) { return !(lhs == rhs); }
+  bool operator==(const T* rhs) const = delete;
+  bool operator==(int rhs) const;
+  bool operator==(double rhs) const;
   // Note: std::u16string_view overload intentionally omitted: Value internally
   // stores strings as UTF-8. While it is possible to implement a comparison
   // operator that would not require first creating a new UTF-8 string from the
   // UTF-16 string argument, it is simpler to just not implement it at all for a
   // rare use case.
-  BASE_EXPORT friend bool operator==(const Value& lhs, std::string_view rhs);
-  friend bool operator==(std::string_view lhs, const Value& rhs) {
-    return rhs == lhs;
+  bool operator==(std::string_view rhs) const;
+  bool operator==(const char* rhs) const {
+    return *this == std::string_view(rhs);
   }
-  friend bool operator!=(const Value& lhs, std::string_view rhs) {
-    return !(lhs == rhs);
-  }
-  friend bool operator!=(std::string_view lhs, const Value& rhs) {
-    return !(lhs == rhs);
-  }
-  friend bool operator==(const Value& lhs, const char* rhs) {
-    return lhs == std::string_view(rhs);
-  }
-  friend bool operator==(const char* lhs, const Value& rhs) {
-    return rhs == lhs;
-  }
-  friend bool operator!=(const Value& lhs, const char* rhs) {
-    return !(lhs == rhs);
-  }
-  friend bool operator!=(const char* lhs, const Value& rhs) {
-    return !(lhs == rhs);
-  }
-  friend bool operator==(const Value& lhs, const std::string& rhs) {
-    return lhs == std::string_view(rhs);
-  }
-  friend bool operator==(const std::string& lhs, const Value& rhs) {
-    return rhs == lhs;
-  }
-  friend bool operator!=(const Value& lhs, const std::string& rhs) {
-    return !(lhs == rhs);
-  }
-  friend bool operator!=(const std::string& lhs, const Value& rhs) {
-    return !(lhs == rhs);
+  bool operator==(const std::string& rhs) const {
+    return *this == std::string_view(rhs);
   }
   // Note: Blob support intentionally omitted as an experiment for potentially
   // wholly removing Blob support from Value itself in the future.
-  BASE_EXPORT friend bool operator==(const Value& lhs, const Value::Dict& rhs);
-  friend bool operator==(const Value::Dict& lhs, const Value& rhs) {
-    return rhs == lhs;
-  }
-  friend bool operator!=(const Value& lhs, const Value::Dict& rhs) {
-    return !(lhs == rhs);
-  }
-  friend bool operator!=(const Value::Dict& lhs, const Value& rhs) {
-    return !(lhs == rhs);
-  }
-  BASE_EXPORT friend bool operator==(const Value& lhs, const Value::List& rhs);
-  friend bool operator==(const Value::List& lhs, const Value& rhs) {
-    return rhs == lhs;
-  }
-  friend bool operator!=(const Value& lhs, const Value::List& rhs) {
-    return !(lhs == rhs);
-  }
-  friend bool operator!=(const Value::List& lhs, const Value& rhs) {
-    return !(lhs == rhs);
-  }
+  bool operator==(const DictValue& rhs) const;
+  bool operator==(const ListValue& rhs) const;
 
   // Estimates dynamic memory usage. Requires tracing support
   // (enable_base_tracing gn flag), otherwise always returns 0. See
@@ -991,24 +915,15 @@ class BASE_EXPORT GSL_OWNER Value {
       return double{lhs} == double{rhs};
     }
 
-    friend bool operator!=(const DoubleStorage& lhs, const DoubleStorage& rhs) {
-      return !(lhs == rhs);
-    }
-
-    friend bool operator<(const DoubleStorage& lhs, const DoubleStorage& rhs) {
-      return double{lhs} < double{rhs};
-    }
-
-    friend bool operator>(const DoubleStorage& lhs, const DoubleStorage& rhs) {
-      return rhs < lhs;
-    }
-
-    friend bool operator<=(const DoubleStorage& lhs, const DoubleStorage& rhs) {
-      return !(rhs < lhs);
-    }
-
-    friend bool operator>=(const DoubleStorage& lhs, const DoubleStorage& rhs) {
-      return !(lhs < rhs);
+    // doubles are partially ordered because NaN is unordered, so anything that
+    // can contain a DoubleStorage (ie. Value, List or Dict) must also use
+    // partial_ordering. `auto` will deduce this correctly but manually written
+    // operators will get cryptic compiler errors if the wrong ordering is
+    // chosen. The return type is specified explicitly here to document where
+    // the requirement comes from.
+    friend std::partial_ordering operator<=>(const DoubleStorage& lhs,
+                                             const DoubleStorage& rhs) {
+      return double{lhs} <=> double{rhs};
     }
 
     alignas(4) std::array<char, sizeof(double)> v_;

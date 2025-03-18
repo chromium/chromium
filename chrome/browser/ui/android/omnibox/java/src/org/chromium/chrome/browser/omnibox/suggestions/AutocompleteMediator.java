@@ -121,8 +121,13 @@ class AutocompleteMediator
 
     private boolean mNativeInitialized;
     private long mUrlFocusTime;
-    // When set, indicates an active omnibox session.
-    private boolean mIsActive;
+    // When set, indicates if the omnibox is focused.
+    private boolean mOmniboxFocused;
+    // Tracks whether the activity window is currently focused.
+    // This flag is updated via the onTopResumedActivityChanged(boolean) callback:
+    // https://developer.android.com/reference/android/app/Activity#onTopResumedActivityChanged(boolean)
+    // Default value is true, as this API is only available starting from API level 29.
+    private boolean mActivityWindowFocused = true;
     // When set, specifies the system time of the most recent suggestion list request.
     private @Nullable Long mLastSuggestionRequestTime;
     // When set, specifies the time when the suggestion list was shown the first time.
@@ -380,8 +385,8 @@ class AutocompleteMediator
      *     session state changes, {@code true} if this will be activated, {@code false} otherwise.
      */
     void onOmniboxSessionStateChange(boolean activated) {
-        if (mIsActive == activated) return;
-        mIsActive = activated;
+        if (mOmniboxFocused == activated) return;
+        mOmniboxFocused = activated;
 
         // Propagate the information about omnibox session state change to all the processors first.
         // Processors need this for accounting purposes.
@@ -889,7 +894,7 @@ class AutocompleteMediator
         }
 
         // Reject results if the current session is inactive.
-        if (!mIsActive) return;
+        if (!isActive()) return;
 
         @Nullable AutocompleteMatch defaultMatch = autocompleteResult.getDefaultMatch();
         String inlineAutocompleteText =
@@ -904,9 +909,7 @@ class AutocompleteMediator
                     mDropdownViewInfoListBuilder.buildDropdownViewInfoList(
                             mAutocompleteInput, autocompleteResult);
             mDropdownViewInfoListManager.setSourceViewInfoList(viewInfoList);
-            if (mIsActive) {
-                mDelegate.onSuggestionsChanged(defaultMatch);
-            }
+            mDelegate.onSuggestionsChanged(defaultMatch);
         }
 
         mListPropertyModel.set(SuggestionListProperties.LIST_IS_FINAL, isFinal);
@@ -1423,7 +1426,7 @@ class AutocompleteMediator
 
     /** Returns whether Omnibox session is active (the user is interacting with the Omnibox). */
     boolean isOmniboxSessionActiveForTesting() {
-        return mIsActive;
+        return mOmniboxFocused;
     }
 
     /** Returns the current Animation Driver instance. */
@@ -1433,13 +1436,18 @@ class AutocompleteMediator
 
     @Override
     public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
-        // TODO(crbug.com/329702834): Ensuring showing Suggestions when activity resumes.
-        if (!isTopResumedActivity) {
-            // Careful: only clear suggestions after Omnibox session state changes to inactive.
-            // This has an immediate impact on suggestions caching mechanism: if suggestions get
-            // cleared before session state becomes inactive, we will cache empty result.
-            mDelegate.clearOmniboxFocus();
+        mActivityWindowFocused = isTopResumedActivity;
+        mListPropertyModel.set(
+                SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED, isTopResumedActivity);
+        if (isActive()) {
+            onTextChanged(
+                    mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
+                    /* isOnFocusContext= */ false);
         }
+    }
+
+    private boolean isActive() {
+        return mOmniboxFocused && mActivityWindowFocused;
     }
 
     @Override

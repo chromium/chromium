@@ -85,7 +85,9 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -553,6 +555,7 @@ void InitTimeOfDayFeatureList(
   enabled_features.push_back(features::kSeaPen);
   enabled_features.push_back(features::kFeatureManagementSeaPen);
   enabled_features.push_back(features::kSeaPenDemoMode);
+  enabled_features.push_back(features::kDemoModeWallpaperUpdate);
   scoped_feature_list.InitWithFeatures(enabled_features, disabled_features);
 }
 
@@ -955,6 +958,8 @@ class WallpaperControllerTestBase : public NoSessionAshTestBase {
 
   const AccountId kChildAccountId =
       AccountId::FromUserEmailGaiaId(kChildEmail, GaiaId("child_gaia_id"));
+
+  ScopedStubInstallAttributes scoped_stub_install_attributes_;
 
  private:
   InProcessDataDecoder decoder_;
@@ -1774,7 +1779,7 @@ TEST_P(WallpaperControllerTest,
   client_.AddCollection(wallpaper_constants::kTimeOfDayWallpaperCollectionId,
                         images);
   WallpaperInfo local_info = InfoWithType(WallpaperType::kDefault);
-  pref_manager_->SetLocalWallpaperInfo(kAccountId1, local_info);
+  ASSERT_TRUE(pref_manager_->SetLocalWallpaperInfo(kAccountId1, local_info));
   SetSessionState(SessionState::OOBE);
   // Log in and trigger `OnActiveUserPrefServiceChange`.
   SimulateUserLogin(kAccountId1);
@@ -1788,6 +1793,34 @@ TEST_P(WallpaperControllerTest,
             actual_info.unit_id.value_or(0));
   histogram_tester().ExpectUniqueSample(
       "Ash.Wallpaper.SetTimeOfDayAfterOobe.Default", true, 1);
+}
+
+TEST_P(WallpaperControllerTest,
+       ActiveUserPrefServiceChanged_DemoMode_SetTimeOfDayWallpaper) {
+  if (!IsTimeOfDayEnabled()) {
+    return;
+  }
+
+  scoped_stub_install_attributes_.Get()->SetDemoMode();
+  ASSERT_TRUE(demo_mode::IsDeviceInDemoMode());
+
+  auto images = TimeOfDayImageSet();
+  client_.AddCollection(wallpaper_constants::kTimeOfDayWallpaperCollectionId,
+                        images);
+  WallpaperInfo local_info = InfoWithType(WallpaperType::kDefault);
+  ASSERT_TRUE(pref_manager_->SetLocalWallpaperInfo(kAccountId1, local_info));
+  // Demo mode skips OOBE state.
+  SetSessionState(SessionState::LOGIN_PRIMARY);
+  SimulateUserLogin(kAccountId1);
+  RunAllTasksUntilIdle();
+
+  WallpaperInfo actual_info;
+  EXPECT_TRUE(pref_manager_->GetUserWallpaperInfo(kAccountId1, &actual_info));
+  EXPECT_EQ(WallpaperType::kOnline, actual_info.type);
+  EXPECT_EQ(wallpaper_constants::kTimeOfDayWallpaperCollectionId,
+            actual_info.collection_id);
+  EXPECT_EQ(wallpaper_constants::kDefaultTimeOfDayWallpaperUnitId,
+            actual_info.unit_id.value_or(0));
 }
 
 TEST_P(WallpaperControllerTest,

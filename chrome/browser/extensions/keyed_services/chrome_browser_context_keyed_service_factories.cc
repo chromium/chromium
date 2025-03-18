@@ -17,6 +17,7 @@
 #include "chrome/browser/extensions/chrome_app_icon_service_factory.h"
 #include "chrome/browser/extensions/chrome_extension_cookies_factory.h"
 #include "chrome/browser/extensions/chrome_extension_system_factory.h"
+#include "chrome/browser/extensions/corrupted_extension_reinstaller_factory.h"
 #include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/extensions/extension_action_dispatcher.h"
 #include "chrome/browser/extensions/extension_error_controller_factory.h"
@@ -55,6 +56,7 @@ void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::ActivityLog::GetFactoryInstance();
   extensions::ChromeAppIconServiceFactory::GetInstance();
   extensions::ChromeExtensionCookiesFactory::GetInstance();
+  extensions::CorruptedExtensionReinstallerFactory::GetInstance();
   extensions::CWSInfoServiceFactory::GetInstance();
   extensions::ExtensionActionDispatcher::GetFactoryInstance();
   extensions::ExtensionErrorControllerFactory::GetInstance();

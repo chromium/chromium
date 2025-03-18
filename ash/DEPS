@@ -93,6 +93,7 @@ include_rules = [
   "+chromeos/ash/components/feature_usage",
   "+chromeos/ash/components/geolocation",
   "+chromeos/ash/components/human_presence",
+  "+chromeos/ash/components/install_attributes",
   "+chromeos/ash/components/local_search_service",
   "+chromeos/ash/components/login/auth",
   "+chromeos/ash/components/mojo_service_manager",

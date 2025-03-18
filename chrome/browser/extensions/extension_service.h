@@ -22,7 +22,6 @@
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/blocklist.h"
-#include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/extensions/delayed_install_manager.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
@@ -67,6 +66,7 @@ FORWARD_DECLARE_TEST(BlocklistedExtensionSyncServiceTest,
 namespace extensions {
 class ChromeExtensionRegistrarDelegate;
 class ComponentLoader;
+class CorruptedExtensionReinstaller;
 class CrxInstaller;
 class DelayedInstallManager;
 class ExtensionActionStorageManager;
@@ -88,6 +88,8 @@ class ExtensionServiceInterface {
   virtual ~ExtensionServiceInterface() = default;
 
   // Gets the object managing reinstalls of the corrupted extensions.
+  // TODO(crbug.com/404564705): Delete this and switch callers to
+  // CorruptedExtensionReinstaller::Get().
   virtual CorruptedExtensionReinstaller* corrupted_extension_reinstaller() = 0;
 
   // Creates an CrxInstaller to update an extension.
@@ -626,7 +628,7 @@ class ExtensionService : public ExtensionServiceInterface,
   ForceInstalledMetrics force_installed_metrics_;
 
   // Schedules downloads/reinstalls of the corrupted extensions.
-  CorruptedExtensionReinstaller corrupted_extension_reinstaller_;
+  raw_ptr<CorruptedExtensionReinstaller> corrupted_extension_reinstaller_;
 
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observation_{this};

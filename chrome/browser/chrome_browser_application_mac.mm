@@ -460,9 +460,9 @@ std::string DescriptionForNSEvent(NSEvent* event) {
       content::BrowserAccessibilityState::GetInstance();
 
   if (enable) {
-    accessibility_state->OnScreenReaderDetected();
+    accessibility_state->EnableProcessAccessibility();
   } else {
-    accessibility_state->OnScreenReaderStopped();
+    accessibility_state->DisableProcessAccessibility();
   }
 }
 

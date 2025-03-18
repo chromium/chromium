@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <compare>
 #include <memory>
 #include <optional>
 #include <ostream>
@@ -933,26 +934,12 @@ bool operator==(const DictValue& lhs, const DictValue& rhs) {
                             deref_2nd);
 }
 
-bool operator!=(const DictValue& lhs, const DictValue& rhs) {
-  return !(lhs == rhs);
-}
-
-bool operator<(const DictValue& lhs, const DictValue& rhs) {
-  auto deref_2nd = [](const auto& p) { return std::tie(p.first, *p.second); };
-  return std::ranges::lexicographical_compare(lhs.storage_, rhs.storage_, {},
-                                              deref_2nd, deref_2nd);
-}
-
-bool operator>(const DictValue& lhs, const DictValue& rhs) {
-  return rhs < lhs;
-}
-
-bool operator<=(const DictValue& lhs, const DictValue& rhs) {
-  return !(rhs < lhs);
-}
-
-bool operator>=(const DictValue& lhs, const DictValue& rhs) {
-  return !(lhs < rhs);
+std::partial_ordering operator<=>(const DictValue& lhs, const DictValue& rhs) {
+  return std::lexicographical_compare_three_way(
+      lhs.storage_.begin(), lhs.storage_.end(), rhs.storage_.begin(),
+      rhs.storage_.end(), [](const auto& a, const auto& b) {
+        return std::tie(a.first, *a.second) <=> std::tie(b.first, *b.second);
+      });
 }
 
 // static
@@ -1295,76 +1282,33 @@ ListValue::ListValue(const std::vector<Value>& storage) {
   }
 }
 
-bool operator==(const ListValue& lhs, const ListValue& rhs) {
-  return lhs.storage_ == rhs.storage_;
+// This can't be declared in the header because of a circular dependency between
+// ListValue::operator<=> and Value::operator<=>.
+std::partial_ordering operator<=>(const ListValue& lhs,
+                                  const ListValue& rhs) = default;
+
+bool Value::operator==(bool rhs) const {
+  return is_bool() && GetBool() == rhs;
 }
 
-bool operator!=(const ListValue& lhs, const ListValue& rhs) {
-  return !(lhs == rhs);
+bool Value::operator==(int rhs) const {
+  return is_int() && GetInt() == rhs;
 }
 
-bool operator<(const ListValue& lhs, const ListValue& rhs) {
-  return lhs.storage_ < rhs.storage_;
+bool Value::operator==(double rhs) const {
+  return is_double() && GetDouble() == rhs;
 }
 
-bool operator>(const ListValue& lhs, const ListValue& rhs) {
-  return rhs < lhs;
+bool Value::operator==(std::string_view rhs) const {
+  return is_string() && GetString() == rhs;
 }
 
-bool operator<=(const ListValue& lhs, const ListValue& rhs) {
-  return !(rhs < lhs);
+bool Value::operator==(const DictValue& rhs) const {
+  return is_dict() && GetDict() == rhs;
 }
 
-bool operator>=(const ListValue& lhs, const ListValue& rhs) {
-  return !(lhs < rhs);
-}
-
-bool operator==(const Value& lhs, const Value& rhs) {
-  return lhs.data_ == rhs.data_;
-}
-
-bool operator!=(const Value& lhs, const Value& rhs) {
-  return !(lhs == rhs);
-}
-
-bool operator<(const Value& lhs, const Value& rhs) {
-  return lhs.data_ < rhs.data_;
-}
-
-bool operator>(const Value& lhs, const Value& rhs) {
-  return rhs < lhs;
-}
-
-bool operator<=(const Value& lhs, const Value& rhs) {
-  return !(rhs < lhs);
-}
-
-bool operator>=(const Value& lhs, const Value& rhs) {
-  return !(lhs < rhs);
-}
-
-bool operator==(const Value& lhs, bool rhs) {
-  return lhs.is_bool() && lhs.GetBool() == rhs;
-}
-
-bool operator==(const Value& lhs, int rhs) {
-  return lhs.is_int() && lhs.GetInt() == rhs;
-}
-
-bool operator==(const Value& lhs, double rhs) {
-  return lhs.is_double() && lhs.GetDouble() == rhs;
-}
-
-bool operator==(const Value& lhs, std::string_view rhs) {
-  return lhs.is_string() && lhs.GetString() == rhs;
-}
-
-bool operator==(const Value& lhs, const DictValue& rhs) {
-  return lhs.is_dict() && lhs.GetDict() == rhs;
-}
-
-bool operator==(const Value& lhs, const ListValue& rhs) {
-  return lhs.is_list() && lhs.GetList() == rhs;
+bool Value::operator==(const ListValue& rhs) const {
+  return is_list() && GetList() == rhs;
 }
 
 size_t Value::EstimateMemoryUsage() const {

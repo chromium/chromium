@@ -833,13 +833,6 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // by the user.
   void MaybeSetIsActiveSearchEngines(OwnedTemplateURLVector* template_urls);
 
-  // Adds to |matches| all TemplateURLs stored in |keyword_to_turl|
-  // whose keywords begin with |prefix|, sorted shortest-keyword-first.
-  template <typename Container>
-  void AddMatchingKeywordsHelper(const Container& keyword_to_turl,
-                                 const std::u16string& prefix,
-                                 TemplateURLVector* matches);
-
   // Returns the TemplateURL corresponding to |prepopulated_id|, if any.
   TemplateURL* FindPrepopulatedTemplateURL(int prepopulated_id);
 

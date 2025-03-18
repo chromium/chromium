@@ -2538,7 +2538,7 @@ TEST_F(ViewTest, PaintLocalBounds) {
   // of it is visible. The visible bounds does not intersect with |root_view|'s
   // bounds.
   v1->SetBounds(0, -1000, 100, 1100);
-  root_view->AddChildView(v1);
+  root_view->AddChildViewRaw(v1);
   EXPECT_EQ(gfx::Rect(0, 0, 100, 1100), v1->GetLocalBounds());
   EXPECT_EQ(gfx::Rect(0, 1000, 100, 100), v1->GetVisibleBounds());
 

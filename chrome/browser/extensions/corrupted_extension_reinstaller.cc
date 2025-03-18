@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/extensions/corrupted_extension_reinstaller_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_system.h"
@@ -43,6 +44,13 @@ const net::BackoffEntry::Policy kCorruptedReinstallBackoffPolicy = {
 };
 
 }  // namespace
+
+// static
+CorruptedExtensionReinstaller* CorruptedExtensionReinstaller::Get(
+    content::BrowserContext* context) {
+  return CorruptedExtensionReinstallerFactory::GetInstance()
+      ->GetForBrowserContext(context);
+}
 
 CorruptedExtensionReinstaller::CorruptedExtensionReinstaller(
     content::BrowserContext* context)
@@ -104,14 +112,16 @@ void CorruptedExtensionReinstaller::NotifyExtensionDisabledDueToCorruption() {
 }
 
 void CorruptedExtensionReinstaller::Shutdown() {
-  // Cancel already scheduled attempts by invalidating weak pointers stored in
-  // postponed tasks.
+  // Cancels already-scheduled attempts, if any, for a smoother shutdown, by
+  // invalidating weak pointers stored in postponed tasks.
   weak_factory_.InvalidateWeakPtrs();
 }
 
 void CorruptedExtensionReinstaller::Fire() {
   scheduled_fire_pending_ = false;
   ExtensionSystem* system = ExtensionSystem::Get(context_);
+  // TODO(crbug.com/403352172): When this dependency on ExtensionService is
+  // removed, update the CorruptedExtensionReinstallerFactory DependsOn() list.
   ExtensionService* service = system->extension_service();
   // If there's nothing to repair, then bail out.
   if (!HasAnyReinstallForCorruption())

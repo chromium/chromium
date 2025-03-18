@@ -44,7 +44,7 @@ class MasonryItemGroupProperties {
 
   bool IsHashTableDeletedValue() const { return is_deleted_; }
 
-  GridSpan Span() const {
+  const GridSpan& Span() const {
     DCHECK(item_span_);
     return *item_span_;
   }
@@ -57,10 +57,22 @@ class MasonryItemGroupProperties {
   std::optional<GridSpan> item_span_;
 };
 
-using MasonryItemGroups =
+struct MasonryItemGroup {
+  DISALLOW_NEW();
+
+  void Trace(Visitor* visitor) const { visitor->Trace(items); }
+
+  HeapVector<BlockNode, 16> items;
+  MasonryItemGroupProperties properties;
+};
+
+using MasonryItemGroupMap =
     HeapHashMap<MasonryItemGroupProperties, HeapVector<BlockNode, 16>>;
+using MasonryItemGroups = HeapVector<MasonryItemGroup, 16>;
 
 }  // namespace blink
+
+WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::MasonryItemGroup)
 
 namespace WTF {
 

@@ -28,34 +28,12 @@ public class AreaMotionEventFilter extends MotionEventFilter {
 
     /**
      * Creates a {@link AreaMotionEventFilter}.
-     * @param context       The context to build the gesture handler under.
-     * @param handler       The handler to be notified of gesture events.
-     * @param triggerRect   The area that events should be stolen from in dp.
-     */
-    public AreaMotionEventFilter(Context context, MotionEventHandler handler, RectF triggerRect) {
-        this(context, handler, triggerRect, true);
-    }
-
-    /**
-     * Creates a {@link AreaMotionEventFilter}.
-     * @param context       The context to build the gesture handler under.
-     * @param handler       The handler to be notified of gesture events.
-     * @param triggerRect   The area that events should be stolen from in dp.
-     * @param autoOffset    Whether or not to offset touch events.
-     */
-    public AreaMotionEventFilter(
-            Context context, MotionEventHandler handler, RectF triggerRect, boolean autoOffset) {
-        super(context, handler, autoOffset);
-        setEventArea(triggerRect);
-    }
-
-    /**
-     * Creates a {@link AreaMotionEventFilter}.
-     * @param context               The context to build the gesture handler under.
-     * @param handler               The handler to be notified of gesture events.
-     * @param triggerRect           The area that events should be stolen from in dp.
-     * @param autoOffset            Whether or not to offset touch events.
-     * @param useDefaultLongPress   Whether or not to use the default long press behavior.
+     *
+     * @param context The context to build the gesture handler under.
+     * @param handler The handler to be notified of gesture events.
+     * @param triggerRect The area that events should be stolen from in dp.
+     * @param autoOffset Whether or not to offset touch events.
+     * @param useDefaultLongPress Whether or not to use the default long press behavior.
      */
     public AreaMotionEventFilter(
             Context context,

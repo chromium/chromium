@@ -79,7 +79,7 @@ public class TabStripUtils {
                 new Runnable() {
                     @Override
                     public void run() {
-                        manager.simulateClick(x, y, false, 0);
+                        manager.simulateClick(x, y, 0);
                     }
                 });
     }
@@ -100,7 +100,7 @@ public class TabStripUtils {
                 new Runnable() {
                     @Override
                     public void run() {
-                        manager.simulateClick(x, y, false, 0);
+                        manager.simulateClick(x, y, 0);
                     }
                 });
     }

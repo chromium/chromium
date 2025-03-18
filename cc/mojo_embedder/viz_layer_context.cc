@@ -57,7 +57,7 @@ void ComputePropertyTreeNodeUpdate(
       old_node->anchor_position_scroll_data_id ==
           new_node.anchor_position_scroll_data_id &&
       old_node->sorting_context_id == new_node.sorting_context_id &&
-      old_node->scroll_offset == new_node.scroll_offset &&
+      old_node->scroll_offset() == new_node.scroll_offset() &&
       old_node->snap_amount == new_node.snap_amount &&
       old_node->has_potential_animation == new_node.has_potential_animation &&
       old_node->is_currently_animating == new_node.is_currently_animating &&
@@ -93,7 +93,7 @@ void ComputePropertyTreeNodeUpdate(
         base::checked_cast<uint32_t>(new_node.anchor_position_scroll_data_id);
   }
   wire->sorting_context_id = new_node.sorting_context_id;
-  wire->scroll_offset = new_node.scroll_offset;
+  wire->scroll_offset = new_node.scroll_offset();
   wire->snap_amount = new_node.snap_amount;
   wire->has_potential_animation = new_node.has_potential_animation;
   wire->is_currently_animating = new_node.is_currently_animating;

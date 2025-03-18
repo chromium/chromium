@@ -27,6 +27,7 @@ template("eslint_ts") {
     inputs = [
       config_base,
       tsconfig,
+      "//ui/webui/resources/tools/webui_eslint_plugin.js",
     ]
     outputs = [ "$target_gen_dir/eslint.config.mjs" ]
 

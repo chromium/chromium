@@ -140,8 +140,11 @@ Verbs fall into a number of different categories:
     - `SelectDropdownItem()` [Interactive] (with non-default input mode)
     - `EnterText()`
     - `SendAccelerator()`
+    - `SendKeyPress()`
     - `Confirm()`
     - `DoDefaultAction()`
+    - `FocusElement()` [Interactive]
+      - May fail if element is on an inactive surface.
     - `ActivateSurface()` [Interactive]
       - ActivateSurface is not always reliable on Linux with the Wayland window
         manager; see [Handling Incompatibilities](#handling-incompatibilities)

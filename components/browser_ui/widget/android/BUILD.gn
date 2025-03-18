@@ -240,6 +240,7 @@ android_resources("java_resources") {
     "java/res/drawable/rounded_corner_card.xml",
     "java/res/drawable/rounded_rectangle_surface_0.xml",
     "java/res/drawable/rounded_rectangle_surface_1.xml",
+    "java/res/drawable/search_box_button_ripple.xml",
     "java/res/drawable/search_row_modern_bg.xml",
     "java/res/drawable/search_toolbar_modern_bg.xml",
     "java/res/drawable/tile_view_highlight.xml",

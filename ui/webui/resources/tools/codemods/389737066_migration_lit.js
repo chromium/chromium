@@ -38,11 +38,21 @@ module.exports = function transformer(file, api) {
               j.tsUnionType([originalType, j.tsUndefinedKeyword()]);
         }
 
+        classMember.decorators = [];
+        if (classMember.override) {
+          // For an unknown reason jscodeshift drops the "override" keyword
+          // once decorators are added below. Add an @override decorator here,
+          // which will be replaced back the "override" keyword later using a
+          // regular expression.
+          const overrideDecorator = j.decorator(j.identifier('override'));
+          classMember.decorators.push(overrideDecorator);
+        }
+
         // Add an @accessor decorator since jscodeshift does not support the
         // "accessor" keyword yet. It will be replaced later using a regular
         // expression.
-        const decorator = j.decorator(j.identifier('accessor'));
-        classMember.decorators = [decorator];
+        const accessorDecorator = j.decorator(j.identifier('accessor'));
+        classMember.decorators.push(accessorDecorator);
       }
     });
   });
@@ -50,6 +60,11 @@ module.exports = function transformer(file, api) {
   const outputOptions = {quote: 'single'};
 
   let out = root.toSource(outputOptions);
+
+  // Restore the "override" keyword if it existed, and place it on the same line
+  // as the property.
+  out = out.replaceAll(/@override\n\s+/g, 'override ');
+
   // Replace @accessor with the 'accessor' keyword and place it on the same line
   // as the property.
   out = out.replaceAll(/@accessor\n\s+/g, 'accessor ');

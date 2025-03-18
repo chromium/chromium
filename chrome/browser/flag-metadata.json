@@ -1294,11 +1294,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "cct-before-unload",
-    "owners": [ "katzz@google.com", "twellington@google.com"],
-    "expiry_milestone": 142
-  },
-  {
     "name": "cct-ephemeral-media-viewer-experiment",
     "owners": [ "chrome-incognito@chromium.org", "//chrome/android/java/src/org/chromium/chrome/browser/customtabs/OWNERS" ],
     "expiry_milestone": 137
@@ -4940,6 +4935,14 @@
     "name": "glic-detached",
     "owners": [
       "andreaxg@google.com",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 137
+  },
+  {
+    "name": "glic-user-resize",
+    "owners": [
+      "iwells@chromium.org",
       "//chrome/browser/glic/OWNERS"
     ],
     "expiry_milestone": 137

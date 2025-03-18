@@ -538,6 +538,11 @@ BASE_FEATURE(kDemoModeSignIn,
              "DemoModeSignIn",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether demo mode applies CBX wallpaper logic.
+BASE_FEATURE(kDemoModeWallpaperUpdate,
+             "DemoModeWallpaperUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Toggle different display features based on user setting and power state
 BASE_FEATURE(kDisplayPerformanceMode,
              "DisplayPerformanceMode",
@@ -3456,6 +3461,10 @@ bool IsCrosSwitcherEnabled() {
 
 bool IsDemoModeSignInEnabled() {
   return base::FeatureList::IsEnabled(kDemoModeSignIn);
+}
+
+bool IsDemoModeWallpaperUpdateEnabled() {
+  return base::FeatureList::IsEnabled(kDemoModeWallpaperUpdate);
 }
 
 bool IsDeskTemplateSyncEnabled() {

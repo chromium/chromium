@@ -295,11 +295,11 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '5e37e525459d359b85f6d3d4dda04ee97cac9a90',
+  'skia_revision': '42c6eb9a70e41280fc2ab8af8e26d4c37307ac6c',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': '4e3a008b14a6be295c3631ad1f9dee86eef8291f',
+  'v8_revision': '5a2534fb1167b7a6cbc90cd8f950733ead9399b6',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
@@ -387,7 +387,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': 'ee2ffa214fe20ef610616fc373901f25ccf1018e',
+  'devtools_frontend_revision': 'c7c38b705399074a4bd1e4cf92fa38dcd76de3d6',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -519,7 +519,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling llvm-libc
   # and whatever else without interference from each other.
-  'llvm_libc_revision':    '7b5c0726f6911b86a5247c9476a173f845bd159f',
+  'llvm_libc_revision':    'ca33d503c4350bdd69d21911aba5e8100ab35f6e',
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
@@ -1146,7 +1146,7 @@ deps = {
   },
 
   'src/chrome/release_scripts': {
-      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + '299723ce7cf51e9f56fc0cbea92ec34135d6e6d8',
+      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + 'd031c9eb1bddb9f6deae0d2a4f4f827b4d11b270',
       'condition': 'checkout_chrome_release_scripts',
   },
 
@@ -1474,7 +1474,7 @@ deps = {
     'packages': [
       {
         'package': 'chromium/chrome/test/data/variations/cipd',
-        'version': 'TXBEcWZdBBESafpW2H42XoR0Dokqj92bJeq5MuCOFYgC',
+        'version': 'rQBNcQhRXi9Ba3I-Narg1g9K-8awqxA8cqKIQ0LOEtAC',
       },
     ],
     'dep_type': 'cipd',
@@ -2893,7 +2893,7 @@ deps = {
     Var('chromium_git') + '/webpagereplay.git' + '@' + Var('webpagereplay_revision'),
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + '7420f62a24067a6300deac25965754de138450b3',
+    Var('webrtc_git') + '/src.git' + '@' + '970b9bc28eaadd707e9b89eb9a798035e4b6b1d1',
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.
@@ -3012,7 +3012,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/boca_app/app',
-        'version': 'hjA1asbcPji1o2suC_0cPTcTmM_UYa8i57eMzccXxmYC',
+        'version': 'ycQVE8XS2EnP4ibqJllccZSrPhvgU9n_oQREJfU1S7wC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -4682,7 +4682,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        '5faa043c83e7a0a4e75c8ed21abcc84623e73ddd',
+        '592463ac6bfea1a8fcc2f944a293146d27bd4f90',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

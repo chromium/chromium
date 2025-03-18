@@ -23,6 +23,7 @@ mojom_component("base") {
     "generic_pending_associated_receiver.mojom",
     "generic_pending_receiver.mojom",
     "int128.mojom",
+    "jserror.mojom",
     "memory_allocator_dump_cross_process_uid.mojom",
     "memory_pressure_level.mojom",
     "message_pump_type.mojom",
@@ -656,6 +657,16 @@ mojom_component("base") {
           converter = "JsTimeConverter"
           mojom = "mojo_base.mojom.JSTime"
           ts = "Date"
+        },
+      ]
+    },
+    {
+      source = "jserror_converter.ts"
+      types = [
+        {
+          converter = "JsErrorConverter"
+          mojom = "mojo_base.mojom.JsError"
+          ts = "Object"
         },
       ]
     },

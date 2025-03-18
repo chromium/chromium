@@ -988,6 +988,15 @@
   <message name="IDS_WEBSITE_SETTINGS_PROTECTED_CONTENT_PAGE_DESCRIPTION" desc="Description of the protected content content setting.">
     To play content protected by copyright, sites may need to use a content protection service. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_PROTECTED_CONTENT_ALLOW" desc="Primary text explaining that sites are allowed to play protected content.">
+    Sites can play protected content
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_PROTECTED_CONTENT_ASK" desc="Primary text explaining that sites need to ask for permission before playing protected content.">
+    Sites can ask to play protected content
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_PROTECTED_CONTENT_BLOCK" desc="Primary text explaining that sites are blocked from playing protected content.">
+    Don't allow sites to play protected content
+  </message>
 
   <!-- Sound -->
 

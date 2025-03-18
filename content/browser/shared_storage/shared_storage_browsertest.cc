@@ -3898,6 +3898,57 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, KeysAndEntriesOperation) {
         SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)}});
 }
 
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, ValuesOperation) {
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+      sharedStorage.set('key0', 'value0');
+      sharedStorage.set('key1', 'value1');
+      sharedStorage.set('key2', 'value2');
+    )"));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(shell(), R"(
+      for await (const value of sharedStorage.values()) {
+        console.log(value);
+      }
+    )",
+                         &out_script_url);
+
+  EXPECT_EQ(3u, console_observer.messages().size());
+  EXPECT_EQ("value0",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("value1",
+            base::UTF16ToUTF8(console_observer.messages()[1].message));
+  EXPECT_EQ("value2",
+            base::UTF16ToUTF8(console_observer.messages()[2].message));
+
+  WaitForHistograms({kTimingRunExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingRunExecutedInWorkletHistogram, 1);
+
+  std::string origin_str = url::Origin::Create(url).Serialize();
+  ExpectAccessObserved(
+      {{AccessScope::kWindow, AccessMethod::kSet, MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForSet("key0", "value0", false)},
+       {AccessScope::kWindow, AccessMethod::kSet, MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForSet("key1", "value1", false)},
+       {AccessScope::kWindow, AccessMethod::kSet, MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForSet("key2", "value2", false)},
+       {AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+        origin_str,
+        SharedStorageEventParams::CreateForAddModule(out_script_url,
+                                                     /*worklet_id=*/0)},
+       {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForRun(
+            "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)},
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kValues,
+        MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)}});
+}
+
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                        KeysAndEntriesOperation_MultipleBatches) {
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);

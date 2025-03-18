@@ -7473,12 +7473,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-    {"cct-before-unload", flag_descriptions::kCCTBeforeUnloadName,
-     flag_descriptions::kCCTBeforeUnloadDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kCCTBeforeUnload)},
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
     {"cct-ephemeral-mode", flag_descriptions::kCCTEphemeralModeName,
      flag_descriptions::kCCTEphemeralModeDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kCCTEphemeralMode)},
@@ -11389,6 +11383,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"glic-detached", flag_descriptions::kGlicDetachedName,
      flag_descriptions::kGlicDetachedDescription, kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(features::kGlicDetached)},
+    {"glic-user-resize", flag_descriptions::kGlicUserResizeName,
+     flag_descriptions::kGlicUserResizeDescription, kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(features::kGlicUserResize)},
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(IS_ANDROID)

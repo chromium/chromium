@@ -597,6 +597,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "ContentSettingsService",
     "CookieSettings",
     "CookiesAPI",
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+    "CorruptedExtensionReinstaller",
+#endif
     "CWSInfoService",
     "DataTypeStoreService",
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)

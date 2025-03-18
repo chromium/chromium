@@ -7,6 +7,7 @@
 #include <jni.h>
 
 #include <memory>
+#include <variant>
 
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
@@ -68,7 +69,7 @@ ThirdPartyCredentialManagerBridge::~ThirdPartyCredentialManagerBridge() =
     default;
 
 void ThirdPartyCredentialManagerBridge::Create(
-    absl::variant<GetCallback, StoreCallback> callback) {
+    std::variant<GetCallback, StoreCallback> callback) {
   callback_ = std::move(callback);
   jni_delegate_->CreateBridge(this);
 }
@@ -92,20 +93,20 @@ void ThirdPartyCredentialManagerBridge::OnPasswordCredentialReceived(
       /*federation=*/
       url::SchemeHostPort(
           GURL(base::android::ConvertJavaStringToUTF16(j_origin))));
-  CHECK(absl::holds_alternative<GetCallback>(callback_));
+  CHECK(std::holds_alternative<GetCallback>(callback_));
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(absl::get<0>(callback_)),
+      base::BindOnce(std::move(std::get<0>(callback_)),
                      password_manager::CredentialManagerError::SUCCESS,
                      std::optional(info)));
 }
 
 void ThirdPartyCredentialManagerBridge::OnGetPasswordCredentialError(
     JNIEnv* env) {
-  CHECK(absl::holds_alternative<GetCallback>(callback_));
+  CHECK(std::holds_alternative<GetCallback>(callback_));
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(absl::get<0>(callback_)),
+      base::BindOnce(std::move(std::get<0>(callback_)),
                      password_manager::CredentialManagerError::UNKNOWN,
                      std::nullopt));
 }
@@ -119,9 +120,9 @@ void ThirdPartyCredentialManagerBridge::Store(const std::string& username,
 void ThirdPartyCredentialManagerBridge::OnCreateCredentialResponse(
     JNIEnv* env,
     jboolean success) {
-  CHECK(absl::holds_alternative<StoreCallback>(callback_));
+  CHECK(std::holds_alternative<StoreCallback>(callback_));
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(absl::get<1>(callback_))));
+      FROM_HERE, base::BindOnce(std::move(std::get<1>(callback_))));
 }
 
 }  // namespace credential_management

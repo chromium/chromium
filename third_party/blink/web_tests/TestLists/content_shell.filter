@@ -342,6 +342,7 @@ external/wpt/css/css-scroll-snap/snap-events/scrollsnapchanging/scrollsnapchangi
 external/wpt/css/css-scroll-snap/snap-after-relayout/changing-scroll-snap-align-nested.tentative.html
 external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/common-to-both-axes-supercedes-first-in-tree-order.html
 external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/prefer-common-to-both-axes.html
+external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/prefer-first-in-tree-order.html
 external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/prefer-focused-nested-containers.html
 external/wpt/css/css-scroll-snap/snap-fling-in-large-area.html
 external/wpt/css/css-shadow-parts/interaction-with-nested-pseudo-class.html

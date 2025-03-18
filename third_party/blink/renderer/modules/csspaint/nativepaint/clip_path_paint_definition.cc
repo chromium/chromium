@@ -65,42 +65,22 @@ class ClipPathPaintWorkletInput : public PaintWorkletInput {
       const gfx::PointF& reference_origin,
       int worklet_id,
       float zoom,
-      const Vector<std::optional<scoped_refptr<BasicShape>>>& animated_shapes,
-      const Vector<double>& offsets,
+      Vector<SkPath> paths,
+      Vector<bool> shape_compatibilities,
+      Vector<double> offsets,
       Vector<std::unique_ptr<gfx::TimingFunction>> timing_functions,
       const std::optional<double>& progress,
       const SkPath static_shape,
       cc::PaintWorkletInput::PropertyKeys property_keys)
       : PaintWorkletInput(clip_area_size, worklet_id, std::move(property_keys)),
-        offsets_(offsets),
+        paths_(std::move(paths)),
+        shape_compatibilities_(std::move(shape_compatibilities)),
+        offsets_(std::move(offsets)),
         timing_functions_(std::move(timing_functions)),
         progress_(progress),
         static_shape_(static_shape),
         dx_(reference_origin.x()),
-        dy_(reference_origin.y()) {
-    std::optional<BasicShape::ShapeType> prev_type = std::nullopt;
-    for (const auto& basic_shape : animated_shapes) {
-      // no compatibility for the first shape
-      if (paths_.size() > 0) {
-        shape_compatibilities_.push_back(
-            (prev_type.has_value() && basic_shape.has_value())
-                ? (basic_shape->get()->GetType() == *prev_type)
-                : false);
-      }
-
-      // if no basic shape is provided, it means there is no clip for this
-      // keyframe.
-      if (basic_shape.has_value()) {
-        Path path;
-        basic_shape->get()->GetPath(path, reference_box, zoom);
-        paths_.push_back(path.GetSkPath());
-        prev_type = basic_shape->get()->GetType();
-      } else {
-        paths_.push_back(InfiniteClipPath());
-        prev_type = std::nullopt;
-      }
-    }
-  }
+        dy_(reference_origin.y()) {}
 
   ~ClipPathPaintWorkletInput() override = default;
 
@@ -182,7 +162,7 @@ class ClipPathPaintWorkletInput : public PaintWorkletInput {
   SkScalar dx_, dy_;
 };
 
-scoped_refptr<BasicShape> CreateBasicShape(
+BasicShape* CreateBasicShape(
     BasicShape::ShapeType type,
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue& untyped_non_interpolable_value) {
@@ -228,11 +208,10 @@ bool IsClipPathNone(const CSSValue* computed_value) {
 }
 
 // Returns the basic shape of a keyframe, or null if the keyframe has no path
-std::optional<scoped_refptr<BasicShape>> GetAnimatedShapeFromKeyframe(
-    const PropertySpecificKeyframe* frame,
-    const KeyframeEffectModelBase* model,
-    const Element* element) {
-  scoped_refptr<BasicShape> basic_shape;
+BasicShape* GetAnimatedShapeFromKeyframe(const PropertySpecificKeyframe* frame,
+                                         const KeyframeEffectModelBase* model,
+                                         const Element* element) {
+  BasicShape* basic_shape;
   if (model->IsStringKeyframeEffectModel()) {
     DCHECK(frame->IsCSSPropertySpecificKeyframe());
     const CSSValue* value =
@@ -250,7 +229,7 @@ std::optional<scoped_refptr<BasicShape>> GetAnimatedShapeFromKeyframe(
           state, DynamicTo<CSSValueList>(computed_value)->First());
     } else {
       DCHECK(IsClipPathNone(computed_value));
-      return std::nullopt;
+      return nullptr;
     }
   } else {
     DCHECK(frame->IsTransitionPropertySpecificKeyframe());
@@ -440,9 +419,17 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
   DCHECK(node.IsElementNode());
   const Element* element = To<Element>(&node);
 
-  Vector<std::optional<scoped_refptr<BasicShape>>> animated_shapes;
+  Vector<SkPath> paths;
+  Vector<bool> shape_compatibilities;
+
   Vector<double> offsets;
   std::optional<double> progress;
+
+  // The passed reference box is adjusted to be relative to a large enclosing
+  // rect. To prevent floating point errors, we defer the translation to the
+  // painting stage and allow path generation to proceed with the unadjusted
+  // rect.
+  gfx::RectF reference_size = gfx::RectF(reference_box.size());
 
   Animation* animation = GetAnimationIfCompositable(element);
   // If we are here the animation must be compositable.
@@ -460,9 +447,28 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
 
   Vector<std::unique_ptr<gfx::TimingFunction>> timing_functions;
 
+  std::optional<BasicShape::ShapeType> prev_type = std::nullopt;
   for (const auto& frame : *frames) {
-    animated_shapes.push_back(
-        GetAnimatedShapeFromKeyframe(frame, model, element));
+    BasicShape* basic_shape =
+        GetAnimatedShapeFromKeyframe(frame, model, element);
+
+    // No compatibility for the first shape.
+    if (!paths.empty()) {
+      shape_compatibilities.push_back(
+          prev_type && basic_shape ? (basic_shape->GetType() == *prev_type)
+                                   : false);
+    }
+
+    if (basic_shape) {
+      Path path;
+      basic_shape->GetPath(path, reference_size, zoom);
+      paths.push_back(path.GetSkPath());
+      prev_type = basic_shape->GetType();
+    } else {
+      paths.push_back(InfiniteClipPath());
+      prev_type = std::nullopt;
+    }
+
     offsets.push_back(frame->Offset());
 
     const TimingFunction& timing_function = frame->Easing();
@@ -474,12 +480,6 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
     }
   }
   progress = effect->Progress();
-
-  // The passed reference box is adjusted to be relative to a large enclosing
-  // rect. To prevent floating point errors, we defer the translation to the
-  // painting stage and allow path generation to proceed with the unadjusted
-  // rect.
-  gfx::RectF reference_size = gfx::RectF(reference_box.size());
   SkPath static_path;
 
   switch (effect->SpecifiedTiming().fill_mode) {
@@ -503,9 +503,7 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
     }
     case Timing::FillMode::BOTH:
     case Timing::FillMode::BACKWARDS: {
-      Path path;
-      animated_shapes[0]->get()->GetPath(path, reference_size, zoom);
-      static_path = path.GetSkPath();
+      static_path = paths[0];
     }
   }
 
@@ -520,7 +518,8 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
   scoped_refptr<ClipPathPaintWorkletInput> input =
       base::MakeRefCounted<ClipPathPaintWorkletInput>(
           reference_size, clip_area_size, reference_box.origin(), worklet_id,
-          zoom, animated_shapes, offsets, std::move(timing_functions), progress,
+          zoom, std::move(paths), std::move(shape_compatibilities),
+          std::move(offsets), std::move(timing_functions), progress,
           static_path, std::move(input_property_keys));
 
   return PaintWorkletDeferredImage::Create(std::move(input), clip_area_size);

@@ -34,6 +34,7 @@ public class BinaryStatePermissionPreference extends Preference
     private int @Nullable [] mDescriptionIds;
     private @ContentSettingValues int mDefaultEnabledValue;
     private @ContentSettingValues int mDefaultDisabledValue;
+    private int mIconMarginEnd;
 
     public BinaryStatePermissionPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -51,11 +52,13 @@ public class BinaryStatePermissionPreference extends Preference
             @ContentSettingValues int setting,
             int[] descriptionIds,
             @ContentSettingValues int defaultEnabledValue,
-            @ContentSettingValues int defaultDisabledValue) {
+            @ContentSettingValues int defaultDisabledValue,
+            int iconMarginEnd) {
         mSetting = setting;
         mDescriptionIds = descriptionIds;
         mDefaultEnabledValue = defaultEnabledValue;
         mDefaultDisabledValue = defaultDisabledValue;
+        mIconMarginEnd = iconMarginEnd;
     }
 
     public @ContentSettingValues int getCheckedSetting() {
@@ -77,6 +80,8 @@ public class BinaryStatePermissionPreference extends Preference
         if (mDescriptionIds != null) {
             mPositive.setPrimaryText(getContext().getText(mDescriptionIds[0]));
             mNegative.setPrimaryText(getContext().getText(mDescriptionIds[1]));
+            mPositive.setIconMarginEnd(mIconMarginEnd);
+            mNegative.setIconMarginEnd(mIconMarginEnd);
             if (mDescriptionIds[2] != 0 && mDescriptionIds[3] != 0) {
                 mPositive.setIcon(mDescriptionIds[2]);
                 mNegative.setIcon(mDescriptionIds[3]);
@@ -85,6 +90,11 @@ public class BinaryStatePermissionPreference extends Preference
 
         RadioButtonWithDescription selectedRadioButton = findRadioButton(mSetting);
         if (selectedRadioButton != null) selectedRadioButton.setChecked(true);
+    }
+
+    public void setIconMarginEnd(int marginEnd) {
+        assumeNonNull(mPositive).setIconMarginEnd(marginEnd);
+        assumeNonNull(mNegative).setIconMarginEnd(marginEnd);
     }
 
     @Override

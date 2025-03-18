@@ -60,7 +60,6 @@ class BrowserAccessibilityStateImplMac : public BrowserAccessibilityStateImpl {
 
  protected:
   void InitBackgroundTasks() override;
-  void UpdateUniqueUserHistograms() override;
   void SetScreenReaderAppActive(bool is_active) override;
 };
 
@@ -85,18 +84,6 @@ void BrowserAccessibilityStateImplMac::SetScreenReaderAppActive(
 
   OnAssistiveTechFound(is_active ? ui::AssistiveTech::kVoiceOver
                                  : ui::AssistiveTech::kNone);
-}
-
-void BrowserAccessibilityStateImplMac::UpdateUniqueUserHistograms() {
-  BrowserAccessibilityStateImpl::UpdateUniqueUserHistograms();
-
-  // Old screen reader metric: does not indicate the use of a screen reader,
-  // just kExtendedProperties mode, which is used by many clients.
-  // Instead of this, use the specific VoiceOver metric.
-  // TODO(accessibility) Remove this, which is redundant with
-  // PerformanceManager.Experimental.HasAccessibilityModeFlag.
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.Mac.VoiceOver.EveryReport",
-                        ActiveAssistiveTech() == ui::AssistiveTech::kVoiceOver);
 }
 
 // static

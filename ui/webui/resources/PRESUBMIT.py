@@ -104,8 +104,18 @@ def CheckNoDisallowedJS(input_api, output_api):
 
 
 def CheckNoNewPolymer(input_api, output_api):
+  IGNORE_FILES = [
+    # This file is needed for testing Polymer specific ESLint rules in
+    # ui/webui/resources/tools/webui_eslint_plugin.js.
+    'ui/webui/resources/tools/tests/eslint_ts/with_webui_plugin_polymer_violations.ts',
+  ]
+
+  def ignore_filter(affected_file):
+    return affected_file.LocalPath().replace("\\", "/") not in IGNORE_FILES
+
   from web_dev_style import presubmit_support
-  return presubmit_support.DisallowNewPolymerElements(input_api, output_api)
+  return presubmit_support.DisallowNewPolymerElements(
+      input_api, output_api, file_filter=ignore_filter)
 
 
 def CheckPatchFormatted(input_api, output_api):

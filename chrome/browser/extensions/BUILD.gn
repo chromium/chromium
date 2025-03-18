@@ -581,6 +581,8 @@ source_set("extensions") {
       "context_menu_matcher.h",
       "corrupted_extension_reinstaller.cc",
       "corrupted_extension_reinstaller.h",
+      "corrupted_extension_reinstaller_factory.cc",
+      "corrupted_extension_reinstaller_factory.h",
       "crx_installer.cc",
       "crx_installer.h",
       "cws_info_service.cc",

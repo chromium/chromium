@@ -11,12 +11,12 @@ namespace blink {
 
 MasonryItemGroups MasonryNode::CollectItemGroups(
     const GridLineResolver& line_resolver,
-    wtf_size_t* start_offset) const {
-  DCHECK(start_offset);
-
-  *start_offset = 0;
-  MasonryItemGroups item_groups;
+    wtf_size_t& max_end_line,
+    wtf_size_t& start_offset) const {
   const auto grid_axis_direction = Style().MasonryTrackSizingDirection();
+
+  start_offset = 0;
+  MasonryItemGroupMap item_group_map;
 
   for (auto child = FirstChild(); child; child = child.NextSibling()) {
     if (child.IsOutOfFlowPositioned()) {
@@ -28,19 +28,38 @@ MasonryItemGroups MasonryNode::CollectItemGroups(
             child.Style(), grid_axis_direction));
 
     const auto& item_span = item_properties.Span();
-    if (!item_span.IsIndefinite()) {
-      DCHECK(item_span.IsUntranslatedDefinite());
-      *start_offset =
-          std::max<int>(*start_offset, -item_span.UntranslatedStartLine());
+    if (item_span.IsUntranslatedDefinite()) {
+      start_offset =
+          std::max<int>(start_offset, -item_span.UntranslatedStartLine());
     }
 
-    const auto group_it = item_groups.find(item_properties);
-    if (group_it == item_groups.end()) {
-      item_groups.insert(item_properties,
-                         HeapVector<BlockNode, 16>({To<BlockNode>(child)}));
+    const auto group_it = item_group_map.find(item_properties);
+    if (group_it == item_group_map.end()) {
+      item_group_map.insert(item_properties,
+                            HeapVector<BlockNode, 16>({To<BlockNode>(child)}));
     } else {
       group_it->value.emplace_back(To<BlockNode>(child));
     }
+  }
+
+  MasonryItemGroups item_groups;
+  item_groups.ReserveInitialCapacity(item_group_map.size());
+  max_end_line =
+      start_offset + line_resolver.ExplicitGridTrackCount(grid_axis_direction);
+
+  for (auto& [group_properties, group_items] : item_group_map) {
+    auto item_span = group_properties.Span();
+
+    if (item_span.IsIndefinite()) {
+      max_end_line = std::max(max_end_line, item_span.IndefiniteSpanSize());
+    } else {
+      DCHECK(item_span.IsUntranslatedDefinite());
+      item_span.Translate(start_offset);
+      max_end_line = std::max(max_end_line, item_span.EndLine());
+    }
+
+    item_groups.emplace_back(MasonryItemGroup{
+        std::move(group_items), MasonryItemGroupProperties(item_span)});
   }
   return item_groups;
 }
@@ -48,26 +67,28 @@ MasonryItemGroups MasonryNode::CollectItemGroups(
 GridItems MasonryNode::ConstructMasonryItems(
     const GridLineResolver& line_resolver,
     wtf_size_t start_offset) const {
-  GridItems masonry_items;
+  const auto& style = Style();
+  const auto grid_axis_direction = style.MasonryTrackSizingDirection();
 
+  GridItems masonry_items;
   {
     bool should_sort_masonry_items_by_order_property = false;
     const int initial_order = ComputedStyleInitialValues::InitialOrder();
-    const auto grid_axis_direction = Style().MasonryTrackSizingDirection();
 
     // This collects all our children, and orders them by their order property.
     for (auto child = FirstChild(); child; child = child.NextSibling()) {
+      const auto& child_style = child.Style();
       auto* masonry_item = MakeGarbageCollected<GridItemData>(
-          To<BlockNode>(child), /*parent_style=*/Style());
+          To<BlockNode>(child), /*parent_style=*/style);
 
       // We'll need to sort when we encounter a non-initial order property.
       should_sort_masonry_items_by_order_property |=
-          child.Style().Order() != initial_order;
+          child_style.Order() != initial_order;
 
       // Resolve the positions of the items based on style. We can only resolve
       // the number of spans for each item based on the grid axis.
       auto item_span = line_resolver.ResolveGridPositionsFromStyle(
-          masonry_item->node.Style(), grid_axis_direction);
+          child_style, grid_axis_direction);
 
       if (item_span.IsUntranslatedDefinite()) {
         item_span.Translate(start_offset);

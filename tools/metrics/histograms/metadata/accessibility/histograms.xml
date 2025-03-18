@@ -40,16 +40,6 @@ chromium-metrics-reviews@google.com.
   <variant name="VirtualKeyboard"/>
 </variants>
 
-<variants name="ReportDelay">
-  <variant name=""
-      summary="This is logged once 45 seconds after startup. Note: Prefer the
-               .EveryReport variant when querying for unique users, as it is
-               logged more frequently."/>
-  <variant name=".EveryReport"
-      summary="This variant is sent with every metrics report, and preferred
-               for computing uniques."/>
-</variants>
-
 <variants name="SodaLanguageCode">
   <variant name="de-DE" summary="German language code"/>
   <variant name="en-US" summary="English language code"/>
@@ -1140,6 +1130,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.CrosSpokenFeedback" enum="BooleanEnabled"
+    expires_after="never">
+<!-- expires-never: usage drives a11y prioritization in browser and content. -->
+
+  <owner>aleventhal@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>Tracks whether the Chrome OS Spoken Feedback feature is on.</summary>
+</histogram>
+
 <histogram
     name="Accessibility.CrosSpokenFeedback.BrailleDisplayConnected.ConnectionChanged"
     enum="BooleanConnected" expires_after="2025-08-10">
@@ -1164,20 +1163,6 @@ chromium-metrics-reviews@google.com.
     and may stop when the user ends their session by turning off the machine, or
     when they disconnect or turn off the Braille display.
   </summary>
-</histogram>
-
-<histogram name="Accessibility.CrosSpokenFeedback{ReportDelay}"
-    enum="BooleanEnabled" expires_after="never">
-<!-- expires-never: usage drives a11y prioritization in browser and content. -->
-
-  <owner>aleventhal@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Tracks whether the Chrome OS Spoken Feedback feature is on.
-
-    {ReportDelay}
-  </summary>
-  <token key="ReportDelay" variants="ReportDelay"/>
 </histogram>
 
 <histogram name="Accessibility.CrosStatusArea.{FeatureName}"
@@ -3390,20 +3375,15 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="Accessibility.WinAPIs.UIAutomation{ReportDelay}"
-    enum="BooleanEnabled" expires_after="2025-09-14">
+<histogram name="Accessibility.WinAPIs.UIAutomation" enum="BooleanEnabled"
+    expires_after="2025-07-06">
   <owner>aleventhal@chromium.org</owner>
   <owner>almaher@microsoft.com</owner>
   <owner>benjamin.beaudry@microsoft.com</owner>
   <owner>janewman@microsoft.com</owner>
   <owner>javiercon@microsoft.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Tracks presence of UI Automation core library (in process).
-
-    {ReportDelay}
-  </summary>
-  <token key="ReportDelay" variants="ReportDelay"/>
+  <summary>Tracks presence of UI Automation core library (in process).</summary>
 </histogram>
 
 <histogram name="Accessibility.WinHighContrastTheme"
@@ -3429,7 +3409,7 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="Accessibility.WinZoomText{ReportDelay}" enum="BooleanEnabled"
+<histogram name="Accessibility.WinZoomText" enum="BooleanEnabled"
     expires_after="never">
 <!-- expires-never: usage drives a11y prioritization in browser and content. -->
 
@@ -3438,23 +3418,18 @@ even if they fit the naming pattern. -->
   <summary>
     Tracks whether the third-party ZoomText screen magnifier is running on
     Windows.
-
-    {ReportDelay}
   </summary>
-  <token key="ReportDelay" variants="ReportDelay"/>
 </histogram>
 
-<histogram name="Accessibility.{ScreenReader}{ReportDelay}"
-    enum="BooleanEnabled" expires_after="never">
+<histogram name="Accessibility.{ScreenReader}" enum="BooleanEnabled"
+    expires_after="never">
 <!-- expires-never: usage drives a11y prioritization in browser and content. -->
 
   <owner>aleventhal@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
-    Tracks whether a screen reader is enabled on {ScreenReader}.
-
-    {ReportDelay}
+    - Tracks whether a screen reader is enabled -- {ScreenReader}.
   </summary>
   <token key="ScreenReader">
     <variant name="Android.TalkBack" summary="Android, specifically TalkBack."/>
@@ -3468,7 +3443,39 @@ even if they fit the naming pattern. -->
     <variant name="WinSupernova" summary="Windows, specifically Supernova."/>
     <variant name="WinZDSR" summary="Windows, specifically ZDSR (Zhengdu)"/>
   </token>
-  <token key="ReportDelay" variants="ReportDelay"/>
+</histogram>
+
+<histogram
+    name="DomDistiller.Android.OnDistillableResult.AccessibilitySettingEnabled"
+    enum="Boolean" expires_after="2025-08-24">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <summary>
+    Records whether the reader mode accessibility setting is enabled. Recorded
+    when ReaderModeManager gets a distillation result.
+  </summary>
+</histogram>
+
+<histogram
+    name="DomDistiller.Android.OnDistillableResult.DistillableMobilePageExcluded"
+    enum="Boolean" expires_after="2025-08-24">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <summary>
+    Records whether current page was excluded because it was found to be mobile
+    friendly. Recorded when ReaderModeManager gets a distillation result.
+  </summary>
+</histogram>
+
+<histogram name="DomDistiller.Android.OnDistillableResult.PageDistillable"
+    enum="Boolean" expires_after="2025-08-24">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <summary>
+    Records whether current page is considered distillable. This is different
+    from the triggering model result because it also includes android business
+    logic. Recorded when ReaderModeManager gets a distillation result.
+  </summary>
 </histogram>
 
 <histogram name="DomDistiller.Android.ReaderModeEnabledInAccessibilitySettings"
@@ -3503,6 +3510,8 @@ even if they fit the naming pattern. -->
 <histogram name="DomDistiller.ReaderShownForPageLoad" enum="Boolean"
     expires_after="2025-08-10">
   <owner>mdjones@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
   <summary>
     Records if the panel became visible at any point after a page was navigated.
   </summary>
@@ -3511,6 +3520,8 @@ even if they fit the naming pattern. -->
 <histogram name="DomDistiller.Time.ViewingReaderModePage" units="ms"
     expires_after="2025-08-24">
   <owner>mdjones@chromium.org</owner>
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
   <summary>
     Records the amount of time a user spent on a Reader Mode Page.
   </summary>

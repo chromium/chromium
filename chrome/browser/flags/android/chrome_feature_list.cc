@@ -218,7 +218,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTAuthTab,
     &kCCTAuthTabDisableAllExternalIntents,
     &kCCTAuthTabEnableHttpsRedirects,
-    &kCCTBeforeUnload,
     &kCCTBlockTouchesDuringEnterAnimation,
     &kCCTClientDataHeader,
     &kCCTEarlyNav,
@@ -642,10 +641,6 @@ BASE_FEATURE(kCCTAuthTabDisableAllExternalIntents,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kCCTAuthTabEnableHttpsRedirects,
              "CCTAuthTabEnableHttpsRedirects",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCCTBeforeUnload,
-             "CCTBeforeUnload",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTBlockTouchesDuringEnterAnimation,

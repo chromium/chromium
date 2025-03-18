@@ -163,8 +163,8 @@ export namespace mojo {
         getConnectionErrorEventRouter(): ConnectionErrorEventRouter;
         sendMessage(
             ordinal: number, paramStruct: mojo.internal.MojomType,
-            maybeResponseStruct: mojo.internal.MojomType|null,
-            args: any[]): Promise<any>;
+            maybeResponseStruct: mojo.internal.MojomType|null, args: any[],
+            useResultResponse: boolean): Promise<any>;
       }
 
       class InterfaceRemoteBaseWrapper<T> {
@@ -193,8 +193,8 @@ export namespace mojo {
         constructor(remoteType: RemoteType<T>);
         registerHandler(
             ordinal: number, paramStruct: mojo.internal.MojomType,
-            responseStruct: mojo.internal.MojomType|null,
-            handler: Function): void;
+            responseStruct: mojo.internal.MojomType|null, handler: Function,
+            useResultResponse: boolean): void;
         getConnectionErrorEventRouter(): ConnectionErrorEventRouter;
       }
 
@@ -204,7 +204,7 @@ export namespace mojo {
         bindNewPipeAndPassRemote(): T;
         associateAndPassRemote(): T;
         close(): void;
-        flushForTesting(): Promise<void>;
+        flush(): Promise<void>;
       }
     }
 

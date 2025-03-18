@@ -183,14 +183,14 @@ TEST_F(NativeViewHostTest, ViewHierarchyChangedForHost) {
   // Add test_host back to host0, expect 1 parent change.
   test_host->ResetParentChanges();
   EXPECT_EQ(0, test_host->num_parent_changes());
-  host0->AddChildView(test_host);
+  host0->AddChildViewRaw(test_host);
   EXPECT_EQ(1, test_host->num_parent_changes());
 
   // Reparent test_host to host1, expect no parent change because the old and
   // new parents, host0 and host1, belong to the same toplevel widget.
   test_host->ResetParentChanges();
   EXPECT_EQ(0, test_host->num_parent_changes());
-  host1->AddChildView(test_host);
+  host1->AddChildViewRaw(test_host);
   EXPECT_EQ(0, test_host->num_parent_changes());
 
   // Reparent test_host to contents view of child0, expect 2 parent changes
@@ -198,7 +198,7 @@ TEST_F(NativeViewHostTest, ViewHierarchyChangedForHost) {
   // parent belongs to the child0.
   test_host->ResetParentChanges();
   EXPECT_EQ(0, test_host->num_parent_changes());
-  child0->GetContentsView()->AddChildView(test_host);
+  child0->GetContentsView()->AddChildViewRaw(test_host);
   EXPECT_EQ(2, test_host->num_parent_changes());
 }
 
