@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/browser/context_factory.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -295,16 +296,16 @@ GlicBorderView::GlicBorderView(Browser* browser)
   has_hardware_acceleration_ =
       gpu_data_manager->IsGpuRasterizationForUIEnabled();
 
-  // Upon GPU crashing, the hardware acceleration status might change. This will
-  // observe GPU changes to keep hardware acceleration status updated.
+  // Upon GPU crashing, the hardware acceleration status might change. This
+  // will observe GPU changes to keep hardware acceleration status updated.
   gpu_data_manager_observer_.Observe(gpu_data_manager);
 
   shader_ =
-      has_hardware_acceleration_
+      ForceSimplifiedShader()
           ? ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-                IDR_GLIC_BORDER_SHADER)
+                IDR_GLIC_SIMPLIFIED_BORDER_SHADER)
           : ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-                IDR_GLIC_SIMPLIFIED_BORDER_SHADER);
+                IDR_GLIC_BORDER_SHADER);
   CHECK(!shader_.empty()) << "Shader not initialized.";
 
   auto* glic_service =
@@ -474,11 +475,11 @@ void GlicBorderView::OnGpuInfoUpdate() {
   if (has_hardware_acceleration_ != has_hardware_acceleration) {
     has_hardware_acceleration_ = has_hardware_acceleration;
     shader_ =
-        has_hardware_acceleration_
+        ForceSimplifiedShader()
             ? ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-                  IDR_GLIC_BORDER_SHADER)
+                  IDR_GLIC_SIMPLIFIED_BORDER_SHADER)
             : ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-                  IDR_GLIC_SIMPLIFIED_BORDER_SHADER);
+                  IDR_GLIC_BORDER_SHADER);
 
     if (IsShowing()) {
       SchedulePaint();
@@ -513,7 +514,7 @@ void GlicBorderView::Show() {
   SetVisible(true);
 
   skip_emphasis_animation_ =
-      gfx::Animation::PrefersReducedMotion() || !has_hardware_acceleration_;
+      gfx::Animation::PrefersReducedMotion() || ForceSimplifiedShader();
 
   ui::Compositor* compositor = layer()->GetCompositor();
   if (!compositor) {
@@ -665,6 +666,11 @@ base::TimeTicks GlicBorderView::GetCreationTime() const {
     return tester_->GetTestCreationTime();
   }
   return creation_time_;
+}
+
+bool GlicBorderView::ForceSimplifiedShader() const {
+  return base::FeatureList::IsEnabled(features::kGlicForceSimplifiedBorder) ||
+         !has_hardware_acceleration_;
 }
 
 BEGIN_METADATA(GlicBorderView)
