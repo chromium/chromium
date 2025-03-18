@@ -54,19 +54,6 @@ public interface TabGroupModelFilter extends TabList {
     int getTabGroupCount();
 
     /**
-     * This method returns the number of tabs in a tab group with reference to {@code rootId}.
-     *
-     * @param rootId The tab root id that is used to find the related group.
-     * @return The number of related tabs.
-     * @deprecated Use {@link #getTabCountForGroup(Token)}. This method returns 1 in the event the
-     *     group was not found or a tab is not in a group which is confusing. Any existing usages of
-     *     this method will be migrated and any reliance on this method returning 1 if the group
-     *     doesn't exist will be fixed as part of the migration.
-     */
-    @Deprecated
-    int getRelatedTabCountForRootId(@TabId int rootId);
-
-    /**
      * Returns the number of tabs in the tab group with {@code tabGroupId} or 0 if the tab group
      * does not exist.
      */
@@ -76,10 +63,10 @@ public interface TabGroupModelFilter extends TabList {
     boolean tabGroupExists(@Nullable Token tabGroupId);
 
     /**
-     * Given a tab group's stable ID, finds out the root ID, or {@link Tab.INVALID_TAB_ID} if the
+     * Given a tab group's tab group ID, finds out the root ID, or {@link Tab.INVALID_TAB_ID} if the
      * tab group doesn't exist in the model.
      *
-     * @param stableId The stable ID of the tab group.
+     * @param tabGroupId The tab group ID to look for.
      * @return The root ID of the tab group or {@link Tab.INVALID_TAB_ID} if the group isn't found
      *     in the tab model.
      */
@@ -87,11 +74,11 @@ public interface TabGroupModelFilter extends TabList {
     int getRootIdFromTabGroupId(@Nullable Token tabGroupId);
 
     /**
-     * Given a tab group's root ID, finds out the stable ID, or null if the tab group doesn't exist
-     * in the model.
+     * Given a tab group's root ID, finds out the tab group ID, or null if the tab group doesn't
+     * exist in the model.
      *
      * @param rootId The root ID of the tab group.
-     * @return The stable ID of the tab group or null if the group isn't found in the tab model.
+     * @return The tab group ID of the tab group or null if the group isn't found in the tab model.
      */
     @Nullable Token getTabGroupIdFromRootId(@TabId int rootId);
 
@@ -260,8 +247,11 @@ public interface TabGroupModelFilter extends TabList {
 
     // TODO(crbug.com/399354986): Migrate these methods to use tabGroupIds instead of rootIds.
 
-    /** Returns the current title of the tab group. */
-    String getTabGroupTitle(@TabId int rootId);
+    /**
+     * Returns the current title of the tab group or null if a title is not set. Prefer {@link
+     * TabGroupTitleUtils#getDisplayableTitle} in most cases.
+     */
+    @Nullable String getTabGroupTitle(@TabId int rootId);
 
     /** Stores the given title for the tab group. */
     void setTabGroupTitle(@TabId int rootId, String title);
