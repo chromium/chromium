@@ -1379,6 +1379,9 @@ void GlicWindowController::EnableChanged() {
   // See crbug.com/398909522.
   if (!enabling_->IsReadyForProfile(profile_)) {
     CloseFinish(/*reopen_detached=*/false, std::nullopt);
+    // We shouldn't destroy contents_ if the glic view is still alive.
+    CHECK(!GetGlicView());
+    contents_.reset();
   }
 }
 
