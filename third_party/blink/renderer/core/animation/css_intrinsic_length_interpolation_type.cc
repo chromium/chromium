@@ -102,7 +102,7 @@ CSSIntrinsicLengthInterpolationType::CreateInterpolableIntrinsicDimension(
   }
 
   DCHECK(length->IsFixed());
-  return InterpolableLength::CreatePixels(length->Value());
+  return InterpolableLength::CreatePixels(length->Pixels());
 }
 
 PairwiseInterpolationValue

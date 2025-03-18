@@ -2357,7 +2357,7 @@ Length ComputedStyle::LineHeight() const {
   if (lh.IsFixed()) {
     float multiplier = TextAutosizingMultiplier();
     return Length::Fixed(TextAutosizer::ComputeAutosizedFontSize(
-        lh.Value(), multiplier, EffectiveZoom()));
+        lh.Pixels(), multiplier, EffectiveZoom()));
   }
 
   return lh;
@@ -2377,7 +2377,8 @@ float ComputedStyle::ComputedLineHeight(const Length& lh, const Font& font) {
         lh, LayoutUnit(font.GetFontDescription().ComputedSize()));
   }
 
-  return lh.Value();
+  DCHECK(lh.IsFixed());
+  return lh.Pixels();
 }
 
 float ComputedStyle::ComputedLineHeight() const {
@@ -2399,7 +2400,8 @@ LayoutUnit ComputedStyle::ComputedLineHeightAsFixed(const Font& font) const {
     return MinimumValueForLength(lh, ComputedFontSizeAsFixed(font));
   }
 
-  return LayoutUnit::FromFloatRound(lh.Value());
+  DCHECK(lh.IsFixed());
+  return LayoutUnit::FromFloatRound(lh.Pixels());
 }
 
 LayoutUnit ComputedStyle::ComputedLineHeightAsFixed() const {

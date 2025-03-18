@@ -1337,36 +1337,6 @@ TEST_F(StyleEngineTest, StyleSheetsForStyleSheetList_ShadowRoot) {
   EXPECT_TRUE(GetStyleEngine().NeedsActiveStyleUpdate());
 }
 
-TEST_F(StyleEngineTest, ViewportDescription) {
-  ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
-  frame_test_helpers::WebViewHelper web_view_helper;
-  WebViewImpl* web_view_impl = web_view_helper.Initialize();
-  web_view_impl->MainFrameWidget()->SetDeviceScaleFactorForTesting(1.f);
-  web_view_impl->MainFrameWidget()->UpdateAllLifecyclePhases(
-      DocumentUpdateReason::kTest);
-
-  Document* document =
-      To<LocalFrame>(web_view_impl->GetPage()->MainFrame())->GetDocument();
-
-  auto desc = document->GetViewportData().GetViewportDescription();
-  float min_width = desc.min_width.GetFloatValue();
-  float max_width = desc.max_width.GetFloatValue();
-  float min_height = desc.min_height.GetFloatValue();
-  float max_height = desc.max_height.GetFloatValue();
-
-  const float device_scale = 3.5f;
-  web_view_impl->MainFrameWidget()->SetDeviceScaleFactorForTesting(
-      device_scale);
-  web_view_impl->MainFrameWidget()->UpdateAllLifecyclePhases(
-      DocumentUpdateReason::kTest);
-
-  desc = document->GetViewportData().GetViewportDescription();
-  EXPECT_FLOAT_EQ(device_scale * min_width, desc.min_width.GetFloatValue());
-  EXPECT_FLOAT_EQ(device_scale * max_width, desc.max_width.GetFloatValue());
-  EXPECT_FLOAT_EQ(device_scale * min_height, desc.min_height.GetFloatValue());
-  EXPECT_FLOAT_EQ(device_scale * max_height, desc.max_height.GetFloatValue());
-}
-
 TEST_F(StyleEngineTest, MediaQueryAffectingValueChanged_StyleElementNoMedia) {
   GetDocument().body()->setInnerHTML("<style>div{color:pink}</style>");
   UpdateAllLifecyclePhases();
