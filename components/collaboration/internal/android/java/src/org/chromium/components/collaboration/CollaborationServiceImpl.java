@@ -10,6 +10,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.url.GURL;
@@ -19,6 +21,7 @@ import org.chromium.url.GURL;
  * are delegated to the native C++ class.
  */
 @JNINamespace("collaboration")
+@NullMarked
 public class CollaborationServiceImpl implements CollaborationService {
     private final ObserverList<CollaborationService.Observer> mObservers = new ObserverList<>();
     private long mNativePtr;
@@ -54,13 +57,13 @@ public class CollaborationServiceImpl implements CollaborationService {
     }
 
     @Override
-    public @MemberRole int getCurrentUserRoleForGroup(String collaborationId) {
+    public @MemberRole int getCurrentUserRoleForGroup(@Nullable String collaborationId) {
         return CollaborationServiceImplJni.get()
                 .getCurrentUserRoleForGroup(mNativePtr, collaborationId);
     }
 
     @Override
-    public GroupData getGroupData(String collaborationId) {
+    public GroupData getGroupData(@Nullable String collaborationId) {
         return CollaborationServiceImplJni.get().getGroupData(mNativePtr, collaborationId);
     }
 
@@ -110,9 +113,10 @@ public class CollaborationServiceImpl implements CollaborationService {
         ServiceStatus getServiceStatus(long nativeCollaborationServiceAndroid);
 
         int getCurrentUserRoleForGroup(
-                long nativeCollaborationServiceAndroid, String collaborationId);
+                long nativeCollaborationServiceAndroid, @Nullable String collaborationId);
 
-        GroupData getGroupData(long nativeCollaborationServiceAndroid, String collaborationId);
+        GroupData getGroupData(
+                long nativeCollaborationServiceAndroid, @Nullable String collaborationId);
 
         void leaveGroup(
                 long nativeCollaborationServiceAndroid, String groupId, Callback<Boolean> callback);
