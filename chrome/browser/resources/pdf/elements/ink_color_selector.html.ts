@@ -2,16 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
+
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {InkColorSelectorElement} from './ink_color_selector.js';
 
 export function getHtml(this: InkColorSelectorElement) {
   return html`
-    <div @keydown="${this.onColorKeydown_}">
-      ${this.getCurrentBrushColors_().map((item, index) => html`
+    <cr-grid role="radiogroup" columns="5" focus-selector=".color-chip"
+        @cr-grid-focus-changed="${this.onCrGridFocusChanged_}">
+      ${this.getCurrentBrushColors_().map(item => html`
         <label class="color-item">
-          <input type="radio" class="color-chip" data-index="${index}"
+          <input type="radio" class="color-chip"
               name="${this.getColorName_()}" .value="${item.color}"
               .style="--item-color: ${this.getVisibleColor_(item.color)}"
               aria-label="${this.i18n(item.label)}"
@@ -19,6 +22,6 @@ export function getHtml(this: InkColorSelectorElement) {
               @click="${this.onColorClick_}"
               ?checked="${this.isCurrentColor_(item.color)}">
         </label>`)}
-    </div>
+    </cr-grid>
   `;
 }

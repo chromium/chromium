@@ -13,9 +13,7 @@
   display: inline-block;
 }
 
-div {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
+cr-grid {
   justify-content: center;
 }
 
