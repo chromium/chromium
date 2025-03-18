@@ -98,11 +98,11 @@ export class HistoryEmbeddingsFilterChips extends
     };
   }
 
-  enableShowResultsByGroupOption: boolean = false;
-  selectedSuggestion?: Suggestion;
-  showResultsByGroup: boolean = false;
-  protected suggestions_: Suggestion[] = generateSuggestions();
-  timeRangeStart?: Date;
+  accessor enableShowResultsByGroupOption: boolean = false;
+  accessor selectedSuggestion: Suggestion|undefined;
+  accessor showResultsByGroup: boolean = false;
+  protected accessor suggestions_: Suggestion[] = generateSuggestions();
+  accessor timeRangeStart: Date|undefined;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

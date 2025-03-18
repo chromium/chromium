@@ -33,6 +33,7 @@ build_webui("build") {
 
   ts_out_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_components/most_visited"
   ts_composite = true
+  ts_tsconfig_base = "//tools/typescript/tsconfig_base_lit_389737066.json"
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
