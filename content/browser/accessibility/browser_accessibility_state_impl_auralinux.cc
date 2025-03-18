@@ -90,7 +90,6 @@ class BrowserAccessibilityStateImplAuralinux
 
  protected:
   void RefreshAssistiveTech() override;
-  void UpdateUniqueUserHistograms() override;
 
  private:
   void OnDiscoveredOrca(bool is_orca_active);
@@ -99,13 +98,6 @@ class BrowserAccessibilityStateImplAuralinux
   // Will be updated via DiscoverOrca().
   bool awaiting_known_assistive_tech_computation_ = false;
 };
-
-void BrowserAccessibilityStateImplAuralinux::UpdateUniqueUserHistograms() {
-  BrowserAccessibilityStateImpl::UpdateUniqueUserHistograms();
-
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.Linux.Orca.EveryReport",
-                        ActiveAssistiveTech() == ui::AssistiveTech::kOrca);
-}
 
 void BrowserAccessibilityStateImplAuralinux::RefreshAssistiveTech() {
   if (!awaiting_known_assistive_tech_computation_) {

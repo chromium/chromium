@@ -234,7 +234,6 @@ class BrowserAccessibilityStateImplWin : public BrowserAccessibilityStateImpl {
  protected:
   void RefreshAssistiveTech() override;
   void InitBackgroundTasks() override;
-  void UpdateUniqueUserHistograms() override;
   ui::AXPlatform::ProductStrings GetProductStrings() override;
   void OnUiaProviderRequested(bool uia_provider_enabled) override;
 
@@ -363,24 +362,6 @@ void BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech(
   }
 
   OnAssistiveTechFound(most_important_assistive_tech);
-}
-
-void BrowserAccessibilityStateImplWin::UpdateUniqueUserHistograms() {
-  BrowserAccessibilityStateImpl::UpdateUniqueUserHistograms();
-
-  ui::AssistiveTech assistive_tech = ActiveAssistiveTech();
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinJAWS.EveryReport",
-                        assistive_tech == ui::AssistiveTech::kJaws);
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinNVDA.EveryReport",
-                        assistive_tech == ui::AssistiveTech::kNvda);
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinSupernova.EveryReport",
-                        assistive_tech == ui::AssistiveTech::kSupernova);
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinZDSR.EveryReport",
-                        assistive_tech == ui::AssistiveTech::kZdsr);
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinZoomText.EveryReport",
-                        assistive_tech == ui::AssistiveTech::kZoomText);
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinNarrator.EveryReport",
-                        assistive_tech == ui::AssistiveTech::kNarrator);
 }
 
 ui::AXPlatform::ProductStrings

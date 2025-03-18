@@ -27,7 +27,6 @@ class BrowserAccessibilityStateImplAndroid
   void SetScreenReaderAppActive(bool is_active) override;
 
  protected:
-  void UpdateUniqueUserHistograms() override;
   void RecordAccessibilityServiceStatsHistogram(int event_type_mask,
                                                 int feedback_type_mask,
                                                 int flags_mask,

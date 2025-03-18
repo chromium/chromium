@@ -160,13 +160,6 @@ void ChromeOSMetricsProvider::ProvideSystemProfileMetrics(
       system_profile_proto);
 }
 
-void ChromeOSMetricsProvider::ProvideAccessibilityMetrics() {
-  bool is_spoken_feedback_enabled =
-      ash::AccessibilityManager::Get()->IsSpokenFeedbackEnabled();
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.CrosSpokenFeedback.EveryReport",
-                        is_spoken_feedback_enabled);
-}
-
 void ChromeOSMetricsProvider::ProvideSuggestedContentMetrics() {
   UMA_HISTOGRAM_BOOLEAN(
       "Apps.AppList.SuggestedContent.Enabled",
@@ -219,7 +212,6 @@ void ChromeOSMetricsProvider::ProvideStabilityMetrics(
 
 void ChromeOSMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
-  ProvideAccessibilityMetrics();
   ProvideSuggestedContentMetrics();
   ProvideMetrics(uma_proto->mutable_system_profile(),
                  /*should_include_arc_metrics=*/!emitted_);

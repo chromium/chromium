@@ -526,8 +526,6 @@ void BrowserAccessibilityStateImpl::OnUserInputEvent() {
   }
 }
 
-void BrowserAccessibilityStateImpl::UpdateUniqueUserHistograms() {}
-
 void BrowserAccessibilityStateImpl::SetAXModeChangeAllowed(bool allowed) {
   allow_ax_mode_changes_ = allowed;
   ui::AXPlatformNode::SetAXModeChangeAllowed(allowed);

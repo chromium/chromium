@@ -430,21 +430,6 @@ void BrowserAccessibilityStateImplAndroid::OnContrastLevelChanged(
   native_theme->NotifyOnNativeThemeUpdated();
 }
 
-void BrowserAccessibilityStateImplAndroid::UpdateUniqueUserHistograms() {
-  BrowserAccessibilityStateImpl::UpdateUniqueUserHistograms();
-
-  ui::AXMode mode = GetAccessibilityMode();
-  // Old screen reader metric: does not indicate the use of a screen reader,
-  // just kExtendedProperties mode, which is used by many clients.
-  // TODO(accessibility) Add metric for Talkback usage and remove this
-  // metric, which is redundant with
-  // PerformanceManager.Experimental.HasAccessibilityModeFlag.
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.Android.ScreenReader.EveryReport",
-                        mode.has_mode(ui::AXMode::kExtendedProperties));
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.Android.Talkback.EveryReport",
-                        ActiveAssistiveTech() == ui::AssistiveTech::kTalkback);
-}
-
 void BrowserAccessibilityStateImplAndroid::SetScreenReaderAppActive(
     bool is_active) {
   static auto* ax_talkback_crash_key = base::debug::AllocateCrashKeyString(

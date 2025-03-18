@@ -96,7 +96,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   ui::AssistiveTech ActiveAssistiveTech() const override;
   bool IsAccessibleBrowser() override;
   void AddUIThreadHistogramCallback(base::OnceClosure callback) override;
-  void UpdateUniqueUserHistograms() override;
   void UpdateHistogramsForTesting() override;
   void SetPerformanceFilteringAllowed(bool enabled) override;
   bool IsPerformanceFilteringAllowed() override;
