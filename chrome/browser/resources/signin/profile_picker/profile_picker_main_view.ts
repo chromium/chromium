@@ -301,7 +301,7 @@ export class ProfilePickerMainViewElement extends
   }
 
   protected getTitle_(): TrustedHTML {
-    const titleStringResouce = this.isProfileListLoadedAndEmpty_() ?
+    const titleStringResouce = this.isProfileListLoadedAndEmptyAndGlic_() ?
         'glicTitleNoProfile' :
         'mainViewTitle';
     // Special styling through 'class' attribute in some version of the title.
@@ -309,7 +309,7 @@ export class ProfilePickerMainViewElement extends
   }
 
   protected getSubtitle_(): TrustedHTML {
-    const subtitleStringResource = this.isProfileListLoadedAndEmpty_() ?
+    const subtitleStringResource = this.isProfileListLoadedAndEmptyAndGlic_() ?
         'mainViewSubtitleGlicNoProfile' :
         'mainViewSubtitle';
     // Special tagging through 'class' attribute in some version of the
@@ -322,30 +322,20 @@ export class ProfilePickerMainViewElement extends
       return true;
     }
 
-    return this.isProfileListLoadedAndEmpty_();
+    return this.isProfileListLoadedAndEmptyAndGlic_();
   }
 
   protected shouldHideFooterText_(): boolean {
-    if (this.isProfileListLoadedAndEmpty_()) {
+    if (this.isProfileListLoadedAndEmptyAndGlic_()) {
       return true;
     }
 
     return !isGlicVersion();
   }
 
-  // This should only return true if the shown version is the Glic version. The
-  // regular version does not support having no profiles available (if the list
-  // is loaded).
-  private isProfileListLoadedAndEmpty_(): boolean {
-    if (!this.profilesListLoaded_) {
-      return false;
-    }
-
-    const isProfileListEmpty = this.profilesList_.length === 0;
-    assert(
-        !isProfileListEmpty || isGlicVersion(),
-        'Only Glic version supports empty profile list');
-    return isProfileListEmpty;
+  private isProfileListLoadedAndEmptyAndGlic_(): boolean {
+    return this.profilesListLoaded_ && this.profilesList_.length === 0 &&
+        isGlicVersion();
   }
 
   private updateLearnMoreLinkEvents_(): void {
