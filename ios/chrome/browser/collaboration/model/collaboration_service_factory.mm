@@ -61,6 +61,7 @@ CollaborationServiceFactory::BuildServiceInstanceFor(
       data_sharing::DataSharingServiceFactory::GetForProfile(profile);
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   auto* sync_service = SyncServiceFactory::GetForProfile(profile);
+  auto* profile_prefs = profile->GetPrefs();
 
   // Sync service might be null in testing environment or explicitly disabled
   // in command line. In the case sync service does not exist,
@@ -71,7 +72,7 @@ CollaborationServiceFactory::BuildServiceInstanceFor(
 
   return std::make_unique<CollaborationServiceImpl>(
       tab_group_sync_service, data_sharing_service, identity_manager,
-      sync_service);
+      sync_service, profile_prefs);
 }
 
 }  // namespace collaboration

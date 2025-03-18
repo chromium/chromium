@@ -12,6 +12,7 @@ bool ServiceStatus::IsAllowedToJoin() {
   // //components/collaboration/public/android/java/src/org/chromium/components/collaboration/ServiceStatus.java.
   switch (collaboration_status) {
     case CollaborationStatus::kDisabled:
+    case CollaborationStatus::kDisabledPending:
     case CollaborationStatus::kDisabledForPolicy:
       return false;
     case CollaborationStatus::kAllowedToJoin:
@@ -26,6 +27,7 @@ bool ServiceStatus::IsAllowedToCreate() {
   // //components/collaboration/public/android/java/src/org/chromium/components/collaboration/ServiceStatus.java.
   switch (collaboration_status) {
     case CollaborationStatus::kDisabled:
+    case CollaborationStatus::kDisabledPending:
     case CollaborationStatus::kDisabledForPolicy:
     case CollaborationStatus::kAllowedToJoin:
     case CollaborationStatus::kEnabledJoinOnly:

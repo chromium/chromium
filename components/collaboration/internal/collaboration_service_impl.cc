@@ -9,10 +9,13 @@
 #include "components/collaboration/internal/collaboration_controller.h"
 #include "components/collaboration/internal/metrics.h"
 #include "components/collaboration/public/collaboration_flow_type.h"
+#include "components/collaboration/public/service_status.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/features.h"
 #include "components/data_sharing/public/group_data.h"
+#include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/collaboration_id.h"
 #include "components/sync/base/features.h"
@@ -30,24 +33,27 @@ using data_sharing::MemberRole;
 using Flow = CollaborationController::Flow;
 using metrics::CollaborationServiceJoinEvent;
 using metrics::CollaborationServiceShareOrManageEvent;
+using Outcome = signin::AccountManagedStatusFinder::Outcome;
 
 CollaborationServiceImpl::CollaborationServiceImpl(
     tab_groups::TabGroupSyncService* tab_group_sync_service,
     data_sharing::DataSharingService* data_sharing_service,
     signin::IdentityManager* identity_manager,
-    syncer::SyncService* sync_service)
+    syncer::SyncService* sync_service,
+    PrefService* profile_prefs)
     : tab_group_sync_service_(tab_group_sync_service),
       data_sharing_service_(data_sharing_service),
       identity_manager_(identity_manager),
-      sync_service_(sync_service) {
+      sync_service_(sync_service),
+      profile_prefs_(profile_prefs) {
   // Initialize ServiceStatus.
-  current_status_.collaboration_status = GetCollaborationStatus();
-
   current_status_.sync_status = GetSyncStatus();
   sync_observer_.Observe(sync_service_);
 
   current_status_.signin_status = GetSigninStatus();
   identity_manager_observer_.Observe(identity_manager_);
+
+  current_status_.collaboration_status = GetCollaborationStatus();
 }
 
 CollaborationServiceImpl::~CollaborationServiceImpl() {
@@ -153,6 +159,7 @@ void CollaborationServiceImpl::OnSyncShutdown(syncer::SyncService* sync) {
 
 void CollaborationServiceImpl::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
+  account_managed_status_finder_.reset();
   RefreshServiceStatus();
 }
 
@@ -266,6 +273,11 @@ SigninStatus CollaborationServiceImpl::GetSigninStatus() {
 }
 
 CollaborationStatus CollaborationServiceImpl::GetCollaborationStatus() {
+  // Check if device policy allow signin.
+  if (!profile_prefs_->GetBoolean(prefs::kSigninAllowed)) {
+    return CollaborationStatus::kDisabledForPolicy;
+  }
+
   // TODO(haileywang): Support collaboration status updates.
   CollaborationStatus status = CollaborationStatus::kDisabled;
   if (base::FeatureList::IsEnabled(
@@ -274,6 +286,47 @@ CollaborationStatus CollaborationServiceImpl::GetCollaborationStatus() {
   } else if (base::FeatureList::IsEnabled(
                  data_sharing::features::kDataSharingJoinOnly)) {
     status = CollaborationStatus::kAllowedToJoin;
+  }
+
+  if (current_status_.signin_status == SigninStatus::kNotSignedIn) {
+    return status;
+  }
+
+  // Figure out if collaboration feature is disabled by account policy. This
+  // early check allows to not disable collaboration feature when the user need
+  // to refresh their account (refresh tokens unavailable).
+  CoreAccountInfo account =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  if (!signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
+          account.email)) {
+    return status;
+  }
+
+  if (!account_managed_status_finder_) {
+    account_managed_status_finder_ =
+        std::make_unique<signin::AccountManagedStatusFinder>(
+            identity_manager_, account,
+            base::BindOnce(&CollaborationServiceImpl::RefreshServiceStatus,
+                           weak_ptr_factory_.GetWeakPtr()),
+            base::Seconds(5));
+  }
+
+  switch (account_managed_status_finder_->GetOutcome()) {
+    case Outcome::kPending:
+      status = CollaborationStatus::kDisabledPending;
+      break;
+    case Outcome::kError:
+    case Outcome::kTimeout:
+      status = CollaborationStatus::kDisabled;
+      break;
+    case Outcome::kEnterpriseGoogleDotCom:
+    case Outcome::kEnterprise:
+      status = CollaborationStatus::kDisabledForPolicy;
+      break;
+    case Outcome::kConsumerGmail:
+    case Outcome::kConsumerWellKnown:
+    case Outcome::kConsumerNotWellKnown:
+      break;
   }
 
   return status;

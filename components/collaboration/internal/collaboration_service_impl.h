@@ -10,9 +10,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/collaboration/public/collaboration_service.h"
+#include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/sync/service/sync_service_observer.h"
+
+class PrefService;
 
 namespace data_sharing {
 class DataSharingService;
@@ -38,7 +42,8 @@ class CollaborationServiceImpl : public CollaborationService,
       tab_groups::TabGroupSyncService* tab_group_sync_service,
       data_sharing::DataSharingService* data_sharing_service,
       signin::IdentityManager* identity_manager,
-      syncer::SyncService* sync_service);
+      syncer::SyncService* sync_service,
+      PrefService* profile_prefs);
   ~CollaborationServiceImpl() override;
 
   // CollaborationService implementation.
@@ -107,6 +112,8 @@ class CollaborationServiceImpl : public CollaborationService,
                           signin::IdentityManager::Observer>
       identity_manager_observer_{this};
   base::ObserverList<CollaborationService::Observer> observers_;
+  std::unique_ptr<signin::AccountManagedStatusFinder>
+      account_managed_status_finder_;
 
   // Service providing information about tabs and tab groups.
   const raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;
@@ -119,6 +126,8 @@ class CollaborationServiceImpl : public CollaborationService,
 
   // Service providing information about sync.
   const raw_ptr<syncer::SyncService> sync_service_;
+
+  const raw_ptr<PrefService> profile_prefs_;
 
   // Started flows.
   // Join controllers: <GroupId, CollaborationController>

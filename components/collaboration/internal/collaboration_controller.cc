@@ -45,6 +45,8 @@ std::string GetStateIdString(StateId state) {
   switch (state) {
     case StateId::kPending:
       return "Pending";
+    case StateId::kWaitingForPolicyUpdate:
+      return "WaitingForPolicyUpdate";
     case StateId::kAuthenticating:
       return "Authenticating";
     case StateId::kWaitingForServicesToInitialize:
@@ -194,9 +196,15 @@ class PendingState : public ControllerState {
       }
     }
 
-    // Verify authentication status.
+    // Handle disabled by policy.
     ServiceStatus status =
         controller->collaboration_service()->GetServiceStatus();
+    if (!status.IsAllowedToJoin()) {
+      controller->TransitionTo(StateId::kWaitingForPolicyUpdate);
+      return;
+    }
+
+    // Verify authentication status.
     if (!status.IsAuthenticationValid()) {
       controller->TransitionTo(StateId::kAuthenticating);
       return;
@@ -208,6 +216,80 @@ class PendingState : public ControllerState {
  private:
   //  Will be invalid after OnEnter() is called.
   CollaborationController::FinishCallback exit_callback_;
+};
+
+class WaitingForPolicyUpdateState : public ControllerState,
+                                    public CollaborationService::Observer {
+ public:
+  WaitingForPolicyUpdateState(StateId id, CollaborationController* controller)
+      : ControllerState(id, controller) {}
+
+  void OnEnter(const ErrorInfo& error) override {
+    ServiceStatus status =
+        controller->collaboration_service()->GetServiceStatus();
+    if (status.collaboration_status == CollaborationStatus::kDisabledPending) {
+      RecordJoinOrShareOrManageEvent(
+          GetLogger(), controller->flow().type,
+          CollaborationServiceJoinEvent::kAccountInfoNotReadyOnSignin,
+          CollaborationServiceShareOrManageEvent::kAccountInfoNotReadyOnSignin);
+      pending_status_change_observer_.Observe(
+          controller->collaboration_service());
+      return;
+    }
+
+    HandleError();
+  }
+
+  void HandleError() override {
+    ServiceStatus status =
+        controller->collaboration_service()->GetServiceStatus();
+    if (status.signin_status == SigninStatus::kNotSignedIn) {
+      RecordJoinOrShareOrManageEvent(
+          GetLogger(), controller->flow().type,
+          CollaborationServiceJoinEvent::kDevicePolicyDisableSignin,
+          CollaborationServiceShareOrManageEvent::kDevicePolicyDisableSignin);
+      HandleErrorWithType(ErrorInfo::Type::kSigninDisabledByPolicy);
+      return;
+    }
+
+    RecordJoinOrShareOrManageEvent(
+        GetLogger(), controller->flow().type,
+        CollaborationServiceJoinEvent::kManagedAccountSignin,
+        CollaborationServiceShareOrManageEvent::kManagedAccountSignin);
+    HandleErrorWithType(ErrorInfo::Type::kSyncDisabledByPolicy);
+  }
+
+  void OnProcessingFinishedWithSuccess() override {
+    ServiceStatus status =
+        controller->collaboration_service()->GetServiceStatus();
+    if (status.IsAuthenticationValid()) {
+      controller->TransitionTo(StateId::kCheckingFlowRequirements);
+      return;
+    }
+    controller->TransitionTo(StateId::kAuthenticating);
+  }
+
+  // CollaborationService::Observer implementation.
+  void OnServiceStatusChanged(const ServiceStatusUpdate& update) override {
+    ServiceStatus status = update.new_status;
+    switch (status.collaboration_status) {
+      case CollaborationStatus::kDisabledPending:
+        break;
+      case CollaborationStatus::kDisabled:
+      case CollaborationStatus::kDisabledForPolicy:
+        HandleError();
+        break;
+      case CollaborationStatus::kAllowedToJoin:
+      case CollaborationStatus::kEnabledJoinOnly:
+      case CollaborationStatus::kEnabledCreateAndJoin:
+        OnProcessingFinishedWithSuccess();
+        break;
+    }
+  }
+
+ private:
+  base::ScopedObservation<CollaborationService, CollaborationService::Observer>
+      pending_status_change_observer_{this};
 };
 
 class AuthenticatingState : public ControllerState,
@@ -247,6 +329,11 @@ class AuthenticatingState : public ControllerState,
   void OnProcessingFinishedWithSuccess() override {
     ServiceStatus status =
         controller->collaboration_service()->GetServiceStatus();
+    if (!status.IsAllowedToJoin()) {
+      controller->TransitionTo(StateId::kWaitingForPolicyUpdate);
+      return;
+    }
+
     if (!status.IsAuthenticationValid()) {
       // Set up the timeout exit task.
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -282,7 +369,13 @@ class AuthenticatingState : public ControllerState,
 
   // CollaborationService::Observer implementation.
   void OnServiceStatusChanged(const ServiceStatusUpdate& update) override {
-    if (update.new_status.IsAuthenticationValid()) {
+    ServiceStatus status = update.new_status;
+    if (!status.IsAllowedToJoin()) {
+      controller->TransitionTo(StateId::kWaitingForPolicyUpdate);
+      return;
+    }
+
+    if (status.IsAuthenticationValid()) {
       if (FlowType::kJoin == controller->flow().type) {
         RecordJoinEvent(
             GetLogger(),
@@ -963,6 +1056,8 @@ std::unique_ptr<ControllerState> CollaborationController::CreateStateObject(
   switch (state) {
     case StateId::kPending:
       return std::make_unique<PendingState>(state, this, base::DoNothing());
+    case StateId::kWaitingForPolicyUpdate:
+      return std::make_unique<WaitingForPolicyUpdateState>(state, this);
     case StateId::kAuthenticating:
       return std::make_unique<AuthenticatingState>(state, this);
     case StateId::kWaitingForServicesToInitialize:
