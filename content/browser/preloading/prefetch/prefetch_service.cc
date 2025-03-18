@@ -32,6 +32,7 @@
 #include "content/browser/preloading/prefetch/prefetch_origin_prober.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_proxy_configurator.h"
+#include "content/browser/preloading/prefetch/prefetch_response_reader.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
 #include "content/browser/preloading/prefetch/proxy_lookup_client_impl.h"
@@ -1098,12 +1099,22 @@ void PrefetchService::OnGotEligibilityForRedirect(
     }
   }
 
+  // TODO(crbug.com/396133768): Consider setting appropriate PrefetchStatus.
+  auto streaming_url_loader = prefetch_container->GetStreamingURLLoader();
+  if (!streaming_url_loader) {
+    if (active_prefetch_ == prefetch_container->key()) {
+      active_prefetch_ = std::nullopt;
+      Prefetch();
+    }
+    return;
+  }
+
   // If the redirect is not eligible and the prefetch is not a decoy, then stop
   // the prefetch.
   if (!eligible && !prefetch_container->IsDecoy()) {
     DCHECK(active_prefetch_ == prefetch_container->key());
     active_prefetch_ = std::nullopt;
-    prefetch_container->GetStreamingURLLoader()->HandleRedirect(
+    streaming_url_loader->HandleRedirect(
         PrefetchRedirectStatus::kFail, redirect_info, std::move(redirect_head));
 
     Prefetch();
@@ -1120,7 +1131,7 @@ void PrefetchService::OnGotEligibilityForRedirect(
           ->IsIsolatedNetworkContextRequiredForCurrentPrefetch() !=
       prefetch_container
           ->IsIsolatedNetworkContextRequiredForPreviousRedirectHop()) {
-    prefetch_container->GetStreamingURLLoader()->HandleRedirect(
+    streaming_url_loader->HandleRedirect(
         PrefetchRedirectStatus::kSwitchNetworkContext, redirect_info,
         std::move(redirect_head));
     // The new ResponseReader is associated with the new streaming URL loader at
@@ -1131,10 +1142,10 @@ void PrefetchService::OnGotEligibilityForRedirect(
   }
 
   // Otherwise, follow the redirect in the same streaming URL loader.
-  prefetch_container->GetStreamingURLLoader()->HandleRedirect(
-      PrefetchRedirectStatus::kFollow, redirect_info, std::move(redirect_head));
+  streaming_url_loader->HandleRedirect(PrefetchRedirectStatus::kFollow,
+                                       redirect_info, std::move(redirect_head));
   // Associate the new ResponseReader with the current streaming URL loader.
-  prefetch_container->GetStreamingURLLoader()->SetResponseReader(
+  streaming_url_loader->SetResponseReader(
       prefetch_container->GetResponseReaderForCurrentPrefetch());
 }
 
@@ -1444,8 +1455,12 @@ void PrefetchService::OnPrefetchRedirect(
     active_prefetch_ = std::nullopt;
     prefetch_container->SetPrefetchStatus(
         PrefetchStatus::kPrefetchFailedInvalidRedirect);
-    prefetch_container->GetStreamingURLLoader()->HandleRedirect(
-        PrefetchRedirectStatus::kFail, redirect_info, std::move(redirect_head));
+    if (auto streaming_url_loader =
+            prefetch_container->GetStreamingURLLoader()) {
+      streaming_url_loader->HandleRedirect(PrefetchRedirectStatus::kFail,
+                                           redirect_info,
+                                           std::move(redirect_head));
+    }
 
     Prefetch();
     RecordRedirectResult(*failure);

@@ -418,8 +418,7 @@ class CONTENT_EXPORT PrefetchContainer {
   // Returns the URL loader being used for prefetching the current redirect hop.
   // This method should be used during prefetching and shouldn't be called for
   // serving purpose.
-  const base::WeakPtr<PrefetchStreamingURLLoader>& GetStreamingURLLoader()
-      const;
+  base::WeakPtr<PrefetchStreamingURLLoader> GetStreamingURLLoader() const;
 
   bool IsStreamingURLLoaderDeletionScheduledForTesting() const;
 

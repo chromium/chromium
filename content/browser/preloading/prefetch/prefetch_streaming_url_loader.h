@@ -123,6 +123,12 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   // Set if any of corresponding `PrefetchResponseReader` starts serving.
   bool used_for_serving_{false};
 
+  // Only true while awaiting a response from `PrefetchService` during
+  // a redirect handring. Specifically, it becomes true when `OnReceiveRedirect`
+  // is called and becomes false either after `HandleRedirect` is called from
+  // `PrefetchService`, or `OnComplete` is received.
+  bool is_waiting_handle_redirect_from_prefetch_service_{false};
+
   // The URL loader used to request the prefetch.
   mojo::Remote<network::mojom::URLLoader> prefetch_url_loader_;
   mojo::Receiver<network::mojom::URLLoaderClient>

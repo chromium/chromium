@@ -10,6 +10,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -29,6 +30,7 @@
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_page_metrics_container.h"
+#include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
 #include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/preloading/preload_pipeline_info.h"
@@ -6381,6 +6383,195 @@ TEST_P(PrefetchServiceTest, CancelWhileBlockedOnHead) {
   // hang.
   ASSERT_TRUE(future.IsReady());
   EXPECT_FALSE(future.Get());
+}
+
+// Tests that the `PrefetchStreamingURLLoader` disconnection during
+// `PrefetchService`'s redirection handling (starts from
+// `PrefetchStreamingURLLoader::OnReceiveRedirect`, and ends until
+// `PrefetchService` calls `PrefetchStreamingURLLoader::HandleRedirect`) causes
+// no crash, and the corresponding prefetch should not be served.
+// A regression test for crbug.com/396133768.
+TEST_P(
+    PrefetchServiceTest,
+    DISABLED_CHROMEOS(URLLoaderDisconnectedWhileHandlingRedirectEligibilty)) {
+  if (!UseNewWaitLoop()) {
+    GTEST_SKIP() << "This test requires PrefetchNewWaitLoop";
+  }
+
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+  PrefetchService* prefetch_service =
+      BrowserContextImpl::From(browser_context())->GetPrefetchService();
+
+  MakePrefetchOnMainFrame(
+      GURL("https://example.com"),
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
+                   blink::mojom::SpeculationEagerness::kEager));
+  task_environment()->RunUntilIdle();
+  VerifyCommonRequestState(GURL("https://example.com"),
+                           {.use_prefetch_proxy = true});
+  VerifyFollowRedirectParams(0);
+
+  // Set a handler so that the eligibility check sequences invocked after
+  // `PrefetchService::OnPrefetchRedirect` will be paused.
+  base::test::TestFuture<base::OnceClosure>
+      redirect_eligibility_check_callback_future;
+  prefetch_service->SetDelayEligibilityCheckForTesting(base::BindRepeating(
+      [](base::test::TestFuture<base::OnceClosure>*
+             redirect_eligibility_check_callback_future,
+         base::OnceClosure callback) {
+        redirect_eligibility_check_callback_future->SetValue(
+            std::move(callback));
+      },
+      base::Unretained(&redirect_eligibility_check_callback_future)));
+
+  net::RedirectInfo redirect_info;
+  redirect_info.new_method = "GET";
+  redirect_info.new_referrer_policy =
+      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
+  redirect_info.new_url = GURL("https://redirect.com");
+  network::TestURLLoaderFactory::PendingRequest* request =
+      test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_TRUE(request);
+  ASSERT_TRUE(request->client);
+  auto redirect_head = CreateURLResponseHeadForPrefetch(
+      net::HTTP_PERMANENT_REDIRECT, kHTMLMimeType,
+      /*use_prefetch_proxy=*/true, {}, GURL("https://redirect.com"));
+
+  request->client->OnReceiveRedirect(redirect_info, redirect_head.Clone());
+  task_environment()->RunUntilIdle();
+
+  // Now the redirect handling is paused right before
+  // `PrefetchService::OnPrefetchRedirect.`
+
+  // Disconnect URLLoader.
+  base::test::TestFuture<void> disconnect_future;
+  std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>> prefetches =
+      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+          PrefetchContainer::Key(MainDocumentToken(),
+                                 GURL("https://example.com")));
+  ASSERT_EQ(1u, prefetches.size());
+  base::WeakPtr<PrefetchContainer> prefetch_container = prefetches[0].second;
+  prefetch_container->GetStreamingURLLoader()->SetOnDeletionScheduledForTests(
+      disconnect_future.GetCallback());
+  request->client.reset();
+  ASSERT_TRUE(disconnect_future.Wait());
+
+  // Resume the eligibility check.
+  redirect_eligibility_check_callback_future.Take().Run();
+  task_environment()->RunUntilIdle();
+
+  // Now `ServableState` should be `kNotServable` since we don't have a
+  // non-redirect response but `PrefetchStreamingURLLoader` is gone.
+  EXPECT_EQ(prefetch_container->GetServableState(base::TimeDelta::Max()),
+            PrefetchContainer::ServableState::kNotServable);
+
+  // Start a navigation. The prefetch should not be served.
+  std::unique_ptr<NavigationResult> navigation_result =
+      SimulatePartOfNavigation(GURL("https://example.com"),
+                               /*is_renderer_initiated=*/true,
+                               /*is_nav_prerender=*/true);
+  ASSERT_TRUE(navigation_result->reader_future.IsReady());
+  EXPECT_FALSE(navigation_result->reader_future.Take());
+
+  prefetch_service->SetDelayEligibilityCheckForTesting(base::NullCallback());
+}
+
+// Tests that the `PrefetchStreamingURLLoader` disconnection during
+// `PrefetchService`'s redirection handling causes no crash, and successfully
+// unblocks the navigation that potentially matches the corresponding
+// prefetch and thus was blocked in the match resolver (BlockUntilHead).
+// A regression test for crbug.com/396133768.√
+TEST_P(
+    PrefetchServiceTest,
+    DISABLED_CHROMEOS(
+        URLLoaderDisconnectedWhileHandlingRedirectEligibilty_BlockUntilHead)) {
+  if (!UseNewWaitLoop()) {
+    GTEST_SKIP() << "This test requires PrefetchNewWaitLoop";
+  }
+
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+  PrefetchService* prefetch_service =
+      BrowserContextImpl::From(browser_context())->GetPrefetchService();
+
+  MakePrefetchOnMainFrame(
+      GURL("https://example.com"),
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/true,
+                   blink::mojom::SpeculationEagerness::kEager));
+  task_environment()->RunUntilIdle();
+  VerifyCommonRequestState(GURL("https://example.com"),
+                           {.use_prefetch_proxy = true});
+  VerifyFollowRedirectParams(0);
+
+  // Start a navigation and invoke FindPrefetch to start a wait loop.
+  std::unique_ptr<NavigationResult> navigation_result =
+      SimulatePartOfNavigation(GURL("https://example.com"),
+                               /*is_renderer_initiated=*/true,
+                               /*is_nav_prerender=*/true);
+  task_environment()->RunUntilIdle();
+  ASSERT_FALSE(navigation_result->reader_future.IsReady());
+
+  // Set a handler so that the eligibility check sequences invocked after
+  // `PrefetchService::OnPrefetchRedirect` will be paused.
+  base::test::TestFuture<base::OnceClosure>
+      redirect_eligibility_check_callback_future;
+  prefetch_service->SetDelayEligibilityCheckForTesting(base::BindRepeating(
+      [](base::test::TestFuture<base::OnceClosure>*
+             redirect_eligibility_check_callback_future,
+         base::OnceClosure callback) {
+        redirect_eligibility_check_callback_future->SetValue(
+            std::move(callback));
+      },
+      base::Unretained(&redirect_eligibility_check_callback_future)));
+
+  // Start redirecting.
+  net::RedirectInfo redirect_info;
+  redirect_info.new_method = "GET";
+  redirect_info.new_referrer_policy =
+      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
+  redirect_info.new_url = GURL("https://redirect.com");
+  network::TestURLLoaderFactory::PendingRequest* request =
+      test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_TRUE(request);
+  ASSERT_TRUE(request->client);
+  auto redirect_head = CreateURLResponseHeadForPrefetch(
+      net::HTTP_PERMANENT_REDIRECT, kHTMLMimeType,
+      /*use_prefetch_proxy=*/true, {}, GURL("https://redirect.com"));
+
+  request->client->OnReceiveRedirect(redirect_info, redirect_head.Clone());
+  task_environment()->RunUntilIdle();
+
+  // Now the redirect handling is paused right before
+  // `PrefetchService::OnPrefetchRedirect.`
+
+  // Disconnect URLLoader.
+  base::test::TestFuture<void> disconnect_future;
+  std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>> prefetches =
+      prefetch_service->GetAllForUrlWithoutRefAndQueryForTesting(
+          PrefetchContainer::Key(MainDocumentToken(),
+                                 GURL("https://example.com")));
+  ASSERT_EQ(1u, prefetches.size());
+  base::WeakPtr<PrefetchContainer> prefetch_container = prefetches[0].second;
+  prefetch_container->GetStreamingURLLoader()->SetOnDeletionScheduledForTests(
+      disconnect_future.GetCallback());
+  request->client.reset();
+  ASSERT_TRUE(disconnect_future.Wait());
+  // `PrefetchStreamingURLLoader::DisconnectPrefetchURLLoaderMojo` will directly
+  // invoke `PrefetchMatchResolver2::OnHeadDetermine`. At this point the
+  // container's `ServableState` should be `kShouldBlockUntilHeadReceived` (same
+  // with a normal case of an ineligible redirect), so it should be unblocked
+  // for unmatched.
+  // TODO(crbug.com/396133768): Explicitly check more detailed Servable/Load
+  // states.
+  redirect_eligibility_check_callback_future.Take().Run();
+  task_environment()->RunUntilIdle();
+  // The prefetch should not be served.
+  EXPECT_FALSE(navigation_result->reader_future.Take());
+
+  prefetch_service->SetDelayEligibilityCheckForTesting(base::NullCallback());
 }
 
 // With new wait loop, multiple concurrent navigations are handled correctly.
