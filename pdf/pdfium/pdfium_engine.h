@@ -368,7 +368,12 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // Returns the focus info of current focus item.
   AccessibilityFocusInfo GetFocusInfo();
 
-  bool IsPDFDocTagged();
+  // Returns whether the "/Marked" attribute in the "MarkInfo" dictionary in the
+  // PDF's catalog is set to true. This should indicate whether the PDF includes
+  // a tree of structural elements which describe the logical organization of
+  // the document, e.g. into sections and headings, and describe special
+  // elements, e.g. headings and table cells.
+  bool IsPDFDocTagged() const;
 
   virtual uint32_t GetLoadedByteSize();
 
