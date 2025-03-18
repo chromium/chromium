@@ -48,18 +48,12 @@ config("tflite_config") {
     "src/third_party/xla/third_party/tsl",
     "//third_party/pthreadpool/src/include",
   ]
-  defines = [ "TFL_STATIC_LIBRARY_BUILD" ]
+  defines = [
+    "TFL_STATIC_LIBRARY_BUILD",
+    "LITERT_DISABLE_OPENCL_SUPPORT",
+  ]
   if (is_android) {
     libs = [ "log" ]
-  }
-
-  if (build_tflite_with_opencl) {
-    include_dirs += [
-      "//third_party/angle/include",
-      "//third_party/vulkan-headers/src/include",
-    ]
-  } else {
-    defines += [ "LITERT_DISABLE_OPENCL_SUPPORT" ]
   }
 }
 
@@ -122,19 +116,6 @@ config("tflite_flags") {
   } else if (is_linux) {
     defines += [ "GEMMLOWP_ALLOW_SLOW_SCALAR_FALLBACK" ]
   }
-
-  if (build_tflite_with_opencl) {
-    cflags += [
-      "-Wno-extra-semi",
-      "-Wno-unreachable-code-return",
-      "-Wno-unreachable-code-break",
-    ]
-
-    defines += [
-      "CL_DELEGATE_NO_GL",
-      "CL_TARGET_OPENCL_VERSION=300",
-    ]
-  }
 }
 
 buildflag_header("buildflags") {
@@ -142,7 +123,6 @@ buildflag_header("buildflags") {
   flags = [
     "BUILD_TFLITE_WITH_NNAPI=$build_tflite_with_nnapi",
     "BUILD_TFLITE_WITH_XNNPACK=$build_tflite_with_xnnpack",
-    "BUILD_TFLITE_WITH_OPENCL=$build_tflite_with_opencl",
   ]
 }
 
@@ -274,13 +254,6 @@ source_set("tflite_public_headers") {
     "src/tensorflow/lite/string_util.h",
     "src/tensorflow/lite/util.h",
   ]
-
-  if (build_tflite_with_opencl) {
-    public += [
-      "src/tensorflow/lite/delegates/gpu/delegate.h",
-      "src/tensorflow/lite/delegates/gpu/delegate_options.h",
-    ]
-  }
 
   configs += [ ":tflite_flags" ]
 }
@@ -673,369 +646,6 @@ source_set("tflite_compiler_utils") {
   visibility = [ ":*" ]
 }
 
-if (build_tflite_with_opencl) {
-  source_set("tflite_gpu_opencl_default") {
-    sources = [
-      "src/tensorflow/lite/delegates/gpu/cl/default/recordable_queue.cc",
-      "src/tensorflow/lite/delegates/gpu/cl/default/util.cc",
-    ]
-    configs += [
-      ":tflite_config",
-      ":tflite_flags",
-    ]
-    public_deps = [
-      ":tflite_gpu_delegate_headers",
-      "//third_party/abseil-cpp:absl",
-      "//third_party/flatbuffers",
-      "//third_party/fp16",
-    ]
-
-    visibility = [ ":*" ]
-  }
-
-  source_set("tflite_gpu_opencl") {
-    sources = [
-      "src/tensorflow/lite/delegates/gpu/cl/api.cc",
-      "src/tensorflow/lite/delegates/gpu/cl/api.h",
-      "src/tensorflow/lite/delegates/gpu/cl/buffer.cc",
-      "src/tensorflow/lite/delegates/gpu/cl/buffer.h",
-      "src/tensorflow/lite/delegates/gpu/cl/cl_arguments.cc",
-      "src/tensorflow/lite/delegates/gpu/cl/cl_arguments.h",
-      "src/tensorflow/lite/delegates/gpu/cl/cl_command_buffer.cc",
-      "src/tensorflow/lite/delegates/gpu/cl/cl_command_buffer.h",
-      "src/tensorflow/lite/delegates/gpu/cl/cl_command_queue.cc",
-      "src/tensorflow/lite/delegates/gpu/cl/cl_command_queue.h",
-      "src/tensorflow/lite/delegates/gpu/cl/cl_context.cc",
-      "src/tensorflow/lite/delegates/gpu/cl/cl_context.h",
-      "src/tensorflow/lite/delegates/gpu/cl/cl_device.cc",
-      "src/tensorflow/lite/delegates/gpu/cl/cl_device.h",
-      "src/tensorflow/lite/delegates/gpu/cl/cl_errors.h",
-      "src/tensorflow/lite/delegates/gpu/cl/cl_event.cc",
-      "src/tensorflow/lite/delegates/gpu/cl/cl_event.h",
-      "src/tensorflow/lite/delegates/gpu/cl/cl_image_format.cc",
-      "src/tensorflow/lite/delegates/gpu/cl/cl_image_format.h",
-      "src/tensorflow/lite/delegates/gpu/cl/cl_kernel.cc",
-      "src/tensorflow/lite/delegates/gpu/cl/cl_kernel.h",
-      "src/tensorflow/lite/delegates/gpu/cl/cl_operation.cc",
-      "src/tensorflow/lite/delegates/gpu/cl/cl_operation.h",
-      "src/tensorflow/lite/delegates/gpu/cl/cl_program.cc",
-      "src/tensorflow/lite/delegates/gpu/cl/cl_program.h",
-      "src/tensorflow/lite/delegates/gpu/cl/compiled_program_cache_generated.h",
-      "src/tensorflow/lite/delegates/gpu/cl/environment.cc",
-      "src/tensorflow/lite/delegates/gpu/cl/environment.h",
-      "src/tensorflow/lite/delegates/gpu/cl/gpu_api_delegate.cc",
-      "src/tensorflow/lite/delegates/gpu/cl/inference_context.cc",
-      "src/tensorflow/lite/delegates/gpu/cl/inference_context.h",
-      "src/tensorflow/lite/delegates/gpu/cl/kernels/converter.cc",
-      "src/tensorflow/lite/delegates/gpu/cl/kernels/converter.h",
-      "src/tensorflow/lite/delegates/gpu/cl/opencl_wrapper.cc",
-      "src/tensorflow/lite/delegates/gpu/cl/opencl_wrapper.h",
-      "src/tensorflow/lite/delegates/gpu/cl/program_cache.cc",
-      "src/tensorflow/lite/delegates/gpu/cl/program_cache.h",
-      "src/tensorflow/lite/delegates/gpu/cl/qcom_thin_filter.cc",
-      "src/tensorflow/lite/delegates/gpu/cl/qcom_thin_filter.h",
-      "src/tensorflow/lite/delegates/gpu/cl/recordable_queue_builder.h",
-      "src/tensorflow/lite/delegates/gpu/cl/serialization_generated.h",
-      "src/tensorflow/lite/delegates/gpu/cl/tensor.cc",
-      "src/tensorflow/lite/delegates/gpu/cl/tensor.h",
-      "src/tensorflow/lite/delegates/gpu/cl/tensor_type_util.cc",
-      "src/tensorflow/lite/delegates/gpu/cl/tensor_type_util.h",
-      "src/tensorflow/lite/delegates/gpu/cl/util.cc",
-      "src/tensorflow/lite/delegates/gpu/cl/util.h",
-      "src/tensorflow/lite/experimental/acceleration/compatibility/android_info.cc",
-      "src/tensorflow/lite/experimental/acceleration/compatibility/android_info.h",
-    ]
-    configs += [
-      ":tflite_config",
-      ":tflite_flags",
-      "//build/config/compiler:rtti",
-    ]
-    public_deps = [
-      ":tflite_gpu_common",
-      ":tflite_gpu_delegate_headers",
-      ":tflite_kernel_internals",
-      ":tflite_public_headers",
-    ]
-    deps = [
-      ":tflite_gpu_opencl_default",
-      "//third_party/farmhash",
-    ]
-
-    include_dirs = [
-      "//third_party/tflite/src/tensorflow/lite/delegates/gpu/common",
-      "//third_party/tflite/src/tensorflow/lite/delegates/gpu/common/task",
-    ]
-
-    visibility = [ ":*" ]
-  }
-
-  source_set("tflite_gpu_common") {
-    sources = [
-      "src/tensorflow/lite/delegates/gpu/common/custom_parsers.h",
-      "src/tensorflow/lite/delegates/gpu/common/custom_transformations.h",
-      "src/tensorflow/lite/delegates/gpu/common/data_type.cc",
-      "src/tensorflow/lite/delegates/gpu/common/data_type.h",
-      "src/tensorflow/lite/delegates/gpu/common/default/custom_parsers.cc",
-      "src/tensorflow/lite/delegates/gpu/common/default/custom_transformations.cc",
-      "src/tensorflow/lite/delegates/gpu/common/flops_util.cc",
-      "src/tensorflow/lite/delegates/gpu/common/flops_util.h",
-      "src/tensorflow/lite/delegates/gpu/common/gpu_info.cc",
-      "src/tensorflow/lite/delegates/gpu/common/gpu_info.h",
-      "src/tensorflow/lite/delegates/gpu/common/gpu_model.cc",
-      "src/tensorflow/lite/delegates/gpu/common/gpu_model.h",
-      "src/tensorflow/lite/delegates/gpu/common/gpu_model_generated.h",
-      "src/tensorflow/lite/delegates/gpu/common/kernel_info.h",
-      "src/tensorflow/lite/delegates/gpu/common/lstm_parser.cc",
-      "src/tensorflow/lite/delegates/gpu/common/lstm_parser.h",
-      "src/tensorflow/lite/delegates/gpu/common/memory_management.cc",
-      "src/tensorflow/lite/delegates/gpu/common/memory_management.h",
-      "src/tensorflow/lite/delegates/gpu/common/memory_management/equality_assignment.h",
-      "src/tensorflow/lite/delegates/gpu/common/memory_management/greedy_by_breadth_assignment.cc",
-      "src/tensorflow/lite/delegates/gpu/common/memory_management/greedy_by_breadth_assignment.h",
-      "src/tensorflow/lite/delegates/gpu/common/memory_management/greedy_by_size_assignment.cc",
-      "src/tensorflow/lite/delegates/gpu/common/memory_management/greedy_by_size_assignment.h",
-      "src/tensorflow/lite/delegates/gpu/common/memory_management/greedy_in_order_assignment.h",
-      "src/tensorflow/lite/delegates/gpu/common/memory_management/internal.cc",
-      "src/tensorflow/lite/delegates/gpu/common/memory_management/internal.h",
-      "src/tensorflow/lite/delegates/gpu/common/memory_management/min_cost_flow_assignment.cc",
-      "src/tensorflow/lite/delegates/gpu/common/memory_management/min_cost_flow_assignment.h",
-      "src/tensorflow/lite/delegates/gpu/common/memory_management/naive_assignment.h",
-      "src/tensorflow/lite/delegates/gpu/common/memory_management/types.cc",
-      "src/tensorflow/lite/delegates/gpu/common/memory_management/types.h",
-      "src/tensorflow/lite/delegates/gpu/common/model.cc",
-      "src/tensorflow/lite/delegates/gpu/common/model.h",
-      "src/tensorflow/lite/delegates/gpu/common/model_builder.cc",
-      "src/tensorflow/lite/delegates/gpu/common/model_builder.h",
-      "src/tensorflow/lite/delegates/gpu/common/model_builder_helper.cc",
-      "src/tensorflow/lite/delegates/gpu/common/model_builder_helper.h",
-      "src/tensorflow/lite/delegates/gpu/common/model_builder_internal.h",
-      "src/tensorflow/lite/delegates/gpu/common/model_hints.h",
-      "src/tensorflow/lite/delegates/gpu/common/model_transformer.cc",
-      "src/tensorflow/lite/delegates/gpu/common/model_transformer.h",
-      "src/tensorflow/lite/delegates/gpu/common/object_reader.cc",
-      "src/tensorflow/lite/delegates/gpu/common/object_reader.h",
-      "src/tensorflow/lite/delegates/gpu/common/operation_parser.cc",
-      "src/tensorflow/lite/delegates/gpu/common/operation_parser.h",
-      "src/tensorflow/lite/delegates/gpu/common/operations.cc",
-      "src/tensorflow/lite/delegates/gpu/common/operations.h",
-      "src/tensorflow/lite/delegates/gpu/common/precision.cc",
-      "src/tensorflow/lite/delegates/gpu/common/precision.h",
-      "src/tensorflow/lite/delegates/gpu/common/quantization_util.cc",
-      "src/tensorflow/lite/delegates/gpu/common/quantization_util.h",
-      "src/tensorflow/lite/delegates/gpu/common/selectors/convolution_selector.h",
-      "src/tensorflow/lite/delegates/gpu/common/selectors/convolution_transposed_selector.h",
-      "src/tensorflow/lite/delegates/gpu/common/selectors/default/convolution_selector.cc",
-      "src/tensorflow/lite/delegates/gpu/common/selectors/default/convolution_transposed_selector.cc",
-      "src/tensorflow/lite/delegates/gpu/common/selectors/default/default_selector.cc",
-      "src/tensorflow/lite/delegates/gpu/common/selectors/default/dw_convolution_selector.cc",
-      "src/tensorflow/lite/delegates/gpu/common/selectors/default/fully_connected_selector.cc",
-      "src/tensorflow/lite/delegates/gpu/common/selectors/default_selector.h",
-      "src/tensorflow/lite/delegates/gpu/common/selectors/dw_convolution_selector.h",
-      "src/tensorflow/lite/delegates/gpu/common/selectors/fully_connected_selector.h",
-      "src/tensorflow/lite/delegates/gpu/common/selectors/operation_selector.cc",
-      "src/tensorflow/lite/delegates/gpu/common/selectors/operation_selector.h",
-      "src/tensorflow/lite/delegates/gpu/common/selectors/simple_selectors.cc",
-      "src/tensorflow/lite/delegates/gpu/common/selectors/simple_selectors.h",
-      "src/tensorflow/lite/delegates/gpu/common/selectors/special_selector.cc",
-      "src/tensorflow/lite/delegates/gpu/common/selectors/special_selector.h",
-      "src/tensorflow/lite/delegates/gpu/common/selectors/subgraph.cc",
-      "src/tensorflow/lite/delegates/gpu/common/selectors/subgraph.h",
-      "src/tensorflow/lite/delegates/gpu/common/shape.cc",
-      "src/tensorflow/lite/delegates/gpu/common/shape.h",
-      "src/tensorflow/lite/delegates/gpu/common/status.h",
-      "src/tensorflow/lite/delegates/gpu/common/task/arguments.cc",
-      "src/tensorflow/lite/delegates/gpu/common/task/arguments.h",
-      "src/tensorflow/lite/delegates/gpu/common/task/buffer_desc.cc",
-      "src/tensorflow/lite/delegates/gpu/common/task/buffer_desc.h",
-      "src/tensorflow/lite/delegates/gpu/common/task/compiler_options.h",
-      "src/tensorflow/lite/delegates/gpu/common/task/gpu_operation.cc",
-      "src/tensorflow/lite/delegates/gpu/common/task/gpu_operation.h",
-      "src/tensorflow/lite/delegates/gpu/common/task/qcom_thin_filter_desc.cc",
-      "src/tensorflow/lite/delegates/gpu/common/task/qcom_thin_filter_desc.h",
-      "src/tensorflow/lite/delegates/gpu/common/task/serialization_base.cc",
-      "src/tensorflow/lite/delegates/gpu/common/task/serialization_base.h",
-      "src/tensorflow/lite/delegates/gpu/common/task/tensor_desc.cc",
-      "src/tensorflow/lite/delegates/gpu/common/task/tensor_desc.h",
-      "src/tensorflow/lite/delegates/gpu/common/task/tuning_type.h",
-      "src/tensorflow/lite/delegates/gpu/common/task/util.cc",
-      "src/tensorflow/lite/delegates/gpu/common/task/util.h",
-      "src/tensorflow/lite/delegates/gpu/common/task/weights_conversion.cc",
-      "src/tensorflow/lite/delegates/gpu/common/task/weights_conversion.h",
-      "src/tensorflow/lite/delegates/gpu/common/task/weights_layout.cc",
-      "src/tensorflow/lite/delegates/gpu/common/task/weights_layout.h",
-      "src/tensorflow/lite/delegates/gpu/common/task/work_group_picking.cc",
-      "src/tensorflow/lite/delegates/gpu/common/task/work_group_picking.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/add.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/add.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/cast.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/cast.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/concat_xy.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/concat_xy.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/concat_z.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/concat_z.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/conv_constants.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/conv_constants.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/conv_generic.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/conv_generic.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/conv_metal_simd.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/conv_metal_simd.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/conv_weights_converter.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/conv_weights_converter.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/conversion.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/conversion.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/convolution_transposed.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/convolution_transposed.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/convolution_transposed_3x3.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/convolution_transposed_3x3.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/convolution_transposed_3x3_thin.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/convolution_transposed_3x3_thin.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/convolution_transposed_4x4.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/convolution_transposed_4x4.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/convolution_transposed_thin.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/convolution_transposed_thin.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/cumsum.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/cumsum.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/depthwise_conv.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/depthwise_conv.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/depthwise_conv_3x3.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/depthwise_conv_3x3.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/depthwise_conv_3x3_stride_h2.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/depthwise_conv_3x3_stride_h2.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/elementwise.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/elementwise.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/fully_connected.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/fully_connected.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/gather.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/gather.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/lstm.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/lstm.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/max_unpooling.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/max_unpooling.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/mean_stddev_normalization.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/mean_stddev_normalization.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/one_hot.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/one_hot.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/padding.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/padding.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/pooling.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/pooling.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/prelu.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/prelu.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/quantize_and_dequantize.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/quantize_and_dequantize.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/reduce.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/reduce.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/relu.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/relu.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/resampler.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/resampler.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/reshape.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/reshape.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/reshapex4.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/reshapex4.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/resize.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/resize.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/select_v2.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/select_v2.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/softmax.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/softmax.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/softmax1x1.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/softmax1x1.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/space_to_depth.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/space_to_depth.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/special/conv_pointwise.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/special/conv_pointwise.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/special/dw7x7_conv2to6_concat_conv8to8.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/special/dw7x7_conv2to6_concat_conv8to8.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/special/fc_fc_add.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/special/fc_fc_add.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/special/thin_pointwise_fuser.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/special/thin_pointwise_fuser.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/split.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/split.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/strided_slice.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/strided_slice.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/tile.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/tile.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/transpose.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/transpose.h",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/winograd.cc",
-      "src/tensorflow/lite/delegates/gpu/common/tasks/winograd.h",
-      "src/tensorflow/lite/delegates/gpu/common/tensor.h",
-      "src/tensorflow/lite/delegates/gpu/common/transformations/add_bias.cc",
-      "src/tensorflow/lite/delegates/gpu/common/transformations/add_bias.h",
-      "src/tensorflow/lite/delegates/gpu/common/transformations/add_quant_adjustments.cc",
-      "src/tensorflow/lite/delegates/gpu/common/transformations/add_quant_adjustments.h",
-      "src/tensorflow/lite/delegates/gpu/common/transformations/fuse_add_to_conv.cc",
-      "src/tensorflow/lite/delegates/gpu/common/transformations/fuse_add_to_conv.h",
-      "src/tensorflow/lite/delegates/gpu/common/transformations/fuse_mul_to_conv.cc",
-      "src/tensorflow/lite/delegates/gpu/common/transformations/fuse_mul_to_conv.h",
-      "src/tensorflow/lite/delegates/gpu/common/transformations/global_pooling_to_reduce_op.cc",
-      "src/tensorflow/lite/delegates/gpu/common/transformations/global_pooling_to_reduce_op.h",
-      "src/tensorflow/lite/delegates/gpu/common/transformations/make_fully_connected.cc",
-      "src/tensorflow/lite/delegates/gpu/common/transformations/make_fully_connected.h",
-      "src/tensorflow/lite/delegates/gpu/common/transformations/make_padding.cc",
-      "src/tensorflow/lite/delegates/gpu/common/transformations/make_padding.h",
-      "src/tensorflow/lite/delegates/gpu/common/transformations/merge_densify.cc",
-      "src/tensorflow/lite/delegates/gpu/common/transformations/merge_densify.h",
-      "src/tensorflow/lite/delegates/gpu/common/transformations/merge_padding_with.cc",
-      "src/tensorflow/lite/delegates/gpu/common/transformations/merge_padding_with.h",
-      "src/tensorflow/lite/delegates/gpu/common/transformations/model_transformations.cc",
-      "src/tensorflow/lite/delegates/gpu/common/transformations/model_transformations.h",
-      "src/tensorflow/lite/delegates/gpu/common/transformations/remove_noop.cc",
-      "src/tensorflow/lite/delegates/gpu/common/transformations/remove_noop.h",
-      "src/tensorflow/lite/delegates/gpu/common/types.h",
-      "src/tensorflow/lite/delegates/gpu/common/util.h",
-      "src/tensorflow/lite/delegates/gpu/common/winograd_util.cc",
-      "src/tensorflow/lite/delegates/gpu/common/winograd_util.h",
-      "src/tensorflow/lite/delegates/gpu/common/workgroup_selection.cc",
-      "src/tensorflow/lite/delegates/gpu/common/workgroup_selection.h",
-    ]
-    configs += [
-      ":tflite_config",
-      ":tflite_flags",
-      "//third_party/eigen3:eigen_includes",
-      "//build/config/compiler:rtti",
-    ]
-    public_deps = [
-      ":tflite_gpu_delegate_headers",
-      ":tflite_kernel_common_headers",
-      ":tflite_kernel_internals",
-      ":tflite_public_headers",
-      "//third_party/abseil-cpp:absl",
-      "//third_party/flatbuffers",
-      "//third_party/fp16",
-      "//third_party/gemmlowp",
-      "//third_party/neon_2_sse",
-      "//third_party/ruy",
-    ]
-    include_dirs =
-        [ "//third_party/tflite/src/tensorflow/lite/delegates/gpu/common/task" ]
-
-    visibility = [ ":*" ]
-  }
-
-  source_set("tflite_gpu_delegate_headers") {
-    public = [
-      "//third_party/abseil-cpp/absl/types/any.h",
-      "src/tensorflow/lite/core/async/async_kernel_internal.h",
-      "src/tensorflow/lite/core/async/task_internal.h",
-      "src/tensorflow/lite/delegates/gpu/api.h",
-      "src/tensorflow/lite/delegates/gpu/cl/opencl_wrapper.h",
-      "src/tensorflow/lite/delegates/gpu/tflite_profile.h",
-      "src/tensorflow/lite/delegates/utils.h",
-      "src/tensorflow/lite/kernels/kernel_util.h",
-      "src/tensorflow/lite/kernels/lstm_shared.h",
-      "src/tensorflow/lite/tools/logging.h",
-      "src/tensorflow/lite/tools/versioning/gpu_compatibility.h",
-    ]
-
-    configs += [ ":tflite_flags" ]
-
-    visibility = [ ":*" ]
-  }
-}
-
 # TODO(crbug.com/1147996): Update to a component build. Will require updating the
 # tflite version.
 # TODO(crbug.com/372526657): Use tflite registration directly and not the C API.
@@ -1188,19 +798,6 @@ tflite_static_library("tflite") {
     ]
   }
 
-  if (build_tflite_with_opencl) {
-    sources += [
-      "src/tensorflow/lite/delegates/gpu/api.cc",
-      "src/tensorflow/lite/delegates/gpu/api.h",
-      "src/tensorflow/lite/delegates/gpu/delegate.cc",
-      "src/tensorflow/lite/delegates/gpu/delegate.h",
-      "src/tensorflow/lite/delegates/gpu/delegate_options.cc",
-      "src/tensorflow/lite/delegates/gpu/delegate_options.h",
-      "src/tensorflow/lite/delegates/gpu/tflite_profile.cc",
-      "src/tensorflow/lite/delegates/gpu/tflite_profile.h",
-    ]
-  }
-
   if (is_win) {
     sources +=
         [ "src/tensorflow/compiler/mlir/lite/mmap_allocation_disabled.cc" ]
@@ -1239,15 +836,6 @@ tflite_static_library("tflite") {
       "//third_party/cpuinfo",
     ]
     conditional_deps += [ "//third_party/xnnpack:xnnpack" ]
-  }
-
-  if (build_tflite_with_opencl) {
-    deps += [
-      ":tflite_gpu_common",
-      ":tflite_gpu_delegate_headers",
-      ":tflite_gpu_opencl",
-      "//third_party/vulkan-headers/src:vulkan_headers",
-    ]
   }
 
   conditional_public_deps = [ ":tflite_kernels" ]
