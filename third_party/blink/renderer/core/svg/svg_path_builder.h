@@ -26,6 +26,8 @@
 
 #include "third_party/blink/renderer/core/svg/svg_path_consumer.h"
 #include "third_party/blink/renderer/core/svg/svg_path_data.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
+#include "third_party/blink/renderer/platform/geometry/path_types.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
@@ -34,11 +36,20 @@ class Path;
 
 class SVGPathBuilder final : public SVGPathConsumer {
  public:
-  SVGPathBuilder(Path& path) : path_(path), last_command_(kPathSegUnknown) {}
+  SVGPathBuilder() : last_command_(kPathSegUnknown) {}
+  explicit SVGPathBuilder(WindRule rule) : SVGPathBuilder() {
+    path_builder_.SetWindRule(rule);
+  }
 
   void EmitSegment(const PathSegmentData&) override;
 
   const gfx::PointF& CurrentPoint() const { return current_point_; }
+
+  Path Finalize() { return path_builder_.Finalize(); }
+
+  void Translate(const gfx::Vector2dF& offset) {
+    path_builder_.Translate(offset);
+  }
 
  private:
   void EmitClose();
@@ -57,7 +68,7 @@ class SVGPathBuilder final : public SVGPathConsumer {
 
   gfx::PointF SmoothControl(bool is_smooth) const;
 
-  Path& path_;
+  PathBuilder path_builder_;
 
   SVGPathSegType last_command_;
   gfx::PointF subpath_point_;

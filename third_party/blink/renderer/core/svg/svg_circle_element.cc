@@ -67,7 +67,7 @@ Path SVGCircleElement::AsPath() const {
   if (r > 0) {
     gfx::PointF center =
         PointForLengthPair(style.Cx(), style.Cy(), viewport_resolver, style);
-    path.AddEllipse(center, r, r);
+    path = Path::MakeEllipse(center, r, r);
   }
   return path;
 }
