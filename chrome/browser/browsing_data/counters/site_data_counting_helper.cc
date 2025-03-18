@@ -29,7 +29,6 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -71,16 +70,11 @@ void SiteDataCountingHelper::CountAndDestroySelfWhenFinished() {
     auto buckets_callback =
         base::BindRepeating(&SiteDataCountingHelper::GetQuotaBucketsCallback,
                             base::Unretained(this));
-    const blink::mojom::StorageType types[] = {
-        blink::mojom::StorageType::kTemporary,
-        blink::mojom::StorageType::kSyncable};
-    for (auto type : types) {
-      tasks_ += 1;
-      content::GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&storage::QuotaManager::GetBucketsModifiedBetween,
-                         quota_manager, type, begin_, end_, buckets_callback));
-    }
+    tasks_ += 1;
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&storage::QuotaManager::GetBucketsModifiedBetween,
+                       quota_manager, begin_, end_, buckets_callback));
   }
 
   // Count origins with local storage or session storage.

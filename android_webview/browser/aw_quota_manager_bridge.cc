@@ -30,7 +30,6 @@
 #include "net/base/schemeful_site.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -79,8 +78,7 @@ class GetStorageKeysTask
   friend class base::RefCountedThreadSafe<GetStorageKeysTask>;
   ~GetStorageKeysTask();
 
-  void OnStorageKeysObtained(blink::mojom::StorageType type,
-                             const std::set<blink::StorageKey>& storage_keys);
+  void OnStorageKeysObtained(const std::set<blink::StorageKey>& storage_keys);
 
   void OnUsageAndQuotaObtained(const blink::StorageKey& storage_key,
                                blink::mojom::QuotaStatusCode status_code,
@@ -116,12 +114,10 @@ void GetStorageKeysTask::Run() {
       FROM_HERE,
       base::BindOnce(
           &QuotaManager::GetAllStorageKeys, quota_manager_,
-          base::BindOnce(&GetStorageKeysTask::OnStorageKeysObtained, this,
-                         blink::mojom::StorageType::kTemporary)));
+          base::BindOnce(&GetStorageKeysTask::OnStorageKeysObtained, this)));
 }
 
 void GetStorageKeysTask::OnStorageKeysObtained(
-    blink::mojom::StorageType type,
     const std::set<blink::StorageKey>& storage_keys) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   num_callbacks_to_wait_ = storage_keys.size();
@@ -129,7 +125,7 @@ void GetStorageKeysTask::OnStorageKeysObtained(
 
   for (const blink::StorageKey& storage_key : storage_keys) {
     quota_manager_->GetUsageAndQuota(
-        storage_key, type,
+        storage_key,
         base::BindOnce(&GetStorageKeysTask::OnUsageAndQuotaObtained, this,
                        storage_key));
   }
@@ -383,7 +379,6 @@ void AwQuotaManagerBridge::GetUsageAndQuotaForOrigin(
           &QuotaManager::GetUsageAndQuota, GetQuotaManager(),
           blink::StorageKey::CreateFirstParty(
               url::Origin::Create(GURL(origin_string))),
-          blink::mojom::StorageType::kTemporary,
           base::BindOnce(&OnUsageAndQuotaObtained, std::move(ui_callback))));
 }
 

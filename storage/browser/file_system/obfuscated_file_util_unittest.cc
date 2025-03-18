@@ -420,8 +420,7 @@ class ObfuscatedFileUtilTest : public testing::Test,
         FROM_HERE, base::BindOnce(
                        [](const scoped_refptr<QuotaManager>& quota_manager,
                           SandboxFileSystemTestHelper* sandbox_file_system) {
-                         quota_manager->ResetUsageTracker(
-                             sandbox_file_system->storage_type());
+                         quota_manager->ResetUsageTracker();
                        },
                        quota_manager_, &sandbox_file_system_));
     base::FileErrorOr<base::FilePath> path =

@@ -164,7 +164,6 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-shared.h"
 #include "third_party/blink/public/mojom/private_network_device/private_network_device.mojom.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/scheme_host_port.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -322,11 +321,10 @@ void OnQuotaManagedBucketDeleted(const storage::BucketLocator& bucket,
 
 void PerformQuotaManagerStorageCleanup(
     const scoped_refptr<storage::QuotaManager>& quota_manager,
-    blink::mojom::StorageType quota_storage_type,
     storage::QuotaClientTypes quota_client_types,
     base::OnceClosure callback) {
-  quota_manager->PerformStorageCleanup(
-      quota_storage_type, std::move(quota_client_types), std::move(callback));
+  quota_manager->PerformStorageCleanup(std::move(quota_client_types),
+                                       std::move(callback));
 }
 
 void ClearedGpuCache(base::OnceClosure callback) {
@@ -863,7 +861,6 @@ class StoragePartitionImpl::QuotaManagedDataDeletionHelper {
       StoragePartition::StorageKeyPolicyMatcherFunction storage_key_matcher,
       bool perform_storage_cleanup,
       base::OnceClosure callback,
-      blink::mojom::StorageType quota_storage_type,
       const std::set<storage::BucketLocator>& buckets);
 
  private:
@@ -2683,12 +2680,11 @@ void StoragePartitionImpl::QuotaManagedDataDeletionHelper::ClearDataOnIOThread(
   if (quota_storage_remove_mask_ & QUOTA_MANAGED_STORAGE_MASK_TEMPORARY) {
     IncrementTaskCountOnIO();
     quota_manager->GetBucketsModifiedBetween(
-        blink::mojom::StorageType::kTemporary, begin, end,
+        begin, end,
         base::BindOnce(&QuotaManagedDataDeletionHelper::ClearBucketsOnIOThread,
                        base::Unretained(this), base::RetainedRef(quota_manager),
                        special_storage_policy, storage_key_matcher,
-                       perform_storage_cleanup, decrement_callback,
-                       blink::mojom::StorageType::kTemporary));
+                       perform_storage_cleanup, decrement_callback));
   }
 
   DecrementTaskCountOnIO();
@@ -2702,7 +2698,6 @@ void StoragePartitionImpl::QuotaManagedDataDeletionHelper::
         StoragePartition::StorageKeyPolicyMatcherFunction storage_key_matcher,
         bool perform_storage_cleanup,
         base::OnceClosure callback,
-        blink::mojom::StorageType quota_storage_type,
         const std::set<storage::BucketLocator>& buckets) {
   // The QuotaManager manages all storage other than cookies, LocalStorage,
   // and SessionStorage. This loop wipes out most HTML5 storage for the given
@@ -2722,8 +2717,7 @@ void StoragePartitionImpl::QuotaManagedDataDeletionHelper::
       perform_storage_cleanup
           ? base::BindOnce(&PerformQuotaManagerStorageCleanup,
                            base::WrapRefCounted(quota_manager),
-                           quota_storage_type, quota_client_types,
-                           std::move(callback))
+                           quota_client_types, std::move(callback))
           : std::move(callback);
 
   size_t* deletion_task_count = new size_t(0u);

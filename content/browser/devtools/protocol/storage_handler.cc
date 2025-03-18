@@ -152,7 +152,7 @@ void GetUsageAndQuotaOnIOThread(
     std::unique_ptr<StorageHandler::GetUsageAndQuotaCallback> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   manager->GetUsageAndQuotaForDevtools(
-      storage_key, blink::mojom::StorageType::kTemporary,
+      storage_key,
       base::BindOnce(&GotUsageAndQuotaDataCallback, std::move(callback)));
 }
 

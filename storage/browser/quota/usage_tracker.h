@@ -27,7 +27,6 @@
 #include "storage/browser/quota/quota_manager_impl.h"
 #include "storage/browser/quota/quota_task.h"
 #include "storage/browser/quota/special_storage_policy.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
 namespace blink {
 class StorageKey;
@@ -40,9 +39,9 @@ class ClientUsageTracker;
 // A helper class that gathers and tracks the amount of data stored in
 // all quota clients.
 //
-// Ownership: Each QuotaManagerImpl instance owns 3 instances of this class (one
-// per storage type: Persistent, Temporary, Syncable). Thread-safety: All
-// methods except the constructor must be called on the same sequence.
+// Ownership: Each QuotaManagerImpl instance owns 1 instance of this class.
+// Thread-safety: All methods except the constructor must be called on the same
+// sequence.
 class COMPONENT_EXPORT(STORAGE_BROWSER) UsageTracker
     : public QuotaTaskObserver {
  public:
@@ -51,7 +50,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) UsageTracker
   UsageTracker(
       QuotaManagerImpl* quota_manager_impl,
       const base::flat_map<mojom::QuotaClient*, QuotaClientType>& client_types,
-      blink::mojom::StorageType type,
       scoped_refptr<SpecialStoragePolicy> special_storage_policy);
 
   UsageTracker(const UsageTracker&) = delete;
@@ -119,7 +117,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) UsageTracker
   struct AccumulateInfo;
   friend class ClientUsageTracker;
 
-  void DidGetBucketsForType(QuotaErrorOr<std::set<BucketInfo>> result);
+  void DidGetAllBuckets(QuotaErrorOr<std::set<BucketInfo>> result);
   void DidGetBucketsForStorageKey(const blink::StorageKey& storage_key,
                                   QuotaErrorOr<std::set<BucketInfo>> result);
 
@@ -147,7 +145,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) UsageTracker
   // Raw pointer usage is safe because `quota_manager_impl_` owns `this` and
   // is therefore valid throughout its lifetime.
   const raw_ptr<QuotaManagerImpl> quota_manager_impl_;
-  const blink::mojom::StorageType type_;
   base::flat_map<QuotaClientType, std::unique_ptr<ClientUsageTracker>>
       client_tracker_map_;
 
