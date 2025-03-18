@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_CARD_UNMASK_FLOW_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_CARD_UNMASK_FLOW_METRICS_H_
 
+#include <variant>
+
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -81,8 +83,8 @@ void LogCvcFilling(CvcFillingFlowType flow_type,
                    CreditCard::RecordType record_type);
 void LogServerCardUnmaskResult(
     ServerCardUnmaskResult unmask_result,
-    absl::variant<payments::PaymentsAutofillClient::PaymentsRpcCardType,
-                  CreditCard::RecordType>,
+    std::variant<payments::PaymentsAutofillClient::PaymentsRpcCardType,
+                 CreditCard::RecordType>,
     ServerCardUnmaskFlowType flow_type);
 void LogServerCardUnmaskFormSubmission(
     payments::PaymentsAutofillClient::PaymentsRpcCardType card_type);

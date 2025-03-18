@@ -21,6 +21,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
@@ -201,7 +202,7 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   // Fires OnPrimaryAccountChanged() notifications on all observers.
   void FirePrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent::State& previous_state,
-      absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
+      std::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
           event_source,
       ScopedPrefCommit& scoped_pref_commit);
 

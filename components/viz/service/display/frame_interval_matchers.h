@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -17,7 +18,6 @@
 #include "components/viz/common/quads/frame_interval_inputs.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/viz_service_export.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace viz {
@@ -50,7 +50,7 @@ class VIZ_SERVICE_EXPORT FrameIntervalMatcher {
                // scrolling.
     kDefault,  // Used if nothing matched.
   };
-  using Result = absl::variant<FrameIntervalClass, base::TimeDelta>;
+  using Result = std::variant<FrameIntervalClass, base::TimeDelta>;
   using ResultCallback =
       base::RepeatingCallback<void(Result, FrameIntervalMatcherType)>;
 
@@ -95,9 +95,8 @@ class VIZ_SERVICE_EXPORT FrameIntervalMatcher {
     // FrameIntervalClass result, and instead should pick one of the
     // supported intervals. If this is set to `monostate`, then
     // `FrameIntervalClass` as well as any frame interval can be returned.
-    absl::
-        variant<absl::monostate, FixedIntervalSettings, ContinuousRangeSettings>
-            interval_settings;
+    std::variant<std::monostate, FixedIntervalSettings, ContinuousRangeSettings>
+        interval_settings;
 
     // Timeout to wait for when increasing frame interval, to avoid blip when
     // rapidly switching frame intervals..

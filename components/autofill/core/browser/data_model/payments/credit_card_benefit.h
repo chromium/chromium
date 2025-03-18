@@ -6,12 +6,12 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_PAYMENTS_CREDIT_CARD_BENEFIT_H_
 
 #include <string>
+#include <variant>
 
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "base/types/id_type.h"
 #include "base/types/strong_alias.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/origin.h"
 
 namespace autofill {
@@ -22,9 +22,9 @@ class CreditCardMerchantBenefit;
 
 // An object that stores card benefit information, i.e., a credit-card-linked
 // benefit that users receive when making an online purchase.
-using CreditCardBenefit = absl::variant<CreditCardFlatRateBenefit,
-                                        CreditCardCategoryBenefit,
-                                        CreditCardMerchantBenefit>;
+using CreditCardBenefit = std::variant<CreditCardFlatRateBenefit,
+                                       CreditCardCategoryBenefit,
+                                       CreditCardMerchantBenefit>;
 
 class CreditCardBenefitBase {
  public:

@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <ostream>
+#include <variant>
 
 #include "build/build_config.h"
 #include "components/signin/public/base/consent_level.h"
@@ -48,7 +49,7 @@ class PrimaryAccountChangeEvent {
   PrimaryAccountChangeEvent(
       State previous_state,
       State current_state,
-      absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
+      std::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
           event_source);
   ~PrimaryAccountChangeEvent();
 
@@ -76,12 +77,12 @@ class PrimaryAccountChangeEvent {
   static bool StatesAndEventSourceAreValid(
       PrimaryAccountChangeEvent::State previous_state,
       PrimaryAccountChangeEvent::State current_state,
-      absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
+      std::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
           event_source);
 
  private:
   State previous_state_, current_state_;
-  absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
+  std::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
       event_source_;
 };
 

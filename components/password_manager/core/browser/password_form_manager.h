@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <variant>
 #include <vector>
 
 #include "base/containers/lru_cache.h"
@@ -34,7 +35,6 @@
 #include "components/password_manager/core/browser/password_save_manager.h"
 #include "components/password_manager/core/browser/possible_username_data.h"
 #include "components/password_manager/core/browser/votes_uploader.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
 class ElapsedTimer;
@@ -48,7 +48,7 @@ class PasswordManagerClient;
 class PasswordManagerDriver;
 struct PossibleUsernameData;
 
-using FormOrDigest = absl::variant<autofill::FormData, PasswordFormDigest>;
+using FormOrDigest = std::variant<autofill::FormData, PasswordFormDigest>;
 
 // This class helps with filling the observed form and with saving/updating the
 // stored information about it.
@@ -256,7 +256,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   // Returns a pointer to the observed form if possible or nullptr otherwise.
   const autofill::FormData* observed_form() const {
-    return absl::get_if<autofill::FormData>(&observed_form_or_digest_);
+    return std::get_if<autofill::FormData>(&observed_form_or_digest_);
   }
 
   // Saves username value from |pending_credentials_| to votes uploader.
@@ -337,12 +337,12 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // Returns a mutable pointer to the observed form if possible or nullptr
   // otherwise.
   autofill::FormData* mutable_observed_form() {
-    return absl::get_if<autofill::FormData>(&observed_form_or_digest_);
+    return std::get_if<autofill::FormData>(&observed_form_or_digest_);
   }
 
   // Returns a pointer to the observed digest if possible or nullptr otherwise.
   const PasswordFormDigest* observed_digest() const {
-    return absl::get_if<PasswordFormDigest>(&observed_form_or_digest_);
+    return std::get_if<PasswordFormDigest>(&observed_form_or_digest_);
   }
 
   // Calculates FillingAssistance and ClassificationCorrectness metrics for

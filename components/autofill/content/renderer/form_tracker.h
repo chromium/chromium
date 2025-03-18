@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CONTENT_RENDERER_FORM_TRACKER_H_
 
 #include <optional>
+#include <variant>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -113,7 +114,7 @@ class FormTracker : public content::RenderFrameObserver,
           filled_fields_and_forms);
 
   void UpdateLastInteractedElement(
-      absl::variant<FormRendererId, FieldRendererId> element_id);
+      std::variant<FormRendererId, FieldRendererId> element_id);
   void ResetLastInteractedElements();
 
   // Set whether a user gesture is required to accept text changes. If

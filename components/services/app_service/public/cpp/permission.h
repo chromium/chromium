@@ -8,12 +8,12 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/values.h"
 #include "components/services/app_service/public/cpp/macros.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace apps {
 
@@ -42,7 +42,7 @@ ENUM(TriState,
 struct COMPONENT_EXPORT(APP_TYPES) Permission {
   // The value of a permission can be a TriState or a bool, depending on how the
   // publisher represents permissions.
-  using PermissionValue = absl::variant<bool, TriState>;
+  using PermissionValue = std::variant<bool, TriState>;
 
   Permission(PermissionType permission_type,
              PermissionValue value,

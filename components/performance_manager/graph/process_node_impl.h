@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -31,7 +32,6 @@
 #include "content/public/browser/background_tracing_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
@@ -194,7 +194,7 @@ class ProcessNodeImpl
   friend class ProcessMetricsDecoratorAccess;
 
   using AnyChildProcessHostProxy =
-      absl::variant<RenderProcessHostProxy, BrowserChildProcessHostProxy>;
+      std::variant<RenderProcessHostProxy, BrowserChildProcessHostProxy>;
 
   // Shared constructor for all process types.
   ProcessNodeImpl(content::ProcessType process_type,

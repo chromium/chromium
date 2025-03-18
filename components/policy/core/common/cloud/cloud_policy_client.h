@@ -15,6 +15,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -124,7 +125,7 @@ class POLICY_EXPORT CloudPolicyClient {
                                      const std::string& account_email) {}
   };
 
-  using NotRegistered = absl::monostate;
+  using NotRegistered = std::monostate;
 
   class POLICY_EXPORT Result {
    public:
@@ -144,7 +145,7 @@ class POLICY_EXPORT CloudPolicyClient {
     }
 
    private:
-    absl::variant<NotRegistered, DeviceManagementStatus> result_;
+    std::variant<NotRegistered, DeviceManagementStatus> result_;
     int net_error_ = 0;
   };
 
