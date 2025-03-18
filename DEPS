@@ -867,7 +867,7 @@ deps = {
         'sha256sum': '10bb3276c41dd3e25d5314ef5c0792f9e32da1d9244e0d2cc0796763c5715cc1',
         'size_bytes': 5429372,
         'generation': 1742224445554251,
-        'condition': '(checkout_linux or checkout_mac or checkout_android and host_os != "mac") and non_git_source',
+        'condition': '((checkout_linux or checkout_mac or checkout_android) and host_os == "linux") and non_git_source',
       },
       {
         'object_name': 'Mac/clang-llvmorg-21-init-5118-g52cd27e6-2.tar.xz',
@@ -972,7 +972,7 @@ deps = {
         'sha256sum': 'bb44ac6bfb2865baf19a5f6754abd3570e5a84164149539e5c6b858c7af0a36f',
         'size_bytes': 5520096,
         'generation': 1742224494457747,
-        'condition': 'checkout_linux or checkout_mac or checkout_android and host_os == "win"',
+        'condition': '(checkout_linux or checkout_mac or checkout_android) and host_os == "win"',
       },
     ]
   },
