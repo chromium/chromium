@@ -17,8 +17,7 @@ export function getHtml(this: LetterSpacingMenuElement) {
     .menuItems="${this.options_}"
     event-name="${ToolbarEvent.LETTER_SPACING}"
     current-selected-index="${this.restoredLetterSpacingIndex_()}"
-    @letter-spacing-change="${this.onLetterSpacingChange_}"
-    initial-count="3">
+    @letter-spacing-change="${this.onLetterSpacingChange_}">
 </simple-action-menu>
 <!--_html_template_end_-->`;
   // clang-format on
