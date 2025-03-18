@@ -3734,7 +3734,7 @@ void LocalFrame::PostMessageEvent(
   DOMWindow* window = nullptr;
   if (source_frame)
     window = source_frame->DomWindow();
-  MessagePortArray* ports = nullptr;
+  GCedMessagePortArray* ports = nullptr;
   if (GetDocument()) {
     ports = MessagePort::EntanglePorts(*GetDocument()->GetExecutionContext(),
                                        std::move(message.ports));

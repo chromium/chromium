@@ -56,14 +56,14 @@ class CORE_EXPORT MessageEvent final : public Event {
 
  public:
   static MessageEvent* Create() { return MakeGarbageCollected<MessageEvent>(); }
-  static MessageEvent* Create(MessagePortArray* ports,
+  static MessageEvent* Create(GCedMessagePortArray* ports,
                               const String& origin = String(),
                               const String& last_event_id = String(),
                               EventTarget* source = nullptr) {
     return MakeGarbageCollected<MessageEvent>(origin, last_event_id, source,
                                               ports);
   }
-  static MessageEvent* Create(MessagePortArray* ports,
+  static MessageEvent* Create(GCedMessagePortArray* ports,
                               scoped_refptr<SerializedScriptValue> data,
                               const String& origin = String(),
                               const String& last_event_id = String(),
@@ -71,7 +71,7 @@ class CORE_EXPORT MessageEvent final : public Event {
     return MakeGarbageCollected<MessageEvent>(
         std::move(data), origin, last_event_id, source, ports, nullptr);
   }
-  static MessageEvent* Create(MessagePortArray* ports,
+  static MessageEvent* Create(GCedMessagePortArray* ports,
                               scoped_refptr<SerializedScriptValue> data,
                               UserActivation* user_activation) {
     return MakeGarbageCollected<MessageEvent>(
@@ -150,7 +150,7 @@ class CORE_EXPORT MessageEvent final : public Event {
                         const String& origin,
                         const String& last_event_id,
                         EventTarget* source,
-                        MessagePortArray*,
+                        GCedMessagePortArray*,
                         UserActivation* user_activation,
                         mojom::blink::DelegatedCapability delegated_capability);
   void initMessageEvent(const AtomicString& type,
@@ -160,7 +160,7 @@ class CORE_EXPORT MessageEvent final : public Event {
                         const String& origin,
                         const String& last_event_id,
                         EventTarget* source,
-                        MessagePortArray*);
+                        GCedMessagePortArray*);
 
   ScriptValue data(ScriptState*);
   bool IsDataDirty() const { return is_data_dirty_; }
