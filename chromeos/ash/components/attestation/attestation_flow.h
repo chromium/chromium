@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
@@ -18,7 +19,6 @@
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "chromeos/dbus/common/dbus_callback.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 class AccountId;
@@ -65,9 +65,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
   // the proto fields at `GetCertificateRequest::metadata` in
   // `third_party/cros_system_api/dbus/attestation/interface.proto`.
   // `CertProfileSpecificData` itself is equivalent to a type-safe tagged union
-  // type that can represent any of the types inside the `absl::variant`.
+  // type that can represent any of the types inside the `std::variant`.
   using CertProfileSpecificData =
-      absl::variant<::attestation::DeviceSetupCertificateRequestMetadata>;
+      std::variant<::attestation::DeviceSetupCertificateRequestMetadata>;
 
   // Returns the attestation key type for a given `certificate_profile`.
   //
@@ -148,9 +148,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION)
   // the proto fields at `GetCertificateRequest::metadata` in
   // `third_party/cros_system_api/dbus/attestation/interface.proto`.
   // `CertProfileSpecificData` itself is equivalent to a type-safe tagged union
-  // type that can represent any of the types inside the `absl::variant`.
+  // type that can represent any of the types inside the `std::variant`.
   using CertProfileSpecificData =
-      absl::variant<::attestation::DeviceSetupCertificateRequestMetadata>;
+      std::variant<::attestation::DeviceSetupCertificateRequestMetadata>;
 
   explicit AttestationFlowLegacy(std::unique_ptr<ServerProxy> server_proxy);
 
