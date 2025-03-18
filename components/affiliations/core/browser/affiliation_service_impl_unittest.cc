@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/affiliations/core/browser/affiliation_service_impl.h"
+
 #include <memory>
+#include <variant>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -19,7 +22,6 @@
 #include "base/test/test_simple_task_runner.h"
 #include "components/affiliations/core/browser/affiliation_backend.h"
 #include "components/affiliations/core/browser/affiliation_fetcher_interface.h"
-#include "components/affiliations/core/browser/affiliation_service_impl.h"
 #include "components/affiliations/core/browser/fake_affiliation_api.h"
 #include "components/affiliations/core/browser/mock_affiliation_consumer.h"
 #include "components/affiliations/core/browser/mock_affiliation_fetcher.h"
@@ -31,7 +33,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 using ::testing::_;
 using ::testing::ByMove;

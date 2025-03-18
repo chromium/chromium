@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/autofill_feedback_data.h"
 
+#include <variant>
+
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
@@ -80,7 +82,7 @@ base::Value::Dict BuildLastAutofillEventLogs(AutofillManager* manager) {
     for (const auto& field : form->fields()) {
       for (const auto& field_log_event : field->field_log_events()) {
         if (const TriggerFillFieldLogEvent* trigger_event =
-                absl::get_if<TriggerFillFieldLogEvent>(&field_log_event)) {
+                std::get_if<TriggerFillFieldLogEvent>(&field_log_event)) {
           had_trigger_event = true;
           if (trigger_event->timestamp > last_autofill_event_timestamp) {
             last_autofill_event_timestamp = trigger_event->timestamp;

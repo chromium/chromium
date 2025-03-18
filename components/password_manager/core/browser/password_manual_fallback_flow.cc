@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <variant>
 
 #include "base/check.h"
 #include "base/check_deref.h"
@@ -180,7 +181,7 @@ void PasswordManualFallbackFlow::RunFlow(
   RunFlowImpl(bounds, text_direction);
 }
 
-absl::variant<autofill::AutofillDriver*, PasswordManagerDriver*>
+std::variant<autofill::AutofillDriver*, PasswordManagerDriver*>
 PasswordManualFallbackFlow::GetDriver() {
   return password_manager_driver_.get();
 }

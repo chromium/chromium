@@ -4,6 +4,8 @@
 
 #import "components/autofill/ios/browser/autofill_util.h"
 
+#include <variant>
+
 #import "base/memory/scoped_refptr.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/values.h"
@@ -119,7 +121,7 @@ TEST_F(AutofillUtilTest, ExtractRemoteFrameToken) {
 
   ASSERT_TRUE(ExtractRemoteFrameToken(remote_frame_token_dict,
                                       &token_with_predecessor));
-  EXPECT_EQ(base::ToLowerASCII(absl::get<autofill::RemoteFrameToken>(
+  EXPECT_EQ(base::ToLowerASCII(std::get<autofill::RemoteFrameToken>(
                                    token_with_predecessor.token)
                                    .ToString()),
             "beefbeefbeefbeefcafecafecafecafe");

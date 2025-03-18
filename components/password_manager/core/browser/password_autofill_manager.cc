@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -59,7 +60,6 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
@@ -93,7 +93,7 @@ bool ContainsOtherThanManagePasswords(
 }
 
 std::string GetGuidFromSuggestion(const Suggestion& suggestion) {
-  return absl::holds_alternative<Suggestion::Guid>(suggestion.payload)
+  return std::holds_alternative<Suggestion::Guid>(suggestion.payload)
              ? suggestion.GetPayload<Suggestion::Guid>().value()
              : std::string();
 }
@@ -148,7 +148,7 @@ PasswordAutofillManager::~PasswordAutofillManager() {
   manual_fallback_metrics_recorder_.reset();
 }
 
-absl::variant<autofill::AutofillDriver*, PasswordManagerDriver*>
+std::variant<autofill::AutofillDriver*, PasswordManagerDriver*>
 PasswordAutofillManager::GetDriver() {
   return password_manager_driver_.get();
 }

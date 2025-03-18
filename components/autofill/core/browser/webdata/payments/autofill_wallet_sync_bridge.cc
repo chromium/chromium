@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <utility>
+#include <variant>
 
 #include "base/base64.h"
 #include "base/containers/contains.h"
@@ -372,7 +373,7 @@ std::unique_ptr<syncer::DataBatch> AutofillWalletSyncBridge::GetAllDataImpl(
       return nullptr;
     }
     for (const CreditCardBenefit& benefit : benefits) {
-      CHECK(*absl::visit(
+      CHECK(*std::visit(
                 [](const auto& a) { return a.linked_card_instrument_id(); },
                 benefit) == entry->instrument_id());
       SetEntityDataFromBenefit(benefit, enforce_utf8, *card_data);

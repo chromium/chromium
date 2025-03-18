@@ -10,6 +10,7 @@
 #include <iterator>
 #include <optional>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/check_deref.h"
@@ -64,7 +65,6 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
@@ -140,7 +140,7 @@ const Suggestion* FindTestSuggestion(AutofillClient& client,
                                      base::span<const Suggestion> suggestions,
                                      int index) {
   auto is_test_suggestion = [&client](const Suggestion& suggestion) {
-    auto* guid = absl::get_if<Suggestion::Guid>(&suggestion.payload);
+    auto* guid = std::get_if<Suggestion::Guid>(&suggestion.payload);
     base::span<const AutofillProfile> test_addresses =
         client.GetTestAddresses();
 
@@ -187,7 +187,7 @@ std::optional<AutofillProfile> GetProfileFromPayload(
   };
 
   const Suggestion::AutofillProfilePayload& details =
-      absl::get<Suggestion::AutofillProfilePayload>(payload);
+      std::get<Suggestion::AutofillProfilePayload>(payload);
   std::optional<AutofillProfile> profile =
       GetProfileFromPersonalDataManager(details.guid.value());
   if (profile && !details.email_override.empty()) {
@@ -494,7 +494,7 @@ void AutofillExternalDelegate::OnAutofillAvailabilityEvent(
       query_field_.global_id(), suggestion_availability);
 }
 
-absl::variant<AutofillDriver*, password_manager::PasswordManagerDriver*>
+std::variant<AutofillDriver*, password_manager::PasswordManagerDriver*>
 AutofillExternalDelegate::GetDriver() {
   return &manager_->driver();
 }
@@ -544,7 +544,7 @@ void AutofillExternalDelegate::OnSuggestionsShown(
 
   if (std::ranges::any_of(suggestions, [](const Suggestion& suggestion) {
         const Suggestion::AutofillProfilePayload* profile_payload =
-            absl::get_if<Suggestion::AutofillProfilePayload>(
+            std::get_if<Suggestion::AutofillProfilePayload>(
                 &suggestion.payload);
         return profile_payload && !profile_payload->email_override.empty();
       })) {
@@ -954,7 +954,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kAddressEntry:
     case SuggestionType::kAddressFieldByFieldFilling: {
       const std::string guid =
-          absl::get<Suggestion::AutofillProfilePayload>(suggestion.payload)
+          std::get<Suggestion::AutofillProfilePayload>(suggestion.payload)
               .guid.value();
       if (AddressDataManager& adm = manager_->client()
                                         .GetPersonalDataManager()
@@ -967,7 +967,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     }
     case SuggestionType::kCreditCardEntry: {
       const std::string guid =
-          absl::get<Suggestion::Guid>(suggestion.payload).value();
+          std::get<Suggestion::Guid>(suggestion.payload).value();
       if (PaymentsDataManager& pdm = manager_->client()
                                          .GetPersonalDataManager()
                                          .payments_data_manager();
@@ -1126,7 +1126,7 @@ void AutofillExternalDelegate::FillAutofillFormData(
 
   PersonalDataManager& pdm = manager_->client().GetPersonalDataManager();
   if (const Suggestion::AutofillProfilePayload* profile_payload =
-          absl::get_if<Suggestion::AutofillProfilePayload>(&payload)) {
+          std::get_if<Suggestion::AutofillProfilePayload>(&payload)) {
     std::optional<AutofillProfile> profile =
         type == SuggestionType::kDevtoolsTestAddressEntry
             ? GetTestAddressByGUID(manager_->client().GetTestAddresses(),
@@ -1141,7 +1141,7 @@ void AutofillExternalDelegate::FillAutofillFormData(
   }
   if (const CreditCard* credit_card =
           pdm.payments_data_manager().GetCreditCardByGUID(
-              absl::get<Suggestion::Guid>(payload).value())) {
+              std::get<Suggestion::Guid>(payload).value())) {
     manager_->FillOrPreviewCreditCardForm(
         action_persistence, query_form_, query_field_.global_id(),
         !is_preview && type == SuggestionType::kVirtualCreditCardEntry

@@ -4,12 +4,13 @@
 
 #include "components/attribution_reporting/registration_header_error_mojom_traits.h"
 
+#include <variant>
+
 #include "base/functional/overloaded.h"
 #include "components/attribution_reporting/registration_header_error.h"
 #include "components/attribution_reporting/registration_header_error.mojom-shared.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/bindings/union_traits.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace mojo {
 
@@ -36,7 +37,7 @@ UnionTraits<
     attribution_reporting::RegistrationHeaderErrorDetails>::
     GetTag(
         const attribution_reporting::RegistrationHeaderErrorDetails& details) {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [](attribution_reporting::mojom::SourceRegistrationError) {
             return attribution_reporting::mojom::

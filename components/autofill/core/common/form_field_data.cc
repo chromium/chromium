@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <optional>
 #include <tuple>
+#include <variant>
 
 #include "base/notreached.h"
 #include "base/pickle.h"
@@ -296,22 +297,22 @@ Section::operator bool() const {
 }
 
 bool Section::is_from_autocomplete() const {
-  return absl::holds_alternative<Autocomplete>(value_);
+  return std::holds_alternative<Autocomplete>(value_);
 }
 
 bool Section::is_from_fieldidentifier() const {
-  return absl::holds_alternative<FieldIdentifier>(value_);
+  return std::holds_alternative<FieldIdentifier>(value_);
 }
 
 bool Section::is_default() const {
-  return absl::holds_alternative<Default>(value_);
+  return std::holds_alternative<Default>(value_);
 }
 
 std::string Section::ToString() const {
   static constexpr char kDefaultSection[] = "-default";
 
   std::string section_name;
-  if (const Autocomplete* autocomplete = absl::get_if<Autocomplete>(&value_)) {
+  if (const Autocomplete* autocomplete = std::get_if<Autocomplete>(&value_)) {
     // To prevent potential section name collisions, append `kDefaultSection`
     // suffix to fields without a `HtmlFieldMode`. Without this, 'autocomplete'
     // attribute values "section--shipping street-address" and "shipping
@@ -320,8 +321,7 @@ std::string Section::ToString() const {
                    (autocomplete->mode != HtmlFieldMode::kNone
                         ? "-" + HtmlFieldModeToString(autocomplete->mode)
                         : kDefaultSection);
-  } else if (const FieldIdentifier* f =
-                 absl::get_if<FieldIdentifier>(&value_)) {
+  } else if (const FieldIdentifier* f = std::get_if<FieldIdentifier>(&value_)) {
     FieldIdentifier field_identifier = *f;
     section_name = base::StrCat(
         {field_identifier.field_name, "_",
