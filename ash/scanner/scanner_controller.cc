@@ -119,10 +119,17 @@ std::u16string GetToastMessageForActionFailure(
   }
 }
 
-// Shows an action progress notification. Note that this will remove the
-// previous action notification if there is one.
+// Shows an action progress notification if needed. The new notification will
+// remove the previous action notification if there is one.
 void ShowActionProgressNotification(
     const ScannerActionViewModel& scanner_action) {
+  // No need to show a progress notification for the copy to clipboard action
+  // since this action should be quite fast in typical use cases.
+  if (scanner_action.GetActionCase() ==
+      manta::proto::ScannerAction::kCopyToClipboard) {
+    return;
+  }
+
   message_center::RichNotificationData optional_fields;
   // Show an infinite loading progress bar.
   optional_fields.progress = -1;
@@ -137,10 +144,7 @@ void ShowActionProgressNotification(
       CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_PROGRESS,
           kScannerActionNotificationId,
-          scanner_action.GetActionCase() ==
-                  manta::proto::ScannerAction::kCopyToClipboard
-              ? u"Copying text..."
-              : u"Creating...",
+          /*title=*/u"Creating...",
           /*message=*/u"",
           /*display_source=*/u"", GURL(),
           message_center::NotifierId(
