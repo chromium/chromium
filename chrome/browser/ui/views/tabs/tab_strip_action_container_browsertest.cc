@@ -206,6 +206,12 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 
   ShowTabStripNudgeButton(TabDeclutterButton());
 
+  // Finish showing declutter chip.
+  tab_strip_action_container()
+      ->animation_session_for_testing()
+      ->ResetAnimationForTesting(1);
+  tab_strip_action_container()->GetWidget()->LayoutRootViewIfNecessary();
+
   OnButtonClicked(TabDeclutterButton());
 
   histogram_tester.ExpectUniqueSample(
@@ -224,6 +230,12 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 
   ShowTabStripNudgeButton(TabDeclutterButton());
 
+  // Finish showing declutter chip.
+  tab_strip_action_container()
+      ->animation_session_for_testing()
+      ->ResetAnimationForTesting(1);
+  tab_strip_action_container()->GetWidget()->LayoutRootViewIfNecessary();
+
   OnButtonDismissed(TabDeclutterButton());
 
   histogram_tester.ExpectUniqueSample(
@@ -235,6 +247,12 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   base::HistogramTester histogram_tester;
 
   ShowTabStripNudgeButton(TabDeclutterButton());
+
+  // Finish showing declutter chip.
+  tab_strip_action_container()
+      ->animation_session_for_testing()
+      ->ResetAnimationForTesting(1);
+  tab_strip_action_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   OnTabStripNudgeButtonTimeout(TabDeclutterButton());
 
