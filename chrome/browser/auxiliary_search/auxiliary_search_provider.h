@@ -47,8 +47,6 @@ class AuxiliarySearchProvider : public KeyedService {
 
   void GetNonSensitiveHistoryData(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& j_ref_obj,
-      const base::android::JavaParamRef<jobject>& j_entries_obj,
       const base::android::JavaParamRef<jobject>& j_callback_obj) const;
 
   static void EnsureFactoryBuilt();
