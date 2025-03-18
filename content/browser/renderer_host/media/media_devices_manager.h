@@ -88,6 +88,24 @@ class CONTENT_EXPORT MediaDevicesManager
     kStopAudioAndVideo,  // Stop audio and video monitoring.
   };
 
+  // These constants are parameters that control how caching works.
+  // A spurious invalidation is one where a subsequent enumeration has the same
+  // result as before the invalidation. If a device class receives
+  // `kMaxSpuriousInvalidations` consecutive invalidations, the cache for that
+  // device class enters a relaxed mode, where the cache becomes less
+  // aggressive in trying to return the latest enumeration value.
+  // This situation has been observed in practice when issuing an enumeration
+  // causes some monitors to always report a new invalidation, even if the set
+  // of devices does not change. See crbug.com/325590346.
+  // In relaxed mode, cache entries have an expiration time
+  // (`kExpireTimeInRelaxedMode`). In this mode, new cached values are assumed
+  // valid until they expire and any invalidations received during this period
+  // are ignored. Effectively, this works as a rate limiter in relaxed
+  // mode and protects against a situation where a buggy device or device
+  // monitor continuously produces repeated invalidations.
+  static constexpr int kMaxSpuriousInvalidations = 5;
+  static constexpr base::TimeDelta kExpireTimeInRelaxedMode = base::Seconds(4);
+
   enum class PermissionDeniedState { kDenied, kNotDenied };
 
   using EnumerationCallback =
@@ -102,6 +120,8 @@ class CONTENT_EXPORT MediaDevicesManager
   using UIInputDeviceChangeCallback = base::RepeatingCallback<void(
       MediaDeviceType stream_type,
       const blink::WebMediaDeviceInfoArray& devices)>;
+
+  static bool IsRelaxedCacheFeatureEnabled();
 
   MediaDevicesManager(
       media::AudioSystem* audio_system,
