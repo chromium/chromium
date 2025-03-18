@@ -7414,6 +7414,29 @@ chromium-metrics-reviews@google.com.
   <summary>Location the user clicked to open the Media Router dialog.</summary>
 </histogram>
 
+<histogram
+    name="MediaRouter.MirroringService.DisabledHardwareCodecAndRenegotiated"
+    enum="VideoCodec" expires_after="2026-03-12">
+  <owner>jophba@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records when a hardware encoder gets disabled during a mirroring session,
+    which prompts a renegotiation without that hardware encoder configuration
+    being offered.
+  </summary>
+</histogram>
+
+<histogram name="MediaRouter.MirroringService.GpuFactoryContextLost"
+    enum="VideoCodec" expires_after="2026-03-12">
+  <owner>jophba@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records when the GPU context for the MirroringGpuFactoriesFactory instance
+    is lost. This should prompt a renegotiation without that hardware encoder
+    configuration being offered.
+  </summary>
+</histogram>
+
 <histogram name="MediaRouter.MirroringService.SessionError"
     enum="MirroringServiceErrorType" expires_after="2025-05-18">
   <owner>muyaoxu@google.com</owner>
