@@ -275,6 +275,10 @@ crbug.com/1421437 [ mac passthrough angle-opengl ] WebglExtension_WEBGL_shader_p
 # point. This is for things like tests that fail in a way that negatively and
 # significantly impacts other tests, e.g. killing the test device.
 
+# Skipped while WEBGL_shader_pixel_local_storage is being updated with new enum values.
+# Note: uncomment expectation for Issue 332745399 below when this is removed.
+crbug.com/angleproject/40096838 conformance2/extensions/webgl-shader-pixel-local-storage.html [ Skip ]
+
 # Skipped because EXT_disjoint_timer_query was disabled due to security concerns.
 crbug.com/808744 [ android ] WebglExtension_EXT_disjoint_timer_query_webgl2 [ Skip ]
 
@@ -580,7 +584,7 @@ crbug.com/329211596 [ win11 qualcomm-0x41333430 angle-d3d11 ] deqp/functional/gl
 crbug.com/373852610 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
 
 # Graphite
-crbug.com/332745399 [ win graphite-enabled ] conformance2/extensions/webgl-shader-pixel-local-storage.html [ Failure ]
+# crbug.com/332745399 [ win graphite-enabled ] conformance2/extensions/webgl-shader-pixel-local-storage.html [ Failure ]
 
 ######################
 # Mac Metal failures #
