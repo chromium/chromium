@@ -538,8 +538,9 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
   // Make sure detent is not larger than 75% of the maximum detent value but at
   // least as large as a standard medium detent.
   height = MIN(height, 0.75 * context.maximumDetentValue);
-  CGFloat mediumDetentHeight = [UISheetPresentationControllerDetent.mediumDetent
-      resolvedValueInContext:context];
+  CGFloat mediumDetentHeight =
+      [[UISheetPresentationControllerDetent mediumDetent]
+          resolvedValueInContext:context];
   height = MAX(height, mediumDetentHeight);
   return height;
 }
