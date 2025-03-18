@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_INTENTS_INTENT_TYPE_H_
-#define IOS_CHROME_BROWSER_INTENTS_INTENT_TYPE_H_
+#ifndef IOS_CHROME_BROWSER_INTENTS_MODEL_INTENT_TYPE_H_
+#define IOS_CHROME_BROWSER_INTENTS_MODEL_INTENT_TYPE_H_
 
 // All intent types available for donation.
 //
@@ -11,6 +11,7 @@
 // numeric values should never be reused.
 // Logged as IOSSpotlightDonatedIntentType enum for
 // IOS.Spotlight.DonatedIntentType histogram.
+// LINT.IfChange(IOSSpotlightDonatedIntentType)
 enum class IntentType {
   kSearchInChrome = 0,         // SearchInChromeIntent
   kOpenReadingList = 1,        // OpenReadingListIntent
@@ -34,6 +35,6 @@ enum class IntentType {
   kManageSettings = 19,        // ManageSettingsIntent
   kMaxValue = kManageSettings,
 };
-// LINT.ThenChange(src/tools/metrics/histograms/enums.xml:IOSSpotlightDonatedIntentType)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSSpotlightDonatedIntentType)
 
-#endif  // IOS_CHROME_BROWSER_INTENTS_INTENT_TYPE_H_
+#endif  // IOS_CHROME_BROWSER_INTENTS_MODEL_INTENT_TYPE_H_

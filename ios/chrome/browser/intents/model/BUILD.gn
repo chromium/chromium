@@ -1,4 +1,4 @@
-source_set("intents_donation_helper") {
+source_set("model_donation_helper") {
   sources = [
     "intents_donation_helper.h",
     "intents_donation_helper.mm",
@@ -50,7 +50,7 @@ source_set("user_activity_browser_agent") {
     "//ios/chrome/app/profile",
     "//ios/chrome/app/spotlight",
     "//ios/chrome/app/startup:startup_basic",
-    "//ios/chrome/browser/intents:intent_type",
+    "//ios/chrome/browser/intents/model:intent_type",
     "//ios/chrome/browser/metrics/model:metrics_internal",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/search_engines/model",

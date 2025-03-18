@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/intents/user_activity_browser_agent.h"
+#import "ios/chrome/browser/intents/model/user_activity_browser_agent.h"
 
 #import <CoreSpotlight/CoreSpotlight.h>
 
@@ -30,7 +30,7 @@
 #import "ios/chrome/app/spotlight/actions_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/spotlight_util.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
-#import "ios/chrome/browser/intents/intents_constants.h"
+#import "ios/chrome/browser/intents/model/intents_constants.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/connection_information.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"

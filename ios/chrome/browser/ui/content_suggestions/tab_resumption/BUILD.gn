@@ -32,7 +32,7 @@ source_set("tab_resumption") {
     "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/favicon/model",
-    "//ios/chrome/browser/intents:intents_donation_helper",
+    "//ios/chrome/browser/intents/model:model_donation_helper",
     "//ios/chrome/browser/metrics/model:metrics_internal",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/ntp/ui_bundled",

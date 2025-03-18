@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/intents/user_activity_browser_agent.h"
+#import "ios/chrome/browser/intents/model/user_activity_browser_agent.h"
 
 #import <CoreSpotlight/CoreSpotlight.h>
 #import <Intents/Intents.h>
@@ -26,8 +26,8 @@
 #import "ios/chrome/app/spotlight/actions_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/spotlight_util.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
-#import "ios/chrome/browser/intents/intent_type.h"
-#import "ios/chrome/browser/intents/intents_constants.h"
+#import "ios/chrome/browser/intents/model/intent_type.h"
+#import "ios/chrome/browser/intents/model/intents_constants.h"
 #import "ios/chrome/browser/metrics/model/first_user_action_recorder.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/intents/intents_constants.h"
+#import "ios/chrome/browser/intents/model/intents_constants.h"
 
 NSString* const kShortcutNewSearch = @"OpenNewSearch";
 NSString* const kShortcutNewIncognitoSearch = @"OpenIncognitoSearch";
