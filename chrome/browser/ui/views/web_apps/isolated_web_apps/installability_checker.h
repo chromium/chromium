@@ -8,11 +8,11 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/check_isolated_web_app_bundle_installability_command.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class Profile;
 
@@ -44,11 +44,11 @@ class InstallabilityChecker {
     SignedWebBundleMetadata metadata;
     base::Version installed_version;
   };
-  using Result = absl::variant<ProfileShutdown,
-                               BundleInvalid,
-                               BundleInstallable,
-                               BundleUpdatable,
-                               BundleOutdated>;
+  using Result = std::variant<ProfileShutdown,
+                              BundleInvalid,
+                              BundleInstallable,
+                              BundleUpdatable,
+                              BundleOutdated>;
 
   static std::unique_ptr<InstallabilityChecker> CreateAndStart(
       Profile* profile,

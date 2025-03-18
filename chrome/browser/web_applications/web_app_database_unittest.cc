@@ -66,7 +66,6 @@
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

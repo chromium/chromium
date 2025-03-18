@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_STORAGE_LOCATION_H_
 
 #include <string>
+#include <variant>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/values.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/origin.h"
 
 namespace web_app {
@@ -97,13 +97,13 @@ class IsolatedWebAppStorageLocation {
   using UnownedBundle = IwaStorageUnownedBundle;
   using Proxy = IwaStorageProxy;
 
-  using Variant = absl::variant<OwnedBundle, UnownedBundle, Proxy>;
+  using Variant = std::variant<OwnedBundle, UnownedBundle, Proxy>;
 
   // Create implicit constructors for each of the variant values. This allows
   // passing an instance of one of the variant values (e.g., `OwnedBundle`) to a
   // function accepting an `IsolatedWebAppStorageLocation` without an explicit
   // conversion. Thus, this class behaves more akin to how a "raw"
-  // `absl::variant` would behave, and reduces the amount of boilerplate
+  // `std::variant` would behave, and reduces the amount of boilerplate
   // necessary.
   template <typename V>
   // NOLINTNEXTLINE(google-explicit-constructor)

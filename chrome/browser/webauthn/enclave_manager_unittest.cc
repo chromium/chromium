@@ -13,6 +13,7 @@
 #include <string_view>
 #include <tuple>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -1614,9 +1615,9 @@ class EnclaveUVTest : public EnclaveManagerTest {
 #endif
   }
 
-  absl::variant<crypto::ScopedFakeUserVerifyingKeyProvider,
-                crypto::ScopedNullUserVerifyingKeyProvider,
-                crypto::ScopedFailingUserVerifyingKeyProvider>
+  std::variant<crypto::ScopedFakeUserVerifyingKeyProvider,
+               crypto::ScopedNullUserVerifyingKeyProvider,
+               crypto::ScopedFailingUserVerifyingKeyProvider>
       fake_provider_;
 
 #if BUILDFLAG(IS_MAC)

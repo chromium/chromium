@@ -9,6 +9,8 @@
 
 #include "chrome/common/profiler/thread_profiler_configuration.h"
 
+#include <variant>
+
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/no_destructor.h"
@@ -76,11 +78,11 @@ ThreadProfilerConfiguration::GetSamplingParams() const {
 
 bool ThreadProfilerConfiguration::IsProfilerEnabledForCurrentProcess() const {
   if (const ChildProcessConfiguration* child_process_configuration =
-          absl::get_if<ChildProcessConfiguration>(&configuration_)) {
+          std::get_if<ChildProcessConfiguration>(&configuration_)) {
     return *child_process_configuration == kChildProcessProfileEnabled;
   }
 
-  const auto& config = absl::get<BrowserProcessConfiguration>(configuration_);
+  const auto& config = std::get<BrowserProcessConfiguration>(configuration_);
   return EnableForVariationGroup(config.variation_group) &&
          IsProcessGloballyEnabled(
              config,
@@ -98,8 +100,8 @@ bool ThreadProfilerConfiguration::IsProfilerEnabledForCurrentProcessAndThread(
 bool ThreadProfilerConfiguration::GetSyntheticFieldTrial(
     std::string* trial_name,
     std::string* group_name) const {
-  DCHECK(absl::holds_alternative<BrowserProcessConfiguration>(configuration_));
-  const auto& config = absl::get<BrowserProcessConfiguration>(configuration_);
+  DCHECK(std::holds_alternative<BrowserProcessConfiguration>(configuration_));
+  const auto& config = std::get<BrowserProcessConfiguration>(configuration_);
 
   if (!config.variation_group.has_value()) {
     return false;
@@ -133,7 +135,7 @@ bool ThreadProfilerConfiguration::GetSyntheticFieldTrial(
 
 bool ThreadProfilerConfiguration::IsProfilerEnabledForChildProcess(
     sampling_profiler::ProfilerProcessType child_process) const {
-  const auto& config = absl::get<BrowserProcessConfiguration>(configuration_);
+  const auto& config = std::get<BrowserProcessConfiguration>(configuration_);
 
   const double enable_fraction =
       platform_configuration_->GetChildProcessPerExecutionEnableFraction(
@@ -146,7 +148,7 @@ bool ThreadProfilerConfiguration::IsProfilerEnabledForChildProcess(
 
 void ThreadProfilerConfiguration::AppendCommandLineSwitchForChildProcess(
     base::CommandLine* child_process_command_line) const {
-  DCHECK(absl::holds_alternative<BrowserProcessConfiguration>(configuration_));
+  DCHECK(std::holds_alternative<BrowserProcessConfiguration>(configuration_));
   if (!IsProfilerEnabledForChildProcess(
           GetProfilerProcessType(*child_process_command_line))) {
     return;

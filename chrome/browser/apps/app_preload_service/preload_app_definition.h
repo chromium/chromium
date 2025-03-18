@@ -8,12 +8,12 @@
 #include <map>
 #include <ostream>
 #include <string>
+#include <variant>
 
 #include "chrome/browser/apps/app_preload_service/proto/app_preload.pb.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_types.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/package_id.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class GURL;
 
@@ -73,7 +73,7 @@ using ShelfPinOrdering = std::map<apps::PackageId, uint32_t>;
 
 // LauncherItem is either an app represented by a PackageId, or a folder
 // represented by a string.
-using LauncherItem = absl::variant<apps::PackageId, std::string>;
+using LauncherItem = std::variant<apps::PackageId, std::string>;
 
 // LauncherItemData is the associated data for a LauncherItem.
 struct LauncherItemData {

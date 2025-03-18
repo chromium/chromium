@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <variant>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -21,7 +22,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom.h"
 
 class BrowserWindowInterface;
@@ -91,7 +91,7 @@ class HistoryClustersHandler : public mojom::PageHandler,
       base::WeakPtr<TopChromeWebUIController::Embedder> side_panel_embedder);
 
   using ContextInterface =
-      absl::variant<BrowserWindowInterface*, tabs::TabInterface*>;
+      std::variant<BrowserWindowInterface*, tabs::TabInterface*>;
   void SetContextInterface(ContextInterface interface);
 
   // Used to set the in-page query from the browser.

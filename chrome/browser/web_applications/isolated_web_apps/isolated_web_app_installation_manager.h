@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/files/scoped_temp_file.h"
 #include "base/functional/callback_forward.h"
@@ -114,7 +115,7 @@ class IsolatedWebAppInstallationManager {
                            NoInstallationWhenDevModePolicyDisabled);
 
   static IsolatedWebAppInstallSource CreateInstallSource(
-      absl::variant<base::FilePath, const base::ScopedTempFile*, url::Origin>
+      std::variant<base::FilePath, const base::ScopedTempFile*, url::Origin>
           source,
       InstallSurface surface);
 
