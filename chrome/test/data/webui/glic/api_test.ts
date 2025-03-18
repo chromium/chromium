@@ -251,6 +251,7 @@ class ApiTests extends ApiTestFixtureBase {
       innerText: true,
       viewportScreenshot: true,
       annotatedPageContent: true,
+      maxMetaTags: 32,
       pdfData: true,
     });
 
@@ -277,6 +278,21 @@ class ApiTests extends ApiTestFixtureBase {
              .bytes())
             .length;
     assertTrue(annotatedPageContentSize > 1);
+
+    // Check metadata.
+    assertTrue(!!result.annotatedPageData.metadata);
+    assertTrue(!!result.annotatedPageData.metadata.frameMetadata);
+    assertEquals(
+        result.annotatedPageData.metadata.frameMetadata.length, 1);
+    const frameMetadata = result.annotatedPageData.metadata.frameMetadata[0];
+    assertTrue(!!frameMetadata);
+    const url:URL = new URL(frameMetadata.url);
+    assertEquals(url.pathname, '/glic/test.html');
+    assertEquals(frameMetadata.metaTags.length, 1);
+    const metaTag = frameMetadata.metaTags[0];
+    assertTrue(!!metaTag);
+    assertEquals(metaTag.name, 'author');
+    assertEquals(metaTag.content, 'George');
   }
 
   // TODO(harringtond): This is disabled because it hangs. Fix it.
