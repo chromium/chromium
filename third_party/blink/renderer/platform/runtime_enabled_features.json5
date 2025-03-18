@@ -5130,7 +5130,6 @@
       // on a worker thread.
       name: "WebUIBundledCodeCacheAsyncFetch",
       status: "experimental",
-      base_feature: "none",
     },
     {
       name: "WebUSB",
