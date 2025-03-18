@@ -131,8 +131,7 @@
 
 - (void)showHandoff {
   HandoffTableViewController* viewController =
-      [[HandoffTableViewController alloc]
-          initWithProfile:self.browser->GetProfile()];
+      [[HandoffTableViewController alloc] initWithProfile:self.profile];
   [self.viewController configureHandlersForRootViewController:viewController];
   [self.baseNavigationController pushViewController:viewController
                                            animated:YES];
