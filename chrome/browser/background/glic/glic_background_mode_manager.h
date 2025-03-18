@@ -79,6 +79,8 @@ class GlicBackgroundModeManager
     return keep_alive_ != nullptr;
   }
 
+  GlicStatusIcon* GetStatusIconForTesting() { return status_icon_.get(); }
+
   void EnterBackgroundMode();
   void ExitBackgroundMode();
 

@@ -11,18 +11,25 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/cr_elements/md_select.css.js';
 import '../settings_shared.css.js';
 
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './autofill_ai_add_or_edit_dialog.html.js';
+import type {CountryDetailManagerProxy} from './country_detail_manager_proxy.js';
+import {CountryDetailManagerProxyImpl} from './country_detail_manager_proxy.js';
 import type {EntityDataManagerProxy} from './entity_data_manager_proxy.js';
 import {EntityDataManagerProxyImpl} from './entity_data_manager_proxy.js';
 
 type AttributeInstance = chrome.autofillPrivate.AttributeInstance;
 type AttributeType = chrome.autofillPrivate.AttributeType;
+const AttributeTypeDataType = chrome.autofillPrivate.AttributeTypeDataType;
+type CountryEntry = chrome.autofillPrivate.CountryEntry;
 type EntityInstance = chrome.autofillPrivate.EntityInstance;
 
 export interface SettingsAutofillAiAddOrEditDialogElement {
@@ -64,6 +71,25 @@ export class SettingsAutofillAiAddOrEditDialogElement extends PolymerElement {
        */
       completeAttributeInstanceList_: {
         type: Array,
+        computed: 'computeCompleteAttributeInstanceList_(countryList_, ' +
+            'completeAttributeTypesList_)',
+      },
+
+      /**
+         The list of all countries that should be displayed in a <select>
+         element for a country field.
+       */
+      countryList_: {
+        type: Array,
+        value: () => [],
+      },
+
+      /**
+         Complete list of attribute types that are associated with the
+         current entity type.
+       */
+      completeAttributeTypesList_: {
+        type: Array,
         value: () => [],
       },
 
@@ -83,33 +109,110 @@ export class SettingsAutofillAiAddOrEditDialogElement extends PolymerElement {
   entityInstance: EntityInstance|null;
   dialogTitle: string;
   private completeAttributeInstanceList_: AttributeInstance[];
+  private countryList_: CountryEntry[];
+  private completeAttributeTypesList_: AttributeType[];
   private canSave_: boolean;
   private userClickedSaveButton_: boolean = false;
   private entityDataManager_: EntityDataManagerProxy =
       EntityDataManagerProxyImpl.getInstance();
+  private countryDetailManager_: CountryDetailManagerProxy =
+      CountryDetailManagerProxyImpl.getInstance();
 
-  override connectedCallback(): void {
+  override async connectedCallback(): Promise<void> {
     super.connectedCallback();
 
+    this.countryList_ = await this.countryDetailManager_.getCountryList(
+        /*forAccountStorage=*/ false);
+
     assert(this.entityInstance);
-    this.entityDataManager_
-        .getAllAttributeTypesForEntityTypeName(
-            this.entityInstance.type.typeName)
-        .then((attributeTypes: AttributeType[]) => {
-          this.completeAttributeInstanceList_ =
-              attributeTypes.map(attributeType => {
-                assert(this.entityInstance);
-                const existingAttributeInstance =
-                    this.entityInstance.attributeInstances.find(
-                        existingAttributeInstance =>
-                            existingAttributeInstance.type.typeName ===
-                            attributeType.typeName);
-                return {
-                  type: attributeType,
-                  value: existingAttributeInstance?.value || '',
-                };
-              });
-        });
+    this.completeAttributeTypesList_ =
+        await this.entityDataManager_.getAllAttributeTypesForEntityTypeName(
+            this.entityInstance.type.typeName);
+  }
+
+  private computeCompleteAttributeInstanceList_(): AttributeInstance[] {
+    if (this.countryList_.length === 0 ||
+        this.completeAttributeTypesList_.length === 0) {
+      return [];
+    }
+
+    return this.completeAttributeTypesList_.map(attributeType => {
+      assert(this.entityInstance);
+      const existingAttributeInstance =
+          this.entityInstance.attributeInstances.find(
+              existingAttributeInstance =>
+                  existingAttributeInstance.type.typeName ===
+                  attributeType.typeName);
+      this.convertCountryAttributeInstance_(existingAttributeInstance);
+      return {
+        type: attributeType,
+        value: existingAttributeInstance?.value || '',
+      };
+    });
+  }
+
+  private convertCountryAttributeInstance_(
+      attributeInstace: AttributeInstance|undefined): void {
+    if (!attributeInstace) {
+      return;
+    }
+    // If `entityInstance` has a value stored for the country attribute, the
+    // value will be the country name, not the country code. I.e. The value will
+    // be "Germany", not "DE". On the other hand, the value stored into
+    // `completeAttributeInstanceList_` should be the country code, not the
+    // country name. I.e. The value should be "DE", not "Germany".
+    // This logic exists because of a trade-off in the C++ autofill private API,
+    // that has to call `EntityInstance::GetCompleteInfo()`, instead of
+    // `EntityInstance::GetRawInfo()`.
+    if (attributeInstace.type.dataType === AttributeTypeDataType.COUNTRY) {
+      // TODO(crbug.com/403312087): Remove comment and exclamation marks once
+      // the <hr> TODO below is solved.
+      // The find operation will always find a match. Currently, the only entry
+      // that doesn't have a name or a country code is the separator.
+      attributeInstace.value = this.countryList_
+                                   .find(
+                                       country => attributeInstace.value ===
+                                           country.name)!.countryCode!;
+    }
+  }
+
+  private isCountryDataType_(attributeInstace: AttributeInstance): boolean {
+    return attributeInstace.type.dataType === AttributeTypeDataType.COUNTRY;
+  }
+
+  private isStringDataType_(attributeInstace: AttributeInstance): boolean {
+    // TODO(crbug.com/393318914): Handle dates separately.
+    return attributeInstace.type.dataType === AttributeTypeDataType.STRING ||
+        attributeInstace.type.dataType === AttributeTypeDataType.DATE;
+  }
+
+  private getCountryCode_(country: CountryEntry): string {
+    // In case there is no country code, the string does not matter as long as
+    // it is not empty and does not collide with any other country code.
+    return country.countryCode || 'SEPARATOR';
+  }
+
+  private getCountryName_(country: CountryEntry): string {
+    // TODO(crbug.com/403312087): Use <hr> as a separator, instead of hacking
+    // the separator like this. To accommodate this, potentially refactor the
+    // `CountryDetailManagerProxy` to return separately the current country and
+    // the list of all countries. Do the same for regular Autofill.
+    return country.name || '------';
+  }
+
+  private isCountrySeparator_(country: CountryEntry): boolean {
+    return !country.countryCode;
+  }
+
+  private isCountrySelected_(
+      attributeInstance: AttributeInstance, country: CountryEntry): boolean {
+    return attributeInstance.value === this.getCountryCode_(country);
+  }
+
+  private onCountrySelectChange_(e: DomRepeatEvent<AttributeInstance>) {
+    this.completeAttributeInstanceList_[e.model.index].value =
+        (e.target as HTMLSelectElement).value;
+    this.onAttributeInstanceFieldInput_(e);
   }
 
   private onCancelClick_(): void {

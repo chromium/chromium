@@ -33,14 +33,13 @@ _SRC_PATH = pathlib.Path(__file__).resolve().parents[2]
 _ANDROIDX_PATH = _SRC_PATH / 'third_party/androidx'
 _CIPD_PATH = _ANDROIDX_PATH / 'cipd'
 _BOM_NAME = 'bill_of_materials.json'
+_EXTRACT_SCRIPT_PATH = _ANDROIDX_PATH / 'extract_and_commit_extras.py'
 
 sys.path.insert(1, str(_SRC_PATH / 'third_party/depot_tools'))
 import gclient_eval
 
 sys.path.insert(1, str(_SRC_PATH / 'build/autoroll'))
 import fetch_util
-
-_FETCH_ALL_PATH = _SRC_PATH / 'third_party/android_deps/fetch_all.py'
 
 # URL to artifacts in latest androidx snapshot.
 _ANDROIDX_LATEST_SNAPSHOT_ARTIFACTS_URL = 'https://androidx.dev/snapshots/latest/artifacts'
@@ -74,16 +73,6 @@ _FILES_TO_COMMIT = [
     'BUILD.gn',
     'build.gradle',
 ]
-_CIPD_DATA_FILES = _FILES_TO_COMMIT + [
-    'VERSION.txt',
-    'to_commit.zip',
-]
-
-_GENERATED_DISCLAIMER = '''\
-// **IMPORTANT**: build.gradle is generated and any changes would be overridden
-//                by the autoroller. Please update build.gradle.template
-//                instead.
-'''
 
 
 def _build_snapshot_repository_url(version):
@@ -162,15 +151,17 @@ def main():
                         help='Path to a locally androidx maven repo to use '
                         'instead of fetching the latest.')
     parser.add_argument(
-        '--no-roll',
+        '--local',
         action='store_true',
-        help='If passed then we will not try rolling the '
-        'latest androidx but use the currently rolled version.')
+        help='If passed then we will run the extract_and_commit_extras.py '
+        'script and will not try rolling to the latest snapshot but reprocess '
+        'the project at the current androidx.dev snapshot.')
     parser.add_argument(
         '--use-bom',
         action='store_true',
         help='If passed then we will use the existing bill_of_materials.json '
-        'instead of resolving the latest androidx.')
+        'instead of resolving the latest androidx (faster but might resolve '
+        'incorrect versions if deps are added/removed).')
     args, extra_args = parser.parse_known_args()
 
     logging.basicConfig(
@@ -182,7 +173,7 @@ def main():
         androidx_snapshot_repository_url = ('file://' +
                                             os.path.abspath(args.local_repo))
     else:
-        if args.no_roll:
+        if args.local:
             version = _get_current_androidx_version()
             logging.info('Resolved current androidx version to %s', version)
         else:
@@ -195,24 +186,16 @@ def main():
         version = 'cr-0' + version
 
     if args.use_bom:
-        version_map_str = fetch_util.generate_version_map_str(_CIPD_PATH /
+        version_map_str = fetch_util.generate_version_map_str(_ANDROIDX_PATH /
                                                               _BOM_NAME)
     else:
         version_map_str = ''
 
-    if os.path.exists(_CIPD_PATH):
-        shutil.rmtree(_CIPD_PATH)
-    os.mkdir(_CIPD_PATH)
-
     fetch_util.fill_template(
         _ANDROIDX_PATH / 'build.gradle.template',
-        _CIPD_PATH / 'build.gradle',
+        _ANDROIDX_PATH / 'build.gradle',
         version_overrides=version_map_str,
-        androidx_repository_url=androidx_snapshot_repository_url,
-        generated_disclaimer=_GENERATED_DISCLAIMER)
-
-    shutil.copyfile(os.path.join(_ANDROIDX_PATH, 'BUILD.gn'),
-                    os.path.join(_CIPD_PATH, 'BUILD.gn'))
+        androidx_repository_url=androidx_snapshot_repository_url)
 
     # Overrides do not work with local snapshots since the repository_url is
     # different.
@@ -220,7 +203,10 @@ def main():
         for subpath, url in _OVERRIDES:
             extra_args += ['--override-artifact', f'{subpath}:{url}']
 
-    fetch_util.run_fetch_all(android_deps_dir=_CIPD_PATH,
+    os.makedirs(_CIPD_PATH, exist_ok=True)
+
+    fetch_util.run_fetch_all(android_deps_dir=_ANDROIDX_PATH,
+                             output_subdir='cipd',
                              extra_args=extra_args,
                              verbose_count=args.verbose_count)
 
@@ -233,8 +219,7 @@ def main():
         _ANDROIDX_PATH / 'build.gradle.template',
         _CIPD_PATH / 'build.gradle',
         version_overrides=version_map_str,
-        androidx_repository_url=androidx_snapshot_repository_url,
-        generated_disclaimer=_GENERATED_DISCLAIMER)
+        androidx_repository_url=androidx_snapshot_repository_url)
 
     version_txt_path = os.path.join(_CIPD_PATH, 'VERSION.txt')
     with open(version_txt_path, 'w') as f:
@@ -246,6 +231,10 @@ def main():
                                     package_root=_CIPD_PATH,
                                     dirnames=['libs'],
                                     absolute_file_map=file_map)
+    if args.local:
+        subprocess.run(
+            [_EXTRACT_SCRIPT_PATH, '--cipd-package-path', _CIPD_PATH],
+            check=True)
 
     fetch_util.write_cipd_yaml(package_root=_CIPD_PATH,
                                package_name=_CIPD_PACKAGE,

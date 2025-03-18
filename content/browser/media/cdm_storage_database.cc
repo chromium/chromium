@@ -287,7 +287,7 @@ CdmStorageKeyUsageSize CdmStorageDatabase::GetUsagePerAllStorageKeys(
   while (get_all_storage_keys_statement.Step()) {
     std::optional<blink::StorageKey> maybe_storage_key =
         blink::StorageKey::Deserialize(
-            get_all_storage_keys_statement.ColumnString(0));
+            get_all_storage_keys_statement.ColumnStringView(0));
     if (maybe_storage_key) {
       auto storage_key = maybe_storage_key.value();
       usage_per_storage_keys.emplace_back(

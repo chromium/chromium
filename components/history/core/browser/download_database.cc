@@ -52,7 +52,7 @@ void BindFilePath(sql::Statement& statement,
   statement.BindString(col, path.value());
 }
 base::FilePath ColumnFilePath(sql::Statement& statement, int col) {
-  return base::FilePath(statement.ColumnString(col));
+  return base::FilePath(statement.ColumnStringView(col));
 }
 
 #else
@@ -64,7 +64,7 @@ void BindFilePath(sql::Statement& statement,
   statement.BindString(col, path.AsUTF8Unsafe());
 }
 base::FilePath ColumnFilePath(sql::Statement& statement, int col) {
-  return base::FilePath::FromUTF8Unsafe(statement.ColumnString(col));
+  return base::FilePath::FromUTF8Unsafe(statement.ColumnStringView(col));
 }
 
 #endif

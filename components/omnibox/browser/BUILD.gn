@@ -132,6 +132,8 @@ static_library("vector_icons") {
 
 static_library("browser") {
   sources = [
+    "actions/contextual_search_action.cc",
+    "actions/contextual_search_action.h",
     "actions/omnibox_action.cc",
     "actions/omnibox_action.h",
     "actions/omnibox_action_concepts.h",

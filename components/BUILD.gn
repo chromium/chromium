@@ -680,6 +680,8 @@ test("components_unittests") {
       "//components/translate/content/android:unit_tests",
       "//components/variations:variations_associated_data",
       "//components/variations/android:variations_java",
+      "//components/visited_url_ranking/internal:internal_java",
+      "//components/visited_url_ranking/internal:native_test_helper_java",
       "//components/webapps/browser/android:java",
       "//components/webapps/browser/android:unit_tests",
       "//components/webauthn/android:unit_tests",

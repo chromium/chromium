@@ -2814,7 +2814,7 @@ public class StripLayoutHelperTest {
 
         // Act: Close tab and remove from group.
         mStripLayoutHelper.handleCloseButtonClick(tabs[0], TIMESTAMP);
-        when(mTabGroupModelFilter.getRelatedTabCountForRootId(eq(0))).thenReturn(1);
+        when(mTabGroupModelFilter.getTabCountForGroup(groupTitle.getTabGroupId())).thenReturn(1);
         mStripLayoutHelper.finishAnimationsAndPushTabUpdates();
 
         // availableSize = width(800) - NTB(32) - endPadding(8) - offsetXLeft(10) - offsetXRight(20)
@@ -4543,16 +4543,17 @@ public class StripLayoutHelperTest {
      */
     private void groupTabs(int startIndex, int endIndex) {
         int groupRootId = mModel.getTabAt(startIndex).getId();
+        Token tabGroupId = new Token(0L, groupRootId);
         int numTabs = endIndex - startIndex;
         List<Tab> relatedTabs = new ArrayList<>();
         for (int i = startIndex; i < endIndex; i++) {
             Tab tab = mModel.getTabAt(i);
             when(mTabGroupModelFilter.isTabInTabGroup(eq(tab))).thenReturn(true);
             when(tab.getRootId()).thenReturn(groupRootId);
-            when(tab.getTabGroupId()).thenReturn(new Token(0L, groupRootId));
+            when(tab.getTabGroupId()).thenReturn(tabGroupId);
             relatedTabs.add(tab);
         }
-        when(mTabGroupModelFilter.getRelatedTabCountForRootId(eq(groupRootId))).thenReturn(numTabs);
+        when(mTabGroupModelFilter.getTabCountForGroup(eq(tabGroupId))).thenReturn(numTabs);
         when(mTabGroupModelFilter.getRelatedTabListForRootId(eq(groupRootId)))
                 .thenReturn(relatedTabs);
 

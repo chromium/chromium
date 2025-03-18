@@ -13,6 +13,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
+#include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -54,7 +55,8 @@ class ControlledHomeBubbleDelegateTest : public BrowserWithTestWindowTest {
                 "chrome_settings_overrides",
                 base::Value::Dict().Set("homepage", "http://www.google.com"))
             .Build();
-    extension_service_->GrantPermissions(extension.get());
+    extensions::PermissionsUpdater(profile()).GrantActivePermissions(
+        extension.get());
     extension_service_->AddExtension(extension.get());
 
     return extension;

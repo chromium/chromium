@@ -215,7 +215,7 @@ unsigned FontPlatformData::GetHash() const {
   // rules. Memcpy is generally optimized enough so that performance doesn't
   // matter here.
   uint32_t text_size_bytes;
-  memcpy(&text_size_bytes, &text_size_, sizeof(uint32_t));
+  UNSAFE_TODO(memcpy(&text_size_bytes, &text_size_, sizeof(uint32_t)));
   h ^= text_size_bytes;
 
   return h;

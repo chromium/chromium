@@ -22,6 +22,7 @@ OnDeviceOptions::OnDeviceOptions(const OnDeviceOptions& orig)
       adapter(orig.adapter),
       safety_checker(std::make_unique<SafetyChecker>(*orig.safety_checker)),
       token_limits(orig.token_limits),
+      capabilities(orig.capabilities),
       logger(orig.logger) {}
 
 bool OnDeviceOptions::ShouldUse() const {
@@ -52,7 +53,10 @@ OnDeviceContext::GetOrCreateSession() {
   if (session_) {
     return session_;
   }
-  opts_.model_client->StartSession(session_.BindNewPipeAndPassReceiver());
+  auto params = on_device_model::mojom::SessionParams::New();
+  params->capabilities = opts_.capabilities;
+  opts_.model_client->StartSession(session_.BindNewPipeAndPassReceiver(),
+                                   std::move(params));
   session_.reset_on_disconnect();
   if (input_ && input_->pieces.size() > 0) {
     AddContext();

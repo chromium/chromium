@@ -75,8 +75,7 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
     public void testStartReorder() {
         // Mock interacting view in a group
         when(mTabForInteractingView.getRootId()).thenReturn(INTERACTING_VIEW_ROOT_ID);
-        when(mTabGroupModelFilter.getRelatedTabCountForRootId(INTERACTING_VIEW_ROOT_ID))
-                .thenReturn(2);
+        when(mTabGroupModelFilter.getTabCountForGroup(GROUP_ID)).thenReturn(2);
 
         // Call
         mStrategy.startReorderMode(mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);

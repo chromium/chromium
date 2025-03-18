@@ -1387,7 +1387,7 @@ bool VisitDatabase::VisitTableContainsAutoincrement() {
   if (!statement.Step())
     return false;
 
-  std::string urls_schema = statement.ColumnString(0);
+  std::string_view urls_schema = statement.ColumnStringView(0);
   // We check if the whole schema contains "AUTOINCREMENT", since
   // "AUTOINCREMENT" only can be used for "INTEGER PRIMARY KEY", so we assume no
   // other columns could contain "AUTOINCREMENT".

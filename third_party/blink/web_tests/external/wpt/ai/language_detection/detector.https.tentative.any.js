@@ -1,5 +1,6 @@
 // META: title=Detect english
 // META: global=window,worker
+// META: script=../resources/util.js
 
 'use strict';
 
@@ -40,3 +41,10 @@ promise_test(async t => {
 
   await promise_rejects_dom(t, 'AbortError', detectPromise);
 }, 'AILanguageDetector.detect() call with an aborted signal.');
+
+promise_test(async t => {
+  const detector = await ai.languageDetector.create();
+  await testAbortPromise(t, signal => {
+    return detector.detect('this string is in English', {signal});
+  });
+}, 'Aborting AILanguageDetector.detect().');

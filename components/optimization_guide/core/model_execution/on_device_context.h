@@ -33,7 +33,8 @@ struct OnDeviceOptions final {
     virtual bool ShouldUse() = 0;
     // Called to create a new empty session.
     virtual void StartSession(
-        mojo::PendingReceiver<on_device_model::mojom::Session> pending) = 0;
+        mojo::PendingReceiver<on_device_model::mojom::Session> pending,
+        on_device_model::mojom::SessionParamsPtr params) = 0;
     // Called to report a successful execution of the model.
     virtual void OnResponseCompleted() = 0;
   };
@@ -43,6 +44,7 @@ struct OnDeviceOptions final {
   scoped_refptr<const OnDeviceModelFeatureAdapter> adapter;
   std::unique_ptr<SafetyChecker> safety_checker;
   TokenLimits token_limits;
+  on_device_model::Capabilities capabilities;
 
   base::WeakPtr<OptimizationGuideLogger> logger;
 

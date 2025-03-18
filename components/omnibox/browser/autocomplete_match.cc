@@ -1400,6 +1400,7 @@ AutocompleteMatch::GetOmniboxEventResultType(int action_index) const {
       case OmniboxActionId::ACTION_IN_SUGGEST:
       case OmniboxActionId::ANSWER_ACTION:
       case OmniboxActionId::EXTENSION_ACTION:
+      case OmniboxActionId::CONTEXTUAL_SEARCH:
         // Preserve existing behavior by continuing on to use the match `type`.
         break;
       case OmniboxActionId::UNKNOWN:

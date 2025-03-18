@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/modules/ai/ai.h"
 #include "third_party/blink/renderer/modules/ai/ai_availability.h"
 #include "third_party/blink/renderer/modules/ai/ai_create_monitor.h"
+#include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/modules/ai/on_device_translation/ai_language_detector.h"
 #include "third_party/blink/renderer/platform/language_detection/language_detection_model.h"
@@ -90,9 +91,9 @@ class AILanguageDetectorCreateTask
       // TODO (crbug.com/383022111): Pass the real download progress rather than
       // mocking one.
       if (monitor_) {
-        monitor_->OnDownloadProgressUpdate(0, model->GetModelSize());
-        monitor_->OnDownloadProgressUpdate(model->GetModelSize(),
-                                           model->GetModelSize());
+        monitor_->OnDownloadProgressUpdate(0, kNormalizedDownloadProgressMax);
+        monitor_->OnDownloadProgressUpdate(kNormalizedDownloadProgressMax,
+                                           kNormalizedDownloadProgressMax);
       }
       resolver_->Resolve(
           MakeGarbageCollected<AILanguageDetector>(model, task_runner_));

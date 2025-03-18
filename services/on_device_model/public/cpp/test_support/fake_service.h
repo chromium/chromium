@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/cpp/service_client.h"
@@ -71,7 +72,8 @@ struct FakeOnDeviceServiceSettings final {
 class FakeOnDeviceSession final : public mojom::Session {
  public:
   explicit FakeOnDeviceSession(FakeOnDeviceServiceSettings* settings,
-                               FakeOnDeviceModel* model);
+                               FakeOnDeviceModel* model,
+                               const Capabilities& capabilities);
   ~FakeOnDeviceSession() override;
 
   // mojom::Session:
@@ -100,6 +102,7 @@ class FakeOnDeviceSession final : public mojom::Session {
   std::string adaptation_model_weight_;
   std::vector<mojom::AppendOptionsPtr> context_;
   raw_ptr<FakeOnDeviceModel> model_;
+  Capabilities capabilities_;
 
   base::WeakPtrFactory<FakeOnDeviceSession> weak_factory_{this};
 };
@@ -148,12 +151,17 @@ class FakeOnDeviceModel : public mojom::OnDeviceModel {
   mojo::UniqueReceiverSet<mojom::OnDeviceModel> model_adaptation_receivers_;
 };
 
-class FakeTsModel final : public on_device_model::mojom::TextSafetyModel {
+class FakeTsModel final : public mojom::TextSafetyModel,
+                          public mojom::TextSafetySession {
  public:
-  explicit FakeTsModel(on_device_model::mojom::TextSafetyModelParamsPtr params);
+  explicit FakeTsModel(mojom::TextSafetyModelParamsPtr params);
   ~FakeTsModel() override;
 
   // on_device_model::mojom::TextSafetyModel
+  void StartSession(
+      mojo::PendingReceiver<mojom::TextSafetySession> session) override;
+
+  // on_device_model::mojom::TextSafetySession
   void ClassifyTextSafety(const std::string& text,
                           ClassifyTextSafetyCallback callback) override;
   void DetectLanguage(const std::string& text,
@@ -162,6 +170,7 @@ class FakeTsModel final : public on_device_model::mojom::TextSafetyModel {
  private:
   bool has_safety_model_ = false;
   bool has_language_model_ = false;
+  mojo::ReceiverSet<mojom::TextSafetySession> sessions_;
 };
 
 // TsHolder holds a single TsModel. Its operations may block.

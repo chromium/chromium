@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/tab_slider_button.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -17,6 +18,7 @@
 namespace ash {
 
 class OnTaskPodController;
+class TabSlider;
 
 // OnTaskPodView contains the shortcut buttons that are part of the OnTask pod.
 // The OnTask pod is meant to supplement OnTask UX with convenience features
@@ -34,9 +36,12 @@ class ASH_EXPORT OnTaskPodView : public views::BoxLayoutView {
   IconButton* get_back_button_for_testing() { return back_button_; }
   IconButton* get_forward_button_for_testing() { return forward_button_; }
   IconButton* reload_tab_button_for_testing() { return reload_tab_button_; }
-  IconButton* snap_pod_button_for_testing() { return snap_pod_button_; }
   views::LabelButton* pin_tab_strip_button_for_testing() {
     return pin_tab_strip_button_;
+  }
+  TabSliderButton* dock_left_button_for_testing() { return dock_left_button_; }
+  TabSliderButton* dock_right_button_for_testing() {
+    return dock_right_button_;
   }
 
   // Called when the web contents navigation context is updated to update
@@ -51,9 +56,6 @@ class ASH_EXPORT OnTaskPodView : public views::BoxLayoutView {
   // Adds shortcut buttons to the OnTask pod view.
   void AddShortcutButtons();
 
-  // Toggles the snap location for the OnTask pod.
-  void ToggleSnapLocation();
-
   // Update the color and text of the pin tab strip button, and the tab strip
   // visibility.
   void UpdatePinTabStripButton();
@@ -62,7 +64,9 @@ class ASH_EXPORT OnTaskPodView : public views::BoxLayoutView {
   const raw_ptr<OnTaskPodController> pod_controller_;
 
   // Pointers to components hosted by the OnTask pod view.
-  raw_ptr<IconButton> snap_pod_button_;
+  raw_ptr<TabSlider> pod_position_slider_;
+  raw_ptr<TabSliderButton> dock_left_button_;
+  raw_ptr<TabSliderButton> dock_right_button_;
   raw_ptr<views::Separator> left_separator_;
   raw_ptr<IconButton> back_button_;
   raw_ptr<IconButton> forward_button_;

@@ -71,11 +71,6 @@ class VIEWS_EXAMPLES_EXPORT DialogExample : public ExampleBase,
   bool OnAccept();
 
  private:
-  template <class>
-  class Delegate;
-  class Bubble;
-  class Dialog;
-
   // Helper methods to setup the configuration Views.
   void StartTextfieldRow(View* parent,
                          raw_ptr<Textfield>* member,

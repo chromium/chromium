@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
 #include "third_party/blink/renderer/core/paint/inline_box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
+#include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -210,9 +211,22 @@ static bool ShouldCreateSubsequence(const PaintLayer& paint_layer,
     return true;
   }
 
-  // Or if the merged bounds with the last chunk would be too empty.
   if (context.GetPaintController().NumNewChunks()) {
     const auto& object = paint_layer.GetLayoutObject();
+
+    // Or if merged hit test opaqueness would become kMixed if either the
+    // current chunk or this layer is transparent to hit test, for better
+    // compositor hit test performance.
+    bool transparent_to_hit_test =
+        ObjectPainter(object).GetHitTestOpaqueness() ==
+        cc::HitTestOpaqueness::kTransparent;
+    if (transparent_to_hit_test !=
+        context.GetPaintController()
+            .CurrentChunkIsNonEmptyAndTransparentToHitTest()) {
+      return true;
+    }
+
+    // Or if the merged bounds with the last chunk would be too empty.
     gfx::Rect last_bounds = context.GetPaintController().LastChunkBounds();
     gfx::Rect visual_rect = FirstFragmentVisualRect(object);
     gfx::Rect merged_bounds = gfx::UnionRects(last_bounds, visual_rect);

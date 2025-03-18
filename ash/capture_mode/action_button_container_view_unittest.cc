@@ -10,6 +10,7 @@
 #include "ash/capture_mode/action_button_view.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/test/test_future.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -60,7 +61,11 @@ ActionButtonView* AddSmartActionsButton(
       ActionButtonViewID::kSmartActionsButton);
 }
 
-using ActionButtonContainerViewTest = views::ViewsTestBase;
+class ActionButtonContainerViewTest : public views::ViewsTestBase {
+ private:
+  // Required by `ActionButtonView`.
+  AshColorProvider color_provider_;
+};
 
 TEST_F(ActionButtonContainerViewTest, AddsActionButton) {
   std::unique_ptr<views::Widget> widget =

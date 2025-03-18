@@ -112,7 +112,7 @@ void SecurityInformationView::SetSummary(const std::u16string& summary_text,
   security_summary_label_->SetDefaultTextStyle(text_style);
 }
 
-void SecurityInformationView::SetDetails(
+void SecurityInformationView::SetDetailsWithLearnMore(
     const std::u16string& details_text,
     views::Link::ClickedCallback security_details_callback) {
   std::vector<std::u16string> subst;
@@ -131,6 +131,10 @@ void SecurityInformationView::SetDetails(
           security_details_callback);
 
   security_details_label_->AddStyleRange(details_range, link_style);
+}
+
+void SecurityInformationView::SetDetails(const std::u16string& details_text) {
+  security_details_label_->SetText(details_text);
 }
 
 void SecurityInformationView::AddResetDecisionsLabel(

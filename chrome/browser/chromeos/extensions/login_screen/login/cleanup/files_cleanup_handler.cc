@@ -65,11 +65,14 @@ bool EnsureDirectoryIsEmpty(const base::FilePath& directory_path,
 
 }  // namespace
 
-FilesCleanupHandler::FilesCleanupHandler() {
-  task_runner_ = base::ThreadPool::CreateTaskRunner(
-      {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
-}
+FilesCleanupHandler::FilesCleanupHandler()
+    : FilesCleanupHandler(base::ThreadPool::CreateTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
+
+FilesCleanupHandler::FilesCleanupHandler(
+    scoped_refptr<base::TaskRunner> task_runner)
+    : task_runner_(task_runner) {}
 
 FilesCleanupHandler::~FilesCleanupHandler() = default;
 

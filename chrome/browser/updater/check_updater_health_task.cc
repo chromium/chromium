@@ -70,11 +70,9 @@ void CheckUpdaterHealthTask::CheckAndRecordUpdaterHealth(
 void CheckUpdaterHealthTask::Run(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  BrowserUpdaterClient::Create(::GetUpdaterScope())
-      ->GetUpdaterVersion(
-          base::BindOnce(&CheckUpdaterHealthTask::CheckAndRecordUpdaterHealth,
-                         this)
-              .Then(std::move(callback)));
+  BrowserUpdaterClient::Create(scope_)->GetUpdaterVersion(
+      base::BindOnce(&CheckUpdaterHealthTask::CheckAndRecordUpdaterHealth, this)
+          .Then(std::move(callback)));
 }
 
 }  // namespace updater

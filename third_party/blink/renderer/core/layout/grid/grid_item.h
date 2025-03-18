@@ -27,7 +27,6 @@ struct OutOfFlowItemPlacement {
 };
 
 struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
- public:
   GridItemData() = default;
   GridItemData(const GridItemData&) = default;
   GridItemData& operator=(const GridItemData&) = default;
@@ -281,9 +280,9 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
   std::optional<MinMaxSizes> contribution_sizes;
 };
 
-// TODO(crbug.com/399153019) - Refactor this so we don't need to make everything
-// GC'd.
-class CORE_EXPORT GridItems : public GarbageCollected<GridItems> {
+class CORE_EXPORT GridItems {
+  DISALLOW_NEW();
+
  public:
   using GridItemDataVector = HeapVector<Member<GridItemData>, 16>;
 
@@ -297,8 +296,8 @@ class CORE_EXPORT GridItems : public GarbageCollected<GridItems> {
 
     using GridItemDataVectorPtr =
         typename std::conditional<is_const,
-                                  Member<const GridItemDataVector>,
-                                  Member<GridItemDataVector>>::type;
+                                  const GridItemDataVector*,
+                                  GridItemDataVector*>::type;
 
     Iterator(GridItemDataVectorPtr item_data, wtf_size_t current_index)
         : current_index_(current_index), item_data_(item_data) {
@@ -394,6 +393,13 @@ class CORE_EXPORT GridItems : public GarbageCollected<GridItems> {
   }
 
   GridItemData& At(wtf_size_t index) {
+    DCHECK_LT(index, item_data_.size());
+    DCHECK(item_data_[index]);
+    return *item_data_[index];
+  }
+
+  const GridItemData& At(wtf_size_t index) const {
+    DCHECK_LT(index, item_data_.size());
     DCHECK(item_data_[index]);
     return *item_data_[index];
   }

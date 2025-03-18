@@ -1113,6 +1113,24 @@ chromium-metrics-reviews@google.com.
   <int value="26" label="MEDIA_CODEC_UNKNOWN_MEDIADRM_EXCEPTION"/>
   <int value="27" label="MEDIA_CODEC_UNKNOWN_CODEC_EXCEPTION"/>
   <int value="28" label="MEDIA_CODEC_LINEAR_BLOCK_EXCEPTION"/>
+  <int value="29" label="MEDIA_CODEC_CERTIFICATE_MALFORMED"/>
+  <int value="30" label="MEDIA_CODEC_CERTIFICATE_MISSING"/>
+  <int value="31" label="MEDIA_CODEC_CRYPTO_LIBRARY"/>
+  <int value="32" label="MEDIA_CODEC_INIT_DATA"/>
+  <int value="33" label="MEDIA_CODEC_KEY_NOT_LOADED"/>
+  <int value="34" label="MEDIA_CODEC_LICENSE_POLICY"/>
+  <int value="35" label="MEDIA_CODEC_LICENSE_RELEASE"/>
+  <int value="36" label="MEDIA_CODEC_LICENSE_REQUEST_REJECTED"/>
+  <int value="37" label="MEDIA_CODEC_LICENSE_RESTORE"/>
+  <int value="38" label="MEDIA_CODEC_LICENSE_STATE"/>
+  <int value="39" label="MEDIA_CODEC_PROVISIONING_CERTIFICATE"/>
+  <int value="40" label="MEDIA_CODEC_PROVISIONING_CONFIG"/>
+  <int value="41" label="MEDIA_CODEC_PROVISIONING_PARSE"/>
+  <int value="42" label="MEDIA_CODEC_PROVISIONING_REQUEST_REJECTED"/>
+  <int value="43" label="MEDIA_CODEC_PROVISIONING_RETRY"/>
+  <int value="44" label="MEDIA_CODEC_SECURE_STOP_RELEASE"/>
+  <int value="45" label="MEDIA_CODEC_STORAGE_READ"/>
+  <int value="46" label="MEDIA_CODEC_STORAGE_WRITE"/>
 </enum>
 
 <enum name="MediaContainers">
@@ -1521,15 +1539,6 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Muted"/>
   <int value="1" label="Not muted"/>
 </enum>
-
-<!-- LINT.IfChange(MidiBackendType) -->
-
-<enum name="MidiBackendType">
-  <int value="0" label="AndroidMidi"/>
-  <int value="1" label="AndroidUsb"/>
-</enum>
-
-<!-- LINT.ThenChange(//media/midi/midi_manager_android.cc:MidiBackendType) -->
 
 <enum name="MidiSendReceiveUsage">
   <int value="0" label="No transaction"/>

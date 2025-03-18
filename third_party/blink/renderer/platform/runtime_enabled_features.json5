@@ -1968,8 +1968,9 @@
       status: "stable",
     },
     {
+      // Killswitch M136.
       name: "FewerSubsequences",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Also enabled when blink::features::kFileHandlingAPI is overridden
@@ -2755,7 +2756,7 @@
       // This uses media::VideoEncoder implementation in MediaRecorder API
       // instead of using MediaRecorder own video encoder implementation.
       name: "MediaRecorderUseMediaVideoEncoder",
-      status: {"Android": "", "default": "stable"},
+      status: "stable",
     },
     {
       name: "MediaSession",
@@ -3516,6 +3517,10 @@
      // in M135 and can be removed after M138.
      name: "RadioInputNextButtonInScope",
      status: "stable",
+    },
+    {
+      name: "RangeBasedTextFind",
+      status: "stable",
     },
     {
       name: "RasterInducingScroll",

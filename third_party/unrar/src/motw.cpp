@@ -82,14 +82,17 @@ void MarkOfTheWeb::CreateZoneIdStream(const std::wstring &Name,StringList &MotwL
   const wchar *Ext=ExtPos==std::wstring::npos ? L"":&Name[ExtPos+1];
 
   bool Matched=false;
-  wchar *CurMask;
+  const wchar *CurMask;
   MotwList.Rewind();
   while ((CurMask=MotwList.GetString())!=nullptr)
   {
     // Perform the fast extension comparison for simple *.ext masks.
-    // When extracting 100000 files with "Exe and office" masks set,
-    // this loop spends 1.14s without this optimization and 0.24s with it.
-    bool FastCmp=CurMask[0]=='*' && CurMask[1]=='.' && !IsWildcard(CurMask+2);
+    // Also we added the fast path to wcsicomp for English only strings.
+    // When extracting 100000 files with "Exe and office" masks set
+    // this loop spent 85ms with this optimization and wcsicomp optimized
+    // for English strings, 415ms with this optimization only, 475ms with
+    // wcsicomp optimized only and 795ms without both optimizations.
+    bool FastCmp=CurMask[0]=='*' && CurMask[1]=='.' && wcspbrk(CurMask+2,L"*?")==NULL;
     if (FastCmp && wcsicomp(Ext,CurMask+2)==0 || !FastCmp && CmpName(CurMask,Name,MATCH_NAMES))
     {
       Matched=true;

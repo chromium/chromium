@@ -39,6 +39,10 @@ class OnDeviceModelMetadata final {
     return validation_config_;
   }
 
+  const on_device_model::Capabilities& capabilities() const {
+    return capabilities_;
+  }
+
  private:
   OnDeviceModelMetadata(
       const base::FilePath& model_path,
@@ -50,6 +54,7 @@ class OnDeviceModelMetadata final {
   std::string version_;
   OnDeviceBaseModelSpec model_spec_;
   proto::OnDeviceModelValidationConfig validation_config_;
+  on_device_model::Capabilities capabilities_;
 };
 
 // Provides a stream of updated ModelMetadatas from component states.

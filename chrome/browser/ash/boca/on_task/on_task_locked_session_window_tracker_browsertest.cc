@@ -598,6 +598,10 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
   const GURL url_2 = embedded_test_server()->GetURL(kTabUrl2Host, "/");
   EXPECT_EQ(on_task_blocklist->GetURLBlocklistState(url_2),
             policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST);
+  const GURL google_docs_url =
+      embedded_test_server()->GetURL(kTabGoogleDocsHost, "/");
+  EXPECT_EQ(on_task_blocklist->GetURLBlocklistState(google_docs_url),
+            policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST);
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
@@ -705,6 +709,69 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
       embedded_test_server()->GetURL(kTabGoogleHost, "/sub-page");
   EXPECT_EQ(on_task_blocklist->GetURLBlocklistState(random_google_url),
             policy::URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST);
+  const GURL google_search_url =
+      embedded_test_server()->GetURL(kTabGoogleHost, "/?q=test");
+  EXPECT_EQ(on_task_blocklist->GetURLBlocklistState(google_search_url),
+            policy::URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST);
+  const GURL url_1_subdomain =
+      embedded_test_server()->GetURL(kTabUrl1SubDomainHost, "/");
+  EXPECT_EQ(on_task_blocklist->GetURLBlocklistState(url_1_subdomain),
+            policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST);
+  const GURL url_2 = embedded_test_server()->GetURL(kTabUrl2Host, "/");
+  EXPECT_EQ(on_task_blocklist->GetURLBlocklistState(url_2),
+            policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST);
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
+                       AllowAndBlockUrlForWorkspaceNavRestriction) {
+  // Launch OnTask SWA.
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager()->LaunchSystemWebAppAsync(
+      launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
+
+  // Set up window tracker to track the app window.
+  const SessionID window_id = boca_app_browser->session_id();
+  ASSERT_TRUE(window_id.is_valid());
+  system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
+      window_id, /*observers=*/{});
+
+  // Spawn tab for testing purposes.
+  auto* const tab_strip_model = boca_app_browser->tab_strip_model();
+  const SessionID tab_id = CreateBackgroundTabAndWait(
+      window_id, embedded_test_server()->GetURL(kTabUrl1Host, "/"),
+      LockedNavigationOptions::WORKSPACE_NAVIGATION);
+  ASSERT_EQ(tab_strip_model->count(), 2);
+  auto* const on_task_blocklist =
+      LockedSessionWindowTrackerFactory::GetForBrowserContext(profile())
+          ->on_task_blocklist();
+  EXPECT_EQ(on_task_blocklist->parent_tab_to_nav_filters()[tab_id],
+            LockedNavigationOptions::WORKSPACE_NAVIGATION);
+
+  // Manually refresh blocklist to override URL blocklist manager sources.
+  tab_strip_model->ActivateTabAt(1);
+  on_task_blocklist->RefreshForUrlBlocklist(
+      tab_strip_model->GetActiveWebContents());
+  content::RunAllTasksUntilIdle();
+
+  // Verify blocklist result with other URLs.
+  EXPECT_EQ(on_task_blocklist->current_page_restriction_level(),
+            LockedNavigationOptions::WORKSPACE_NAVIGATION);
+  const GURL google_docs_url =
+      embedded_test_server()->GetURL(kTabGoogleDocsHost, "/");
+  EXPECT_EQ(on_task_blocklist->GetURLBlocklistState(google_docs_url),
+            policy::URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST);
+  const GURL random_google_url =
+      embedded_test_server()->GetURL(kTabGoogleHost, "/sub-page");
+  EXPECT_EQ(on_task_blocklist->GetURLBlocklistState(random_google_url),
+            policy::URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST);
+  const GURL google_search_url =
+      embedded_test_server()->GetURL(kTabGoogleHost, "/?q=test");
+  EXPECT_EQ(on_task_blocklist->GetURLBlocklistState(google_search_url),
+            policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST);
   const GURL url_1_subdomain =
       embedded_test_server()->GetURL(kTabUrl1SubDomainHost, "/");
   EXPECT_EQ(on_task_blocklist->GetURLBlocklistState(url_1_subdomain),

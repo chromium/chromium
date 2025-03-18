@@ -149,8 +149,7 @@ void TestSignedWebBundleBuilder::AddFilesFromFolder(
     std::string mime_type;
     if (file_path.MatchesExtension(FILE_PATH_LITERAL(".webmanifest"))) {
       mime_type = "application/manifest+json";
-    } else if (!net::GetWellKnownMimeTypeFromExtension(
-                   file_path.Extension().substr(1), &mime_type)) {
+    } else if (!net::GetWellKnownMimeTypeFromFile(file_path, &mime_type)) {
       LOG(ERROR) << "Unable to deduce mime type from extension: "
                  << file_path.Extension();
       continue;

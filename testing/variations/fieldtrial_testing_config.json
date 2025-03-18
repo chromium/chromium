@@ -34,6 +34,27 @@
             ]
         }
     ],
+    "AXBlockFlowIterator": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AccessibilityBlockFlowIterator"
+                    ]
+                }
+            ]
+        }
+    ],
     "AXRandomizedStressTests": [
         {
             "platforms": [
@@ -11488,29 +11509,6 @@
                     },
                     "enable_features": [
                         "HappinessTrackingUnlock"
-                    ]
-                }
-            ]
-        }
-    ],
-    "HeapProfilerMobileSamplingRate": [
-        {
-            "platforms": [
-                "android",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "browser-sampling-rate-bytes": "10000000",
-                        "gpu-sampling-rate-bytes": "5000000",
-                        "network-sampling-rate-bytes": "10000000",
-                        "renderer-sampling-rate-bytes": "10000000",
-                        "utility-sampling-rate-bytes": "1000000"
-                    },
-                    "enable_features": [
-                        "HeapProfilerReporting"
                     ]
                 }
             ]

@@ -295,6 +295,20 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
           : [_scrollView.topAnchor
                 constraintEqualToAnchor:view.safeAreaLayoutGuide.topAnchor];
 
+  if (self.preferToCompressContent) {
+    // Constrain the height of _scrollContentView to the height of _scrollView,
+    // making the content unscrollable.  Set constraint priority to
+    // UILayoutPriorityDefaultLow + 1 so that this constraint is deactivated and
+    // content is made scrollable only after views with compression resistence
+    // of UILayoutPriorityDefaultLow are first compressed.
+    NSLayoutConstraint* contentViewUnscrollableHeightConstraint =
+        [_scrollContentView.heightAnchor
+            constraintEqualToAnchor:_scrollView.heightAnchor];
+    contentViewUnscrollableHeightConstraint.priority =
+        UILayoutPriorityDefaultLow + 1;
+    contentViewUnscrollableHeightConstraint.active = YES;
+  }
+
   [NSLayoutConstraint activateConstraints:@[
     // Scroll view constraints.
     scrollViewTopConstraint,

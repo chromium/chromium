@@ -698,7 +698,9 @@ void AIManager::AddModelDownloadProgressObserver(
 void AIManager::SendDownloadProgressUpdate(uint64_t downloaded_bytes,
                                            uint64_t total_bytes) {
   for (auto& observer : download_progress_observers_) {
-    observer->OnDownloadProgressUpdate(downloaded_bytes, total_bytes);
+    observer->OnDownloadProgressUpdate(
+        AIUtils::NormalizeModelDownloadProgress(downloaded_bytes, total_bytes),
+        AIUtils::kNormalizedDownloadProgressMax);
   }
 }
 

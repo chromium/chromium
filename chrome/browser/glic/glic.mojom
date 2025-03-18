@@ -185,6 +185,7 @@ struct WebClientInitialState {
   bool microphone_permission_enabled;
   bool location_permission_enabled;
   bool tab_context_permission_enabled;
+  bool os_location_permission_enabled;
   mojo_base.mojom.Version chrome_version;
   // Whether the glic panel can currently be attached to a browser window.
   bool can_attach;
@@ -201,8 +202,10 @@ struct GetTabContextOptions {
   uint32 inner_text_bytes_limit;
   // Whether to include a viewport screenshot in the response.
   bool include_viewport_screenshot;
-    // Whether to include annotated page content in the response.
+  // Whether to include annotated page content in the response.
   bool include_annotated_page_content;
+  // Maximum number of meta tags (per Document)to include in the response.
+  uint32 max_meta_tags;
   // Whether to include PDF data in the response.
   bool include_pdf;
   // Maximum size of PDF data returned. If PDF data exceeds this size, no PDF
@@ -413,6 +416,9 @@ interface WebClientHandler {
 
   // Attempts to open the OS permission settings page.  No return value.
   OpenOsPermissionSettingsMenu(content_settings.mojom.ContentSettingsType type);
+
+  // Get the status of the OS Microphone permission currently granted to Chrome.
+  GetOsMicrophonePermissionStatus() => (bool enabled);
 };
 
 // Data sent from the browser to the web client with panel opening information.
@@ -547,6 +553,10 @@ interface WebClient {
   // client or by user action in the glic settings.
   NotifyTabContextPermissionStateChanged(bool enabled);
 
+  // The OS Location permission granted to Chrome has changed by user action in
+  // the OS settings menu.
+  NotifyOsLocationPermissionStateChanged(bool enabled);
+
   // The focused tab has changed.
   NotifyFocusedTabChanged(FocusedTabData focused_tab_data);
 };
@@ -641,12 +651,33 @@ struct FocusedTabCandidate {
   InvalidCandidateError invalid_candidate_error;
 };
 
+// A meta tag.
+struct MetaTag {
+  string name;
+  string content;
+};
+
+// Metadata about a frame.
+struct FrameMetadata {
+  url.mojom.Url url;
+  array<MetaTag> meta_tags;
+};
+
+// Metadata about the page content.  Includes metadata about each frame.
+struct PageMetadata {
+  // The main frame is the first entry in the array.
+  array<FrameMetadata> frame_metadata;
+};
+
 // Information about the annotated page content.
 struct AnnotatedPageData {
   // Proto for AnnotatedPageContent.
   // See components/optimization_guide/proto/features/common_quality_data.proto
   // Provided only if requested.
   mojo_base.mojom.ProtoWrapper? annotated_page_content;
+
+  // Metadata about the page content.
+  PageMetadata? metadata;
 };
 
 // Annotates an image, providing security relevant information about the origins

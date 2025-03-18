@@ -2243,6 +2243,7 @@ void URLLoader::ContinueOnResponseStartedImmediately() {
       // is.  That means we need to delay sending the response started IPC.
       VLOG(1) << "Will sniff content for mime type: " << url_request_->url();
       is_more_mime_sniffing_needed_ = true;
+      mime_type_before_sniffing_ = response_->mime_type;
     } else if (response_->mime_type.empty()) {
       // Ugg.  The server told us not to sniff the content but didn't give us
       // a mime type.  What's a browser to do?  Turns out, we're supposed to
@@ -2419,10 +2420,10 @@ void URLLoader::DidRead(int num_bytes,
            pending_write_buffer_offset_ >= net::kMaxBytesToSniff);
 
       if (is_more_mime_sniffing_needed_) {
-        const std::string& type_hint = response_->mime_type;
+        CHECK(mime_type_before_sniffing_.has_value());
         std::string new_type;
         is_more_mime_sniffing_needed_ = !net::SniffMimeType(
-            data, url_request_->url(), type_hint,
+            data, url_request_->url(), mime_type_before_sniffing_.value(),
             net::ForceSniffFileUrlsForHtml::kDisabled, &new_type);
         // SniffMimeType() returns false if there is not enough data to
         // determine the mime type. However, even if it returns false, it

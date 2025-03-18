@@ -13,7 +13,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -148,9 +147,9 @@ std::unique_ptr<VideoDecoderMixin> V4L2VideoDecoder::Create(
   DCHECK(decoder_task_runner->RunsTasksInCurrentSequence());
   DCHECK(client);
 
-  return base::WrapUnique<VideoDecoderMixin>(new V4L2VideoDecoder(
-      std::move(media_log), std::move(decoder_task_runner), std::move(client),
-      base::MakeRefCounted<V4L2Device>()));
+  return base::WrapUnique<VideoDecoderMixin>(
+      new V4L2VideoDecoder(std::move(media_log), std::move(decoder_task_runner),
+                           std::move(client), new V4L2Device()));
 }
 
 // static

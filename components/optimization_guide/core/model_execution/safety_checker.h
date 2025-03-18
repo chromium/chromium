@@ -77,6 +77,10 @@ class SafetyChecker final {
   const SafetyConfig& safety_cfg() const { return safety_cfg_; }
 
  private:
+  mojo::Remote<on_device_model::mojom::TextSafetySession>& GetSession();
+
+  mojo::Remote<on_device_model::mojom::TextSafetySession> session_;
+
   base::WeakPtr<TextSafetyClient> client_;
   on_device_model::TextSafetyLoaderParams params_;
   SafetyConfig safety_cfg_;

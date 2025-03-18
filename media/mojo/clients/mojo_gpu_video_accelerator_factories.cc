@@ -265,14 +265,6 @@ bool MojoGpuVideoAcceleratorFactories::ShouldUseGpuMemoryBuffersForVideoFrames(
 media::GpuVideoAcceleratorFactories::OutputFormat
 MojoGpuVideoAcceleratorFactories::VideoFrameOutputFormat(
     media::VideoPixelFormat pixel_format) {
-  auto format = VideoFrameOutputFormatImpl(pixel_format);
-  UMA_HISTOGRAM_ENUMERATION("Media.GPU.OutputFormat", format);
-  return format;
-}
-
-media::GpuVideoAcceleratorFactories::OutputFormat
-MojoGpuVideoAcceleratorFactories::VideoFrameOutputFormatImpl(
-    media::VideoPixelFormat pixel_format) {
   using OutputFormat = media::GpuVideoAcceleratorFactories::OutputFormat;
 
   DCHECK(task_runner_->RunsTasksInCurrentSequence());

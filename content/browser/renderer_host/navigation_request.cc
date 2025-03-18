@@ -2461,11 +2461,16 @@ void NavigationRequest::BeginNavigation() {
 void NavigationRequest::UpdateNavigationStartTime(const base::TimeTicks& time,
                                                   bool for_legacy,
                                                   bool showed_dialog) {
-  // Should be called at most once per NavigationRequest.
-  CHECK(original_navigation_start_.is_null());
-
   // Track the adjustment details for https://crbug.com/385170155.
-  original_navigation_start_ = common_params_->navigation_start;
+  // Note: It is possible to get here more than once for a single request, which
+  // might happen if a beforeunload ack for a different navigation is received
+  // at the wrong time (see https://crbug.com/402545469). In that case, preserve
+  // the existing `original_navigation_start_`.
+  // TODO(crbug.com/404286908): Track which NavigationRequest should be updated
+  // in response to a given beforeunload completion.
+  if (original_navigation_start_.is_null()) {
+    original_navigation_start_ = common_params_->navigation_start;
+  }
   navigation_start_adjustment_for_legacy_ = for_legacy;
   beforeunload_dialog_shown_ = showed_dialog;
 

@@ -123,10 +123,8 @@ void HoldingSpaceClientImpl::CopyImageToClipboard(const HoldingSpaceItem& item,
   holding_space_metrics::RecordItemAction(
       {&item}, holding_space_metrics::ItemAction::kCopy);
 
-  std::string ext = item.file().file_path.Extension();
   std::string mime_type;
-  if (ext.empty() ||
-      !net::GetWellKnownMimeTypeFromExtension(ext.substr(1), &mime_type) ||
+  if (!net::GetWellKnownMimeTypeFromFile(item.file().file_path, &mime_type) ||
       !net::MatchesMimeType(kMimeTypeImage, mime_type)) {
     std::move(callback).Run(/*success=*/false);
     return;

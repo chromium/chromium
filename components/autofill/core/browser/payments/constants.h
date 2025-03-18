@@ -7,6 +7,8 @@
 
 #include <string_view>
 
+#include "components/autofill/core/browser/field_types.h"
+
 namespace autofill {
 
 // Contains constants specific to the payments Autofill used in the browser
@@ -41,6 +43,11 @@ inline constexpr std::string_view kCapitalOneLargeCardArtUrl =
 // The conversion multiplier to go from standard currency units to
 // micro-currency units.
 inline constexpr uint64_t kMicrosPerDollar = 1e6;
+
+// Field types that specified as the CVC field.
+inline constexpr FieldTypeSet kCvcFieldTypes = {
+    FieldType::CREDIT_CARD_VERIFICATION_CODE,
+    FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE};
 
 }  // namespace autofill
 

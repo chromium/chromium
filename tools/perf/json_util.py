@@ -215,6 +215,14 @@ def key_from_builder_details(builder_details: PerfBuilderDetails,
   return key
 
 
+def is_empty(data: Optional[Dict[Any, Any]]) -> bool:
+  if not data:
+    return True
+  if json_constants.RESULTS not in data or not data[json_constants.RESULTS]:
+    return True
+  return False
+
+
 def _get_improvement_direction(unit: str) -> str:
   """Returns the improvement direction for a given unit."""
   return "down" if "smallerIsBetter" in unit else "up"

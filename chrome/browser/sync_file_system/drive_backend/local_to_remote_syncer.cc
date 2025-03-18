@@ -65,11 +65,10 @@ bool IsLocalFileMissing(const SyncFileMetadata& local_metadata,
 }
 
 std::string GetMimeTypeFromTitle(const base::FilePath& title) {
-  base::FilePath::StringType extension = title.Extension();
   std::string mime_type;
-  if (extension.empty() ||
-      !net::GetWellKnownMimeTypeFromExtension(extension.substr(1), &mime_type))
+  if (!net::GetWellKnownMimeTypeFromFile(title, &mime_type)) {
     return kMimeTypeOctetStream;
+  }
   return mime_type;
 }
 

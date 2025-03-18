@@ -5,7 +5,6 @@
 #include "media/gpu/android/frame_info_helper.h"
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -156,8 +155,6 @@ class FrameInfoHelperImpl : public FrameInfoHelper,
     class FrameInfoHelperHolder
         : public base::RefCountedThreadSafe<FrameInfoHelperHolder> {
      public:
-      REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
-
       explicit FrameInfoHelperHolder(raw_ptr<OnGpu> frame_info_helper_on_gpu)
           : frame_info_helper_on_gpu_(frame_info_helper_on_gpu) {
         DCHECK(frame_info_helper_on_gpu_);

@@ -124,69 +124,60 @@ bool CanNetworkConnect(
   return false;
 }
 
-// A bubble which displays network info.
-class NetworkStateListDetailedView::InfoBubble
-    : public views::BubbleDialogDelegateView {
- public:
-  InfoBubble(views::View* anchor,
-             std::unique_ptr<views::View> content,
-             NetworkStateListDetailedView* detailed_view)
-      : views::BubbleDialogDelegateView(anchor, views::BubbleBorder::TOP_RIGHT),
-        detailed_view_(detailed_view) {
-    SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
-    set_margins(gfx::Insets(kBubbleMargin));
-    SetArrow(views::BubbleBorder::NONE);
-    set_shadow(views::BubbleBorder::NO_SHADOW);
-    SetNotifyEnterExitOnChild(true);
-    SetLayoutManager(std::make_unique<views::FillLayout>());
-    AddChildView(std::move(content));
+NetworkStateListInfoBubble::NetworkStateListInfoBubble(
+    views::View* anchor,
+    std::unique_ptr<views::View> content,
+    NetworkStateListDetailedView* detailed_view)
+    : views::BubbleDialogDelegateView(anchor, views::BubbleBorder::TOP_RIGHT),
+      detailed_view_(detailed_view) {
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  set_margins(gfx::Insets(kBubbleMargin));
+  SetArrow(views::BubbleBorder::NONE);
+  set_shadow(views::BubbleBorder::NO_SHADOW);
+  SetNotifyEnterExitOnChild(true);
+  SetLayoutManager(std::make_unique<views::FillLayout>());
+  AddChildView(std::move(content));
+}
+
+NetworkStateListInfoBubble::~NetworkStateListInfoBubble() {
+  // The detailed view can be destructed before info bubble is destructed.
+  // Call OnInfoBubbleDestroyed only if the detailed view is live.
+  if (detailed_view_) {
+    detailed_view_->OnInfoBubbleDestroyed();
   }
+}
 
-  InfoBubble(const InfoBubble&) = delete;
-  InfoBubble& operator=(const InfoBubble&) = delete;
+void NetworkStateListInfoBubble::OnNetworkStateListDetailedViewIsDeleting() {
+  detailed_view_ = nullptr;
+}
 
-  ~InfoBubble() override {
-    // The detailed view can be destructed before info bubble is destructed.
-    // Call OnInfoBubbleDestroyed only if the detailed view is live.
-    if (detailed_view_) {
-      detailed_view_->OnInfoBubbleDestroyed();
-    }
+gfx::Size NetworkStateListInfoBubble::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  // This bubble should be inset by kBubbleMargin on both left and right
+  // relative to the parent bubble.
+  const gfx::Size anchor_size = GetAnchorView()->size();
+  int contents_width =
+      anchor_size.width() - 2 * kBubbleMargin - margins().width();
+  return gfx::Size(
+      contents_width,
+      GetLayoutManager()->GetPreferredHeightForWidth(this, contents_width));
+}
+
+void NetworkStateListInfoBubble::OnMouseExited(const ui::MouseEvent& event) {
+  // Like the user switching bubble/menu, hide the bubble when the mouse
+  // exits.
+  if (detailed_view_) {
+    detailed_view_->ResetInfoBubble();
   }
+}
 
-  void OnNetworkStateListDetailedViewIsDeleting() { detailed_view_ = nullptr; }
-
- private:
-  // View:
-  gfx::Size CalculatePreferredSize(
-      const views::SizeBounds& available_size) const override {
-    // This bubble should be inset by kBubbleMargin on both left and right
-    // relative to the parent bubble.
-    const gfx::Size anchor_size = GetAnchorView()->size();
-    int contents_width =
-        anchor_size.width() - 2 * kBubbleMargin - margins().width();
-    return gfx::Size(
-        contents_width,
-        GetLayoutManager()->GetPreferredHeightForWidth(this, contents_width));
-  }
-
-  void OnMouseExited(const ui::MouseEvent& event) override {
-    // Like the user switching bubble/menu, hide the bubble when the mouse
-    // exits.
-    if (detailed_view_) {
-      detailed_view_->ResetInfoBubble();
-    }
-  }
-
-  void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
-                                views::Widget* widget) const override {
-    params->shadow_type = views::Widget::InitParams::ShadowType::kDrop;
-    params->shadow_elevation = kBubbleShadowElevation;
-    params->name = "NetworkStateListDetailedView::InfoBubble";
-  }
-
-  // Not owned.
-  raw_ptr<NetworkStateListDetailedView> detailed_view_;
-};
+void NetworkStateListInfoBubble::OnBeforeBubbleWidgetInit(
+    views::Widget::InitParams* params,
+    views::Widget* widget) const {
+  params->shadow_type = views::Widget::InitParams::ShadowType::kDrop;
+  params->shadow_elevation = kBubbleShadowElevation;
+  params->name = "NetworkStateListInfoBubble";
+}
 
 //------------------------------------------------------------------------------
 // NetworkStateListDetailedView
@@ -409,7 +400,8 @@ void NetworkStateListDetailedView::ToggleInfoBubble() {
     return;
   }
 
-  info_bubble_ = new InfoBubble(tri_view(), CreateNetworkInfoView(), this);
+  info_bubble_ =
+      new NetworkStateListInfoBubble(tri_view(), CreateNetworkInfoView(), this);
   views::BubbleDialogDelegateView::CreateBubble(info_bubble_)->Show();
   info_bubble_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert,
                                                    false);

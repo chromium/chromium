@@ -540,8 +540,8 @@ external/wpt/dom/events/scrolling/wheel-event-transactions-target-move.html
 external/wpt/dom/events/scrolling/wheel-event-transactions-target-resize.html?include=passive-false
 external/wpt/dom/events/scrolling/wheel-event-transactions-target-resize.html?include=passive-true
 external/wpt/dom/events/webkit-animation-iteration-event.html
-external/wpt/dom/nodes/moveBefore/tentative/select-option-optgroup.html
-external/wpt/dom/nodes/moveBefore/tentative/selection-preserve.html
+external/wpt/dom/nodes/moveBefore/select-option-optgroup.html
+external/wpt/dom/nodes/moveBefore/selection-preserve.html
 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-*
 external/wpt/dom/nodes/remove-from-shadow-host-and-adopt-into-iframe.html
 external/wpt/editing/crashtests/contenteditable-will-be-blurred-by-focus-event-listener.html
@@ -1108,7 +1108,7 @@ virtual/scalefactor200/external/wpt/css/printing/pseudo-animations-print.html
 virtual/scalefactor200/external/wpt/css/printing/zero-size-002-print.tentative.html
 virtual/scalefactor200/external/wpt/css/printing/zero-size-003-print.tentative.html
 
-virtual/atomic-move-range-preservation/external/wpt/dom/nodes/moveBefore/tentative/selection-preserve.html
+virtual/atomic-move-range-preservation/external/wpt/dom/nodes/moveBefore/selection-preserve.html
 virtual/backface-visibility-interop/external/wpt/css/css-transforms/backface-visibility-001.html
 virtual/backface-visibility-interop/external/wpt/css/css-transforms/backface-visibility-hidden-animated-002.html
 virtual/backface-visibility-interop/external/wpt/css/css-transforms/ttwf-css-3d-polygon-cycle.html

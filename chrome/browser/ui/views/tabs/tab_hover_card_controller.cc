@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/callback_list.h"
@@ -361,8 +362,14 @@ void TabHoverCardController::UpdateOrShowCard(
     ResetCardsSeenCount();
   }
   if (is_initial && !disable_animations_for_testing_) {
+    // Use the largest tab in the tab strip when determining the delay so that
+    // the delay is consistent for all tabs within the tab strip.
+    int largest_tab = tab->width();
+    for (int i = 0; i < tab_strip_->GetTabCount(); i++) {
+      largest_tab = std::max(largest_tab, tab_strip_->tab_at(i)->width());
+    }
     delayed_show_timer_.Start(
-        FROM_HERE, GetShowDelay(tab->width()),
+        FROM_HERE, GetShowDelay(largest_tab),
         base::BindOnce(&TabHoverCardController::ShowHoverCard,
                        weak_ptr_factory_.GetWeakPtr(), true, tab));
   } else {

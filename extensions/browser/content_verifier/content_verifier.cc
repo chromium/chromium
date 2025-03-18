@@ -450,16 +450,14 @@ class ContentVerifier::VerifiedFileTypeHelper {
     const base::FilePath canonical_path(canonical_path_value.value());
 
     // JavaScript and HTML files should always be verified.
-    if (const auto ext = canonical_path.Extension(); !ext.empty()) {
-      std::string mime_type;
-      if (net::GetWellKnownMimeTypeFromExtension(ext.substr(1), &mime_type)) {
-        if (blink::IsSupportedJavascriptMimeType(mime_type)) {
-          return ContentVerifier::VerifiedFileType::kMiscJsFile;
-        }
+    std::string mime_type;
+    if (net::GetWellKnownMimeTypeFromFile(canonical_path, &mime_type)) {
+      if (blink::IsSupportedJavascriptMimeType(mime_type)) {
+        return ContentVerifier::VerifiedFileType::kMiscJsFile;
+      }
 
-        if (mime_type == "text/html") {
-          return ContentVerifier::VerifiedFileType::kMiscHtmlFile;
-        }
+      if (mime_type == "text/html") {
+        return ContentVerifier::VerifiedFileType::kMiscHtmlFile;
       }
     }
 

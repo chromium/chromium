@@ -75,7 +75,8 @@ const char* gms_version_code() {
 }
 
 void set_gms_version_code_for_test(const std::string& gms_version_code) {
-  get_device_info().gms_version_code = strdup(gms_version_code.c_str());
+  get_device_info().gms_version_code =
+      UNSAFE_TODO(strdup(gms_version_code.c_str()));
   Java_DeviceInfo_setGmsVersionCodeForTest(AttachCurrentThread(),
                                            gms_version_code);
 }

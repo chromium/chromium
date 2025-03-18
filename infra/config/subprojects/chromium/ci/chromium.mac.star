@@ -859,6 +859,7 @@ ci.thin_tester(
         category = "mac",
         short_name = "13",
     ),
+    contact_team_email = "bling-engprod@google.com",
 )
 
 ci.thin_tester(

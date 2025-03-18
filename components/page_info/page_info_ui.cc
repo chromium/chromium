@@ -545,6 +545,7 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
                                        IDS_PAGE_INFO_INTERNAL_PAGE,
                                        SecurityDescriptionType::INTERNAL);
     case PageInfo::SITE_IDENTITY_STATUS_EV_CERT:
+    case PageInfo::SITE_IDENTITY_STATUS_1QWAC_CERT:
     case PageInfo::SITE_IDENTITY_STATUS_CERT:
       switch (identity_info.connection_status) {
         case PageInfo::SITE_CONNECTION_STATUS_INSECURE_ACTIVE_SUBRESOURCE:
@@ -584,6 +585,7 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
       // should never call this function.
       NOTREACHED();
     case PageInfo::SITE_IDENTITY_STATUS_EV_CERT:
+    case PageInfo::SITE_IDENTITY_STATUS_1QWAC_CERT:
     case PageInfo::SITE_IDENTITY_STATUS_CERT:
     case PageInfo::SITE_IDENTITY_STATUS_ISOLATED_WEB_APP:
       switch (identity_info.connection_status) {
@@ -999,6 +1001,7 @@ int PageInfoUI::GetIdentityIconID(PageInfo::SiteIdentityStatus status) {
     case PageInfo::SITE_IDENTITY_STATUS_INTERNAL_PAGE:
     case PageInfo::SITE_IDENTITY_STATUS_CERT:
     case PageInfo::SITE_IDENTITY_STATUS_EV_CERT:
+    case PageInfo::SITE_IDENTITY_STATUS_1QWAC_CERT:
     case PageInfo::SITE_IDENTITY_STATUS_ISOLATED_WEB_APP:
       return IDR_PAGEINFO_GOOD;
     case PageInfo::SITE_IDENTITY_STATUS_NO_CERT:
@@ -1035,6 +1038,7 @@ int PageInfoUI::GetIdentityIconColorID(PageInfo::SiteIdentityStatus status) {
     case PageInfo::SITE_IDENTITY_STATUS_INTERNAL_PAGE:
     case PageInfo::SITE_IDENTITY_STATUS_CERT:
     case PageInfo::SITE_IDENTITY_STATUS_EV_CERT:
+    case PageInfo::SITE_IDENTITY_STATUS_1QWAC_CERT:
     case PageInfo::SITE_IDENTITY_STATUS_ISOLATED_WEB_APP:
       return IDR_PAGEINFO_GOOD_COLOR;
     case PageInfo::SITE_IDENTITY_STATUS_NO_CERT:

@@ -290,7 +290,7 @@ void BnplManager::FetchRedirectUrl() {
   request_details.instrument_id = ongoing_flow_state_->instrument_id;
   request_details.risk_data = ongoing_flow_state_->risk_data;
   request_details.merchant_domain =
-      autofill_client_->GetLastCommittedPrimaryMainFrameURL();
+      autofill_client_->GetLastCommittedPrimaryMainFrameOrigin().GetURL();
   request_details.total_amount = ongoing_flow_state_->final_checkout_amount;
   // Only `USD` is supported for MVP.
   request_details.currency = "USD";

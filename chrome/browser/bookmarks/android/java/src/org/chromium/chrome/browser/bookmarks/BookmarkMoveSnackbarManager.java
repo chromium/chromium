@@ -45,6 +45,11 @@ public class BookmarkMoveSnackbarManager {
                         return;
                     }
 
+                    // Return early if the old/new parents have matching account-ness.
+                    if (oldParent.isAccountBookmark() == newParent.isAccountBookmark()) {
+                        return;
+                    }
+
                     // TODO(crbug.com/41496270): Consider handling the edge cases here where one or
                     // multiple bookmarks fail to move. For now, just roll with any of the bookmarks
                     // being moved.
@@ -121,7 +126,7 @@ public class BookmarkMoveSnackbarManager {
      */
     public void startFolderPickerAndObserveResult(
             BookmarkManagerOpener bookmarkManagerOpener, BookmarkId... bookmarkIds) {
-        mIsObserving = true;
+        mIsObserving = mBookmarkModel.areAccountBookmarkFoldersActive();
         mBookmarkIds = Arrays.asList(bookmarkIds);
 
         // TODO(crbug.com/1465757): Record user action.

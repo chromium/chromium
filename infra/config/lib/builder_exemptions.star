@@ -711,7 +711,6 @@ exempted_from_contact_builders = {
         "Mac Builder Next",
         "Mac deterministic",
         "Mac deterministic (dbg)",
-        "Mac13 Tests",
         "Mac13 Tests (dbg)",
         "Oreo Phone Tester",
         "Site Isolation Android",

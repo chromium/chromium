@@ -8,9 +8,11 @@
  */
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import '../controls/settings_checkbox.js';
 import '../settings_shared.css.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -18,7 +20,10 @@ import {getTemplate} from './clear_browsing_data_dialog_v2.html.js';
 
 export interface SettingsClearBrowsingDataDialogV2Element {
   $: {
+    cancelButton: CrButtonElement,
+    clearButton: CrButtonElement,
     deleteBrowsingDataDialog: CrDialogElement,
+    showMoreButton: CrButtonElement,
   };
 }
 
@@ -34,14 +39,35 @@ export class SettingsClearBrowsingDataDialogV2Element extends
     return getTemplate();
   }
 
-  /** Click handler for the "Cancel" button. */
+  static get properties() {
+    return {
+      dataTypesExpanded_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
+
+  private dataTypesExpanded_: boolean;
+
   private onCancelClick_() {
     this.$.deleteBrowsingDataDialog.close();
   }
 
-  /** Click handler for the "Delete data" button. */
   private onClearBrowsingDataClick_() {
     // TODO(crbug.com/397187800): Trigger the deletion.
+  }
+
+  private onShowMoreClick_() {
+    this.dataTypesExpanded_ = true;
+    // TODO(crbug.com/397187800): Handle checkbox expansion.
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-clear-browsing-data-dialog-v2':
+        SettingsClearBrowsingDataDialogV2Element;
   }
 }
 

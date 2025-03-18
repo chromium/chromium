@@ -83,7 +83,7 @@ bool CanImportURL(const GURL& url) {
 
 // Initializes |favicon_url| and |png_data| members of given FaviconUsageData
 // structure with provided favicon data. Returns true if data is valid.
-bool SetFaviconData(const std::string& icon_url,
+bool SetFaviconData(std::string_view icon_url,
                     const std::vector<unsigned char>& icon_data,
                     favicon_base::FaviconUsageData* usage_data) {
   usage_data->favicon_url = GURL(icon_url);
@@ -583,8 +583,9 @@ void FirefoxImporter::LoadFavicons(
         continue;
 
       favicon_base::FaviconUsageData usage_data;
-      if (!SetFaviconData(s.ColumnString(0), data, &usage_data))
+      if (!SetFaviconData(s.ColumnStringView(0), data, &usage_data)) {
         continue;
+      }
 
       usage_data.urls = i.second;
       favicons->push_back(usage_data);
@@ -637,8 +638,9 @@ void FirefoxImporter::LoadFavicons(
         continue;
 
       favicon_base::FaviconUsageData usage_data;
-      if (!SetFaviconData(s.ColumnString(1), data, &usage_data))
+      if (!SetFaviconData(s.ColumnStringView(1), data, &usage_data)) {
         continue;
+      }
 
       usage_data.urls.insert(entry.url);
       favicons->push_back(usage_data);

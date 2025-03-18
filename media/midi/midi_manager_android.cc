@@ -10,12 +10,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "media/midi/midi_device_android.h"
-#include "media/midi/midi_manager_usb.h"
 #include "media/midi/midi_output_port_android.h"
 #include "media/midi/midi_service.h"
 #include "media/midi/midi_switches.h"
 #include "media/midi/task_service.h"
-#include "media/midi/usb_midi_device_factory_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "media/midi/midi_jni_headers/MidiManagerAndroid_jni.h"
@@ -28,17 +26,6 @@ namespace midi {
 
 namespace {
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(MidiBackendType)
-enum class BackendType {
-  kAndroidMidi = 0,
-  kAndroidUsb = 1,
-  kMaxValue = kAndroidUsb,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:MidiBackendType)
-
 bool HasSystemFeatureMidi() {
   // Check if the MIDI service actually runs on the system.
   return Java_MidiManagerAndroid_hasSystemFeatureMidi(
@@ -47,17 +34,16 @@ bool HasSystemFeatureMidi() {
 
 }  // namespace
 
-MidiManager* MidiManager::Create(MidiService* service) {
-  const BackendType type = HasSystemFeatureMidi() ? BackendType::kAndroidMidi
-                                                  : BackendType::kAndroidUsb;
-  base::UmaHistogramEnumeration("Media.Midi.BackendType", type);
+bool HasSystemFeatureMidiForTesting() {
+  return HasSystemFeatureMidi();
+}
 
-  if (type == BackendType::kAndroidMidi) {
+MidiManager* MidiManager::Create(MidiService* service) {
+  if (HasSystemFeatureMidi()) {
     return new MidiManagerAndroid(service);
   }
 
-  return new MidiManagerUsb(service,
-                            std::make_unique<UsbMidiDeviceFactoryAndroid>());
+  return new MidiManager(service);
 }
 
 MidiManagerAndroid::MidiManagerAndroid(MidiService* service)

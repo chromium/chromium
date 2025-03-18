@@ -74,12 +74,7 @@ InkOverflow::InkOverflow(Type source_type, const InkOverflow& source) {
       static_assert(sizeof(outsets_) == sizeof(single_),
                     "outsets should be the size of a pointer");
       single_ = source.single_;
-#if DCHECK_IS_ON()
-      for (wtf_size_t i = 0; i < std::size(outsets_); ++i) {
-        // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-        UNSAFE_TODO(DCHECK_EQ(outsets_[i], source.outsets_[i]));
-      }
-#endif
+      DCHECK(base::span(outsets_) == base::span(source.outsets_));
       break;
     case Type::kSelf:
     case Type::kContents:
@@ -105,12 +100,7 @@ InkOverflow::InkOverflow(Type source_type, InkOverflow&& source) {
       static_assert(sizeof(outsets_) == sizeof(single_),
                     "outsets should be the size of a pointer");
       single_ = source.single_;
-#if DCHECK_IS_ON()
-      for (wtf_size_t i = 0; i < std::size(outsets_); ++i) {
-        // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-        UNSAFE_TODO(DCHECK_EQ(outsets_[i], source.outsets_[i]));
-      }
-#endif
+      DCHECK(base::span(outsets_) == base::span(source.outsets_));
       break;
     case Type::kSelf:
     case Type::kContents:
@@ -148,16 +138,11 @@ InkOverflow::Type InkOverflow::Reset(Type type, Type new_type) {
 }
 
 PhysicalRect InkOverflow::FromOutsets(const PhysicalSize& size) const {
-  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-  const LayoutUnit left_outset(
-      LayoutUnit::FromRawValue(UNSAFE_TODO(outsets_[0])));
-  const LayoutUnit top_outset(
-      LayoutUnit::FromRawValue(UNSAFE_TODO(outsets_[1])));
+  const LayoutUnit left_outset(LayoutUnit::FromRawValue(outsets_[0]));
+  const LayoutUnit top_outset(LayoutUnit::FromRawValue(outsets_[1]));
   return {-left_outset, -top_outset,
-          left_outset + size.width +
-              LayoutUnit::FromRawValue(UNSAFE_TODO(outsets_[2])),
-          top_outset + size.height +
-              LayoutUnit::FromRawValue(UNSAFE_TODO(outsets_[3]))};
+          left_outset + size.width + LayoutUnit::FromRawValue(outsets_[2]),
+          top_outset + size.height + LayoutUnit::FromRawValue(outsets_[3])};
 }
 
 PhysicalRect InkOverflow::Self(Type type, const PhysicalSize& size) const {
@@ -255,10 +240,9 @@ bool InkOverflow::TrySetOutsets(Type type,
     return false;
   Reset(type);
   outsets_[0] = left_outset.RawValue();
-  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-  UNSAFE_TODO(outsets_[1]) = top_outset.RawValue();
-  UNSAFE_TODO(outsets_[2]) = right_outset.RawValue();
-  UNSAFE_TODO(outsets_[3]) = bottom_outset.RawValue();
+  outsets_[1] = top_outset.RawValue();
+  outsets_[2] = right_outset.RawValue();
+  outsets_[3] = bottom_outset.RawValue();
   return true;
 }
 

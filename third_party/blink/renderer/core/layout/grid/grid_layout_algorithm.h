@@ -120,7 +120,7 @@ class CORE_EXPORT GridLayoutAlgorithm
       const std::optional<GridTrackSizingDirection>& opt_track_direction) const;
 
   // Helper that calls the method above for the entire grid sizing tree.
-  void InitializeTrackSizes(const GridSizingTree& sizing_tree,
+  void InitializeTrackSizes(GridSizingTree* sizing_tree,
                             const std::optional<GridTrackSizingDirection>&
                                 opt_track_direction = std::nullopt) const;
 
@@ -139,9 +139,9 @@ class CORE_EXPORT GridLayoutAlgorithm
 
   // Helper that calls the method above for the entire grid sizing tree.
   void CompleteTrackSizingAlgorithm(
-      const GridSizingTree& sizing_tree,
       GridTrackSizingDirection track_direction,
       SizingConstraint sizing_constraint,
+      GridSizingTree* sizing_tree,
       bool* opt_needs_additional_pass = nullptr) const;
 
   // Performs the final baseline alignment pass of a grid sizing subtree.
@@ -153,7 +153,7 @@ class CORE_EXPORT GridLayoutAlgorithm
       SizingConstraint sizing_constraint) const;
 
   // Helper that calls the method above for the entire grid sizing tree.
-  void CompleteFinalBaselineAlignment(const GridSizingTree& sizing_tree) const;
+  void CompleteFinalBaselineAlignment(GridSizingTree* sizing_tree) const;
 
   // Helper which iterates over the sizing tree, and instantiates a subgrid
   // algorithm to invoke the callback with.

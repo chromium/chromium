@@ -119,6 +119,12 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
     this.host.getTabContextPermissionState().assignAndSignal(payload.enabled);
   }
 
+  glicWebClientNotifyOsLocationPermissionStateChanged(payload: {
+    enabled: boolean,
+  }) {
+    this.host.getOsLocationPermissionState().assignAndSignal(payload.enabled);
+  }
+
   glicWebClientNotifyFocusedTabChanged(payload: {
     focusedTabDataPrivate: FocusedTabDataPrivate,
   }) {
@@ -154,6 +160,8 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
       ObservableValueImpl.withNoValue<boolean>();
   private permissionStateLocation = ObservableValueImpl.withNoValue<boolean>();
   private permissionStateTabContext =
+      ObservableValueImpl.withNoValue<boolean>();
+  private permissionStateOsLocation =
       ObservableValueImpl.withNoValue<boolean>();
   panelActiveValue = ObservableValueImpl.withNoValue<boolean>();
   private fitWindow = false;
@@ -202,6 +210,8 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
         state.locationPermissionEnabled);
     this.permissionStateTabContext.assignAndSignal(
         state.tabContextPermissionEnabled);
+    this.permissionStateOsLocation.assignAndSignal(
+        state.osLocationPermissionEnabled);
     this.canAttachPanelValue.assignAndSignal(state.canAttach);
     this.chromeVersion = state.chromeVersion;
     this.panelActiveValue.assignAndSignal(state.panelIsActive);
@@ -356,6 +366,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     return this.permissionStateTabContext;
   }
 
+  getOsLocationPermissionState(): ObservableValueImpl<boolean> {
+    return this.permissionStateOsLocation;
+  }
+
   setMicrophonePermissionState(enabled: boolean): Promise<void> {
     return this.sender.requestWithResponse(
         'glicBrowserSetMicrophonePermissionState', {enabled});
@@ -416,6 +430,12 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   openOsPermissionSettingsMenu(permission: string): void {
     this.sender.requestNoResponse(
         'glicBrowserOpenOsPermissionSettingsMenu', {permission});
+  }
+
+  async getOsMicrophonePermissionStatus(): Promise<boolean> {
+    return (await this.sender.requestWithResponse(
+                'glicBrowserGetOsMicrophonePermissionStatus', undefined))
+        .enabled;
   }
 }
 

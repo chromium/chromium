@@ -27,18 +27,19 @@ void DoPeriodicTasks(base::OnceClosure callback) {
                 FROM_HERE,
                 {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
                  base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-                base::BindOnce(&::GetUpdaterScope),
+                base::BindOnce(&GetBrowserUpdaterScope),
                 base::BindOnce(
                     [](base::OnceClosure callback, UpdaterScope scope) {
                       BrowserUpdaterClient::Create(scope)->RunPeriodicTasks(
-                          std::move(callback));
+                          base::BindOnce(
+                              &CheckUpdaterHealthTask::Run,
+                              base::MakeRefCounted<CheckUpdaterHealthTask>(
+                                  scope),
+                              std::move(callback)));
                     },
                     std::move(callback)));
           },
-          base::BindOnce(
-              &CheckUpdaterHealthTask::Run,
-              base::MakeRefCounted<CheckUpdaterHealthTask>(::GetUpdaterScope()),
-              std::move(callback))));
+          std::move(callback)));
 }
 
 }  // namespace updater

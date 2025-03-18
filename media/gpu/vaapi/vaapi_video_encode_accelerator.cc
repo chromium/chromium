@@ -21,7 +21,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/numerics/safe_conversions.h"
@@ -892,19 +891,19 @@ VaapiVideoEncodeAccelerator::CreateEncodeJob(
   scoped_refptr<CodecPicture> picture;
   switch (output_codec_) {
     case VideoCodec::kH264:
-      picture = base::MakeRefCounted<VaapiH264Picture>(
+      picture = new VaapiH264Picture(
           reconstructed_surface->ReleaseAsVASurfaceHandle());
       break;
     case VideoCodec::kVP8:
-      picture = base::MakeRefCounted<VaapiVP8Picture>(
+      picture = new VaapiVP8Picture(
           reconstructed_surface->ReleaseAsVASurfaceHandle());
       break;
     case VideoCodec::kVP9:
-      picture = base::MakeRefCounted<VaapiVP9Picture>(
+      picture = new VaapiVP9Picture(
           reconstructed_surface->ReleaseAsVASurfaceHandle());
       break;
     case VideoCodec::kAV1:
-      picture = base::MakeRefCounted<VaapiAV1Picture>(
+      picture = new VaapiAV1Picture(
           /*display_va_surface=*/nullptr,
           reconstructed_surface->ReleaseAsVASurfaceHandle());
       break;

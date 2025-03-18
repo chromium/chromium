@@ -24,13 +24,22 @@ class GroupSuggestionsServiceAndroid : public base::SupportsUserData::Data {
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
+  // Returns the delegate that routes the events to Java delegates. The
+  // returned object is of type:
+  // org.chromium.components.visited_url_ranking.url_grouping.DelegateBridge.
+  base::android::ScopedJavaLocalRef<jobject> GetJavaDelegateBridge();
+
  private:
+  class SuggestionDelegateBridge;
+
   // A reference to the Java counterpart of this class. See
   // GroupSuggestionsServiceImpl.java.
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
 
   // Not owned.
   raw_ptr<GroupSuggestionsService> group_suggestions_service_;
+
+  std::unique_ptr<SuggestionDelegateBridge> delegate_bridge_;
 };
 
 }  // namespace visited_url_ranking

@@ -90,18 +90,6 @@ export class SearchAndAssistantSettingsCardElement extends
         },
       },
 
-      scannerIcon_: {
-        type: String,
-        readOnly: true,
-        value: () => {
-          // <if expr="_google_chrome">
-          return 'ash-internal:scanner';
-          // </if>
-          // <if expr="not _google_chrome">
-          return '';
-          // </if>
-        },
-      },
       scannerLabel_: {
         type: String,
         readOnly: true,

@@ -43,6 +43,11 @@ enum class MetricsFailure {
   kMaxValue = kMeasureFailure
 };
 
+// These values are logged to UMA. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with
+// "PreFreezeReadProcMapsType" in tools/metrics/histograms/enums.xml.
+enum class ReadProcMaps { kFailed, kEmpty, kSuccess, kMaxValue = kSuccess };
+
 // This constant is chosen arbitrarily, to allow time for the background tasks
 // to finish running BEFORE collecting metrics.
 const base::TimeDelta kDelayForMetrics = base::Seconds(2);
@@ -598,19 +603,21 @@ void PreFreezeBackgroundMemoryTrimmer::CompactSelf(
 
   TRACE_EVENT0("base", "CompactSelf");
   std::vector<debug::MappedMemoryRegion> regions;
+  auto did_read_proc_maps = ReadProcMaps::kSuccess;
 
   // We still start the task in the control group, in order to record metrics.
   if (base::FeatureList::IsEnabled(kShouldFreezeSelf)) {
     std::string proc_maps;
     if (!debug::ReadProcMaps(&proc_maps) ||
         !ParseProcMaps(proc_maps, &regions)) {
-      return;
-    }
-
-    if (regions.size() == 0) {
-      return;
+      did_read_proc_maps = ReadProcMaps::kFailed;
+    } else if (regions.size() == 0) {
+      did_read_proc_maps = ReadProcMaps::kEmpty;
     }
   }
+
+  UmaHistogramEnumeration("Memory.SelfCompact2.Renderer.ReadProcMaps",
+                          did_read_proc_maps);
 
   Instance().StartSelfCompaction(std::move(task_runner), std::move(regions),
                                  MiBToBytes(kShouldFreezeSelfMaxSize.Get()),

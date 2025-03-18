@@ -119,8 +119,8 @@ AudioScheduledSourceHandler::UpdateSchedulingInfo(size_t quantum_frame_size,
   // start time in the middle of the quantum.
   if (quantum_frame_offset) {
     for (unsigned i = 0; i < output_bus->NumberOfChannels(); ++i) {
-      memset(output_bus->Channel(i)->MutableData(), 0,
-             sizeof(float) * quantum_frame_offset);
+      UNSAFE_TODO(memset(output_bus->Channel(i)->MutableData(), 0,
+                         sizeof(float) * quantum_frame_offset));
     }
   }
 
