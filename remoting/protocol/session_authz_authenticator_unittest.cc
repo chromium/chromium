@@ -391,7 +391,7 @@ TEST_F(SessionAuthzAuthenticatorTest,
   StartAuthExchange();
   ASSERT_EQ(host_->state(), Authenticator::REJECTED);
   ASSERT_EQ(host_->rejection_reason(),
-            Authenticator::RejectionReason::PROTOCOL_ERROR);
+            Authenticator::RejectionReason::INVALID_ARGUMENT);
 }
 
 TEST_F(SessionAuthzAuthenticatorTest,

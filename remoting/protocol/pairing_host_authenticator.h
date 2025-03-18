@@ -51,7 +51,6 @@ class PairingHostAuthenticator : public PairingAuthenticatorBase {
   scoped_refptr<PairingRegistry> pairing_registry_;
   CreateBaseAuthenticatorCallback create_base_authenticator_callback_;
   std::string pin_;
-  bool protocol_error_ = false;
   bool waiting_for_paired_secret_ = false;
 
   base::WeakPtrFactory<PairingHostAuthenticator> weak_factory_{this};

@@ -149,7 +149,17 @@ enum class ExtendedStartCrdSessionResultCode {
   // Failure because the session policies have changed.
   kFailureSessionPoliciesChanged = 32,
 
-  kMaxValue = kFailureSessionPoliciesChanged
+  // Failure because the session authenticator has returned an unexpected error.
+  kFailureUnexpectedAuthenticatorError = 33,
+
+  // Failure because the application is in an invalid state.
+  kFailureInvalidState = 34,
+
+  // Failure because the peer has sent an invalid message. E.g. fields are
+  // missing in the message.
+  kFailureInvalidArgument = 35,
+
+  kMaxValue = kFailureInvalidArgument
 };
 
 // Translates the error code.
