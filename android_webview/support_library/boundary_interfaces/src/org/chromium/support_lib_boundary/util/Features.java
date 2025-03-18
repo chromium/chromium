@@ -355,4 +355,7 @@ public class Features {
     // WebResourceResponse#setResponseHeadersMultiMap
     // WebResourceResponse#getResponseHeadersMultiMap
     public static final String ASYNC_SHOULD_INTERCEPT_REQUEST = "ASYNC_SHOULD_INTERCEPT_REQUEST";
+
+    // SupportLibWebViewChromium weakly reference WebView
+    public static final String PROVIDER_WEAKLY_REF_WEBVIEW = "PROVIDER_WEAKLY_REF_WEBVIEW";
 }
