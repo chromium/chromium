@@ -409,8 +409,9 @@ void BrowsingHistoryHandler::QueryHistoryContinuation(
   }
   query_history_callback_ = std::move(callback);
 
-  DCHECK(query_history_continuation_);
-  std::move(query_history_continuation_).Run();
+  if (!query_history_continuation_.is_null()) {
+    std::move(query_history_continuation_).Run();
+  }
 }
 
 void BrowsingHistoryHandler::RemoveVisits(
