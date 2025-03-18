@@ -6,6 +6,7 @@
 
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -214,7 +215,7 @@ TEST(Expected, CopyConstructor) {
     constexpr expected<int, Error> ex2 = ex1;
     static_assert(ex2.has_value());
     // Note: In theory this could be constexpr, but is currently not due to
-    // implementation details of absl::get [1].
+    // implementation details of std::get [1].
     // TODO: Make this a static_assert once this is fixed in Abseil, or we use
     // std::variant. Similarly in the tests below.
     // [1]

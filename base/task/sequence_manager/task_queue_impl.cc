@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
@@ -382,11 +383,10 @@ void TaskQueueImpl::PostTask(PostedTask task) {
 
 #if DCHECK_IS_ON()
   TimeDelta delay = GetTaskDelayAdjustment(current_thread);
-  if (absl::holds_alternative<base::TimeTicks>(
-          task.delay_or_delayed_run_time)) {
-    absl::get<base::TimeTicks>(task.delay_or_delayed_run_time) += delay;
+  if (std::holds_alternative<base::TimeTicks>(task.delay_or_delayed_run_time)) {
+    std::get<base::TimeTicks>(task.delay_or_delayed_run_time) += delay;
   } else {
-    absl::get<base::TimeDelta>(task.delay_or_delayed_run_time) += delay;
+    std::get<base::TimeDelta>(task.delay_or_delayed_run_time) += delay;
   }
 #endif  // DCHECK_IS_ON()
 
@@ -1110,12 +1110,12 @@ Task TaskQueueImpl::MakeDelayedTask(PostedTask delayed_task,
   const bool explicit_high_resolution_timer_win =
       g_explicit_high_resolution_timer_win.load(std::memory_order_relaxed);
 #endif  // BUILDFLAG(IS_WIN)
-  if (absl::holds_alternative<base::TimeDelta>(
+  if (std::holds_alternative<base::TimeDelta>(
           delayed_task.delay_or_delayed_run_time)) {
-    delay = absl::get<base::TimeDelta>(delayed_task.delay_or_delayed_run_time);
+    delay = std::get<base::TimeDelta>(delayed_task.delay_or_delayed_run_time);
     delayed_task.delay_or_delayed_run_time = lazy_now->Now() + delay;
   } else {
-    delay = absl::get<base::TimeTicks>(delayed_task.delay_or_delayed_run_time) -
+    delay = std::get<base::TimeTicks>(delayed_task.delay_or_delayed_run_time) -
             lazy_now->Now();
   }
 #if BUILDFLAG(IS_WIN)
