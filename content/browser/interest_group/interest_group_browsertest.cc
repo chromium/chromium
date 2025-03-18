@@ -68,6 +68,7 @@
 #include "content/browser/interest_group/additional_bids_test_util.h"
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
+#include "content/browser/interest_group/privacy_sandbox_coordinator_test_util.h"
 #include "content/browser/interest_group/test_interest_group_observer.h"
 #include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_manager_impl.h"
@@ -27619,21 +27620,15 @@ class InterestGroupTrustedSignalsKVv2BrowserTest
         base::Unretained(this)));
 
     InterestGroupPrivateNetworkBrowserTest::SetUpOnMainThread();
+  }
 
-    // Insert the coordinator key in the database directly, to avoid having to
-    // inject a network response to a fetch from the coordinator.
-    const uint8_t kTestPublicKey[] = {
-        0xa1, 0x5f, 0x40, 0x65, 0x86, 0xfa, 0xc4, 0x7b, 0x99, 0x59, 0x70,
-        0xf1, 0x85, 0xd9, 0xd8, 0x91, 0xc7, 0x4d, 0xcf, 0x1e, 0xb9, 0x1a,
-        0x7d, 0x50, 0xa5, 0x8b, 0x01, 0x68, 0x3e, 0x60, 0x05, 0x2d,
-    };
-    BiddingAndAuctionKeySet keyset({BiddingAndAuctionServerKey{
-        std::string(reinterpret_cast<const char*>(kTestPublicKey),
-                    sizeof(kTestPublicKey)),
-        kKeyIdStr}});
-    manager_->SetBiddingAndAuctionServerKeys(
-        kCoordinatorOrigin, keyset.AsBinaryProto(),
-        /*expiration=*/base::Time::Now() + base::Days(1));
+  // Sets up default public keys for `signals_origins` using
+  // `kCoordinatorOrigin`. May only be called once per test.
+  void ConfigureSignalsServerKeys(
+      base::span<const url::Origin> signals_origins) {
+    ConfigureTestPrivacySandboxCoordinatorKeys(
+        manager_, TrustedServerAPIType::kTrustedKeyValue, kCoordinatorOrigin,
+        signals_origins);
   }
 
   // These test helps set up an auction on simulated public servers with signals
@@ -27747,12 +27742,6 @@ class InterestGroupTrustedSignalsKVv2BrowserTest
           }
         ])";
 
-    const auto kTestPrivateKey = std::to_array<uint8_t>({
-        0xff, 0x1f, 0x47, 0xb1, 0x68, 0xb6, 0xb9, 0xea, 0x65, 0xf7, 0x97,
-        0x4f, 0xf2, 0x2e, 0xf2, 0x36, 0x94, 0xe2, 0xf6, 0xb6, 0x8d, 0x66,
-        0xf3, 0xa7, 0x64, 0x14, 0x28, 0xd4, 0x45, 0x35, 0x01, 0x8f,
-    });
-
     base::AutoLock auto_lock(lock_);
 
     // Handle CORS preflight request.
@@ -27773,16 +27762,14 @@ class InterestGroupTrustedSignalsKVv2BrowserTest
 
     // Decrypt the request.
     auto response_key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
-        kKeyId, EVP_HPKE_DHKEM_X25519_HKDF_SHA256, EVP_HPKE_HKDF_SHA256,
-        EVP_HPKE_AES_256_GCM);
+        kTestPrivacySandboxCoordinatorId, EVP_HPKE_DHKEM_X25519_HKDF_SHA256,
+        EVP_HPKE_HKDF_SHA256, EVP_HPKE_AES_256_GCM);
     CHECK(response_key_config.ok()) << response_key_config.status();
 
-    auto ohttp_gateway =
-        quiche::ObliviousHttpGateway::Create(
-            std::string(reinterpret_cast<const char*>(&kTestPrivateKey[0]),
-                        sizeof(kTestPrivateKey)),
-            response_key_config.value())
-            .value();
+    auto ohttp_gateway = quiche::ObliviousHttpGateway::Create(
+                             GetTestPrivacySandboxCoordinatorPrivateKey(),
+                             response_key_config.value())
+                             .value();
 
     auto received_request = ohttp_gateway.DecryptObliviousHttpRequest(
         request.content, "message/ad-auction-trusted-signals-request");
@@ -27849,12 +27836,10 @@ class InterestGroupTrustedSignalsKVv2BrowserTest
     send_access_control_allow_origin_header_ = true;
   }
 
-  static constexpr int kKeyId = 170;
-  static constexpr char kKeyIdStr[] = "AA";
   base::test::ScopedFeatureList feature_list_;
 
-  const url::Origin kCoordinatorOrigin = url::Origin::Create(
-      GURL("https://publickeyservice.gcp.privacysandboxservices.com"));
+  const url::Origin kCoordinatorOrigin =
+      url::Origin::Create(GURL("https://coordinator.test"));
 
   base::Lock lock_;
   std::string access_control_allow_origin_header_ GUARDED_BY(lock_);
@@ -27888,6 +27873,8 @@ void InterestGroupTrustedSignalsKVv2BrowserTest::
           .GetURL(kBidderSignals, "/trusted_kvv2_bidding_signals");
   GURL seller_script_url =
       remote_test_server_.GetURL(kSeller, "/interest_group/decision_logic.js");
+
+  ConfigureSignalsServerKeys({url::Origin::Create(bidder_signals_url)});
 
   url::Origin bidder_origin = url::Origin::Create(bidder_script_url);
   url::Origin seller_origin = url::Origin::Create(seller_script_url);
@@ -27926,8 +27913,8 @@ void InterestGroupTrustedSignalsKVv2BrowserTest::
           .SetTrustedBiddingSignalsUrl(bidder_signals_url)
           .SetTrustedBiddingSignalsKeys({{"key1", "key2"}})
           .SetAds(/*ads=*/{{{ad_url, R"({"ad":"metadata","here":[1,2]})"}}})
-          .SetTrustedBiddingSignalsCoordinator(url::Origin::Create(
-              GURL("https://publickeyservice.gcp.privacysandboxservices.com")))
+          .SetTrustedBiddingSignalsCoordinator(
+              url::Origin::Create(GURL("https://coordinator.test")))
           .SetExecutionMode(
               blink::InterestGroup::ExecutionMode::kGroupedByOriginMode)
           .Build();
@@ -28028,6 +28015,8 @@ void InterestGroupTrustedSignalsKVv2BrowserTest::
       (signals_on_private_origin ? embedded_https_test_server()
                                  : remote_test_server_)
           .GetURL(kSellerSignals, "/trusted_kvv2_scoring_signals");
+
+  ConfigureSignalsServerKeys({url::Origin::Create(seller_signals_url)});
 
   url::Origin bidder_origin = url::Origin::Create(bidder_script_url);
   url::Origin seller_origin = url::Origin::Create(seller_script_url);
@@ -28138,8 +28127,7 @@ void InterestGroupTrustedSignalsKVv2BrowserTest::
     decisionLogicURL: $2,
     trustedScoringSignalsURL: $3,
     interestGroupBuyers: [$4],
-    trustedScoringSignalsCoordinator:
-      "https://publickeyservice.gcp.privacysandboxservices.com"
+    trustedScoringSignalsCoordinator: "https://coordinator.test"
   })",
                                          seller_origin, seller_script_url,
                                          seller_signals_url, bidder_origin);
@@ -28178,6 +28166,8 @@ IN_PROC_BROWSER_TEST_P(InterestGroupTrustedSignalsKVv2BrowserTest,
   GURL seller_script_url = embedded_https_test_server().GetURL(
       kSeller, "/interest_group/decision_logic.js");
 
+  ConfigureSignalsServerKeys({url::Origin::Create(bidder_signals_url)});
+
   url::Origin bidder_origin = url::Origin::Create(bidder_script_url);
   url::Origin seller_origin = url::Origin::Create(seller_script_url);
 
@@ -28193,8 +28183,8 @@ IN_PROC_BROWSER_TEST_P(InterestGroupTrustedSignalsKVv2BrowserTest,
               .SetTrustedBiddingSignalsUrl(bidder_signals_url)
               .SetTrustedBiddingSignalsKeys({{"key1", "key2"}})
               .SetAds(/*ads=*/{{{ad_url, R"({"ad":"metadata","here":[1,2]})"}}})
-              .SetTrustedBiddingSignalsCoordinator(url::Origin::Create(GURL(
-                  "https://publickeyservice.gcp.privacysandboxservices.com")))
+              .SetTrustedBiddingSignalsCoordinator(
+                  url::Origin::Create(GURL("https://coordinator.test")))
               .SetExecutionMode(
                   blink::InterestGroup::ExecutionMode::kGroupedByOriginMode)
               .Build()));
@@ -28267,6 +28257,8 @@ IN_PROC_BROWSER_TEST_P(InterestGroupTrustedSignalsKVv2BrowserTest,
       "/interest_group/decision_logic_trusted_kvv2_scoring_signals.js");
   GURL seller_signals_url = embedded_https_test_server().GetURL(
       kSellerSignals, "/trusted_kvv2_scoring_signals");
+
+  ConfigureSignalsServerKeys({url::Origin::Create(seller_signals_url)});
 
   url::Origin bidder_origin = url::Origin::Create(bidder_script_url);
   url::Origin seller_origin = url::Origin::Create(seller_script_url);
@@ -28341,8 +28333,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupTrustedSignalsKVv2BrowserTest,
     decisionLogicURL: $2,
     trustedScoringSignalsURL: $3,
     interestGroupBuyers: [$4],
-    trustedScoringSignalsCoordinator:
-      "https://publickeyservice.gcp.privacysandboxservices.com"
+    trustedScoringSignalsCoordinator: "https://coordinator.test"
   })",
                                          seller_origin, seller_script_url,
                                          seller_signals_url, bidder_origin);
@@ -28492,6 +28483,8 @@ IN_PROC_BROWSER_TEST_P(InterestGroupTrustedSignalsKVv2BrowserTest,
   GURL seller_signals_url = embedded_https_test_server().GetURL(
       kSellerSignals, "/trusted_kvv2_scoring_signals");
 
+  ConfigureSignalsServerKeys({url::Origin::Create(seller_signals_url)});
+
   url::Origin bidder_origin = url::Origin::Create(bidder_script_url);
   url::Origin seller_origin = url::Origin::Create(seller_script_url);
 
@@ -28573,8 +28566,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupTrustedSignalsKVv2BrowserTest,
     trustedScoringSignalsURL: $3,
     interestGroupBuyers: [$4],
     sendCreativeScanningMetadata: true,
-    trustedScoringSignalsCoordinator:
-      "https://publickeyservice.gcp.privacysandboxservices.com"
+    trustedScoringSignalsCoordinator: "https://coordinator.test"
   })",
                                          seller_origin, seller_script_url,
                                          seller_signals_url, bidder_origin);

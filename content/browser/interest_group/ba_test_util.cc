@@ -9,15 +9,17 @@
 
 #include <array>
 #include <map>
-#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "content/browser/interest_group/interest_group_auction.h"
+#include "content/browser/interest_group/privacy_sandbox_coordinator_test_util.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/common/oblivious_http_header_key_config.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_gateway.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,15 +48,14 @@ std::map<std::string, JoinBidWinHistoryForTest> ExtractJoinBidWinHistories(
   // Decrypt the message.
   CHECK(!bna_request.empty());
 
-  auto key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
-                        0x12, EVP_HPKE_DHKEM_X25519_HKDF_SHA256,
-                        EVP_HPKE_HKDF_SHA256, EVP_HPKE_AES_256_GCM)
-                        .value();
+  auto key_config =
+      quiche::ObliviousHttpHeaderKeyConfig::Create(
+          kTestPrivacySandboxCoordinatorId, EVP_HPKE_DHKEM_X25519_HKDF_SHA256,
+          EVP_HPKE_HKDF_SHA256, EVP_HPKE_AES_256_GCM)
+          .value();
   auto ohttp_gateway =
       quiche::ObliviousHttpGateway::Create(
-          std::string(reinterpret_cast<const char*>(&kTestBaPrivateKey[0]),
-                      sizeof(kTestBaPrivateKey)),
-          key_config)
+          GetTestPrivacySandboxCoordinatorPrivateKey(), key_config)
           .value();
   EXPECT_EQ(0x00, bna_request[0]);
   auto request = ohttp_gateway.DecryptObliviousHttpRequest(
