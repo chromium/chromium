@@ -64,8 +64,11 @@ void MenuSeparator::OnPaint(gfx::Canvas* canvas) {
 
   ui::NativeTheme::MenuSeparatorExtraParams menu_separator;
   menu_separator.paint_rect = &paint_rect;
-  menu_separator.color_id =
-      MenuController::GetActiveInstance()->GetSeparatorColorId();
+  // TODO(crbug.com/402547880): ideally, make sure the separator is used within
+  // the context of a valid menu controller.
+  if (const auto* menu_controller = MenuController::GetActiveInstance()) {
+    menu_separator.color_id = menu_controller->GetSeparatorColorId();
+  }
   menu_separator.type = type_;
   GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(),
                           ui::NativeTheme::kMenuPopupSeparator,
