@@ -143,6 +143,8 @@ void SessionAccessor::CreateInternal(
     on_device_model::mojom::LoadAdaptationParamsPtr adaptation_params,
     std::optional<uint32_t> adaptation_id) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  // TODO(crbug.com/403383823): Require `params` to be non-null and remove
+  // this fallback path.
   if (!params) {
     params = on_device_model::mojom::SessionParams::New();
     // If session params are not provided but adaptation params are, inherit
@@ -156,6 +158,8 @@ void SessionAccessor::CreateInternal(
       }
       params->max_tokens = adaptation_params->max_tokens;
     }
+    params->top_k = 1;
+    params->temperature = 0.0;
   }
   if (kImageInput.Get()) {
     params->capabilities.Put(on_device_model::CapabilityFlags::kImageInput);
@@ -164,10 +168,10 @@ void SessionAccessor::CreateInternal(
     params->capabilities.Put(on_device_model::CapabilityFlags::kAudioInput);
   }
 
-  // TODO(crbug.com/403383823): Add sampling params to
-  // ChromeMLAdaptationDescriptor and pass them here.
   ChromeMLAdaptationDescriptor descriptor = {
       .max_tokens = params->max_tokens,
+      .top_k = params->top_k,
+      .temperature = params->temperature,
       .enable_image_input = params->capabilities.Has(
           on_device_model::CapabilityFlags::kImageInput),
       .enable_audio_input = params->capabilities.Has(

@@ -185,6 +185,30 @@ TEST_F(OnDeviceModelServiceTest, Append) {
                           "Context: cheddar\n"));
 }
 
+TEST_F(OnDeviceModelServiceTest, PerSessionSamplingParams) {
+  auto model = LoadModel();
+
+  // Sampling params passed at session creation are used during Generate().
+  auto session_params = mojom::SessionParams::New();
+  session_params->top_k = 2;
+  session_params->temperature = 0.5;
+
+  TestResponseHolder response;
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(),
+                      std::move(session_params));
+
+  session->Append(MakeInput("cheese"), {});
+  session->Append(MakeInput("more"), {});
+  session->Append(MakeInput("cheddar"), {});
+  session->Generate(mojom::GenerateOptions::New(), response.BindRemote());
+  response.WaitForCompletion();
+
+  EXPECT_THAT(response.responses(),
+              ElementsAre("TopK: 2, Temp: 0.5\n", "Context: cheese\n",
+                          "Context: more\n", "Context: cheddar\n"));
+}
+
 TEST_F(OnDeviceModelServiceTest, GenerateWithSamplingParamsIsNotAllowed) {
   auto model = LoadModel();
 
@@ -553,6 +577,8 @@ TEST_F(OnDeviceModelServiceTest, AppendWithImages) {
   mojo::Remote<mojom::Session> session;
   auto params = mojom::SessionParams::New();
   params->capabilities.Put(CapabilityFlags::kImageInput);
+  params->top_k = 1;
+  params->temperature = 0;
   model->StartSession(session.BindNewPipeAndPassReceiver(), std::move(params));
 
   {
