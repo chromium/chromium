@@ -1725,12 +1725,14 @@ enum HeaderBehaviour {
 
   self.fullscreenController->BrowserTraitCollectionChangedBegin();
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
   // TODO(crbug.com/41198852): - traitCollectionDidChange: is not always
   // forwarded because in some cases the presented view controller isn't a child
   // of the BVC in the view controller hierarchy (some intervening object isn't
   // a view controller).
   [self.presentedViewController
       traitCollectionDidChange:previousTraitCollection];
+#endif
 
   if (self.currentWebState) {
     UIEdgeInsets contentPadding =
