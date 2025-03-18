@@ -6572,10 +6572,12 @@
                     ],
                     "min_os_version": "16151.0.0",
                     "hardware_classes": [
+                        "brask",
                         "brya",
                         "corsola",
                         "geralt",
-                        "nissa"
+                        "nissa",
+                        "rex"
                     ]
                 }
             ]
