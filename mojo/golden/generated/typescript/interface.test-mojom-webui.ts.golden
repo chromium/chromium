@@ -59,7 +59,8 @@ export class IFaceRemote implements IFaceInterface {
         IFace_Method_ResponseParamsSpec.$,
         [
           param
-        ]);
+        ],
+        false);
   }
 };
 
@@ -88,7 +89,8 @@ export class IFaceReceiver {
         0,
         IFace_Method_ParamsSpec.$,
         IFace_Method_ResponseParamsSpec.$,
-        impl.method.bind(impl));
+        impl.method.bind(impl),
+        false);
     this.onConnectionError = this.helper_internal_.getConnectionErrorEventRouter();
   }
 }
@@ -140,7 +142,8 @@ export class IFaceCallbackRouter {
         0,
         IFace_Method_ParamsSpec.$,
         IFace_Method_ResponseParamsSpec.$,
-        this.method.createReceiverHandler(true /* expectsResponse */));
+        this.method.createReceiverHandler(true /* expectsResponse */),
+        false);
     this.onConnectionError = this.helper_internal_.getConnectionErrorEventRouter();
   }
 

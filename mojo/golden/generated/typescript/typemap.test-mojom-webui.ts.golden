@@ -64,7 +64,8 @@ export class IFaceWithTypemapRemote implements IFaceWithTypemapInterface {
         IFaceWithTypemap_Echo_ResponseParamsSpec.$,
         [
           param
-        ]);
+        ],
+        false);
   }
 };
 
@@ -93,7 +94,8 @@ export class IFaceWithTypemapReceiver {
         0,
         IFaceWithTypemap_Echo_ParamsSpec.$,
         IFaceWithTypemap_Echo_ResponseParamsSpec.$,
-        impl.echo.bind(impl));
+        impl.echo.bind(impl),
+        false);
     this.onConnectionError = this.helper_internal_.getConnectionErrorEventRouter();
   }
 }
@@ -145,7 +147,8 @@ export class IFaceWithTypemapCallbackRouter {
         0,
         IFaceWithTypemap_Echo_ParamsSpec.$,
         IFaceWithTypemap_Echo_ResponseParamsSpec.$,
-        this.echo.createReceiverHandler(true /* expectsResponse */));
+        this.echo.createReceiverHandler(true /* expectsResponse */),
+        false);
     this.onConnectionError = this.helper_internal_.getConnectionErrorEventRouter();
   }
 

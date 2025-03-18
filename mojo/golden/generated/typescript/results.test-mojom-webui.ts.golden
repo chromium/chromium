@@ -30,7 +30,7 @@ export class ResultInterfacePendingReceiver implements
 }
 
 export interface ResultInterfaceInterface {
-  method(a: boolean): void;
+  method(a: boolean): Promise<boolean>;
 }
 
 export class ResultInterfaceRemote implements ResultInterfaceInterface {
@@ -50,14 +50,15 @@ export class ResultInterfaceRemote implements ResultInterfaceInterface {
   }
 
   method(
-      a: boolean): void {
-    this.proxy.sendMessage(
+      a: boolean): Promise<boolean> {
+    return this.proxy.sendMessage(
         0,
         ResultInterface_Method_ParamsSpec.$,
-        null,
+        ResultInterface_Method_ResponseParamsSpec.$,
         [
           a
-        ]);
+        ],
+        true);
   }
 };
 
@@ -85,8 +86,9 @@ export class ResultInterfaceReceiver {
     this.helper_internal_.registerHandler(
         0,
         ResultInterface_Method_ParamsSpec.$,
-        null,
-        impl.method.bind(impl));
+        ResultInterface_Method_ResponseParamsSpec.$,
+        impl.method.bind(impl),
+        true);
     this.onConnectionError = this.helper_internal_.getConnectionErrorEventRouter();
   }
 }
@@ -137,8 +139,9 @@ export class ResultInterfaceCallbackRouter {
     this.helper_internal_.registerHandler(
         0,
         ResultInterface_Method_ParamsSpec.$,
-        null,
-        this.method.createReceiverHandler(false /* expectsResponse */));
+        ResultInterface_Method_ResponseParamsSpec.$,
+        this.method.createReceiverHandler(true /* expectsResponse */),
+        true);
     this.onConnectionError = this.helper_internal_.getConnectionErrorEventRouter();
   }
 
