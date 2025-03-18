@@ -44,8 +44,7 @@ void SetModalPresentationStyle(UIViewController* view_controller) {
 
 - (void)start {
   BringAndroidTabsToIOSService* service =
-      BringAndroidTabsToIOSServiceFactory::GetForProfileIfExists(
-          self.browser->GetProfile());
+      BringAndroidTabsToIOSServiceFactory::GetForProfileIfExists(self.profile);
   _mediator = [[BringAndroidTabsPromptMediator alloc]
       initWithBringAndroidTabsService:service
                             URLLoader:UrlLoadingBrowserAgent::FromBrowser(
