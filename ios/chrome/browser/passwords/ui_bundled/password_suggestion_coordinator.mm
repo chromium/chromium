@@ -309,11 +309,12 @@ constexpr CGFloat preferredCornerRadius = 20;
   auto resolver = ^CGFloat(
       id<UISheetPresentationControllerDetentResolutionContext> context) {
     CGFloat height = [self.viewController preferredHeightForContent];
-    CGFloat largeDetentHeight = [UISheetPresentationControllerDetent.largeDetent
-        resolvedValueInContext:context];
+    CGFloat largeDetentHeight =
+        [[UISheetPresentationControllerDetent largeDetent]
+            resolvedValueInContext:context];
     height = MIN(height, largeDetentHeight);
     CGFloat mediumDetentHeight =
-        [UISheetPresentationControllerDetent.mediumDetent
+        [[UISheetPresentationControllerDetent mediumDetent]
             resolvedValueInContext:context];
     return MAX(height, mediumDetentHeight);
   };
@@ -336,7 +337,7 @@ constexpr CGFloat preferredCornerRadius = 20;
   // the maximum size.
   return @[
     [self preferredHeightDetent],
-    UISheetPresentationControllerDetent.largeDetent
+    [UISheetPresentationControllerDetent largeDetent]
   ];
 }
 

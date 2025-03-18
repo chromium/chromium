@@ -70,8 +70,8 @@ constexpr base::TimeDelta kDialogTimeout = base::Seconds(30);
       _presentedViewController.sheetPresentationController;
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
   presentationController.detents = @[
-    UISheetPresentationControllerDetent.mediumDetent,
-    UISheetPresentationControllerDetent.largeDetent
+    [UISheetPresentationControllerDetent mediumDetent],
+    [UISheetPresentationControllerDetent largeDetent]
   ];
   presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
 
