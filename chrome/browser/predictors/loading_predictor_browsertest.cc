@@ -2779,8 +2779,9 @@ IN_PROC_BROWSER_TEST_F(FencedFrameLoadingPredictorBrowserTest,
 
 // Verify DNS prefetch triggered by link response header is working in fenced
 // frame.
+// TODO(crbug.com/360154073): Disabled for flakiness.
 IN_PROC_BROWSER_TEST_F(FencedFrameLoadingPredictorBrowserTest,
-                       DnsPrefetchFromLinkHeader) {
+                       DISABLED_DnsPrefetchFromLinkHeader) {
   std::string relative_url = "/title1.html";
   net::test_server::ControllableHttpResponse response(
       &embedded_https_test_server(), relative_url);
