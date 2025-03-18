@@ -809,10 +809,6 @@ TEST_P(StatisticsRecorderTest, GlobalCallbackCalled) {
 }
 
 TEST_P(StatisticsRecorderTest, LogOnShutdownNotInitialized) {
-  // Some builds don't have runtime vlogging. See base/logging.h.
-  if (!VLOG_IS_ON(0)) {
-    GTEST_SKIP();
-  }
   ResetVLogInitialized();
   logging::SetMinLogLevel(logging::LOGGING_WARNING);
   InitializeStatisticsRecorder();
@@ -823,10 +819,6 @@ TEST_P(StatisticsRecorderTest, LogOnShutdownNotInitialized) {
 }
 
 TEST_P(StatisticsRecorderTest, LogOnShutdownInitializedExplicitly) {
-  // Some builds don't have runtime vlogging. See base/logging.h.
-  if (!VLOG_IS_ON(0)) {
-    GTEST_SKIP();
-  }
   ResetVLogInitialized();
   logging::SetMinLogLevel(logging::LOGGING_WARNING);
   InitializeStatisticsRecorder();
@@ -839,10 +831,6 @@ TEST_P(StatisticsRecorderTest, LogOnShutdownInitializedExplicitly) {
 }
 
 TEST_P(StatisticsRecorderTest, LogOnShutdownInitialized) {
-  // Some builds don't have runtime vlogging. See base/logging.h.
-  if (!VLOG_IS_ON(0)) {
-    GTEST_SKIP();
-  }
   ResetVLogInitialized();
   logging::SetMinLogLevel(logging::LOGGING_VERBOSE);
   InitializeStatisticsRecorder();
