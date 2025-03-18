@@ -981,9 +981,6 @@ public final class ProductionSupportedFlagList {
                 CcFeatures.THROTTLE_FRAME_RATE_ON_MANY_DID_NOT_PRODUCE_FRAME,
                 "Reduce frame rate when pixels aren't updated for many frames"),
         Flag.baseFeature(
-                "MojoMessageAlwaysUseLatestVersion",
-                "Performance experiment to always use the latest (largest) message version."),
-        Flag.baseFeature(
                 BlinkFeatures.BF_CACHE_OPEN_BROADCAST_CHANNEL,
                 "Start putting pages with broadcast channel into bfcache."),
         Flag.baseFeature(

@@ -288,32 +288,6 @@ TEST(UnionTest, SerializeNotNull) {
 }
 
 TEST(UnionTest, SerializeIsNullInlined) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(kMojoMessageAlwaysUseLatestVersion);
-
-  base::MetricsSubSampler::ScopedNeverSampleForTesting no_subsampling_;
-  PodUnionPtr pod;
-
-  Message message(0, 0, 0, 0, nullptr);
-  mojo::internal::Buffer& buffer = *message.payload_buffer();
-  EXPECT_EQ(sizeof(mojo::internal::MessageHeader), buffer.cursor());
-
-  mojo::internal::MessageFragment<internal::PodUnion_Data> fragment(message);
-  fragment.Allocate();
-  mojo::internal::Serialize<PodUnionDataView>(pod, fragment, true);
-  EXPECT_TRUE(fragment->is_null());
-  EXPECT_EQ(16U + sizeof(mojo::internal::MessageHeader), buffer.cursor());
-
-  PodUnionPtr pod2;
-  mojo::internal::Deserialize<PodUnionDataView>(fragment.data(), &pod2,
-                                                nullptr);
-  EXPECT_TRUE(pod2.is_null());
-}
-
-TEST(UnionTest, SerializeIsNullInlinedV3) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kMojoMessageAlwaysUseLatestVersion);
-
   PodUnionPtr pod;
 
   Message message(0, 0, 0, 0, nullptr);

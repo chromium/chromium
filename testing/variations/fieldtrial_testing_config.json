@@ -14789,22 +14789,6 @@
             ]
         }
     ],
-    "MojoMessageAlwaysUseLatestVersion": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MojoMessageAlwaysUseLatestVersion"
-                    ]
-                }
-            ]
-        }
-    ],
     "MojoPredictiveAllocation": [
         {
             "platforms": [
