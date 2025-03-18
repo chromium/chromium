@@ -25,7 +25,6 @@ source_set("common") {
 
   deps = [
     "//base",
-    "//ios/third_party/webkit",
     "//ios/web/public/navigation",
     "//net",
     "//services/network/public/cpp",
@@ -66,6 +65,7 @@ source_set("web_view_creation_util") {
   deps = [
     ":user_agent",
     "//base",
+    "//ios/third_party/webkit",
     "//ios/web/web_state:web_view_internal_creation_util",
     "//ios/web/web_state/ui:wk_web_view_configuration_provider",
   ]

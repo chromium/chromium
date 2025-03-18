@@ -4,6 +4,8 @@
 
 #import "ios/web/common/web_view_creation_util.h"
 
+#import <WebKit/WebKit.h>
+
 #import "base/check.h"
 #import "ios/web/common/user_agent.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
