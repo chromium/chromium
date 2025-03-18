@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
+#include "media/midi/midi_export.h"
 #include "media/midi/midi_input_port_android.h"
 #include "media/midi/midi_manager.h"
 
@@ -25,6 +26,10 @@ namespace midi {
 class MidiDeviceAndroid;
 class MidiOutputPortAndroid;
 class MidiService;
+
+// Checks if the current running Android system implements the MIDI service.
+// Should be available only in tests.
+MIDI_EXPORT bool HasSystemFeatureMidiForTesting();
 
 // MidiManagerAndroid is a MidiManager subclass for Android M or newer. For
 // older android OSes, we use MidiManagerUsb.

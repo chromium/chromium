@@ -2294,6 +2294,9 @@ extern const char kVisitedURLRankingServiceHistoryVisibilityScoreFilterName[];
 extern const char
     kVisitedURLRankingServiceHistoryVisibilityScoreFilterDescription[];
 
+extern const char kGroupPromoPrototypeName[];
+extern const char kGroupPromoPrototypeDescription[];
+
 extern const char kV8VmFutureName[];
 extern const char kV8VmFutureDescription[];
 
@@ -3138,12 +3141,6 @@ extern const char kSmartCardWebApiDescription[];
 extern const char kTranslateOpenSettingsName[];
 extern const char kTranslateOpenSettingsDescription[];
 #endif
-
-extern const char kUserDisplayModeSyncBrowserMitigationName[];
-extern const char kUserDisplayModeSyncBrowserMitigationDescription[];
-
-extern const char kUserDisplayModeSyncStandaloneMitigationName[];
-extern const char kUserDisplayModeSyncStandaloneMitigationDescription[];
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 extern const char kWasmTtsComponentUpdaterEnabledName[];
@@ -4133,6 +4130,12 @@ extern const char kArcWindowPredictorDescription[];
 
 extern const char kScalableIphDebugName[];
 extern const char kScalableIphDebugDescription[];
+
+extern const char kScannerDisclaimerDebugOverrideName[];
+extern const char kScannerDisclaimerDebugOverrideDescription[];
+extern const char kScannerDisclaimerDebugOverrideChoiceDefault[];
+extern const char kScannerDisclaimerDebugOverrideChoiceAlwaysReminder[];
+extern const char kScannerDisclaimerDebugOverrideChoiceAlwaysFull[];
 
 extern const char kSealKeyName[];
 extern const char kSealKeyDescription[];

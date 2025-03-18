@@ -50,9 +50,6 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/shadow_types.h"
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace ash {
 
@@ -79,32 +76,19 @@ constexpr gfx::Size kImagePreferredSize(/*width=*/kImageWidth,
                                         /*height=*/kImageHeight);
 
 std::u16string GetTextTitle(bool is_reminder) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return l10n_util::GetStringUTF16(
-      is_reminder ? IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_TITLE_REMINDER
-                  : IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_TITLE);
-#else
-  return is_reminder ? u"Reminder title" : u"Disclaimer title";
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      is_reminder ? IDS_ASH_SCANNER_DISCLAIMER_REMINDER_TITLE
+                  : IDS_ASH_SCANNER_DISCLAIMER_TITLE);
 }
 
 std::u16string GetTextAcceptButton(bool is_reminder) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return l10n_util::GetStringUTF16(
-      is_reminder ? IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_TITLE_REMINDER_ACCEPT
-                  : IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_ACCEPT);
-#else
-  return is_reminder ? u"Acknowledge button" : u"Accept Button";
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      is_reminder ? IDS_ASH_SCANNER_DISCLAIMER_REMINDER_ACCEPT
+                  : IDS_ASH_SCANNER_DISCLAIMER_ACCEPT);
 }
 
 std::u16string GetTextDeclineButton() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return l10n_util::GetStringUTF16(
-      IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_DECLINE);
-#else
-  return u"Decline Button";
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return l10n_util::GetStringUTF16(IDS_ASH_SCANNER_DISCLAIMER_DECLINE);
 }
 
 views::Builder<views::StyledLabel> GetTextBodyBuilder() {
@@ -158,17 +142,10 @@ views::StyledLabel::RangeStyleInfo GetLinkTextStyleInfo(
 views::Builder<views::StyledLabel> GetParagraphOneBuilder(
     base::RepeatingClosure press_terms_of_service_callback) {
   std::vector<size_t> offsets;
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  std::u16string link_text = l10n_util::GetStringUTF16(
-      IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_TERMS_LINK_TEXT);
+  std::u16string link_text =
+      l10n_util::GetStringUTF16(IDS_ASH_SCANNER_DISCLAIMER_TERMS_LINK_TEXT);
   std::u16string text = l10n_util::GetStringFUTF16(
-      IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_PARAGRAPH_ONE, {link_text},
-      &offsets);
-#else
-  std::u16string link_text = u"terms and conditions";
-  std::u16string text = u"Read the terms and conditions.";
-  offsets = {text.find(link_text)};
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      IDS_ASH_SCANNER_DISCLAIMER_PARAGRAPH_ONE, {link_text}, &offsets);
   CHECK_EQ(offsets.size(), 1u);
 
   return GetTextBodyBuilder()
@@ -180,13 +157,8 @@ views::Builder<views::StyledLabel> GetParagraphOneBuilder(
 }
 
 views::Builder<views::StyledLabel> GetParagraphTwoBuilder() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  std::u16string text = l10n_util::GetStringUTF16(
-      IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_PARAGRAPH_TWO);
-#else
   std::u16string text =
-      u"This is the disclaimer view for a capture mode feature.";
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      l10n_util::GetStringUTF16(IDS_ASH_SCANNER_DISCLAIMER_PARAGRAPH_TWO);
   return GetTextBodyBuilder()
       .SetText(std::move(text))
       .SetID(DisclaimerViewId::kDisclaimerViewParagraphTwoId);
@@ -195,17 +167,10 @@ views::Builder<views::StyledLabel> GetParagraphTwoBuilder() {
 views::Builder<views::StyledLabel> GetParagraphThreeBuilder(
     base::RepeatingClosure press_learn_more_link_callback) {
   std::vector<size_t> offsets;
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::u16string link_text = l10n_util::GetStringUTF16(
-      IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_LEARN_MORE_LINK_TEXT);
+      IDS_ASH_SCANNER_DISCLAIMER_LEARN_MORE_LINK_TEXT);
   std::u16string text = l10n_util::GetStringFUTF16(
-      IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_PARAGRAPH_THREE, {link_text},
-      &offsets);
-#else
-  std::u16string link_text = u"Learn more";
-  std::u16string text = u"Learn more about the feature.";
-  offsets = {text.find(link_text)};
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      IDS_ASH_SCANNER_DISCLAIMER_PARAGRAPH_THREE, {link_text}, &offsets);
   CHECK_EQ(offsets.size(), 1u);
 
   return GetTextBodyBuilder()

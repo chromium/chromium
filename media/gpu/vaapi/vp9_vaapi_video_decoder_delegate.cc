@@ -11,7 +11,6 @@
 
 #include <type_traits>
 
-#include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -51,7 +50,7 @@ scoped_refptr<VP9Picture> VP9VaapiVideoDecoderDelegate::CreateVP9Picture() {
     return nullptr;
   }
 
-  return base::MakeRefCounted<VaapiVP9Picture>(std::move(va_surface_handle));
+  return new VaapiVP9Picture(std::move(va_surface_handle));
 }
 
 DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(

@@ -605,7 +605,11 @@ void PdfViewWebPlugin::Paint(cc::PaintCanvas* canvas, const gfx::Rect& rect) {
   canvas->drawImage(snapshot_, 0, 0);
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
-  if (ink_module_ && ink_module_->HasInputsToDraw()) {
+  if (!ink_module_) {
+    return;
+  }
+
+  if (ink_module_->HasInputsToDraw()) {
     SkBitmap sk_bitmap;
     sk_bitmap.allocPixels(
         SkImageInfo::MakeN32Premul(rect.width(), rect.height()));
@@ -615,13 +619,18 @@ void PdfViewWebPlugin::Paint(cc::PaintCanvas* canvas, const gfx::Rect& rect) {
 
     sk_sp<SkImage> snapshot = sk_bitmap.asImage();
     CHECK(snapshot);
-    cc::PaintImage cc_snapshot =
+    snapshot_ink_inputs_ =
         cc::PaintImageBuilder::WithDefault()
             .set_image(std::move(snapshot), cc::PaintImage::GetNextContentId())
             .set_id(cc::PaintImage::GetNextId())
             .set_no_cache(true)
             .TakePaintImage();
-    canvas->drawImage(cc_snapshot, 0, 0);
+    canvas->drawImage(snapshot_ink_inputs_.value(), 0, 0);
+  } else if (snapshot_ink_inputs_.has_value()) {
+    // Waiting on `snapshot_` to get refreshed to reflect the change for an
+    // added stroke, so reapply the last Ink inputs snapshot to avoid a flash
+    // of a recently added stroke temporarily disappearing.
+    canvas->drawImage(snapshot_ink_inputs_.value(), 0, 0);
   }
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 }
@@ -2263,6 +2272,14 @@ void PdfViewWebPlugin::UpdateSnapshot(sk_sp<SkImage> snapshot) {
           .set_id(cc::PaintImage::GetNextId())
           .set_no_cache(true)
           .TakePaintImage();
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  // `paint_manager_` updates the snapshot after it has completed painting,
+  // which uses `engine_` in `DoPaint()`.  Any newly added Ink stroke will now
+  // be applied in the snapshot, so there is no need to retain any prior
+  // `snapshot_ink_inputs_`.
+  snapshot_ink_inputs_.reset();
+#endif
 
   if (!plugin_rect_.IsEmpty())
     InvalidatePluginContainer();

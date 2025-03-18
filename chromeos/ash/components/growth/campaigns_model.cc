@@ -363,6 +363,7 @@ const Payload* GetPayloadBySlot(const Campaign* campaign, Slot slot) {
       return campaign->FindDictByDottedPath(base::StringPrintf(
           kPayloadPathTemplate, kDemoModeSignInExperiencePath));
     case Slot::kDemoModeFreePlayApps:
+    case Slot::kDryRun:
       NOTREACHED();
   }
 

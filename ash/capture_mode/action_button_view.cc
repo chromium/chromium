@@ -12,6 +12,7 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/style_util.h"
 #include "ash/style/system_shadow.h"
 #include "ash/style/typography.h"
 #include "base/time/time.h"
@@ -25,6 +26,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/animation/animation_builder.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
@@ -33,6 +35,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -89,6 +92,14 @@ ActionButtonView::ActionButtonView(views::Button::PressedCallback callback,
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                 kActionButtonRadius);
 
+  StyleUtil::ConfigureInkDropAttributes(
+      this, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity);
+  StyleUtil::SetUpInkDropForButton(this);
+  ink_drop_container_ =
+      AddChildView(std::make_unique<views::InkDropContainerView>());
+  // The container should adjust its bounds if we collapse to an icon button.
+  ink_drop_container_->SetAutoMatchParentBounds(true);
+
   if (icon) {
     image_view_ = AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
@@ -101,7 +112,9 @@ ActionButtonView::ActionButtonView(views::Button::PressedCallback callback,
   SetAccessibleName(text);
 }
 
-ActionButtonView::~ActionButtonView() = default;
+ActionButtonView::~ActionButtonView() {
+  views::InkDrop::Remove(this);
+}
 
 void ActionButtonView::AddedToWidget() {
   views::Button::AddedToWidget();
@@ -122,6 +135,17 @@ void ActionButtonView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   // The shadow layer is a sibling of this view's layer, and should have the
   // same bounds.
   shadow_->SetContentBounds(layer()->bounds());
+}
+
+void ActionButtonView::AddLayerToRegion(ui::Layer* layer,
+                                        views::LayerRegion region) {
+  // This routes background layers to `ink_drop_container_` instead of `this` to
+  // avoid painting effects underneath our background.
+  ink_drop_container_->AddLayerToRegion(layer, region);
+}
+
+void ActionButtonView::RemoveLayerFromRegions(ui::Layer* layer) {
+  ink_drop_container_->RemoveLayerFromRegions(layer);
 }
 
 void ActionButtonView::CollapseToIconButton() {

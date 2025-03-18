@@ -27,10 +27,10 @@ FileAttachment::Type FileAttachmentTypeFromMimeType(
 }
 
 std::string MimeTypeFromPath(const base::FilePath& path) {
-  std::string mime_type = "application/octet-stream";
-  base::FilePath::StringType ext = path.Extension();
-  if (!ext.empty())
-    net::GetWellKnownMimeTypeFromExtension(ext.substr(1), &mime_type);
+  std::string mime_type;
+  if (!net::GetWellKnownMimeTypeFromFile(path, &mime_type)) {
+    return "application/octet-stream";
+  }
 
   return mime_type;
 }

@@ -38,13 +38,188 @@
 #include "ui/base/cocoa/bubble_closer.h"
 #endif
 
+class AccountChooserDialogView;
+class AppDialogView;
+class AnnouncementView;
+class BruschettaUninstallerView;
+class ChromeLabsBubbleView;
+class ColorPickerViewTest;
+class ContentSettingBubbleContents;
+class CriticalNotificationBubbleView;
+class CrostiniAnsibleSoftwareConfigView;
+class CrostiniExpiredContainerWarningView;
+class CrostiniForceCloseView;
+class CrostiniPackageInstallFailureView;
+class CrostiniRecoveryView;
+class CrostiniUninstallerView;
+class CrostiniUpdateFilesystemView;
+class DiceWebSigninInterceptionBubbleView;
+class ExtensionInstallDialogView;
+class ExtensionInstallFrictionDialogView;
+class ExtensionInstalledBubbleView;
+class ExtensionPopup;
+class ExtensionsMenuView;
+class FlyingIndicator;
+class GlobalErrorBubbleView;
+class HomePageUndoBubble;
+class MediaDialogView;
+class HatsNextWebDialog;
+class IncognitoClearBrowsingDataDialog;
+class LocationBarBubbleDelegateView;
+class NetworkProfileBubbleView;
+class PageInfoBubbleViewBase;
+class PermissionPromptBaseView;
+class PluginVmInstallerView;
+class ProfileCustomizationBubbleView;
+class ProfileMenuViewBase;
+class RemoveSuggestionBubbleDialogDelegateView;
+class StoragePressureBubbleView;
+class TabGroupEditorBubbleView;
+class TabHoverCardBubbleView;
+class TestBubbleView;
+class ToolbarActionHoverCardBubbleView;
+class ToolbarActionsBarBubbleViews;
+class ScreenshotSurfaceTestDialog;
+class WebBubbleView;
+class WebUIBubbleDialogView;
+FORWARD_DECLARE_TEST(InProcessBrowserTest,
+                     RunsScheduledLayoutOnAnchoredBubbles);
+
+namespace ambient_signin {
+class AmbientSigninBubbleView;
+}
+
+namespace arc {
+class ArcSplashScreenDialogView;
+class BaseDialogDelegateView;
+class ResizeConfirmationDialogView;
+class RoundedCornerBubbleDialogDelegateView;
+
+namespace input_overlay {
+class DeleteEditShortcut;
+class RichNudge;
+}  // namespace input_overlay
+}  // namespace arc
+
+namespace ash {
+class AnchoredNudge;
+class ContextualNudge;
+class DictationBubbleView;
+class FaceGazeBubbleView;
+class GameDashboardMainMenuView;
+class HelpBubbleViewAsh;
+class ImeModeIndicatorView;
+class KioskAppInstructionBubble;
+class MouseKeysBubbleView;
+class NetworkInfoBubble;
+class NetworkStateListInfoBubble;
+class PaletteWelcomeBubbleView;
+class QuickInsertCapsLockStateView;
+class QuickInsertPreviewBubbleView;
+class ShelfBubble;
+class TestBubbleDialogDelegateView;
+class TestBubbleDialogDelegate;
+class TrayBubbleView;
+FORWARD_DECLARE_TEST(OverviewSessionTest, HideBubbleTransient);
+FORWARD_DECLARE_TEST(ResizeShadowAndCursorTest,
+                     DefaultCursorOnBubbleWidgetCorners);
+FORWARD_DECLARE_TEST(SnapGroupOverviewTest, HideBubbleTransientInOverview);
+FORWARD_DECLARE_TEST(
+    SnapGroupDesksTest,
+    NoCrashWhenDraggingOverviewGroupItemWithBubbleToAnotherDesk);
+FORWARD_DECLARE_TEST(SnapGroupTest,
+                     NoCrashWhenReSnappingSecondaryToPrimaryWithTransient);
+
+namespace sharesheet {
+class SharesheetBubbleView;
+}
+}  // namespace ash
+
+namespace autofill {
+class CardUnmaskAuthenticationSelectionDialogView;
+class CardUnmaskPromptViews;
+class LocalCardMigrationDialogView;
+class LocalCardMigrationErrorDialogView;
+}  // namespace autofill
+
+namespace captions {
+class CaptionBubble;
+}
+
+namespace chromeos {
+class MultitaskMenu;
+}
+
 namespace gfx {
 class Rect;
 }
 
+namespace lens {
+class LensPreselectionBubble;
+class LensRegionSearchInstructionsView;
+}  // namespace lens
+
+namespace media_router {
+class CastDialogView;
+class MediaRemotingDialogView;
+}  // namespace media_router
+
+namespace send_tab_to_self {
+class SendTabToSelfToolbarBubbleView;
+}
+
+namespace toasts {
+class ToastView;
+}
+
+namespace ui::ime {
+class AnnouncementView;
+class CandidateWindowView;
+class GrammarSuggestionWindow;
+class InfolistWindow;
+class SuggestionWindowView;
+class UndoWindow;
+}  // namespace ui::ime
+
+namespace user_education {
+class HelpBubbleView;
+
+namespace test {
+class TestCustomHelpBubbleView;
+}
+}  // namespace user_education
+
+namespace webid {
+class AccountSelectionBubbleView;
+}
+
 namespace views {
 
+class AnchorTestBubbleDialogDelegateView;
 class Button;
+class FocusManagerTestBubbleDialogDelegateView;
+class FrameViewTestBubbleDialogDelegateView;
+class InfoBubble;
+class InteractionSequenceViewsTest;
+class TestBubbleDialogDelegateView;
+class TestBubbleView;
+class TouchSelectionMenuViews;
+
+namespace examples {
+template <class DialogType>
+class DialogExampleDelegate;
+class ExampleBubble;
+class LoginBubbleDialogView;
+}  // namespace examples
+
+namespace test {
+class SimpleBubbleView;
+class TestBubbleView;
+class WidgetTestBubbleDialogDelegateView;
+FORWARD_DECLARE_TEST(DesktopWidgetTestInteractive, FocusChangesOnBubble);
+FORWARD_DECLARE_TEST(InteractionTestUtilViewsTest, ActivateSurface);
+FORWARD_DECLARE_TEST(InteractionTestUtilViewsTest, Confirm);
+}  // namespace test
 
 class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
  public:
@@ -525,8 +700,13 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
 };
 
 // BubbleDialogDelegateView is a BubbleDialogDelegate that is also a View.
-// Prefer using a BubbleDialogDelegate that sets a separate View as its contents
-// view.
+//
+// DEPRECATED: Using this class makes it more challenging to reason about object
+// ownership/lifetimes and promotes writing "fat" views that also contain
+// business logic. Instead, use DialogModel if possible; otherwise, use separate
+// subclasses of BubbleDialogDelegate and View to handle those interfaces'
+// respective concerns.
+//
 // TODO(pbos): Migrate existing uses of BubbleDialogDelegateView to directly
 // inherit or use BubbleDialogDelegate.
 class VIEWS_EXPORT BubbleDialogDelegateView : public View,
@@ -559,15 +739,6 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public View,
       Widget::InitParams::Ownership ownership =
           Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
 
-  // |shadow| usually doesn't need to be explicitly set, just uses the default
-  // argument. Unless on Mac when the bubble needs to use Views base shadow,
-  // override it with suitable bubble border type.
-  explicit BubbleDialogDelegateView(
-      View* anchor_view = nullptr,
-      BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_LEFT,
-      BubbleBorder::Shadow shadow = BubbleBorder::DIALOG_SHADOW,
-      bool autosize = false);
-
   // For use with std::make_unique<>(). Callers still must be in the friend list
   // below, just as with the private constructor.
   explicit BubbleDialogDelegateView(
@@ -581,8 +752,6 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public View,
   BubbleDialogDelegateView(const BubbleDialogDelegateView&) = delete;
   BubbleDialogDelegateView& operator=(const BubbleDialogDelegateView&) = delete;
   ~BubbleDialogDelegateView() override;
-
-  static PassKey CreatePassKey() { return PassKey(); }
 
   // BubbleDialogDelegate:
   View* GetContentsView() override;
@@ -603,6 +772,149 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public View,
  private:
   FRIEND_TEST_ALL_PREFIXES(BubbleDelegateTest, CreateDelegate);
   FRIEND_TEST_ALL_PREFIXES(BubbleDelegateTest, NonClientHitTest);
+
+  // DO NOT ADD TO THIS LIST!
+  // These existing cases are "grandfathered in", but there shouldn't be more.
+  // See comments atop class.
+  friend class ::AccountChooserDialogView;
+  friend class ::AnnouncementView;
+  friend class ::AppDialogView;
+  friend class ::BruschettaUninstallerView;
+  friend class ::ChromeLabsBubbleView;
+  friend class ::ColorPickerViewTest;
+  friend class ::ContentSettingBubbleContents;
+  friend class ::CriticalNotificationBubbleView;
+  friend class ::CrostiniAnsibleSoftwareConfigView;
+  friend class ::CrostiniExpiredContainerWarningView;
+  friend class ::CrostiniForceCloseView;
+  friend class ::CrostiniPackageInstallFailureView;
+  friend class ::CrostiniRecoveryView;
+  friend class ::CrostiniUninstallerView;
+  friend class ::CrostiniUpdateFilesystemView;
+  friend class ::DiceWebSigninInterceptionBubbleView;
+  friend class ::ExtensionInstallDialogView;
+  friend class ::ExtensionInstallFrictionDialogView;
+  friend class ::ExtensionInstalledBubbleView;
+  friend class ::ExtensionPopup;
+  friend class ::ExtensionsMenuView;
+  friend class ::FlyingIndicator;
+  friend class ::GlobalErrorBubbleView;
+  friend class ::HomePageUndoBubble;
+  friend class ::MediaDialogView;
+  friend class ::HatsNextWebDialog;
+  friend class ::IncognitoClearBrowsingDataDialog;
+  friend class ::LocationBarBubbleDelegateView;
+  friend class ::NetworkProfileBubbleView;
+  friend class ::PageInfoBubbleViewBase;
+  friend class ::PermissionPromptBaseView;
+  friend class ::PluginVmInstallerView;
+  friend class ::ProfileCustomizationBubbleView;
+  friend class ::ProfileMenuViewBase;
+  friend class ::RemoveSuggestionBubbleDialogDelegateView;
+  friend class ::StoragePressureBubbleView;
+  friend class ::TabGroupEditorBubbleView;
+  friend class ::TabHoverCardBubbleView;
+  friend class ::TestBubbleView;
+  friend class ::ToolbarActionHoverCardBubbleView;
+  friend class ::ToolbarActionsBarBubbleViews;
+  friend class ::ScreenshotSurfaceTestDialog;
+  friend class ::WebBubbleView;
+  friend class ::WebUIBubbleDialogView;
+  FRIEND_TEST_ALL_PREFIXES(::InProcessBrowserTest,
+                           RunsScheduledLayoutOnAnchoredBubbles);
+  friend class ::ambient_signin::AmbientSigninBubbleView;
+  friend class ::arc::ArcSplashScreenDialogView;
+  friend class ::arc::BaseDialogDelegateView;
+  friend class ::arc::ResizeConfirmationDialogView;
+  friend class ::arc::RoundedCornerBubbleDialogDelegateView;
+  friend class ::arc::input_overlay::DeleteEditShortcut;
+  friend class ::arc::input_overlay::RichNudge;
+  friend class ::ash::AnchoredNudge;
+  friend class ::ash::ContextualNudge;
+  friend class ::ash::DictationBubbleView;
+  friend class ::ash::FaceGazeBubbleView;
+  friend class ::ash::GameDashboardMainMenuView;
+  friend class ::ash::HelpBubbleViewAsh;
+  friend class ::ash::ImeModeIndicatorView;
+  friend class ::ash::KioskAppInstructionBubble;
+  friend class ::ash::MouseKeysBubbleView;
+  friend class ::ash::NetworkInfoBubble;
+  friend class ::ash::NetworkStateListInfoBubble;
+  friend class ::ash::PaletteWelcomeBubbleView;
+  friend class ::ash::QuickInsertCapsLockStateView;
+  friend class ::ash::QuickInsertPreviewBubbleView;
+  friend class ::ash::ShelfBubble;
+  friend class ::ash::TestBubbleDialogDelegateView;
+  friend class ::ash::TestBubbleDialogDelegate;
+  friend class ::ash::TrayBubbleView;
+  FRIEND_TEST_ALL_PREFIXES(::ash::OverviewSessionTest, HideBubbleTransient);
+  FRIEND_TEST_ALL_PREFIXES(::ash::ResizeShadowAndCursorTest,
+                           DefaultCursorOnBubbleWidgetCorners);
+  FRIEND_TEST_ALL_PREFIXES(::ash::SnapGroupOverviewTest,
+                           HideBubbleTransientInOverview);
+  FRIEND_TEST_ALL_PREFIXES(
+      ::ash::SnapGroupDesksTest,
+      NoCrashWhenDraggingOverviewGroupItemWithBubbleToAnotherDesk);
+  FRIEND_TEST_ALL_PREFIXES(
+      ::ash::SnapGroupTest,
+      NoCrashWhenReSnappingSecondaryToPrimaryWithTransient);
+  friend class ::ash::sharesheet::SharesheetBubbleView;
+  friend class ::autofill::CardUnmaskAuthenticationSelectionDialogView;
+  friend class ::autofill::CardUnmaskPromptViews;
+  friend class ::autofill::LocalCardMigrationDialogView;
+  friend class ::autofill::LocalCardMigrationErrorDialogView;
+  friend class ::captions::CaptionBubble;
+  friend class ::chromeos::MultitaskMenu;
+  friend class ::lens::LensPreselectionBubble;
+  friend class ::lens::LensRegionSearchInstructionsView;
+  friend class ::media_router::CastDialogView;
+  friend class ::media_router::MediaRemotingDialogView;
+  friend class ::send_tab_to_self::SendTabToSelfToolbarBubbleView;
+  friend class ::toasts::ToastView;
+  friend class ::ui::ime::AnnouncementView;
+  friend class ::ui::ime::CandidateWindowView;
+  friend class ::ui::ime::GrammarSuggestionWindow;
+  friend class ::ui::ime::InfolistWindow;
+  friend class ::ui::ime::SuggestionWindowView;
+  friend class ::ui::ime::UndoWindow;
+  friend class ::user_education::HelpBubbleView;
+  friend class ::user_education::test::TestCustomHelpBubbleView;
+  friend class ::webid::AccountSelectionBubbleView;
+  friend class AnchorTestBubbleDialogDelegateView;
+  friend class FocusManagerTestBubbleDialogDelegateView;
+  friend class FrameViewTestBubbleDialogDelegateView;
+  friend class InfoBubble;
+  friend class InteractionSequenceViewsTest;
+  friend class TestBubbleDialogDelegateView;
+  friend class TestBubbleView;
+  friend class TouchSelectionMenuViews;
+  FRIEND_TEST_ALL_PREFIXES(BubbleDialogDelegateViewInteractiveTest,
+                           BubbleAndParentNotActiveSimultaneously);
+  FRIEND_TEST_ALL_PREFIXES(BubbleDialogDelegateViewTest, WithClientLayerTest);
+  FRIEND_TEST_ALL_PREFIXES(BubbleDialogDelegateViewTest,
+                           WithoutClientLayerTest);
+  FRIEND_TEST_ALL_PREFIXES(WidgetFocusObserverTest, Bubble);
+  friend class examples::DialogExampleDelegate<BubbleDialogDelegateView>;
+  friend class examples::ExampleBubble;
+  friend class examples::LoginBubbleDialogView;
+  friend class test::SimpleBubbleView;
+  friend class test::TestBubbleView;
+  friend class test::WidgetTestBubbleDialogDelegateView;
+  FRIEND_TEST_ALL_PREFIXES(test::DesktopWidgetTestInteractive,
+                           FocusChangesOnBubble);
+  FRIEND_TEST_ALL_PREFIXES(test::InteractionTestUtilViewsTest, ActivateSurface);
+  FRIEND_TEST_ALL_PREFIXES(test::InteractionTestUtilViewsTest, Confirm);
+
+  // |shadow| usually doesn't need to be explicitly set, just uses the default
+  // argument. Unless on Mac when the bubble needs to use Views base shadow,
+  // override it with suitable bubble border type.
+  explicit BubbleDialogDelegateView(
+      View* anchor_view = nullptr,
+      BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_LEFT,
+      BubbleBorder::Shadow shadow = BubbleBorder::DIALOG_SHADOW,
+      bool autosize = false);
+
+  static PassKey CreatePassKey() { return PassKey(); }
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, BubbleDialogDelegateView, View)

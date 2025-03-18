@@ -2797,6 +2797,10 @@ TEST_F(BrowserAutofillManagerTest,
       CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
 
+  // Test case for credit-card-number field.
+  const FormFieldData& card_number_field = form.fields()[1];
+  ASSERT_EQ(card_number_field.name(), u"cardnumber");
+
   // Set up `BnplManager` for testing.
   MockBnplManager& bnpl_manager_ =
       payments_client().CreateOrGetMockBnplManager();
@@ -2813,7 +2817,7 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_CALL(bnpl_manager_, NotifyOfSuggestionGeneration).Times(0);
 #endif
 
-  OnAskForValuesToFill(form, form.fields()[0]);
+  OnAskForValuesToFill(form, card_number_field);
 
   // Verify that suggestions are returned as normal.
   EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());

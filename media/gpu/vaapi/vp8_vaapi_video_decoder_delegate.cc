@@ -5,7 +5,6 @@
 #include "media/gpu/vaapi/vp8_vaapi_video_decoder_delegate.h"
 
 #include "base/functional/callback_helpers.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/trace_event/trace_event.h"
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_decode_surface_handler.h"
@@ -36,7 +35,7 @@ scoped_refptr<VP8Picture> VP8VaapiVideoDecoderDelegate::CreateVP8Picture() {
     return nullptr;
   }
 
-  return base::MakeRefCounted<VaapiVP8Picture>(std::move(va_surface_handle));
+  return new VaapiVP8Picture(std::move(va_surface_handle));
 }
 
 bool VP8VaapiVideoDecoderDelegate::SubmitDecode(

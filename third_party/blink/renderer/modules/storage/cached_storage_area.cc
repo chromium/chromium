@@ -731,7 +731,7 @@ String CachedStorageArea::Uint8VectorToString(const Vector<uint8_t>& input,
         break;
       }
       StringBuffer<UChar> buffer(input_size / sizeof(UChar));
-      std::memcpy(buffer.Characters(), input.data(), input_size);
+      UNSAFE_TODO(std::memcpy(buffer.Characters(), input.data(), input_size));
       result = String::Adopt(buffer);
       break;
     }
@@ -797,7 +797,7 @@ Vector<uint8_t> CachedStorageArea::StringToUint8Vector(
       unsigned length = input.length();
       if (input.Is8Bit() && input.ContainsOnlyASCIIOrEmpty()) {
         Vector<uint8_t> result(length);
-        std::memcpy(result.data(), input.Characters8(), length);
+        UNSAFE_TODO(std::memcpy(result.data(), input.Characters8(), length));
         return result;
       }
       // Handle 8 bit case where it's not only ascii.
@@ -824,7 +824,7 @@ Vector<uint8_t> CachedStorageArea::StringToUint8Vector(
       StringUTF8Adaptor utf8(input,
                              WTF::Utf8ConversionMode::kStrictReplacingErrors);
       Vector<uint8_t> result(utf8.size());
-      std::memcpy(result.data(), utf8.data(), utf8.size());
+      UNSAFE_TODO(std::memcpy(result.data(), utf8.data(), utf8.size()));
       return result;
     }
     case FormatOption::kLocalStorageDetectFormat: {

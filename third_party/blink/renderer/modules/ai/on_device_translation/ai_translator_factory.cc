@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/modules/ai/ai.h"
 #include "third_party/blink/renderer/modules/ai/ai_create_monitor.h"
 #include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
+#include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -125,8 +126,9 @@ class CreateTranslatorClient
       // TODO (crbug.com/391715395): Pass the real download progress rather than
       // mocking one.
       if (monitor_) {
-        monitor_->OnDownloadProgressUpdate(0, 0x10000);
-        monitor_->OnDownloadProgressUpdate(0x10000, 0x10000);
+        monitor_->OnDownloadProgressUpdate(0, kNormalizedDownloadProgressMax);
+        monitor_->OnDownloadProgressUpdate(kNormalizedDownloadProgressMax,
+                                           kNormalizedDownloadProgressMax);
       }
 
       GetResolver()->Resolve(MakeGarbageCollected<AITranslator>(

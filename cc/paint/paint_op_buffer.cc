@@ -490,7 +490,7 @@ PaintOpBuffer::BufferDataPtr PaintOpBuffer::ReallocBuffer(size_t new_size) {
   std::unique_ptr<char, base::AlignedFreeDeleter> new_data(
       static_cast<char*>(base::AlignedAlloc(new_size, kPaintOpAlign)));
   if (data_)
-    memcpy(new_data.get(), data_.get(), used_);
+    UNSAFE_TODO(memcpy(new_data.get(), data_.get(), used_));
   BufferDataPtr old_data = std::move(data_);
   data_ = std::move(new_data);
   reserved_ = new_size;

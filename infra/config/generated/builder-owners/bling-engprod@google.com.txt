@@ -2,6 +2,7 @@ ci/Mac Builder
 ci/Mac Builder (dbg)
 ci/Mac11 Tests
 ci/Mac12 Tests
+ci/Mac13 Tests
 ci/ios-vm
 ci/ios18-sdk-device
 ci/mac-archive-rel

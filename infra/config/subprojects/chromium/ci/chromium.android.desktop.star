@@ -262,6 +262,7 @@ ci.thin_tester(
             "android_browsertests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.emulator_15.android_browsertests.filter",
+                    "--emulator-debug-tags=all",
                 ],
                 # TODO(crbug.com/401854645): Re-enable the CQ when emulator
                 # flake rate subsides.

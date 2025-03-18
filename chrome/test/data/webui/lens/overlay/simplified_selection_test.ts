@@ -15,6 +15,7 @@ import {assertDeepEquals, assertEquals, assertTrue} from 'chrome-untrusted://web
 import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome-untrusted://webui-test/test_util.js';
 
+import {assertWithinThreshold} from '../utils/object_utils.js';
 import {addEmptyTextToPage, addGenericWordsToPageNormalized} from '../utils/text_utils.js';
 
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
@@ -74,7 +75,7 @@ suite('SimplifiedSelection', function() {
     BrowserProxyImpl.setInstance(testBrowserProxy);
 
     textLayerElement = document.createElement('lens-simplified-text-layer');
-    selectionOverlayRect = {height: 100, width: 100, x: 50, y: 50} as DOMRect;
+    selectionOverlayRect = new DOMRect(0, 0, 100, 100);
     textLayerElement.setSelectionOverlayRectForTesting(selectionOverlayRect);
     document.body.appendChild(textLayerElement);
     await waitAfterNextRender(textLayerElement);
@@ -335,5 +336,56 @@ suite('SimplifiedSelection', function() {
     const textQuery = await testBrowserProxy.handler.whenCalled(
         'issueTranslateSelectionRequest');
     assertDeepEquals('hello there test', textQuery);
+  });
+
+  test('ShowHighlightedRegionText', async () => {
+    await addEmptyTextToPage(callbackRouterRemote);
+    // Add 3 words to the region text response.
+    await addGenericWordsToPageNormalized(callbackRouterRemote);
+    await waitAfterNextRender(textLayerElement);
+
+    const highlightedLineElements: NodeListOf<Element> =
+        textLayerElement.shadowRoot.querySelectorAll('.highlighted-line');
+    assertEquals(2, highlightedLineElements.length);
+    const bodyRect = document.body.getBoundingClientRect();
+    const threshold = 1e-4;
+
+    const firstHighlightedLine = highlightedLineElements.item(0);
+    const rect = firstHighlightedLine.getBoundingClientRect();
+
+    const expectedLine1 = {x: 0.105, y: 0.105, width: 0.11, height: 0.11};
+    assertWithinThreshold(
+        expectedLine1.width, rect.width / bodyRect.width, threshold);
+    assertWithinThreshold(
+        expectedLine1.height, rect.height / bodyRect.height, threshold);
+    assertWithinThreshold(
+        (expectedLine1.x - expectedLine1.width / 2), rect.left / bodyRect.width,
+        threshold);
+    assertWithinThreshold(
+        (expectedLine1.y - expectedLine1.height / 2),
+        rect.top / bodyRect.height, threshold);
+
+    const secondLine = highlightedLineElements.item(1);
+    const secondRect = secondLine.getBoundingClientRect();
+
+    const expectedLine2 = {x: 0.3, y: 0.3, width: 0.1, height: 0.1};
+    assertWithinThreshold(
+        expectedLine2.width, secondRect.width / bodyRect.width, threshold);
+    assertWithinThreshold(
+        expectedLine2.height, secondRect.height / bodyRect.height, threshold);
+    assertWithinThreshold(
+        (expectedLine2.x - expectedLine2.width / 2),
+        secondRect.left / bodyRect.width, threshold);
+    assertWithinThreshold(
+        (expectedLine2.y - expectedLine2.height / 2),
+        secondRect.top / bodyRect.height, threshold);
+
+    // Getting a follow-up text response should clear highlights.
+    await addEmptyTextToPage(callbackRouterRemote);
+    await waitAfterNextRender(textLayerElement);
+    assertEquals(
+        0,
+        textLayerElement.shadowRoot.querySelectorAll('.highlighted-line')
+            .length);
   });
 });

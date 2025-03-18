@@ -481,6 +481,10 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   const std::vector<gfx::Rect>& deferred_invalidates_for_testing() const {
     return deferred_invalidates_;
   }
+
+  bool HasInkInputsSnapshotForTesting() const {
+    return snapshot_ink_inputs_.has_value();
+  }
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
  private:
@@ -767,6 +771,11 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
 
   // The current image snapshot.
   cc::PaintImage snapshot_;
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  // The last saved image snapshot for rendering of Ink inputs.
+  std::optional<cc::PaintImage> snapshot_ink_inputs_;
+#endif
 
   // Translate from snapshot to device pixels.
   gfx::Vector2dF snapshot_translate_;

@@ -28,6 +28,10 @@
 #include "media/midi/midi_manager_win.h"
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_ANDROID)
+#include "media/midi/midi_manager_android.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace midi {
 
 namespace {
@@ -363,6 +367,8 @@ class PlatformMidiManagerTest : public ::testing::Test {
 #if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN) && \
     !(defined(USE_ALSA) && defined(USE_UDEV)) && !BUILDFLAG(IS_ANDROID)
     return false;
+#elif BUILDFLAG(IS_ANDROID)
+    return HasSystemFeatureMidiForTesting();
 #else
     return true;
 #endif

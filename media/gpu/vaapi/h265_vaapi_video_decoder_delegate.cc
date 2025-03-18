@@ -9,7 +9,6 @@
 
 #include "media/gpu/vaapi/h265_vaapi_video_decoder_delegate.h"
 
-#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "media/base/cdm_context.h"
 #include "media/gpu/macros.h"
@@ -63,7 +62,7 @@ scoped_refptr<H265Picture> H265VaapiVideoDecoderDelegate::CreateH265Picture() {
     return nullptr;
   }
 
-  return base::MakeRefCounted<VaapiH265Picture>(std::move(va_surface_handle));
+  return new VaapiH265Picture(std::move(va_surface_handle));
 }
 
 bool H265VaapiVideoDecoderDelegate::IsChromaSamplingSupported(

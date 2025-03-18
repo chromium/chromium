@@ -5344,18 +5344,6 @@ const char kTranslateOpenSettingsDescription[] =
     "Add an option to the translate bubble menu to open language settings.";
 #endif
 
-const char kUserDisplayModeSyncBrowserMitigationName[] =
-    "Web App User Display Mode Sync Browser Mitigation";
-const char kUserDisplayModeSyncBrowserMitigationDescription[] =
-    "Enables a mitigation during web app install on CrOS for syncing "
-    "user_display_mode: kBrowser to non-CrOS devices.";
-
-const char kUserDisplayModeSyncStandaloneMitigationName[] =
-    "Web App User Display Mode Sync Standalone Mitigation";
-const char kUserDisplayModeSyncStandaloneMitigationDescription[] =
-    "Enables a mitigation during web app install on CrOS for syncing "
-    "user_display_mode: kStandalone to non-CrOS devices.";
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 const char kWasmTtsComponentUpdaterEnabledName[] =
     "Enable Wasm TTS Extension Component";
@@ -7018,6 +7006,16 @@ const char kScalableIphDebugName[] = "Scalable Iph Debug";
 const char kScalableIphDebugDescription[] =
     "Enables debug feature of Scalable Iph";
 
+const char kScannerDisclaimerDebugOverrideName[] =
+    "Scanner disclaimer: Debug override";
+const char kScannerDisclaimerDebugOverrideDescription[] =
+    "Allows overriding the type of disclaimer displayed when Scanner is shown";
+const char kScannerDisclaimerDebugOverrideChoiceDefault[] = "Default";
+const char kScannerDisclaimerDebugOverrideChoiceAlwaysReminder[] =
+    "Always reminder disclaimer";
+const char kScannerDisclaimerDebugOverrideChoiceAlwaysFull[] =
+    "Always full disclaimer";
+
 const char kSeaPenName[] = "SeaPen";
 const char kSeaPenDescription[] = "Enable SeaPen Wallpaper";
 
@@ -7644,6 +7642,10 @@ const char kTaskManagerDesktopRefreshName[] = "Task Manager Desktop Refresh";
 const char kTaskManagerDesktopRefreshDescription[] =
     "Enables a refreshed design for the Task Manager on Desktop platforms.";
 #endif  // BUILDFLAG(IS_ANDROID)
+
+const char kGroupPromoPrototypeName[] = "Group Promo Prototype";
+const char kGroupPromoPrototypeDescription[] =
+    "Enables prototype for group promo.";
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 const char kEnableNetworkServiceSandboxName[] =

@@ -18,7 +18,7 @@ import type {BrowserProxy} from '../browser_proxy.js';
 import {ContentSettingsType} from '../content_settings_types.mojom-webui.js';
 import type {FocusedTabCandidate as FocusedTabCandidateMojo, FocusedTabData as FocusedTabDataMojo, GetTabContextOptionsMojoType as TabContextOptionsMojo, InvalidCandidateError as MojoInvalidCandidateError, NoCandidateTabError as MojoNoCandidateTabError, OpenPanelInfo as OpenPanelInfoMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, ScrollToSelector as ScrollToSelectorMojo, TabContextMojoType as TabContextMojo, TabData as TabDataMojo, WebClientHandlerInterface, WebClientInterface} from '../glic.mojom-webui.js';
 import {WebClientHandlerRemote, WebClientMode, WebClientReceiver, WebClientSizingMode} from '../glic.mojom-webui.js';
-import type {ActInFocusedTabParams, DraggableArea, PanelOpeningData, PanelState, Screenshot, ScrollToParams, TabContextOptions, WebPageData} from '../glic_api/glic_api.js';
+import type {ActInFocusedTabParams, DraggableArea, PageMetadata, PanelOpeningData, PanelState, Screenshot, ScrollToParams, TabContextOptions, WebPageData} from '../glic_api/glic_api.js';
 import {ActInFocusedTabErrorReason, CaptureScreenshotErrorReason, DEFAULT_INNER_TEXT_BYTES_LIMIT, DEFAULT_PDF_SIZE_LIMIT, GetTabContextErrorReason, InvalidCandidateError, NoCandidateTabError, ScrollToErrorReason} from '../glic_api/glic_api.js';
 
 import {replaceProperties} from './conversions.js';
@@ -999,7 +999,14 @@ function tabContextToClient(
     if (annotatedPageContent) {
       extras.addTransfer(annotatedPageContent);
     }
-    annotatedPageData = {annotatedPageContent};
+    let metadata: PageMetadata|undefined = undefined;
+    if (tabContext.annotatedPageData.metadata) {
+      metadata = {
+        frameMetadata: tabContext.annotatedPageData.metadata.frameMetadata.map(
+          m => replaceProperties(m, {url: urlToClient(m.url)})),
+      };
+    }
+    annotatedPageData = {annotatedPageContent, metadata};
   }
 
   return {
@@ -1020,6 +1027,7 @@ function tabContextOptionsFromClient(options: TabContextOptions):
     includeViewportScreenshot: options.viewportScreenshot ?? false,
     includePdf: options.pdfData ?? false,
     includeAnnotatedPageContent: options.annotatedPageContent ?? false,
+    maxMetaTags: options.maxMetaTags ?? 0,
     pdfSizeLimit: options.pdfSizeLimit === undefined ?
         DEFAULT_PDF_SIZE_LIMIT :
         Math.min(Number.MAX_SAFE_INTEGER, options.pdfSizeLimit),

@@ -25,7 +25,6 @@ static_library("auto_sleep") {
   ]
   deps = [
     "//ash",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/policy/scheduled_task_handler",
     "//chrome/common:constants",
     "//components/policy:generated",

@@ -2,25 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/host/linux/gdbus_connection_ref.h"
 
+#include <array>
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <vector>
 
-#include "base/check.h"
-#include "base/check_op.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/threading/thread.h"
 #include "base/types/expected.h"
 #include "dbus/test_service.h"
 #include "remoting/host/linux/dbus_interfaces/org_chromium_TestInterface.h"
@@ -49,7 +43,8 @@ class GDBusConnectionRefTest : public testing::Test {
   void TearDown() override { test_service_.ShutdownAndBlock(); }
 
  protected:
-  static constexpr char kObjectPath[] = "/org/chromium/TestObject";
+  static constexpr gvariant::ObjectPathCStr kObjectPath =
+      "/org/chromium/TestObject";
 
   void PingBus() {
     base::test::TestFuture<base::expected<gvariant::Ignored, std::string>>
@@ -69,9 +64,11 @@ class GDBusConnectionRefTest : public testing::Test {
 };
 
 TEST_F(GDBusConnectionRefTest, MethodCall) {
-  const char* kMessages[] = {"one", "two", "three"};
-  base::test::TestFuture<base::expected<std::tuple<std::string>, std::string>>
-      futures[3] = {};
+  std::array kMessages = {"one", "two", "three"};
+  std::array<base::test::TestFuture<
+                 base::expected<std::tuple<std::string>, std::string>>,
+             3>
+      futures;
 
   for (std::size_t i = 0; i < 3; ++i) {
     connection_.Call<test_interface::AsyncEcho>(
@@ -197,7 +194,7 @@ TEST_F(GDBusConnectionRefTest, SubscribeAll) {
       signal_future;
 
   auto signal_subscription = connection_.SignalSubscribe(
-      service_name_.c_str(), nullptr, nullptr, nullptr,
+      service_name_.c_str(), std::nullopt, nullptr, nullptr,
       signal_future.GetRepeatingCallback());
 
   PingBus();
@@ -208,7 +205,7 @@ TEST_F(GDBusConnectionRefTest, SubscribeAll) {
     auto [sender, object_path, interface_name, signal_name, arguments] =
         signal_future.Take();
     EXPECT_EQ(connection_name, sender);
-    EXPECT_EQ(kObjectPath, object_path.value());
+    EXPECT_EQ(kObjectPath, object_path);
     EXPECT_EQ(test_interface::Test::kInterfaceName, interface_name);
     EXPECT_EQ(test_interface::Test::kSignalName, signal_name);
     EXPECT_EQ(GVariantRef<>::From(std::tuple("message1")), arguments);
@@ -220,7 +217,7 @@ TEST_F(GDBusConnectionRefTest, SubscribeAll) {
     auto [sender, object_path, interface_name, signal_name, arguments] =
         signal_future.Take();
     EXPECT_EQ(connection_name, sender);
-    EXPECT_EQ("/", object_path.value());
+    EXPECT_EQ(gvariant::ObjectPathCStr("/"), object_path);
     EXPECT_EQ(test_interface::Test::kInterfaceName, interface_name);
     EXPECT_EQ(test_interface::Test::kSignalName, signal_name);
     EXPECT_EQ(GVariantRef<>::From(std::tuple("message2")), arguments);
@@ -234,7 +231,7 @@ TEST_F(GDBusConnectionRefTest, SubscribeAll) {
     auto [sender, object_path, interface_name, signal_name, arguments] =
         signal_future.Take();
     EXPECT_EQ(connection_name, sender);
-    EXPECT_EQ(kObjectPath, object_path.value());
+    EXPECT_EQ(kObjectPath, object_path);
     EXPECT_EQ(
         org_freedesktop_DBus_Properties::PropertiesChanged::kInterfaceName,
         interface_name);

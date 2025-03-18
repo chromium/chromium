@@ -13,6 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/autofill_optimization_guide.h"
@@ -69,7 +70,8 @@ AmountExtractionManager::MaybeParseAmountToMonetaryMicroUnits(
 bool AmountExtractionManager::ShouldTriggerAmountExtraction(
     const SuggestionsContext& context,
     bool should_suppress_suggestions,
-    bool has_suggestions) const {
+    bool has_suggestions,
+    FieldType field_type) const {
   // If there is an ongoing search, do not trigger the search.
   if (search_request_pending_) {
     return false;
@@ -78,6 +80,12 @@ bool AmountExtractionManager::ShouldTriggerAmountExtraction(
   if (!context.is_autofill_available) {
     return false;
   }
+
+  // If the interacted form field is CVC, do not trigger the search.
+  if (kCvcFieldTypes.find(field_type) != kCvcFieldTypes.end()) {
+    return false;
+  }
+
   // If there are no suggestions, do not show a BNPL chip as suggestions showing
   // is a requirement for BNPL.
   if (!has_suggestions) {

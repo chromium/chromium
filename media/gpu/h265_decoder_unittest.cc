@@ -14,7 +14,6 @@
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/types/optional_util.h"
 #include "media/base/test_data_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -152,7 +151,7 @@ class H265DecoderTest : public ::testing::Test {
   void ResetExpectations() {
     // Sets default behaviors for mock methods for convenience.
     ON_CALL(*accelerator_, CreateH265Picture()).WillByDefault(Invoke([]() {
-      return base::MakeRefCounted<H265Picture>();
+      return new H265Picture();
     }));
     ON_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _, _, _, _))
         .WillByDefault(Return(H265Decoder::H265Accelerator::Status::kOk));

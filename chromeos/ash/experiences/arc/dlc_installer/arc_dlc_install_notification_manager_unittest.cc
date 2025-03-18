@@ -56,6 +56,7 @@ TEST_F(ArcDlcInstallNotificationManagerTest, DisplayNotification_Success) {
             l10n_util::GetStringUTF16(IDS_ARC_VM_PRELOAD_NOTIFICATION_TITLE));
   EXPECT_EQ(notifications[0].message(),
             l10n_util::GetStringUTF16(IDS_ARC_VM_PRELOAD_SUCCEEDED_MESSAGE));
+  EXPECT_EQ(notifications[0].id(), "arc_dlc_install/succeeded");
 }
 
 TEST_F(ArcDlcInstallNotificationManagerTest, DisplayNotification_Failure) {
@@ -68,6 +69,7 @@ TEST_F(ArcDlcInstallNotificationManagerTest, DisplayNotification_Failure) {
             l10n_util::GetStringUTF16(IDS_ARC_VM_PRELOAD_NOTIFICATION_TITLE));
   EXPECT_EQ(notifications[0].message(),
             l10n_util::GetStringUTF16(IDS_ARC_VM_PRELOAD_FAILED_MESSAGE));
+  EXPECT_EQ(notifications[0].id(), "arc_dlc_install/failed");
 }
 
 TEST_F(ArcDlcInstallNotificationManagerTest,
@@ -81,6 +83,7 @@ TEST_F(ArcDlcInstallNotificationManagerTest,
             l10n_util::GetStringUTF16(IDS_ARC_VM_PRELOAD_NOTIFICATION_TITLE));
   EXPECT_EQ(notifications[0].message(),
             l10n_util::GetStringUTF16(IDS_ARC_VM_PRELOAD_STARTED_MESSAGE));
+  EXPECT_EQ(notifications[0].id(), "arc_dlc_install/started");
 }
 
 }  // namespace arc

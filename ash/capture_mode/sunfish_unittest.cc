@@ -203,6 +203,12 @@ Matcher<ActionButtonView*> ActionButtonIsCollapsed() {
                   Property(&views::Label::GetVisible, false));
 }
 
+// Returns whether a `DisclaimerView` is a reminder disclaimer or not.
+bool DisclaimerIsReminder(views::View& disclaimer) {
+  return !disclaimer.GetViewByID(
+      DisclaimerViewId::kDisclaimerViewDeclineButtonId);
+}
+
 class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
  public:
   // TestNewWindowDelegate:
@@ -4806,7 +4812,7 @@ TEST_F(ScannerTest, DisclaimerAcceptContinuesScreenshotSession) {
   EXPECT_EQ(GetScannerDisclaimerType(ScannerEntryPoint::kSmartActionsButton),
             ScannerDisclaimerType::kNone);
   EXPECT_EQ(GetScannerDisclaimerType(ScannerEntryPoint::kSunfishSession),
-            ScannerDisclaimerType::kNone);
+            ScannerDisclaimerType::kReminder);
   EXPECT_TRUE(controller->IsActive());
   WaitForImageCapturedForSearch(PerformCaptureType::kScanner);
 
@@ -4942,6 +4948,78 @@ TEST_F(ScannerTest, DisclaimerDeclineGoesBackToScreenshotMode) {
   EXPECT_TRUE(controller->IsActive());
   // The smart actions button is now removed.
   EXPECT_THAT(session_test_api.GetActionButtons(), SizeIs(1));
+}
+
+// Tests that the full disclaimer is shown when the smart actions button is
+// clicked for the first time.
+TEST_F(ScannerTest, FullDisclaimerFromSmartActionsButton) {
+  PrefService& prefs =
+      *Shell::Get()->session_controller()->GetActivePrefService();
+  SetAllScannerDisclaimersUnackedForTest(prefs);
+  ASSERT_EQ(
+      GetScannerDisclaimerType(prefs, ScannerEntryPoint::kSmartActionsButton),
+      ScannerDisclaimerType::kFull);
+
+  ActionButtonView* smart_actions_button = GetSmartActionsButton();
+  LeftClickOn(smart_actions_button);
+
+  views::Widget* disclaimer = CaptureModeSessionTestApi().GetDisclaimerWidget();
+  ASSERT_TRUE(disclaimer);
+  EXPECT_FALSE(DisclaimerIsReminder(*disclaimer->GetContentsView()));
+}
+
+// Tests that the full disclaimer is shown on first Sunfish-session start.
+TEST_F(ScannerTest, FullDisclaimerFromSunfishSession) {
+  PrefService& prefs =
+      *Shell::Get()->session_controller()->GetActivePrefService();
+  SetAllScannerDisclaimersUnackedForTest(prefs);
+  ASSERT_EQ(GetScannerDisclaimerType(prefs, ScannerEntryPoint::kSunfishSession),
+            ScannerDisclaimerType::kFull);
+
+  CaptureModeController::Get()->StartSunfishSession();
+
+  views::Widget* disclaimer = CaptureModeSessionTestApi().GetDisclaimerWidget();
+  ASSERT_TRUE(disclaimer);
+  EXPECT_FALSE(DisclaimerIsReminder(*disclaimer->GetContentsView()));
+}
+
+// Tests that the reminder disclaimer is shown for the smart actions button when
+// the smart actions button is clicked after the Sunfish-session disclaimer is
+// acknowledged.
+TEST_F(ScannerTest, ReminderDisclaimerFromSmartActionsButton) {
+  PrefService& prefs =
+      *Shell::Get()->session_controller()->GetActivePrefService();
+  SetAllScannerDisclaimersUnackedForTest(prefs);
+  // Acknowledge the Sunfish-session disclaimer.
+  SetScannerDisclaimerAcked(prefs, ScannerEntryPoint::kSunfishSession);
+  ASSERT_EQ(
+      GetScannerDisclaimerType(prefs, ScannerEntryPoint::kSmartActionsButton),
+      ScannerDisclaimerType::kReminder);
+
+  ActionButtonView* smart_actions_button = GetSmartActionsButton();
+  LeftClickOn(smart_actions_button);
+
+  views::Widget* disclaimer = CaptureModeSessionTestApi().GetDisclaimerWidget();
+  ASSERT_TRUE(disclaimer);
+  EXPECT_TRUE(DisclaimerIsReminder(*disclaimer->GetContentsView()));
+}
+
+// Tests that the reminder disclaimer is shown at Sunfish-session start if the
+// smart actions button disclaimer is acknowledged.
+TEST_F(ScannerTest, ReminderDisclaimerFromSunfishSession) {
+  PrefService& prefs =
+      *Shell::Get()->session_controller()->GetActivePrefService();
+  SetAllScannerDisclaimersUnackedForTest(prefs);
+  // Acknowledge the smart actions button disclaimer.
+  SetScannerDisclaimerAcked(prefs, ScannerEntryPoint::kSmartActionsButton);
+  ASSERT_EQ(GetScannerDisclaimerType(prefs, ScannerEntryPoint::kSunfishSession),
+            ScannerDisclaimerType::kReminder);
+
+  CaptureModeController::Get()->StartSunfishSession();
+
+  views::Widget* disclaimer = CaptureModeSessionTestApi().GetDisclaimerWidget();
+  ASSERT_TRUE(disclaimer);
+  EXPECT_TRUE(DisclaimerIsReminder(*disclaimer->GetContentsView()));
 }
 
 // Tests that the consent disclaimer can be properly navigated from the smart
@@ -5083,6 +5161,70 @@ TEST_F(ScannerTest, DisclaimerLearnMoreLinkFromScreenshotMode) {
           prefs::kScannerEnabled));
 }
 
+TEST_F(ScannerTest, ReminderDisclaimerTosLinkFromScreenshotMode) {
+  EXPECT_CALL(new_window_delegate(),
+              OpenUrl(GURL(chrome::kGooglePrivacyPolicyUrl), _, _));
+
+  PrefService& prefs =
+      *Shell::Get()->session_controller()->GetActivePrefService();
+  SetAllScannerDisclaimersUnackedForTest(prefs);
+  // Acknowledge the Sunfish-session disclaimer.
+  SetScannerDisclaimerAcked(prefs, ScannerEntryPoint::kSunfishSession);
+  ASSERT_EQ(
+      GetScannerDisclaimerType(prefs, ScannerEntryPoint::kSmartActionsButton),
+      ScannerDisclaimerType::kReminder);
+
+  ActionButtonView* smart_actions_button = GetSmartActionsButton();
+  LeftClickOn(smart_actions_button);
+  views::Widget* disclaimer = CaptureModeSessionTestApi().GetDisclaimerWidget();
+  ASSERT_TRUE(disclaimer);
+  ASSERT_TRUE(DisclaimerIsReminder(*disclaimer->GetContentsView()));
+  auto* paragraph_one = views::AsViewClass<views::StyledLabel>(
+      disclaimer->GetContentsView()->GetViewByID(
+          kDisclaimerViewParagraphOneId));
+  ASSERT_TRUE(paragraph_one);
+
+  paragraph_one->ClickFirstLinkForTesting();
+
+  EXPECT_FALSE(capture_mode_util::IsCaptureModeActive());
+  // Clicking the smart actions button should still show a reminder next time.
+  EXPECT_EQ(
+      GetScannerDisclaimerType(prefs, ScannerEntryPoint::kSmartActionsButton),
+      ScannerDisclaimerType::kReminder);
+}
+
+TEST_F(ScannerTest, ReminderDisclaimerLearnMoreLinkFromScreenshotMode) {
+  EXPECT_CALL(new_window_delegate(),
+              OpenUrl(GURL(chrome::kScannerLearnMoreUrl), _, _));
+
+  PrefService& prefs =
+      *Shell::Get()->session_controller()->GetActivePrefService();
+  SetAllScannerDisclaimersUnackedForTest(prefs);
+  // Acknowledge the Sunfish-session disclaimer.
+  SetScannerDisclaimerAcked(prefs, ScannerEntryPoint::kSunfishSession);
+  ASSERT_EQ(
+      GetScannerDisclaimerType(prefs, ScannerEntryPoint::kSmartActionsButton),
+      ScannerDisclaimerType::kReminder);
+
+  ActionButtonView* smart_actions_button = GetSmartActionsButton();
+  LeftClickOn(smart_actions_button);
+  views::Widget* disclaimer = CaptureModeSessionTestApi().GetDisclaimerWidget();
+  ASSERT_TRUE(disclaimer);
+  ASSERT_TRUE(DisclaimerIsReminder(*disclaimer->GetContentsView()));
+  auto* paragraph_three = views::AsViewClass<views::StyledLabel>(
+      disclaimer->GetContentsView()->GetViewByID(
+          kDisclaimerViewParagraphThreeId));
+  ASSERT_TRUE(paragraph_three);
+
+  paragraph_three->ClickFirstLinkForTesting();
+
+  EXPECT_FALSE(capture_mode_util::IsCaptureModeActive());
+  // Clicking the smart actions button should still show a reminder next time.
+  EXPECT_EQ(
+      GetScannerDisclaimerType(prefs, ScannerEntryPoint::kSmartActionsButton),
+      ScannerDisclaimerType::kReminder);
+}
+
 TEST_F(ScannerTest, DisclaimerTosLinkFromSunfishMode) {
   EXPECT_CALL(new_window_delegate(),
               OpenUrl(GURL(chrome::kGooglePrivacyPolicyUrl), _, _));
@@ -5139,6 +5281,72 @@ TEST_F(ScannerTest, DisclaimerLearnMoreLinkFromSunfishMode) {
   EXPECT_TRUE(
       Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
           prefs::kScannerEnabled));
+}
+
+TEST_F(ScannerTest, ReminderDisclaimerTosLinkFromSunfishMode) {
+  EXPECT_CALL(new_window_delegate(),
+              OpenUrl(GURL(chrome::kGooglePrivacyPolicyUrl), _, _));
+
+  PrefService& prefs =
+      *Shell::Get()->session_controller()->GetActivePrefService();
+  SetAllScannerDisclaimersUnackedForTest(prefs);
+  // Acknowledge the smart actions button disclaimer.
+  SetScannerDisclaimerAcked(prefs, ScannerEntryPoint::kSmartActionsButton);
+  ASSERT_EQ(GetScannerDisclaimerType(prefs, ScannerEntryPoint::kSunfishSession),
+            ScannerDisclaimerType::kReminder);
+
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  ASSERT_TRUE(controller->IsActive());
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  views::Widget* disclaimer = session_test_api.GetDisclaimerWidget();
+  ASSERT_TRUE(disclaimer);
+  ASSERT_TRUE(DisclaimerIsReminder(*disclaimer->GetContentsView()));
+  auto* paragraph_one = views::AsViewClass<views::StyledLabel>(
+      disclaimer->GetContentsView()->GetViewByID(
+          kDisclaimerViewParagraphOneId));
+  ASSERT_TRUE(paragraph_one);
+
+  paragraph_one->ClickFirstLinkForTesting();
+
+  EXPECT_FALSE(capture_mode_util::IsCaptureModeActive());
+  // Starting a Sunfish-session should still show a reminder next time.
+  EXPECT_EQ(GetScannerDisclaimerType(prefs, ScannerEntryPoint::kSunfishSession),
+            ScannerDisclaimerType::kReminder);
+}
+
+TEST_F(ScannerTest, ReminderDisclaimerLearnMoreLinkFromSunfishMode) {
+  EXPECT_CALL(new_window_delegate(),
+              OpenUrl(GURL(chrome::kScannerLearnMoreUrl), _, _));
+
+  PrefService& prefs =
+      *Shell::Get()->session_controller()->GetActivePrefService();
+  SetAllScannerDisclaimersUnackedForTest(prefs);
+  // Acknowledge the smart actions button disclaimer.
+  SetScannerDisclaimerAcked(prefs, ScannerEntryPoint::kSmartActionsButton);
+  ASSERT_EQ(GetScannerDisclaimerType(prefs, ScannerEntryPoint::kSunfishSession),
+            ScannerDisclaimerType::kReminder);
+
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  ASSERT_TRUE(controller->IsActive());
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  views::Widget* disclaimer = session_test_api.GetDisclaimerWidget();
+  ASSERT_TRUE(disclaimer);
+  ASSERT_TRUE(DisclaimerIsReminder(*disclaimer->GetContentsView()));
+  auto* paragraph_three = views::AsViewClass<views::StyledLabel>(
+      disclaimer->GetContentsView()->GetViewByID(
+          kDisclaimerViewParagraphThreeId));
+  ASSERT_TRUE(paragraph_three);
+
+  paragraph_three->ClickFirstLinkForTesting();
+
+  EXPECT_FALSE(capture_mode_util::IsCaptureModeActive());
+  // Starting a Sunfish-session should still show a reminder next time.
+  EXPECT_EQ(GetScannerDisclaimerType(prefs, ScannerEntryPoint::kSunfishSession),
+            ScannerDisclaimerType::kReminder);
 }
 
 TEST_F(ScannerTest, DisclaimerAcceptRecordsHistogramOnce) {
@@ -5204,7 +5412,7 @@ TEST_F(ScannerTest,
 
   EXPECT_EQ(session_test_api.GetDisclaimerWidget(), nullptr);
   EXPECT_EQ(GetScannerDisclaimerType(ScannerEntryPoint::kSmartActionsButton),
-            ScannerDisclaimerType::kNone);
+            ScannerDisclaimerType::kReminder);
   EXPECT_EQ(GetScannerDisclaimerType(ScannerEntryPoint::kSunfishSession),
             ScannerDisclaimerType::kNone);
   EXPECT_TRUE(controller->IsActive());
@@ -5284,7 +5492,7 @@ TEST_F(ScannerTest, KeyboardNavigationDisclaimerAcceptedFromSunfishMode) {
 
   EXPECT_EQ(session_test_api.GetDisclaimerWidget(), nullptr);
   EXPECT_EQ(GetScannerDisclaimerType(ScannerEntryPoint::kSmartActionsButton),
-            ScannerDisclaimerType::kNone);
+            ScannerDisclaimerType::kReminder);
   EXPECT_EQ(GetScannerDisclaimerType(ScannerEntryPoint::kSunfishSession),
             ScannerDisclaimerType::kNone);
 }

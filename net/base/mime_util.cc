@@ -54,6 +54,9 @@ class MimeUtil : public PlatformMimeUtil {
   bool GetWellKnownMimeTypeFromExtension(const base::FilePath::StringType& ext,
                                          std::string* mime_type) const;
 
+  bool GetWellKnownMimeTypeFromFile(const base::FilePath& file_path,
+                                    std::string* mime_type) const;
+
   bool GetPreferredExtensionForMimeType(
       std::string_view mime_type,
       base::FilePath::StringType* extension) const;
@@ -324,6 +327,15 @@ bool MimeUtil::GetMimeTypeFromFile(const base::FilePath& file_path,
   if (file_name_str.empty())
     return false;
   return GetMimeTypeFromExtension(file_name_str.substr(1), result);
+}
+
+bool MimeUtil::GetWellKnownMimeTypeFromFile(const base::FilePath& file_path,
+                                            string* result) const {
+  base::FilePath::StringType file_name_str = file_path.Extension();
+  if (file_name_str.empty()) {
+    return false;
+  }
+  return GetWellKnownMimeTypeFromExtension(file_name_str.substr(1), result);
 }
 
 bool MimeUtil::GetMimeTypeFromExtensionHelper(
@@ -646,6 +658,11 @@ bool GetMimeTypeFromFile(const base::FilePath& file_path,
 bool GetWellKnownMimeTypeFromExtension(const base::FilePath::StringType& ext,
                                        std::string* mime_type) {
   return g_mime_util.Get().GetWellKnownMimeTypeFromExtension(ext, mime_type);
+}
+
+bool GetWellKnownMimeTypeFromFile(const base::FilePath& file_path,
+                                  std::string* mime_type) {
+  return g_mime_util.Get().GetWellKnownMimeTypeFromFile(file_path, mime_type);
 }
 
 bool GetPreferredExtensionForMimeType(std::string_view mime_type,

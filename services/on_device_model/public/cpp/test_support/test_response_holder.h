@@ -13,6 +13,10 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
+#ifndef ML_INTERNAL_TEXT_SAFETY_SESSION_MIGRATION
+#define ML_INTERNAL_TEXT_SAFETY_SESSION_MIGRATION 1
+#endif
+
 namespace on_device_model {
 
 // Helper to accumulate a streamed response from model execution. This is only
