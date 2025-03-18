@@ -417,14 +417,29 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
               document_service_->render_frame_host())
               .ComputeSiteForCookies());
 
-  // TODO(crbug.com/401011862): Distinguish between whether this in an addModule
-  // or a createWorklet call using `creation_method_`, and also send
-  // `data_origin_type` as part of the event params.
-  shared_storage_runtime_manager_->NotifySharedStorageAccessed(
-      AccessScope::kWindow, AccessMethod::kAddModule,
-      document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
-      SharedStorageEventParams::CreateForAddModule(script_source_url,
-                                                   worklet_id_));
+  if (creation_method ==
+      blink::mojom::SharedStorageWorkletCreationMethod::kAddModule) {
+    shared_storage_runtime_manager_->NotifySharedStorageAccessed(
+        AccessScope::kWindow, AccessMethod::kAddModule,
+        document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
+        SharedStorageEventParams::CreateForAddModule(script_source_url,
+                                                     worklet_id_));
+  } else {
+    std::string data_origin_type_string =
+        (data_origin_type ==
+         blink::mojom::SharedStorageDataOriginType::kContextOrigin)
+            ? "context-origin"
+            : ((data_origin_type ==
+                blink::mojom::SharedStorageDataOriginType::kScriptOrigin)
+                   ? "script-origin"
+                   : data_origin.Serialize());
+
+    shared_storage_runtime_manager_->NotifySharedStorageAccessed(
+        AccessScope::kWindow, AccessMethod::kCreateWorklet,
+        document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
+        SharedStorageEventParams::CreateForCreateWorklet(
+            script_source_url, data_origin_type_string, worklet_id_));
+  }
 
   create_worklet_finished_callback_ = std::move(callback);
 

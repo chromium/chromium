@@ -4172,6 +4172,13 @@ IN_PROC_BROWSER_TEST_P(
 
   EXPECT_EQ(blink::mojom::SharedStorageWorkletCreationMethod::kCreateWorklet,
             worklet_host->creation_method());
+
+  std::string data_origin_str = url::Origin::Create(url).Serialize();
+  ExpectAccessObserved({{AccessScope::kWindow, AccessMethod::kCreateWorklet,
+                         MainFrameId(), data_origin_str,
+                         SharedStorageEventParams::CreateForCreateWorklet(
+                             module_script_url, "context-origin",
+                             /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -4203,6 +4210,14 @@ IN_PROC_BROWSER_TEST_P(
 
   EXPECT_EQ(blink::mojom::SharedStorageWorkletCreationMethod::kCreateWorklet,
             worklet_host->creation_method());
+
+  // The default data origin is the context origin.
+  std::string data_origin_str = url::Origin::Create(url).Serialize();
+  ExpectAccessObserved({{AccessScope::kWindow, AccessMethod::kCreateWorklet,
+                         MainFrameId(), data_origin_str,
+                         SharedStorageEventParams::CreateForCreateWorklet(
+                             module_script_url, "context-origin",
+                             /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -4238,6 +4253,14 @@ IN_PROC_BROWSER_TEST_P(
 
   EXPECT_EQ(blink::mojom::SharedStorageWorkletCreationMethod::kCreateWorklet,
             worklet_host->creation_method());
+
+  std::string data_origin_str =
+      url::Origin::Create(module_script_url).Serialize();
+  ExpectAccessObserved({{AccessScope::kWindow, AccessMethod::kCreateWorklet,
+                         MainFrameId(), data_origin_str,
+                         SharedStorageEventParams::CreateForCreateWorklet(
+                             module_script_url, "script-origin",
+                             /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -4275,6 +4298,13 @@ IN_PROC_BROWSER_TEST_P(
 
   EXPECT_EQ(blink::mojom::SharedStorageWorkletCreationMethod::kCreateWorklet,
             worklet_host->creation_method());
+
+  std::string custom_data_origin_str = custom_data_origin.Serialize();
+  ExpectAccessObserved({{AccessScope::kWindow, AccessMethod::kCreateWorklet,
+                         MainFrameId(), custom_data_origin_str,
+                         SharedStorageEventParams::CreateForCreateWorklet(
+                             module_script_url, custom_data_origin_str,
+                             /*worklet_id=*/0)}});
 }
 
 // Start a worklet under b.test using the script origin as the data
@@ -8846,6 +8876,13 @@ IN_PROC_BROWSER_TEST_P(SharedStorageCreateWorkletCustomDataOriginBrowserTest,
       shell(),
       JsReplace("sharedStorage.createWorklet($1, {dataOrigin: $2})",
                 module_script_url.spec(), custom_data_origin.Serialize())));
+
+  std::string custom_data_origin_str = custom_data_origin.Serialize();
+  ExpectAccessObserved({{AccessScope::kWindow, AccessMethod::kCreateWorklet,
+                         MainFrameId(), custom_data_origin_str,
+                         SharedStorageEventParams::CreateForCreateWorklet(
+                             module_script_url, custom_data_origin_str,
+                             /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -8865,6 +8902,13 @@ IN_PROC_BROWSER_TEST_P(
       shell(),
       JsReplace("sharedStorage.createWorklet($1, {dataOrigin: $2})",
                 module_script_url.spec(), custom_data_origin.Serialize())));
+
+  std::string custom_data_origin_str = custom_data_origin.Serialize();
+  ExpectAccessObserved({{AccessScope::kWindow, AccessMethod::kCreateWorklet,
+                         MainFrameId(), custom_data_origin_str,
+                         SharedStorageEventParams::CreateForCreateWorklet(
+                             module_script_url, custom_data_origin_str,
+                             /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -8884,6 +8928,13 @@ IN_PROC_BROWSER_TEST_P(
       shell(),
       JsReplace("sharedStorage.createWorklet($1, {dataOrigin: $2})",
                 module_script_url.spec(), custom_data_origin.Serialize())));
+
+  std::string custom_data_origin_str = custom_data_origin.Serialize();
+  ExpectAccessObserved({{AccessScope::kWindow, AccessMethod::kCreateWorklet,
+                         MainFrameId(), custom_data_origin_str,
+                         SharedStorageEventParams::CreateForCreateWorklet(
+                             module_script_url, custom_data_origin_str,
+                             /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageCreateWorkletCustomDataOriginBrowserTest,
@@ -8902,6 +8953,13 @@ IN_PROC_BROWSER_TEST_P(SharedStorageCreateWorkletCustomDataOriginBrowserTest,
       shell(),
       JsReplace("sharedStorage.createWorklet($1, {dataOrigin: $2})",
                 module_script_url.spec(), custom_data_origin.Serialize())));
+
+  std::string custom_data_origin_str = custom_data_origin.Serialize();
+  ExpectAccessObserved({{AccessScope::kWindow, AccessMethod::kCreateWorklet,
+                         MainFrameId(), custom_data_origin_str,
+                         SharedStorageEventParams::CreateForCreateWorklet(
+                             module_script_url, custom_data_origin_str,
+                             /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -8921,6 +8979,13 @@ IN_PROC_BROWSER_TEST_P(
       shell(),
       JsReplace("sharedStorage.createWorklet($1, {dataOrigin: $2})",
                 module_script_url.spec(), custom_data_origin.Serialize())));
+
+  std::string custom_data_origin_str = custom_data_origin.Serialize();
+  ExpectAccessObserved({{AccessScope::kWindow, AccessMethod::kCreateWorklet,
+                         MainFrameId(), custom_data_origin_str,
+                         SharedStorageEventParams::CreateForCreateWorklet(
+                             module_script_url, custom_data_origin_str,
+                             /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -8940,6 +9005,13 @@ IN_PROC_BROWSER_TEST_P(
       shell(),
       JsReplace("sharedStorage.createWorklet($1, {dataOrigin: $2})",
                 module_script_url.spec(), custom_data_origin.Serialize())));
+
+  std::string custom_data_origin_str = custom_data_origin.Serialize();
+  ExpectAccessObserved({{AccessScope::kWindow, AccessMethod::kCreateWorklet,
+                         MainFrameId(), custom_data_origin_str,
+                         SharedStorageEventParams::CreateForCreateWorklet(
+                             module_script_url, custom_data_origin_str,
+                             /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
@@ -8981,14 +9053,13 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   WaitForHistograms({kTimingRunExecutedInWorkletHistogram});
   histogram_tester_.ExpectTotalCount(kTimingRunExecutedInWorkletHistogram, 2);
 
-  // TODO(cammie): Update to using `AccessMethod::kCreateWorklet` when it's
-  // available.
   std::string origin_str = url::Origin::Create(url).Serialize();
   ExpectAccessObserved(
-      {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+      {{AccessScope::kWindow, AccessMethod::kCreateWorklet, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForAddModule(out_script_url1,
-                                                     /*worklet_id=*/0)},
+        SharedStorageEventParams::CreateForCreateWorklet(out_script_url1,
+                                                         "context-origin",
+                                                         /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRun(
             "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)},
@@ -9007,10 +9078,11 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
        {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
         MainFrameId(), origin_str,
         SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)},
-       {AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+       {AccessScope::kWindow, AccessMethod::kCreateWorklet, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForAddModule(out_script_url2,
-                                                     /*worklet_id=*/1)},
+        SharedStorageEventParams::CreateForCreateWorklet(out_script_url2,
+                                                         "context-origin",
+                                                         /*worklet_id=*/1)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRun(
             "test-operation", blink::CloneableMessage(), /*worklet_id=*/1)},
