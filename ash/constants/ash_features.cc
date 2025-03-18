@@ -1167,7 +1167,7 @@ BASE_FEATURE(kGraduation, "Graduation", base::FEATURE_ENABLED_BY_DEFAULT);
 // load the Takeout Transfer tool.
 BASE_FEATURE(kGraduationUseEmbeddedTransferEndpoint,
              "GraduationUseEmbeddedTransferEndpoint",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables a Files banner about Google One offer. This flag is used by Gamgee
 // nudge to conditionally disable the G1 file banner for CBX boards via finch.
