@@ -42,9 +42,11 @@ constexpr size_t kFakeModeless =
 }  // namespace
 
 template <class DialogType>
-class DialogExampleDelegate : public virtual DialogType {
+class DialogExampleDelegate : public DialogType {
  public:
-  explicit DialogExampleDelegate(DialogExample* parent) : parent_(parent) {
+  template <typename... Args>
+  explicit DialogExampleDelegate(DialogExample* parent, Args&&... args)
+      : DialogType(std::forward<Args>(args)...), parent_(parent) {
     DialogDelegate::SetButtons(parent_->GetDialogButtons());
     DialogDelegate::SetButtonLabel(ui::mojom::DialogButton::kOk,
                                    parent_->ok_button_text());
@@ -89,8 +91,7 @@ class DialogExampleBubble
     : public DialogExampleDelegate<BubbleDialogDelegateView> {
  public:
   DialogExampleBubble(DialogExample* parent, View* anchor)
-      : BubbleDialogDelegateView(anchor, BubbleBorder::TOP_LEFT),
-        DialogExampleDelegate(parent) {
+      : DialogExampleDelegate(parent, anchor, BubbleBorder::TOP_LEFT) {
     set_close_on_deactivate(!parent->persistent_bubble_checked());
   }
 
