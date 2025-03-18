@@ -21,7 +21,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/auto_sleep/weekly_interval_timer.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -179,7 +178,7 @@ void DeviceWeeklyScheduledSuspendController::
     return;
   }
   const base::Value::List& policy_config =
-      g_browser_process->local_state()->GetList(
+      pref_change_registrar_.prefs()->GetList(
           prefs::kDeviceWeeklyScheduledSuspend);
 
   device_suspension_timers_.clear();
