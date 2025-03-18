@@ -212,11 +212,12 @@ void TerminalSource::StartDataRequest(
 }
 
 std::string TerminalSource::GetMimeType(const GURL& url) {
-  std::string mime_type(kDefaultMime);
-  std::string ext = base::FilePath(url.path_piece()).Extension();
-  if (!ext.empty()) {
-    net::GetWellKnownMimeTypeFromExtension(ext.substr(1), &mime_type);
+  std::string mime_type;
+  if (!net::GetWellKnownMimeTypeFromFile(base::FilePath(url.path_piece()),
+                                         &mime_type)) {
+    return kDefaultMime;
   }
+
   return mime_type;
 }
 

@@ -88,8 +88,8 @@ LocationProviderManager::LocationProviderManager(
       internals_updated_closure_(std::move(internals_updated_closure)),
       network_request_callback_(std::move(network_request_callback)),
       network_response_callback_(std::move(network_response_callback)) {
-#if BUILDFLAG(IS_ANDROID)
-  // On Android, default to using the platform location provider.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // On Android and iOS, default to using the platform location provider.
   provider_manager_mode_ = kPlatformOnly;
 #elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   // On Ash / Lacros / Linux, default to using the network location provider.

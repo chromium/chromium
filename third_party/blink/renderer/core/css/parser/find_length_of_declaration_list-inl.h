@@ -468,7 +468,7 @@ static inline uint8x16_t LoadAndCollapseHighBytes(const UChar* ptr) {
 }
 static inline uint8x16_t LoadAndCollapseHighBytes(const LChar* ptr) {
   uint8x16_t ret;
-  memcpy(&ret, ptr, sizeof(ret));
+  UNSAFE_TODO(memcpy(&ret, ptr, sizeof(ret)));
   return ret;
 }
 

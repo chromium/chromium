@@ -16,6 +16,7 @@
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
+#include "chrome/browser/extensions/managed_installation_mode.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -59,35 +60,6 @@ class ExtensionManagement : public KeyedService {
     virtual void OnExtensionManagementSettingsChanged() = 0;
   };
 
-  // Installation mode for extensions, default is INSTALLATION_ALLOWED.
-  // * INSTALLATION_ALLOWED: Extension can be installed.
-  // * INSTALLATION_BLOCKED: Extension cannot be installed.
-  // * INSTALLATION_FORCED: Extension will be installed automatically
-  //                        and cannot be disabled.
-  // * INSTALLATION_RECOMMENDED: Extension will be installed automatically but
-  //                             can be disabled.
-  // * INSTALLATION_REMOVED:  Extension cannot be installed and will be
-  //                          automatically removed.
-  enum InstallationMode {
-    INSTALLATION_ALLOWED = 0,
-    INSTALLATION_BLOCKED,
-    INSTALLATION_FORCED,
-    INSTALLATION_RECOMMENDED,
-    INSTALLATION_REMOVED,
-  };
-
-  // Behavior for "Pin extension to toolbar" from the extensions menu, default
-  // is kDefaultUnpinned
-  // * kDefaultUnpinned: Extension starts unpinned, but the user can still pin
-  //                     it afterwards.
-  // * kForcePinned: Extension starts pinned to the toolbar, and the user
-  //                 cannot unpin it.
-  // TODO(crbug.com/40126725): Add kDefaultPinned state.
-  enum class ToolbarPinMode {
-    kDefaultUnpinned = 0,
-    kForcePinned,
-  };
-
   explicit ExtensionManagement(Profile* profile);
 
   ExtensionManagement(const ExtensionManagement&) = delete;
@@ -112,12 +84,12 @@ class ExtensionManagement : public KeyedService {
   bool BlocklistedByDefault() const;
 
   // Returns installation mode for an extension.
-  InstallationMode GetInstallationMode(const Extension* extension);
+  ManagedInstallationMode GetInstallationMode(const Extension* extension);
 
   // Returns installation mode for an extension with id |extension_id| and
   // updated with |update_url|.
-  InstallationMode GetInstallationMode(const ExtensionId& extension_id,
-                                       const std::string& update_url);
+  ManagedInstallationMode GetInstallationMode(const ExtensionId& extension_id,
+                                              const std::string& update_url);
 
   // Returns the force install list, in format specified by
   // ExternalPolicyLoader::AddExtension().
@@ -312,7 +284,7 @@ class ExtensionManagement : public KeyedService {
   // Helper to return an extension install list, in format specified by
   // ExternalPolicyLoader::AddExtension().
   base::Value::Dict GetInstallListByMode(
-      InstallationMode installation_mode) const;
+      ManagedInstallationMode installation_mode) const;
 
   // Helper to update `extension_dict` for forced installs.
   void UpdateForcedExtensions(const base::Value::Dict* extension_dict);

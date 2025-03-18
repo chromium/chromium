@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {type WebClientInitialState} from '../glic.mojom-webui.js';
-import type {AnnotatedPageData, ActInFocusedTabParams, ActInFocusedTabResult, ChromeVersion, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabCandidate, FocusedTabData, InvalidCandidateError, NoCandidateTabError, OpenPanelInfo, PanelOpeningData, PanelState, PdfDocumentData, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
+import type {AnnotatedPageData, ActInFocusedTabParams, ActInFocusedTabResult, ChromeVersion, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabCandidate, FocusedTabData, InvalidCandidateError, NoCandidateTabError, OpenPanelInfo, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -429,8 +429,8 @@ export declare interface PdfDocumentDataPrivate extends
 export declare interface AnnotatedPageDataPrivate extends
     Omit<AnnotatedPageData, 'annotatedPageContent'> {
   annotatedPageContent?: ArrayBuffer;
+  metadata?: PageMetadata;
 }
-
 
 export class ErrorWithReasonImpl<T extends keyof ErrorReasonTypes> extends Error
     implements ErrorWithReason<T> {

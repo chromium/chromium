@@ -28,6 +28,7 @@ namespace arc {
 class ArcDiskSpaceMonitor;
 class ArcDlcInstaller;
 class ArcIconCacheDelegateProvider;
+class ArcLockedFullscreenManager;
 class ArcPlayStoreEnabledPreferenceHandler;
 class ArcServiceManager;
 class ArcSessionManager;
@@ -74,6 +75,12 @@ class ArcServiceLauncher {
   // Ensure all ARC keyed service factories are properly initialised.
   static void EnsureFactoriesBuilt();
 
+  // Accessor for the locked fullscreen manager used by the caller to set up
+  // or tear down ARC while entering or exiting locked fullscreen mode.
+  ArcLockedFullscreenManager* arc_locked_fullscreen_manager() {
+    return arc_locked_fullscreen_manager_.get();
+  }
+
   // Specifies ArcSessionRunner to be passed into ArcSessionManager on its
   // creation. Must be called before ArcServiceLauncher is created,
   // and must not be called twice in a sequence.
@@ -118,6 +125,7 @@ class ArcServiceLauncher {
       arc_icon_cache_delegate_provider_;
   std::unique_ptr<BrowserUrlOpener> arc_net_url_opener_;
   std::unique_ptr<ArcVmDataMigrationNotifier> arc_vm_data_migration_notifier_;
+  std::unique_ptr<ArcLockedFullscreenManager> arc_locked_fullscreen_manager_;
 
   // |scheduler_configuration_manager_| outlives |this|.
   const raw_ptr<ash::SchedulerConfigurationManagerBase>

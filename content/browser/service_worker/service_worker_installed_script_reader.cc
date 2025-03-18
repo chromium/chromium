@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
@@ -174,7 +175,7 @@ void ServiceWorkerInstalledScriptReader::OnReadDataPrepared(
     // TODO(crbug.com/40120038): Avoid copying |metadata| if |client_| doesn't
     // need it.
     auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(metadata->size());
-    memmove(buffer->data(), metadata->data(), metadata->size());
+    UNSAFE_TODO(memmove(buffer->data(), metadata->data(), metadata->size()));
     meta_data_sender_ = std::make_unique<MetaDataSender>(
         std::move(buffer), std::move(meta_producer_handle));
     meta_data_sender_->Start(base::BindOnce(

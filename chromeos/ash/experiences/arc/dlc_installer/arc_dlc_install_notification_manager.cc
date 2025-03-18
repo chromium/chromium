@@ -25,7 +25,6 @@ namespace arc {
 namespace {
 
 constexpr char kNotifierId[] = "arc_dlc_install";
-constexpr char kSuggestNotificationId[] = "arc_dlc_install/suggest";
 
 // Retrieves the localized message string for the specified notification type.
 std::u16string GetMessage(NotificationType type) {
@@ -36,6 +35,17 @@ std::u16string GetMessage(NotificationType type) {
       return l10n_util::GetStringUTF16(IDS_ARC_VM_PRELOAD_SUCCEEDED_MESSAGE);
     case NotificationType::kArcVmPreloadFailed:
       return l10n_util::GetStringUTF16(IDS_ARC_VM_PRELOAD_FAILED_MESSAGE);
+  }
+}
+
+std::string GenerateNotificationId(NotificationType type) {
+  switch (type) {
+    case NotificationType::kArcVmPreloadStarted:
+      return std::string(kNotifierId) + "/started";
+    case NotificationType::kArcVmPreloadSucceeded:
+      return std::string(kNotifierId) + "/succeeded";
+    case NotificationType::kArcVmPreloadFailed:
+      return std::string(kNotifierId) + "/failed";
   }
 }
 
@@ -60,7 +70,8 @@ void ArcDlcInstallNotificationManager::Show(
           base::BindRepeating([]() {}));
 
   message_center::Notification notification = ash::CreateSystemNotification(
-      message_center::NOTIFICATION_TYPE_SIMPLE, kSuggestNotificationId,
+      message_center::NOTIFICATION_TYPE_SIMPLE,
+      GenerateNotificationId(notification_type),
       l10n_util::GetStringUTF16(IDS_ARC_VM_PRELOAD_NOTIFICATION_TITLE),
       GetMessage(notification_type), std::u16string(), GURL(), notifier_id,
       message_center::RichNotificationData(), std::move(click_delegate),

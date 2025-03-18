@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
@@ -385,7 +386,7 @@ std::string BuildCpuInfo() {
   uname(&unixinfo);
 
   // special case for biarch systems
-  if (strcmp(unixinfo.machine, "x86_64") == 0 &&
+  if (UNSAFE_TODO(strcmp(unixinfo.machine, "x86_64")) == 0 &&
       sizeof(void*) == sizeof(int32_t)) {
     cpuinfo.assign("i686 (x86_64)");
   } else {

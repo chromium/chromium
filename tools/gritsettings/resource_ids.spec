@@ -461,7 +461,7 @@
     "includes": [4160],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/lens/overlay/resources.grd": {
-    "META": {"sizes": {"includes": [70]}},
+    "META": {"sizes": {"includes": [90]}},
     "includes": [4180],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/lens/shared/resources.grd": {

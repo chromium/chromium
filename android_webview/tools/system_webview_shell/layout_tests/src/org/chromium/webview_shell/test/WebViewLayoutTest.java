@@ -4,6 +4,7 @@
 
 package org.chromium.webview_shell.test;
 
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 import androidx.test.filters.MediumTest;
@@ -16,6 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
@@ -93,6 +95,9 @@ public class WebViewLayoutTest {
     @Test
     @MediumTest
     public void testRequestMIDIAccess() throws Exception {
+        if (!hasSystemFeatureMidi()) {
+            return;
+        }
         runWebViewLayoutTest(
                 "blink-apis/webmidi/requestmidiaccess.html",
                 "blink-apis/webmidi/requestmidiaccess-expected.txt");
@@ -101,6 +106,9 @@ public class WebViewLayoutTest {
     @Test
     @MediumTest
     public void testRequestMIDIAccessWithSysex() throws Exception {
+        if (!hasSystemFeatureMidi()) {
+            return;
+        }
         mTestActivity.setGrantPermission(true);
         runWebViewLayoutTest(
                 "blink-apis/webmidi/requestmidiaccess-with-sysex.html",
@@ -234,5 +242,14 @@ public class WebViewLayoutTest {
         try (FileOutputStream outputStream = new FileOutputStream(fileOut)) {
             outputStream.write(contents.getBytes(StandardCharsets.UTF_8));
         }
+    }
+
+    /**
+     * Checks if the device has the MIDI system feature.
+     */
+    private static boolean hasSystemFeatureMidi() {
+        return ContextUtils.getApplicationContext()
+                .getPackageManager()
+                .hasSystemFeature(PackageManager.FEATURE_MIDI);
     }
 }

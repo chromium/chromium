@@ -51,8 +51,9 @@ VpxEncoder::VpxEncoder(
       use_vp9_(use_vp9),
       is_screencast_(is_screencast),
       on_error_cb_(on_error_cb) {
-  std::memset(&codec_config_, 0, sizeof(codec_config_));
-  std::memset(&alpha_codec_config_, 0, sizeof(alpha_codec_config_));
+  UNSAFE_TODO(std::memset(&codec_config_, 0, sizeof(codec_config_)));
+  UNSAFE_TODO(
+      std::memset(&alpha_codec_config_, 0, sizeof(alpha_codec_config_)));
   codec_config_.g_timebase.den = 0;        // Not initialized.
   alpha_codec_config_.g_timebase.den = 0;  // Not initialized.
 }

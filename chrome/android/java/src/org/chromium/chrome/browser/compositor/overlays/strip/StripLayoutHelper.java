@@ -3194,13 +3194,13 @@ public class StripLayoutHelper
     }
 
     /**
-     * @param rootId The root ID of the relevant tab group.
+     * @param tabGroupId The tab group ID of the relevant tab group.
      * @param titleText The tab group's title text, if any. Null otherwise.
      * @return The provided title text if it isn't empty. Otherwise, returns the default title.
      */
-    private String getDefaultGroupTitleTextIfEmpty(int rootId, @Nullable String titleText) {
+    private String getDefaultGroupTitleTextIfEmpty(Token tabGroupId, @Nullable String titleText) {
         if (TextUtils.isEmpty(titleText)) {
-            int numTabs = mTabGroupModelFilter.getRelatedTabCountForRootId(rootId);
+            int numTabs = mTabGroupModelFilter.getTabCountForGroup(tabGroupId);
             titleText = TabGroupTitleUtils.getDefaultTitle(mContext, numTabs);
         }
         return titleText;
@@ -3229,7 +3229,7 @@ public class StripLayoutHelper
         assert groupTitle != null;
 
         // 1. Update indicator text and width.
-        titleText = getDefaultGroupTitleTextIfEmpty(groupTitle.getRootId(), titleText);
+        titleText = getDefaultGroupTitleTextIfEmpty(groupTitle.getTabGroupId(), titleText);
         int widthPx = mLayerTitleCache.getGroupTitleWidth(mIncognito, titleText);
         float widthDp = widthPx / mContext.getResources().getDisplayMetrics().density;
         float oldWidth = groupTitle.getWidth();

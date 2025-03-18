@@ -4939,6 +4939,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "group-promo-prototype",
+    "owners": [ "ssid@chromium.org", "yuezhanggg@chromium.org"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "growth-campaigns",
     "owners": [ "llin@google.com", "cros-growth@google.com" ],
     "expiry_milestone": 140
@@ -7881,6 +7886,14 @@
     "expiry_milestone": 125
   },
   {
+    "name": "scanner-disclaimer-debug-override",
+    "owners": [
+      "mlcui@google.com",
+      "//ash/scanner/OWNERS"
+    ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "scheduler-configuration",
     "owners": [ "kerrnel@chromium.org", "mnissler@chromium.org" ],
     // This flag never expires because some users need to override CPU security
@@ -9285,16 +9298,6 @@
     "name": "wayland-ui-scaling",
     "owners": [ "nickdiego@igalia.com", "fangzhoug@chromium.org", "thomasanderson@chromium.org"],
     "expiry_milestone": 141
-  },
-  {
-    "name": "web-app-user-display-mode-sync-browser-mitigation",
-    "owners": [ "alancutter@chromium.org", "pwa-team@google.com" ],
-    "expiry_milestone": 132
-  },
-  {
-    "name": "web-app-user-display-mode-sync-standalone-mitigation",
-    "owners": [ "alancutter@chromium.org", "pwa-team@google.com" ],
-    "expiry_milestone": 132
   },
   {
     "name": "web-authentication-align-error-type-for-payment-credential-create",

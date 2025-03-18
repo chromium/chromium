@@ -2877,9 +2877,21 @@ void WebLocalFrameImpl::DownloadURL(
 }
 
 WebFrame* WebLocalFrameImpl::GetProvisionalOwnerFrame() {
-  return GetFrame()->IsProvisional()
-             ? WebFrame::FromCoreFrame(GetFrame()->GetProvisionalOwnerFrame())
-             : nullptr;
+  if (!GetFrame()->IsProvisional()) {
+    return nullptr;
+  }
+  if (GetFrame()->IsMainFrame()) {
+    // For provisional main frames created for a local <-> local swap, the
+    // `GetProvisionalOwnerFrame()` will return the "fake" RemoteFrame created
+    // as a placeholder for the new WebView / Page. To get the previous local
+    // frame, get it using `GetPreviousMainFrameForLocalSwap()` instead.
+    Frame* previous_local_main_frame =
+        ViewImpl()->GetPage()->GetPreviousMainFrameForLocalSwap();
+    if (previous_local_main_frame) {
+      return WebFrame::FromCoreFrame(previous_local_main_frame);
+    }
+  }
+  return WebFrame::FromCoreFrame(GetFrame()->GetProvisionalOwnerFrame());
 }
 
 void WebLocalFrameImpl::MaybeStartOutermostMainFrameNavigation(

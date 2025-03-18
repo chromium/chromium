@@ -77,7 +77,8 @@ class CORE_EXPORT CSSSelectorList : public GarbageCollected<CSSSelectorList> {
   explicit CSSSelectorList(base::PassKey<CSSSelectorList>) {}
 
   CSSSelectorList(CSSSelectorList&& o) {
-    memcpy(this, o.first_selector_, ComputeLength() * sizeof(CSSSelector));
+    UNSAFE_TODO(
+        memcpy(this, o.first_selector_, ComputeLength() * sizeof(CSSSelector)));
   }
   ~CSSSelectorList() = default;
 

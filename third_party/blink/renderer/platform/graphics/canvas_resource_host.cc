@@ -98,9 +98,6 @@ void CanvasResourceHost::CreateRateLimiter() {
 }
 
 RasterMode CanvasResourceHost::GetRasterMode() const {
-  if (preferred_2d_raster_mode() == RasterModeHint::kPreferCPU) {
-    return RasterMode::kCPU;
-  }
   if (IsHibernating()) {
     return RasterMode::kCPU;
   }

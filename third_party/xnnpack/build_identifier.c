@@ -9,8 +9,8 @@
 //   Generator: scripts/generate-build-identifier.py
 //
 // The following inputs were used to generate this file.
-// - external/xnnpack+/src/bf16-f32-gemm/gen/bf16-f32-gemm-11x16c2-minmax-asm-amd64-avx512bf16-broadcast.S
-// - external/xnnpack+/src/bf16-f32-gemm/gen/bf16-f32-gemm-1x16c2-minmax-asm-amd64-avx512bf16-broadcast.S
+// - external/xnnpack+/src/bf16-f32-gemm/gen/bf16-f32-gemm-11x32c2-minmax-asm-amd64-avx512bf16-broadcast.S
+// - external/xnnpack+/src/bf16-f32-gemm/gen/bf16-f32-gemm-1x32c2-minmax-asm-amd64-avx512bf16-broadcast.S
 // - external/xnnpack+/src/configs/hardware-config.c
 // - external/xnnpack+/src/enums/allocation-type.c
 // - external/xnnpack+/src/enums/datatype-strings.c
@@ -159,9 +159,12 @@
 // - external/xnnpack+/src/f32-f16-vcvt/gen/f32-f16-vcvt-scalar-fabsf-u2.c
 // - external/xnnpack+/src/f32-f16-vcvt/gen/f32-f16-vcvt-sse2-u16.c
 // - external/xnnpack+/src/f32-f16-vcvt/gen/f32-f16-vcvt-sse41-u8.c
+// - external/xnnpack+/src/f32-gemm/gen/f32-gemm-10x16c2-minmax-asm-amd64-avx512f-broadcast.S
+// - external/xnnpack+/src/f32-gemm/gen/f32-gemm-10x8-minmax-fma3-broadcast.c
 // - external/xnnpack+/src/f32-gemm/gen/f32-gemm-1x16-minmax-avx-broadcast.c
 // - external/xnnpack+/src/f32-gemm/gen/f32-gemm-1x16-minmax-avx512f-broadcast.c
 // - external/xnnpack+/src/f32-gemm/gen/f32-gemm-1x16-minmax-fma3-broadcast.c
+// - external/xnnpack+/src/f32-gemm/gen/f32-gemm-1x16c2-minmax-asm-amd64-avx512f-broadcast.S
 // - external/xnnpack+/src/f32-gemm/gen/f32-gemm-1x16s4-minmax-fma3-broadcast.c
 // - external/xnnpack+/src/f32-gemm/gen/f32-gemm-1x32-minmax-avx512f-broadcast.c
 // - external/xnnpack+/src/f32-gemm/gen/f32-gemm-1x32c2-minmax-asm-amd64-avx512f-broadcast.S
@@ -194,6 +197,7 @@
 // - external/xnnpack+/src/f32-ibilinear-chw/gen/f32-ibilinear-chw-sse-p8.c
 // - external/xnnpack+/src/f32-ibilinear/gen/f32-ibilinear-scalar-c2.c
 // - external/xnnpack+/src/f32-ibilinear/gen/f32-ibilinear-sse-c8.c
+// - external/xnnpack+/src/f32-igemm/gen/f32-igemm-10x8-minmax-fma3-broadcast.c
 // - external/xnnpack+/src/f32-igemm/gen/f32-igemm-1x16-minmax-avx-broadcast.c
 // - external/xnnpack+/src/f32-igemm/gen/f32-igemm-1x16-minmax-avx512f-broadcast.c
 // - external/xnnpack+/src/f32-igemm/gen/f32-igemm-1x16-minmax-fma3-broadcast.c
@@ -480,6 +484,7 @@
 // - external/xnnpack+/src/f32-vunary/gen/f32-vsqr-sse2.c
 // - external/xnnpack+/src/log.c
 // - external/xnnpack+/src/memory.c
+// - external/xnnpack+/src/microparams-init.c
 // - external/xnnpack+/src/mutex.c
 // - external/xnnpack+/src/params.c
 // - external/xnnpack+/src/qd8-f16-qb4w-gemm/gen/qd8-f16-qb4w-gemm-1x8c8-minmax-avx2.c
@@ -918,10 +923,10 @@
 #include <string.h>
 
 static const uint8_t xnn_build_identifier[] = {
-   73, 252, 106,  81,  56,  21, 120, 220,
-  158,  57,  62, 104,  26, 110, 155, 253,
-  234, 206,  99, 201, 200,  71,  75,  67,
-   82, 195, 163, 246, 155,  58,  24,  84
+  124, 212, 200,   4, 116,  47, 114, 153,
+   14, 121, 138, 157,   6, 229,  57,  73,
+  244, 163, 118, 146,  86,  73, 138,  92,
+  234, 229, 179,  80,  37, 119,  13,  84
 };
 
 size_t xnn_experimental_get_build_identifier_size() {

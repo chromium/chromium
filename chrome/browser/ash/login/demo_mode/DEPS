@@ -29,6 +29,7 @@ include_rules = [
   "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/chrome_browser_main_extra_parts.h",
   "+chrome/browser/chrome_browser_main.h",
+  "+chrome/browser/chromeos/extensions/login_screen/login/cleanup",
   "+chrome/browser/component_updater",
   "+chrome/browser/extensions/external_loader.h",
   "+chrome/browser/extensions/external_provider_impl.h",

@@ -83,7 +83,9 @@ class CORE_EXPORT CSSBitsetBase {
     return false;
   }
 
-  inline void Reset() { std::memset(chunks_.data(), 0, sizeof(chunks_)); }
+  inline void Reset() {
+    UNSAFE_TODO(std::memset(chunks_.data(), 0, sizeof(chunks_)));
+  }
 
   // Yields the CSSPropertyIDs which are set.
   class Iterator {

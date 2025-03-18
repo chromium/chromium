@@ -7327,6 +7327,55 @@ TEST_F(URLLoaderMockSocketTest, PrivateNetworkRequestPolicyDoesNotCloseSocket) {
   EXPECT_TRUE(socket_data_no_reads_no_writes.socket());
 }
 
+TEST_F(URLLoaderMockSocketTest, SniffMime) {
+  const std::string_view kTestHtml = "<html><body>hello world</body></html>";
+  const net::MockRead kReads[] = {
+      net::MockRead(net::SYNCHRONOUS, /*seq=*/1, "HTTP/1.1 200 OK\r\n\r\n"),
+      net::MockRead(net::SYNCHRONOUS, kTestHtml,
+                    /*result=*/0,
+                    /*seq=*/2),
+      net::MockRead(net::SYNCHRONOUS, net::OK, /*seq=*/3)};
+  net::SequencedSocketData socket_data_connect(kAsyncMockConnect, {}, {});
+  net::SequencedSocketData socket_data_reads_writes(kReads, kOriginTestWrites);
+  socket_factory_.AddSocketDataProvider(&socket_data_connect);
+  socket_factory_.AddSocketDataProvider(&socket_data_reads_writes);
+  ResourceRequest request =
+      CreateResourceRequest("GET", GURL("http://origin.test/"));
+  set_sniff();
+  std::string body;
+  EXPECT_EQ(net::OK, LoadRequest(request, &body));
+  EXPECT_TRUE(did_mime_sniff());
+  EXPECT_EQ(mime_type(), "text/html");
+  EXPECT_EQ(body, kTestHtml);
+}
+
+// Regression test for https://crbug.com/404165029. Ensures MIME sniffing works
+// correctly with incremental body reads, addressing a bug where the sniffing
+// hint was not properly maintained.
+TEST_F(URLLoaderMockSocketTest, SniffMimeByteByByteRead) {
+  const std::string_view kTestHtml = "<html><body>hello world</body></html>";
+  std::vector<net::MockRead> reads;
+  reads.emplace_back(net::SYNCHRONOUS, /*seq=*/reads.size() + 1,
+                     "HTTP/1.1 200 OK\r\n\r\n");
+  for (size_t i = 0; i < kTestHtml.size(); ++i) {
+    reads.emplace_back(net::SYNCHRONOUS, kTestHtml.substr(i, 1),
+                       /*result=*/0, /*seq=*/reads.size() + 1);
+  }
+  reads.emplace_back(net::SYNCHRONOUS, net::OK, /*seq=*/reads.size() + 1);
+  net::SequencedSocketData socket_data_connect(kAsyncMockConnect, {}, {});
+  net::SequencedSocketData socket_data_reads_writes(reads, kOriginTestWrites);
+  socket_factory_.AddSocketDataProvider(&socket_data_connect);
+  socket_factory_.AddSocketDataProvider(&socket_data_reads_writes);
+  ResourceRequest request =
+      CreateResourceRequest("GET", GURL("http://origin.test/"));
+  set_sniff();
+  std::string body;
+  EXPECT_EQ(net::OK, LoadRequest(request, &body));
+  EXPECT_TRUE(did_mime_sniff());
+  EXPECT_EQ(mime_type(), "text/html");
+  EXPECT_EQ(body, kTestHtml);
+}
+
 TEST_P(ParameterizedURLLoaderTest, WithDnsAliases) {
   GURL url(test_server_.GetURL(kHostnameWithAliases, "/echo"));
 

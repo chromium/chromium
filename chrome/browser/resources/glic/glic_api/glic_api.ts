@@ -571,6 +571,11 @@ export declare interface TabContextOptions {
   /** If true, returns the serialized annotatedPageContent proto. */
   annotatedPageContent?: boolean;
   /**
+   * Maximum number of meta tags (per Document/Frame) to include in the
+   * response. Defaults to 0 if not provided.
+   */
+  maxMetaTags?: number;
+  /**
    * If true, and the focused tab contains a PDF as the top level document,
    * returns PdfDocumentData.
    */
@@ -644,6 +649,31 @@ export declare interface DocumentData {
 export declare interface AnnotatedPageData {
   /** Serialized annotatedPageContent proto. */
   annotatedPageContent?: ReadableStream<Uint8Array>;
+  /**
+   * Metadata about the annotated page content. Present when
+   * annotatedPageContent has been requested.
+   */
+  metadata?: PageMetadata;
+}
+
+/** Meta tag name and content taken from the <head> element of a frame. */
+export declare interface MetaTag {
+  name: string;
+  content: string;
+}
+
+/**
+ * Metadata about a frame.  Number of MetaTags is limited by the
+ * maxMetaTags option.
+ */
+export declare interface FrameMetadata {
+  url: string;
+  metaTags: MetaTag[];
+}
+
+/** Metadata about the page.  Includes URL and meta tags for each frame. */
+export declare interface PageMetadata {
+  frameMetadata: FrameMetadata[];
 }
 
 /**

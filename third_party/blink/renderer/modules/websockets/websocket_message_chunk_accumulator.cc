@@ -47,7 +47,7 @@ void WebSocketMessageChunkAccumulator::Append(base::span<const char> data) {
       pool_.pop_back();
     }
     const size_t to_be_written = std::min(data.size(), kSegmentSize);
-    memcpy(segment_ptr.get(), data.data(), to_be_written);
+    UNSAFE_TODO(memcpy(segment_ptr.get(), data.data(), to_be_written));
     data = data.subspan(to_be_written);
     size_ += to_be_written;
     segments_.push_back(std::move(segment_ptr));

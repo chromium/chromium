@@ -1045,6 +1045,10 @@
   <message name="IDS_SETTINGS_NOTIFICATION_WARNING" desc="A warning that notifications will be disabled by deleting cookies for this site.">
     Notifications will be disabled
   </message>
+  <!-- TODO(crbug.com/397187800): Make DBDv2 strings translatable. -->
+  <message name="IDS_SETTINGS_CLEAR_BROWSING_DATA_SHOW_MORE" translateable="false">
+    Show more
+  </message>
 
   <!-- Downloads Page -->
   <message name="IDS_SETTINGS_DOWNLOADS" desc="Name of the settings page which displays download preferences.">

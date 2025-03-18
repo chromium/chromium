@@ -72,6 +72,7 @@
 #include "chrome/browser/extensions/fake_safe_browsing_database_manager.h"
 #include "chrome/browser/extensions/installed_loader.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
+#include "chrome/browser/extensions/managed_installation_mode.h"
 #include "chrome/browser/extensions/pack_extension_job.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/extensions/permissions/permissions_test_util.h"
@@ -8336,9 +8337,9 @@ TEST_F(ExtensionServiceTest, UserInstalledExtensionThenRequiredByPolicy) {
 
   ExtensionManagement* management =
       ExtensionManagementFactory::GetForBrowserContext(profile());
-  ExtensionManagement::InstallationMode installation_mode =
+  ManagedInstallationMode installation_mode =
       management->GetInstallationMode(extension);
-  EXPECT_EQ(ExtensionManagement::INSTALLATION_FORCED, installation_mode);
+  EXPECT_EQ(ManagedInstallationMode::kForced, installation_mode);
 
   // Reload all extensions.
   service()->ReloadExtensionsForTest();
@@ -8387,9 +8388,9 @@ TEST_F(ExtensionServiceTest,
 
   ExtensionManagement* management =
       ExtensionManagementFactory::GetForBrowserContext(profile());
-  ExtensionManagement::InstallationMode installation_mode =
+  ManagedInstallationMode installation_mode =
       management->GetInstallationMode(extension);
-  EXPECT_EQ(ExtensionManagement::INSTALLATION_FORCED, installation_mode);
+  EXPECT_EQ(ManagedInstallationMode::kForced, installation_mode);
 
   GURL good_update_url(kGoodUpdateURL);
   ExternalInstallInfoUpdateUrl info(
@@ -8452,11 +8453,11 @@ TEST_F(ExtensionServiceTest, InstallingUnacknowledgedExternalExtension) {
   EXPECT_EQ(ManifestLocation::kExternalPrefDownload, extension->location());
   EXPECT_EQ(version_str, extension->VersionString());
 
-  ExtensionManagement::InstallationMode installation_mode =
+  ManagedInstallationMode installation_mode =
       ExtensionManagementFactory::GetForBrowserContext(profile())
           ->GetInstallationMode(extension);
 
-  EXPECT_EQ(ExtensionManagement::INSTALLATION_RECOMMENDED, installation_mode);
+  EXPECT_EQ(ManagedInstallationMode::kRecommended, installation_mode);
   EXPECT_TRUE(registry()->enabled_extensions().Contains(good_crx));
   EXPECT_TRUE(prefs()->IsExternalExtensionAcknowledged(extension->id()));
   EXPECT_TRUE(prefs()->GetDisableReasons(good_crx).empty());

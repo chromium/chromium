@@ -140,8 +140,8 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                         mWindowAndroid,
                         mDataSharingTabManager);
 
-        // Set groupRootId to bypass showMenu() call.
-        mTabGroupContextMenuCoordinator.setGroupRootIdForTesting(ROOT_ID);
+        // Set group ids manually to bypass showMenu() call.
+        mTabGroupContextMenuCoordinator.setGroupDataForTesting(ROOT_ID, TAB_GROUP_ID);
     }
 
     @Test
@@ -390,7 +390,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         when(mTabGroupModelFilter.getTabUngrouper()).thenReturn(mTabUngrouper);
         when(mTabGroupModelFilter.isTabInTabGroup(tab)).thenReturn(true);
         when(mTabGroupModelFilter.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB_ID);
-        when(mTabGroupModelFilter.getRelatedTabCountForRootId(eq(TAB_ID))).thenReturn(1);
+        when(mTabGroupModelFilter.getTabCountForGroup(eq(TAB_GROUP_ID))).thenReturn(1);
         List<Tab> tabsInGroup = Arrays.asList(tab);
         when(mTabGroupModelFilter.getRelatedTabListForRootId(eq(TAB_ID))).thenReturn(tabsInGroup);
         when(mTabGroupModelFilter.getRelatedTabList(eq(TAB_ID))).thenReturn(tabsInGroup);
