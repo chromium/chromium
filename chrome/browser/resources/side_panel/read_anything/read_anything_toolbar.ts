@@ -847,9 +847,12 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     // If the previously focused item becomes disabled or disappears from the
     // toolbar because of speech starting or stopping, put the focus on the
     // play/pause button so keyboard navigation continues working.
-    if ((this.shadowRoot !== null) &&
+    if (this.isReadAloudPlayable && (this.shadowRoot !== null) &&
         (this.shadowRoot.activeElement === null ||
          this.shadowRoot.activeElement.clientHeight === 0)) {
+      // TODO: crbug.com/404570701 - If we lose focus just because read aloud
+      // is no longer playable (e.g. from clicking a link in the panel via
+      // keyboard navigation), the rate menu should be focused instead.
       this.$.toolbarContainer.querySelector<HTMLElement>('#play-pause')
           ?.focus();
     }
