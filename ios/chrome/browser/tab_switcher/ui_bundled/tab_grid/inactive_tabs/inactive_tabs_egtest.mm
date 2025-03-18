@@ -734,6 +734,42 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
                  @"Inactive tab count should be 0");
 }
 
+// Checks that changing settings from another window updates the grid, and pops
+// it when there are no inactive tabs anymore.
+- (void)testSettingsChangesInBackgroundPopsInactiveTabs {
+  CreateRegularTabs(1, self.testServer);
+  [self relaunchAppWithInactiveTabsTestMode];
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Enter the Inactive Tabs grid.
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
+      performAction:grey_tap()];
+
+  // There should be one inactive tab, and the active NTP.
+  GREYAssertTrue([ChromeEarlGrey mainTabCount] == 1,
+                 @"Main tab count should be 1");
+  GREYAssertTrue([ChromeEarlGrey incognitoTabCount] == 0,
+                 @"Incognito tab count should be 0");
+  GREYAssertTrue([ChromeEarlGrey inactiveTabCount] == 1,
+                 @"Inactive tab count should be 1");
+
+  // Simulate disabling Inactive Tabs from another window.
+  [ChromeEarlGrey setIntegerValue:kInactiveTabsDisabledByUser
+                      forUserPref:prefs::kInactiveTabsTimeThreshold];
+
+  // The Inactive Tabs grid should no longer be visible.
+  [[EarlGrey selectElementWithMatcher:InactiveTabGrid()]
+      assertWithMatcher:grey_notVisible()];
+
+  // There should be no inactive tab, just 2 active tabs.
+  GREYAssertTrue([ChromeEarlGrey mainTabCount] == 2,
+                 @"Main tab count should be 2");
+  GREYAssertTrue([ChromeEarlGrey incognitoTabCount] == 0,
+                 @"Incognito tab count should be 0");
+  GREYAssertTrue([ChromeEarlGrey inactiveTabCount] == 0,
+                 @"Inactive tab count should be 0");
+}
+
 // Checks that the count of inactive tabs appears.
 - (void)testShowCount {
   CreateRegularTabs(3, self.testServer);
