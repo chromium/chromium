@@ -140,7 +140,7 @@ message ConversationTurn {
 
 // All the information collected from the browser along with the user input
 // (for features like Compose).
-// NEXT ID: 17
+// NEXT ID: 18
 message BrowserCollectedInformation {
   // The page context of the page the model is acting on.
   PageContext page_context = 1;
@@ -194,6 +194,12 @@ message BrowserCollectedInformation {
   AutofillAiTypeRequest autofill_ai_type_request = 15;
 
   AutofillAiTypeResponse autofill_ai_type_response = 16;
+
+  // The annotated page content with actionable elements for the foreground tab.
+  // This is intentionally not part of the PageContext as it should not be used
+  // for production but is needed for  prototyping. See crbug.com/403632369 for more
+  // details.
+  AnnotatedPageContent action_annotated_page_content = 17;
 }
 
 message HistoryQueryResult {
