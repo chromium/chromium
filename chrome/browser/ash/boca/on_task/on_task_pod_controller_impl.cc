@@ -41,7 +41,7 @@ std::unique_ptr<views::Widget> CreateChildWidget(
   params.parent = parent_window;
   params.name = widget_name;
   params.activatable = views::Widget::InitParams::Activatable::kDefault;
-  params.opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   auto widget = std::make_unique<views::Widget>();
   widget->Init(std::move(params));
   widget->SetContentsView(std::move(view));
