@@ -99,7 +99,8 @@ class SuggestionListViewBinder {
             updateContainerVisibility(model, view);
         } else if (SuggestionListProperties.COLOR_SCHEME.equals(propertyKey)) {
             view.dropdown.refreshPopupBackground(model.get(SuggestionListProperties.COLOR_SCHEME));
-        } else if (SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE.equals(propertyKey)) {
+        } else if (SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE.equals(propertyKey)
+                || SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED.equals(propertyKey)) {
             if (model.get(SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE)) {
                 Context context = view.dropdown.getContext();
                 boolean isIncognito =
@@ -132,7 +133,8 @@ class SuggestionListViewBinder {
         boolean shouldListBeVisible =
                 model.get(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE) && listItems.size() > 0;
         boolean shouldContainerBeVisible =
-                model.get(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE)
+                model.get(SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED)
+                        && model.get(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE)
                         && (listItems.size() > 0
                                 || model.get(SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE));
         int listVisibility = shouldListBeVisible ? View.VISIBLE : View.GONE;
