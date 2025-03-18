@@ -305,18 +305,12 @@ SharedStorageHeaderObserver::DoPermissionsPolicyDoubleCheck(
         // be ineligible for writing to shared storage.
         return PermissionsPolicyDoubleCheckStatus::kSubresourceSourceNoPolicy;
       }
-      // Create a dummy `network::ResourceRequest` so that we can signal to
-      // `permissions_policy` that the actual request was opted-in to shared
-      // storage and hence that
+
       // `network::mojom::PermissionsPolicyFeature::kSharedStorage` should be
       // treated as an assumed opt-in feature during the permissions check.
-      network::ResourceRequest dummy_request;
-      dummy_request.shared_storage_writable_eligible = true;
-      return permissions_policy->IsFeatureEnabledForSubresourceRequest(
+      return permissions_policy->IsFeatureEnabledForOrigin(
                  network::mojom::PermissionsPolicyFeature::kSharedStorage,
-                 request_origin, dummy_request.browsing_topics,
-                 dummy_request.shared_storage_writable_eligible,
-                 dummy_request.ad_auction_headers)
+                 request_origin, /*override_default_policy_to_all=*/true)
                  ? PermissionsPolicyDoubleCheckStatus::kEnabled
                  : PermissionsPolicyDoubleCheckStatus::kDisabled;
     }
