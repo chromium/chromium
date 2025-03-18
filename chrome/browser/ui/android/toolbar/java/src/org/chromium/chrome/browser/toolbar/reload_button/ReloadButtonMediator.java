@@ -15,6 +15,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.KeyboardNavigationListener;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelAnimatorFactory;
 
@@ -28,6 +29,7 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
     private final PropertyModel mModel;
     private final Resources mResources;
     private final Callback<String> mShowToastCallback;
+    private final ThemeColorProvider mThemeColorProvider;
     private boolean mIsShiftDownForReload;
     private boolean mIsReloading;
 
@@ -40,11 +42,13 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
     ReloadButtonMediator(
             PropertyModel model,
             ReloadButtonCoordinator.Delegate delegate,
+            ThemeColorProvider themeColorProvider,
             Callback<String> showToast,
             Resources resources) {
         mModel = model;
         mResources = resources;
         mShowToastCallback = showToast;
+        mThemeColorProvider = themeColorProvider;
 
         Callback<MotionEvent> onTouchListener =
                 (event) ->
@@ -55,6 +59,8 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
                 ReloadButtonProperties.CLICK_LISTENER,
                 () -> delegate.stopOrReloadCurrentTab(mIsShiftDownForReload));
         mModel.set(ReloadButtonProperties.LONG_CLICK_LISTENER, this::showActionToastOnReloadButton);
+
+        mThemeColorProvider.addTintObserver(this);
     }
 
     private void showActionToastOnReloadButton() {
@@ -67,7 +73,11 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
 
     @Override
     public void onTintChanged(
-            ColorStateList tint, ColorStateList activityFocusTint, int brandedColorScheme) {}
+            ColorStateList tint,
+            ColorStateList activityFocusTint,
+            @BrandedColorScheme int brandedColorScheme) {
+        mModel.set(ReloadButtonProperties.TINT_LIST, activityFocusTint);
+    }
 
     /**
      * Prepares the view for fade animation and returns an alpha animator.
@@ -132,5 +142,7 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
         mModel.set(ReloadButtonProperties.TOUCH_LISTENER, null);
         mModel.set(ReloadButtonProperties.CLICK_LISTENER, null);
         mModel.set(ReloadButtonProperties.LONG_CLICK_LISTENER, null);
+
+        mThemeColorProvider.removeTintObserver(this);
     }
 }

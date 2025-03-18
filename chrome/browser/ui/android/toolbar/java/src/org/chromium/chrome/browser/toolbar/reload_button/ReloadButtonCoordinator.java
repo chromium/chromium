@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.toolbar.reload_button;
 
 import android.animation.ObjectAnimator;
+import android.content.res.ColorStateList;
 import android.view.View;
 import android.widget.ImageButton;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.widget.Toast;
@@ -37,7 +39,15 @@ public class ReloadButtonCoordinator {
      * @param view reload button android view.
      * @param delegate that contains reload logic for reload button.
      */
-    public ReloadButtonCoordinator(ImageButton view, ReloadButtonCoordinator.Delegate delegate) {
+    public ReloadButtonCoordinator(
+            ImageButton view,
+            ReloadButtonCoordinator.Delegate delegate,
+            ThemeColorProvider themeColorProvider) {
+        // ThemeColorProvider might not be updated by this time. Keep existing color list.
+        final ColorStateList tint =
+                themeColorProvider.getActivityFocusTint() == null
+                        ? view.getImageTintList()
+                        : themeColorProvider.getActivityFocusTint();
         final var model =
                 new PropertyModel.Builder(ReloadButtonProperties.ALL_KEYS)
                         .with(ReloadButtonProperties.ALPHA, view.getAlpha())
@@ -47,12 +57,14 @@ public class ReloadButtonCoordinator {
                         .with(
                                 ReloadButtonProperties.CONTENT_DESCRIPTION,
                                 view.getContentDescription())
+                        .with(ReloadButtonProperties.TINT_LIST, tint)
                         .with(ReloadButtonProperties.DRAWABLE_LEVEL, view.getDrawable().getLevel())
                         .build();
         mMediator =
                 new ReloadButtonMediator(
                         model,
                         delegate,
+                        themeColorProvider,
                         (text) -> Toast.showAnchoredToast(view.getContext(), view, text),
                         view.getResources());
         PropertyModelChangeProcessor.create(model, view, ReloadButtonViewBinder::bind);

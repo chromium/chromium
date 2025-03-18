@@ -8,9 +8,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -20,14 +22,15 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyModel;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -42,8 +45,9 @@ public class ReloadButtonMediatorTest {
 
     @Rule public MockitoRule mockitoTestRule = MockitoJUnit.rule();
 
-    @Spy public ReloadButtonCoordinator.Delegate mDelegate;
-    @Spy public Callback<String> mShowToastCallback;
+    @Mock public ReloadButtonCoordinator.Delegate mDelegate;
+    @Mock public Callback<String> mShowToastCallback;
+    @Mock public ThemeColorProvider mThemeColorProvider;
 
     @Mock public Resources mResources;
     private PropertyModel mModel;
@@ -61,7 +65,9 @@ public class ReloadButtonMediatorTest {
         when(mResources.getString(R.string.menu_stop_refresh)).thenReturn(STOP_TOAST_MSG);
 
         mModel = new PropertyModel.Builder(ReloadButtonProperties.ALL_KEYS).build();
-        mMediator = new ReloadButtonMediator(mModel, mDelegate, mShowToastCallback, mResources);
+        mMediator =
+                new ReloadButtonMediator(
+                        mModel, mDelegate, mThemeColorProvider, mShowToastCallback, mResources);
     }
 
     @Test
@@ -155,6 +161,18 @@ public class ReloadButtonMediatorTest {
         mMediator.getFadeAnimator(false);
         assertEquals(
                 "Alpha should be set to 1", mModel.get(ReloadButtonProperties.ALPHA), 1f, 0.01f);
+    }
+
+    @Test
+    public void testActivityFocusChanged_shouldUpdateFocusTint() {
+        var tint = mock(ColorStateList.class);
+        var focusTint = mock(ColorStateList.class);
+        mMediator.onTintChanged(tint, focusTint, BrandedColorScheme.APP_DEFAULT);
+
+        assertEquals(
+                "Activity focus tint list should be used, but was another tint",
+                mModel.get(ReloadButtonProperties.TINT_LIST),
+                focusTint);
     }
 
     @Test

@@ -455,7 +455,6 @@ public class ToolbarTablet extends ToolbarLayout
         ImageViewCompat.setImageTintList(mForwardButton, activityFocusTint);
         // The tint of the |mSaveOfflineButton| should not be affected by an activity focus change.
         ImageViewCompat.setImageTintList(mSaveOfflineButton, tint);
-        ImageViewCompat.setImageTintList(mReloadButton, activityFocusTint);
         ImageViewCompat.setImageTintList(
                 (ImageView) getTabSwitcherButtonCoordinator().getContainerView(),
                 activityFocusTint);

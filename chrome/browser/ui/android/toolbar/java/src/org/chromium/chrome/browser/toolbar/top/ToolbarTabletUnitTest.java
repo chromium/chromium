@@ -741,10 +741,6 @@ public final class ToolbarTabletUnitTest {
                 activityFocusTint.getDefaultColor(),
                 mForwardButton.getImageTintList().getDefaultColor());
         Assert.assertEquals(
-                "Reload button tint is incorrect.",
-                activityFocusTint.getDefaultColor(),
-                mReloadingButton.getImageTintList().getDefaultColor());
-        Assert.assertEquals(
                 "Save offline button tint is incorrect.",
                 tint.getDefaultColor(),
                 mSaveOfflineButton.getImageTintList().getDefaultColor());
