@@ -1025,13 +1025,13 @@ def _print_build_status(build_id):
   try:
     builds = query_build_info(build_id)['builds']
     if not builds:
-      print(f'No build found with id ({build_id})')
-      print('To see the status of all builds:',
+      print(f'⚠️ No build found with id ({build_id})')
+      print('⚠️ To see the status of all builds:',
             shlex.join([server_path, '--print-status-all']))
       return 1
     build_info = builds[0]
   except ConnectionRefusedError:
-    print('No server running. Consult $OUTDIR/buildserver.log.0')
+    print('⚠️ No server running. Consult $OUTDIR/buildserver.log.0')
     return 0
   pending_tasks = build_info['pending_tasks']
   completed_tasks = build_info['completed_tasks']
@@ -1039,9 +1039,9 @@ def _print_build_status(build_id):
 
   # Print nothing if we never got any tasks.
   if completed_tasks:
-    print(f'Build Server Status: [{completed_tasks}/{total_tasks}]')
+    print(f'⏩ Build Server Status: [{completed_tasks}/{total_tasks}]')
     if pending_tasks:
-      print('To wait for jobs:', shlex.join([server_path, '--wait-for-idle']))
+      print('⏩ To wait for jobs:', shlex.join([server_path, '--wait-for-idle']))
   return 0
 
 
