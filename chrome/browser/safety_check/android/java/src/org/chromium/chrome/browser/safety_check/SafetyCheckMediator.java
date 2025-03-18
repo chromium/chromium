@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConf
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
+import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
@@ -119,6 +120,8 @@ class SafetyCheckMediator {
      * password manager settings.
      */
     private CustomTabIntentHelper mCustomTabIntentHelper;
+
+    private SettingsCustomTabLauncher mSettingsCustomTabLauncher;
 
     private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
@@ -214,7 +217,8 @@ class SafetyCheckMediator {
             PasswordStoreBridge passwordStoreBridge,
             PasswordManagerHelper passwordManagerHelper,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
-            CustomTabIntentHelper customTabIntentHelper) {
+            CustomTabIntentHelper customTabIntentHelper,
+            SettingsCustomTabLauncher settingsCustomTabLauncher) {
         this(
                 profile,
                 safetyCheckModel,
@@ -231,6 +235,7 @@ class SafetyCheckMediator {
                 passwordManagerHelper,
                 modalDialogManagerSupplier);
         mCustomTabIntentHelper = customTabIntentHelper;
+        mSettingsCustomTabLauncher = settingsCustomTabLauncher;
     }
 
     @VisibleForTesting
@@ -586,7 +591,8 @@ class SafetyCheckMediator {
                                 mModalDialogManagerSupplier,
                                 /* managePasskeys= */ false,
                                 account,
-                                mCustomTabIntentHelper);
+                                mCustomTabIntentHelper,
+                                mSettingsCustomTabLauncher);
                         return true;
                     };
         } else if (state == PasswordsState.SIGNED_OUT) {
@@ -639,7 +645,8 @@ class SafetyCheckMediator {
                                     p.getContext(),
                                     PasswordCheckReferrer.SAFETY_CHECK,
                                     mModalDialogManagerSupplier,
-                                    account);
+                                    account,
+                                    mSettingsCustomTabLauncher);
                         }
                         return true;
                     };

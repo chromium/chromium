@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
+import org.chromium.chrome.browser.settings.SettingsCustomTabLauncherImpl;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
@@ -55,7 +56,8 @@ public class PasswordCheckupLauncher {
                     windowAndroid.getContext().get(),
                     passwordCheckReferrer,
                     getModalDialogManagerSupplier(windowAndroid),
-                    accountEmail);
+                    accountEmail,
+                    new SettingsCustomTabLauncherImpl());
             return;
         }
 
@@ -69,7 +71,8 @@ public class PasswordCheckupLauncher {
                     windowAndroid.getContext().get(),
                     passwordCheckReferrer,
                     getModalDialogManagerSupplier(windowAndroid),
-                    accountEmail);
+                    accountEmail,
+                    new SettingsCustomTabLauncherImpl());
             return;
         }
 

@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.password_manager.settings.ExportErrorDialogFr
 import org.chromium.chrome.browser.password_manager.settings.NonCancelableProgressBar;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.widget.Toast;
 
@@ -51,7 +52,10 @@ public class PasswordCsvDownloadFlowController {
     /** Starts the CSV download flow by showing the dialog explaining the reason and risks. */
     @Initializer
     public void showDialogAndStartFlow(
-            FragmentActivity activity, Profile profile, boolean isGooglePlayServicesAvailable) {
+            FragmentActivity activity,
+            Profile profile,
+            boolean isGooglePlayServicesAvailable,
+            SettingsCustomTabLauncher settingsCustomTabLauncher) {
         mProfile = profile;
         mFragmentActivity = activity;
         mCsvDownloadDialogController =
@@ -62,7 +66,8 @@ public class PasswordCsvDownloadFlowController {
                         () -> {
                             dismissDownloadDialog();
                             endFlow();
-                        });
+                        },
+                        settingsCustomTabLauncher);
         mCsvDownloadDialogController.showDialog();
     }
 
