@@ -1230,7 +1230,7 @@ void GaiaScreenHandler::Show() {
   network_state_informer_->AddObserver(this);
 
   // Start listening for HTTP login requests.
-  enable_ash_httpauth_ = HttpAuthDialog::Enable();
+  enable_system_httpauth_ = HttpAuthDialog::Enable();
 
   base::Value::Dict data;
   if (LoginDisplayHost::default_host()) {
@@ -1244,7 +1244,7 @@ void GaiaScreenHandler::Show() {
 void GaiaScreenHandler::Hide() {
   hidden_ = true;
   network_state_informer_->RemoveObserver(this);
-  enable_ash_httpauth_.reset();
+  enable_system_httpauth_.reset();
   auth_flow_auto_reload_manager_.Terminate();
 }
 
