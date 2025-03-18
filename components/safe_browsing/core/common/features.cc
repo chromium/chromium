@@ -80,6 +80,10 @@ BASE_FEATURE(kClientSideDetectionSamplePing,
              "ClientSideDetectionSamplePing",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kClientSideDetectionShowLlamaScamVerdictWarning,
+             "ClientSideDetectionShowLlamaScamVerdictWarning",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kClientSideDetectionShowScamVerdictWarning,
              "ClientSideDetectionShowScamVerdictWarning",
              base::FEATURE_DISABLED_BY_DEFAULT);

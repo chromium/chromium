@@ -76,6 +76,10 @@ BASE_DECLARE_FEATURE(kClientSideDetectionNotificationPrompt);
 // preclassification check conditions pass.
 BASE_DECLARE_FEATURE(kClientSideDetectionSamplePing);
 
+// Show a warning to the user based on the
+// IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2.
+BASE_DECLARE_FEATURE(kClientSideDetectionShowLlamaScamVerdictWarning);
+
 // Show a warning to the user that factors in the IntelligentScanVerdict from
 // ClientPhishingResponse.
 BASE_DECLARE_FEATURE(kClientSideDetectionShowScamVerdictWarning);
