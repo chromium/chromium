@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/android/password_store_empty_backend.h"
 
+#include <variant>
 #include <vector>
 
 #include "base/test/mock_callback.h"
@@ -61,7 +62,7 @@ TEST_F(PasswordStoreEmptyBackendTest, GetAllLoginsAsyncReturnsEmpty) {
   base::test::TestFuture<LoginsResultOrError> future;
   backend->GetAllLoginsAsync(future.GetCallback());
   const LoginsResultOrError& result = future.Get();
-  EXPECT_TRUE(absl::get<LoginsResult>(result).empty());
+  EXPECT_TRUE(std::get<LoginsResult>(result).empty());
 }
 
 TEST_F(PasswordStoreEmptyBackendTest,
@@ -70,7 +71,7 @@ TEST_F(PasswordStoreEmptyBackendTest,
   base::test::TestFuture<LoginsResultOrError> future;
   backend->GetAllLoginsWithAffiliationAndBrandingAsync(future.GetCallback());
   const LoginsResultOrError& result = future.Get();
-  EXPECT_TRUE(absl::get<LoginsResult>(result).empty());
+  EXPECT_TRUE(std::get<LoginsResult>(result).empty());
 }
 
 TEST_F(PasswordStoreEmptyBackendTest, FillMatchingLoginsAsyncReturnsEmpty) {
@@ -81,7 +82,7 @@ TEST_F(PasswordStoreEmptyBackendTest, FillMatchingLoginsAsyncReturnsEmpty) {
   backend->FillMatchingLoginsAsync(future.GetCallback(), /*include_psl=*/false,
                                    forms);
   const LoginsResultOrError& result = future.Get();
-  EXPECT_TRUE(absl::get<LoginsResult>(result).empty());
+  EXPECT_TRUE(std::get<LoginsResult>(result).empty());
 }
 
 TEST_F(PasswordStoreEmptyBackendTest,
@@ -92,7 +93,7 @@ TEST_F(PasswordStoreEmptyBackendTest,
                                  GURL(kTestUrl));
   backend->GetGroupedMatchingLoginsAsync(form_digest, future.GetCallback());
   const LoginsResultOrError& result = future.Get();
-  EXPECT_TRUE(absl::get<LoginsResult>(result).empty());
+  EXPECT_TRUE(std::get<LoginsResult>(result).empty());
 }
 
 TEST_F(PasswordStoreEmptyBackendTest,
@@ -107,7 +108,7 @@ TEST_F(PasswordStoreEmptyBackendTest,
                                            future.GetCallback());
 
   const PasswordChangesOrError& result = future.Get();
-  EXPECT_TRUE(absl::get<PasswordChanges>(result).value().empty());
+  EXPECT_TRUE(std::get<PasswordChanges>(result).value().empty());
 }
 
 }  // namespace password_manager

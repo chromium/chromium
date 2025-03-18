@@ -9,6 +9,7 @@
 #include <ctime>
 #include <memory>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -360,7 +361,7 @@ void BtmRedirectContext::HandleUncommitted(
     std::vector<BtmRedirectInfoPtr> server_redirects) {
   // Uncommitted navigations leave the user on the last-committed page; use that
   // for `final_url`.
-  absl::visit(  //
+  std::visit(  //
       base::Overloaded{
           [&](BtmRedirectInfoPtr client_redirect) {
             // The uncommitted navigation began with a client redirect, so its
@@ -406,7 +407,7 @@ void BtmRedirectContext::AppendCommitted(
   // If there was a client-side redirect before
   // `BtmBounceDetector::client_bounce_detection_timer_` timedout, grow the
   // chain. Otherwise, end it.
-  absl::visit(  //
+  std::visit(  //
       base::Overloaded{
           [this](BtmRedirectInfoPtr client_redirect) {
             // The committed navigation began with a client redirect, so extend
@@ -985,7 +986,7 @@ void BtmWebContentsObserver::OnWorkerCreated(
     const url::Origin& security_origin,
     DedicatedWorkerCreator creator) {
   const GlobalRenderFrameHostId* const render_frame_host_id =
-      absl::get_if<GlobalRenderFrameHostId>(&creator);
+      std::get_if<GlobalRenderFrameHostId>(&creator);
   if (!render_frame_host_id) {
     return;
   }
@@ -1069,7 +1070,7 @@ void BtmBounceDetector::DidFinishNavigation(
   }
 
   if (BtmRedirectInfoPtr* client_redirect =
-          absl::get_if<BtmRedirectInfoPtr>(&server_state->navigation_start)) {
+          std::get_if<BtmRedirectInfoPtr>(&server_state->navigation_start)) {
     if (prev_page_access_type.has_value()) {
       // In case there were any late storage notifications, update the client
       // redirect info.

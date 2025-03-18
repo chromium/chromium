@@ -59,7 +59,7 @@ struct LocalDataItemModel {
   struct FolderIcon {
     bool operator==(const FolderIcon& other) const = default;
   };
-  using Icon = absl::variant<NoIcon, PageUrlIcon, FolderIcon>;
+  using Icon = std::variant<NoIcon, PageUrlIcon, FolderIcon>;
 
   // This is default-constructed as the NoIcon variant.
   Icon icon;

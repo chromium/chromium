@@ -333,7 +333,7 @@ bool PropertyTreeBuilderContext::AddTransformNodeIfNeeded(
   node->is_currently_animating = TransformIsAnimating(*mutator_host_, layer);
   node->maximum_animation_scale = MaximumAnimationScale(*mutator_host_, layer);
 
-  node->scroll_offset = layer->scroll_offset();
+  node->SetScrollOffset(layer->scroll_offset(), DamageReason::kUntracked);
 
   node->needs_local_transform_update = true;
   transform_tree_->UpdateTransforms(node->id);

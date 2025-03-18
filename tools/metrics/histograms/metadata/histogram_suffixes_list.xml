@@ -2669,8 +2669,10 @@ chromium-metrics-reviews@google.com.
   <suffix name="DownloadService"
       label="Only counting memory used by Download service."/>
   <suffix name="FontCaches" label="Only counting memory used by font caches."/>
+  <suffix name="Gpu.GraphiteShaderCache"
+      label="Only counting memory used by Dawn/Graphite Shader Cache."/>
   <suffix name="Gpu.GrShaderCache"
-      label="Only counting memory used by Shader Cache."/>
+      label="Only counting memory used by Skia Shader Cache."/>
   <suffix name="GpuMappedMemory"
       label="Memory shared between the GPU process and its client for
              transfers."/>

@@ -166,6 +166,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1505542291183484463">Okno veľkosti dlaždice dole</translation>
 <translation id="1510238584712386396">Spúšťač</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Zobraziť nastavenia upozornení. Upozornenia sú pre aplikáciu vypnuté}few{Zobraziť nastavenia upozornení. Upozornenia sú vypnuté pre # aplikácie}many{Show notification settings. Notifications are off for # apps}other{Zobraziť nastavenia upozornení. Upozornenia sú vypnuté pre # aplikácií}}</translation>
+<translation id="1521655867290435174">Tabuľky Google</translation>
 <translation id="1523032696246003">Batéria: <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> do úplného nabitia</translation>
 <translation id="1525508553941733066">ZATVORIŤ</translation>
 <translation id="1526448108126799339">Otvorenie novej karty v novom okne</translation>
@@ -345,7 +346,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2201071101391734388"><ph name="INDEX" /> nedávna fotka z <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Zbaliť Úlohy Google</translation>
 <translation id="2208323208084708176">Režim zjednotenej pracovnej plochy</translation>
-<translation id="2220572644011485463">PIN alebo heslo</translation>
 <translation id="2222841058024245321">7. plocha</translation>
 <translation id="2223384056430485343">Na rozdelenej obrazovke</translation>
 <translation id="2224075387478458881">Nahrávanie obrazovky nie je povolené, keď je viditeľný chránený obsah</translation>
@@ -1829,7 +1829,6 @@ Nová inštalácia</translation>
 <translation id="7000027735917578303">Nastavenia okien a plôch</translation>
 <translation id="7004910047186208204">Pripojenie k mobilným dátam</translation>
 <translation id="7005239792648594238">Začnite otvorením aplikácie</translation>
-<translation id="7007983414944123363">Váš kód PIN alebo heslo sa nepodarilo overiť. Skúste to znova.</translation>
 <translation id="7014684956566476813">Pripojené k zariadeniu <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Vráťte sa späť o <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">6. plocha</translation>
@@ -2465,6 +2464,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="9168436347345867845">Neskôr</translation>
 <translation id="9178475906033259337">Zobrazuje sa jeden výsledok pre <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Táto funkcia vám umožní rýchly prístup k ľubovoľnému prihlásenému používateľovi bez hesla. Používajte ju iba s dôveryhodnými účtami.</translation>
+<translation id="9183302530794969518">Dokumenty Google</translation>
 <translation id="9183456764293710005">Lupa na celú obrazovku</translation>
 <translation id="9192133205265227850">Používať <ph name="DEVICE_NAME" /></translation>
 <translation id="9193626018745640770">Prebieha prenášanie do neznámeho prijímača</translation>

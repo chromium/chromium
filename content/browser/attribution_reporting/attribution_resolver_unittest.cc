@@ -15,6 +15,7 @@
 #include <string_view>
 #include <tuple>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/containers/enum_set.h"
@@ -73,7 +74,6 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "url/gurl.h"
@@ -151,7 +151,7 @@ MATCHER_P(CreateReportSourceIs, matcher, "") {
 MATCHER_P(CreateReportMaxEventLevelReportsLimitIs, matcher, "") {
   std::optional<int> value;
   if (const auto* v =
-          absl::get_if<CreateReportResult::NoCapacityForConversionDestination>(
+          std::get_if<CreateReportResult::NoCapacityForConversionDestination>(
               &arg.event_level_result())) {
     value = v->max;
   }
@@ -161,7 +161,7 @@ MATCHER_P(CreateReportMaxEventLevelReportsLimitIs, matcher, "") {
 MATCHER_P(CreateReportMaxAggregatableReportsLimitIs, matcher, "") {
   std::optional<int> value;
   if (const auto* v =
-          absl::get_if<CreateReportResult::NoCapacityForConversionDestination>(
+          std::get_if<CreateReportResult::NoCapacityForConversionDestination>(
               &arg.aggregatable_result())) {
     value = v->max;
   }

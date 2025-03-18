@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <numeric>
 #include <set>
+#include <variant>
 #include <vector>
 
 #include "base/check_op.h"
@@ -391,12 +392,12 @@ ValidateSplitAndInferOutput(const ContextProperties& context_properties,
         "input tensor."));
   }
 
-  static_assert(absl::variant_size<decltype(attributes.splits)>() == 2,
+  static_assert(std::variant_size<decltype(attributes.splits)>() == 2,
                 "When adding new variants update the branches below.");
 
   std::vector<OperandDescriptor> outputs;
-  if (absl::holds_alternative<uint32_t>(attributes.splits)) {
-    uint32_t splits = absl::get<uint32_t>(attributes.splits);
+  if (std::holds_alternative<uint32_t>(attributes.splits)) {
+    uint32_t splits = std::get<uint32_t>(attributes.splits);
     if (splits == 0) {
       return base::unexpected(
           ErrorWithLabel(label, "The splits must be greater than zero."));
@@ -422,10 +423,10 @@ ValidateSplitAndInferOutput(const ContextProperties& context_properties,
       CHECK(split_descriptor.has_value());
       outputs.push_back(*std::move(split_descriptor));
     }
-  } else if (absl::holds_alternative<base::span<const uint32_t>>(
+  } else if (std::holds_alternative<base::span<const uint32_t>>(
                  attributes.splits)) {
     const auto& splits =
-        absl::get<base::span<const uint32_t>>(attributes.splits);
+        std::get<base::span<const uint32_t>>(attributes.splits);
     if (std::ranges::any_of(splits,
                             [](uint32_t split) { return split == 0; })) {
       return base::unexpected(
@@ -1262,7 +1263,7 @@ base::expected<uint32_t, std::string> CalculateResample2dOutputSize(
 base::expected<OperandDescriptor, std::string> ValidateResample2dAndInferOutput(
     const ContextProperties& context_properties,
     const OperandDescriptor& input,
-    const absl::variant<base::span<const float>, base::span<const uint32_t>>&
+    const std::variant<base::span<const float>, base::span<const uint32_t>>&
         scales_or_sizes,
     base::span<const uint32_t> axes,
     std::string_view label) {
@@ -1281,8 +1282,8 @@ base::expected<OperandDescriptor, std::string> ValidateResample2dAndInferOutput(
 
   // Validate scales or sizes and infer the output.
   std::vector<uint32_t> output_shape(input.shape());
-  if (absl::holds_alternative<base::span<const float>>(scales_or_sizes)) {
-    const auto& scales = absl::get<base::span<const float>>(scales_or_sizes);
+  if (std::holds_alternative<base::span<const float>>(scales_or_sizes)) {
+    const auto& scales = std::get<base::span<const float>>(scales_or_sizes);
     if (scales.size() != 2) {
       return base::unexpected(
           ErrorWithLabel(label, "The length of scales should be 2."));
@@ -1309,9 +1310,9 @@ base::expected<OperandDescriptor, std::string> ValidateResample2dAndInferOutput(
                      output_second_axis.error()));
     }
     output_shape[axes[1]] = output_second_axis.value();
-  } else if (absl::holds_alternative<base::span<const uint32_t>>(
+  } else if (std::holds_alternative<base::span<const uint32_t>>(
                  scales_or_sizes)) {
-    const auto& sizes = absl::get<base::span<const uint32_t>>(scales_or_sizes);
+    const auto& sizes = std::get<base::span<const uint32_t>>(scales_or_sizes);
     if (sizes.size() != 2) {
       return base::unexpected(
           ErrorWithLabel(label, "The length of sizes should be 2."));

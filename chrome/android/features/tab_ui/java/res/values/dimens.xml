@@ -140,7 +140,6 @@ found in the LICENSE file.
     <dimen name="tab_strip_tooltip_label_horizontal_padding">8dp</dimen>
     <dimen name="tab_strip_tooltip_label_vertical_padding">4dp</dimen>
     <dimen name="tab_strip_tooltip_corner_radius">4dp</dimen>
-    <dimen name="tab_strip_favicon_background_elevation">@dimen/default_elevation_2</dimen>
     <dimen name="tab_strip_shared_image_tiles_size">26dp</dimen>
 
     <!-- Dimens for tab group list bottom sheet. -->

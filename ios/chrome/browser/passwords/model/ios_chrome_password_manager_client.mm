@@ -294,6 +294,11 @@ signin::IdentityManager* IOSChromePasswordManagerClient::GetIdentityManager() {
   return IdentityManagerFactory::GetForProfile(bridge_.profile);
 }
 
+const signin::IdentityManager*
+IOSChromePasswordManagerClient::GetIdentityManager() const {
+  return IdentityManagerFactory::GetForProfile(bridge_.profile);
+}
+
 scoped_refptr<network::SharedURLLoaderFactory>
 IOSChromePasswordManagerClient::GetURLLoaderFactory() {
   return (bridge_.profile)->GetSharedURLLoaderFactory();

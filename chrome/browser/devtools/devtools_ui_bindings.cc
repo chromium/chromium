@@ -10,6 +10,7 @@
 #include <memory>
 #include <string_view>
 #include <utility>
+#include <variant>
 
 #include "aida_client.h"
 #include "base/base64.h"
@@ -957,12 +958,12 @@ void DevToolsUIBindings::OnAidaConversationRequest(
     int stream_id,
     const std::string& request,
     base::TimeDelta delay,
-    absl::variant<network::ResourceRequest, std::string>
+    std::variant<network::ResourceRequest, std::string>
         resource_request_or_error) {
-  if (absl::holds_alternative<std::string>(resource_request_or_error)) {
+  if (std::holds_alternative<std::string>(resource_request_or_error)) {
     base::Value::Dict response_dict;
     response_dict.Set("response",
-                      absl::get<std::string>(resource_request_or_error));
+                      std::get<std::string>(resource_request_or_error));
     auto response_value = base::Value(std::move(response_dict));
     std::move(callback).Run(&response_value);
     return;
@@ -972,7 +973,7 @@ void DevToolsUIBindings::OnAidaConversationRequest(
   url_loader_factory = profile_->GetDefaultStoragePartition()
                            ->GetURLLoaderFactoryForBrowserProcess();
   auto resource_request =
-      absl::get<network::ResourceRequest>(resource_request_or_error);
+      std::get<network::ResourceRequest>(resource_request_or_error);
   resource_request.url =
       resource_request.url.Resolve(AidaClient::kDoConversationUrlPath);
   // Set a maximum timeout value, individual features may send a shorter timeout
@@ -990,12 +991,12 @@ void DevToolsUIBindings::OnAidaConversationRequest(
 void DevToolsUIBindings::OnRegisterAidaClientEventRequest(
     DevToolsEmbedderMessageDispatcher::Delegate::DispatchCallback callback,
     const std::string& request,
-    absl::variant<network::ResourceRequest, std::string>
+    std::variant<network::ResourceRequest, std::string>
         resource_request_or_error) {
-  if (absl::holds_alternative<std::string>(resource_request_or_error)) {
+  if (std::holds_alternative<std::string>(resource_request_or_error)) {
     base::Value::Dict response_dict;
     response_dict.Set("response",
-                      absl::get<std::string>(resource_request_or_error));
+                      std::get<std::string>(resource_request_or_error));
     auto response_value = base::Value(std::move(response_dict));
     std::move(callback).Run(&response_value);
     return;
@@ -1003,7 +1004,7 @@ void DevToolsUIBindings::OnRegisterAidaClientEventRequest(
   auto url_loader_factory = profile_->GetDefaultStoragePartition()
                                 ->GetURLLoaderFactoryForBrowserProcess();
   auto resource_request = std::make_unique<network::ResourceRequest>(
-      absl::get<network::ResourceRequest>(resource_request_or_error));
+      std::get<network::ResourceRequest>(resource_request_or_error));
   resource_request->url =
       resource_request->url.Resolve(AidaClient::kRegisterClientEventUrlPath);
   auto simple_url_loader = network::SimpleURLLoader::Create(
@@ -1024,7 +1025,7 @@ void DevToolsUIBindings::OnAidaConversationResponse(
     int stream_id,
     const std::string request,
     base::TimeDelta delay,
-    absl::variant<network::ResourceRequest, std::string>
+    std::variant<network::ResourceRequest, std::string>
         resource_request_or_error,
     base::TimeTicks start_time,
     const base::Value* response) {

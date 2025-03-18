@@ -166,6 +166,7 @@
 <translation id="1505542291183484463">Размясціць акно ў ніжняй частцы экрана</translation>
 <translation id="1510238584712386396">Панэль запуску</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Паказаць налады апавяшчэнняў. Апавяшчэнні выключаны для адной праграмы}one{Паказаць налады апавяшчэнняў. Апавяшчэнні выключаны для # праграмы}few{Паказаць налады апавяшчэнняў. Апавяшчэнні выключаны для # праграм}many{Паказаць налады апавяшчэнняў. Апавяшчэнні выключаны для # праграм}other{Паказаць налады апавяшчэнняў. Апавяшчэнні выключаны для # праграмы}}</translation>
+<translation id="1521655867290435174">Табліцы Google</translation>
 <translation id="1523032696246003">Акумулятар зараджаны на <ph name="BATTERY_PERCENTAGE" />% | Да поўнай зарадкі застаецца <ph name="TIME" /></translation>
 <translation id="1525508553941733066">АДХІЛІЦЬ</translation>
 <translation id="1526448108126799339">Адкрыць новую ўкладку ў новым акне</translation>
@@ -345,7 +346,6 @@
 <translation id="2201071101391734388">Нядаўняе фота <ph name="INDEX" /> з <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Згарнуць Google Задачы</translation>
 <translation id="2208323208084708176">Рэжым адзінага працоўнага стала</translation>
-<translation id="2220572644011485463">PIN-код або пароль</translation>
 <translation id="2222841058024245321">Працоўны стол 7</translation>
 <translation id="2223384056430485343">У рэжыме падзеленага экрана</translation>
 <translation id="2224075387478458881">Запіс экрана забаронены, калі на ім ёсць абароненае змесціва</translation>
@@ -1829,7 +1829,6 @@
 <translation id="7000027735917578303">Налады акон і працоўных сталоў</translation>
 <translation id="7004910047186208204">Падключыцца да мабільнага інтэрнэту</translation>
 <translation id="7005239792648594238">Каб пачаць, адкрыйце праграму</translation>
-<translation id="7007983414944123363">Пароль або PIN-код спраўдзіць не ўдалося. Паўтарыце спробу.</translation>
 <translation id="7014684956566476813">Устаноўлена падключэнне да прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7015766095477679451">Можна будзе прадоўжыць у <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Працоўны стол 6</translation>
@@ -2466,6 +2465,7 @@
 <translation id="9168436347345867845">Пазней</translation>
 <translation id="9178475906033259337">Паказваецца 1 вынік па запыце "<ph name="QUERY" />"</translation>
 <translation id="9179259655489829027">Гэта функцыя дазваляе хутка атрымліваць доступ да карыстальнікаў, якія выканалі ўваход, – без уводу пароля. Выкарыстоўвайце гэту функцыю толькі на ўліковых запісах, якім давяраеце.</translation>
+<translation id="9183302530794969518">Дакументы Google</translation>
 <translation id="9183456764293710005">Поўнаэкранная лупа</translation>
 <translation id="9192133205265227850">Выкарыстоўваць прыладу "<ph name="DEVICE_NAME" />"</translation>
 <translation id="9193626018745640770">Трансляцыя невядомаму атрымальніку</translation>

@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <variant>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -395,7 +396,7 @@ void MojoVideoDecoderService::OnReaderRead(
   }
 
   if (buffer->end_of_stream() && buffer->next_config() &&
-      !absl::holds_alternative<VideoDecoderConfig>(*buffer->next_config())) {
+      !std::holds_alternative<VideoDecoderConfig>(*buffer->next_config())) {
     std::move(bad_message_callback)
         .Run("Invalid DecoderBuffer::next_config() for video.");
     return;

@@ -41,9 +41,17 @@ public class CommerceBottomSheetContentBinder {
                             ? View.VISIBLE
                             : View.GONE);
         } else if (propertyKey == CommerceBottomSheetContentProperties.HAS_CUSTOM_PADDING) {
-            if (!model.get(CommerceBottomSheetContentProperties.HAS_CUSTOM_PADDING)) return;
             LinearLayout itemContainer = (LinearLayout) view.findViewById(R.id.item_container);
-            itemContainer.setPadding(0, 0, 0, 0);
+            if (model.get(CommerceBottomSheetContentProperties.HAS_CUSTOM_PADDING)) {
+                itemContainer.setPadding(0, 0, 0, 0);
+            } else {
+                int padding =
+                        itemContainer
+                                .getContext()
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.content_item_container_padding);
+                itemContainer.setPadding(padding, padding, padding, padding);
+            }
         }
     }
 }

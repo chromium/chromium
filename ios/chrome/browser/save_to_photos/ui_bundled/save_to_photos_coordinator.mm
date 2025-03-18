@@ -82,7 +82,7 @@
       HandlerForProtocol(dispatcher, ApplicationCommands);
   id<GoogleOneCommands> googleOneHandler =
       HandlerForProtocol(dispatcher, GoogleOneCommands);
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   PhotosService* photosService = PhotosServiceFactory::GetForProfile(profile);
   PrefService* prefService = profile->GetPrefs();
   ChromeAccountManagerService* accountManagerService =

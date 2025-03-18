@@ -504,6 +504,7 @@
 <translation id="310900540163454140"><ph name="WEBSITE" /> сырсөзүн өчүрөсүзбү?</translation>
 <translation id="3112556859945124369">Белгилөө…</translation>
 <translation id="3119874402040566234">Чыгасыз жана серептөө дайындары өчүрүлөт</translation>
+<translation id="3124568093781685165">Сырсөздөрүңүздү үй-бүлөңүз менен бөлүшүңүз</translation>
 <translation id="3130863904455712965">Таржымал жана башкалар</translation>
 <translation id="313283613037595347">Жаңы жашыруун өтмөк түзүү.</translation>
 <translation id="3138611310073113613">Тандоону жоюу</translation>
@@ -1003,6 +1004,7 @@
 <translation id="5352128922772839949">Файлды сактоо</translation>
 <translation id="5355191726083956201">Күчөтүлгөн коргоо күйүк</translation>
 <translation id="537853552771686272">Өзүңүздү кызыктырган темаларды жана сайттарды тескеңиз</translation>
+<translation id="5390458669633674385">{count,plural, =1{{count} жабылды}other{{count} жабылды}}</translation>
 <translation id="5394975111793637642">"Сиз үчүн тандалган товарлар тууралуу сын-пикирлер" картасын жашыруу</translation>
 <translation id="5395707839134961196">Издөө куралынын чоо-жайын жашыруу</translation>
 <translation id="5414763847370083940">Кандайдыр бир сайтта баасы төмөндөсө, билдирүү аласыз.</translation>
@@ -1132,6 +1134,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="5897749768294722429">Көргөн сайттарга тез кайтуу үчүн өтмөктөр менен таржымалды шайкештириңиз.</translation>
 <translation id="5898848375214731122">Масса</translation>
 <translation id="5899314093904173337">Жакын жердеги адамдар менен бөлүшүү үчүн, алар камера же болбосо QR кодду скандаган колдонмо менен бул QR кодду скандашы керек</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} жаңы өтмөк}other{{count} жаңы өтмөк}}</translation>
 <translation id="5911030830365207728">Google Котормо</translation>
 <translation id="5917913282764181683">Жүктөлүп алынгандарды автоматтык түрдө жок кылуу</translation>
 <translation id="5922999516621365983">Кадоо үчүн өтмөктү бул жерге сүйрөп келиңиз.</translation>
@@ -1674,6 +1677,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8131740175452115882">Ырастоо</translation>
 <translation id="8132598642024322408">Азыркы баасы: <ph name="PRICE" />, мурунку баасы: <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Ар бир сайтта же колдонмодо уникалдуу сырсөз колдонуңуз. Эгер кимдир бирөөлөр кайра колдонулган сырсөзүңүздү билип алышса, аны менен башка аккаунттарыңызга да кирип алышы мүмкүн. Вебсайтты ачып, аларды азыр өзгөртүү үчүн басыңыз.</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} жабык өтмөк}other{{count} жабык өтмөк}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{дагы 1}other{дагы #}}</translation>
 <translation id="8150167929304790980">Толук аты-жөнүңүз</translation>
 <translation id="8152331954420209374">Lens'ке өтүү</translation>

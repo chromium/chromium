@@ -83,7 +83,7 @@
 - (void)start {
   [super start];
 
-  PrefService* prefService = self.browser->GetProfile()->GetPrefs();
+  PrefService* prefService = self.profile->GetPrefs();
   self.mediator = [[MiniMapMediator alloc] initWithPrefs:prefService
                                                 webState:self.webState.get()];
   self.mediator.delegate = self;
@@ -108,7 +108,7 @@
       self.consentViewController.sheetPresentationController;
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
   presentationController.detents =
-      @[ UISheetPresentationControllerDetent.largeDetent ];
+      @[ [UISheetPresentationControllerDetent largeDetent] ];
   [self.baseViewController presentViewController:self.consentViewController
                                         animated:YES
                                       completion:nil];
@@ -284,7 +284,7 @@
     [self.mediator userOpenedURLFromMiniMap];
     OpenNewTabCommand* command = [OpenNewTabCommand
         commandWithURLFromChrome:net::GURLWithNSURL(url)
-                     inIncognito:self.browser->GetProfile()->IsOffTheRecord()];
+                     inIncognito:self.profile->IsOffTheRecord()];
     id<ApplicationCommands> applicationHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), ApplicationCommands);
     [applicationHandler openURLInNewTab:command];
@@ -299,14 +299,13 @@
   if (query) {
     [self.mediator userOpenedQueryFromMiniMap];
     TemplateURLService* templateURLService =
-        ios::TemplateURLServiceFactory::GetForProfile(
-            self.browser->GetProfile());
+        ios::TemplateURLServiceFactory::GetForProfile(self.profile);
     GURL url = templateURLService->GenerateSearchURLForDefaultSearchProvider(
         base::SysNSStringToUTF16(query));
 
     OpenNewTabCommand* command = [OpenNewTabCommand
         commandWithURLFromChrome:url
-                     inIncognito:self.browser->GetProfile()->IsOffTheRecord()];
+                     inIncognito:self.profile->IsOffTheRecord()];
     id<ApplicationCommands> applicationHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), ApplicationCommands);
     [applicationHandler openURLInNewTab:command];

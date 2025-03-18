@@ -166,6 +166,7 @@
 <translation id="1505542291183484463">ប្ដូរ​ទំហំវិនដូជាប្រអប់ចុះក្រោម</translation>
 <translation id="1510238584712386396">ឡាន់ឆ័រ</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{បង្ហាញ​ការកំណត់​ការជូនដំណឹង។ ការជូនដំណឹង​ត្រូវបាន​បិទ​សម្រាប់​កម្មវិធីមួយ}other{បង្ហាញ​ការកំណត់​ការជូនដំណឹង។ ការជូនដំណឹង​ត្រូវបាន​បិទ​សម្រាប់​កម្មវិធី #}}</translation>
+<translation id="1521655867290435174">Google បញ្ជី</translation>
 <translation id="1523032696246003">ថ្ម <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" />ទៀត​ទើបពេញ</translation>
 <translation id="1525508553941733066">បដិសេធ</translation>
 <translation id="1526448108126799339">បើក​ផ្ទាំង​ថ្មី​នៅ​ក្នុងវិនដូ​ថ្មី</translation>
@@ -345,7 +346,6 @@
 <translation id="2201071101391734388">រូបថតថ្មីៗ <ph name="INDEX" /> សន្លឹកក្នុងចំណោម <ph name="TOTAL_COUNT" /> សន្លឹក។</translation>
 <translation id="2201687081523799384">បង្រួម Google កិច្ចការ</translation>
 <translation id="2208323208084708176">របៀបដេស៍ថបរួមតែមួយ។</translation>
-<translation id="2220572644011485463">កូដ PIN ឬពាក្យសម្ងាត់</translation>
 <translation id="2222841058024245321">តុទី 7</translation>
 <translation id="2223384056430485343">ក្នុងមុខងារ​បំបែកអេក្រង់</translation>
 <translation id="2224075387478458881">មិនអនុញ្ញាតឱ្យថតវីដេអូអេក្រង់ទេ នៅពេលអាចមើលឃើញខ្លឹមសារដែលមានការការពារ</translation>
@@ -1829,7 +1829,6 @@
 <translation id="7000027735917578303">ការកំណត់​តុ និង​វិនដូ</translation>
 <translation id="7004910047186208204">ភ្ជាប់​ទៅ​ទិន្នន័យទូរសព្ទចល័ត</translation>
 <translation id="7005239792648594238">បើកកម្មវិធី ដើម្បី​ចាប់ផ្ដើម</translation>
-<translation id="7007983414944123363">មិនអាចផ្ទៀងផ្ទាត់កូដ PIN ឬពាក្យសម្ងាត់​របស់អ្នក​បានទេ។ សូមព្យាយាមម្ដងទៀត។</translation>
 <translation id="7014684956566476813">បានភ្ជាប់ជាមួយ​ឧបករណ៍ដែលមាន​ឈ្មោះថា <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">ត្រឡប់​មកវិញ​នៅម៉ោង <ph name="COME_BACK_TIME" />។</translation>
 <translation id="70168403932084660">តុទី 6</translation>
@@ -1942,6 +1941,7 @@
 <translation id="742594950370306541">កាមេរ៉ាស្ថិតនៅក្នុងការប្រើ។</translation>
 <translation id="742608627846767349">អរុណសួស្ដី</translation>
 <translation id="743058460480092004">កាមេរ៉ា និងម៉ៃក្រូហ្វូនស្ថិតក្នុងការប្រើ។</translation>
+<translation id="7440404390546433462">ស្វែងរកនៅលើ Google</translation>
 <translation id="7441711280402516925">កំពុងចាក់ · ប្ដូរទៅផ្ទាំង</translation>
 <translation id="7453330308669753048">បានដក​លទ្ធផលប្រវត្តិ​ស្វែងរកចេញ</translation>
 <translation id="7459485586006128091">ដោយសារ​មាន​បញ្ហា​ខាង​ក្នុង ហតស្ប៉ត​ត្រូវ​បានបិទ។ សូម​សាកល្បង​ភ្ជាប់​ឡើងវិញ​ក្នុង​ពេល​បន្តិចទៀត។</translation>
@@ -2465,6 +2465,7 @@
 <translation id="9168436347345867845">ធ្វើនៅ​ពេលក្រោយ</translation>
 <translation id="9178475906033259337">កំពុង​បង្ហាញ​លទ្ធផល 1 សម្រាប់ <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">មុខងារនេះអនុញ្ញាតឱ្យអ្នកចូលប្រើគណនីអ្នកប្រើប្រាស់ទាំងឡាយបានឆាប់រហ័សដោយមិនចាំបាច់មានពាក្យសម្ងាត់។ ប្រើមុខងារនេះជាមួយគណនីដែលអ្នកជឿទុកចិត្តតែប៉ុណ្ណោះ។</translation>
+<translation id="9183302530794969518">Google ឯកសារ</translation>
 <translation id="9183456764293710005">កម្មវិធី​ពង្រីក​ពេញ​អេក្រង់</translation>
 <translation id="9192133205265227850">ប្រើ "<ph name="DEVICE_NAME" />"</translation>
 <translation id="9193626018745640770">កំពុង​បញ្ជូន​ទៅឧបករណ៍​ទទួល​ដែលមិន​ស្គាល់</translation>

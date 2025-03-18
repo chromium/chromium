@@ -11,7 +11,7 @@
 
       function parseLines(str) {
         let lines = [];
-        const logLineHeaderRegex = /^\[(?<process>[^:]*):(?<thread>[^:]*):(?<time>[^:]*):(?<level>[^:]*):(?<location>[^:]*)\] (?<text>.*)/;
+        const logLineHeaderRegex = /^\[(?<process>[^:]*):(?<thread>[^:]*):(?<time>[0-9.\/]*):(?<level>[^:]*):(?<location>[^\]]*)\] (?<text>.*)/;
         for (let l of str.split("\n")) {
           let match = logLineHeaderRegex.exec(l);
           if (match !== null) {

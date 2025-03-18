@@ -12,6 +12,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/types/optional_ref.h"
@@ -67,16 +68,16 @@ std::string_view AutofillPredictionSourceToStringView(
 
 class AutofillField : public FormFieldData {
  public:
-  using FieldLogEventType = absl::variant<absl::monostate,
-                                          AskForValuesToFillFieldLogEvent,
-                                          TriggerFillFieldLogEvent,
-                                          FillFieldLogEvent,
-                                          TypingFieldLogEvent,
-                                          HeuristicPredictionFieldLogEvent,
-                                          AutocompleteAttributeFieldLogEvent,
-                                          ServerPredictionFieldLogEvent,
-                                          RationalizationFieldLogEvent,
-                                          AblationFieldLogEvent>;
+  using FieldLogEventType = std::variant<std::monostate,
+                                         AskForValuesToFillFieldLogEvent,
+                                         TriggerFillFieldLogEvent,
+                                         FillFieldLogEvent,
+                                         TypingFieldLogEvent,
+                                         HeuristicPredictionFieldLogEvent,
+                                         AutocompleteAttributeFieldLogEvent,
+                                         ServerPredictionFieldLogEvent,
+                                         RationalizationFieldLogEvent,
+                                         AblationFieldLogEvent>;
 
   AutofillField();
   explicit AutofillField(const FormFieldData& field);

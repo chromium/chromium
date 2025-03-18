@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/android/jni_array.h"
@@ -17,7 +18,6 @@
 #include "base/observer_list.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/trusted_vault/trusted_vault_client.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 // JNI bridge for a Java implementation of the TrustedVaultClient interface,
 // used on Android.
@@ -142,10 +142,10 @@ class TrustedVaultClientAndroid : public trusted_vault::TrustedVaultClient {
   };
 
   using RequestId = int32_t;
-  using OngoingRequest = absl::variant<OngoingFetchKeys,
-                                       OngoingMarkLocalKeysAsStale,
-                                       OngoingGetIsRecoverabilityDegraded,
-                                       OngoingAddTrustedRecoveryMethod>;
+  using OngoingRequest = std::variant<OngoingFetchKeys,
+                                      OngoingMarkLocalKeysAsStale,
+                                      OngoingGetIsRecoverabilityDegraded,
+                                      OngoingAddTrustedRecoveryMethod>;
 
   RequestId RegisterNewOngoingRequest(OngoingRequest request);
   OngoingRequest GetAndUnregisterOngoingRequest(RequestId id);

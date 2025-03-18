@@ -960,6 +960,7 @@ bool CopyViewAndClickCountsProvidersFromIdlToMojo(
           provider.Utf8().c_str(), input.name().Utf8().c_str()));
       return false;
     }
+    view_and_click_counts_providers.push_back(parsed_provider);
   }
 
   output.view_and_click_counts_providers =

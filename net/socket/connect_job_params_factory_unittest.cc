@@ -6,6 +6,7 @@
 
 #include <ostream>
 #include <tuple>
+#include <variant>
 
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
@@ -28,7 +29,6 @@
 #include "net/ssl/ssl_config.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 

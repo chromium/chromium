@@ -5,10 +5,11 @@
 #ifndef UI_BASE_MODELS_IMAGE_MODEL_H_
 #define UI_BASE_MODELS_IMAGE_MODEL_H_
 
+#include <variant>
+
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
@@ -135,7 +136,7 @@ class COMPONENT_EXPORT(UI_BASE) ImageModel {
   explicit ImageModel(const gfx::ImageSkia& image_skia);
   explicit ImageModel(ImageGeneratorAndSize image_generator);
 
-  absl::variant<VectorIconModel, gfx::Image, ImageGeneratorAndSize> icon_;
+  std::variant<VectorIconModel, gfx::Image, ImageGeneratorAndSize> icon_;
 };
 
 }  // namespace ui

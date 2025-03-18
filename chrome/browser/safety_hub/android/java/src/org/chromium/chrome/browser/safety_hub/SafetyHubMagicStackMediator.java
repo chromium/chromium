@@ -266,8 +266,15 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
                 (view) -> {
                     mHatsHelper.triggerProactiveHatsSurveyWhenCardTapped(
                             mTabModelSelector, MagicStackEntry.ModuleType.PASSWORDS);
+                    // The settingsCustomTabLauncher is only needed by dialogs shown when
+                    // password manager is not available. Since the SafetyHub magic stack
+                    // card is only shown if the password manager is accessible, it's fine
+                    // to pass null instead.
                     SafetyHubUtils.showPasswordCheckUi(
-                            mContext, mProfile, mModalDialogManagerSupplier);
+                            mContext,
+                            mProfile,
+                            mModalDialogManagerSupplier,
+                            /* settingsCustomTabLauncher= */ null);
                     recordExternalInteractions(ExternalInteractions.OPEN_GPM_FROM_MAGIC_STACK);
                     mMagicStackBridge.dismissCompromisedPasswordsModule();
                     dismissModule();

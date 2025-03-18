@@ -6,6 +6,7 @@
 
 #include <string>
 #include <utility>
+#include <variant>
 
 #include "base/strings/utf_string_conversions.h"
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
@@ -242,7 +243,7 @@ blink::mojom::HomeTabUnionDataView::Tag
 UnionTraits<blink::mojom::HomeTabUnionDataView,
             ::blink::Manifest::TabStrip::HomeTab>::
     GetTag(const ::blink::Manifest::TabStrip::HomeTab& value) {
-  if (absl::holds_alternative<blink::mojom::TabStripMemberVisibility>(value)) {
+  if (std::holds_alternative<blink::mojom::TabStripMemberVisibility>(value)) {
     return blink::mojom::HomeTabUnion::Tag::kVisibility;
   } else {
     return blink::mojom::HomeTabUnion::Tag::kParams;

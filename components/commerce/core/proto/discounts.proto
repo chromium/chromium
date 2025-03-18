@@ -32,6 +32,7 @@ message Discount {
   enum Type {
     TYPE_UNSPECIFIED = 0;
     FREE_LISTING_WITH_CODE = 1;
+    CRAWLED_PROMOTION = 2;
   }
   // Type of the discount.
   optional Type type = 2;

@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -26,7 +27,6 @@
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -280,7 +280,7 @@ class IsolatedWebAppBuilder {
       const web_package::test::KeyPairs& key_pairs);
 
  private:
-  using ResourceBody = absl::variant<base::FilePath, std::string>;
+  using ResourceBody = std::variant<base::FilePath, std::string>;
 
   class Resource {
    public:

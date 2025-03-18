@@ -210,11 +210,6 @@ constexpr base::FeatureParam<base::TimeDelta>
         &kBocaCustomPolling, "InSessionPollingIntervalInSeconds",
         base::Seconds(60)};
 
-// Enables or disables Boca OnTask mute ARC audio requests on ChromeOS.
-BASE_FEATURE(kBocaOnTaskMuteArcAudio,
-             "BocaOnTaskMuteArcAudio",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables or disables the Boca OnTask pod on ChromeOS.
 BASE_FEATURE(kBocaOnTaskPod,
              "BocaOnTaskPod",
@@ -543,10 +538,9 @@ BASE_FEATURE(kDemoModeSignIn,
              "DemoModeSignIn",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether clean up local files between shopper session when demo mode
-// sign in is enable. No-op if demo mode sign in is disabled.
-BASE_FEATURE(kDemoModeSignInFileCleanup,
-             "DemoModeSignInFileCleanup",
+// Controls whether demo mode applies CBX wallpaper logic.
+BASE_FEATURE(kDemoModeWallpaperUpdate,
+             "DemoModeWallpaperUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Toggle different display features based on user setting and power state
@@ -1178,7 +1172,7 @@ BASE_FEATURE(kGraduation, "Graduation", base::FEATURE_ENABLED_BY_DEFAULT);
 // load the Takeout Transfer tool.
 BASE_FEATURE(kGraduationUseEmbeddedTransferEndpoint,
              "GraduationUseEmbeddedTransferEndpoint",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables a Files banner about Google One offer. This flag is used by Gamgee
 // nudge to conditionally disable the G1 file banner for CBX boards via finch.
@@ -3377,10 +3371,6 @@ bool IsBocaCustomPollingEnabled() {
   return base::FeatureList::IsEnabled(kBocaCustomPolling);
 }
 
-bool IsBocaOnTaskMuteArcAudioEnabled() {
-  return base::FeatureList::IsEnabled(kBocaOnTaskMuteArcAudio);
-}
-
 bool IsBocaOnTaskPodEnabled() {
   return base::FeatureList::IsEnabled(kBocaOnTaskPod);
 }
@@ -3473,8 +3463,8 @@ bool IsDemoModeSignInEnabled() {
   return base::FeatureList::IsEnabled(kDemoModeSignIn);
 }
 
-bool IsDemoModeSignInFileCleanupEnabled() {
-  return base::FeatureList::IsEnabled(kDemoModeSignInFileCleanup);
+bool IsDemoModeWallpaperUpdateEnabled() {
+  return base::FeatureList::IsEnabled(kDemoModeWallpaperUpdate);
 }
 
 bool IsDeskTemplateSyncEnabled() {

@@ -17,7 +17,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
-import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetMediator;
@@ -150,10 +149,7 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
         BackPressHandler bottomSheetBackPressHandler =
                 mBottomSheetController.getBottomSheetBackPressHandler();
         BackPressHelper.create(
-                mActivity,
-                mActivity.getOnBackPressedDispatcher(),
-                bottomSheetBackPressHandler,
-                SecondaryActivity.SIGNIN_AND_HISTORY_SYNC);
+                mActivity, mActivity.getOnBackPressedDispatcher(), bottomSheetBackPressHandler);
 
         mAccountPickerBottomSheetCoordinator =
                 new AccountPickerBottomSheetCoordinator(

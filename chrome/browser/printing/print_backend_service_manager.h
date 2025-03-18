@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 #include <type_traits>
+#include <variant>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -25,7 +26,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "printing/buildflags/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
 #include "ui/gfx/native_widget_types.h"
@@ -402,7 +402,7 @@ class PrintBackendServiceManager {
   // another service instance.
   std::optional<ClientId> RegisterClient(
       ClientType client_type,
-      absl::variant<std::string, RemoteId> destination);
+      std::variant<std::string, RemoteId> destination);
 
   // Get the total number of clients registered.
   size_t GetClientsRegisteredCount() const;

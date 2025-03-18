@@ -316,7 +316,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1532118530259321453">Esta páxina di</translation>
 <translation id="1533966801397200693">O perfil no que tes a sesión iniciada é un perfil xestionado. A persoa administradora pode facer cambios na súa configuración de forma remota, analizar información sobre o navegador mediante informes e realizar outras tarefas necesarias. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Traducir páxina</translation>
-<translation id="1538295100801850685">Melloras de predición</translation>
 <translation id="1539840569003678498">Envío do informe:</translation>
 <translation id="1542105669288201090">Formación empresarial</translation>
 <translation id="1545757265410828525">Historial de prezos</translation>
@@ -1157,7 +1156,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3052868890529250114">Adoitas conectarte a este sitio web de maneira segura, pero desta vez Chrome non puido usar unha conexión segura. É posible que un atacante estea tentando espiar ou modificar a túa conexión de rede. <ph name="BEGIN_LEARN_MORE_LINK" />Máis información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Baixada de prezo de <ph name="PRICE_DROP" /> no seguinte produto: <ph name="PRODUCT_NAME" /></translation>
 <translation id="3061707000357573562">Servizo de parche</translation>
-<translation id="306198082577913404">Activa as melloras de predición</translation>
 <translation id="3062655045399308513">Eliminar datos de navegación…</translation>
 <translation id="3063453392496098461">Produciuse un erro na instalación dos servizos en segundo plano de VPN.</translation>
 <translation id="306573536155379004">Comezou a partida.</translation>
@@ -2325,7 +2323,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5097099694988056070">Estatísticas do hardware, como o uso de CPU/RAM</translation>
 <translation id="5097468150760963273">27 × 39 in</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome necesita acceso ao seguinte recurso do teu dispositivo: <ph name="PERMISSION" /></translation>
 <translation id="510644072453496781">Cartón (final)</translation>
 <translation id="5106648964679263509">Completouse a tarxeta virtual de <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="5108881358339761672">O sitio non é seguro</translation>
@@ -4053,7 +4050,6 @@ Detalles adicionais:
 <translation id="8134058435519644366">Contratación e persoal</translation>
 <translation id="8135546115396015134">tecla esquerda</translation>
 <translation id="8137456439814903304">Enerxía, empresas e servizos públicos</translation>
-<translation id="81474145143203755">Concédelle permiso de <ph name="PERMISSION" /> a Chrome para que poida usar ese recurso neste sitio</translation>
 <translation id="8148608574971654810">Versión do PDF:</translation>
 <translation id="8149426793427495338">O teu ordenador entrou no modo de suspensión.</translation>
 <translation id="8150722005171944719">Non se pode ler o ficheiro que se encontra en <ph name="URL" />. É posible que se eliminase, movese ou que os permisos do ficheiro estean impedindo o acceso.</translation>

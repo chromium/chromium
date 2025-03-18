@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/files/file_util.h"
@@ -91,7 +92,7 @@ class MockPasswordStoreBackendTester {
   MOCK_METHOD(void, LoginsReceivedConstRef, (const LoginsResult&));
 
   void HandleLoginsOrError(LoginsResultOrError results) {
-    LoginsReceivedConstRef(std::move(absl::get<LoginsResult>(results)));
+    LoginsReceivedConstRef(std::move(std::get<LoginsResult>(results)));
   }
 };
 

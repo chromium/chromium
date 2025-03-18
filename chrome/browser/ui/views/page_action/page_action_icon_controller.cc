@@ -62,10 +62,14 @@
 
 namespace {
 
+// TODO(crbug.com/402820548): Move all checking logic into
+// `IsPageActionMigrated` by using FeatureParameters.
 static constexpr std::array<PageActionIconType, 5> kMigratedPageActionTypes = {
-    PageActionIconType::kLensOverlay, PageActionIconType::kMemorySaver,
-    PageActionIconType::kTranslate,   PageActionIconType::kIntentPicker,
+    PageActionIconType::kMemorySaver,
+    PageActionIconType::kTranslate,
+    PageActionIconType::kIntentPicker,
     PageActionIconType::kZoom,
+    PageActionIconType::kPaymentsOfferNotification,
 };
 
 void RecordCTRMetrics(const char* name, PageActionCTREvent event) {
@@ -113,10 +117,15 @@ void PageActionIconController::Init(const PageActionIconParams& params,
   for (PageActionIconType type : params.types_enabled) {
     // When the page action migration is enabled, the new
     // PageActionContainerView will contain the migrated page action icon.
+    // TODO(crbug.com/402820548): Move all checking logic into
+    // `IsPageActionMigrated` by using FeatureParameters.
     if (base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
       if (base::Contains(kMigratedPageActionTypes, type)) {
         continue;
       }
+    }
+    if (IsPageActionMigrated(type)) {
+      continue;
     }
     switch (type) {
       case PageActionIconType::kPaymentsOfferNotification:

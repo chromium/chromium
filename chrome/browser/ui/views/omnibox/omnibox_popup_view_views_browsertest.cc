@@ -71,7 +71,7 @@ class ClickTrackingOverlayView : public views::View {
     // OmniboxPopupViewViews's parent.
     auto* contents = result->parent();
     SetBoundsRect(contents->ConvertRectToParent(result->bounds()));
-    contents->parent()->AddChildView(this);
+    contents->parent()->AddChildViewRaw(this);
   }
 
   // views::View:

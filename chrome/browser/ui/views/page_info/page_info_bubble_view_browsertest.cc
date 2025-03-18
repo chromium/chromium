@@ -1427,8 +1427,7 @@ class PageInfoBubbleViewBrowserTestCookiesSubpage
   PageInfoBubbleViewBrowserTestCookiesSubpage() {
     std::vector<base::test::FeatureRef>
         enabled_features =
-            {privacy_sandbox::kPrivacySandboxFirstPartySetsUI,
-             privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi},
+            {privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi},
         disabled_features = {};
     if (GetParam()) {
       enabled_features.push_back(

@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/memory/raw_ref.h"
@@ -16,7 +17,6 @@
 #include "components/supervised_user/core/browser/proto/families_common.pb.h"
 #include "components/supervised_user/core/browser/proto/parent_access_callback.pb.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 class GURL;
@@ -83,7 +83,7 @@ class ParentAccessCallbackParsedResult {
       const std::string& encoded_parent_access_callback_proto);
 
  private:
-  absl::variant<
+  std::variant<
       kids::platform::parentaccess::client::proto::ParentAccessCallback,
       ParentAccessWidgetError>
       result_;

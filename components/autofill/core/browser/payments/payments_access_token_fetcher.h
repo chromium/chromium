@@ -7,11 +7,11 @@
 
 #include <memory>
 #include <string>
+#include <variant>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class GoogleServiceAuthError;
 
@@ -27,7 +27,7 @@ namespace autofill::payments {
 class PaymentsAccessTokenFetcher {
  public:
   using FinishCallback = base::OnceCallback<void(
-      const absl::variant<GoogleServiceAuthError, std::string>&)>;
+      const std::variant<GoogleServiceAuthError, std::string>&)>;
 
   explicit PaymentsAccessTokenFetcher(
       signin::IdentityManager& identity_manager);

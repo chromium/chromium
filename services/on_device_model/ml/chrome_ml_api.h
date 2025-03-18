@@ -115,6 +115,10 @@ struct ChromeMLAdaptationDescriptor {
   // `max_tokens` set by the base model will be used.
   uint32_t max_tokens;
 
+  // Parameters which control the output sampling.
+  uint32_t top_k;
+  float temperature;
+
   // Whether this model will handle InputPieces containing images.
   bool enable_image_input;
 
@@ -200,6 +204,8 @@ struct ChromeMLExecuteOptions {
   const ChromeMLExecutionOutputFn* execution_output_fn;
   // Optional adaptation ID for this request.
   uint32_t* adaptation_id;
+
+  // TODO(crbug.com/403383823): Remove these members from this struct.
   uint32_t top_k;
   float temperature;
 

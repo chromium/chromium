@@ -29,11 +29,11 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
                                          /*auto_repetitions=*/0);
 
     grid_axis_tracks_ = algorithm.BuildGridAxisTracks(
-        line_resolver, SizingConstraint::kLayout, &start_offset);
+        line_resolver, SizingConstraint::kLayout, start_offset);
 
     const auto grid_axis_direction = grid_axis_tracks_->Direction();
     for (const auto& masonry_item :
-         algorithm.BuildVirtualMasonryItems(line_resolver, &start_offset)) {
+         algorithm.BuildVirtualMasonryItems(line_resolver, start_offset)) {
       MasonryItemCachedData item_data;
 
       item_data.resolved_span =
@@ -245,20 +245,21 @@ TEST_F(MasonryLayoutAlgorithmTest, CollectMasonryItemGroups) {
 
   MasonryNode node(GetLayoutBoxByElementId("masonry"));
 
-  wtf_size_t start_offset;
+  wtf_size_t max_end_line, start_offset;
   const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
-  const auto item_groups = node.CollectItemGroups(line_resolver, &start_offset);
+  const auto item_groups =
+      node.CollectItemGroups(line_resolver, max_end_line, start_offset);
 
   EXPECT_EQ(item_groups.size(), 4u);
 
-  for (const auto& [properties, items] : item_groups) {
+  for (const auto& [items, properties] : item_groups) {
     wtf_size_t expected_size = 0;
     const auto& span = properties.Span();
     if (span == GridSpan::IndefiniteGridSpan(3) ||
-        span == GridSpan::UntranslatedDefiniteGridSpan(0, 1)) {
+        span == GridSpan::TranslatedDefiniteGridSpan(0, 1)) {
       expected_size = 1;
     } else if (span == GridSpan::IndefiniteGridSpan(1) ||
-               span == GridSpan::UntranslatedDefiniteGridSpan(0, 3)) {
+               span == GridSpan::TranslatedDefiniteGridSpan(0, 3)) {
       expected_size = 2;
     }
     EXPECT_EQ(items.size(), expected_size);

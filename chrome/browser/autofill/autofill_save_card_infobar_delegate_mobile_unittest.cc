@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <variant>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -203,8 +204,8 @@ AutofillSaveCardInfoBarDelegateMobileTest::
   }
 
   credit_card_to_save_ = credit_card;
-  absl::variant<payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
-                payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>
+  std::variant<payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
+               payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>
       save_card_callback;
   AutofillSaveCardUiInfo ui_info;
   if (is_uploading) {

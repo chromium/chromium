@@ -316,7 +316,6 @@
 <translation id="1532118530259321453">यो पृष्ठले यसो भन्छ</translation>
 <translation id="1533966801397200693">तपाईं साइन इन हुनुभएको प्रोफाइल कुनै व्यवस्थापन गरिएको प्रोफाइल हो। तपाईंका एड्मिन टाढैबाट प्रोफाइलका सेटिङ मिलाउन, रिपोर्टिङमार्फत ब्राउजरको जानकारी विश्लेषण गर्न र अन्य आवश्यक कार्यहरू गर्न सक्छन्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">यो पृष्ठ अनुवाद गर्नुहोस्</translation>
-<translation id="1538295100801850685">सुझावहरूको गुणस्तर सुधार गर्ने सुविधा</translation>
 <translation id="1539840569003678498">रिपोर्ट पठाइएको मिति र समय:</translation>
 <translation id="1542105669288201090">व्यावसायिक शिक्षा</translation>
 <translation id="1545757265410828525">विगतको मूल्य</translation>
@@ -1157,7 +1156,6 @@
 <translation id="3052868890529250114">तपाईं प्रायः जसो साइटहरूमा सुरक्षित रूपमा कनेक्ट गर्नुहुन्छ तर Chrome ले अहिले सुरक्षित कनेक्सन प्रयोग गर्न सकेन। ह्याकरले तपाईंको नेटवर्क कनेक्सन निगरानी गर्न वा परिमार्जन गर्न खोजिरहेको हुन सक्छ। <ph name="BEGIN_LEARN_MORE_LINK" />यो चेतावनीका बारेमा थप जान्नुहोस्<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> को मूल्य <ph name="PRICE_DROP" /> घटेको छ</translation>
 <translation id="3061707000357573562">प्याचसम्बन्धी सेवा</translation>
-<translation id="306198082577913404">सुझावहरूको गुणस्तर सुधार गर्ने सुविधा अन गर्नुहोस्</translation>
 <translation id="3062655045399308513">ब्राउजिङ डेटा मेटाउनुहोस्...</translation>
 <translation id="3063453392496098461">VPN का ब्याकग्राउन्डमा चल्ने सेवाहरू इन्स्टल गर्न सकिएन।</translation>
 <translation id="306573536155379004">गेम सुरु भएको छ।</translation>
@@ -2323,7 +2321,6 @@
 <translation id="5097099694988056070">CPU/RAM को प्रयोग जस्ता यन्त्रसम्बन्धी तथ्याङ्क</translation>
 <translation id="5097468150760963273">२७ x ३९ इन्च</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome लाई तपाईंको डिभाइसको <ph name="PERMISSION" /> प्रयोग गर्ने अनुमति दिनु पर्ने हुन्छ</translation>
 <translation id="510644072453496781">कार्डबोर्ड (इन्ड)</translation>
 <translation id="5106648964679263509"><ph name="BNPL_ISSUER_NAME" /> को भर्चुअल कार्डको विवरण भरियो</translation>
 <translation id="5108881358339761672">यो साइट सुरक्षित छैन</translation>
@@ -4051,7 +4048,6 @@
 <translation id="8134058435519644366">भर्ती तथा नियक्ति गर्ने सेवा</translation>
 <translation id="8135546115396015134">लेफ्ट की</translation>
 <translation id="8137456439814903304">ऊर्जा तथा युटिलिटीहरू</translation>
-<translation id="81474145143203755">Chrome लाई यो साइटमा <ph name="PERMISSION" /> प्रयोग गर्ने अनुमति दिनुहोस्</translation>
 <translation id="8148608574971654810">PDF को संस्करण:</translation>
 <translation id="8149426793427495338">तपाईंको कम्प्युटर शयन अवस्थामा गयो।</translation>
 <translation id="8150722005171944719"><ph name="URL" /> मा भएको फाइल पठनीय छैन। यो हटाइएको, सारिएको हुनसक्छ, वा फाइल अनुमतिले पहुँचलाई रोकेको हुन सक्छ।</translation>

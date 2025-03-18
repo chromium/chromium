@@ -1047,21 +1047,29 @@ def _CollectReferencedKinds(module, all_defined_kinds):
     return kind
 
   referenced_user_kinds = {}
+
+  def find_and_add_all_user_kinds(kind):
+    for referenced_kind in extract_referenced_user_kinds(kind):
+      sanitized_kind = sanitize_kind(referenced_kind)
+      referenced_user_kinds[sanitized_kind.spec] = sanitized_kind
+
   for defined_kind in all_defined_kinds:
     if mojom.IsStructKind(defined_kind) or mojom.IsUnionKind(defined_kind):
       for field in defined_kind.fields:
-        for referenced_kind in extract_referenced_user_kinds(field.kind):
-          sanitized_kind = sanitize_kind(referenced_kind)
-          referenced_user_kinds[sanitized_kind.spec] = sanitized_kind
+        find_and_add_all_user_kinds(field.kind)
 
   # Also scan for references in parameter lists
   for interface in module.interfaces:
     for method in interface.methods:
       for param in itertools.chain(method.parameters or [],
                                    method.response_parameters or []):
-        for referenced_kind in extract_referenced_user_kinds(param.kind):
-          sanitized_kind = sanitize_kind(referenced_kind)
-          referenced_user_kinds[sanitized_kind.spec] = sanitized_kind
+        find_and_add_all_user_kinds(param.kind)
+
+      if method.result_response:
+        result_response = method.result_response
+        find_and_add_all_user_kinds(result_response.success_kind)
+        find_and_add_all_user_kinds(result_response.failure_kind)
+
   # Consts can reference imported enums.
   for const in module.constants:
     if not const.kind in mojom.PRIMITIVES:

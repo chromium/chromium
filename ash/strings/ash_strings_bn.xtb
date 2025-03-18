@@ -166,6 +166,7 @@
 <translation id="1505542291183484463">নিচের দিকে সাইজ ছোট বড় করার উইন্ডো টাইল করুন</translation>
 <translation id="1510238584712386396">লঞ্চার</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{বিজ্ঞপ্তির সেটিংস দেখান। একটি অ্যাপের জন্য বিজ্ঞপ্তির নোটিফিকেশন বন্ধ আছে}one{বিজ্ঞপ্তির সেটিংস দেখান। #টি অ্যাপের জন্য নোটিফিকেশন বন্ধ আছে}other{বিজ্ঞপ্তির সেটিংস দেখান। #টি অ্যাপের জন্য নোটিফিকেশন বন্ধ আছে}}</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">ব্যাটারি <ph name="BATTERY_PERCENTAGE" />% | সম্পূর্ণ চার্জ হতে <ph name="TIME" /> বাকি আছে</translation>
 <translation id="1525508553941733066">খারিজ করুন</translation>
 <translation id="1526448108126799339">নতুন উইন্ডোতে নতুন ট্যাব খুলুন</translation>
@@ -345,7 +346,6 @@
 <translation id="2201071101391734388"><ph name="TOTAL_COUNT" />-এর মধ্যে <ph name="INDEX" /> নম্বরের সাম্প্রতিক ফটো</translation>
 <translation id="2201687081523799384">Google Tasks আড়াল করুন</translation>
 <translation id="2208323208084708176">একীভূত ডেস্কটপ মোড</translation>
-<translation id="2220572644011485463">PIN বা পাসওয়ার্ড</translation>
 <translation id="2222841058024245321">ডেস্ক ৭</translation>
 <translation id="2223384056430485343">স্প্লিট স্ক্রিনে</translation>
 <translation id="2224075387478458881">কোনও সুরক্ষিত কন্টেন্ট দেখানোর সময় স্ক্রিন রেকর্ড করার অনুমতি দেওয়া হয় না</translation>
@@ -1829,7 +1829,6 @@
 <translation id="7000027735917578303">উইন্ডো ও ডেস্ক সেটিংস</translation>
 <translation id="7004910047186208204">মোবাইল ডেটার সাথে কানেক্ট করুন</translation>
 <translation id="7005239792648594238">শুরু করার জন্য অ্যাপ খুলুন</translation>
-<translation id="7007983414944123363">আপনার পিন বা পাসওয়ার্ড যাচাই করা যায়নি। আবার চেষ্টা করুন।</translation>
 <translation id="7014684956566476813"><ph name="DEVICE_NAME" /> নামের ডিভাইসে কানেক্ট করা হয়েছে</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" />-এ আবার ব্যবহার করতে পারবেন।</translation>
 <translation id="70168403932084660">ডেস্ক ৬</translation>
@@ -2467,6 +2466,7 @@
 <translation id="9168436347345867845">এটি পরে করুন</translation>
 <translation id="9178475906033259337"><ph name="QUERY" />-এর জন্য ১টি ফলাফল দেখানো হচ্ছে</translation>
 <translation id="9179259655489829027">এই বৈশিষ্ট্যের মাধ্যমে আপনি কোনও পাসওয়ার্ড ছাড়াই সাইন-ইন করা যেকোনও ব্যবহারকারীকে দ্রুত অ্যাক্সেস করতে পারেন। এটি শুধুমাত্র বিশ্বস্ত অ্যাকাউন্টেই ব্যবহার করুন।</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183456764293710005">ফুল-স্ক্রিন ম্যাগনিফায়ার</translation>
 <translation id="9192133205265227850">"<ph name="DEVICE_NAME" />" ব্যবহার করুন</translation>
 <translation id="9193626018745640770">অজানা ডিভাইসে কাস্ট করা হচ্ছে</translation>

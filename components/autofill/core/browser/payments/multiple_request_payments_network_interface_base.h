@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <variant>
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -54,7 +55,7 @@ class MultipleRequestPaymentsNetworkInterfaceBase {
 
     // Function invoked when access token is fetched.
     void AccessTokenFetchFinished(
-        const absl::variant<GoogleServiceAuthError, std::string>& result);
+        const std::variant<GoogleServiceAuthError, std::string>& result);
 
     // Helper function to complete the request with the access token and start
     // the request.

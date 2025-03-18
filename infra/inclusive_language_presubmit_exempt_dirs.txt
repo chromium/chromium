@@ -302,7 +302,7 @@ third_party/afl/src/docs 11 2
 third_party/afl/src/llvm_mode 1 1
 third_party/afl/src/qemu_mode 1 1
 third_party/android_build_tools/json 1 1
-third_party/android_deps/buildSrc/src/main/groovy 36 2
+third_party/android_deps/buildSrc/src/main/groovy 37 2
 third_party/android_deps/libs 1 1
 third_party/android_deps/libs/com_google_auto_service_auto_service_annotations 1 1
 third_party/android_deps/libs/com_google_errorprone_error_prone_annotations 1 1
@@ -724,7 +724,7 @@ third_party/rust/chromium_crates_io/vendor/rand_chacha-0.3.1 4 1
 third_party/rust/chromium_crates_io/vendor/rand_core-0.6.4 4 1
 third_party/rust/chromium_crates_io/vendor/rand_core-0.6.4/src 3 1
 third_party/rust/chromium_crates_io/vendor/rand_pcg-0.3.1 4 1
-third_party/rust/chromium_crates_io/vendor/read-fonts-0.27.2/src/tables 3 2
+third_party/rust/chromium_crates_io/vendor/read-fonts-0.27.3/src/tables 3 2
 third_party/rust/chromium_crates_io/vendor/regex-1.11.1 1 1
 third_party/rust/chromium_crates_io/vendor/regex-1.11.1/src 1 1
 third_party/rust/chromium_crates_io/vendor/regex-1.11.1/tests 7 6
@@ -856,7 +856,7 @@ tools/metrics/actions 1 1
 tools/metrics/histograms 11 2
 tools/metrics/histograms/metadata/gpu 1 1
 tools/metrics/ukm 1 1
-tools/perf 27 8
+tools/perf 29 8
 tools/perf/cli_tools/update_wpr 2 1
 tools/perf/core 13 4
 tools/perf/core/results_processor/formatters 1 1

@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <variant>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -268,16 +269,16 @@ void DedicatedWorkerHost::StartScriptLoad(
   RenderFrameHostImpl* creator_render_frame_host = nullptr;
   DedicatedWorkerHost* creator_worker = nullptr;
 
-  absl::visit(base::Overloaded(
-                  [&](const GlobalRenderFrameHostId& render_frame_host_id) {
-                    creator_render_frame_host =
-                        RenderFrameHostImpl::FromID(render_frame_host_id);
-                  },
-                  [&](blink::DedicatedWorkerToken dedicated_worker_token) {
-                    creator_worker = service_->GetDedicatedWorkerHostFromToken(
-                        dedicated_worker_token);
-                  }),
-              creator_);
+  std::visit(base::Overloaded(
+                 [&](const GlobalRenderFrameHostId& render_frame_host_id) {
+                   creator_render_frame_host =
+                       RenderFrameHostImpl::FromID(render_frame_host_id);
+                 },
+                 [&](blink::DedicatedWorkerToken dedicated_worker_token) {
+                   creator_worker = service_->GetDedicatedWorkerHostFromToken(
+                       dedicated_worker_token);
+                 }),
+             creator_);
 
   if (!creator_render_frame_host && !creator_worker) {
     ScriptLoadStartFailed(network::URLLoaderCompletionStatus(net::ERR_ABORTED));
@@ -987,7 +988,7 @@ void DedicatedWorkerHost::UpdateSubresourceLoaderFactories() {
   // If this is a nested worker, there is no creator frame and
   // |creator_render_frame_host| will be null.
   const content::GlobalRenderFrameHostId* const render_frame_host_id =
-      absl::get_if<content::GlobalRenderFrameHostId>(&creator_);
+      std::get_if<content::GlobalRenderFrameHostId>(&creator_);
   RenderFrameHostImpl* creator_render_frame_host =
       render_frame_host_id ? RenderFrameHostImpl::FromID(*render_frame_host_id)
                            : nullptr;

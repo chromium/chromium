@@ -4,6 +4,8 @@
 
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 
+#include <variant>
+
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -42,7 +44,7 @@ class PolicyControllerTest : public ui::DataTransferPolicyController {
       PasteIfAllowed,
       void(base::optional_ref<const ui::DataTransferEndpoint> data_src,
            base::optional_ref<const ui::DataTransferEndpoint> data_dst,
-           absl::variant<size_t, std::vector<base::FilePath>> pasted_content,
+           std::variant<size_t, std::vector<base::FilePath>> pasted_content,
            content::RenderFrameHost* rfh,
            base::OnceCallback<void(bool)> callback));
 
@@ -173,7 +175,7 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
       .WillOnce(testing::Invoke(
           [](base::optional_ref<const ui::DataTransferEndpoint> data_src,
              base::optional_ref<const ui::DataTransferEndpoint> data_dst,
-             absl::variant<size_t, std::vector<base::FilePath>> pasted_content,
+             std::variant<size_t, std::vector<base::FilePath>> pasted_content,
              content::RenderFrameHost* rfh,
              base::OnceCallback<void(bool)> callback) {
             std::move(callback).Run(true);
@@ -199,7 +201,7 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
       .WillOnce(testing::Invoke(
           [](base::optional_ref<const ui::DataTransferEndpoint> data_src,
              base::optional_ref<const ui::DataTransferEndpoint> data_dst,
-             absl::variant<size_t, std::vector<base::FilePath>> pasted_content,
+             std::variant<size_t, std::vector<base::FilePath>> pasted_content,
              content::RenderFrameHost* rfh,
              base::OnceCallback<void(bool)> callback) {
             std::move(callback).Run(false);

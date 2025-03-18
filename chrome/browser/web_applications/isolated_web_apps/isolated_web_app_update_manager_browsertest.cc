@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string_view>
+#include <variant>
 
 #include "base/base64.h"
 #include "base/check_deref.h"
@@ -1147,11 +1148,11 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
 
   const auto& isolation_data = GetIsolatedWebApp(GetAppId())->isolation_data();
   const auto& app_location =
-      base::FilePath(absl::get_if<IsolatedWebAppStorageLocation::OwnedBundle>(
+      base::FilePath(std::get_if<IsolatedWebAppStorageLocation::OwnedBundle>(
                          &isolation_data->location().variant())
                          ->dir_name_ascii());
   const auto& app_update_location = base::FilePath(
-      absl::get_if<IsolatedWebAppStorageLocation::OwnedBundle>(
+      std::get_if<IsolatedWebAppStorageLocation::OwnedBundle>(
           &isolation_data->pending_update_info()->location.variant())
           ->dir_name_ascii());
 

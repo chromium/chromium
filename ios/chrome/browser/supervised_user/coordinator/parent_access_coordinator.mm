@@ -67,7 +67,7 @@
 }
 
 - (void)start {
-  ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
+  ProfileIOS* profile = self.profile->GetOriginalProfile();
 
   // Set up the WebState and its TabHelper.
   web::WebState::CreateParams params = web::WebState::CreateParams(profile);

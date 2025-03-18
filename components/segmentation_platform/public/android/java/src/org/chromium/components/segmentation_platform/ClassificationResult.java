@@ -16,8 +16,11 @@ public class ClassificationResult {
 
     public final @Nullable List<String> orderedLabels;
 
-    public ClassificationResult(int status, String[] orderedLabels) {
+    public final long requestId;
+
+    public ClassificationResult(int status, String[] orderedLabels, long requestId) {
         this.status = status;
         this.orderedLabels = orderedLabels == null ? null : List.of(orderedLabels);
+        this.requestId = requestId;
     }
 }

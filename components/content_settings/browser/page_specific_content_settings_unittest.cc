@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -641,7 +642,7 @@ TEST_F(PageSpecificContentSettingsTest, BrowsingDataModelSharedDictionary) {
   EXPECT_EQ(0, browsing_data::GetUniqueHostCount(*blocked_browsing_data_model));
   ASSERT_EQ(1u, allowed_browsing_data_model->size());
   EXPECT_EQ("google.com",
-            *absl::get_if<std::string>(
+            *std::get_if<std::string>(
                 &*(*allowed_browsing_data_model->begin()).data_owner));
 }
 
@@ -673,7 +674,7 @@ TEST_F(PageSpecificContentSettingsTest,
   EXPECT_EQ(1, browsing_data::GetUniqueHostCount(*blocked_browsing_data_model));
   ASSERT_EQ(1u, blocked_browsing_data_model->size());
   EXPECT_EQ("google.com",
-            *absl::get_if<std::string>(
+            *std::get_if<std::string>(
                 &*(*blocked_browsing_data_model->begin()).data_owner));
 }
 
@@ -709,7 +710,7 @@ TEST_F(PageSpecificContentSettingsTest,
   EXPECT_EQ(0, browsing_data::GetUniqueHostCount(*blocked_browsing_data_model));
   ASSERT_EQ(1u, allowed_browsing_data_model->size());
   EXPECT_EQ("google.com",
-            *absl::get_if<std::string>(
+            *std::get_if<std::string>(
                 &*(*allowed_browsing_data_model->begin()).data_owner));
 }
 
@@ -745,7 +746,7 @@ TEST_F(PageSpecificContentSettingsTest,
   EXPECT_EQ(1, browsing_data::GetUniqueHostCount(*blocked_browsing_data_model));
   ASSERT_EQ(1u, blocked_browsing_data_model->size());
   EXPECT_EQ("google.com",
-            *absl::get_if<std::string>(
+            *std::get_if<std::string>(
                 &*(*blocked_browsing_data_model->begin()).data_owner));
 }
 

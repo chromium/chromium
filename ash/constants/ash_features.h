@@ -77,7 +77,6 @@ extern const base::FeatureParam<base::TimeDelta>
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<base::TimeDelta>
     kBocaInSessionPeriodicJobIntervalInSeconds;
-COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBocaOnTaskMuteArcAudio);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBocaOnTaskPod);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBocaStudentHeartbeat);
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -168,7 +167,7 @@ BASE_DECLARE_FEATURE(kDeferConciergeStartup);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kDemoModeSignIn);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kDemoModeSignInFileCleanup);
+BASE_DECLARE_FEATURE(kDemoModeWallpaperUpdate);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kDeskTemplateSync);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kDeviceActiveClient28DayActiveCheckMembership);
@@ -1049,7 +1048,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaConsumerEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaExtensionConsumerEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaCustomPollingEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaOnTaskMuteArcAudioEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaOnTaskPodEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsBocaStudentHeartbeatEnabled();
@@ -1079,7 +1077,7 @@ bool IsCryptauthAttestationSyncingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDeepLinkingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDemoModeAppLandscapeLockedEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDemoModeSignInEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDemoModeSignInFileCleanupEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDemoModeWallpaperUpdateEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDeskTemplateSyncEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDisplayPerformanceModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsInputDeviceSettingsSplitEnabled();

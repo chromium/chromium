@@ -247,6 +247,9 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
         base::apple::ObjCCastStrict<TableViewMultiDetailTextCell>(cell);
     multiDetailTextCell.accessibilityIdentifier =
         multiDetailTextCell.textLabel.text;
+    if ([self showEditView]) {
+      multiDetailTextCell.selectionStyle = UITableViewCellSelectionStyleDefault;
+    }
     return multiDetailTextCell;
   }
 

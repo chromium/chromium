@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -884,14 +885,14 @@ class DummyBackgroundResponseProcessorClient
       base::span<const char> expected_body,
       std::optional<base::span<const uint8_t>> expected_cached_metadata) {
     EXPECT_TRUE(head_);
-    if (absl::holds_alternative<SegmentedBuffer>(body_)) {
-      const SegmentedBuffer& raw_body = absl::get<SegmentedBuffer>(body_);
+    if (std::holds_alternative<SegmentedBuffer>(body_)) {
+      const SegmentedBuffer& raw_body = std::get<SegmentedBuffer>(body_);
       const Vector<char> concatenated_body = raw_body.CopyAs<Vector<char>>();
       EXPECT_THAT(concatenated_body, testing::ElementsAreArray(expected_body));
     } else {
-      CHECK(absl::holds_alternative<mojo::ScopedDataPipeConsumerHandle>(body_));
+      CHECK(std::holds_alternative<mojo::ScopedDataPipeConsumerHandle>(body_));
       mojo::ScopedDataPipeConsumerHandle& handle =
-          absl::get<mojo::ScopedDataPipeConsumerHandle>(body_);
+          std::get<mojo::ScopedDataPipeConsumerHandle>(body_);
       std::string text;
       EXPECT_TRUE(mojo::BlockingCopyToString(std::move(handle), &text));
       EXPECT_THAT(text, testing::ElementsAreArray(expected_body));

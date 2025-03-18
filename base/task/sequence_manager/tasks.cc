@@ -4,6 +4,8 @@
 
 #include "base/task/sequence_manager/tasks.h"
 
+#include <variant>
+
 #include "base/task/sequence_manager/task_order.h"
 
 namespace base::sequence_manager {
@@ -14,25 +16,25 @@ Task::Task(internal::PostedTask posted_task,
            TimeTicks queue_time,
            WakeUpResolution resolution,
            TimeDelta leeway)
-    : PendingTask(posted_task.location,
-                  std::move(posted_task.callback),
-                  queue_time,
-                  absl::holds_alternative<base::TimeTicks>(
-                      posted_task.delay_or_delayed_run_time)
-                      ? absl::get<base::TimeTicks>(
-                            posted_task.delay_or_delayed_run_time)
-                      : base::TimeTicks(),
-                  leeway,
-                  posted_task.delay_policy),
+    : PendingTask(
+          posted_task.location,
+          std::move(posted_task.callback),
+          queue_time,
+          std::holds_alternative<base::TimeTicks>(
+              posted_task.delay_or_delayed_run_time)
+              ? std::get<base::TimeTicks>(posted_task.delay_or_delayed_run_time)
+              : base::TimeTicks(),
+          leeway,
+          posted_task.delay_policy),
       nestable(posted_task.nestable),
       task_type(posted_task.task_type),
       task_runner(std::move(posted_task.task_runner)),
       enqueue_order_(enqueue_order),
       delayed_task_handle_delegate_(
           std::move(posted_task.delayed_task_handle_delegate)) {
-  DCHECK(!absl::holds_alternative<base::TimeDelta>(
+  DCHECK(!std::holds_alternative<base::TimeDelta>(
              posted_task.delay_or_delayed_run_time) ||
-         absl::get<base::TimeDelta>(posted_task.delay_or_delayed_run_time)
+         std::get<base::TimeDelta>(posted_task.delay_or_delayed_run_time)
              .is_zero());
   // We use |sequence_num| when comparing PendingTask for ordering purposes
   // and it may wrap around to a negative number during the static cast, hence,

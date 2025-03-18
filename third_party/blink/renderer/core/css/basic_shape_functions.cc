@@ -610,14 +610,11 @@ static BasicShapeRadius CssValueToBasicShapeRadius(
       ConvertToLength(state, To<CSSPrimitiveValue>(radius)));
 }
 
-scoped_refptr<BasicShape> BasicShapeForValue(
-    const StyleResolverState& state,
-    const CSSValue& basic_shape_value) {
-  scoped_refptr<BasicShape> basic_shape;
-
+BasicShape* BasicShapeForValue(const StyleResolverState& state,
+                               const CSSValue& basic_shape_value) {
   if (const auto* circle_value =
           DynamicTo<cssvalue::CSSBasicShapeCircleValue>(basic_shape_value)) {
-    scoped_refptr<BasicShapeCircle> circle = BasicShapeCircle::Create();
+    BasicShapeCircle* circle = MakeGarbageCollected<BasicShapeCircle>();
 
     circle->SetCenterX(
         ConvertToCenterCoordinate(state, circle_value->CenterX()));
@@ -627,11 +624,11 @@ scoped_refptr<BasicShape> BasicShapeForValue(
         CssValueToBasicShapeRadius(state, circle_value->Radius()));
     circle->SetHasExplicitCenter(circle_value->CenterX());
 
-    basic_shape = std::move(circle);
+    return circle;
   } else if (const auto* ellipse_value =
                  DynamicTo<cssvalue::CSSBasicShapeEllipseValue>(
                      basic_shape_value)) {
-    scoped_refptr<BasicShapeEllipse> ellipse = BasicShapeEllipse::Create();
+    BasicShapeEllipse* ellipse = MakeGarbageCollected<BasicShapeEllipse>();
 
     ellipse->SetCenterX(
         ConvertToCenterCoordinate(state, ellipse_value->CenterX()));
@@ -643,11 +640,11 @@ scoped_refptr<BasicShape> BasicShapeForValue(
         CssValueToBasicShapeRadius(state, ellipse_value->RadiusY()));
     ellipse->SetHasExplicitCenter(ellipse_value->CenterX());
 
-    basic_shape = std::move(ellipse);
+    return ellipse;
   } else if (const auto* polygon_value =
                  DynamicTo<cssvalue::CSSBasicShapePolygonValue>(
                      basic_shape_value)) {
-    scoped_refptr<BasicShapePolygon> polygon = BasicShapePolygon::Create();
+    BasicShapePolygon* polygon = MakeGarbageCollected<BasicShapePolygon>();
 
     polygon->SetWindRule(polygon_value->GetWindRule());
     const HeapVector<Member<CSSPrimitiveValue>>& values =
@@ -657,11 +654,11 @@ scoped_refptr<BasicShape> BasicShapeForValue(
                            ConvertToLength(state, values.at(i + 1).Get()));
     }
 
-    basic_shape = std::move(polygon);
+    return polygon;
   } else if (const auto* inset_value =
                  DynamicTo<cssvalue::CSSBasicShapeInsetValue>(
                      basic_shape_value)) {
-    scoped_refptr<BasicShapeInset> rect = BasicShapeInset::Create();
+    BasicShapeInset* rect = MakeGarbageCollected<BasicShapeInset>();
 
     rect->SetTop(
         ConvertToLength(state, To<CSSPrimitiveValue>(inset_value->Top())));
@@ -672,12 +669,12 @@ scoped_refptr<BasicShape> BasicShapeForValue(
     rect->SetLeft(
         ConvertToLength(state, To<CSSPrimitiveValue>(inset_value->Left())));
 
-    InitializeBorderRadius(rect.get(), state, *inset_value);
-    basic_shape = std::move(rect);
+    InitializeBorderRadius(rect, state, *inset_value);
+    return rect;
   } else if (const auto* rect_value =
                  DynamicTo<cssvalue::CSSBasicShapeRectValue>(
                      basic_shape_value)) {
-    scoped_refptr<BasicShapeInset> inset = BasicShapeInset::Create();
+    BasicShapeInset* inset = MakeGarbageCollected<BasicShapeInset>();
 
     // Spec: All <basic-shape-rect> functions compute to the equivalent
     // inset() function. NOTE: Given `rect(t r b l)`, the equivalent function
@@ -701,12 +698,12 @@ scoped_refptr<BasicShape> BasicShapeForValue(
     inset->SetBottom(get_inset_length(*rect_value->Bottom(), true));
     inset->SetLeft(get_inset_length(*rect_value->Left(), false));
 
-    InitializeBorderRadius(inset.get(), state, *rect_value);
-    basic_shape = std::move(inset);
+    InitializeBorderRadius(inset, state, *rect_value);
+    return inset;
   } else if (const auto* xywh_value =
                  DynamicTo<cssvalue::CSSBasicShapeXYWHValue>(
                      basic_shape_value)) {
-    scoped_refptr<BasicShapeInset> inset = BasicShapeInset::Create();
+    BasicShapeInset* inset = MakeGarbageCollected<BasicShapeInset>();
 
     // Spec: All <basic-shape-rect> functions compute to the equivalent
     // inset() function. NOTE: Given `xywh(x y w h)`, the equivalent function
@@ -724,22 +721,22 @@ scoped_refptr<BasicShape> BasicShapeForValue(
                          .Add(ConvertToLength(state, xywh_value->Height()))
                          .SubtractFromOneHundredPercent());
 
-    InitializeBorderRadius(inset.get(), state, *xywh_value);
-    basic_shape = std::move(inset);
+    InitializeBorderRadius(inset, state, *xywh_value);
+    return inset;
   } else if (const auto* ray_value =
                  DynamicTo<cssvalue::CSSRayValue>(basic_shape_value)) {
     float angle =
         ray_value->Angle().ComputeDegrees(state.CssToLengthConversionData());
     StyleRay::RaySize size = KeywordToRaySize(ray_value->Size().GetValueID());
     bool contain = !!ray_value->Contain();
-    basic_shape =
-        StyleRay::Create(angle, size, contain,
-                         ConvertToCenterCoordinate(state, ray_value->CenterX()),
-                         ConvertToCenterCoordinate(state, ray_value->CenterY()),
-                         ray_value->CenterX());
+    return MakeGarbageCollected<StyleRay>(
+        angle, size, contain,
+        ConvertToCenterCoordinate(state, ray_value->CenterX()),
+        ConvertToCenterCoordinate(state, ray_value->CenterY()),
+        ray_value->CenterX());
   } else if (const auto* path_value =
                  DynamicTo<cssvalue::CSSPathValue>(basic_shape_value)) {
-    basic_shape = path_value->GetStylePath();
+    return path_value->GetStylePath();
   } else if (const auto* shape_value =
                  DynamicTo<cssvalue::CSSShapeValue>(basic_shape_value)) {
     Vector<StyleShape::Segment> segments;
@@ -747,15 +744,12 @@ scoped_refptr<BasicShape> BasicShapeForValue(
     for (const cssvalue::CSSShapeCommand* command : shape_value->Commands()) {
       segments.push_back(ShapeCommandToShapeSegment(*command, state));
     }
-    basic_shape = StyleShape::Create(
+    return MakeGarbageCollected<StyleShape>(
         shape_value->GetWindRule(),
         StyleBuilderConverter::ConvertPosition(state, shape_value->GetOrigin()),
         std::move(segments));
-  } else {
-    NOTREACHED();
   }
-
-  return basic_shape;
+  NOTREACHED();
 }
 
 }  // namespace blink

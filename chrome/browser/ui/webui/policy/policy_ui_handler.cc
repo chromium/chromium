@@ -539,16 +539,15 @@ void PolicyUIHandler::HandleShouldShowPromotion(const base::Value::List& args) {
   bool dismissed_banner_pref = profile->GetPrefs()->GetBoolean(
       policy::policy_prefs::kHasDismissedPolicyPagePromotionBanner);
 
-  std::unique_ptr<enterprise_promotion::PromotionEligibilityChecker>
-      promotion_eligibility_checker =
-          std::make_unique<enterprise_promotion::PromotionEligibilityChecker>(
-              /*profile_id=*/profile_id_service->GetProfileId().value(),
-              /*client=*/
-              profile->GetCloudPolicyManager()->core()->client(),
-              /*identity_manager=*/identity_manager,
-              /*locale=*/locale,
-              /*dismissed_banner_pref=*/dismissed_banner_pref);
-  promotion_eligibility_checker->MaybeCheckPromotionEligibility(
+  promotion_eligibility_checker_ =
+      std::make_unique<enterprise_promotion::PromotionEligibilityChecker>(
+          /*profile_id=*/profile_id_service->GetProfileId().value(),
+          /*client=*/
+          profile->GetCloudPolicyManager()->core()->client(),
+          /*identity_manager=*/identity_manager,
+          /*locale=*/locale,
+          /*dismissed_banner_pref=*/dismissed_banner_pref);
+  promotion_eligibility_checker_->MaybeCheckPromotionEligibility(
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
       base::BindOnce(&PolicyUIHandler::OnPromotionEligibilityFetched,
                      weak_factory_.GetWeakPtr(), callback_id));

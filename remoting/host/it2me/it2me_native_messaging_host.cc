@@ -208,7 +208,7 @@ void It2MeNativeMessagingHost::OnMessage(const std::string& message) {
   std::optional<base::Value::Dict> response =
       CreateNativeMessageResponse(request);
   if (!response.has_value()) {
-    SendErrorAndExit(base::Value::Dict(), ErrorCode::INCOMPATIBLE_PROTOCOL);
+    SendErrorAndExit(base::Value::Dict(), ErrorCode::INVALID_ARGUMENT);
     return;
   }
 
@@ -325,7 +325,7 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
     authorized_helper = *authorized_helper_value;
     if (!IsValidEmailAddress(authorized_helper)) {
       LOG(ERROR) << "Invalid authorized_helper value: " << authorized_helper;
-      SendErrorAndExit(std::move(response), ErrorCode::INCOMPATIBLE_PROTOCOL);
+      SendErrorAndExit(std::move(response), ErrorCode::INVALID_ARGUMENT);
       return;
     }
   }
@@ -370,7 +370,7 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
       } else if (signaling_access_token || api_access_token) {
         LOG(ERROR) << "The website did not provide both the signaling access "
                    << "token and the API access token.";
-        SendErrorAndExit(std::move(response), ErrorCode::INCOMPATIBLE_PROTOCOL);
+        SendErrorAndExit(std::move(response), ErrorCode::INVALID_ARGUMENT);
         return;
       } else {
         HOST_LOG << "The website did not provide signaling and API access "
@@ -395,7 +395,7 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
     }
   }
   if (!create_connection_context) {
-    SendErrorAndExit(std::move(response), ErrorCode::INCOMPATIBLE_PROTOCOL);
+    SendErrorAndExit(std::move(response), ErrorCode::INVALID_STATE);
     return;
   }
 
@@ -513,7 +513,7 @@ void It2MeNativeMessagingHost::ProcessUpdateAccessTokens(
   if (!signaling_access_token) {
     LOG(ERROR) << "Cannot find " << kSignalingAccessToken << " in the "
                << kUpdateAccessTokensMessage << " message.";
-    SendErrorAndExit(std::move(response), ErrorCode::INCOMPATIBLE_PROTOCOL);
+    SendErrorAndExit(std::move(response), ErrorCode::INVALID_ARGUMENT);
     return;
   }
 
@@ -521,7 +521,7 @@ void It2MeNativeMessagingHost::ProcessUpdateAccessTokens(
   if (!api_access_token) {
     LOG(ERROR) << "Cannot find " << kApiAccessToken << " in the "
                << kUpdateAccessTokensMessage << " message.";
-    SendErrorAndExit(std::move(response), ErrorCode::INCOMPATIBLE_PROTOCOL);
+    SendErrorAndExit(std::move(response), ErrorCode::INVALID_ARGUMENT);
     return;
   }
 

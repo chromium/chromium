@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <unordered_map>
+#include <variant>
 
 #include "base/containers/small_map.h"
 #include "base/functional/callback_forward.h"
@@ -206,12 +207,12 @@ class PasswordStoreAndroidBackend
 
     template <typename T>
     bool Holds() const {
-      return absl::holds_alternative<T>(success_callback_);
+      return std::holds_alternative<T>(success_callback_);
     }
 
     template <typename T>
     T&& Get() && {
-      return std::move(absl::get<T>(success_callback_));
+      return std::move(std::get<T>(success_callback_));
     }
 
     void RecordMetrics(std::optional<AndroidBackendError> error) const;
@@ -221,7 +222,7 @@ class PasswordStoreAndroidBackend
     PasswordStoreOperation GetOperation();
 
    private:
-    absl::variant<LoginsOrErrorReply, PasswordChangesOrErrorReply>
+    std::variant<LoginsOrErrorReply, PasswordChangesOrErrorReply>
         success_callback_;
     PasswordStoreBackendMetricsRecorder metrics_recorder_;
     base::TimeDelta delay_;

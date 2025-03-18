@@ -6,6 +6,7 @@
 
 #include <string>
 #include <tuple>
+#include <variant>
 #include <vector>
 
 #include "base/json/values_util.h"
@@ -875,7 +876,7 @@ class PrivacySandboxSettingsM1Test : public PrivacySandboxSettingsTest {
   // Pseudo-constants for the convenience of tests that need to check values of
   // type bool*. We can't actually make these const, as then dereferencing them
   // would give the wrong type (i.e. const bool*). Since we are using
-  // absl::variant for the test outputs, the types must exactly match.
+  // std::variant for the test outputs, the types must exactly match.
   bool kTrue_ = true;
   bool kFalse_ = false;
 

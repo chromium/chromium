@@ -97,13 +97,6 @@ static FlushForImageListener* GetFlushForImageListener() {
 
 namespace {
 
-// Serves as reverse-killswitch while we roll out the change for
-// CanvasResourceProviderSoftwareSharedImage creation to require SW compositing.
-// TODO(crbug.com/379996128): Eliminet post-safe rollout.
-BASE_FEATURE(kCanvasAllowCRPSharedBitmapWithGPUCompositing,
-             "CanvasAllowCRPSharedBitmapWithGPUCompositing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool IsGMBAllowed(gfx::Size size,
                   viz::SharedImageFormat format,
                   const gpu::Capabilities& caps) {
@@ -223,21 +216,6 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     }
   }
 
-  // BitmapGpuChannelLostObserver implementation.
-  void OnGpuChannelLost() override { resource_host()->NotifyGpuContextLost(); }
-
-  base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
-      shared_image_interface_provider_;
-
-  bool IsSoftwareSharedImageGpuChannelLost() const override {
-    if (!is_software_) {
-      return false;
-    }
-
-    return !shared_image_interface_provider_ ||
-           !shared_image_interface_provider_->SharedImageInterface();
-  }
-
   CanvasResourceProviderSharedImage(
       gfx::Size size,
       viz::SharedImageFormat format,
@@ -281,6 +259,15 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     // that may have a reference in skia.
     if (is_accelerated_ && !use_oop_rasterization_)
       FlushGrContext();
+  }
+
+  bool IsSoftwareSharedImageGpuChannelLost() const override {
+    if (!is_software_) {
+      return false;
+    }
+
+    return !shared_image_interface_provider_ ||
+           !shared_image_interface_provider_->SharedImageInterface();
   }
 
   bool IsAccelerated() const final { return is_accelerated_; }
@@ -784,6 +771,9 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
   }
 
  private:
+  // BitmapGpuChannelLostObserver implementation.
+  void OnGpuChannelLost() override { resource_host()->NotifyGpuContextLost(); }
+
   bool IsResourceUsable(CanvasResource* resource) final {
     // The only resources that should be coming in here are
     // CanvasResourceSharedImage instances, since that is the only type of
@@ -819,6 +809,8 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     }
   }
 
+  base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
+      shared_image_interface_provider_;
   const bool is_accelerated_;
   gpu::SharedImageUsageSet shared_image_usage_flags_;
   bool current_resource_has_write_access_ = false;
@@ -1071,14 +1063,10 @@ CanvasResourceProvider::CreateSoftwareSharedImageProvider(
     ShouldInitialize should_initialize,
     WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
     CanvasResourceHost* resource_host) {
-  if (!base::FeatureList::IsEnabled(
-          kCanvasAllowCRPSharedBitmapWithGPUCompositing)) {
-    // CanvasResourceProviderSoftwareSharedImage works only with the software
-    // compositor. However, this was not historically enforced. We are rolling
-    // out this enforcement with a reverse killswitch.
-    if (SharedGpuContext::IsGpuCompositingEnabled()) {
-      return nullptr;
-    }
+  // CanvasResourceProviderSoftwareSharedImage works only with the software
+  // compositor.
+  if (SharedGpuContext::IsGpuCompositingEnabled()) {
+    return nullptr;
   }
 
   auto provider = std::make_unique<CanvasResourceProviderSharedImage>(

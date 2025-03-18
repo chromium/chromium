@@ -183,8 +183,7 @@ void OnDeviceExecution::Cancel() {
   CancelPendingResponse(Result::kCancelled);
 }
 
-void OnDeviceExecution::BeginExecution(OnDeviceContext& context,
-                                       const SamplingParams& sampling_params) {
+void OnDeviceExecution::BeginExecution(OnDeviceContext& context) {
   auto input = opts_.adapter->ConstructInputString(
       last_message_.read(), /*want_input_context=*/false);
   if (!input) {
@@ -211,8 +210,6 @@ void OnDeviceExecution::BeginExecution(OnDeviceContext& context,
 
   auto options = on_device_model::mojom::GenerateOptions::New();
   options->max_output_tokens = opts_.token_limits.max_output_tokens;
-  options->top_k = sampling_params.top_k;
-  options->temperature = sampling_params.temperature;
 
   opts_.safety_checker->RunRequestChecks(
       last_message_,

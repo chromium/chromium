@@ -97,17 +97,6 @@ export class SettingsDisplayAndMagnificationSubpageElement extends
       },
 
       /**
-       * Whether the always show scrollbars feature is enabled.
-       */
-      isAccessibilityAlwaysShowScrollbarsEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-            'isAccessibilityAlwaysShowScrollbarsEnabled');
-        },
-      },
-
-      /**
        * Whether the magnifier following ChromeVox focus feature is
        * enabled.
        */
@@ -172,7 +161,6 @@ export class SettingsDisplayAndMagnificationSubpageElement extends
   private screenMagnifierMouseFollowingModePrefValues_: {[key: string]: number};
   private screenMagnifierZoomOptions_: Array<{value: number, name: string}>;
   private isAccessibilityReducedAnimationsEnabled_: boolean;
-  private isAccessibilityAlwaysShowScrollbarsEnabled_: boolean;
   private isAccessibilityMagnifierFollowsChromeVoxEnabled_: boolean;
 
 

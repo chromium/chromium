@@ -166,6 +166,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1505542291183484463">Tiled resize window downwards</translation>
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Show notification settings. Notifications are off for an app}other{Show notification settings. Notifications are off for # apps}}</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">Battery <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> until full</translation>
 <translation id="1525508553941733066">DISMISS</translation>
 <translation id="1526448108126799339">Open new tab in new window</translation>
@@ -345,7 +346,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="2201071101391734388">Recent photo <ph name="INDEX" /> of <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Collapse Google Tasks</translation>
 <translation id="2208323208084708176">Unified desktop mode</translation>
-<translation id="2220572644011485463">PIN or password</translation>
 <translation id="2222841058024245321">Desk 7</translation>
 <translation id="2223384056430485343">In a split screen</translation>
 <translation id="2224075387478458881">Screen recording is not allowed when protected content is visible</translation>
@@ -1829,7 +1829,6 @@ New install</translation>
 <translation id="7000027735917578303">Windows and desks settings</translation>
 <translation id="7004910047186208204">Connect to mobile data</translation>
 <translation id="7005239792648594238">Open an app to get started</translation>
-<translation id="7007983414944123363">Your PIN or password couldn't be verified. Try again.</translation>
 <translation id="7014684956566476813">Connected to a device named <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Come back at <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Desk 6</translation>
@@ -2466,6 +2465,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="9168436347345867845">Do it later</translation>
 <translation id="9178475906033259337">Displaying one result for <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">This feature allows you to quickly access any signed-in user without requiring a password. Only use this feature with accounts that you trust.</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183456764293710005">Full-screen Magnifier</translation>
 <translation id="9192133205265227850">Use '<ph name="DEVICE_NAME" />'</translation>
 <translation id="9193626018745640770">Casting on an unknown receiver</translation>

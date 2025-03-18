@@ -107,8 +107,7 @@ void SVGAnimateMotionElement::ChildMPathChanged() {
 void SVGAnimateMotionElement::ParseAttribute(
     const AttributeModificationParams& params) {
   if (params.name == svg_names::kPathAttr) {
-    path_ = Path();
-    BuildPathFromString(params.new_value, path_);
+    path_ = BuildPathFromString(params.new_value);
     AnimationAttributeChanged();
     return;
   }

@@ -163,7 +163,7 @@ void GetIsolatedWebAppSizeJob::Start(
             .Then(barrier.CreateClosure()));
   }
 
-  absl::visit(
+  std::visit(
       base::Overloaded{
           [&](const IwaStorageOwnedBundle& owned_bundle) {
             base::ThreadPool::PostTaskAndReplyWithResult(

@@ -1768,7 +1768,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MultiDevice.SecureChannel.Nearby.ConnectionResult"
     enum="MultiDeviceNearbyConnectionsInitiatorResult"
-    expires_after="2025-07-13">
+    expires_after="2025-09-14">
   <owner>hansenmichael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>

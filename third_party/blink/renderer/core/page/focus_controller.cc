@@ -383,61 +383,18 @@ class FocusNavigation final {
     DCHECK(reading_flow_container.GetLayoutBox());
     DCHECK(!reading_flow_container_);
     reading_flow_container_ = &reading_flow_container;
-    auto* children = MakeGarbageCollected<HeapVector<Member<Element>>>();
-    // We optimize to only sort by reading-order if at least one child's
-    // reading-order value is not the default (0).
-    bool should_sort_by_reading_order = false;
-    // Layout box only includes elements that are in the reading flow
-    // container's layout. For each reading flow item, check if itself or its
-    // ancestor should be included in this scope instead, in reading flow order.
-    for (Node* reading_flow_node :
-         reading_flow_container_->GetLayoutBox()->ReadingFlowNodes()) {
+    HeapVector<Member<Element>> children;
+    for (Node* reading_flow_node : Owner()->ReadingFlowChildren()) {
       Element* reading_flow_item = DynamicTo<Element>(reading_flow_node);
-      if (!reading_flow_item) {
+      if (!reading_flow_item || !IsOwnedByRoot(*reading_flow_item)) {
         continue;
       }
-      do {
-        if (IsOwnedByRoot(*reading_flow_item)) {
-          // TODO(dizhangg) this check is O(n^2)
-          if (!children->Contains(reading_flow_item)) {
-            children->push_back(reading_flow_item);
-            if (reading_flow_item->ReadingOrderValue() != 0) {
-              should_sort_by_reading_order = true;
-            }
-          }
-          break;
-        }
-        reading_flow_item =
-            FlatTreeTraversal::ParentElement(*reading_flow_item);
-        // If parent is reading flow container, then we have traversed all
-        // potential parents and there is no reading flow item to add.
-      } while (reading_flow_item &&
-               reading_flow_item != reading_flow_container_);
+      children.push_back(reading_flow_item);
     }
-    // If a child is not in the sorted children, we add it after in DOM order.
-    // This includes elements with computed style display:contents,
-    // position:absolute, and position:fixed.
-    for (Element& child : ElementTraversal::ChildrenOf(*root_)) {
-      // TODO(dizhangg) this check is O(n^2)
-      if (!children->Contains(child) && IsOwnedByRoot(child)) {
-        children->push_back(child);
-        if (child.ReadingOrderValue() != 0) {
-          should_sort_by_reading_order = true;
-        }
-      }
-    }
-    // Now that we have a complete list of children, sort them by reading-order.
-    if (should_sort_by_reading_order) {
-      std::stable_sort(children->begin(), children->end(),
-                       [](const auto& lhs, const auto& rhs) {
-                         return lhs->ReadingOrderValue() <
-                                rhs->ReadingOrderValue();
-                       });
-    }
-    reading_flow_next_elements_.ReserveCapacityForSize(children->size());
-    reading_flow_previous_elements_.ReserveCapacityForSize(children->size());
+    reading_flow_next_elements_.ReserveCapacityForSize(children.size());
+    reading_flow_previous_elements_.ReserveCapacityForSize(children.size());
     Element* prev_element = nullptr;
-    for (Element* child : *children) {
+    for (Element* child : children) {
       // Pseudo elements in reading-flow are not focusable and should not be
       // included in the elements to traverse.
       if (child->IsPseudoElement()) {

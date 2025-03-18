@@ -41,7 +41,10 @@ if (is_android) {
   }
 
   android_resources("java_resources") {
-    sources = []
+    sources = [
+      "android/java/res/drawable-night/signin_logo.xml",
+      "android/java/res/drawable/signin_logo.xml",
+    ]
     deps = [ "//components/browser_ui/styles/android:java_resources" ]
   }
 

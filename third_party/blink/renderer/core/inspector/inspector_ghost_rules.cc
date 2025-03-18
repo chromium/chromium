@@ -156,6 +156,8 @@ void InspectorGhostRules::PopulateSheet(
         continue;
       }
 
+      quiet_mutation_scope_.Add(sheet);
+
       // It's not valid to insert an empty nested decl. rule, so we temporarily
       // insert --dummy, then remove it immediately.
       rule.QuietlyInsertRule(&execution_context, "--dummy:1", i);

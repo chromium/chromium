@@ -10,6 +10,7 @@
 #include <iterator>
 #include <optional>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -1247,7 +1248,7 @@ void AttributionSrcLoader::ResourceClient::
         attribution_reporting::SuitableOrigin reporting_origin) {
   AtomicString header;
 
-  AttributionReportingIssueType issue_type = absl::visit(
+  AttributionReportingIssueType issue_type = std::visit(
       base::Overloaded{
           [&](attribution_reporting::mojom::SourceRegistrationError) {
             header = headers.web_source;

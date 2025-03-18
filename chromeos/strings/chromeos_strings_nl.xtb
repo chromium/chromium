@@ -513,7 +513,6 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="3373141842870501561">Achtergrond Aardestroom</translation>
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> achtergrond met de letter <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Exclusief</translation>
-<translation id="3395147534045164351">Locatie uitlijnen aan- of uitzetten</translation>
 <translation id="3404249063913988450">Screensaver aanzetten</translation>
 <translation id="3413935475507503304">Klik op Volgende om door te gaan met de update.</translation>
 <translation id="3428551088151258685">buiten</translation>
@@ -1395,6 +1394,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="7388345524791662148">Meer opties voor <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Geïntegreerde touchpad</translation>
 <translation id="7397270852490618635">Licht thema uitzetten</translation>
+<translation id="7400166052988585408">Je docent vergrendelt je scherm over <ph name="NUM_SECONDS" /> seconden</translation>
 <translation id="7401543881546089382">Snelle link verwijderen</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> is klaar om te worden geüpdatet</translation>
 <translation id="741244894080940828">conversie</translation>

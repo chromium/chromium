@@ -101,12 +101,14 @@ class AXMainNodeAnnotatorControllerBrowserTest : public InProcessBrowserTest {
       speech_monitor_.Replay();
     }
 #else
+    content::BrowserAccessibilityState::GetInstance()->SetScreenReaderAppActive(
+        enabled);
     // Spoof a screen reader.
     if (!enabled) {
-      screen_reader_override_.reset();
-    } else if (!screen_reader_override_) {
-      screen_reader_override_.emplace(ui::AXMode::kWebContents |
-                                      ui::AXMode::kExtendedProperties);
+      ax_mode_override_.reset();
+    } else if (!ax_mode_override_) {
+      ax_mode_override_.emplace(ui::AXMode::kWebContents |
+                                ui::AXMode::kExtendedProperties);
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
@@ -125,8 +127,7 @@ class AXMainNodeAnnotatorControllerBrowserTest : public InProcessBrowserTest {
 
   ash::test::SpeechMonitor speech_monitor_;
 #else
-  std::optional<content::ScopedAccessibilityModeOverride>
-      screen_reader_override_;
+  std::optional<content::ScopedAccessibilityModeOverride> ax_mode_override_;
 #endif
 
   base::test::ScopedFeatureList scoped_feature_list_;

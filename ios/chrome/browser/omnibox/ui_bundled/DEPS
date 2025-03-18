@@ -7,7 +7,7 @@ include_rules = [
   "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
   "+ios/chrome/browser/history/model/top_sites_factory.h",
   "+ios/chrome/browser/https_upgrades/model/https_upgrade_service_factory.h",
-  "+ios/chrome/browser/intents/intents_donation_helper.h",
+  "+ios/chrome/browser/intents/model/intents_donation_helper.h",
   "+ios/chrome/browser/location_bar/ui_bundled",
   "+ios/chrome/browser/net/model",
   "+ios/chrome/browser/ntp/model",

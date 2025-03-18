@@ -1246,7 +1246,7 @@ void WebrtcTransport::AddPendingCandidatesIfPossible() {
     for (const auto& candidate : pending_incoming_candidates_) {
       if (!peer_connection()->AddIceCandidate(candidate.get())) {
         LOG(ERROR) << "Failed to add incoming candidate";
-        Close(ErrorCode::INCOMPATIBLE_PROTOCOL);
+        Close(ErrorCode::CHANNEL_CONNECTION_ERROR);
         return;
       }
     }

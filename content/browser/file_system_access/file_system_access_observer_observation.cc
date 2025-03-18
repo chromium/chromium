@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -39,27 +40,27 @@ namespace content {
 namespace {
 
 FileSystemAccessPermissionContext::HandleType GetHandleType(
-    const absl::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
-                        std::unique_ptr<FileSystemAccessFileHandleImpl>>&
+    const std::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
+                       std::unique_ptr<FileSystemAccessFileHandleImpl>>&
         handle) {
-  return absl::get_if<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>>(
+  return std::get_if<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>>(
              &handle)
              ? FileSystemAccessPermissionContext::HandleType::kDirectory
              : FileSystemAccessPermissionContext::HandleType::kFile;
 }
 
 FileSystemAccessHandleBase& AsHandleBase(
-    const absl::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
-                        std::unique_ptr<FileSystemAccessFileHandleImpl>>&
+    const std::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
+                       std::unique_ptr<FileSystemAccessFileHandleImpl>>&
         handle) {
   auto* dir_handle_ptr =
-      absl::get_if<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>>(
+      std::get_if<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>>(
           &handle);
   if (dir_handle_ptr) {
     return *static_cast<FileSystemAccessHandleBase*>(dir_handle_ptr->get());
   }
 
-  return *absl::get<std::unique_ptr<FileSystemAccessFileHandleImpl>>(handle);
+  return *std::get<std::unique_ptr<FileSystemAccessFileHandleImpl>>(handle);
 }
 
 // TODO(crbug.com/40105284): Move this to a helper shared with
@@ -145,8 +146,8 @@ FileSystemAccessObserverObservation::FileSystemAccessObserverObservation(
     FileSystemAccessObserverHost* host,
     std::unique_ptr<FileSystemAccessObservationGroup::Observer> observation,
     mojo::PendingRemote<blink::mojom::FileSystemAccessObserver> remote,
-    absl::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
-                  std::unique_ptr<FileSystemAccessFileHandleImpl>> handle)
+    std::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
+                 std::unique_ptr<FileSystemAccessFileHandleImpl>> handle)
     : WebContentsObserver(
           WebContents::FromRenderFrameHost(RenderFrameHostImpl::FromID(
               AsHandleBase(handle).context().frame_id))),

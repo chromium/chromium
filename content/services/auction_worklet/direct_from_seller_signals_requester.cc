@@ -10,6 +10,7 @@
 #include <string>
 #include <tuple>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -25,7 +26,6 @@
 #include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-local-handle.h"
@@ -109,15 +109,15 @@ v8::Local<v8::Value> DirectFromSellerSignalsRequester::Result::GetSignals(
     v8::Local<v8::Context> context,
     std::vector<std::string>& errors) const {
   DCHECK(v8_helper.v8_runner()->RunsTasksInCurrentSequence());
-  if (absl::holds_alternative<ErrorString>(response_or_error_)) {
-    errors.push_back(absl::get<ErrorString>(response_or_error_).value());
+  if (std::holds_alternative<ErrorString>(response_or_error_)) {
+    errors.push_back(std::get<ErrorString>(response_or_error_).value());
     return v8::Null(v8_helper.isolate());
   }
 
-  DCHECK(absl::holds_alternative<scoped_refptr<ResponseString>>(
+  DCHECK(std::holds_alternative<scoped_refptr<ResponseString>>(
       response_or_error_));
   scoped_refptr<ResponseString> response =
-      absl::get<scoped_refptr<ResponseString>>(response_or_error_);
+      std::get<scoped_refptr<ResponseString>>(response_or_error_);
   v8::MaybeLocal<v8::Value> v8_result =
       response ? v8_helper.CreateValueFromJson(context, response->value())
                : v8::Null(v8_helper.isolate());
@@ -131,14 +131,14 @@ v8::Local<v8::Value> DirectFromSellerSignalsRequester::Result::GetSignals(
 }
 
 bool DirectFromSellerSignalsRequester::Result::IsNull() const {
-  if (absl::holds_alternative<ErrorString>(response_or_error_)) {
+  if (std::holds_alternative<ErrorString>(response_or_error_)) {
     return false;
   }
 
-  DCHECK(absl::holds_alternative<scoped_refptr<ResponseString>>(
+  DCHECK(std::holds_alternative<scoped_refptr<ResponseString>>(
       response_or_error_));
   scoped_refptr<ResponseString> response =
-      absl::get<scoped_refptr<ResponseString>>(response_or_error_);
+      std::get<scoped_refptr<ResponseString>>(response_or_error_);
   return response == nullptr;
 }
 

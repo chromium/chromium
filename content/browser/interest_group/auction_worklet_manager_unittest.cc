@@ -2697,33 +2697,6 @@ TEST_F(AuctionWorkletManagerTest, BidderWorkletUrlRequestProtection) {
   EXPECT_EQ("Unexpected request", TakeBadMessage());
 }
 
-// Test a bidder worklet can be correctly requested with a valid coordinator
-// when `kFledgeTrustedSignalsKVv2Support` is disabled. It depends on
-// `GetBiddingAndAuctionServerKey()` to cause a crash if it is called
-// unexpectedly.
-TEST_F(AuctionWorkletManagerTest, BidderWorkletWithKVv2FeatureDisabled) {
-  std::unique_ptr<AuctionWorkletManager::WorkletHandle> handle;
-  base::test::TestFuture<void> worklet_available;
-
-  auction_worklet_manager_->RequestBidderWorklet(
-      kAuction1, kDecisionLogicUrl, kWasmUrl, kTrustedSignalsUrl,
-      /*needs_cors_for_additional_bid=*/false,
-      /*experiment_group_id=*/std::nullopt,
-      /*trusted_bidding_signals_slot_size_param=*/"",
-      /*trusted_bidding_signals_coordinator=*/
-      url::Origin::Create(GURL("https://origin.test/")),
-      worklet_available.GetCallback(), NeverInvokedFatalErrorCallback(), handle,
-      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
-
-  ASSERT_TRUE(worklet_available.Wait());
-  EXPECT_TRUE(handle->GetBidderWorklet());
-  std::unique_ptr<MockBidderWorklet> bidder_worklet =
-      auction_process_manager_->WaitForBidderWorklet();
-  EXPECT_EQ(kDecisionLogicUrl, bidder_worklet->script_source_url());
-  EXPECT_EQ(kTrustedSignalsUrl, bidder_worklet->trusted_bidding_signals_url());
-  EXPECT_TRUE(!bidder_worklet->public_key());
-}
-
 // Minimal test that seller worklets' AuctionURLLoaderFactoryProxies are
 // correctly configured.
 TEST_F(AuctionWorkletManagerTest, SellerWorkletUrlRequestProtection) {
@@ -2792,32 +2765,6 @@ TEST_F(AuctionWorkletManagerTest, SellerWorkletUrlRequestProtection) {
   EXPECT_EQ(std::size(kAllowedUrls),
             url_loader_factory_.pending_requests()->size());
   EXPECT_EQ("Unexpected request", TakeBadMessage());
-}
-
-// Test a seller worklet can be correctly requested with a valid coordinator
-// when `kFledgeTrustedSignalsKVv2Support` is disabled. It depends on
-// `GetBiddingAndAuctionServerKey()` to cause a crash if it is called
-// unexpectedly.
-TEST_F(AuctionWorkletManagerTest, SellerWorkletWithKVv2FeatureDisabled) {
-  SellerWorkletHelper seller_helper;
-
-  auction_worklet_manager_->RequestSellerWorklet(
-      kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl,
-      /*experiment_group_id=*/std::nullopt,
-      /*trusted_scoring_signals_coordinator=*/
-      url::Origin::Create(GURL("https://origin.test/")),
-      /*send_creative_scanning_metadata=*/std::nullopt,
-      seller_helper.ProcessAssignedCallback(),
-      seller_helper.WorkletAvailableCallback(),
-      NeverInvokedFatalErrorCallback(), seller_helper.handle(),
-      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
-
-  seller_helper.WaitForWorklet();
-  EXPECT_TRUE(seller_helper.handle()->GetSellerWorklet());
-  std::unique_ptr<MockSellerWorklet> seller_worklet =
-      auction_process_manager_->WaitForSellerWorklet();
-  EXPECT_EQ(kDecisionLogicUrl, seller_worklet->script_source_url());
-  EXPECT_EQ(kTrustedSignalsUrl, seller_worklet->trusted_scoring_signals_url());
 }
 
 TEST(WorkletKeyTest, HashConsistentForEqualKeys) {
@@ -4160,6 +4107,74 @@ TEST_F(AuctionWorkletManagerKVv2Test, ProcessAssignedReentrancy) {
     // Destroy the seller worklet.
     auction_process_manager_->WaitForSellerWorklet();
   }
+}
+
+class AuctionWorkletManagerKVv2DisableTest : public AuctionWorkletManagerTest {
+ public:
+  AuctionWorkletManagerKVv2DisableTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/
+        {blink::features::kFledgeTrustedSignalsKVv2Support});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test a bidder worklet can be correctly requested with a valid coordinator
+// when `kFledgeTrustedSignalsKVv2Support` is disabled. It depends on
+// `GetBiddingAndAuctionServerKey()` to cause a crash if it is called
+// unexpectedly.
+TEST_F(AuctionWorkletManagerKVv2DisableTest,
+       BidderWorkletWithKVv2FeatureDisabled) {
+  std::unique_ptr<AuctionWorkletManager::WorkletHandle> handle;
+  base::test::TestFuture<void> worklet_available;
+
+  auction_worklet_manager_->RequestBidderWorklet(
+      kAuction1, kDecisionLogicUrl, kWasmUrl, kTrustedSignalsUrl,
+      /*needs_cors_for_additional_bid=*/false,
+      /*experiment_group_id=*/std::nullopt,
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_bidding_signals_coordinator=*/
+      url::Origin::Create(GURL("https://origin.test/")),
+      worklet_available.GetCallback(), NeverInvokedFatalErrorCallback(), handle,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
+
+  ASSERT_TRUE(worklet_available.Wait());
+  EXPECT_TRUE(handle->GetBidderWorklet());
+  std::unique_ptr<MockBidderWorklet> bidder_worklet =
+      auction_process_manager_->WaitForBidderWorklet();
+  EXPECT_EQ(kDecisionLogicUrl, bidder_worklet->script_source_url());
+  EXPECT_EQ(kTrustedSignalsUrl, bidder_worklet->trusted_bidding_signals_url());
+  EXPECT_TRUE(!bidder_worklet->public_key());
+}
+
+// Test a seller worklet can be correctly requested with a valid coordinator
+// when `kFledgeTrustedSignalsKVv2Support` is disabled. It depends on
+// `GetBiddingAndAuctionServerKey()` to cause a crash if it is called
+// unexpectedly.
+TEST_F(AuctionWorkletManagerKVv2DisableTest,
+       SellerWorkletWithKVv2FeatureDisabled) {
+  SellerWorkletHelper seller_helper;
+
+  auction_worklet_manager_->RequestSellerWorklet(
+      kAuction1, kDecisionLogicUrl, kTrustedSignalsUrl,
+      /*experiment_group_id=*/std::nullopt,
+      /*trusted_scoring_signals_coordinator=*/
+      url::Origin::Create(GURL("https://origin.test/")),
+      /*send_creative_scanning_metadata=*/std::nullopt,
+      seller_helper.ProcessAssignedCallback(),
+      seller_helper.WorkletAvailableCallback(),
+      NeverInvokedFatalErrorCallback(), seller_helper.handle(),
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
+
+  seller_helper.WaitForWorklet();
+  EXPECT_TRUE(seller_helper.handle()->GetSellerWorklet());
+  std::unique_ptr<MockSellerWorklet> seller_worklet =
+      auction_process_manager_->WaitForSellerWorklet();
+  EXPECT_EQ(kDecisionLogicUrl, seller_worklet->script_source_url());
+  EXPECT_EQ(kTrustedSignalsUrl, seller_worklet->trusted_scoring_signals_url());
 }
 
 }  // namespace

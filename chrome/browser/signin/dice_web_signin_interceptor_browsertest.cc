@@ -1394,10 +1394,9 @@ IN_PROC_BROWSER_TEST_F(
             ChromeSigninUserChoice::kAlwaysAsk);
 }
 
-// Test Suite where PRE_* tests are with
-// `switches::kExplicitBrowserSigninUIOnDesktop` disabled, and regular test with
-// `switches::kExplicitBrowserSigninUIOnDesktop` enabled, simulating users
-// transitioning in to `switches::kExplicitBrowserSigninUIOnDesktop` active.
+// Test Suite where PRE_* tests are with explicit signin disabled, and regular
+// test with explicit signin enabled, simulating users transitioning in to
+// explicit signin active.
 class DiceWebSigninInterceptorWithUnoEnabledAndPREDisabledBrowserTest
     : public DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest {
  public:
@@ -1407,8 +1406,9 @@ class DiceWebSigninInterceptorWithUnoEnabledAndPREDisabledBrowserTest
   const std::string email_ = "alice@example.com";
 };
 
-// Signing in to Chrome while UNO is disabled, to simulate a signed in user
-// prior to UNO activation, then enabling the feature for them.
+// Signing in to Chrome while explicit signin is disabled, to simulate a signed
+// in user prior to explicit signin activation, then enabling the feature for
+// them.
 IN_PROC_BROWSER_TEST_F(
     DiceWebSigninInterceptorWithUnoEnabledAndPREDisabledBrowserTest,
     PRE_ChromeSignedInTransitionToUnoEnabled) {
@@ -1435,7 +1435,7 @@ IN_PROC_BROWSER_TEST_F(
   SetSignoutAllowed(false);
 }
 
-// Enabling UNO, after being signed in
+// Enabling explicit signin, after being signed in
 // already.
 IN_PROC_BROWSER_TEST_F(
     DiceWebSigninInterceptorWithUnoEnabledAndPREDisabledBrowserTest,
@@ -1443,9 +1443,8 @@ IN_PROC_BROWSER_TEST_F(
   // We are still signed in from the PRE_ test.
   ASSERT_TRUE(IsChromeSignedIn());
 
-  // Starting Chrome with a Signed in account prior to
-  // `switches::kExplicitBrowserSigninUIOnDesktop` activation should not turn
-  // this pref on.
+  // Starting Chrome with a Signed in account prior to explicit signin
+  // activation should not turn this pref on.
   EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
       prefs::kExplicitBrowserSignin));
   // Since we did not interact with passwords before, passwords should remain
@@ -1468,12 +1467,11 @@ IN_PROC_BROWSER_TEST_F(
               signin_metrics::AccessPoint::kChromeSigninInterceptBubble)
           .Build(email_));
 
-  // Explicit Signing in while `switches::kExplicitBrowserSigninUIOnDesktop` is
-  // active should be stored.
+  // Explicit Signing in should be stored.
   EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
       prefs::kExplicitBrowserSignin));
-  // Signing in with `switches::kExplicitBrowserSigninUIOnDesktop` enabled,
-  // should affect the passwords default.
+  // Signing in with explicit signin enabled, should affect the passwords
+  // default.
   EXPECT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
       pref_service, sync_service));
 

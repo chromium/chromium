@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.ACTION_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.COLOR_SCHEME;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.HUB_SEARCH_ENABLED_STATE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_BUTTON_LOOKUP_CALLBACK;
@@ -105,6 +106,7 @@ public class HubToolbarMediatorUnitTest {
     private ObservableSupplierImpl<DisplayButtonData>
             mIncognitoTabSwitcherReferenceButtonDataSupplier2;
     private ObservableSupplierImpl<Integer> mOverviewColorSupplier;
+    private ObservableSupplierImpl<Boolean> mHubSearchEnabledStateSupplier;
     private PropertyModel mModel;
 
     @Before
@@ -114,6 +116,7 @@ public class HubToolbarMediatorUnitTest {
         mTabSwitcherReferenceButtonDataSupplier1 = new ObservableSupplierImpl<>();
         mIncognitoTabSwitcherReferenceButtonDataSupplier2 = new ObservableSupplierImpl<>();
         mOverviewColorSupplier = new ObservableSupplierImpl<>();
+        mHubSearchEnabledStateSupplier = new ObservableSupplierImpl<>();
         mModel = new PropertyModel.Builder(HubToolbarProperties.ALL_KEYS).build();
         mModel.addObserver(mPropertyObserver);
 
@@ -130,6 +133,15 @@ public class HubToolbarMediatorUnitTest {
                 .thenReturn(mIncognitoTabSwitcherPane);
         when(mPaneManager.getPaneForId(PaneId.TAB_GROUPS)).thenReturn(mTabGroupsPane);
         when(mPaneManager.getPaneForId(PaneId.BOOKMARKS)).thenReturn(mBookmarksPane);
+
+        when(mTabSwitcherPane.getHubSearchEnabledStateSupplier())
+                .thenReturn(mHubSearchEnabledStateSupplier);
+        when(mIncognitoTabSwitcherPane.getHubSearchEnabledStateSupplier())
+                .thenReturn(mHubSearchEnabledStateSupplier);
+        when(mTabGroupsPane.getHubSearchEnabledStateSupplier())
+                .thenReturn(mHubSearchEnabledStateSupplier);
+        when(mBookmarksPane.getHubSearchEnabledStateSupplier())
+                .thenReturn(mHubSearchEnabledStateSupplier);
 
         when(mTabSwitcherPane.getReferenceButtonDataSupplier())
                 .thenReturn(mTabSwitcherReferenceButtonDataSupplier1);
@@ -170,6 +182,34 @@ public class HubToolbarMediatorUnitTest {
 
         assertFalse(mTabSwitcherReferenceButtonDataSupplier1.hasObservers());
         assertFalse(mIncognitoTabSwitcherReferenceButtonDataSupplier2.hasObservers());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
+    public void testHubSearchEnabledStateSupplier() {
+        assertFalse(mHubSearchEnabledStateSupplier.hasObservers());
+
+        when(mPaneOrderController.getPaneOrder())
+                .thenReturn(ImmutableSet.of(PaneId.TAB_SWITCHER, PaneId.INCOGNITO_TAB_SWITCHER));
+        mFocusedPaneSupplier.set(mTabSwitcherPane);
+        HubToolbarMediator mediator =
+                new HubToolbarMediator(
+                        mActivity,
+                        mModel,
+                        mPaneManager,
+                        mTracker,
+                        mSearchActivityClient,
+                        mOverviewColorSupplier);
+        assertTrue(mHubSearchEnabledStateSupplier.hasObservers());
+
+        mHubSearchEnabledStateSupplier.set(false);
+        assertFalse(mModel.get(HUB_SEARCH_ENABLED_STATE));
+        mHubSearchEnabledStateSupplier.set(true);
+        assertTrue(mModel.get(HUB_SEARCH_ENABLED_STATE));
+
+        mediator.destroy();
+        assertFalse(mHubSearchEnabledStateSupplier.hasObservers());
     }
 
     @Test

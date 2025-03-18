@@ -31,7 +31,8 @@ void OpenUrlInNewTab(BrowserContext* context,
   tab_model->CreateTab(TabAndroid::FromWebContents(parent), second_web_contents,
                        /*select=*/true);
 
-  ASSERT_TRUE(content::NavigateToURL(second_web_contents, url));
+  content::NavigateToURLBlockUntilNavigationsComplete(second_web_contents, url,
+                                                      1);
   ASSERT_EQ(tab_count + 1, tab_model->GetTabCount());
   ASSERT_NE(parent, second_web_contents);
   ASSERT_EQ(second_web_contents, tab_model->GetActiveWebContents());

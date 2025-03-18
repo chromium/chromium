@@ -10,7 +10,7 @@ found in the LICENSE file.
     <dimen name="action_bar_shadow_height">10dp</dimen>
     <dimen name="bottom_sheet_corner_radius">16dp</dimen>
     <dimen name="card_padding">16dp</dimen>
-    <dimen name="clear_text_button_end_padding">10dp</dimen>
+    <dimen name="clear_text_button_horizontal_padding">16dp</dimen>
     <dimen name="default_rounded_corner_radius">8dp</dimen>
     <dimen name="card_rounded_corner_radius">16dp</dimen>
     <dimen name="card_rounded_corner_small_radius">4dp</dimen>
@@ -79,6 +79,10 @@ found in the LICENSE file.
          location bar on tablets. -->
     <dimen name="modern_toolbar_background_vertical_offset">4dp</dimen>
     <dimen name="toolbar_text_box_elevation">@dimen/default_elevation_2</dimen>
+    <dimen name="focused_button_highlight_stroke_width">2dp</dimen>
+    <dimen name="search_box_button_highlight_width">40dp</dimen>
+    <dimen name="search_box_button_highlight_height">32dp</dimen>
+    <dimen name="search_box_nav_button_background_inset">12dp</dimen>
 
     <!-- Promo cards dimensions -->
     <dimen name="promo_image_size">24dp</dimen>

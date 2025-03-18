@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -50,7 +51,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/mock_resource_bundle_delegate.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -273,12 +273,12 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
                                      const gfx::Image& expected_image) {
     if constexpr (BUILDFLAG(IS_ANDROID)) {
       auto* custom_icon_url =
-          absl::get_if<Suggestion::CustomIconUrl>(&suggestion.custom_icon);
+          std::get_if<Suggestion::CustomIconUrl>(&suggestion.custom_icon);
       GURL url = custom_icon_url ? **custom_icon_url : GURL();
       return url == expected_url;
     } else {
-      CHECK(absl::holds_alternative<gfx::Image>(suggestion.custom_icon));
-      return AreImagesEqual(absl::get<gfx::Image>(suggestion.custom_icon),
+      CHECK(std::holds_alternative<gfx::Image>(suggestion.custom_icon));
+      return AreImagesEqual(std::get<gfx::Image>(suggestion.custom_icon),
                             expected_image);
     }
   }
@@ -343,16 +343,16 @@ class AutofillCreditCardBenefitsLabelTest
     std::u16string benefit_description;
     int64_t instrument_id;
 
-    if (absl::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit())) {
+    if (std::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit())) {
       CreditCardFlatRateBenefit benefit =
-          absl::get<CreditCardFlatRateBenefit>(GetBenefit());
+          std::get<CreditCardFlatRateBenefit>(GetBenefit());
       payments_data().AddCreditCardBenefitForTest(benefit);
       benefit_description = benefit.benefit_description();
       instrument_id = *benefit.linked_card_instrument_id();
-    } else if (absl::holds_alternative<CreditCardMerchantBenefit>(
+    } else if (std::holds_alternative<CreditCardMerchantBenefit>(
                    GetBenefit())) {
       CreditCardMerchantBenefit benefit =
-          absl::get<CreditCardMerchantBenefit>(GetBenefit());
+          std::get<CreditCardMerchantBenefit>(GetBenefit());
       payments_data().AddCreditCardBenefitForTest(benefit);
       benefit_description = benefit.benefit_description();
       instrument_id = *benefit.linked_card_instrument_id();
@@ -360,7 +360,7 @@ class AutofillCreditCardBenefitsLabelTest
       // displayed.
       autofill_client()->set_last_committed_primary_main_frame_url(
           benefit.merchant_domains().begin()->GetURL());
-    } else if (absl::holds_alternative<CreditCardCategoryBenefit>(
+    } else if (std::holds_alternative<CreditCardCategoryBenefit>(
                    GetBenefit())) {
       ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
                   autofill_client()->GetAutofillOptimizationGuide()),
@@ -368,7 +368,7 @@ class AutofillCreditCardBenefitsLabelTest
           .WillByDefault(testing::Return(
               CreditCardCategoryBenefit::BenefitCategory::kSubscription));
       CreditCardCategoryBenefit benefit =
-          absl::get<CreditCardCategoryBenefit>(GetBenefit());
+          std::get<CreditCardCategoryBenefit>(GetBenefit());
       payments_data().AddCreditCardBenefitForTest(benefit);
       benefit_description = benefit.benefit_description();
       instrument_id = *benefit.linked_card_instrument_id();
@@ -544,7 +544,7 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
 // where the webpage's URL is different from the benefit's applicable URL.
 TEST_P(AutofillCreditCardBenefitsLabelTest,
        BenefitSuggestionLabelNotDisplayed_MerchantUrlIsDifferent) {
-  if (!absl::holds_alternative<CreditCardMerchantBenefit>(GetBenefit())) {
+  if (!std::holds_alternative<CreditCardMerchantBenefit>(GetBenefit())) {
     GTEST_SKIP() << "This test should not run for non-merchant benefits.";
   }
   autofill_client()->set_last_committed_primary_main_frame_url(
@@ -565,7 +565,7 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
 // benefit's applicable category.
 TEST_P(AutofillCreditCardBenefitsLabelTest,
        BenefitSuggestionLabelNotDisplayed_CategoryIsDifferent) {
-  if (!absl::holds_alternative<CreditCardCategoryBenefit>(GetBenefit())) {
+  if (!std::holds_alternative<CreditCardCategoryBenefit>(GetBenefit())) {
     GTEST_SKIP() << "This test should not run for non-category benefits.";
   }
 
@@ -669,7 +669,7 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
 TEST_P(
     AutofillCreditCardBenefitsLabelTest,
     GetCreditCardSuggestionsForTouchToFill_BenefitsNotAdded_NonApplicableUrl) {
-  if (!absl::holds_alternative<CreditCardMerchantBenefit>(GetBenefit())) {
+  if (!std::holds_alternative<CreditCardMerchantBenefit>(GetBenefit())) {
     GTEST_SKIP() << "This test should not run for non-merchant benefits.";
   }
   autofill_client()->set_last_committed_primary_main_frame_url(
@@ -694,7 +694,7 @@ TEST_P(
 TEST_P(
     AutofillCreditCardBenefitsLabelTest,
     GetCreditCardSuggestionsForTouchToFill_BenefitsNotAdded_DifferentCategory) {
-  if (!absl::holds_alternative<CreditCardCategoryBenefit>(GetBenefit())) {
+  if (!std::holds_alternative<CreditCardCategoryBenefit>(GetBenefit())) {
     GTEST_SKIP() << "This test should not run for non-category benefits.";
   }
 
@@ -1914,8 +1914,7 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   EXPECT_EQ(promo_code_suggestions[0].main_text.value, u"test_promo_code_1");
   EXPECT_THAT(promo_code_suggestions[0],
               EqualLabels({{u"test_value_prop_text_1"}}));
-  EXPECT_FALSE(
-      absl::holds_alternative<GURL>(promo_code_suggestions[0].payload));
+  EXPECT_FALSE(std::holds_alternative<GURL>(promo_code_suggestions[0].payload));
   EXPECT_EQ(promo_code_suggestions[0].type,
             SuggestionType::kMerchantPromoCodeEntry);
 }

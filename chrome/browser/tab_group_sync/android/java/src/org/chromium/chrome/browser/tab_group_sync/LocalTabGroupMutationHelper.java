@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tab_group_sync;
 
 import android.text.TextUtils;
 
+import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncControllerImpl.TabCreationDelegate;
@@ -134,8 +135,7 @@ public class LocalTabGroupMutationHelper {
         LogUtils.log(TAG, "reconcileGroup " + tabGroup);
         assert tabGroup.localId != null;
 
-        int rootId = TabGroupSyncUtils.getRootId(mTabGroupModelFilter, tabGroup.localId);
-        List<Tab> tabs = mTabGroupModelFilter.getRelatedTabListForRootId(rootId);
+        List<Tab> tabs = mTabGroupModelFilter.getTabsInGroup(tabGroup.localId.tabGroupId);
         assert !tabs.isEmpty();
         if (tabs.isEmpty()) {
             LogUtils.log(TAG, "Found no tabs in the local group");
@@ -158,8 +158,7 @@ public class LocalTabGroupMutationHelper {
         // Update the remaining tabs. If the tab is already there, ensure its URL is up-to-date.
         // If the tab doesn't exist yet, create a new one.
         // Note, root ID might have changed due to the close operations. Query it again.
-        rootId = TabGroupSyncUtils.getRootId(mTabGroupModelFilter, tabGroup.localId);
-        tabs = mTabGroupModelFilter.getRelatedTabListForRootId(rootId);
+        int rootId = TabGroupSyncUtils.getRootId(mTabGroupModelFilter, tabGroup.localId);
         int groupStartIndex = TabModelUtils.getTabIndexById(getTabModel(), tabs.get(0).getId());
         Tab parent = tabs.get(0);
         boolean wasCollapsed = mTabGroupModelFilter.getTabGroupCollapsed(rootId);
@@ -222,19 +221,19 @@ public class LocalTabGroupMutationHelper {
      * during the next startup of the window. This function is responsible for notifying sync that
      * the group has been closed and drop the mapping.
      *
-     * @param tabGroupId The local ID of the tab group.
+     * @param localGroupId The local ID of the tab group.
      * @param closingSource The source of the tab closure.
      */
-    public void closeTabGroup(LocalTabGroupId tabGroupId, @ClosingSource int closingSource) {
-        LogUtils.log(TAG, "closeTabGroup " + tabGroupId);
-        int rootId = TabGroupSyncUtils.getRootId(mTabGroupModelFilter, tabGroupId);
-        assert rootId != Tab.INVALID_TAB_ID;
+    public void closeTabGroup(LocalTabGroupId localGroupId, @ClosingSource int closingSource) {
+        LogUtils.log(TAG, "closeTabGroup " + localGroupId);
+        Token tabGroupId = localGroupId.tabGroupId;
+        assert mTabGroupModelFilter.tabGroupExists(tabGroupId);
 
-        SavedTabGroup group = mTabGroupSyncService.getGroup(tabGroupId);
+        SavedTabGroup group = mTabGroupSyncService.getGroup(localGroupId);
         boolean isCollaboration = group != null && !TextUtils.isEmpty(group.collaborationId);
 
         // Close the tabs.
-        List<Tab> tabs = mTabGroupModelFilter.getRelatedTabListForRootId(rootId);
+        List<Tab> tabs = mTabGroupModelFilter.getTabsInGroup(tabGroupId);
         getTabModel()
                 .getTabRemover()
                 .forceCloseTabs(
@@ -244,7 +243,7 @@ public class LocalTabGroupMutationHelper {
                                 .build());
 
         // Remove mapping from service. Collect metrics before that.
-        mTabGroupSyncService.removeLocalTabGroupMapping(tabGroupId, closingSource);
+        mTabGroupSyncService.removeLocalTabGroupMapping(localGroupId, closingSource);
     }
 
     private List<Tab> findLocalTabsNotInSyncPostStartup(SavedTabGroup savedTabGroup) {
@@ -260,8 +259,7 @@ public class LocalTabGroupMutationHelper {
         }
 
         List<Tab> tabsNotInSync = new ArrayList<>();
-        int rootId = TabGroupSyncUtils.getRootId(mTabGroupModelFilter, savedTabGroup.localId);
-        for (Tab localTab : mTabGroupModelFilter.getRelatedTabListForRootId(rootId)) {
+        for (Tab localTab : mTabGroupModelFilter.getTabsInGroup(savedTabGroup.localId.tabGroupId)) {
             if (!savedTabIds.contains(localTab.getId())) {
                 tabsNotInSync.add(localTab);
             }

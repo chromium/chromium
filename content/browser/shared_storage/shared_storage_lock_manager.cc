@@ -59,13 +59,14 @@ void SharedStorageLockManager::SharedStorageUpdate(
     const url::Origin& shared_storage_origin,
     AccessScope scope,
     FrameTreeNodeId main_frame_id,
+    std::optional<int> worklet_id,
     SharedStorageUpdateCallback callback) {
   base::UmaHistogramBoolean("Storage.SharedStorage.UpdateMethod.HasLockOption",
                             !!method_with_options->with_lock);
 
   SharedStorageUpdateHelper(std::move(method_with_options),
                             shared_storage_origin, scope, main_frame_id,
-                            std::move(callback),
+                            worklet_id, std::move(callback),
                             /*batch_update_id=*/std::nullopt);
 }
 
@@ -76,14 +77,16 @@ void SharedStorageLockManager::SharedStorageBatchUpdate(
     const url::Origin& shared_storage_origin,
     AccessScope scope,
     FrameTreeNodeId main_frame_id,
+    std::optional<int> worklet_id,
     SharedStorageUpdateCallback callback) {
   base::UmaHistogramBoolean(
       "Storage.SharedStorage.BatchUpdateMethod.HasLockOption", !!with_lock);
 
-  auto ready_to_handle_batch_update_callback = base::BindOnce(
-      &SharedStorageLockManager::OnReadyToHandleBatchUpdate,
-      weak_ptr_factory_.GetWeakPtr(), std::move(methods_with_options),
-      shared_storage_origin, scope, main_frame_id, std::move(callback));
+  auto ready_to_handle_batch_update_callback =
+      base::BindOnce(&SharedStorageLockManager::OnReadyToHandleBatchUpdate,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(methods_with_options), shared_storage_origin,
+                     scope, main_frame_id, worklet_id, std::move(callback));
 
   if (!with_lock ||
       !base::FeatureList::IsEnabled(blink::features::kSharedStorageWebLocks)) {
@@ -151,13 +154,14 @@ void SharedStorageLockManager::SharedStorageUpdateHelper(
     const url::Origin& shared_storage_origin,
     AccessScope scope,
     FrameTreeNodeId main_frame_id,
+    std::optional<int> worklet_id,
     SharedStorageUpdateCallback callback,
     std::optional<int> batch_update_id) {
   auto ready_to_handle_update_callback = base::BindOnce(
       &SharedStorageLockManager::OnReadyToHandleUpdate,
       weak_ptr_factory_.GetWeakPtr(), std::move(method_with_options->method),
-      shared_storage_origin, scope, main_frame_id, std::move(callback),
-      std::move(batch_update_id));
+      shared_storage_origin, scope, main_frame_id, worklet_id,
+      std::move(callback), std::move(batch_update_id));
 
   const std::optional<std::string>& with_lock = method_with_options->with_lock;
 
@@ -178,6 +182,7 @@ void SharedStorageLockManager::OnReadyToHandleUpdate(
     url::Origin shared_storage_origin,
     AccessScope scope,
     FrameTreeNodeId main_frame_id,
+    std::optional<int> worklet_id,
     SharedStorageUpdateCallback callback,
     std::optional<int> batch_update_id,
     mojo::AssociatedRemote<blink::mojom::LockHandle> lock_handle,
@@ -201,7 +206,7 @@ void SharedStorageLockManager::OnReadyToHandleUpdate(
               SharedStorageEventParams::CreateForSet(
                   base::UTF16ToUTF8(set_method->key),
                   base::UTF16ToUTF8(set_method->value),
-                  set_method->ignore_if_present));
+                  set_method->ignore_if_present, worklet_id));
 
       auto completed_callback = base::BindOnce(
           [](SharedStorageUpdateCallback callback, OperationResult result) {
@@ -231,7 +236,7 @@ void SharedStorageLockManager::OnReadyToHandleUpdate(
               shared_storage_origin.Serialize(),
               SharedStorageEventParams::CreateForAppend(
                   base::UTF16ToUTF8(append_method->key),
-                  base::UTF16ToUTF8(append_method->value)));
+                  base::UTF16ToUTF8(append_method->value), worklet_id));
 
       auto completed_callback = base::BindOnce(
           [](SharedStorageUpdateCallback callback, OperationResult result) {
@@ -259,7 +264,7 @@ void SharedStorageLockManager::OnReadyToHandleUpdate(
               scope, access_method, main_frame_id,
               shared_storage_origin.Serialize(),
               SharedStorageEventParams::CreateForGetOrDelete(
-                  base::UTF16ToUTF8(delete_method->key)));
+                  base::UTF16ToUTF8(delete_method->key), worklet_id));
 
       auto completed_callback = base::BindOnce(
           [](SharedStorageUpdateCallback callback, OperationResult result) {
@@ -283,7 +288,9 @@ void SharedStorageLockManager::OnReadyToHandleUpdate(
           ->NotifySharedStorageAccessed(
               scope, access_method, main_frame_id,
               shared_storage_origin.Serialize(),
-              SharedStorageEventParams::CreateDefault());
+              worklet_id
+                  ? SharedStorageEventParams::CreateWithWorkletId(*worklet_id)
+                  : SharedStorageEventParams::CreateDefault());
 
       auto completed_callback = base::BindOnce(
           [](SharedStorageUpdateCallback callback, OperationResult result) {
@@ -336,6 +343,7 @@ void SharedStorageLockManager::OnReadyToHandleBatchUpdate(
     url::Origin shared_storage_origin,
     AccessScope scope,
     FrameTreeNodeId main_frame_id,
+    std::optional<int> worklet_id,
     SharedStorageUpdateCallback callback,
     mojo::AssociatedRemote<blink::mojom::LockHandle> lock_handle,
     mojo::Remote<blink::mojom::LockManager> lock_manager) {
@@ -358,7 +366,7 @@ void SharedStorageLockManager::OnReadyToHandleBatchUpdate(
   for (auto& method_with_options : methods_with_options) {
     SharedStorageUpdateHelper(
         std::move(method_with_options), shared_storage_origin, scope,
-        main_frame_id,
+        main_frame_id, worklet_id,
         base::BindOnce(&SharedStorageLockManager::OnMethodWithinBatchFinished,
                        weak_ptr_factory_.GetWeakPtr(), batch_update_id),
         std::make_optional(batch_update_id));

@@ -477,9 +477,9 @@ void RecordDocumentSizeBytes(lens::MimeType page_content_type,
                              size_t document_size_bytes) {
   const auto sliced_invoked_histogram_name =
       "Lens.Overlay.ByPageContentType." +
-      MimeTypeToMetricString(page_content_type) + ".DocumentSize";
-  base::UmaHistogramMemoryKB(sliced_invoked_histogram_name,
-                             document_size_bytes / 1000);
+      MimeTypeToMetricString(page_content_type) + ".DocumentSize2";
+  base::UmaHistogramCustomCounts(sliced_invoked_histogram_name,
+                                 document_size_bytes / 1000, 1, 100000, 100);
 }
 
 void RecordPdfPageCount(uint32_t page_count) {

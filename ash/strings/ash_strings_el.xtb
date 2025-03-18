@@ -166,6 +166,7 @@
 <translation id="1505542291183484463">Αλλαγή μεγέθους παραθύρου σε παράθεση προς τα κάτω</translation>
 <translation id="1510238584712386396">Λειτουργία εκκίνησης</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Εμφάνιση ρυθμίσεων ειδοποιήσεων. Έχουν απενεργοποιηθεί οι ειδοποιήσεις για κάποια εφαρμογή.}other{Εμφάνιση ρυθμίσεων ειδοποιήσεων. Έχουν απενεργοποιηθεί οι ειδοποιήσεις για # εφαρμογές.}}</translation>
+<translation id="1521655867290435174">Υπολογιστικά φύλλα Google</translation>
 <translation id="1523032696246003">Μπαταρία <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> για πλήρη φόρτιση</translation>
 <translation id="1525508553941733066">ΑΠΟΡΡΙΨΗ</translation>
 <translation id="1526448108126799339">Άνοιγμα νέας καρτέλας σε νέο παράθυρο</translation>
@@ -345,7 +346,6 @@
 <translation id="2201071101391734388">Πρόσφατη φωτογραφία <ph name="INDEX" /> από <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Σύμπτυξη του Google Tasks</translation>
 <translation id="2208323208084708176">Ενιαία λειτουργία επιφάνειας εργασίας.</translation>
-<translation id="2220572644011485463">PIN ή κωδικός πρόσβασης</translation>
 <translation id="2222841058024245321">Γραφείο 7</translation>
 <translation id="2223384056430485343">Σε παράθυρο διαχωρισμού οθόνης</translation>
 <translation id="2224075387478458881">Η εγγραφή οθόνης δεν επιτρέπεται όταν είναι ορατό προστατευμένο περιεχόμενο.</translation>
@@ -1829,7 +1829,6 @@
 <translation id="7000027735917578303">Ρυθμίσεις παραθύρων και γραφείων</translation>
 <translation id="7004910047186208204">Σύνδεση σε δεδομένα κινητής τηλεφωνίας</translation>
 <translation id="7005239792648594238">Ανοίξτε μια εφαρμογή για να ξεκινήσετε</translation>
-<translation id="7007983414944123363">Δεν ήταν δυνατή η επαλήθευση του PIN ή του κωδικού πρόσβασής σας. Δοκιμάστε ξανά.</translation>
 <translation id="7014684956566476813">Πραγματοποιήθηκε σύνδεση σε συσκευή με όνομα <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Επιστρέψτε ξανά στις <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Γραφείο 6</translation>
@@ -2466,6 +2465,7 @@
 <translation id="9168436347345867845">Αργότερα</translation>
 <translation id="9178475906033259337">Προβολή 1 αποτελέσματος για την αναζήτηση <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Αυτή η λειτουργία σάς επιτρέπει να έχετε γρήγορη πρόσβαση σε οποιονδήποτε συνδεδεμένο χρήστη, χωρίς να απαιτείται κωδικός πρόσβασης. Χρησιμοποιήστε αυτήν τη λειτουργία μόνο με λογαριασμούς που εμπιστεύεστε.</translation>
+<translation id="9183302530794969518">Έγγραφα Google</translation>
 <translation id="9183456764293710005">Μεγέθυνση πλήρους οθόνης</translation>
 <translation id="9192133205265227850">Χρήση της συσκευής <ph name="DEVICE_NAME" /></translation>
 <translation id="9193626018745640770">Μετάδοση σε άγνωστο δέκτη</translation>

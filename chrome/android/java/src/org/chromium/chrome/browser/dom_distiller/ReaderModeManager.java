@@ -101,7 +101,19 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     public static final String EXTRA_READER_MODE_PARENT =
             "org.chromium.chrome.browser.dom_distiller.EXTRA_READER_MODE_PARENT";
 
-    /** The url of the last page visited if the last page was reader mode page.  Otherwise null. */
+    /** Histogram name for the state of the reader mode accessibility setting. */
+    public static final String ACCESSIBILITY_SETTING_HISTOGRAM =
+            "DomDistiller.Android.OnDistillableResult.AccessibilitySettingEnabled";
+
+    /** Histogram name for whether a distillable mobile page was excluded. */
+    public static final String DISTILLABLE_MOBILE_PAGE_EXCLUDED_HISTOGRAM =
+            "DomDistiller.Android.OnDistillableResult.DistillableMobilePageExcluded";
+
+    /** Histogram name for the end distillability result. */
+    public static final String PAGE_DISTILLABLE_RESULT_HISTOGRAM =
+            "DomDistiller.Android.OnDistillableResult.PageDistillable";
+
+    /** The url of the last page visited if the last page was reader mode page. Otherwise null. */
     private GURL mReaderModePageUrl;
 
     /** Whether the fact that the current web page was distillable or not has been recorded. */
@@ -650,8 +662,9 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     }
 
     /**
-     * Set the observer for updating reader mode status based on whether or not the page should
-     * be viewed in reader mode.
+     * Set the observer for updating reader mode status based on whether or not the page should be
+     * viewed in reader mode.
+     *
      * @param tabToObserve The tab to attach the observer to.
      */
     private void setDistillabilityObserver(final Tab tabToObserve) {
@@ -660,10 +673,12 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
                     // Make sure the page didn't navigate while waiting for a response.
                     if (!tab.getUrl().equals(mDistillerUrl)) return;
 
-                    if (isDistillable
-                            && !(isMobileOptimized
-                                    && DomDistillerTabUtils.shouldExcludeMobileFriendly(
-                                            tabToObserve))) {
+                    // So here we want to record (1) is the page distillable
+                    boolean shouldExcludeMobileFriendly =
+                            DomDistillerTabUtils.shouldExcludeMobileFriendly(tabToObserve);
+                    boolean excludeCurrentMobilePage =
+                            isMobileOptimized && shouldExcludeMobileFriendly;
+                    if (isDistillable && !excludeCurrentMobilePage) {
                         mDistillationStatus = DistillationStatus.POSSIBLE;
                         tryShowingPrompt();
                     } else {
@@ -673,7 +688,14 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
                             && (mDistillationStatus == DistillationStatus.POSSIBLE || isLast)) {
                         mIsUmaRecorded = true;
                         RecordHistogram.recordBooleanHistogram(
-                                "DomDistiller.PageDistillable",
+                                ACCESSIBILITY_SETTING_HISTOGRAM,
+                                DomDistillerTabUtils.isReaderModeAccessibilitySettingEnabled(
+                                        tabToObserve.getProfile()));
+                        RecordHistogram.recordBooleanHistogram(
+                                DISTILLABLE_MOBILE_PAGE_EXCLUDED_HISTOGRAM,
+                                isDistillable && excludeCurrentMobilePage);
+                        RecordHistogram.recordBooleanHistogram(
+                                PAGE_DISTILLABLE_RESULT_HISTOGRAM,
                                 mDistillationStatus == DistillationStatus.POSSIBLE);
                     }
                 };

@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/functional/bind.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -286,7 +287,7 @@ ui::NativeTheme::Part Checkbox::GetThemePart() const {
 
 void Checkbox::GetExtraParams(ui::NativeTheme::ExtraParams* params) const {
   LabelButton::GetExtraParams(params);
-  absl::get<ui::NativeTheme::ButtonExtraParams>(*params).checked = GetChecked();
+  std::get<ui::NativeTheme::ButtonExtraParams>(*params).checked = GetChecked();
 }
 
 void Checkbox::SetAndUpdateAccessibleDefaultActionVerb() {

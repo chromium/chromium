@@ -10,13 +10,12 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
-#import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/task/sequenced_task_runner.h"
 #import "base/test/bind.h"
 #import "base/test/gtest_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/test/test_future.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/pref_registry/pref_registry_syncable.h"
@@ -342,21 +341,19 @@ TEST_P(AuthenticationServiceTest, TestSetReauthPromptForSignInAndSync) {
 }
 
 // Tests that reauth prompt is not set when the user signs out.
-TEST_P(AuthenticationServiceTest,
-       TestHandleForgottenIdentityNoPromptSignIn_SyncingUser) {
+TEST_P(AuthenticationServiceTest, TestHandleForgottenIdentityNoPromptSignIn) {
   // Sign in.
   authentication_service()->SignIn(identity(0),
                                    signin_metrics::AccessPoint::kUnknown);
-  authentication_service()->GrantSyncConsent(
-      identity(0), signin_metrics::AccessPoint::kUnknown);
   VerifyLastSigninTimestamp();
 
-  // Set the authentication service as "In Foreground", remove identity and run
-  // the loop.
+  // Set the authentication service as "In Foreground", then remove the
+  // identity.
   FireApplicationWillEnterForeground();
-  fake_system_identity_manager()->ForgetIdentity(identity(0),
-                                                 base::DoNothing());
-  base::RunLoop().RunUntilIdle();
+  base::test::TestFuture<NSError*> identity_forgotten;
+  fake_system_identity_manager()->ForgetIdentity(
+      identity(0), identity_forgotten.GetCallback());
+  ASSERT_TRUE(identity_forgotten.Wait());
 
   // User is signed out (no corresponding identity), but not prompted for sign
   // in (as the action was user initiated).
@@ -365,38 +362,16 @@ TEST_P(AuthenticationServiceTest,
   EXPECT_FALSE(authentication_service()->ShouldReauthPromptForSignInAndSync());
 }
 
-// Tests that reauth prompt is set if the primary identity is remove from
-// an other app when the user was signed and syncing.
+// The reauth prompt should be shown if the primary identity is removed from an
+// other app when the user was signed in.
 TEST_P(AuthenticationServiceTest, TestHandleForgottenIdentityPromptSignIn) {
   // Sign in.
   authentication_service()->SignIn(identity(0),
                                    signin_metrics::AccessPoint::kUnknown);
-  authentication_service()->GrantSyncConsent(
-      identity(0), signin_metrics::AccessPoint::kUnknown);
   VerifyLastSigninTimestamp();
 
-  // Set the authentication service as "In Background", remove identity and run
-  // the loop.
-  fake_system_identity_manager()->ForgetIdentityFromOtherApplication(
-      identity(0));
-
-  // User is signed out (no corresponding identity), and reauth prompt is set.
-  EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
-  EXPECT_TRUE(authentication_service()->ShouldReauthPromptForSignInAndSync());
-}
-
-// The reauth prompt should be shown if the primary identity is remove from an
-// other app when the user was signed in.
-TEST_P(AuthenticationServiceTest,
-       TestHandleForgottenIdentityNoPromptSignIn_NonSyncingUser) {
-  // Sign in.
-  authentication_service()->SignIn(identity(0),
-                                   signin_metrics::AccessPoint::kUnknown);
-  VerifyLastSigninTimestamp();
-
-  // Set the authentication service as "In Background", remove identity and run
-  // the loop.
+  // Set the authentication service as "In Background", then remove the
+  // identity.
   fake_system_identity_manager()->ForgetIdentityFromOtherApplication(
       identity(0));
 
@@ -455,9 +430,10 @@ TEST_P(AuthenticationServiceTest, HasPrimaryIdentityBackground) {
 
   // Remove the signed in identity while in background, and check that
   // HasPrimaryIdentity is up-to-date.
-  fake_system_identity_manager()->ForgetIdentity(identity(0),
-                                                 base::DoNothing());
-  base::RunLoop().RunUntilIdle();
+  base::test::TestFuture<NSError*> identity_forgotten;
+  fake_system_identity_manager()->ForgetIdentity(
+      identity(0), identity_forgotten.GetCallback());
+  ASSERT_TRUE(identity_forgotten.Wait());
 
   EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
@@ -517,72 +493,15 @@ TEST_P(AuthenticationServiceTest, MDMErrorsClearedOnSignout) {
       signin_metrics::ProfileSignout::kAbortSignin, nil);
   EXPECT_FALSE(HasCachedMDMInfo(identity(0)));
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
-  EXPECT_EQ(ClearBrowsingDataCount(), 0);
 }
 
-// Tests that MDM errors are correctly cleared when signing out from a managed
-// account which clears browsing data in this case.
+// Tests that (a) MDM errors are cleared, and (b) local data *only from the
+// signed-in period* are cleared, when signing out of a managed account.
 // If `kSeparateProfilesForManagedAccounts` is enabled, managed accounts are
 // assigned into their own separate profiles and cannot sign out from there, so
 // this test doesn't apply.
 TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
-       MDMErrorsClearedOnSignoutAndClearBrowsingData) {
-  // Add a managed identity to device.
-  FakeSystemIdentity* fake_system_identity =
-      [FakeSystemIdentity fakeManagedIdentity];
-  fake_system_identity_manager()->AddIdentity(fake_system_identity);
-
-  ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
-  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
-
-  authentication_service()->SignIn(identity(2),
-                                   signin_metrics::AccessPoint::kUnknown);
-  VerifyLastSigninTimestamp();
-  // Mark the signed-in user as "migrated from previously syncing".
-  MarkSignedinUserMigratedFromSyncing();
-
-  SetCachedMDMInfo(identity(2), CreateRefreshAccessTokenError(identity(2)));
-  authentication_service()->SignOut(
-      signin_metrics::ProfileSignout::kAbortSignin, nil);
-  EXPECT_FALSE(HasCachedMDMInfo(identity(2)));
-  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
-  EXPECT_EQ(ClearBrowsingDataCount(), 1);
-}
-
-// Tests that local data are not cleared when signing out of a non-syncing
-// managed account.
-// If `kSeparateProfilesForManagedAccounts` is enabled, managed accounts are
-// assigned into their own separate profiles and cannot sign out from there, so
-// this test doesn't apply.
-TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
-       SignedInManagedAccountSignOut) {
-  FakeSystemIdentity* fake_system_identity =
-      [FakeSystemIdentity fakeManagedIdentity];
-  fake_system_identity_manager()->AddIdentity(fake_system_identity);
-  ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
-  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
-
-  authentication_service()->SignIn(identity(2),
-                                   signin_metrics::AccessPoint::kUnknown);
-  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
-  EXPECT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
-      signin::ConsentLevel::kSignin));
-  VerifyLastSigninTimestamp();
-
-  SetCachedMDMInfo(identity(2), CreateRefreshAccessTokenError(identity(0)));
-  authentication_service()->SignOut(
-      signin_metrics::ProfileSignout::kAbortSignin, nil);
-  EXPECT_FALSE(HasCachedMDMInfo(identity(2)));
-  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
-  EXPECT_EQ(ClearBrowsingDataCount(), 0);
-}
-
-// Tests that local data is cleared on signout for a managed account.
-// If `kSeparateProfilesForManagedAccounts` is enabled, managed accounts are
-// assigned into their own separate profiles and cannot sign out from there, so
-// this test doesn't apply.
-TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
-       SignedInManagedAccountSignOutWithClearData_UnmanagedBrowser) {
+       ManagedAccountSignOut_ClearDataFromSignin) {
   FakeSystemIdentity* fake_system_identity =
       [FakeSystemIdentity fakeManagedIdentity];
   fake_system_identity_manager()->AddIdentity(fake_system_identity);
@@ -596,22 +515,22 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
       signin::ConsentLevel::kSignin));
   VerifyLastSigninTimestamp();
 
-  SetCachedMDMInfo(identity(2), CreateRefreshAccessTokenError(identity(0)));
+  SetCachedMDMInfo(identity(2), CreateRefreshAccessTokenError(identity(2)));
   authentication_service()->SignOut(
       signin_metrics::ProfileSignout::kUserClickedSignoutSettings, nil);
   EXPECT_FALSE(HasCachedMDMInfo(identity(2)));
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
+  EXPECT_EQ(ClearBrowsingDataCount(), 0);
   EXPECT_EQ(ClearBrowsingDataFromSigninCount(), 1);
 }
 
-// Tests that local data is not cleared on managed user's signout for a managed
-// account and the browser is managed.
+// Tests that (a) MDM errors are cleared, and (b) local data is *not* cleared,
+// when signing out of a managed account while the browser is managed.
 // If `kSeparateProfilesForManagedAccounts` is enabled, managed accounts are
 // assigned into their own separate profiles and cannot sign out from there, so
 // this test doesn't apply.
-TEST_F(
-    AuthenticationServiceWithoutSeparateProfilesTest,
-    SignedInManagedAccountSignOutWithClearDataFeatureEnabled_ManagedBrowser) {
+TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
+       ManagedAccountSignOut_DontClearIfManagedBrowser) {
   // Add managed configuration so the browser is managed.
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   NSDictionary* dict = @{@"key" : @"value"};
@@ -629,7 +548,7 @@ TEST_F(
       signin::ConsentLevel::kSignin));
   VerifyLastSigninTimestamp();
 
-  SetCachedMDMInfo(identity(2), CreateRefreshAccessTokenError(identity(0)));
+  SetCachedMDMInfo(identity(2), CreateRefreshAccessTokenError(identity(2)));
   // Data should not be cleared if the browser is managed.
   authentication_service()->SignOut(
       signin_metrics::ProfileSignout::kAbortSignin, nil);
@@ -638,51 +557,6 @@ TEST_F(
   EXPECT_EQ(ClearBrowsingDataCount(), 0);
   EXPECT_EQ(ClearBrowsingDataFromSigninCount(), 0);
   [userDefaults removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
-}
-
-// TODO(crbug.com/40066949): Remove this test after kSync users are migrated in
-// phase 3. See ConsentLevel::kSync documentation for details.
-// Tests that all local data is cleared (not just the data from sign-in time)
-// when the user has the sync consent.
-// TODO(crbug.com/379077722): Separate profiles won't roll out before kSync
-// is fully gone on iOS, so no need to update this test to work with
-// `kSeparateProfilesForManagedAccounts` enabled.
-TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
-       SignedInManagedAccountSignOutWithClearData_SyncMigration) {
-  FakeSystemIdentity* fake_system_identity =
-      [FakeSystemIdentity fakeManagedIdentity];
-  fake_system_identity_manager()->AddIdentity(fake_system_identity);
-  ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
-  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
-
-  authentication_service()->SignIn(identity(2),
-                                   signin_metrics::AccessPoint::kUnknown);
-  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
-  ASSERT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
-      signin::ConsentLevel::kSignin));
-  VerifyLastSigninTimestamp();
-
-  // Grant Sync consent.
-  EXPECT_CALL(*mock_sync_service(), SetSyncFeatureRequested());
-  authentication_service()->GrantSyncConsent(
-      identity(2), signin_metrics::AccessPoint::kUnknown);
-
-  EXPECT_NSEQ(identity(2), authentication_service()->GetPrimaryIdentity(
-                               signin::ConsentLevel::kSync));
-  EXPECT_TRUE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-
-  // Data should be fully clear if the browser is managed and still has sync
-  // consent.
-  ON_CALL(*mock_sync_service()->GetMockUserSettings(),
-          IsInitialSyncFeatureSetupComplete())
-      .WillByDefault(Return(true));
-  authentication_service()->SignOut(
-      signin_metrics::ProfileSignout::kAbortSignin, nil);
-  ASSERT_FALSE(HasCachedMDMInfo(identity(2)));
-  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
-  EXPECT_EQ(ClearBrowsingDataCount(), 1);
-  EXPECT_EQ(ClearBrowsingDataFromSigninCount(), 0);
 }
 
 // Tests that MDM errors do not lead to seeding empty account ids.
@@ -721,43 +595,14 @@ TEST_P(AuthenticationServiceTest, MDMErrorsDontSeedEmptyAccountIds) {
   EXPECT_OCMOCK_VERIFY((id)mdm_error_mock);
 }
 
-// Tests that MDM errors are correctly cleared when signing out of a managed
-// account.
+// Tests that (a) MDM errors are cleared and (b) all browsing data is cleared
+// (not just from the signed-in period), when signing out of a managed account
+// that was migrated from ConsentLevel::kSync.
 // If `kSeparateProfilesForManagedAccounts` is enabled, managed accounts are
 // assigned into their own separate profiles and cannot sign out from there, so
 // this test doesn't apply.
 TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
-       ManagedAccountSignOut) {
-  FakeSystemIdentity* fake_system_identity =
-      [FakeSystemIdentity fakeManagedIdentity];
-  fake_system_identity_manager()->AddIdentity(fake_system_identity);
-  ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
-  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
-
-  authentication_service()->SignIn(identity(2),
-                                   signin_metrics::AccessPoint::kUnknown);
-  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
-  EXPECT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
-      signin::ConsentLevel::kSignin));
-  ON_CALL(*mock_sync_service()->GetMockUserSettings(),
-          IsInitialSyncFeatureSetupComplete())
-      .WillByDefault(Return(true));
-  VerifyLastSigninTimestamp();
-
-  authentication_service()->SignOut(
-      signin_metrics::ProfileSignout::kAbortSignin, nil);
-  EXPECT_FALSE(HasCachedMDMInfo(identity(2)));
-  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
-  EXPECT_EQ(ClearBrowsingDataCount(), 1);
-}
-
-// Tests that MDM errors are correctly cleared when signing out with clearing
-// browsing data of a managed account.
-// If `kSeparateProfilesForManagedAccounts` is enabled, managed accounts are
-// assigned into their own separate profiles and cannot sign out from there, so
-// this test doesn't apply.
-TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
-       ManagedAccountSignOutAndClearBrowsingData) {
+       ManagedAccountSignOut_MigratedFromSyncing) {
   FakeSystemIdentity* fake_system_identity =
       [FakeSystemIdentity fakeManagedIdentity];
   fake_system_identity_manager()->AddIdentity(fake_system_identity);
@@ -775,13 +620,14 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
       signin::ConsentLevel::kSignin));
   VerifyLastSigninTimestamp();
 
-  // Note: Clear data on signout is decided inside AuthenticationService based
-  // on the account state.
   authentication_service()->SignOut(
       signin_metrics::ProfileSignout::kAbortSignin, nil);
   EXPECT_FALSE(HasCachedMDMInfo(identity(2)));
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
+  // Because the account was migrated from Sync-the-feature, all browsing data
+  // should be cleared, not just from the signed-in period.
   EXPECT_EQ(ClearBrowsingDataCount(), 1);
+  EXPECT_EQ(ClearBrowsingDataFromSigninCount(), 0);
 }
 
 // Tests that potential MDM notifications are correctly handled and dispatched
@@ -893,38 +739,6 @@ TEST_P(AuthenticationServiceTest, ShowMDMErrorDialog) {
   EXPECT_EQ(invocation_counter, 1u);
 }
 
-// TODO(crbug.com/40066949): Remove this test after kSync users are migrated in
-// phase 3. See ConsentLevel::kSync documentation for details.
-TEST_P(AuthenticationServiceTest, SigninAndSyncDecoupled) {
-  // Sign in.
-  authentication_service()->SignIn(identity(0),
-                                   signin_metrics::AccessPoint::kUnknown);
-  VerifyLastSigninTimestamp();
-
-  EXPECT_NSEQ(identity(0), authentication_service()->GetPrimaryIdentity(
-                               signin::ConsentLevel::kSignin));
-  EXPECT_TRUE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  EXPECT_FALSE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  EXPECT_TRUE(authentication_service()->HasPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
-
-  // Grant Sync consent.
-  EXPECT_CALL(*mock_sync_service(), SetSyncFeatureRequested());
-  authentication_service()->GrantSyncConsent(
-      identity(0), signin_metrics::AccessPoint::kUnknown);
-
-  EXPECT_NSEQ(identity(0), authentication_service()->GetPrimaryIdentity(
-                               signin::ConsentLevel::kSignin));
-  EXPECT_TRUE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  EXPECT_TRUE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  EXPECT_TRUE(authentication_service()->HasPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
-}
-
 TEST_P(AuthenticationServiceTest, SigninDisallowedCrash) {
   // Disable sign-in.
   profile_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
@@ -1027,9 +841,10 @@ TEST_P(AuthenticationServiceTest, TestAccountsForgetIdentityWhenSignedOut) {
   EXPECT_EQ(2ul, account_info_vector.size());
   // Let's forget `fakeIdentity2`.
   id<SystemIdentity> fake_identity2 = [FakeSystemIdentity fakeIdentity2];
-  fake_system_identity_manager()->ForgetIdentity(fake_identity2,
-                                                 base::DoNothing());
-  base::RunLoop().RunUntilIdle();
+  base::test::TestFuture<NSError*> identity_forgotten;
+  fake_system_identity_manager()->ForgetIdentity(
+      fake_identity2, identity_forgotten.GetCallback());
+  ASSERT_TRUE(identity_forgotten.Wait());
   account_info_vector =
       identity_manager()->GetExtendedAccountInfoForAccountsWithRefreshToken();
   EXPECT_EQ(1ul, account_info_vector.size());

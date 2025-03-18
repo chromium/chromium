@@ -47,6 +47,7 @@ public class NotificationConstants {
             "notification_info_profile_incognito";
     static final String EXTRA_NOTIFICATION_INFO_ACTION_INDEX = "notification_info_action_index";
     static final String EXTRA_NOTIFICATION_INFO_WEBAPK_PACKAGE = "notification_info_webapk_package";
+    static final String EXTRA_NOTIFICATION_INFO_CHANNEL_ID = "notification_info_channel_id";
     static final String EXTRA_NOTIFICATION_REPLY = "notification_reply";
     static final String EXTRA_NOTIFICATION_ACTION = "notification_action";
     static final String EXTRA_NOTIFICATION_BACKUP_OF_ORIGINAL = "notification_backup_of_original";

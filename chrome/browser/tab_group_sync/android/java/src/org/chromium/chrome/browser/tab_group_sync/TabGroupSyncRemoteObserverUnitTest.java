@@ -47,7 +47,6 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TriggerSource;
 import org.chromium.url.GURL;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /** Unit tests for the {@link TabGroupSyncRemoteObserver}. */
@@ -110,9 +109,9 @@ public class TabGroupSyncRemoteObserverUnitTest {
 
     private void addOneTab() {
         mTabModel.addTab(TAB_ID_1);
-        List<Tab> tabs = new ArrayList<>();
-        tabs.add(mTabModel.getTabAt(0));
-        when(mTabGroupModelFilter.getRelatedTabListForRootId(eq(ROOT_ID_1))).thenReturn(tabs);
+        Tab tab = mTabModel.getTabAt(0);
+        tab.setTabGroupId(TOKEN_1);
+        when(mTabGroupModelFilter.getTabsInGroup(eq(TOKEN_1))).thenReturn(List.of(tab));
     }
 
     @Test

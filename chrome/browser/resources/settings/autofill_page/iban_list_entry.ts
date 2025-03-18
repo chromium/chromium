@@ -15,6 +15,7 @@ import './passwords_shared.css.js';
 import './screen_reader_only.css.js';
 
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './iban_list_entry.html.js';
@@ -52,10 +53,20 @@ export class SettingsIbanListEntryElement extends
     return {
       /** A saved IBAN. */
       iban: Object,
+
+      showNewFopDisplayEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableNewFopDisplay');
+        },
+        readOnly: true,
+      },
     };
   }
 
   iban: chrome.autofillPrivate.IbanEntry;
+
+  private showNewFopDisplayEnabled_: boolean;
 
   get dotsMenu(): HTMLElement|null {
     return this.shadowRoot!.getElementById('ibanMenu');
@@ -109,6 +120,20 @@ export class SettingsIbanListEntryElement extends
         Math.max(0, strippedSummaryLabel.length - 4));
 
     return this.i18n('a11yIbanDescription', lastFourDigits);
+  }
+
+  private getLabel_(iban: chrome.autofillPrivate.IbanEntry): string {
+    if (this.showNewFopDisplayEnabled_ && iban.nickname) {
+      return iban.nickname;
+    }
+    return iban.metadata!.summaryLabel;
+  }
+
+  private getSubLabel_(iban: chrome.autofillPrivate.IbanEntry): string {
+    if (this.showNewFopDisplayEnabled_ && iban.nickname) {
+      return iban.metadata!.summaryLabel;
+    }
+    return iban.nickname || '';
   }
 
   /**

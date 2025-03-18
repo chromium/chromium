@@ -12,6 +12,8 @@ external/wpt/secure-payment-confirmation/*
 
 # crbug.com/338470959 set_rph_registration_mode not implemented for headless shell
 external/wpt/html/webappapis/system-state-and-capabilities/*
+virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/protocol-handler-register.https.html
+virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/protocol-handler-unregister.https.html
 
 # crbug.com/397998925 run_bounce_tracking_mitigations and the bounce tracking
 # mitigations feature are not implemented for content shell yet.

@@ -11,7 +11,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/back_press/BackPressMetrics.java",
     "java/src/org/chromium/chrome/browser/back_press/CloseListenerManager.java",
     "java/src/org/chromium/chrome/browser/back_press/MinimizeAppAndCloseTabBackPressHandler.java",
-    "java/src/org/chromium/chrome/browser/back_press/SecondaryActivityBackPressUma.java",
   ]
 
   deps = [

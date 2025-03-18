@@ -97,6 +97,10 @@ export class PostSelectionRendererElement extends PolymerElement {
       canvasPhysicalHeight: Number,
       canvasPhysicalWidth: Number,
       selectionOverlayRect: Object,
+      shouldDarkenScrim: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -131,6 +135,8 @@ export class PostSelectionRendererElement extends PolymerElement {
   });
   private newBoxAnimation: Animation|null = null;
   private animateOnResize = false;
+  // Whether to darken the post selection scrim.
+  private shouldDarkenScrim = false;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -151,6 +157,11 @@ export class PostSelectionRendererElement extends PolymerElement {
           composed: true,
           detail: this.getNormalizedCenterRotatedBox(),
         }));
+      }
+    });
+    this.eventTracker_.add(document, 'text-found-in-region', () => {
+      if (this.hasSelection()) {
+        this.shouldDarkenScrim = true;
       }
     });
     this.resizeObserver.observe(this);
@@ -192,6 +203,7 @@ export class PostSelectionRendererElement extends PolymerElement {
     unfocusShimmer(this, ShimmerControlRequester.POST_SELECTION);
     this.height = 0;
     this.width = 0;
+    this.shouldDarkenScrim = false;
     this.dispatchEvent(new CustomEvent(
         'hide-selected-region-context-menu', {bubbles: true, composed: true}));
     this.notifyPostSelectionUpdated();
@@ -209,6 +221,7 @@ export class PostSelectionRendererElement extends PolymerElement {
         width: this.width,
         height: this.height,
       };
+      this.shouldDarkenScrim = false;
       return true;
     }
     return false;

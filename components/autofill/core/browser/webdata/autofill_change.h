@@ -7,6 +7,7 @@
 
 #include <concepts>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -16,7 +17,6 @@
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace autofill {
 
@@ -67,12 +67,12 @@ class AutofillDataModelChange {
     }
     if constexpr (std::same_as<DataType, Iban>) {
       if (data_model_.record_type() == Iban::RecordType::kLocalIban) {
-        CHECK(absl::holds_alternative<std::string>(key_) &&
-              absl::get<std::string>(key_) == data_model_.guid());
+        CHECK(std::holds_alternative<std::string>(key_) &&
+              std::get<std::string>(key_) == data_model_.guid());
       } else {
         CHECK(data_model_.record_type() == Iban::RecordType::kServerIban);
-        CHECK(absl::holds_alternative<int64_t>(key_) &&
-              absl::get<int64_t>(key_) == data_model_.instrument_id());
+        CHECK(std::holds_alternative<int64_t>(key_) &&
+              std::get<int64_t>(key_) == data_model_.instrument_id());
       }
     } else if constexpr (std::same_as<DataType, ServerCvc>) {
       CHECK(data_model_.instrument_id == key_);
@@ -123,7 +123,7 @@ using CreditCardChange = AutofillDataModelChange<CreditCard, std::string>;
 // Identified by `Iban::guid()` for local IBANs and `Iban::instrument_id()` for
 // server IBANs.
 using IbanChange =
-    AutofillDataModelChange<Iban, absl::variant<std::string, int64_t>>;
+    AutofillDataModelChange<Iban, std::variant<std::string, int64_t>>;
 
 // Identified by `ServerCvc::instrument_id`.
 using ServerCvcChange = AutofillDataModelChange<ServerCvc, int64_t>;

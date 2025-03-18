@@ -166,6 +166,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1505542291183484463">Ndrysho përmasat e dritares me pllakëza në drejtimin poshtë</translation>
 <translation id="1510238584712386396">Nisësi</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Shfaq cilësimet e njoftimeve. Njoftimet janë joaktive për një aplikacion}other{Shfaq cilësimet e njoftimeve. Njoftimet janë joaktive për # aplikacione}}</translation>
+<translation id="1521655867290435174">Fletët e Google</translation>
 <translation id="1523032696246003">Bateria <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> deri në karikimin e plotë</translation>
 <translation id="1525508553941733066">ANULO</translation>
 <translation id="1526448108126799339">Hape skedën e re në një dritare të re</translation>
@@ -345,7 +346,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2201071101391734388">Fotografia e fundit <ph name="INDEX" /> nga <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Palos Google Tasks</translation>
 <translation id="2208323208084708176">Modaliteti i desktopit të unifikuar</translation>
-<translation id="2220572644011485463">Kodi PIN ose fjalëkalimi</translation>
 <translation id="2222841058024245321">Tavolina e punës 7</translation>
 <translation id="2223384056430485343">Në një ekran të ndarë</translation>
 <translation id="2224075387478458881">Regjistrimi i ekranit nuk lejohet kur përmbajtja e mbrojtur është e dukshme</translation>
@@ -1829,7 +1829,6 @@ Instalim i ri</translation>
 <translation id="7000027735917578303">Cilësimet e dritareve dhe tavolinave të punës</translation>
 <translation id="7004910047186208204">Lidhe me të dhënat celulare</translation>
 <translation id="7005239792648594238">Hap një aplikacion për të filluar</translation>
-<translation id="7007983414944123363">Kod yt PIN ose fjalëkalimi nuk mund të verifikoheshin. Provo përsëri.</translation>
 <translation id="7014684956566476813">Lidhur me një pajisje me emrin "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7015766095477679451">Kthehu në <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Tavolina e punës 6</translation>
@@ -2466,6 +2465,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="9168436347345867845">Bëje më vonë</translation>
 <translation id="9178475906033259337">Po shfaq 1 rezultat për <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Ky funksion të lejon që të qasesh me shpejtësi te çdo përdorues i identifikuar pa kërkuar një fjalëkalim. Përdore këtë funksion vetëm me llogaritë që u beson.</translation>
+<translation id="9183302530794969518">Dokumentet e Google</translation>
 <translation id="9183456764293710005">Zmadhuesi i ekranit të plotë</translation>
 <translation id="9192133205265227850">Përdor "<ph name="DEVICE_NAME" />"</translation>
 <translation id="9193626018745640770">Po transmeton në një marrës të panjohur</translation>

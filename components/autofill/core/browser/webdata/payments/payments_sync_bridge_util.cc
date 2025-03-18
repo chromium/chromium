@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 
 #include <algorithm>
+#include <variant>
 
 #include "base/base64.h"
 #include "base/check.h"
@@ -647,7 +648,7 @@ void SetAutofillWalletSpecificsFromCardBenefit(
     sync_pb::AutofillWalletSpecifics& wallet_specifics) {
   sync_pb::CardBenefit* wallet_benefit =
       wallet_specifics.mutable_masked_card()->add_card_benefit();
-  const CreditCardBenefitBase& benefit_base = absl::visit(
+  const CreditCardBenefitBase& benefit_base = std::visit(
       [](const auto& a) -> const CreditCardBenefitBase& { return a; }, benefit);
   if (enforce_utf8) {
     wallet_benefit->set_benefit_id(
@@ -665,7 +666,7 @@ void SetAutofillWalletSpecificsFromCardBenefit(
     wallet_benefit->set_end_time_unix_epoch_milliseconds(
         benefit_base.expiry_time().InMillisecondsSinceUnixEpoch());
   }
-  absl::visit(
+  std::visit(
       base::Overloaded{
           [&wallet_benefit](const CreditCardFlatRateBenefit&) {
             wallet_benefit->mutable_flat_rate_benefit();

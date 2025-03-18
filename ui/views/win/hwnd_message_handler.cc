@@ -1262,13 +1262,6 @@ LRESULT HWNDMessageHandler::HandleNcHitTestMessage(unsigned int message,
   return ret;
 }
 
-void HWNDMessageHandler::HandleParentChanged() {
-  // If the forwarder window's parent is changed then we need to reset our
-  // context as we will not receive touch releases if the touch was initiated
-  // in the forwarder window.
-  touch_ids_.clear();
-}
-
 void HWNDMessageHandler::ApplyPinchZoomScale(float scale) {
   POINT cursor_pos = GetCursorPos();
   ScreenToClient(hwnd(), &cursor_pos);
@@ -1830,7 +1823,7 @@ LRESULT HWNDMessageHandler::OnCreate(CREATESTRUCT* create_struct) {
 
 void HWNDMessageHandler::OnDestroy() {
   ::RemoveProp(hwnd(), ui::kWindowTranslucent);
-  session_change_observer_.reset(nullptr);
+  session_change_observer_.reset();
   delegate_->HandleDestroying();
   // If the window going away is a fullscreen window then remove its references
   // from the full screen window map.

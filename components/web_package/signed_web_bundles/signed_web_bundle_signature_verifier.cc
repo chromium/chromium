@@ -5,6 +5,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/containers/extend.h"
@@ -200,7 +201,7 @@ SignedWebBundleSignatureVerifier::VerifyWithHashForIntegrityBlock(
         .attributes_cbor = signature_stack_entry.attributes_cbor(),
     });
 
-    bool valid_signature = absl::visit(
+    bool valid_signature = std::visit(
         base::Overloaded{[&payload_to_verify](const auto& signature_info) {
                            return signature_info.signature().Verify(
                                payload_to_verify, signature_info.public_key());

@@ -110,9 +110,6 @@ public class AddToHomescreenDialogView
         mAppRatingBar = (RatingBar) mAppLayout.findViewById(R.id.control_rating);
         mPlayLogoView = (ImageView) mParentView.findViewById(R.id.play_logo);
 
-        mAppNameView.setOnClickListener(this);
-        mIconView.setOnClickListener(this);
-
         mParentView.addOnLayoutChangeListener(
                 new View.OnLayoutChangeListener() {
                     @Override
@@ -239,6 +236,9 @@ public class AddToHomescreenDialogView
                 mAppNameView.setVisibility(View.VISIBLE);
                 mAppRatingBar.setVisibility(View.VISIBLE);
                 mPlayLogoView.setVisibility(View.VISIBLE);
+
+                mAppNameView.setOnClickListener(this);
+                mIconView.setOnClickListener(this);
                 break;
             case AppType.SHORTCUT:
                 mShortcutTitleInput.setVisibility(View.VISIBLE);

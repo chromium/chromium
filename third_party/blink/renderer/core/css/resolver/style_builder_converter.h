@@ -336,10 +336,8 @@ class StyleBuilderConverter {
   static RespectImageOrientationEnum ConvertImageOrientation(
       StyleResolverState&,
       const CSSValue&);
-  static scoped_refptr<StylePath> ConvertPathOrNone(StyleResolverState&,
-                                                    const CSSValue&);
-  static scoped_refptr<BasicShape> ConvertObjectViewBox(StyleResolverState&,
-                                                        const CSSValue&);
+  static StylePath* ConvertPathOrNone(StyleResolverState&, const CSSValue&);
+  static BasicShape* ConvertObjectViewBox(StyleResolverState&, const CSSValue&);
   static OffsetPathOperation* ConvertOffsetPath(StyleResolverState&,
                                                 const CSSValue&);
   static StyleOffsetRotation ConvertOffsetRotate(const CSSLengthResolver&,

@@ -166,6 +166,7 @@
 <translation id="1505542291183484463">向下調整並排視窗大小</translation>
 <translation id="1510238584712386396">啟動器</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{顯示通知設定。已關閉 1 個應用程式的通知}other{顯示通知設定。已關閉 # 個應用程式的通知}}</translation>
+<translation id="1521655867290435174">Google 試算表</translation>
 <translation id="1523032696246003">電量：<ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" />後便完成充電</translation>
 <translation id="1525508553941733066">關閉</translation>
 <translation id="1526448108126799339">在新視窗中開啟新分頁</translation>
@@ -345,7 +346,6 @@
 <translation id="2201071101391734388">第 <ph name="INDEX" /> 張近期相片 (共 <ph name="TOTAL_COUNT" /> 張)。</translation>
 <translation id="2201687081523799384">收合 Google Tasks</translation>
 <translation id="2208323208084708176">統一桌面模式</translation>
-<translation id="2220572644011485463">PIN 或密碼</translation>
 <translation id="2222841058024245321">桌面 7</translation>
 <translation id="2223384056430485343">喺分割螢幕</translation>
 <translation id="2224075387478458881">當畫面上有受保護的內容時，就無法使用螢幕畫面錄影功能</translation>
@@ -1827,7 +1827,6 @@
 <translation id="7000027735917578303">視窗同桌面設定</translation>
 <translation id="7004910047186208204">連線至流動數據</translation>
 <translation id="7005239792648594238">開啟應用程式即可開始</translation>
-<translation id="7007983414944123363">系統無法驗證您的 PIN 或密碼。請再試一次。</translation>
 <translation id="7014684956566476813">已連接名為「<ph name="DEVICE_NAME" />」的裝置</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> 後才可使用。</translation>
 <translation id="70168403932084660">桌面 6</translation>
@@ -2464,6 +2463,7 @@
 <translation id="9168436347345867845">稍後再說</translation>
 <translation id="9178475906033259337">顯示緊 1 個同「<ph name="QUERY" />」有關嘅結果</translation>
 <translation id="9179259655489829027">這項功能讓您可快速登入任何已登入的使用者帳戶，無需使用密碼。建議您只讓信任的帳戶使用此功能。</translation>
+<translation id="9183302530794969518">Google 文件</translation>
 <translation id="9183456764293710005">全螢幕放大鏡</translation>
 <translation id="9192133205265227850">使用「<ph name="DEVICE_NAME" />」</translation>
 <translation id="9193626018745640770">正在投放到不明接收器</translation>

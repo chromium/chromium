@@ -60,7 +60,8 @@ base::android::ScopedJavaGlobalRef<jobject> BuildJavaContextMenuParams(
           url::GURLAndroid::FromNativeGURL(env, sanitizedReferrer),
           static_cast<int>(params.referrer_policy), can_save, params.x,
           params.y, static_cast<int>(params.source_type),
-          params.opened_from_highlight, additional_navigation_params));
+          params.opened_from_highlight, params.opened_from_interest_target,
+          additional_navigation_params));
 }
 
 content::ContextMenuParams* ContextMenuParamsFromJavaObject(

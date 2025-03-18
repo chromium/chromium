@@ -10,6 +10,7 @@
 #include <ostream>
 #include <string>
 #include <string_view>
+#include <variant>
 
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -23,7 +24,6 @@
 #include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
@@ -147,15 +147,15 @@ struct Suggestion {
   using IsLoading = base::StrongAlias<class IsLoadingTag, bool>;
   using InstrumentId = base::StrongAlias<class InstrumentIdTag, uint64_t>;
   using ValueToFill = base::StrongAlias<struct ValueToFill, std::u16string>;
-  using Payload = absl::variant<Guid,
-                                InstrumentId,
-                                AutofillProfilePayload,
-                                GURL,
-                                ValueToFill,
-                                PasswordSuggestionDetails,
-                                PlusAddressPayload,
-                                AutofillAiPayload,
-                                PaymentsPayload>;
+  using Payload = std::variant<Guid,
+                               InstrumentId,
+                               AutofillProfilePayload,
+                               GURL,
+                               ValueToFill,
+                               PasswordSuggestionDetails,
+                               PlusAddressPayload,
+                               AutofillAiPayload,
+                               PaymentsPayload>;
 
   // This struct is used to provide password suggestions with custom icons,
   // using the favicon of the website associated with the credentials. While
@@ -347,7 +347,7 @@ struct Suggestion {
 #if DCHECK_IS_ON()
     DCHECK(Invariant());
 #endif
-    return absl::holds_alternative<T>(payload) ? absl::get<T>(payload) : T{};
+    return std::holds_alternative<T>(payload) ? std::get<T>(payload) : T{};
   }
 
 #if DCHECK_IS_ON()
@@ -355,39 +355,39 @@ struct Suggestion {
     switch (type) {
       case SuggestionType::kCreateNewPlusAddressInline:
       case SuggestionType::kPlusAddressError:
-        return absl::holds_alternative<PlusAddressPayload>(payload);
+        return std::holds_alternative<PlusAddressPayload>(payload);
       case SuggestionType::kPasswordEntry:
         // Manual fallback password suggestions store the password to preview or
         // fill in the suggestion's payload.
         // TODO(crbug.com/333992198): Use `PasswordSuggestionDetails` only for
         // all suggestions with `SuggestionType::kPasswordEntry`.
-        return absl::holds_alternative<Guid>(payload) ||
-               absl::holds_alternative<PasswordSuggestionDetails>(payload);
+        return std::holds_alternative<Guid>(payload) ||
+               std::holds_alternative<PasswordSuggestionDetails>(payload);
       case SuggestionType::kFillPassword:
       case SuggestionType::kViewPasswordDetails:
-        return absl::holds_alternative<PasswordSuggestionDetails>(payload);
+        return std::holds_alternative<PasswordSuggestionDetails>(payload);
       case SuggestionType::kSeePromoCodeDetails:
-        return absl::holds_alternative<GURL>(payload);
+        return std::holds_alternative<GURL>(payload);
       case SuggestionType::kIbanEntry:
-        return absl::holds_alternative<ValueToFill>(payload) ||
-               absl::holds_alternative<Guid>(payload) ||
-               absl::holds_alternative<InstrumentId>(payload);
+        return std::holds_alternative<ValueToFill>(payload) ||
+               std::holds_alternative<Guid>(payload) ||
+               std::holds_alternative<InstrumentId>(payload);
       case SuggestionType::kFillAutofillAi:
-        return absl::holds_alternative<ValueToFill>(payload) ||
-               absl::holds_alternative<AutofillAiPayload>(payload);
+        return std::holds_alternative<ValueToFill>(payload) ||
+               std::holds_alternative<AutofillAiPayload>(payload);
       case SuggestionType::kCreditCardEntry:
       case SuggestionType::kVirtualCreditCardEntry:
         // TODO(crbug.com/367434234): Use `PaymentsPayload` for all credit card
         // suggestions. Only Touch-To-Fill credit card suggestions currently
         // use this.
-        return absl::holds_alternative<Guid>(payload) ||
-               absl::holds_alternative<PaymentsPayload>(payload);
+        return std::holds_alternative<Guid>(payload) ||
+               std::holds_alternative<PaymentsPayload>(payload);
       case SuggestionType::kBnplEntry:
-        return absl::holds_alternative<PaymentsPayload>(payload);
+        return std::holds_alternative<PaymentsPayload>(payload);
       case SuggestionType::kDevtoolsTestAddressEntry:
       default:
-        return absl::holds_alternative<Guid>(payload) ||
-               absl::holds_alternative<AutofillProfilePayload>(payload);
+        return std::holds_alternative<Guid>(payload) ||
+               std::holds_alternative<AutofillProfilePayload>(payload);
     }
   }
 #endif
@@ -428,7 +428,7 @@ struct Suggestion {
   // Depending on the use case and platform, it can be a `gfx::Image` instance
   // or imply more complex semantic of fetching the icon (see `CustomIconUrl`
   // and `FaviconDetails` docs for details).
-  absl::variant<gfx::Image, CustomIconUrl, FaviconDetails> custom_icon;
+  std::variant<gfx::Image, CustomIconUrl, FaviconDetails> custom_icon;
 
   // The children of this suggestion. If present, the autofill popup will have
   // submenus.

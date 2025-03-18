@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -553,7 +554,7 @@ void IsolatedWebAppInstallerViewImpl::ShowInstallSuccessScreen(
 views::Widget* IsolatedWebAppInstallerViewImpl::ShowDialog(
     const IsolatedWebAppInstallerModel::Dialog& dialog) {
   Dim(true);
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [this](const IsolatedWebAppInstallerModel::BundleInvalidDialog&) {
             return ShowChildDialog(

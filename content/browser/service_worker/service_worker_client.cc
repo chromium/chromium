@@ -5,6 +5,7 @@
 #include "content/browser/service_worker/service_worker_client.h"
 
 #include <set>
+#include <variant>
 
 #include "base/check_is_test.h"
 #include "base/containers/adapters.h"
@@ -408,7 +409,7 @@ void ServiceWorkerClient::ClaimedByRegistration(
 blink::mojom::ServiceWorkerClientType ServiceWorkerClient::GetClientType()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return absl::visit(
+  return std::visit(
       base::Overloaded(
           [](GlobalRenderFrameHostId render_frame_host_id) {
             return blink::mojom::ServiceWorkerClientType::kWindow;
@@ -424,13 +425,13 @@ blink::mojom::ServiceWorkerClientType ServiceWorkerClient::GetClientType()
 
 bool ServiceWorkerClient::IsContainerForWindowClient() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return absl::holds_alternative<GlobalRenderFrameHostId>(client_info_);
+  return std::holds_alternative<GlobalRenderFrameHostId>(client_info_);
 }
 
 bool ServiceWorkerClient::IsContainerForWorkerClient() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return absl::holds_alternative<blink::DedicatedWorkerToken>(client_info_) ||
-         absl::holds_alternative<blink::SharedWorkerToken>(client_info_);
+  return std::holds_alternative<blink::DedicatedWorkerToken>(client_info_) ||
+         std::holds_alternative<blink::SharedWorkerToken>(client_info_);
 }
 
 ServiceWorkerClientInfo ServiceWorkerClient::GetServiceWorkerClientInfo()
@@ -613,7 +614,7 @@ blink::StorageKey ServiceWorkerClient::CalculateStorageKeyForUpdateUrls(
 
   const url::Origin origin = url::Origin::Create(url);
 
-  const std::optional<blink::StorageKey> storage_key = absl::visit(
+  const std::optional<blink::StorageKey> storage_key = std::visit(
       base::Overloaded(
           [&](GlobalRenderFrameHostId render_frame_host_id) {
             // We use `ongoing_navigation_frame_tree_node_id_` instead of
@@ -766,7 +767,7 @@ bool ServiceWorkerClient::is_execution_ready() const {
 GlobalRenderFrameHostId ServiceWorkerClient::GetRenderFrameHostId() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsContainerForWindowClient());
-  return absl::get<GlobalRenderFrameHostId>(client_info_);
+  return std::get<GlobalRenderFrameHostId>(client_info_);
 }
 
 int ServiceWorkerClient::GetProcessId() const {

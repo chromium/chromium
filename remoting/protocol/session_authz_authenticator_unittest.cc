@@ -314,10 +314,9 @@ TEST_F(SessionAuthzAuthenticatorTest,
 
 TEST_F(SessionAuthzAuthenticatorTest,
        AuthenticatedWithSessionPolicies_GetSessionPoliciesReturnsPolicies) {
-  SessionPolicies policies = {
-      .maximum_session_duration = base::Hours(10),
-      .curtain_required = true,
-  };
+  SessionPolicies policies;
+  policies.maximum_session_duration = base::Hours(10);
+  policies.curtain_required = true;
   EXPECT_CALL(*mock_service_client_, GenerateHostToken(_))
       .WillOnce(RespondGenerateHostToken());
   EXPECT_CALL(*mock_service_client_, VerifySessionToken(_, _))
@@ -392,7 +391,7 @@ TEST_F(SessionAuthzAuthenticatorTest,
   StartAuthExchange();
   ASSERT_EQ(host_->state(), Authenticator::REJECTED);
   ASSERT_EQ(host_->rejection_reason(),
-            Authenticator::RejectionReason::PROTOCOL_ERROR);
+            Authenticator::RejectionReason::INVALID_ARGUMENT);
 }
 
 TEST_F(SessionAuthzAuthenticatorTest,

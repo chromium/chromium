@@ -12,13 +12,13 @@ import type {InkBrushSelectorElement} from './ink_brush_selector.js';
 export function getHtml(this: InkBrushSelectorElement) {
   // clang-format off
   return html`
-    <div role="listbox">
+    <div>
       ${BRUSH_TYPES.map(brush =>  html`
-        <cr-icon-button id="${brush}" role="option"
+        <cr-icon-button id="${brush}"
             iron-icon="${this.getIcon_(brush)}"
             data-brush="${brush}"
             data-selected="${this.isCurrentType_(brush)}"
-            aria-selected="${this.isCurrentType_(brush)}"
+            aria-pressed="${this.isCurrentType_(brush)}"
             aria-label="${this.getLabel_(brush)}"
             title="${this.getLabel_(brush)}"
             @click="${this.onBrushClick_}">

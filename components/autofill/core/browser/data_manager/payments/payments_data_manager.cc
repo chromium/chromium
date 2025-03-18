@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <variant>
 
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
@@ -589,7 +590,7 @@ std::optional<T> PaymentsDataManager::GetCreditCardBenefitByInstrumentId(
   }
   base::Time now = AutofillClock::Now();
   for (const CreditCardBenefit& benefit : credit_card_benefits_) {
-    if (const auto* b = absl::get_if<T>(&benefit);
+    if (const auto* b = std::get_if<T>(&benefit);
         b && b->linked_card_instrument_id() == instrument_id &&
         b->start_time() <= now && now < b->expiry_time() && filter(*b)) {
       return *b;

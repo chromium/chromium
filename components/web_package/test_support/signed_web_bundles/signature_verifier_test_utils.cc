@@ -4,6 +4,8 @@
 
 #include "components/web_package/test_support/signed_web_bundles/signature_verifier_test_utils.h"
 
+#include <variant>
+
 #include "base/check_op.h"
 #include "base/containers/map_util.h"
 #include "base/notreached.h"
@@ -56,7 +58,7 @@ mojom::BundleIntegrityBlockSignatureStackEntryPtr MakeSignatureStackEntry(
 
   raw_signature_stack_entry->attributes_cbor =
       std::vector(std::begin(attributes_cbor), std::end(attributes_cbor));
-  raw_signature_stack_entry->signature_info = absl::visit(
+  raw_signature_stack_entry->signature_info = std::visit(
       [&](const auto& public_key) {
         return CreateSignatureInfo(public_key, signature);
       },

@@ -4,11 +4,16 @@
 
 package org.chromium.components.privacy_sandbox;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.Bundle;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
@@ -22,6 +27,7 @@ import org.chromium.ui.text.SpanApplier;
  * with a {@link TrackingProtectionDelegate} to access and modify fingerprinting protection
  * preferences.
  */
+@NullMarked
 public class FingerprintingProtectionSettingsFragment extends PrivacySandboxBaseFragment {
     // Must match key in fp_protection_preferences.xml.
     private static final String PREF_FP_PROTECTION_SWITCH = "fp_protection_switch";
@@ -39,7 +45,7 @@ public class FingerprintingProtectionSettingsFragment extends PrivacySandboxBase
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.fp_protection_preferences);
         mPageTitle.set(getString(R.string.tracking_protection_fingerprinting_protection_title));
 
@@ -57,6 +63,7 @@ public class FingerprintingProtectionSettingsFragment extends PrivacySandboxBase
      *
      * @param delegate {@link TrackingProtectionDelegate} to set.
      */
+    @Initializer
     public void setTrackingProtectionDelegate(TrackingProtectionDelegate delegate) {
         mDelegate = delegate;
     }
@@ -65,6 +72,7 @@ public class FingerprintingProtectionSettingsFragment extends PrivacySandboxBase
         ChromeSwitchPreference fpProtectionSwitch = findPreference(PREF_FP_PROTECTION_SWITCH);
         TextMessagePreference fpProtectionLearnMore = findPreference(PREF_FP_PROTECTION_LEARN_MORE);
 
+        assumeNonNull(fpProtectionSwitch);
         fpProtectionSwitch.setChecked(mDelegate.isFingerprintingProtectionEnabled());
         fpProtectionSwitch.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
@@ -74,6 +82,7 @@ public class FingerprintingProtectionSettingsFragment extends PrivacySandboxBase
                     return true;
                 });
 
+        assumeNonNull(fpProtectionLearnMore);
         fpProtectionLearnMore.setSummary(
                 SpanApplier.applySpans(
                         getResources()

@@ -97,6 +97,17 @@ enum ErrorCode {
   // The connection was disconnected because the session policies have changed.
   SESSION_POLICIES_CHANGED = 64;
 
+  // The connection was rejected because the authenticator has encountered an
+  // unexpected error.
+  UNEXPECTED_AUTHENTICATOR_ERROR = 65;
+
+  // The application is in an invalid state.
+  INVALID_STATE = 66;
+
+  // The peer has sent an invalid message. E.g. fields are missing in the
+  // message.
+  INVALID_ARGUMENT = 67;
+
   reserved 2, 11, 12, 15, 17, 41;
   reserved 5 to 7, 19 to 25, 28 to 39, 51 to 61;
 

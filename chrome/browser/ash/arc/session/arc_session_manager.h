@@ -34,7 +34,6 @@
 #include "chromeos/ash/experiences/arc/session/arc_stop_reason.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class ArcAppLauncher;
 class Profile;

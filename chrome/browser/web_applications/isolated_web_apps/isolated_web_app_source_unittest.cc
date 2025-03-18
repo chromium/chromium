@@ -4,12 +4,13 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 
+#include <variant>
+
 #include "base/files/file_path.h"
 #include "base/test/gmock_expected_support.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -420,14 +421,14 @@ TEST_F(IwaSourceDevModeTest, WithFileOp) {
 TEST_F(IwaSourceDevModeTest, FromStorageLocation) {
   base::FilePath profile_dir(FILE_PATH_LITERAL("/profile-directory"));
   {
-    base::expected<IwaSourceDevMode, absl::monostate> result =
+    base::expected<IwaSourceDevMode, std::monostate> result =
         IwaSourceDevMode::FromStorageLocation(
             profile_dir,
             IwaStorageOwnedBundle("ascii-dir", /*dev_mode=*/false));
     EXPECT_THAT(result, ErrorIs(_));
   }
   {
-    base::expected<IwaSourceDevMode, absl::monostate> result =
+    base::expected<IwaSourceDevMode, std::monostate> result =
         IwaSourceDevMode::FromStorageLocation(
             profile_dir, IwaStorageOwnedBundle("ascii-dir", /*dev_mode=*/true));
     EXPECT_THAT(
@@ -437,13 +438,13 @@ TEST_F(IwaSourceDevModeTest, FromStorageLocation) {
                                               .AppendASCII("main.swbn")))));
   }
   {
-    base::expected<IwaSourceDevMode, absl::monostate> result =
+    base::expected<IwaSourceDevMode, std::monostate> result =
         IwaSourceDevMode::FromStorageLocation(
             profile_dir, IwaStorageUnownedBundle(kExamplePath));
     EXPECT_THAT(result, ValueIs(Eq(IwaSourceBundleDevMode(kExamplePath))));
   }
   {
-    base::expected<IwaSourceDevMode, absl::monostate> result =
+    base::expected<IwaSourceDevMode, std::monostate> result =
         IwaSourceDevMode::FromStorageLocation(profile_dir,
                                               IwaStorageProxy(kExampleOrigin));
     EXPECT_THAT(result, ValueIs(Eq(IwaSourceProxy(kExampleOrigin))));
@@ -475,7 +476,7 @@ TEST_F(IwaSourceProdModeTest, WithFileOp) {
 TEST_F(IwaSourceProdModeTest, FromStorageLocation) {
   base::FilePath profile_dir(FILE_PATH_LITERAL("/profile-directory"));
   {
-    base::expected<IwaSourceProdMode, absl::monostate> result =
+    base::expected<IwaSourceProdMode, std::monostate> result =
         IwaSourceProdMode::FromStorageLocation(
             profile_dir,
             IwaStorageOwnedBundle("ascii-dir", /*dev_mode=*/false));
@@ -486,19 +487,19 @@ TEST_F(IwaSourceProdModeTest, FromStorageLocation) {
                                                .AppendASCII("main.swbn")))));
   }
   {
-    base::expected<IwaSourceProdMode, absl::monostate> result =
+    base::expected<IwaSourceProdMode, std::monostate> result =
         IwaSourceProdMode::FromStorageLocation(
             profile_dir, IwaStorageOwnedBundle("ascii-dir", /*dev_mode=*/true));
     EXPECT_THAT(result, ErrorIs(_));
   }
   {
-    base::expected<IwaSourceProdMode, absl::monostate> result =
+    base::expected<IwaSourceProdMode, std::monostate> result =
         IwaSourceProdMode::FromStorageLocation(
             profile_dir, IwaStorageUnownedBundle(kExamplePath));
     EXPECT_THAT(result, ErrorIs(_));
   }
   {
-    base::expected<IwaSourceProdMode, absl::monostate> result =
+    base::expected<IwaSourceProdMode, std::monostate> result =
         IwaSourceProdMode::FromStorageLocation(profile_dir,
                                                IwaStorageProxy(kExampleOrigin));
     EXPECT_THAT(result, ErrorIs(_));

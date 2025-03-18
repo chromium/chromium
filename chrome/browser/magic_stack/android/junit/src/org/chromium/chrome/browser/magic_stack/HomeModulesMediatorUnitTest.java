@@ -703,7 +703,8 @@ public class HomeModulesMediatorUnitTest {
                 new ClassificationResult(
                         org.chromium.components.segmentation_platform.prediction_status
                                 .PredictionStatus.SUCCEEDED,
-                        new String[] {"TabResumption", "SingleTab", "PriceChange"});
+                        new String[] {"TabResumption", "SingleTab", "PriceChange"},
+                        /* requestId= */ 0);
         Set<Integer> filteredEnabledModuleSet = new HashSet<>();
         filteredEnabledModuleSet.add(ModuleType.SINGLE_TAB);
         filteredEnabledModuleSet.add(ModuleType.PRICE_CHANGE);

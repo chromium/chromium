@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">Tapeta Plynoucí Země</translation>
 <translation id="33736539805963175">Pozadí v barvě <ph name="LETTERS_COLOR" /> s písmenem <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Exkluzivní</translation>
-<translation id="3395147534045164351">Přepnout umístění přichycení</translation>
 <translation id="3404249063913988450">Aktivovat spořič obrazovky</translation>
 <translation id="3413935475507503304">Pokud chcete pokračovat v aktualizaci, klikněte na Další.</translation>
 <translation id="3428551088151258685">venkovní</translation>
@@ -1395,6 +1394,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="7388345524791662148">Další možnosti pro nahrávku <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Vestavěný touchpad</translation>
 <translation id="7397270852490618635">Vypnout světlý motiv</translation>
+<translation id="7400166052988585408">Za <ph name="NUM_SECONDS" /> s vám učitel zamkne obrazovku</translation>
 <translation id="7401543881546089382">Smazat zkratku</translation>
 <translation id="7405493795721832710">Zařízení <ph name="DEVICE_NAME" /> je připraveno k aktualizaci</translation>
 <translation id="741244894080940828">převod</translation>

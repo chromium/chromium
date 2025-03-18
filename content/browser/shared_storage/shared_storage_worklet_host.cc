@@ -417,14 +417,29 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
               document_service_->render_frame_host())
               .ComputeSiteForCookies());
 
-  // TODO(crbug.com/401011862): Distinguish between whether this in an addModule
-  // or a createWorklet call using `creation_method_`, and also send
-  // `data_origin_type` as part of the event params.
-  shared_storage_runtime_manager_->NotifySharedStorageAccessed(
-      AccessScope::kWindow, AccessMethod::kAddModule,
-      document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
-      SharedStorageEventParams::CreateForAddModule(script_source_url,
-                                                   worklet_id_));
+  if (creation_method ==
+      blink::mojom::SharedStorageWorkletCreationMethod::kAddModule) {
+    shared_storage_runtime_manager_->NotifySharedStorageAccessed(
+        AccessScope::kWindow, AccessMethod::kAddModule,
+        document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
+        SharedStorageEventParams::CreateForAddModule(script_source_url,
+                                                     worklet_id_));
+  } else {
+    std::string data_origin_type_string =
+        (data_origin_type ==
+         blink::mojom::SharedStorageDataOriginType::kContextOrigin)
+            ? "context-origin"
+            : ((data_origin_type ==
+                blink::mojom::SharedStorageDataOriginType::kScriptOrigin)
+                   ? "script-origin"
+                   : data_origin.Serialize());
+
+    shared_storage_runtime_manager_->NotifySharedStorageAccessed(
+        AccessScope::kWindow, AccessMethod::kCreateWorklet,
+        document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
+        SharedStorageEventParams::CreateForCreateWorklet(
+            script_source_url, data_origin_type_string, worklet_id_));
+  }
 
   create_worklet_finished_callback_ = std::move(callback);
 
@@ -995,7 +1010,8 @@ void SharedStorageWorkletHost::SharedStorageUpdate(
 
   shared_storage_runtime_manager_->lock_manager().SharedStorageUpdate(
       std::move(method_with_options), shared_storage_origin_,
-      AccessScope::kSharedStorageWorklet, main_frame_id, std::move(callback));
+      AccessScope::kSharedStorageWorklet, main_frame_id, worklet_id_,
+      std::move(callback));
 }
 
 void SharedStorageWorkletHost::SharedStorageBatchUpdate(
@@ -1016,7 +1032,8 @@ void SharedStorageWorkletHost::SharedStorageBatchUpdate(
 
   shared_storage_runtime_manager_->lock_manager().SharedStorageBatchUpdate(
       std::move(methods_with_options), with_lock, shared_storage_origin_,
-      AccessScope::kSharedStorageWorklet, main_frame_id, std::move(callback));
+      AccessScope::kSharedStorageWorklet, main_frame_id, worklet_id_,
+      std::move(callback));
 }
 
 void SharedStorageWorkletHost::SharedStorageGet(
@@ -1036,7 +1053,8 @@ void SharedStorageWorkletHost::SharedStorageGet(
     shared_storage_runtime_manager_->NotifySharedStorageAccessed(
         AccessScope::kSharedStorageWorklet, AccessMethod::kGet,
         document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
-        SharedStorageEventParams::CreateForGetOrDelete(base::UTF16ToUTF8(key)));
+        SharedStorageEventParams::CreateForGetOrDelete(base::UTF16ToUTF8(key),
+                                                       worklet_id_));
   }
 
   auto operation_completed_callback = base::BindOnce(
@@ -1087,7 +1105,7 @@ void SharedStorageWorkletHost::SharedStorageKeys(
     shared_storage_runtime_manager_->NotifySharedStorageAccessed(
         AccessScope::kSharedStorageWorklet, AccessMethod::kKeys,
         document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
-        SharedStorageEventParams::CreateDefault());
+        SharedStorageEventParams::CreateWithWorkletId(worklet_id_));
   }
 
   shared_storage_manager_->Keys(shared_storage_origin_,
@@ -1096,7 +1114,8 @@ void SharedStorageWorkletHost::SharedStorageKeys(
 
 void SharedStorageWorkletHost::SharedStorageEntries(
     mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
-        pending_listener) {
+        pending_listener,
+    bool values_only) {
   std::string debug_message;
   if (!IsSharedStorageAllowed(&debug_message)) {
     mojo::Remote<blink::mojom::SharedStorageEntriesListener> listener(
@@ -1111,9 +1130,10 @@ void SharedStorageWorkletHost::SharedStorageEntries(
 
   if (document_service_) {
     shared_storage_runtime_manager_->NotifySharedStorageAccessed(
-        AccessScope::kSharedStorageWorklet, AccessMethod::kEntries,
+        AccessScope::kSharedStorageWorklet,
+        values_only ? AccessMethod::kValues : AccessMethod::kEntries,
         document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
-        SharedStorageEventParams::CreateDefault());
+        SharedStorageEventParams::CreateWithWorkletId(worklet_id_));
   }
 
   shared_storage_manager_->Entries(
@@ -1137,7 +1157,7 @@ void SharedStorageWorkletHost::SharedStorageLength(
     shared_storage_runtime_manager_->NotifySharedStorageAccessed(
         AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
         document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
-        SharedStorageEventParams::CreateDefault());
+        SharedStorageEventParams::CreateWithWorkletId(worklet_id_));
   }
 
   auto operation_completed_callback = base::BindOnce(
@@ -1179,7 +1199,7 @@ void SharedStorageWorkletHost::SharedStorageRemainingBudget(
     shared_storage_runtime_manager_->NotifySharedStorageAccessed(
         AccessScope::kSharedStorageWorklet, AccessMethod::kRemainingBudget,
         document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
-        SharedStorageEventParams::CreateDefault());
+        SharedStorageEventParams::CreateWithWorkletId(worklet_id_));
   }
 
   auto operation_completed_callback = base::BindOnce(

@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -1032,7 +1033,7 @@ void PopulateAXNode(const ui::AXNodeData& source,
 
 proto::Any AnyWrapProto(const google::protobuf::MessageLite& m) {
   optimization_guide::proto::Any any;
-  any.set_type_url("type.googleapis.com/" + m.GetTypeName());
+  any.set_type_url(base::StrCat({"type.googleapis.com/", m.GetTypeName()}));
   m.SerializeToString(any.mutable_value());
   return any;
 }

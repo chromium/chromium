@@ -13,6 +13,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check_deref.h"
@@ -2196,8 +2197,8 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
   if (!base::FeatureList::IsEnabled(
           features::kAutofillOptimizeFormExtraction)) {
     std::erase_if(child_frames, [](const auto& child_frame) {
-      return absl::visit([](const auto& token) { return token.is_empty(); },
-                         child_frame.token);
+      return std::visit([](const auto& token) { return token.is_empty(); },
+                        child_frame.token);
     });
     if (child_frames.size() > kMaxExtractableChildFrames) {
       child_frames.clear();

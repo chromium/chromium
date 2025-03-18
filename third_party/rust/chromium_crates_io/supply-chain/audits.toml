@@ -2939,6 +2939,12 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.27.1 -> 0.27.2"
 notes = "CFF charsets support, font_builder related changes, clippy fixes."
 
+[[audits.read-fonts]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.27.2 -> 0.27.3"
+notes = "Glyf/gvar performance improvements, HVAR/VVAR subset support, test fix for cmap test."
+
 [[audits.regex]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -3765,6 +3771,12 @@ who = "Dominik Röttsches <drott@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.28.0 -> 0.28.1"
 notes = "Fix for gsub hang, limits to cmap 12 iterator."
+
+[[audits.skrifa]]
+who = "Dominik Röttsches <drott@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "0.28.1 -> 0.29.0"
+notes = "Glyf/gvar performance improvements, glyph names API, malloc-free cycle detection."
 
 [[audits.small_ctor]]
 who = "danakj@chromium.org"

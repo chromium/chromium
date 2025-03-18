@@ -67,7 +67,7 @@
       initWithSearchController:searchController];
   self.passwordViewController.delegate = self;
 
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForProfile(profile);
   web::WebState* webState =

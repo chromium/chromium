@@ -45,17 +45,16 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 // Returns an empty string if the account isn't managed.
 - (NSString*)managedDomain {
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(self.browser->GetProfile());
+      IdentityManagerFactory::GetForProfile(self.profile);
   return base::SysUTF16ToNSString(
       HostedDomainForPrimaryAccount(identityManager));
 }
 
 // Returns the AuthenticationService of the browser.
 - (AuthenticationService*)authService {
-  ProfileIOS* profile = self.browser->GetProfile();
-  DCHECK(profile);
+  DCHECK(self.profile);
   AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForProfile(profile);
+      AuthenticationServiceFactory::GetForProfile(self.profile);
   return authService;
 }
 
@@ -77,8 +76,8 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
       self.presentedViewController.sheetPresentationController;
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
   presentationController.detents = @[
-    UISheetPresentationControllerDetent.mediumDetent,
-    UISheetPresentationControllerDetent.largeDetent
+    [UISheetPresentationControllerDetent mediumDetent],
+    [UISheetPresentationControllerDetent largeDetent]
   ];
   presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
 

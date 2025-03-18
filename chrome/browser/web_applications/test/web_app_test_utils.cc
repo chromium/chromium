@@ -18,6 +18,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/base64.h"
@@ -87,7 +88,6 @@
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
@@ -1060,7 +1060,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
             /*dev_mode=*/false};
       } else {
         constexpr size_t kNumLocationTypes =
-            absl::variant_size<IsolatedWebAppStorageLocation::Variant>::value;
+            std::variant_size<IsolatedWebAppStorageLocation::Variant>::value;
         std::array<IsolatedWebAppStorageLocation, kNumLocationTypes>
             location_types = {
                 IwaStorageOwnedBundle{

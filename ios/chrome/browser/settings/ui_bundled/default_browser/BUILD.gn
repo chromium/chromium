@@ -12,7 +12,7 @@ source_set("default_browser") {
     "//ios/chrome/browser/default_browser/model",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/default_promo/ui_bundled:coordinator",
-    "//ios/chrome/browser/intents:intents_donation_helper",
+    "//ios/chrome/browser/intents/model:model_donation_helper",
     "//ios/chrome/browser/settings/ui_bundled:constants",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/settings/ui_bundled/resources",

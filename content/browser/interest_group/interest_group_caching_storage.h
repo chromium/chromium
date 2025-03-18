@@ -225,6 +225,9 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
   void RecordDebugReportCooldown(const url::Origin& origin,
                                  base::Time cooldown_start,
                                  DebugReportCooldownType cooldown_type);
+  // Records a view or a click event. Aggregate time bucketed view and click
+  // information is provided to bidder's browsing signals in generateBid().
+  void RecordViewClick(network::AdAuctionEventRecord event_record);
   // Records a K-anonymity update for an interest group. If
   // `replace_existing_values` is true, this update will store the new
   // `update_time` and `positive_hashed_values`, replacing the interest

@@ -293,7 +293,8 @@ void SharedStorageDocumentServiceImpl::SharedStorageUpdate(
   GetSharedStorageRuntimeManager()->lock_manager().SharedStorageUpdate(
       std::move(method_with_options),
       /*shared_storage_origin=*/render_frame_host().GetLastCommittedOrigin(),
-      AccessScope::kWindow, main_frame_id(), base::DoNothing());
+      AccessScope::kWindow, main_frame_id(), /*worklet_id=*/std::nullopt,
+      base::DoNothing());
 
   std::move(callback).Run(/*error_message=*/{});
 }
@@ -329,7 +330,8 @@ void SharedStorageDocumentServiceImpl::SharedStorageBatchUpdate(
   GetSharedStorageRuntimeManager()->lock_manager().SharedStorageBatchUpdate(
       std::move(methods_with_options), with_lock,
       /*shared_storage_origin=*/render_frame_host().GetLastCommittedOrigin(),
-      AccessScope::kWindow, main_frame_id(), base::DoNothing());
+      AccessScope::kWindow, main_frame_id(), /*worklet_id=*/std::nullopt,
+      base::DoNothing());
 
   std::move(callback).Run(/*error_message=*/{});
 }

@@ -381,15 +381,15 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
       break;
   }
 
-  if (auto* transition =
-          ViewTransitionUtils::GetTransition(object.GetDocument())) {
-    // Note that `NeedsViewTransitionEffectNode` returns true for values that
-    // are in the non-transition-pseudo tree DOM. That is, things like layout
-    // view or the view transition elements that we are transitioning.
-    if (transition->NeedsViewTransitionEffectNode(object)) {
-      reasons |= CompositingReason::kViewTransitionElement;
-    }
-  }
+  ViewTransitionUtils::ForEachTransition(
+      object.GetDocument(), [&](ViewTransition& transition) {
+        // This ensures compositing for elements that are actively participating
+        // in a transition because they are tagged with view-transition-name.
+        // It does not apply to the ::view-transition* pseudo-elements.
+        if (transition.NeedsViewTransitionEffectNode(object)) {
+          reasons |= CompositingReason::kViewTransitionElement;
+        }
+      });
 
   auto* element = DynamicTo<Element>(object.GetNode());
   if (element && element->GetRestrictionTargetId()) {

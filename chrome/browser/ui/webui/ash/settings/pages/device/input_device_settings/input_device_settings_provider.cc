@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings/input_device_settings_provider.h"
 
 #include <algorithm>
+#include <variant>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerator_actions.h"
@@ -42,7 +43,7 @@ namespace ash::settings {
 namespace {
 
 using ActionTypeVariant =
-    absl::variant<AcceleratorAction, ::ash::mojom::StaticShortcutAction>;
+    std::variant<AcceleratorAction, ::ash::mojom::StaticShortcutAction>;
 
 constexpr double kDefaultKeyboardBrightness = 40.0;
 
@@ -114,8 +115,7 @@ mojom::ActionTypePtr GetActionType(
 }
 
 mojom::ActionTypePtr GetActionTypeFromVariant(ActionTypeVariant variant) {
-  return absl::visit([](auto&& value) { return GetActionType(value); },
-                     variant);
+  return std::visit([](auto&& value) { return GetActionType(value); }, variant);
 }
 
 template <typename T>

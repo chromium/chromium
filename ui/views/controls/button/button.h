@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <variant>
 
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
@@ -15,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_types.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
@@ -127,8 +127,7 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
     void Run(const ui::Event& event);
 
    private:
-    absl::variant<base::OnceClosure, base::RepeatingClosure, Callback>
-        callback_;
+    std::variant<base::OnceClosure, base::RepeatingClosure, Callback> callback_;
   };
 
   // This is used to ensure that multiple overlapping elements anchored on this

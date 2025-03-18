@@ -654,7 +654,6 @@ public class WebsitePermissionsFetcher {
         private class RelatedWebsiteSetsInfoFetcher extends Task {
             private boolean canDealWithRelatedWebsiteSetsInfo() {
                 return mSiteSettingsDelegate != null
-                        && mSiteSettingsDelegate.isPrivacySandboxFirstPartySetsUiFeatureEnabled()
                         && mSiteSettingsDelegate.isRelatedWebsiteSetsDataAccessEnabled();
             }
 

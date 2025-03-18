@@ -29,7 +29,8 @@ TEST_F(LocalSessionPoliciesProviderTest,
   base::MockCallback<LocalSessionPoliciesProvider::LocalPoliciesChangedCallback>
       callback;
   auto subscription = provider_.AddLocalPoliciesChangedCallback(callback.Get());
-  SessionPolicies new_policies = {.maximum_session_duration = base::Hours(10)};
+  SessionPolicies new_policies;
+  new_policies.maximum_session_duration = base::Hours(10);
   EXPECT_CALL(callback, Run(new_policies)).Times(1);
   provider_.set_local_policies(new_policies);
   EXPECT_EQ(provider_.get_local_policies(), new_policies);
@@ -37,7 +38,8 @@ TEST_F(LocalSessionPoliciesProviderTest,
 
 TEST_F(LocalSessionPoliciesProviderTest,
        PoliciesNotChanged_CallbacksNotNotified) {
-  SessionPolicies new_policies = {.maximum_session_duration = base::Hours(10)};
+  SessionPolicies new_policies;
+  new_policies.maximum_session_duration = base::Hours(10);
   provider_.set_local_policies(new_policies);
 
   base::MockCallback<LocalSessionPoliciesProvider::LocalPoliciesChangedCallback>
@@ -54,7 +56,8 @@ TEST_F(LocalSessionPoliciesProviderTest,
   auto subscription = std::make_unique<base::CallbackListSubscription>(
       provider_.AddLocalPoliciesChangedCallback(callback.Get()));
   subscription.reset();
-  SessionPolicies new_policies = {.maximum_session_duration = base::Hours(10)};
+  SessionPolicies new_policies;
+  new_policies.maximum_session_duration = base::Hours(10);
   EXPECT_CALL(callback, Run(new_policies)).Times(0);
   provider_.set_local_policies(new_policies);
 }

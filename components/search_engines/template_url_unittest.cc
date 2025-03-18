@@ -1156,62 +1156,6 @@ TEST_F(TemplateURLTest, ReplaceCurrentPageUrl) {
   }
 }
 
-#if BUILDFLAG(IS_ANDROID)
-// Tests appending attribution parameter to queries originating from Play API
-// search engine.
-TEST_F(TemplateURLTest, PlayAPIAttributionEnabled) {
-  const struct TestData {
-    const char* url;
-    std::u16string terms;
-    RegulatoryExtensionType reg_ext_type;
-    const char* output;
-  } test_data[] = {{"http://foo/?q={searchTerms}", u"bar",
-                    RegulatoryExtensionType::kDefault, "http://foo/?q=bar"},
-                   {"http://foo/?q={searchTerms}", u"bar",
-                    RegulatoryExtensionType::kAndroidEEA,
-                    "http://foo/?q=bar&chrome_dse_attribution=1"}};
-  TemplateURLData data;
-  for (const auto& entry : test_data) {
-    data.SetURL(entry.url);
-    data.regulatory_origin = entry.reg_ext_type;
-    TemplateURL url(data);
-    EXPECT_TRUE(url.url_ref().IsValid(search_terms_data_));
-    ASSERT_TRUE(url.url_ref().SupportsReplacement(search_terms_data_));
-    GURL result(url.url_ref().ReplaceSearchTerms(
-        TemplateURLRef::SearchTermsArgs(entry.terms), search_terms_data_));
-    ASSERT_TRUE(result.is_valid());
-    EXPECT_EQ(entry.output, result.spec());
-  }
-}
-
-TEST_F(TemplateURLTest, PlayAPIAttributionDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      switches::kRemoveSearchEngineChoiceAttribution);
-  const struct TestData {
-    const char* url;
-    std::u16string terms;
-    RegulatoryExtensionType reg_ext_type;
-    const char* output;
-  } test_data[] = {{"http://foo/?q={searchTerms}", u"bar",
-                    RegulatoryExtensionType::kDefault, "http://foo/?q=bar"},
-                   {"http://foo/?q={searchTerms}", u"bar",
-                    RegulatoryExtensionType::kAndroidEEA, "http://foo/?q=bar"}};
-  TemplateURLData data;
-  for (const auto& entry : test_data) {
-    data.SetURL(entry.url);
-    data.regulatory_origin = entry.reg_ext_type;
-    TemplateURL url(data);
-    EXPECT_TRUE(url.url_ref().IsValid(search_terms_data_));
-    ASSERT_TRUE(url.url_ref().SupportsReplacement(search_terms_data_));
-    GURL result(url.url_ref().ReplaceSearchTerms(
-        TemplateURLRef::SearchTermsArgs(entry.terms), search_terms_data_));
-    ASSERT_TRUE(result.is_valid());
-    EXPECT_EQ(entry.output, result.spec());
-  }
-}
-#endif
-
 TEST_F(TemplateURLTest, Suggestions) {
   struct TestData {
     const int accepted_suggestion;

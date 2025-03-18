@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "ash/constants/ash_features.h"
 #include "ash/root_window_controller.h"
@@ -190,7 +191,7 @@ void EcheAppManagerFactory::ShowNotification(
 
   if (info->category() ==
       LaunchAppHelper::NotificationInfo::Category::kNative) {
-    if (absl::get<LaunchAppHelper::NotificationInfo::NotificationType>(
+    if (std::get<LaunchAppHelper::NotificationInfo::NotificationType>(
             info->type()) ==
         LaunchAppHelper::NotificationInfo::NotificationType::kScreenLock) {
       weak_ptr->notification_controller_->ShowScreenLockNotification(

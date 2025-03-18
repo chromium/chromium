@@ -37,6 +37,8 @@ component("platform") {
   ]
 
   sources = [
+    "assistive_tech.cc",
+    "assistive_tech.h",
     "ax_mode_observer.cc",
     "ax_mode_observer.h",
     "ax_node_id_delegate.h",

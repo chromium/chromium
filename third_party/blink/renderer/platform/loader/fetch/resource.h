@@ -26,6 +26,7 @@
 
 #include <memory>
 #include <optional>
+#include <variant>
 
 #include "base/auto_reset.h"
 #include "base/containers/span.h"
@@ -34,7 +35,6 @@
 #include "base/time/time.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "net/base/schemeful_site.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
@@ -165,7 +165,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   // thread, this method is called with a SegmentedBuffer data. Otherwise, it is
   // called with a span<const char> data several times.
   virtual void AppendData(
-      absl::variant<SegmentedBuffer, base::span<const char>>);
+      std::variant<SegmentedBuffer, base::span<const char>>);
   virtual void FinishAsError(const ResourceError&,
                              base::SingleThreadTaskRunner*);
 

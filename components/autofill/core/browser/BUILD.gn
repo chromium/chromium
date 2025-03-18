@@ -729,6 +729,10 @@ static_library("browser") {
     sources += [
       "payments/autofill_save_iban_ui_info.cc",
       "payments/autofill_save_iban_ui_info.h",
+      "ui/addresses/android/autofill_address_editor_ui_info_android.cc",
+      "ui/addresses/android/autofill_address_editor_ui_info_android.h",
+      "ui/addresses/android/autofill_address_ui_component_android.cc",
+      "ui/addresses/android/autofill_address_ui_component_android.h",
     ]
   }
 

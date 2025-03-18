@@ -8,6 +8,7 @@
 #include <concepts>
 #include <map>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -52,10 +53,10 @@ class TestAutofillDriverTemplate : public T {
   LocalFrameToken GetFrameToken() const override { return frame_token_; }
   TestAutofillDriverTemplate* GetParent() override { return parent_; }
   std::optional<LocalFrameToken> Resolve(FrameToken query) override {
-    if (auto* local_frame_token = absl::get_if<LocalFrameToken>(&query)) {
+    if (auto* local_frame_token = std::get_if<LocalFrameToken>(&query)) {
       return *local_frame_token;
     }
-    auto it = remote_frame_tokens_.find(absl::get<RemoteFrameToken>(query));
+    auto it = remote_frame_tokens_.find(std::get<RemoteFrameToken>(query));
     if (it != remote_frame_tokens_.end()) {
       return it->second;
     }

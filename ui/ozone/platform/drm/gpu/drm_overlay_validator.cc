@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/metrics/histogram_macros.h"
@@ -94,7 +95,7 @@ DrmOverlayPlane DrmOverlayValidator::MakeOverlayPlane(
       GetBufferForPageFlipTest(window_, param, &reusable_buffers);
 
   return DrmOverlayPlane(buffer, param.color_space, param.plane_z_order,
-                         absl::get<gfx::OverlayTransform>(param.transform),
+                         std::get<gfx::OverlayTransform>(param.transform),
                          gfx::ToNearestRect(param.display_rect),
                          gfx::ToNearestRect(param.display_rect),
                          param.crop_rect, !param.is_opaque,

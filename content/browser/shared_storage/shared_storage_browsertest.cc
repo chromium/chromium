@@ -3252,15 +3252,24 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, SetAppendOperationInDocument) {
         SharedStorageEventParams::CreateForRun(
             "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
-        origin_str, SharedStorageEventParams::CreateForGetOrDelete("key0")},
+        origin_str,
+        SharedStorageEventParams::CreateForGetOrDelete("key0",
+                                                       /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
-        origin_str, SharedStorageEventParams::CreateForGetOrDelete("key1")},
+        origin_str,
+        SharedStorageEventParams::CreateForGetOrDelete("key1",
+                                                       /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
-        origin_str, SharedStorageEventParams::CreateForGetOrDelete("key2")},
+        origin_str,
+        SharedStorageEventParams::CreateForGetOrDelete("key2",
+                                                       /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
-        origin_str, SharedStorageEventParams::CreateForGetOrDelete("key3")},
+        origin_str,
+        SharedStorageEventParams::CreateForGetOrDelete("key3",
+                                                       /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
-        MainFrameId(), origin_str, SharedStorageEventParams::CreateDefault()}});
+        MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, DeleteOperationInDocument) {
@@ -3307,9 +3316,12 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, DeleteOperationInDocument) {
         SharedStorageEventParams::CreateForRun(
             "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
-        MainFrameId(), origin_str, SharedStorageEventParams::CreateDefault()},
+        MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
-        origin_str, SharedStorageEventParams::CreateForGetOrDelete("key0")}});
+        origin_str,
+        SharedStorageEventParams::CreateForGetOrDelete("key0",
+                                                       /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, ClearOperationInDocument) {
@@ -3349,7 +3361,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, ClearOperationInDocument) {
         SharedStorageEventParams::CreateForRun(
             "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
-        MainFrameId(), origin_str, SharedStorageEventParams::CreateDefault()}});
+        MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, SetAppendOperationInWorklet) {
@@ -3404,35 +3417,51 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, SetAppendOperationInWorklet) {
             "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForSet("key0", "value0", false)},
+        SharedStorageEventParams::CreateForSet("key0", "value0", false,
+                                               /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForSet("key1", "value1", false)},
+        SharedStorageEventParams::CreateForSet("key1", "value1", false,
+                                               /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForSet("key1", "value111", false)},
+        SharedStorageEventParams::CreateForSet("key1", "value111", false,
+                                               /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForSet("key2", "value2", false)},
+        SharedStorageEventParams::CreateForSet("key2", "value2", false,
+                                               /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForSet("key2", "value222", true)},
+        SharedStorageEventParams::CreateForSet("key2", "value222", true,
+                                               /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForSet("key3", "value3", false)},
+        SharedStorageEventParams::CreateForSet("key3", "value3", false,
+                                               /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kAppend,
         MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForAppend("key3", "value333")},
+        SharedStorageEventParams::CreateForAppend("key3", "value333",
+                                                  /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
-        origin_str, SharedStorageEventParams::CreateForGetOrDelete("key0")},
+        origin_str,
+        SharedStorageEventParams::CreateForGetOrDelete("key0",
+                                                       /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
-        origin_str, SharedStorageEventParams::CreateForGetOrDelete("key1")},
+        origin_str,
+        SharedStorageEventParams::CreateForGetOrDelete("key1",
+                                                       /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
-        origin_str, SharedStorageEventParams::CreateForGetOrDelete("key2")},
+        origin_str,
+        SharedStorageEventParams::CreateForGetOrDelete("key2",
+                                                       /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
-        origin_str, SharedStorageEventParams::CreateForGetOrDelete("key3")},
+        origin_str,
+        SharedStorageEventParams::CreateForGetOrDelete("key3",
+                                                       /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
-        MainFrameId(), origin_str, SharedStorageEventParams::CreateDefault()}});
+        MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
@@ -3472,10 +3501,11 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
        {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
         origin_str,
         SharedStorageEventParams::CreateForSet("k", std::string(2621439, 'a'),
-                                               false)},
+                                               false, /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kAppend,
         MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForAppend("k", "a")}});
+        SharedStorageEventParams::CreateForAppend("k", "a",
+                                                  /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, DeleteOperationInWorklet) {
@@ -3527,18 +3557,26 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, DeleteOperationInWorklet) {
             "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForSet("key0", "value0", false)},
+        SharedStorageEventParams::CreateForSet("key0", "value0", false,
+                                               /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
-        MainFrameId(), origin_str, SharedStorageEventParams::CreateDefault()},
+        MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
-        origin_str, SharedStorageEventParams::CreateForGetOrDelete("key0")},
+        origin_str,
+        SharedStorageEventParams::CreateForGetOrDelete("key0",
+                                                       /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kDelete,
         MainFrameId(), origin_str,
-        SharedStorageEventParams::CreateForGetOrDelete("key0")},
+        SharedStorageEventParams::CreateForGetOrDelete("key0",
+                                                       /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
-        MainFrameId(), origin_str, SharedStorageEventParams::CreateDefault()},
+        MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
-        origin_str, SharedStorageEventParams::CreateForGetOrDelete("key0")}});
+        origin_str,
+        SharedStorageEventParams::CreateForGetOrDelete("key0",
+                                                       /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, ClearOperationInWorklet) {
@@ -3579,15 +3617,21 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, ClearOperationInWorklet) {
             "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForSet("key0", "value0", false)},
+        SharedStorageEventParams::CreateForSet("key0", "value0", false,
+                                               /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
-        MainFrameId(), origin_str, SharedStorageEventParams::CreateDefault()},
+        MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
-        origin_str, SharedStorageEventParams::CreateForGetOrDelete("key0")},
+        origin_str,
+        SharedStorageEventParams::CreateForGetOrDelete("key0",
+                                                       /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kClear, MainFrameId(),
-        origin_str, SharedStorageEventParams::CreateDefault()},
+        origin_str,
+        SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
-        MainFrameId(), origin_str, SharedStorageEventParams::CreateDefault()}});
+        MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, ConsoleErrorInWorklet) {
@@ -3691,16 +3735,22 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, GetOperationInWorklet) {
         SharedStorageEventParams::CreateForRun(
             "get-operation", blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
-        MainFrameId(), origin_str, SharedStorageEventParams::CreateDefault()},
+        MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
-        origin_str, SharedStorageEventParams::CreateForGetOrDelete("key0")},
+        origin_str,
+        SharedStorageEventParams::CreateForGetOrDelete("key0",
+                                                       /*worklet_id=*/0)},
        {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRun(
             "get-operation", blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
-        MainFrameId(), origin_str, SharedStorageEventParams::CreateDefault()},
+        MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
-        origin_str, SharedStorageEventParams::CreateForGetOrDelete("key0")}});
+        origin_str,
+        SharedStorageEventParams::CreateForGetOrDelete("key0",
+                                                       /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
@@ -3741,7 +3791,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
         SharedStorageEventParams::CreateForRun(
             "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
-        MainFrameId(), origin_str, SharedStorageEventParams::CreateDefault()}});
+        MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
@@ -3784,7 +3835,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
             "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
         MainFrameId(), origin2_str,
-        SharedStorageEventParams::CreateDefault()}});
+        SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, KeysAndEntriesOperation) {
@@ -3840,9 +3891,62 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, KeysAndEntriesOperation) {
         SharedStorageEventParams::CreateForRun(
             "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kKeys, MainFrameId(),
-        origin_str, SharedStorageEventParams::CreateDefault()},
+        origin_str,
+        SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kEntries,
-        MainFrameId(), origin_str, SharedStorageEventParams::CreateDefault()}});
+        MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)}});
+}
+
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, ValuesOperation) {
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+      sharedStorage.set('key0', 'value0');
+      sharedStorage.set('key1', 'value1');
+      sharedStorage.set('key2', 'value2');
+    )"));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(shell(), R"(
+      for await (const value of sharedStorage.values()) {
+        console.log(value);
+      }
+    )",
+                         &out_script_url);
+
+  EXPECT_EQ(3u, console_observer.messages().size());
+  EXPECT_EQ("value0",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("value1",
+            base::UTF16ToUTF8(console_observer.messages()[1].message));
+  EXPECT_EQ("value2",
+            base::UTF16ToUTF8(console_observer.messages()[2].message));
+
+  WaitForHistograms({kTimingRunExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingRunExecutedInWorkletHistogram, 1);
+
+  std::string origin_str = url::Origin::Create(url).Serialize();
+  ExpectAccessObserved(
+      {{AccessScope::kWindow, AccessMethod::kSet, MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForSet("key0", "value0", false)},
+       {AccessScope::kWindow, AccessMethod::kSet, MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForSet("key1", "value1", false)},
+       {AccessScope::kWindow, AccessMethod::kSet, MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForSet("key2", "value2", false)},
+       {AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+        origin_str,
+        SharedStorageEventParams::CreateForAddModule(out_script_url,
+                                                     /*worklet_id=*/0)},
+       {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForRun(
+            "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)},
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kValues,
+        MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
@@ -3901,12 +4005,14 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
       AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
       SharedStorageEventParams::CreateForRun(
           "test-operation", blink::CloneableMessage(), /*worklet_id=*/0));
-  expected_accesses.emplace_back(AccessScope::kSharedStorageWorklet,
-                                 AccessMethod::kKeys, MainFrameId(), origin_str,
-                                 SharedStorageEventParams::CreateDefault());
+  expected_accesses.emplace_back(
+      AccessScope::kSharedStorageWorklet, AccessMethod::kKeys, MainFrameId(),
+      origin_str,
+      SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0));
   expected_accesses.emplace_back(
       AccessScope::kSharedStorageWorklet, AccessMethod::kEntries, MainFrameId(),
-      origin_str, SharedStorageEventParams::CreateDefault());
+      origin_str,
+      SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0));
   ExpectAccessObserved(expected_accesses);
 }
 
@@ -4117,6 +4223,13 @@ IN_PROC_BROWSER_TEST_P(
 
   EXPECT_EQ(blink::mojom::SharedStorageWorkletCreationMethod::kCreateWorklet,
             worklet_host->creation_method());
+
+  std::string data_origin_str = url::Origin::Create(url).Serialize();
+  ExpectAccessObserved({{AccessScope::kWindow, AccessMethod::kCreateWorklet,
+                         MainFrameId(), data_origin_str,
+                         SharedStorageEventParams::CreateForCreateWorklet(
+                             module_script_url, "context-origin",
+                             /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -4148,6 +4261,14 @@ IN_PROC_BROWSER_TEST_P(
 
   EXPECT_EQ(blink::mojom::SharedStorageWorkletCreationMethod::kCreateWorklet,
             worklet_host->creation_method());
+
+  // The default data origin is the context origin.
+  std::string data_origin_str = url::Origin::Create(url).Serialize();
+  ExpectAccessObserved({{AccessScope::kWindow, AccessMethod::kCreateWorklet,
+                         MainFrameId(), data_origin_str,
+                         SharedStorageEventParams::CreateForCreateWorklet(
+                             module_script_url, "context-origin",
+                             /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -4183,6 +4304,14 @@ IN_PROC_BROWSER_TEST_P(
 
   EXPECT_EQ(blink::mojom::SharedStorageWorkletCreationMethod::kCreateWorklet,
             worklet_host->creation_method());
+
+  std::string data_origin_str =
+      url::Origin::Create(module_script_url).Serialize();
+  ExpectAccessObserved({{AccessScope::kWindow, AccessMethod::kCreateWorklet,
+                         MainFrameId(), data_origin_str,
+                         SharedStorageEventParams::CreateForCreateWorklet(
+                             module_script_url, "script-origin",
+                             /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -4220,6 +4349,13 @@ IN_PROC_BROWSER_TEST_P(
 
   EXPECT_EQ(blink::mojom::SharedStorageWorkletCreationMethod::kCreateWorklet,
             worklet_host->creation_method());
+
+  std::string custom_data_origin_str = custom_data_origin.Serialize();
+  ExpectAccessObserved({{AccessScope::kWindow, AccessMethod::kCreateWorklet,
+                         MainFrameId(), custom_data_origin_str,
+                         SharedStorageEventParams::CreateForCreateWorklet(
+                             module_script_url, custom_data_origin_str,
+                             /*worklet_id=*/0)}});
 }
 
 // Start a worklet under b.test using the script origin as the data
@@ -8791,6 +8927,13 @@ IN_PROC_BROWSER_TEST_P(SharedStorageCreateWorkletCustomDataOriginBrowserTest,
       shell(),
       JsReplace("sharedStorage.createWorklet($1, {dataOrigin: $2})",
                 module_script_url.spec(), custom_data_origin.Serialize())));
+
+  std::string custom_data_origin_str = custom_data_origin.Serialize();
+  ExpectAccessObserved({{AccessScope::kWindow, AccessMethod::kCreateWorklet,
+                         MainFrameId(), custom_data_origin_str,
+                         SharedStorageEventParams::CreateForCreateWorklet(
+                             module_script_url, custom_data_origin_str,
+                             /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -8810,6 +8953,13 @@ IN_PROC_BROWSER_TEST_P(
       shell(),
       JsReplace("sharedStorage.createWorklet($1, {dataOrigin: $2})",
                 module_script_url.spec(), custom_data_origin.Serialize())));
+
+  std::string custom_data_origin_str = custom_data_origin.Serialize();
+  ExpectAccessObserved({{AccessScope::kWindow, AccessMethod::kCreateWorklet,
+                         MainFrameId(), custom_data_origin_str,
+                         SharedStorageEventParams::CreateForCreateWorklet(
+                             module_script_url, custom_data_origin_str,
+                             /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -8829,6 +8979,13 @@ IN_PROC_BROWSER_TEST_P(
       shell(),
       JsReplace("sharedStorage.createWorklet($1, {dataOrigin: $2})",
                 module_script_url.spec(), custom_data_origin.Serialize())));
+
+  std::string custom_data_origin_str = custom_data_origin.Serialize();
+  ExpectAccessObserved({{AccessScope::kWindow, AccessMethod::kCreateWorklet,
+                         MainFrameId(), custom_data_origin_str,
+                         SharedStorageEventParams::CreateForCreateWorklet(
+                             module_script_url, custom_data_origin_str,
+                             /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageCreateWorkletCustomDataOriginBrowserTest,
@@ -8847,6 +9004,13 @@ IN_PROC_BROWSER_TEST_P(SharedStorageCreateWorkletCustomDataOriginBrowserTest,
       shell(),
       JsReplace("sharedStorage.createWorklet($1, {dataOrigin: $2})",
                 module_script_url.spec(), custom_data_origin.Serialize())));
+
+  std::string custom_data_origin_str = custom_data_origin.Serialize();
+  ExpectAccessObserved({{AccessScope::kWindow, AccessMethod::kCreateWorklet,
+                         MainFrameId(), custom_data_origin_str,
+                         SharedStorageEventParams::CreateForCreateWorklet(
+                             module_script_url, custom_data_origin_str,
+                             /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -8866,6 +9030,13 @@ IN_PROC_BROWSER_TEST_P(
       shell(),
       JsReplace("sharedStorage.createWorklet($1, {dataOrigin: $2})",
                 module_script_url.spec(), custom_data_origin.Serialize())));
+
+  std::string custom_data_origin_str = custom_data_origin.Serialize();
+  ExpectAccessObserved({{AccessScope::kWindow, AccessMethod::kCreateWorklet,
+                         MainFrameId(), custom_data_origin_str,
+                         SharedStorageEventParams::CreateForCreateWorklet(
+                             module_script_url, custom_data_origin_str,
+                             /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -8885,6 +9056,102 @@ IN_PROC_BROWSER_TEST_P(
       shell(),
       JsReplace("sharedStorage.createWorklet($1, {dataOrigin: $2})",
                 module_script_url.spec(), custom_data_origin.Serialize())));
+
+  std::string custom_data_origin_str = custom_data_origin.Serialize();
+  ExpectAccessObserved({{AccessScope::kWindow, AccessMethod::kCreateWorklet,
+                         MainFrameId(), custom_data_origin_str,
+                         SharedStorageEventParams::CreateForCreateWorklet(
+                             module_script_url, custom_data_origin_str,
+                             /*worklet_id=*/0)}});
+}
+
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
+                       TwoWorkletsInSameFrame_IDsAreCorrect) {
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url1;
+  ExecuteScriptInWorkletUsingCreateWorklet(shell(), R"(
+      sharedStorage.set('key0', 'value0');
+      sharedStorage.append('key0', 'value1');
+
+      console.log(await sharedStorage.get('key0'));
+      console.log(await sharedStorage.length());
+    )",
+                                           &out_script_url1);
+
+  GURL out_script_url2;
+  ExecuteScriptInWorkletUsingCreateWorklet(shell(), R"(
+      sharedStorage.set('key1', 'value2');
+      sharedStorage.append('key1', 'value3');
+
+      console.log(await sharedStorage.get('key1'));
+      console.log(await sharedStorage.length());
+    )",
+                                           &out_script_url2,
+                                           /*expected_total_host_count=*/2u);
+
+  EXPECT_EQ(4u, console_observer.messages().size());
+  EXPECT_EQ("value0value1",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[1].message));
+  EXPECT_EQ("value2value3",
+            base::UTF16ToUTF8(console_observer.messages()[2].message));
+  EXPECT_EQ("2", base::UTF16ToUTF8(console_observer.messages()[3].message));
+
+  WaitForHistograms({kTimingRunExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingRunExecutedInWorkletHistogram, 2);
+
+  std::string origin_str = url::Origin::Create(url).Serialize();
+  ExpectAccessObserved(
+      {{AccessScope::kWindow, AccessMethod::kCreateWorklet, MainFrameId(),
+        origin_str,
+        SharedStorageEventParams::CreateForCreateWorklet(out_script_url1,
+                                                         "context-origin",
+                                                         /*worklet_id=*/0)},
+       {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForRun(
+            "test-operation", blink::CloneableMessage(), /*worklet_id=*/0)},
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
+        origin_str,
+        SharedStorageEventParams::CreateForSet("key0", "value0", false,
+                                               /*worklet_id=*/0)},
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kAppend,
+        MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForAppend("key0", "value1",
+                                                  /*worklet_id=*/0)},
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
+        origin_str,
+        SharedStorageEventParams::CreateForGetOrDelete("key0",
+                                                       /*worklet_id=*/0)},
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
+        MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/0)},
+       {AccessScope::kWindow, AccessMethod::kCreateWorklet, MainFrameId(),
+        origin_str,
+        SharedStorageEventParams::CreateForCreateWorklet(out_script_url2,
+                                                         "context-origin",
+                                                         /*worklet_id=*/1)},
+       {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForRun(
+            "test-operation", blink::CloneableMessage(), /*worklet_id=*/1)},
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
+        origin_str,
+        SharedStorageEventParams::CreateForSet("key1", "value2", false,
+                                               /*worklet_id=*/1)},
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kAppend,
+        MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForAppend("key1", "value3",
+                                                  /*worklet_id=*/1)},
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kGet, MainFrameId(),
+        origin_str,
+        SharedStorageEventParams::CreateForGetOrDelete("key1",
+                                                       /*worklet_id=*/1)},
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kLength,
+        MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateWithWorkletId(/*worklet_id=*/1)}});
 }
 
 }  // namespace content

@@ -102,6 +102,7 @@ bool ImeKeyboard::IsAltGrAvailable() const {
       "ua",
       "us(altgr-intl)",
       "us(intl)",
+      "us(noop-altgr)",
   });
 
   return kSet.contains(last_layout_);

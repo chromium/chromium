@@ -390,6 +390,17 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
               (!this.suppressCopyAndSaveAsImage &&
                (this.enableCopyAsImage || this.enableSaveAsImage)) ||
               this.showDetectedTextContextMenuOptions);
+
+          // If simplified selection is enabled, send an event to the post
+          // selection renderer to darken the scrim if text is found within the
+          // region so that text gleams are visible.
+          if (this.simplifiedSelectionEnabled &&
+              this.showDetectedTextContextMenuOptions) {
+            this.dispatchEvent(new CustomEvent('text-found-in-region', {
+              bubbles: true,
+              composed: true,
+            }));
+          }
         });
     this.eventTracker_.add(
         document, 'restore-selected-region-context-menu', () => {

@@ -44,18 +44,6 @@ public class PassthroughTabUngrouper implements TabUngrouper {
 
     @Override
     public void ungroupTabGroup(
-            int rootId,
-            boolean trailing,
-            boolean allowDialog,
-            @Nullable TabModelActionListener listener) {
-        Function<TabGroupModelFilter, List<Tab>> tabsFetcher =
-                (filter) -> getTabsToUngroup(filter, rootId);
-
-        ungroupTabsInternal(tabsFetcher, trailing, listener);
-    }
-
-    @Override
-    public void ungroupTabGroup(
             @NonNull Token tabGroupId,
             boolean trailing,
             boolean allowDialog,
@@ -95,11 +83,7 @@ public class PassthroughTabUngrouper implements TabUngrouper {
 
     static @Nullable List<Tab> getTabsToUngroup(
             @NonNull TabGroupModelFilter filter, @NonNull Token token) {
-        return getTabsToUngroup(filter, filter.getRootIdFromTabGroupId(token));
-    }
-
-    static @Nullable List<Tab> getTabsToUngroup(@NonNull TabGroupModelFilter filter, int rootId) {
-        return filter.getRelatedTabListForRootId(rootId);
+        return filter.getTabsInGroup(token);
     }
 
     private TabGroupModelFilterInternal getTabGroupModelFilter() {

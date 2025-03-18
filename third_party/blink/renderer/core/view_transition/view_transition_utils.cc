@@ -179,6 +179,22 @@ ViewTransition* ViewTransitionUtils::GetTransition(const Document& document) {
 }
 
 // static
+ViewTransition* ViewTransitionUtils::TransitionForTaggedElement(
+    const LayoutObject& layout_object) {
+  ViewTransition* result = nullptr;
+  // Note: an element can't participate in more than one transition at the same
+  // time. There may be skipped transitions still waiting for the DOM callback
+  // to run, but those should return false from NeedsViewTransitionEffectNode.
+  ForEachTransition(
+      layout_object.GetDocument(), [&](ViewTransition& transition) {
+        if (transition.NeedsViewTransitionEffectNode(layout_object)) {
+          result = &transition;
+        }
+      });
+  return result;
+}
+
+// static
 void ViewTransitionUtils::ForEachTransition(
     const Document& document,
     base::FunctionRef<void(ViewTransition&)> function) {

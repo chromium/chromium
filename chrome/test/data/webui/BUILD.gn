@@ -288,7 +288,7 @@ source_set("interactive_ui_tests") {
     sources += [ "tab_strip/tab_strip_focus_test.cc" ]
   }
 
-  if (enable_extensions) {
+  if (enable_extensions_core) {
     sources += [ "extensions/extensions_focus_test.cc" ]
   }
 
@@ -380,28 +380,28 @@ webui_ts_library("build_ts") {
   tsconfig_base = "tsconfig_base.json"
   in_files = [
     "chai_assert.ts",
+    "fake_chrome_event.ts",
     "keyboard_mock_interactions.ts",
     "mocha_adapter_simple.ts",
+    "mock_controller.ts",
     "mock_timer.ts",
     "mock_timer_test.ts",
     "test_browser_proxy.ts",
     "test_mock.ts",
+    "test_plural_string_proxy.ts",
     "test_util.ts",
   ]
 
   if (!is_android) {
     in_files += [
       "chrome_timeticks_test.ts",
-      "fake_chrome_event.ts",
       "fake_settings_private.ts",
       "metrics_test_support.ts",
-      "mock_controller.ts",
       "mocked_metrics_reporter.ts",
       "mouse_mock_interactions.ts",
       "polymer_test_util.ts",
       "test_api.ts",
       "test_open_window_proxy.ts",
-      "test_plural_string_proxy.ts",
       "test_store.ts",
       "trusted_html.ts",
     ]
@@ -572,7 +572,7 @@ generate_grd("build_grd") {
         [ "$target_gen_dir/cr_components/certificate_manager/resources.grdp" ]
   }
 
-  if (enable_extensions) {
+  if (enable_extensions_core) {
     deps += [ "extensions:build_grdp" ]
     grdp_files += [ "$target_gen_dir/extensions/resources.grdp" ]
   }

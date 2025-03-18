@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <string>
+#include <utility>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -19,7 +20,6 @@
 #include "media/base/vector_math.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "mojo/public/cpp/system/platform_handle.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace audio {
 

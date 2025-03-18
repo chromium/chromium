@@ -12,6 +12,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -43,7 +44,6 @@
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "sql/statement.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -528,7 +528,7 @@ std::string SerializeAttributionScopesData(
 }
 
 base::expected<std::optional<attribution_reporting::AttributionScopesData>,
-               absl::monostate>
+               std::monostate>
 DeserializeAttributionScopesData(sql::Statement& stmt, int col) {
   proto::AttributionScopesData msg;
   if (stmt.GetColumnType(col) == sql::ColumnType::kNull) {
@@ -537,7 +537,7 @@ DeserializeAttributionScopesData(sql::Statement& stmt, int col) {
 
   if (base::span<const uint8_t> blob = stmt.ColumnBlob(col);
       !msg.ParseFromArray(blob.data(), blob.size())) {
-    return base::unexpected(absl::monostate());
+    return base::unexpected(std::monostate());
   }
 
   base::flat_set<std::string> scopes(
@@ -548,7 +548,7 @@ DeserializeAttributionScopesData(sql::Statement& stmt, int col) {
       msg.scope_limit(), msg.max_event_states());
   if (!scopes_data.has_value()) {
     // DB entry is corrupted.
-    return base::unexpected(absl::monostate());
+    return base::unexpected(std::monostate());
   }
   return scopes_data;
 }

@@ -222,7 +222,7 @@ TEST(PropertyTreeTest, UndoOverscroll) {
 
   const gfx::PointF overscroll_offset(0, 10);
   TransformNode overscroll_node;
-  overscroll_node.scroll_offset = overscroll_offset;
+  overscroll_node.SetScrollOffset(overscroll_offset, DamageReason::kUntracked);
   overscroll_node.id = transform_tree.Insert(overscroll_node, 1);
   viewport_property_ids.overscroll_elasticity_transform = overscroll_node.id;
 
@@ -685,7 +685,8 @@ TEST(ScrollTreeTest, GetScrollOffsetForScrollTimelineNegativeOffset) {
   // Set a scroll value close to 0.
   scroll_tree.SetScrollOffset(element_id, gfx::PointF(0, 0.1));
   transform_tree.Node(transform_node_id)->scrolls = true;
-  transform_tree.Node(transform_node_id)->scroll_offset = gfx::PointF(0, 0.1);
+  transform_tree.Node(transform_node_id)
+      ->SetScrollOffset(gfx::PointF(0, 0.1), DamageReason::kUntracked);
 
   // Pretend that the snap amount was slightly larger than 0.1.
   transform_tree.Node(transform_node_id)->snap_amount = gfx::Vector2dF(0, 0.2);

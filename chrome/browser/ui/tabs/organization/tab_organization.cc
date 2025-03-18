@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 #include <unordered_set>
+#include <variant>
 
 #include "base/debug/dump_without_crashing.h"
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/tab_groups/tab_group_id.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace {
 constexpr int kMinValidTabsForOrganizing = 2;
@@ -26,7 +26,7 @@ TabOrganization::TabOrganization(
     TabDatas tab_datas,
     std::vector<std::u16string> names,
     int first_new_tab_index,
-    absl::variant<size_t, std::u16string> current_name,
+    std::variant<size_t, std::u16string> current_name,
     UserChoice choice)
     : first_new_tab_index_(first_new_tab_index),
       names_(names),
@@ -60,12 +60,12 @@ TabOrganization::~TabOrganization() {
 }
 
 const std::u16string TabOrganization::GetDisplayName() const {
-  if (absl::holds_alternative<size_t>(current_name())) {
-    const size_t index = absl::get<size_t>(current_name());
+  if (std::holds_alternative<size_t>(current_name())) {
+    const size_t index = std::get<size_t>(current_name());
     CHECK(index < names_.size());
     return names_.at(index);
-  } else if (absl::holds_alternative<std::u16string>(current_name())) {
-    return absl::get<std::u16string>(current_name());
+  } else if (std::holds_alternative<std::u16string>(current_name())) {
+    return std::get<std::u16string>(current_name());
   }
   return u"";
 }
@@ -137,7 +137,7 @@ void TabOrganization::RemoveTabData(TabData::TabID tab_id) {
 }
 
 void TabOrganization::SetCurrentName(
-    absl::variant<size_t, std::u16string> new_current_name) {
+    std::variant<size_t, std::u16string> new_current_name) {
   current_name_ = new_current_name;
   NotifyObserversOfUpdate();
 }

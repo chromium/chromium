@@ -316,7 +316,6 @@
 <translation id="1532118530259321453">Ова страница наводи:</translation>
 <translation id="1533966801397200693">Профил на који сте пријављени је профил којим се управља. Администратор може даљински да уноси промене у подешавања профила, да анализира информације о прегледачу помоћу извештавања и обавља друге неопходне задатке. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Преведи страницу</translation>
-<translation id="1538295100801850685">Побољшања предвиђања</translation>
 <translation id="1539840569003678498">Пријава је послата:</translation>
 <translation id="1542105669288201090">Пословно образовање</translation>
 <translation id="1545757265410828525">Историја цена</translation>
@@ -1157,7 +1156,6 @@
 <translation id="3052868890529250114">Обично се безбедно повезујете са сајтовима, али Chrome овог пута не може да користи безбедну везу. Нападач можда покушава да шпијунира или измени мрежну везу. <ph name="BEGIN_LEARN_MORE_LINK" />Сазнајте више о овом упозорењу<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Снижење од <ph name="PRICE_DROP" /> за:<ph name="PRODUCT_NAME" /></translation>
 <translation id="3061707000357573562">Услуга крпљења</translation>
-<translation id="306198082577913404">Укључите побољшања предвиђања</translation>
 <translation id="3062655045399308513">Избриши податке прегледања…</translation>
 <translation id="3063453392496098461">Инсталирање VPN услуга у позадини није успело.</translation>
 <translation id="306573536155379004">Игра је покренута.</translation>
@@ -1698,6 +1696,7 @@
 <translation id="3964661563329879394">{COUNT,plural, =0{None}=1{Са 1 сајта }one{Са # сајта }few{Са # сајта }other{Са # сајтова }}</translation>
 <translation id="3965672182149944205">Желите да сачувате адресу?</translation>
 <translation id="3966044442021752214">Безбедност производа</translation>
+<translation id="3969869202926863008">Приступ локалној мрежи</translation>
 <translation id="397105322502079400">Израчунавање...</translation>
 <translation id="3973234410852337861">Хост <ph name="HOST_NAME" /> је блокиран</translation>
 <translation id="3975852104434126461">Ауто-мото индустрија</translation>
@@ -2054,6 +2053,7 @@
 <translation id="460848736049414407">Блокирао је администратор</translation>
 <translation id="4610279718074907952">Овај сајт је у групи, коју дефинише <ph name="SET_OWNER" />, који може да види ваше активности</translation>
 <translation id="46128681529823442">Опрема за фудбал</translation>
+<translation id="4612904677925722054">Овај сајт можда има садржај за старију публику. Родитељ или старатељ мора да каже да је у реду да посетиш овај веб-сајт.</translation>
 <translation id="4619564267100705184">Потврдите идентитет</translation>
 <translation id="4622292761762557753">Ипак пренеси</translation>
 <translation id="4622647778991854660">Омогућите обавештења у Центру за обавештења. Отворите <ph name="LINK" />.</translation>
@@ -2325,7 +2325,6 @@
 <translation id="5097099694988056070">Статистички подаци о уређају, попут искоришћености процесора/RAM меморије</translation>
 <translation id="5097468150760963273">27×39 in</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome тражи приступ дозволи <ph name="PERMISSION" /> на уређају</translation>
 <translation id="510644072453496781">Картон (крај)</translation>
 <translation id="5106648964679263509">Виртуелна картица за <ph name="BNPL_ISSUER_NAME" /> је попуњена</translation>
 <translation id="5108881358339761672">Сајт није безбедан</translation>
@@ -2652,6 +2651,7 @@
 <translation id="5660122698869360728">Нов паметни фолдер који вам помаже да сачувате све странице за куповину на једном месту и аутоматски пратите цене, добијате увид у цене и друго.</translation>
 <translation id="5663955426505430495">Администратор овог уређаја је инсталирао додатке за додатне функције. Додаци имају приступ некима од података.</translation>
 <translation id="5667827081946850877">Аудио-књиге</translation>
+<translation id="5674082555327905359">Може да тражи да се повезује са било којим уређајем на локалној мрежи</translation>
 <translation id="5675650730144413517">Ова страница не функционише</translation>
 <translation id="5675809467256309336">Денс и електронска музика</translation>
 <translation id="5675959228867414813">Прикажи према датуму</translation>
@@ -2924,6 +2924,7 @@
 <translation id="6159908896951210943">Формално</translation>
 <translation id="6160391204859821737">Укључите функцију за приватност са огласима</translation>
 <translation id="6162403104168428984">Желите да ажурирате адресу?</translation>
+<translation id="6164605812717770913">Родитељ или старатељ је навео да није у реду да посетиш овај сајт. Можеш да затражиш да га одблокира.</translation>
 <translation id="6165508094623778733">Сазнајте више</translation>
 <translation id="6167577165590485365">Последњи покушај преузимања:</translation>
 <translation id="617256461084925519">Google Chrome покушава да провери да ли сте то ви да би могао да унесе информације о плаћању.</translation>
@@ -3015,6 +3016,7 @@
 <translation id="6321917430147971392">Проверите DNS подешавања</translation>
 <translation id="6322182122604171028">Коришћење функције Windows Hello није успело</translation>
 <translation id="6326947323444967009">Подесите Chrome као подразумевани прегледач система у подешавањима iOS-а</translation>
+<translation id="6327065120806001832">приступ локалној мрежи</translation>
 <translation id="6328639280570009161">Покушајте да онемогућите предвиђање мреже</translation>
 <translation id="6335029926534404762">Спортска обућа</translation>
 <translation id="6337133576188860026">Ослобађа мање од <ph name="SIZE" />. Неки сајтови ће се можда спорије учитавати кад их следећи пут посетите.</translation>
@@ -4053,7 +4055,6 @@
 <translation id="8134058435519644366">Запошљавање и избор кадрова</translation>
 <translation id="8135546115396015134">леви тастер</translation>
 <translation id="8137456439814903304">Производња и дистрибуција енергије</translation>
-<translation id="81474145143203755">Да бисте користили дозволу <ph name="PERMISSION" /> на овом сајту, одобрите приступ Chrome-у</translation>
 <translation id="8148608574971654810">PDF верзија:</translation>
 <translation id="8149426793427495338">Рачунар је прешао у режим спавања.</translation>
 <translation id="8150722005171944719">Датотека на адреси <ph name="URL" /> не може да се чита. Можда је уклоњена или премештена или дозволе за датотеке спречавају приступ.</translation>

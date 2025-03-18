@@ -13,10 +13,12 @@
 #include "android_webview/browser/aw_cookie_access_policy.h"
 #include "android_webview/browser/cookie_manager.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/base/shared_memory_version.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -192,6 +194,7 @@ void AwProxyingRestrictedCookieManager::SetCookieFromString(
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
     net::StorageAccessApiStatus storage_access_api_status,
+    bool get_version_shared_memory,
     bool apply_devtools_overrides,
     const std::string& cookie,
     SetCookieFromStringCallback callback) {
@@ -201,7 +204,7 @@ void AwProxyingRestrictedCookieManager::SetCookieFromString(
       AllowCookies(url, site_for_cookies, storage_access_api_status);
 
   if (cookieState == PrivacySetting::kStateDisallowed) {
-    std::move(callback).Run();
+    std::move(callback).Run(/*response=*/nullptr);
     return;
   }
 
@@ -215,9 +218,10 @@ void AwProxyingRestrictedCookieManager::SetCookieFromString(
        parsed_cookie.IsSecure())) {
     underlying_restricted_cookie_manager_->SetCookieFromString(
         url, site_for_cookies, top_frame_origin, storage_access_api_status,
-        apply_devtools_overrides, cookie, std::move(callback));
+        get_version_shared_memory, apply_devtools_overrides, cookie,
+        std::move(callback));
   } else {
-    std::move(callback).Run();
+    std::move(callback).Run(/*response=*/nullptr);
   }
 }
 

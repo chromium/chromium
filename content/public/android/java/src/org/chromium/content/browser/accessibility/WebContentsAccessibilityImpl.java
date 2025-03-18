@@ -809,7 +809,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                             WebContentsAccessibilityImpl.this,
                             AccessibilityState.isScreenReaderEnabled(),
                             AccessibilityState.isOnlyPasswordManagersEnabled(),
-                            AccessibilityState.isKnownScreenReaderRunning(),
+                            AccessibilityState.isScreenReaderRunning(),
                             /* isAccessibilityEnabled= */ true);
 
             // Update the state of enabling/disabling the image descriptions feature. To enable the
@@ -2264,7 +2264,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 WebContentsAccessibilityImpl caller,
                 boolean screenReaderMode,
                 boolean formControlsMode,
-                boolean isKnownScreenReaderRunning,
+                boolean isScreenReaderRunning,
                 boolean isAccessibilityEnabled);
 
         void disableRendererAccessibility(long nativeWebContentsAccessibilityAndroid);

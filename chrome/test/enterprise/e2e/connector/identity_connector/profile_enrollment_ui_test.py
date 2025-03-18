@@ -69,12 +69,12 @@ def main(argv):
     # Check user identity status in the profile menu
     if "demo" in FLAGS.account:
       if workprofile.child_window(
-          title=FLAGS.account, control_type="Text").exists():
+          title="Demo Test • Work", control_type="Text").exists():
         logging.info("Icebreaker work profile created")
 
     if "enterprise" in FLAGS.account:
       if workprofile.child_window(
-          title=FLAGS.account, control_type="Text").exists():
+          title="Enterprise Test • Work", control_type="Text").exists():
         logging.info("Dasherless work profile created")
 
     # Check chrome policy page to see the cloud policies

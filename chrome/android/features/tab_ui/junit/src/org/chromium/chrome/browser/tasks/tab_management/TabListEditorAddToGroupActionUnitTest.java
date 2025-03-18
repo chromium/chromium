@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -183,7 +182,7 @@ public class TabListEditorAddToGroupActionUnitTest {
 
         assertTrue(mAction.performAction(tabs));
         verify(mCoordinator).showBottomSheet(tabs);
-        verify(mTabGroupCreationDialogManager, never()).showDialog(anyInt(), any());
+        verify(mTabGroupCreationDialogManager, never()).showDialog(any(), any());
     }
 
     @Test
@@ -194,7 +193,7 @@ public class TabListEditorAddToGroupActionUnitTest {
         assertTrue(mAction.performAction(tabs));
         verify(mTabGroupModelFilter).mergeListOfTabsToGroup(eq(tabs), eq(mTab1), anyBoolean());
         verify(mTabGroupCreationDialogManager)
-                .showDialog(eq(mTab1.getRootId()), eq(mTabGroupModelFilter));
+                .showDialog(eq(mTab1.getTabGroupId()), eq(mTabGroupModelFilter));
         verify(mCoordinator, never()).showBottomSheet(tabs);
     }
 

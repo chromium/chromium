@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/form_import/addresses/autofill_save_update_address_profile_delegate_ios.h"
 
 #include <memory>
+#include <variant>
 
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -205,7 +206,7 @@ struct DelegateStringsTestCase {
   bool is_account_profile;
   int expected_message_action_text_id;
   int expected_message_text_id;
-  absl::variant<int, std::u16string> expected_description_or_id;
+  std::variant<int, std::u16string> expected_description_or_id;
 };
 
 class DelegateStringsTest
@@ -232,14 +233,14 @@ TEST_P(DelegateStringsTest, TestStrings) {
       l10n_util::GetStringUTF16(test_case.expected_message_action_text_id));
   EXPECT_EQ(delegate_->GetMessageText(),
             l10n_util::GetStringUTF16(test_case.expected_message_text_id));
-  if (absl::holds_alternative<int>(test_case.expected_description_or_id)) {
+  if (std::holds_alternative<int>(test_case.expected_description_or_id)) {
     EXPECT_EQ(
         delegate_->GetDescription(),
         l10n_util::GetStringFUTF16(
-            absl::get<int>(test_case.expected_description_or_id), kTestEmail));
+            std::get<int>(test_case.expected_description_or_id), kTestEmail));
   } else {
     EXPECT_EQ(delegate_->GetDescription(),
-              absl::get<std::u16string>(test_case.expected_description_or_id));
+              std::get<std::u16string>(test_case.expected_description_or_id));
   }
 }
 

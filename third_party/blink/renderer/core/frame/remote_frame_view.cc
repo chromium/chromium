@@ -39,7 +39,7 @@ namespace blink {
 
 BASE_FEATURE(kSkipUnnecessaryRemoteFrameGeometryPropagation,
              "SkipUnnecessaryRemoteFrameGeometryPropagation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 RemoteFrameView::RemoteFrameView(RemoteFrame* remote_frame)
     : FrameView(gfx::Rect()), remote_frame_(remote_frame) {

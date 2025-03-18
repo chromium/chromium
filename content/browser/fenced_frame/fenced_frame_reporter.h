@@ -10,6 +10,7 @@
 #include <set>
 #include <string>
 #include <tuple>
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -89,7 +90,7 @@ class CONTENT_EXPORT FencedFrameReporter
   using PrivateAggregationRequests =
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
 
-  using DestinationVariant = absl::
+  using DestinationVariant = std::
       variant<DestinationEnumEvent, DestinationURLEvent, AutomaticBeaconEvent>;
 
   // TODO(crbug.com/40285398): Once the CL that stops repeating checks for

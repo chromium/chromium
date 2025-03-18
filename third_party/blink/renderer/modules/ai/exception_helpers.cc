@@ -37,7 +37,7 @@ const char kExceptionMessageCancelled[] = "The request was cancelled.";
 const char kExceptionMessageSessionDestroyed[] =
     "The model execution session has been destroyed.";
 const char kExceptionMessageRequestAborted[] = "The request has been aborted.";
-const char kExceptionRequestTooLarge[] = "The prompt request is too large.";
+const char kExceptionMessageInputTooLarge[] = "The input is too large.";
 
 const char kExceptionMessageInvalidTemperatureAndTopKFormat[] =
     "Initializing a new session must either specify both topK and temperature, "
@@ -48,9 +48,6 @@ const char kExceptionMessageInvalidTemperature[] =
     "The temperature value provided is invalid.";
 const char kExceptionMessageUnableToCreateSession[] =
     "The session cannot be created.";
-const char kExceptionMessageInitialPromptTooLarge[] =
-    "The initial prompts / system prompts are too large to fit in the "
-    "context.";
 const char kExceptionMessageUnableToCloneSession[] =
     "The session cannot be cloned.";
 const char kExceptionMessageUnableToCalculateUsage[] =
@@ -168,7 +165,7 @@ DOMException* ConvertModelStreamingResponseErrorToDOMException(
           DOMException::GetErrorName(DOMExceptionCode::kInvalidStateError));
     case ModelStreamingResponseStatus::kErrorInputTooLarge:
       return DOMException::Create(
-          kExceptionRequestTooLarge,
+          kExceptionMessageInputTooLarge,
           DOMException::GetErrorName(DOMExceptionCode::kQuotaExceededError));
     case ModelStreamingResponseStatus::kErrorResponseLowQuality:
       return DOMException::Create(

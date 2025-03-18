@@ -91,7 +91,7 @@ public class CommerceBottomSheetContentCoordinator implements CommerceBottomShee
                     public void onSheetStateChanged(int newState, int reason) {
                         if (newState == SheetState.FULL) {
                             mContenRecyclerView.suppressLayout(false);
-                            if (!mMediator.isContentWrappingContent()) {
+                            if (mScrimModel != null && !mMediator.isContentWrappingContent()) {
                                 mScrimModel = bottomSheetController.createScrimParams();
                                 mScrimManagerSupplier.get().showScrim(mScrimModel);
                             }

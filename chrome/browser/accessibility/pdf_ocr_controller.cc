@@ -120,8 +120,8 @@ bool IsAccessibilityEnabled(Profile* profile) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Check all web contentses. `ReadAnythingUntrustedPageHandler` sets the
-  // screen reader mode when starting to observe a PDF WebContents via
-  // `SetUpPdfObserver()`. So if any of them have screen reader mode enabled,
+  // extended properties mode when starting to observe a PDF WebContents via
+  // `SetUpPdfObserver()`. So if any of them have that mode enabled,
   // return true.
   for (auto* contents : GetAllPdfWebContents(profile)) {
     if (contents->GetAccessibilityMode().has_mode(
@@ -283,9 +283,12 @@ void PdfOcrController::Activate() {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 void PdfOcrController::OnAXModeAdded(ui::AXMode mode) {
-  if (mode.has_mode(ui::AXMode::kExtendedProperties)) {
-    OnActivationChanged();
-  }
+  OnActivationChanged();
+}
+
+void PdfOcrController::OnAssistiveTechChanged(
+    ui::AssistiveTech assistive_tech) {
+  OnActivationChanged();
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <utility>
+#include <variant>
 
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -73,11 +74,11 @@ ProcessNodeImpl::ProcessNodeImpl(content::ProcessType process_type,
       // Do nothing.
       break;
     case content::PROCESS_TYPE_RENDERER:
-      CHECK(absl::get<RenderProcessHostProxy>(child_process_host_proxy_)
+      CHECK(std::get<RenderProcessHostProxy>(child_process_host_proxy_)
                 .is_valid());
       break;
     default:
-      CHECK(absl::get<BrowserChildProcessHostProxy>(child_process_host_proxy_)
+      CHECK(std::get<BrowserChildProcessHostProxy>(child_process_host_proxy_)
                 .is_valid());
       break;
   }
@@ -275,7 +276,7 @@ RenderProcessHostId ProcessNodeImpl::GetRenderProcessHostId() const {
 const RenderProcessHostProxy& ProcessNodeImpl::GetRenderProcessHostProxy()
     const {
   DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
-  return absl::get<RenderProcessHostProxy>(child_process_host_proxy_);
+  return std::get<RenderProcessHostProxy>(child_process_host_proxy_);
 }
 
 const BrowserChildProcessHostProxy&
@@ -283,7 +284,7 @@ ProcessNodeImpl::GetBrowserChildProcessHostProxy() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(process_type_, content::PROCESS_TYPE_BROWSER);
   DCHECK_NE(process_type_, content::PROCESS_TYPE_RENDERER);
-  return absl::get<BrowserChildProcessHostProxy>(child_process_host_proxy_);
+  return std::get<BrowserChildProcessHostProxy>(child_process_host_proxy_);
 }
 
 base::TaskPriority ProcessNodeImpl::GetPriority() const {

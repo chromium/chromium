@@ -4,6 +4,8 @@
 
 #include "ash/style/icon_button.h"
 
+#include <variant>
+
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/style/blurred_background_shield.h"
 #include "ash/style/style_util.h"
@@ -227,11 +229,11 @@ std::unique_ptr<IconButton> IconButton::Builder::Build() {
   }
 
   std::u16string accessible_name;
-  if (absl::holds_alternative<int>(accessible_name_)) {
+  if (std::holds_alternative<int>(accessible_name_)) {
     accessible_name =
-        l10n_util::GetStringUTF16(absl::get<int>(accessible_name_));
+        l10n_util::GetStringUTF16(std::get<int>(accessible_name_));
   } else {
-    accessible_name = absl::get<std::u16string>(accessible_name_);
+    accessible_name = std::get<std::u16string>(accessible_name_);
   }
 
   auto button = std::make_unique<IconButton>(

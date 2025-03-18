@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">Динамические обои с Землей</translation>
 <translation id="33736539805963175">Буква: <ph name="LETTERS_LETTER" />, фон: <ph name="LETTERS_COLOR" /></translation>
 <translation id="3383623117265110236">Эксклюзивно</translation>
-<translation id="3395147534045164351">Включить или отключить место привязки</translation>
 <translation id="3404249063913988450">Включить заставку</translation>
 <translation id="3413935475507503304">Чтобы выполнить обновление, нажмите "Далее".</translation>
 <translation id="3428551088151258685">под открытым небом</translation>
@@ -929,6 +928,7 @@
 <translation id="5286263799730375393">цвет подсветки</translation>
 <translation id="5292579816060236070">Обои с рассветом</translation>
 <translation id="5294769550414936029">версия <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">разрешить или запретить доступ к камере</translation>
 <translation id="5300814202279832142">Переместить окно на рабочий стол</translation>
 <translation id="5302048478445481009">Язык</translation>
 <translation id="5303837385540978511">Эксклюзивные обои для <ph name="PRODUCT_NAME" /></translation>

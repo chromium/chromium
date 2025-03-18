@@ -9,6 +9,7 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/commerce/core/feature_utils.h"
@@ -56,7 +57,8 @@ ScopedJavaLocalRef<jobject> ConvertToJavaDiscountInfo(
       terms_and_conditions_java_string,
       ConvertUTF8ToJavaString(env, info.value_in_text),
       discount_code_java_string, info.id, info.is_merchant_wide,
-      info.expiry_time_sec, info.offer_id);
+      info.expiry_time_sec.has_value(), info.expiry_time_sec.value_or(0),
+      info.offer_id);
 }
 
 ScopedJavaLocalRef<jobjectArray> ConvertToJavaDiscountInfos(

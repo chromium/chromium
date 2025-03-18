@@ -38,6 +38,9 @@ class HubToolbarProperties {
     public static final WritableBooleanPropertyKey SEARCH_LOUPE_VISIBLE =
             new WritableBooleanPropertyKey();
 
+    public static final WritableBooleanPropertyKey HUB_SEARCH_ENABLED_STATE =
+            new WritableBooleanPropertyKey();
+
     public static final WritableObjectPropertyKey<Runnable> SEARCH_LISTENER =
             new WritableObjectPropertyKey<>();
 
@@ -70,5 +73,6 @@ class HubToolbarProperties {
         IS_INCOGNITO,
         TOOLBAR_OVERVIEW_COLOR_SETTER,
         APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION,
+        HUB_SEARCH_ENABLED_STATE,
     };
 }

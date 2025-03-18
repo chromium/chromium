@@ -17,8 +17,7 @@ export function getHtml(this: ColorMenuElement) {
     .menuItems="${this.options_}"
     event-name="${ToolbarEvent.THEME}"
     current-selected-index="${this.restoredThemeIndex_()}"
-    @theme-change="${this.onThemeChange_}"
-    initial-count="5">
+    @theme-change="${this.onThemeChange_}">
 </simple-action-menu>
 <!--_html_template_end_-->`;
   // clang-format on

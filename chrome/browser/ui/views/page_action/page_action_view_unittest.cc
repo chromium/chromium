@@ -150,6 +150,7 @@ class PageActionViewTest : public ChromeViewsTestBase {
 
     ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(false));
     ON_CALL(mock_model_, GetShowSuggestionChip()).WillByDefault(Return(false));
+    ON_CALL(mock_model_, GetShouldAnimateChip()).WillByDefault(Return(false));
     ON_CALL(mock_model_, GetText()).WillByDefault(ReturnRef(mock_string_));
     ON_CALL(mock_model_, GetTooltipText())
         .WillByDefault(ReturnRef(mock_string_));
@@ -442,25 +443,6 @@ TEST_F(PageActionViewTriggerTest, PageActionDoesNotTriggersIfBubbleShowing) {
   EXPECT_EQ(0, TotalTriggerCount());
 }
 
-// Action invocation suppression carries state across mouse events. Ensure that
-// state is cleaned up, and isn't carried into a subsequent key event. The
-// alternate way to test this a ForTest getter.
-TEST_F(PageActionViewTriggerTest, PageActionsSuccessiveTriggers) {
-  EXPECT_CALL(*model(), GetActionItemIsShowingBubble())
-      .WillRepeatedly(Return(true));
-  views::test::InteractionTestUtilSimulatorViews::PressButton(
-      page_action_view(), ui::test::InteractionTestUtil::InputType::kMouse);
-  EXPECT_EQ(0, TotalTriggerCount());
-
-  // A subsequent keyboard click should work.
-  ui::KeyEvent key_event(EventType::kKeyPressed, ui::VKEY_RETURN, ui::EF_NONE);
-  EXPECT_CALL(*model(), GetActionItemIsShowingBubble())
-      .WillRepeatedly(Return(false));
-  views::test::InteractionTestUtilSimulatorViews::PressButton(
-      page_action_view(), ui::test::InteractionTestUtil::InputType::kKeyboard);
-  EXPECT_EQ(1, TotalTriggerCount());
-}
-
 class PageActionViewAnimationTest : public PageActionViewTest {
  public:
   using PageActionViewTest::PageActionViewTest;
@@ -513,6 +495,7 @@ class PageActionViewAnimationTest : public PageActionViewTest {
 };
 
 TEST_F(PageActionViewAnimationTest, ChipStateDuringAnimateOut) {
+  EXPECT_CALL(*model(), GetShouldAnimateChip()).WillRepeatedly(Return(true));
   SetInitialChipVisibility(true);
   ExtendAnimations();
 
@@ -536,6 +519,7 @@ TEST_F(PageActionViewAnimationTest, ChipStateDuringAnimateOut) {
 }
 
 TEST_F(PageActionViewAnimationTest, ChipStateDuringAnimateIn) {
+  EXPECT_CALL(*model(), GetShouldAnimateChip()).WillRepeatedly(Return(true));
   SetInitialChipVisibility(false);
   ExtendAnimations();
 
@@ -561,6 +545,7 @@ TEST_F(PageActionViewAnimationTest, ChipStateDuringAnimateIn) {
 TEST_F(PageActionViewAnimationTest, BorderInsetsScaleWithAnimationProgress) {
   gfx::Animation::SetPrefersReducedMotionForTesting(false);
   ASSERT_FALSE(gfx::Animation::PrefersReducedMotion());
+  EXPECT_CALL(*model(), GetShouldAnimateChip()).WillRepeatedly(Return(true));
 
   // Record the min and max insets.
   // The test will compare insets mid-animation to these values.
@@ -580,6 +565,26 @@ TEST_F(PageActionViewAnimationTest, BorderInsetsScaleWithAnimationProgress) {
   const gfx::Insets curr_insets = page_action_view()->GetInsets();
   EXPECT_LT(curr_insets.width(), max_insets.width());
   EXPECT_GT(curr_insets.width(), min_insets.width());
+}
+
+TEST_F(PageActionViewAnimationTest, AnimationsDisabled) {
+  gfx::Animation::SetPrefersReducedMotionForTesting(false);
+  ASSERT_FALSE(gfx::Animation::PrefersReducedMotion());
+  SetInitialChipVisibility(false);
+
+  ExtendAnimations();
+  EXPECT_CALL(*model(), GetShouldAnimateChip()).WillRepeatedly(Return(false));
+  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
+  page_action_view()->OnPageActionModelChanged(*model());
+
+  EXPECT_FALSE(page_action_view()->is_animating_label());
+  EXPECT_TRUE(page_action_view()->IsChipVisible());
+
+  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(false));
+  page_action_view()->OnPageActionModelChanged(*model());
+
+  EXPECT_FALSE(page_action_view()->is_animating_label());
+  EXPECT_FALSE(page_action_view()->IsChipVisible());
 }
 
 }  // namespace

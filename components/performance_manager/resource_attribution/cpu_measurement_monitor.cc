@@ -10,6 +10,7 @@
 #include <optional>
 #include <set>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check_op.h"
@@ -46,7 +47,6 @@
 #include "components/performance_manager/resource_attribution/graph_change.h"
 #include "components/performance_manager/resource_attribution/worker_client_pages.h"
 #include "content/public/common/process_type.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -81,7 +81,7 @@ OriginInBrowsingInstanceContextForNode(
   // If this node was just assigned a new origin, assign CPU usage before the
   // change to the previous origin.
   GraphChangeUpdateOrigin* origin_change =
-      absl::get_if<GraphChangeUpdateOrigin>(&graph_change);
+      std::get_if<GraphChangeUpdateOrigin>(&graph_change);
   std::optional<url::Origin> origin;
   if (origin_change && origin_change->node == node) {
     origin = origin_change->previous_origin;
@@ -338,8 +338,7 @@ QueryResultMap CPUMeasurementMonitor::UpdateAndGetCPUMeasurements(
 
 void CPUMeasurementMonitor::RecordMemoryMetrics() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  constexpr size_t kNumContextTypes =
-      absl::variant_size<ResourceContext>::value;
+  constexpr size_t kNumContextTypes = std::variant_size<ResourceContext>::value;
 
   // Estimates for each live ResourceContext type by index into the
   // ResourceContext variant.
@@ -667,7 +666,7 @@ void CPUMeasurementMonitor::UpdateCPUMeasurements(
   CHECK(process_node);
 
   if (!base::FeatureList::IsEnabled(kResourceAttributionIncludeOrigins) &&
-      absl::holds_alternative<GraphChangeUpdateOrigin>(graph_change)) {
+      std::holds_alternative<GraphChangeUpdateOrigin>(graph_change)) {
     // No need to update measurements on origin changes when origins aren't
     // being measured.
     return;
@@ -1024,7 +1023,7 @@ void CPUMeasurementMonitor::MeasureAndDistributeCPUUsage(
   // the current priority.
   base::TaskPriority process_priority;
   GraphChangeUpdateProcessPriority* priority_change =
-      absl::get_if<GraphChangeUpdateProcessPriority>(&graph_change);
+      std::get_if<GraphChangeUpdateProcessPriority>(&graph_change);
   if (priority_change && priority_change->process_node == process_node) {
     process_priority = priority_change->previous_priority;
   } else {

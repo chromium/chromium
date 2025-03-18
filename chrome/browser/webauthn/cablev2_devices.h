@@ -11,7 +11,6 @@
 
 #include "base/containers/span.h"
 #include "device/fido/fido_constants.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 
 class PrefService;

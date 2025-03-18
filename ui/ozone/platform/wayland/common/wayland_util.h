@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_COMMON_WAYLAND_UTIL_H_
 #define UI_OZONE_PLATFORM_WAYLAND_COMMON_WAYLAND_UTIL_H_
 
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -12,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/events/platform_event.h"
 #include "ui/gfx/geometry/rect.h"

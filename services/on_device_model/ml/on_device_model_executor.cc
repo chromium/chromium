@@ -279,11 +279,15 @@ SessionImpl::SessionImpl(const ChromeML& chrome_ml,
                          ChromeMLModel model,
                          SessionAccessor::Ptr session,
                          uint32_t max_tokens,
+                         uint32_t top_k,
+                         float temperature,
                          std::optional<uint32_t> adaptation_id)
     : chrome_ml_(chrome_ml),
       model_(model),
       session_(std::move(session)),
       max_tokens_(max_tokens),
+      top_k_(top_k),
+      temperature_(temperature),
       adaptation_id_(adaptation_id) {}
 SessionImpl::~SessionImpl() = default;
 
@@ -316,10 +320,8 @@ void SessionImpl::Generate(
   responder_ = std::make_unique<Responder>(
       std::move(response), std::move(on_complete), std::move(cloned));
   ChromeMLExecutionOutputFn output_fn = responder_->CreateOutputFn();
-  options->top_k = GetTopK(options->top_k);
-  options->temperature = GetTemperature(options->temperature);
   *responder_->GetCancelFn() =
-      cloned_raw->Generate(std::move(options), output_fn);
+      cloned_raw->Generate(std::move(options), top_k_, temperature_, output_fn);
 }
 
 DISABLE_CFI_DLSYM
@@ -336,8 +338,9 @@ void SessionImpl::Score(const std::string& text,
 }
 
 std::unique_ptr<SessionImpl> SessionImpl::Clone() {
-  return std::make_unique<SessionImpl>(
-      chrome_ml_.get(), model_, session_->Clone(), max_tokens_, adaptation_id_);
+  return std::make_unique<SessionImpl>(chrome_ml_.get(), model_,
+                                       session_->Clone(), max_tokens_, top_k_,
+                                       temperature_, adaptation_id_);
 }
 
 void SessionImpl::RemoveContext(ContextHolder* context) {
@@ -432,12 +435,16 @@ std::unique_ptr<SessionImpl> OnDeviceModelExecutor::CreateSession(
     CHECK(it != adaptation_params_.end());
     adaptation_params = it->second->Clone();
   }
+  uint32_t top_k =
+      GetTopK(params ? std::make_optional(params->top_k) : std::nullopt);
+  float temperature = GetTemperature(
+      params ? std::make_optional(params->temperature) : std::nullopt);
   auto session = SessionAccessor::Create(
       *chrome_ml_, model_task_runner_, model_, std::move(params),
       std::move(adaptation_params), adaptation_id);
   return std::make_unique<SessionImpl>(*chrome_ml_, model_, std::move(session),
                                        max_tokens_ - kReserveTokensForSafety,
-                                       adaptation_id);
+                                       top_k, temperature, adaptation_id);
 }
 
 std::unique_ptr<OnDeviceModelExecutor::ScopedAdaptation>

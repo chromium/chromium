@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">Pozadina sa Zemljom</translation>
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> pozadina sa slovom <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Ekskluzivno</translation>
-<translation id="3395147534045164351">Uključite ili isključite lokaciju poravnanja</translation>
 <translation id="3404249063913988450">Omogućite čuvar ekrana</translation>
 <translation id="3413935475507503304">Da biste nastavili sa ažuriranjem, kliknite na Dalje.</translation>
 <translation id="3428551088151258685">otvoreni</translation>
@@ -929,6 +928,7 @@
 <translation id="5286263799730375393">boja pozadinskog osvetljenja</translation>
 <translation id="5292579816060236070">Pozadina sa izlaskom sunca</translation>
 <translation id="5294769550414936029">verzija <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">uključite ili isključite pristup kameri</translation>
 <translation id="5300814202279832142">Premestite prozor na radnu površinu</translation>
 <translation id="5302048478445481009">Jezik</translation>
 <translation id="5303837385540978511">Ekskluzivna <ph name="PRODUCT_NAME" /> pozadina</translation>
@@ -1044,6 +1044,7 @@
 <translation id="5896602941605730551">Pustite</translation>
 <translation id="5901630391730855834">Žuta</translation>
 <translation id="5903200662178656908">Uređaj je kombinacija tastature i miša.</translation>
+<translation id="5903822368221507416">Sakrijte kartice</translation>
 <translation id="5904994456462260490">Dodajte novi naziv pristupne tačke</translation>
 <translation id="590746845088109442">mačke</translation>
 <translation id="5907649332524363701">boja ključa</translation>

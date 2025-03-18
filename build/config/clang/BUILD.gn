@@ -140,7 +140,7 @@ group("llvm-symbolizer_data") {
 }
 
 template("clang_lib") {
-  if (!defined(invoker.libname)) {
+  if (!defined(invoker.libname) || is_wasm) {
     not_needed(invoker, "*")
     config(target_name) {
     }

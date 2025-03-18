@@ -13,6 +13,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/input/native_web_keyboard_event.h"
@@ -149,9 +150,8 @@ base::WeakPtr<ParentAccessView> ParentAccessView::ShowParentAccessDialog(
   auto dialog_delegate = std::make_unique<views::DialogDelegate>();
   dialog_delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   dialog_delegate->SetModalType(/*modal_type=*/ui::mojom::ModalType::kWindow);
-  // TODO(crbug.com/391629329): Until a cancellation button is provided by the PACP,
-  // the dialog will offer a close "X" button.
-  dialog_delegate->SetShowCloseButton(/*show_close_button=*/true);
+  dialog_delegate->SetShowCloseButton(
+      /*show_close_button=*/true);
   dialog_delegate->SetOwnedByWidget(/*delete_self=*/true);
 
   // Obtain the default, platform-appropriate, corner radius value computed by
@@ -173,6 +173,9 @@ base::WeakPtr<ParentAccessView> ParentAccessView::ShowParentAccessDialog(
       std::move(dialog_delegate),
       /*parent=*/web_contents->GetTopLevelNativeWindow());
   view_weak_ptr->widget_observations_.AddObservation(widget);
+
+  // Border must be set only after the widget has been created.
+  view_weak_ptr->UpdateDialogBorder();
 
   // Starts observing the new dialog contents that have been created in
   // `Initialize`.
@@ -197,6 +200,10 @@ void ParentAccessView::OnWidgetClosing(views::Widget* widget) {
     std::move(dialog_result_reset_callback_).Run();
   }
   widget_observations_.RemoveAllObservations();
+}
+
+void ParentAccessView::OnWidgetThemeChanged(views::Widget*) {
+  UpdateDialogBorder();
 }
 
 void ParentAccessView::CloseView() {
@@ -396,6 +403,21 @@ void ParentAccessView::ShowNativeView() {
   web_view_->SetVisible(false);
   widget->Show();
   web_view_->RequestFocus();
+}
+
+void ParentAccessView::UpdateDialogBorder() {
+  auto* widget = GetWidget();
+  CHECK(widget);
+  CHECK(widget->widget_delegate()->AsDialogDelegate()->GetBubbleFrameView());
+
+  auto border = std::make_unique<views::BubbleBorder>(
+      views::BubbleBorder::NONE, views::BubbleBorder::DIALOG_SHADOW);
+  border->SetColor(kColorParentAccessViewLocalWebApprovalBackground);
+  border->SetCornerRadius(corner_radius_);
+  widget->widget_delegate()
+      ->AsDialogDelegate()
+      ->GetBubbleFrameView()
+      ->SetBubbleBorder(std::move(border));
 }
 
 BEGIN_METADATA(ParentAccessView)

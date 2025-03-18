@@ -39,6 +39,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -1121,11 +1122,21 @@ void ChromePasswordProtectionService::OpenPasswordCheck(
 
     if (credentials_store.is_account_store &&
         credentials_store.is_profile_store) {
-      // If the compromised credential is saved in both stores, the safety
-      // check in menu Chrome settings will open so the user can review the
-      // compromised credentials in each of the stores.
-      checkup_launcher_->LaunchSafetyCheck(
-          env, web_contents->GetTopLevelNativeWindow());
+      // If the compromised credential is saved in both stores, Safety Hub in
+      // Chrome will open so the user can review the compromised credentials in
+      // both stores.
+
+      // TODO(crbug.com/397184847): While the local passwords module is not in
+      // the most recent version of Safety Check (also known as Safety Hub),
+      // show the old UI.
+      if (base::FeatureList::IsEnabled(
+              features::kSafetyHubLocalPasswordsModule)) {
+        checkup_launcher_->LaunchSafetyHub(
+            env, web_contents->GetTopLevelNativeWindow());
+      } else {
+        checkup_launcher_->LaunchSafetyCheck(
+            env, web_contents->GetTopLevelNativeWindow());
+      }
     } else {
       // In case the compromised credential is only saved in one of the stores,
       // checkup for that store will open.

@@ -336,6 +336,8 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     this.session_ = new SessionRemote();
     this.model_.startSession(this.session_.$.bindNewPipeAndPassReceiver(), {
       maxTokens: 0,
+      topK: this.topK_,
+      temperature: this.temperature_,
       capabilities: {
         imageInput: this.imagesEnabled_(),
         audioInput: this.audioEnabled_(),
@@ -440,8 +442,8 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     clonedSession.generate(
         {
           maxOutputTokens: 0,
-          topK: this.topK_,
-          temperature: this.temperature_,
+          topK: null,
+          temperature: null,
         },
         this.responseRouter_.$.bindNewPipeAndPassRemote());
     const onResponseId =

@@ -43,6 +43,16 @@ class WTF_EXPORT TextOffsetMap {
   // we mapped string-2 to string-3 with producing map23. This constructor
   // creates a TextOffsetMap instance for mapping string-1 to string-3.
   TextOffsetMap(const TextOffsetMap& map12, const TextOffsetMap& map23);
+  // Suppose that we mapped string-1 of which length is `length1` to string-2
+  // of which length is `length2` with producing map12, and we mapped
+  // string-2 to string-3 of which length is `length3` with producing map23.
+  // This constructor creates a TextOffsetMap instance for mapping string-1
+  // to string-3.
+  TextOffsetMap(wtf_size_t length1,
+                const TextOffsetMap& map12,
+                wtf_size_t length2,
+                const TextOffsetMap& map23,
+                wtf_size_t length3);
 
   bool IsEmpty() const { return entries_.empty(); }
 

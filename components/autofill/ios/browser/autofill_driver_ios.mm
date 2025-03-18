@@ -4,6 +4,8 @@
 
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 
+#include <variant>
+
 #import "base/check_deref.h"
 #import "base/containers/contains.h"
 #import "base/containers/to_vector.h"
@@ -133,11 +135,11 @@ std::optional<LocalFrameToken> AutofillDriverIOS::Resolve(FrameToken query) {
     return std::nullopt;
   }
 
-  if (absl::holds_alternative<LocalFrameToken>(query)) {
-    return absl::get<LocalFrameToken>(query);
+  if (std::holds_alternative<LocalFrameToken>(query)) {
+    return std::get<LocalFrameToken>(query);
   }
-  CHECK(absl::holds_alternative<RemoteFrameToken>(query));
-  auto remote_token = absl::get<RemoteFrameToken>(query);
+  CHECK(std::holds_alternative<RemoteFrameToken>(query));
+  auto remote_token = std::get<RemoteFrameToken>(query);
   auto* registrar = ChildFrameRegistrar::FromWebState(web_state_);
   return registrar ? registrar->LookupChildFrame(remote_token) : std::nullopt;
 }
@@ -461,10 +463,10 @@ void AutofillDriverIOS::FormsSeen(
     for (const autofill::FormData& form : updated_forms) {
       for (const autofill::FrameTokenWithPredecessor& child_frame :
            form.child_frames()) {
-        // This absl::get is safe because on iOS, FormData::child_frames is
-        // only ever populated with RemoteFrameTokens. absl::get will fail a
+        // This std::get is safe because on iOS, FormData::child_frames is
+        // only ever populated with RemoteFrameTokens. std::get will fail a
         // CHECK if this assumption is ever wrong.
-        auto token = absl::get<autofill::RemoteFrameToken>(child_frame.token);
+        auto token = std::get<autofill::RemoteFrameToken>(child_frame.token);
         auto* registrar =
             ChildFrameRegistrar::GetOrCreateForWebState(web_state_);
         if (registrar && known_child_frames_.insert(token).second) {

@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">Zaslonsko ozadje premika Zemlje</translation>
 <translation id="33736539805963175">Ozadje <ph name="LETTERS_COLOR" /> barve s črko <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Ekskluzivno</translation>
-<translation id="3395147534045164351">Preklop lokacije pripenjanja</translation>
 <translation id="3404249063913988450">Omogočanje ohranjevalnika zaslona</translation>
 <translation id="3413935475507503304">Če želite nadaljevati posodobitev, kliknite Naprej.</translation>
 <translation id="3428551088151258685">na prostem</translation>
@@ -929,6 +928,7 @@
 <translation id="5286263799730375393">barva osvetlitve ozadja</translation>
 <translation id="5292579816060236070">Ozadje s sončnim vzhodom</translation>
 <translation id="5294769550414936029">različica <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">preklop dostopa do fotoaparata</translation>
 <translation id="5300814202279832142">Premik okna na namizje</translation>
 <translation id="5302048478445481009">Jezik</translation>
 <translation id="5303837385540978511">Ekskluzivno zaslonsko ozadje za <ph name="PRODUCT_NAME" /></translation>
@@ -1044,6 +1044,7 @@
 <translation id="5896602941605730551">Predvajanje</translation>
 <translation id="5901630391730855834">Rumena</translation>
 <translation id="5903200662178656908">Naprava je kombinacija tipkovnice in miške.</translation>
+<translation id="5903822368221507416">Skrivanje zavihkov</translation>
 <translation id="5904994456462260490">Dodajte nov APN</translation>
 <translation id="590746845088109442">mačke</translation>
 <translation id="5907649332524363701">barva tipk</translation>

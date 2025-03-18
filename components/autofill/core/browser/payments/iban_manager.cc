@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/payments/iban_manager.h"
 
+#include <variant>
+
 #include "base/containers/contains.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
@@ -94,7 +96,7 @@ void IbanManager::UmaRecorder::OnIbanSuggestionSelected(
   autofill_metrics::LogIbanSelectedCountry(
       Iban::GetCountryCode(suggestion.main_text.value));
   bool is_local_iban =
-      absl::holds_alternative<Suggestion::Guid>(suggestion.payload);
+      std::holds_alternative<Suggestion::Guid>(suggestion.payload);
   // We log every time the IBAN suggestion is selected.
   autofill_metrics::LogIndividualIbanSuggestionsEvent(
       is_local_iban ? IbanSuggestionsEvent::kLocalIbanSuggestionSelected

@@ -140,6 +140,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/first_run/ui_bundled/omnibox_position:eg_app_support+eg2",
     "//ios/chrome/browser/fullscreen/ui_bundled/test:eg_app_support+eg2",
     "//ios/chrome/browser/history/ui_bundled:constants",
+    "//ios/chrome/browser/history/ui_bundled:coordinator",
     "//ios/chrome/browser/https_upgrades/model:eg_app_support+eg2",
     "//ios/chrome/browser/incognito_interstitial/ui_bundled:constants",
     "//ios/chrome/browser/infobars/ui_bundled:eg_app_support+eg2",
@@ -278,6 +279,7 @@ source_set("eg_app_support+eg2") {
     "//ios/web/public/test/fakes",
     "//services/metrics/public/cpp:metrics_cpp",
     "//third_party/metrics_proto",
+    "//third_party/ocmock",
     "//ui/base",
     "//ui/base:test_support",
   ]
@@ -339,6 +341,7 @@ source_set("eg_test_support+eg2") {
     "//base/test:test_support",
     "//components/strings",
     "//components/sync/base",
+    "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_container/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",

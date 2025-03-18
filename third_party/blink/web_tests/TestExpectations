@@ -2626,23 +2626,6 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/404307103 external/wpt/css/css-fonts/font-synthesis-01.html [ Failure ]
-crbug.com/404307103 external/wpt/css/css-fonts/font-synthesis-02.html [ Failure ]
-crbug.com/404307103 external/wpt/css/css-fonts/font-synthesis-03.html [ Failure ]
-crbug.com/404307103 external/wpt/css/css-fonts/font-synthesis-04.html [ Failure ]
-crbug.com/404307103 [ Win ] external/wpt/css/css-fonts/font-synthesis-07.html [ Failure ]
-crbug.com/404307103 external/wpt/css/css-fonts/font-synthesis-08.html [ Failure ]
-crbug.com/404307103 [ Win ] external/wpt/css/css-fonts/font-synthesis-small-caps-first-letter.html [ Failure ]
-crbug.com/404307103 [ Win ] external/wpt/css/css-fonts/font-synthesis-small-caps-first-line.html [ Failure ]
-crbug.com/404307103 [ Win ] external/wpt/css/css-fonts/font-synthesis-small-caps.html [ Failure ]
-crbug.com/404307103 external/wpt/css/css-fonts/font-synthesis-style-first-letter.html [ Failure ]
-crbug.com/404307103 external/wpt/css/css-fonts/font-synthesis-style-first-line.html [ Failure ]
-crbug.com/404307103 external/wpt/css/css-fonts/font-synthesis-style.html [ Failure ]
-crbug.com/404307103 external/wpt/css/css-fonts/font-synthesis-weight-first-letter.html [ Failure ]
-crbug.com/404307103 external/wpt/css/css-fonts/font-synthesis-weight-first-line.html [ Failure ]
-crbug.com/404307103 external/wpt/css/css-fonts/font-synthesis-weight.html [ Failure ]
-crbug.com/404307103 external/wpt/css/css-fonts/lang-attribute-affects-rendering-of-second-text-run.html [ Failure ]
-crbug.com/404307103 external/wpt/css/css-fonts/lang-attribute-affects-rendering.html [ Failure ]
 crbug.com/404288142 external/wpt/html/canvas/offscreen/manual/text/canvas.2d.offscreen.worker.lang.html [ Timeout ]
 crbug.com/404288142 external/wpt/html/canvas/offscreen/manual/text/canvas.2d.offscreen.worker.lang.inherit.html [ Timeout ]
 crbug.com/403967924 [ Linux ] external/wpt/css/css-ui/caret-eol-001.html [ Failure ]
@@ -2655,7 +2638,6 @@ crbug.com/403967924 [ Linux ] external/wpt/css/css-ui/caret-eol-004.tentative.ht
 crbug.com/403967924 [ Win ] external/wpt/css/css-ui/caret-eol-004.tentative.html [ Failure ]
 [ Win11-arm64 ] virtual/threaded/wpt_internal/view-transition/browser-controls-root-offset-new.html [ Failure ]
 [ Mac15 ] virtual/threaded/wpt_internal/view-transition/browser-controls-root-offset-new.html [ Failure ]
-crbug.com/403345128 [ Linux ] external/wpt/css/css-page/monolithic-overflow-029-print.html [ Failure ]
 crbug.com/403345125 external/wpt/css/css-writing-modes/available-size-020.html [ Failure ]
 crbug.com/403345125 external/wpt/css/css-writing-modes/available-size-021.html [ Failure ]
 crbug.com/403345125 external/wpt/css/css-writing-modes/available-size-022.html [ Failure ]
@@ -2763,10 +2745,6 @@ crbug.com/388934352 external/wpt/trusted-types/WorkerGlobalScope-importScripts.h
 crbug.com/388580242 [ Mac14 ] external/wpt/html/cross-origin-opener-policy/popup-redirect-same-origin-allow-popups.https.html [ Crash Failure ]
 crbug.com/388309400 [ Mac15 ] external/wpt/css/CSS2/backgrounds/background-position-applies-to-012.xht [ Crash ]
 crbug.com/388309400 [ Win ] external/wpt/css/CSS2/backgrounds/background-position-applies-to-012.xht [ Crash ]
-crbug.com/388319477 [ Mac13 ] external/wpt/css/css-page/margin-boxes/content-007-print.html [ Crash ]
-crbug.com/388319477 [ Win ] external/wpt/css/css-page/margin-boxes/content-007-print.html [ Crash ]
-crbug.com/388319477 [ Mac13 ] external/wpt/css/css-page/margin-boxes/dimensions-008-print.html [ Crash ]
-crbug.com/388319477 [ Win ] external/wpt/css/css-page/margin-boxes/dimensions-008-print.html [ Crash ]
 crbug.com/388345823 [ Win ] external/wpt/fetch/api/credentials/cookies.any.sharedworker.html [ Crash ]
 crbug.com/388326073 [ Mac14 ] external/wpt/fedcm/fedcm-authz/fedcm-disclosure-text-shown.https.html [ Crash ]
 crbug.com/388326073 [ Win ] external/wpt/fedcm/fedcm-authz/fedcm-disclosure-text-shown.https.html [ Crash ]
@@ -2777,8 +2755,6 @@ crbug.com/41482163 [ Linux ] external/wpt/fedcm/fedcm-authz/fedcm-continue-on-wi
 [ Win ] virtual/keepalive-in-browser-migration/external/wpt/background-fetch/abort.https.window.html [ Crash Timeout ]
 crbug.com/388376334 [ Mac12 ] virtual/permission-element/external/wpt/html/semantics/permission-element/display-css-property-reftest.tentative.html [ Crash ]
 crbug.com/388376334 [ Win ] virtual/permission-element/external/wpt/html/semantics/permission-element/display-css-property-reftest.tentative.html [ Crash ]
-crbug.com/388312948 [ Mac14 ] virtual/scalefactor200/external/wpt/css/printing/input-file-print.html [ Crash ]
-crbug.com/388312948 [ Win ] virtual/scalefactor200/external/wpt/css/printing/input-file-print.html [ Crash ]
 crbug.com/388319476 [ Mac15 ] virtual/threaded/external/wpt/css/css-view-transitions/navigation/pagereveal-ready-promise.html [ Crash ]
 crbug.com/388319476 [ Win ] virtual/threaded/external/wpt/css/css-view-transitions/navigation/pagereveal-ready-promise.html [ Crash ]
 crbug.com/388319476 [ Win ] virtual/threaded/external/wpt/css/css-view-transitions/navigation/with-types/navigation-supersedes-types-same-rule.html [ Crash ]
@@ -2860,6 +2836,8 @@ crbug.com/383369477 [ Mac13 ] virtual/speculation-rules-prerender-target-hint/ex
 crbug.com/383369477 [ Mac14 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/activation-start.html [ Skip Timeout ]
 crbug.com/383369477 [ Mac13 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/service-workers.https.html [ Skip Timeout ]
 crbug.com/383369477 [ Mac14 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/service-workers.https.html [ Skip Timeout ]
+crbug.com/40288240 [ Mac14 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/protocol-handler-register.https.html [ Pass Timeout ] # Flaky only on Mac14
+crbug.com/40288240 [ Mac14 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/protocol-handler-unregister.https.html [ Pass Timeout ] # Flaky only on Mac14
 crbug.com/383200044 [ Win10.20h2 ] external/wpt/png/apng/fdAT-16bit.html [ Failure ]
 crbug.com/382988706 external/wpt/css/css-rhythm/replaced-elements/block-level-canvas-margins-affected-by-block-step-size.html [ Failure ]
 crbug.com/382988706 external/wpt/css/css-rhythm/replaced-elements/block-level-embed-margins-affected-by-block-step-size.html [ Failure ]
@@ -8835,9 +8813,6 @@ crbug.com/339041663 external/wpt/mediacapture-insertable-streams/tentative/Video
 # failure from enabling swiftshader on headless shell, combined with a preexisting flaky Crash/Timeout
 crbug.com/626703 crbug.com/339041663 external/wpt/css/css-grid/subgrid/scrollbar-gutter-002.html [ Crash Failure Pass Timeout ]
 
-# Gardener 2025-03-14
-crbug.com/403505389 external/wpt/css/css-page/page-size-005-print.html [ Failure ]
-
 # Gardener 2024-10-31
 crbug.com/376589790 [ Win11-arm64 ] fast/js/toString-stack-overflow.html [ Failure Pass ]
 
@@ -8902,8 +8877,10 @@ crbug.com/380327348 media/encrypted-media/encrypted-media-async-setcert-with-gc.
 # TODO(crbug.com/381407888): See if we can replace Pass/Failure with platform-specific -expected.txt files and remove this.
 crbug.com/381407888 [ Win11-arm64 ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Failure Pass ]
 crbug.com/381407888 [ Mac ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Failure Pass ]
-# Will pass or fail depending on bot's HW capabilities, allow either while this feature is behind flag.
-crbug.com/388299759 virtual/webrtc-h265/external/wpt/webrtc/protocol/h265-level-id.https.html [ Failure Pass ]
+
+# This test passes or fails depending if the bot that runs it has H265 hardware support.
+# TODO(crbug.com/388299759): Remove this line in favor of platform specific -expected.txt lines.
+crbug.com/388299759 external/wpt/webrtc/protocol/h265-level-id.https.html [ Failure Pass ]
 
 # Gardener 2024-11-27
 crbug.com/381142479 virtual/threaded/external/wpt/css/css-view-transitions/navigation/pagereveal-ctor.html [ Failure Pass ]
@@ -8976,12 +8953,6 @@ crbug.com/390162928 external/wpt/css/css-break/table/table-cell-expansion-004.ht
 crbug.com/390162928 external/wpt/css/css-sizing/aspect-ratio/replaced-element-035.html [ Failure Skip ]
 crbug.com/390162928 external/wpt/css/css-grid/grid-items/anonymous-grid-item-001.html [ Failure Skip ]
 crbug.com/390162928 external/wpt/css/css-break/block-min-height-001b.html [ Failure Skip ]
-crbug.com/390162928 external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-082c-print.html [ Failure Skip ]
-crbug.com/390162928 external/wpt/css/css-break/table/table-fragmentation-002c-print.html [ Failure Skip ]
-crbug.com/390162928 external/wpt/css/css-break/table/table-fragmentation-001c-print.html [ Failure Skip ]
-crbug.com/390162928 external/wpt/css/css-break/table/table-fragmentation-002d-print.html [ Failure Skip ]
-crbug.com/390162928 external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-069a-print.html [ Failure Skip ]
-crbug.com/390162928 external/wpt/css/css-break/overflowed-abs-pos-with-percentage-height-print.html [ Failure Skip ]
 crbug.com/390162928 external/wpt/css/css-grid/alignment/grid-item-no-aspect-ratio-stretch-5.html [ Failure Skip ]
 crbug.com/390162928 external/wpt/css/selectors/user-invalid.html [ Failure Skip ]
 crbug.com/390162928 external/wpt/css/selectors/user-valid-user-invalid-multifield-inputs.tentative.html [ Failure Skip ]
@@ -9113,43 +9084,8 @@ crbug.com/391006701 [ Debug Mac ] images/yuv-decode-eligible/webp-image-decoding
 crbug.com/404060200 [ Mac12 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html [ Failure ]
 crbug.com/404060200 [ Mac12 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html?include=variant-2-test [ Failure Pass ]
 crbug.com/404060200 [ Mac12 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html?include=variant-4-test [ Failure Pass ]
-crbug.com/404069999 [ Debug Linux ] external/wpt/css/css-page/page-name-000-print.html [ Failure ]
-crbug.com/404069999 [ Debug Linux ] external/wpt/css/css-page/page-visibility-hidden-001-print.html [ Failure ]
-crbug.com/404069999 [ Debug Linux ] virtual/scalefactor200/external/wpt/css/printing/zero-size-001-print.tentative.html [ Failure ]
 
-# Gardener 2025-03-18 Flaky due to anti-aliasing issues.
-crbug.com/339041663 [ Linux ] external/wpt/css/css-anchor-position/anchor-position-005-print.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-break/abspos-overflow-hidden-001-print.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-081a-print.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-081b-print.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-081d-print.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-082a-print.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-082b-print.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-082d-print.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-066-print.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-068a-print.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-068b-print.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-068c-print.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-068d-print.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-069c-print.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-069d-print.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-break/flexbox/single-line-row-flex-fragmentation-046-print.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-break/table/table-fragmentation-002b-print.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-break/zero-height-page-break-001-print.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-multicol/column-balancing-paged-001-print.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-page/basic-pagination-002-print.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-page/fixedpos-010-print.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-page/margin-boxes/content-001-print.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-page/monolithic-overflow-014-print.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-page/monolithic-overflow-022-print.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-page/monolithic-overflow-026-print.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-page/monolithic-overflow-027-print.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-page/page-box-001-print.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-page/page-box-010-print.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-page/page-margin-auto-and-non-zero-print.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-page/page-name-orthogonal-writing-003-print.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-page/page-size-009-print.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/css-page/page-size-015-print.tentative.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/printing/transition-in-media-print.tentative.html [ Failure ]
-crbug.com/339041663 [ Linux ] external/wpt/css/printing/zero-size-001-print.tentative.html [ Failure ]
-crbug.com/339041663 [ Linux ] virtual/scalefactor200/external/wpt/css/printing/transition-in-media-print.tentative.html [ Failure ]
+# Gardener 2025-03-18
+crbug.com/402494870 virtual/fractional-scroll-offsets/external/wpt/css/css-position/sticky/position-sticky-offset-print.html [ Failure Pass ]
+crbug.com/402494870 virtual/scalefactor200/external/wpt/css/printing/pseudo-animations-print.html [ Failure Pass ]
+crbug.com/402494870 virtual/scalefactor200/external/wpt/css/printing/zero-size-002-print.tentative.html [ Failure Pass ]

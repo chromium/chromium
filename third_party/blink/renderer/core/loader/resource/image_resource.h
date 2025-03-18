@@ -23,10 +23,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_IMAGE_RESOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_IMAGE_RESOURCE_H_
 
+#include <variant>
+
 #include "base/containers/span.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_info.h"
@@ -89,7 +90,7 @@ class CORE_EXPORT ImageResource final
   void NotifyStartLoad() override;
   void ResponseReceived(const ResourceResponse&) override;
   void AppendData(
-      absl::variant<SegmentedBuffer, base::span<const char>>) override;
+      std::variant<SegmentedBuffer, base::span<const char>>) override;
   void Finish(base::TimeTicks finish_time,
               base::SingleThreadTaskRunner*) override;
   void FinishAsError(const ResourceError&,

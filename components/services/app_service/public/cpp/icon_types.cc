@@ -4,6 +4,8 @@
 
 #include "components/services/app_service/public/cpp/icon_types.h"
 
+#include <variant>
+
 namespace apps {
 
 IconKey::IconKey() = default;
@@ -34,8 +36,8 @@ IconKeyPtr IconKey::Clone() const {
 }
 
 bool IconKey::HasUpdatedVersion() const {
-  return absl::holds_alternative<bool>(update_version) &&
-         absl::get<bool>(update_version);
+  return std::holds_alternative<bool>(update_version) &&
+         std::get<bool>(update_version);
 }
 
 constexpr int32_t IconKey::kInvalidResourceId = 0;
@@ -48,10 +50,10 @@ IconValue::~IconValue() = default;
 std::optional<apps::IconKey> MergeIconKey(const apps::IconKey* state,
                                           const apps::IconKey* delta) {
   //`state` should have int32_t `update_version` only.
-  CHECK(!state || absl::holds_alternative<int32_t>(state->update_version));
+  CHECK(!state || std::holds_alternative<int32_t>(state->update_version));
 
   // `delta` should hold a bool icon version only.
-  CHECK(!delta || absl::holds_alternative<bool>(delta->update_version));
+  CHECK(!delta || std::holds_alternative<bool>(delta->update_version));
 
   if (!delta) {
     if (state) {
@@ -72,11 +74,11 @@ std::optional<apps::IconKey> MergeIconKey(const apps::IconKey* state,
     return icon_key;
   }
 
-  icon_key.update_version = absl::get<int32_t>(state->update_version);
+  icon_key.update_version = std::get<int32_t>(state->update_version);
 
   // The icon is updated by the app, so increase `update_version`.
   if (delta->HasUpdatedVersion()) {
-    ++absl::get<int32_t>(icon_key.update_version);
+    ++std::get<int32_t>(icon_key.update_version);
   }
   return icon_key;
 }

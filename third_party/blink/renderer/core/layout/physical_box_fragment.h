@@ -98,7 +98,7 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
     return base::span(children_);
   }
 
-  const HeapVector<Member<Node>>* ReadingFlowNodes() const {
+  const GCedHeapVector<Member<Node>>* ReadingFlowNodes() const {
     if (rare_data_) {
       return rare_data_->reading_flow_nodes_;
     }
@@ -180,7 +180,7 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
     return rare_data_->GetField(FieldId::kTableGridRect)->table_grid_rect;
   }
 
-  const TableColumnGeometries* TableColumnGeometries() const {
+  const GCedTableColumnGeometries* TableColumnGeometries() const {
     return rare_data_->table_column_geometries_.Get();
   }
 

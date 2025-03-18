@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <iterator>
 #include <string>
+#include <variant>
 
 #include "base/functional/overloaded.h"
 #include "base/memory/raw_ptr.h"
@@ -693,7 +694,7 @@ void SetUpCreditCardAndBenefitData(
     const std::string& issuer_id,
     TestPersonalDataManager& personal_data,
     AutofillOptimizationGuide* optimization_guide) {
-  absl::visit(
+  std::visit(
       base::Overloaded{
           [&card](const CreditCardFlatRateBenefit& flat_rate_benefit) {
             card.set_instrument_id(

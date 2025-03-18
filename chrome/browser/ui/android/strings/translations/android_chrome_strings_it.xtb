@@ -432,7 +432,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2981364137500752533">Puoi avere fino a 5 finestre.</translation>
 <translation id="2983102365694924129">In base alla tua attività svolta su un sito. Questa impostazione non è attiva.</translation>
 <translation id="2984978667043170458">Includi il testo circostante nelle ricerche Google</translation>
-<translation id="2988638966064514052">Rendi le tue password più efficaci</translation>
 <translation id="2989523299700148168">Visitati di recente</translation>
 <translation id="2992473221983447149">Descrizioni delle immagini</translation>
 <translation id="2996291259634659425">Crea passphrase</translation>
@@ -548,7 +547,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3557336313807607643">Aggiungi ai contatti</translation>
 <translation id="3563767357928833671">Contenuti degli Appunti visualizzati</translation>
 <translation id="3566639033325271639">Aggiorna impostazioni</translation>
-<translation id="3568945271227339929">Nessuna password compromessa</translation>
 <translation id="3575464060651642446">Controllo delle password su questo dispositivo in corso…</translation>
 <translation id="3577473026931028326">Si è verificato un errore. Riprova.</translation>
 <translation id="3577558748185201054">Gestisci i tuoi interessi e le tue preferenze</translation>
@@ -1055,7 +1053,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5958275228015807058">Puoi trovare i tuoi file e le tue pagine nella cartella Download</translation>
 <translation id="5958994127112619898">Pagina semplificata</translation>
 <translation id="5962718611393537961">Tocca per comprimere</translation>
-<translation id="5964180026566797835">Impossibile controllare le password</translation>
 <translation id="5964869237734432770">Interrompi descr. immagini</translation>
 <translation id="5977976211062815271">Su questo dispositivo</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 pagina nel tuo elenco di lettura}other{# pagine nel tuo elenco di lettura}}</translation>
@@ -1099,6 +1096,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="6150320133806434356">Segnalibro salvato</translation>
 <translation id="6150706324143004339">Aggiorna Chrome per usare e salvare i dati di Chrome nel tuo Account Google</translation>
 <translation id="6154478581116148741">Attiva il blocco schermo in Impostazioni per esportare le tue password da questo dispositivo</translation>
+<translation id="6156323911414505561">Mostra barra dei preferiti</translation>
 <translation id="6162892189396105610">Precarica le pagine che Chrome ritiene tu possa visitare.</translation>
 <translation id="6170675927290506430">Vai alle impostazioni di notifica</translation>
 <translation id="6186394685773237175">Non sono state trovate password compromesse</translation>

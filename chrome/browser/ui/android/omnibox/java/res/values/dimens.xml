@@ -122,8 +122,6 @@ found in the LICENSE file.
 
     <!-- Button highlight dimensions. -->
     <dimen name="toolbar_button_highlight_size">40dp</dimen>
-    <dimen name="omnibox_button_highlight_width">40dp</dimen>
-    <dimen name="omnibox_button_highlight_height">32dp</dimen>
     <dimen name="status_view_highlight_size">32dp</dimen>
     <dimen name="status_view_verbose_highlight_width">94dp</dimen>
     <dimen name="status_view_verbose_highlight_height">40dp</dimen>

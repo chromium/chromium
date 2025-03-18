@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessLossExportFlowCoordinator;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.pwm_disabled.PasswordCsvDownloadFlowControllerFactory;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -95,14 +94,6 @@ public class PasswordAccessLossDialogHelper {
             Supplier<ModalDialogManager> modalDialogManagerSupplier) {
         FragmentActivity activity = (FragmentActivity) ContextUtils.activityFromContext(context);
         assert activity != null : "Context is expected to be a fragment activity";
-        if (ChromeFeatureList.isEnabled(LOGIN_DB_DEPRECATION_ANDROID)) {
-            PasswordCsvDownloadFlowControllerFactory.getOrCreateController()
-                    .showDialogAndStartFlow(
-                            activity,
-                            profile,
-                            PasswordManagerUtilBridge.isGooglePlayServicesUpdatable());
-            return;
-        }
         new PasswordAccessLossExportFlowCoordinator(activity, profile, modalDialogManagerSupplier)
                 .startExportFlow();
     }

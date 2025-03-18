@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/command_line.h"
@@ -42,7 +43,6 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -309,12 +309,12 @@ void IsolatedWebAppInstallationManager::
 // static
 IsolatedWebAppInstallSource
 IsolatedWebAppInstallationManager::CreateInstallSource(
-    absl::variant<base::FilePath, const base::ScopedTempFile*, url::Origin>
+    std::variant<base::FilePath, const base::ScopedTempFile*, url::Origin>
         source,
     InstallSurface surface) {
   switch (surface) {
     case InstallSurface::kDevUi:
-      return IsolatedWebAppInstallSource::FromDevUi(absl::visit(
+      return IsolatedWebAppInstallSource::FromDevUi(std::visit(
           base::Overloaded{
               [](base::FilePath path) -> IwaSourceDevModeWithFileOp {
                 return IwaSourceBundleDevModeWithFileOp(

@@ -1335,6 +1335,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1918127774159128277">Actualitza les capacitats de Wi-Fi Direct</translation>
 <translation id="1918141783557917887">&amp;Més petit</translation>
 <translation id="1918281588461452432">A mesura que navegues pels llocs web, el contingut de les pàgines s'encripta i es desa al dispositiu</translation>
+<translation id="1919096511823372013">Insereix enllaços, emojis i més. També pots obtenir ajuda per crear imatges i escriure amb la IA de Google.</translation>
 <translation id="1919872106782726755">Per configurar una impremta digital, fes que el teu fill toqui el sensor d'empremtes digitals que hi ha a l'extrem superior dret del teclat, al costat del botó d'engegada. Les dades de l'empremta digital del teu fill s'emmagatzemen de manera segura i no surten mai del <ph name="DEVICE_TYPE" />.</translation>
 <translation id="192015196730532810">Pots crear el teu propi grup de pestanyes.</translation>
 <translation id="1920314570001095522">No hi ha cap pestanya similar per organitzar, però pot ser que t'agradin aquests grups</translation>
@@ -8969,6 +8970,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7377451353532943397">Continua bloquejant l'accés als sensors</translation>
 <translation id="7377481913241237033">Connecta't amb un codi</translation>
 <translation id="73786666777299047">Obre Chrome Web Store</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Hi ha una altra tasca al mateix grup de tasques: <ph name="OTHER_TASKS" />.}other{<ph name="TASK_ROW" />. Hi ha # tasques més al mateix grup de tasques: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380272457268061606">Vols desactivar la recuperació de dades locals?</translation>
 <translation id="7380459290951585794">Comprova que el telèfon sigui a prop teu, que estigui desbloquejat i que tingui el Bluetooth i la Wi‑Fi activats</translation>
 <translation id="7380622428988553498">El nom del dispositiu conté caràcters que no són vàlids</translation>

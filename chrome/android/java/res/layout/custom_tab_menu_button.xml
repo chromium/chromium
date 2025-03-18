@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- LINT.IfChange(MenuButton) -->
+<org.chromium.chrome.browser.toolbar.menu_button.MenuButton
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/menu_button_wrapper"
+    android:layout_height="match_parent"
+    android:layout_width="@dimen/toolbar_button_width">
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/menu_button"
+        style="@style/ToolbarButton"
+        android:src="@drawable/ic_more_vert_24dp"
+        android:layout_gravity="center"
+        android:clickable="true"
+        android:focusable="true"
+        android:contentDescription="@string/accessibility_toolbar_btn_menu"
+        android:tooltipText="@string/accessibility_toolbar_btn_menu"
+        android:background="@null"
+        app:tint="@color/default_icon_color_tint_list" />
+</org.chromium.chrome.browser.toolbar.menu_button.MenuButton>
+<!-- LINT.ThenChange(//chrome/android/java/res/layout/custom_tabs_toolbar.xml:MenuButton) -->

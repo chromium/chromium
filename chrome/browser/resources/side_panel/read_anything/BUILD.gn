@@ -52,7 +52,7 @@ build_webui("build") {
     "language_toast.css",
     "read_anything_toolbar.css",
     "menus/simple_action_menu.css",
-    "toolbar_styles_shared_lit.css",
+    "toolbar_styles_shared.css",
     "voice_selection_menu.css",
   ]
   icons_html_files = [ "icons.html" ]

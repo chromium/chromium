@@ -264,20 +264,6 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::UpdateOrCreateBucket(
   return bucket_result;
 }
 
-QuotaErrorOr<BucketInfo> QuotaDatabase::GetOrCreateBucketDeprecated(
-    const BucketInitParams& params,
-    StorageType type) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  return GetBucket(params.storage_key, params.name, type)
-      .or_else([&](DetailedQuotaError error) -> QuotaErrorOr<BucketInfo> {
-        if (error != QuotaError::kNotFound) {
-          return base::unexpected(error);
-        }
-        return CreateBucketInternal(params, type);
-      });
-}
-
 QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketForTesting(
     const StorageKey& storage_key,
     const std::string& bucket_name,

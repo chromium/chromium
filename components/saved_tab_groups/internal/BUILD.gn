@@ -251,22 +251,3 @@ source_set("tab_group_sync_bridge") {
     "//components/sync/model",
   ]
 }
-
-source_set("shared_tab_group_data_type_controller") {
-  visibility = [ "//components/browser_sync" ]
-
-  sources = [
-    "shared_tab_group_data_type_controller.cc",
-    "shared_tab_group_data_type_controller.h",
-    "shared_tab_group_precondition_checker.cc",
-    "shared_tab_group_precondition_checker.h",
-  ]
-
-  deps = [
-    "//base",
-    "//components/signin/public/identity_manager",
-    "//components/sync/base",
-    "//components/sync/model",
-    "//components/sync/service",
-  ]
-}

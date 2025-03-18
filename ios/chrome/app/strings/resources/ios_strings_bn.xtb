@@ -504,6 +504,7 @@
 <translation id="310900540163454140"><ph name="WEBSITE" />-এর পাসওয়ার্ড মুছতে চান?</translation>
 <translation id="3112556859945124369">চিহ্নিত করুন…</translation>
 <translation id="3119874402040566234">আপনি সাইন-আউট হয়ে যাবেন এবং ব্রাউজ করা ডেটা মুছে দেওয়া হবে</translation>
+<translation id="3124568093781685165">আপনার পরিবারের সাথে আপনার পাসওয়ার্ড শেয়ার করুন</translation>
 <translation id="3130863904455712965">ইতিহাস ও আরও অনেক কিছু</translation>
 <translation id="313283613037595347">নতুন ছদ্মবেশী ট্যাব তৈরি করুন।</translation>
 <translation id="3138611310073113613">বেছে নেওয়া ফাইল বাতিল করুন</translation>
@@ -1003,6 +1004,7 @@
 <translation id="5352128922772839949">ফাইল সেভ করুন</translation>
 <translation id="5355191726083956201">"উন্নত সুরক্ষা" ফিচার চালু করা আছে</translation>
 <translation id="537853552771686272">আপনার আগ্রহের বিষয় ও সাইট ম্যানেজ করুন</translation>
+<translation id="5390458669633674385">{count,plural, =1{{count}টি বন্ধ আছে}one{{count}টি বন্ধ আছে}other{{count}টি বন্ধ আছে}}</translation>
 <translation id="5394975111793637642">'আপনার জন্য প্রোডাক্টের পর্যালোচনা' কার্ড লুকান</translation>
 <translation id="5395707839134961196">সার্চ ইঞ্জিনের বিবরণ লুকান</translation>
 <translation id="5414763847370083940">কোনও সাইটে দাম কমলে সেই সম্পর্কে আপনি বিজ্ঞপ্তি পাবেন।</translation>
@@ -1133,6 +1135,7 @@
 <translation id="5897749768294722429">আপনার দেখা সাইটে ঝটপট ফিরে যেতে, ট্যাব ও ইতিহাস সিঙ্ক করুন।</translation>
 <translation id="5898848375214731122">ভর</translation>
 <translation id="5899314093904173337">কাছাকাছি থাকা লোকেদের সাথে শেয়ার করতে, তাদের ক্যামেরা বা QR স্ক্যানার অ্যাপ দিয়ে এই QR কোড স্ক্যান করতে দিন</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count}টি নতুন ট্যাব}one{{count}টি নতুন ট্যাব}other{{count}টি নতুন ট্যাব}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5917913282764181683">আপনার ডাউনলোড অটোমেটিক মুছে দিন</translation>
 <translation id="5922999516621365983">এটি পিন করার জন্য এখানে ট্যাব টেনে আনুন।</translation>
@@ -1675,6 +1678,7 @@
 <translation id="8131740175452115882">নিশ্চিত হন</translation>
 <translation id="8132598642024322408">আগে <ph name="PREVIOUS_PRICE" /> ছিল এখন <ph name="PRICE" />।</translation>
 <translation id="813370552429173916">প্রতিটি সাইট বা অ্যাপের জন্য অনন্য পাসওয়ার্ড ব্যবহার করুন। আগে ব্যবহার করা কোনও পাসওয়ার্ড খুঁজে পেলে, সেটি ব্যবহার করেও অন্যান্য অ্যাকাউন্ট অ্যাক্সেসের চেষ্টা করা হতে পারে। ওয়েবসাইট খুলতে ক্লিক করুন এবং পাসওয়ার্ড এখনই পরিবর্তন করুন।</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count}টি বন্ধ হওয়া ট্যাব}one{{count}টি বন্ধ হওয়া ট্যাব}other{{count}টি বন্ধ হওয়া ট্যাব}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{অন্য ১টি}one{অন্য #টি}other{অন্য #টি}}</translation>
 <translation id="8150167929304790980">পুরো নাম</translation>
 <translation id="8152331954420209374">Lens-এ যান</translation>

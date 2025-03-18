@@ -31,7 +31,6 @@ import android.os.Message;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -1986,13 +1985,12 @@ public class StripLayoutHelper
      *
      * @param x The x position of the event.
      * @param y The y position of the event.
-     * @param fromMouse Whether the event originates from a mouse.
      * @param buttons State of all buttons that are pressed.
      */
-    public void onDown(float x, float y, boolean fromMouse, int buttons) {
+    public void onDown(float x, float y, int buttons) {
         resetResizeTimeout(false);
 
-        if (mNewTabButton.onDown(x, y, fromMouse, buttons)) {
+        if (mNewTabButton.onDown(x, y, buttons)) {
             mRenderHost.requestRender();
             return;
         }
@@ -2000,7 +1998,7 @@ public class StripLayoutHelper
         StripLayoutView clickedView = getViewAtPositionX(x, /* includeGroupTitles= */ true);
         if (clickedView instanceof StripLayoutTab clickedTab
                 && clickedTab.checkCloseHitTest(x, y)) {
-            clickedTab.setClosePressed(/* closePressed= */ true, fromMouse);
+            clickedTab.setClosePressed(/* closePressed= */ true, buttons);
             mRenderHost.requestRender();
         } else if (MotionEventUtils.isPrimaryButton(buttons)) {
             mDelayedReorderView = clickedView;
@@ -2013,16 +2011,15 @@ public class StripLayoutHelper
     /**
      * Called on long press touch event.
      *
-     * @param time The current time of the app in ms.
      * @param x The x coordinate of the position of the press event.
      * @param y The y coordinate of the position of the press event.
      */
-    public void onLongPress(long time, float x, float y) {
+    public void onLongPress(float x, float y) {
         StripLayoutView stripView = getViewAtPositionX(x, true);
         if (stripView == null || stripView instanceof StripLayoutTab) {
             StripLayoutTab clickedTab = stripView != null ? (StripLayoutTab) stripView : null;
             if (clickedTab != null && clickedTab.checkCloseHitTest(x, y)) {
-                clickedTab.setClosePressed(false, false);
+                clickedTab.setClosePressed(false, 0);
                 mRenderHost.requestRender();
                 showTabMenu(clickedTab);
             } else {
@@ -2656,12 +2653,11 @@ public class StripLayoutHelper
      * @param time The current time of the app in ms.
      * @param x The x coordinate of the position of the click.
      * @param y The y coordinate of the position of the click.
-     * @param fromMouse Whether the event originates from a mouse.
      * @param buttons State of all buttons that were pressed when onDown was invoked.
      */
-    public void click(long time, float x, float y, boolean fromMouse, int buttons) {
+    public void click(long time, float x, float y, int buttons) {
         resetResizeTimeout(false);
-        StripLayoutView clickedView = determineClickedView(x, y, fromMouse, buttons);
+        StripLayoutView clickedView = determineClickedView(x, y, buttons);
         if (clickedView == null) return;
         clickedView.handleClick(time);
     }
@@ -2764,12 +2760,11 @@ public class StripLayoutHelper
                 .prepareCloseTabs(params, /* allowDialog= */ true, listener, onPreparedCallback);
     }
 
-    private StripLayoutView determineClickedView(float x, float y, boolean fromMouse, int buttons) {
-        if (mNewTabButton.click(x, y, fromMouse, buttons)) return mNewTabButton;
+    private StripLayoutView determineClickedView(float x, float y, int buttons) {
+        if (mNewTabButton.click(x, y, buttons)) return mNewTabButton;
         StripLayoutView view = getViewAtPositionX(x, true);
         if (view instanceof StripLayoutTab clickedTab) {
-            if ((clickedTab.checkCloseHitTest(x, y)
-                    || (fromMouse && (buttons & MotionEvent.BUTTON_TERTIARY) != 0))) {
+            if (clickedTab.checkCloseHitTest(x, y) || MotionEventUtils.isTertiaryButton(buttons)) {
                 return clickedTab.getCloseButton();
             }
             return clickedTab;
@@ -2971,8 +2966,7 @@ public class StripLayoutHelper
         builder.append(groupDescription);
 
         // 2. Retrieve the grouped tabs and append the tab titles.
-        List<Tab> relatedTabs =
-                mTabGroupModelFilter.getRelatedTabListForRootId(groupTitle.getRootId());
+        List<Tab> relatedTabs = mTabGroupModelFilter.getTabsInGroup(groupTitle.getTabGroupId());
         int relatedTabsCount = relatedTabs.size();
         if (relatedTabsCount > 0) {
             final String contentDescriptionSeparator = " - ";

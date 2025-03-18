@@ -7,6 +7,7 @@
 #include <memory>
 #include <string_view>
 #include <utility>
+#include <variant>
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
@@ -176,7 +177,7 @@ ChromeTestChromeMainDelegate::CreateContentUtilityClient() {
 std::optional<int> ChromeTestChromeMainDelegate::PostEarlyInitialization(
     InvokedIn invoked_in) {
   auto result = ChromeMainDelegate::PostEarlyInitialization(invoked_in);
-  if (absl::get_if<InvokedInBrowserProcess>(&invoked_in)) {
+  if (std::get_if<InvokedInBrowserProcess>(&invoked_in)) {
     // If servicing an `InProcessBrowserTest`, give the test an opportunity to
     // prepopulate Local State with preferences.
     ChromeFeatureListCreator* chrome_feature_list_creator =

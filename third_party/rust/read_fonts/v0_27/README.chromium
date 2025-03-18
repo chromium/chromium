@@ -1,9 +1,9 @@
 Name: read-fonts
 URL: https://crates.io/crates/read-fonts
-Version: 0.27.2
-Revision: d7b4a99bd0fb0c433ce4ef620fa3c1afda6b831b
+Version: 0.27.3
+Revision: 195a6c6384d2687a37c195f97ab51dd9b2149bde
 License: Apache-2.0
-License File: //third_party/rust/chromium_crates_io/vendor/read-fonts-0.27.2/LICENSE-APACHE
+License File: //third_party/rust/chromium_crates_io/vendor/read-fonts-0.27.3/LICENSE-APACHE
 Shipped: yes
 Security Critical: yes
 

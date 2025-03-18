@@ -45,6 +45,7 @@
 <translation id="1652197001188145583">Kui see on sisse lülitatud, võivad saidid küsida luba NFC-seadmete kasutamiseks. Kui see on välja lülitatud, ei saa saidid NFC-seadmeid kasutada.</translation>
 <translation id="1660204651932907780">Saitidel lubatakse esitada heli (soovitatav)</translation>
 <translation id="1677097821151855053">Küpsisefaile ja muid saidi andmeid kasutatakse teie meeldejätmiseks, näiteks selleks, et teid sisse logida või reklaame isikupärastada. Kõigi saitide küpsisefailide haldamiseks vaadake jaotist <ph name="BEGIN_LINK" />Seaded<ph name="END_LINK" />.</translation>
+<translation id="1679305402657584804">Lubage saitidel küsida luba NFC-seadmete kasutamiseks</translation>
 <translation id="1686785653877010442">Saidid saadavad tavaliselt märguandeid, et teavitada teid erakorralistest uudistest või vestlussõnumitest.</translation>
 <translation id="169515064810179024">Blokeeri saitide juurdepääs liikumisanduritele</translation>
 <translation id="1703666494654169921">Ära luba saitidel kasutada VR-seadmeid ega -andmeid</translation>
@@ -84,6 +85,7 @@
 <translation id="2185965788978862351">See kustutab <ph name="DATASIZE" /> andmeid ja küpsisefaile, mille saidid või rakendused on teie avakuvale salvestanud.</translation>
 <translation id="2194856509914051091">Olulised aspektid</translation>
 <translation id="2215727959747642672">Failide muutmine</translation>
+<translation id="2218389616572918761">Lubage saitidel küsida luba mikrofoni kasutamiseks</translation>
 <translation id="2228071138934252756">Selleks et anda rakendusele <ph name="APP_NAME" /> juurdepääs teie kaamerale, lülitage kaamera sisse ka <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Kolmanda osapoole küpsisefailid on blokeeritud</translation>
 <translation id="2238944249568001759">Soovitatud otsingud teie viimase vahelehe põhjal</translation>
@@ -132,8 +134,10 @@
 <translation id="2726059656860238749">Chrome’i käivitamisel on kursor omnikastikeses, et vähendada väiksema jõudlusega seadmete puhul käivitusaega.</translation>
 <translation id="2750481671343847896">Saidid saavad kuvada identiteedihaldusteenuste sisselogimisviipasid.</translation>
 <translation id="2787357173144933081">Omnikastikese kiirkäivitamine</translation>
+<translation id="2789132527330338807">Lubage saitidel küsida luba luua teie ümbrusest 3D-kaarti või jälgida kaamera asendit</translation>
 <translation id="2790501146643349491">Kui see on sisse lülitatud, saavad hiljuti suletud saidid andmete saatmise ja vastuvõtmise lõpetada. Kui see on välja lülitatud, ei saa hiljuti suletud saidid andmete saatmist ega vastuvõtmist lõpetada.</translation>
 <translation id="2795716239552913152">Saidid kasutavad teie asukohateavet tavaliselt asjakohaste funktsioonide või teabe (nt kohalikud uudised või läheduses asuvad kauplused) pakkumiseks</translation>
+<translation id="2802908157808345702">Ärge lubage saitidel saata hüpikaknaid ega kasutada ümbersuunamisi</translation>
 <translation id="2814830417943086299">Chrome kuvab nüüd teie hiljutisi vahelehti teie seadme rakenduste loendis ja otsingutulemustes. Saate selle Chrome’i seadetes igal ajal välja lülitada.</translation>
 <translation id="2822354292072154809">Kas soovite objekti <ph name="CHOSEN_OBJECT_NAME" /> jaoks kindlasti lähtestada kõik saidi load?</translation>
 <translation id="2850913818900871965">Mobiilivaate taotlemine</translation>
@@ -274,6 +278,7 @@
 <translation id="4598549027014564149">Inkognito režiimis ei saa saidid küpsisefailide kaudu teie sirvimistegevusi saitidel (isegi seotud saitidel) jälgida. Teie sirvimistegevusi ei kasutata näiteks reklaamide isikupärastamiseks. Funktsioonid ei pruugi mõnel saidil toimida.</translation>
 <translation id="461356340001513807">Logime teid veebisaitidele sisse, kasutades teie identiteedihaldusteenuses olevat kontot</translation>
 <translation id="4619615317237390068">Muudest seadmetest pärinevad vahelehed</translation>
+<translation id="4635969503923889910">Ärge lubage saitidel kasutada NFC-seadmeid</translation>
 <translation id="4644713492825682049">Kustuta ja lähtesta</translation>
 <translation id="4645575059429386691">Vanema hallatud</translation>
 <translation id="4670064810192446073">Virtuaalreaalsus</translation>
@@ -372,6 +377,7 @@
 <translation id="5877248419911025165">Ahenda kõik taotlused</translation>
 <translation id="5884085660368669834">Saidi eelistus</translation>
 <translation id="5887687176710214216">Viimati külastati eile</translation>
+<translation id="5908617755156109052">Ärge lubage saitidel luua oma ümbrusest 3D-kaarti ega jälgida kaamera asendit</translation>
 <translation id="5916664084637901428">Sees</translation>
 <translation id="5922853908706496913">Ekraanikuva jagamine</translation>
 <translation id="5922967540311291836">Kolmanda osapoole küpsisefailide blokeerimine</translation>
@@ -582,6 +588,7 @@
 <translation id="8676374126336081632">Tühjenda sisestus</translation>
 <translation id="8681886425883659911">Reklaamid on blokeeritud saitidel, mis teadaolevalt kuvavad sekkuvaid või eksitavaid reklaame</translation>
 <translation id="868929229000858085">Otsige kontaktide hulgast</translation>
+<translation id="8707904142362025782">Lubage saitidel küsida luba kaamera kasutamiseks</translation>
 <translation id="8712637175834984815">Selge</translation>
 <translation id="8715862698998036666">Lohistage ülaosast ja pühkige vasakult või paremalt serva poole, et täisekraanilt väljuda.</translation>
 <translation id="8719283222052720129">Lülitage <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" /> sisse luba rakendusele <ph name="APP_NAME" />.</translation>

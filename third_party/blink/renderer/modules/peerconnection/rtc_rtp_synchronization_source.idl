@@ -4,5 +4,4 @@
 
 // https://w3c.github.io/webrtc-pc/#dom-rtcrtpsynchronizationsource
 dictionary RTCRtpSynchronizationSource : RTCRtpContributingSource {
-    // TODO(hbos): Implement voiceActivityFlag. https://crbug.com/893159
 };

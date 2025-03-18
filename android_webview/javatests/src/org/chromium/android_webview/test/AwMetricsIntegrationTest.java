@@ -410,21 +410,6 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    public void testMetadata_accessibility() throws Throwable {
-        // Wait for a metrics log, since AccessibilityMetricsProvider only logs this histogram
-        // during log collection. Do not assert anything about this histogram before this point (ex.
-        // do not assert total count == 0), because this would race with the initial metrics log.
-        mPlatformServiceBridge.waitForNextMetricsLog();
-
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "Accessibility.Android.ScreenReader.EveryReport"));
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"AndroidWebView"})
     public void testMetadata_debugging() throws Throwable {
         // Wait for a metrics log, since DebuggingMetricsProvider only logs this histogram
         // during log collection. Do not assert anything about this histogram before this point (ex.

@@ -30,6 +30,9 @@ using PasswordChangeErrorCase = optimization_guide::proto ::
     PasswordChangeSubmissionData_PasswordChangeErrorCase;
 using ProtoTreeUpdate = optimization_guide::proto::AXTreeUpdate;
 using SubmissionOutcome = ChangeFormSubmissionVerifier::SubmissionOutcome;
+using FinalModelStatus = optimization_guide::proto::FinalModelStatus;
+using QualityLogEntry =
+    std::unique_ptr<optimization_guide::ModelQualityLogEntry>;
 
 // Max numbers of nodes for the AX Tree Update Snapshot.
 constexpr int kMaxNodesInAXTreeSnapshot = 5000;
@@ -42,6 +45,28 @@ void LogSubmissionOutcome(SubmissionOutcome outcome, ukm::SourceId ukm_id) {
   ukm::builders::PasswordManager_PasswordChangeSubmissionOutcome(ukm_id)
       .SetPasswordChangeSubmissionOutcome(static_cast<int>(outcome))
       .Record(ukm::UkmRecorder::Get());
+}
+
+void AddFinalModelStatusLog(
+    OptimizationGuideKeyedService* optimization_executor,
+    FinalModelStatus final_status) {
+  base::WeakPtr<optimization_guide::ModelQualityLogsUploaderService>
+      logs_uploader_ptr;
+
+  auto* logs_uploader =
+      optimization_executor->GetModelQualityLogsUploaderService();
+  if (logs_uploader) {
+    logs_uploader_ptr = logs_uploader->GetWeakPtr();
+  }
+
+  QualityLogEntry log_entry =
+      std::make_unique<optimization_guide::ModelQualityLogEntry>(
+          logs_uploader_ptr);
+  log_entry->log_ai_data_request()
+      ->mutable_password_change_submission()
+      ->mutable_quality()
+      ->set_final_model_status(final_status);
+  optimization_guide::ModelQualityLogEntry::Upload(std::move(log_entry));
 }
 
 void RecordOutcomeMetrics(
@@ -224,32 +249,45 @@ void ChangeFormSubmissionVerifier::ProcessTree(
       request.mutable_page_context();
   *page_context->mutable_ax_tree_data() = std::move(ax_tree_proto);
 
-  OptimizationGuideKeyedService* optimization_executor =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
-
-  optimization_executor->ExecuteModel(
-      optimization_guide::ModelBasedCapabilityKey::kPasswordChangeSubmission,
-      request,
-      /*execution_timeout=*/std::nullopt,
-      password_manager::metrics_util::TimeCallback(
+  optimization_guide::ModelExecutionCallbackWithLogging<
+      optimization_guide::proto::PasswordChangeSubmissionLoggingData>
+      wrapper_callback = password_manager::metrics_util::TimeCallback(
           base::BindOnce(
               &ChangeFormSubmissionVerifier::OnExecutionResponseCallback,
               weak_ptr_factory_.GetWeakPtr()),
-          kPasswordChangeVerificationTimeHistogram));
+          kPasswordChangeVerificationTimeHistogram);
+
+  optimization_guide::ExecuteModelWithLogging(
+      GetOptimizationService(),
+      optimization_guide::ModelBasedCapabilityKey::kPasswordChangeSubmission,
+      request,
+      /*execution_timeout=*/std::nullopt, std::move(wrapper_callback));
+}
+
+OptimizationGuideKeyedService*
+ChangeFormSubmissionVerifier::GetOptimizationService() {
+  return OptimizationGuideKeyedServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
 }
 
 void ChangeFormSubmissionVerifier::OnExecutionResponseCallback(
     optimization_guide::OptimizationGuideModelExecutionResult execution_result,
-    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+    std::unique_ptr<
+        optimization_guide::proto::PasswordChangeSubmissionLoggingData>
+        logging_data) {
   CHECK(callback_);
   CHECK(web_contents_);
+
   ChromePasswordManagerClient* client =
       ChromePasswordManagerClient::FromWebContents(web_contents_.get());
 
+  OptimizationGuideKeyedService* optimization_executor =
+      GetOptimizationService();
   if (!execution_result.response.has_value()) {
     LogSubmissionOutcome(SubmissionOutcome::kNoResponse,
                          client->GetUkmSourceId());
+    AddFinalModelStatusLog(optimization_executor,
+                           FinalModelStatus::FINAL_MODEL_STATUS_UNSPECIFIED);
     std::move(callback_).Run(false);
     return;
   }
@@ -260,6 +298,8 @@ void ChangeFormSubmissionVerifier::OnExecutionResponseCallback(
   if (!response) {
     LogSubmissionOutcome(SubmissionOutcome::kCouldNotParse,
                          client->GetUkmSourceId());
+    AddFinalModelStatusLog(optimization_executor,
+                           FinalModelStatus::FINAL_MODEL_STATUS_UNSPECIFIED);
     std::move(callback_).Run(false);
     return;
   }
@@ -274,8 +314,12 @@ void ChangeFormSubmissionVerifier::OnExecutionResponseCallback(
       outcome !=
           PasswordChangeOutcome::
               PasswordChangeSubmissionData_PasswordChangeOutcome_UNKNOWN_OUTCOME) {
+    AddFinalModelStatusLog(optimization_executor,
+                           FinalModelStatus::FINAL_MODEL_STATUS_FAILURE);
     std::move(callback_).Run(false);
     return;
   }
+  AddFinalModelStatusLog(optimization_executor,
+                         FinalModelStatus::FINAL_MODEL_STATUS_SUCCESS);
   std::move(callback_).Run(true);
 }

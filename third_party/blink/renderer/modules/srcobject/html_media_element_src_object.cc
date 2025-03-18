@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/modules/srcobject/html_media_element_src_object.h"
 
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include <variant>
+
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_mediasourcehandle_mediastream.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
@@ -21,15 +22,15 @@ V8MediaProvider* HTMLMediaElementSrcObject::srcObject(
   HTMLMediaElement::SrcObjectVariant src_object_variant =
       element.GetSrcObjectVariant();
 
-  if (absl::holds_alternative<blink::MediaSourceHandle*>(src_object_variant)) {
-    auto* handle = absl::get<MediaSourceHandle*>(src_object_variant);
+  if (std::holds_alternative<blink::MediaSourceHandle*>(src_object_variant)) {
+    auto* handle = std::get<MediaSourceHandle*>(src_object_variant);
     DCHECK(handle);  // A nullptr is seen as a MediaStreamDescriptor*.
     return MakeGarbageCollected<V8MediaProvider>(
         static_cast<MediaSourceHandleImpl*>(handle));
   }
 
   // Otherwise, it is either null or a non-nullptr MediaStreamDescriptor*.
-  auto* descriptor = absl::get<MediaStreamDescriptor*>(src_object_variant);
+  auto* descriptor = std::get<MediaStreamDescriptor*>(src_object_variant);
   if (descriptor) {
     MediaStream* stream = ToMediaStream(descriptor);
     return MakeGarbageCollected<V8MediaProvider>(stream);

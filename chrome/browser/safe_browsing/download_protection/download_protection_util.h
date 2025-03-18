@@ -69,6 +69,7 @@ enum DownloadCheckResultReason {
   REASON_LOCAL_DECRYPTION_PROMPT = 37,
   REASON_LOCAL_DECRYPTION_FAILED = 38,
   REASON_IMMEDIATE_DEEP_SCAN = 39,
+  REASON_IGNORED_VERDICT = 40,
   REASON_MAX  // Always add new values before this one.
 };
 

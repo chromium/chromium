@@ -432,7 +432,6 @@
 <translation id="2981364137500752533">您最多只能打开 5 个窗口。</translation>
 <translation id="2983102365694924129">根据您在网站上的活动。此设置已关闭。</translation>
 <translation id="2984978667043170458">将上下文内容纳入到 Google 搜索查询中</translation>
-<translation id="2988638966064514052">强化密码</translation>
 <translation id="2989523299700148168">最近用过的搜索引擎</translation>
 <translation id="2992473221983447149">图片说明</translation>
 <translation id="2996291259634659425">创建密码</translation>
@@ -548,7 +547,6 @@
 <translation id="3557336313807607643">添加到通讯录</translation>
 <translation id="3563767357928833671">已显示剪贴板内容</translation>
 <translation id="3566639033325271639">更新设置</translation>
-<translation id="3568945271227339929">没有任何密码遭泄露</translation>
 <translation id="3575464060651642446">正在检查此设备上的密码…</translation>
 <translation id="3577473026931028326">出了点问题。请重试。</translation>
 <translation id="3577558748185201054">管理您的兴趣和偏好设置</translation>
@@ -1055,7 +1053,6 @@
 <translation id="5958275228015807058">在“下载内容”中查找您的文件和网页</translation>
 <translation id="5958994127112619898">简化网页</translation>
 <translation id="5962718611393537961">点按即可收起</translation>
-<translation id="5964180026566797835">无法检查密码</translation>
 <translation id="5964869237734432770">停止获取图片说明</translation>
 <translation id="5977976211062815271">在这部设备上</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{您的阅读清单中有 1 个页面}other{您的阅读清单中有 # 个页面}}</translation>
@@ -1099,6 +1096,7 @@
 <translation id="6150320133806434356">书签已保存</translation>
 <translation id="6150706324143004339">如要将 Chrome 数据保存在您的 Google 账号中并使用这些数据，请更新 Chrome</translation>
 <translation id="6154478581116148741">需在“设置”部分中开启屏幕锁定功能，才能从此设备中导出您的密码</translation>
+<translation id="6156323911414505561">显示书签栏</translation>
 <translation id="6162892189396105610">预加载 Chrome 认为您可能会访问的网页。</translation>
 <translation id="6170675927290506430">前往通知设置页面</translation>
 <translation id="6186394685773237175">未发现任何已泄露的密码</translation>

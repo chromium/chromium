@@ -5,6 +5,7 @@
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 
 #include <algorithm>
+#include <variant>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -15,7 +16,6 @@
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
 #include "crypto/unexportable_key.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace unexportable_keys {
 
@@ -51,7 +51,7 @@ class MaybePendingUnexportableKeyId {
   std::vector<CallbackType>& GetCallbacks();
 
   // Holds the value of its first alternative type by default.
-  absl::variant<std::vector<CallbackType>, UnexportableKeyId>
+  std::variant<std::vector<CallbackType>, UnexportableKeyId>
       key_id_or_pending_callbacks_;
 };
 
@@ -64,13 +64,13 @@ MaybePendingUnexportableKeyId::MaybePendingUnexportableKeyId(
 MaybePendingUnexportableKeyId::~MaybePendingUnexportableKeyId() = default;
 
 bool MaybePendingUnexportableKeyId::HasKeyId() {
-  return absl::holds_alternative<UnexportableKeyId>(
+  return std::holds_alternative<UnexportableKeyId>(
       key_id_or_pending_callbacks_);
 }
 
 UnexportableKeyId MaybePendingUnexportableKeyId::GetKeyId() {
   CHECK(HasKeyId());
-  return absl::get<UnexportableKeyId>(key_id_or_pending_callbacks_);
+  return std::get<UnexportableKeyId>(key_id_or_pending_callbacks_);
 }
 
 void MaybePendingUnexportableKeyId::AddCallback(CallbackType callback) {
@@ -102,7 +102,7 @@ void MaybePendingUnexportableKeyId::RunCallbacksWithFailure(
 std::vector<MaybePendingUnexportableKeyId::CallbackType>&
 MaybePendingUnexportableKeyId::GetCallbacks() {
   CHECK(!HasKeyId());
-  return absl::get<std::vector<CallbackType>>(key_id_or_pending_callbacks_);
+  return std::get<std::vector<CallbackType>>(key_id_or_pending_callbacks_);
 }
 
 }  // namespace

@@ -28,17 +28,16 @@ struct UsageTracker::AccumulateInfo {
 UsageTracker::UsageTracker(
     QuotaManagerImpl* quota_manager_impl,
     const base::flat_map<mojom::QuotaClient*, QuotaClientType>& client_types,
-    blink::mojom::StorageType type,
     scoped_refptr<SpecialStoragePolicy> special_storage_policy)
-    : quota_manager_impl_(quota_manager_impl), type_(type) {
+    : quota_manager_impl_(quota_manager_impl) {
   DCHECK(quota_manager_impl_);
 
   for (const auto& client_and_type : client_types) {
     mojom::QuotaClient* client = client_and_type.first;
     QuotaClientType client_type = client_and_type.second;
-    auto [it, inserted] = client_tracker_map_.insert(std::make_pair(
-        client_type, std::make_unique<ClientUsageTracker>(
-                         this, client, type, special_storage_policy)));
+    auto [it, inserted] = client_tracker_map_.insert(
+        std::make_pair(client_type, std::make_unique<ClientUsageTracker>(
+                                        this, client, special_storage_policy)));
     CHECK(inserted);
   }
 }
@@ -53,9 +52,8 @@ void UsageTracker::GetGlobalUsage(UsageCallback callback) {
   if (global_usage_callbacks_.size() > 1)
     return;
 
-  quota_manager_impl_->GetBucketsForType(
-      type_, base::BindOnce(&UsageTracker::DidGetBucketsForType,
-                            weak_factory_.GetWeakPtr()));
+  quota_manager_impl_->GetAllBuckets(base::BindOnce(
+      &UsageTracker::DidGetAllBuckets, weak_factory_.GetWeakPtr()));
 }
 
 void UsageTracker::GetStorageKeyUsageWithBreakdown(
@@ -69,9 +67,8 @@ void UsageTracker::GetStorageKeyUsageWithBreakdown(
     return;
 
   quota_manager_impl_->GetBucketsForStorageKey(
-      storage_key, type_,
-      base::BindOnce(&UsageTracker::DidGetBucketsForStorageKey,
-                     weak_factory_.GetWeakPtr(), storage_key));
+      storage_key, base::BindOnce(&UsageTracker::DidGetBucketsForStorageKey,
+                                  weak_factory_.GetWeakPtr(), storage_key));
 }
 
 void UsageTracker::GetBucketUsageWithBreakdown(
@@ -116,7 +113,6 @@ void UsageTracker::UpdateBucketUsageCache(QuotaClientType client_type,
 void UsageTracker::DeleteBucketCache(QuotaClientType client_type,
                                      const BucketLocator& bucket) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(bucket.type, type_);
 
   GetClient(client_type).DeleteBucketCache(bucket);
 }
@@ -178,8 +174,7 @@ void UsageTracker::SetUsageCacheEnabled(QuotaClientType client_type,
   GetClient(client_type).SetUsageCacheEnabled(storage_key, enabled);
 }
 
-void UsageTracker::DidGetBucketsForType(
-    QuotaErrorOr<std::set<BucketInfo>> result) {
+void UsageTracker::DidGetAllBuckets(QuotaErrorOr<std::set<BucketInfo>> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto info = std::make_unique<AccumulateInfo>();
   if (!result.has_value()) {

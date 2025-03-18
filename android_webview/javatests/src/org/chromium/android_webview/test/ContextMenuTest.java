@@ -265,6 +265,7 @@ public class ContextMenuTest extends AwParameterizedTest {
                         0,
                         MenuSourceType.TOUCH,
                         false,
+                        /* openedFromInterestTarget= */ false,
                         /* additionalNavigationParams= */ null);
 
         AwContextMenuItemDelegate itemDelegate =
@@ -309,6 +310,7 @@ public class ContextMenuTest extends AwParameterizedTest {
                         0,
                         MenuSourceType.TOUCH,
                         false,
+                        /* openedFromInterestTarget= */ false,
                         /* additionalNavigationParams= */ null);
 
         AwContextMenuHeaderCoordinator headerCoordinator =

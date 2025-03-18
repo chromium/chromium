@@ -56,11 +56,34 @@
   <button>button</button>
 </select>
 
+<select>
+  <option></option>
+  <div>
+    <button>button</button>
+  </div>
+  <span>
+    <button>button</button>
+  </span>
+</select>
+
 <!-- <legend> (if present) should be the first child of <optgroup>. -->
 <select>
   <optgroup>
     <option>..</option>
     <legend>legend</legend>
+  </optgroup>
+</select>
+
+<select>
+  <optgroup>
+    <div>
+      <legend>legend</legend>
+    </div>
+  </optgroup>
+  <optgroup>
+    <span>
+      <legend>legend</legend>
+    </span>
   </optgroup>
 </select>
 

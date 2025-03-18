@@ -1341,6 +1341,7 @@
 <translation id="1918127774159128277">Опресняване на възможностите на Wi-Fi Direct</translation>
 <translation id="1918141783557917887">&amp;По-малък</translation>
 <translation id="1918281588461452432">Докато сърфирате в сайтовете, съдържанието на страниците им се шифрова и запазва на устройството ви</translation>
+<translation id="1919096511823372013">Вмъквайте връзки, емоджита и др. Можете също да получите помощ при писане и създаване на изображения с AI на Google.</translation>
 <translation id="1919872106782726755">За да настрои отпечатък, детето ви трябва да докосне сензора за отпечатъци в горния десен ъгъл на клавиатурата до бутона за включване/изключване. Данните за отпечатъка му се съхраняват надеждно и никога не напускат устройството <ph name="DEVICE_TYPE" />.</translation>
 <translation id="192015196730532810">Можете да създадете своя собствена група раздели.</translation>
 <translation id="1920314570001095522">Няма подобни раздели, които да бъдат организирани, но може да харесате тези групи</translation>
@@ -1887,6 +1888,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300332192655962933">Файлът не бе налице в сайта</translation>
 <translation id="2300383962156589922">Персонализиране и управление на <ph name="APP_NAME" /></translation>
+<translation id="2301064673700597535">Декларации за квалифициран сертификат</translation>
 <translation id="2301382460326681002">Основната директория на разширението е невалидна.</translation>
 <translation id="2301402091755573488">Споделен раздел</translation>
 <translation id="2302342861452486996"><ph name="BEGIN_H3" />Функции за отстраняване на грешки<ph name="END_H3" />
@@ -8986,6 +8988,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7377451353532943397">Достъпът до сензорите да продължи да се блокира</translation>
 <translation id="7377481913241237033">Свързване чрез код</translation>
 <translation id="73786666777299047">Отваряне на уеб магазина на Chrome</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Друга задача в същата група задачи: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Още # задачи в същата група задачи: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380272457268061606">Да се деактивира ли възстановяването на локални данни?</translation>
 <translation id="7380459290951585794">Телефонът трябва да е наблизо, да е отключен и Bluetooth и функцията за Wi-Fi да са включени</translation>
 <translation id="7380622428988553498">Името на устройството съдържа невалидни знаци</translation>

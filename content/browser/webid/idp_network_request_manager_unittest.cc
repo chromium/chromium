@@ -682,6 +682,59 @@ TEST_F(IdpNetworkRequestManagerTest, ComputeWellKnownUrl) {
                               GURL("https://192.101.0.1/test/")));
 }
 
+TEST_F(IdpNetworkRequestManagerTest, ParseUsername) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmAlternativeIdentifiers);
+
+  const auto* test_accounts_json = R"({
+  "accounts" : [
+    {
+      "id": "1234",
+      "email": "ken@idp.test",
+      "username": "ken"
+    }
+  ]
+  })";
+
+  FetchStatus accounts_response;
+  std::vector<IdentityRequestAccountPtr> accounts;
+  std::tie(accounts_response, accounts) =
+      SendAccountsRequestAndWaitForResponse(test_accounts_json);
+
+  ASSERT_EQ(ParseStatus::kSuccess, accounts_response.parse_status);
+  EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
+  EXPECT_EQ("1234", accounts[0]->id);
+  EXPECT_EQ("ken@idp.test", accounts[0]->email);
+  EXPECT_EQ("ken@idp.test", accounts[0]->display_identifier);
+  EXPECT_EQ("ken", accounts[0]->display_name);
+}
+
+TEST_F(IdpNetworkRequestManagerTest, ParsePhoneNumber) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmAlternativeIdentifiers);
+
+  const auto* test_accounts_json = R"({
+  "accounts" : [
+    {
+      "id": "1234",
+      "phone": "111-111-1111"
+    }
+  ]
+  })";
+
+  FetchStatus accounts_response;
+  std::vector<IdentityRequestAccountPtr> accounts;
+  std::tie(accounts_response, accounts) =
+      SendAccountsRequestAndWaitForResponse(test_accounts_json);
+
+  ASSERT_EQ(ParseStatus::kSuccess, accounts_response.parse_status);
+  EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
+  EXPECT_EQ("1234", accounts[0]->id);
+  EXPECT_EQ("", accounts[0]->email);
+  EXPECT_EQ("", accounts[0]->display_identifier);
+  EXPECT_EQ("111-111-1111", accounts[0]->display_name);
+}
+
 // Test that IdpNetworkRequestManager::FetchWellKnown() fails when the
 // identity provider domain is empty.
 TEST_F(IdpNetworkRequestManagerTest, FetchWellKnownIllegalDomainFails) {

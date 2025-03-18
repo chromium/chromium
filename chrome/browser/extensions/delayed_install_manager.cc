@@ -9,20 +9,26 @@
 
 #include "base/check.h"
 #include "base/trace_event/trace_event.h"
+#include "chrome/browser/extensions/delayed_install_manager_factory.h"
 #include "chrome/browser/extensions/install_gate.h"
 #include "extensions/browser/extension_registrar.h"
 
 namespace extensions {
 
-DelayedInstallManager::DelayedInstallManager(
-    ExtensionPrefs* extension_prefs,
-    ExtensionRegistrar* extension_registrar)
-    : extension_prefs_(extension_prefs),
-      extension_registrar_(extension_registrar) {}
+DelayedInstallManager::DelayedInstallManager(content::BrowserContext* context)
+    : extension_prefs_(ExtensionPrefs::Get(context)),
+      extension_registrar_(ExtensionRegistrar::Get(context)) {}
 
 DelayedInstallManager::~DelayedInstallManager() = default;
 
+// static
+DelayedInstallManager* DelayedInstallManager::Get(
+    content::BrowserContext* context) {
+  return DelayedInstallManagerFactory::GetForBrowserContext(context);
+}
+
 void DelayedInstallManager::Shutdown() {
+  // Avoids dangling pointers during keyed service two-phase shutdown.
   extension_prefs_ = nullptr;
   extension_registrar_ = nullptr;
 }

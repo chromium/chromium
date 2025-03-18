@@ -319,13 +319,13 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
       return SelectElementAccessibilityIssueReason::kDisallowedSelectChild;
     }
     if (IsA<HTMLSelectElement>(*parent)) {
-      if (IsAllowedDescendantOfSelect(descendant)) {
+      if (IsAllowedDescendantOfSelect(descendant, *parent)) {
         return SelectElementAccessibilityIssueReason::kValidChild;
       }
       return SelectElementAccessibilityIssueReason::kDisallowedSelectChild;
     }
     if (IsA<HTMLOptGroupElement>(*parent)) {
-      if (IsAllowedDescendantOfOptgroup(descendant)) {
+      if (IsAllowedDescendantOfOptgroup(descendant, *parent)) {
         return SelectElementAccessibilityIssueReason::kValidChild;
       }
       return SelectElementAccessibilityIssueReason::kDisallowedOptGroupChild;
@@ -360,9 +360,10 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
     return SelectElementAccessibilityIssueReason::kDisallowedSelectChild;
   }
 
-  bool IsAllowedDescendantOfSelect(const Node& descendant) {
-    // <button> has to be the first child of <select>.
+  bool IsAllowedDescendantOfSelect(const Node& descendant, const Node& parent) {
+    // <button> has to be the first direct descendant of the <select>.
     return (IsA<HTMLButtonElement>(descendant) &&
+            IsA<HTMLSelectElement>(parent) &&
             !ElementTraversal::PreviousSibling(descendant)) ||
            IsA<HTMLOptionElement>(descendant) ||
            IsA<HTMLOptGroupElement>(descendant) ||
@@ -373,9 +374,11 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
            IsA<HTMLTemplateElement>(descendant);
   }
 
-  bool IsAllowedDescendantOfOptgroup(const Node& descendant) {
-    // <legend> has to be the first child of <select>.
+  bool IsAllowedDescendantOfOptgroup(const Node& descendant,
+                                     const Node& parent) {
+    // <legend> has to be the first direct descendant of the <optgroup>.
     return (IsA<HTMLLegendElement>(descendant) &&
+            IsA<HTMLOptGroupElement>(parent) &&
             !ElementTraversal::PreviousSibling(descendant)) ||
            IsA<HTMLOptionElement>(descendant) ||
            IsA<HTMLDivElement>(descendant) ||
@@ -421,20 +424,21 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
       const Node& descendant) {
     // As we've already checked the descendant's parent, we can directly look at
     // the grandparent.
-    for (const Node* ancestor = descendant.parentNode()->parentNode(); ancestor;
+    const Node* parent = descendant.parentNode();
+    for (const Node* ancestor = parent->parentNode(); ancestor;
          ancestor = ancestor->parentNode()) {
       if (IsA<HTMLOptionElement>(*ancestor) ||
           IsA<HTMLSelectedContentElement>(*ancestor)) {
         return CheckDescedantOfOption(descendant);
       }
       if (IsA<HTMLOptGroupElement>(*ancestor)) {
-        if (IsAllowedDescendantOfOptgroup(descendant)) {
+        if (IsAllowedDescendantOfOptgroup(descendant, *parent)) {
           return SelectElementAccessibilityIssueReason::kValidChild;
         }
         return SelectElementAccessibilityIssueReason::kDisallowedOptGroupChild;
       }
       if (IsA<HTMLSelectElement>(*ancestor) &&
-          IsAllowedDescendantOfSelect(descendant)) {
+          IsAllowedDescendantOfSelect(descendant, *parent)) {
         return SelectElementAccessibilityIssueReason::kValidChild;
       }
     }

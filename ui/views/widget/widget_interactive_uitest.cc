@@ -626,7 +626,7 @@ TEST_F(WidgetTestInteractive, CheckResizeControllerEvents) {
   // |view| needs to be a particular size. Reset the LayoutManager so that
   // it doesn't get resized.
   toplevel->GetRootView()->SetLayoutManager(nullptr);
-  toplevel->GetRootView()->AddChildView(view);
+  toplevel->GetRootView()->AddChildViewRaw(view);
 
   toplevel->Show();
   RunPendingMessages();
@@ -1934,7 +1934,7 @@ TEST_F(WidgetCaptureTest, ResetCaptureOnGestureEnd) {
 
   MouseView* mouse = new MouseView;
   mouse->SetBounds(30, 0, 30, 30);
-  container->AddChildView(mouse);
+  container->AddChildViewRaw(mouse);
 
   toplevel->SetSize(gfx::Size(100, 100));
   toplevel->Show();

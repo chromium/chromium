@@ -55,7 +55,7 @@
   if (self) {
     _addressViewController = [[AddressViewController alloc] init];
 
-    ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
+    ProfileIOS* profile = self.profile->GetOriginalProfile();
 
     // Service must use regular profile, even if the Browser has an
     // OTR profile.

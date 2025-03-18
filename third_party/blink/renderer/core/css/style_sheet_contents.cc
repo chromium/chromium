@@ -817,6 +817,7 @@ RuleSet* StyleSheetContents::CreateUnconnectedRuleSet(
     const MediaQueryEvaluator& medium) const {
   auto* rule_set = MakeGarbageCollected<RuleSet>();
   rule_set->AddRulesFromSheet(this, medium);
+  rule_set->CompactRulesIfNeeded();
   return rule_set;
 }
 

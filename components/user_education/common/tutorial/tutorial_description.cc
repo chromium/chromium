@@ -8,7 +8,6 @@
 #include <variant>
 
 #include "components/user_education/common/user_education_events.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"

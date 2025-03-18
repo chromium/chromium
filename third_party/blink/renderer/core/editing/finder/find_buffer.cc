@@ -179,6 +179,9 @@ bool AreInOrder(const Node& start, const Node& end) {
   while (node && !node->isSameNode(&end)) {
     node = FlatTreeTraversal::Next(*node);
   }
+  if (!node) {
+    return false;
+  }
   return node->isSameNode(&end);
 }
 
@@ -397,7 +400,6 @@ void FindBuffer::CollectTextUntilBlockBoundary(
   // Get first visible text node from |start_position|.
   Node* node =
       ForwardVisibleTextNode(*range.StartPosition().NodeAsRangeFirstNode());
-
   if (!node || !node->isConnected())
     return;
 
@@ -405,8 +407,8 @@ void FindBuffer::CollectTextUntilBlockBoundary(
   Node* end_node = range.EndPosition().NodeAsRangeLastNode();
   // TODO(crbug.com/399672833): |AreInOrder| can result in linearly walking the
   // rest of the DOM tree so we should use a more efficient comparison.
-  if (RuntimeEnabledFeatures::RangeBasedTextFindEnabled() &&
-      !AreInOrder(*node, *end_node)) {
+  if (!end_node || (RuntimeEnabledFeatures::RangeBasedTextFindEnabled() &&
+                    !AreInOrder(*node, *end_node))) {
     return;
   }
 

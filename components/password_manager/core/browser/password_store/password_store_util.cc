@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
 
 #include <algorithm>
+#include <variant>
 
 namespace password_manager {
 
@@ -12,11 +13,11 @@ PasswordChanges JoinPasswordStoreChanges(
     const std::vector<PasswordChangesOrError>& changes_to_join) {
   PasswordStoreChangeList joined_changes;
   for (const auto& changes_or_error : changes_to_join) {
-    if (absl::holds_alternative<PasswordStoreBackendError>(changes_or_error)) {
+    if (std::holds_alternative<PasswordStoreBackendError>(changes_or_error)) {
       return std::nullopt;
     }
     const PasswordChanges& changes =
-        absl::get<PasswordChanges>(changes_or_error);
+        std::get<PasswordChanges>(changes_or_error);
     if (!changes.has_value()) {
       return std::nullopt;
     }
@@ -26,18 +27,18 @@ PasswordChanges JoinPasswordStoreChanges(
 }
 
 LoginsResult GetLoginsOrEmptyListOnFailure(LoginsResultOrError result) {
-  if (absl::holds_alternative<PasswordStoreBackendError>(result)) {
+  if (std::holds_alternative<PasswordStoreBackendError>(result)) {
     return {};
   }
-  return std::move(absl::get<LoginsResult>(result));
+  return std::move(std::get<LoginsResult>(result));
 }
 
 PasswordChanges GetPasswordChangesOrNulloptOnFailure(
     PasswordChangesOrError result) {
-  if (absl::holds_alternative<PasswordStoreBackendError>(result)) {
+  if (std::holds_alternative<PasswordStoreBackendError>(result)) {
     return std::nullopt;
   }
-  return std::move(absl::get<PasswordChanges>(result));
+  return std::move(std::get<PasswordChanges>(result));
 }
 
 }  // namespace password_manager

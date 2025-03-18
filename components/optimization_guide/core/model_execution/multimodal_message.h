@@ -146,7 +146,9 @@ class MultimodalMessageReadView {
   ~MultimodalMessageReadView();
 
   // Get the type of the underlying message.
-  std::string GetTypeName() const { return message_->GetTypeName(); }
+  std::string GetTypeName() const {
+    return std::string(message_->GetTypeName());
+  }
 
   // Get the type of multimodal content for a field.
   MultimodalType GetMultimodalType(const proto::ProtoField& proto_field) const;
@@ -265,7 +267,9 @@ class MultimodalMessage final {
     return MultimodalMessageReadView(*message_, &overlay_);
   }
 
-  std::string GetTypeName() const { return message_->GetTypeName(); }
+  std::string GetTypeName() const {
+    return std::string(message_->GetTypeName());
+  }
 
  private:
   std::unique_ptr<google::protobuf::MessageLite> message_;

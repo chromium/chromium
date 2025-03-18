@@ -5,6 +5,7 @@
 #import "components/autofill/ios/browser/autofill_agent.h"
 
 #import <string>
+#import <variant>
 
 #import "base/apple/bundle_locations.h"
 #import "base/json/json_writer.h"
@@ -54,7 +55,6 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#import "third_party/abseil-cpp/absl/types/variant.h"
 #import "ui/base/resource/resource_bundle.h"
 #import "ui/gfx/image/image_unittest_util.h"
 #import "url/gurl.h"
@@ -738,9 +738,9 @@ TEST_F(AutofillAgentTests,
       autofill::Suggestion("", "", suggestion_network_icon,
                            autofill::SuggestionType::kCreditCardEntry)};
   ASSERT_TRUE(
-      absl::holds_alternative<gfx::Image>(autofillSuggestions[0].custom_icon));
+      std::holds_alternative<gfx::Image>(autofillSuggestions[0].custom_icon));
   ASSERT_TRUE(
-      absl::get<gfx::Image>(autofillSuggestions[0].custom_icon).IsEmpty());
+      std::get<gfx::Image>(autofillSuggestions[0].custom_icon).IsEmpty());
 
   // When the custom icon is not present, the default icon should be used.
   [autofill_agent_ showAutofillPopup:autofillSuggestions

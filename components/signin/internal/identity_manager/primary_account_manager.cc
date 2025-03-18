@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/command_line.h"
@@ -30,7 +31,6 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_id.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 using signin::PrimaryAccountChangeEvent;
 
@@ -803,7 +803,7 @@ void PrimaryAccountManager::ComputeExplicitBrowserSignin(
 
 void PrimaryAccountManager::FirePrimaryAccountChanged(
     const PrimaryAccountChangeEvent::State& previous_state,
-    absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
+    std::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
         event_source,
     ScopedPrefCommit& scoped_pref_commit) {
   PrimaryAccountChangeEvent::State current_state = GetPrimaryAccountState();

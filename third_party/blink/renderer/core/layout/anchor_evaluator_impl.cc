@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/anchor_evaluator_impl.h"
 
+#include <variant>
+
 #include "base/auto_reset.h"
 #include "third_party/blink/renderer/core/css/anchor_query.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
@@ -139,7 +141,7 @@ bool IsScopedByElement(const ScopedCSSName* lookup_name,
 bool InSameAnchorScope(const AnchorKey& key,
                        const LayoutBox& query_box,
                        const LayoutObject& anchor_object) {
-  const ScopedCSSName* const* name = absl::get_if<const ScopedCSSName*>(&key);
+  const ScopedCSSName* const* name = std::get_if<const ScopedCSSName*>(&key);
   if (!name) {
     // This is an implicit anchor reference, which is unaffected
     // by anchor-scope.

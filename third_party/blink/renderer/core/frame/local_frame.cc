@@ -3654,7 +3654,7 @@ void LocalFrame::DownloadURL(
     network::mojom::blink::RedirectMode cross_origin_redirect_behavior) {
   mojo::PendingRemote<mojom::blink::BlobURLToken> blob_url_token;
   if (request.Url().ProtocolIs("blob")) {
-    DomWindow()->GetPublicURLManager().ResolveForNavigation(
+    DomWindow()->GetPublicURLManager().ResolveAsBlobURLToken(
         request.Url(), blob_url_token.InitWithNewPipeAndPassReceiver(),
         /*is_top_level_navigation=*/false);
   }
@@ -3734,7 +3734,7 @@ void LocalFrame::PostMessageEvent(
   DOMWindow* window = nullptr;
   if (source_frame)
     window = source_frame->DomWindow();
-  MessagePortArray* ports = nullptr;
+  GCedMessagePortArray* ports = nullptr;
   if (GetDocument()) {
     ports = MessagePort::EntanglePorts(*GetDocument()->GetExecutionContext(),
                                        std::move(message.ports));

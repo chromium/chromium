@@ -1344,6 +1344,7 @@
 <translation id="1918127774159128277">‏רענון היכולות של Wi-Fi ישיר</translation>
 <translation id="1918141783557917887">&amp;קטן יותר</translation>
 <translation id="1918281588461452432">כשגולשים באתרים, תוכן הדפים שלהם מוצפן ונשמר במכשיר</translation>
+<translation id="1919096511823372013">‏מוסיפים קישורים, סמלי אמוג'י ועוד. ניתן גם לקבל עזרה בכתיבה וביצירת תמונות עם AI מבית Google.</translation>
 <translation id="1919872106782726755">כדי להגדיר טביעת אצבע, על הילד או הילדה לגעת בחיישן טביעות האצבע שבפינה הימנית העליונה של המקלדת, ליד כפתור ההפעלה. נתוני טביעות האצבע של הילד או הילדה נשמרים באופן מאובטח ואף פעם לא נשלחים ממכשיר ה-<ph name="DEVICE_TYPE" /> הזה.</translation>
 <translation id="192015196730532810">יש לך אפשרות ליצור קבוצת כרטיסיות משלך.</translation>
 <translation id="1920314570001095522">אין כרטיסיות דומות לארגון, אבל יכול להיות שהקבוצות האלה יתאימו לך</translation>
@@ -8992,6 +8993,7 @@
 <translation id="7377451353532943397">המשך חסימת הגישה לחיישנים</translation>
 <translation id="7377481913241237033">התחברות באמצעות קוד</translation>
 <translation id="73786666777299047">‏פתיחת חנות האינטרנט של Chrome</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{‫<ph name="TASK_ROW" />. יש עוד משימה באותה קבוצה: <ph name="OTHER_TASKS" />}one{‫<ph name="TASK_ROW" />. יש עוד # משימות באותה קבוצה: <ph name="OTHER_TASKS" />}two{‫<ph name="TASK_ROW" />. יש עוד # משימות באותה קבוצה: <ph name="OTHER_TASKS" />}other{‫<ph name="TASK_ROW" />. יש עוד # משימות באותה קבוצה: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380272457268061606">להשבית את שחזור הנתונים המקומיים?</translation>
 <translation id="7380459290951585794">‏חשוב לוודא שהטלפון נמצא בקרבת מקום, שהוא לא נעול ושה‑Bluetooth וה‑Wi‑Fi פועלים</translation>
 <translation id="7380622428988553498">שם המכשיר מכיל תווים לא חוקיים</translation>

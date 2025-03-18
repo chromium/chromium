@@ -505,6 +505,7 @@
 <translation id="310900540163454140">Видалити пароль для вебсайту <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Позначити…</translation>
 <translation id="3119874402040566234">Ви вийдете з облікового запису, а дані вебперегляду буде видалено</translation>
+<translation id="3124568093781685165">Діліться паролями з учасниками сімейної групи</translation>
 <translation id="3130863904455712965">Історія та інші переваги</translation>
 <translation id="313283613037595347">Створити нову анонімну вкладку.</translation>
 <translation id="3138611310073113613">Скасувати вибір</translation>
@@ -1004,6 +1005,7 @@
 <translation id="5352128922772839949">Зберегти файл</translation>
 <translation id="5355191726083956201">Покращений захист увімкнено</translation>
 <translation id="537853552771686272">Керуйте темами й сайтами, які вас цікавлять</translation>
+<translation id="5390458669633674385">{count,plural, =1{Закрито {count} вкладку}one{Закрито {count} вкладку}few{Закрито {count} вкладки}many{Закрито {count} вкладок}other{Закрито {count} вкладки}}</translation>
 <translation id="5394975111793637642">Сховати картку "Вибрані відгуки про товари"</translation>
 <translation id="5395707839134961196">Сховати відомості про пошукову систему</translation>
 <translation id="5414763847370083940">Ви отримаєте сповіщення, коли на якомусь сайті знизиться ціна.</translation>
@@ -1133,6 +1135,7 @@
 <translation id="5897749768294722429">Щоб швидко відкривати відвідані сайти, увімкніть синхронізацію вкладок і історії.</translation>
 <translation id="5898848375214731122">Маса</translation>
 <translation id="5899314093904173337">Щоб отримати доступ до контенту, люди поруч можуть зісканувати цей QR-код за допомогою камери або QR-сканера</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} нова вкладка}one{{count} нова вкладка}few{{count} нові вкладки}many{{count} нових вкладок}other{{count} нової вкладки}}</translation>
 <translation id="5911030830365207728">Google Перекладач</translation>
 <translation id="5917913282764181683">Автоматично видаляйте завантаження</translation>
 <translation id="5922999516621365983">Перетягніть вкладку сюди, щоб закріпити її.</translation>
@@ -1675,6 +1678,7 @@
 <translation id="8131740175452115882">Підтвердити</translation>
 <translation id="8132598642024322408">Поточна ціна – <ph name="PRICE" />, попередня – <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Використовуйте унікальні паролі для кожного сайту й додатка. Якщо зломник виявить повторно використаний пароль, він зможе отримати доступ до інших ваших облікових записів. Натисніть, щоб відкрити веб-сайт і змінити паролі.</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} закрита вкладка}one{{count} закрита вкладка}few{{count} закриті вкладки}many{{count} закритих вкладок}other{{count} закритої вкладки}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{і ще 1 об’єкт}one{і ще # об’єкт}few{і ще # об’єкти}many{і ще # об’єктів}other{і ще # об’єкта}}</translation>
 <translation id="8150167929304790980">Повне ім'я</translation>
 <translation id="8152331954420209374">Перейти в Об’єктив</translation>

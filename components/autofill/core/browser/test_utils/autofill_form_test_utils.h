@@ -54,6 +54,7 @@ struct FieldDescription {
   std::vector<SelectOption> datalist_options;
   FieldPropertiesMask properties_mask = 0;
   bool checked = false;
+  std::optional<int32_t> form_control_ax_id;
 };
 
 // Attributes provided to the test form.

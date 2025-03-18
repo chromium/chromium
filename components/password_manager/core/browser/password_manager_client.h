@@ -490,6 +490,7 @@ class PasswordManagerClient {
 
   // Returns the identity manager for profile.
   virtual signin::IdentityManager* GetIdentityManager() = 0;
+  virtual const signin::IdentityManager* GetIdentityManager() const = 0;
 
   // Returns the field info manager for profile.
   virtual password_manager::FieldInfoManager* GetFieldInfoManager() const;
@@ -548,6 +549,8 @@ class PasswordManagerClient {
       std::vector<std::unique_ptr<password_manager::PasswordForm>> forms,
       int credential_type_flags,
       CredentialsCallback callback);
+
+  virtual void TriggerSignIn(signin_metrics::AccessPoint access_point) const;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_CHROMEOS)

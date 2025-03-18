@@ -12,6 +12,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/atomic_sequence_num.h"
@@ -61,7 +62,6 @@
 #include "services/network/public/mojom/attribution.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
@@ -160,9 +160,9 @@ std::string AutomaticBeaconTypeAsString(
 blink::FencedFrameBeaconReportingResult CreateBeaconReportingResultEnum(
     const FencedFrameReporter::DestinationVariant& event_variant,
     std::optional<int> http_response_code) {
-  // Unfortunately absl::visit can't make this more compact, because each
+  // Unfortunately std::visit can't make this more compact, because each
   // combination of results produces a unique output enum.
-  if (absl::holds_alternative<DestinationEnumEvent>(event_variant)) {
+  if (std::holds_alternative<DestinationEnumEvent>(event_variant)) {
     if (!http_response_code.has_value()) {
       return blink::FencedFrameBeaconReportingResult::kDestinationEnumInvalid;
     }
@@ -172,7 +172,7 @@ blink::FencedFrameBeaconReportingResult CreateBeaconReportingResultEnum(
     return blink::FencedFrameBeaconReportingResult::kDestinationEnumSuccess;
   }
 
-  if (absl::holds_alternative<DestinationURLEvent>(event_variant)) {
+  if (std::holds_alternative<DestinationURLEvent>(event_variant)) {
     if (!http_response_code.has_value()) {
       return blink::FencedFrameBeaconReportingResult::kDestinationUrlInvalid;
     }
@@ -182,7 +182,7 @@ blink::FencedFrameBeaconReportingResult CreateBeaconReportingResultEnum(
     return blink::FencedFrameBeaconReportingResult::kDestinationUrlSuccess;
   }
 
-  if (absl::holds_alternative<AutomaticBeaconEvent>(event_variant)) {
+  if (std::holds_alternative<AutomaticBeaconEvent>(event_variant)) {
     if (!http_response_code.has_value()) {
       return blink::FencedFrameBeaconReportingResult::kAutomaticInvalid;
     }
@@ -400,7 +400,7 @@ bool FencedFrameReporter::SendReport(
   // the map is empty, can't send a request. An entry with a null (not empty)
   // map means the map is pending, and is handled below.
   if (it == reporting_metadata_.end() ||
-      (absl::holds_alternative<DestinationEnumEvent>(event_variant) &&
+      (std::holds_alternative<DestinationEnumEvent>(event_variant) &&
        it->second.reporting_url_map && it->second.reporting_url_map->empty())) {
     error_message = base::StrCat(
         {"This frame did not register reporting metadata for destination '",
@@ -465,7 +465,7 @@ bool FencedFrameReporter::SendReport(
         ad_component_root->GetParentOrOuterDocument()
             ->frame_tree_node()
             ->GetClosestAncestorWithFencedFrameProperties();
-    CHECK(absl::holds_alternative<AutomaticBeaconEvent>(event_variant));
+    CHECK(std::holds_alternative<AutomaticBeaconEvent>(event_variant));
     request_initiator = ad_root->current_frame_host()->GetLastCommittedOrigin();
     request_referrer_policy =
         Referrer::ReferrerPolicyForUrlRequest(ad_root->current_frame_host()
@@ -510,15 +510,15 @@ bool FencedFrameReporter::SendReportInternal(
   // use as the initiator for the report's network request.
   GURL destination_url;
   url::Origin network_request_initiator = request_initiator;
-  if (absl::holds_alternative<DestinationEnumEvent>(event_variant) ||
-      absl::holds_alternative<AutomaticBeaconEvent>(event_variant)) {
+  if (std::holds_alternative<DestinationEnumEvent>(event_variant) ||
+      std::holds_alternative<AutomaticBeaconEvent>(event_variant)) {
     std::string event_type;
 
-    if (absl::holds_alternative<DestinationEnumEvent>(event_variant)) {
-      event_type = absl::get<DestinationEnumEvent>(event_variant).type;
+    if (std::holds_alternative<DestinationEnumEvent>(event_variant)) {
+      event_type = std::get<DestinationEnumEvent>(event_variant).type;
     } else {
       event_type = AutomaticBeaconTypeAsString(
-          absl::get<AutomaticBeaconEvent>(event_variant).type);
+          std::get<AutomaticBeaconEvent>(event_variant).type);
     }
 
     // Since the event references a destination enum, resolve the lookup based
@@ -560,7 +560,7 @@ bool FencedFrameReporter::SendReportInternal(
   } else {
     // Since the event references a destination URL, use it directly.
     // The URL should have been validated previously, to be a valid HTTPS URL.
-    CHECK(absl::holds_alternative<DestinationURLEvent>(event_variant));
+    CHECK(std::holds_alternative<DestinationURLEvent>(event_variant));
 
     // Check that reportEvent to custom destination URLs with macro
     // substitution is allowed in this context. (i.e., The macro map has a
@@ -602,8 +602,7 @@ bool FencedFrameReporter::SendReportInternal(
       return false;
     }
 
-    const GURL& original_url =
-        absl::get<DestinationURLEvent>(event_variant).url;
+    const GURL& original_url = std::get<DestinationURLEvent>(event_variant).url;
     if (!original_url.is_valid() || !original_url.SchemeIs(url::kHttpsScheme)) {
       attempted_custom_url_report_to_disallowed_origin_ = true;
       error_message =
@@ -686,14 +685,14 @@ bool FencedFrameReporter::SendReportInternal(
   // removed.
   if (base::FeatureList::IsEnabled(
           blink::features::kFencedFramesAutomaticBeaconCredentials) &&
-      absl::holds_alternative<AutomaticBeaconEvent>(event_variant) &&
+      std::holds_alternative<AutomaticBeaconEvent>(event_variant) &&
       GetContentClient()
           ->browser()
           ->AreDeprecatedAutomaticBeaconCredentialsAllowed(
               browser_context_, destination_url, main_frame_origin_)) {
     request->credentials_mode = network::mojom::CredentialsMode::kInclude;
   }
-  if (absl::holds_alternative<DestinationURLEvent>(event_variant)) {
+  if (std::holds_alternative<DestinationURLEvent>(event_variant)) {
     request->method = net::HttpRequestHeaders::kGetMethod;
   } else {
     request->method = net::HttpRequestHeaders::kPostMethod;
@@ -739,11 +738,11 @@ bool FencedFrameReporter::SendReportInternal(
   }
 
   std::optional<std::string> event_data;
-  if (absl::holds_alternative<DestinationEnumEvent>(event_variant)) {
-    event_data.emplace(absl::get<DestinationEnumEvent>(event_variant).data);
+  if (std::holds_alternative<DestinationEnumEvent>(event_variant)) {
+    event_data.emplace(std::get<DestinationEnumEvent>(event_variant).data);
   }
-  if (absl::holds_alternative<AutomaticBeaconEvent>(event_variant)) {
-    event_data.emplace(absl::get<AutomaticBeaconEvent>(event_variant).data);
+  if (std::holds_alternative<AutomaticBeaconEvent>(event_variant)) {
+    event_data.emplace(std::get<AutomaticBeaconEvent>(event_variant).data);
   }
 
   devtools_instrumentation::OnFencedFrameReportRequestSent(
@@ -838,7 +837,7 @@ bool FencedFrameReporter::SendReportInternal(
 
   // The associated histograms will be sent out in the FencedFrameReporter
   // destructor.
-  absl::visit(
+  std::visit(
       [&](const auto& event) {
         using Event = std::decay_t<decltype(event)>;
         if constexpr (std::is_same_v<Event, DestinationEnumEvent> ||

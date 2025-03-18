@@ -5,6 +5,7 @@
 #include "components/viz/service/display/overlay_candidate_factory.h"
 
 #include <unordered_map>
+#include <variant>
 #include <vector>
 
 #include "base/dcheck_is_on.h"
@@ -388,8 +389,8 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest,
       factory.FromDrawQuad(&quad, candidate);
   ASSERT_EQ(result, OverlayCandidate::CandidateStatus::kSuccess);
   ASSERT_TRUE(
-      absl::holds_alternative<gfx::OverlayTransform>(candidate.transform));
-  EXPECT_EQ(absl::get<gfx::OverlayTransform>(candidate.transform),
+      std::holds_alternative<gfx::OverlayTransform>(candidate.transform));
+  EXPECT_EQ(std::get<gfx::OverlayTransform>(candidate.transform),
             gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE);
   EXPECT_EQ(candidate.display_rect, gfx::RectF(1, 2, 3, 4));
 }
@@ -414,8 +415,8 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest, SupportsNonAxisAligned) {
   OverlayCandidate::CandidateStatus result =
       factory.FromDrawQuad(&quad, candidate);
   ASSERT_EQ(result, OverlayCandidate::CandidateStatus::kSuccess);
-  ASSERT_TRUE(absl::holds_alternative<gfx::Transform>(candidate.transform));
-  EXPECT_EQ(absl::get<gfx::Transform>(candidate.transform), transform);
+  ASSERT_TRUE(std::holds_alternative<gfx::Transform>(candidate.transform));
+  EXPECT_EQ(std::get<gfx::Transform>(candidate.transform), transform);
   EXPECT_EQ(candidate.display_rect, gfx::RectF(0, 0, 1, 1));
 }
 
@@ -446,11 +447,10 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest, TransformIncludesYFlip) {
   transform_y_flipped.SkewX(45.0);
   transform_y_flipped.Translate(0, 1);
   transform_y_flipped.Scale(1, -1);
-  ASSERT_TRUE(absl::holds_alternative<gfx::Transform>(candidate.transform));
-  EXPECT_EQ(absl::get<gfx::Transform>(candidate.transform),
-            transform_y_flipped);
+  ASSERT_TRUE(std::holds_alternative<gfx::Transform>(candidate.transform));
+  EXPECT_EQ(std::get<gfx::Transform>(candidate.transform), transform_y_flipped);
   gfx::PointF display_rect_origin =
-      absl::get<gfx::Transform>(candidate.transform)
+      std::get<gfx::Transform>(candidate.transform)
           .MapPoint(candidate.display_rect.origin());
   // Flip moves the origin to 0,1. The skew slides it out to 1,1.
   EXPECT_EQ(display_rect_origin, gfx::PointF(1, 1));
@@ -481,8 +481,8 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest,
   ASSERT_EQ(result, OverlayCandidate::CandidateStatus::kSuccess);
 
   EXPECT_EQ(candidate.display_rect, gfx::RectF(0, 0, 1, 1));
-  ASSERT_TRUE(absl::holds_alternative<gfx::Transform>(candidate.transform));
-  EXPECT_EQ(absl::get<gfx::Transform>(candidate.transform), transform);
+  ASSERT_TRUE(std::holds_alternative<gfx::Transform>(candidate.transform));
+  EXPECT_EQ(std::get<gfx::Transform>(candidate.transform), transform);
 }
 
 TEST_F(OverlayCandidateFactoryArbitraryTransformTest,
@@ -509,8 +509,8 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest,
 
   EXPECT_EQ(candidate.display_rect, gfx::RectF(0.5, 0.5, 1, 1));
   ASSERT_TRUE(
-      absl::holds_alternative<gfx::OverlayTransform>(candidate.transform));
-  EXPECT_EQ(absl::get<gfx::OverlayTransform>(candidate.transform),
+      std::holds_alternative<gfx::OverlayTransform>(candidate.transform));
+  EXPECT_EQ(std::get<gfx::OverlayTransform>(candidate.transform),
             gfx::OVERLAY_TRANSFORM_NONE);
 }
 
@@ -807,8 +807,8 @@ class TransformedOverlayClipRectTest : public OverlayCandidateFactoryTestBase {
         factory.FromDrawQuad(&quad, candidate);
     ASSERT_EQ(result, OverlayCandidate::CandidateStatus::kSuccess);
     ASSERT_TRUE(
-        absl::holds_alternative<gfx::OverlayTransform>(candidate.transform));
-    EXPECT_EQ(absl::get<gfx::OverlayTransform>(candidate.transform),
+        std::holds_alternative<gfx::OverlayTransform>(candidate.transform));
+    EXPECT_EQ(std::get<gfx::OverlayTransform>(candidate.transform),
               overlay_transform);
     EXPECT_EQ(candidate.display_rect, gfx::RectF(50, 50, 50, 50));
     EXPECT_TRUE(

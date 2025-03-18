@@ -12,6 +12,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/base64.h"
@@ -78,7 +79,6 @@
 #include "services/network/public/mojom/attribution.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
@@ -214,7 +214,7 @@ class AttributionInteropContentBrowserClient : public TestContentBrowserClient {
     std::vector<base::Time> times;
     for (const auto& event : events) {
       if (const auto* data =
-              absl::get_if<AttributionSimulationEvent::Response>(&event.data);
+              std::get_if<AttributionSimulationEvent::Response>(&event.data);
           data && data->debug_permission) {
         times.push_back(event.time);
       }
@@ -267,7 +267,7 @@ class ControllableStorageDelegate : public AttributionResolverDelegateImpl {
         null_aggregatable_reports_days;
     for (auto& event : run.events) {
       if (auto* data =
-              absl::get_if<AttributionSimulationEvent::Response>(&event.data)) {
+              std::get_if<AttributionSimulationEvent::Response>(&event.data)) {
         if (data->randomized_response.has_value()) {
           responses.emplace_back(
               event.time,
@@ -552,7 +552,7 @@ RunAttributionInteropSimulation(
   for (const auto& event : run.events) {
     task_environment.FastForwardBy(event.time - base::Time::Now());
 
-    absl::visit(
+    std::visit(
         [&](const auto& data) { Handle(data, *manager->GetDataHostManager()); },
         event.data);
   }

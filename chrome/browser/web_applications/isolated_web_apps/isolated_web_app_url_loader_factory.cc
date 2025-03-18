@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <variant>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -65,7 +66,6 @@
 #include "services/network/public/mojom/url_loader_completion_status.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -112,7 +112,7 @@ const std::string& GetDefaultCsp() {
 }
 
 std::optional<std::string> ComputeCspOverride(const IwaSourceWithMode& source) {
-  auto* proxy_source = absl::get_if<IwaSourceProxy>(&source.variant());
+  auto* proxy_source = std::get_if<IwaSourceProxy>(&source.variant());
   if (proxy_source && proxy_source->proxy_url().scheme() == "http") {
     url::Origin origin = proxy_source->proxy_url();
     std::string proxy_ws_url =
@@ -706,21 +706,21 @@ void IsolatedWebAppURLLoaderFactory::HandleRequest(
     return;
   }
 
-  absl::visit(base::Overloaded{
-                  [&](const IwaSourceBundleWithMode& source) {
-                    CHECK(!url_info.web_bundle_id().is_for_proxy_mode());
-                    HandleSignedBundle(
-                        source.path(), source.dev_mode(),
-                        url_info.web_bundle_id(), std::move(loader_receiver),
-                        resource_request, std::move(loader_client));
-                  },
-                  [&](const IwaSourceProxy& source) {
-                    CHECK(url_info.web_bundle_id().is_for_proxy_mode());
-                    HandleProxy(url_info, source, std::move(loader_receiver),
-                                resource_request, std::move(loader_client),
-                                traffic_annotation);
-                  }},
-              source.variant());
+  std::visit(base::Overloaded{
+                 [&](const IwaSourceBundleWithMode& source) {
+                   CHECK(!url_info.web_bundle_id().is_for_proxy_mode());
+                   HandleSignedBundle(
+                       source.path(), source.dev_mode(),
+                       url_info.web_bundle_id(), std::move(loader_receiver),
+                       resource_request, std::move(loader_client));
+                 },
+                 [&](const IwaSourceProxy& source) {
+                   CHECK(url_info.web_bundle_id().is_for_proxy_mode());
+                   HandleProxy(url_info, source, std::move(loader_receiver),
+                               resource_request, std::move(loader_client),
+                               traffic_annotation);
+                 }},
+             source.variant());
 }
 
 void IsolatedWebAppURLLoaderFactory::OnProfileWillBeDestroyed(

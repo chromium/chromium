@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/autofill/payments/save_iban_ui.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/autofill/address_sign_in_promo_view.h"
 #include "chrome/browser/ui/views/autofill/autofill_ai/save_or_update_autofill_ai_data_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/payments/filled_card_information_bubble_views.h"
@@ -39,6 +40,7 @@
 #include "chrome/browser/ui/views/autofill/update_address_profile_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
@@ -65,8 +67,16 @@ View* ShowBubble(ToolbarButtonProvider* toolbar_button_provider,
   auto bubble =
       std::make_unique<View>(anchor_view, std::forward<Args>(args)...);
   if (!views::Button::AsButton(anchor_view)) {
-    PageActionIconView* icon_view =
-        toolbar_button_provider->GetPageActionIconView(page_action_icon_type);
+    views::Button* icon_view;
+    if (base::FeatureList::IsEnabled(::features::kPageActionsMigration)) {
+      CHECK(action_id.has_value());
+      auto* page_action =
+          toolbar_button_provider->GetPageActionView(action_id.value());
+      icon_view = page_action;
+    } else {
+      icon_view =
+          toolbar_button_provider->GetPageActionIconView(page_action_icon_type);
+    }
     CHECK(icon_view);
     bubble->SetHighlightedButton(icon_view);
   }
@@ -172,10 +182,8 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowOfferNotificationBubble(
     content::WebContents* web_contents,
     OfferNotificationBubbleController* controller,
     bool is_user_gesture) {
-  // TODO(crbug.com/376283803): An action ID should be created and used here
-  // when Payments Offer is migrated to the new page actions framework.
   return ShowBubble<OfferNotificationBubbleViews>(
-      toolbar_button_provider_, std::nullopt,
+      toolbar_button_provider_, kActionOffersAndRewardsForPage,
       PageActionIconType::kPaymentsOfferNotification, is_user_gesture,
       web_contents, controller);
 }

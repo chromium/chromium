@@ -316,7 +316,6 @@
 <translation id="1532118530259321453">Бұл беттегі сұрау</translation>
 <translation id="1533966801397200693">Сіз кірген профиль — басқарылатын профиль. Әкімші профиль параметрлеріне қашықтан өзгеріс енгізе алады, есеп беру арқылы браузер туралы ақпаратты талдай алады және басқа қажетті тапсырмаларды орындай алады. <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Бетті аудару</translation>
-<translation id="1538295100801850685">Болжамдарды жақсарту</translation>
 <translation id="1539840569003678498">Есеп жіберілді:</translation>
 <translation id="1542105669288201090">Іскери білім</translation>
 <translation id="1545757265410828525">Баға тарихы</translation>
@@ -1157,7 +1156,6 @@
 <translation id="3052868890529250114">Әдетте сайттарға қауіпсіз қосыласыз, бірақ Chrome бұл жолы қауіпсіз байланысты пайдалана алмады. Шабуылдаушы желі байланысыңызды ұстап қалуға немесе өзгертуге әрекет жасауы мүмкін. <ph name="BEGIN_LEARN_MORE_LINK" />Бұл ескерту туралы толық ақпарат<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> бағасы <ph name="PRICE_DROP" /> арзандады.</translation>
 <translation id="3061707000357573562">Қызметті түзету</translation>
-<translation id="306198082577913404">Болжамдарды жақсарту мүмкіндігін қосыңыз.</translation>
 <translation id="3062655045399308513">Браузерді пайдалану деректерін жою…</translation>
 <translation id="3063453392496098461">VPN фондық қызметтері орнатылмады.</translation>
 <translation id="306573536155379004">Ойын басталды.</translation>
@@ -1697,6 +1695,7 @@
 <translation id="3964661563329879394">{COUNT,plural, =0{Жоқ}=1{1 сайттан }other{# сайттан }}</translation>
 <translation id="3965672182149944205">Мекенжайды сақтау керек пе?</translation>
 <translation id="3966044442021752214">Өнім қауіпсіздігі</translation>
+<translation id="3969869202926863008">Жергілікті желіге кіру</translation>
 <translation id="397105322502079400">Есептелуде…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> блокталған</translation>
 <translation id="3975852104434126461">Автомобиль өнеркәсібі</translation>
@@ -2053,6 +2052,7 @@
 <translation id="460848736049414407">Әкімші бөгеді</translation>
 <translation id="4610279718074907952">Бұл сайт әрекетіңізді көре алатын <ph name="SET_OWNER" /> белгілеген топқа кіреді</translation>
 <translation id="46128681529823442">Футбол жабдығы</translation>
+<translation id="4612904677925722054">Бұл сайтта ересектерге арналған контент бар. Ата-ана немесе қамқоршы бұл веб-сайтқа кіруге рұқсат беруі керек.</translation>
 <translation id="4619564267100705184">Жеке басыңызды растаңыз</translation>
 <translation id="4622292761762557753">Бәрібір тасымалдау</translation>
 <translation id="4622647778991854660">Хабарландыру орталығында хабарландыруларды қосу. "<ph name="LINK" />" бетін ашу.</translation>
@@ -2324,7 +2324,6 @@
 <translation id="5097099694988056070">CPU/RAM пайдалануы сияқты құрылғы статистикасы</translation>
 <translation id="5097468150760963273">27 x 39 дюйм</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome-ға құрылғыңыздағы <ph name="PERMISSION" /> рұқсаты қажет</translation>
 <translation id="510644072453496781">Картон (соңы)</translation>
 <translation id="5106648964679263509"><ph name="BNPL_ISSUER_NAME" /> виртуалдық картасы толтырылды</translation>
 <translation id="5108881358339761672">Сайт қауіпсіз емес</translation>
@@ -2651,6 +2650,7 @@
 <translation id="5660122698869360728">Қалаулы тауарлардың беттерін бір жерге сақтауға, бағаларды автоматты түрде бақылауға, баға статистикасын алуға және т.б. мүмкіндік беретін жаңа смарт қалта.</translation>
 <translation id="5663955426505430495">Құрылғының әкімшісі қосымша функциялар үшін кеңейтімдер орнатты. Кеңейтімдер кейбір деректерді пайдалана алады.</translation>
 <translation id="5667827081946850877">Аудиокітаптар</translation>
+<translation id="5674082555327905359">Жергілікті желідегі құрылғыларға қосылуды сұрай алады.</translation>
 <translation id="5675650730144413517">Бұл бет жұмыс істемейді</translation>
 <translation id="5675809467256309336">Би және электрондық музыка</translation>
 <translation id="5675959228867414813">Күн бойынша көрсету</translation>
@@ -2924,6 +2924,7 @@
 <translation id="6159908896951210943">Ресми</translation>
 <translation id="6160391204859821737">Жарнамадағы құпиялық функциясын қосу</translation>
 <translation id="6162403104168428984">Мекенжайды өзгерту керек пе?</translation>
+<translation id="6164605812717770913">Ата-анаңыз немесе қамқоршыңыз бұл сайтқа кіруге тыйым салған. Оны блоктан шығаруды сұраңыз.</translation>
 <translation id="6165508094623778733">Толығырақ</translation>
 <translation id="6167577165590485365">Саясатты алуға жасалған соңғы әрекет:</translation>
 <translation id="617256461084925519">Google Chrome төлем туралы ақпаратыңызды толтыру үшін сіз екеніңізді растағысы келеді.</translation>
@@ -3015,6 +3016,7 @@
 <translation id="6321917430147971392">DNS параметрлерін тексеріңіз</translation>
 <translation id="6322182122604171028">Windows Hello платформасын пайдалану мүмкін болмады</translation>
 <translation id="6326947323444967009">Chrome-ды iOS параметрлерінде жүйенің әдепкі браузері етіп орнату</translation>
+<translation id="6327065120806001832">жергілікті желіге кіру</translation>
 <translation id="6328639280570009161">Желілік болжамды өшіруге әрекет ету</translation>
 <translation id="6335029926534404762">Спорттық аяқ киім</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> аз орын босатады .Кейбір сайттар келесі кіргенде баяуырақ жүктелуі мүмкін.</translation>
@@ -4052,7 +4054,6 @@
 <translation id="8134058435519644366">Жұмысқа қабылдау және жұмысқа тұру</translation>
 <translation id="8135546115396015134">сол жақ перне</translation>
 <translation id="8137456439814903304">Қуат және коммуналдық қызметтер</translation>
-<translation id="81474145143203755">Бұл сайтта <ph name="PERMISSION" /> пайдалану үшін Chrome-ға рұқсат беріңіз.</translation>
 <translation id="8148608574971654810">PDF нұсқасы:</translation>
 <translation id="8149426793427495338">Компьютеріңіз ұйқы күйіне өтті.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> сілтемесіндегі файл оқылмайды. Ол жойылған, көшірілген болуы немесе файл рұқсаттары кедергі болуы мүмкін.</translation>

@@ -499,8 +499,9 @@ bool LayerImpl::LayerPropertyChangedFromPropertyTrees() const {
     return false;
   TransformNode* transform_node =
       GetTransformTree().Node(transform_tree_index());
-  if (transform_node && transform_node->transform_changed)
+  if (transform_node && transform_node->transform_changed()) {
     return true;
+  }
   if (effect_tree_index() == kInvalidPropertyNodeId)
     return false;
   EffectNode* effect_node = GetEffectTree().Node(effect_tree_index());

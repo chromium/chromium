@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/base64.h"
@@ -153,7 +154,7 @@ bool IntegrityBlockDataHasRotatedKey(
 void CleanupLocationIfOwned(const base::FilePath& profile_dir,
                             const IsolatedWebAppStorageLocation& location,
                             base::OnceClosure closure) {
-  absl::visit(
+  std::visit(
       base::Overloaded{
           [&](const IwaStorageOwnedBundle& location) {
             base::ThreadPool::PostTaskAndReply(
@@ -188,32 +189,32 @@ void UpdateBundlePathAndCreateStorageLocation(
         std::move(callback));
   };
 
-  absl::visit(base::Overloaded{
-                  [&](const IwaSourceBundleWithModeAndFileOp& bundle) {
-                    switch (bundle.mode_and_file_op()) {
-                      case IwaSourceBundleModeAndFileOp::kDevModeCopy:
-                        copy_or_move(bundle.path(), /*dev_mode=*/true,
-                                     Operation::kCopy);
-                        break;
-                      case IwaSourceBundleModeAndFileOp::kDevModeMove:
-                        copy_or_move(bundle.path(), /*dev_mode=*/true,
-                                     Operation::kMove);
-                        break;
-                      case IwaSourceBundleModeAndFileOp::kProdModeCopy:
-                        copy_or_move(bundle.path(), /*dev_mode=*/false,
-                                     Operation::kCopy);
-                        break;
-                      case IwaSourceBundleModeAndFileOp::kProdModeMove:
-                        copy_or_move(bundle.path(), /*dev_mode=*/false,
-                                     Operation::kMove);
-                        break;
-                    }
-                  },
-                  [&](const IwaSourceProxy& proxy) {
-                    std::move(callback).Run(IwaStorageProxy(proxy.proxy_url()));
-                  },
-              },
-              source.variant());
+  std::visit(base::Overloaded{
+                 [&](const IwaSourceBundleWithModeAndFileOp& bundle) {
+                   switch (bundle.mode_and_file_op()) {
+                     case IwaSourceBundleModeAndFileOp::kDevModeCopy:
+                       copy_or_move(bundle.path(), /*dev_mode=*/true,
+                                    Operation::kCopy);
+                       break;
+                     case IwaSourceBundleModeAndFileOp::kDevModeMove:
+                       copy_or_move(bundle.path(), /*dev_mode=*/true,
+                                    Operation::kMove);
+                       break;
+                     case IwaSourceBundleModeAndFileOp::kProdModeCopy:
+                       copy_or_move(bundle.path(), /*dev_mode=*/false,
+                                    Operation::kCopy);
+                       break;
+                     case IwaSourceBundleModeAndFileOp::kProdModeMove:
+                       copy_or_move(bundle.path(), /*dev_mode=*/false,
+                                    Operation::kMove);
+                       break;
+                   }
+                 },
+                 [&](const IwaSourceProxy& proxy) {
+                   std::move(callback).Run(IwaStorageProxy(proxy.proxy_url()));
+                 },
+             },
+             source.variant());
 }
 
 base::expected<std::reference_wrapper<const WebApp>, std::string>
@@ -362,7 +363,7 @@ void IsolatedWebAppInstallCommandHelper::CheckTrustAndSignatures(
         void(base::expected<
              std::optional<web_package::SignedWebBundleIntegrityBlock>,
              std::string>)> callback) {
-  absl::visit(
+  std::visit(
       base::Overloaded{
           [&](const IwaSourceBundleWithMode& location) {
             CHECK(!url_info_.web_bundle_id().is_for_proxy_mode());

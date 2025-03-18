@@ -97,6 +97,7 @@ void BrowsingTopicsURLLoaderInterceptor::PopulateRequestOrRedirectHeaders(
     bool is_redirect,
     net::HttpRequestHeaders& headers,
     std::vector<std::string>* removed_headers) {
+  DCHECK(resource_request_->browsing_topics);
   topics_eligible_ = false;
 
   if (removed_headers) {
@@ -155,17 +156,13 @@ void BrowsingTopicsURLLoaderInterceptor::PopulateRequestOrRedirectHeaders(
   const network::PermissionsPolicy* permissions_policy =
       request_initiator_frame->GetPermissionsPolicy();
 
-  if (!permissions_policy->IsFeatureEnabledForSubresourceRequest(
+  if (!permissions_policy->IsFeatureEnabledForOrigin(
           network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin,
-          resource_request_->browsing_topics,
-          resource_request_->shared_storage_writable_eligible,
-          resource_request_->ad_auction_headers) ||
-      !permissions_policy->IsFeatureEnabledForSubresourceRequest(
+          /*override_default_policy_to_all=*/true) ||
+      !permissions_policy->IsFeatureEnabledForOrigin(
           network::mojom::PermissionsPolicyFeature::
               kBrowsingTopicsBackwardCompatible,
-          origin, resource_request_->browsing_topics,
-          resource_request_->shared_storage_writable_eligible,
-          resource_request_->ad_auction_headers)) {
+          origin, /*override_default_policy_to_all=*/true)) {
     RecordFetchRequestResultUma(BrowsingTopicsFetchRequestOrRedirectResult::
                                     kDisallowedByPermissionsPolicy,
                                 is_redirect);

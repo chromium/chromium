@@ -120,7 +120,7 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
 - (void)start {
   [super start];
 
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   _mediator = [[PasswordIssuesMediator alloc]
         initForWarningType:_warningType
       passwordCheckManager:IOSChromePasswordCheckManagerFactory::GetForProfile(

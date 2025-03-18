@@ -133,7 +133,8 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
                     UserPrefs.get(mProfile),
                     new PasswordStoreBridge(mProfile),
                     PasswordManagerHelper.getForProfile(mProfile),
-                    LaunchIntentDispatcher::createCustomTabActivityIntent);
+                    LaunchIntentDispatcher::createCustomTabActivityIntent,
+                    new SettingsCustomTabLauncherImpl());
         }
         if (fragment instanceof PasswordCheckFragmentView) {
             PasswordCheckComponentUiFactory.create(
@@ -228,7 +229,8 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
                     new SafetyHubModuleDelegateImpl(
                             mProfile,
                             mModalDialogManagerSupplier,
-                            SigninAndHistorySyncActivityLauncherImpl.get()));
+                            SigninAndHistorySyncActivityLauncherImpl.get(),
+                            new SettingsCustomTabLauncherImpl()));
         }
         if (fragment instanceof AccountManagementFragment) {
             ((AccountManagementFragment) fragment)

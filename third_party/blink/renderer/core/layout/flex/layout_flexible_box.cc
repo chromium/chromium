@@ -129,7 +129,9 @@ const DevtoolsFlexInfo* LayoutFlexibleBox::FlexLayoutData() const {
 }
 
 void LayoutFlexibleBox::RemoveChild(LayoutObject* child) {
-  if (!DocumentBeingDestroyed() && !StyleRef().IsDeprecatedFlexbox()) {
+  if (!DocumentBeingDestroyed() &&
+      (RuntimeEnabledFeatures::LayoutWebkitBoxTreeFixEnabled() ||
+       !StyleRef().IsDeprecatedFlexbox())) {
     MergeAnonymousFlexItems(child);
   }
 

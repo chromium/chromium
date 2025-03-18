@@ -127,21 +127,22 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   }
 
   private actionMenuItem_: SearchResultItem|null = null;
-  protected answerSource_: SearchResultItem|null = null;
+  protected accessor answerSource_: SearchResultItem|null = null;
   private answerLinkClicked_: boolean = false;
   private browserProxy_ = HistoryEmbeddingsBrowserProxyImpl.getInstance();
-  private clickedIndices_: Set<number> = new Set();
-  protected enableAnswers_: boolean =
+  private accessor clickedIndices_: Set<number> = new Set();
+  protected accessor enableAnswers_: boolean =
       loadTimeData.getBoolean('enableHistoryEmbeddingsAnswers');
-  protected enableImages_: boolean =
+  protected accessor enableImages_: boolean =
       loadTimeData.getBoolean('enableHistoryEmbeddingsImages');
-  protected feedbackState_: CrFeedbackOption = CrFeedbackOption.UNSPECIFIED;
-  protected loadingAnswer_ = false;
-  protected loadingResults_ = false;
+  protected accessor feedbackState_: CrFeedbackOption =
+      CrFeedbackOption.UNSPECIFIED;
+  protected accessor loadingAnswer_ = false;
+  protected accessor loadingResults_ = false;
   private loadingStateMinimumMs_ = LOADING_STATE_MINIMUM_MS;
   private queryResultMinAge_ = QUERY_RESULT_MINIMUM_AGE;
-  protected searchResult_: SearchResult|null = null;
-  protected searchResultDirty_: boolean = false;
+  protected accessor searchResult_: SearchResult|null = null;
+  protected accessor searchResultDirty_: boolean = false;
   private searchTimestamp_: number = 0;
   /**
    * When this is non-null, that means there's a SearchResult that's pending
@@ -151,12 +152,12 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
    */
   private resultPendingMetricsTimestamp_: number|null = null;
   private eventTracker_: EventTracker = new EventTracker();
-  forceSuppressLogging: boolean = false;
-  isEmpty: boolean = true;
-  numCharsForQuery: number = 0;
+  accessor forceSuppressLogging: boolean = false;
+  accessor isEmpty: boolean = true;
+  accessor numCharsForQuery: number = 0;
   private numCharsForLastResultQuery_: number = 0;
-  searchQuery: string = '';
-  timeRangeStart?: Date;
+  accessor searchQuery: string = '';
+  accessor timeRangeStart: Date|undefined;
   private searchResultChangedId_: number|null = null;
   /**
    * A promise of a setTimeout for the first set of search results to come back
@@ -165,10 +166,10 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
    * search result for the same query is queued after it.
    */
   private searchResultPromise_: Promise<void>|null = null;
-  showRelativeTimes: boolean = false;
-  showMoreFromSiteMenuOption: boolean = false;
-  otherHistoryResultClicked: boolean = false;
-  inSidePanel: boolean = false;
+  accessor showRelativeTimes: boolean = false;
+  accessor showMoreFromSiteMenuOption: boolean = false;
+  accessor otherHistoryResultClicked: boolean = false;
+  accessor inSidePanel: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();

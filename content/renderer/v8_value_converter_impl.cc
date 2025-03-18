@@ -13,6 +13,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -247,7 +248,7 @@ v8::Local<v8::Value> V8ValueConverterImpl::ToV8ValueImpl(
     raw_ptr<v8::Isolate> isolate;
     v8::Local<v8::Object> creation_context;
 
-    v8::Local<v8::Value> operator()(absl::monostate value) {
+    v8::Local<v8::Value> operator()(std::monostate value) {
       return v8::Null(isolate);
     }
 

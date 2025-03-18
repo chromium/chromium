@@ -7,12 +7,12 @@
 
 #include <string>
 #include <string_view>
+#include <variant>
 
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/usage_history_information.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace autofill {
 
@@ -186,7 +186,7 @@ class Iban {
   // Equality operators call `Compare()` above.
   bool operator==(const Iban& iban) const;
 
-  void set_identifier(const absl::variant<Guid, InstrumentId>& identifier);
+  void set_identifier(const std::variant<Guid, InstrumentId>& identifier);
 
   const std::string& guid() const;
   int64_t instrument_id() const;
@@ -244,7 +244,7 @@ class Iban {
   // To distinguish between local IBANs, utilize the Guid as the identifier. For
   // server-based IBANs, they are uniquely identified by the InstrumentId, a
   // unique identifier assigned by the server.
-  absl::variant<Guid, InstrumentId> identifier_;
+  std::variant<Guid, InstrumentId> identifier_;
 
   // The IBAN's value. For local IBANs, this value is the actual full IBAN
   // value. For server-based IBANs, this value is empty.

@@ -44,12 +44,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_HTTP_AUTH_DIALOG)
     ScopedEnabler(const ScopedEnabler&) = delete;
     ScopedEnabler& operator=(const ScopedEnabler&) = delete;
   };
-  // Prior to shipping Lacros, ash-chrome needs to handle both browser-based
-  // http-auth dialogs, and OS-based http-auth dialogs. Classes that need the
-  // latter should call this method and keep the returned ScopedEnabler alive.
-  // This forces the latter use-case.
-  // After shipping Lacros, this method will be unnecessary as the OS-based
-  // http-auth dialog will be the only remaining use case.
+  // Ash-chrome needs to handle both browser-based http-auth dialogs, and
+  // OS-based http-auth dialogs. Classes that need the latter should call this
+  // method and keep the returned ScopedEnabler alive. This forces the latter
+  // use-case.
   static std::unique_ptr<ScopedEnabler> Enable();
   static bool IsEnabled();
 

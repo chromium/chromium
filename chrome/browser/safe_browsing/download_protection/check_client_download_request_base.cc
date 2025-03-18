@@ -538,6 +538,13 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
       // Ignore the verdict because we were just reporting a sampled file.
       reason = REASON_SAMPLED_UNSUPPORTED_FILE;
       result = DownloadCheckResult::UNKNOWN;
+#if BUILDFLAG(IS_ANDROID)
+    } else if (kMaliciousApkDownloadCheckTelemetryOnly.Get()) {
+      // If Android download protection is in telemetry-only mode, ignore the
+      // verdict.
+      reason = REASON_IGNORED_VERDICT;
+      result = DownloadCheckResult::UNKNOWN;
+#endif
     } else {
       switch (response.verdict()) {
         case ClientDownloadResponse::SAFE:

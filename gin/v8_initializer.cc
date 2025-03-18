@@ -513,19 +513,11 @@ void SetFeatureFlags() {
                          "--no-use-original-message-for-stack-trace");
 
   // JavaScript language features.
-  SetV8FlagsIfOverridden(features::kJavaScriptIteratorHelpers,
-                         "--harmony-iterator-helpers",
-                         "--no-harmony-iterator-helpers");
-  SetV8FlagsIfOverridden(features::kJavaScriptPromiseWithResolvers,
-                         "--js-promise-withresolvers",
-                         "--no-js-promise-withresolvers");
   SetV8FlagsIfOverridden(features::kJavaScriptRegExpModifiers,
                          "--js-regexp-modifiers", "--no-js-regexp-modifiers");
   SetV8FlagsIfOverridden(features::kJavaScriptImportAttributes,
                          "--harmony-import-attributes",
                          "--no-harmony-import-attributes");
-  SetV8FlagsIfOverridden(features::kJavaScriptSetMethods,
-                         "--harmony-set-methods", "--no-harmony-set-methods");
   SetV8FlagsIfOverridden(features::kJavaScriptRegExpDuplicateNamedGroups,
                          "--js-regexp-duplicate-named-groups",
                          "--no-js-duplicate-named-groups");

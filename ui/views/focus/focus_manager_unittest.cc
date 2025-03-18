@@ -110,8 +110,8 @@ TEST_F(FocusManagerTest, ViewFocusCallbacks) {
   const int kView2ID = 2;
   SimpleTestView* view1 = new SimpleTestView(event_list, kView1ID);
   SimpleTestView* view2 = new SimpleTestView(event_list, kView2ID);
-  GetContentsView()->AddChildView(view1);
-  GetContentsView()->AddChildView(view2);
+  GetContentsView()->AddChildViewRaw(view1);
+  GetContentsView()->AddChildViewRaw(view2);
 
   view1->RequestFocus();
   ASSERT_EQ(1, static_cast<int>(event_list->vec.size()));
@@ -504,7 +504,7 @@ TEST_F(FocusManagerTest, FocusInAboutToRequestFocusFromTabTraversal) {
       new FocusInAboutToRequestFocusFromTabTraversalView;
   v2->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   v2->set_view_to_focus(v1);
-  GetContentsView()->AddChildView(v2);
+  GetContentsView()->AddChildViewRaw(v2);
 
   views::View* v3 = new View;
   v3->SetFocusBehavior(View::FocusBehavior::ALWAYS);
@@ -521,7 +521,7 @@ TEST_F(FocusManagerTest, FocusInAboutToRequestFocusFromTabTraversal) {
 
 TEST_F(FocusManagerTest, RotateFocus) {
   views::AccessiblePaneView* pane1 = new AccessiblePaneView();
-  GetContentsView()->AddChildView(pane1);
+  GetContentsView()->AddChildViewRaw(pane1);
 
   views::View* v1 = new View;
   v1->SetFocusBehavior(View::FocusBehavior::ALWAYS);
@@ -532,7 +532,7 @@ TEST_F(FocusManagerTest, RotateFocus) {
   pane1->AddChildViewRaw(v2);
 
   views::AccessiblePaneView* pane2 = new AccessiblePaneView();
-  GetContentsView()->AddChildView(pane2);
+  GetContentsView()->AddChildViewRaw(pane2);
 
   views::View* v3 = new View;
   v3->SetFocusBehavior(View::FocusBehavior::ALWAYS);
@@ -736,7 +736,7 @@ TEST_F(FocusManagerTest, StoreFocusedView) {
   SimpleTestView* view = new SimpleTestView(event_list, kView1ID);
 
   // Add view to the view hierarchy and make it focusable.
-  GetWidget()->GetRootView()->AddChildView(view);
+  GetWidget()->GetRootView()->AddChildViewRaw(view);
   view->SetFocusBehavior(View::FocusBehavior::ALWAYS);
 
   GetFocusManager()->SetFocusedView(view);

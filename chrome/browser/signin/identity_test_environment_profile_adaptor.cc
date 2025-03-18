@@ -4,11 +4,12 @@
 
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 
+#include <variant>
+
 #include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/browser_process.h"
@@ -46,7 +47,7 @@ void IdentityTestEnvironmentProfileAdaptor::
     SetIdentityTestEnvironmentFactoriesOnBrowserContext(
         content::BrowserContext* context) {
   for (auto& f : GetIdentityTestEnvironmentFactories()) {
-    absl::visit(
+    std::visit(
         [context](auto& p) {
           p.first->SetTestingFactory(context, std::move(p.second));
         },

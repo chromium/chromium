@@ -11,6 +11,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <variant>
 
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
@@ -32,7 +33,6 @@
 #include "content/public/browser/page_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "net/base/schemeful_site.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -247,8 +247,8 @@ class PageSpecificContentSettings
 
   static void StorageAccessed(
       mojom::ContentSettingsManager::StorageType storage_type,
-      absl::variant<content::GlobalRenderFrameHostToken,
-                    content::GlobalRenderFrameHostId> frame_id,
+      std::variant<content::GlobalRenderFrameHostToken,
+                   content::GlobalRenderFrameHostId> frame_id,
       const blink::StorageKey& storage_key,
       bool blocked_by_policy);
 

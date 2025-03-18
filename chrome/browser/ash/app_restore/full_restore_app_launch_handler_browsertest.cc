@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <variant>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -368,14 +369,13 @@ class FullRestoreAppLaunchHandlerTestBase
   }
 
   std::unique_ptr<::app_restore::WindowInfo> GetWindowInfo(
-      absl::variant<int32_t, aura::Window*> restore_window_id_or_window) {
+      std::variant<int32_t, aura::Window*> restore_window_id_or_window) {
     auto* read_handler = ::full_restore::FullRestoreReadHandler::GetInstance();
-    if (absl::holds_alternative<int32_t>(restore_window_id_or_window)) {
+    if (std::holds_alternative<int32_t>(restore_window_id_or_window)) {
       return read_handler->GetWindowInfo(
-          absl::get<int32_t>(restore_window_id_or_window));
+          std::get<int32_t>(restore_window_id_or_window));
     }
-    aura::Window* window =
-        absl::get<aura::Window*>(restore_window_id_or_window);
+    aura::Window* window = std::get<aura::Window*>(restore_window_id_or_window);
     CHECK(window);
     return read_handler->GetWindowInfo(window);
   }

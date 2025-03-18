@@ -316,7 +316,6 @@
 <translation id="1532118530259321453">Cette page indique</translation>
 <translation id="1533966801397200693">Le profil auquel vous êtes connecté est un profil géré. Votre administrateur peut modifier les paramètres de votre profil à distance, analyser les informations concernant le navigateur au moyen des rapports et effectuer d'autres tâches nécessaires. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Traduire la page</translation>
-<translation id="1538295100801850685">Améliorations des prévisions</translation>
 <translation id="1539840569003678498">Envoi du rapport :</translation>
 <translation id="1542105669288201090">Formation commerciale</translation>
 <translation id="1545757265410828525">Historique des prix</translation>
@@ -1157,7 +1156,6 @@
 <translation id="3052868890529250114">Vous vous connectez généralement aux sites en toute sécurité, mais Chrome n'a pas pu utiliser de connexion sécurisée cette fois-ci. Un pirate peut essayer d'écouter ou de modifier votre connexion réseau. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus sur cet avertissement<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Rabais de <ph name="PRICE_DROP" /> sur le <ph name="PRODUCT_NAME" /></translation>
 <translation id="3061707000357573562">Service de correctif</translation>
-<translation id="306198082577913404">Activer les améliorations de prédiction</translation>
 <translation id="3062655045399308513">Supprimer les données de navigation…</translation>
 <translation id="3063453392496098461">L'installation des services de RPV en arrière-plan a échoué.</translation>
 <translation id="306573536155379004">Jeu démarré.</translation>
@@ -2325,7 +2323,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5097099694988056070">Statistiques relatives à l'appareil, comme l'utilisation du processeur ou de la mémoire vive</translation>
 <translation id="5097468150760963273">27 po x 39 po</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Vous devez accorder à Chrome l'autorisation d'accéder à la fonction suivante de votre appareil : <ph name="PERMISSION" /></translation>
 <translation id="510644072453496781">Carton (extrémité)</translation>
 <translation id="5106648964679263509">Carte virtuelle pour <ph name="BNPL_ISSUER_NAME" /> remplie</translation>
 <translation id="5108881358339761672">Ce site n'est pas sécurisé</translation>
@@ -4053,7 +4050,6 @@ Détails supplémentaires :
 <translation id="8134058435519644366">Dotation en personnel</translation>
 <translation id="8135546115396015134">touche de gauche</translation>
 <translation id="8137456439814903304">Énergie et services publics</translation>
-<translation id="81474145143203755">Pour utiliser votre <ph name="PERMISSION" /> sur ce site, accordez l'accès à Chrome</translation>
 <translation id="8148608574971654810">Version PDF :</translation>
 <translation id="8149426793427495338">Votre ordinateur s'est mis en veille.</translation>
 <translation id="8150722005171944719">Le fichier à l'adresse <ph name="URL" /> n'est pas lisible. Il est possible qu'il ait été supprimé ou déplacé, ou que les autorisations associées à ce fichier empêchent d'y accéder.</translation>

@@ -7,6 +7,7 @@
 #include <memory>
 #include <string_view>
 #include <utility>
+#include <variant>
 
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
@@ -201,12 +202,12 @@ base::Value::Dict CertNodeBuilder::Build() {
 
 std::string HandleOptionalOrError(
     const x509_certificate_model::OptionalStringOrError& s) {
-  if (absl::holds_alternative<x509_certificate_model::Error>(s)) {
+  if (std::holds_alternative<x509_certificate_model::Error>(s)) {
     return l10n_util::GetStringUTF8(IDS_CERT_DUMP_ERROR);
-  } else if (absl::holds_alternative<x509_certificate_model::NotPresent>(s)) {
+  } else if (std::holds_alternative<x509_certificate_model::NotPresent>(s)) {
     return l10n_util::GetStringUTF8(IDS_CERT_INFO_FIELD_NOT_PRESENT);
   }
-  return absl::get<std::string>(s);
+  return std::get<std::string>(s);
 }
 
 base::Value::List GenerateConstraintList(

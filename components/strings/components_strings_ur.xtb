@@ -316,7 +316,6 @@
 <translation id="1532118530259321453">اس صفحے کے مطابق</translation>
 <translation id="1533966801397200693">آپ جس پروفائل میں سائن ان ہیں وہ ایک منظم پروفائل ہے۔ آپ کا منتظم آپ کی پروفائل کی ترتیبات میں دور سے تبدیلیاں کر سکتا ہے، رپورٹنگ کے ذریعے براؤزر کے بارے میں معلومات کا تجزیہ کر سکتا ہے اور دیگر ضروری ٹاسکس انجام دے سکتا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">صفحہ کا ترجمہ کریں</translation>
-<translation id="1538295100801850685">پیشگوئی کی بہتریاں</translation>
 <translation id="1539840569003678498">رپورٹ بھیج دی گئی:</translation>
 <translation id="1542105669288201090">کاروباری تعلیم</translation>
 <translation id="1545757265410828525">قیمت کی سرگزشت</translation>
@@ -1157,7 +1156,6 @@
 <translation id="3052868890529250114">‏آپ ان سائٹس سے عموماً محفوظ طریقے سے منسلک ہوتے ہیں لیکن اس مرتبہ Chrome محفوظ کنکشن کا استعمال نہیں کر سکا۔ کوئی حملہ آور آپ کے نیٹ ورک کنکشن کی جاسوسی یا اس میں ترمیم کرنے کی کوشش کر سکتا ہے۔ <ph name="BEGIN_LEARN_MORE_LINK" />اس وارننگ کے بارے میں مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> سے قیمت میں <ph name="PRICE_DROP" /> گراوٹ</translation>
 <translation id="3061707000357573562">پیچ سروس</translation>
-<translation id="306198082577913404">پیشگوئی کی بہتریوں کے لیے آن کریں</translation>
 <translation id="3062655045399308513">براؤزنگ ڈیٹا حذف کریں...</translation>
 <translation id="3063453392496098461">‏‫VPN کی پس منظر سروسز کی انسٹالیشن ناکام ہو گئی۔</translation>
 <translation id="306573536155379004">گیم شروع ہو گئی۔</translation>
@@ -2326,7 +2324,6 @@
 <translation id="5097099694988056070">‏CPU/RAM کے استعمال جیسے آلے کے اعداد و شمار</translation>
 <translation id="5097468150760963273">‏‎27 x 39 انچ</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">‏Chrome کو آپ کے آلے کے <ph name="PERMISSION" /> تک رسائی درکار ہے</translation>
 <translation id="510644072453496781">کارڈ بورڈ (اینڈ)</translation>
 <translation id="5106648964679263509">ورچوئل کارڈ <ph name="BNPL_ISSUER_NAME" /> کے لیے پر کیا گیا</translation>
 <translation id="5108881358339761672">سائٹ محفوظ نہیں ہے</translation>
@@ -4055,7 +4052,6 @@
 <translation id="8134058435519644366">تقرری اور عملہ سازی</translation>
 <translation id="8135546115396015134">بائیں کلید</translation>
 <translation id="8137456439814903304">توانائی اور یوٹیلیٹیز</translation>
-<translation id="81474145143203755">‏اس سائٹ پر اپنا <ph name="PERMISSION" /> استعمال کرنے کے لیے Chrome کو رسائی فراہم کریں</translation>
 <translation id="8148608574971654810">‏PDF ورژن:</translation>
 <translation id="8149426793427495338">آپ کا کمپیوٹر سلیپ وضع میں چلا گیا۔</translation>
 <translation id="8150722005171944719"><ph name="URL" /> پر موجود فائل پڑھنے لائق نہیں ہے۔ ممکن ہے اسے ہٹا دیا گیا ہو، منتقل کر دیا گیا ہو یا ممکن ہے فائل کی اجازتیں رسائی روک رہی ہوں۔</translation>

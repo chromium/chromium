@@ -360,6 +360,7 @@ class WPTAdapter:
 
         if (self.options.enable_sanitizer
                 or self.options.configuration == 'Debug'):
+            runner_options.sanitizer_enabled = self.options.enable_sanitizer
             runner_options.timeout_multiplier = (
                 self.options.timeout_multiplier or 1) * 5
             logger.info(

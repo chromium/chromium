@@ -5,6 +5,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -23,7 +24,6 @@
 #include "content/public/utility/content_utility_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace variations {
 class VariationsIdsProvider;
@@ -71,7 +71,7 @@ class MockContentMainDelegate : public ContentBrowserTestShellMainDelegate {
   // The return value of RunProcess is platform-dependent and the startup
   // sequence depends heavily on it, so don't allow it to be mocked.
   MOCK_METHOD(void, MockRunProcess, (const std::string&, MainFunctionParams));
-  absl::variant<int, MainFunctionParams> RunProcess(
+  std::variant<int, MainFunctionParams> RunProcess(
       const std::string& process_type,
       MainFunctionParams main_function_params) override {
     // MainFunctionParams is move-only so pass a dummy to the mock.
@@ -168,17 +168,17 @@ class MockContentMainDelegate : public ContentBrowserTestShellMainDelegate {
 };
 
 MATCHER_P(InvokedInMatcher, process_type, "") {
-  // `arg` is an absl::variant. Return true if the type held by the variant is
+  // `arg` is an std::variant. Return true if the type held by the variant is
   // correct for `process_type` (empty means the browser process).
-  return absl::visit(base::Overloaded{
-                         [&](ContentMainDelegate::InvokedInBrowserProcess) {
-                           return process_type.empty();
-                         },
-                         [&](ContentMainDelegate::InvokedInChildProcess) {
-                           return !process_type.empty();
-                         },
-                     },
-                     arg);
+  return std::visit(base::Overloaded{
+                        [&](ContentMainDelegate::InvokedInBrowserProcess) {
+                          return process_type.empty();
+                        },
+                        [&](ContentMainDelegate::InvokedInChildProcess) {
+                          return !process_type.empty();
+                        },
+                    },
+                    arg);
 }
 
 // Tests that methods of ContentMainDelegate are called in the expected order.

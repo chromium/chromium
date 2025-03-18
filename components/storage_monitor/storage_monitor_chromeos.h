@@ -13,6 +13,7 @@
 #include <memory>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
@@ -29,8 +30,9 @@ namespace storage_monitor {
 
 class MtpManagerClientChromeOS;
 
-class StorageMonitorCros : public StorageMonitor,
-                           public ash::disks::DiskMountManager::Observer {
+class COMPONENT_EXPORT(STORAGE_MONITOR) StorageMonitorCros
+    : public StorageMonitor,
+      public ash::disks::DiskMountManager::Observer {
  public:
   // Should only be called by browser start up code.
   // Use StorageMonitor::GetInstance() instead.

@@ -64,14 +64,14 @@ export class CrShortcutInputElement extends CrShortcutInputElementBase {
     };
   }
 
-  shortcut: string = '';
-  inputAriaLabel: string = '';
-  editButtonAriaLabel: string = '';
-  inputDisabled: boolean = false;
-  allowCtrlAltShortcuts = false;
-  protected readonly_: boolean = true;
+  accessor shortcut: string = '';
+  accessor inputAriaLabel: string = '';
+  accessor editButtonAriaLabel: string = '';
+  accessor inputDisabled: boolean = false;
+  accessor allowCtrlAltShortcuts = false;
+  protected accessor readonly_: boolean = true;
   private capturing_: boolean = false;
-  private error_: ShortcutError = ShortcutError.NO_ERROR;
+  private accessor error_: ShortcutError = ShortcutError.NO_ERROR;
   private pendingShortcut_: string = '';
 
   override firstUpdated() {

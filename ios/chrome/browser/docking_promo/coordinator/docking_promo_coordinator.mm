@@ -90,7 +90,7 @@
   }
 
   PromosManager* promosManager =
-      PromosManagerFactory::GetForProfile(self.browser->GetProfile());
+      PromosManagerFactory::GetForProfile(self.profile);
 
   AppState* appState = self.browser->GetSceneState().profileState.appState;
 
@@ -106,8 +106,8 @@
     _promoTrigger = DockingPromoTrigger::kFRE;
     self.viewController =
         [[DockingPromoViewController alloc] initWithRemindMeLater:YES];
-    self.mediator.tracker = feature_engagement::TrackerFactory::GetForProfile(
-        self.browser->GetProfile());
+    self.mediator.tracker =
+        feature_engagement::TrackerFactory::GetForProfile(self.profile);
     self.viewController.actionHandler = self;
     self.viewController.presentationController.delegate = self;
     self.viewController.modalInPresentation = YES;
@@ -148,8 +148,8 @@
 
   self.viewController = [[DockingPromoViewController alloc]
       initWithRemindMeLater:[self promoHasRemindMeLater]];
-  self.mediator.tracker = feature_engagement::TrackerFactory::GetForProfile(
-      self.browser->GetProfile());
+  self.mediator.tracker =
+      feature_engagement::TrackerFactory::GetForProfile(self.profile);
   self.viewController.actionHandler = self;
   self.viewController.presentationController.delegate = self;
 
@@ -191,8 +191,7 @@
   DCHECK([self promoHasRemindMeLater]);
 
   feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForProfile(
-          self.browser->GetProfile());
+      feature_engagement::TrackerFactory::GetForProfile(self.profile);
   tracker->NotifyEvent(feature_engagement::events::kDockingPromoRemindMeLater);
 
   if (_firstRun) {

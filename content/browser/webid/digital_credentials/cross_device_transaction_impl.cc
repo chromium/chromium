@@ -5,6 +5,7 @@
 #include "content/browser/webid/digital_credentials/cross_device_transaction_impl.h"
 
 #include <optional>
+#include <variant>
 
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
@@ -224,21 +225,21 @@ void TransactionImpl::OnHaveResponse(
     FIDO_LOG(EVENT) << "Have response from digital identity request.";
     std::move(callback_).Run(std::move(response).value());
   } else {
-    absl::visit(base::Overloaded{
-                    [this](ProtocolError error) {
-                      FIDO_LOG(EVENT)
-                          << "Protocol error from digital identity request: "
-                          << static_cast<int>(error);
-                      std::move(callback_).Run(base::unexpected(error));
-                    },
-                    [this](RemoteError error) {
-                      FIDO_LOG(EVENT)
-                          << "Remote error from digital identity request: "
-                          << static_cast<int>(error);
-                      std::move(callback_).Run(base::unexpected(error));
-                    },
-                },
-                response.error());
+    std::visit(base::Overloaded{
+                   [this](ProtocolError error) {
+                     FIDO_LOG(EVENT)
+                         << "Protocol error from digital identity request: "
+                         << static_cast<int>(error);
+                     std::move(callback_).Run(base::unexpected(error));
+                   },
+                   [this](RemoteError error) {
+                     FIDO_LOG(EVENT)
+                         << "Remote error from digital identity request: "
+                         << static_cast<int>(error);
+                     std::move(callback_).Run(base::unexpected(error));
+                   },
+               },
+               response.error());
   }
 }
 

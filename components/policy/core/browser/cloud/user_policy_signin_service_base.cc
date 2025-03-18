@@ -5,6 +5,7 @@
 #include "components/policy/core/browser/cloud/user_policy_signin_service_base.h"
 
 #include <utility>
+#include <variant>
 
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
@@ -44,20 +45,20 @@ const em::DeviceRegisterRequest::Type kCloudPolicyRegistrationType =
 UserPolicySigninServiceBase::UserPolicySigninServiceBase(
     PrefService* local_state,
     DeviceManagementService* device_management_service,
-    absl::variant<UserCloudPolicyManager*, ProfileCloudPolicyManager*>
+    std::variant<UserCloudPolicyManager*, ProfileCloudPolicyManager*>
         policy_manager,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory)
     : user_policy_manager_(
-          absl::holds_alternative<UserCloudPolicyManager*>(policy_manager)
-              ? absl::get<UserCloudPolicyManager*>(policy_manager)
+          std::holds_alternative<UserCloudPolicyManager*>(policy_manager)
+              ? std::get<UserCloudPolicyManager*>(policy_manager)
               : nullptr),
       policy_manager_(
-          absl::holds_alternative<UserCloudPolicyManager*>(policy_manager)
+          std::holds_alternative<UserCloudPolicyManager*>(policy_manager)
               ? static_cast<CloudPolicyManager*>(
-                    absl::get<UserCloudPolicyManager*>(policy_manager))
+                    std::get<UserCloudPolicyManager*>(policy_manager))
               : static_cast<CloudPolicyManager*>(
-                    absl::get<ProfileCloudPolicyManager*>(policy_manager))),
+                    std::get<ProfileCloudPolicyManager*>(policy_manager))),
       identity_manager_(identity_manager),
       local_state_(local_state),
       device_management_service_(device_management_service),

@@ -10,7 +10,6 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
@@ -189,7 +188,6 @@ class WebAppToolbarButtonContainer : public views::View,
       nullptr;
   raw_ptr<WebAppMenuButton> web_app_menu_button_ = nullptr;
   raw_ptr<SystemAppAccessibleName> system_app_accessible_name_ = nullptr;
-  raw_ptr<ToolbarButton> download_button_ = nullptr;
   raw_ptr<AvatarToolbarButton> avatar_button_ = nullptr;
 };
 

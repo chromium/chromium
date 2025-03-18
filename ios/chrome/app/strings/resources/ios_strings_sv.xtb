@@ -504,6 +504,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="310900540163454140">Vill du radera lösenordet för <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Markera …</translation>
 <translation id="3119874402040566234">Du loggas ut och webbinformationen rensas</translation>
+<translation id="3124568093781685165">Dela dina lösenord med familjen</translation>
 <translation id="3130863904455712965">Historik med mera</translation>
 <translation id="313283613037595347">Skapa en ny inkognitoflik.</translation>
 <translation id="3138611310073113613">Släng valet</translation>
@@ -1003,6 +1004,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="5352128922772839949">Spara fil</translation>
 <translation id="5355191726083956201">Förbättrat skydd är aktiverat</translation>
 <translation id="537853552771686272">Hantera ämnen och webbplatser som du är intresserad av</translation>
+<translation id="5390458669633674385">{count,plural, =1{{count} har stängts}other{{count} har stängts}}</translation>
 <translation id="5394975111793637642">Dölj kortet Produktrecensioner för dig</translation>
 <translation id="5395707839134961196">Dölj sökmotorinformation</translation>
 <translation id="5414763847370083940">Du får en avisering om priset sänks på en webbplats.</translation>
@@ -1132,6 +1134,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5897749768294722429">Synkronisera flikar och historik för att snabbt återgå till webbplatser du har besökt.</translation>
 <translation id="5898848375214731122">Vikt</translation>
 <translation id="5899314093904173337">Om du vill dela med personer i närheten ber du dem att skanna QR-koden med kameran eller en app för att skanna QR-koder</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} ny flik}other{{count} nya flikar}}</translation>
 <translation id="5911030830365207728">Google Översätt</translation>
 <translation id="5917913282764181683">Radera nedladdningar automatiskt</translation>
 <translation id="5922999516621365983">Dra hit fliken för att fästa den.</translation>
@@ -1674,6 +1677,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8131740175452115882">Bekräfta</translation>
 <translation id="8132598642024322408">Nedsatt från <ph name="PREVIOUS_PRICE" /> till <ph name="PRICE" />.</translation>
 <translation id="813370552429173916">Använd ett unikt lösenord till varje webbplats eller app. Om någon får tag på ett återanvänt lösenord kan det användas till att få åtkomst till dina andra konton. Klicka här för att öppna webbplatsen och ändra dem nu.</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} stängd flik}other{{count} stängda flikar}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 annan}other{# andra}}</translation>
 <translation id="8150167929304790980">Fullständigt namn</translation>
 <translation id="8152331954420209374">Öppna Lens</translation>

@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">A Föld mozgása háttérkép</translation>
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> háttér a következő betűvel: <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Exkluzív</translation>
-<translation id="3395147534045164351">Igazítási hely kapcsolója</translation>
 <translation id="3404249063913988450">Képernyővédő engedélyezése</translation>
 <translation id="3413935475507503304">A frissítéssel való folytatáshoz kattintson a Tovább lehetőségre.</translation>
 <translation id="3428551088151258685">a szabadban</translation>
@@ -929,6 +928,7 @@
 <translation id="5286263799730375393">háttérvilágítás színe</translation>
 <translation id="5292579816060236070">Napkelte háttérkép</translation>
 <translation id="5294769550414936029">verzió: <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">kamera-hozzáférés be-/kikapcsolása</translation>
 <translation id="5300814202279832142">Ablak áthelyezése a kívánt asztalra</translation>
 <translation id="5302048478445481009">Nyelv</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> exkluzív háttérkép</translation>
@@ -1395,6 +1395,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="7388345524791662148">További lehetőségek a következőhöz: <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Beépített érintőpad</translation>
 <translation id="7397270852490618635">Világos téma kikapcsolása</translation>
+<translation id="7400166052988585408">Tanára <ph name="NUM_SECONDS" /> másodperc múlva zárolni fogja az Ön képernyőjét</translation>
 <translation id="7401543881546089382">Billentyűkód törlése</translation>
 <translation id="7405493795721832710">A(z) <ph name="DEVICE_NAME" /> készen áll a frissítésre</translation>
 <translation id="741244894080940828">Átváltás</translation>

@@ -47,6 +47,8 @@ public class CrossDevicePaneImpl implements CrossDevicePane {
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mHairlineVisibilitySupplier =
             new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean> mHubSearchEnabledStateSupplier =
+            new ObservableSupplierImpl<>();
 
     private CrossDeviceListCoordinator mCrossDeviceListCoordinator;
 
@@ -165,5 +167,11 @@ public class CrossDevicePaneImpl implements CrossDevicePane {
             @NonNull HubContainerView hubContainerView) {
         return FadeHubLayoutAnimationFactory.createFadeOutAnimatorProvider(
                 hubContainerView, HUB_LAYOUT_FADE_DURATION_MS, mOnToolbarAlphaChange);
+    }
+
+    @NonNull
+    @Override
+    public ObservableSupplier<Boolean> getHubSearchEnabledStateSupplier() {
+        return mHubSearchEnabledStateSupplier;
     }
 }
