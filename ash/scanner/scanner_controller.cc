@@ -73,6 +73,45 @@ constexpr size_t kUserFacingStringDepthLimit = 20;
 constexpr size_t kUserFacingStringOutputLimit =
     std::numeric_limits<size_t>::max();
 
+std::u16string GetTitleForActionProgressNotification(
+    manta::proto::ScannerAction::ActionCase action_case) {
+  switch (action_case) {
+    case manta::proto::ScannerAction::kNewEvent:
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SCANNER_ACTION_PROGRESS_TITLE_ADDING_EVENT);
+    case manta::proto::ScannerAction::kNewContact:
+    case manta::proto::ScannerAction::kNewGoogleDoc:
+    case manta::proto::ScannerAction::kNewGoogleSheet:
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SCANNER_ACTION_PROGRESS_TITLE_CREATING);
+    case manta::proto::ScannerAction::kCopyToClipboard:
+      // No progress notification is shown for the copy to clipboard action.
+    case manta::proto::ScannerAction::ACTION_NOT_SET:
+      NOTREACHED();
+  }
+}
+
+std::u16string GetDisplaySourceForActionProgressNotification(
+    manta::proto::ScannerAction::ActionCase action_case) {
+  switch (action_case) {
+    case manta::proto::ScannerAction::kNewEvent:
+      return l10n_util::GetStringUTF16(IDS_ASH_SCANNER_ACTION_NEW_EVENT_SOURCE);
+    case manta::proto::ScannerAction::kNewContact:
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SCANNER_ACTION_NEW_CONTACT_SOURCE);
+    case manta::proto::ScannerAction::kNewGoogleDoc:
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SCANNER_ACTION_NEW_GOOGLE_DOC_SOURCE);
+    case manta::proto::ScannerAction::kNewGoogleSheet:
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_SCANNER_ACTION_NEW_GOOGLE_SHEET_SOURCE);
+    case manta::proto::ScannerAction::kCopyToClipboard:
+      // No progress notification is shown for the copy to clipboard action.
+    case manta::proto::ScannerAction::ACTION_NOT_SET:
+      NOTREACHED();
+  }
+}
+
 std::u16string GetToastMessageForActionSuccess(
     manta::proto::ScannerAction::ActionCase action_case) {
   switch (action_case) {
@@ -125,8 +164,9 @@ void ShowActionProgressNotification(
     const ScannerActionViewModel& scanner_action) {
   // No need to show a progress notification for the copy to clipboard action
   // since this action should be quite fast in typical use cases.
-  if (scanner_action.GetActionCase() ==
-      manta::proto::ScannerAction::kCopyToClipboard) {
+  manta::proto::ScannerAction::ActionCase action_case =
+      scanner_action.GetActionCase();
+  if (action_case == manta::proto::ScannerAction::kCopyToClipboard) {
     return;
   }
 
@@ -139,14 +179,14 @@ void ShowActionProgressNotification(
   auto* message_center = message_center::MessageCenter::Get();
   message_center->RemoveNotification(kScannerActionNotificationId,
                                      /*by_user=*/false);
-  // TODO: crbug.com/375967525 - Finalize the action notification strings.
   std::unique_ptr<message_center::Notification> notification =
       CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_PROGRESS,
           kScannerActionNotificationId,
-          /*title=*/u"Creating...",
+          /*title=*/GetTitleForActionProgressNotification(action_case),
           /*message=*/u"",
-          /*display_source=*/u"", GURL(),
+          /*display_source=*/
+          GetDisplaySourceForActionProgressNotification(action_case), GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kScannerNotifierId, NotificationCatalogName::kScannerAction),
