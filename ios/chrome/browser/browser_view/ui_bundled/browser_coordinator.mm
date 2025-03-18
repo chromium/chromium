@@ -171,6 +171,7 @@
 #import "ios/chrome/browser/shared/coordinator/alert/repost_form_coordinator_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
@@ -4023,14 +4024,15 @@ enum class ToolbarKind {
 - (void)stopQuickDeleteForAnimationWithCompletion:(ProceduralBlock)completion {
   CHECK(IsIosQuickDeleteEnabled());
 
-  // TODO(crbug.com/335387869): Remove NotFatalUntil and the if below when we're
-  // sure this code path is infeasible. The BrowserViewController should always
-  // have at least the QuickDeleteViewController on top of it.
-  CHECK(self.viewController.presentedViewController, base::NotFatalUntil::M137);
-
   // If BrowserViewController has not presented any view controller, then
   // trigger `completion` immediately.
   if (!self.viewController.presentedViewController) {
+    // TODO(crbug.com/335387869): Remove NotFatalUntil when we're sure this code
+    // path is infeasible. If Quick Delete is not visible because it was
+    // dismissed while the deletion was occuring, then the tab grid should be
+    // visible.
+    CHECK(self.sceneState.controller.isTabGridVisible,
+          base::NotFatalUntil::M139);
     if (completion) {
       completion();
     }

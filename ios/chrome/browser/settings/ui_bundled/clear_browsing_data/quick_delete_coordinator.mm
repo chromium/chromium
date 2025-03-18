@@ -54,6 +54,7 @@ using browsing_data::DeleteBrowsingDataDialogAction;
   QuickDeleteMediator* _mediator;
   QuickDeleteBrowsingDataCoordinator* _browsingDataCoordinator;
   std::unique_ptr<ScopedUIBlocker> _windowUIBlocker;
+  UIWindow* _window;
 
   // The tabs closure animation should only be performed if Quick Delete is
   // opened on top of a tab or the tab grid.
@@ -107,6 +108,7 @@ using browsing_data::DeleteBrowsingDataDialogAction;
   _viewController.presentationHandler = self;
   _viewController.mutator = _mediator;
   _viewController.presentationController.delegate = self;
+  _window = self.baseViewController.view.window;
 
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
@@ -208,7 +210,6 @@ using browsing_data::DeleteBrowsingDataDialogAction;
         BrowsingDataRemover::WebStatesReloadPolicy::kForceReload;
   }
 
-  UIWindow* window = _viewController.view.window;
   __weak QuickDeleteCoordinator* weakSelf = self;
   ProceduralBlock dismissCompletionBlock = ^() {
     [weakSelf animateTabsClosureWithBeginTime:beginTime
@@ -217,8 +218,7 @@ using browsing_data::DeleteBrowsingDataDialogAction;
                                        groups:tabGroupsWithTabsToClose
                               allInactiveTabs:allInactiveTabsWillClose
                           browsingDataRemover:browsingDataRemover
-                    browsingDataRemoverParams:params
-                                       window:window];
+                    browsingDataRemoverParams:params];
   };
 
   id<ApplicationCommands> applicationCommandsHandler = HandlerForProtocol(
@@ -264,8 +264,6 @@ using browsing_data::DeleteBrowsingDataDialogAction;
   base::UmaHistogramEnumeration(
       browsing_data::kDeleteBrowsingDataDialogHistogram,
       DeleteBrowsingDataDialogAction::kDialogDismissedImplicitly);
-
-  [self disconnect];
   [self dismissQuickDelete];
 }
 
@@ -296,8 +294,7 @@ using browsing_data::DeleteBrowsingDataDialogAction;
                                         tabGroupsWithTabsToClose
                     allInactiveTabs:(BOOL)animateAllInactiveTabs
                 browsingDataRemover:(BrowsingDataRemover*)browsingDataRemover
-          browsingDataRemoverParams:(BrowsingDataRemover::RemovalParams)params
-                             window:(UIWindow*)window {
+          browsingDataRemoverParams:(BrowsingDataRemover::RemovalParams)params {
   base::OnceClosure onRemoverCompletion = base::BindOnce(
       [](UIWindow* window, std::unique_ptr<ScopedUIBlocker> uiBlocker) {
         uiBlocker.reset();
@@ -315,7 +312,7 @@ using browsing_data::DeleteBrowsingDataDialogAction;
         // rearrange.
         TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
       },
-      window, std::move(_windowUIBlocker));
+      _window, std::move(_windowUIBlocker));
 
   base::OnceClosure onAnimationCompletion = base::BindOnce(
       &BrowsingDataRemover::RemoveInRange, browsingDataRemover->AsWeakPtr(),
@@ -337,6 +334,10 @@ using browsing_data::DeleteBrowsingDataDialogAction;
   if (_windowUIBlocker) {
     _windowUIBlocker.reset();
   }
+  _window.userInteractionEnabled = YES;
+  _window.accessibilityElementsHidden = NO;
+  _window = nil;
+
   _viewController.presentationHandler = nil;
   _viewController.mutator = nil;
   _viewController.presentationController.delegate = nil;
