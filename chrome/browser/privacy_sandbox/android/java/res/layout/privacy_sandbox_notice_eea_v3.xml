@@ -17,7 +17,6 @@ found in the LICENSE file.
        android:id="@+id/privacy_sandbox_notice_eea_main_layout"
        android:layout_width="match_parent"
        android:layout_height="wrap_content"
-       android:layout_marginTop="52dp"
        android:orientation="vertical">
 
        <org.chromium.components.browser_ui.widget.BoundedLinearLayout
