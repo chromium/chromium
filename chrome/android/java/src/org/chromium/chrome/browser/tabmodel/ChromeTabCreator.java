@@ -38,6 +38,8 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabParentIntent;
 import org.chromium.chrome.browser.tab.TabResolver;
 import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.tabmodel.TabCreator.NeedsTabModel;
+import org.chromium.chrome.browser.tabmodel.TabCreator.NeedsTabModelOrderController;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -48,7 +50,8 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 /** This class creates various kinds of new tabs and adds them to the right {@link TabModel}. */
-public class ChromeTabCreator extends TabCreator {
+public class ChromeTabCreator extends TabCreator
+        implements NeedsTabModel, NeedsTabModelOrderController {
     private final Activity mActivity;
     private final WindowAndroid mNativeWindow;
     private final Supplier<TabDelegateFactory> mTabDelegateFactorySupplier;
@@ -689,14 +692,14 @@ public class ChromeTabCreator extends TabCreator {
         return IntentHandler.getTransitionTypeFromIntent(intent, transition);
     }
 
-    /**
-     * Sets the tab model and tab content manager to use.
-     * @param model           The new {@link TabModel} to use.
-     * @param orderController The controller for determining the order of tabs.
-     */
-    public void setTabModel(TabModel model, TabModelOrderController orderController) {
-        mTabModel = model;
-        mOrderController = orderController;
+    @Override
+    public void setTabModel(TabModel tabModel) {
+        mTabModel = tabModel;
+    }
+
+    @Override
+    public void setTabModelOrderController(TabModelOrderController tabModelOrderController) {
+        mOrderController = tabModelOrderController;
     }
 
     /** Returns the default tab delegate factory to be used if creating new tabs w/o parents. */

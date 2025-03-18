@@ -24,6 +24,8 @@ import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabmodel.TabCreator.NeedsTabModel;
+import org.chromium.chrome.browser.tabmodel.TabCreator.NeedsTabModelOrderController;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
@@ -118,10 +120,8 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         ProfileProvider profileProvider = mProfileProviderSupplier.get();
         assert profileProvider != null;
 
-        ChromeTabCreator regularTabCreator =
-                (ChromeTabCreator) getTabCreatorManager().getTabCreator(false);
-        ChromeTabCreator incognitoTabCreator =
-                (ChromeTabCreator) getTabCreatorManager().getTabCreator(true);
+        TabCreator regularTabCreator = getTabCreatorManager().getTabCreator(false);
+        TabCreator incognitoTabCreator = getTabCreatorManager().getTabCreator(true);
         mRecentlyClosedBridge =
                 new RecentlyClosedBridge(profileProvider.getOriginalProfile(), this);
         Supplier<TabGroupModelFilter> regularTabGroupModelFilterSupplier =
@@ -147,7 +147,13 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                         regularTabRemover,
                         mIsUndoSupported,
                         /* isArchivedTabModel= */ false);
-        regularTabCreator.setTabModel(normalModel, mOrderController);
+        if (regularTabCreator instanceof NeedsTabModel needsTabModel) {
+            needsTabModel.setTabModel(normalModel);
+        }
+        if (regularTabCreator
+                instanceof NeedsTabModelOrderController needsTabModelOrderController) {
+            needsTabModelOrderController.setTabModelOrderController(mOrderController);
+        }
 
         TabRemover incognitoTabRemover =
                 new PassthroughTabRemover(
@@ -167,7 +173,13 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                                 mActivityType,
                                 this,
                                 incognitoTabRemover));
-        incognitoTabCreator.setTabModel(incognitoModel, mOrderController);
+        if (incognitoTabCreator instanceof NeedsTabModel needsTabModel) {
+            needsTabModel.setTabModel(incognitoModel);
+        }
+        if (incognitoTabCreator
+                instanceof NeedsTabModelOrderController needsTabModelOrderController) {
+            needsTabModelOrderController.setTabModelOrderController(mOrderController);
+        }
         onNativeLibraryReadyInternal(tabContentProvider, normalModel, incognitoModel);
     }
 
