@@ -307,7 +307,7 @@ static unsigned FindLengthOfValidDouble(const LChar* string, const LChar* end) {
 #if defined(__SSE2__) || defined(__ARM_NEON__)
   if (length >= 16) {
     uint8_t b __attribute__((vector_size(16)));
-    memcpy(&b, string, sizeof(b));
+    UNSAFE_TODO(memcpy(&b, string, sizeof(b)));
     auto is_decimal_mask = (b >= '0' && b <= '9');
     auto is_mark_mask = (b == '.');
 #ifdef __SSE2__
@@ -853,7 +853,7 @@ ALWAYS_INLINE static bool ParseAlphaValue(const LChar*& string,
 // Fast for LChar, reasonable for UChar.
 template <int N>
 static inline bool MatchesLiteral(const LChar* a, const char (&b)[N]) {
-  return memcmp(a, b, N - 1) == 0;
+  return UNSAFE_TODO(memcmp(a, b, N - 1)) == 0;
 }
 
 template <int N>
@@ -911,8 +911,8 @@ static inline bool ConsumeFallbackValuesAndEndOfEnv(const LChar** a,
 static inline bool MatchesCaseInsensitiveLiteral4(const LChar* a,
                                                   const char (&b)[5]) {
   uint32_t av, bv;
-  memcpy(&av, a, sizeof(av));
-  memcpy(&bv, b, sizeof(bv));
+  UNSAFE_TODO(memcpy(&av, a, sizeof(av)));
+  UNSAFE_TODO(memcpy(&bv, b, sizeof(bv)));
 
   uint32_t mask = 0;
   if ((bv & 0xff) >= 'a' && (bv & 0xff) <= 'z') {
@@ -934,8 +934,8 @@ static inline bool MatchesCaseInsensitiveLiteral4(const LChar* a,
 static inline bool MatchesCaseInsensitiveLiteral2(const LChar* a,
                                                   const char (&b)[3]) {
   uint16_t av, bv;
-  memcpy(&av, a, sizeof(av));
-  memcpy(&bv, b, sizeof(bv));
+  UNSAFE_TODO(memcpy(&av, a, sizeof(av)));
+  UNSAFE_TODO(memcpy(&bv, b, sizeof(bv)));
 
   uint16_t mask = 0;
   if ((bv & 0xff) >= 'a' && (bv & 0xff) <= 'z') {

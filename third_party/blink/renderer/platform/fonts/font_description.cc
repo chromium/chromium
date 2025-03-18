@@ -29,6 +29,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 
+#include "base/compiler_specific.h"
 #include "base/memory/values_equivalent.h"
 #include "base/strings/to_string.h"
 #include "build/build_config.h"
@@ -67,13 +68,13 @@ bool FontDescription::use_subpixel_text_positioning_ = false;
 // static
 FontDescription FontDescription::CreateHashTableEmptyValue() {
   FontDescription result;
-  memset(&result, 0, sizeof(FontDescription));
+  UNSAFE_TODO(memset(&result, 0, sizeof(FontDescription)));
   DCHECK(result.IsHashTableEmptyValue());
   return result;
 }
 
 FontDescription::FontDescription(WTF::HashTableDeletedValueType) {
-  memset(this, 0, sizeof(FontDescription));
+  UNSAFE_TODO(memset(this, 0, sizeof(FontDescription)));
   fields_.hash_category_ = kHashDeletedValue;
 }
 

@@ -187,8 +187,8 @@ uint8_t* PaintOpReader::CopyScratchSpace(size_t bytes) {
   if (options_.scratch_buffer.size() < bytes) {
     options_.scratch_buffer.resize(bytes);
   }
-  memcpy(options_.scratch_buffer.data(), const_cast<const uint8_t*>(memory_),
-         bytes);
+  UNSAFE_TODO(memcpy(options_.scratch_buffer.data(),
+                     const_cast<const uint8_t*>(memory_), bytes));
   return options_.scratch_buffer.data();
 }
 
@@ -203,7 +203,8 @@ void PaintOpReader::ReadData(base::span<uint8_t> data) {
     return;
   }
 
-  memcpy(data.data(), const_cast<const uint8_t*>(memory_), data.size());
+  UNSAFE_TODO(
+      memcpy(data.data(), const_cast<const uint8_t*>(memory_), data.size()));
   DidRead(data.size());
 }
 

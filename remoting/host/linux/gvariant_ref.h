@@ -1081,7 +1081,7 @@ constexpr bool operator==(const ObjectPathCStr& lhs,
   if (std::is_constant_evaluated()) {
     return std::string_view(lhs.c_str()) == std::string_view(rhs.c_str());
   } else {
-    return std::strcmp(lhs.c_str(), rhs.c_str()) == 0;
+    return UNSAFE_TODO(std::strcmp(lhs.c_str(), rhs.c_str())) == 0;
   }
 }
 
@@ -1118,7 +1118,7 @@ constexpr bool operator==(const TypeSignatureCStr& lhs,
   if (std::is_constant_evaluated()) {
     return std::string_view(lhs.c_str()) == std::string_view(rhs.c_str());
   } else {
-    return std::strcmp(lhs.c_str(), rhs.c_str()) == 0;
+    return UNSAFE_TODO(std::strcmp(lhs.c_str(), rhs.c_str())) == 0;
   }
 }
 
