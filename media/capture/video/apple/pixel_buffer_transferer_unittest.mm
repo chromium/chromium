@@ -42,13 +42,7 @@ constexpr OSType kPixelFormatI420 = kCVPixelFormatType_420YpCbCr8Planar;
 
 }  // namespace
 
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_FAMILY)
-#define MAYBE_CanCopyYuvsAndVerifyColor DISABLED_CanCopyYuvsAndVerifyColor
-#else
-#define MAYBE_CanCopyYuvsAndVerifyColor CanCopyYuvsAndVerifyColor
-#endif
-
-TEST(PixelBufferTransfererTest, MAYBE_CanCopyYuvsAndVerifyColor) {
+TEST(PixelBufferTransfererTest, CanCopyYuvsAndVerifyColor) {
   constexpr OSType kPixelFormat = kPixelFormatYuvs;
   constexpr int kWidth = 32;
   constexpr int kHeight = 32;
@@ -69,8 +63,6 @@ TEST(PixelBufferTransfererTest, MAYBE_CanCopyYuvsAndVerifyColor) {
 
 #if defined(ARCH_CPU_ARM64)
 // Bulk-disabled as part of arm64 bot stabilization: https://crbug.com/1154345
-#define MAYBE_CanScaleYuvsAndVerifyColor DISABLED_CanScaleYuvsAndVerifyColor
-#elif BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_FAMILY)
 #define MAYBE_CanScaleYuvsAndVerifyColor DISABLED_CanScaleYuvsAndVerifyColor
 #else
 #define MAYBE_CanScaleYuvsAndVerifyColor CanScaleYuvsAndVerifyColor
@@ -99,15 +91,7 @@ TEST(PixelBufferTransfererTest, MAYBE_CanScaleYuvsAndVerifyColor) {
       CVPixelBufferGetIOSurface(destination.get()), kColorR, kColorG, kColorB));
 }
 
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_FAMILY)
-#define MAYBE_CanScaleYuvsAndVerifyCheckerPattern \
-  DISABLED_CanScaleYuvsAndVerifyCheckerPattern
-#else
-#define MAYBE_CanScaleYuvsAndVerifyCheckerPattern \
-  CanScaleYuvsAndVerifyCheckerPattern
-#endif
-
-TEST(PixelBufferTransfererTest, MAYBE_CanScaleYuvsAndVerifyCheckerPattern) {
+TEST(PixelBufferTransfererTest, CanScaleYuvsAndVerifyCheckerPattern) {
   // Note: The ARGB -> YUVS -> ARGB conversions results in a small loss of
   // information, so for the checker pattern to be intact the buffer can't be
   // tiny (e.g. 4x4).
@@ -142,9 +126,6 @@ TEST(PixelBufferTransfererTest, MAYBE_CanScaleYuvsAndVerifyCheckerPattern) {
 
 #if defined(ARCH_CPU_ARM64)
 // Bulk-disabled as part of arm64 bot stabilization: https://crbug.com/1154345
-#define MAYBE_CanStretchYuvsAndVerifyCheckerPattern \
-  DISABLED_CanStretchYuvsAndVerifyCheckerPattern
-#elif BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_FAMILY)
 #define MAYBE_CanStretchYuvsAndVerifyCheckerPattern \
   DISABLED_CanStretchYuvsAndVerifyCheckerPattern
 #else
@@ -185,10 +166,8 @@ TEST(PixelBufferTransfererTest, MAYBE_CanStretchYuvsAndVerifyCheckerPattern) {
   EXPECT_EQ(num_tiles_across_y, kSourceNumTilesAcross);
 }
 
-#if defined(ARCH_CPU_ARM64) || BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_FAMILY)
+#if defined(ARCH_CPU_ARM64)
 // Bulk-disabled as part of arm64 bot stabilization: https://crbug.com/1154345
-#define MAYBE_CanStretchYuvsAndVerifyColor DISABLED_CanStretchYuvsAndVerifyColor
-#elif BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_FAMILY)
 #define MAYBE_CanStretchYuvsAndVerifyColor DISABLED_CanStretchYuvsAndVerifyColor
 #else
 #define MAYBE_CanStretchYuvsAndVerifyColor CanStretchYuvsAndVerifyColor
@@ -217,16 +196,7 @@ TEST(PixelBufferTransfererTest, MAYBE_CanStretchYuvsAndVerifyColor) {
       CVPixelBufferGetIOSurface(destination.get()), kColorR, kColorG, kColorB));
 }
 
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_FAMILY)
-#define MAYBE_CanConvertAndStretchSimultaneouslyYuvsToNv12 \
-  DISABLED_CanConvertAndStretchSimultaneouslyYuvsToNv12
-#else
-#define MAYBE_CanConvertAndStretchSimultaneouslyYuvsToNv12 \
-  CanConvertAndStretchSimultaneouslyYuvsToNv12
-#endif
-
-TEST(PixelBufferTransfererTest,
-     MAYBE_CanConvertAndStretchSimultaneouslyYuvsToNv12) {
+TEST(PixelBufferTransfererTest, CanConvertAndStretchSimultaneouslyYuvsToNv12) {
   // Source pixel format: YUVS
   constexpr int kSourceWidth = 32;
   constexpr int kSourceHeight = 32;
