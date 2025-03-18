@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/on_device_model/fake/fake_chrome_ml_api.h"
 #include "services/on_device_model/fake/on_device_model_fake.h"
 #include "services/on_device_model/ml/chrome_ml_types.h"
@@ -182,6 +183,25 @@ TEST_F(OnDeviceModelServiceTest, Append) {
   EXPECT_THAT(response.responses(),
               ElementsAre("Context: cheese\n", "Context: more\n",
                           "Context: cheddar\n"));
+}
+
+TEST_F(OnDeviceModelServiceTest, GenerateWithSamplingParamsIsNotAllowed) {
+  auto model = LoadModel();
+
+  TestResponseHolder response;
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+  session->Append(MakeInput("cheese"), {});
+
+  // Sampling params should be passed at session creation, not to Generate().
+  auto generate_options = mojom::GenerateOptions::New();
+  generate_options->top_k = 2;
+  generate_options->temperature = 0.8;
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  session->Generate(std::move(generate_options), response.BindRemote());
+  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
+              testing::HasSubstr("deprecated"));
 }
 
 TEST_F(OnDeviceModelServiceTest, CloneContextAndContinue) {

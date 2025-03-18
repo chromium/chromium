@@ -587,13 +587,9 @@ void AILanguageModel::Prompt(
     append_options->input->pieces.push_back(ml::Token::kModel);
     session_->GetSession().Append(std::move(append_options),
                                   std::move(context_remote));
-    auto generate_options = on_device_model::mojom::GenerateOptions::New();
-    const optimization_guide::SamplingParams sampling_param =
-        session_->GetSamplingParams();
-    generate_options->top_k = sampling_param.top_k;
-    generate_options->temperature = sampling_param.temperature;
-    session_->GetSession().Generate(std::move(generate_options),
-                                    std::move(response_remote));
+    session_->GetSession().Generate(
+        on_device_model::mojom::GenerateOptions::New(),
+        std::move(response_remote));
     return;
   }
 

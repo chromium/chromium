@@ -104,12 +104,15 @@ ChromeMLCancelFn SessionAccessor::Append(
 
 ChromeMLCancelFn SessionAccessor::Generate(
     on_device_model::mojom::GenerateOptionsPtr options,
+    uint32_t top_k,
+    float temperature,
     ChromeMLExecutionOutputFn output_fn) {
   auto canceler = base::MakeRefCounted<Canceler>(chrome_ml_.get());
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&SessionAccessor::GenerateInternal, base::Unretained(this),
-                     std::move(options), std::move(output_fn), canceler));
+                     std::move(options), top_k, temperature,
+                     std::move(output_fn), canceler));
   return [canceler] { canceler->Cancel(); };
 }
 
@@ -161,6 +164,8 @@ void SessionAccessor::CreateInternal(
     params->capabilities.Put(on_device_model::CapabilityFlags::kAudioInput);
   }
 
+  // TODO(crbug.com/403383823): Add sampling params to
+  // ChromeMLAdaptationDescriptor and pass them here.
   ChromeMLAdaptationDescriptor descriptor = {
       .max_tokens = params->max_tokens,
       .enable_image_input = params->capabilities.Has(
@@ -209,13 +214,17 @@ void SessionAccessor::AppendInternal(
 DISABLE_CFI_DLSYM
 void SessionAccessor::GenerateInternal(
     on_device_model::mojom::GenerateOptionsPtr generate_options,
+    uint32_t top_k,
+    float temperature,
     ChromeMLExecutionOutputFn output_fn,
     scoped_refptr<Canceler> canceler) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   ChromeMLExecuteOptions options{
       .max_output_tokens = generate_options->max_output_tokens,
-      .top_k = generate_options->top_k.value_or(1),
-      .temperature = generate_options->temperature.value_or(0),
+      // TODO(crbug.com/403383823): Remove these fields from
+      // ChromeMLExecuteOptions.
+      .top_k = top_k,
+      .temperature = temperature,
   };
   if (output_fn) {
     options.execution_output_fn = &output_fn;
