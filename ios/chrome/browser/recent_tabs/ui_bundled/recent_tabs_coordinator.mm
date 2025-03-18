@@ -112,7 +112,7 @@
   // OriginalProfile since the mediator services need a SignIn
   // manager which is not present in an OffTheRecord Profile.
   DCHECK(!self.mediator);
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
 
   sync_sessions::SessionSyncService* sessionSyncService =
       SessionSyncServiceFactory::GetForProfile(profile);
@@ -200,7 +200,7 @@
       "Mobile.RecentTabsManager.TotalTabsFromOtherDevicesOpenAll",
       session->tabs.size());
 
-  BOOL inIncognito = self.browser->GetProfile()->IsOffTheRecord();
+  BOOL inIncognito = self.profile->IsOffTheRecord();
   UrlLoadingBrowserAgent* URLLoader =
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
   OpenDistantSessionInBackground(session, inIncognito,
@@ -238,7 +238,7 @@
   // if there is no signed-in account (eg. if sign-in unsuccessful) or if sync
   // is disabled by policies.
   if (history_sync::GetSkipReason(_syncService, _authenticationService,
-                                  self.browser->GetProfile()->GetPrefs(), NO) !=
+                                  self.profile->GetPrefs(), NO) !=
       history_sync::HistorySyncSkipReason::kNone) {
     [self.mediator refreshSessionsView];
   } else {

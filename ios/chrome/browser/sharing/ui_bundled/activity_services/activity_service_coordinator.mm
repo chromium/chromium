@@ -91,7 +91,7 @@ constexpr CGFloat kAppIconPointSize = 80;
       static_cast<id<BrowserCoordinatorCommands, FindInPageCommands>>(
           self.browser->GetCommandDispatcher());
 
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   self.incognito = profile->IsOffTheRecord();
   bookmarks::BookmarkModel* bookmarkModel =
       ios::BookmarkModelFactory::GetForProfile(profile);
