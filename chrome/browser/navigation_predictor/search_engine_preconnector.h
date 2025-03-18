@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/predictors/preconnect_manager.h"
 #include "url/origin.h"
 
 namespace content {
@@ -22,10 +23,11 @@ BASE_DECLARE_FEATURE(kPreconnectToSearchWithPrivacyModeEnabled);
 
 // Class to preconnect to the user's default search engine at regular intervals.
 // Preconnects are made by |this| if the browser app is likely in foreground.
-class SearchEnginePreconnector {
+class SearchEnginePreconnector
+    : public predictors::PreconnectManager::Delegate {
  public:
   explicit SearchEnginePreconnector(content::BrowserContext* browser_context);
-  ~SearchEnginePreconnector();
+  ~SearchEnginePreconnector() override;
 
   SearchEnginePreconnector(const SearchEnginePreconnector&) = delete;
   SearchEnginePreconnector& operator=(const SearchEnginePreconnector&) = delete;
@@ -37,6 +39,15 @@ class SearchEnginePreconnector {
 
   // Stops preconnecting to the DSE. Called on app background.
   void StopPreconnecting();
+
+  // PreconnectManager::Delegate:
+  void PreconnectInitiated(const GURL& url,
+                           const GURL& preconnect_url) override {}
+  void PreconnectFinished(
+      std::unique_ptr<predictors::PreconnectStats> stats) override {}
+
+  // Lazily creates the PreconnectManager instance.
+  predictors::PreconnectManager& GetPreconnectManager();
 
  private:
   // Preconnects to the default search engine synchronously. Preconnects in
@@ -52,11 +63,19 @@ class SearchEnginePreconnector {
 
   int GetPreconnectIntervalSec() const;
 
+  base::WeakPtr<SearchEnginePreconnector> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
   // Used to get keyed services.
   const raw_ptr<content::BrowserContext> browser_context_;
 
   // Used to preconnect regularly.
   base::OneShotTimer timer_;
+
+  std::unique_ptr<predictors::PreconnectManager> preconnect_manager_;
+
+  base::WeakPtrFactory<SearchEnginePreconnector> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_NAVIGATION_PREDICTOR_SEARCH_ENGINE_PRECONNECTOR_H_

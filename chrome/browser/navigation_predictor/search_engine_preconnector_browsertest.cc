@@ -60,11 +60,21 @@ class SearchEnginePreconnectorBrowserTest
     subresource_filter::SubresourceFilterBrowserTest::SetUpOnMainThread();
     host_resolver()->ClearRules();
 
+    // Get notified for Loading predictor's preconnect observer.
     auto* loading_predictor =
         predictors::LoadingPredictorFactory::GetForProfile(
             browser()->profile());
     ASSERT_TRUE(loading_predictor);
     loading_predictor->preconnect_manager()->SetObserverForTesting(this);
+
+    // Also get notified for the SearchEnginePreconnect's preconnect observer.
+    auto* navigation_predictor_keyed_service =
+        NavigationPredictorKeyedServiceFactory::GetForProfile(
+            browser()->profile());
+    ASSERT_TRUE(navigation_predictor_keyed_service);
+    navigation_predictor_keyed_service->search_engine_preconnector()
+        ->GetPreconnectManager()
+        .SetObserverForTesting(this);
   }
 
   const GURL GetTestURL(const char* file) const {

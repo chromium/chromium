@@ -1762,6 +1762,10 @@ static_library("browser") {
     "//chrome/browser/ip_protection",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/navigation_predictor:impl",
+
+    # TODO(crbug.com/394204688): Remove this once we ensure that
+    # `PreconnectFromKeyedService` does not cause any regressions.
+    "//chrome/browser/navigation_predictor:navigation_predictor",
     "//chrome/browser/optimization_guide:impl",
     "//chrome/browser/permissions",
     "//chrome/browser/policy/messaging_layer/storage_selector",

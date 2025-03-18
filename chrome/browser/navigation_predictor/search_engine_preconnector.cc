@@ -12,8 +12,7 @@
 #include "chrome/browser/navigation_predictor/navigation_predictor_features.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
-#include "chrome/browser/predictors/loading_predictor.h"
-#include "chrome/browser/predictors/loading_predictor_factory.h"
+#include "chrome/browser/predictors/loading_predictor_config.h"
 #include "chrome/browser/predictors/predictors_traffic_annotations.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -90,11 +89,14 @@ void SearchEnginePreconnector::PreconnectDSE() {
     return;
   }
 
-  auto* loading_predictor = predictors::LoadingPredictorFactory::GetForProfile(
-      Profile::FromBrowserContext(browser_context_));
-
-  if (!loading_predictor)
+  if (!preconnect_url.is_valid() || !preconnect_url.has_host()) {
     return;
+  }
+
+  if (!predictors::IsPreconnectAllowed(
+          Profile::FromBrowserContext(browser_context_))) {
+    return;
+  }
 
   const bool is_browser_app_likely_in_foreground =
       IsBrowserAppLikelyInForeground();
@@ -110,16 +112,18 @@ void SearchEnginePreconnector::PreconnectDSE() {
     net::SchemefulSite schemeful_site(preconnect_url);
     auto network_anonymziation_key =
         net::NetworkAnonymizationKey::CreateSameSite(schemeful_site);
-    loading_predictor->PreconnectURLIfAllowed(
+    GetPreconnectManager().StartPreconnectUrl(
         preconnect_url, /*allow_credentials=*/true, network_anonymziation_key,
-        predictors::kSearchEnginePreconnectTrafficAnnotation);
+        predictors::kSearchEnginePreconnectTrafficAnnotation,
+        /*storage_partition_config=*/nullptr);
 
     if (base::FeatureList::IsEnabled(
             features::kPreconnectToSearchWithPrivacyModeEnabled)) {
-      loading_predictor->PreconnectURLIfAllowed(
+      GetPreconnectManager().StartPreconnectUrl(
           preconnect_url,
           /*allow_credentials=*/false, network_anonymziation_key,
-          predictors::kSearchEnginePreconnectTrafficAnnotation);
+          predictors::kSearchEnginePreconnectTrafficAnnotation,
+          /*storage_partition_config=*/nullptr);
     }
   }
 
@@ -160,4 +164,14 @@ int SearchEnginePreconnector::GetPreconnectIntervalSec() const {
       net::features::kSearchEnginePreconnectInterval, "preconnect_interval",
       kPreconnectIntervalSec);
   return preconnect_interval;
+}
+
+predictors::PreconnectManager&
+SearchEnginePreconnector::GetPreconnectManager() {
+  if (!preconnect_manager_) {
+    preconnect_manager_ = std::make_unique<predictors::PreconnectManager>(
+        GetWeakPtr(), Profile::FromBrowserContext(browser_context_));
+  }
+
+  return *preconnect_manager_.get();
 }
