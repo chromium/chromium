@@ -38,7 +38,6 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/drive/drive_notification_manager_factory.h"
 #include "chrome/browser/file_util_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -47,7 +46,6 @@
 #include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/download/public/common/download_item.h"
-#include "components/drive/drive_notification_manager.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/drive/event_logger.h"
 #include "components/prefs/pref_service.h"
@@ -442,12 +440,6 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
     Value::Dict connection_status;
     connection_status.Set(
         "status", ToString(drive::util::GetDriveConnectionStatus(profile())));
-    drive::DriveNotificationManager* const manager =
-        drive::DriveNotificationManagerFactory::FindForBrowserContext(
-            profile());
-    connection_status.Set(
-        "push-notification-enabled",
-        manager ? manager->push_notification_enabled() : false);
 
     MaybeCallJavascript("updateConnectionStatus",
                         Value(std::move(connection_status)));

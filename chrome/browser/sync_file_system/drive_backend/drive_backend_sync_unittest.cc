@@ -126,7 +126,6 @@ class DriveBackendSyncTest : public testing::Test,
         base::SingleThreadTaskRunner::GetCurrentDefault(),  // ui_task_runner
         worker_task_runner_.get(), drive_task_runner.get(), base_dir_.GetPath(),
         nullptr,  // task_logger
-        nullptr,  // notification_manager
         extensions::ExtensionRegistrar::Get(&profile_),
         extensions::ExtensionRegistry::Get(&profile_),
         nullptr,  // identity_manager
@@ -323,7 +322,7 @@ class DriveBackendSyncTest : public testing::Test,
   }
 
   void FetchRemoteChanges() {
-    remote_sync_service_->OnNotificationTimerFired();
+    remote_sync_service_->OnReadyToSendRequests();
     WaitForIdleWorker();
   }
 

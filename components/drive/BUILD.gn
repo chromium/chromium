@@ -10,16 +10,11 @@ component("drive") {
   sources = [
     "drive_api_util.cc",
     "drive_api_util.h",
-    "drive_notification_manager.cc",
-    "drive_notification_manager.h",
-    "drive_notification_observer.h",
     "drive_pref_names.h",
     "drive_uploader.cc",
     "drive_uploader.h",
     "event_logger.cc",
     "event_logger.h",
-    "features.cc",
-    "features.h",
     "file_errors.cc",
     "file_errors.h",
     "file_system_core_util.cc",
@@ -94,7 +89,6 @@ source_set("unit_tests") {
 
   sources = [
     "drive_api_util_unittest.cc",
-    "drive_notification_manager_unittest.cc",
     "drive_uploader_unittest.cc",
     "event_logger_unittest.cc",
     "resource_metadata_storage_unittest.cc",
