@@ -19,10 +19,13 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/i18n/message_formatter.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/session_manager/session_manager_types.h"
 #include "remoting/base/string_resources.h"
@@ -99,6 +102,48 @@ gfx::NativeView GetParentContainer() {
                                   GetParentContainerId());
 }
 
+class CountdownTimer {
+ public:
+  using CountdownCallback = base::RepeatingCallback<void(base::TimeDelta)>;
+
+  explicit CountdownTimer(base::TimeDelta time,
+                          CountdownCallback countdown_callback,
+                          base::OnceClosure completion_callback)
+      : time_left_(time),
+        countdown_callback_(std::move(countdown_callback)),
+        completion_callback_(std::move(completion_callback)) {}
+
+  CountdownTimer(const CountdownTimer&) = delete;
+  CountdownTimer& operator=(const CountdownTimer&) = delete;
+
+  void Start() {
+    countdown_timer_.Start(FROM_HERE, /*delay=*/base::Seconds(1),
+                           base::BindRepeating(&CountdownTimer::RunEverySecond,
+                                               weak_factory_.GetWeakPtr()));
+  }
+
+ private:
+  void RunEverySecond() {
+    time_left_ = time_left_ - base::Seconds(1);
+
+    if (time_left_ < base::Seconds(1)) {
+      countdown_timer_.Stop();
+      std::move(completion_callback_).Run();
+      return;
+    }
+
+    countdown_callback_.Run(time_left_);
+  }
+
+  base::RepeatingTimer countdown_timer_;
+
+  base::TimeDelta time_left_;
+  CountdownCallback countdown_callback_;
+  base::OnceClosure completion_callback_;
+
+  base::WeakPtrFactory<CountdownTimer> weak_factory_{this};
+};
+
 }  // namespace
 
 class It2MeConfirmationDialogChromeOS::Core : public ash::SessionObserver {
@@ -108,6 +153,7 @@ class It2MeConfirmationDialogChromeOS::Core : public ash::SessionObserver {
                 const std::u16string& ok_label,
                 const std::u16string& cancel_label,
                 const std::optional<ui::ImageModel> icon,
+                const base::TimeDelta auto_accept_timeout,
                 ResultCallback callback);
   ~Core() override;
 
@@ -121,8 +167,19 @@ class It2MeConfirmationDialogChromeOS::Core : public ash::SessionObserver {
   // Implements ash::SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
+  bool HasAutoAcceptTimeout();
+  void StartAutoAcceptCountDown();
+  void UpdateCountdownInDialogUI(base::TimeDelta count);
+  void OnCountdownComplete();
+
+  std::unique_ptr<CountdownTimer> countdown_timer_;
+
   ResultCallback callback_;
   std::unique_ptr<MessageBox> message_box_;
+  base::TimeDelta auto_accept_timeout_;
+
+  base::WeakPtrFactory<It2MeConfirmationDialogChromeOS::Core> weak_factory_{
+      this};
 };
 
 It2MeConfirmationDialogChromeOS::Core::Core(
@@ -131,14 +188,16 @@ It2MeConfirmationDialogChromeOS::Core::Core(
     const std::u16string& ok_label,
     const std::u16string& cancel_label,
     const std::optional<ui::ImageModel> icon,
+    const base::TimeDelta auto_accept_timeout,
     ResultCallback callback) {
   session_controller()->AddObserver(this);
   message_box_ = std::make_unique<MessageBox>(
       title_label, message_label, ok_label, cancel_label, icon,
       base::BindOnce(
           &It2MeConfirmationDialogChromeOS::Core::OnConfirmationDialogResult,
-          base::Unretained(this)));
+          weak_factory_.GetWeakPtr()));
   callback_ = std::move(callback);
+  auto_accept_timeout_ = auto_accept_timeout;
 }
 
 It2MeConfirmationDialogChromeOS::Core::~Core() {
@@ -148,6 +207,10 @@ It2MeConfirmationDialogChromeOS::Core::~Core() {
 void It2MeConfirmationDialogChromeOS::Core::ShowConfirmationDialog() {
   // Ensure the message box remains visible when the user logs in/out.
   message_box_->ShowInParentContainer(GetParentContainer());
+
+  if (HasAutoAcceptTimeout()) {
+    StartAutoAcceptCountDown();
+  }
 }
 
 void It2MeConfirmationDialogChromeOS::Core::OnConfirmationDialogResult(
@@ -164,6 +227,37 @@ void It2MeConfirmationDialogChromeOS::Core::OnSessionStateChanged(
 views::DialogDelegate&
 It2MeConfirmationDialogChromeOS::Core::GetDialogDelegate() {
   return message_box_->GetDialogDelegate();
+}
+
+bool It2MeConfirmationDialogChromeOS::Core::HasAutoAcceptTimeout() {
+  return !auto_accept_timeout_.is_zero();
+}
+
+void It2MeConfirmationDialogChromeOS::Core::StartAutoAcceptCountDown() {
+  countdown_timer_ = std::make_unique<CountdownTimer>(
+      /*time=*/auto_accept_timeout_,
+      /*countdown_callback=*/
+      base::BindRepeating(
+          &It2MeConfirmationDialogChromeOS::Core::UpdateCountdownInDialogUI,
+          weak_factory_.GetWeakPtr()),
+      /*completion_callback=*/
+      base::BindOnce(
+          &It2MeConfirmationDialogChromeOS::Core::OnCountdownComplete,
+          weak_factory_.GetWeakPtr()));
+  countdown_timer_->Start();
+}
+
+void It2MeConfirmationDialogChromeOS::Core::UpdateCountdownInDialogUI(
+    base::TimeDelta time_left) {
+  // TODO(b:390346397): Update core dialog UI to show countdown.
+}
+
+void It2MeConfirmationDialogChromeOS::Core::OnCountdownComplete() {
+  weak_factory_.InvalidateWeakPtrs();
+  countdown_timer_.reset();
+  // `callback_` will lead to destruction of `this`, so no member fields should
+  // be accessed after this point.
+  std::move(callback_).Run(Result::OK);
 }
 
 It2MeConfirmationDialogChromeOS::It2MeConfirmationDialogChromeOS(
@@ -190,6 +284,7 @@ void It2MeConfirmationDialogChromeOS::Show(const std::string& remote_user_email,
         /*ok_button_label=*/GetConfirmButtonLabel(),
         /*cancel_button_label=*/GetDeclineButtonLabel(),
         /*icon=*/GetDialogIcon(),
+        /*auto_accept_timeout=*/auto_accept_timeout_,
         /*callback=*/
         base::BindOnce(
             &It2MeConfirmationDialogChromeOS::OnConfirmationDialogResult,
