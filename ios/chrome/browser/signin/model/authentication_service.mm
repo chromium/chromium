@@ -463,15 +463,10 @@ void AuthenticationService::SignOut(
   base::OnceClosure callback_closure =
       completion ? base::BindOnce(completion) : base::DoNothing();
 
-  if (base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts) &&
-      is_managed) {
-    if (completion) {
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, std::move(callback_closure));
-    }
-    return;
-  }
-
+  // Note: Once `kSeparateProfilesForManagedAccounts` is launched, the "clear
+  // browsing data" cases are only reachable for managed accounts that were
+  // already signed in before that feature was enabled. Once those users have
+  // been migrated, this code can be cleaned up.
   if ((is_managed && is_initial_sync_feature_setup_complete) ||
       (is_managed && is_migrated_from_syncing)) {
     // If `is_clear_data_feature_for_managed_users_enabled` is false, browsing
