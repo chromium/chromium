@@ -155,8 +155,8 @@ bool WebNode::IsFocusable() const {
     return false;
   if (!private_->GetDocument().HaveRenderBlockingResourcesLoaded())
     return false;
-  private_->GetDocument().UpdateStyleAndLayoutTreeForElement(
-      element, DocumentUpdateReason::kFocus);
+  // Element::IsFocusable will internally update style and layout, so there's no
+  // need to do so before calling it here.
   return element->IsFocusable();
 }
 
