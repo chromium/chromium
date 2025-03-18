@@ -52,14 +52,13 @@
 
 - (void)start {
   [super start];
-  ProfileIOS* profile = self.browser->GetProfile();
   first_run::BestFeaturesScreenVariationType variation =
       first_run::GetBestFeaturesScreenVariationType();
 
   if (variation == first_run::BestFeaturesScreenVariationType::
                        kSignedInUsersOnlyAfterDBPromo) {
     signin::IdentityManager* identityManager =
-        IdentityManagerFactory::GetForProfile(profile);
+        IdentityManagerFactory::GetForProfile(self.profile);
     if (!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
       // Skip the Best Features Screen if the "signed in users only" arm is
       // enabled and the user is not signed in.
@@ -70,9 +69,9 @@
 
   segmentation_platform::SegmentationPlatformService* segmentationService =
       segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
-          profile);
+          self.profile);
   commerce::ShoppingService* shoppingService =
-      commerce::ShoppingServiceFactory::GetForProfile(profile);
+      commerce::ShoppingServiceFactory::GetForProfile(self.profile);
   _mediator = [[BestFeaturesScreenMediator alloc]
       initWithSegmentationService:segmentationService
                   shoppingService:shoppingService];
