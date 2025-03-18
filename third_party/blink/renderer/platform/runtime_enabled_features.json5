@@ -1060,6 +1060,12 @@
       name: "CSSComputedStyleFullPseudoElementParser",
       status: "stable",
     },
+    // https://drafts.csswg.org/css-values-5/#progress
+    // container-progress()
+    {
+      name: "CSSContainerProgressNotation",
+      status: "experimental",
+    },
     {
       // https://drafts.csswg.org/css-borders-4/#corner-shaping
       name: "CSSCornerShape",
@@ -1165,6 +1171,12 @@
       name: "CSSMasonryLayout",
       status: "test",
     },
+    // https://drafts.csswg.org/css-values-5/#progress
+    // media-progress()
+    {
+      name: "CSSMediaProgressNotation",
+      status: "experimental",
+    },
     {
       name: "CSSMixins",
       status: "test",
@@ -1191,7 +1203,7 @@
       status: "experimental",
     },
     // https://drafts.csswg.org/css-values-5/#progress
-    // progress(), media-progress(), container-progress()
+    // progress()
     {
       name: "CSSProgressNotation",
       status: "stable",
