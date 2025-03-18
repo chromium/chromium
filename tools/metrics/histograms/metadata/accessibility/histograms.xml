@@ -3484,6 +3484,16 @@ even if they fit the naming pattern. -->
   <token key="ReportDelay" variants="ReportDelay"/>
 </histogram>
 
+<histogram name="DomDistiller.Android.ReaderModeEnabledInAccessibilitySettings"
+    enum="Boolean" expires_after="2025-09-07">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <summary>
+    Tracks when the user interacts with the reader mode toggle in accessibility
+    settings.
+  </summary>
+</histogram>
+
 <histogram name="DomDistiller.ReaderMode.EntryPoint"
     enum="ReaderModeEntryPoint" expires_after="2023-11-30">
   <owner>katie@chromium.org</owner>
