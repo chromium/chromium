@@ -2596,7 +2596,8 @@ class TabListMediator implements TabListNotificationHandler {
 
     private void renameTabGroup(int tabId) {
         TabModel tabModel = mCurrentTabGroupModelFilterSupplier.get().getTabModel();
-        int rootId = tabModel.getTabById(tabId).getRootId();
+        Tab tab = tabModel.getTabById(tabId);
+        int rootId = tab.getRootId();
         TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
 
         var tabGroupVisualDataDialogManager =
@@ -2640,12 +2641,12 @@ class TabListMediator implements TabListNotificationHandler {
                                 RecordUserAction.record("TabGroup.RenameDialog.ColorChanged");
                             }
 
-                            String defaultGroupTitle =
-                                    tabGroupVisualDataDialogManager.getDefaultGroupTitle();
+                            String initialGroupTitle =
+                                    tabGroupVisualDataDialogManager.getInitialGroupTitle();
                             String inputGroupTitle =
                                     tabGroupVisualDataDialogManager.getCurrentGroupTitle();
                             boolean didChangeTitle =
-                                    !Objects.equals(defaultGroupTitle, inputGroupTitle);
+                                    !Objects.equals(initialGroupTitle, inputGroupTitle);
                             // This check must be included in case the user has a null title
                             // which is displayed as a tab count and chooses not to change it.
                             if (didChangeTitle) {
@@ -2658,7 +2659,7 @@ class TabListMediator implements TabListNotificationHandler {
                     }
                 };
 
-        tabGroupVisualDataDialogManager.showDialog(rootId, filter, dialogController);
+        tabGroupVisualDataDialogManager.showDialog(tab.getTabGroupId(), filter, dialogController);
     }
 
     private TextResolver getActionButtonDescriptionTextResolver(

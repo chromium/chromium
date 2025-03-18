@@ -186,7 +186,7 @@ public class TabListEditorLegacyGroupActionUnitTest {
         Tab tab = mTabModel.getTabAt(0);
         assertTrue(mAction.perform());
         verify(mGroupFilter).createSingleTabGroup(tab);
-        verify(mTabGroupCreationDialogManager).showDialog(tab.getRootId(), mGroupFilter);
+        verify(mTabGroupCreationDialogManager).showDialog(tab.getTabGroupId(), mGroupFilter);
 
         when(mGroupFilter.isTabInTabGroup(tab)).thenReturn(true);
         assertTrue(mAction.perform());
@@ -237,7 +237,8 @@ public class TabListEditorLegacyGroupActionUnitTest {
         assertTrue(mAction.perform());
         verify(mGroupFilter)
                 .mergeListOfTabsToGroup(selectedTabs.subList(0, 2), destinationTab, true);
-        verify(mTabGroupCreationDialogManager).showDialog(destinationTab.getRootId(), mGroupFilter);
+        verify(mTabGroupCreationDialogManager)
+                .showDialog(destinationTab.getTabGroupId(), mGroupFilter);
         verify(mDelegate).hideByAction();
     }
 

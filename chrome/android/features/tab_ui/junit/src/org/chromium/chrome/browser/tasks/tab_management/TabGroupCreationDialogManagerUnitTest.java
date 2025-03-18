@@ -19,6 +19,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -31,6 +32,7 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabGroupCreationDialogManagerUnitTest {
+    private static final Token TAB_GROUP_ID = new Token(378L, 48739L);
     private static final int TAB1_ID = 456;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -59,18 +61,18 @@ public class TabGroupCreationDialogManagerUnitTest {
     public void testShowOnWillMergingCreateNewGroup() {
         mTabGroupCreationDialogManager.setDialogManagerForTesting(mTabGroupVisualDataDialogManager);
 
-        mTabGroupCreationDialogManager.showDialog(TAB1_ID, mTabGroupModelFilter);
+        mTabGroupCreationDialogManager.showDialog(TAB_GROUP_ID, mTabGroupModelFilter);
         ModalDialogProperties.Controller controller =
                 mTabGroupCreationDialogManager.getDialogControllerForTesting();
         verify(mTabGroupVisualDataDialogManager)
-                .showDialog(TAB1_ID, mTabGroupModelFilter, controller);
+                .showDialog(TAB_GROUP_ID, mTabGroupModelFilter, controller);
     }
 
     @Test
     public void testRunnableOnDismiss() {
         mTabGroupCreationDialogManager.setDialogManagerForTesting(mTabGroupVisualDataDialogManager);
 
-        mTabGroupCreationDialogManager.showDialog(TAB1_ID, mTabGroupModelFilter);
+        mTabGroupCreationDialogManager.showDialog(TAB_GROUP_ID, mTabGroupModelFilter);
         ModalDialogProperties.Controller controller =
                 mTabGroupCreationDialogManager.getDialogControllerForTesting();
         controller.onDismiss(null, DialogDismissalCause.UNKNOWN);
