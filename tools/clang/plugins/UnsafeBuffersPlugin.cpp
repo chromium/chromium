@@ -288,7 +288,8 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
     }
     auto* decl = reinterpret_cast<clang::NamedDecl*>(diag.getRawArg(0));
     llvm::StringRef name = decl->getName();
-    return name == "strlen" || name == "atoi" || name == "atof";
+    return name == "strlen" || name == "wcslen" || name == "atoi" ||
+           name == "atof";
   }
 
   // Used to prevent recursing into HandleDiagnostic() when we're emitting a
