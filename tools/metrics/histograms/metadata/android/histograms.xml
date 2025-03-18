@@ -2648,7 +2648,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.MaybeCopyContentAreaAsBitmapSync.Time" units="ms"
-    expires_after="2025-05-01">
+    expires_after="2025-09-07">
   <owner>acondor@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
