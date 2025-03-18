@@ -5,6 +5,7 @@
 #include "services/accessibility/features/v8_utils.h"
 
 #include <string_view>
+#include <variant>
 
 #include "base/memory/raw_ptr.h"
 #include "v8-array-buffer.h"
@@ -36,7 +37,7 @@ v8::Local<v8::Value> V8ValueConverter::ToV8Value(
     raw_ptr<v8::Isolate> isolate;
     v8::Local<v8::Object> creation_context;
 
-    v8::Local<v8::Value> operator()(absl::monostate value) {
+    v8::Local<v8::Value> operator()(std::monostate value) {
       return v8::Null(isolate);
     }
 

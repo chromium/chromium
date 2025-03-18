@@ -6,6 +6,8 @@
 
 #include <string.h>
 
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "chromeos/ash/components/dbus/biod/biod_client.h"
@@ -14,7 +16,6 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/device/fingerprint/fingerprint.h"
 #include "services/device/public/mojom/fingerprint.mojom.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace device {
 
