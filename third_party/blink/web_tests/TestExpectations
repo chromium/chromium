@@ -9084,3 +9084,8 @@ crbug.com/391006701 [ Debug Mac ] images/yuv-decode-eligible/webp-image-decoding
 crbug.com/404060200 [ Mac12 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html [ Failure ]
 crbug.com/404060200 [ Mac12 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html?include=variant-2-test [ Failure Pass ]
 crbug.com/404060200 [ Mac12 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html?include=variant-4-test [ Failure Pass ]
+
+# Gardener 2025-03-18
+crbug.com/402494870 virtual/fractional-scroll-offsets/external/wpt/css/css-position/sticky/position-sticky-offset-print.html [ Failure Pass ]
+crbug.com/402494870 virtual/scalefactor200/external/wpt/css/printing/pseudo-animations-print.html [ Failure Pass ]
+crbug.com/402494870 virtual/scalefactor200/external/wpt/css/printing/zero-size-002-print.tentative.html [ Failure Pass ]
