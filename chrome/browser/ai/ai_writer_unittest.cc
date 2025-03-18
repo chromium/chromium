@@ -298,7 +298,8 @@ TEST_F(AIWriterTest, CreateWriterRetryAfterConfigNotAvailableForFeature) {
               const std::optional<optimization_guide::SessionConfigParams>&
                   config_params) {
             // Returns a MockSession for the second call.
-            return std::make_unique<optimization_guide::MockSession>();
+            return std::make_unique<
+                testing::NiceMock<optimization_guide::MockSession>>(&session_);
           }));
 
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
@@ -320,6 +321,15 @@ TEST_F(AIWriterTest, CreateWriterRetryAfterConfigNotAvailableForFeature) {
               optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
             availability_observer = observer;
             run_loop_for_add_observer.Quit();
+          }));
+
+  EXPECT_CALL(session_, GetContextSizeInTokens(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::MultimodalMessageReadView request_metadata,
+              optimization_guide::OptimizationGuideModelSizeInTokenCallback
+                  callback) {
+            std::move(callback).Run(
+                blink::mojom::kWritingAssistanceMaxInputTokenSize);
           }));
 
   mojo::Remote<blink::mojom::AIWriter> writer_remote;
@@ -407,6 +417,36 @@ TEST_F(AIWriterTest, CreateWriterAbortAfterConfigNotAvailableForFeature) {
 
   // RemoveOnDeviceModelAvailabilityChangeObserver should be called.
   run_loop_for_remove_observer.Run();
+}
+
+TEST_F(AIWriterTest, CreateWriterContextLimitExceededError) {
+  SetupMockOptimizationGuideKeyedService();
+  SetupMockSession();
+
+  EXPECT_CALL(session_, GetContextSizeInTokens(_, _))
+      .WillOnce(testing::Invoke(
+          [](optimization_guide::MultimodalMessageReadView request_metadata,
+             optimization_guide::OptimizationGuideModelSizeInTokenCallback
+                 callback) {
+            std::move(callback).Run(
+                blink::mojom::kWritingAssistanceMaxInputTokenSize + 1);
+          }));
+
+  MockCreateWriterClient mock_create_writer_client;
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_create_writer_client, OnError(_))
+      .WillOnce(testing::Invoke([&](blink::mojom::AIManagerCreateClientError
+                                        error) {
+        ASSERT_EQ(
+            error,
+            blink::mojom::AIManagerCreateClientError::kInitialInputTooLarge);
+        run_loop.Quit();
+      }));
+
+  mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
+  ai_manager->CreateWriter(mock_create_writer_client.BindNewPipeAndPassRemote(),
+                           GetDefaultOptions());
+  run_loop.Run();
 }
 
 TEST_F(AIWriterTest, WriteDefault) {

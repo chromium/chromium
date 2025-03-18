@@ -128,10 +128,10 @@ class CreateLanguageModelClient
             kExceptionMessageUnableToCreateSession);
         break;
       }
-      case AIManagerCreateClientError::kInitialPromptsTooLarge: {
+      case AIManagerCreateClientError::kInitialInputTooLarge: {
         GetResolver()->RejectWithDOMException(
             DOMExceptionCode::kQuotaExceededError,
-            kExceptionMessageInitialPromptTooLarge);
+            kExceptionMessageInputTooLarge);
         break;
       }
       case AIManagerCreateClientError::kUnsupportedLanguage: {

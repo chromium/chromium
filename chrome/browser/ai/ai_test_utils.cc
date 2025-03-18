@@ -112,6 +112,14 @@ void AITestUtils::AITestBase::SetupMockSession() {
         return std::make_unique<
             testing::NiceMock<optimization_guide::MockSession>>(&session_);
       });
+  ON_CALL(session_, GetContextSizeInTokens(testing::_, testing::_))
+      .WillByDefault(
+          [&](optimization_guide::MultimodalMessageReadView request_metadata,
+              optimization_guide::OptimizationGuideModelSizeInTokenCallback
+                  callback) {
+            std::move(callback).Run(
+                blink::mojom::kWritingAssistanceMaxInputTokenSize);
+          });
   ON_CALL(session_, GetExecutionInputSizeInTokens(testing::_, testing::_))
       .WillByDefault(
           [&](optimization_guide::MultimodalMessageReadView request_metadata,

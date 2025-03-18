@@ -367,7 +367,7 @@ void AILanguageModel::InitializeContextWithInitialPrompts(
     // than the limit.
     std::move(callback).Run(
         base::unexpected(
-            blink::mojom::AIManagerCreateClientError::kInitialPromptsTooLarge),
+            blink::mojom::AIManagerCreateClientError::kInitialInputTooLarge),
         /*info=*/nullptr);
     return;
   }

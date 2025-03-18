@@ -151,22 +151,84 @@ template <typename ContextBoundObjectType,
           typename ContextBoundObjectReceiverInterface,
           typename ClientRemoteInterface,
           typename CreateOptionsPtrType>
-class CreateContextBoundObjectTask : public CreateOnDeviceSessionTask {
+void OnSessionCreated(
+    AIContextBoundObjectSet& context_bound_object_set,
+    CreateOptionsPtrType options,
+    std::optional<optimization_guide::MultimodalMessage> initial_request,
+    mojo::Remote<ClientRemoteInterface> client_remote,
+    std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
+        session) {
+  if (!session) {
+    client_remote->OnError(
+        blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+    return;
+  }
+
+  if (initial_request.has_value()) {
+    session->GetContextSizeInTokens(
+        initial_request.value().read(),
+        base::BindOnce(
+            [](AIContextBoundObjectSet& context_bound_object_set,
+               CreateOptionsPtrType options,
+               mojo::Remote<ClientRemoteInterface> client_remote,
+               std::unique_ptr<
+                   optimization_guide::OptimizationGuideModelExecutor::Session>
+                   session,
+               std::optional<uint32_t> result) {
+              if (!result.has_value()) {
+                client_remote->OnError(
+                    blink::mojom::AIManagerCreateClientError::
+                        kUnableToCalculateTokenSize);
+                return;
+              }
+              if (result.value() >
+                  blink::mojom::kWritingAssistanceMaxInputTokenSize) {
+                client_remote->OnError(
+                    blink::mojom::AIManagerCreateClientError::
+                        kInitialInputTooLarge);
+                return;
+              }
+              mojo::PendingRemote<ContextBoundObjectReceiverInterface>
+                  pending_remote;
+              context_bound_object_set.AddContextBoundObject(
+                  std::make_unique<ContextBoundObjectType>(
+                      context_bound_object_set, std::move(session),
+                      std::move(options),
+                      pending_remote.InitWithNewPipeAndPassReceiver()));
+              client_remote->OnResult(std::move(pending_remote));
+            },
+            std::ref(context_bound_object_set), std::move(options),
+            std::move(client_remote), std::move(session)));
+    return;
+  }
+
+  mojo::PendingRemote<ContextBoundObjectReceiverInterface> pending_remote;
+  context_bound_object_set.AddContextBoundObject(
+      std::make_unique<ContextBoundObjectType>(
+          context_bound_object_set, std::move(session), std::move(options),
+          pending_remote.InitWithNewPipeAndPassReceiver()));
+  client_remote->OnResult(std::move(pending_remote));
+}
+
+// TODO(crbug.com/402442890): Move this to `ai_create_on_device_session_task.cc`
+template <typename ClientRemoteInterface>
+class CreateWritingAssistanceSessionTask : public CreateOnDeviceSessionTask {
  public:
-  using CreateObjectCallback =
-      base::OnceCallback<std::unique_ptr<ContextBoundObjectType>(
-          std::unique_ptr<
-              optimization_guide::OptimizationGuideModelExecutor::Session>,
-          mojo::PendingReceiver<ContextBoundObjectReceiverInterface>)>;
+  using WritingAssistanceSessionTaskCallback = base::OnceCallback<void(
+      mojo::Remote<ClientRemoteInterface>,
+      std::unique_ptr<
+          optimization_guide::OptimizationGuideModelExecutor::Session>)>;
+
   static void CreateAndStart(
       content::BrowserContext* browser_context,
       optimization_guide::ModelBasedCapabilityKey feature,
       AIContextBoundObjectSet& context_bound_object_set,
-      CreateOptionsPtrType options,
+      WritingAssistanceSessionTaskCallback callback,
       mojo::PendingRemote<ClientRemoteInterface> client) {
-    auto task = std::make_unique<CreateContextBoundObjectTask>(
-        base::PassKey<CreateContextBoundObjectTask>(), browser_context, feature,
-        context_bound_object_set, std::move(options), std::move(client));
+    auto task = std::make_unique<CreateWritingAssistanceSessionTask>(
+        base::PassKey<CreateWritingAssistanceSessionTask>(), browser_context,
+        feature, context_bound_object_set, std::move(callback),
+        std::move(client));
     task->Start();
     if (task->IsPending()) {
       // Put `task` to AIContextBoundObjectSet to continue observing the model
@@ -175,47 +237,32 @@ class CreateContextBoundObjectTask : public CreateOnDeviceSessionTask {
     }
   }
 
-  CreateContextBoundObjectTask(
-      base::PassKey<CreateContextBoundObjectTask>,
+  CreateWritingAssistanceSessionTask(
+      base::PassKey<CreateWritingAssistanceSessionTask>,
       content::BrowserContext* browser_context,
       optimization_guide::ModelBasedCapabilityKey feature,
       AIContextBoundObjectSet& context_bound_object_set,
-      CreateOptionsPtrType options,
+      WritingAssistanceSessionTaskCallback callback,
       mojo::PendingRemote<ClientRemoteInterface> client)
       : CreateOnDeviceSessionTask(context_bound_object_set,
                                   browser_context,
                                   feature),
-        context_bound_object_set_(context_bound_object_set),
-        options_(std::move(options)),
+        callback_(std::move(callback)),
         client_remote_(std::move(client)) {
     client_remote_.set_disconnect_handler(base::BindOnce(
-        &CreateContextBoundObjectTask::Cancel, base::Unretained(this)));
+        &CreateWritingAssistanceSessionTask::Cancel, base::Unretained(this)));
   }
-  ~CreateContextBoundObjectTask() override = default;
+  ~CreateWritingAssistanceSessionTask() override = default;
 
  protected:
   void OnFinish(std::unique_ptr<
                 optimization_guide::OptimizationGuideModelExecutor::Session>
                     session) override {
-    if (!session) {
-      client_remote_->OnError(
-          blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
-      return;
-    }
-    mojo::PendingRemote<ContextBoundObjectReceiverInterface> pending_remote;
-    context_bound_object_set_->AddContextBoundObject(
-        std::make_unique<ContextBoundObjectType>(
-            context_bound_object_set_.get(), std::move(session),
-            std::move(options_),
-            pending_remote.InitWithNewPipeAndPassReceiver()));
-    client_remote_->OnResult(std::move(pending_remote));
+    std::move(callback_).Run(std::move(client_remote_), std::move(session));
   }
 
  private:
-  // Both of `CreateContextBoundObjectTask` and `AIContextBoundObjectSet` are
-  // owned by the `AIManager`.
-  const raw_ref<AIContextBoundObjectSet> context_bound_object_set_;
-  CreateOptionsPtrType options_;
+  WritingAssistanceSessionTaskCallback callback_;
   mojo::Remote<ClientRemoteInterface> client_remote_;
 };
 
@@ -440,12 +487,22 @@ void AIManager::CreateSummarizer(
         blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
     return;
   }
-  CreateContextBoundObjectTask<AISummarizer, blink::mojom::AISummarizer,
-                               blink::mojom::AIManagerCreateSummarizerClient,
-                               blink::mojom::AISummarizerCreateOptionsPtr>::
+  // TODO(crbug.com/398888519): For Summarizer, any context is not set as
+  // `input_context_substitutions` in the optimization guide model config,
+  // which makes it unable to calculate the context token size. Passing in
+  // std::nullopt would prevent unnecessary calculate calls to be made. Consider
+  // updating the model config, or use `SessionImpl::GetSizeInTokens()` instead.
+  auto callback = base::BindOnce(
+      &OnSessionCreated<AISummarizer, blink::mojom::AISummarizer,
+                        blink::mojom::AIManagerCreateSummarizerClient,
+                        blink::mojom::AISummarizerCreateOptionsPtr>,
+      std::ref(context_bound_object_set_), std::move(options),
+      /*initial_request=*/std::nullopt);
+  CreateWritingAssistanceSessionTask<
+      blink::mojom::AIManagerCreateSummarizerClient>::
       CreateAndStart(browser_context_,
                      optimization_guide::ModelBasedCapabilityKey::kSummarize,
-                     context_bound_object_set_, std::move(options),
+                     context_bound_object_set_, std::move(callback),
                      std::move(client));
 }
 
@@ -522,13 +579,25 @@ void AIManager::CreateWriter(
         blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
     return;
   }
-  CreateContextBoundObjectTask<AIWriter, blink::mojom::AIWriter,
-                               blink::mojom::AIManagerCreateWriterClient,
-                               blink::mojom::AIWriterCreateOptionsPtr>::
+  std::optional<optimization_guide::MultimodalMessage> initial_request;
+  if (options->shared_context.has_value() &&
+      !options->shared_context.value().empty()) {
+    optimization_guide::proto::WritingAssistanceApiRequest request;
+    request.set_shared_context(options->shared_context.value());
+    initial_request = optimization_guide::MultimodalMessage(request);
+  }
+  auto callback = base::BindOnce(
+      &OnSessionCreated<AIWriter, blink::mojom::AIWriter,
+                        blink::mojom::AIManagerCreateWriterClient,
+                        blink::mojom::AIWriterCreateOptionsPtr>,
+      std::ref(context_bound_object_set_), std::move(options),
+      std::move(initial_request));
+  CreateWritingAssistanceSessionTask<
+      blink::mojom::AIManagerCreateWriterClient>::
       CreateAndStart(
           browser_context_,
           optimization_guide::ModelBasedCapabilityKey::kWritingAssistanceApi,
-          context_bound_object_set_, std::move(options), std::move(client));
+          context_bound_object_set_, std::move(callback), std::move(client));
 }
 
 void AIManager::CanCreateRewriter(
@@ -558,13 +627,25 @@ void AIManager::CreateRewriter(
         blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
     return;
   }
-  CreateContextBoundObjectTask<AIRewriter, blink::mojom::AIRewriter,
-                               blink::mojom::AIManagerCreateRewriterClient,
-                               blink::mojom::AIRewriterCreateOptionsPtr>::
+  std::optional<optimization_guide::MultimodalMessage> initial_request;
+  if (options->shared_context.has_value() &&
+      !options->shared_context.value().empty()) {
+    optimization_guide::proto::WritingAssistanceApiRequest request;
+    request.set_shared_context(options->shared_context.value());
+    initial_request = optimization_guide::MultimodalMessage(request);
+  }
+  auto callback = base::BindOnce(
+      &OnSessionCreated<AIRewriter, blink::mojom::AIRewriter,
+                        blink::mojom::AIManagerCreateRewriterClient,
+                        blink::mojom::AIRewriterCreateOptionsPtr>,
+      std::ref(context_bound_object_set_), std::move(options),
+      std::move(initial_request));
+  CreateWritingAssistanceSessionTask<
+      blink::mojom::AIManagerCreateRewriterClient>::
       CreateAndStart(
           browser_context_,
           optimization_guide::ModelBasedCapabilityKey::kWritingAssistanceApi,
-          context_bound_object_set_, std::move(options), std::move(client));
+          context_bound_object_set_, std::move(callback), std::move(client));
 }
 
 void AIManager::CanCreateSession(
