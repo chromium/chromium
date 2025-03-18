@@ -252,23 +252,6 @@ class CORE_EXPORT GridLayoutAlgorithm
       LayoutUnit* intrinsic_block_size,
       LayoutUnit* offset_in_stitched_container);
 
-  // Constructs gap geometry for Gap Decorations. Each gap boundary is
-  // determined by its start and end offsets and stored in `gap_geometry`.
-  // For column gaps, the offsets correspond to inline coordinates;
-  // for row gaps, they correspond to block coordinates. The first track,
-  // midpoint of each gap boundary, and last track are stored in
-  // `intersection_points`, which will be used to determine pairs for painting
-  // gap decorations.
-  void BuildGapGeometry(GridTrackSizingDirection track_direction,
-                        const GridLayoutData& layout_data,
-                        HeapVector<LayoutUnit>& intersection_points,
-                        GapFragmentData::GapGeometry* gap_geometry) const;
-  // TODO(samomekarajr): Remove this method when done with the new
-  // implementation.
-  void PopulateGapIntersectionPoints(
-      const HeapVector<LayoutUnit>& intersection_points,
-      GapFragmentData::GapBoundaries& gap_boundaries) const;
-
   void BuildGapIntersectionPoints(
       const GridLayoutData& layout_data,
       GapFragmentData::GapGeometry* gap_geometry) const;

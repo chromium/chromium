@@ -3428,18 +3428,6 @@ void GridLayoutAlgorithm::PlaceGridItems(
   if (RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
       Style().HasColumnRule()) {
     CHECK(gap_geometry);
-    HeapVector<LayoutUnit> inline_intersection_points;
-    BuildGapGeometry(kForColumns, layout_data, inline_intersection_points,
-                     gap_geometry);
-
-    HeapVector<LayoutUnit> block_intersection_points;
-    BuildGapGeometry(kForRows, layout_data, block_intersection_points,
-                     gap_geometry);
-
-    PopulateGapIntersectionPoints(block_intersection_points,
-                                  gap_geometry->GetGapBoundaries(kForColumns));
-    PopulateGapIntersectionPoints(inline_intersection_points,
-                                  gap_geometry->GetGapBoundaries(kForRows));
     container_builder_.SetGapGeometry(std::move(gap_geometry));
   }
 
@@ -4025,37 +4013,6 @@ void GridLayoutAlgorithm::MarkBlockedStatusForGapIntersections(
   }
   if (grid_item.SpanSize(kForRows) > 1) {
     MarkIntersectionPoints(kForRows, row_span, col_span);
-  }
-}
-
-void GridLayoutAlgorithm::BuildGapGeometry(
-    GridTrackSizingDirection track_direction,
-    const GridLayoutData& layout_data,
-    HeapVector<LayoutUnit>& intersection_points,
-    GapFragmentData::GapGeometry* gap_geometry) const {
-  const auto tracks =
-      LayoutGrid::ComputeExpandedPositions(&layout_data, track_direction);
-  const auto& gutter_size = track_direction == kForColumns
-                                ? layout_data.Columns().GutterSize()
-                                : layout_data.Rows().GutterSize();
-
-  intersection_points.push_back(tracks[0]);
-  for (wtf_size_t i = 1; i < tracks.size() - 1; ++i) {
-    const auto start_offset = tracks[i] - gutter_size;
-    const auto end_offset = tracks[i];
-    GapFragmentData::GapBoundary gap_boundary(/*index=*/i, start_offset,
-                                              end_offset);
-    intersection_points.push_back((start_offset + end_offset) / 2.0f);
-    gap_geometry->AddGapBoundary(track_direction, gap_boundary);
-  }
-  intersection_points.push_back(tracks[tracks.size() - 1]);
-}
-
-void GridLayoutAlgorithm::PopulateGapIntersectionPoints(
-    const HeapVector<LayoutUnit>& intersection_points,
-    GapFragmentData::GapBoundaries& gap_boundaries) const {
-  for (auto& gap : gap_boundaries) {
-    gap.intersection_points = intersection_points;
   }
 }
 
