@@ -2299,6 +2299,11 @@ Animation::CheckCanStartAnimationOnCompositorInternal() const {
 }
 
 bool Animation::EffectivelyPlaying() const {
+  if (!RuntimeEnabledFeatures::
+          CompositingDecisionAtAnimationPhaseBoundariesEnabled()) {
+    return Playing();
+  }
+
   if (!Playing()) {
     return false;
   }
@@ -2311,6 +2316,9 @@ bool Animation::EffectivelyPlaying() const {
 }
 
 void Animation::OnActivePhaseStateChange(bool in_active_phase) {
+  DCHECK(RuntimeEnabledFeatures::
+             CompositingDecisionAtAnimationPhaseBoundariesEnabled());
+
   if (!timeline_ || timeline_->IsMonotonicallyIncreasing()) {
     return;
   }
