@@ -3534,6 +3534,10 @@
      status: "stable",
     },
     {
+      name: "RangeBasedTextFind",
+      status: "stable",
+    },
+    {
       name: "RasterInducingScroll",
       status: "test",
     },
