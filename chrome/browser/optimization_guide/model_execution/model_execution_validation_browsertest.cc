@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
@@ -117,8 +118,8 @@ class ModelExecutionValidationBrowserTestBase : public InProcessBrowserTest {
     string_response.set_value("test_response");
     proto::ExecuteResponse execute_response;
     proto::Any* any_metadata = execute_response.mutable_response_metadata();
-    any_metadata->set_type_url("type.googleapis.com/" +
-                               string_response.GetTypeName());
+    any_metadata->set_type_url(
+        base::StrCat({"type.googleapis.com/", string_response.GetTypeName()}));
     string_response.SerializeToString(any_metadata->mutable_value());
 
     std::string serialized_response;

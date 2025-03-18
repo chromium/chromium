@@ -14,6 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_manager.h"
@@ -301,7 +302,8 @@ AILanguageModel::~AILanguageModel() = default;
 PromptApiMetadata AILanguageModel::ParseMetadata(
     const optimization_guide::proto::Any& any) {
   PromptApiMetadata metadata;
-  if (any.type_url() == "type.googleapis.com/" + metadata.GetTypeName()) {
+  if (any.type_url() ==
+      base::StrCat({"type.googleapis.com/", metadata.GetTypeName()})) {
     metadata.ParseFromString(any.value());
   }
   return metadata;

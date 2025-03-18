@@ -745,7 +745,8 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_Success) {
   response.SerializeToString(&serialized_metadata);
   optimization_guide::proto::Any result;
   result.set_value(serialized_metadata);
-  result.set_type_url("type.googleapis.com/" + response.GetTypeName());
+  result.set_type_url(
+      base::StrCat({"type.googleapis.com/", response.GetTypeName()}));
 
   std::vector<side_panel::customize_chrome::mojom::WallpaperSearchResultPtr>
       images;
@@ -855,7 +856,8 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_MultipleRequests) {
   response1.SerializeToString(&serialized_metadata1);
   optimization_guide::proto::Any result1;
   result1.set_value(serialized_metadata1);
-  result1.set_type_url("type.googleapis.com/" + response1.GetTypeName());
+  result1.set_type_url(
+      base::StrCat({"type.googleapis.com/", response1.GetTypeName()}));
 
   std::vector<side_panel::customize_chrome::mojom::WallpaperSearchResultPtr>
       images1;
@@ -919,7 +921,8 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_MultipleRequests) {
   response2.SerializeToString(&serialized_metadata2);
   optimization_guide::proto::Any result2;
   result2.set_value(serialized_metadata2);
-  result2.set_type_url("type.googleapis.com/" + response2.GetTypeName());
+  result2.set_type_url(
+      base::StrCat({"type.googleapis.com/", response2.GetTypeName()}));
 
   std::vector<side_panel::customize_chrome::mojom::WallpaperSearchResultPtr>
       images2;
@@ -1151,7 +1154,8 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoImages) {
   response.SerializeToString(&serialized_metadata);
   optimization_guide::proto::Any result;
   result.set_value(serialized_metadata);
-  result.set_type_url("type.googleapis.com/" + response.GetTypeName());
+  result.set_type_url(
+      base::StrCat({"type.googleapis.com/", response.GetTypeName()}));
 
   std::vector<side_panel::customize_chrome::mojom::WallpaperSearchResultPtr>
       images;
@@ -1449,7 +1453,8 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
   response.SerializeToString(&serialized_metadata);
   optimization_guide::proto::Any result;
   result.set_value(serialized_metadata);
-  result.set_type_url("type.googleapis.com/" + response.GetTypeName());
+  result.set_type_url(
+      base::StrCat({"type.googleapis.com/", response.GetTypeName()}));
 
   std::vector<side_panel::customize_chrome::mojom::WallpaperSearchResultPtr>
       images;
@@ -1584,7 +1589,8 @@ TEST_F(WallpaperSearchHandlerTest, SetUserFeedback) {
   response1.SerializeToString(&serialized_metadata1);
   optimization_guide::proto::Any result1;
   result1.set_value(serialized_metadata1);
-  result1.set_type_url("type.googleapis.com/" + response1.GetTypeName());
+  result1.set_type_url(
+      base::StrCat({"type.googleapis.com/", response1.GetTypeName()}));
   std::move(done_callback1)
       .Run(optimization_guide::OptimizationGuideModelExecutionResult(
                base::ok(result1), nullptr),
@@ -1631,7 +1637,8 @@ TEST_F(WallpaperSearchHandlerTest, SetUserFeedback) {
   response2.SerializeToString(&serialized_metadata2);
   optimization_guide::proto::Any result2;
   result2.set_value(serialized_metadata2);
-  result2.set_type_url("type.googleapis.com/" + response2.GetTypeName());
+  result2.set_type_url(
+      base::StrCat({"type.googleapis.com/", response2.GetTypeName()}));
 
   std::move(done_callback2)
       .Run(optimization_guide::OptimizationGuideModelExecutionResult(
