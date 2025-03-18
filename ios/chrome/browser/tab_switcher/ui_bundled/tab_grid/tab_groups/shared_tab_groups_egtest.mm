@@ -172,6 +172,22 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
   [TabGroupAppInterface cleanup];
 }
 
+- (void)testOpenURL {
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab2Title)];
+
+  [ChromeEarlGrey selectTabAtIndex:0];
+
+  GREYAssertEqual(0ul, [ChromeEarlGrey indexOfActiveNormalTab], @"Active");
+
+  GURL joinGroupURL = data_sharing::GetDataSharingUrl(data_sharing::GroupToken(
+      data_sharing::GroupId("resources%2F3be"), "CggHBicxA_slvx"));
+  [ChromeEarlGrey sceneOpenURL:joinGroupURL];
+
+  GREYAssertEqual(0ul, [ChromeEarlGrey indexOfActiveNormalTab], @"Active");
+}
+
 // Tests that the user education is shown in the grid only once.
 - (void)testUserEducationInGrid {
   if (@available(iOS 17, *)) {
