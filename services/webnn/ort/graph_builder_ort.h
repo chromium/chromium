@@ -37,7 +37,8 @@ namespace internal {
 template <typename T, typename... U>
 concept IsAnyOf = (std::same_as<T, U> || ...);
 template <typename T>
-concept IsSupportedTensorType = IsAnyOf<T, float, uint16_t, int64_t>;
+concept IsSupportedTensorType =
+    IsAnyOf<T, float, uint16_t, int32_t, uint32_t, int64_t>;
 
 }  // namespace internal
 
@@ -179,6 +180,13 @@ class GraphBuilderOrt {
       base::span<const int64_t> ends_value,
       base::span<const int64_t> steps_value);
 
+  // Clamp the indices within the dimension size to prevent out-of-bound
+  // reading.
+  [[nodiscard]] base::expected<std::string, mojom::ErrorPtr> ClampIndices(
+      std::string_view indices,
+      OperandDataType indices_data_type,
+      uint32_t dim_size);
+
   void AddInput(uint64_t input_id);
   void AddOutput(uint64_t output_id);
 
@@ -229,8 +237,10 @@ class GraphBuilderOrt {
   AddDequantizeOrQuantizeLinearOperation(
       std::string_view op_type,
       const DequantizeOrQuantizeLinear& operation_ptr);
-  void AddGatherOperation(const mojom::Gather& gather);
-  void AddGatherElementsOperation(const mojom::GatherElements& gather_elements);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddGatherOperation(
+      const mojom::Gather& gather);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr>
+  AddGatherElementsOperation(const mojom::GatherElements& gather_elements);
   void AddGatherNDOperation(const mojom::GatherND& gather_nd);
   void AddGemmOperation(const mojom::Gemm& gemm);
   template <typename GruType>

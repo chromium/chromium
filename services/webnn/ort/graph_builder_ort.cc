@@ -187,6 +187,18 @@ struct TensorTypeMap<uint16_t> {
 };
 
 template <>
+struct TensorTypeMap<int32_t> {
+  static constexpr ONNXTensorElementDataType value =
+      ONNX_TENSOR_ELEMENT_DATA_TYPE_INT32;
+};
+
+template <>
+struct TensorTypeMap<uint32_t> {
+  static constexpr ONNXTensorElementDataType value =
+      ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT32;
+};
+
+template <>
 struct TensorTypeMap<int64_t> {
   static constexpr ONNXTensorElementDataType value =
       ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64;
@@ -532,6 +544,54 @@ GraphBuilderOrt::AddSliceNode(std::string_view node,
   model_editor_.AddNode(kOpTypeSlice, node, inputs, outputs);
 
   return base::ok();
+}
+
+[[nodiscard]] base::expected<std::string, mojom::ErrorPtr>
+GraphBuilderOrt::ClampIndices(std::string_view indices,
+                              OperandDataType indices_data_type,
+                              uint32_t dim_size) {
+  const std::string node = GenerateNextOperationName("inserted_clamp");
+  const std::string output = GenerateNextOperandName();
+
+  // The dimension size must be greater than 0.
+  CHECK_GT(dim_size, 0u);
+
+  std::string min;
+  std::string max;
+  switch (indices_data_type) {
+    case OperandDataType::kInt32: {
+      int32_t min_value = -base::saturated_cast<int32_t>(dim_size);
+      int32_t max_value = base::saturated_cast<int32_t>(dim_size - 1);
+      ASSIGN_OR_RETURN(min, CreateScalarInitializer(min_value));
+      ASSIGN_OR_RETURN(max, CreateScalarInitializer(max_value));
+      break;
+    }
+    case OperandDataType::kUint32: {
+      uint32_t min_value = 0;
+      uint32_t max_value = dim_size - 1;
+      ASSIGN_OR_RETURN(min, CreateScalarInitializer(min_value));
+      ASSIGN_OR_RETURN(max, CreateScalarInitializer(max_value));
+      break;
+    }
+    case OperandDataType::kInt64: {
+      int64_t min_value = -static_cast<int64_t>(dim_size);
+      int64_t max_value = static_cast<int64_t>(dim_size - 1);
+      ASSIGN_OR_RETURN(min, CreateScalarInitializer(min_value));
+      ASSIGN_OR_RETURN(max, CreateScalarInitializer(max_value));
+      break;
+    }
+    default:
+      NOTREACHED() << "[WebNN] Indices can only be one of the int32, uint32 "
+                      "and int64 data types.";
+  }
+
+  std::array<const char*, 3> inputs = {indices.data(), min.c_str(),
+                                       max.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  model_editor_.AddNode(kOpTypeClamp, node, inputs, outputs);
+
+  return output;
 }
 
 void GraphBuilderOrt::AddInput(uint64_t input_id) {
@@ -1402,28 +1462,37 @@ GraphBuilderOrt::AddDequantizeOrQuantizeLinearOperation(
   return base::ok();
 }
 
-void GraphBuilderOrt::AddGatherOperation(const mojom::Gather& gather) {
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderOrt::AddGatherOperation(const mojom::Gather& gather) {
   const std::string node = GenerateNextOperationName(gather.label);
   const std::string input = GetOperandNameById(gather.input_operand_id);
   const std::string indices = GetOperandNameById(gather.indices_operand_id);
   const std::string output = GetOperandNameById(gather.output_operand_id);
 
-  // TODO(https://github.com/shiyi9801/chromium/issues/82): Clamp the indices
-  // operand to ensure it won't be out-of-bound.
+  // Clamp the indices operand to ensure it won't be out-of-bound.
+  base::span<const uint32_t> input_shape =
+      GetOperand(gather.input_operand_id).descriptor.shape();
+  const OperandDataType indices_data_type =
+      GetOperand(gather.indices_operand_id).descriptor.data_type();
+  ASSIGN_OR_RETURN(
+      std::string clamped_indices,
+      ClampIndices(indices, indices_data_type, input_shape.at(gather.axis)));
 
   int64_t axis = static_cast<int64_t>(gather.axis);
   std::vector<ScopedOrtOpAttr> attributes;
   attributes.reserve(1);
   attributes.push_back(model_editor_.CreateAttribute(/*name=*/"axis", axis));
 
-  std::array<const char*, 2> inputs = {input.c_str(), indices.c_str()};
+  std::array<const char*, 2> inputs = {input.c_str(), clamped_indices.c_str()};
   std::array<const char*, 1> outputs = {output.c_str()};
 
   model_editor_.AddNode(kOpTypeGather, node, inputs, outputs,
                         std::move(attributes));
+  return base::ok();
 }
 
-void GraphBuilderOrt::AddGatherElementsOperation(
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderOrt::AddGatherElementsOperation(
     const mojom::GatherElements& gather_elements) {
   const std::string node = GenerateNextOperationName(gather_elements.label);
   const std::string input =
@@ -1433,19 +1502,26 @@ void GraphBuilderOrt::AddGatherElementsOperation(
   const std::string output =
       GetOperandNameById(gather_elements.output_operand_id);
 
-  // TODO(https://github.com/shiyi9801/chromium/issues/149): Clamp the indices
-  // operand to ensure it won't be out-of-bound.
+  // Clamp the indices operand to ensure it won't be out-of-bound.
+  base::span<const uint32_t> input_shape =
+      GetOperand(gather_elements.input_operand_id).descriptor.shape();
+  const OperandDataType indices_data_type =
+      GetOperand(gather_elements.indices_operand_id).descriptor.data_type();
+  ASSIGN_OR_RETURN(std::string clamped_indices,
+                   ClampIndices(indices, indices_data_type,
+                                input_shape.at(gather_elements.axis)));
 
   int64_t axis = static_cast<int64_t>(gather_elements.axis);
   std::vector<ScopedOrtOpAttr> attributes;
   attributes.reserve(1);
   attributes.push_back(model_editor_.CreateAttribute(/*name=*/"axis", axis));
 
-  std::array<const char*, 2> inputs = {input.c_str(), indices.c_str()};
+  std::array<const char*, 2> inputs = {input.c_str(), clamped_indices.c_str()};
   std::array<const char*, 1> outputs = {output.c_str()};
 
   model_editor_.AddNode(kOpTypeGatherElements, node, inputs, outputs,
                         std::move(attributes));
+  return base::ok();
 }
 
 void GraphBuilderOrt::AddGatherNDOperation(const mojom::GatherND& gather_nd) {
@@ -2905,11 +2981,12 @@ GraphBuilderOrt::BuildModel() {
         break;
       }
       case mojom::Operation::Tag::kGather: {
-        AddGatherOperation(*operation->get_gather());
+        RETURN_IF_ERROR(AddGatherOperation(*operation->get_gather()));
         break;
       }
       case mojom::Operation::Tag::kGatherElements: {
-        AddGatherElementsOperation(*operation->get_gather_elements());
+        RETURN_IF_ERROR(
+            AddGatherElementsOperation(*operation->get_gather_elements()));
         break;
       }
       case mojom::Operation::Tag::kGatherNd: {
