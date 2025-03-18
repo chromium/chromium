@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.commerce.coupons;
 
 import static org.chromium.chrome.browser.commerce.CommerceBottomSheetContentProperties.ALL_KEYS;
 import static org.chromium.chrome.browser.commerce.CommerceBottomSheetContentProperties.CUSTOM_VIEW;
+import static org.chromium.chrome.browser.commerce.CommerceBottomSheetContentProperties.HAS_CUSTOM_PADDING;
 import static org.chromium.chrome.browser.commerce.CommerceBottomSheetContentProperties.HAS_TITLE;
 import static org.chromium.chrome.browser.commerce.CommerceBottomSheetContentProperties.TITLE;
 import static org.chromium.chrome.browser.commerce.CommerceBottomSheetContentProperties.TYPE;
@@ -95,6 +96,7 @@ public class DiscountsBottomSheetContentCoordinator implements CommerceBottomShe
                 .with(TYPE, ContentType.DISCOUNTS)
                 .with(HAS_TITLE, true)
                 .with(TITLE, mContext.getString(R.string.discount_container_title))
+                .with(HAS_CUSTOM_PADDING, false)
                 .with(CUSTOM_VIEW, mDiscountsContentContainer)
                 .build();
     }

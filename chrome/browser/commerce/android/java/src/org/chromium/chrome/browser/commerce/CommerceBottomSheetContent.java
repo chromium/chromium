@@ -18,15 +18,11 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 public class CommerceBottomSheetContent implements BottomSheetContent {
 
     private final View mContentView;
-    private final int mExpectedContentItemCount;
     private final BottomSheetController mBottomSheetController;
 
     public CommerceBottomSheetContent(
-            View contentView,
-            int expectedContentItemCount,
-            BottomSheetController bottomSheetController) {
+            View contentView, BottomSheetController bottomSheetController) {
         mContentView = contentView;
-        mExpectedContentItemCount = expectedContentItemCount;
         mBottomSheetController = bottomSheetController;
     }
 
@@ -99,13 +95,7 @@ public class CommerceBottomSheetContent implements BottomSheetContent {
 
     @Override
     public @StringRes int getSheetHalfHeightAccessibilityStringId() {
-        if (mExpectedContentItemCount > 2) {
-            return R.string.commerce_bottom_sheet_content_opened_half;
-        }
-        // Half-height is disabled if mExpectedContentItemCount is less than or equal to 2, so no
-        // need for an accessibility string.
-        assert false : "Half state is not supported with < 2 commerce features";
-        return 0;
+        return R.string.commerce_bottom_sheet_content_opened_half;
     }
 
     @Override

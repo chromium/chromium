@@ -35,7 +35,7 @@ import java.util.Locale;
 /** Mediator for discounts bottom sheet responsible for model list update. */
 public class DiscountsBottomSheetContentMediator {
     private final Context mContext;
-    private final Tab mTab;
+    private final Supplier<Tab> mTabSupplier;
     private final ModelList mModelList;
 
     public DiscountsBottomSheetContentMediator(
@@ -43,14 +43,14 @@ public class DiscountsBottomSheetContentMediator {
             @NonNull Supplier<Tab> tabSupplier,
             @NonNull ModelList modelList) {
         mContext = context;
-        mTab = tabSupplier.get();
+        mTabSupplier = tabSupplier;
         mModelList = modelList;
     }
 
     public void requestShowContent(Callback<Boolean> contentReadyCallback) {
-        ShoppingServiceFactory.getForProfile(mTab.getProfile())
+        ShoppingServiceFactory.getForProfile(mTabSupplier.get().getProfile())
                 .getDiscountInfoForUrl(
-                        mTab.getUrl(),
+                        mTabSupplier.get().getUrl(),
                         (url, infoList) -> {
                             updateModelList(infoList);
                             contentReadyCallback.onResult(mModelList.size() > 0);

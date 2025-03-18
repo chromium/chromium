@@ -75,6 +75,7 @@ public class CommerceBottomSheetContentRenderTest {
                 .with(CommerceBottomSheetContentProperties.TYPE, type)
                 .with(CommerceBottomSheetContentProperties.HAS_TITLE, hasTitle)
                 .with(CommerceBottomSheetContentProperties.TITLE, "Title " + type)
+                .with(CommerceBottomSheetContentProperties.HAS_CUSTOM_PADDING, false)
                 .with(CommerceBottomSheetContentProperties.CUSTOM_VIEW, view)
                 .build();
     }
