@@ -196,7 +196,7 @@
                            forProtocol:@protocol(TabGroupsCommands)];
 
   self.mediator.tabGroupsHandler = self;
-  if (!self.browser->GetProfile()->IsOffTheRecord()) {
+  if (!self.profile->IsOffTheRecord()) {
     self.mediator.tabGridToolbarHandler =
         HandlerForProtocol(dispatcher, TabGridToolbarCommands);
   }
@@ -334,15 +334,13 @@
 
 - (void)showTabGridTabGroupSnackbarAfterClosingGroups:
     (int)numberOfClosedGroups {
-  if (!IsTabGroupSyncEnabled() ||
-      self.browser->GetProfile()->IsOffTheRecord()) {
+  if (!IsTabGroupSyncEnabled() || self.profile->IsOffTheRecord()) {
     return;
   }
 
   // Don't show the snackbar if the IPH will be presented.
   feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForProfile(
-          self.browser->GetProfile());
+      feature_engagement::TrackerFactory::GetForProfile(self.profile);
   if (tracker->WouldTriggerHelpUI(
           feature_engagement::kIPHiOSSavedTabGroupClosed)) {
     return;

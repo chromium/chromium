@@ -102,7 +102,7 @@ UIImage* ConfirmationAlertImage() {
 - (void)start {
   [super start];
 
-  PrefService* prefs = self.browser->GetProfile()->GetPrefs();
+  PrefService* prefs = self.profile->GetPrefs();
 
   _confirmationAlert = [[ConfirmationAlertViewController alloc] init];
   _confirmationAlert.titleString = base::SysUTF16ToNSString(

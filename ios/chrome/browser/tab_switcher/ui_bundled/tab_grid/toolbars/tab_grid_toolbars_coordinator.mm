@@ -67,8 +67,7 @@
 
 - (void)showSavedTabGroupIPH {
   feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForProfile(
-          self.browser->GetProfile());
+      feature_engagement::TrackerFactory::GetForProfile(self.profile);
   if (!tracker->WouldTriggerHelpUI(
           feature_engagement::kIPHiOSSavedTabGroupClosed)) {
     return;
@@ -113,8 +112,7 @@
 - (void)savedTabGroupIPHDismissed {
   [self.topToolbar resetLastPageControlHighlight];
   feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForProfile(
-          self.browser->GetProfile());
+      feature_engagement::TrackerFactory::GetForProfile(self.profile);
   tracker->Dismissed(feature_engagement::kIPHiOSSavedTabGroupClosed);
 }
 
