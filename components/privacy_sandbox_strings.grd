@@ -936,7 +936,7 @@
         Related sites can share third-party cookies with each other to help sites work as expected, such as keeping you signed in or remembering your site settings. Sites are responsible for explaining why they need access to this data. Learn more about <ph name="START_LINK">&lt;a target="_blank" href="$1" aria-description="$2"&gt;</ph>related sites and third-party cookies<ph name="END_LINK">&lt;/a&gt;</ph>
       </message>
       <message name="IDS_ALL_SITES_RWS_FILTER_VIEW_STORAGE_DESCRIPTION" desc="" translateable="false">
-        Storage used by sites in the list: <ph name="TOTAL_USAGE">$1<ex>8 GB</ex></ph>
+        Total storage used by sites in the list: <ph name="TOTAL_USAGE">$1<ex>8 GB</ex></ph>
       </message>
 
       <!-- RWS - Site Settings -->
