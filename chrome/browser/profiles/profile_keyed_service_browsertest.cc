@@ -599,6 +599,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "CookiesAPI",
     "CWSInfoService",
     "DataTypeStoreService",
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+    "DelayedInstallManager",
+#endif
     "DeveloperPrivateAPI",
     "DeviceInfoSyncService",
     "DownloadCoreService",
