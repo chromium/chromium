@@ -37,6 +37,7 @@ android_library("java") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/regional_capabilities/android:java",
     "//chrome/browser/settings:java",
+    "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/ui/messages/android:java",
     "//components/browser_ui/settings/android:java",

@@ -80,7 +80,8 @@ public class PromoDialogRenderTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             PromoDialog testDialog =
-                                    new PromoDialog(sActivity) {
+                                    new PromoDialog(
+                                            sActivity, /* shouldPadForWindowInsets= */ true) {
                                         @Override
                                         protected DialogParams getDialogParams() {
                                             return dialogParams;

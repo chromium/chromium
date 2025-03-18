@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -19,6 +19,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.widget.ChromeDialog;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.content_public.browser.LifecycleState;
@@ -66,14 +67,17 @@ public class PrivacySandboxDialogV3 extends ChromeDialog
             R.string.privacy_sandbox_m1_consent_learn_more_card_v3;
 
     public PrivacySandboxDialogV3(
-            Context context, Profile profile, ActivityWindowAndroid activityWindowAndroid) {
-        super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
+            Activity activity, Profile profile, ActivityWindowAndroid activityWindowAndroid) {
+        super(
+                activity,
+                R.style.ThemeOverlay_BrowserUI_Fullscreen,
+                EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled());
 
         mProfile = profile;
         mActivityWindowAndroid = activityWindowAndroid;
 
-        mContentView =
-                LayoutInflater.from(context).inflate(R.layout.privacy_sandbox_consent_eea_v3, null);
+        mContentView = LayoutInflater.from(activity)
+                                     .inflate(R.layout.privacy_sandbox_consent_eea_v3, null);
         setContentView(mContentView);
 
         ButtonCompat ackButton = mContentView.findViewById(R.id.ack_button);
@@ -96,7 +100,7 @@ public class PrivacySandboxDialogV3 extends ChromeDialog
                 mContentView.findViewById(R.id.ad_measurement_dropdown_container);
         mAdMeasurementExpandArrowView = mContentView.findViewById(R.id.ad_measurement_expand_arrow);
         mAdMeasurementExpandArrowView.setImageDrawable(
-                PrivacySandboxDialogUtils.createExpandDrawable(context));
+                PrivacySandboxDialogUtils.createExpandDrawable(activity));
         mAdMeasurementExpandArrowView.setChecked(isMeasurementDropdownExpanded());
 
         mViewContainer = mContentView.findViewById(R.id.privacy_sandbox_consent_eea_view);

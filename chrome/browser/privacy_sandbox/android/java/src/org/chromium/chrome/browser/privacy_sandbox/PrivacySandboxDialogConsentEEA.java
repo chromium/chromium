@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Handler;
@@ -22,6 +23,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.widget.ChromeDialog;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.content_public.browser.LifecycleState;
@@ -44,6 +46,7 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
 
     private final PrivacySandboxBridge mPrivacySandboxBridge;
 
+    private Activity mActivity;
     private View mContentView;
 
     private final CheckableImageView mExpandArrowView;
@@ -82,20 +85,24 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
             R.string.privacy_sandbox_m1_notice_learn_more_v2_clank;
 
     public PrivacySandboxDialogConsentEEA(
-            Context context,
+            Activity activity,
             PrivacySandboxBridge privacySandboxBridge,
             boolean disableAnimations,
             @SurfaceType int surfaceType,
             Profile profile,
             ActivityWindowAndroid activityWindowAndroid) {
-        super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
+        super(
+                activity,
+                R.style.ThemeOverlay_BrowserUI_Fullscreen,
+                EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled());
+        mActivity = activity;
         mPrivacySandboxBridge = privacySandboxBridge;
         mAreAnimationsDisabled = disableAnimations;
         mSurfaceType = surfaceType;
         mProfile = profile;
         mActivityWindowAndroid = activityWindowAndroid;
         mContentView =
-                LayoutInflater.from(context).inflate(R.layout.privacy_sandbox_consent_eea, null);
+                LayoutInflater.from(mActivity).inflate(R.layout.privacy_sandbox_consent_eea, null);
         setContentView(mContentView);
         mOnClickListener = getOnClickListener();
 
@@ -120,7 +127,7 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
         mDropdownElement.setOnClickListener(mOnClickListener);
         mDropdownContainer = mContentView.findViewById(R.id.dropdown_container);
         mExpandArrowView = mContentView.findViewById(R.id.expand_arrow);
-        mExpandArrowView.setImageDrawable(PrivacySandboxDialogUtils.createExpandDrawable(context));
+        mExpandArrowView.setImageDrawable(PrivacySandboxDialogUtils.createExpandDrawable(activity));
         mExpandArrowView.setChecked(isDropdownExpanded());
 
         mMoreButton.setOnClickListener(mOnClickListener);
@@ -418,11 +425,7 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
 
     private void showNotice() {
         PrivacySandboxDialogController.showNoticeEEA(
-                getContext(),
-                mPrivacySandboxBridge,
-                mSurfaceType,
-                mProfile,
-                mActivityWindowAndroid);
+                mActivity, mPrivacySandboxBridge, mSurfaceType, mProfile, mActivityWindowAndroid);
     }
 
     private boolean isDropdownExpanded() {

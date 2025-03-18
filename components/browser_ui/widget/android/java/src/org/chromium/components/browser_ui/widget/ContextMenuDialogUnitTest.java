@@ -41,6 +41,8 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowPhoneWindow;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.browser_ui.edge_to_edge.layout.EdgeToEdgeLayoutCoordinator;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.dragdrop.DragEventDispatchHelper.DragEventDispatchDestination;
 import org.chromium.ui.widget.UiWidgetFactory;
@@ -289,6 +291,45 @@ public class ContextMenuDialogUnitTest {
                 .onDragEventWithOffset(eq(mockDragEvent2), anyInt(), anyInt());
     }
 
+    @Test
+    public void testFullscreenDialog() {
+        mActivity.getTheme().applyStyle(R.style.Theme_Material3_Light, true);
+        mDialog =
+                new ContextMenuDialog(
+                        mActivity,
+                        R.style.ThemeOverlay_BrowserUI_Fullscreen,
+                        ContextMenuDialog.NO_CUSTOM_MARGIN,
+                        ContextMenuDialog.NO_CUSTOM_MARGIN,
+                        mRootView,
+                        mMenuContentView,
+                        /* isPopup*/ false,
+                        /* shouldRemoveScrim */ false,
+                        /* shouldSysUiMatchActivity */ true,
+                        0,
+                        0,
+                        mSpyDragDispatchingDestinationView,
+                        new Rect(0, 0, 0, 0),
+                        /* shouldPadForWindowInsets= */ true);
+        mDialog.setContentView(new View(mActivity));
+        EdgeToEdgeLayoutCoordinator edgeToEdgeLayoutCoordinator =
+                mDialog.getEdgeToEdgeLayoutCoordinatorForTesting();
+
+        Assert.assertNotNull(
+                "EdgeToEdgeCoordinator should not be null", edgeToEdgeLayoutCoordinator);
+        Assert.assertEquals(
+                "System bar colors is incorrect",
+                SemanticColorUtils.getDefaultBgColor(mActivity),
+                edgeToEdgeLayoutCoordinator.getStatusBarColor());
+        Assert.assertEquals(
+                "System bar colors is incorrect",
+                SemanticColorUtils.getDefaultBgColor(mActivity),
+                edgeToEdgeLayoutCoordinator.getNavigationBarColor());
+        Assert.assertEquals(
+                "System bar colors is incorrect",
+                SemanticColorUtils.getDefaultBgColor(mActivity),
+                edgeToEdgeLayoutCoordinator.getNavigationBarDividerColor());
+    }
+
     private ContextMenuDialog createContextMenuDialog(boolean isPopup, boolean shouldRemoveScrim) {
         return createContextMenuDialog(isPopup, shouldRemoveScrim, true);
     }
@@ -308,7 +349,8 @@ public class ContextMenuDialogUnitTest {
                 0,
                 0,
                 mSpyDragDispatchingDestinationView,
-                new Rect(0, 0, 0, 0));
+                new Rect(0, 0, 0, 0),
+                /* shouldPadForWindowInsets= */ true);
     }
 
     private void requestLayoutForRootView() {
