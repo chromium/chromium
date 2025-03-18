@@ -24,10 +24,11 @@ PhysicalFragmentRareData::PhysicalFragmentRareData(
     wtf_size_t num_fields)
     : table_collapsed_borders_(builder.table_collapsed_borders_),
       mathml_paint_info_(builder.mathml_paint_info_),
-      reading_flow_nodes_(builder.reading_flow_nodes_.size()
-                              ? MakeGarbageCollected<HeapVector<Member<Node>>>(
-                                    builder.reading_flow_nodes_)
-                              : nullptr),
+      reading_flow_nodes_(
+          builder.reading_flow_nodes_.size()
+              ? MakeGarbageCollected<GCedHeapVector<Member<Node>>>(
+                    builder.reading_flow_nodes_)
+              : nullptr),
       gap_geometry_(builder.gap_geometry_) {
   field_list_.ReserveInitialCapacity(num_fields);
 
@@ -78,7 +79,7 @@ PhysicalFragmentRareData::PhysicalFragmentRareData(
   }
 
   if (!builder.table_column_geometries_.empty()) {
-    table_column_geometries_ = MakeGarbageCollected<TableColumnGeometries>(
+    table_column_geometries_ = MakeGarbageCollected<GCedTableColumnGeometries>(
         builder.table_column_geometries_);
   }
 

@@ -2854,11 +2854,11 @@ void PaintLayerScrollableArea::DelayScrollOffsetClampScope::
 
 HeapVector<Member<PaintLayerScrollableArea>>&
 PaintLayerScrollableArea::DelayScrollOffsetClampScope::NeedsClampList() {
-  DEFINE_STATIC_LOCAL(
-      Persistent<HeapVector<Member<PaintLayerScrollableArea>>>,
-      needs_clamp_list,
-      (MakeGarbageCollected<HeapVector<Member<PaintLayerScrollableArea>>>()));
-  return *needs_clamp_list;
+  using Holder =
+      DisallowNewWrapper<HeapVector<Member<PaintLayerScrollableArea>>>;
+  DEFINE_STATIC_LOCAL(Persistent<Holder>, needs_clamp_list,
+                      (MakeGarbageCollected<Holder>()));
+  return needs_clamp_list->Value();
 }
 
 ScrollbarTheme& PaintLayerScrollableArea::GetPageScrollbarTheme() const {

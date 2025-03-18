@@ -115,7 +115,7 @@ class CORE_EXPORT ImageElementTiming final
 
   // Vector containing the element timing infos that will be reported during the
   // next presentation promise callback.
-  Member<HeapVector<Member<ElementTimingInfo>>> element_timings_;
+  Member<GCedHeapVector<Member<ElementTimingInfo>>> element_timings_;
   struct ImageInfo {
     ImageInfo() {}
 
