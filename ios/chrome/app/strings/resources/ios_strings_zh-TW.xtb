@@ -440,6 +440,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{密碼已儲存到 Google 帳戶 ({EMAIL})}other{密碼已儲存到 Google 帳戶 ({EMAIL})}}</translation>
 <translation id="2791174088547598693">新增密碼…</translation>
 <translation id="2797302972324086597">國家/地區代碼</translation>
+<translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} 個檔案}other{{COUNT} 個檔案}}</translation>
 <translation id="2816489851009559785">「選單」→「設定」→「預設瀏覽器」</translation>
 <translation id="2818821771744632548">你已在重設 iPhone 時登出帳戶 (<ph name="USER_NAME" />)，如要重新登入，請輕觸下方的「繼續」。</translation>
 <translation id="2819667972867209401">開啟時，資料會儲存到 Google 帳戶；關閉後，資料只會儲存到這部裝置，並在你登出後刪除。</translation>
@@ -504,6 +505,7 @@
 <translation id="310900540163454140">要刪除「<ph name="WEBSITE" />」的密碼嗎？</translation>
 <translation id="3112556859945124369">標示…</translation>
 <translation id="3119874402040566234">系統會將你登出並刪除瀏覽資料</translation>
+<translation id="3124568093781685165">與家人共用密碼</translation>
 <translation id="3130863904455712965">歷史記錄和其他資料</translation>
 <translation id="313283613037595347">新增無痕分頁。</translation>
 <translation id="3138611310073113613">要捨棄所選項目嗎？</translation>
@@ -1003,6 +1005,7 @@
 <translation id="5352128922772839949">儲存檔案</translation>
 <translation id="5355191726083956201">已啟用強化防護功能</translation>
 <translation id="537853552771686272">管理你感興趣的主題和網站</translation>
+<translation id="5390458669633674385">{count,plural, =1{已關閉 {count} 個分頁}other{已關閉 {count} 個分頁}}</translation>
 <translation id="5394975111793637642">隱藏「為你推薦的產品評論」資訊卡</translation>
 <translation id="5395707839134961196">隱藏搜尋引擎詳細資料</translation>
 <translation id="5414763847370083940">如果產品在任何網站上降價，系統會透過快訊通知你。</translation>
@@ -1132,6 +1135,7 @@
 <translation id="5897749768294722429">如要快速回訪瀏覽過的網站，可以同步分頁和歷史記錄。</translation>
 <translation id="5898848375214731122">質量</translation>
 <translation id="5899314093904173337">如要與附近的使用者分享，請讓對方使用相機或 QR 掃描器應用程式掃描這個 QR code</translation>
+<translation id="5902752768726620872">{count,plural, =1{新增 {count} 個分頁}other{新增 {count} 個分頁}}</translation>
 <translation id="5911030830365207728">Google 翻譯</translation>
 <translation id="5917913282764181683">自動刪除下載內容</translation>
 <translation id="5922999516621365983">將分頁拖曳到這裡即可固定。</translation>
@@ -1674,6 +1678,7 @@
 <translation id="8131740175452115882">確認</translation>
 <translation id="8132598642024322408">原價 <ph name="PREVIOUS_PRICE" />，現在只要 <ph name="PRICE" />，</translation>
 <translation id="813370552429173916">請為每個網站或應用程式設定專屬密碼。假如有人取得你重複使用的密碼，就能登入你的其他帳戶。請立即點按選項開啟網站，並變更密碼。</translation>
+<translation id="8135556271852808840">{count,plural, =1{已關閉 {count} 個分頁}other{已關閉 {count} 個分頁}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{還有另外 1 個項目}other{還有另外 # 個項目}}</translation>
 <translation id="8150167929304790980">完整名稱</translation>
 <translation id="8152331954420209374">開啟智慧鏡頭</translation>

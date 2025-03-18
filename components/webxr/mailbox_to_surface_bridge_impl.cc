@@ -37,11 +37,11 @@
 namespace webxr {
 
 MailboxToSurfaceBridgeImpl::MailboxToSurfaceBridgeImpl() {
-  DVLOG(1) << __FUNCTION__;
+  DVLOG(1) << __func__;
 }
 
 MailboxToSurfaceBridgeImpl::~MailboxToSurfaceBridgeImpl() {
-  DVLOG(1) << __FUNCTION__;
+  DVLOG(1) << __func__;
 }
 
 bool MailboxToSurfaceBridgeImpl::IsConnected() {
@@ -50,7 +50,7 @@ bool MailboxToSurfaceBridgeImpl::IsConnected() {
 
 void MailboxToSurfaceBridgeImpl::OnContextAvailableOnUiThread(
     scoped_refptr<viz::ContextProvider> provider) {
-  DVLOG(1) << __FUNCTION__;
+  DVLOG(1) << __func__;
   // Must save a reference to the viz::ContextProvider to keep it alive,
   // otherwise the GL context created from it becomes invalid on its
   // destruction.
@@ -83,7 +83,7 @@ void MailboxToSurfaceBridgeImpl::BindContextProviderToCurrentThread() {
     return;
   }
 
-  DVLOG(1) << __FUNCTION__ << ": Context ready";
+  DVLOG(1) << __func__ << ": Context ready";
   if (on_context_bound_) {
     std::move(on_context_bound_).Run();
   }
@@ -112,21 +112,21 @@ void MailboxToSurfaceBridgeImpl::CreateAndBindContextProvider(
 }
 
 void MailboxToSurfaceBridgeImpl::GenSyncToken(gpu::SyncToken* out_sync_token) {
-  TRACE_EVENT0("gpu", __FUNCTION__);
+  TRACE_EVENT0("gpu", "GenSyncToken");
   DCHECK(IsConnected());
   gl_->GenSyncTokenCHROMIUM(out_sync_token->GetData());
 }
 
 void MailboxToSurfaceBridgeImpl::WaitSyncToken(
     const gpu::SyncToken& sync_token) {
-  TRACE_EVENT0("gpu", __FUNCTION__);
+  TRACE_EVENT0("gpu", "WaitSyncToken");
   DCHECK(IsConnected());
   gl_->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
 }
 
 void MailboxToSurfaceBridgeImpl::WaitForClientGpuFence(
     gfx::GpuFence& gpu_fence) {
-  TRACE_EVENT0("gpu", __FUNCTION__);
+  TRACE_EVENT0("gpu", "WaitForClientGpuFence");
   DCHECK(IsConnected());
   GLuint id = gl_->CreateClientGpuFenceCHROMIUM(gpu_fence.AsClientGpuFence());
   gl_->WaitGpuFenceCHROMIUM(id);
@@ -136,7 +136,7 @@ void MailboxToSurfaceBridgeImpl::WaitForClientGpuFence(
 void MailboxToSurfaceBridgeImpl::CreateGpuFence(
     const gpu::SyncToken& sync_token,
     base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)> callback) {
-  TRACE_EVENT0("gpu", __FUNCTION__);
+  TRACE_EVENT0("gpu", "CreateGpuFence");
   DCHECK(IsConnected());
   gl_->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
   GLuint id = gl_->CreateGpuFenceCHROMIUM();
@@ -152,7 +152,7 @@ MailboxToSurfaceBridgeImpl::CreateSharedImage(
     const gfx::ColorSpace& color_space,
     gpu::SharedImageUsageSet usage,
     gpu::SyncToken& sync_token) {
-  TRACE_EVENT0("gpu", __FUNCTION__);
+  TRACE_EVENT0("gpu", "CreateSharedImage");
   DCHECK(IsConnected());
 
   auto* sii = context_provider_->SharedImageInterface();
@@ -172,7 +172,7 @@ MailboxToSurfaceBridgeImpl::CreateSharedImage(
 void MailboxToSurfaceBridgeImpl::DestroySharedImage(
     const gpu::SyncToken& sync_token,
     scoped_refptr<gpu::ClientSharedImage> shared_image) {
-  TRACE_EVENT0("gpu", __FUNCTION__);
+  TRACE_EVENT0("gpu", "CreateSharedImage");
   DCHECK(IsConnected());
   DCHECK(shared_image);
 

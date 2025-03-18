@@ -1652,6 +1652,7 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kSharedWorkerBlobURLFixEnabled, true);
   registry->RegisterBooleanPref(
       prefs::kServiceWorkerToControlSrcdocIframeEnabled, true);
+  registry->RegisterBooleanPref(prefs::kReduceAcceptLanguageEnabled, true);
 }
 
 // static
@@ -2836,6 +2837,11 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
       if (prefs->GetBoolean(prefs::kWebAudioOutputBufferingEnabled)) {
         command_line->AppendSwitch(
             blink::switches::kWebAudioBypassOutputBufferingOptOut);
+      }
+
+      if (!prefs->GetBoolean(prefs::kReduceAcceptLanguageEnabled)) {
+        command_line->AppendSwitch(
+            blink::switches::kDisableReduceAcceptLanguage);
       }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -8572,6 +8578,20 @@ bool ChromeContentBrowserClient::IsBlobUrlPartitioningEnabled(
       Profile::FromBrowserContext(browser_context)
           ->GetPrefs()
           ->FindPreference(prefs::kPartitionedBlobUrlUsage);
+
+  if (pref && pref->IsManaged() && pref->GetValue()->is_bool()) {
+    return pref->GetValue()->GetBool();
+  }
+  return true;
+}
+
+bool ChromeContentBrowserClient::ShouldReduceAcceptLanguage(
+    content::BrowserContext* browser_context) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  const PrefService::Preference* pref =
+      Profile::FromBrowserContext(browser_context)
+          ->GetPrefs()
+          ->FindPreference(prefs::kReduceAcceptLanguageEnabled);
 
   if (pref && pref->IsManaged() && pref->GetValue()->is_bool()) {
     return pref->GetValue()->GetBool();

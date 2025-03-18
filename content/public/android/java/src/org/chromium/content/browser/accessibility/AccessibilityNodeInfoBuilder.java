@@ -470,7 +470,8 @@ public class AccessibilityNodeInfoBuilder {
             int[] suggestionStarts,
             int[] suggestionEnds,
             String[] suggestions,
-            String stateDescription) {
+            String stateDescription,
+            String containerTitle) {
         long now = SystemClock.elapsedRealtime();
 
         CharSequence computedText =
@@ -486,6 +487,11 @@ public class AccessibilityNodeInfoBuilder {
         // We add the stateDescription attribute when it is non-null and not empty.
         if (stateDescription != null && !stateDescription.isEmpty()) {
             node.setStateDescription(stateDescription);
+        }
+
+        // We add the containerTitle attribute when it is non-null and not empty.
+        if (containerTitle != null && !containerTitle.isEmpty()) {
+            node.setContainerTitle(containerTitle);
         }
 
         // We expose the nested structure of links, which results in the roles of all nested nodes
@@ -511,6 +517,7 @@ public class AccessibilityNodeInfoBuilder {
             int[] suggestionEnds,
             String[] suggestions,
             String stateDescription,
+            String containerTitle,
             float textSize,
             int textStyle,
             int textColor,
@@ -545,6 +552,11 @@ public class AccessibilityNodeInfoBuilder {
         // We add the stateDescription attribute when it is non-null and not empty.
         if (stateDescription != null && !stateDescription.isEmpty()) {
             node.setStateDescription(stateDescription);
+        }
+
+        // We add the containerTitle attribute when it is non-null and not empty.
+        if (containerTitle != null && !containerTitle.isEmpty()) {
+            node.setContainerTitle(containerTitle);
         }
 
         // We expose the nested structure of links, which results in the roles of all nested nodes

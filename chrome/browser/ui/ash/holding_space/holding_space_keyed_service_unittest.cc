@@ -67,6 +67,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync_preferences/pref_service_mock_factory.h"
 #include "components/sync_preferences/pref_service_syncable.h"
+#include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_names.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/test/fake_download_item.h"
@@ -776,10 +777,7 @@ class HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest
     auto* user = user_manager()->AddGuestUser();
     user_manager()->UserLoggedIn(
         user->GetAccountId(),
-        user_manager::FakeUserManager::GetFakeUsernameHash(
-            user->GetAccountId()),
-        /*browser_restart=*/false,
-        /*is_child=*/false);
+        user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
   }
 
   TestingProfile* CreateProfile(const std::string& profile_name) override {

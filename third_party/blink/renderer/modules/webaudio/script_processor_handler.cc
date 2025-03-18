@@ -192,7 +192,8 @@ void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
       const float* source = UNSAFE_TODO(
           static_cast<float*>(shared_output_buffer->channels()[i].Data()) +
           buffer_read_write_index_);
-      memcpy(destination, source, sizeof(float) * frames_to_process);
+      UNSAFE_TODO(
+          memcpy(destination, source, sizeof(float) * frames_to_process));
     }
   }
 

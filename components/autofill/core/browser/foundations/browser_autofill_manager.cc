@@ -109,6 +109,7 @@
 #include "components/autofill/core/browser/payments/amount_extraction_manager.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
@@ -1451,23 +1452,25 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
   // and whether the suggestion is shown.
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
+  bool form_and_field_cached = GetCachedFormAndField(
+      form.global_id(), field.global_id(), &form_structure, &autofill_field);
   if (trigger_source ==
           AutofillSuggestionTriggerSource::kFormControlElementClicked &&
-      GetCachedFormAndField(form.global_id(), field.global_id(),
-                            &form_structure, &autofill_field)) {
+      form_and_field_cached) {
     autofill_field->AppendLogEventIfNotRepeated(AskForValuesToFillFieldLogEvent{
         .has_suggestion = ToOptionalBoolean(!suggestions.empty()),
         .suggestion_is_shown = ToOptionalBoolean(show_suggestions),
     });
   }
 
-  // When user clicks on the credit card form on the merchant checkout pages,
-  // `this` checks `amount_extraction_manager_` if amount extraction should
-  // happen, and if so, triggers amount extraction.
-  if (amount_extraction_manager_->ShouldTriggerAmountExtraction(
+  // When a user interacts with the credit card form on the merchant checkout
+  // pages, `this` checks `amount_extraction_manager_` if amount extraction
+  // should happen, and if so, triggers amount extraction.
+  if (autofill_field &&
+      amount_extraction_manager_->ShouldTriggerAmountExtraction(
           context,
           ShouldSuppressSuggestions(context.suppress_reason, log_manager()),
-          !suggestions.empty())) {
+          !suggestions.empty(), autofill_field->Type().GetStorableType())) {
     if (payments::BnplManager* bnpl_manager =
             client().GetPaymentsAutofillClient()->GetPaymentsBnplManager()) {
       bnpl_manager->NotifyOfSuggestionGeneration(trigger_source);

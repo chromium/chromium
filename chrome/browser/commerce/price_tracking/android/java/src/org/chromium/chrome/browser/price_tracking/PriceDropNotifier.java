@@ -22,7 +22,7 @@ import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNo
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
@@ -198,7 +198,7 @@ public class PriceDropNotifier {
             }
         }
         NotificationWrapper notificationWrapper = notificationBuilder.buildNotificationWrapper();
-        NotificationManagerProxyImpl.getInstance().notify(notificationWrapper);
+        BaseNotificationManagerProxyFactory.create().notify(notificationWrapper);
         NotificationUmaTracker.getInstance()
                 .onNotificationShown(notificationType, notificationWrapper.getNotification());
         mPriceDropNotificationManager.updateNotificationTimestamps(notificationType, true);

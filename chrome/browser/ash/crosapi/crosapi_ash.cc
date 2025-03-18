@@ -87,12 +87,6 @@
 #include "printing/buildflags/buildflags.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 
-#if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
-#include "content/public/browser/stable_video_decoder_factory.h"
-#include "media/base/media_switches.h"
-#include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
-#endif  // BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
-
 namespace crosapi {
 namespace {
 

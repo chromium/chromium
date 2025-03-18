@@ -12,6 +12,8 @@
 
 namespace blink {
 
+static constexpr uint64_t kNormalizedDownloadProgressMax = 0x10000;
+
 // Converts string language codes to AILanguageCode mojo struct.
 Vector<mojom::blink::AILanguageCodePtr> ToMojoLanguageCodes(
     const Vector<String>& language_codes);

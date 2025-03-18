@@ -1104,10 +1104,9 @@ SELECT
 FROM chrome_scroll_update_info AS info
 LEFT JOIN chrome_presented_scroll_offsets AS delta
   ON info.id = delta.scroll_update_id
+-- TODO(b:380286381, b:393051057): remove the frame_display_id condition when dropped frames are handled.
 WHERE
-  is_first_scroll_update_in_frame
-  -- TODO(b:380286381, b:393051057): remove this when dropped frames are handled.
-  AND info.frame_display_id IS NOT NULL;
+  is_first_scroll_update_in_frame AND info.frame_display_id IS NOT NULL;
 
 -- Source of truth for the definition of the stages of a scroll. Mainly intended
 -- for visualization purposes (e.g. in Chrome Scroll Jank plugin).

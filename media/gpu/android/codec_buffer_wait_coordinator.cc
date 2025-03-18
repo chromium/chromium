@@ -5,8 +5,6 @@
 #include "media/gpu/android/codec_buffer_wait_coordinator.h"
 
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
-#include "base/memory/ref_counted.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 
@@ -17,8 +15,6 @@ namespace media {
 // This let's us safely signal an event on any thread.
 struct FrameAvailableEvent
     : public base::RefCountedThreadSafe<FrameAvailableEvent> {
-  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
-
   FrameAvailableEvent()
       : event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
               base::WaitableEvent::InitialState::NOT_SIGNALED) {}
@@ -35,7 +31,7 @@ CodecBufferWaitCoordinator::CodecBufferWaitCoordinator(
     scoped_refptr<gpu::RefCountedLock> drdc_lock)
     : RefCountedLockHelperDrDc(std::move(drdc_lock)),
       texture_owner_(std::move(texture_owner)),
-      frame_available_event_(base::MakeRefCounted<FrameAvailableEvent>()),
+      frame_available_event_(new FrameAvailableEvent()),
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   DCHECK(texture_owner_);
   texture_owner_->SetFrameAvailableCallback(base::BindRepeating(

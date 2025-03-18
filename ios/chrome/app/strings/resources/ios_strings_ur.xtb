@@ -440,6 +440,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{‏آپ کے Google اکاؤنٹ {EMAIL} میں پاس ورڈ محفوظ کیا گیا ہے}other{‏آپ کے Google اکاؤنٹ {EMAIL} میں پاس ورڈز محفوظ کیے گئے ہیں}}</translation>
 <translation id="2791174088547598693">پاس ورڈ شامل کریں…</translation>
 <translation id="2797302972324086597">ملک کا کوڈ</translation>
+<translation id="2810376924814601526">{COUNT,plural, =1{‫{COUNT} فائل}other{‫{COUNT} فائلز}}</translation>
 <translation id="2816489851009559785">مینو ← ترتیبات ← ڈیفالٹ براؤزر</translation>
 <translation id="2818821771744632548">‏آپ اپنے iPhone ری سیٹ کے حصے کے طور پر اپنے اکاؤنٹ <ph name="USER_NAME" /> سے سائن آؤٹ ہو گئے تھے۔ واپس سائن ان کرنے کے لیے، نیچے "جاری رکھیں" پر تھپتھپائیں۔</translation>
 <translation id="2819667972867209401">‏آن ہونے پر، ڈیٹا آپ کے Google اکاؤنٹ میں محفوظ ہوتا ہے۔ آف ہونے پر، ڈیٹا صرف اس آلہ میں محفوظ ہوتا ہے اور اگر آپ سائن آؤٹ کرتے ہیں تو اسے حذف کر دیا جاتا ہے۔</translation>
@@ -504,6 +505,7 @@
 <translation id="310900540163454140"><ph name="WEBSITE" /> کا پاس ورڈ حذف کریں؟</translation>
 <translation id="3112556859945124369">نشان زد کریں…</translation>
 <translation id="3119874402040566234">آپ سائن آؤٹ ہو جائیں گے اور براؤزنگ ڈیٹا کو حذف کر دیا جائے گا</translation>
+<translation id="3124568093781685165">اپنے پاس ورڈز اپنی فیملی کے ساتھ اشتراک کریں</translation>
 <translation id="3130863904455712965">سرگزشت اور مزید</translation>
 <translation id="313283613037595347">نیا پوشیدگی ٹیب بنائیں۔</translation>
 <translation id="3138611310073113613">انتخاب کو مسترد کریں</translation>
@@ -1003,6 +1005,7 @@
 <translation id="5352128922772839949">فائل محفوظ کریں</translation>
 <translation id="5355191726083956201">بہتر کردہ تحفظ آن ہے</translation>
 <translation id="537853552771686272">ان عنوانات اور سائٹس کا نظم کریں جن میں آپ کی دلچسپی ہے</translation>
+<translation id="5390458669633674385">{count,plural, =1{‫{count} کو بند کیا گیا}other{‫{count} کو بند کیا گیا}}</translation>
 <translation id="5394975111793637642">اپنے کارڈ کے لیے پروڈکٹ کے جائزے چھپائیں</translation>
 <translation id="5395707839134961196">سرچ انجن کی تفصیلات چھپائیں</translation>
 <translation id="5414763847370083940">کسی بھی سائٹ پر قیمت کم ہونے کی صورت میں آپ کو ایک الرٹ حاصل ہو گا۔</translation>
@@ -1132,6 +1135,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5897749768294722429">تیزی سے اپنی ملاحظہ کردہ سائٹس پر واپس جانے کے لیے اپنے ٹیبز اور سرگزشت کو مطابقت پذیر کریں۔</translation>
 <translation id="5898848375214731122">کمّیت</translation>
 <translation id="5899314093904173337">‏قریبی لوگوں سے اشتراک کرنے کے لیے، انہیں اس QR کوڈ کو ان کے کیمرے یا QR اسکینر ایپ سے اسکین کرنے دیں</translation>
+<translation id="5902752768726620872">{count,plural, =1{‫{count} نیا ٹیب}other{‫{count} نئے ٹیبز}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5917913282764181683">اپنے ڈاؤن لوڈز کو خودکار طور پر حذف کریں</translation>
 <translation id="5922999516621365983">اسے پن کرنے کے لیے ٹیب کو یہاں گھسیٹیں۔</translation>
@@ -1674,6 +1678,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8131740175452115882">تصدیق کریں</translation>
 <translation id="8132598642024322408">اب <ph name="PRICE" /> پہلے <ph name="PREVIOUS_PRICE" /> تھی۔</translation>
 <translation id="813370552429173916">ہر سائٹ یا ایپ کیلئے ایک منفرد پاس ورڈ استعمال کریں۔ اگر کسی شخص کو دوبارہ استعمال کردہ پاس ورڈ کا پتا چلتا ہے تو آپ کے دیگر اکاؤنٹس تک رسائی کیلئے اس کا استعمال کیا جا سکتا ہے۔ ویب سائٹ کھولنے کے لیے کلک کریں اور انہیں ابھی تبدیل کریں۔</translation>
+<translation id="8135556271852808840">{count,plural, =1{‫{count} ٹیب کو بند کیا گیا}other{‫{count} ٹیبز کو بند کیا گیا}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 دیگر}other{# دیگر}}</translation>
 <translation id="8150167929304790980">پورا نام</translation>
 <translation id="8152331954420209374">لینز پر جائیں</translation>

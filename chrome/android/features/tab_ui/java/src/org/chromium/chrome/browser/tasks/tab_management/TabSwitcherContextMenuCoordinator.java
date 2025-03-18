@@ -18,6 +18,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareUtils;
@@ -164,9 +165,14 @@ public class TabSwitcherContextMenuCoordinator extends TabOverflowMenuCoordinato
         @Nullable Tab tab = getTabById(mTabModelSupplier, id);
         if (tab == null) return;
 
-        itemList.add(
-                BrowserUiListMenuUtils.buildMenuListItem(
-                        R.string.add_tab_to_group, R.id.add_to_tab_group, R.drawable.ic_widgets));
+        if (ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled()) {
+            itemList.add(
+                    BrowserUiListMenuUtils.buildMenuListItem(
+                            R.string.add_tab_to_group,
+                            R.id.add_to_tab_group,
+                            R.drawable.ic_widgets));
+        }
+
         itemList.add(
                 BrowserUiListMenuUtils.buildMenuListItem(
                         R.string.add_to_bookmarks,

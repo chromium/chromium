@@ -24,6 +24,17 @@ message OnDeviceModelExecutionConfig {
 
   // A config used for validating the model and device after download.
   optional OnDeviceModelValidationConfig validation_config = 2;
+
+  // List of capabilities supported by the base model.
+  repeated OnDeviceModelCapability capabilities = 3;
+}
+
+enum OnDeviceModelCapability {
+  ON_DEVICE_MODEL_CAPABILITY_UNSPECIFIED = 0;
+  // The model supports taking image input.
+  ON_DEVICE_MODEL_CAPABILITY_IMAGE_INPUT = 1;
+  // The model supports taking audio input.
+  ON_DEVICE_MODEL_CAPABILITY_AUDIO_INPUT = 2;
 }
 
 message OnDeviceModelExecutionFeatureConfig {

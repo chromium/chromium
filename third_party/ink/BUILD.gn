@@ -49,6 +49,8 @@ source_set("ink") {
     "src/ink/geometry/internal/mesh_constants.h",
     "src/ink/geometry/internal/mesh_packing.cc",
     "src/ink/geometry/internal/mesh_packing.h",
+    "src/ink/geometry/internal/modulo.cc",
+    "src/ink/geometry/internal/modulo.h",
     "src/ink/geometry/internal/static_rtree.cc",
     "src/ink/geometry/internal/static_rtree.h",
     "src/ink/geometry/intersects.cc",
@@ -167,8 +169,6 @@ source_set("ink") {
     "src/ink/types/physical_distance.cc",
     "src/ink/types/physical_distance.h",
     "src/ink/types/small_array.h",
-    "src/ink/types/uri.cc",
-    "src/ink/types/uri.h",
   ]
 
   public_configs = [ ":public_config" ]

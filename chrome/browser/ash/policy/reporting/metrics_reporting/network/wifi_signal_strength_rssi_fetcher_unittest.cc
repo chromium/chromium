@@ -53,9 +53,7 @@ class WifiSignalStrengthRssiFetcherTest : public ::testing::Test {
     fake_user_manager_->AddGaiaUser(account_id,
                                     user_manager::UserType::kRegular);
     fake_user_manager_->UserLoggedIn(account_id,
-                                     network_handler_test_helper_.UserHash(),
-                                     /*browser_restart=*/false,
-                                     /*is_child=*/false);
+                                     network_handler_test_helper_.UserHash());
 
     ash::LoginState::Get()->SetLoggedInState(
         ash::LoginState::LOGGED_IN_ACTIVE,

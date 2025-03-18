@@ -37,6 +37,15 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAdAuctionSignals);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
                                                kAdAuctionSignalsMaxSizeBytes);
 
+// Serves as killswitch for changing CanCreateCanvasResourceProvider() to
+// create resource provider internally rather than Canvas2DLayerBridge.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kAdjustCanCreateCanvas2dResourceProvider);
+
+// Serves as killswitch for changing GetOrCreateCanvasResourceProvider() away
+// from using GetOrCreateCanvas2DLayerBridge() for 2D contexts.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAdjustGetOrCreate2DCanvasProvider);
+
 // Avoids copying ResourceRequest::TrustedParams when possible.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAvoidTrustedParamsCopies);
 
@@ -725,6 +734,14 @@ enum class IsolateSandboxedIframesGrouping {
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     IsolateSandboxedIframesGrouping,
     kIsolateSandboxedIframesGroupingParam);
+
+// Serves as killswitch for migrating CanvasRenderingContext2D::IsPaintable()
+// from checking the existence of the canvas' Canvas2DLayerBridge to checking
+// for the existence of its resource provider.
+// NOTE: Do not check this feature directly: Check
+// CheckProviderInCanvas2DRenderingContextIsPaintable() instead.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kIsPaintableChecksResourceProviderInsteadOfBridge);
 
 // Kill-switch for the fetch keepalive request infra migration.
 // If enabled, all keepalive requests will be proxied via the browser process.

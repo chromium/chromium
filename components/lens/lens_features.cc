@@ -67,6 +67,10 @@ BASE_FEATURE(kLensOverlayUpdatedClientContext,
              "LensOverlayUpdatedClientContext",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensOverlayMGTInSidePanel,
+             "LensOverlayMGTInSidePanel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the Lens Overlay omnibox entry point. This is a separate feature from
 // kLensOverlay so that the omnibox entry point can be disabled without a
 // dependency on the rest of the Lens Overlay features. This means if can be
@@ -922,4 +926,9 @@ bool UpdateViewportEachQueryEnabled() {
 bool IsUpdatedClientContextEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlayUpdatedClientContext);
 }
+
+bool ShouldShowMGTInSidePanel() {
+  return base::FeatureList::IsEnabled(kLensOverlayMGTInSidePanel);
+}
+
 }  // namespace lens::features

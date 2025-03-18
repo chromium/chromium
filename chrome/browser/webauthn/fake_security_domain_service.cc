@@ -12,12 +12,18 @@
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "components/trusted_vault/proto/vault.pb.h"
+#include "components/trusted_vault/trusted_vault_connection.h"
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/resource_request.h"
 
 namespace {
 
 constexpr char kSecurityDomainName[] = "users/me/securitydomains/hw_protected";
+
+base::Time ToTime(const trusted_vault_pb::Timestamp& proto) {
+  return base::Time::UnixEpoch() + base::Seconds(proto.seconds()) +
+         base::Nanoseconds(proto.nanos());
+}
 
 // Get the body of a request, assuming that it simply has a bytestring body.
 // This is true of requests from the trusted_vault code.
@@ -81,6 +87,36 @@ class FakeSecurityDomainServiceImpl : public FakeSecurityDomainService {
              trusted_vault_pb::SecurityDomainMember::
                  MEMBER_TYPE_GOOGLE_PASSWORD_MANAGER_PIN;
     });
+  }
+
+  std::string GetPinMemberPublicKey() const override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    const auto pin_member =
+        std::ranges::find_if(members_, [](const auto& member) -> bool {
+          return member.member_type() ==
+                 trusted_vault_pb::SecurityDomainMember::
+                     MEMBER_TYPE_GOOGLE_PASSWORD_MANAGER_PIN;
+        });
+    CHECK(pin_member != members_.end());
+    return pin_member->public_key();
+  }
+
+  trusted_vault::GpmPinMetadata GetPinMetadata() const override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    const auto pin_member =
+        std::ranges::find_if(members_, [](const auto& member) -> bool {
+          return member.member_type() ==
+                 trusted_vault_pb::SecurityDomainMember::
+                     MEMBER_TYPE_GOOGLE_PASSWORD_MANAGER_PIN;
+        });
+    CHECK(pin_member != members_.end());
+    const auto& pin_metadata =
+        pin_member->member_metadata().google_password_manager_pin_metadata();
+    return trusted_vault::GpmPinMetadata(
+        GetPinMemberPublicKey(), pin_metadata.encrypted_pin_hash(),
+        ToTime(pin_metadata.expiration_time()));
   }
 
   base::span<const trusted_vault_pb::SecurityDomainMember> members()

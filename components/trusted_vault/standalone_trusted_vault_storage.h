@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_TRUSTED_VAULT_STANDALONE_TRUSTED_VAULT_STORAGE_H_
 #define COMPONENTS_TRUSTED_VAULT_STANDALONE_TRUSTED_VAULT_STORAGE_H_
 
+#include <memory>
+
 #include "base/files/file_path.h"
 #include "base/functional/function_ref.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
@@ -14,40 +16,68 @@ namespace trusted_vault {
 
 enum class SecurityDomainId;
 
-// Interface for storage helper for |StandaloneTrustedVaultBackend| which
-// handles file operations.
+// Storage helper for StandaloneTrustedVaultBackend handling file operations.
+// TODO: This interface currently exposes pointers to internal data structures
+// (|data_|). Consider rewriting it to avoid this, and potentially also get rid
+// of ReadDataFromDisk() and WriteDataToDisk().
 class StandaloneTrustedVaultStorage {
  public:
-  StandaloneTrustedVaultStorage() = default;
+  // Interface for actual file access. Can be swapped with a fake for tests.
+  class FileAccess {
+   public:
+    FileAccess() = default;
+    FileAccess(const FileAccess&) = delete;
+    FileAccess& operator=(const FileAccess&) = delete;
+    virtual ~FileAccess() = default;
+
+    virtual trusted_vault_pb::LocalTrustedVault ReadFromDisk() = 0;
+    virtual void WriteToDisk(
+        const trusted_vault_pb::LocalTrustedVault& data) = 0;
+  };
+
+  // Create with non-default FileAccess. Only used for testing.
+  static std::unique_ptr<StandaloneTrustedVaultStorage> CreateForTesting(
+      std::unique_ptr<FileAccess> file_access);
+
+  StandaloneTrustedVaultStorage(const base::FilePath& base_dir,
+                                SecurityDomainId security_domain_id);
   StandaloneTrustedVaultStorage(const StandaloneTrustedVaultStorage& other) =
       delete;
   StandaloneTrustedVaultStorage& operator=(
       const StandaloneTrustedVaultStorage& other) = delete;
-  virtual ~StandaloneTrustedVaultStorage() = default;
+  ~StandaloneTrustedVaultStorage();
 
   // Restores state saved in storage, should be called before using the object.
-  virtual void ReadDataFromDisk() = 0;
+  void ReadDataFromDisk();
 
   // Writes data back to disk.
-  virtual void WriteDataToDisk() = 0;
+  void WriteDataToDisk();
 
   // Adds a new per-user vault in for |gaia_id|.
-  // Checks that there isn't an existing entry for |gaia_id|. The lifetime of
+  // There must be no existing per-user vault for |gaia_id|. The lifetime of
   // the returned pointer is bound to the lifetime of |this|, but it becomes
-  // invalid when |ReadDataFromDisk| is called.
-  [[nodiscard]] virtual trusted_vault_pb::LocalTrustedVaultPerUser*
-  AddUserVault(const GaiaId& gaia_id) = 0;
+  // invalid when ReadDataFromDisk() is called.
+  // This never returns null.
+  trusted_vault_pb::LocalTrustedVaultPerUser* AddUserVault(
+      const GaiaId& gaia_id);
 
   // Finds the per-user vault for |gaia_id|. Returns null if not found. The
   // lifetime of the returned pointer is bound to the lifetime of |this|, but it
-  // becomes invalid when |ReadDataFromDisk| is called.
-  [[nodiscard]] virtual trusted_vault_pb::LocalTrustedVaultPerUser*
-  FindUserVault(const GaiaId& gaia_id) = 0;
+  // becomes invalid when ReadDataFromDisk() is called.
+  trusted_vault_pb::LocalTrustedVaultPerUser* FindUserVault(
+      const GaiaId& gaia_id);
 
   // Removes the per-user vaults that match |predicate|.
-  virtual void RemoveUserVaults(
+  void RemoveUserVaults(
       base::FunctionRef<bool(const trusted_vault_pb::LocalTrustedVaultPerUser&)>
-          predicate) = 0;
+          predicate);
+
+ private:
+  explicit StandaloneTrustedVaultStorage(
+      std::unique_ptr<FileAccess> file_access);
+
+  std::unique_ptr<FileAccess> file_access_;
+  trusted_vault_pb::LocalTrustedVault data_;
 };
 
 }  // namespace trusted_vault

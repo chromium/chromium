@@ -56,4 +56,8 @@ public class Interpolators {
 
     public static final LinearInterpolator LINEAR_INTERPOLATOR = new LinearInterpolator();
     public static final OvershootInterpolator OVERSHOOT_INTERPOLATOR = new OvershootInterpolator();
+
+    /** Custom interpolator for the new background tab animation curved motion. */
+    public static final Interpolator NEW_BACKGROUND_TAB_ANIMATION_INTERPOLATOR =
+            PathInterpolatorCompat.create(0.41f, 0.12f, 0.38f, 1f);
 }

@@ -354,27 +354,28 @@ def resolve_packages(packages: List[str], target_id: Optional[str]) -> None:
 
     ssh_run(['pkgctl', 'gc'], target_id, check=False)
 
-    def _retry_command(cmd: List[str],
-                       retries: int = 2,
-                       **kwargs) -> Optional[subprocess.CompletedProcess]:
+    # A temporary solution to avoid cycle dependency. The DIR_SRC_ROOT should be
+    # moved away from common.py.
+    # pylint: disable=cyclic-import, import-outside-toplevel
+    import monitors
+
+    def _retry_command(cmd: List[str], package) -> subprocess.CompletedProcess:
         """Helper function for retrying a subprocess.run command."""
 
-        for i in range(retries):
-            if i == retries - 1:
-                proc = ssh_run(cmd, **kwargs, check=True)
-                return proc
-            proc = ssh_run(cmd, **kwargs, check=False)
-            if proc.returncode == 0:
-                return proc
-            time.sleep(3)
-        return None
+        proc = ssh_run(cmd, target_id=target_id, check=False)
+        if proc.returncode == 0:
+            return proc
+        time.sleep(3)
+        monitors.count('pkgctl', 'resolve', package, 'retry').record(1)
+        return ssh_run(cmd, target_id=target_id, check=True)
 
     for package in packages:
         resolve_cmd = [
             'pkgctl', 'resolve',
             'fuchsia-pkg://%s/%s' % (REPO_ALIAS, package)
         ]
-        _retry_command(resolve_cmd, target_id=target_id)
+        with monitors.time_consumption('pkgctl', 'resolve', package):
+            _retry_command(resolve_cmd, package)
 
 
 def get_ip_address(target_id: Optional[str], ipv4_only: bool = False):

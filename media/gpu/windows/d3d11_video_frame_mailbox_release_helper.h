@@ -27,8 +27,6 @@ class MediaLog;
 class MEDIA_GPU_EXPORT D3D11VideoFrameMailboxReleaseHelper
     : public base::RefCountedThreadSafe<D3D11VideoFrameMailboxReleaseHelper> {
  public:
-  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
-
   // May be constructed on any thread.
   D3D11VideoFrameMailboxReleaseHelper(
       std::unique_ptr<MediaLog> media_log,
@@ -49,7 +47,8 @@ class MEDIA_GPU_EXPORT D3D11VideoFrameMailboxReleaseHelper
 
  private:
   friend class base::RefCountedThreadSafe<D3D11VideoFrameMailboxReleaseHelper>;
-  ~D3D11VideoFrameMailboxReleaseHelper();
+
+  virtual ~D3D11VideoFrameMailboxReleaseHelper();
 
   // Called to wait on |sync_token|, and call |wait_complete_cb| when done.
   void OnMailboxReleased(base::OnceClosure wait_complete_cb,

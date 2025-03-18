@@ -1968,6 +1968,14 @@ void Widget::OnNativeWidgetSizeChanged(const gfx::Size& new_size) {
 #endif
 }
 
+void Widget::OnNativeWidgetUserResizeStarted() {
+  observers_.Notify(&WidgetObserver::OnWidgetUserResizeStarted);
+}
+
+void Widget::OnNativeWidgetUserResizeEnded() {
+  observers_.Notify(&WidgetObserver::OnWidgetUserResizeEnded);
+}
+
 void Widget::OnNativeWidgetWorkspaceChanged() {}
 
 void Widget::OnNativeWidgetWindowShowStateChanged() {

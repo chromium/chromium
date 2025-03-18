@@ -6,7 +6,6 @@
 #define MEDIA_GPU_CHROMEOS_FRAME_REGISTRY_H_
 
 #include "base/containers/flat_map.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/unguessable_token.h"
@@ -30,8 +29,6 @@ namespace media {
 // be constructed and destroyed on any sequence.
 class FrameRegistry final : public base::RefCountedThreadSafe<FrameRegistry> {
  public:
-  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
-
   FrameRegistry();
 
   // FrameRegistry is not copyable or movable.

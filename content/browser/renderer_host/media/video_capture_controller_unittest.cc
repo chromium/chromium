@@ -22,6 +22,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -167,7 +168,7 @@ class VideoCaptureControllerTest
   ~VideoCaptureControllerTest() override {}
 
  protected:
-  static const int kPoolSize = 3;
+  static constexpr int kPoolSize = 3;
 
   void SetUp() override {
     const std::string arbitrary_device_id = "arbitrary_device_id";
@@ -192,7 +193,7 @@ class VideoCaptureControllerTest
   void TearDown() override { base::RunLoop().RunUntilIdle(); }
 
   void InitializeNewDeviceClientAndBufferPoolInstances() {
-    buffer_pool_ = new media::VideoCaptureBufferPoolImpl(
+    buffer_pool_ = base::MakeRefCounted<media::VideoCaptureBufferPoolImpl>(
         media::VideoCaptureBufferType::kSharedMemory, kPoolSize);
 #if BUILDFLAG(IS_CHROMEOS)
     device_client_ = std::make_unique<media::VideoCaptureDeviceClient>(

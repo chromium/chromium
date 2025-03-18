@@ -82,6 +82,10 @@ class ModelExecutionManager final {
       ModelBasedCapabilityKey feature,
       const std::optional<SessionConfigParams>& config_params);
 
+  // Returns the capabilities for the on-device model, or empty capabilities if
+  // no model is available.
+  on_device_model::Capabilities GetOnDeviceCapabilities();
+
   void Shutdown();
 
  private:

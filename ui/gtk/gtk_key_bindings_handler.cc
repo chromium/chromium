@@ -6,6 +6,7 @@
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "ui/base/ime/text_edit_commands.h"
 #include "ui/events/event_constants.h"
@@ -118,7 +119,7 @@ ui::TextEditCommand GtkKeyBindingsHandler::MatchEvent(const ui::Event& event) {
 void GtkKeyBindingsHandler::OnSettingsChanged(GSettings* settings,
                                               const char* key) {
   DCHECK(settings);
-  if (strcmp(key, kGtkKeyTheme) != 0) {
+  if (UNSAFE_TODO(strcmp(key, kGtkKeyTheme)) != 0) {
     return;
   }
   auto g_free_deleter = [](gchar* s) { g_free(s); };
@@ -127,7 +128,7 @@ void GtkKeyBindingsHandler::OnSettingsChanged(GSettings* settings,
   if (!key_theme) {
     return;
   }
-  emacs_theme_ = strcmp(key_theme.get(), kEmacsKeyTheme) == 0;
+  emacs_theme_ = UNSAFE_TODO(strcmp(key_theme.get(), kEmacsKeyTheme)) == 0;
 }
 
 }  // namespace gtk

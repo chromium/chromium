@@ -724,9 +724,10 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
         DCHECK(entry.string);
         // If strncmp returns 0, then either the keys are equal, or |name| sorts
         // before |entry|.
-        return strncmp(entry.string,
-                       reinterpret_cast<const char*>(name.Characters8()),
-                       name.length()) < 0;
+        return UNSAFE_TODO(
+                   strncmp(entry.string,
+                           reinterpret_cast<const char*>(name.Characters8()),
+                           name.length())) < 0;
       });
   if (match == pseudo_type_map_end || match->string != name.GetString()) {
     return CSSSelector::kPseudoUnknown;

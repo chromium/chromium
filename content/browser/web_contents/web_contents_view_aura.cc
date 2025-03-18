@@ -376,14 +376,14 @@ WebContentsViewAura::OnPerformingDropContext::OnPerformingDropContext(
     std::unique_ptr<DropData> drop_data,
     DropMetadata drop_metadata,
     std::unique_ptr<ui::OSExchangeData> data,
-    base::ScopedClosureRunner end_drag_runner,
+    base::ScopedClosureRunner drop_exit_cleanup,
     std::optional<gfx::PointF> transformed_pt,
     gfx::PointF screen_pt)
     : target_rwh(target_rwh->GetWeakPtr()),
       drop_data(std::move(drop_data)),
       drop_metadata(drop_metadata),
       data(std::move(data)),
-      end_drag_runner(std::move(end_drag_runner)),
+      drop_exit_cleanup(std::move(drop_exit_cleanup)),
       transformed_pt(std::move(transformed_pt)),
       screen_pt(screen_pt) {}
 
@@ -796,10 +796,6 @@ void WebContentsViewAura::PrepareDropData(
 void WebContentsViewAura::EndDrag(
     base::WeakPtr<RenderWidgetHostImpl> source_rwh_weak_ptr,
     DragOperation op) {
-  // `drag_in_progress_` could still be true, if the `PerformDropCallback()`
-  // terminates early and the `end_drag_runner` runs `EndDrag()` before reaching
-  // the CompleteDrop() call.
-  drag_in_progress_ = false;
   drag_security_info_.OnDragEnded();
 
   if (!web_contents_)
@@ -1555,6 +1551,11 @@ void WebContentsViewAura::CompleteDragExit() {
   current_drag_data_.reset();
 }
 
+void WebContentsViewAura::OnDropExit(
+    base::ScopedClosureRunner end_drag_runner) {
+  drag_in_progress_ = false;
+}
+
 // PerformDropCallback() is called once the user releases the mouse button
 // over this window.  This function completes the drop if possible.  A drop
 // may not be possible for example if the RWH has changed since the user's drag
@@ -1607,7 +1608,11 @@ void WebContentsViewAura::PerformDropCallback(
     std::unique_ptr<ui::OSExchangeData> data,
     base::WeakPtr<RenderWidgetHostViewBase> target,
     std::optional<gfx::PointF> transformed_pt) {
-  base::ScopedClosureRunner end_drag_runner(std::move(end_drag_runner_));
+  // Exit callback to make sure |drag_in_pregress_| is flipped on exit and
+  // |end_drag_runner_| is run after OnGotVirtualFilesAsTempFiles finishes.
+  base::ScopedClosureRunner drop_exit_cleanup(base::BindOnce(
+      &WebContentsViewAura::OnDropExit, weak_ptr_factory_.GetWeakPtr(),
+      std::move(end_drag_runner_)));
 
   if (!target) {
     return;
@@ -1642,7 +1647,7 @@ void WebContentsViewAura::PerformDropCallback(
 
   OnPerformingDropContext drop_context(
       target_rwh, std::move(current_drag_data_), drop_metadata, std::move(data),
-      std::move(end_drag_runner), transformed_pt, screen_pt);
+      std::move(drop_exit_cleanup), transformed_pt, screen_pt);
 
 #if BUILDFLAG(IS_WIN)
   if (ShouldIncludeVirtualFiles(*drop_context.drop_data) &&
@@ -1725,7 +1730,6 @@ WebContentsViewAura::GetDropCallback(const ui::DropTargetEvent& event) {
 }
 
 void WebContentsViewAura::CompleteDrop(OnPerformingDropContext drop_context) {
-  drag_in_progress_ = false;
   web_contents_->Focus();
 
   const int key_modifiers =

@@ -237,6 +237,7 @@ android_library("main_autofill_java") {
   ]
   sources = [
     "java/src/org/chromium/components/autofill/AddressNormalizer.java",
+    "java/src/org/chromium/components/autofill/AutofillAddressUiComponent.java",
     "java/src/org/chromium/components/autofill/AutofillDelegate.java",
     "java/src/org/chromium/components/autofill/AutofillDropdownAdapter.java",
     "java/src/org/chromium/components/autofill/AutofillPopup.java",

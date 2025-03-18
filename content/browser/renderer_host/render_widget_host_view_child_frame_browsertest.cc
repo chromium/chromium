@@ -636,8 +636,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
     // Watch for visual properties changes, first to the child oop-iframe, then
     // to the descendant (at which point we're done and can validate the
     // values).
-    root_view->SetDisplayFeatureForTesting(&emulated_display_feature);
-    root_widget->SynchronizeVisualProperties();
+    root_view->OverrideDisplayFeatureForEmulation(&emulated_display_feature);
 
     while (true) {
       properties = oopchild->current_frame_host()

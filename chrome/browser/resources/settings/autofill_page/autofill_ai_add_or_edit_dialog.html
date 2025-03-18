@@ -1,6 +1,11 @@
-<style include="cr-shared-style settings-shared">
+<style include="cr-shared-style settings-shared md-select">
   :host {
     white-space: nowrap;
+  }
+
+  .md-select {
+    --md-select-width: var(--cr-input-width, 100%);
+    margin-bottom: var(--cr-form-field-bottom-spacing);
   }
 
   #dialog::part(body-container) {
@@ -20,12 +25,39 @@
 <cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach>
   <div slot="title">[[dialogTitle]]</div>
   <div slot="body">
-    <template is="dom-repeat" items="[[completeAttributeInstanceList_]]">
-      <cr-input id="attributeInstanceField" type="text"
-          label="[[item.type.typeNameAsString]]" value="{{item.value}}"
-          spellcheck="false" maxlength="1000"
-          on-input="onAttributeInstanceFieldInput_">
-      </cr-input>
+    <template is="dom-repeat" items="[[completeAttributeInstanceList_]]"
+        as="attributeInstanceItem">
+
+      <template is="dom-if" if="[[isCountryDataType_(attributeInstanceItem)]]">
+        <label id="country-select-label" class="cr-form-field-label">
+          [[attributeInstanceItem.type.typeNameAsString]]
+        </label>
+        <select id="country-select" class="md-select"
+            aria-label="[[attributeInstanceItem.type.typeNameAsString]]"
+            on-change="onCountrySelectChange_">
+          <!-- TODO(crbug.com/403312087): Add accessibility support for the
+               empty option. -->
+          <option value=""></option>
+          <template is="dom-repeat" items="[[countryList_]]" as="countryItem">
+            <option value="[[getCountryCode_(countryItem)]]"
+                disabled="[[isCountrySeparator_(countryItem)]]"
+                selected="[[isCountrySelected_(
+                    attributeInstanceItem, countryItem)]]">
+              [[getCountryName_(countryItem)]]
+            </option>
+          </template>
+        </select>
+      </template>
+
+      <template is="dom-if" if="[[isStringDataType_(attributeInstanceItem)]]">
+        <cr-input id="attributeInstanceField" type="text"
+            label="[[attributeInstanceItem.type.typeNameAsString]]"
+            value="{{attributeInstanceItem.value}}"
+            spellcheck="false" maxlength="1000"
+            on-input="onAttributeInstanceFieldInput_">
+        </cr-input>
+      </template>
+
     </template>
     <div id="validationError" hidden="[[canSave_]]">
       $i18n{autofillAiAddOrEditDialogValidationError}

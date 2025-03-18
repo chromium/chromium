@@ -24,6 +24,7 @@
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_sync_service_factory.h"
 #include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
+#include "chrome/browser/extensions/external_provider_manager_factory.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/extensions/install_verifier_factory.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
@@ -58,6 +59,7 @@ void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::ExtensionGarbageCollectorFactory::GetInstance();
   extensions::ExtensionGCMAppHandler::GetFactoryInstance();
   extensions::ExtensionManagementFactory::GetInstance();
+  extensions::ExternalProviderManagerFactory::GetInstance();
   extensions::ChromeExtensionSystemFactory::GetInstance();
   extensions::InstallTrackerFactory::GetInstance();
   extensions::InstallVerifierFactory::GetInstance();

@@ -87,9 +87,7 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
         AccountId::FromUserEmailGaiaId("test@test", GaiaId("fakegaia"));
     fake_user_manager_->AddGaiaUser(account_id,
                                     user_manager::UserType::kRegular);
-    fake_user_manager_->UserLoggedIn(account_id, kUserHash,
-                                     /*browser_restart=*/false,
-                                     /*is_child=*/false);
+    fake_user_manager_->UserLoggedIn(account_id, kUserHash);
 
     ash::LoginState::Get()->SetLoggedInState(
         ash::LoginState::LOGGED_IN_ACTIVE,

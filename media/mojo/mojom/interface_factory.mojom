@@ -12,10 +12,19 @@ import "media/mojo/mojom/media_log.mojom";
 import "media/mojo/mojom/media_types.mojom";
 import "media/mojo/mojom/renderer.mojom";
 import "media/mojo/mojom/renderer_extensions.mojom";
-import "media/mojo/mojom/stable/stable_video_decoder.mojom";
 import "media/mojo/mojom/video_decoder.mojom";
 import "mojo/public/mojom/base/token.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+
+// A disconnection of this interface can be interpreted as the
+// VideoDecoder implementation created by
+// InterfaceFactory.CreateVideoDecoderWithTracker() having been destroyed
+// (or never bound in the first place).
+//
+// This interface is intended to be implemented by the browser process and used
+// by the video decoder processes.
+[EnableIf=allow_oop_video_decoder]
+interface VideoDecoderTracker {};
 
 // A factory for creating media mojo interfaces. Renderers can only access
 // ContentDecryptionModules created with the same factory.
@@ -25,28 +34,25 @@ interface InterfaceFactory {
   // Creates a VideoDecoder (|video_decoder|). If |dst_video_decoder| is
   // provided and supported by the implementation, VideoDecoder calls on
   // |video_decoder| should be forwarded to |dst_video_decoder|. This is
-  // intended to be used for out-of-process video decoding and LaCrOS in which
+  // intended to be used for out-of-process video decoding in which
   // the GPU process acts a proxy between a renderer and a video decoder process
   // so that it can create a gpu::Mailbox for each decoded frame. As such, only
   // the GPU process should be provided with a valid |dst_video_decoder|.
-  //
-  // TODO(b/327268445): we can remove the `dst_video_decoder` parameter once
-  // GTFO OOP-VD is used instead of regular OOP-VD.
   CreateVideoDecoder(
       pending_receiver<VideoDecoder> video_decoder,
-      pending_remote<media.stable.mojom.StableVideoDecoder>? dst_video_decoder);
+      pending_remote<media.mojom.VideoDecoder>? dst_video_decoder);
 
-  // Creates a StableVideoDecoder (`video_decoder`). This method is intended to
-  // be used only for the "GTFO OOP-VD" mode, i.e., when the StableVideoDecoder
-  // client talks directly to the StableVideoDecoder service without using the
-  // GPU process as a proxy (in contrast to the "regular OOP-VD" mode).
-  //
-  // The StableVideoDecoder implementation lives in a utility process. Clients
-  // are expected to live in either the browser process (for supported profile
-  // querying) or the renderer process (to drive video decoding).
+  // Creates a VideoDecoder and should be called by the browser process.
+  // If |tracker| is provided, the caller can handle its disconnection in order
+  // to know when the VideoDecoder implementation is destroyed. Note that
+  // |tracker| may get disconnected without ever creating a VideoDecoder
+  // implementation instance, e.g., if an error occurs that prevents |receiver|
+  // from being bound to an implementation. This method is intended to be used
+  // only for OOP-VD.
   [EnableIf=allow_oop_video_decoder]
-  CreateStableVideoDecoder(
-      pending_receiver<media.stable.mojom.StableVideoDecoder> video_decoder);
+  CreateVideoDecoderWithTracker(
+      pending_receiver<VideoDecoder> receiver,
+      pending_remote<VideoDecoderTracker>? tracker);
 
   // Creates an AudioEncoder bound to a given receiver.
   CreateAudioEncoder(pending_receiver<AudioEncoder> audio_encoder);

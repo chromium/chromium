@@ -2392,10 +2392,10 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
     }
     start = InterpolationValue(
         MakeGarbageCollected<InterpolableList>(0),
-        CSSDefaultNonInterpolableValue::Create(start_css_value));
+        MakeGarbageCollected<CSSDefaultNonInterpolableValue>(start_css_value));
     end = InterpolationValue(
         MakeGarbageCollected<InterpolableList>(0),
-        CSSDefaultNonInterpolableValue::Create(end_css_value));
+        MakeGarbageCollected<CSSDefaultNonInterpolableValue>(end_css_value));
   }
   // If we have multiple transitions on the same property, we will use the
   // last one since we iterate over them in order.

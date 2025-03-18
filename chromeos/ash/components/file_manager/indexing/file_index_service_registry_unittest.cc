@@ -16,6 +16,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -54,10 +55,7 @@ class FileIndexServiceRegistryTest : public testing::Test {
 
   void LoginUser(const AccountId& account_id) {
     fake_user_manager()->UserLoggedIn(
-        account_id,
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
-        /*browser_restart=*/false,
-        /*is_child=*/false);
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
     fake_user_manager()->OnUserProfileCreated(account_id, nullptr);
   }
 

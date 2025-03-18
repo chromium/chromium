@@ -26,7 +26,7 @@ const char kLocalTracesTableName[] = "local_traces";
 constexpr int kCurrentVersionNumber = 5;
 
 ClientTraceReport GetReportFromStatement(sql::Statement& statement) {
-  auto trace_id = base::Token::FromString(statement.ColumnString(0));
+  auto trace_id = base::Token::FromString(statement.ColumnStringView(0));
   CHECK(trace_id.has_value());
 
   ClientTraceReport client_report;

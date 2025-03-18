@@ -4588,13 +4588,13 @@ DoGetViewClickCountsForProviderAndEligible(sql::Database& db,
     return std::nullopt;
   }
   if (!result.uncompacted_view_events.ParseFromString(
-          get_counts.ColumnString(0)) ||
+          get_counts.ColumnStringView(0)) ||
       !result.compacted_view_events.ParseFromString(
-          get_counts.ColumnString(1)) ||
+          get_counts.ColumnStringView(1)) ||
       !result.uncompacted_click_events.ParseFromString(
-          get_counts.ColumnString(2)) ||
+          get_counts.ColumnStringView(2)) ||
       !result.compacted_click_events.ParseFromString(
-          get_counts.ColumnString(3))) {
+          get_counts.ColumnStringView(3))) {
     base::UmaHistogramEnumeration(
         "Storage.InterestGroup.ProtoDeserializationResult.ListOfTimestamps",
         InterestGroupStorageProtoSerializationResult::kFailed);
@@ -4740,9 +4740,9 @@ void DoRecordViewClick(sql::Database& db,
     if (get_counts.Step()) {
       row_exists = true;
       if (!uncompacted_view_events.ParseFromString(
-              get_counts.ColumnString(0)) ||
+              get_counts.ColumnStringView(0)) ||
           !uncompacted_click_events.ParseFromString(
-              get_counts.ColumnString(1))) {
+              get_counts.ColumnStringView(1))) {
         // TODO(crbug.com/355010821): Consider bubbling out the failure.
         base::UmaHistogramEnumeration(
             "Storage.InterestGroup.ProtoDeserializationResult.ListOfTimestamps",

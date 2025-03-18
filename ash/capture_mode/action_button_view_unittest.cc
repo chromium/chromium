@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/style/ash_color_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
@@ -16,7 +17,11 @@
 namespace ash {
 namespace {
 
-using ActionButtonViewTest = views::ViewsTestBase;
+class ActionButtonViewTest : public views::ViewsTestBase {
+ private:
+  // Required by `ActionButtonView`.
+  AshColorProvider color_provider_;
+};
 
 TEST_F(ActionButtonViewTest, ShowsIconAndLabelByDefault) {
   ActionButtonView action_button(

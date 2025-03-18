@@ -195,6 +195,10 @@ bool IsMatchingDevice(CHROME_LUID desired_luid, ID3D11Device* device) {
   return false;
 }
 
+bool IsOdd(int value) {
+  return (value & 1) != 0;
+}
+
 }  // namespace
 
 struct MediaFoundationVideoEncodeAccelerator::PendingInput {
@@ -913,6 +917,12 @@ bool MediaFoundationVideoEncodeAccelerator::IsFrameSizeAllowed(gfx::Size size) {
   // It's possible `max_framerate_and_resolutions_` is empty when we
   // failed to retrieve `MF_VIDEO_MAX_MB_PER_SEC`.
   DCHECK(!min_resolution_.IsEmpty());
+
+  if (IsOdd(size.width()) || IsOdd(size.height())) {
+    MEDIA_LOG(ERROR, media_log_) << "MediaFoundation does not support "
+                                    "encoding frame of odd width/height well.";
+    return false;
+  }
 
   for (auto& [frame_rate, resolution] : max_framerate_and_resolutions_) {
     // TODO(crbug.com/365813271): Add framerate check once we can make sure

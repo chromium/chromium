@@ -2233,7 +2233,8 @@ void TableView::InstallFocusRing() {
     // from highlighting the whole table, which is the default fallback
     // behavior if there is no highlight path.
     if (v->table_style().inset_focus_ring) {
-      return table_focused && v->GetFirstSelectedRow().has_value();
+      return table_focused && v->GetFirstSelectedRow().has_value() &&
+             PlatformStyle::kTableViewSupportsKeyboardNavigationByCell;
     }
     return table_focused;
   }));

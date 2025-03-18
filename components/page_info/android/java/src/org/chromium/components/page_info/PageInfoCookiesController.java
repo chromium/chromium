@@ -4,6 +4,7 @@
 
 package org.chromium.components.page_info;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.content_settings.PrefNames.IN_CONTEXT_COOKIE_CONTROLS_OPENED;
 
 import android.view.View;
@@ -12,6 +13,8 @@ import android.view.ViewGroup;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteDataCleaner;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
@@ -29,27 +32,28 @@ import org.chromium.components.user_prefs.UserPrefs;
 import java.util.Collection;
 
 /** Class for controlling the page info cookies section. */
+@NullMarked
 public class PageInfoCookiesController extends PageInfoPreferenceSubpageController
         implements CookieControlsObserver {
     private final PageInfoMainController mMainController;
     private final PageInfoRowView mRowView;
     private final String mFullUrl;
     private final String mTitle;
-    private CookieControlsBridge mBridge;
-    private PageInfoCookiesSettings mSubPage;
+    private @Nullable CookieControlsBridge mBridge;
+    private @Nullable PageInfoCookiesSettings mSubPage;
 
     private boolean mCookieControlsVisible;
     private boolean mThirdPartyCookiesBlocked;
     private int mEnforcement;
     private long mExpiration;
     private boolean mShouldDisplaySiteBreakageString;
-    private Website mWebsite;
+    private @Nullable Website mWebsite;
     private boolean mBlockAll3pc;
     private boolean mIsIncognito;
     private boolean mIsModeBUi;
     private int mDaysUntilExpirationForTesting;
     private boolean mFixedExpirationForTesting;
-    private Collection<Website> mRwsInfoForTesting;
+    private @Nullable Collection<Website> mRwsInfoForTesting;
 
     public PageInfoCookiesController(
             PageInfoMainController mainController,
@@ -95,35 +99,36 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
     }
 
     @Override
-    public View createViewForSubpage(ViewGroup parent) {
+    public @Nullable View createViewForSubpage(ViewGroup parent) {
         assert mSubPage == null;
         if (!canCreateSubpageFragment()) return null;
 
         mSubPage = new PageInfoCookiesSettings();
         View view = addSubpageFragment(mSubPage);
+        var delegate = getDelegate();
         PageInfoCookiesSettings.PageInfoCookiesViewParams params =
-                new PageInfoCookiesSettings.PageInfoCookiesViewParams();
-        params.thirdPartyCookieBlockingEnabled = getDelegate().cookieControlsShown();
-        params.onThirdPartyCookieToggleChanged = this::onThirdPartyCookieToggleChanged;
-        params.onClearCallback = this::onClearCookiesClicked;
-        params.onCookieSettingsLinkClicked = getDelegate()::showCookieSettings;
-        params.onFeedbackLinkClicked = getDelegate()::showCookieFeedback;
-        params.disableCookieDeletion = isDeletionDisabled();
-        params.hostName = mMainController.getURL().getHost();
-        params.blockAll3pc = mBlockAll3pc;
-        params.isIncognito = mIsIncognito;
-        params.fixedExpirationForTesting = mFixedExpirationForTesting;
-        params.daysUntilExpirationForTesting = mDaysUntilExpirationForTesting;
-        params.isModeBUi = mIsModeBUi;
-        mSubPage.setParams(params);
+                new PageInfoCookiesSettings.PageInfoCookiesViewParams(
+                        /* thirdPartyCookieBlockingEnabled= */ delegate.cookieControlsShown(),
+                        /* onThirdPartyCookieToggleChanged= */ this
+                                ::onThirdPartyCookieToggleChanged,
+                        /* onClearCallback= */ this::onClearCookiesClicked,
+                        /* onCookieSettingsLinkClicked= */ delegate::showCookieSettings,
+                        /* onFeedbackLinkClicked= */ delegate::showCookieFeedback,
+                        /* disableCookieDeletion= */ isDeletionDisabled(),
+                        /* hostName= */ mMainController.getURL().getHost(),
+                        /* blockAll3pc= */ mBlockAll3pc,
+                        /* isIncognito= */ mIsIncognito,
+                        /* isModeBUi= */ mIsModeBUi,
+                        /* fixedExpirationForTesting= */ mFixedExpirationForTesting,
+                        /* daysUntilExpirationForTesting= */ mDaysUntilExpirationForTesting);
+        mSubPage.setParams(params, delegate);
         mSubPage.setCookieStatus(
                 mCookieControlsVisible, mThirdPartyCookiesBlocked, mEnforcement, mExpiration);
-        mSubPage.setPageInfoDelegate(getDelegate());
 
         SiteSettingsCategory storageCategory =
                 SiteSettingsCategory.createFromType(
                         mMainController.getBrowserContext(), SiteSettingsCategory.Type.USE_STORAGE);
-        new WebsitePermissionsFetcher(getDelegate().getSiteSettingsDelegate())
+        new WebsitePermissionsFetcher(delegate.getSiteSettingsDelegate())
                 .fetchPreferencesForCategoryAndPopulateRwsInfo(
                         storageCategory, this::onStorageFetched);
         if (mRwsInfoForTesting != null) {
@@ -136,6 +141,7 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
     private void onStorageFetched(Collection<Website> result) {
         String origin = Origin.createOrThrow(mFullUrl).toString();
         WebsiteAddress address = WebsiteAddress.create(origin);
+        assert address != null;
 
         mWebsite =
                 SingleWebsiteSettings.mergePermissionAndStorageInfoForTopLevelOrigin(
@@ -279,6 +285,7 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
     }
 
     void destroy() {
+        assumeNonNull(mBridge);
         mBridge.onUiClosing();
         mBridge.destroy();
         mBridge = null;

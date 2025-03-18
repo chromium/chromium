@@ -17,15 +17,14 @@ namespace blink {
 
 class BasicShapeNonInterpolableValue : public NonInterpolableValue {
  public:
-  static scoped_refptr<const NonInterpolableValue> Create(
-      BasicShape::ShapeType type) {
-    return base::AdoptRef(new BasicShapeNonInterpolableValue(type));
+  explicit BasicShapeNonInterpolableValue(BasicShape::ShapeType type)
+      : type_(type), wind_rule_(RULE_NONZERO), size_(0) {
+    DCHECK_NE(type, BasicShape::kBasicShapePolygonType);
   }
-  static scoped_refptr<const NonInterpolableValue> CreatePolygon(
-      WindRule wind_rule,
-      wtf_size_t size) {
-    return base::AdoptRef(new BasicShapeNonInterpolableValue(wind_rule, size));
-  }
+  BasicShapeNonInterpolableValue(WindRule wind_rule, wtf_size_t size)
+      : type_(BasicShape::kBasicShapePolygonType),
+        wind_rule_(wind_rule),
+        size_(size) {}
 
   BasicShape::ShapeType GetShapeType() const { return type_; }
 
@@ -57,15 +56,6 @@ class BasicShapeNonInterpolableValue : public NonInterpolableValue {
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  BasicShapeNonInterpolableValue(BasicShape::ShapeType type)
-      : type_(type), wind_rule_(RULE_NONZERO), size_(0) {
-    DCHECK_NE(type, BasicShape::kBasicShapePolygonType);
-  }
-  BasicShapeNonInterpolableValue(WindRule wind_rule, wtf_size_t size)
-      : type_(BasicShape::kBasicShapePolygonType),
-        wind_rule_(wind_rule),
-        size_(size) {}
-
   const BasicShape::ShapeType type_;
   const WindRule wind_rule_;
   const wtf_size_t size_;
@@ -280,9 +270,9 @@ InterpolationValue ConvertCSSValue(
   }
   list->Set(kCircleRadiusIndex, radius);
 
-  return InterpolationValue(std::move(list),
-                            BasicShapeNonInterpolableValue::Create(
-                                BasicShape::kBasicShapeCircleType));
+  return InterpolationValue(
+      std::move(list), MakeGarbageCollected<BasicShapeNonInterpolableValue>(
+                           BasicShape::kBasicShapeCircleType));
 }
 
 InterpolationValue ConvertBasicShape(const BasicShapeCircle& circle,
@@ -304,9 +294,9 @@ InterpolationValue ConvertBasicShape(const BasicShapeCircle& circle,
   }
   list->Set(kCircleRadiusIndex, radius);
 
-  return InterpolationValue(std::move(list),
-                            BasicShapeNonInterpolableValue::Create(
-                                BasicShape::kBasicShapeCircleType));
+  return InterpolationValue(
+      std::move(list), MakeGarbageCollected<BasicShapeNonInterpolableValue>(
+                           BasicShape::kBasicShapeCircleType));
 }
 
 InterpolableValue* CreateNeutralValue() {
@@ -372,8 +362,9 @@ InterpolationValue ConvertCSSValue(
   }
   list->Set(kEllipseRadiusYIndex, radius);
 
-  return InterpolationValue(list, BasicShapeNonInterpolableValue::Create(
-                                      BasicShape::kBasicShapeEllipseType));
+  return InterpolationValue(
+      list, MakeGarbageCollected<BasicShapeNonInterpolableValue>(
+                BasicShape::kBasicShapeEllipseType));
 }
 
 InterpolationValue ConvertBasicShape(const BasicShapeEllipse& ellipse,
@@ -398,8 +389,9 @@ InterpolationValue ConvertBasicShape(const BasicShapeEllipse& ellipse,
   }
   list->Set(kEllipseRadiusYIndex, radius);
 
-  return InterpolationValue(list, BasicShapeNonInterpolableValue::Create(
-                                      BasicShape::kBasicShapeEllipseType));
+  return InterpolationValue(
+      list, MakeGarbageCollected<BasicShapeNonInterpolableValue>(
+                BasicShape::kBasicShapeEllipseType));
 }
 
 InterpolableValue* CreateNeutralValue() {
@@ -478,8 +470,9 @@ InterpolationValue ConvertCSSValue(
             ConvertCSSBorderRadiusWidth(inset.BottomLeftRadius()));
   list->Set(kInsetBorderBottomLeftHeightIndex,
             ConvertCSSBorderRadiusHeight(inset.BottomLeftRadius()));
-  return InterpolationValue(list, BasicShapeNonInterpolableValue::Create(
-                                      BasicShape::kBasicShapeInsetType));
+  return InterpolationValue(
+      list, MakeGarbageCollected<BasicShapeNonInterpolableValue>(
+                BasicShape::kBasicShapeInsetType));
 }
 
 void FillCanonicalRect(InterpolableList* list,
@@ -537,8 +530,9 @@ InterpolationValue ConvertCSSValueToInset(const BasicShapeCSSValueClass& rect) {
             ConvertCSSBorderRadiusWidth(rect.BottomLeftRadius()));
   list->Set(kInsetBorderBottomLeftHeightIndex,
             ConvertCSSBorderRadiusHeight(rect.BottomLeftRadius()));
-  return InterpolationValue(list, BasicShapeNonInterpolableValue::Create(
-                                      BasicShape::kBasicShapeInsetType));
+  return InterpolationValue(
+      list, MakeGarbageCollected<BasicShapeNonInterpolableValue>(
+                BasicShape::kBasicShapeInsetType));
 }
 
 InterpolationValue ConvertBasicShape(const BasicShapeInset& inset,
@@ -567,8 +561,9 @@ InterpolationValue ConvertBasicShape(const BasicShapeInset& inset,
             ConvertLength(inset.BottomLeftRadius().Width(), property, zoom));
   list->Set(kInsetBorderBottomLeftHeightIndex,
             ConvertLength(inset.BottomLeftRadius().Height(), property, zoom));
-  return InterpolationValue(list, BasicShapeNonInterpolableValue::Create(
-                                      BasicShape::kBasicShapeInsetType));
+  return InterpolationValue(
+      list, MakeGarbageCollected<BasicShapeNonInterpolableValue>(
+                BasicShape::kBasicShapeInsetType));
 }
 
 InterpolableValue* CreateNeutralValue() {
@@ -639,8 +634,9 @@ InterpolationValue ConvertCSSValue(
   for (wtf_size_t i = 0; i < size; i++) {
     list->Set(i, ConvertCSSLength(polygon.Values()[i].Get()));
   }
-  return InterpolationValue(list, BasicShapeNonInterpolableValue::CreatePolygon(
-                                      polygon.GetWindRule(), size));
+  return InterpolationValue(
+      list, MakeGarbageCollected<BasicShapeNonInterpolableValue>(
+                polygon.GetWindRule(), size));
 }
 
 InterpolationValue ConvertBasicShape(const BasicShapePolygon& polygon,
@@ -651,8 +647,9 @@ InterpolationValue ConvertBasicShape(const BasicShapePolygon& polygon,
   for (wtf_size_t i = 0; i < size; i++) {
     list->Set(i, ConvertLength(polygon.Values()[i], property, zoom));
   }
-  return InterpolationValue(list, BasicShapeNonInterpolableValue::CreatePolygon(
-                                      polygon.GetWindRule(), size));
+  return InterpolationValue(
+      list, MakeGarbageCollected<BasicShapeNonInterpolableValue>(
+                polygon.GetWindRule(), size));
 }
 
 InterpolableValue* CreateNeutralValue(

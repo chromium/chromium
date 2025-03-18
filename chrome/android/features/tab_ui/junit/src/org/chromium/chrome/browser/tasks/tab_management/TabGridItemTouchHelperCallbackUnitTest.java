@@ -49,7 +49,10 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -65,6 +68,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter.ViewHolder;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Tests for {@link TabGridItemTouchHelperCallback}. */
 @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -961,23 +965,45 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
-    public void onLongPress_triggerTabListEditor() {
-        TabUiFeatureUtilities.setTabListEditorLongPressEntryEnabledForTesting(true);
-
+    @EnableFeatures(ChromeFeatureList.TAB_SWITCHER_CONTEXT_MENU_ANDROID)
+    public void onLongPress_triggerListener() {
         // Simulate the selection of card#1 in TabListModel.
         mItemTouchHelperCallback.setSelectedTabIndexForTesting(POSITION1);
 
         mItemTouchHelperCallback.onSelectedChanged(
-                mMockViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
+                mMockViewHolder1, ItemTouchHelper.ACTION_STATE_DRAG);
 
-        verify(mOnLongPressTabItemEventListener).onLongPressEvent(TAB1_ID);
-        assertTrue(mItemTouchHelperCallback.shouldBlockAction());
+        verify(mOnLongPressTabItemEventListener).onLongPressEvent(eq(TAB1_ID), any());
     }
 
     @Test
-    public void onLongPress_preventTriggerTabListEditor() {
-        TabUiFeatureUtilities.setTabListEditorLongPressEntryEnabledForTesting(true);
+    @EnableFeatures(ChromeFeatureList.TAB_SWITCHER_CONTEXT_MENU_ANDROID)
+    public void onLongPress_cancelLongPress() {
+        AtomicBoolean longPressCancelled = new AtomicBoolean(false);
+        when(mOnLongPressTabItemEventListener.onLongPressEvent(anyInt(), any()))
+                .thenReturn(() -> longPressCancelled.set(true));
+        // Simulate the selection of card#1 in TabListModel.
+        mItemTouchHelperCallback.setSelectedTabIndexForTesting(POSITION1);
 
+        mItemTouchHelperCallback.onSelectedChanged(
+                mMockViewHolder1, ItemTouchHelper.ACTION_STATE_DRAG);
+
+        verify(mOnLongPressTabItemEventListener).onLongPressEvent(eq(TAB1_ID), any());
+
+        mItemTouchHelperCallback.onChildDraw(
+                mCanvas,
+                mRecyclerView,
+                mMockViewHolder1,
+                1000.f,
+                1000.f,
+                ItemTouchHelper.ACTION_STATE_IDLE,
+                true);
+        assertTrue(longPressCancelled.get());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_SWITCHER_CONTEXT_MENU_ANDROID)
+    public void onLongPress_preventTriggerListener() {
         // Simulate the selection of card#1 in TabListModel.
         mItemTouchHelperCallback.setSelectedTabIndexForTesting(POSITION1);
 
@@ -985,10 +1011,9 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         mItemTouchHelperCallback.setHoveredTabIndexForTesting(POSITION2);
 
         mItemTouchHelperCallback.onSelectedChanged(
-                mMockViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
+                mMockViewHolder1, ItemTouchHelper.ACTION_STATE_DRAG);
 
-        verify(mOnLongPressTabItemEventListener, never()).onLongPressEvent(TAB1_ID);
-        assertFalse(mItemTouchHelperCallback.shouldBlockAction());
+        verify(mOnLongPressTabItemEventListener, never()).onLongPressEvent(anyInt(), any());
     }
 
     @Test

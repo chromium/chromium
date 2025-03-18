@@ -25,6 +25,7 @@ struct VectorIcon;
 namespace views {
 class BoxLayout;
 class ImageView;
+class InkDropContainerView;
 class Label;
 }  // namespace views
 
@@ -51,6 +52,8 @@ class ASH_EXPORT ActionButtonView : public views::Button {
   // views::Button:
   void AddedToWidget() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+  void AddLayerToRegion(ui::Layer* layer, views::LayerRegion region) override;
+  void RemoveLayerFromRegions(ui::Layer* layer) override;
 
   // Collapses the action button, hiding its label so that only the icon
   // shows.
@@ -77,6 +80,9 @@ class ASH_EXPORT ActionButtonView : public views::Button {
   // The label containing the action button text. This label is hidden when the
   // action button is collapsed.
   raw_ptr<views::Label> label_ = nullptr;
+
+  // Ensures the ink drop is painted above the button's background.
+  raw_ptr<views::InkDropContainerView> ink_drop_container_ = nullptr;
 };
 
 }  // namespace ash

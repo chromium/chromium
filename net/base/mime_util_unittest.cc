@@ -163,8 +163,16 @@ TEST(MimeUtilTest, FileTest) {
   for (const auto& test : tests) {
     rv = GetMimeTypeFromFile(base::FilePath(test.file_path), &mime_type);
     EXPECT_EQ(test.valid, rv);
-    if (rv)
+    if (rv) {
       EXPECT_EQ(test.mime_type, mime_type);
+    }
+
+    rv = GetWellKnownMimeTypeFromFile(base::FilePath(test.file_path),
+                                      &mime_type);
+    EXPECT_EQ(test.valid, rv);
+    if (rv) {
+      EXPECT_EQ(test.mime_type, mime_type);
+    }
   }
 }
 
@@ -592,6 +600,9 @@ TEST(MimeUtilTest, ScopedOverrideGetMimeTypeForTesting) {
     std::string mime_type;
     EXPECT_TRUE(GetWellKnownMimeTypeFromExtension(FILE_PATH_LITERAL("png"),
                                                   &mime_type));
+    EXPECT_EQ(mime_type, expected_mime_type);
+    EXPECT_TRUE(GetWellKnownMimeTypeFromFile(
+        base::FilePath(FILE_PATH_LITERAL("c:\\foo\\bar.png")), &mime_type));
     EXPECT_EQ(mime_type, expected_mime_type);
     EXPECT_TRUE(GetMimeTypeFromExtension(FILE_PATH_LITERAL("png"), &mime_type));
     EXPECT_EQ(mime_type, expected_mime_type);

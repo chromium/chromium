@@ -67,10 +67,12 @@
 #include "chrome/browser/extensions/external_policy_loader.h"
 #include "chrome/browser/extensions/external_pref_loader.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
+#include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/extensions/external_testing_loader.h"
 #include "chrome/browser/extensions/fake_safe_browsing_database_manager.h"
 #include "chrome/browser/extensions/installed_loader.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
+#include "chrome/browser/extensions/managed_installation_mode.h"
 #include "chrome/browser/extensions/pack_extension_job.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/extensions/permissions/permissions_test_util.h"
@@ -677,9 +679,10 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
   ExtensionServiceTest() = default;
 
   MockExternalProvider* AddMockExternalProvider(ManifestLocation location) {
-    auto provider = std::make_unique<MockExternalProvider>(service(), location);
+    auto provider = std::make_unique<MockExternalProvider>(
+        external_provider_manager(), location);
     MockExternalProvider* provider_ptr = provider.get();
-    service()->AddProviderForTesting(std::move(provider));
+    external_provider_manager()->AddProviderForTesting(std::move(provider));
     return provider_ptr;
   }
 
@@ -916,6 +919,10 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
 
   PendingExtensionManager* pending_extension_manager() {
     return PendingExtensionManager::Get(profile());
+  }
+
+  ExternalProviderManager* external_provider_manager() {
+    return ExternalProviderManager::Get(profile());
   }
 
   typedef ExtensionManagementPrefUpdater<
@@ -1540,7 +1547,7 @@ TEST_F(ExtensionServiceTest, UninstallingNotLoadedExtension) {
   // in CheckExternalUninstall, a crash will happen here because we will get or
   // dereference a NULL pointer (extension) inside UninstallExtension.
   MockExternalProvider provider(nullptr, ManifestLocation::kExternalRegistry);
-  service()->OnExternalProviderReady(&provider);
+  external_provider_manager()->OnExternalProviderReady(&provider);
 }
 
 // Test that external extensions with incorrect IDs are not installed.
@@ -4981,11 +4988,13 @@ TEST_F(ExtensionServiceTest, PreinstalledAppsInstall) {
         "  }"
         "}";
     preinstalled_apps::Provider* provider = new preinstalled_apps::Provider(
-        profile(), service(), new ExternalTestingLoader(json_data, data_dir()),
+        profile(), external_provider_manager(),
+        new ExternalTestingLoader(json_data, data_dir()),
         ManifestLocation::kInternal, ManifestLocation::kInvalidLocation,
         Extension::FROM_WEBSTORE | Extension::WAS_INSTALLED_BY_DEFAULT);
 
-    service()->AddProviderForTesting(base::WrapUnique(provider));
+    external_provider_manager()->AddProviderForTesting(
+        base::WrapUnique(provider));
   }
 
   ASSERT_EQ(0u, registry()->enabled_extensions().size());
@@ -5388,8 +5397,8 @@ class ExtensionServiceZipUninstallProfileFeatureTest
  public:
   void SetUp() override {
     ExtensionServiceWithEmptyServiceTest::SetUp();
-      expected_extension_install_directory_ =
-          service()->unpacked_install_directory();
+    expected_extension_install_directory_ =
+        registrar()->unpacked_install_directory();
   }
 
  protected:
@@ -5413,11 +5422,11 @@ TEST_F(ExtensionServiceZipUninstallProfileFeatureTest,
 
   registry()->AddObserver(&observer);
 
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ZipFileInstaller::InstallZipFileToUnpackedExtensionsDir,
-                       zipfile_installer, original_path,
-                       service()->unpacked_install_directory()));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ZipFileInstaller::InstallZipFileToUnpackedExtensionsDir,
+                     zipfile_installer, original_path,
+                     registrar()->unpacked_install_directory()));
   task_environment()->RunUntilIdle();
 
   std::string extension_id = std::string(observer.last_extension_installed);
@@ -6121,7 +6130,7 @@ void ExtensionServiceTest::TestExternalProvider(MockExternalProvider* provider,
     // Now test an externally triggered uninstall (deleting the registry key or
     // the pref entry).
     provider->RemoveExtension(good_crx);
-    service()->OnExternalProviderReady(provider);
+    external_provider_manager()->OnExternalProviderReady(provider);
     task_environment()->RunUntilIdle();
     ASSERT_EQ(0u, loaded_extensions().size());
     EXPECT_FALSE(prefs()->IsExternalExtensionUninstalled(good_crx));
@@ -6947,18 +6956,21 @@ TEST_F(ExtensionServiceTest, InstallPriorityExternalUpdateUrl) {
   ExternalInstallInfoUpdateUrl info(
       kGoodId, std::string(), std::move(good_update_url),
       ManifestLocation::kInternal, Extension::NO_FLAGS, false);
-  EXPECT_FALSE(service()->OnExternalExtensionUpdateUrlFound(info, true));
+  EXPECT_FALSE(external_provider_manager()->OnExternalExtensionUpdateUrlFound(
+      info, true));
   EXPECT_FALSE(pending->IsIdPending(kGoodId));
 
   // Update the download location when install is requested from higher priority
   // location.
   info.download_location = ManifestLocation::kExternalPolicyDownload;
-  EXPECT_FALSE(service()->OnExternalExtensionUpdateUrlFound(info, true));
+  EXPECT_FALSE(external_provider_manager()->OnExternalExtensionUpdateUrlFound(
+      info, true));
   EXPECT_FALSE(pending->IsIdPending(kGoodId));
 
   // Try the low priority again.  Should be rejected.
   info.download_location = ManifestLocation::kExternalPrefDownload;
-  EXPECT_FALSE(service()->OnExternalExtensionUpdateUrlFound(info, true));
+  EXPECT_FALSE(external_provider_manager()->OnExternalExtensionUpdateUrlFound(
+      info, true));
   // The existing record should still be present in the pending extension
   // manager.
   EXPECT_FALSE(pending->IsIdPending(kGoodId));
@@ -6966,7 +6978,8 @@ TEST_F(ExtensionServiceTest, InstallPriorityExternalUpdateUrl) {
   // Skip install when the location has the same priority as the installed
   // location.
   info.download_location = ManifestLocation::kExternalPolicyDownload;
-  EXPECT_FALSE(service()->OnExternalExtensionUpdateUrlFound(info, true));
+  EXPECT_FALSE(external_provider_manager()->OnExternalExtensionUpdateUrlFound(
+      info, true));
 
   EXPECT_FALSE(pending->IsIdPending(kGoodId));
 }
@@ -6994,7 +7007,8 @@ TEST_F(ExtensionServiceTest, FailedLocalFileInstallIsNotPending) {
     PendingRemovalObserver observer(pending, kGoodId);
 
     // Simulate an external source adding the extension.
-    EXPECT_TRUE(service()->OnExternalExtensionFileFound(info));
+    EXPECT_TRUE(
+        external_provider_manager()->OnExternalExtensionFileFound(info));
     EXPECT_TRUE(pending->IsIdPending(kGoodId));
     observer.WaitForRemoval();
     EXPECT_FALSE(pending->IsIdPending(kGoodId));
@@ -7041,7 +7055,8 @@ TEST_F(ExtensionServiceTest, InstallPriorityExternalLocalFile) {
   {
     // Simulate an external source adding the extension as kInternal.
     PendingRemovalObserver observer(pending, kGoodId);
-    EXPECT_TRUE(service()->OnExternalExtensionFileFound(info));
+    EXPECT_TRUE(
+        external_provider_manager()->OnExternalExtensionFileFound(info));
     EXPECT_TRUE(pending->IsIdPending(kGoodId));
     observer.WaitForRemoval();
     VerifyCrxInstall(kInvalidPathToCrx, INSTALL_FAILED);
@@ -7051,18 +7066,21 @@ TEST_F(ExtensionServiceTest, InstallPriorityExternalLocalFile) {
     // Simulate an external source adding the extension as kExternalPref.
     PendingRemovalObserver observer(pending, kGoodId);
     info.crx_location = ManifestLocation::kExternalPref;
-    EXPECT_TRUE(service()->OnExternalExtensionFileFound(info));
+    EXPECT_TRUE(
+        external_provider_manager()->OnExternalExtensionFileFound(info));
     EXPECT_TRUE(pending->IsIdPending(kGoodId));
 
     // Simulate an external source adding as EXTERNAL_PREF again.
     // This is rejected because the version and the location are the same as
     // the previous installation, which is still pending.
-    EXPECT_FALSE(service()->OnExternalExtensionFileFound(info));
+    EXPECT_FALSE(
+        external_provider_manager()->OnExternalExtensionFileFound(info));
     EXPECT_TRUE(pending->IsIdPending(kGoodId));
 
     // Try INTERNAL again.  Should fail.
     info.crx_location = ManifestLocation::kInternal;
-    EXPECT_FALSE(service()->OnExternalExtensionFileFound(info));
+    EXPECT_FALSE(
+        external_provider_manager()->OnExternalExtensionFileFound(info));
     EXPECT_TRUE(pending->IsIdPending(kGoodId));
 
     observer.WaitForRemoval();
@@ -7073,16 +7091,20 @@ TEST_F(ExtensionServiceTest, InstallPriorityExternalLocalFile) {
     // Now the registry adds the extension.
     PendingRemovalObserver observer(pending, kGoodId);
     info.crx_location = ManifestLocation::kExternalRegistry;
-    EXPECT_TRUE(service()->OnExternalExtensionFileFound(info));
+
+    EXPECT_TRUE(
+        external_provider_manager()->OnExternalExtensionFileFound(info));
     EXPECT_TRUE(pending->IsIdPending(kGoodId));
 
     // Registry outranks both external pref and internal, so both fail.
     info.crx_location = ManifestLocation::kExternalPref;
-    EXPECT_FALSE(service()->OnExternalExtensionFileFound(info));
+    EXPECT_FALSE(
+        external_provider_manager()->OnExternalExtensionFileFound(info));
     EXPECT_TRUE(pending->IsIdPending(kGoodId));
 
     info.crx_location = ManifestLocation::kInternal;
-    EXPECT_FALSE(service()->OnExternalExtensionFileFound(info));
+    EXPECT_FALSE(
+        external_provider_manager()->OnExternalExtensionFileFound(info));
     EXPECT_TRUE(pending->IsIdPending(kGoodId));
 
     observer.WaitForRemoval();
@@ -7110,41 +7132,41 @@ TEST_F(ExtensionServiceTest, InstallPriorityExternalLocalFile) {
 
   // Older than the installed version...
   info.version = older_version;
-  EXPECT_FALSE(service()->OnExternalExtensionFileFound(info));
+  EXPECT_FALSE(external_provider_manager()->OnExternalExtensionFileFound(info));
   EXPECT_FALSE(pending->IsIdPending(kGoodId));
 
   // Same version as the installed version...
   info.version = ext->version();
-  EXPECT_FALSE(service()->OnExternalExtensionFileFound(info));
+  EXPECT_FALSE(external_provider_manager()->OnExternalExtensionFileFound(info));
   EXPECT_FALSE(pending->IsIdPending(kGoodId));
 
   // Newer than the installed version...
   info.version = newer_version;
-  EXPECT_TRUE(service()->OnExternalExtensionFileFound(info));
+  EXPECT_TRUE(external_provider_manager()->OnExternalExtensionFileFound(info));
   EXPECT_TRUE(pending->IsIdPending(kGoodId));
 
   // An external install for a higher priority install source should succeed
   // if the version is greater.  |older_version| is not...
   info.version = older_version;
   info.crx_location = ManifestLocation::kExternalPref;
-  EXPECT_FALSE(service()->OnExternalExtensionFileFound(info));
+  EXPECT_FALSE(external_provider_manager()->OnExternalExtensionFileFound(info));
   EXPECT_TRUE(pending->IsIdPending(kGoodId));
 
   // |newer_version| is newer.
   info.version = newer_version;
-  EXPECT_TRUE(service()->OnExternalExtensionFileFound(info));
+  EXPECT_TRUE(external_provider_manager()->OnExternalExtensionFileFound(info));
   EXPECT_TRUE(pending->IsIdPending(kGoodId));
 
   // An external install for an even higher priority install source should
   // succeed if the version is greater.
   info.crx_location = ManifestLocation::kExternalRegistry;
-  EXPECT_TRUE(service()->OnExternalExtensionFileFound(info));
+  EXPECT_TRUE(external_provider_manager()->OnExternalExtensionFileFound(info));
   EXPECT_TRUE(pending->IsIdPending(kGoodId));
 
   // Because kExternalPref is a lower priority source than kExternalRegistry,
   // adding from external pref will now fail.
   info.crx_location = ManifestLocation::kExternalPref;
-  EXPECT_FALSE(service()->OnExternalExtensionFileFound(info));
+  EXPECT_FALSE(external_provider_manager()->OnExternalExtensionFileFound(info));
   EXPECT_TRUE(pending->IsIdPending(kGoodId));
 }
 
@@ -7166,7 +7188,7 @@ TEST_F(ExtensionServiceTest, ConcurrentExternalLocalFile) {
   ExternalInstallInfoFile info(kGoodId, kVersion123, kInvalidPathToCrx,
                                ManifestLocation::kExternalPref, kCreationFlags,
                                kDontMarkAcknowledged, kDontInstallImmediately);
-  EXPECT_TRUE(service()->OnExternalExtensionFileFound(info));
+  EXPECT_TRUE(external_provider_manager()->OnExternalExtensionFileFound(info));
 
   const PendingExtensionInfo* pending_info;
   EXPECT_TRUE((pending_info = pending->GetById(kGoodId)));
@@ -7175,14 +7197,14 @@ TEST_F(ExtensionServiceTest, ConcurrentExternalLocalFile) {
 
   // Adding a newer version overrides the currently pending version.
   info.version = base::Version(kVersion124);
-  EXPECT_TRUE(service()->OnExternalExtensionFileFound(info));
+  EXPECT_TRUE(external_provider_manager()->OnExternalExtensionFileFound(info));
   EXPECT_TRUE((pending_info = pending->GetById(kGoodId)));
   EXPECT_TRUE(pending_info->version().IsValid());
   EXPECT_EQ(pending_info->version(), kVersion124);
 
   // Adding an older version fails.
   info.version = kVersion123;
-  EXPECT_FALSE(service()->OnExternalExtensionFileFound(info));
+  EXPECT_FALSE(external_provider_manager()->OnExternalExtensionFileFound(info));
   EXPECT_TRUE((pending_info = pending->GetById(kGoodId)));
   EXPECT_TRUE(pending_info->version().IsValid());
   EXPECT_EQ(pending_info->version(), kVersion124);
@@ -7190,7 +7212,7 @@ TEST_F(ExtensionServiceTest, ConcurrentExternalLocalFile) {
   // Adding an older version fails even when coming from a higher-priority
   // location.
   info.crx_location = ManifestLocation::kExternalRegistry;
-  EXPECT_FALSE(service()->OnExternalExtensionFileFound(info));
+  EXPECT_FALSE(external_provider_manager()->OnExternalExtensionFileFound(info));
   EXPECT_TRUE((pending_info = pending->GetById(kGoodId)));
   EXPECT_TRUE(pending_info->version().IsValid());
   EXPECT_EQ(pending_info->version(), kVersion124);
@@ -7200,7 +7222,8 @@ TEST_F(ExtensionServiceTest, ConcurrentExternalLocalFile) {
   ExternalInstallInfoUpdateUrl update_info(
       kGoodId, std::string(), kUpdateUrl,
       ManifestLocation::kExternalPolicyDownload, Extension::NO_FLAGS, false);
-  EXPECT_TRUE(service()->OnExternalExtensionUpdateUrlFound(update_info, true));
+  EXPECT_TRUE(external_provider_manager()->OnExternalExtensionUpdateUrlFound(
+      update_info, true));
   EXPECT_TRUE((pending_info = pending->GetById(kGoodId)));
   EXPECT_FALSE(pending_info->version().IsValid());
 }
@@ -7250,7 +7273,7 @@ class ExtensionSourcePriorityTest : public ExtensionServiceTest {
     ExternalInstallInfoFile info(crx_id_, base::Version("1.0.0.0"), crx_path_,
                                  ManifestLocation::kExternalPref,
                                  Extension::NO_FLAGS, false, false);
-    return service()->OnExternalExtensionFileFound(info);
+    return external_provider_manager()->OnExternalExtensionFileFound(info);
   }
 
   // Fake a request from sync to install an extension.
@@ -7269,7 +7292,8 @@ class ExtensionSourcePriorityTest : public ExtensionServiceTest {
     ExternalInstallInfoUpdateUrl info(crx_id_, std::string(), GURL(),
                                       ManifestLocation::kExternalPolicyDownload,
                                       Extension::NO_FLAGS, false);
-    return service()->OnExternalExtensionUpdateUrlFound(info, true);
+    return external_provider_manager()->OnExternalExtensionUpdateUrlFound(info,
+                                                                          true);
   }
 
   // Get the install source of a pending extension.
@@ -8313,9 +8337,9 @@ TEST_F(ExtensionServiceTest, UserInstalledExtensionThenRequiredByPolicy) {
 
   ExtensionManagement* management =
       ExtensionManagementFactory::GetForBrowserContext(profile());
-  ExtensionManagement::InstallationMode installation_mode =
+  ManagedInstallationMode installation_mode =
       management->GetInstallationMode(extension);
-  EXPECT_EQ(ExtensionManagement::INSTALLATION_FORCED, installation_mode);
+  EXPECT_EQ(ManagedInstallationMode::kForced, installation_mode);
 
   // Reload all extensions.
   service()->ReloadExtensionsForTest();
@@ -8364,15 +8388,15 @@ TEST_F(ExtensionServiceTest,
 
   ExtensionManagement* management =
       ExtensionManagementFactory::GetForBrowserContext(profile());
-  ExtensionManagement::InstallationMode installation_mode =
+  ManagedInstallationMode installation_mode =
       management->GetInstallationMode(extension);
-  EXPECT_EQ(ExtensionManagement::INSTALLATION_FORCED, installation_mode);
+  EXPECT_EQ(ManagedInstallationMode::kForced, installation_mode);
 
   GURL good_update_url(kGoodUpdateURL);
   ExternalInstallInfoUpdateUrl info(
       good_crx, std::string(), std::move(good_update_url),
       ManifestLocation::kExternalPolicyDownload, Extension::NO_FLAGS, false);
-  service()->OnExternalExtensionUpdateUrlFound(info, true);
+  external_provider_manager()->OnExternalExtensionUpdateUrlFound(info, true);
   base::RunLoop().RunUntilIdle();
 
   extension = registry()->GetInstalledExtension(good_crx);
@@ -8429,11 +8453,11 @@ TEST_F(ExtensionServiceTest, InstallingUnacknowledgedExternalExtension) {
   EXPECT_EQ(ManifestLocation::kExternalPrefDownload, extension->location());
   EXPECT_EQ(version_str, extension->VersionString());
 
-  ExtensionManagement::InstallationMode installation_mode =
+  ManagedInstallationMode installation_mode =
       ExtensionManagementFactory::GetForBrowserContext(profile())
           ->GetInstallationMode(extension);
 
-  EXPECT_EQ(ExtensionManagement::INSTALLATION_RECOMMENDED, installation_mode);
+  EXPECT_EQ(ManagedInstallationMode::kRecommended, installation_mode);
   EXPECT_TRUE(registry()->enabled_extensions().Contains(good_crx));
   EXPECT_TRUE(prefs()->IsExternalExtensionAcknowledged(extension->id()));
   EXPECT_TRUE(prefs()->GetDisableReasons(good_crx).empty());
@@ -8534,7 +8558,7 @@ TEST_P(ExternalExtensionPriorityTest, PolicyForegroundFetch) {
   service()->updater()->Start();
 
   GURL update_url(extension_urls::kChromeWebstoreUpdateURL);
-  service()->OnExternalExtensionUpdateUrlFound(
+  external_provider_manager()->OnExternalExtensionUpdateUrlFound(
       ExternalInstallInfoUpdateUrl(all_zero /* extension_id */,
                                    "" /* install_parameter */, update_url,
                                    GetParam() /* download_location */,
@@ -8544,7 +8568,7 @@ TEST_P(ExternalExtensionPriorityTest, PolicyForegroundFetch) {
 
   MockExternalProvider provider(nullptr,
                                 ManifestLocation::kExternalPolicyDownload);
-  service()->OnExternalProviderReady(&provider);
+  external_provider_manager()->OnExternalProviderReady(&provider);
 
   task_environment()->RunUntilIdle();
 

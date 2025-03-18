@@ -53,6 +53,7 @@ class OpenXrController {
   mojom::XRInputSourceDescriptionPtr GetDescription(
       XrTime predicted_display_time);
 
+  mojom::XRHandedness GetHandness() const;
   std::optional<GamepadButton> GetButton(OpenXrButtonType type) const;
   std::optional<Gamepad> GetWebXRGamepad() const;
 
@@ -102,7 +103,6 @@ class OpenXrController {
       XrTime predicted_display_time) const;
 
   mojom::XRTargetRayMode GetTargetRayMode() const;
-  mojom::XRHandedness GetHandness() const;
   std::vector<double> GetAxis(OpenXrAxisType type) const;
 
   template <typename T>

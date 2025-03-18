@@ -1277,7 +1277,7 @@ void HttpStreamPool::AttemptManager::MaybeNotifySSLConfigReady() {
 
 void HttpStreamPool::AttemptManager::MaybeAttemptQuic() {
   CHECK(service_endpoint_request_);
-  if (!CanUseQuic() || quic_task_result_.has_value() ||
+  if (is_failing_ || !CanUseQuic() || quic_task_result_.has_value() ||
       !service_endpoint_request_->EndpointsCryptoReady()) {
     return;
   }

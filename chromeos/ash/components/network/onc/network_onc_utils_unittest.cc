@@ -25,6 +25,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -48,10 +49,7 @@ class ONCUtilsTest : public testing::Test {
     const user_manager::User* user = fake_user_manager->AddGaiaUser(
         account_id, user_manager::UserType::kRegular);
     fake_user_manager->UserLoggedIn(
-        account_id,
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
-        /*browser_restart=*/false,
-        /*is_child=*/false);
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
     fake_user_manager->SwitchActiveUser(account_id);
 
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(

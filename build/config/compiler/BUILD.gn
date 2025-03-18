@@ -1694,6 +1694,7 @@ config("libcxx_module") {
     cflags_cc = [
       "-fmodules",
       "-fmodule-map-file=" + modulemap,
+      "-fbuiltin-module-map",
       "-fno-implicit-module-maps",
 
       # This removes absolute paths from .pcm files.

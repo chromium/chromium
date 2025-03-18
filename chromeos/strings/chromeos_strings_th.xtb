@@ -929,6 +929,7 @@
 <translation id="5286263799730375393">สีไฟแบ็กไลต์</translation>
 <translation id="5292579816060236070">วอลเปเปอร์พระอาทิตย์ขึ้น</translation>
 <translation id="5294769550414936029">เวอร์ชัน <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">เปิด/ปิดการเข้าถึงกล้อง</translation>
 <translation id="5300814202279832142">ย้ายหน้าต่างไปที่เดสก์</translation>
 <translation id="5302048478445481009">ภาษา</translation>
 <translation id="5303837385540978511">วอลเปเปอร์สุดพิเศษจาก <ph name="PRODUCT_NAME" /></translation>
@@ -1395,6 +1396,7 @@
 <translation id="7388345524791662148">ตัวเลือกเพิ่มเติมสำหรับ <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">ทัชแพดในตัว</translation>
 <translation id="7397270852490618635">ปิดธีมสว่าง</translation>
+<translation id="7400166052988585408">ครูจะล็อกหน้าจอของคุณใน <ph name="NUM_SECONDS" /> วินาที</translation>
 <translation id="7401543881546089382">ลบทางลัด</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> พร้อมอัปเดตแล้ว</translation>
 <translation id="741244894080940828">การแปลง</translation>

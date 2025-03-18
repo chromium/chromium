@@ -21,7 +21,7 @@ export async function waitForCookie(cookieAndValue, expectCookie) {
 
 export function expireCookie(cookieAndAttributes) {
   document.cookie =
-      cookieAndAttributes + '; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
+      `${cookieAndAttributes}; expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
 }
 
 export function addCookieAndSessionCleanup(test) {

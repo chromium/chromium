@@ -7,12 +7,7 @@ GEN_INCLUDE(['../select_to_speak/mv2/select_to_speak_e2e_test_base.js']);
 /**
  * Test fixture for word_utils.js.
  */
-SelectToSpeakWordUtilsUnitTest = class extends SelectToSpeakE2ETest {
-  async setUpDeferred() {
-    await super.setUpDeferred();
-    await importModule('WordUtils', '/common/word_utils.js');
-  }
-};
+SelectToSpeakWordUtilsUnitTest = class extends SelectToSpeakE2ETest {};
 
 AX_TEST_F(
     'SelectToSpeakWordUtilsUnitTest', 'getNextWordStartWithoutWordStarts',

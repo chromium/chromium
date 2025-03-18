@@ -494,10 +494,10 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     You previously didn't allow <ph name="permission">$1<ex>camera</ex></ph> for this site
   </message>
   <message name ="IDS_PERMISSION_OFF_FOR_CHROME" desc="Text informing the user that they have turned the permission off for chrome">
-    To use your <ph name="permission">$1<ex>camera</ex></ph> on this site, give Chrome access
+    To use your <ph name="permission">$1<ex>camera</ex></ph> on this site, give <ph name="short_product_name">$2<ex>Chrome</ex></ph> access
   </message>
   <message name ="IDS_PERMISSION_CHROME_NEEDS_PERMISSION" desc="Text informing the user in the background that Chrome needs a permission in order to use it on the site the user is visiting">
-      Chrome needs access to your device's <ph name="permission">$1<ex>camera</ex></ph>
+    <ph name="short_product_name">$1<ex>Chrome</ex></ph> needs access to your device's <ph name="permission">$2<ex>camera</ex></ph>
   </message>
     <message name="IDS_GEOLOCATION_NAME_FRAGMENT" desc="Text fragment identifying the geolocation permission">
     location

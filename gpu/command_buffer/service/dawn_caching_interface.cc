@@ -52,8 +52,7 @@ void DawnCachingInterface::StoreData(const void* key,
   // Send the cache entry to be stored on the host-side if applicable.
   if (cache_blob_callback_) {
     std::string value_str(static_cast<const char*>(value), value_size);
-    cache_blob_callback_.Run(gpu::GpuDiskCacheType::kDawnWebGPU, key_str,
-                             value_str);
+    cache_blob_callback_.Run(key_str, value_str);
   }
 }
 

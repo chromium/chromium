@@ -18,28 +18,11 @@ import {recordLensOverlaySemanticEvent} from './metrics_utils.js';
 import type {GestureEvent} from './selection_utils.js';
 import {getCss} from './simplified_text_layer.css.js';
 import {getHtml} from './simplified_text_layer.html.js';
-import type {Line, Paragraph, Text, Word} from './text.mojom-webui.js';
+import type {Text} from './text.mojom-webui.js';
+import {createHighlightedLines, type HighlightedLine} from './text_highlights.js';
 import type {TextCopyCallback, TextLayerBase} from './text_layer_base.js';
-import {getTextSeparator, isWordRenderable, translateWords} from './text_rendering.js';
-
-// A struct representing a text response from the server. Used instead of the
-// mojo Text struct so text can be easily extracted using common functions that
-// also apply to the regular text layer.
-class TextResponse {
-  // The content language received from OnTextReceived.
-  contentLanguage: string = '';
-  // The words received.
-  receivedWords: Word[] = [];
-  // An array that corresponds 1:1 to receivedWords, where paragraphNumbers[i]
-  // is the paragraph number for receivedWords[i]. In addition, the index at
-  // paragraphNumbers[i] corresponds to the Paragraph in paragraphs[i] that the
-  // word belongs in.
-  paragraphNumbers: number[] = [];
-  // The lines received from OnTextReceived.
-  lines: Line[] = [];
-  // The paragraphs received from OnTextReceived.
-  paragraphs: Paragraph[] = [];
-}
+import {getTextSeparator, isWordRenderable, type TextResponse, translateWords} from './text_rendering.js';
+import {toPercent} from './values_converter.js';
 
 // A struct for holding the ID of a timeout and whether it has elapsed since
 // being set. Needed to clear the timeout.
@@ -58,6 +41,12 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
     return 'lens-simplified-text-layer';
   }
 
+  static override get properties() {
+    return {
+      highlightedLines: {type: Array},
+    };
+  }
+
   static override get styles() {
     return getCss();
   }
@@ -66,10 +55,13 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
     return getHtml.bind(this)();
   }
 
+  // The currently selected lines.
+  protected highlightedLines: HighlightedLine[] = [];
+
   // The lens text response corresponding to the full image response.
-  private fullTextResponse?: TextResponse = undefined;
+  private fullTextResponse: TextResponse|null = null;
   // The Lens text response corresponding to the regions selected.
-  private regionTextResponse?: TextResponse = undefined;
+  private regionTextResponse: TextResponse|null = null;
   private eventTracker_: EventTracker = new EventTracker();
   // The bounds of the parent element. This is updated by the parent to avoid
   // this class needing to call getBoundingClientRect()
@@ -159,6 +151,7 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
   }
 
   onSelectionStart(): void {
+    this.highlightedLines = [];
     this.fire('hide-selected-region-context-menu');
   }
 
@@ -166,7 +159,7 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
     // Clear the previous region selection text response as a new selection has
     // been made. Also clear any timeouts that also pertained to the last region
     // response.
-    this.regionTextResponse = undefined;
+    this.regionTextResponse = null;
     this.clearTextTimeouts();
   }
 
@@ -267,14 +260,23 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
   }
 
   private onRegionTextReceived(text: Text) {
-    // Reset all old text.
-    this.regionTextResponse = new TextResponse();
-    let paragraphNumber = 0;
-
-    // If there was already text, log a text gleam render end event.
-    if (this.regionTextResponse.receivedWords.length > 0) {
+    // If there was rendered text, log a text gleam render end event.
+    if (this.regionTextResponse &&
+        this.regionTextResponse.receivedWords.length > 0) {
       recordLensOverlaySemanticEvent(SemanticEvent.kTextGleamsViewEnd);
     }
+
+    // Reset all old text.
+    this.regionTextResponse = {
+      contentLanguage: '',
+      receivedWords: [],
+      paragraphNumbers: [],
+      lineNumbers: [],
+      lines: [],
+      paragraphs: [],
+    };
+    let lineNumber = 0;
+    let paragraphNumber = 0;
 
     // Flatten Text structure to a list of arrays for easier rendering and
     // referencing.
@@ -284,10 +286,15 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
           // Filter out words with invalid bounding boxes.
           if (isWordRenderable(word)) {
             this.regionTextResponse.receivedWords.push(word);
+            this.regionTextResponse.lineNumbers.push(lineNumber);
             this.regionTextResponse.paragraphNumbers.push(paragraphNumber);
+
+            const wordBoundingBox = word.geometry?.boundingBox;
+            assert(wordBoundingBox);
           }
         }
         this.regionTextResponse.lines.push(line);
+        lineNumber++;
       }
       this.regionTextResponse.paragraphs.push(paragraph);
       paragraphNumber++;
@@ -299,6 +306,10 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
     assert(
         this.regionTextResponse.paragraphNumbers.length ===
         this.regionTextResponse.receivedWords.length);
+
+    this.highlightedLines = createHighlightedLines(
+        this.regionTextResponse, 0,
+        this.regionTextResponse.receivedWords.length - 1);
 
     // Used to notify the post selection renderer so that, if a region has
     // already been selected, text in the region can be detected.
@@ -328,7 +339,14 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
     }
 
     // Reset all old text.
-    this.fullTextResponse = new TextResponse();
+    this.fullTextResponse = {
+      contentLanguage: '',
+      receivedWords: [],
+      paragraphNumbers: [],
+      lineNumbers: [],
+      lines: [],
+      paragraphs: [],
+    };
     let paragraphNumber = 0;
 
     // Flatten Text structure to a list of arrays for easier rendering and
@@ -459,6 +477,19 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
           return word.plainText + separator;
         })
         .join('');
+  }
+
+  /** @return The CSS styles string for the given highlighted line. */
+  protected getHighlightedLineStyle(line: HighlightedLine): string {
+    // Put into an array instead of a long string to keep this code readable.
+    const styles: string[] = [
+      `width: ${toPercent(line.width)}`,
+      `height: ${toPercent(line.height)}`,
+      `top: ${toPercent(line.top)}`,
+      `left: ${toPercent(line.left)}`,
+      `transform: rotate(${line.rotation}rad)`,
+    ];
+    return styles.join(';');
   }
 
   private clearTextTimeouts() {

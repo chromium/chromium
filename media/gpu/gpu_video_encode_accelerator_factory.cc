@@ -16,7 +16,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
@@ -60,7 +59,7 @@ std::unique_ptr<VideoEncodeAccelerator> CreateV4L2VEA() {
   // TODO(crbug.com/901264): Encoders use hack for passing offset within
   // a DMA-buf, which is not supported upstream.
   return base::WrapUnique<VideoEncodeAccelerator>(
-      new V4L2VideoEncodeAccelerator(base::MakeRefCounted<V4L2Device>()));
+      new V4L2VideoEncodeAccelerator(new V4L2Device()));
 #else
   return nullptr;
 #endif

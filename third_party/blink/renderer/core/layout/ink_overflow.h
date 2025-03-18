@@ -264,7 +264,7 @@ class CORE_EXPORT InkOverflow {
     // When both self and contents overflow.
     ContainerInkOverflow* container_;
     // Outsets in small |LayoutUnit|s when overflow is small.
-    SmallRawValue outsets_[4];
+    std::array<SmallRawValue, 4> outsets_;
     static_assert(sizeof(outsets_) == sizeof(single_),
                   "outsets should be the size of a pointer");
   };

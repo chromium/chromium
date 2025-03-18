@@ -705,6 +705,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Sniffing state and ORB state.
   bool is_more_orb_sniffing_needed_ = false;
   bool is_more_mime_sniffing_needed_ = false;
+  std::optional<std::string> mime_type_before_sniffing_;
   const raw_ref<orb::PerFactoryState> per_factory_orb_state_;
   // `orb_analyzer_` must be destructed before `per_factory_orb_state_`.
   std::unique_ptr<orb::ResponseAnalyzer> orb_analyzer_;

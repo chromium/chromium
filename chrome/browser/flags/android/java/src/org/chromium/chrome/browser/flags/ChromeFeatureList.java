@@ -373,6 +373,7 @@ public abstract class ChromeFeatureList {
     public static final String FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE =
             "FullscreenInsetsApiMigrationOnAutomotive";
     public static final String GROUP_NEW_TAB_WITH_PARENT = "GroupNewTabWithParent";
+    public static final String GROUP_SUGGESTION_SERVICE = "GroupSuggestionService";
     public static final String LOCK_BACK_PRESS_HANDLER_AT_START = "LockBackPressHandlerAtStart";
     public static final String HASH_PREFIX_REAL_TIME_LOOKUPS =
             "SafeBrowsingHashPrefixRealTimeLookups";
@@ -641,7 +642,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAsyncNotificationManager =
             newCachedFlag(ASYNC_NOTIFICATION_MANAGER, false, true);
     public static final CachedFlag sAsyncNotificationManagerForDownload =
-            newCachedFlag(ASYNC_NOTIFICATION_MANAGER_FOR_DOWNLOAD, false);
+            newCachedFlag(ASYNC_NOTIFICATION_MANAGER_FOR_DOWNLOAD, false, true);
     public static final CachedFlag sBlockIntentsWhileLocked =
             newCachedFlag(BLOCK_INTENTS_WHILE_LOCKED, false);
     public static final CachedFlag sBookmarkPaneAndroid =

@@ -350,6 +350,12 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   void DidChangeScrollOffsetImpl(FieldRendererId element_id);
 
+  // At least on Android, multiple AskForValuesToFill() events may be fired in
+  // short succession. Since getting the event handling right in AutofillAgent
+  // is difficult we ignore duplicate AskForValuesToFill() as a workaround.
+  // See crbug.com/40284788 for details.
+  bool ShouldThrottleAskForValuesToFill(FieldRendererId field);
+
   // Shows Password Manager, password generation, or Autofill suggestions for
   // `element`. This call is asynchronous and may or may not lead to the showing
   // of a suggestion popup (no popup is shown if there are no available
@@ -557,6 +563,11 @@ class AutofillAgent : public content::RenderFrameObserver,
     base::TimeTicks last_autofill_agent_reset = base::TimeTicks::Now();
     base::TimeTicks last_dom_content_loaded;
   } timing_;
+
+  struct {
+    base::TimeTicks time;
+    FieldRendererId field = {};
+  } last_ask_for_values_to_fill_;
 
   base::WeakPtrFactory<AutofillAgent> weak_ptr_factory_{this};
 };

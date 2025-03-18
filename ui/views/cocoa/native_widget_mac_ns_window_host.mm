@@ -42,6 +42,7 @@
 #include "ui/native_theme/native_theme_mac.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/cocoa/immersive_mode_reveal_client.h"
+#include "ui/views/cocoa/native_widget_mac_event_monitor.h"
 #include "ui/views/cocoa/text_input_host.h"
 #include "ui/views/cocoa/tooltip_manager_mac.h"
 #include "ui/views/controls/label.h"
@@ -87,6 +88,8 @@ class BridgedNativeWidgetHostDummy
   void OnWindowGeometryChanged(
       const gfx::Rect& window_bounds_in_screen_dips,
       const gfx::Rect& content_bounds_in_screen_dips) override {}
+  void OnWindowWillStartLiveResize() override {}
+  void OnWindowDidEndLiveResize() override {}
   void OnWindowFullscreenTransitionStart(
       bool target_fullscreen_state) override {}
   void OnWindowFullscreenTransitionComplete(bool is_fullscreen) override {}
@@ -1286,6 +1289,14 @@ void NativeWidgetMacNSWindowHost::OnWindowGeometryChanged(
     // Update the compositor surface and layer size.
     UpdateCompositorProperties();
   }
+}
+
+void NativeWidgetMacNSWindowHost::OnWindowWillStartLiveResize() {
+  native_widget_mac_->OnWindowWillStartLiveResize();
+}
+
+void NativeWidgetMacNSWindowHost::OnWindowDidEndLiveResize() {
+  native_widget_mac_->OnWindowDidEndLiveResize();
 }
 
 void NativeWidgetMacNSWindowHost::OnWindowFullscreenTransitionStart(

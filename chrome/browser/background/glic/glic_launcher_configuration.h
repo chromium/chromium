@@ -36,6 +36,9 @@ class GlicLauncherConfiguration {
 
   static ui::Accelerator GetGlobalHotkey();
 
+  // Returns the default hotkey for the glic launcher.
+  static ui::Accelerator GetDefaultHotkey();
+
  private:
   void OnEnabledPrefChanged();
   void OnGlobalHotkeyPrefChanged();

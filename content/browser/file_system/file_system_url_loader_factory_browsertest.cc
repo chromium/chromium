@@ -924,12 +924,8 @@ IN_PROC_BROWSER_TEST_P(FileSystemURLLoaderFactoryTest, FileGetMimeType) {
   WriteFile(kFilename, base::as_byte_span(file_data));
 
   std::string mime_type_direct;
-  base::FilePath::StringType extension =
-      base::FilePath().AppendASCII(kFilename).Extension();
-  if (!extension.empty())
-    extension = extension.substr(1);
-  EXPECT_TRUE(
-      net::GetWellKnownMimeTypeFromExtension(extension, &mime_type_direct));
+  EXPECT_TRUE(net::GetWellKnownMimeTypeFromFile(
+      base::FilePath::FromASCII(kFilename), &mime_type_direct));
 
   auto client = TestLoad(CreateFileSystemURL(kFilename));
   EXPECT_TRUE(client->has_received_response());

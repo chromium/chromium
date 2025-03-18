@@ -417,8 +417,16 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchOptimizationGuideInteractiveTest,
                           "(el) => el.getAnimations().length === 0")));
 }
 
+// TODO(crbug.com/404256907): Flayky in Linux TSAN.
+#if defined(THREAD_SANITIZER) && BUILDFLAG(IS_LINUX)
+#define MAYBE_SearchesAndSetsNewAndHistoricalResults \
+  DISABLED_SearchesAndSetsNewAndHistoricalResults
+#else
+#define MAYBE_SearchesAndSetsNewAndHistoricalResults \
+  SearchesAndSetsNewAndHistoricalResults
+#endif  // defined(THREAD_SANITIZER) && BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_F(WallpaperSearchOptimizationGuideInteractiveTest,
-                       SearchesAndSetsNewAndHistoricalResults) {
+                       MAYBE_SearchesAndSetsNewAndHistoricalResults) {
   // Intercept Wallpaper Search descriptor fetches, and respond with data.
   std::unique_ptr<content::URLLoaderInterceptor> descriptors_fetch_interceptor =
       SetUpDescriptorsResponseWithData();

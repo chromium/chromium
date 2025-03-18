@@ -47,6 +47,15 @@ WITH
   steps_with_ordering AS (
     SELECT
       *,
+      -- Partition the steps so that, if the same step (for the same input) was
+      -- emitted more than once (e.g. due to b:390406106), the step ends up in
+      -- the same partition as all its duplicates. This will enable us to
+      -- deduplicate the steps later.
+      -- If there are multiple STEP_RESAMPLE_SCROLL_EVENTS steps, we assume that
+      -- the input was only dispatched after the last resampling, so we only
+      -- care about the last STEP_RESAMPLE_SCROLL_EVENTS step. We don't have any
+      -- preference for other steps but, for the sake of determinsm and
+      -- consistency, let's always pick the last step.
       row_number() OVER (PARTITION BY latency_id, utid, step, input_type ORDER BY ts DESC) AS ordering_within_partition
     FROM steps_with_potential_duplicates
   )

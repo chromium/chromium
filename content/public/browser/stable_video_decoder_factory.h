@@ -6,16 +6,17 @@
 #define CONTENT_PUBLIC_BROWSER_STABLE_VIDEO_DECODER_FACTORY_H_
 
 #include "content/common/content_export.h"
-#include "media/mojo/mojom/stable/stable_video_decoder.mojom-forward.h"
+#include "media/mojo/mojom/interface_factory.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+
+// TODO(crbug.com/347331029): rename this file to oop_video_decoder_factory.h.
 
 namespace content {
 
-// Binds a StableVideoDecoderFactory PendingReceiver by starting a new utility
-// process. This function can be called from any thread.
-CONTENT_EXPORT void LaunchStableVideoDecoderFactory(
-    mojo::PendingReceiver<media::stable::mojom::StableVideoDecoderFactory>
-        receiver);
+// Binds a media::mojom::InterfaceFactory PendingReceiver by starting a new
+// utility process. This function can be called from any thread.
+CONTENT_EXPORT void LaunchOOPVideoDecoderFactory(
+    mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver);
 
 }  // namespace content
 

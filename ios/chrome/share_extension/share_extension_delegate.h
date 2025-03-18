@@ -13,11 +13,13 @@
 @protocol ShareExtensionDelegate
 
 - (void)didTapCloseShareExtensionSheet:
-    (ShareExtensionSheet*)shareExtensionSheetSheet;
+    (ShareExtensionSheet*)shareExtensionSheet;
 - (void)didTapOpenInChromeShareExtensionSheet:
-    (ShareExtensionSheet*)shareExtensionSheetSheet;
+    (ShareExtensionSheet*)shareExtensionSheet;
 - (void)didTapMoreOptionsShareExtensionSheet:
-    (ShareExtensionSheet*)shareExtensionSheetSheet;
+    (ShareExtensionSheet*)shareExtensionSheet;
+- (void)didTapSearchInChromeShareExtensionSheet:
+    (ShareExtensionSheet*)shareExtensionSheet;
 
 @end
 

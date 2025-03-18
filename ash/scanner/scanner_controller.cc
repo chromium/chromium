@@ -397,6 +397,11 @@ void ScannerController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kScannerEnterprisePolicyAllowed,
       static_cast<int>(ScannerEnterprisePolicy::kAllowedWithModelImprovement));
+
+  registry->RegisterBooleanPref(
+      prefs::kScannerEntryPointDisclaimerAckSmartActionsButton, false);
+  registry->RegisterBooleanPref(
+      prefs::kScannerEntryPointDisclaimerAckSunfishSession, false);
 }
 
 // static

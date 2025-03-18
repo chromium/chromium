@@ -1,0 +1,30 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "gpu/ipc/common/gpu_feature_info.mojom";
+import "media/mojo/mojom/interface_factory.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
+
+// A VideoDecoderFactoryProcess is intended to be hosted in a utility process.
+// The client is expected to be the browser process. The intended usage is as
+// follows:
+//
+// 1) The browser process receives a request to bind a
+//    pending_receiver<InterfaceFactory>.
+//
+// 2) The browser process starts a utility process to bind a
+//    pending_receiver<VideoDecoderFactoryProcess>. It then uses this
+//    connection to call InitializeVideoDecoderFactory() with the
+//    pending_receiver<InterfaceFactory> from (1).
+[ServiceSandbox=sandbox.mojom.Sandbox.kHardwareVideoDecoding,
+    EnableIf=allow_oop_video_decoder]
+interface VideoDecoderFactoryProcess {
+  // Initializes an InterfaceFactory using |gpu_feature_info| to
+  // restrict the supported video decode configurations.
+  InitializeVideoDecoderFactory(
+      gpu.mojom.GpuFeatureInfo gpu_feature_info,
+      pending_receiver<InterfaceFactory> receiver);
+};

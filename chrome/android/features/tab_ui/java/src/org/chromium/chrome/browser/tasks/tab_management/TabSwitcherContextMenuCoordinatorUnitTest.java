@@ -34,7 +34,9 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
@@ -54,6 +56,10 @@ import java.util.List;
 
 /** Unit tests for {@link TabSwitcherContextMenuCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures({
+    ChromeFeatureList.TAB_SWITCHER_CONTEXT_MENU_ANDROID,
+    ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID
+})
 public class TabSwitcherContextMenuCoordinatorUnitTest {
     private static @TabId final int TAB_ID = 1;
     private static final int MENU_WIDTH = 300;

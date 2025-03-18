@@ -143,8 +143,8 @@ void BrowserAccessibilityManagerWin::FireAriaNotificationEvent(
     return;
   }
 
-  if (!ToBrowserAccessibilityWin(node)->GetCOM()->HasEventListenerForEvent(
-          UIA_NotificationEventId)) {
+  auto* provider = ToBrowserAccessibilityWin(node)->GetCOM();
+  if (!provider->HasEventListenerForEvent(UIA_NotificationEventId)) {
     return;
   }
 
@@ -196,8 +196,7 @@ void BrowserAccessibilityManagerWin::FireAriaNotificationEvent(
   const base::win::ScopedBstr notification_id_bstr(
       base::UTF8ToWide(notification_id));
 
-  uia_raise_notification_event_func(ToBrowserAccessibilityWin(node)->GetCOM(),
-                                    NotificationKind_ActionCompleted,
+  uia_raise_notification_event_func(provider, NotificationKind_ActionCompleted,
                                     MapPropertiesToUiaNotificationProcessing(),
                                     announcement_bstr.Get(),
                                     notification_id_bstr.Get());
@@ -673,15 +672,14 @@ void BrowserAccessibilityManagerWin::FireUiaAccessibilityEvent(
     return;
   }
 
-  if (!ToBrowserAccessibilityWin(node)->GetCOM()->HasEventListenerForEvent(
-          uia_event)) {
+  auto* provider = ToBrowserAccessibilityWin(node)->GetCOM();
+  if (!provider->HasEventListenerForEvent(uia_event)) {
     return;
   }
 
   WinAccessibilityAPIUsageScopedUIAEventsNotifier scoped_events_notifier;
 
-  ::UiaRaiseAutomationEvent(ToBrowserAccessibilityWin(node)->GetCOM(),
-                            uia_event);
+  ::UiaRaiseAutomationEvent(provider, uia_event);
 }
 
 void BrowserAccessibilityManagerWin::FireUiaPropertyChangedEvent(
@@ -704,18 +702,17 @@ void BrowserAccessibilityManagerWin::FireUiaPropertyChangedEvent(
   VARIANT old_value = {};
   old_value.vt = VT_EMPTY;
 
-  if (!ToBrowserAccessibilityWin(node)->GetCOM()->HasEventListenerForProperty(
-          uia_property)) {
+  auto* provider = ToBrowserAccessibilityWin(node)->GetCOM();
+  if (!provider->HasEventListenerForProperty(uia_property)) {
     return;
   }
   WinAccessibilityAPIUsageScopedUIAEventsNotifier scoped_events_notifier;
 
   base::win::ScopedVariant new_value;
-  if (SUCCEEDED(ToBrowserAccessibilityWin(node)->GetCOM()->GetPropertyValueImpl(
-          uia_property, new_value.Receive()))) {
-    ::UiaRaiseAutomationPropertyChangedEvent(
-        ToBrowserAccessibilityWin(node)->GetCOM(), uia_property, old_value,
-        new_value);
+  if (SUCCEEDED(
+          provider->GetPropertyValueImpl(uia_property, new_value.Receive()))) {
+    ::UiaRaiseAutomationPropertyChangedEvent(provider, uia_property, old_value,
+                                             new_value);
   }
 }
 
@@ -740,8 +737,8 @@ void BrowserAccessibilityManagerWin::FireUiaStructureChangedEvent(
     return;
   }
 
-  if (!ToBrowserAccessibilityWin(node)->GetCOM()->HasEventListenerForEvent(
-          UIA_StructureChangedEventId)) {
+  auto* provider = ToBrowserAccessibilityWin(node)->GetCOM();
+  if (!provider->HasEventListenerForEvent(UIA_StructureChangedEventId)) {
     return;
   }
 
@@ -755,8 +752,7 @@ void BrowserAccessibilityManagerWin::FireUiaStructureChangedEvent(
       auto* parent_com = parent ? parent->GetCOM() : nullptr;
       if (parent && parent_com) {
         AXPlatformNodeWin::RuntimeIdArray runtime_id;
-        ToBrowserAccessibilityWin(node)->GetCOM()->GetRuntimeIdArray(
-            runtime_id);
+        provider->GetRuntimeIdArray(runtime_id);
         UiaRaiseStructureChangedEvent(parent_com, change_type,
                                       runtime_id.data(), runtime_id.size());
       }
@@ -766,8 +762,7 @@ void BrowserAccessibilityManagerWin::FireUiaStructureChangedEvent(
     default: {
       // All other types are fired on |node|.  For 'ChildAdded' |node| is the
       // child that was added; for other types, it's the parent container.
-      UiaRaiseStructureChangedEvent(ToBrowserAccessibilityWin(node)->GetCOM(),
-                                    change_type, nullptr, 0);
+      UiaRaiseStructureChangedEvent(provider, change_type, nullptr, 0);
     }
   }
 }
@@ -808,17 +803,17 @@ void BrowserAccessibilityManagerWin::FireUiaActiveTextPositionChangedEvent(
   }
 
   // Create the text range contained by the target node.
-  if (!ToBrowserAccessibilityWin(node)->GetCOM()->HasEventListenerForEvent(
+  auto* provider = ToBrowserAccessibilityWin(node)->GetCOM();
+  if (!provider->HasEventListenerForEvent(
           UIA_ActiveTextPositionChangedEventId)) {
     return;
   }
   Microsoft::WRL::ComPtr<ITextRangeProvider> text_range;
-  AXPlatformNodeTextProviderWin::CreateDegenerateRangeAtStart(
-      ToBrowserAccessibilityWin(node)->GetCOM(), &text_range);
+  AXPlatformNodeTextProviderWin::CreateDegenerateRangeAtStart(provider,
+                                                              &text_range);
 
   // Fire the UiaRaiseActiveTextPositionChangedEvent.
-  active_text_position_changed_func(ToBrowserAccessibilityWin(node)->GetCOM(),
-                                    text_range.Get());
+  active_text_position_changed_func(provider, text_range.Get());
 }
 
 bool BrowserAccessibilityManagerWin::CanFireEvents() const {

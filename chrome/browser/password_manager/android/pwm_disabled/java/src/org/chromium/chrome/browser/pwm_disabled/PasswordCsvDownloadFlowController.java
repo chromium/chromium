@@ -95,12 +95,18 @@ public class PasswordCsvDownloadFlowController {
 
     private void onDownloadLocationSet(Uri destinationFileUri) {
         dismissDownloadDialog();
-        mProgressBarManager = new DialogManager(null);
+        if (destinationFileUri == null) {
+            endFlow();
+            return;
+        }
+
         Uri sourceFileUri = getSourceFileUri();
         if (sourceFileUri == null) {
             showErrorDialog();
             return;
         }
+
+        mProgressBarManager = new DialogManager(null);
         mProgressBarManager.show(
                 new NonCancelableProgressBar(R.string.passwords_export_in_progress_title),
                 mFragmentActivity.getSupportFragmentManager());

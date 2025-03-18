@@ -6,12 +6,15 @@ import("//build/config/android/config.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
 
 source_set("lib") {
+  # External code should depend on ":android_webview" instead.
+  visibility = [ "//android_webview" ]
   sources = [
     "aw_main_delegate.cc",
     "aw_main_delegate.h",
     "webview_jni_onload.cc",
     "webview_jni_onload.h",
   ]
+  defines = [ "IS_ANDROID_WEBVIEW_IMPL" ]
 
   deps = [
     "//android_webview/browser",
@@ -61,7 +64,7 @@ source_set("lib") {
 
 source_set("webview_entry_point") {
   deps = [
-    ":lib",
+    "//android_webview",
     "//base",
   ]
   sources = [ "webview_entry_point.cc" ]

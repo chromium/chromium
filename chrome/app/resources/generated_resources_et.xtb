@@ -624,6 +624,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1430915738399379752">Printimine</translation>
 <translation id="1431188203598586230">Viimane tarkvaravärskendus</translation>
 <translation id="1432581352905426595">Halda otsingumootoreid</translation>
+<translation id="1432650420699700107">Saidid saavad küsida luba teie kohalikus võrgus mis tahes seadmega ühenduse loomiseks</translation>
 <translation id="1433478348197382180">Lugemisrežiim</translation>
 <translation id="1433980411933182122">Käivitamine</translation>
 <translation id="1434696352799406980">See lähtestab käivitamisel avatava lehe, uue vahelehe, otsingumootori ja vähendatud vahelehed. See keelab ka kõik laiendused ja kustutab kõik ajutised andmed (nt küpsised). Teie järjehoidjaid, ajalugu ega salvestatud paroole ei kustutata.</translation>
@@ -1336,6 +1337,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1918127774159128277">Värskenda WiFi Directi võimalusi</translation>
 <translation id="1918141783557917887">&amp;Väiksemaks</translation>
 <translation id="1918281588461452432">Saitide sirvimisel krüpteeritakse nende lehtede sisu ja salvestatakse teie seadmesse</translation>
+<translation id="1919096511823372013">Sisestage linke, emotikone ja muud. Samuti võite kirjutamisel ja piltide loomisel kasutada Google’i AI abi.</translation>
 <translation id="1919872106782726755">Sõrmejälje seadistamiseks laske lapsel puudutada klaviatuuri paremas ülanurgas toitenupu kõrval olevat sõrmejäljeandurit. Teie lapse sõrmejäljeandmed talletatakse turvaliselt ja neid ei edastata seadmest <ph name="DEVICE_TYPE" /> kunagi väljapoole.</translation>
 <translation id="192015196730532810">Saate luua oma vahelehegrupi.</translation>
 <translation id="1920314570001095522">Korraldamiseks pole sarnaseid vahekaarte, kuid need grupid võivad teile meeldida</translation>
@@ -4834,6 +4836,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4364830672918311045">Kuva märguanded</translation>
 <translation id="4367971618859387374">Kuvatav nimi</translation>
 <translation id="4368960422722232719">Kuva mälukasutus eelvaatekaardil, mida näidatakse, kui kursorit hõljutatakse vahelehe kohal</translation>
+<translation id="4369151461324628035">Ära luba saitidel luua ühendust ühegi seadmega minu kohalikus võrgus</translation>
 <translation id="4369215744064167350">Veebisaidi taotlus kinnitati</translation>
 <translation id="4369233657762989723">Dikteerimine sees/väljas</translation>
 <translation id="436926121798828366">Saate seda igal ajal <ph name="SETTINGS_LINK" /> muuta</translation>
@@ -5387,6 +5390,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4772914216048388646">Korrapärane</translation>
 <translation id="4773112038801431077">Üleminek Linuxi uuemale versioonile</translation>
 <translation id="4773122030389014189">Vahelehegrupi „<ph name="GROUP_NAME" />“ jagamine</translation>
+<translation id="4773253008034797668">Lubatud luua ühendus mis tahes seadmega teie kohalikus võrgus</translation>
 <translation id="477548766361111120">Luba laiendusel seda saiti lugeda ja muuta</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> on ühendatud</translation>
 <translation id="4776594120007763294">Lehe lisamiseks hiljem lugemiseks klõpsake nupul</translation>
@@ -7851,6 +7855,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6563002009564846727">Windowsist imporditud sertifikaatide vaatamine</translation>
 <translation id="6563055593659435495">Teie telefoniga ei saa ühendust säilitada. Veenduge, et teie telefon oleks läheduses, avatud ning Bluetooth ja WiFi oleksid sisse lülitatud.</translation>
 <translation id="6564860838537532172">Sirvimisajalugu otsides saadetakse teie ajaloo-otsingud, parimate vastete lehesisu ja genereeritud mudeliväljundid Google'ile ning ülevaatajad võivad neid näha, et seda funktsiooni täiustada.</translation>
+<translation id="6565144332292237355">Saidid saavad selle funktsiooni abil otsida teie kohalikust võrgust seadmeid ja luua nendega ühenduse</translation>
 <translation id="6569931898053264308">Keskmine sääst</translation>
 <translation id="6570622975915850879">Kasuta teist seadet</translation>
 <translation id="65711204837946324">Allalaadimiseks on vaja luba</translation>
@@ -8979,6 +8984,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7377451353532943397">Blokeeri ka edaspidi juurdepääs anduritele</translation>
 <translation id="7377481913241237033">Ühendamine koodiga</translation>
 <translation id="73786666777299047">Ava Chrome'i veebipood</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Veel üks tegum samas tegumigrupis: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Veel # tegumit samas tegumigrupis: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380272457268061606">Kas keelata kohalike andmete taastamine?</translation>
 <translation id="7380459290951585794">Veenduge, et teie telefon oleks läheduses, avatud ning Bluetooth ja WiFi oleksid sisse lülitatud</translation>
 <translation id="7380622428988553498">Seadme nimi sisaldab sobimatuid tähemärke</translation>
@@ -11564,6 +11570,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
       <ph name="LIST_ITEM" />Käitage Chrome'i ühenduvuse diagnostika
     <ph name="END_LIST" /></translation>
 <translation id="9161172953291434881">Kas usaldate sellele saidile oma andmeid?</translation>
+<translation id="9164418710391288146">Pole lubatud luua ühendust ühegi seadmega teie kohalikus võrgus</translation>
 <translation id="9165856803582999927">Skannige see QR-kood selle seadme kaameraga, milles soovite rakenduse <ph name="APP_NAME" /> jaoks pääsukoodi luua ja salvestada</translation>
 <translation id="916607977885256133">Pilt pildis</translation>
 <translation id="9166253503936244008">Skannige see QR-kood seadmega, milles on pääsuvõti, mida soovite rakenduse <ph name="APP_NAME" /> jaoks kasutada</translation>

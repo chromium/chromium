@@ -1142,8 +1142,7 @@ base::TimeDelta ArCoreImpl::GetFrameTimestamp() {
 
 mojom::XRPlaneDetectionDataPtr ArCoreImpl::GetDetectedPlanesData() {
   DVLOG(2) << __func__;
-
-  TRACE_EVENT0("gpu", __func__);
+  TRACE_EVENT0("gpu", "GetDetectedPlanesData");
 
   // ArCoreGl::ProcessFrame only calls this method if the feature is enabled.
   DCHECK(plane_manager_);
@@ -1153,8 +1152,7 @@ mojom::XRPlaneDetectionDataPtr ArCoreImpl::GetDetectedPlanesData() {
 
 mojom::XRAnchorsDataPtr ArCoreImpl::GetAnchorsData() {
   DVLOG(2) << __func__;
-
-  TRACE_EVENT0("gpu", __func__);
+  TRACE_EVENT0("gpu", "GetAnchorsData");
 
   // ArCoreGl::ProcessFrame only calls this method if the feature is enabled.
   DCHECK(anchor_manager_);
@@ -1163,7 +1161,8 @@ mojom::XRAnchorsDataPtr ArCoreImpl::GetAnchorsData() {
 }
 
 mojom::XRLightEstimationDataPtr ArCoreImpl::GetLightEstimationData() {
-  TRACE_EVENT0("gpu", __func__);
+  DVLOG(2) << __func__;
+  TRACE_EVENT0("gpu", "GetLightEstimationData");
 
   // ArCoreGl::ProcessFrame only calls this method if the feature is enabled.
   DCHECK(arcore_light_estimate_.get());

@@ -117,6 +117,10 @@ std::optional<growth::ActionType> GetActionTypeBySlot(growth::Slot slot) {
     return growth::ActionType::kShowNudge;
   }
 
+  if (slot == growth::Slot::kDryRun) {
+    return growth::ActionType::kDryRun;
+  }
+
   return std::nullopt;
 }
 
@@ -168,6 +172,11 @@ void MaybeTriggerSlot(growth::Slot slot) {
     return;
   }
 
+  if (action_type == growth::ActionType::kDryRun) {
+    // Skip rendering for dry run.
+    return;
+  }
+
   const auto* payload = growth::GetPayloadBySlot(campaign, slot);
   if (!payload) {
     // No payload for the targeted slot. It is valid for counterfactual control.
@@ -196,6 +205,7 @@ void MaybeTriggerRuntimeCampaigns(growth::TriggerType type,
 
   MaybeTriggerSlot(growth::Slot::kNudge);
   MaybeTriggerSlot(growth::Slot::kNotification);
+  MaybeTriggerSlot(growth::Slot::kDryRun);
 }
 
 void MaybeTriggerCampaignsWhenCampaignsLoaded() {

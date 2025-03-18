@@ -76,6 +76,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     private EditText mGroupTitleEditText;
     private ColorPickerCoordinator mColorPickerCoordinator;
     private TabGroupModelFilter mTabGroupModelFilter;
+    private Token mTabGroupId;
     private int mGroupRootId;
     private Context mContext;
 
@@ -257,6 +258,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
      * @param tabGroupId The tab group ID of the interacting tab group.
      */
     protected void showMenu(RectProvider anchorViewRectProvider, Token tabGroupId) {
+        mTabGroupId = tabGroupId;
         mGroupRootId = mTabGroupModelFilter.getRootIdFromTabGroupId(tabGroupId);
         createAndShowMenu(
                 anchorViewRectProvider,
@@ -477,7 +479,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
 
     private String getDefaultTitle() {
         return TabGroupTitleUtils.getDefaultTitle(
-                mContext, mTabGroupModelFilter.getRelatedTabCountForRootId(mGroupRootId));
+                mContext, mTabGroupModelFilter.getTabCountForGroup(mTabGroupId));
     }
 
     // TODO(crbug.com/358689769): Enable live editing and updating of the group title.
@@ -584,7 +586,8 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         return mKeyboardVisibilityListener;
     }
 
-    void setGroupRootIdForTesting(int id) {
+    void setGroupDataForTesting(int id, Token tabGroupId) {
         mGroupRootId = id;
+        mTabGroupId = tabGroupId;
     }
 }

@@ -1114,8 +1114,18 @@ void CommandData::ProcessCommand()
       OutHelp(RARX_USERERROR);
 #endif
   }
+
+  // Since messages usually include '\n' in the beginning, we also issue
+  // the final '\n'. It is especially important in Unix, where otherwise
+  // the shell can display the prompt on the same line as the last message.
+  // mprintf is blocked with -idq and if error messages had been displayed
+  // in this mode, we use eprintf to separate them from shell prompt.
+  // If nothing was displayed with -idq, we avoid the excessive empty line.
   if (!BareOutput)
-    mprintf(L"\n");
+    if (MsgStream==MSG_ERRONLY && IsConsoleOutputPresent())
+      eprintf(L"\n");
+    else
+      mprintf(L"\n");
 }
 
 

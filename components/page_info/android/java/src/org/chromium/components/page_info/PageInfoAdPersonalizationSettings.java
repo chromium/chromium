@@ -3,32 +3,45 @@
 // found in the LICENSE file.
 package org.chromium.components.page_info;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.Bundle;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
 
 import java.util.List;
 
 /** View showing showing details about ad personalization of a site. */
+@NullMarked
 public class PageInfoAdPersonalizationSettings extends BaseSiteSettingsFragment
         implements Preference.OnPreferenceClickListener {
     private static final String PERSONALIZATION_SUMMARY = "personalization_summary";
     private static final String MANAGE_INTEREST_PREFERENCE = "manage_interest_button";
     private static final String TOPIC_INFO_PREFERENCE = "topic_info";
 
-    /**  Parameters to configure the cookie controls view. */
-    public static class Params {
-        public boolean hasJoinedUserToInterestGroup;
-        public List<String> topicInfo;
-        public Runnable onManageInterestsButtonClicked;
+    /** Parameters to configure the cookie controls view. */
+    static class Params {
+        public final boolean hasJoinedUserToInterestGroup;
+        public final List<String> topicInfo;
+        public final Runnable onManageInterestsButtonClicked;
+
+        Params(
+                boolean hasJoinedUserToInterestGroup,
+                List<String> topicInfo,
+                Runnable onManageInterestsButtonClicked) {
+            this.hasJoinedUserToInterestGroup = hasJoinedUserToInterestGroup;
+            this.topicInfo = topicInfo;
+            this.onManageInterestsButtonClicked = onManageInterestsButtonClicked;
+        }
     }
 
-    private Params mParams;
+    private @Nullable Params mParams;
 
     public void setParams(Params params) {
         mParams = params;
@@ -46,15 +59,18 @@ public class PageInfoAdPersonalizationSettings extends BaseSiteSettingsFragment
         } else {
             summaryId = R.string.page_info_ad_privacy_topics_description;
         }
-        findPreference(PERSONALIZATION_SUMMARY).setSummary(summaryId);
+        Preference summaryPref = findPreference(PERSONALIZATION_SUMMARY);
+        assumeNonNull(summaryPref);
+        summaryPref.setSummary(summaryId);
 
         Preference topicList = findPreference(TOPIC_INFO_PREFERENCE);
+        assumeNonNull(topicList);
         topicList.setVisible(!mParams.topicInfo.isEmpty());
         topicList.setTitle(TextUtils.join("\n\n", mParams.topicInfo));
     }
 
     @Override
-    public void onCreatePreferences(Bundle bundle, String s) {
+    public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         // Remove this Preference if it is restored without SiteSettingsDelegate.
         if (!hasSiteSettingsDelegate()) {
             getParentFragmentManager().beginTransaction().remove(this).commit();
@@ -64,13 +80,14 @@ public class PageInfoAdPersonalizationSettings extends BaseSiteSettingsFragment
                 this, R.xml.page_info_ad_personalization_preference);
 
         var manageButtonPreference = findPreference(MANAGE_INTEREST_PREFERENCE);
+        assumeNonNull(manageButtonPreference);
         manageButtonPreference.setOnPreferenceClickListener(this);
         manageButtonPreference.setTitle(R.string.page_info_ad_privacy_subpage_manage_button);
         updateTopics();
     }
 
     @Override
-    public boolean onPreferenceClick(@NonNull Preference preference) {
+    public boolean onPreferenceClick(Preference preference) {
         if (preference.getKey().equals(MANAGE_INTEREST_PREFERENCE)) {
             if (mParams != null) {
                 mParams.onManageInterestsButtonClicked.run();

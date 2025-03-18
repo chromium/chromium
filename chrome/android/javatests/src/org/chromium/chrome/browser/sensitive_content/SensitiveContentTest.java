@@ -74,6 +74,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -140,6 +141,7 @@ public class SensitiveContentTest {
     @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
     @Mock private TabWindowManager mTabWindowManager;
     @Mock private ObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
+    @Mock private ToolbarManager mToolbarManager;
     @Mock private ViewGroup mContentView;
 
     private WebPageStation mPage;
@@ -710,7 +712,8 @@ public class SensitiveContentTest {
                         () -> mTopUiThemeColorProvider,
                         mHubLayoutDependencyHolder,
                         mCompositorViewHolderSupplier,
-                        mContentView);
+                        mContentView,
+                        mToolbarManager);
 
         tabContentManagerSupplier.set(tabContentManager);
         CompositorAnimationHandler.setTestingMode(true);

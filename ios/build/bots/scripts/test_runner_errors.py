@@ -104,6 +104,6 @@ class RuntimeBuildNotFoundError(Error):
 class SimRuntimeDeleteTimeoutError(Error):
   """When deleting a simulator runtime exceeds timeout."""
 
-  def __init__(self, ios_version):
+  def __init__(self, runtime_id):
     super(SimRuntimeDeleteTimeoutError, self).__init__(
-        'Unable to delete runtime %s after timeout' % ios_version)
+        'Unable to delete runtime %s after timeout' % runtime_id)

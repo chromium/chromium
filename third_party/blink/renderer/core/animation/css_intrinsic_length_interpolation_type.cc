@@ -20,11 +20,12 @@ namespace blink {
 class CSSIntrinsicLengthNonInterpolableValue final
     : public NonInterpolableValue {
  public:
-  ~CSSIntrinsicLengthNonInterpolableValue() final = default;
-
   enum EType { kNone, kAutoAndLength, kLength, kAutoAndNone };
 
-  static scoped_refptr<CSSIntrinsicLengthNonInterpolableValue> Create(
+  explicit CSSIntrinsicLengthNonInterpolableValue(EType type) : type_(type) {}
+  ~CSSIntrinsicLengthNonInterpolableValue() final = default;
+
+  static CSSIntrinsicLengthNonInterpolableValue* Create(
       const StyleIntrinsicLength& intrinsic_dimension) {
     EType type = kNone;
     if (intrinsic_dimension.HasAuto() &&
@@ -35,7 +36,7 @@ class CSSIntrinsicLengthNonInterpolableValue final
     } else if (intrinsic_dimension.GetLength().has_value()) {
       type = kLength;
     }
-    return base::AdoptRef(new CSSIntrinsicLengthNonInterpolableValue(type));
+    return MakeGarbageCollected<CSSIntrinsicLengthNonInterpolableValue>(type);
   }
 
   bool HasNone() const { return type_ == kNone || type_ == kAutoAndNone; }
@@ -54,8 +55,6 @@ class CSSIntrinsicLengthNonInterpolableValue final
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  explicit CSSIntrinsicLengthNonInterpolableValue(EType type) : type_(type) {}
-
   EType type_;
 };
 

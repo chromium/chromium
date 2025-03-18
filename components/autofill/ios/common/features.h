@@ -28,6 +28,10 @@ BASE_DECLARE_FEATURE(kAutofillDynamicallyLoadsFieldsForAddressInput);
 // modal dialog that was triggered from the KA (e.g. filling a suggestion).
 BASE_DECLARE_FEATURE(kAutofillFixPaymentSheetSpam);
 
+// Fix for XHR form submission detection when autofill across iframes is
+// enabled.
+BASE_DECLARE_FEATURE(kAutofillFixXhrForXframe);
+
 // Controls whether to use the isolated content world instead of the page
 // content world for the Autofill JS feature scripts.
 // TODO(crbug.com/40747550) Remove once the isolated content world is launched

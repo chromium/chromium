@@ -124,6 +124,12 @@ interface NativeWidgetNSWindowHost {
       gfx.mojom.Rect window_bounds_in_screen_dips,
       gfx.mojom.Rect content_bounds_in_screen_dips);
 
+  // Called when the window is about to be live resized.
+  OnWindowWillStartLiveResize();
+
+  // Called when a live resize operation on the window has ended.
+  OnWindowDidEndLiveResize();
+
   // Called when the window begins transitioning to or from being fullscreen.
   OnWindowFullscreenTransitionStart(
       bool target_fullscreen_state);

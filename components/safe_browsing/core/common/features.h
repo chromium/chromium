@@ -230,6 +230,11 @@ BASE_DECLARE_FEATURE(kMaliciousApkDownloadCheck);
 // then ClientDownloadRequests for APK downloads on Android are active for all
 // Safe Browsing-enabled users, and may show warnings.
 extern const base::FeatureParam<bool> kMaliciousApkDownloadCheckTelemetryOnly;
+
+// Allows a fieldtrial config to override the APK download check service URL. If
+// empty (default), the default hardcoded URL will be used.
+extern const base::FeatureParam<std::string>
+    kMaliciousApkDownloadCheckServiceUrlOverride;
 #endif
 
 // Killswitch for fetching and executing the notification content detection

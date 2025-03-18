@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -54,11 +56,19 @@ void AttemptChromeSignin(CoreAccountId account_id,
   if (access_point == signin_metrics::AccessPoint::kWebSignin) {
     AccountInfo account_info =
         identity_manager->FindExtendedAccountInfoByAccountId(account_id);
+
+    // When automation is enabled, automatically promote web sign in to Chrome
+    // sign in.
+    const bool auto_accept_signin =
+        base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kBrowserSigninAutoAccept);
+
     // If the user did not choose the signin choice, do not proceed with a
     // sign in from a Web Signin.
-    if (SigninPrefs(*profile.GetPrefs())
-            .GetChromeSigninInterceptionUserChoice(account_info.gaia) !=
-        ChromeSigninUserChoice::kSignin) {
+    if (!auto_accept_signin &&
+        SigninPrefs(*profile.GetPrefs())
+                .GetChromeSigninInterceptionUserChoice(account_info.gaia) !=
+            ChromeSigninUserChoice::kSignin) {
       return;
     }
 

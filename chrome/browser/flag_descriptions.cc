@@ -20,6 +20,18 @@ const char kAccelerated2dCanvasDescription[] =
     "Enables the use of the GPU to perform 2d canvas rendering instead of "
     "using software rendering.";
 
+const char kAdjustCanCreateCanvas2DResourceProviderName[] =
+    "Adjust CanCreateCanvas2DResourceProvider()";
+const char kAdjustCanCreateCanvas2DResourceProviderDescription[] =
+    "Changes CanvasRenderingContxt2D::CanCreateCanvas2DResourceProvider() "
+    "to check for provider recreation rather than bridge recreation";
+
+const char kAdjustGetOrCreate2DCanvasProviderName[] =
+    "Adjust GetOrCreateCanvasResourceProvider() for Canvas2D";
+const char kAdjustGetOrCreate2DCanvasProviderDescription[] =
+    "Moves HTMLCanvasElement::GetOrCreateCanvasResourceProvider() "
+    "away from calling GetOrCreateCanvas2DLayerBridge() for Canvas2D";
+
 const char kAiSettingsPageRefreshName[] = "AI settings page refresh";
 const char kAiSettingsPageRefreshDescription[] =
     "Enables a revamp of the existing AI settings page.";
@@ -556,6 +568,12 @@ const char kIsolatedSandboxedIframesDescription[] =
     "header, even in the main frame. The affected sandboxed documents can be "
     "grouped into processes based on their URL's site or origin. The default "
     "grouping when enabled is per-site.";
+
+const char kIsPaintableChecksResourceProviderInsteadOfBridgeName[] =
+    "CanvasRenderingContext2D::IsPaintable() adjustment";
+const char kIsPaintableChecksResourceProviderInsteadOfBridgeDescription[] =
+    "Has CanvasRenderingContext2D::IsPaintable() check for the existence of "
+    "the resource provider rather than the bridge";
 
 #if BUILDFLAG(IS_ANDROID)
 const char kAutofillDeprecateAccessibilityApiName[] =
@@ -1940,7 +1958,7 @@ const char kFedCmButtonModeDescription[] =
     "Enables RPs specify whether they want to trigger the FedCM widget flow or "
     "the button flow.";
 
-const char kFedCmCooldownOnIgnoreName[] = "kFedCmCooldownOnIgnore";
+const char kFedCmCooldownOnIgnoreName[] = "FedCmCooldownOnIgnore";
 const char kFedCmCooldownOnIgnoreDescription[] =
     "Enables cooldown of the FedCM API in passive mode whenever the dialog is "
     "ignored by the user.";
@@ -5326,18 +5344,6 @@ const char kTranslateOpenSettingsDescription[] =
     "Add an option to the translate bubble menu to open language settings.";
 #endif
 
-const char kUserDisplayModeSyncBrowserMitigationName[] =
-    "Web App User Display Mode Sync Browser Mitigation";
-const char kUserDisplayModeSyncBrowserMitigationDescription[] =
-    "Enables a mitigation during web app install on CrOS for syncing "
-    "user_display_mode: kBrowser to non-CrOS devices.";
-
-const char kUserDisplayModeSyncStandaloneMitigationName[] =
-    "Web App User Display Mode Sync Standalone Mitigation";
-const char kUserDisplayModeSyncStandaloneMitigationDescription[] =
-    "Enables a mitigation during web app install on CrOS for syncing "
-    "user_display_mode: kStandalone to non-CrOS devices.";
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 const char kWasmTtsComponentUpdaterEnabledName[] =
     "Enable Wasm TTS Extension Component";
@@ -6898,6 +6904,12 @@ const char kNotificationsIgnoreRequireInteractionDescription[] =
     "Always timeout notifications, even if they are set with "
     "requireInteraction.";
 
+const char kOfflineItemsInNotificationsName[] =
+    "Background fetched items in Notifications";
+const char kOfflineItemsInNotificationsDescription[] =
+    "Show background fetched items in notifications instead of the download "
+    "shelf.";
+
 const char kOnDeviceAppControlsName[] = "On-device controls for apps";
 const char kOnDeviceAppControlsDescription[] =
     "Enables the on-device controls UI for blocking apps.";
@@ -6993,6 +7005,16 @@ const char kArcWindowPredictorDescription[] =
 const char kScalableIphDebugName[] = "Scalable Iph Debug";
 const char kScalableIphDebugDescription[] =
     "Enables debug feature of Scalable Iph";
+
+const char kScannerDisclaimerDebugOverrideName[] =
+    "Scanner disclaimer: Debug override";
+const char kScannerDisclaimerDebugOverrideDescription[] =
+    "Allows overriding the type of disclaimer displayed when Scanner is shown";
+const char kScannerDisclaimerDebugOverrideChoiceDefault[] = "Default";
+const char kScannerDisclaimerDebugOverrideChoiceAlwaysReminder[] =
+    "Always reminder disclaimer";
+const char kScannerDisclaimerDebugOverrideChoiceAlwaysFull[] =
+    "Always full disclaimer";
 
 const char kSeaPenName[] = "SeaPen";
 const char kSeaPenDescription[] = "Enable SeaPen Wallpaper";
@@ -7620,6 +7642,10 @@ const char kTaskManagerDesktopRefreshName[] = "Task Manager Desktop Refresh";
 const char kTaskManagerDesktopRefreshDescription[] =
     "Enables a refreshed design for the Task Manager on Desktop platforms.";
 #endif  // BUILDFLAG(IS_ANDROID)
+
+const char kGroupPromoPrototypeName[] = "Group Promo Prototype";
+const char kGroupPromoPrototypeDescription[] =
+    "Enables prototype for group promo.";
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 const char kEnableNetworkServiceSandboxName[] =

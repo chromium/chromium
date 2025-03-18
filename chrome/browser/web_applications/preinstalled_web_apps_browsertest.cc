@@ -109,6 +109,11 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppsBrowserTest,
           "https://www.youtube.com/s/notifications/manifest/cr_install.html",
           "https://www.youtube.com/?feature=ytca",
       },
+      {
+          ash::kGoogleChatAppId,
+          "https://mail.google.com/chat/download?usp=chrome_default",
+          "https://mail.google.com/chat/",
+      },
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   };
   size_t kOfflineOnlyExpectedCount =
@@ -119,9 +124,6 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppsBrowserTest,
   } kOnlineOnlyExpectations[] = {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #if BUILDFLAG(IS_CHROMEOS)
-      {
-          "https://mail.google.com/chat/download?usp=chrome_default",
-      },
       {
           "https://meet.google.com/download/webapp?usp=chrome_default",
       },

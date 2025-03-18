@@ -2609,6 +2609,7 @@ if (!is_android) {
       "//ui/shell_dialogs:test_support",
       "//ui/web_dialogs:test_support",
       "//ui/webui",
+      "//ui/webui:buildflags",
       "//ui/webui:test_support",
       "//ui/webui/resources/cr_components/history_clusters:mojo_bindings",
       "//v8",
@@ -3521,8 +3522,7 @@ if (!is_android) {
       ]
 
       deps += [
-        "//chrome/browser/background/glic",
-        "//chrome/browser/background/glic:browser_tests",
+        "//chrome/browser/background/glic:glic",
         "//chrome/browser/glic:browser_tests",
         "//chrome/browser/glic:glic",
         "//chrome/browser/glic:test_support",
@@ -5535,6 +5535,10 @@ if (!is_android) {
 
     if (chrome_root_store_cert_management_ui) {
       deps += [ "//components/server_certificate_database" ]
+    }
+
+    if (enable_webui_generate_code_cache) {
+      deps += [ "//ui/webui/resources:code_cache_resources" ]
     }
   }
 }
@@ -11576,6 +11580,7 @@ if (!is_android && !is_chromeos_device) {
       sources += [ "../browser/contextual_cueing/contextual_cueing_helper_interactive_uitest.cc" ]
 
       deps += [
+        "//chrome/browser/background/glic:glic",
         "//chrome/browser/background/glic:interactive_ui_tests",
         "//chrome/browser/glic:glic",
         "//chrome/browser/glic:interactive_ui_tests",

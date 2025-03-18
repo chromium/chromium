@@ -54,30 +54,41 @@ class OptionalRotation {
 
 class CSSRotateNonInterpolableValue : public NonInterpolableValue {
  public:
-  static scoped_refptr<CSSRotateNonInterpolableValue> Create(
+  CSSRotateNonInterpolableValue(bool is_single,
+                                const OptionalRotation& start,
+                                const OptionalRotation& end,
+                                bool is_start_additive,
+                                bool is_end_additive)
+      : is_single_(is_single),
+        start_(start),
+        end_(end),
+        is_start_additive_(is_start_additive),
+        is_end_additive_(is_end_additive) {}
+
+  static CSSRotateNonInterpolableValue* Create(
       const OptionalRotation& rotation) {
-    return base::AdoptRef(new CSSRotateNonInterpolableValue(
-        true, rotation, OptionalRotation(), false, false));
+    return MakeGarbageCollected<CSSRotateNonInterpolableValue>(
+        true, rotation, OptionalRotation(), false, false);
   }
 
-  static scoped_refptr<CSSRotateNonInterpolableValue> Create(
+  static CSSRotateNonInterpolableValue* Create(
       const CSSRotateNonInterpolableValue& start,
       const CSSRotateNonInterpolableValue& end) {
-    return base::AdoptRef(new CSSRotateNonInterpolableValue(
+    return MakeGarbageCollected<CSSRotateNonInterpolableValue>(
         false, start.GetOptionalRotation(), end.GetOptionalRotation(),
-        start.IsAdditive(), end.IsAdditive()));
+        start.IsAdditive(), end.IsAdditive());
   }
 
-  static scoped_refptr<CSSRotateNonInterpolableValue> CreateAdditive(
+  static CSSRotateNonInterpolableValue* CreateAdditive(
       const CSSRotateNonInterpolableValue& other) {
     DCHECK(other.is_single_);
     const bool is_single = true;
     const bool is_additive = true;
-    return base::AdoptRef(new CSSRotateNonInterpolableValue(
-        is_single, other.start_, other.end_, is_additive, is_additive));
+    return MakeGarbageCollected<CSSRotateNonInterpolableValue>(
+        is_single, other.start_, other.end_, is_additive, is_additive);
   }
 
-  scoped_refptr<CSSRotateNonInterpolableValue> Composite(
+  CSSRotateNonInterpolableValue* Composite(
       const CSSRotateNonInterpolableValue& other,
       double other_progress) const {
     DCHECK(is_single_ && !is_start_additive_);
@@ -109,17 +120,6 @@ class CSSRotateNonInterpolableValue : public NonInterpolableValue {
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  CSSRotateNonInterpolableValue(bool is_single,
-                                const OptionalRotation& start,
-                                const OptionalRotation& end,
-                                bool is_start_additive,
-                                bool is_end_additive)
-      : is_single_(is_single),
-        start_(start),
-        end_(end),
-        is_start_additive_(is_start_additive),
-        is_end_additive_(is_end_additive) {}
-
   const OptionalRotation& GetOptionalRotation() const {
     DCHECK(is_single_);
     return start_;

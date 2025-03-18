@@ -73,7 +73,7 @@ public class StripLayoutUtils {
             return false;
         }
         return modelFilter.isTabInTabGroup(tab)
-                && modelFilter.getRelatedTabCountForRootId(tab.getRootId()) == 1;
+                && modelFilter.getTabCountForGroup(tab.getTabGroupId()) == 1;
     }
 
     /**
@@ -86,7 +86,7 @@ public class StripLayoutUtils {
         if (stripLayoutGroupTitle == null) {
             return 0;
         }
-        return modelFilter.getRelatedTabCountForRootId(stripLayoutGroupTitle.getRootId());
+        return modelFilter.getTabCountForGroup(stripLayoutGroupTitle.getTabGroupId());
     }
 
     /**

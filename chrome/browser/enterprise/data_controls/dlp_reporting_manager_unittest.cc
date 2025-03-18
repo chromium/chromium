@@ -35,6 +35,7 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -90,10 +91,9 @@ class DlpReportingManagerTest : public testing::Test {
                                const AccountId& account_id,
                                const user_manager::User* user,
                                DlpPolicyEvent_UserType DlpUserType,
-                               unsigned int event_number,
-                               bool is_child = false) {
-    user_manager->UserLoggedIn(account_id, user->username_hash(),
-                               /*browser_restart=*/false, is_child);
+                               unsigned int event_number) {
+    user_manager->UserLoggedIn(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
     manager_->ReportEvent(kCompanyUrl, Rule::Restriction::kPrinting,
                           Rule::Level::kBlock, kRuleName, kRuleId);
     ASSERT_EQ(events_.size(), event_number + 1);
@@ -242,8 +242,7 @@ TEST_F(DlpReportingManagerTest, UserType) {
   ReportEventAndCheckUser(user_manager, guest_user_id, guest_user,
                           DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE, 4u);
   ReportEventAndCheckUser(user_manager, child_user_id, child_user,
-                          DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE, 5u,
-                          true);
+                          DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE, 5u);
   EXPECT_EQ(manager_->events_reported(), 6u);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

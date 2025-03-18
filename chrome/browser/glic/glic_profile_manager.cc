@@ -98,10 +98,25 @@ Profile* GlicProfileManager::GetProfileForLaunch() const {
 }
 
 void GlicProfileManager::SetActiveGlic(GlicKeyedService* glic) {
-  if (last_active_glic_ && last_active_glic_.get() != glic) {
+  if (last_active_glic_ && last_active_glic_.get() != glic &&
+      last_active_glic_->IsWindowShowing()) {
     last_active_glic_->ClosePanel();
   }
-  last_active_glic_ = glic->GetWeakPtr();
+  Profile* last_active_glic_profile = nullptr;
+  if (glic) {
+    last_active_glic_ = glic->GetWeakPtr();
+    last_active_glic_profile = last_active_glic_->profile();
+  } else {
+    last_active_glic_.reset();
+  }
+  observers_.Notify(&Observer::OnLastActiveGlicProfileChanged,
+                    last_active_glic_profile);
+}
+
+void GlicProfileManager::OnServiceShutdown(GlicKeyedService* glic) {
+  if (last_active_glic_ && last_active_glic_.get() == glic) {
+    SetActiveGlic(nullptr);
+  }
 }
 
 bool GlicProfileManager::ShouldPreloadForProfile(Profile* profile) const {
@@ -128,6 +143,10 @@ bool GlicProfileManager::ShouldPreloadForProfile(Profile* profile) const {
   }
 
   return true;
+}
+
+GlicKeyedService* GlicProfileManager::GetLastActiveGlic() const {
+  return last_active_glic_.get();
 }
 
 void GlicProfileManager::MaybeAutoOpenGlicPanel() {
@@ -167,6 +186,14 @@ void GlicProfileManager::DidSelectProfile(Profile* profile) {
       GlicKeyedServiceFactory::GetGlicKeyedService(profile);
   service->ToggleUI(nullptr, /*prevent_close=*/true,
                     mojom::InvocationSource::kProfilePicker);
+}
+
+void GlicProfileManager::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void GlicProfileManager::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 // static

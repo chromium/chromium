@@ -133,6 +133,11 @@ source_set("unit_tests") {
     "visited_url_ranking_service_impl_unittest.cc",
   ]
 
+  if (is_android) {
+    sources +=
+        [ "url_grouping/android/group_suggestions_service_android_unittest.cc" ]
+  }
+
   deps = [
     ":internal",
     ":internal_url_grouping",
@@ -155,18 +160,31 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (is_android) {
+    deps += [
+      ":native_test_helper_java",
+      ":test_jni_headers",
+    ]
+  }
 }
 
 if (is_android) {
+  # TODO(crbug.com/404270786): Scope down internal_java visibility.
   android_library("internal_java") {
-    visibility = [ "//chrome/android:chrome_all_java" ]
+    visibility = [
+      "//chrome/android:chrome_all_java",
+      "//components:*",
+    ]
     srcjar_deps = [ ":jni_headers" ]
-    sources = [ "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/GroupSuggestionsServiceImpl.java" ]
+    sources = [
+      "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/DelegateBridge.java",
+      "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/GroupSuggestionsServiceImpl.java",
+    ]
 
     deps = [
       "//base:base_java",
       "//build/android:build_java",
-      "//chrome/browser/tab:java",
       "//components/visited_url_ranking/public:public_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
@@ -178,6 +196,25 @@ if (is_android) {
       "//chrome/browser",
     ]
 
-    sources = [ "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/GroupSuggestionsServiceImpl.java" ]
+    sources = [
+      "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/DelegateBridge.java",
+      "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/GroupSuggestionsServiceImpl.java",
+    ]
+  }
+
+  android_library("native_test_helper_java") {
+    srcjar_deps = [ ":test_jni_headers" ]
+    testonly = true
+    sources = [ "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/TestServiceDelegate.java" ]
+    deps = [
+      "//base:base_java",
+      "//components/visited_url_ranking/public:public_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
+  generate_jni("test_jni_headers") {
+    testonly = true
+    sources = [ "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/TestServiceDelegate.java" ]
   }
 }

@@ -121,6 +121,9 @@ class OnDeviceModelServiceController
       ModelBasedCapabilityKey feature,
       OnDeviceModelAvailabilityObserver* observer);
 
+  // Calls `callback` with the capabilities of the current model.
+  on_device_model::Capabilities GetCapabilities();
+
   base::WeakPtr<OnDeviceModelServiceController> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -151,8 +154,9 @@ class OnDeviceModelServiceController
     ~OnDeviceModelClient() override;
     std::unique_ptr<OnDeviceOptions::Client> Clone() const override;
     bool ShouldUse() override;
-    void StartSession(mojo::PendingReceiver<on_device_model::mojom::Session>
-                          pending) override;
+    void StartSession(
+        mojo::PendingReceiver<on_device_model::mojom::Session> pending,
+        on_device_model::mojom::SessionParamsPtr params) override;
     void OnResponseCompleted() override;
 
    private:

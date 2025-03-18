@@ -1335,6 +1335,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1918127774159128277">Aggiorna funzionalità WiFi Direct</translation>
 <translation id="1918141783557917887">Più &amp;piccolo</translation>
 <translation id="1918281588461452432">Quando navighi nei siti, i contenuti delle pagine vengono criptati e salvati sul tuo dispositivo</translation>
+<translation id="1919096511823372013">Inserisci link, emoji e altro ancora. Puoi anche ricevere aiuto con la scrittura e la creazione di immagini con Google AI.</translation>
 <translation id="1919872106782726755">Per configurare l'impronta, chiedi a tuo figlio di toccare il sensore di impronte digitali nell'angolo in alto a destra della tastiera, accanto al tasto di accensione. I dati relativi all'impronta di tuo figlio vengono memorizzati in modo sicuro e non possono essere trasferiti in alcun modo da questo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="192015196730532810">Puoi creare il tuo gruppo di schede.</translation>
 <translation id="1920314570001095522">Non ci sono schede simili da organizzare, ma potrebbero piacerti questi gruppi</translation>
@@ -1878,6 +1879,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300332192655962933">Il file non era disponibile sul sito</translation>
 <translation id="2300383962156589922">Personalizza e controlla <ph name="APP_NAME" /></translation>
+<translation id="2301064673700597535">Dichiarazioni certificati di qualificazione</translation>
 <translation id="2301382460326681002">Directory principale dell'estensione non valida.</translation>
 <translation id="2301402091755573488">Scheda condivisa</translation>
 <translation id="2302342861452486996"><ph name="BEGIN_H3" />Funzioni di debug<ph name="END_H3" />
@@ -8971,6 +8973,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7377451353532943397">Continua a impedire l'accesso ai sensori</translation>
 <translation id="7377481913241237033">Connessione tramite codice</translation>
 <translation id="73786666777299047">Apri Chrome Web Store.</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Un'altra attività nello stesso gruppo di attività: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Altre # attività nello stesso gruppo di attività: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380272457268061606">Vuoi disattivare il recupero dei dati locali?</translation>
 <translation id="7380459290951585794">Assicurati che il tuo telefono sia nelle vicinanze, sbloccato e che il Bluetooth e il Wi-Fi siano attivi</translation>
 <translation id="7380622428988553498">Il nome del dispositivo contiene caratteri non validi</translation>

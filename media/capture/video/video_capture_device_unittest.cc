@@ -19,6 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
@@ -186,6 +187,8 @@ class MockMFPhotoCallback final : public IMFCaptureEngineOnSampleCallback {
 class MockImageCaptureClient
     : public base::RefCountedThreadSafe<MockImageCaptureClient> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   // GMock doesn't support move-only arguments, so we use this forward method.
   void DoOnPhotoTaken(mojom::BlobPtr blob) {
     if (strcmp("image/jpeg", blob->mime_type.c_str()) == 0) {
@@ -221,7 +224,7 @@ class MockImageCaptureClient
 
  private:
   friend class base::RefCountedThreadSafe<MockImageCaptureClient>;
-  virtual ~MockImageCaptureClient() = default;
+  ~MockImageCaptureClient() = default;
 
   mojom::PhotoStatePtr state_;
 };
@@ -270,7 +273,7 @@ class VideoCaptureDeviceTest
         main_thread_task_runner_(
             base::SingleThreadTaskRunner::GetCurrentDefault()),
         video_capture_client_(CreateDeviceClient()),
-        image_capture_client_(new MockImageCaptureClient()) {
+        image_capture_client_(base::MakeRefCounted<MockImageCaptureClient>()) {
 #if BUILDFLAG(IS_CHROMEOS)
     local_gpu_memory_buffer_manager_ =
         std::make_unique<LocalGpuMemoryBufferManager>();

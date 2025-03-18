@@ -49,15 +49,9 @@ void GlicLauncherConfiguration::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kGlicLauncherEnabled, false);
 
-#if BUILDFLAG(IS_MAC)
-  const ui::EventFlags modifiers = ui::EF_CONTROL_DOWN;
-#else
-  const ui::EventFlags modifiers = ui::EF_ALT_DOWN;
-#endif
-
-  const ui::Accelerator hotkey(ui::KeyboardCode::VKEY_G, modifiers);
-  registry->RegisterStringPref(prefs::kGlicLauncherHotkey,
-                               ui::Command::AcceleratorToString(hotkey));
+  registry->RegisterStringPref(
+      prefs::kGlicLauncherHotkey,
+      ui::Command::AcceleratorToString(GetDefaultHotkey()));
 }
 
 // static
@@ -84,6 +78,17 @@ ui::Accelerator GlicLauncherConfiguration::GetGlobalHotkey() {
   }
 
   return hotkey;
+}
+
+// static
+ui::Accelerator GlicLauncherConfiguration::GetDefaultHotkey() {
+#if BUILDFLAG(IS_MAC)
+  const ui::EventFlags modifiers = ui::EF_CONTROL_DOWN;
+#else
+  const ui::EventFlags modifiers = ui::EF_ALT_DOWN;
+#endif
+
+  return ui::Accelerator(ui::KeyboardCode::VKEY_G, modifiers);
 }
 
 void GlicLauncherConfiguration::OnEnabledPrefChanged() {

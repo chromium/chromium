@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_timeouts.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/media.h"
 #include "media/base/media_util.h"
@@ -23,6 +24,7 @@
 
 struct Env {
   Env() {
+    TestTimeouts::Initialize();
     media::InitializeMediaLibrary();
     base::CommandLine::Init(0, nullptr);
     logging::SetMinLogLevel(logging::LOGGING_FATAL);

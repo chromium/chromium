@@ -184,6 +184,10 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
       chromeos::DBusMethodCallback<vm_tools::concierge::SetUpVmUserResponse>
           callback) override;
 
+  void GetBaguetteImageUrl(
+      chromeos::DBusMethodCallback<
+          vm_tools::concierge::GetBaguetteImageUrlResponse> callback) override;
+
   const base::ObserverList<Observer>& observer_list() const {
     return observer_list_;
   }
@@ -241,6 +245,7 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
   int modify_fake_power_config_call_count() const {
     return modify_fake_power_config_call_count_;
   }
+  int mute_vm_audio_call_count() const { return mute_vm_audio_call_count_; }
 
   void set_vm_started_signal_connected(bool connected) {
     is_vm_started_signal_connected_ = connected;
@@ -457,6 +462,7 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
   int reclaim_vm_memory_call_count_ = 0;
   int list_vms_call_count_ = 0;
   int modify_fake_power_config_call_count_ = 0;
+  int mute_vm_audio_call_count_ = 0;
 
   bool is_vm_started_signal_connected_ = true;
   bool is_vm_stopped_signal_connected_ = true;
@@ -513,6 +519,8 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
       mute_vm_audio_response_;
   std::optional<vm_tools::concierge::SetUpVmUserResponse>
       set_up_vm_user_response_;
+  std::optional<vm_tools::concierge::GetBaguetteImageUrlResponse>
+      get_baguette_image_url_response_;
 
   base::TimeDelta send_create_disk_image_response_delay_;
   base::TimeDelta send_start_vm_response_delay_;

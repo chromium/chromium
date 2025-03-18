@@ -16,12 +16,9 @@ namespace blink {
 
 class CSSDisplayNonInterpolableValue final : public NonInterpolableValue {
  public:
+  CSSDisplayNonInterpolableValue(EDisplay start, EDisplay end)
+      : start_(start), end_(end) {}
   ~CSSDisplayNonInterpolableValue() final = default;
-
-  static scoped_refptr<CSSDisplayNonInterpolableValue> Create(EDisplay start,
-                                                              EDisplay end) {
-    return base::AdoptRef(new CSSDisplayNonInterpolableValue(start, end));
-  }
 
   EDisplay Display() const {
     DCHECK_EQ(start_, end_);
@@ -44,9 +41,6 @@ class CSSDisplayNonInterpolableValue final : public NonInterpolableValue {
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  CSSDisplayNonInterpolableValue(EDisplay start, EDisplay end)
-      : start_(start), end_(end) {}
-
   const EDisplay start_;
   const EDisplay end_;
 };
@@ -102,7 +96,7 @@ InterpolationValue CSSDisplayInterpolationType::CreateDisplayValue(
     EDisplay display) const {
   return InterpolationValue(
       MakeGarbageCollected<InterpolableNumber>(0),
-      CSSDisplayNonInterpolableValue::Create(display, display));
+      MakeGarbageCollected<CSSDisplayNonInterpolableValue>(display, display));
 }
 
 InterpolationValue CSSDisplayInterpolationType::MaybeConvertNeutral(
@@ -189,7 +183,8 @@ PairwiseInterpolationValue CSSDisplayInterpolationType::MaybeMergeSingles(
   return PairwiseInterpolationValue(
       MakeGarbageCollected<InterpolableNumber>(0),
       MakeGarbageCollected<InterpolableNumber>(1),
-      CSSDisplayNonInterpolableValue::Create(start_display, end_display));
+      MakeGarbageCollected<CSSDisplayNonInterpolableValue>(start_display,
+                                                           end_display));
 }
 
 void CSSDisplayInterpolationType::Composite(

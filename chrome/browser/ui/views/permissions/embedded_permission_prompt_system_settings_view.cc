@@ -9,6 +9,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/ui/url_identity.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/features.h"
 #include "components/strings/grit/components_strings.h"
@@ -50,8 +51,9 @@ std::u16string EmbeddedPermissionPromptSystemSettingsView::GetWindowTitle()
     permission_name = requests[0]->GetPermissionNameTextFragment();
   }
 
-  return l10n_util::GetStringFUTF16(IDS_PERMISSION_OFF_FOR_CHROME,
-                                    permission_name);
+  return l10n_util::GetStringFUTF16(
+      IDS_PERMISSION_OFF_FOR_CHROME, permission_name,
+      l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME));
 }
 
 void EmbeddedPermissionPromptSystemSettingsView::RunButtonCallback(

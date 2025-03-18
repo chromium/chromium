@@ -36,8 +36,8 @@ ScriptPromise<IDLSequence<LanguageDetectionResult>> AILanguageDetector::detect(
   }
 
   auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolver<IDLSequence<LanguageDetectionResult>>>(
-      script_state);
+      AIResolverWithAbortSignal<IDLSequence<LanguageDetectionResult>>>(
+      script_state, signal);
 
   language_detection_model_->DetectLanguage(
       task_runner_, input,
@@ -63,9 +63,13 @@ HeapVector<Member<LanguageDetectionResult>> AILanguageDetector::ConvertResult(
 }
 
 void AILanguageDetector::OnDetectComplete(
-    ScriptPromiseResolver<IDLSequence<LanguageDetectionResult>>* resolver,
+    AIResolverWithAbortSignal<IDLSequence<LanguageDetectionResult>>* resolver,
     base::expected<WTF::Vector<LanguageDetectionModel::LanguagePrediction>,
                    DetectLanguageError> result) {
+  if (resolver->aborted()) {
+    return;
+  }
+
   if (result.has_value()) {
     // Order the result from most to least confident.
     std::sort(result.value().rbegin(), result.value().rend());

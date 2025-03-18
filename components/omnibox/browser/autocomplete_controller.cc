@@ -1593,6 +1593,23 @@ void AutocompleteController::AttachActions() {
   if (omnibox::IsLensSearchbox(input_.current_page_classification())) {
     return;
   }
+
+  #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // Attach the contextual search action in the page keyword mode.
+  // TODO(crbug.com/403325029): Once a provider is created for contextual search
+  // actions, move this logic there.
+  if (input_.InKeywordMode()) {
+    AutocompleteInput keyword_input = input_;
+    const TemplateURL* keyword_turl =
+        AutocompleteInput::GetSubstitutingTemplateURLForInput(
+            template_url_service_, &keyword_input);
+    if (keyword_turl->starter_pack_id() == TemplateURLStarterPackData::kPage) {
+      internal_result_.AttachContextualSearchActionToMatches();
+      return;
+    }
+  }
+  #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
   // TabMatcher should run for ZPS for the Hub since open tab suggestions are
   // shown there.
   if (!input_.IsZeroSuggest() ||

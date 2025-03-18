@@ -125,10 +125,35 @@ TEST_F(AmountExtractionManagerTest, ShouldTriggerWhenEligible) {
   SuggestionsContext context;
   context.is_autofill_available = true;
   context.filling_product = FillingProduct::kCreditCard;
+  std::vector<FieldType> field_types = {FieldType::CREDIT_CARD_NUMBER,
+                                        FieldType::CREDIT_CARD_NAME_FULL,
+                                        FieldType::CREDIT_CARD_EXP_MONTH};
 
-  EXPECT_TRUE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
+  for (FieldType field_type : field_types) {
+    EXPECT_TRUE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
+        context,
+        /*should_suppress_suggestions=*/false,
+        /*has_suggestions=*/true,
+        /*field_type=*/field_type));
+  }
+}
+
+TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenCvcFieldIsClicked) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableAmountExtractionDesktop};
+
+  SuggestionsContext context;
+  context.is_autofill_available = true;
+  context.filling_product = FillingProduct::kCreditCard;
+
+  EXPECT_FALSE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
       context, /*should_suppress_suggestions=*/false,
-      /*has_suggestions=*/true));
+      /*has_suggestions=*/true,
+      /*field_type=*/FieldType::CREDIT_CARD_VERIFICATION_CODE));
+  EXPECT_FALSE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
+      context, /*should_suppress_suggestions=*/false,
+      /*has_suggestions=*/true,
+      /*field_type=*/FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE));
 }
 
 TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenFeatureIsNotEnabled) {
@@ -144,7 +169,7 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenFeatureIsNotEnabled) {
 
   EXPECT_FALSE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
       context, /*should_suppress_suggestions=*/false,
-      /*has_suggestions=*/true));
+      /*has_suggestions=*/true, /*field_type=*/FieldType::CREDIT_CARD_NUMBER));
 }
 
 TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenSearchIsOngoing) {
@@ -155,7 +180,7 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenSearchIsOngoing) {
       /*search_request_pending*/ true);
   EXPECT_FALSE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
       context, /*should_suppress_suggestions=*/false,
-      /*has_suggestions=*/true));
+      /*has_suggestions=*/true, /*field_type=*/FieldType::CREDIT_CARD_NUMBER));
 }
 
 TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenAutofillUnavailable) {
@@ -165,7 +190,7 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenAutofillUnavailable) {
 
   EXPECT_FALSE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
       context, /*should_suppress_suggestions=*/false,
-      /*has_suggestions=*/true));
+      /*has_suggestions=*/true, /*field_type=*/FieldType::CREDIT_CARD_NUMBER));
 }
 
 TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenFormIsNotCreditCard) {
@@ -175,7 +200,7 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenFormIsNotCreditCard) {
 
   EXPECT_FALSE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
       context, /*should_suppress_suggestions=*/false,
-      /*has_suggestions=*/true));
+      /*has_suggestions=*/true, /*field_type=*/FieldType::CREDIT_CARD_NUMBER));
 }
 
 TEST_F(AmountExtractionManagerTest,
@@ -185,7 +210,8 @@ TEST_F(AmountExtractionManagerTest,
   context.filling_product = FillingProduct::kCreditCard;
 
   EXPECT_FALSE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
-      context, /*should_suppress_suggestions=*/true, /*has_suggestions=*/true));
+      context, /*should_suppress_suggestions=*/true, /*has_suggestions=*/true,
+      /*field_type=*/FieldType::CREDIT_CARD_NUMBER));
 }
 
 TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenNoSuggestion) {
@@ -195,7 +221,7 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenNoSuggestion) {
 
   EXPECT_FALSE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
       context, /*should_suppress_suggestions=*/false,
-      /*has_suggestions=*/false));
+      /*has_suggestions=*/false, /*field_type=*/FieldType::CREDIT_CARD_NUMBER));
 }
 
 TEST_F(AmountExtractionManagerTest, ShouldNotTriggerIfUrlNotEligible) {
@@ -210,7 +236,7 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerIfUrlNotEligible) {
 
   EXPECT_FALSE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
       context, /*should_suppress_suggestions=*/false,
-      /*has_suggestions=*/true));
+      /*has_suggestions=*/true, /*field_type=*/FieldType::CREDIT_CARD_NUMBER));
 }
 
 TEST_F(AmountExtractionManagerTest, ShouldNotTriggerIfNoBnplIssuer) {
@@ -223,7 +249,7 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerIfNoBnplIssuer) {
       amount_extraction_manager_->IsUrlEligibleForAmountExtractionForTesting());
   EXPECT_FALSE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
       context, /*should_suppress_suggestions=*/false,
-      /*has_suggestions=*/true));
+      /*has_suggestions=*/true, /*field_type=*/FieldType::CREDIT_CARD_NUMBER));
 }
 
 // This test checks when the search is triggered,

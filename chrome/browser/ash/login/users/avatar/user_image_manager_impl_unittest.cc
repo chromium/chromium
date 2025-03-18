@@ -20,8 +20,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
-#include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "components/user_manager/user.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -129,9 +129,7 @@ TEST_F(UserImageManagerImplTest, RecordsUserImageLoggedInHistogram) {
   fake_chrome_user_manager()->SetIsCurrentUserNew(false);
   fake_chrome_user_manager()->UserLoggedIn(
       account_id, /*user_id_hash=*/
-      user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
-      /*browser_restart=*/false,
-      /*is_child=*/false);
+      user_manager::TestHelper::GetFakeUsernameHash(account_id));
 
   histogram_tester.ExpectUniqueSample(
       UserImageManagerImpl::kUserImageLoggedInHistogramName,

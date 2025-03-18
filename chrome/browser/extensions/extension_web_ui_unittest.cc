@@ -16,6 +16,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
+#include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/extensions/api/chrome_url_overrides.h"
 #include "chrome/common/webui_url_constants.h"
@@ -340,11 +341,14 @@ TEST_F(ExtensionWebUIOverrideURLTest,
   PackCRX(data_dir().AppendASCII("ntp_override"),
           data_dir().AppendASCII("ntp_override.pem"), crx_path);
 
+  ExternalProviderManager* external_provider_manager =
+      ExternalProviderManager::Get(profile());
   auto external_provider = std::make_unique<MockExternalProvider>(
-      service(), ManifestLocation::kExternalPref);
+      external_provider_manager, ManifestLocation::kExternalPref);
   external_provider->UpdateOrAddExtension(kNtpOverrideExtensionId, "1",
                                           crx_path);
-  service()->AddProviderForTesting(std::move(external_provider));
+  external_provider_manager->AddProviderForTesting(
+      std::move(external_provider));
 
   TestExtensionRegistryObserver observer(registry(), kNtpOverrideExtensionId);
   service()->CheckForExternalUpdates();

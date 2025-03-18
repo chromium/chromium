@@ -1117,6 +1117,7 @@ BASE_FEATURE(kIOSReactivationNotifications,
 
 const char kIOSReactivationNotificationsTriggerTimeParam[] =
     "reactivation_trigger_time";
+const char kIOSReactivationNotificationsOrderParam[] = "reactivation_order";
 
 bool IsIOSReactivationNotificationsEnabled() {
   return base::FeatureList::IsEnabled(kIOSReactivationNotifications);

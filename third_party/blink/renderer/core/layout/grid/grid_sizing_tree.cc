@@ -13,11 +13,11 @@ void GridSizingTree::AddToPreorderTraversal(const BlockNode& grid_node) {
   DCHECK(!subgrid_index_lookup_map_.Contains(grid_layout_box));
   subgrid_index_lookup_map_.insert(grid_layout_box, tree_data_.size());
 
-  tree_data_.emplace_back(MakeGarbageCollected<GridTreeNode>());
+  tree_data_.emplace_back();
 }
 
 void GridSizingTree::SetSizingNodeData(const BlockNode& grid_node,
-                                       GridItems* grid_items,
+                                       GridItems&& grid_items,
                                        GridLayoutData&& layout_data) {
   DCHECK(grid_node.IsGrid());
 
@@ -29,7 +29,7 @@ void GridSizingTree::SetSizingNodeData(const BlockNode& grid_node,
   auto child_subgrid_index = grid_node_index + 1;
   auto& tree_node = At(grid_node_index);
 
-  for (wtf_size_t current_item_index = 0; const auto& grid_item : *grid_items) {
+  for (wtf_size_t current_item_index = 0; const auto& grid_item : grid_items) {
     // If this grid item is a subgrid, we need to add its subtree size to this
     // grid's subtree size and move to the next `child_subgrid_index`.
     if (grid_item.IsSubgrid()) {
@@ -59,7 +59,7 @@ void GridSizingTree::SetSizingNodeData(const BlockNode& grid_node,
                                             subgridded_item_indices);
   }
 
-  tree_node.SetGridItems(grid_items);
+  tree_node.grid_items = std::move(grid_items);
   tree_node.layout_data = std::move(layout_data);
   tree_node.writing_mode = grid_node.Style().GetWritingMode();
 }
@@ -71,8 +71,8 @@ GridLayoutTreePtr GridSizingTree::FinalizeTree() const {
   layout_tree_data.ReserveInitialCapacity(tree_size);
 
   for (const auto& grid_tree_node : tree_data_) {
-    layout_tree_data.emplace_back(grid_tree_node->layout_data,
-                                  grid_tree_node->subtree_size);
+    layout_tree_data.emplace_back(grid_tree_node.layout_data,
+                                  grid_tree_node.subtree_size);
   }
 
   for (wtf_size_t i = tree_size; i; --i) {
@@ -100,14 +100,13 @@ SubgriddedItemData GridSizingTree::LookupSubgriddedItemData(
   const auto* item_layout_box = grid_item.node.GetLayoutBox();
 
   DCHECK(subgridded_item_data_lookup_map_.Contains(item_layout_box));
-  const auto subgridded_item_indices =
+  const auto [item_index_in_parent, parent_grid_index] =
       subgridded_item_data_lookup_map_.at(item_layout_box);
 
-  const auto& subgrid_tree_node = At(subgridded_item_indices.parent_grid_index);
-  return SubgriddedItemData(subgrid_tree_node.GetGridItems().At(
-                                subgridded_item_indices.item_index_in_parent),
-                            subgrid_tree_node.layout_data,
-                            subgrid_tree_node.writing_mode);
+  const auto& subgrid_tree_node = At(parent_grid_index);
+  return SubgriddedItemData(
+      subgrid_tree_node.grid_items.At(item_index_in_parent),
+      subgrid_tree_node.layout_data, subgrid_tree_node.writing_mode);
 }
 
 wtf_size_t GridSizingTree::LookupSubgridIndex(

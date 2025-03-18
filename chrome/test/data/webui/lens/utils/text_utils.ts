@@ -62,7 +62,7 @@ export async function addGenericWordsToPageNormalized(
     createParagraph([
       createLine([
         createWord('hello', {x: 0.1, y: 0.1, width: 0.1, height: 0.1}),
-        createWord('there', {x: 0.2, y: 0.2, width: 0.1, height: 0.1}),
+        createWord('there', {x: 0.11, y: 0.11, width: 0.1, height: 0.1}),
       ]),
     ]),
     createParagraph([

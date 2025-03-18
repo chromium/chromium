@@ -70,6 +70,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -94,6 +95,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @Mock private HubLayoutDependencyHolder mHubLayoutDependencyHolder;
     @Mock private TabWindowManager mTabWindowManager;
     @Mock private ObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
+    @Mock private ToolbarManager mToolbarManager;
     @Mock private ViewGroup mContentView;
 
     private TabModelSelector mTabModelSelector;
@@ -220,7 +222,8 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                         () -> mTopUiThemeColorProvider,
                         mHubLayoutDependencyHolder,
                         mCompositorViewHolderSupplier,
-                        mContentView);
+                        mContentView,
+                        mToolbarManager);
 
         tabContentManagerSupplier.set(tabContentManager);
         mManager = mManagerPhone;

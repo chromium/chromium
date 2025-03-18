@@ -61,6 +61,7 @@ chromium-metrics-reviews@google.com.
     <variant name="CreateTab"/>
     <variant name="DetachPanel"/>
     <variant name="GetContextFromFocusedTab"/>
+    <variant name="GetOsMicrophonePermissionStatus"/>
     <variant name="GetUserProfileInfo"/>
     <variant name="OnResponseRated"/>
     <variant name="OnResponseStarted"/>
@@ -445,6 +446,16 @@ chromium-metrics-reviews@google.com.
     the focused tab. Records an enum sample that answers a) is the main document
     a PDF (based on its MIME type) and b) were PDF contents actually found
     within the web page (only if Chrome's PDF plugin is actually active).
+  </summary>
+</histogram>
+
+<histogram name="Glic.Usage.Hotkey" enum="GlicHotkeyUsage"
+    expires_after="2026-01-15">
+  <owner>erikchen@chromium.org</owner>
+  <owner>alimariam@google.com</owner>
+  <summary>
+    Records whether the user is using the default or custom hotkey. Recorded
+    when the user presses the hotkey.
   </summary>
 </histogram>
 

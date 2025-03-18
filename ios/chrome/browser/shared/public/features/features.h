@@ -939,6 +939,10 @@ BASE_DECLARE_FEATURE(kIOSReactivationNotifications);
 // notification should trigger.
 extern const char kIOSReactivationNotificationsTriggerTimeParam[];
 
+// Feature param containing a comma separated list of integers that represent
+// cases of the `TipsNotificationType` enum.
+extern const char kIOSReactivationNotificationsOrderParam[];
+
 // Returns whether `kIOSReactivationNotifications` is enabled.
 bool IsIOSReactivationNotificationsEnabled();
 

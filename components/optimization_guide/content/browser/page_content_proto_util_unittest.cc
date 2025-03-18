@@ -65,7 +65,15 @@ bool ConvertAIPageContentToProto(blink::mojom::AIPageContentPtr& root_content,
   page_content_map[main_frame_token] = std::move(root_content);
 
   auto get_render_frame_info = base::BindLambdaForTesting(
-      [&](int, blink::FrameToken) -> std::optional<RenderFrameInfo> {
+      [&](int, blink::FrameToken token) -> std::optional<RenderFrameInfo> {
+        if (token == main_frame_token.frame_token) {
+          RenderFrameInfo render_frame_info;
+          render_frame_info.global_frame_token = main_frame_token;
+          render_frame_info.source_origin =
+              url::Origin::Create(GURL("https://example.com"));
+          render_frame_info.url = GURL("https://example.com");
+          return render_frame_info;
+        }
         return std::nullopt;
       });
 
@@ -97,14 +105,22 @@ TEST(PageContentProtoUtilTest, IframeNodeWithNoData) {
   page_content_map[main_frame_token] = std::move(root_content);
 
   auto get_render_frame_info = base::BindLambdaForTesting(
-      [](int child_process_id,
-         blink::FrameToken) -> std::optional<RenderFrameInfo> {
+      [&](int child_process_id,
+          blink::FrameToken token) -> std::optional<RenderFrameInfo> {
+        if (token == main_frame_token.frame_token) {
+          RenderFrameInfo render_frame_info;
+          render_frame_info.global_frame_token = main_frame_token;
+          render_frame_info.source_origin =
+              url::Origin::Create(GURL("https://example.com"));
+          render_frame_info.url = GURL("https://example.com");
+          return render_frame_info;
+        }
         NOTREACHED();
       });
 
   AIPageContentResult page_content;
-  EXPECT_FALSE(ConvertAIPageContentToProto(main_frame_token, page_content_map,
-                                           get_render_frame_info, page_content));
+  EXPECT_FALSE(ConvertAIPageContentToProto(
+      main_frame_token, page_content_map, get_render_frame_info, page_content));
 }
 
 TEST(PageContentProtoUtilTest, IframeDestroyed) {
@@ -126,13 +142,21 @@ TEST(PageContentProtoUtilTest, IframeDestroyed) {
   auto get_render_frame_info = base::BindLambdaForTesting(
       [&](int child_process_id,
           blink::FrameToken token) -> std::optional<RenderFrameInfo> {
+        if(token == main_frame_token.frame_token) {
+          RenderFrameInfo render_frame_info;
+          render_frame_info.global_frame_token = main_frame_token;
+          render_frame_info.source_origin =
+              url::Origin::Create(GURL("https://example.com"));
+          render_frame_info.url = GURL("https://example.com");
+          return render_frame_info;
+        }
         query_token = token;
         return std::nullopt;
       });
 
   AIPageContentResult page_content;
-  EXPECT_FALSE(ConvertAIPageContentToProto(main_frame_token, page_content_map,
-                                           get_render_frame_info, page_content));
+  EXPECT_FALSE(ConvertAIPageContentToProto(
+      main_frame_token, page_content_map, get_render_frame_info, page_content));
   ASSERT_TRUE(query_token.has_value());
   EXPECT_EQ(iframe_token.frame_token, *query_token);
 }
@@ -186,8 +210,8 @@ TEST(PageContentProtoUtilTest, ConvertTextInfo) {
             optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
   ASSERT_EQ(page_content.proto.root_node().children_nodes_size(), 5);
 
-  CheckTextNodeProto(page_content.proto.root_node().children_nodes(0), "XS text",
-                     optimization_guide::proto::TEXT_SIZE_XS,
+  CheckTextNodeProto(page_content.proto.root_node().children_nodes(0),
+                     "XS text", optimization_guide::proto::TEXT_SIZE_XS,
                      /*has_emphasis=*/false, blink::Color(0, 0, 0).Rgb());
   CheckTextNodeProto(page_content.proto.root_node().children_nodes(1), "S text",
                      optimization_guide::proto::TEXT_SIZE_S,
@@ -198,8 +222,8 @@ TEST(PageContentProtoUtilTest, ConvertTextInfo) {
   CheckTextNodeProto(page_content.proto.root_node().children_nodes(3), "L text",
                      optimization_guide::proto::TEXT_SIZE_L,
                      /*has_emphasis=*/true, blink::Color(0, 0, 255).Rgb());
-  CheckTextNodeProto(page_content.proto.root_node().children_nodes(4), "XL text",
-                     optimization_guide::proto::TEXT_SIZE_XL,
+  CheckTextNodeProto(page_content.proto.root_node().children_nodes(4),
+                     "XL text", optimization_guide::proto::TEXT_SIZE_XL,
                      /*has_emphasis=*/false, blink::Color(255, 255, 255).Rgb());
 }
 
@@ -233,11 +257,15 @@ TEST(PageContentProtoUtilTest, ConvertImageInfo) {
             optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
   ASSERT_EQ(page_content.proto.root_node().children_nodes_size(), 1);
 
-  EXPECT_EQ(
-      page_content.proto.root_node().children_nodes(0).content_attributes().attribute_type(),
-      optimization_guide::proto::CONTENT_ATTRIBUTE_IMAGE);
-  const auto& image_data =
-      page_content.proto.root_node().children_nodes(0).content_attributes().image_data();
+  EXPECT_EQ(page_content.proto.root_node()
+                .children_nodes(0)
+                .content_attributes()
+                .attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_IMAGE);
+  const auto& image_data = page_content.proto.root_node()
+                               .children_nodes(0)
+                               .content_attributes()
+                               .image_data();
   EXPECT_EQ(image_data.image_caption(), "image caption");
   EXPECT_EQ(image_data.source_url(), GURL("https://example.com"));
 }
@@ -282,11 +310,15 @@ TEST(PageContentProtoUtilTest, ConvertAnchorData) {
   EXPECT_EQ(page_content.proto.version(),
             optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
   ASSERT_EQ(page_content.proto.root_node().children_nodes_size(), 1);
-  EXPECT_EQ(
-      page_content.proto.root_node().children_nodes(0).content_attributes().attribute_type(),
-      optimization_guide::proto::CONTENT_ATTRIBUTE_ANCHOR);
-  const auto& anchor_data =
-      page_content.proto.root_node().children_nodes(0).content_attributes().anchor_data();
+  EXPECT_EQ(page_content.proto.root_node()
+                .children_nodes(0)
+                .content_attributes()
+                .attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_ANCHOR);
+  const auto& anchor_data = page_content.proto.root_node()
+                                .children_nodes(0)
+                                .content_attributes()
+                                .anchor_data();
   EXPECT_EQ(anchor_data.url(), GURL("https://example.com/anchor"));
   EXPECT_EQ(anchor_data.rel_size(), 6);
   EXPECT_EQ(anchor_data.rel(0), optimization_guide::proto::ANCHOR_REL_UNKNOWN);
@@ -328,11 +360,15 @@ TEST(PageContentProtoUtilTest, ConvertTableData) {
   EXPECT_EQ(page_content.proto.version(),
             optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
   ASSERT_EQ(page_content.proto.root_node().children_nodes_size(), 1);
-  EXPECT_EQ(
-      page_content.proto.root_node().children_nodes(0).content_attributes().attribute_type(),
-      optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE);
-  const auto& table_data =
-      page_content.proto.root_node().children_nodes(0).content_attributes().table_data();
+  EXPECT_EQ(page_content.proto.root_node()
+                .children_nodes(0)
+                .content_attributes()
+                .attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE);
+  const auto& table_data = page_content.proto.root_node()
+                               .children_nodes(0)
+                               .content_attributes()
+                               .table_data();
   EXPECT_EQ(table_data.table_name(), "table name");
 }
 
@@ -451,9 +487,14 @@ TEST(PageContentProtoUtilTest, ConvertIframeData) {
           blink::FrameToken token) -> std::optional<RenderFrameInfo> {
         query_token = token;
         RenderFrameInfo render_frame_info;
-        render_frame_info.global_frame_token = iframe_token;
+        if(token == main_frame_token.frame_token) {
+            render_frame_info.global_frame_token = main_frame_token;
+        } else {
+            render_frame_info.global_frame_token = iframe_token;
+        }
         render_frame_info.source_origin =
             url::Origin::Create(GURL("https://example.com"));
+        render_frame_info.url = GURL("https://example.com");
         return render_frame_info;
       });
 
@@ -466,11 +507,15 @@ TEST(PageContentProtoUtilTest, ConvertIframeData) {
   EXPECT_EQ(page_content.proto.version(),
             optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
   ASSERT_EQ(page_content.proto.root_node().children_nodes_size(), 1);
-  EXPECT_EQ(
-      page_content.proto.root_node().children_nodes(0).content_attributes().attribute_type(),
-      optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
-  const auto& proto_iframe_data =
-      page_content.proto.root_node().children_nodes(0).content_attributes().iframe_data();
+  EXPECT_EQ(page_content.proto.root_node()
+                .children_nodes(0)
+                .content_attributes()
+                .attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  const auto& proto_iframe_data = page_content.proto.root_node()
+                                      .children_nodes(0)
+                                      .content_attributes()
+                                      .iframe_data();
   EXPECT_TRUE(proto_iframe_data.likely_ad_frame());
   const auto& frame_interaction_info =
       proto_iframe_data.frame_data().frame_interaction_info();
@@ -513,11 +558,15 @@ TEST(PageContentProtoUtilTest, ConvertGeometry) {
   EXPECT_EQ(page_content.proto.version(),
             optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
   ASSERT_EQ(page_content.proto.root_node().children_nodes_size(), 1);
-  EXPECT_EQ(
-      page_content.proto.root_node().children_nodes(0).content_attributes().attribute_type(),
-      optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
-  const auto& geometry =
-      page_content.proto.root_node().children_nodes(0).content_attributes().geometry();
+  EXPECT_EQ(page_content.proto.root_node()
+                .children_nodes(0)
+                .content_attributes()
+                .attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+  const auto& geometry = page_content.proto.root_node()
+                             .children_nodes(0)
+                             .content_attributes()
+                             .geometry();
   EXPECT_EQ(geometry.outer_bounding_box().x(), 10);
   EXPECT_EQ(geometry.outer_bounding_box().y(), 20);
   EXPECT_EQ(geometry.outer_bounding_box().width(), 30);
@@ -556,9 +605,11 @@ TEST(PageContentProtoUtilTest, ConvertNodeInteractionInfo) {
   EXPECT_EQ(page_content.proto.version(),
             optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
   ASSERT_EQ(page_content.proto.root_node().children_nodes_size(), 1);
-  EXPECT_EQ(
-      page_content.proto.root_node().children_nodes(0).content_attributes().attribute_type(),
-      optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+  EXPECT_EQ(page_content.proto.root_node()
+                .children_nodes(0)
+                .content_attributes()
+                .attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
   const auto& interaction_info = page_content.proto.root_node()
                                      .children_nodes(0)
                                      .content_attributes()
@@ -587,7 +638,8 @@ TEST(PageContentProtoUtilTest, ConvertPageInteractionInfo) {
 
   EXPECT_EQ(page_content.proto.version(),
             optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
-  const auto& page_interaction_info = page_content.proto.page_interaction_info();
+  const auto& page_interaction_info =
+      page_content.proto.page_interaction_info();
   EXPECT_EQ(page_interaction_info.focused_node_id(), 1);
   EXPECT_EQ(page_interaction_info.accessibility_focused_node_id(), 2);
   EXPECT_EQ(page_interaction_info.mouse_position().x(), 10);
@@ -695,8 +747,10 @@ TEST(PageContentProtoUtilTest, ConvertFormData) {
   EXPECT_EQ(page_content.proto.version(),
             optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
   ASSERT_EQ(page_content.proto.root_node().children_nodes_size(), 1);
-  const auto& form_data_proto =
-      page_content.proto.root_node().children_nodes(0).content_attributes().form_data();
+  const auto& form_data_proto = page_content.proto.root_node()
+                                    .children_nodes(0)
+                                    .content_attributes()
+                                    .form_data();
   EXPECT_EQ(form_data_proto.form_name(), "form name");
 }
 
@@ -764,7 +818,8 @@ TEST(PageContentProtoUtilTest, ConvertNodeId) {
   EXPECT_EQ(page_content.proto.version(),
             optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
   ASSERT_EQ(page_content.proto.root_node().children_nodes_size(), 1);
-  EXPECT_EQ(page_content.proto.root_node().content_attributes().content_node_id(), 1);
+  EXPECT_EQ(
+      page_content.proto.root_node().content_attributes().content_node_id(), 1);
   EXPECT_EQ(page_content.proto.root_node()
                 .children_nodes(0)
                 .content_attributes()

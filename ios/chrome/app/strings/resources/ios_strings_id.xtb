@@ -504,6 +504,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="310900540163454140">Hapus sandi untuk <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Tandai…</translation>
 <translation id="3119874402040566234">Anda akan logout dan data penjelajahan akan dihapus</translation>
+<translation id="3124568093781685165">Bagikan sandi Anda kepada keluarga Anda</translation>
 <translation id="3130863904455712965">Histori dan lainnya</translation>
 <translation id="313283613037595347">Buat tab Samaran baru.</translation>
 <translation id="3138611310073113613">Hapus pilihan</translation>
@@ -1003,6 +1004,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="5352128922772839949">Simpan file</translation>
 <translation id="5355191726083956201">Perlindungan yang Ditingkatkan aktif</translation>
 <translation id="537853552771686272">Kelola topik dan situs yang Anda minati</translation>
+<translation id="5390458669633674385">{count,plural, =1{{count} ditutup}other{{count} ditutup}}</translation>
 <translation id="5394975111793637642">Sembunyikan kartu ulasan produk untuk Anda</translation>
 <translation id="5395707839134961196">Sembunyikan detail mesin telusur</translation>
 <translation id="5414763847370083940">Anda akan mendapatkan notifikasi jika ada diskon di situs mana pun.</translation>
@@ -1132,6 +1134,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5897749768294722429">Untuk segera kembali ke situs yang Anda buka, sinkronkan tab dan histori Anda.</translation>
 <translation id="5898848375214731122">Massa</translation>
 <translation id="5899314093904173337">Untuk berbagi dengan orang-orang di sekitar, izinkan mereka memindai kode QR ini dengan kamera atau aplikasi pemindai QR</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} tab baru}other{{count} tab baru}}</translation>
 <translation id="5911030830365207728">Google Terjemahan</translation>
 <translation id="5917913282764181683">Hapus otomatis download Anda</translation>
 <translation id="5922999516621365983">Tarik tab ke sini untuk menyematkannya.</translation>
@@ -1674,6 +1677,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8131740175452115882">Konfirmasi</translation>
 <translation id="8132598642024322408">Sekarang <ph name="PRICE" />, sebelumnya <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Gunakan sandi unik untuk setiap situs atau aplikasi. Jika seseorang menemukan sandi yang digunakan ulang, sandi tersebut dapat digunakan untuk mengakses akun Anda yang lain. Klik untuk membuka situs dan mengubahnya sekarang.</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} tab ditutup}other{{count} tab ditutup}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 lainnya}other{# lainnya}}</translation>
 <translation id="8150167929304790980">Nama lengkap</translation>
 <translation id="8152331954420209374">Buka Lens</translation>

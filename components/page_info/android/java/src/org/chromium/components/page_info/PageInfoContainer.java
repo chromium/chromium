@@ -12,31 +12,54 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.ElidedUrlTextView;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.widget.ChromeImageButton;
 
 /** Represents the url, a sub page header and container for page info content. */
+@NullMarked
 public class PageInfoContainer extends FrameLayout {
     public static final float sScale = 0.92f;
     public static final int sOutDuration = 90;
     public static final int sInDuration = 210;
 
-    /**  Parameters to configure the view of page info subpage. */
+    /** Parameters to configure the view of page info subpage. */
     public static class Params {
         // The URL to be shown at the top of the page.
-        public CharSequence url;
+        public final CharSequence url;
         // The length of the URL's origin in number of characters.
-        public int urlOriginLength;
+        public final int urlOriginLength;
         // The URL to show in truncated state.
-        public String truncatedUrl;
-        // Whether the close button is displayed.
-        public boolean showCloseButton;
+        public final String truncatedUrl;
 
-        public Runnable urlTitleClickCallback;
-        public Runnable urlTitleLongClickCallback;
-        public Runnable backButtonClickCallback;
-        public Runnable closeButtonClickCallback;
+        public final Runnable backButtonClickCallback;
+        public final Runnable urlTitleClickCallback;
+        public final Runnable urlTitleLongClickCallback;
+        // Whether the close button is displayed.
+        public final boolean showCloseButton;
+        public final Runnable closeButtonClickCallback;
+
+        public Params(
+                CharSequence url,
+                int urlOriginLength,
+                String truncatedUrl,
+                Runnable backButtonClickCallback,
+                Runnable urlTitleClickCallback,
+                Runnable urlTitleLongClickCallback,
+                boolean showCloseButton,
+                Runnable closeButtonClickCallback) {
+            this.url = url;
+            this.urlOriginLength = urlOriginLength;
+            this.truncatedUrl = truncatedUrl;
+            this.backButtonClickCallback = backButtonClickCallback;
+            this.urlTitleClickCallback = urlTitleClickCallback;
+            this.urlTitleLongClickCallback = urlTitleLongClickCallback;
+            this.showCloseButton = showCloseButton;
+            this.closeButtonClickCallback = closeButtonClickCallback;
+        }
     }
 
     private ElidedUrlTextView mExpandedUrlTitle;
@@ -44,7 +67,7 @@ public class PageInfoContainer extends FrameLayout {
 
     private final ViewGroup mWrapper;
     private final ViewGroup mContent;
-    private View mCurrentView;
+    private @Nullable View mCurrentView;
 
     private final View mSubpageHeader;
     private final TextView mSubpageTitle;
@@ -58,6 +81,7 @@ public class PageInfoContainer extends FrameLayout {
         mSubpageTitle = findViewById(R.id.page_info_subpage_title);
     }
 
+    @Initializer
     public void setParams(Params params) {
         View urlWrapper = findViewById(R.id.page_info_url_wrapper);
         initializeUrlView(urlWrapper, params);
@@ -111,7 +135,10 @@ public class PageInfoContainer extends FrameLayout {
         mTruncatedUrlTitle.setCompoundDrawablesRelative(favicon, null, null, null);
     }
 
-    public void showPage(View view, CharSequence subPageTitle, Runnable onPreviousPageRemoved) {
+    public void showPage(
+            @Nullable View view,
+            @Nullable CharSequence subPageTitle,
+            @Nullable Runnable onPreviousPageRemoved) {
         if (mCurrentView == null) {
             // Don't animate if there is no current view.
             assert onPreviousPageRemoved == null;
@@ -141,7 +168,7 @@ public class PageInfoContainer extends FrameLayout {
     }
 
     /** Replaces the current view with |view| and configures the subpage header. */
-    private void replaceContentView(View view, CharSequence subPageTitle) {
+    private void replaceContentView(@Nullable View view, @Nullable CharSequence subPageTitle) {
         mContent.removeAllViews();
         mCurrentView = view;
         mSubpageHeader.setVisibility(subPageTitle != null ? VISIBLE : GONE);

@@ -210,6 +210,11 @@ constexpr base::FeatureParam<base::TimeDelta>
         &kBocaCustomPolling, "InSessionPollingIntervalInSeconds",
         base::Seconds(60)};
 
+// Enables or disables Boca OnTask mute ARC audio requests on ChromeOS.
+BASE_FEATURE(kBocaOnTaskMuteArcAudio,
+             "BocaOnTaskMuteArcAudio",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables the Boca OnTask pod on ChromeOS.
 BASE_FEATURE(kBocaOnTaskPod,
              "BocaOnTaskPod",
@@ -229,7 +234,7 @@ BASE_FEATURE(kBocaStudentHeartbeatCustomInterval,
 constexpr base::FeatureParam<base::TimeDelta>
     kBocaStudentHeartbeatPeriodicJobIntervalInSeconds{
         &kBocaStudentHeartbeatCustomInterval,
-        "StudentHeartbeatPeriodicJobIntervalInSeconds", base::Seconds(60)};
+        "StudentHeartbeatPeriodicJobIntervalInSeconds", base::Seconds(30)};
 
 // Enables or disables Boca extension consumer experience on ChromeOS.
 BASE_FEATURE(kBocaExtensionConsumer,
@@ -536,6 +541,12 @@ BASE_FEATURE(kCryptohomeRecoveryByDefaultForEnterprise,
 // session.
 BASE_FEATURE(kDemoModeSignIn,
              "DemoModeSignIn",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether clean up local files between shopper session when demo mode
+// sign in is enable. No-op if demo mode sign in is disabled.
+BASE_FEATURE(kDemoModeSignInFileCleanup,
+             "DemoModeSignInFileCleanup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Toggle different display features based on user setting and power state
@@ -1971,6 +1982,11 @@ BASE_FEATURE(kNotificationsInContextMenu,
              "NotificationsInContextMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables showing OfflineItems in Notifications.
+BASE_FEATURE(kOfflineItemsInNotifications,
+             "OfflineItemsInNotifications",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to enable on-device grammar check service.
 BASE_FEATURE(kOnDeviceGrammarCheck,
              "OnDeviceGrammarCheck",
@@ -2000,7 +2016,7 @@ BASE_FEATURE(kOobeAddUserDuringEnrollment,
              "OobeAddUserDuringEnrollment",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, CHOBOE Screen will be shown during the new user onboarding flow.
+// If enabled, CHOOBE Screen will be shown during the new user onboarding flow.
 BASE_FEATURE(kOobeChoobe, "OobeChoobe", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, CrOS events for OOBE and onboarding flow will be recorded.
@@ -2260,12 +2276,6 @@ BASE_FEATURE(kOsFeedbackDialog,
 BASE_FEATURE(kParentAccessJelly,
              "ParentAccessJelly",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// This feature allows usage of passwordless flow in GAIA.
-// (This feature is only available for consumer users)
-BASE_FEATURE(kPasswordlessGaiaForConsumers,
-             "PasswordlessGaiaForConsumers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables a notification warning users that their Thunderbolt device is not
 // supported on their CrOS device.
@@ -2595,12 +2605,6 @@ BASE_FEATURE(kSeamlessRefreshRateSwitching,
 BASE_FEATURE(kSeparateNetworkIcons,
              "SeparateNetworkIcons",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables separate password and PIN fields on the login screen when PIN
-// autosubmit is off, instead of a combined "Password or PIN" field.
-BASE_FEATURE(kSeparatePasswordAndPinOnLogin,
-             "SeparatePasswordAndPinOnLogin",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // With this feature enabled, the shortcut app badge is painted in the UI
 // instead of being part of the shortcut app icon.
@@ -3373,6 +3377,10 @@ bool IsBocaCustomPollingEnabled() {
   return base::FeatureList::IsEnabled(kBocaCustomPolling);
 }
 
+bool IsBocaOnTaskMuteArcAudioEnabled() {
+  return base::FeatureList::IsEnabled(kBocaOnTaskMuteArcAudio);
+}
+
 bool IsBocaOnTaskPodEnabled() {
   return base::FeatureList::IsEnabled(kBocaOnTaskPod);
 }
@@ -3463,6 +3471,10 @@ bool IsCrosSwitcherEnabled() {
 
 bool IsDemoModeSignInEnabled() {
   return base::FeatureList::IsEnabled(kDemoModeSignIn);
+}
+
+bool IsDemoModeSignInFileCleanupEnabled() {
+  return base::FeatureList::IsEnabled(kDemoModeSignInFileCleanup);
 }
 
 bool IsDeskTemplateSyncEnabled() {
@@ -4066,6 +4078,10 @@ bool IsNssDbClientCertsRollbackEnabled() {
   return base::FeatureList::IsEnabled(kEnableNssDbClientCertsRollback);
 }
 
+bool IsOfflineItemsInNotificationsEnabled() {
+  return base::FeatureList::IsEnabled(kOfflineItemsInNotifications);
+}
+
 bool AreOngoingProcessesEnabled() {
   return base::FeatureList::IsEnabled(kOngoingProcesses);
 }
@@ -4175,10 +4191,6 @@ bool IsOsSyncConsentRevampEnabled() {
 
 bool IsParentAccessJellyEnabled() {
   return base::FeatureList::IsEnabled(kParentAccessJelly);
-}
-
-bool IsPasswordlessGaiaEnabledForConsumers() {
-  return base::FeatureList::IsEnabled(kPasswordlessGaiaForConsumers);
 }
 
 bool IsPcieBillboardNotificationEnabled() {
@@ -4363,10 +4375,6 @@ bool IsSeaPenUseExptTemplateEnabled() {
 
 bool IsSeparateNetworkIconsEnabled() {
   return base::FeatureList::IsEnabled(kSeparateNetworkIcons);
-}
-
-bool IsSeparatePasswordAndPinOnLoginEnabled() {
-  return base::FeatureList::IsEnabled(kSeparatePasswordAndPinOnLogin);
 }
 
 bool IsSeparateWebAppShortcutBadgeIconEnabled() {

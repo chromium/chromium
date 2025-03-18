@@ -461,7 +461,7 @@
     "includes": [4160],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/lens/overlay/resources.grd": {
-    "META": {"sizes": {"includes": [70]}},
+    "META": {"sizes": {"includes": [90]}},
     "includes": [4180],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/lens/shared/resources.grd": {
@@ -595,6 +595,10 @@
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/side_panel/customize_chrome/resources.grd": {
     "META": {"sizes": {"includes": [80],}},
     "includes": [4840],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/side_panel/history/resources.grd": {
+    "META": {"sizes": {"includes": [5],}},
+    "includes": [4850],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/side_panel/history_clusters/resources.grd": {
     "META": {"sizes": {"includes": [5],}},

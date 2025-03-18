@@ -11,6 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
+#include "components/trusted_vault/trusted_vault_connection.h"
 #include "net/http/http_status_code.h"
 
 namespace network {
@@ -55,6 +56,8 @@ class FakeSecurityDomainService {
 
   virtual size_t num_physical_members() const = 0;
   virtual size_t num_pin_members() const = 0;
+  virtual std::string GetPinMemberPublicKey() const = 0;
+  virtual trusted_vault::GpmPinMetadata GetPinMetadata() const = 0;
   virtual base::span<const trusted_vault_pb::SecurityDomainMember> members()
       const = 0;
 };

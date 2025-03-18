@@ -13,7 +13,6 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/buildflag.h"
 #include "media/base/decoder_buffer.h"
@@ -104,7 +103,7 @@ H264Validator::H264Validator(VideoCodecProfile profile,
                              size_t num_temporal_layers,
                              std::optional<uint8_t> level)
     : DecoderBufferValidator(visible_rect, num_temporal_layers),
-      cur_pic_(base::MakeRefCounted<H264Picture>()),
+      cur_pic_(new H264Picture),
       profile_(VideoCodecProfileToH264ProfileIDC(profile)),
       level_(level) {}
 

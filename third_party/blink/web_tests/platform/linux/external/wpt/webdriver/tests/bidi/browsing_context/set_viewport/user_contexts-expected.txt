@@ -1,0 +1,19 @@
+This is a wdspec test.
+[FAIL] test_set_to_user_context
+  TypeError: BrowsingContext.set_viewport() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_set_to_default_user_context
+  TypeError: BrowsingContext.set_viewport() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_set_to_multiple_user_contexts
+  TypeError: BrowsingContext.set_viewport() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_undefined_viewport
+  TypeError: BrowsingContext.set_viewport() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_reset_to_default
+  TypeError: BrowsingContext.set_viewport() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_set_viewport_and_device_pixel_ratio
+  TypeError: BrowsingContext.set_viewport() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_set_to_user_context_and_then_to_context
+  TypeError: BrowsingContext.set_viewport() got an unexpected keyword argument 'user_contexts'
+[FAIL] test_set_viewport_to_user_context_and_then_device_pixel_ratio_to_context
+  TypeError: BrowsingContext.set_viewport() got an unexpected keyword argument 'user_contexts'
+Harness: the test ran to completion.
+

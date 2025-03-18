@@ -45,6 +45,9 @@ public class BookmarkBarUtils {
         int ITEM = 1;
     }
 
+    /** Whether the bookmark bar feature is forcibly enabled/disabled for testing. */
+    private static Boolean sFeatureEnabledForTesting;
+
     /** Whether the bookmark bar user setting is forcibly enabled/disabled for testing. */
     private static Boolean sSettingEnabledForTesting;
 
@@ -62,6 +65,9 @@ public class BookmarkBarUtils {
      * @return Whether the feature is currently enabled.
      */
     public static boolean isFeatureEnabled(@NonNull Context context) {
+        if (sFeatureEnabledForTesting != null) {
+            return sFeatureEnabledForTesting;
+        }
         return ChromeFeatureList.sAndroidBookmarkBar.isEnabled()
                 && DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
@@ -178,6 +184,16 @@ public class BookmarkBarUtils {
 
     private static @NonNull PrefService getPrefService(@NonNull Profile profile) {
         return UserPrefs.get(profile.getOriginalProfile());
+    }
+
+    /**
+     * Sets whether the bookmark bar feature is forcibly enabled/disabled for testing.
+     *
+     * @param enabled Whether the feature is forcibly enabled/disabled.
+     */
+    public static void setFeatureEnabledForTesting(@Nullable Boolean enabled) {
+        sFeatureEnabledForTesting = enabled;
+        ResettersForTesting.register(() -> sFeatureEnabledForTesting = null);
     }
 
     /**

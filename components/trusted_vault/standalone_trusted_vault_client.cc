@@ -24,7 +24,6 @@
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/standalone_trusted_vault_backend.h"
 #include "components/trusted_vault/standalone_trusted_vault_storage.h"
-#include "components/trusted_vault/standalone_trusted_vault_storage_impl.h"
 #include "components/trusted_vault/trusted_vault_access_token_fetcher_impl.h"
 #include "components/trusted_vault/trusted_vault_connection_impl.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
@@ -267,8 +266,8 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
 
   backend_ = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
       security_domain,
-      std::make_unique<StandaloneTrustedVaultStorageImpl>(base_dir,
-                                                          security_domain),
+      std::make_unique<StandaloneTrustedVaultStorage>(base_dir,
+                                                      security_domain),
       std::make_unique<BackendDelegate>(
           base::BindPostTaskToCurrentDefault(
               base::BindRepeating(&StandaloneTrustedVaultClient::

@@ -11,29 +11,42 @@ def find_for_request(request):
     test_id = request.cookies.get(b'test_id').value.decode('utf-8')
     manager = test_to_session_manager_mapping.get(test_id)
     if manager == None:
-        raise Exception("Could not find manager for test_id: " + test_id)
+        raise Exception(f"Could not find manager for test_id: {test_id}")
     return manager
+
+class CookieDetail:
+    def __init__(self, name_and_value = None, attributes = None):
+        self.name_and_value = name_and_value
+        self.attributes = attributes
+
+    def get_name_and_value(self):
+        if self.name_and_value is None:
+            return "auth_cookie=abcdef0123"
+        return self.name_and_value
+
+    def get_attributes(self, request):
+        if self.attributes is None:
+            return f"Domain={request.url_parts.hostname}; Path=/device-bound-session-credentials"
+        return self.attributes
 
 class SessionManager:
     def __init__(self):
         self.session_to_key_map = {}
         self.should_refresh_end_session = False
         self.authorization_value = None
-        self.cookie_attributes = None
         self.scope_origin = None
         self.registration_sends_challenge = False
-        self.cookie_name_and_value = "auth_cookie=abcdef0123"
-        self.session_to_cookie_name_and_value_map = {}
+        self.cookie_details = None
+        self.session_to_cookie_details_map = {}
         self.session_to_early_challenge_map = {}
         self.has_called_refresh = False
         self.scope_specification_items = []
         self.refresh_sends_challenge = True
         self.refresh_url = "/device-bound-session-credentials/refresh_session.py"
+        self.include_site = True
 
-    def next_session_id_value(self):
-        return len(self.session_to_key_map)
     def next_session_id(self):
-        return str(self.next_session_id_value())
+        return len(self.session_to_key_map)
 
     def create_new_session(self):
         session_id = self.next_session_id()
@@ -61,10 +74,6 @@ class SessionManager:
         if authorization_value is not None:
             self.authorization_value = authorization_value
 
-        cookie_attributes = configuration.get("cookieAttributes")
-        if cookie_attributes is not None:
-            self.cookie_attributes = cookie_attributes
-
         scope_origin = configuration.get("scopeOrigin")
         if scope_origin is not None:
             self.scope_origin = scope_origin
@@ -73,16 +82,20 @@ class SessionManager:
         if registration_sends_challenge is not None:
             self.registration_sends_challenge = registration_sends_challenge
 
-        cookie_name_and_value = configuration.get("cookieNameAndValue")
-        if cookie_name_and_value is not None:
-            self.cookie_name_and_value = cookie_name_and_value
+        cookie_details = configuration.get("cookieDetails")
+        if cookie_details is not None:
+            self.cookie_details = []
+            for detail in cookie_details:
+                self.cookie_details.append(CookieDetail(detail.get("nameAndValue"), detail.get("attributes")))
 
-        next_sessions_cookie_names_and_values = configuration.get("cookieNamesAndValuesForNextRegisteredSessions")
-        if next_sessions_cookie_names_and_values is not None:
-            next_session_id_value = self.next_session_id_value()
-            for cookie_name_and_value in next_sessions_cookie_names_and_values:
-                self.session_to_cookie_name_and_value_map[str(next_session_id_value)] = cookie_name_and_value
-                next_session_id_value += 1
+        next_sessions_cookie_details = configuration.get("cookieDetailsForNextRegisteredSessions")
+        if next_sessions_cookie_details is not None:
+            next_session_id = self.next_session_id()
+            for session in next_sessions_cookie_details:
+                self.session_to_cookie_details_map[next_session_id] = []
+                for detail in session:
+                    self.session_to_cookie_details_map[next_session_id].append(CookieDetail(detail.get("nameAndValue"), detail.get("attributes")))
+                next_session_id += 1
 
         next_session_early_challenge = configuration.get("earlyChallengeForNextRegisteredSession")
         if next_session_early_challenge is not None:
@@ -99,6 +112,10 @@ class SessionManager:
         refresh_url = configuration.get("refreshUrl")
         if refresh_url is not None:
             self.refresh_url = refresh_url
+
+        include_site = configuration.get("includeSite")
+        if include_site is not None:
+            self.include_site = include_site
 
     def get_should_refresh_end_session(self):
         return self.should_refresh_end_session
@@ -123,34 +140,43 @@ class SessionManager:
             "hasCalledRefresh": self.has_called_refresh
         }
 
-    def get_cookie_name_and_value(self, session_id):
+    def get_cookie_details(self, session_id):
         # Try to use the session-specific override first.
-        if self.session_to_cookie_name_and_value_map.get(session_id) is not None:
-            return self.session_to_cookie_name_and_value_map[session_id]
+        if self.session_to_cookie_details_map.get(session_id) is not None:
+            return self.session_to_cookie_details_map[session_id]
         # If there isn't any, use the general override.
-        return self.cookie_name_and_value
+        if self.cookie_details is not None:
+            return self.cookie_details
+        return [CookieDetail()]
 
     def get_early_challenge(self, session_id):
         return self.session_to_early_challenge_map.get(session_id)
 
-    def get_session_instructions_response(self, session_id, request):
-        cookie_parts = [self.get_cookie_name_and_value(session_id)]
-        cookie_attributes = self.cookie_attributes
-        if cookie_attributes is None:
-            cookie_attributes = "Domain=" + request.url_parts.hostname + "; Path=/device-bound-session-credentials"
-        cookie_parts.append(cookie_attributes)
-        value_of_set_cookie = "; ".join(cookie_parts)
+    def get_sessions_instructions_response_credentials(self, session_id, request):
+        return list(map(lambda cookie_detail: {
+            "type": "cookie",
+            "name": cookie_detail.get_name_and_value().split("=")[0],
+            "attributes": cookie_detail.get_attributes(request)
+        }, self.get_cookie_details(session_id)))
 
+    def get_session_instructions_response_set_cookie_headers(self, session_id, request):
+        header_values = list(map(
+            lambda cookie_detail: f"{cookie_detail.get_name_and_value()}; {cookie_detail.get_attributes(request)}",
+            self.get_cookie_details(session_id)
+        ))
+        return [("Set-Cookie", header_value) for header_value in header_values]
+
+    def get_session_instructions_response(self, session_id, request):
         scope_origin = ""
         if self.scope_origin is not None:
             scope_origin = self.scope_origin
 
         response_body = {
-            "session_identifier": session_id,
+            "session_identifier": str(session_id),
             "refresh_url": self.refresh_url,
             "scope": {
                 "origin": scope_origin,
-                "include_site": True,
+                "include_site": self.include_site,
                 "scope_specification" : self.scope_specification_items + [
                     { "type": "exclude", "domain": request.url_parts.hostname, "path": "/device-bound-session-credentials/request_early_challenge.py" },
                     { "type": "exclude", "domain": request.url_parts.hostname, "path": "/device-bound-session-credentials/end_session_via_clear_site_data.py" },
@@ -158,16 +184,11 @@ class SessionManager:
                     { "type": "exclude", "domain": request.url_parts.hostname, "path": "/device-bound-session-credentials/set_cookie.py" },
                 ]
             },
-            "credentials": [{
-                "type": "cookie",
-                "name": self.get_cookie_name_and_value(session_id).split("=")[0],
-                "attributes": cookie_attributes
-            }]
+            "credentials": self.get_sessions_instructions_response_credentials(session_id, request)
         }
-        headers = [
+        headers = self.get_session_instructions_response_set_cookie_headers(session_id, request) + [
             ("Content-Type", "application/json"),
-            ("Cache-Control", "no-store"),
-            ("Set-Cookie", value_of_set_cookie)
+            ("Cache-Control", "no-store")
         ]
 
         return (200, headers, json.dumps(response_body))

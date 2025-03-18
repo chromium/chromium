@@ -8,7 +8,6 @@ import static android.view.View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
@@ -800,77 +799,6 @@ public class TabGridDialogTest {
         mSelectionEditorRobot.resultRobot.verifyTabListEditorIsHidden();
         waitForDialogHidingAnimationInTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 1);
-    }
-
-    @Test
-    @MediumTest
-    public void testDialogSelectionEditor_LongPressTabAndVerifyNoSelectionOccurs()
-            throws ExecutionException {
-        TabUiFeatureUtilities.setTabListEditorLongPressEntryEnabledForTesting(true);
-        final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
-        createTabs(cta, false, 2);
-        enterTabSwitcher(cta);
-        verifyTabSwitcherCardCount(cta, 2);
-
-        // Create a tab group.
-        mergeAllNormalTabsToAGroup(cta);
-        verifyTabSwitcherCardCount(cta, 1);
-
-        // Open the selection editor with longpress.
-        openDialogFromTabSwitcherAndVerify(cta, 2, null);
-        onView(
-                        allOf(
-                                withId(R.id.tab_list_recycler_view),
-                                withParent(withId(R.id.tab_grid_dialog_recycler_view_container))))
-                .perform(RecyclerViewActions.actionOnItemAtPosition(0, longClick()));
-
-        mSelectionEditorRobot.resultRobot.verifyTabListEditorIsVisible();
-        // Verify no selection action occurred to switch the selected tab in the tab model
-        Criteria.checkThat(
-                sActivityTestRule.getActivity().getCurrentTabModel().index(), Matchers.is(1));
-    }
-
-    @Test
-    @MediumTest
-    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/338998202
-    public void testDialogSelectionEditor_PostLongPressClickNoSelectionEditor()
-            throws ExecutionException {
-        TabUiFeatureUtilities.setTabListEditorLongPressEntryEnabledForTesting(true);
-        final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
-        createTabs(cta, false, 2);
-        enterTabSwitcher(cta);
-        verifyTabSwitcherCardCount(cta, 2);
-
-        // Create a tab group.
-        mergeAllNormalTabsToAGroup(cta);
-        verifyTabSwitcherCardCount(cta, 1);
-
-        // Open the selection editor with longpress.
-        openDialogFromTabSwitcherAndVerify(cta, 2, null);
-        onView(
-                        allOf(
-                                withId(R.id.tab_list_recycler_view),
-                                withParent(withId(R.id.tab_grid_dialog_recycler_view_container))))
-                .perform(RecyclerViewActions.actionOnItemAtPosition(0, longClick()));
-
-        mSelectionEditorRobot.resultRobot.verifyTabListEditorIsVisible();
-        Espresso.pressBack();
-
-        assertTrue(isDialogFullyVisible(cta));
-        clickFirstTabInDialog(cta);
-        waitForDialogHidingAnimation(cta);
-
-        // Make sure tab switcher strip (and by extension a tab page) is showing to verify clicking
-        // the tab worked.
-        CriteriaHelper.pollUiThread(
-                () ->
-                        sActivityTestRule
-                                        .getActivity()
-                                        .getBrowserControlsManager()
-                                        .getBottomControlOffset()
-                                == 0);
-        ViewUtils.waitForVisibleView(
-                allOf(withId(R.id.toolbar_show_group_dialog_button), isCompletelyDisplayed()));
     }
 
     @Test

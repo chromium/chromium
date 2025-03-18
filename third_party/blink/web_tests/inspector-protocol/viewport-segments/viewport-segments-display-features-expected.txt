@@ -1,0 +1,15 @@
+Test the CDP Display Features.
+Viewport size : 800x600
+PASS
+PASS
+PASS: Negative display feature parameters
+PASS: Negative display feature parameters
+PASS: Invalid display feature orientation type
+PASS: Display feature viewport segments outside screen height
+PASS: Display feature viewport segments outside screen height
+PASS: Display feature viewport segments outside screen width
+PASS: Display feature viewport segments outside screen width
+PASS: Only one display feature is supported
+Horizontal MQ matches: true
+Horizontal MQ matches: false
+

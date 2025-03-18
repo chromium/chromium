@@ -334,8 +334,12 @@ gfx::Size RenderWidgetHostViewIOS::GetRequestedRendererSize() {
 std::optional<DisplayFeature> RenderWidgetHostViewIOS::GetDisplayFeature() {
   return std::nullopt;
 }
-void RenderWidgetHostViewIOS::SetDisplayFeatureForTesting(
+
+void RenderWidgetHostViewIOS::DisableDisplayFeatureOverrideForEmulation() {}
+
+void RenderWidgetHostViewIOS::OverrideDisplayFeatureForEmulation(
     const DisplayFeature* display_feature) {}
+
 void RenderWidgetHostViewIOS::UpdateBackgroundColor() {}
 
 void RenderWidgetHostViewIOS::

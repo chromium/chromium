@@ -49,11 +49,11 @@ class PairwisePrimitiveInterpolation : public PrimitiveInterpolation {
       const InterpolationType& type,
       InterpolableValue* start,
       InterpolableValue* end,
-      scoped_refptr<const NonInterpolableValue> non_interpolable_value)
+      const NonInterpolableValue* non_interpolable_value)
       : type_(type),
         start_(start),
         end_(end),
-        non_interpolable_value_(std::move(non_interpolable_value)) {
+        non_interpolable_value_(non_interpolable_value) {
     DCHECK(start_);
     DCHECK(end_);
   }
@@ -71,6 +71,7 @@ class PairwisePrimitiveInterpolation : public PrimitiveInterpolation {
     PrimitiveInterpolation::Trace(v);
     v->Trace(start_);
     v->Trace(end_);
+    v->Trace(non_interpolable_value_);
   }
 
  private:
@@ -78,7 +79,7 @@ class PairwisePrimitiveInterpolation : public PrimitiveInterpolation {
                         Member<TypedInterpolationValue>& result) const final {
     DCHECK(result);
     DCHECK_EQ(&result->GetType(), &type_);
-    DCHECK_EQ(result->GetNonInterpolableValue(), non_interpolable_value_.get());
+    DCHECK_EQ(result->GetNonInterpolableValue(), non_interpolable_value_.Get());
     start_->AssertCanInterpolateWith(*end_);
     start_->Interpolate(*end_, fraction,
                         *result->MutableValue().interpolable_value);
@@ -93,7 +94,7 @@ class PairwisePrimitiveInterpolation : public PrimitiveInterpolation {
   const InterpolationType& type_;
   Member<InterpolableValue> start_;
   Member<InterpolableValue> end_;
-  scoped_refptr<const NonInterpolableValue> non_interpolable_value_;
+  Member<const NonInterpolableValue> non_interpolable_value_;
 };
 
 // Represents a pair of incompatible keyframes that fall back to 50% flip

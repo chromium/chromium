@@ -19,6 +19,7 @@
 #include "chrome/browser/extensions/extension_error_ui_desktop.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/external_install_error.h"
+#include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/extensions/test_blocklist.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/recovery/recovery_install_global_error.h"
@@ -195,10 +196,13 @@ void GlobalErrorBubbleTest::ShowUi(const std::string& name) {
         &temp_dir, "update_from_webstore", "update_from_webstore.pem");
 
     GlobalErrorWaiter waiter(profile);
+    extensions::ExternalProviderManager* external_provider_manager =
+        extensions::ExternalProviderManager::Get(profile);
     auto provider = std::make_unique<extensions::MockExternalProvider>(
-        extension_service, extensions::mojom::ManifestLocation::kExternalPref);
+        external_provider_manager,
+        extensions::mojom::ManifestLocation::kExternalPref);
     extensions::MockExternalProvider* provider_ptr = provider.get();
-    extension_service->AddProviderForTesting(std::move(provider));
+    external_provider_manager->AddProviderForTesting(std::move(provider));
     provider_ptr->UpdateOrAddExtension(kExtensionWithUpdateUrl, "1.0.0.0",
                                        crx_path);
     extension_service->CheckForExternalUpdates();

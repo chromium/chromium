@@ -69,10 +69,6 @@ BASE_DECLARE_FEATURE(kWebAuthnEnclaveAuthenticatorDelay);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnAmbientSignin);
 
-// Support the PRF extension with iCloud Keychain credentials.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthniCloudKeychainPrf);
-
 // Enables linking of hybrid devices to Chrome, both pre-linking (i.e. through
 // Sync) and through hybrid.
 COMPONENT_EXPORT(DEVICE_FIDO)
@@ -83,10 +79,6 @@ BASE_DECLARE_FEATURE(kWebAuthnHybridLinking);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnPublishPrelinkingInfo);
 #endif  // BUILDFLAG(IS_ANDROID)
-
-// Update the "last_used" timestamp in GPM passkeys when asserted.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnUpdateLastUsed);
 
 // Enables the WebAuthn Signal API for Windows Hello.
 COMPONENT_EXPORT(DEVICE_FIDO)

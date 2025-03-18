@@ -8,6 +8,7 @@
 #include <sys/ioctl.h>
 
 #include "base/files/file_enumerator.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -348,7 +349,7 @@ class V4l2CaptureDelegateGPUMemoryBufferTest
   void SetUp() override {
     device_factory_ = std::make_unique<VideoCaptureDeviceFactoryV4L2>(
         base::SingleThreadTaskRunner::GetCurrentDefault());
-    scoped_refptr<FakeV4L2Impl> fake_v4l2(new FakeV4L2Impl());
+    auto fake_v4l2 = base::MakeRefCounted<FakeV4L2Impl>();
     fake_v4l2_ = fake_v4l2.get();
     auto fake_device_provider = std::make_unique<FakeDeviceProvider>();
     fake_device_provider_ = fake_device_provider.get();

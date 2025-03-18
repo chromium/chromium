@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
+#include "base/trace_event/trace_event.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "third_party/openxr/dev/xr_android.h"
@@ -46,6 +47,7 @@ mojom::XRLightEstimationDataPtr OpenXrLightEstimatorAndroid::GetLightEstimate(
   if (light_estimator_ == XR_NULL_HANDLE) {
     return nullptr;
   }
+  TRACE_EVENT0("xr", "GetLightEstimate");
 
   XrLightEstimateGetInfoANDROID estimate_info = {
       XR_TYPE_LIGHT_ESTIMATE_GET_INFO_ANDROID};

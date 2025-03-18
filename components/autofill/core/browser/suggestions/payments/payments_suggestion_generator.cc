@@ -62,10 +62,6 @@ namespace autofill {
 
 namespace {
 
-constexpr FieldTypeSet kCvcFieldTypes = {
-    FieldType::CREDIT_CARD_VERIFICATION_CODE,
-    FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE};
-
 constexpr uint64_t kCentsPerDollar = 100;
 
 Suggestion CreateSeparator() {

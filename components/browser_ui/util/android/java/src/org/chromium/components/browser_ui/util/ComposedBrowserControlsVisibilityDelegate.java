@@ -61,7 +61,7 @@ public class ComposedBrowserControlsVisibilityDelegate extends BrowserControlsVi
     }
 
     @Override
-    public void removeObserver(Callback<@BrowserControlsState Integer> obs) {
+    public void removeObserver(@Nullable Callback<@BrowserControlsState Integer> obs) {
         super.removeObserver(obs);
         if (!hasObservers()) {
             // One of the delegates can be activity-scoped and live longer than e.g. a tab-scoped

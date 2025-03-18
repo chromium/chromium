@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//media/media_options.gni")
+
 assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
 
 component("cdm_factory_daemon_browser") {
@@ -34,10 +36,6 @@ component("cdm_factory_daemon_gpu") {
     "chromeos_cdm_factory.h",
     "content_decryption_module_adapter.cc",
     "content_decryption_module_adapter.h",
-    "remote_cdm_context.cc",
-    "remote_cdm_context.h",
-    "stable_cdm_context_impl.cc",
-    "stable_cdm_context_impl.h",
   ]
   public_deps = [
     "//chromeos/components/cdm_factory_daemon/mojom",
@@ -45,9 +43,17 @@ component("cdm_factory_daemon_gpu") {
   ]
   deps = [
     "//base",
-    "//media/mojo/mojom/stable:stable_video_decoder",
     "//mojo/public/cpp/bindings",
   ]
+  if (allow_oop_video_decoder) {
+    sources += [
+      "cdm_context_for_oopvd_impl.cc",
+      "cdm_context_for_oopvd_impl.h",
+      "remote_cdm_context.cc",
+      "remote_cdm_context.h",
+    ]
+    deps += [ "//media/mojo/common" ]
+  }
   defines = [ "IS_CDM_FACTORY_DAEMON_IMPL" ]
 }
 

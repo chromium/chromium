@@ -504,6 +504,7 @@
 <translation id="310900540163454140"><ph name="WEBSITE" />-н нууц үгийг устгах уу?</translation>
 <translation id="3112556859945124369">Тэмдэглэх...</translation>
 <translation id="3119874402040566234">Таныг гаргах бөгөөд интернэтээр үзсэн өгөгдлийг устгана</translation>
+<translation id="3124568093781685165">Нууц үгээ гэр бүлийнхэнтэйгээ хуваалцана уу</translation>
 <translation id="3130863904455712965">Түүх болон бусад</translation>
 <translation id="313283613037595347">Шинэ Нууцлалтай таб үүсгэх</translation>
 <translation id="3138611310073113613">Сонголтыг болих</translation>
@@ -1003,6 +1004,7 @@
 <translation id="5352128922772839949">Файлыг хадгалах</translation>
 <translation id="5355191726083956201">Сайжруулсан хамгаалалт асаалттай байна</translation>
 <translation id="537853552771686272">Сонирхдог сэдэв, сайтуудаа удирдана уу</translation>
+<translation id="5390458669633674385">{count,plural, =1{{count} табыг хаасан}other{{count} табыг хаасан}}</translation>
 <translation id="5394975111793637642">Танд зориулсан бүтээгдэхүүний шүүмжийн картыг нуух</translation>
 <translation id="5395707839134961196">Хайлтын системийн дэлгэрэнгүй мэдээллийг нуух</translation>
 <translation id="5414763847370083940">Аль нэг сайтад үнэ буурсан тохиолдолд та сэрэмжлүүлэг авна.</translation>
@@ -1132,6 +1134,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5897749768294722429">Зочилсон сайтууддаа шуурхай буцаж очихын тулд табууд болон түүхээ синк хийгээрэй.</translation>
 <translation id="5898848375214731122">Жин</translation>
 <translation id="5899314093904173337">Ойролцоо байгаа хүмүүстэй хуваалцахын тулд тэдэнд энэ QR кодыг камер эсвэл QR код скан хийдэг аппаар скан хийхийг зөвшөөрнө үү</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} шинэ таб}other{{count} шинэ таб}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5917913282764181683">Татаж авсан файлаа автоматаар устгах</translation>
 <translation id="5922999516621365983">Табыг бэхлэхийн тулд ийш чирнэ үү.</translation>
@@ -1674,6 +1677,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8131740175452115882">Батлах</translation>
 <translation id="8132598642024322408">Одоо <ph name="PRICE" /> болсон бөгөөд өмнө нь <ph name="PREVIOUS_PRICE" /> байсан.</translation>
 <translation id="813370552429173916">Сайт эсвэл апп бүрд өвөрмөц нууц үг ашиглаарай. Хэрэв хэн нэгэн дахин ашигласан нууц үг илрүүлбэл үүнийг таны бусад бүртгэлд хандахад ашиглах боломжтой. Вебсайтыг нээж, тэдгээрийг одоо өөрчлөхийн тулд товшино уу.</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} табыг хаасан}other{{count} табыг хаасан}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{Өөр 1}other{Өөр #}}</translation>
 <translation id="8150167929304790980">Бүтэн нэр</translation>
 <translation id="8152331954420209374">Lens рүү очих</translation>

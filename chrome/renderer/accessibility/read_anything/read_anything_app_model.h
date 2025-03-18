@@ -136,14 +136,22 @@ class ReadAnythingAppModel {
   float font_size() const { return font_size_; }
   bool links_enabled() const { return links_enabled_; }
   bool images_enabled() const { return images_enabled_; }
-  int letter_spacing() const { return letter_spacing_; }
-  void set_letter_spacing(int letter_spacing) {
+  read_anything::mojom::LetterSpacing letter_spacing() const {
+    return letter_spacing_;
+  }
+  void set_letter_spacing(read_anything::mojom::LetterSpacing letter_spacing) {
     letter_spacing_ = letter_spacing;
   }
-  int line_spacing() const { return line_spacing_; }
-  void set_line_spacing(int line_spacing) { line_spacing_ = line_spacing; }
-  int color_theme() const { return color_theme_; }
-  void set_color_theme(int color_theme) { color_theme_ = color_theme; }
+  read_anything::mojom::LineSpacing line_spacing() const {
+    return line_spacing_;
+  }
+  void set_line_spacing(read_anything::mojom::LineSpacing line_spacing) {
+    line_spacing_ = line_spacing;
+  }
+  read_anything::mojom::Colors color_theme() const { return color_theme_; }
+  void set_color_theme(read_anything::mojom::Colors color_theme) {
+    color_theme_ = color_theme;
+  }
 
   // Selection.
   bool has_selection() const { return has_selection_; }
@@ -258,11 +266,6 @@ class ReadAnythingAppModel {
 
   void EraseTreeForTesting(const ui::AXTreeID& tree_id);
 
-  double GetLineSpacingValue(
-      read_anything::mojom::LineSpacing line_spacing) const;
-  double GetLetterSpacingValue(
-      read_anything::mojom::LetterSpacing letter_spacing) const;
-
   void AdjustTextSize(int increment);
   void ResetTextSize();
   void ToggleLinksEnabled();
@@ -370,9 +373,12 @@ class ReadAnythingAppModel {
   float font_size_;
   bool links_enabled_ = true;
   bool images_enabled_ = false;
-  int letter_spacing_ = (int)read_anything::mojom::LetterSpacing::kDefaultValue;
-  int line_spacing_ = (int)read_anything::mojom::LineSpacing::kDefaultValue;
-  int color_theme_ = (int)read_anything::mojom::Colors::kDefaultValue;
+  read_anything::mojom::LetterSpacing letter_spacing_ =
+      read_anything::mojom::LetterSpacing::kDefaultValue;
+  read_anything::mojom::LineSpacing line_spacing_ =
+      read_anything::mojom::LineSpacing::kDefaultValue;
+  read_anything::mojom::Colors color_theme_ =
+      read_anything::mojom::Colors::kDefaultValue;
 
   // Selection information.
   bool has_selection_ = false;

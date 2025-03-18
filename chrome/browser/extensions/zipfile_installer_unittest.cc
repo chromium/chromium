@@ -200,7 +200,7 @@ class ZipFileInstallerLocationTest : public ZipFileInstallerTest,
   void SetUp() override {
     ZipFileInstallerTest::SetUp();
     expected_extension_install_directory_ =
-        service()->unpacked_install_directory();
+        registrar()->unpacked_install_directory();
   }
 
   // Install the .zip in the test directory with `zip_name` and `expect_error`
@@ -232,7 +232,7 @@ void ZipFileInstallerLocationTest::RunInstaller(const std::string& zip_name,
       base::BindOnce(&ZipFileInstaller::InstallZipFileToUnpackedExtensionsDir,
                      zipfile_installer_, original_zip_path,
                      unzip_dir_root.empty()
-                         ? service()->unpacked_install_directory()
+                         ? registrar()->unpacked_install_directory()
                          : unzip_dir_root));
   observer_.WaitForInstall(expect_error);
   task_environment()->RunUntilIdle();

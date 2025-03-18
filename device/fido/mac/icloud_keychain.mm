@@ -58,8 +58,7 @@ AuthenticatorSupportedOptions AuthenticatorOptions() {
       UserVerificationAvailability::kSupportedAndConfigured;
   options.supports_user_presence = true;
   if (@available(macOS 15.0, *)) {
-    options.supports_prf =
-        base::FeatureList::IsEnabled(kWebAuthniCloudKeychainPrf);
+    options.supports_prf = true;
   }
   return options;
 }

@@ -43,7 +43,7 @@ constexpr char kFullSessionResponse[] = R"(
           "kDummyDeviceId":
          {
             "info": {"device_id":"kDummyDeviceId"},
-            "state":"ACTIVE",
+            "state":"INACTIVE",
             "activity": {
               "activeTab": {
                 "title": "google"
@@ -155,7 +155,7 @@ constexpr char kPartialResponse[] = R"(
             "kDummyDeviceId":
           {
               "info": {"device_id":"kDummyDeviceId"},
-              "state":"ACTIVE",
+              "state":"INACTIVE",
               "activity": {
                 "activeTab": {
                   "title": "google"
@@ -398,6 +398,11 @@ TEST_F(SessionParserTest, TestParseStudentStatusProtoFromJson) {
                           .activity()
                           .active_tab()
                           .title());
+  EXPECT_EQ(::boca::StudentDevice::INACTIVE, session_partial->student_statuses()
+                                                 .at("3")
+                                                 .devices()
+                                                 .at("kDummyDeviceId")
+                                                 .state());
   EXPECT_EQ(::boca::ViewScreenConfig::REQUESTED,
             session_partial->student_statuses()
                 .at("3")

@@ -38,6 +38,7 @@ static_library("regional_capabilities") {
 source_set("country_access_reason") {
   visibility = [
     ":*",
+    "//chrome/browser/search_engine_choice:impl",
     "//chrome/browser/ui:ui",
     "//components/search_engines:search_engines",
   ]

@@ -126,13 +126,6 @@ void SetGlWorkarounds(const GlWorkarounds& workarounds) {
 }
 
 #if BUILDFLAG(IS_WIN)
-unsigned int FrameRateToPresentDuration(float frame_rate) {
-  if (frame_rate == 0)
-    return 0u;
-  // Present duration unit is 100 ns.
-  return static_cast<unsigned int>(1.0E7 / frame_rate);
-}
-
 unsigned int DirectCompositionRootSurfaceBufferCount() {
   return base::FeatureList::IsEnabled(features::kDCompTripleBufferRootSwapChain)
              ? 3u

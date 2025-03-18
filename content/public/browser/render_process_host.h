@@ -58,7 +58,7 @@
 #endif
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-#include "media/mojo/mojom/stable/stable_video_decoder.mojom-forward.h"
+#include "media/mojo/mojom/video_decoder.mojom-forward.h"
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -710,9 +710,8 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
       mojo::PendingReceiver<blink::mojom::WebSocketConnector> receiver) = 0;
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-  virtual void CreateStableVideoDecoder(
-      mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder>
-          receiver) = 0;
+  virtual void CreateOOPVideoDecoder(
+      mojo::PendingReceiver<media::mojom::VideoDecoder> receiver) = 0;
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
   // Returns the current number of active views in this process.  Excludes

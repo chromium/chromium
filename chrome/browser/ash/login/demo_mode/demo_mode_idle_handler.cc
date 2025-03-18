@@ -4,9 +4,15 @@
 
 #include "chrome/browser/ash/login/demo_mode/demo_mode_idle_handler.h"
 
+#include <optional>
+
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/metrics/demo_session_metrics_recorder.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/experiences/idle_detector/idle_detector.h"
 #include "components/prefs/pref_service.h"
@@ -52,8 +58,10 @@ void ResetPrefs() {
 
 }  // namespace
 
-DemoModeIdleHandler::DemoModeIdleHandler(DemoModeWindowCloser* window_closer)
-    : window_closer_(window_closer) {
+DemoModeIdleHandler::DemoModeIdleHandler(
+    DemoModeWindowCloser* window_closer,
+    scoped_refptr<base::SequencedTaskRunner> blocking_task_runner)
+    : window_closer_(window_closer), file_cleaner_(blocking_task_runner) {
   user_activity_observer_.Observe(ui::UserActivityDetector::Get());
 }
 
@@ -75,9 +83,26 @@ void DemoModeIdleHandler::OnUserActivity(const ui::Event* event) {
       base::BindRepeating(&DemoModeIdleHandler::OnIdle,
                           weak_ptr_factory_.GetWeakPtr()),
       /*tick_clock=*/nullptr);
-  idle_detector_->Start(kReLuanchDemoAppIdleDuration);
+
+  idle_detector_->Start(
+      idle_time_out_for_test_.value_or(kReLuanchDemoAppIdleDuration));
 }
 
+void DemoModeIdleHandler::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void DemoModeIdleHandler::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void DemoModeIdleHandler::SetIdleTimeoutForTest(
+    std::optional<base::TimeDelta> timeout) {
+  idle_time_out_for_test_ = std::move(timeout);
+}
+
+// This function is invoked on the task runner of timer. Post task properly on
+// different thread.
 void DemoModeIdleHandler::OnIdle() {
   // Report shopper session dwell time metrics.
   DemoSessionMetricsRecorder::Get()->ReportShopperSessionDwellTime();
@@ -85,6 +110,11 @@ void DemoModeIdleHandler::OnIdle() {
   // Stop idle detect clock:
   idle_detector_.reset();
   is_user_active_ = false;
+
+  if (features::IsDemoModeSignInFileCleanupEnabled()) {
+    // The IO tasks will be executed from non-UI thread by  `file_cleaner_`.
+    CleanupLocalFiles();
+  }
 
   window_closer_->StartClosingApps();
   ResetPrefs();
@@ -94,6 +124,29 @@ void DemoModeIdleHandler::OnIdle() {
   ResetWallpaper();
 
   // TODO(crbug.com/382360715): Restore network if changed by user.
+}
+
+void DemoModeIdleHandler::CleanupLocalFiles() {
+  // TODO(crbug.com/396731796): Maybe only do clean up when there's a change
+  // under "MyFiles". Unmount the mounted archives before the cleanup. Restore
+  // the default download location if user changed it.
+
+  // Note this won't work for emulator since "MyFiles" is not mounted from user
+  // data directory.
+  file_cleaner_.Cleanup(
+      base::BindOnce(&DemoModeIdleHandler::OnLocalFilesCleanupCompleted,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DemoModeIdleHandler::OnLocalFilesCleanupCompleted(
+    const std::optional<std::string>& error_message) {
+  if (error_message) {
+    LOG(ERROR) << "Cleanup local files on device idle failed: "
+               << error_message.value();
+    return;
+  }
+
+  observers_.Notify(&Observer::OnLocalFilesCleanupCompleted);
 }
 
 }  // namespace ash

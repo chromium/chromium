@@ -194,8 +194,8 @@ dependencies {
 
 task setUpRepository(type: BuildConfigGenerator) {
     // Paths are relative to the chromium source root.
-    repositoryPath 'third_party/android_deps'
-    chromiumSourceRoot '../..'
-    cipdBucket 'chromium'
-    internalTargetVisibility = [':*', '//third_party/androidx:*']
+    pathToBuildGradle 'third_party/android_deps'
+    cipdPackagePrefix 'chromium/third_party/android_deps'
+    artifactSubdir 'cipd'
+    internalTargetVisibility = [':*', '//third_party/androidx:*', '//third_party/android_deps/autorolled:*']
 }

@@ -49,7 +49,6 @@ public class TabGroupListBottomSheetMediator {
                 @Override
                 public void onSheetClosed(@StateChangeReason int reason) {
                     mBottomSheetController.removeObserver(mBottomSheetObserver);
-                    mDelegate.onSheetClosed();
                     mModelList.clear();
                 }
 
@@ -160,7 +159,12 @@ public class TabGroupListBottomSheetMediator {
         assert !tabs.isEmpty();
         Tab tab = tabs.get(0);
 
-        mFilter.mergeListOfTabsToGroup(tabs, tab, true);
+        if (tabs.size() == 1) {
+            mFilter.createSingleTabGroup(tab);
+        } else {
+            mFilter.mergeListOfTabsToGroup(tabs, tab, /* notify= */ true);
+        }
+
         hide(StateChangeReason.INTERACTION_COMPLETE);
         var tabGroupId = tab.getTabGroupId();
         if (tabGroupId == null) return;

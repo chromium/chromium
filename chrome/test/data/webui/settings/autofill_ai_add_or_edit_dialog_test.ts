@@ -6,7 +6,7 @@
 import 'chrome://settings/lazy_load.js';
 
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {assertDeepEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {CrButtonElement, CrInputElement, SettingsAutofillAiAddOrEditDialogElement} from 'chrome://settings/lazy_load.js';
 import {EntityDataManagerProxyImpl} from 'chrome://settings/lazy_load.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
@@ -163,6 +163,8 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
           dialog.dialogTitle = testEntityInstance.type.editEntityTypeString;
         }
         document.body.appendChild(dialog);
+        await entityDataManager.whenCalled(
+            'getAllAttributeTypesForEntityTypeName');
         await flushTasks();
 
         // Verify that the dialog title is correct.
@@ -212,6 +214,7 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
   test('testAddOrEditEntityInstanceValidationError', async function() {
     dialog.entityInstance = testEntityInstance;
     document.body.appendChild(dialog);
+    await entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName');
     await flushTasks();
 
     // The validation error should not be visible yet and the save button
@@ -254,6 +257,201 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
     await flushTasks();
     attributeInstanceFields[0]!.dispatchEvent(new Event('input'));
     await flushTasks();
+
+    // One field is not empty, so the validation error should not be visible
+    // anymore and the save button should be enabled.
+    assertFalse(isVisible(validationError));
+    assertFalse(saveButton.disabled);
+  });
+});
+
+suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
+  let dialog: SettingsAutofillAiAddOrEditDialogElement;
+  let entityDataManager: TestEntityDataManagerProxy;
+  let testEntityInstance: chrome.autofillPrivate.EntityInstance;
+  let testAttributeTypes: chrome.autofillPrivate.AttributeType[];
+
+  async function simulateCountryChange(
+      countrySelect: HTMLSelectElement, newCountryCode: string) {
+    countrySelect.value = newCountryCode;
+    countrySelect.dispatchEvent(new CustomEvent('change'));
+    await flushTasks();
+  }
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    entityDataManager = new TestEntityDataManagerProxy();
+    EntityDataManagerProxyImpl.setInstance(entityDataManager);
+
+    // For easier testing, all fields are empty except for the country.
+    testEntityInstance = {
+      type: {
+        typeName: 1,
+        typeNameAsString: 'Passport',
+        addEntityTypeString: 'Add passport',
+        editEntityTypeString: 'Edit passport',
+      },
+      attributeInstances: [
+        {
+          type: {
+            typeName: 0,
+            typeNameAsString: 'Name',
+            dataType: AttributeTypeDataType.STRING,
+          },
+          value: '',
+        },
+        {
+          type: {
+            typeName: 1,
+            typeNameAsString: 'Country',
+            dataType: AttributeTypeDataType.COUNTRY,
+          },
+          value: 'Germany',
+        },
+      ],
+      guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc181',
+      nickname: 'My passport',
+    };
+    testAttributeTypes = [
+      {
+        typeName: 0,
+        typeNameAsString: 'Name',
+        dataType: AttributeTypeDataType.STRING,
+      },
+      {
+        typeName: 1,
+        typeNameAsString: 'Country',
+        dataType: AttributeTypeDataType.COUNTRY,
+      },
+    ];
+    entityDataManager.setGetAllAttributeTypesForEntityTypeNameResponse(
+        testAttributeTypes);
+
+    dialog = document.createElement('settings-autofill-ai-add-or-edit-dialog');
+  });
+
+  interface AddOrEditEntityInstanceCountryParamsInterface {
+    // True if the user is adding an entity instance, false if the user is
+    // editing an entity instance.
+    add: boolean;
+    // If true, the country is changed. This param should always be true for
+    // adding.
+    changeCountry: boolean;
+    // The title of the test.
+    title: string;
+  }
+
+  const addOrEditEntityInstanceCountryParams:
+      AddOrEditEntityInstanceCountryParamsInterface[] = [
+        {add: true, changeCountry: true, title: 'testAddEntityInstanceCountry'},
+        {
+          add: false,
+          changeCountry: true,
+          title: 'testEditEntityInstanceCountry',
+        },
+        {
+          add: false,
+          changeCountry: false,
+          title: 'testEditEntityInstanceDontChangeCountry',
+        },
+      ];
+
+  addOrEditEntityInstanceCountryParams.forEach(
+      (params) => test(params.title, async function() {
+        // Set up the test.
+        const oldCountryCode = 'DE';
+        const newCountryCode = 'CH';
+        if (params.add) {
+          testEntityInstance = {
+            type: testEntityInstance.type,
+            attributeInstances: [],
+            guid: '',
+            nickname: '',
+          };
+        }
+        dialog.entityInstance = structuredClone(testEntityInstance);
+        document.body.appendChild(dialog);
+        await entityDataManager.whenCalled(
+            'getAllAttributeTypesForEntityTypeName');
+        await flushTasks();
+
+        // Retrieve the country selector.
+        const countrySelect =
+            dialog.shadowRoot!.querySelector<HTMLSelectElement>(
+                '#country-select');
+        assertTrue(!!countrySelect);
+        if (params.add) {
+          assertEquals('', countrySelect.value);
+        } else {
+          assertEquals(oldCountryCode, countrySelect.value);
+        }
+
+        if (params.changeCountry) {
+          await simulateCountryChange(countrySelect, newCountryCode);
+        }
+
+        // Confirm the dialog and verify that the new country code is saved.
+        const saveButton =
+            dialog.shadowRoot!.querySelector<HTMLElement>('.action-button');
+        assertTrue(!!saveButton);
+
+        const dialogConfirmedPromise =
+            eventToPromise('autofill-ai-add-or-edit-done', dialog);
+        saveButton.click();
+
+        const dialogConfirmedEvent = await dialogConfirmedPromise;
+        await flushTasks();
+
+        const expectedEntityInstance = structuredClone(testEntityInstance);
+        expectedEntityInstance.attributeInstances = [{
+          type: {
+            typeName: 1,
+            typeNameAsString: 'Country',
+            dataType: AttributeTypeDataType.COUNTRY,
+          },
+          value: params.changeCountry ? newCountryCode : oldCountryCode,
+        }];
+
+        assertDeepEquals(expectedEntityInstance, dialogConfirmedEvent.detail);
+      }));
+
+  test('testAddOrEditEntityInstanceCountryValidationError', async function() {
+    dialog.entityInstance = testEntityInstance;
+    document.body.appendChild(dialog);
+    await entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName');
+    await flushTasks();
+
+    // The validation error should not be visible yet and the save button
+    // should be enabled.
+    const validationError =
+        dialog.shadowRoot!.querySelector<HTMLElement>('#validationError');
+    const saveButton =
+        dialog.shadowRoot!.querySelector<CrButtonElement>('.action-button');
+    assertTrue(!!validationError);
+    assertTrue(!!saveButton);
+    assertFalse(isVisible(validationError));
+    assertFalse(saveButton.disabled);
+
+    // Simulate that the user clears the country field.
+    const countrySelect =
+        dialog.shadowRoot!.querySelector<HTMLSelectElement>('#country-select');
+    assertTrue(!!countrySelect);
+    await simulateCountryChange(countrySelect, '');
+
+    // All fields are empty, but the save button was not clicked yet, so there
+    // is no validation error.
+    assertFalse(isVisible(validationError));
+    assertFalse(saveButton.disabled);
+
+    saveButton.click();
+    await flushTasks();
+    // All fields are empty and the save button was clicked, so the validation
+    // error should be visible and the save button should be disabled.
+    assertTrue(isVisible(validationError));
+    assertTrue(saveButton.disabled);
+
+    await simulateCountryChange(countrySelect, 'DE');
 
     // One field is not empty, so the validation error should not be visible
     // anymore and the save button should be enabled.

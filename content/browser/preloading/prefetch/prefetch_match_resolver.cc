@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
+#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
@@ -44,11 +45,23 @@ PrefetchMatchResolver::CandidateData::~CandidateData() = default;
 
 PrefetchMatchResolver::PrefetchMatchResolver(
     PrefetchContainer::Key navigated_key,
+    PrefetchServiceWorkerState expected_service_worker_state,
     base::WeakPtr<PrefetchService> prefetch_service,
     Callback callback)
     : navigated_key_(std::move(navigated_key)),
+      expected_service_worker_state_(expected_service_worker_state),
       prefetch_service_(std::move(prefetch_service)),
-      callback_(std::move(callback)) {}
+      callback_(std::move(callback)) {
+  switch (expected_service_worker_state_) {
+    case PrefetchServiceWorkerState::kAllowed:
+      NOTREACHED();
+    case PrefetchServiceWorkerState::kControlled:
+      CHECK(base::FeatureList::IsEnabled(features::kPrefetchServiceWorker));
+      break;
+    case PrefetchServiceWorkerState::kDisallowed:
+      break;
+  }
+}
 
 PrefetchMatchResolver::~PrefetchMatchResolver() = default;
 
@@ -64,6 +77,7 @@ std::optional<base::TimeDelta> PrefetchMatchResolver::GetBlockedDuration()
 // static
 void PrefetchMatchResolver::FindPrefetch(
     PrefetchContainer::Key navigated_key,
+    PrefetchServiceWorkerState expected_service_worker_state,
     bool is_nav_prerender,
     PrefetchService& prefetch_service,
     base::WeakPtr<PrefetchServingPageMetricsContainer>
@@ -72,8 +86,8 @@ void PrefetchMatchResolver::FindPrefetch(
   TRACE_EVENT0("loading", "PrefetchMatchResolver::FindPrefetch");
   // See the comment of `self_`.
   auto prefetch_match_resolver = base::WrapUnique(new PrefetchMatchResolver(
-      std::move(navigated_key), prefetch_service.GetWeakPtr(),
-      std::move(callback)));
+      std::move(navigated_key), expected_service_worker_state,
+      prefetch_service.GetWeakPtr(), std::move(callback)));
   PrefetchMatchResolver& ref = *prefetch_match_resolver.get();
   ref.self_ = std::move(prefetch_match_resolver);
 
@@ -91,7 +105,20 @@ void PrefetchMatchResolver::FindPrefetchInternal(
       std::move(serving_page_metrics_container));
   // Consume `candidates`.
   for (auto& prefetch_container : candidates) {
-    RegisterCandidate(*prefetch_container);
+    // Register the candidate only if `PrefetchServiceWorkerState` is matching.
+    if (prefetch_container->service_worker_state() ==
+        expected_service_worker_state_) {
+      RegisterCandidate(*prefetch_container);
+    } else if (prefetch_container->service_worker_state() ==
+               PrefetchServiceWorkerState::kAllowed) {
+      // Also register the candidate if `PrefetchServiceWorkerState::kAllowed`,
+      // so that we anyway start BlockUntilHead (if eligible) before service
+      // worker controller check is done, and remove the candidate later (in
+      // `OnDeterminedHead()`) if the final `PrefetchServiceWorkerState` turns
+      // not matching.
+      CHECK(base::FeatureList::IsEnabled(features::kPrefetchServiceWorker));
+      RegisterCandidate(*prefetch_container);
+    }
   }
 
   // Backward compatibility to the behavior of `PrefetchMatchResolver`: If it
@@ -244,6 +271,25 @@ void PrefetchMatchResolver::OnDeterminedHead(
 
   // Note that `OnDeterimnedHead()` is called even if `PrefetchContainer` is in
   // failure `PrefetchState`. See, for example, https://crbug.com/375333786.
+
+  // Remove the candidate if the final `PrefetchServiceWorkerState` is not
+  // matching, i.e. we started speculatively BlockUntilHead on the candidate
+  // when `PrefetchServiceWorkerState::kAllowed`, but the final
+  // `PrefetchServiceWorkerState` found not matching here. At the time of
+  // `OnDeterminedHead()`, service worker controller check is always done and
+  // thus the final `PrefetchServiceWorkerState` is already determined here.
+  //
+  // TODO(https://crbug.com/40947546): Maybe we could unblock earlier when
+  // `PrefetchServiceWorkerState` is transitioned from `kAllowed`.
+  CHECK_NE(prefetch_container.service_worker_state(),
+           PrefetchServiceWorkerState::kAllowed);
+  if (prefetch_container.service_worker_state() !=
+      expected_service_worker_state_) {
+    CHECK(base::FeatureList::IsEnabled(features::kPrefetchServiceWorker));
+    MaybeUnblockForUnmatch(prefetch_container.key());
+    return;
+  }
+
   switch (prefetch_container.GetServableState(PrefetchCacheableDuration())) {
     case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
       // All callsites of `PrefetchContainer::OnDeterminedHead()` are
@@ -308,6 +354,9 @@ void PrefetchMatchResolver::UnblockForMatch(
   auto& candidate_data = candidates_[prefetch_key];
   CHECK(candidate_data->prefetch_container);
   PrefetchContainer& prefetch_container = *candidate_data->prefetch_container;
+
+  CHECK_EQ(prefetch_container.service_worker_state(),
+           expected_service_worker_state_);
 
   UnregisterCandidate(prefetch_key, /*is_served=*/true);
 

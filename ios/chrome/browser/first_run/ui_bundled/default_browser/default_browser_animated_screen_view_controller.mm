@@ -30,42 +30,22 @@ NSString* const kDefaultBrowserAnimationDarkmode =
     @"default_browser_animation_darkmode";
 NSString* const kDefaultBrowserAnimationRtlDarkmode =
     @"default_browser_animation_rtl_darkmode";
-
-// The spacing between the bottom of the `AnimationView` and the top of the
-// `InstructionView`.
-constexpr CGFloat kAnimationOffsetFromInstruction = -10;
-
-// The `AnimationView` height offest for wide devices.
-constexpr CGFloat kWideAnimationHeightOffset = -200;
-
-// The `AnimationView` top offset for wide devices.
-constexpr CGFloat kWidetopAnchorOffset = 125;
-
-// Vertical center offset for tablets.
-constexpr CGFloat kTabletCenterOffset = 40;
-}  // namespace
-
-@interface DefaultBrowserAnimatedScreenViewController ()
-
-// Custom animation view used in the full-screen promo.
-@property(nonatomic, strong) id<LottieAnimation> animationViewWrapper;
-
-// Custom animation view used in the full-screen promo in dark mode.
-@property(nonatomic, strong) id<LottieAnimation> animationViewWrapperDarkMode;
-
-// Subview for information and action part of the view.
-@property(nonatomic, strong) PromoStyleViewController* promoScreen;
-
-@end
-
+// Accessibility IDs.
 NSString* const kDefaultBrowserInstructionsViewAnimationViewId =
     @"DefaultBrowserInstructionsViewAnimationViewId";
-
 NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
     @"DefaultBrowserInstructionsViewDarkAnimationViewId";
+// Spacing for the content stack view.
+const CGFloat kStackViewSpacing = 10;
+// Spacing above the title.
+const CGFloat kTitleTopMarginWhenNoHeaderImage = 30;
+}  // namespace
 
 @implementation DefaultBrowserAnimatedScreenViewController {
-  UIView* _instructionView;
+  // Custom animation view.
+  id<LottieAnimation> _animationViewWrapper;
+  // Custom animation view in dark mode.
+  id<LottieAnimation> _animationViewWrapperDarkMode;
 }
 
 @synthesize hasPlatformPolicies = _hasPlatformPolicies;
@@ -74,6 +54,12 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
+  self.view.accessibilityIdentifier =
+      first_run::kFirstRunAnimatedDefaultBrowserScreenAccessibilityIdentifier;
+  self.subtitleBottomMargin = 0;
+  self.titleTopMarginWhenNoHeaderImage = kTitleTopMarginWhenNoHeaderImage;
+  self.preferToCompressContent = YES;
+
   if (@available(iOS 17, *)) {
     NSArray<UITrait>* traits =
         TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
@@ -81,8 +67,6 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
                        withAction:@selector(selectAnimationForCurrentStyle)];
   }
 
-  self.view.accessibilityIdentifier =
-      first_run::kFirstRunAnimatedDefaultBrowserScreenAccessibilityIdentifier;
   if (![self.titleText length] || ![self.subtitleText length]) {
     // Sets default promo text if title and subtitle text are not explicitly
     // set.
@@ -103,7 +87,6 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
   }
   self.primaryActionString = l10n_util::GetNSString(
       IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_PRIMARY_ACTION);
-
   self.secondaryActionString = l10n_util::GetNSString(
       IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION);
 
@@ -114,42 +97,11 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
         l10n_util::GetNSString(IDS_IOS_SHOW_ME_HOW_FIRST_RUN_TITLE);
   }
 
-  NSArray* defaultBrowserSteps = @[
-    l10n_util::GetNSString(IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_FIRST_STEP),
-    l10n_util::GetNSString(
-        IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECOND_STEP),
-    l10n_util::GetNSString(IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_THIRD_STEP)
-  ];
-
-  // Only add the instruction view if the Animated DBP is disabled or the
-  // appropriate experiment arm is enabled.
-  if ([self shouldShowInstructions]) {
-    UIView* instructionView =
-        [[InstructionView alloc] initWithList:defaultBrowserSteps];
-    instructionView.translatesAutoresizingMaskIntoConstraints = NO;
-
-    [self.specificContentView addSubview:instructionView];
-
-    [NSLayoutConstraint activateConstraints:@[
-      [instructionView.centerXAnchor
-          constraintEqualToAnchor:self.specificContentView.centerXAnchor],
-      [instructionView.widthAnchor
-          constraintEqualToAnchor:self.specificContentView.widthAnchor],
-      [instructionView.bottomAnchor
-          constraintEqualToAnchor:self.specificContentView.bottomAnchor],
-      [instructionView.topAnchor
-          constraintGreaterThanOrEqualToAnchor:self.specificContentView
-                                                   .topAnchor],
-    ]];
-    _instructionView = instructionView;
-  }
+  UIStackView* contentStack = [self contentStack];
+  [self.specificContentView addSubview:contentStack];
+  AddSameConstraints(contentStack, self.specificContentView);
 
   [super viewDidLoad];
-
-  // `addVideoSection` is called after `viewDidLoad` to ensure the necessary
-  // parent views are loaded. These views are necessary before the constraints
-  // for the video subview can be applied.
-  [self addVideoSection];
 }
 
 #if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
@@ -175,8 +127,34 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
 
 #pragma mark - Private
 
-// Adds the video animation.
-- (void)addVideoSection {
+// Returns a content stack that includes the animation and instructions views.
+- (UIStackView*)contentStack {
+  [self createAnimationViews];
+  UIStackView* stack = [[UIStackView alloc] initWithArrangedSubviews:@[
+    _animationViewWrapper.animationView,
+    _animationViewWrapperDarkMode.animationView
+  ]];
+
+  if ([self shouldShowInstructions]) {
+    UIView* instructionsView = [self instructionsView];
+    [stack addArrangedSubview:instructionsView];
+    [NSLayoutConstraint activateConstraints:@[
+      [instructionsView.widthAnchor constraintEqualToAnchor:stack.widthAnchor],
+    ]];
+  }
+
+  stack.axis = UILayoutConstraintAxisVertical;
+  stack.translatesAutoresizingMaskIntoConstraints = NO;
+  stack.alignment = UIStackViewAlignmentCenter;
+  stack.distribution = UIStackViewDistributionFill;
+  stack.spacing = kStackViewSpacing;
+
+  return stack;
+}
+
+// Creates the animation views. Sets `_animationViewWrapper` and
+// `_animationViewWrapperDarkMode`.
+- (void)createAnimationViews {
   NSString* animationAssetName = nil;
   NSString* animationAssetNameDarkMode = nil;
 
@@ -190,12 +168,12 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
     animationAssetNameDarkMode = kDefaultBrowserAnimationDarkmode;
   }
 
-  self.animationViewWrapper = [self createAnimation:animationAssetName];
-  self.animationViewWrapper.animationView.accessibilityIdentifier =
+  _animationViewWrapper = [self createAnimation:animationAssetName];
+  _animationViewWrapper.animationView.accessibilityIdentifier =
       kDefaultBrowserInstructionsViewAnimationViewId;
-  self.animationViewWrapperDarkMode =
+  _animationViewWrapperDarkMode =
       [self createAnimation:animationAssetNameDarkMode];
-  self.animationViewWrapperDarkMode.animationView.accessibilityIdentifier =
+  _animationViewWrapperDarkMode.animationView.accessibilityIdentifier =
       kDefaultBrowserInstructionsViewDarkAnimationViewId;
 
   // Set the text localization.
@@ -204,64 +182,47 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
         IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_DEFAULT_BROWSER_APP),
     @"IDS_CHROME" : l10n_util::GetNSString(IDS_IOS_SHORT_PRODUCT_NAME)
   };
-  [self.animationViewWrapper setDictionaryTextProvider:textProvider];
-  [self.animationViewWrapperDarkMode setDictionaryTextProvider:textProvider];
+  [_animationViewWrapper setDictionaryTextProvider:textProvider];
+  [_animationViewWrapperDarkMode setDictionaryTextProvider:textProvider];
 
-  [self.specificContentView addSubview:self.animationViewWrapper.animationView];
-  [self.specificContentView
-      addSubview:self.animationViewWrapperDarkMode.animationView];
-
-  // Layout the animation view.
-  self.animationViewWrapper.animationView
+  _animationViewWrapper.animationView
       .translatesAutoresizingMaskIntoConstraints = NO;
-  self.animationViewWrapper.animationView.contentMode =
-      UIViewContentModeScaleAspectFit;
-  self.animationViewWrapperDarkMode.animationView
+  _animationViewWrapperDarkMode.animationView
       .translatesAutoresizingMaskIntoConstraints = NO;
-  self.animationViewWrapperDarkMode.animationView.contentMode =
-      UIViewContentModeScaleAspectFit;
 
-  [NSLayoutConstraint activateConstraints:@[
-    [self.animationViewWrapper.animationView.leadingAnchor
-        constraintEqualToAnchor:self.view.leadingAnchor],
-    [self.animationViewWrapper.animationView.trailingAnchor
-        constraintEqualToAnchor:self.view.trailingAnchor],
-    [self.animationViewWrapper.animationView.bottomAnchor
-        constraintEqualToAnchor:self.specificContentView.bottomAnchor],
-  ]];
-
-  CGFloat heightAnchorOffest = [self shouldShowInstructions]
-                                   ? kWideAnimationHeightOffset * 2
-                                   : kWideAnimationHeightOffset;
-
-  if ([self shouldShowInstructions]) {
-    [NSLayoutConstraint activateConstraints:@[
-      [self.animationViewWrapper.animationView.bottomAnchor
-          constraintEqualToAnchor:_instructionView.topAnchor
-                         constant:kAnimationOffsetFromInstruction],
-      [self.animationViewWrapper.animationView.heightAnchor
-          constraintEqualToAnchor:self.view.heightAnchor
-                         constant:heightAnchorOffest],
-    ]];
-  }
-
-  if ([self isDisplayRegular]) {
-    [NSLayoutConstraint activateConstraints:@[
-      [self.animationViewWrapper.animationView.heightAnchor
-          constraintEqualToAnchor:self.view.heightAnchor
-                         constant:heightAnchorOffest],
-      [self.animationViewWrapper.animationView.topAnchor
-          constraintEqualToAnchor:self.view.topAnchor
-                         constant:kWidetopAnchorOffset],
-      [self.animationViewWrapper.animationView.bottomAnchor
-          constraintEqualToAnchor:self.view.bottomAnchor],
-    ]];
-  }
-
-  AddSameConstraints(self.animationViewWrapperDarkMode.animationView,
-                     self.animationViewWrapper.animationView);
+  // Set low compression resistance priority for the animation views to make
+  // their height dynamic. We need to index the subviews here because Lottie
+  // animation wrapper doesn't expose the view we need access to for this.
+  // TODO(crbug.com/404301564): Expose the subview we need from Lottie.
+  NSArray<UIView*>* animationSubviews =
+      _animationViewWrapper.animationView.subviews;
+  NSArray<UIView*>* animationDarkmodeSubviews =
+      _animationViewWrapper.animationView.subviews;
+  CHECK([animationSubviews count] == 1, base::NotFatalUntil::M138);
+  CHECK([animationDarkmodeSubviews count] == 1, base::NotFatalUntil::M138);
+  [animationSubviews[0]
+      setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
+                                      forAxis:UILayoutConstraintAxisVertical];
+  [animationDarkmodeSubviews[0]
+      setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
+                                      forAxis:UILayoutConstraintAxisVertical];
 
   [self selectAnimationForCurrentStyle];
+}
+
+// Returns an InstructionView configured with steps to set default browser.
+- (UIView*)instructionsView {
+  NSArray* defaultBrowserSteps = @[
+    l10n_util::GetNSString(IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_FIRST_STEP),
+    l10n_util::GetNSString(
+        IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECOND_STEP),
+    l10n_util::GetNSString(IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_THIRD_STEP)
+  ];
+
+  UIView* instructionView =
+      [[InstructionView alloc] initWithList:defaultBrowserSteps];
+  instructionView.translatesAutoresizingMaskIntoConstraints = NO;
+  return instructionView;
 }
 
 // Creates and returns the LottieAnimation view for the `animationAssetName`.
@@ -276,17 +237,15 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
 // Selects regular or dark mode animation based on the given style.
 - (void)selectAnimationForStyle:(UIUserInterfaceStyle)style {
   if (style == UIUserInterfaceStyleDark) {
-    self.animationViewWrapper.animationView.hidden = YES;
-    [self.animationViewWrapper stop];
-
-    self.animationViewWrapperDarkMode.animationView.hidden = NO;
-    [self.animationViewWrapperDarkMode play];
+    _animationViewWrapper.animationView.hidden = YES;
+    [_animationViewWrapper stop];
+    _animationViewWrapperDarkMode.animationView.hidden = NO;
+    [_animationViewWrapperDarkMode play];
   } else {
-    self.animationViewWrapperDarkMode.animationView.hidden = YES;
-    [self.animationViewWrapperDarkMode stop];
-
-    self.animationViewWrapper.animationView.hidden = NO;
-    [self.animationViewWrapper play];
+    _animationViewWrapperDarkMode.animationView.hidden = YES;
+    [_animationViewWrapperDarkMode stop];
+    _animationViewWrapper.animationView.hidden = NO;
+    [_animationViewWrapper play];
   }
 }
 
@@ -295,28 +254,12 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
   [self selectAnimationForStyle:self.traitCollection.userInterfaceStyle];
 }
 
-// Returns the center offset for video instructions and information section to
-// align with.
-- (CGFloat)centerOffset {
-  if ([self isDisplayRegular]) {
-    return -kTabletCenterOffset;
-  }
-  return 0;
-}
-
 // Returns whether the Instruction View is included on the Default Browser
 // Promo.
 - (BOOL)shouldShowInstructions {
   return (first_run::AnimatedDefaultBrowserPromoInFREExperimentTypeEnabled() ==
           first_run::AnimatedDefaultBrowserPromoInFREExperimentType::
               kAnimationWithInstructions);
-}
-
-// Returns whether the horizontal display is regular. Used to determine the
-// layout for larger screens.
-- (BOOL)isDisplayRegular {
-  return self.traitCollection.horizontalSizeClass ==
-         UIUserInterfaceSizeClassRegular;
 }
 
 @end

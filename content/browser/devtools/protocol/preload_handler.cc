@@ -290,6 +290,9 @@ Preload::PrefetchStatus PrefetchStatusToProtocol(PrefetchStatus status) {
     case PrefetchStatus::kPrefetchIneligibleUserHasServiceWorkerNoFetchHandler:
       return Preload::PrefetchStatusEnum::
           PrefetchNotEligibleUserHasServiceWorkerNoFetchHandler;
+    case PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved:
+      return Preload::PrefetchStatusEnum::
+          PrefetchEvictedAfterBrowsingDataRemoved;
   }
 }
 
