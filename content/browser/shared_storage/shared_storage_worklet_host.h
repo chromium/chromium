@@ -137,7 +137,8 @@ class CONTENT_EXPORT SharedStorageWorkletHost
           pending_listener) override;
   void SharedStorageEntries(
       mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
-          pending_listener) override;
+          pending_listener,
+      bool values_only) override;
   void SharedStorageLength(SharedStorageLengthCallback callback) override;
   void SharedStorageRemainingBudget(
       SharedStorageRemainingBudgetCallback callback) override;

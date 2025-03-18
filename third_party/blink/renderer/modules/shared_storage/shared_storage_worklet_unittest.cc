@@ -181,8 +181,10 @@ class TestClient : public blink::mojom::SharedStorageWorkletServiceClient {
 
   void SharedStorageEntries(
       mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
-          pending_listener) override {
+          pending_listener,
+      bool values_only) override {
     pending_entries_listeners_.push_back(std::move(pending_listener));
+    observed_entries_bool_params_.push_back(values_only);
   }
 
   void SharedStorageLength(SharedStorageLengthCallback callback) override {
@@ -249,6 +251,7 @@ class TestClient : public blink::mojom::SharedStorageWorkletServiceClient {
       observed_update_params_;
   std::vector<BatchUpdateParameter> observed_batch_update_params_;
   std::vector<std::u16string> observed_get_params_;
+  std::vector<bool> observed_entries_bool_params_;
   size_t observed_length_count_ = 0;
   size_t observed_remaining_budget_count_ = 0;
   size_t observed_get_interest_groups_count_ = 0;
@@ -3247,6 +3250,8 @@ TEST_F(SharedStorageWorkletTest, Entries_OneEmptyBatch_Success) {
   EXPECT_TRUE(run_result.success);
 
   EXPECT_EQ(test_client_->observed_console_log_messages_.size(), 0u);
+  EXPECT_EQ(test_client_->observed_entries_bool_params_.size(), 1u);
+  EXPECT_FALSE(test_client_->observed_entries_bool_params_[0]);
 }
 
 TEST_F(SharedStorageWorkletTest, Entries_FirstBatchError_Failure) {
@@ -3283,6 +3288,8 @@ TEST_F(SharedStorageWorkletTest, Entries_FirstBatchError_Failure) {
   EXPECT_EQ(run_result.error_message, "OperationError: Internal error 12345");
 
   EXPECT_EQ(test_client_->observed_console_log_messages_.size(), 0u);
+  EXPECT_EQ(test_client_->observed_entries_bool_params_.size(), 1u);
+  EXPECT_FALSE(test_client_->observed_entries_bool_params_[0]);
 }
 
 TEST_F(SharedStorageWorkletTest, Entries_TwoBatches_Success) {
@@ -3330,6 +3337,9 @@ TEST_F(SharedStorageWorkletTest, Entries_TwoBatches_Success) {
   EXPECT_EQ(test_client_->observed_console_log_messages_.size(), 3u);
   EXPECT_EQ(test_client_->observed_console_log_messages_[1], "key1;value1");
   EXPECT_EQ(test_client_->observed_console_log_messages_[2], "key2;value2");
+
+  EXPECT_EQ(test_client_->observed_entries_bool_params_.size(), 1u);
+  EXPECT_FALSE(test_client_->observed_entries_bool_params_[0]);
 }
 
 TEST_F(SharedStorageWorkletTest, Entries_SecondBatchError_Failure) {
@@ -3376,6 +3386,9 @@ TEST_F(SharedStorageWorkletTest, Entries_SecondBatchError_Failure) {
   EXPECT_EQ(run_result.error_message, "OperationError: Internal error 12345");
 
   EXPECT_EQ(test_client_->observed_console_log_messages_.size(), 1u);
+
+  EXPECT_EQ(test_client_->observed_entries_bool_params_.size(), 1u);
+  EXPECT_FALSE(test_client_->observed_entries_bool_params_[0]);
 }
 
 TEST_F(SharedStorageWorkletTest, Keys_OneBatch_Success) {
@@ -3558,6 +3571,8 @@ TEST_F(SharedStorageWorkletTest, Values_ManuallyCallNext) {
             "{\"done\":false,\"value\":\"value3\"}");
   EXPECT_EQ(test_client_->observed_console_log_messages_[2], "{\"done\":true}");
   EXPECT_EQ(test_client_->observed_console_log_messages_[3], "{\"done\":true}");
+  EXPECT_EQ(test_client_->observed_entries_bool_params_.size(), 1u);
+  EXPECT_TRUE(test_client_->observed_entries_bool_params_[0]);
 }
 
 TEST_F(SharedStorageWorkletTest, RemainingBudget_ClientError) {

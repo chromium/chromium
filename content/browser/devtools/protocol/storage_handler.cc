@@ -1612,9 +1612,8 @@ void StorageHandler::NotifySharedStorageAccessed(
       type_enum = Storage::SharedStorageAccessTypeEnum::WorkletKeys;
       break;
     case AccessMethod::kValues:
-      // TODO(crbug.com/401011862): Implement this path.
-      NOTREACHED();
     case AccessMethod::kEntries:
+      // TODO(crbug.com/401011862): Separate values from entries.
       type_enum = Storage::SharedStorageAccessTypeEnum::WorkletEntries;
       break;
     case AccessMethod::kLength:

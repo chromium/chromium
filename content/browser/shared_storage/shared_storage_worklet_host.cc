@@ -1114,7 +1114,8 @@ void SharedStorageWorkletHost::SharedStorageKeys(
 
 void SharedStorageWorkletHost::SharedStorageEntries(
     mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
-        pending_listener) {
+        pending_listener,
+    bool values_only) {
   std::string debug_message;
   if (!IsSharedStorageAllowed(&debug_message)) {
     mojo::Remote<blink::mojom::SharedStorageEntriesListener> listener(
@@ -1129,7 +1130,8 @@ void SharedStorageWorkletHost::SharedStorageEntries(
 
   if (document_service_) {
     shared_storage_runtime_manager_->NotifySharedStorageAccessed(
-        AccessScope::kSharedStorageWorklet, AccessMethod::kEntries,
+        AccessScope::kSharedStorageWorklet,
+        values_only ? AccessMethod::kValues : AccessMethod::kEntries,
         document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
         SharedStorageEventParams::CreateWithWorkletId(worklet_id_));
   }
