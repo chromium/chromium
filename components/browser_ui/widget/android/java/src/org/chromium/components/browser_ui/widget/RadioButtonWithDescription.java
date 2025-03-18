@@ -185,6 +185,15 @@ public class RadioButtonWithDescription extends RelativeLayout implements OnClic
         mIcon.setVisibility(View.VISIBLE);
     }
 
+    /** Set the icon margin end. */
+    public void setIconMarginEnd(int end) {
+        LayoutParams params = new LayoutParams(mIcon.getLayoutParams());
+        params.setMarginEnd(end);
+        params.addRule(RelativeLayout.END_OF, mRadioButton.getId());
+        params.addRule(RelativeLayout.CENTER_VERTICAL);
+        mIcon.setLayoutParams(params);
+    }
+
     /**
      * @return TextView displayed as primary inside this {@link RadioButtonWithDescription}.
      */

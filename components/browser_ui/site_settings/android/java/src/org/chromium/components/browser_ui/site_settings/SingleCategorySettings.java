@@ -1586,7 +1586,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 setting,
                 descriptionIds,
                 defaultEnabledValue != null ? defaultEnabledValue : ContentSettingValues.ASK,
-                defaultDisabledValue != null ? defaultDisabledValue : ContentSettingValues.BLOCK);
+                defaultDisabledValue != null ? defaultDisabledValue : ContentSettingValues.BLOCK,
+                getResources().getDimensionPixelSize(R.dimen.radio_button_compact_icon_margin_end));
     }
 
     private void updateNotificationsSecondaryControls() {
