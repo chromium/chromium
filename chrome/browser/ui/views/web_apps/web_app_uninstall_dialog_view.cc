@@ -86,7 +86,7 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
 
   SetTitle(l10n_util::GetStringUTF16(IDS_APP_UNINSTALL_PROMPT_TITLE));
 
-  AddChildView(WebAppIconNameAndOriginView::Create(
+  AddChildViewRaw(WebAppIconNameAndOriginView::Create(
                    image_,
                    base::UTF8ToUTF16(
                        provider_->registrar_unsafe().GetAppShortName(app_id_)),

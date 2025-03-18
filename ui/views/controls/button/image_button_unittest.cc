@@ -186,7 +186,7 @@ TEST_F(ImageButtonTest, PreferredSizeInvalidation) {
   gfx::ImageSkia second_image = gfx::test::CreateImageSkia(/*size=*/50);
   button.SetImageModel(Button::STATE_NORMAL,
                        ui::ImageModel::FromImageSkia(first_image));
-  parent.AddChildView(&button);
+  parent.AddChildViewRaw(&button);
   ASSERT_EQ(0, parent.pref_size_changed_calls());
 
   button.SetImageModel(Button::STATE_NORMAL,

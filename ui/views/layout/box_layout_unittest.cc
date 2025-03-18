@@ -198,7 +198,7 @@ TEST_F(BoxLayoutTest, UseHeightForWidth) {
   View* v1 = new StaticSizedView(gfx::Size(20, 10));
   host_->AddChildViewRaw(v1);
   ProportionallySizedView* v2 = new ProportionallySizedView(2);
-  host_->AddChildView(v2);
+  host_->AddChildViewRaw(v2);
   EXPECT_EQ(gfx::Size(20, 50), layout->GetPreferredSize(host_.get()));
 
   host_->SetBounds(0, 0, 20, 50);
@@ -1043,9 +1043,9 @@ TEST_F(BoxLayoutTest, MinimumChildSize) {
   BoxLayout* layout = host_->SetLayoutManager(std::make_unique<BoxLayout>(
       BoxLayout::Orientation::kHorizontal, gfx::Insets()));
   StaticSizedView* v1 = new StaticSizedView(gfx::Size(20, 20));
-  host_->AddChildView(v1);
+  host_->AddChildViewRaw(v1);
   StaticSizedView* v2 = new StaticSizedView(gfx::Size(20, 20));
-  host_->AddChildView(v2);
+  host_->AddChildViewRaw(v2);
 
   v1->set_minimum_size(gfx::Size(10, 20));
   layout->SetFlexForView(v1, 1, true);
@@ -1083,7 +1083,7 @@ TEST_F(BoxLayoutTest, HeightIsAdjustedForInsufficientWidth) {
   // Add a view next to the label. The label should wrap into multiple lines.
   text->SetMultiLine(true);
   StaticSizedView* v2 = new StaticSizedView(gfx::Size(20, text_size.height()));
-  host_->AddChildView(v2);
+  host_->AddChildViewRaw(v2);
 
   EXPECT_GT(
       layout->GetPreferredSize(host_.get(), SizeBounds(text_size.width(), {}))

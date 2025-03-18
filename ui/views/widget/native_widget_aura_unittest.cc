@@ -558,7 +558,7 @@ TEST_F(NativeWidgetAuraTest, DontCaptureOnGesture) {
   GestureTrackingView* child = new GestureTrackingView();
   child->set_consume_gesture_event(false);
   content_view->SetLayoutManager(std::make_unique<FillLayout>());
-  content_view->AddChildView(child);
+  content_view->AddChildViewRaw(child);
   auto widget = std::make_unique<TestWidget>();
   Widget::InitParams params(Widget::InitParams::CLIENT_OWNS_WIDGET,
                             Widget::InitParams::TYPE_WINDOW_FRAMELESS);
