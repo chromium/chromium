@@ -242,6 +242,8 @@
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/platform/assistive_tech.h"
+#include "ui/accessibility/platform/ax_mode_observer.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
@@ -903,11 +905,42 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
   raw_ptr<BrowserView> browser_view_;
 };
 
+class BrowserView::AccessibilityModeObserver : public ui::AXModeObserver {
+ public:
+  explicit AccessibilityModeObserver(BrowserView* browser_view)
+      : browser_view_(browser_view) {
+    ax_mode_observation_.Observe(&ui::AXPlatform::GetInstance());
+  }
+
+ private:
+  // ui::AXModeObserver:
+  void OnAssistiveTechChanged(ui::AssistiveTech assistive_tech) override {
+    // The WebUI tablet/"touchable" tabstrip is not used when a screen reader is
+    // active - see `WebUITabStripContainerView::UseTouchableTabStrip()`.
+    // However, updating the assistive tech state in order to read it is slow,
+    // so instead of trying to it synchronously at startup, respond to updates
+    // here, then pass them to the browser via post so the tabstrip state can
+    // be properly updated on a fresh call stack.
+    if (ui::IsScreenReader(assistive_tech)) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(&BrowserView::MaybeInitializeWebUITabStrip,
+                                    browser_view_->GetAsWeakPtr()));
+    }
+  }
+
+  const raw_ptr<BrowserView> browser_view_;
+  base::ScopedObservation<ui::AXPlatform, ui::AXModeObserver>
+      ax_mode_observation_{this};
+};
+
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView, public:
 
 BrowserView::BrowserView(std::unique_ptr<Browser> browser)
-    : views::ClientView(nullptr, nullptr), browser_(std::move(browser)) {
+    : views::ClientView(nullptr, nullptr),
+      browser_(std::move(browser)),
+      accessibility_mode_observer_(
+          std::make_unique<AccessibilityModeObserver>(this)) {
   SetShowIcon(::ShouldShowWindowIcon(
       browser_.get(), AppUsesWindowControlsOverlay(), AppUsesTabbed()));
 

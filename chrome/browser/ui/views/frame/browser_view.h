@@ -938,6 +938,8 @@ class BrowserView : public BrowserWindow,
   FRIEND_TEST_ALL_PREFIXES(BrowserViewTest, AccessibleWindowTitle);
   FRIEND_TEST_ALL_PREFIXES(PermissionChipUnitTest, AccessibleName);
 
+  class AccessibilityModeObserver;
+
   // BrowserUserEducationInterface private methods:
   user_education::FeaturePromoControllerCommon* GetFeaturePromoControllerImpl()
       override;
@@ -1182,6 +1184,11 @@ class BrowserView : public BrowserWindow,
 
   // the webui based tabstrip, when applicable. see https://crbug.com/989131.
   raw_ptr<WebUITabStripContainerView> webui_tab_strip_ = nullptr;
+
+  // Allows us to react to changes in accessibility mode. Having an observer
+  // object allows for the browser to change mode if it enters or leaves
+  // accessibility mode.
+  std::unique_ptr<AccessibilityModeObserver> accessibility_mode_observer_;
 
   // The Toolbar containing the navigation buttons, menus and the address bar.
   raw_ptr<ToolbarView> toolbar_ = nullptr;
