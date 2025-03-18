@@ -62,9 +62,10 @@ WebGPURecyclableResourceCache::GetOrCreateCanvasResource(
 void WebGPURecyclableResourceCache::OnDestroyRecyclableResource(
     std::unique_ptr<CanvasResourceProvider> resource_provider,
     const gpu::SyncToken& completion_sync_token) {
-  int resource_size = resource_provider->Size().width() *
-                      resource_provider->Size().height() *
-                      resource_provider->GetSkImageInfo().bytesPerPixel();
+  int resource_size =
+      resource_provider->GetSharedImageFormat().EstimatedSizeInBytes(
+          resource_provider->Size());
+
   if (context_provider_) {
     total_unused_resources_in_bytes_ += resource_size;
 
