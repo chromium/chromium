@@ -7538,6 +7538,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"cct-nested-security-icon", flag_descriptions::kCCTNestedSecurityIconName,
      flag_descriptions::kCCTNestedSecurityIconDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kCCTNestedSecurityIcon)},
+    {"cct-toolbar-refactor", flag_descriptions::kCCTToolbarRefactorName,
+     flag_descriptions::kCCTToolbarRefactorDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kCCTToolbarRefactor)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

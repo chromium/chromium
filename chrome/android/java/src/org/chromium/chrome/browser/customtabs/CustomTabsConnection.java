@@ -506,11 +506,15 @@ public class CustomTabsConnection {
                 TaskTraits.UI_DEFAULT,
                 () -> {
                     try (TraceEvent e = TraceEvent.scoped("InitializeViewHierarchy")) {
+                        int toolbarLayoutId =
+                                ChromeFeatureList.sCctToolbarRefactor.isEnabled()
+                                        ? R.layout.new_custom_tab_toolbar
+                                        : R.layout.custom_tabs_toolbar;
                         WarmupManager.getInstance()
                                 .initializeViewHierarchy(
                                         ContextUtils.getApplicationContext(),
                                         R.layout.custom_tabs_control_container,
-                                        R.layout.custom_tabs_toolbar);
+                                        toolbarLayoutId);
                     }
                 });
 

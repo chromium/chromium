@@ -15250,6 +15250,7 @@ from previous Chrome versions.
       label="AutofillEnableStickyManualFallbackForCards:enabled"/>
   <int value="438447086" label="AutocorrectToggle:disabled"/>
   <int value="439267320" label="ScreenTime:disabled"/>
+  <int value="439533068" label="CCTToolbarRefactor:enabled"/>
   <int value="439858569" label="OmniboxForceAllowedToBeDefault:enabled"/>
   <int value="439859371" label="WebXRWebGPUBinding:disabled"/>
   <int value="441096714" label="WebBluetoothConfirmPairingSupport:disabled"/>
@@ -16460,6 +16461,7 @@ from previous Chrome versions.
   <int value="925611968" label="ClearUndecryptablePasswords:enabled"/>
   <int value="925712999" label="V8Orinoco:enabled"/>
   <int value="925950257" label="WebRtcCombinedNetworkAndWorkerThread:disabled"/>
+  <int value="926227424" label="CCTToolbarRefactor:disabled"/>
   <int value="926844887" label="QuickDim:disabled"/>
   <int value="926852901" label="DataReductionProxyMainMenu:disabled"/>
   <int value="928840332" label="TrafficCountersForWiFiTesting:disabled"/>

@@ -4396,6 +4396,9 @@ const char kCCTSignInPromptDescription[] =
     "Displays a sign-in prompt message in CCT opened by 1P apps when the user "
     "is signed out of Chrome but signed in to the 1P app.";
 
+const char kCCTToolbarRefactorName[] = "CCT Toolbar Refactor";
+const char kCCTToolbarRefactorDescription[] = "CCT Toolbar Refactor";
+
 const char kBottomBrowserControlsRefactorName[] =
     "BottomBrowserControlsRefactor";
 const char kBottomBrowserControlsRefactorDescription[] =

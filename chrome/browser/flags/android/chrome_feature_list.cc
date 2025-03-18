@@ -241,6 +241,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTResizableForThirdParties,
     &kCCTRevampedBranding,
     &kCCTTabModalDialog,
+    &kCCTToolbarRefactor,
     &kChangeUnfocusedPriority,
     &kDefaultBrowserPromoAndroid2,
     &kDisableInstanceLimit,
@@ -732,6 +733,10 @@ BASE_FEATURE(kCCTRevampedBranding,
 BASE_FEATURE(kCCTTabModalDialog,
              "CCTTabModalDialog",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCCTToolbarRefactor,
+             "CCTToolbarRefactor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, render processes associated only with tabs in unfocused windows
 // will be downgraded to "vis" priority, rather than remaining at "fg". This

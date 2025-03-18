@@ -2585,6 +2585,9 @@ extern const char kCCTRevampedBrandingDescription[];
 extern const char kCCTSignInPromptName[];
 extern const char kCCTSignInPromptDescription[];
 
+extern const char kCCTToolbarRefactorName[];
+extern const char kCCTToolbarRefactorDescription[];
+
 extern const char kBottomBrowserControlsRefactorName[];
 extern const char kBottomBrowserControlsRefactorDescription[];
 
