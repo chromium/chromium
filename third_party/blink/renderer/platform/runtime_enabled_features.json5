@@ -2961,13 +2961,7 @@
       // "virtual/text-antialias/" virtual test suite.
       // crbug.com/339041663
       name: "NoFontAntialiasing",
-      status: {
-        "Win": "test",
-        "Mac": "test",
-        "Linux": "test",
-        "Android": "test",
-        "default": ""
-      }
+      status: "test",
     },
     {
       name: "NoIdleEncodingForWebTests",
