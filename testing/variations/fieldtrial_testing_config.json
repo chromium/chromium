@@ -3326,8 +3326,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "BatterySaverModeAlignWakeUps",
-                        "LowerHighResolutionTimerThreshold",
-                        "TimerSlackMac"
+                        "LowerHighResolutionTimerThreshold"
                     ]
                 }
             ]
