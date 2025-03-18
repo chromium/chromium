@@ -2836,6 +2836,8 @@ crbug.com/383369477 [ Mac13 ] virtual/speculation-rules-prerender-target-hint/ex
 crbug.com/383369477 [ Mac14 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/activation-start.html [ Skip Timeout ]
 crbug.com/383369477 [ Mac13 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/service-workers.https.html [ Skip Timeout ]
 crbug.com/383369477 [ Mac14 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/service-workers.https.html [ Skip Timeout ]
+crbug.com/40288240 [ Mac14 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/protocol-handler-register.https.html [ Pass Timeout ] # Flaky only on Mac14
+crbug.com/40288240 [ Mac14 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/protocol-handler-unregister.https.html [ Pass Timeout ] # Flaky only on Mac14
 crbug.com/383200044 [ Win10.20h2 ] external/wpt/png/apng/fdAT-16bit.html [ Failure ]
 crbug.com/382988706 external/wpt/css/css-rhythm/replaced-elements/block-level-canvas-margins-affected-by-block-step-size.html [ Failure ]
 crbug.com/382988706 external/wpt/css/css-rhythm/replaced-elements/block-level-embed-margins-affected-by-block-step-size.html [ Failure ]
