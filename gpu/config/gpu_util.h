@@ -102,7 +102,7 @@ GPU_EXPORT std::string VulkanVersionToString(uint32_t vulkan_version);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-GPU_EXPORT void EnsureNonSoftwareDeviceForTesting(
+GPU_EXPORT void TrySetNonSoftwareDevicePreferenceForTesting(
     gl::GpuPreference gpu_preference);
 #endif
 
