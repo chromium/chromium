@@ -985,9 +985,10 @@ def main():
           '^.*SanitizerCommon-ubsan-arm64-Darwin.*Posix/dedup_token_length_test.cpp$',
       ]
 
-  test_env = None
+  test_env = os.environ.copy()
+  # Dump all FileCheck input on test failure.
+  test_env['FILECHECK_OPTS'] = '--dump-input-filter=all'
   if lit_excludes:
-    test_env = os.environ.copy()
     test_env['LIT_FILTER_OUT'] = '|'.join(lit_excludes)
 
   if args.bootstrap:
