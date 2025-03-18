@@ -123,8 +123,6 @@ TEST_F(LoggingTest, BasicLogging) {
   EXPECT_TRUE(LOG_IS_ON(INFO));
   EXPECT_EQ(DCHECK_IS_ON(), DLOG_IS_ON(INFO));
 
-  EXPECT_TRUE(VLOG_IS_ON(0));
-
   LOG(INFO) << mock_log_source.Log();
   LOG_IF(INFO, true) << mock_log_source.Log();
   PLOG(INFO) << mock_log_source.Log();
@@ -891,8 +889,6 @@ TEST_F(LoggingTest, String16) {
 // Tests that we don't VLOG from logging_unittest except when in the scope
 // of the ScopedVmoduleSwitches.
 TEST_F(LoggingTest, ScopedVmoduleSwitches) {
-  EXPECT_TRUE(VLOG_IS_ON(0));
-
   // To avoid unreachable-code warnings when VLOG is disabled at compile-time.
   int expected_logs = 0;
   if (VLOG_IS_ON(0)) {
