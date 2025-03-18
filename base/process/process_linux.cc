@@ -50,7 +50,7 @@ BASE_FEATURE(kOneGroupPerRenderer,
 
 BASE_FEATURE(kFlattenCpuCgroups,
              "FlattenCpuCgroups",
-             FEATURE_DISABLED_BY_DEFAULT);
+             FEATURE_ENABLED_BY_DEFAULT);
 
 // If FlattenCpuCgroupsUnified parameter is enabled, foreground renderer
 // processes uses /sys/fs/cgroup/cpu/ui cgroup instead of
