@@ -81,4 +81,10 @@ static_assert(static_cast<int>(PageActionIconType::kOptimizationGuide) == 31);
 static_assert(static_cast<int>(PageActionIconType::kCollaborationMessaging) ==
               32);
 static_assert(static_cast<int>(PageActionIconType::kChangePassword) == 33);
+
+// Returns a bool indicating whether the given page action type has been
+// migrated to the new framework, which is based on ActionItems instead of
+// PageActionIconType.
+bool IsPageActionMigrated(PageActionIconType page_action);
+
 #endif  // CHROME_BROWSER_UI_PAGE_ACTION_PAGE_ACTION_ICON_TYPE_H_

@@ -425,8 +425,10 @@ class LocationBarViewPageActionMigrationTest
     : public LocationBarViewBrowserTest {
  public:
   LocationBarViewPageActionMigrationTest() {
-    scoped_feature_list_.InitWithFeatures({::features::kPageActionsMigration},
-                                          {});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{::features::kPageActionsMigration,
+          {{::features::kPageActionsMigrationLensOverlay.name, "true"}}}},
+        {});
   }
   ~LocationBarViewPageActionMigrationTest() override = default;
 

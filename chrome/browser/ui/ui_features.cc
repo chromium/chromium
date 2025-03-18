@@ -339,6 +339,8 @@ BASE_FEATURE(kInlineFullscreenPerfExperiment,
 BASE_FEATURE(kPageActionsMigration,
              "PageActionsMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<bool> kPageActionsMigrationLensOverlay{
+    &kPageActionsMigration, "lens_overlay", false};
 
 BASE_FEATURE(kCompositorLoadingAnimations,
              "CompositorLoadingAnimations",
