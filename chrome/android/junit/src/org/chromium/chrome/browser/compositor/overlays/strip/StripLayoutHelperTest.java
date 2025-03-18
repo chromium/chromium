@@ -1360,7 +1360,7 @@ public class StripLayoutHelperTest {
         initializeTest(false, false, 0, 1);
 
         // Verify new tab button is in pressed state, not hover state, when clicked from mouse.
-        mStripLayoutHelper.onDown(mStripLayoutHelper.getNewTabButton().getDrawX() + 1, 0, true, 1);
+        mStripLayoutHelper.onDown(mStripLayoutHelper.getNewTabButton().getDrawX() + 1, 0, 1);
         assertFalse(
                 "New tab button should not be hovered",
                 mStripLayoutHelper.getNewTabButton().isHovered());
@@ -1501,13 +1501,13 @@ public class StripLayoutHelperTest {
         tabs[0].setCloseButtonForTesting(closeButton);
 
         // Verify close button is in pressed state, not hover state, when clicked from mouse.
-        mStripLayoutHelper.onDown(x + 1, y + 1, true, 1);
+        mStripLayoutHelper.onDown(x + 1, y + 1, 1);
         assertFalse("Close button should not be hovered", closeButton.isHovered());
-        mStripLayoutHelper.onDown((int) x + 1, y + 1, true, 1);
+        mStripLayoutHelper.onDown((int) x + 1, y + 1, 1);
         assertFalse("Close should NOT be hovered", closeButton.isPressedFromMouse());
 
         // Verify close button is not in hover state or press state when long-pressed.
-        mStripLayoutHelper.onLongPress(1L, x + 1, y + 1);
+        mStripLayoutHelper.onLongPress(x + 1, y + 1);
         assertFalse("Close button should NOT be hovered", closeButton.isHovered());
         assertFalse("Close button should NOT be pressed", closeButton.isPressed());
     }
@@ -1859,7 +1859,7 @@ public class StripLayoutHelperTest {
         // Press down on new tab button.
         // CenterX = getX() + (getWidth() / 2) = 700 + (100 / 2) = 750
         // CenterY = getY() + (getHeight() / 2) = 1400 + (100 / 2) = 1450
-        mStripLayoutHelper.onDown(750f, 1450f, false, 0);
+        mStripLayoutHelper.onDown(750f, 1450f, 0);
 
         // Verify.
         assertTrue(
@@ -1880,7 +1880,7 @@ public class StripLayoutHelperTest {
         // Press down on second tab.
         when(tabs[1].checkCloseHitTest(anyFloat(), anyFloat())).thenReturn(false);
         mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
-        mStripLayoutHelper.onDown(150f, 0f, false, 0);
+        mStripLayoutHelper.onDown(150f, 0f, 0);
 
         // Verify.
         assertFalse(
@@ -1892,7 +1892,7 @@ public class StripLayoutHelperTest {
         assertFalse(
                 "Should not start reorder mode when pressing down on tab without mouse.",
                 mStripLayoutHelper.getInReorderModeForTesting());
-        verify(tabs[1], never()).setClosePressed(anyBoolean(), anyBoolean());
+        verify(tabs[1], never()).setClosePressed(anyBoolean(), anyInt());
     }
 
     @Test
@@ -1905,7 +1905,7 @@ public class StripLayoutHelperTest {
         // Press down on second tab with mouse followed by drag.
         when(tabs[1].checkCloseHitTest(anyFloat(), anyFloat())).thenReturn(false);
         mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
-        mStripLayoutHelper.onDown(DRAG_START_POINT.x, 0, true, MotionEvent.BUTTON_PRIMARY);
+        mStripLayoutHelper.onDown(DRAG_START_POINT.x, 0, MotionEvent.BUTTON_PRIMARY);
         mStripLayoutHelper.drag(TIMESTAMP, DRAG_START_POINT.x, DRAG_START_POINT.y, 30f);
 
         // Verify.
@@ -1935,7 +1935,7 @@ public class StripLayoutHelperTest {
         // Press down on second tab's close button.
         when(tabs[1].checkCloseHitTest(anyFloat(), anyFloat())).thenReturn(true);
         mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
-        mStripLayoutHelper.onDown(150f, 0f, false, MotionEvent.BUTTON_PRIMARY);
+        mStripLayoutHelper.onDown(150f, 0f, 0);
 
         // Verify.
         assertFalse(
@@ -1947,7 +1947,7 @@ public class StripLayoutHelperTest {
         assertFalse(
                 "Should not start reorder mode from close button.",
                 mStripLayoutHelper.getInReorderModeForTesting());
-        verify(tabs[1]).setClosePressed(eq(true), eq(false));
+        verify(tabs[1]).setClosePressed(eq(true), eq(0));
     }
 
     @Test
@@ -1960,7 +1960,7 @@ public class StripLayoutHelperTest {
         // Press down on second tab's close button with mouse.
         when(tabs[1].checkCloseHitTest(anyFloat(), anyFloat())).thenReturn(true);
         mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
-        mStripLayoutHelper.onDown(150f, 0f, true, MotionEvent.BUTTON_PRIMARY);
+        mStripLayoutHelper.onDown(150f, 0f, MotionEvent.BUTTON_PRIMARY);
 
         // Verify.
         assertFalse(
@@ -1972,7 +1972,7 @@ public class StripLayoutHelperTest {
         assertFalse(
                 "Should not start reorder mode from close button.",
                 mStripLayoutHelper.getInReorderModeForTesting());
-        verify(tabs[1]).setClosePressed(eq(true), eq(true));
+        verify(tabs[1]).setClosePressed(eq(true), eq(MotionEvent.BUTTON_PRIMARY));
     }
 
     @Test
@@ -1993,7 +1993,7 @@ public class StripLayoutHelperTest {
 
         // Press down on second tab and assert scroller is finished.
         mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
-        mStripLayoutHelper.onDown(150f, 0f, false, 0);
+        mStripLayoutHelper.onDown(150f, 0f, 0);
         assertFalse(
                 "New tab button should not be pressed.",
                 mStripLayoutHelper.getNewTabButton().isPressed());
@@ -2091,7 +2091,7 @@ public class StripLayoutHelperTest {
         setupForGroupContextMenu();
 
         // Long press on group title.
-        mStripLayoutHelper.onLongPress(TIMESTAMP, 10f, 0f);
+        mStripLayoutHelper.onLongPress(10f, 0f);
         // Verify we performed haptic feedback for a long-press.
         verify(mToolbarContainerView, times(1))
                 .performHapticFeedback(eq(HapticFeedbackConstants.LONG_PRESS));
@@ -2155,7 +2155,7 @@ public class StripLayoutHelperTest {
 
         // Long press on group title and verify drag with context menu does not start a scroll.
         // Long press on group title.
-        mStripLayoutHelper.onLongPress(TIMESTAMP, 10f, 0f);
+        mStripLayoutHelper.onLongPress(10f, 0f);
         verify(mTabGroupContextMenuCoordinator).showMenu(any(), any());
         when(mTabGroupContextMenuCoordinator.isMenuShowing()).thenReturn(true);
         mStripLayoutHelper.drag(TIMESTAMP, /* x= */ 60f, /* y= */ 10f, /* deltaX= */ 50f);
@@ -2185,7 +2185,7 @@ public class StripLayoutHelperTest {
         // Long press on second tab.
         when(tabs[1].checkCloseHitTest(anyFloat(), anyFloat())).thenReturn(false);
         mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
-        mStripLayoutHelper.onLongPress(TIMESTAMP, 150f, 0f);
+        mStripLayoutHelper.onLongPress(150f, 0f);
     }
 
     @Test
@@ -2203,7 +2203,7 @@ public class StripLayoutHelperTest {
         // Long press on second tab's close button.
         when(tabs[1].checkCloseHitTest(anyFloat(), anyFloat())).thenReturn(true);
         mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
-        mStripLayoutHelper.onLongPress(TIMESTAMP, 150f, 0f);
+        mStripLayoutHelper.onLongPress(150f, 0f);
 
         // Verify that we show the "Close all tabs" popup menu.
         assertFalse(
@@ -2240,7 +2240,7 @@ public class StripLayoutHelperTest {
 
         // Long press past the last tab.
         mStripLayoutHelper.setTabAtPositionForTesting(null);
-        mStripLayoutHelper.onLongPress(TIMESTAMP, 150f, 0f);
+        mStripLayoutHelper.onLongPress(150f, 0f);
 
         // Verify that we show the "Close all tabs" popup menu.
         assertFalse(
