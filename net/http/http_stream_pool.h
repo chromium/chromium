@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <variant>
 
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
@@ -29,7 +30,6 @@
 #include "net/socket/stream_attempt.h"
 #include "net/socket/stream_socket_close_reason.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace net {
 
