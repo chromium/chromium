@@ -68,22 +68,15 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   virtual void InitBackgroundTasks();
 
   // BrowserAccessibilityState implementation.
-  void EnableAccessibility() override;
-  void DisableAccessibility() override;
-  bool IsRendererAccessibilityEnabled() override;
+  void EnableProcessAccessibility() override;
+  void DisableProcessAccessibility() override;
+  bool IsAccessibilityAllowed() override;
   ui::AXMode GetAccessibilityMode() override;
   ui::AXMode GetAccessibilityModeForBrowserContext(
       BrowserContext* browser_context) override;
+  // TODO(aleventhal): Rename this to Add/RemoveProcessAccessibilityFlags()
   void AddAccessibilityModeFlags(ui::AXMode mode) override;
   void RemoveAccessibilityModeFlags(ui::AXMode mode) override;
-  void ResetAccessibilityMode() override;
-  // These methods indicate the presence of AXMode::kAllProperties, which is
-  // a misnomer because it is used by many clients, and not just screen readers.
-  // Methods with "AssistiveTech" in the name deal with actual
-  // screen reader usage.
-  // TODO(accessibility) Rename these methods to fix the misnomer.
-  void OnScreenReaderDetected() override;
-  void OnScreenReaderStopped() override;
   // Some platforms have a strong signal indicating the presence of a
   // screen reader and can call in to let us know when one has
   // been enabled/disabled.
@@ -251,8 +244,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // ResetAccessibilityMode(); and applies them to all WebContentses in the
   // process. Guaranteed to hold at least an instance with no mode flags set.
   std::unique_ptr<ScopedAccessibilityMode> process_accessibility_mode_;
-
-  base::WeakPtrFactory<BrowserAccessibilityStateImpl> weak_factory_{this};
 };
 
 }  // namespace content
