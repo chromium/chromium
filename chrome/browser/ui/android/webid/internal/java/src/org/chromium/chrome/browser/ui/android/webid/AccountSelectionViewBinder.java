@@ -206,15 +206,18 @@ class AccountSelectionViewBinder {
                     account.isFilteredOut()
                             ? view.getContext().getString(R.string.filtered_account_message)
                             : account.getEmail());
+            TextView secondaryDescription = view.findViewById(R.id.secondary_description);
+            // The secondary description is not shown in the account chip of active mode's
+            // request permission dialog. In this case, the view is not present.
+            if (secondaryDescription == null) {
+                return;
+            }
             if (model.get(AccountProperties.SHOW_IDP)
                     && account.getSecondaryDescription() != null) {
-                TextView secondaryDescription = view.findViewById(R.id.secondary_description);
-                // The secondary description is not shown in the account chip of active mode's
-                // request permission dialog. In this case, the view is not present.
-                if (secondaryDescription != null) {
-                    secondaryDescription.setText(account.getSecondaryDescription());
-                    secondaryDescription.setVisibility(View.VISIBLE);
-                }
+                secondaryDescription.setText(account.getSecondaryDescription());
+                secondaryDescription.setVisibility(View.VISIBLE);
+            } else {
+                secondaryDescription.setVisibility(View.GONE);
             }
         } else if (key != AccountProperties.SHOW_IDP) {
             assert false : "Unhandled update to property:" + key;
