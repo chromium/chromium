@@ -12,6 +12,7 @@
 
 #include "chrome/browser/about_flags.h"
 
+#include <array>
 #include <iterator>
 #include <map>
 #include <memory>
@@ -4438,6 +4439,20 @@ const FeatureEntry::FeatureVariation
          kStandardBoundSessionCredentialsEnabledOriginTrialToken,
          std::size(kStandardBoundSessionCredentialsEnabledOriginTrialToken),
          nullptr}};
+
+#if BUILDFLAG(IS_CHROMEOS)
+constexpr auto kScannerDisclaimerDebugOverrideChoices =
+    std::to_array<FeatureEntry::Choice>({
+        {flag_descriptions::kScannerDisclaimerDebugOverrideChoiceDefault, "",
+         ""},
+        {flag_descriptions::kScannerDisclaimerDebugOverrideChoiceAlwaysReminder,
+         ash::switches::kScannerDisclaimerDebugOverride,
+         ash::switches::kScannerDisclaimerDebugOverrideReminder},
+        {flag_descriptions::kScannerDisclaimerDebugOverrideChoiceAlwaysFull,
+         ash::switches::kScannerDisclaimerDebugOverride,
+         ash::switches::kScannerDisclaimerDebugOverrideFull},
+    });
+#endif
 
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
@@ -11844,6 +11859,13 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(
          blink::features::kIsPaintableChecksResourceProviderInsteadOfBridge)},
+
+#if BUILDFLAG(IS_CHROMEOS)
+    {"scanner-disclaimer-debug-override",
+     flag_descriptions::kScannerDisclaimerDebugOverrideName,
+     flag_descriptions::kScannerDisclaimerDebugOverrideDescription, kOsCrOS,
+     MULTI_VALUE_TYPE(kScannerDisclaimerDebugOverrideChoices)},
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

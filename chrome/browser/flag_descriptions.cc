@@ -7018,6 +7018,16 @@ const char kScalableIphDebugName[] = "Scalable Iph Debug";
 const char kScalableIphDebugDescription[] =
     "Enables debug feature of Scalable Iph";
 
+const char kScannerDisclaimerDebugOverrideName[] =
+    "Scanner disclaimer: Debug override";
+const char kScannerDisclaimerDebugOverrideDescription[] =
+    "Allows overriding the type of disclaimer displayed when Scanner is shown";
+const char kScannerDisclaimerDebugOverrideChoiceDefault[] = "Default";
+const char kScannerDisclaimerDebugOverrideChoiceAlwaysReminder[] =
+    "Always reminder disclaimer";
+const char kScannerDisclaimerDebugOverrideChoiceAlwaysFull[] =
+    "Always full disclaimer";
+
 const char kSeaPenName[] = "SeaPen";
 const char kSeaPenDescription[] = "Enable SeaPen Wallpaper";
 
