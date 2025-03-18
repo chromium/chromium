@@ -995,7 +995,8 @@ void SharedStorageWorkletHost::SharedStorageUpdate(
 
   shared_storage_runtime_manager_->lock_manager().SharedStorageUpdate(
       std::move(method_with_options), shared_storage_origin_,
-      AccessScope::kSharedStorageWorklet, main_frame_id, std::move(callback));
+      AccessScope::kSharedStorageWorklet, main_frame_id, worklet_id_,
+      std::move(callback));
 }
 
 void SharedStorageWorkletHost::SharedStorageBatchUpdate(
@@ -1016,7 +1017,8 @@ void SharedStorageWorkletHost::SharedStorageBatchUpdate(
 
   shared_storage_runtime_manager_->lock_manager().SharedStorageBatchUpdate(
       std::move(methods_with_options), with_lock, shared_storage_origin_,
-      AccessScope::kSharedStorageWorklet, main_frame_id, std::move(callback));
+      AccessScope::kSharedStorageWorklet, main_frame_id, worklet_id_,
+      std::move(callback));
 }
 
 void SharedStorageWorkletHost::SharedStorageGet(

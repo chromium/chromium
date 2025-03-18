@@ -256,7 +256,7 @@ void SharedStorageHeaderObserver::HeaderReceived(
       ->lock_manager()
       .SharedStorageBatchUpdate(
           std::move(methods_with_options), with_lock, request_origin,
-          AccessScope::kHeader, main_frame_id,
+          AccessScope::kHeader, main_frame_id, /*worklet_id=*/std::nullopt,
           base::BindOnce(&SharedStorageHeaderObserver::OnBatchUpdateFinished,
                          weak_ptr_factory_.GetWeakPtr(), request_origin,
                          std::move(cloned_methods_with_options), with_lock));

@@ -214,7 +214,8 @@ void SharedStorageBrowserTestBase::ExecuteScriptInWorklet(
     std::optional<std::string> filtering_id_max_bytes,
     std::optional<std::string> max_contributions,
     std::string* out_error,
-    bool wait_for_operation_finish) {
+    bool wait_for_operation_finish,
+    bool use_add_module) {
   DCHECK(out_module_script_url);
 
   base::StringPairs run_function_body_replacement;
@@ -228,9 +229,30 @@ void SharedStorageBrowserTestBase::ExecuteScriptInWorklet(
                 "/shared_storage/customizable_module.js",
                 run_function_body_replacement));
 
-  EXPECT_TRUE(
-      ExecJs(execution_target, JsReplace("sharedStorage.worklet.addModule($1)",
-                                         *out_module_script_url)));
+  std::string worklet_creation_script =
+      use_add_module ? JsReplace("sharedStorage.worklet.addModule($1)",
+                                 *out_module_script_url)
+                     : JsReplace(R"(
+      if (typeof window.testWorklets === 'undefined' ||
+          !Array.isArray(window.testWorklets)) {
+        window.testWorklets = [];
+      }
+      new Promise((resolve, reject) => {
+        sharedStorage.createWorklet($1)
+        .then((worklet) => {
+          window.testWorklets.push(worklet);
+          resolve();
+        });
+      })
+    )",
+                                 *out_module_script_url);
+
+  EXPECT_TRUE(ExecJs(execution_target, worklet_creation_script));
+
+  auto* worklet_host =
+      test_runtime_manager().GetLastAttachedWorkletHostForFrameWithScriptSrc(
+          execution_target.render_frame_host(), *out_module_script_url);
+  ASSERT_TRUE(worklet_host);
 
   // There may be more than one host in the worklet host manager if we are
   // executing inside a nested fenced frame that was created using
@@ -240,10 +262,11 @@ void SharedStorageBrowserTestBase::ExecuteScriptInWorklet(
 
   EXPECT_EQ(0u, test_runtime_manager().GetKeepAliveWorkletHostsCount());
 
-  auto* worklet_host = test_runtime_manager().GetAttachedWorkletHostForFrame(
-      execution_target.render_frame_host());
-  EXPECT_EQ(blink::mojom::SharedStorageWorkletCreationMethod::kAddModule,
-            worklet_host->creation_method());
+  EXPECT_EQ(
+      worklet_host->creation_method(),
+      use_add_module
+          ? blink::mojom::SharedStorageWorkletCreationMethod::kAddModule
+          : blink::mojom::SharedStorageWorkletCreationMethod::kCreateWorklet);
 
   // There is 1 more "worklet operation": `run()`.
   worklet_host->SetExpectedWorkletResponsesCount(1);
@@ -270,21 +293,43 @@ void SharedStorageBrowserTestBase::ExecuteScriptInWorklet(
          "}"});
   }
 
+  std::string run_operation_script =
+      use_add_module
+          ? base::StrCat(
+                {"sharedStorage.run('test-operation', {keepAlive: keepWorklet",
+                 private_aggregation_config_js, "});"})
+          : base::StrCat({"window.testWorklets.at(-1).run('test-operation',",
+                          " {keepAlive: keepWorklet",
+                          private_aggregation_config_js, "});"});
   testing::AssertionResult result =
-      ExecJs(execution_target,
-             base::StrCat(
-                 {"sharedStorage.run('test-operation', {keepAlive: keepWorklet",
-                  private_aggregation_config_js, "});"}));
+      ExecJs(execution_target, run_operation_script);
   EXPECT_EQ(!!result, out_error == nullptr);
   if (out_error) {
     *out_error = std::string(result.message());
     return;
   }
-
   if (wait_for_operation_finish) {
     CHECK(worklet_host);
     worklet_host->WaitForWorkletResponses();
   }
+}
+
+void SharedStorageBrowserTestBase::ExecuteScriptInWorkletUsingCreateWorklet(
+    const ToRenderFrameHost& execution_target,
+    const std::string& script,
+    GURL* out_module_script_url,
+    size_t expected_total_host_count,
+    bool keep_alive_after_operation,
+    std::optional<std::string> context_id,
+    std::optional<std::string> filtering_id_max_bytes,
+    std::optional<std::string> max_contributions,
+    std::string* out_error,
+    bool wait_for_operation_finish) {
+  ExecuteScriptInWorklet(execution_target, script, out_module_script_url,
+                         expected_total_host_count, keep_alive_after_operation,
+                         context_id, filtering_id_max_bytes, max_contributions,
+                         out_error, wait_for_operation_finish,
+                         /*use_add_module=*/false);
 }
 
 FrameTreeNode* SharedStorageBrowserTestBase::CreateIFrame(

@@ -74,7 +74,8 @@ void AuctionSharedStorageHost::SharedStorageUpdate(
       .SharedStorageUpdate(std::move(method_with_options),
                            receiver_set_.current_context().worklet_origin,
                            AccessScope::kProtectedAudienceWorklet,
-                           main_frame_id, base::DoNothing());
+                           main_frame_id, /*worklet_id=*/std::nullopt,
+                           base::DoNothing());
 
   GetContentClient()->browser()->LogWebFeatureForCurrentPage(
       receiver_set_.current_context().auction_runner_rfh,
@@ -97,7 +98,8 @@ void AuctionSharedStorageHost::SharedStorageBatchUpdate(
       .SharedStorageBatchUpdate(std::move(methods_with_options), with_lock,
                                 receiver_set_.current_context().worklet_origin,
                                 AccessScope::kProtectedAudienceWorklet,
-                                main_frame_id, base::DoNothing());
+                                main_frame_id, /*worklet_id=*/std::nullopt,
+                                base::DoNothing());
 
   GetContentClient()->browser()->LogWebFeatureForCurrentPage(
       receiver_set_.current_context().auction_runner_rfh,
