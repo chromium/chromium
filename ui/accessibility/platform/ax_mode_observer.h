@@ -11,13 +11,18 @@
 
 namespace ui {
 
+enum class AssistiveTech;
+
 class COMPONENT_EXPORT(AX_PLATFORM) AXModeObserver
     : public base::CheckedObserver {
  public:
   ~AXModeObserver() override;
 
   // Notifies when accessibility mode changes.
-  virtual void OnAXModeAdded(AXMode mode) = 0;
+  virtual void OnAXModeAdded(AXMode mode) {}
+
+  // Notifies when an assistive tech becomes active or inactive.
+  virtual void OnAssistiveTechChanged(AssistiveTech assistive_tech) {}
 };
 
 }  // namespace ui

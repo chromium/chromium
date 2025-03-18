@@ -60,13 +60,8 @@ class BrowserAccessibilityStateImplMac : public BrowserAccessibilityStateImpl {
 
  protected:
   void InitBackgroundTasks() override;
-  void UpdateHistogramsOnOtherThread() override;
   void UpdateUniqueUserHistograms() override;
-  void SetKnownScreenReaderAppActive(bool is_active) override;
-  AssistiveTech ActiveKnownAssistiveTech() override;
-
- private:
-  bool is_voiceover_active_ = false;
+  void SetScreenReaderAppActive(bool is_active) override;
 };
 
 void BrowserAccessibilityStateImplMac::InitBackgroundTasks() {
@@ -76,52 +71,32 @@ void BrowserAccessibilityStateImplMac::InitBackgroundTasks() {
       FROM_HERE, base::BindOnce(&SetUpAccessibilityNotifications));
 }
 
-void BrowserAccessibilityStateImplMac::UpdateHistogramsOnOtherThread() {
-  BrowserAccessibilityStateImpl::UpdateHistogramsOnOtherThread();
-
-  // Screen reader metric.
-  ui::AXMode mode =
-      BrowserAccessibilityStateImpl::GetInstance()->GetAccessibilityMode();
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.Mac.ScreenReader",
-                        mode.has_mode(ui::AXMode::kExtendedProperties));
-}
-
-void BrowserAccessibilityStateImplMac::SetKnownScreenReaderAppActive(
+void BrowserAccessibilityStateImplMac::SetScreenReaderAppActive(
     bool is_active) {
   static auto* ax_voiceover_crash_key = base::debug::AllocateCrashKeyString(
       "ax_voiceover", base::debug::CrashKeySize::Size32);
   if (is_active) {
     base::debug::SetCrashKeyString(ax_voiceover_crash_key, "true");
-  } else if (is_voiceover_active_) {
+  } else {
     base::debug::ClearCrashKeyString(ax_voiceover_crash_key);
   }
-  is_voiceover_active_ = is_active;
-  awaiting_known_assistive_tech_computation_ = false;
 
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.Mac.VoiceOver", is_voiceover_active_);
-}
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.Mac.VoiceOver", is_active);
 
-BrowserAccessibilityState::AssistiveTech
-BrowserAccessibilityStateImplMac::ActiveKnownAssistiveTech() {
-  if (awaiting_known_assistive_tech_computation_) {
-    return kUnknown;
-  }
-  return is_voiceover_active_ ? kVoiceOver : kNone;
+  OnAssistiveTechFound(is_active ? ui::AssistiveTech::kVoiceOver
+                                 : ui::AssistiveTech::kNone);
 }
 
 void BrowserAccessibilityStateImplMac::UpdateUniqueUserHistograms() {
   BrowserAccessibilityStateImpl::UpdateUniqueUserHistograms();
 
-  ui::AXMode mode = GetAccessibilityMode();
   // Old screen reader metric: does not indicate the use of a screen reader,
   // just kExtendedProperties mode, which is used by many clients.
   // Instead of this, use the specific VoiceOver metric.
   // TODO(accessibility) Remove this, which is redundant with
   // PerformanceManager.Experimental.HasAccessibilityModeFlag.
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.Mac.ScreenReader.EveryReport",
-                        mode.has_mode(ui::AXMode::kExtendedProperties));
   UMA_HISTOGRAM_BOOLEAN("Accessibility.Mac.VoiceOver.EveryReport",
-                        is_voiceover_active_);
+                        ActiveAssistiveTech() == ui::AssistiveTech::kVoiceOver);
 }
 
 // static

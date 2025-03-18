@@ -2199,7 +2199,7 @@ void JNI_WebContentsAccessibilityImpl_SetBrowserAXMode(
   // Always update state if a known screen reader is running.
   auto* accessibility_state_android =
       static_cast<BrowserAccessibilityStateImplAndroid*>(accessibility_state);
-  accessibility_state_android->SetKnownScreenReaderAppActive(
+  accessibility_state_android->SetScreenReaderAppActive(
       is_known_screen_reader_running);
 
   // The AXMode flags will be set according to requirements of the current

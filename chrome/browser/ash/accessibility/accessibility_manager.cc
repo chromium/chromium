@@ -784,7 +784,7 @@ void AccessibilityManager::OnSpokenFeedbackChanged() {
 
   content::BrowserAccessibilityState* browser_ax_state =
       content::BrowserAccessibilityState::GetInstance();
-  browser_ax_state->SetKnownScreenReaderAppActive(enabled);
+  browser_ax_state->SetScreenReaderAppActive(enabled);
 
   if (IsUserBrowserContext(profile_)) {
     user_manager::KnownUser known_user(g_browser_process->local_state());

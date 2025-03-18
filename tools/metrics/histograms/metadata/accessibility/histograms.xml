@@ -2038,8 +2038,8 @@ even if they fit the naming pattern. -->
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Whether Chrome has enabled accessibility support because the user passed the
-    --force-renderer-accessibility flag on the command-line (logged once 45 secs
-    after startup).
+    --force-renderer-accessibility flag on the command-line (logged once after
+    startup).
   </summary>
 </histogram>
 
@@ -3457,27 +3457,14 @@ even if they fit the naming pattern. -->
     {ReportDelay}
   </summary>
   <token key="ScreenReader">
-    <variant name="Android.ScreenReader"
-        summary="Android (e.g. Talkback, or any other screen reader, or app
-                 masquerading as a screen reader)."/>
     <variant name="Android.TalkBack" summary="Android, specifically TalkBack."/>
     <variant name="Linux.Orca"
         summary="This tracks Orca screen reader usage specifically"/>
-    <variant name="Mac.ScreenReader"
-        summary="This tracks to the screen reader AXMode flag on Mac, which
-                 can actually be turned on by any assistive technology"/>
     <variant name="Mac.VoiceOver"
         summary="This tracks VoiceOver screen reader usage specifically"/>
     <variant name="WinJAWS" summary="Windows, specifically JAWS."/>
     <variant name="WinNarrator" summary="Windows, specifically Narrator."/>
     <variant name="WinNVDA" summary="Windows, specifically NVDA"/>
-    <variant name="WinScreenReader2"
-        summary="Windows. This is tracking the presence of the
-                 kExtendedProperties mode flag. In this case, Chrome has
-                 detected accessibility calls that would normally only occur
-                 from a screen reader. See also the more specific metrics
-                 such as Accessibility.WinJAWS/WinNVDA, or
-                 Accessibility.ModeFlag"/>
     <variant name="WinSupernova" summary="Windows, specifically Supernova."/>
     <variant name="WinZDSR" summary="Windows, specifically ZDSR (Zhengdu)"/>
   </token>

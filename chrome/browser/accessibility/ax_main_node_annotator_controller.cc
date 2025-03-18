@@ -190,11 +190,10 @@ void AXMainNodeAnnotatorController::Activate() {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-void AXMainNodeAnnotatorController::OnAXModeAdded(ui::AXMode mode) {
-  if (mode.has_mode(ui::AXMode::kExtendedProperties)) {
-    activated_ = true;
-    OnActivationChanged();
-  }
+void AXMainNodeAnnotatorController::OnAssistiveTechChanged(
+    ui::AssistiveTech assistive_tech) {
+  activated_ = ui::IsScreenReader(assistive_tech);
+  OnActivationChanged();
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

@@ -19,7 +19,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -211,12 +210,15 @@ BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
   DCHECK_EQ(g_instance, nullptr);
   g_instance = this;
 
+  bool manually_enabled = false;
+
   bool disallow_changes = false;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableRendererAccessibility)) {
     disallow_changes = true;
   } else if (base::CommandLine::ForCurrentProcess()->HasSwitch(
                  switches::kForceRendererAccessibility)) {
+    manually_enabled = true;
 #if BUILDFLAG(IS_WIN)
     std::string ax_mode_bundle = base::WideToUTF8(
         base::CommandLine::ForCurrentProcess()->GetSwitchValueNative(
@@ -247,6 +249,8 @@ BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
     }
   }
 
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.ManuallyEnabled", manually_enabled);
+
   SetAXModeChangeAllowed(!disallow_changes);
 }
 
@@ -256,14 +260,6 @@ void BrowserAccessibilityStateImpl::InitBackgroundTasks() {
   // The delay is necessary because assistive technology sometimes isn't
   // detected until after the user interacts in some way, so a reasonable delay
   // gives us better numbers.
-
-  // Some things can be done on another thread safely.
-  base::ThreadPool::PostDelayedTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(
-          &BrowserAccessibilityStateImpl::UpdateHistogramsOnOtherThread,
-          base::Unretained(this)),
-      histogram_delay_);
 
   // Other things must be done on the UI thread (e.g. to access PrefService).
   GetUIThreadTaskRunner({})->PostDelayedTask(
@@ -304,49 +300,18 @@ void BrowserAccessibilityStateImpl::OnScreenReaderStopped() {
       base::Seconds(kDisableAccessibilitySupportDelaySecs));
 }
 
-void BrowserAccessibilityStateImpl::UpdateKnownAssistiveTechSlow() {
-  // Overridden by some platforms, specifically Windows and Linux.
+void BrowserAccessibilityStateImpl::OnAssistiveTechFound(
+    ui::AssistiveTech assistive_tech) {
+  ax_platform_.NotifyAssistiveTechChanged(assistive_tech);
 }
 
-void BrowserAccessibilityStateImpl::SetKnownScreenReaderAppActive(
-    bool is_active) {
-  // Currently only meaningful on macOS, for VoiceOver detection,
-  // ChromeOS for ChromeVox detection, Android for Talkback detection, and
-  // unit tests.
-  // Other platforms detect specific, known screen reader apps in the
-  // OS-specific subclass.
+void BrowserAccessibilityStateImpl::SetScreenReaderAppActive(bool is_active) {
+  OnAssistiveTechFound(is_active ? ui::AssistiveTech::kGenericScreenReader
+                                 : ui::AssistiveTech::kNone);
 }
 
-BrowserAccessibilityState::AssistiveTech
-BrowserAccessibilityStateImpl::ActiveKnownAssistiveTech() {
-  return kNone;
-}
-
-bool BrowserAccessibilityStateImpl::IsKnownScreenReaderActiveSlow() {
-  // There is no need to run asssistive tech detection code if the
-  // AXMode does not have kExtendedProperties set, because an assistive tech
-  // would have made API calls causing that AXMode to be set.
-  if (GetAccessibilityMode().has_mode((ui::AXMode::kExtendedProperties))) {
-    return false;
-  }
-  UpdateKnownAssistiveTechSlow();
-  switch (ActiveKnownAssistiveTech()) {
-    case kUnknown:
-      NOTREACHED();
-    case kNone:
-    case kZoomText:
-      return false;
-    case kChromeVox:
-    case kJaws:
-    case kNarrator:
-    case kNvda:
-    case kOrca:
-    case kSupernova:
-    case kTalkback:
-    case kVoiceOver:
-    case kZdsr:
-      return true;
-  }
+ui::AssistiveTech BrowserAccessibilityStateImpl::ActiveAssistiveTech() const {
+  return ui::AXPlatform::GetInstance().active_assistive_tech();
 }
 
 void BrowserAccessibilityStateImpl::EnableAccessibility() {
@@ -409,11 +374,7 @@ void BrowserAccessibilityStateImpl::MaybeResetAccessibilityMode() {
 }
 
 void BrowserAccessibilityStateImpl::ResetAccessibilityMode() {
-  if (!allow_ax_mode_changes_) {
-    return;
-  }
-
-  process_accessibility_mode_ = CreateScopedModeForProcess(ui::AXMode());
+  SetProcessMode(ui::AXMode());
 }
 
 bool BrowserAccessibilityStateImpl::IsAccessibleBrowser() {
@@ -425,14 +386,8 @@ void BrowserAccessibilityStateImpl::AddUIThreadHistogramCallback(
   ui_thread_histogram_callbacks_.push_back(std::move(callback));
 }
 
-void BrowserAccessibilityStateImpl::AddOtherThreadHistogramCallback(
-    base::OnceClosure callback) {
-  other_thread_histogram_callbacks_.push_back(std::move(callback));
-}
-
 void BrowserAccessibilityStateImpl::UpdateHistogramsForTesting() {
   UpdateHistogramsOnUIThread();
-  UpdateHistogramsOnOtherThread();
 }
 
 void BrowserAccessibilityStateImpl::SetPerformanceFilteringAllowed(
@@ -455,28 +410,7 @@ void BrowserAccessibilityStateImpl::UpdateHistogramsOnUIThread() {
       !GetAccessibilityMode().is_mode_off() && !allow_ax_mode_changes_);
 
   ui_thread_done_ = true;
-  if (other_thread_done_ && background_thread_done_callback_) {
-    std::move(background_thread_done_callback_).Run();
-  }
-}
-
-void BrowserAccessibilityStateImpl::UpdateHistogramsOnOtherThread() {
-  UpdateKnownAssistiveTechSlow();
-
-  for (auto& callback : other_thread_histogram_callbacks_) {
-    std::move(callback).Run();
-  }
-  other_thread_histogram_callbacks_.clear();
-
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&BrowserAccessibilityStateImpl::OnOtherThreadDone,
-                     base::Unretained(this)));
-}
-
-void BrowserAccessibilityStateImpl::OnOtherThreadDone() {
-  other_thread_done_ = true;
-  if (ui_thread_done_ && background_thread_done_callback_) {
+  if (background_thread_done_callback_) {
     std::move(background_thread_done_callback_).Run();
   }
 }
@@ -513,23 +447,17 @@ ui::AXMode BrowserAccessibilityStateImpl::GetAccessibilityModeForBrowserContext(
 }
 
 bool BrowserAccessibilityStateImpl::ShouldBlockAutoDisable() {
-  if (ActiveKnownAssistiveTech()) {
-    // This condition should only occur if a known assistive tech is active.
-    // * If the assistive tech is actually still active, it indicates an error
-    // with the heuristic, and we should notify a histogram so that we can
-    // gather data and improve the heuristic's logic, as well as block the auto
-    // disable from occurring.
-    // * If the assistive tech is no longer active, then it has been unloaded
-    // and it is fine to auto-disable.
-    // Reaching here should be a rare case, and therefore we call the 'slow'
-    // code (uses system calls on Windows/Linux) to update the running active
-    // assistive tech state, before we make a determination.
-    UpdateKnownAssistiveTechSlow();
-    if (ActiveKnownAssistiveTech()) {
-      return true;
-    }
-  }
-  return false;
+  // This condition should only occur if a known assistive tech is active.
+  // * If the assistive tech is actually still active, it indicates an error
+  // with the heuristic, and we should notify a histogram so that we can
+  // gather data and improve the heuristic's logic, as well as block the auto
+  // disable from occurring.
+  // * If the assistive tech is no longer active, then it has been unloaded
+  // and it is fine to auto-disable.
+  // Reaching here should be a rare case, and therefore we call the 'slow'
+  // code (uses system calls on Windows/Linux) to update the running active
+  // assistive tech state, before we make a determination.
+  return ActiveAssistiveTech() != ui::AssistiveTech::kNone;
 }
 
 void BrowserAccessibilityStateImpl::OnUserInputEvent() {
@@ -564,7 +492,7 @@ void BrowserAccessibilityStateImpl::OnUserInputEvent() {
   if (ShouldBlockAutoDisable()) {
     base::UmaHistogramEnumeration(
         "Accessibility.AutoDisabled.BlockedAfter.UserInput",
-        ActiveKnownAssistiveTech());
+        ActiveAssistiveTech());
     return;
   }
 
@@ -666,12 +594,22 @@ ui::AXMode BrowserAccessibilityStateImpl::GetProcessMode() {
 // Replaces the scoper that backs the legacy process-wide mode with one applying
 // `new_mode`.
 void BrowserAccessibilityStateImpl::SetProcessMode(ui::AXMode new_mode) {
+  if (!allow_ax_mode_changes_) {
+    return;
+  }
+
   const ui::AXMode previous_mode = GetAccessibilityMode();
   if (new_mode == previous_mode) {
     return;
   }
 
   process_accessibility_mode_ = CreateScopedModeForProcess(new_mode);
+
+  // If the AXMode changes, there's a good chance an assistive technology was
+  // activated. Allow platforms that must perform special detection to update
+  // their notion of which tech is running. The platform-specific implementation
+  // is responsible for calling `OnAssistiveTechFound()` in response.
+  RefreshAssistiveTech();
 }
 
 void BrowserAccessibilityStateImpl::OnAccessibilityApiUsage() {
