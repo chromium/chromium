@@ -37,7 +37,6 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
-import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -429,8 +428,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             BackPressHelper.create(
                     activeFragment.getViewLifecycleOwner(),
                     getOnBackPressedDispatcher(),
-                    (BackPressHandler) activeFragment,
-                    SecondaryActivity.SETTINGS);
+                    (BackPressHandler) activeFragment);
         }
     }
 
@@ -438,8 +436,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         BackPressHelper.create(
                 this,
                 getOnBackPressedDispatcher(),
-                mBottomSheetControllerSupplier.get().getBottomSheetBackPressHandler(),
-                SecondaryActivity.SETTINGS);
+                mBottomSheetControllerSupplier.get().getBottomSheetBackPressHandler());
     }
 
     @Override

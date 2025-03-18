@@ -974,16 +974,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Android.BackPress.SecondaryActivity" enum="SecondaryActivity"
-    expires_after="2025-04-27">
-  <owner>lazzzis@chromium.org</owner>
-  <owner>src/chrome/browser/back_press/android/OWNERS</owner>
-  <summary>
-    Records the secondary activity which intercepts the back press when the user
-    does the Backpress gesture and it's not handled by the system.
-  </summary>
-</histogram>
-
 <histogram name="Android.BackPress.SwipeEdge{Type}" enum="SwipeEdge"
     expires_after="2025-08-24">
   <owner>lazzzis@chromium.org</owner>

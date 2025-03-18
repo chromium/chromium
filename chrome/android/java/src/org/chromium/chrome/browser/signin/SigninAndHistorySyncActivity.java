@@ -24,7 +24,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.firstrun.FirstRunActivityBase;
 import org.chromium.chrome.browser.init.ActivityProfileProvider;
@@ -292,11 +291,6 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
     @Override
     public @BackPressResult int handleBackPress() {
         return mCoordinator.handleBackPress();
-    }
-
-    @Override
-    public @SecondaryActivityBackPressUma.SecondaryActivity int getSecondaryActivity() {
-        return SecondaryActivityBackPressUma.SecondaryActivity.SIGNIN_AND_HISTORY_SYNC;
     }
 
     public static @NonNull Intent createIntent(

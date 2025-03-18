@@ -61,11 +61,9 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
-import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.history.AppFilterCoordinator.AppInfo;
 import org.chromium.chrome.browser.history.HistoryManagerToolbar.InfoHeaderPref;
@@ -217,11 +215,7 @@ public class HistoryUiTest {
 
         Assert.assertEquals(expectedItemCount, mAdapter.getItemCount());
 
-        BackPressHelper.create(
-                mLifecycleOwner,
-                mOnBackPressedDispatcher,
-                mHistoryManager,
-                SecondaryActivity.HISTORY);
+        BackPressHelper.create(mLifecycleOwner, mOnBackPressedDispatcher, mHistoryManager);
     }
 
     @Test
@@ -615,25 +609,17 @@ public class HistoryUiTest {
         Assert.assertEquals(View.GONE, toolbarSearchView.getVisibility());
 
         // Press back press to unselect item and the search view is showing again.
-        var backPressRecorder =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.BackPress.SecondaryActivity", SecondaryActivity.HISTORY);
         Assert.assertTrue(mHistoryManager.getHandleBackPressChangedSupplier().get());
         ThreadUtils.runOnUiThreadBlocking(mOnBackPressedDispatcher::onBackPressed);
         Assert.assertFalse(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
         Assert.assertEquals(View.GONE, toolbarShadow.getVisibility());
         Assert.assertEquals(View.VISIBLE, toolbarSearchView.getVisibility());
-        backPressRecorder.assertExpected();
 
         // Press back to close the search view.
-        var backPressRecorder2 =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.BackPress.SecondaryActivity", SecondaryActivity.HISTORY);
         Assert.assertTrue(mHistoryManager.getHandleBackPressChangedSupplier().get());
         ThreadUtils.runOnUiThreadBlocking(mOnBackPressedDispatcher::onBackPressed);
         Assert.assertEquals(View.GONE, toolbarShadow.getVisibility());
         Assert.assertEquals(View.GONE, toolbarSearchView.getVisibility());
-        backPressRecorder2.assertExpected();
     }
 
     @Test
