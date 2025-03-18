@@ -8015,12 +8015,6 @@ const char kEnablePolicyPromotionBannerDescription[] =
     "Enables showing the policy promotion banner on chrome://policy page.";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS)
-const char kOverlayScrollbarsOSSettingsName[] = "Overlay Scrollbar OS Settings";
-const char kOverlayScrollbarsOSSettingsDescription[] =
-    "Enable the OS settings for overlay scrollbars on ChromeOS.";
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 const char kSupervisedUserBlockInterstitialV3Name[] =
     "Enable URL filter interstitial V3";
 const char kSupervisedUserBlockInterstitialV3Description[] =

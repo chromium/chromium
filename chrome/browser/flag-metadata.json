@@ -6865,15 +6865,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "overlay-scrollbars-os-settings",
-    "owners": [
-      "zhzhliu@chromium.org",
-      "cros-ui-foundations@google.com"
-    ],
-    // This flag is used for os settings for overlay scrollbars.
-    "expiry_milestone": 150
-  },
-  {
     "name": "overlay-strategies",
     "owners": [ "chromeos-gfx@google.com" ],
     // This flag is used for QA & debugging on ChromeOS, which has no way to

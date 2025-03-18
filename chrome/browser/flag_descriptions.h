@@ -4733,11 +4733,6 @@ extern const char kEnableCertManagementV2UIEditCertsName[];
 extern const char kEnableCertManagementV2UIEditCertsDescription[];
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
-#if BUILDFLAG(IS_CHROMEOS)
-extern const char kOverlayScrollbarsOSSettingsName[];
-extern const char kOverlayScrollbarsOSSettingsDescription[];
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kEnablePolicyPromotionBannerName[];
 extern const char kEnablePolicyPromotionBannerDescription[];

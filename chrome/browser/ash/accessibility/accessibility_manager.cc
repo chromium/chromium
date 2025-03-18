@@ -962,7 +962,7 @@ bool AccessibilityManager::IsReducedAnimationsEnabled() const {
 }
 
 void AccessibilityManager::EnableAlwaysShowScrollbars(bool enabled) {
-  if (!::features::IsOverlayScrollbarOSSettingEnabled() || !profile_) {
+  if (!profile_) {
     return;
   }
 
@@ -973,9 +973,8 @@ void AccessibilityManager::EnableAlwaysShowScrollbars(bool enabled) {
 }
 
 bool AccessibilityManager::IsAlwaysShowScrollbarsEnabled() const {
-  return ::features::IsOverlayScrollbarOSSettingEnabled() && profile_ &&
-         profile_->GetPrefs()->GetBoolean(
-             prefs::kAccessibilityAlwaysShowScrollbarsEnabled);
+  return profile_ && profile_->GetPrefs()->GetBoolean(
+                         prefs::kAccessibilityAlwaysShowScrollbarsEnabled);
 }
 
 void AccessibilityManager::OnReducedAnimationsChanged() const {
@@ -2022,10 +2021,8 @@ void AccessibilityManager::UpdateChromeOSAccessibilityHistograms() {
     base::UmaHistogramBoolean("Accessibility.CrosFaceGaze",
                               IsFaceGazeEnabled());
   }
-  if (::features::IsOverlayScrollbarOSSettingEnabled()) {
-    base::UmaHistogramBoolean("Accessibility.CrosAlwaysShowScrollbar",
-                              IsAlwaysShowScrollbarsEnabled());
-  }
+  base::UmaHistogramBoolean("Accessibility.CrosAlwaysShowScrollbar",
+                            IsAlwaysShowScrollbarsEnabled());
 }
 
 void AccessibilityManager::PlayVolumeAdjustSound() {
