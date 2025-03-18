@@ -872,11 +872,12 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
   PerformHeaderChecks(children[0], kTitleSignInWithoutIdp,
                       /*expect_idp_brand_icon_in_header=*/false);
 
-  PerformMultiAccountChecks(children[1], /*expected_account_rows=*/4,
+  views::View* accounts_container = children[1];
+  PerformMultiAccountChecks(accounts_container, /*expected_account_rows=*/4,
                             /*expected_mismatch_rows=*/0);
 
   std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
-      GetAccounts(children[1]);
+      GetAccounts(accounts_container);
 
   // Check the first IDP.
   size_t accounts_index = 0;
@@ -886,6 +887,22 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
   // Check the second IDP.
   CheckHoverableAccountRows(accounts, kAccountSuffixes2, accounts_index,
                             /*expect_idp=*/true);
+
+  views::ScrollView* accounts_scroller =
+      static_cast<views::ScrollView*>(accounts_container->children()[1]);
+  int initial_height = accounts_scroller->GetVisibleRect().height();
+  // Scrolling increases the size of the view.
+  accounts_scroller->ScrollByOffset(gfx::PointF(0, 50));
+  // Using GetPreferredSize() since the visible rect does not seem to be updated
+  // right away.
+  int new_height = accounts_scroller->GetPreferredSize().height();
+  EXPECT_GT(new_height, initial_height);
+  // Scrolling back does not shrink it.
+  accounts_scroller->ScrollToOffset(gfx::PointF());
+  EXPECT_EQ(accounts_scroller->GetPreferredSize().height(), new_height);
+  // Scrolling more increases the size more.
+  accounts_scroller->ScrollByOffset(gfx::PointF(0, 200));
+  EXPECT_GT(accounts_scroller->GetPreferredSize().height(), new_height);
 }
 
 TEST_F(MultipleIdpAccountSelectionBubbleViewTest, OneIdpWithMismatch) {

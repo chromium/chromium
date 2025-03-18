@@ -66,6 +66,7 @@ namespace {
 
 constexpr int kMultiIdpUseOtherAccountButtonIconMargin = 9;
 constexpr int kSingleIdpUseOtherAccountButtonIconMargin = 5;
+constexpr int kMaxExpandableAccountsScrollViewHeight = 350;
 
 // views::MdTextButton which:
 // - Uses the passed-in `brand_background_color` based on whether the button
@@ -596,6 +597,7 @@ void AccountSelectionBubbleView::AddSeparatorAndMultipleAccountChooser(
   // to show accounts at the top while still always showing mismatches in the UI
   // before any scrolling occurs.
   auto account_scroll_view = std::make_unique<views::ScrollView>();
+
   account_scroll_view->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
   views::View* const accounts_content =
@@ -649,7 +651,7 @@ void AccountSelectionBubbleView::AddSeparatorAndMultipleAccountChooser(
   // be at least one IDP row at the beginning. Note that `num_account_rows` can
   // be 0 if everything is an IDP mismatch.
   if (num_account_rows > 0) {
-    float num_visible_rows = is_multi_idp ? 3.5f : 2.5f;
+    float num_visible_rows = is_multi_idp ? 1.5f : 2.5f;
     const int per_account_size =
         accounts_content->children()[0]->GetPreferredSize().height();
     int clipped_size = static_cast<int>(per_account_size * num_visible_rows);
@@ -667,6 +669,14 @@ void AccountSelectionBubbleView::AddSeparatorAndMultipleAccountChooser(
           gfx::Insets::TLBR(is_multi_idp ? kVerticalSpacing - kTopBottomPadding
                                          : kVerticalSpacing,
                             0, 0, 0)));
+    }
+    if (is_multi_idp) {
+      expandable_account_scroll_view_ = account_scroll_view.get();
+      on_contents_scrolled_subscription_ =
+          expandable_account_scroll_view_->AddContentsScrolledCallback(
+              base::BindRepeating(
+                  &AccountSelectionBubbleView::OnExpandableAccountsScrolled,
+                  base::Unretained(this)));
     }
   }
 
@@ -755,6 +765,19 @@ void AccountSelectionBubbleView::AddAccounts(
         CreateAccountRow(account, /*clickable_position=*/out_position++,
                          /*should_include_idp=*/true, /*is_modal_dialog=*/false,
                          /*additional_vertical_padding=*/0, last_used_string));
+  }
+}
+
+void AccountSelectionBubbleView::OnExpandableAccountsScrolled() {
+  float current_offset = expandable_account_scroll_view_->CurrentOffset().y();
+  if (current_offset > max_offset_) {
+    int current_height =
+        expandable_account_scroll_view_->GetVisibleRect().height();
+    expandable_account_scroll_view_->ClipHeightTo(
+        0, std::min(kMaxExpandableAccountsScrollViewHeight,
+                    current_height +
+                        static_cast<int>(current_offset - max_offset_)));
+    max_offset_ = current_offset;
   }
 }
 
@@ -871,6 +894,9 @@ void AccountSelectionBubbleView::UpdateHeader(const gfx::Image& idp_image,
 }
 
 void AccountSelectionBubbleView::RemoveNonHeaderChildViews() {
+  expandable_account_scroll_view_ = nullptr;
+  on_contents_scrolled_subscription_ = base::CallbackListSubscription();
+  max_offset_ = 0.f;
   const std::vector<raw_ptr<views::View, VectorExperimental>> child_views =
       children();
   for (views::View* child_view : child_views) {
