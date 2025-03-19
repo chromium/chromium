@@ -1009,6 +1009,10 @@ void AIPageContentAgent::ContentBuilder::AddFrameInteractionInfo(
 void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
     const LayoutObject& object,
     mojom::blink::AIPageContentAttributes& attributes) const {
+  if (!options_->enable_experimental_actionable_data) {
+    return;
+  }
+
   attributes.node_interaction_info =
       mojom::blink::AIPageContentNodeInteractionInfo::New();
   mojom::blink::AIPageContentNodeInteractionInfo& node_interaction_info =

@@ -77,7 +77,8 @@ bool ConvertAIPageContentToProto(blink::mojom::AIPageContentPtr& root_content,
         return std::nullopt;
       });
 
-  return ConvertAIPageContentToProto(main_frame_token, page_content_map,
+  return ConvertAIPageContentToProto(blink::mojom::AIPageContentOptions::New(),
+                                     main_frame_token, page_content_map,
                                      get_render_frame_info, page_content);
 }
 
@@ -120,7 +121,8 @@ TEST(PageContentProtoUtilTest, IframeNodeWithNoData) {
 
   AIPageContentResult page_content;
   EXPECT_FALSE(ConvertAIPageContentToProto(
-      main_frame_token, page_content_map, get_render_frame_info, page_content));
+      blink::mojom::AIPageContentOptions::New(), main_frame_token,
+      page_content_map, get_render_frame_info, page_content));
 }
 
 TEST(PageContentProtoUtilTest, IframeDestroyed) {
@@ -156,7 +158,8 @@ TEST(PageContentProtoUtilTest, IframeDestroyed) {
 
   AIPageContentResult page_content;
   EXPECT_FALSE(ConvertAIPageContentToProto(
-      main_frame_token, page_content_map, get_render_frame_info, page_content));
+      blink::mojom::AIPageContentOptions::New(), main_frame_token,
+      page_content_map, get_render_frame_info, page_content));
   ASSERT_TRUE(query_token.has_value());
   EXPECT_EQ(iframe_token.frame_token, *query_token);
 }
@@ -499,8 +502,9 @@ TEST(PageContentProtoUtilTest, ConvertIframeData) {
       });
 
   AIPageContentResult page_content;
-  EXPECT_TRUE(ConvertAIPageContentToProto(main_frame_token, page_content_map,
-                                          get_render_frame_info, page_content));
+  EXPECT_TRUE(ConvertAIPageContentToProto(
+      blink::mojom::AIPageContentOptions::New(), main_frame_token,
+      page_content_map, get_render_frame_info, page_content));
   ASSERT_TRUE(query_token.has_value());
   EXPECT_EQ(iframe_token.frame_token, *query_token);
 

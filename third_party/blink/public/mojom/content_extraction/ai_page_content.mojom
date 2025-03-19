@@ -362,6 +362,10 @@ struct AIPageContentOptions {
 
   // The maximum number of meta elements to include in the content.
   int32 max_meta_elements = 0;
+
+  // Include node-level data for actionable elements captured in
+  // AIPageContentNodeInteractionInfo.
+  bool enable_experimental_actionable_data = false;
 };
 
 // Used to obtain the AIPageContent representation for Documents. Lives in the

@@ -247,6 +247,12 @@ class AIPageContentAgentTest : public testing::Test {
         << ", expected: " << expected.ToString();
   }
 
+  mojom::blink::AIPageContentPtr GetAIPageContentWithActionableElements() {
+    mojom::blink::AIPageContentOptions options;
+    options.enable_experimental_actionable_data = true;
+    return GetAIPageContent(options);
+  }
+
   mojom::blink::AIPageContentPtr GetAIPageContent(
       std::optional<mojom::blink::AIPageContentOptions> options =
           std::nullopt) {
@@ -1102,10 +1108,7 @@ TEST_F(AIPageContentAgentTest, FixedPosition) {
   CheckContainerNode(fixed_element);
   EXPECT_TRUE(
       fixed_element.content_attributes->geometry->is_fixed_or_sticky_position);
-  EXPECT_FALSE(fixed_element.content_attributes->node_interaction_info
-                   ->scrolls_overflow_x);
-  EXPECT_FALSE(fixed_element.content_attributes->node_interaction_info
-                   ->scrolls_overflow_y);
+  EXPECT_FALSE(fixed_element.content_attributes->node_interaction_info);
   CheckTextNode(*fixed_element.children_nodes[0],
                 "This element stays in place when the page is scrolled.");
 
@@ -1113,20 +1116,14 @@ TEST_F(AIPageContentAgentTest, FixedPosition) {
   CheckContainerNode(sticky_element);
   EXPECT_TRUE(
       sticky_element.content_attributes->geometry->is_fixed_or_sticky_position);
-  EXPECT_FALSE(sticky_element.content_attributes->node_interaction_info
-                   ->scrolls_overflow_x);
-  EXPECT_FALSE(sticky_element.content_attributes->node_interaction_info
-                   ->scrolls_overflow_y);
+  EXPECT_FALSE(sticky_element.content_attributes->node_interaction_info);
   CheckTextNode(*sticky_element.children_nodes[0],
                 "This element stays in place when the page is scrolled.");
 
   const auto& normal_element = *root.children_nodes[2];
   EXPECT_FALSE(
       normal_element.content_attributes->geometry->is_fixed_or_sticky_position);
-  EXPECT_FALSE(normal_element.content_attributes->node_interaction_info
-                   ->scrolls_overflow_x);
-  EXPECT_FALSE(normal_element.content_attributes->node_interaction_info
-                   ->scrolls_overflow_y);
+  EXPECT_FALSE(normal_element.content_attributes->node_interaction_info);
   CheckTextNode(normal_element,
                 "This element flows naturally with the document.");
 }
@@ -1185,7 +1182,7 @@ TEST_F(AIPageContentAgentTest, ScrollContainer) {
       "     </body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto content = GetAIPageContent();
+  auto content = GetAIPageContentWithActionableElements();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
@@ -1950,7 +1947,7 @@ TEST_F(AIPageContentAgentTest, InteractiveElements) {
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto content = GetAIPageContent();
+  auto content = GetAIPageContentWithActionableElements();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 

@@ -560,6 +560,7 @@ bool ConvertNode(content::GlobalRenderFrameHostToken source_frame_token,
 }  // namespace
 
 bool ConvertAIPageContentToProto(
+    blink::mojom::AIPageContentOptionsPtr main_frame_options,
     content::GlobalRenderFrameHostToken main_frame_token,
     const AIPageContentMap& page_content_map,
     GetRenderFrameInfo get_render_frame_info,
@@ -605,8 +606,13 @@ bool ConvertAIPageContentToProto(
         proto_main_frame_data->mutable_frame_interaction_info());
   }
 
-  page_content_result.proto.set_version(
-      optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
+  auto version = optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0;
+  if (main_frame_options->enable_experimental_actionable_data) {
+    version = optimization_guide::proto::
+        ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0;
+  }
+  page_content_result.proto.set_version(version);
+
   return true;
 }
 
