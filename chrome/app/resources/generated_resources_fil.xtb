@@ -267,6 +267,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1175572348579024023">Mag-scroll</translation>
 <translation id="1175914831232945926">Mga Digit</translation>
 <translation id="1176471985365269981">Hindi pinapayagang mag-edit ng mga file o folder sa iyong device</translation>
+<translation id="1176864681932214421">Gumawa ng mga larawan gamit ang AI</translation>
 <translation id="1177073277575830464">Tapos na ang mabilisang pag-setup ng Android. Ipagpatuloy ang pag-setup sa iyong <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1177440945615690056">Puwede kang kumonekta sa anumang kwalipikadong mobile network sa Mga Setting</translation>
 <translation id="1177548198167638471">Huwag nang Itanong Ulit</translation>
@@ -3700,6 +3701,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3582057310199111521">Nailagay sa isang mapanlinlang na site at nakita sa paglabag sa data</translation>
 <translation id="3582299299336701326">Padilimin ang maliliwanag na screen, at paliwanagin ang madidilim na screen. Pindutin ang Search + Ctrl + H para i-on at i-off ang pag-invert ng kulay.</translation>
 <translation id="3584169441612580296">Basahin at baguhin ang mga larawan, musika at iba pang media sa iyong computer</translation>
+<translation id="3586741240886978899">Ginamit mo sa site na ito</translation>
 <translation id="3586806079541226322">Hindi mabuksan ang file na ito</translation>
 <translation id="3586931643579894722">Magtago ng mga detalye</translation>
 <translation id="3587279952965197737">Dapat may <ph name="MAX_CHARACTER_COUNT" /> (na) character o mas kaunti</translation>
@@ -4076,9 +4078,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
     <ph name="BEGIN_PARAGRAPH2" />Puwede mong simulan o ihinto ang pagpayag sa mga ulat na ito anumang oras sa mga setting ng iyong Chrome device. Kung isa kang administrator ng domain, puwede mong baguhin ang setting na ito sa admin console.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">Aurora Borealis sa gabi, sa kalangitan sa itaas ng maliit na cottage na bahay.</translation>
 <translation id="3818102823568165369">Mga lokal na certificate na idinagdag ng iyong operating system o administrator.</translation>
-<translation id="3818662907126913619">Para magamit ang iyong device gamit ang profile mo sa <ph name="DOMAIN" />, kailangan ng iyong organisasyon ng impormasyon tungkol sa device.
-
-Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga file, browser mo, at operating system ng device.</translation>
 <translation id="3819164369574292143">Mag-zoom in para palakihin ang mga item sa screen. Gamitin ang Search + Ctrl + M para i-on at i-off ang magnifier. Gamitin ang Ctrl + Alt + Mga arrow key para gumalaw kapag naka-zoom in.</translation>
 <translation id="3819257035322786455">Backup</translation>
 <translation id="3819261658055281761">Hindi na-store ng system ang pangmatagalang token ng access ng API para sa device na ito.</translation>
@@ -4396,9 +4395,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4031527940632463547">Na-block ang mga sensor</translation>
 <translation id="4033471457476425443">Magdagdag ng bagong folder</translation>
 <translation id="4033963223187371752">Posibleng mag-embed ng content na tulad ng mga imahe o web frame na hindi secure ang mga secure na site</translation>
-<translation id="4034706080855851454">Para magamit ang iyong device gamit ang profile sa organisasyon mo, kailangan ng iyong organisasyon ng impormasyon tungkol sa device.
-
-Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga file, browser mo, at operating system ng device.</translation>
 <translation id="4034824040120875894">Printer</translation>
 <translation id="4035758313003622889">&amp;Task manager</translation>
 <translation id="4035877632587724847">Huwag payagan</translation>
@@ -9377,6 +9373,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7650582458329409456">{COUNT,plural, =1{1 fingerprint ang na-set up}one{{COUNT} fingerprint ang na-set up}other{{COUNT} na fingerprint ang na-set up}}</translation>
 <translation id="7650677314924139716">Wi-Fi lang ang kasalukuyang setting ng paggamit ng data</translation>
 <translation id="7650920359639954963">Hindi naka-enable: <ph name="REASON" /></translation>
+<translation id="7651182181030187705">Para makuha ang bookmark na ito sa lahat ng iyong device, i-verify na ikaw ito</translation>
 <translation id="7651400349472467012">Available ang instant na hotspot</translation>
 <translation id="7651784568388208829">Pagpapatuloy ng gawain sa Phone Hub</translation>
 <translation id="765293928828334535">Hindi maidadagdag mula sa website na ito ang mga app, extension, at script ng user</translation>
@@ -9415,6 +9412,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7670434942695515800">Para sa pinakamahusay na performance, mag-upgrade sa pinakabagong bersyon. Inirerekomenda ang pag-back up ng iyong mga file kung sakaling hindi makumpleto ang pag-upgrade. Kapag nagsimula na ang pag-upgrade, magsa-shut down ang Linux. I-save ang mga nakabukas na file bago magpatuloy. <ph name="LINK_START" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="7670483791111801022">Mga Subtitle</translation>
 <translation id="7671130400130574146">Gumamit ng system title bar at mga hangganan</translation>
+<translation id="7671139479636735732">Mag-right click para madaling ma-visualize ang iyong mga ideya</translation>
 <translation id="767127784612208024">Pindutin para kumpirmahin ang pag-reset</translation>
 <translation id="7671472752213333268">Gusto ng "<ph name="EXTENSION_NAME" />" na mag-scan mula sa "<ph name="SCANNER_NAME" />."</translation>
 <translation id="7672504401554182757">Piliin kung aling device ang may passkey para sa <ph name="APP_NAME" /></translation>

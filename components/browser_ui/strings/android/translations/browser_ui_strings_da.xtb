@@ -87,6 +87,7 @@
 <translation id="2215727959747642672">Filredigering</translation>
 <translation id="2218389616572918761">Websites kan anmode om adgang til din mikrofon</translation>
 <translation id="2228071138934252756">Aktivér også dit kamera i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> adgang til kameraet.</translation>
+<translation id="2231160360698766265">Websites kan afspille beskyttet indhold</translation>
 <translation id="2235344399760031203">Tredjepartscookies er blokeret</translation>
 <translation id="2238944249568001759">Foreslåede søgninger baseret på din seneste fane</translation>
 <translation id="2241587408274973373">Kort på siden Ny fane</translation>
@@ -630,6 +631,7 @@
 <translation id="9138217887606523162">Det aktuelle zoomniveau er <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9156722768168878035">Få Chrome til at vise dine seneste faner på din enheds appliste og i søgeresultaterne. Du kan til enhver tid deaktivere dette i Chrome-indstillingerne.</translation>
 <translation id="9162462602695099906">Denne side er farlig</translation>
+<translation id="9182556968660520230">Tillad ikke, at websites afspiller beskyttet indhold</translation>
 <translation id="947156494302904893">Websites, du besøger, kan verificere, at du er en rigtig person og ikke en bot</translation>
 <translation id="959682366969460160">Bliv velorganiseret</translation>
 <translation id="967624055006145463">Lagrede data</translation>

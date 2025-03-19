@@ -42,6 +42,7 @@
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/renderer_main_platform_delegate.h"
 #include "media/media_buildflags.h"
+#include "mojo/public/cpp/bindings/direct_receiver.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/mojo_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -314,6 +315,16 @@ int RendererMain(MainFunctionParams parameters) {
       TRACE_EVENT_INSTANT1("startup", "RendererMain", TRACE_EVENT_SCOPE_THREAD,
                            "needs_startup_tracing_after_mojo_init", true);
     }
+
+#if BUILDFLAG(IS_WIN)
+    // Now that Mojo is initialized, but before the sandbox is enabled, set up
+    // DirectReceiver.
+    if (base::FeatureList::IsEnabled(
+            blink::features::kDirectCompositorThreadIpc)) {
+      // Pre-initialize a transport since a feature that will use it is enabled.
+      mojo::CreateDirectReceiverTransportBeforeSandbox();
+    }
+#endif  // BUILDFLAG(IS_WIN)
 
     if (need_sandbox) {
       should_run_loop = platform.EnableSandbox();

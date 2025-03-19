@@ -182,16 +182,21 @@ std::unique_ptr<views::Label> CreateMainTextLabel(
 }
 
 // Creates a label for the suggestion's minor text.
-std::unique_ptr<views::Label> CreateMinorTextLabel(
+std::vector<std::unique_ptr<views::Label>> CreateMinorTextLabels(
     const Suggestion& suggestion) {
-  if (suggestion.minor_text.value.empty()) {
-    return nullptr;
+  std::vector<std::unique_ptr<views::Label>> minor_text_labels;
+  for (const Suggestion::Text& text : suggestion.minor_texts) {
+    if (text.value.empty()) {
+      continue;
+    }
+    auto label = std::make_unique<views::Label>(
+        text.value, views::style::CONTEXT_DIALOG_BODY_TEXT,
+        suggestion.HasDeactivatedStyle() ? kDisabledTextStyle
+                                         : kMinorTextStyle);
+    label->SetEnabledColor(ui::kColorLabelForegroundSecondary);
+    minor_text_labels.push_back(std::move(label));
   }
-  auto label = std::make_unique<views::Label>(
-      suggestion.minor_text.value, views::style::CONTEXT_DIALOG_BODY_TEXT,
-      suggestion.HasDeactivatedStyle() ? kDisabledTextStyle : kMinorTextStyle);
-  label->SetEnabledColor(ui::kColorLabelForegroundSecondary);
-  return label;
+  return minor_text_labels;
 }
 
 // Creates sub-text views and passes their references to `PopupRowContentView`
@@ -397,7 +402,7 @@ std::unique_ptr<PopupRowContentView> CreatePasswordPopupRowContentView(
   std::vector<std::unique_ptr<views::View>> subtext_views;
   subtext_views.push_back(CreatePasswordSubtextView(suggestion));
   popup_cell_utils::AddSuggestionContentToView(
-      suggestion, std::move(main_text_label), CreateMinorTextLabel(suggestion),
+      suggestion, std::move(main_text_label), CreateMinorTextLabels(suggestion),
       CreatePasswordDescriptionLabel(suggestion), std::move(subtext_views),
       GetPasswordIconView(suggestion, favicon_loader), *view);
 
@@ -417,7 +422,7 @@ std::unique_ptr<PopupRowContentView> CreateComposePopupRowContentView(
   }
   popup_cell_utils::AddSuggestionContentToView(
       suggestion, std::move(main_text_label),
-      /*minor_text_label=*/nullptr,
+      /*minor_text_labels=*/{},
       /*description_label=*/nullptr, /*subtext_views=*/
       CreateSubtextViews(*view, suggestion, FillingProduct::kCompose),
       popup_cell_utils::GetIconImageView(suggestion), *view);
@@ -445,7 +450,7 @@ std::unique_ptr<PopupRowContentView> CreatePopupRowContentView(
   FormatLabel(*main_text_label, suggestion.main_text, main_filling_product,
               kAutofillSuggestionMaxWidth);
   popup_cell_utils::AddSuggestionContentToView(
-      suggestion, std::move(main_text_label), CreateMinorTextLabel(suggestion),
+      suggestion, std::move(main_text_label), CreateMinorTextLabels(suggestion),
       /*description_label=*/nullptr,
       CreateSubtextViews(*view, suggestion, main_filling_product),
       popup_cell_utils::GetIconImageView(suggestion), *view);
@@ -466,7 +471,7 @@ std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
   FormatLabel(*main_text_label, suggestion.main_text,
               FillingProduct::kAutocomplete, kAutofillSuggestionMaxWidth);
   popup_cell_utils::AddSuggestionContentToView(
-      suggestion, std::move(main_text_label), CreateMinorTextLabel(suggestion),
+      suggestion, std::move(main_text_label), CreateMinorTextLabels(suggestion),
       /*description_label=*/nullptr,
       CreateSubtextViews(*view, suggestion, FillingProduct::kAutocomplete),
       popup_cell_utils::GetIconImageView(suggestion), *view);
@@ -524,7 +529,7 @@ std::unique_ptr<PopupRowView> CreateNewPlusAddressInlineSuggestion(
   FormatLabel(*main_text_label, suggestion.main_text,
               FillingProduct::kPlusAddresses, kAutofillSuggestionMaxWidth);
   popup_cell_utils::AddSuggestionContentToView(
-      suggestion, std::move(main_text_label), CreateMinorTextLabel(suggestion),
+      suggestion, std::move(main_text_label), CreateMinorTextLabels(suggestion),
       /*description_label=*/nullptr,
       CreateSubtextViews(*view, suggestion, FillingProduct::kPlusAddresses),
       popup_cell_utils::GetIconImageView(suggestion), *view);

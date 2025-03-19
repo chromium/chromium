@@ -212,7 +212,6 @@ class KioskChromeAppManager : public KioskAppManagerBase,
   friend class GlobalManager;
   friend class ChromeAppKioskAppManagerTest;
   friend class KioskAutoLaunchViewsTest;
-  friend class KioskBaseTest;
 
   // Gets KioskAppData for the given app id.
   const KioskAppData* GetAppData(const std::string& app_id) const;

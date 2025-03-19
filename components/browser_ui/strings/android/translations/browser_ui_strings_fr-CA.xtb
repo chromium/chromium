@@ -87,6 +87,7 @@
 <translation id="2215727959747642672">Modification des fichiers</translation>
 <translation id="2218389616572918761">Les sites peuvent demander d'accéder à votre microphone</translation>
 <translation id="2228071138934252756">Pour autoriser <ph name="APP_NAME" /> à accéder à votre appareil photo, activez aussi celui-ci dans les <ph name="BEGIN_LINK" />paramètres d'Android<ph name="END_LINK" />.</translation>
+<translation id="2231160360698766265">Les sites peuvent faire jouer du contenu protégé</translation>
 <translation id="2235344399760031203">Les témoins tiers sont bloqués</translation>
 <translation id="2238944249568001759">Recherches suggérées en fonction de votre dernier onglet</translation>
 <translation id="2241587408274973373">Cartes de la page Nouvel onglet</translation>
@@ -630,6 +631,7 @@
 <translation id="9138217887606523162">Le zoom actuel est de <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9156722768168878035">Laissez Chrome afficher vos onglets récents dans la liste d'applis et les résultats de recherche de votre appareil. Vous pouvez désactiver cette option en tout temps dans les paramètres de Chrome.</translation>
 <translation id="9162462602695099906">Cette page est dangereuse</translation>
+<translation id="9182556968660520230">Ne pas autoriser les sites à faire jouer du contenu protégé</translation>
 <translation id="947156494302904893">Les sites que vous visitez peuvent vérifier que vous êtes une personne réelle et non un robot</translation>
 <translation id="959682366969460160">Place à l'organisation</translation>
 <translation id="967624055006145463">Données stockées</translation>

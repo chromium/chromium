@@ -18,6 +18,7 @@ source_set("tabs_impl") {
     ":tabs_public",
     "//chrome/browser/sync",
     "//components/favicon/content",
+    "//components/metrics:content",
     "//content/public/browser",
   ]
 }

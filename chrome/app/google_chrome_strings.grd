@@ -2101,6 +2101,9 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_PROFILE_PICKER_PROFILE_SWITCH_SUBTITLE" desc="Profile picker profile switch subtitle">
           A Chrome profile with this account already exists on this device
         </message>
+        <message name="IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_NOT_SUPPORTED_BY_GLIC_FLOW_BODY" desc="Body of the force sign in error dialog, the dialog is shown when the user attempts to reauth a profile while in the Glic version. This flow is not supported in this version of the picker. The overall purpose of the dialog is to redirect the user to the regular picker to finalize the reauth.">
+          To use this profile with Glic, open Chrome and sign in
+        </message>
 
         <!-- First Run Experience -->
         <message name="IDS_FRE_SIGN_IN_TITLE_0"

@@ -152,6 +152,7 @@ gardener_rotations = struct(
     CHROMIUM_GPU = _main_rotation("chromium.gpu", "chromium.gpu rotation", "chromium.gpu tree closers"),
     IOS = _main_rotation("ios", "ios rotation", "ios tree closers"),
     CHROMIUMOS = _main_rotation("chromiumos", "chromiumos rotation", "chromiumos tree closers"),  # This group is not on SoM.
+    CRONET = _main_rotation("cronet", "cronet rotation", None),
 )
 
 # Free disk space in a machine reserved for build tasks.

@@ -1345,6 +1345,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1918127774159128277">Osvježi mogućnosti WiFi Directa</translation>
 <translation id="1918141783557917887">&amp;Manje</translation>
 <translation id="1918281588461452432">Dok pregledate web lokacije, sadržaji stranica se šifriraju i pohranjuju na uređaju</translation>
+<translation id="1919096511823372013">Umetnite veze, emojije i drugo. Možete i dobiti pomoć Googleovog AI-ja s pisanjem i izradom slika.</translation>
 <translation id="1919872106782726755">Da postavite otisak prsta, dijete treba dodirnuti senzor za otisak prsta u gornjem desnom uglu tastature, pored dugmeta za uključivanje. Podaci otiska prsta vašeg djeteta se sigurno pohranjuju i nikada ne napuštaju uređaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="192015196730532810">Možete kreirati svoju grupu kartica.</translation>
 <translation id="1920314570001095522">Nema sličnih kartica za organiziranje, ali će vam se možda svidjeti ove grupe</translation>
@@ -4073,9 +4074,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
     <ph name="BEGIN_PARAGRAPH2" />Možete dozvoliti ili onemogućiti te izvještaje bilo kada u postavkama Chrome uređaja. Ako ste administrator domene, možete promijeniti ovu postavku u administratorskoj konzoli.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">Polarna svjetlost noću iznad male seoske kolibe.</translation>
 <translation id="3818102823568165369">Lokalni certifikati koje je dodao operativni sistem ili administrator.</translation>
-<translation id="3818662907126913619">Da koristite uređaj s profilom <ph name="DOMAIN" />, organizacija treba informacije o uređaju.
-
-One mogu uključivati informacije o instaliranom softveru, fajlovima, pregledniku i operativnom sistemu uređaja.</translation>
 <translation id="3819164369574292143">Uvećajte da stavke na ekranu budu veće. Koristite tipku za pretraživanje + Ctrl + M da uključite i isključite povećalo. Koristite Ctrl + Alt + tipke sa strelicama da se krećete po ekranu kada je uvećan.</translation>
 <translation id="3819257035322786455">Sigurnosna kopija</translation>
 <translation id="3819261658055281761">Sistem nije uspio pohraniti token za dugoročni pristup API-ju za ovaj uređaj.</translation>
@@ -4393,9 +4391,6 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="4031527940632463547">Senzori su blokirani</translation>
 <translation id="4033471457476425443">Dodaj novi folder</translation>
 <translation id="4033963223187371752">Sigurne web lokacije mogu ugraditi sadržaj kao što su slike ili web okviri koji nisu sigurni</translation>
-<translation id="4034706080855851454">Da koristite uređaj s profilom organizacije, organizacija treba informacije o uređaju.
-
-One mogu uključivati informacije o instaliranom softveru, fajlovima, pregledniku i operativnom sistemu uređaja.</translation>
 <translation id="4034824040120875894">Štampač</translation>
 <translation id="4035758313003622889">Upravi&amp;telj zadataka</translation>
 <translation id="4035877632587724847">Nemoj dozvoliti</translation>
@@ -8996,6 +8991,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7377451353532943397">Nastavi blokirati pristup senzoru</translation>
 <translation id="7377481913241237033">Povežite se pomoću koda</translation>
 <translation id="73786666777299047">Otvorite Chrome Web trgovinu</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Drugi zadatak u istoj grupi zadataka: <ph name="OTHER_TASKS" />}one{<ph name="TASK_ROW" />. Ostali # zadatak u istoj grupi zadataka: <ph name="OTHER_TASKS" />}few{<ph name="TASK_ROW" />. Ostala # zadatka u istoj grupi zadataka: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Ostalih # zadataka u istoj grupi zadataka: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380272457268061606">Onemogućiti vraćanje lokalnih podataka?</translation>
 <translation id="7380459290951585794">Provjerite nalazi li se telefon u blizini, je li otključan i jesu li Bluetooth i WiFi uključeni</translation>
 <translation id="7380622428988553498">Naziv uređaja sadrži nevažeće znakove</translation>

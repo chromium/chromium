@@ -1469,9 +1469,8 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
 
   // Take the two-copy path.
   // Create the intermediate rgb shared image cache if not already present.
-  if (!yuv_cache_.rgb_shared_image_cache) {
-    yuv_cache_.rgb_shared_image_cache =
-        std::make_unique<VideoFrameSharedImageCache>();
+  if (!rgb_shared_image_cache_) {
+    rgb_shared_image_cache_ = std::make_unique<VideoFrameSharedImageCache>();
   }
 
   // This SI is used to cache the VideoFrame. We will eventually read out
@@ -1488,7 +1487,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     src_usage |= gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
   }
   auto [rgb_shared_image, rgb_sync_token, status] =
-      yuv_cache_.rgb_shared_image_cache->GetOrCreateSharedImage(
+      rgb_shared_image_cache_->GetOrCreateSharedImage(
           video_frame.get(), raster_context_provider, src_usage,
           SHARED_IMAGE_FORMAT, video_frame->CompatRGBColorSpace());
   CHECK(rgb_shared_image);
@@ -1524,7 +1523,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
 
   // Update the `rgb_sync_token` to be waited upon based on gles tasks performed
   // earlier.
-  yuv_cache_.rgb_shared_image_cache->UpdateSyncToken(dest_sync_token);
+  rgb_shared_image_cache_->UpdateSyncToken(dest_sync_token);
 
   // We do not need to synchronize video frame read here since it's already
   // taken care of earlier.
@@ -1582,21 +1581,17 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   }
 
   // Recreate both the caches if not set.
-  if (!yuv_cache_.rgb_shared_image_cache &&
-      !yuv_cache_.yuv_shared_image_cache) {
-    yuv_cache_.rgb_shared_image_cache =
-        std::make_unique<VideoFrameSharedImageCache>();
-    yuv_cache_.yuv_shared_image_cache =
-        std::make_unique<VideoFrameSharedImageCache>();
+  if (!rgb_shared_image_cache_ && !yuv_shared_image_cache_) {
+    rgb_shared_image_cache_ = std::make_unique<VideoFrameSharedImageCache>();
+    yuv_shared_image_cache_ = std::make_unique<VideoFrameSharedImageCache>();
   }
 
-  DCHECK(yuv_cache_.rgb_shared_image_cache &&
-         yuv_cache_.yuv_shared_image_cache);
+  DCHECK(rgb_shared_image_cache_ && yuv_shared_image_cache_);
 
   // We need a shared image to receive the intermediate RGB result. Try to reuse
   // one if compatible, otherwise create a new one.
   auto [rgb_shared_image, rgb_sync_token, status] =
-      yuv_cache_.rgb_shared_image_cache->GetOrCreateSharedImage(
+      rgb_shared_image_cache_->GetOrCreateSharedImage(
           video_frame.get(), raster_context_provider, src_usage,
           SHARED_IMAGE_FORMAT, video_frame->CompatRGBColorSpace());
   CHECK(rgb_shared_image);
@@ -1607,7 +1602,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   internals::ConvertYuvVideoFrameToRgbSharedImage(
       video_frame.get(), raster_context_provider, rgb_shared_image->mailbox(),
       rgb_sync_token,
-      /*use_visible_rect=*/false, yuv_cache_.yuv_shared_image_cache.get());
+      /*use_visible_rect=*/false, yuv_shared_image_cache_.get());
 
   gpu::SyncToken post_conversion_sync_token;
   raster_context_provider->RasterInterface()->GenUnverifiedSyncTokenCHROMIUM(
@@ -1622,7 +1617,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
 
   // Update the rgb sync token to be waited upon based on gles tasks performed
   // earlier.
-  yuv_cache_.rgb_shared_image_cache->UpdateSyncToken(rgb_sync_token);
+  rgb_shared_image_cache_->UpdateSyncToken(rgb_sync_token);
 
   // video_frame->UpdateReleaseSyncToken is not necessary since the video frame
   // data we used was CPU-side (IsMappable) to begin with. If there were any
@@ -1712,7 +1707,11 @@ bool PaintCanvasVideoRenderer::TexSubImage2D(unsigned target,
 void PaintCanvasVideoRenderer::ResetCache() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   cache_.reset();
-  yuv_cache_.Reset();
+  rgb_shared_image_cache_.reset();
+  yuv_shared_image_cache_.reset();
+  // ClientSharedImage destructor calls DestroySharedImage which in turn ensures
+  // that the deferred destroy request is flushed. Thus, clients don't need to
+  // call SharedImageInterface::Flush explicitly.
 }
 
 PaintCanvasVideoRenderer::Cache::Cache(VideoFrame::ID frame_id)
@@ -1911,19 +1910,6 @@ gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
                               raster_context_provider->ContextSupport());
   }
   return sync_token;
-}
-
-PaintCanvasVideoRenderer::YUVTextureCache::YUVTextureCache() = default;
-PaintCanvasVideoRenderer::YUVTextureCache::~YUVTextureCache() {
-  Reset();
-}
-
-void PaintCanvasVideoRenderer::YUVTextureCache::Reset() {
-  rgb_shared_image_cache.reset();
-  yuv_shared_image_cache.reset();
-  // ClientSharedImage destructor calls DestroySharedImage which in turn ensures
-  // that the deferred destroy request is flushed. Thus, clients don't need to
-  // call SharedImageInterface::Flush explicitly.
 }
 
 gfx::Size PaintCanvasVideoRenderer::LastImageDimensionsForTesting() {

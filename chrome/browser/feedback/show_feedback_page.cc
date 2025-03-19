@@ -22,6 +22,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "extensions/browser/api/feedback_private/feedback_private_api.h"
+#include "third_party/re2/src/re2/re2.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/webui/os_feedback_ui/url_constants.h"
@@ -49,12 +50,14 @@ constexpr char kDescriptionPlaceholderQueryParam[] =
     "description_placeholder_text";
 constexpr char kFromAssistantQueryParam[] = "from_assistant";
 constexpr char kSettingsSearchFeedbackQueryParam[] = "from_settings_search";
+constexpr char kIsQueryFingerprint[] = "is_query_fingerprint";
 constexpr char kCategoryTagParam[] = "category_tag";
 constexpr char kPageURLParam[] = "page_url";
 constexpr char kQueryParamSeparator[] = "&";
 constexpr char kQueryParamKeyValueSeparator[] = "=";
 constexpr char kFromAssistantQueryParamValue[] = "true";
 constexpr char kSettingsSearchFeedbackQueryParamValue[] = "true";
+constexpr char kIsQueryFingerprintValue[] = "true";
 constexpr char kFromAutofillQueryParam[] = "from_autofill";
 constexpr char kFromAutofillParamValue[] = "true";
 constexpr char kAutofillMetadataQueryParam[] = "autofill_metadata";
@@ -84,6 +87,14 @@ GURL BuildFeedbackUrl(const std::string& extra_diagnostics,
   if (!description_template.empty()) {
     query_params.emplace_back(
         StrCatQueryParam(kDescriptionTemplateQueryParam, description_template));
+
+    // If the user has queried for "fingerprint" in Settings app, we want to
+    // check the 'Send system & app info and metrics' checkbox in the feedback
+    // dialog.
+    if (re2::RE2::PartialMatch(description_template, "fingerprint")) {
+      query_params.emplace_back(
+          StrCatQueryParam(kIsQueryFingerprint, kIsQueryFingerprintValue));
+    }
   }
 
   if (!description_placeholder_text.empty()) {

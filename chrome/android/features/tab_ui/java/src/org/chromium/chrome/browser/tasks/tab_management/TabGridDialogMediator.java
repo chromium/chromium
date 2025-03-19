@@ -1148,12 +1148,13 @@ public class TabGridDialogMediator
         }
 
         int tabsCount = getRelatedTabs(mCurrentTabId).size();
+        int rootId = currentTab.getRootId();
         if (mCurrentGroupModifiedTitle.length() == 0
                 || TabGroupTitleUtils.isDefaultTitle(
                         mActivity, mCurrentGroupModifiedTitle, tabsCount)) {
             // When dialog title is empty or was unchanged, delete previously stored title and
             // restore default title.
-            filter.deleteTabGroupTitle(currentTab.getRootId());
+            filter.deleteTabGroupTitle(rootId);
 
             String originalTitle = TabGroupTitleUtils.getDefaultTitle(mActivity, tabsCount);
             mModel.set(
@@ -1167,12 +1168,12 @@ public class TabGridDialogMediator
             mModel.set(TabGridDialogProperties.HEADER_TITLE, originalTitle);
             // Setting the tab group title to null ensures the default title isn't saved, but
             // observers downstream will update to the correct default title.
-            filter.setTabGroupTitle(currentTab.getRootId(), null);
+            filter.setTabGroupTitle(rootId, null);
             mCurrentGroupModifiedTitle = null;
             RecordUserAction.record("TabGridDialog.ResetTabGroupName");
             return;
         }
-        filter.setTabGroupTitle(currentTab.getRootId(), mCurrentGroupModifiedTitle);
+        filter.setTabGroupTitle(rootId, mCurrentGroupModifiedTitle);
         int relatedTabsCount = getRelatedTabs(mCurrentTabId).size();
         mModel.set(
                 TabGridDialogProperties.COLLAPSE_BUTTON_CONTENT_DESCRIPTION,

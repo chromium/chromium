@@ -99,7 +99,7 @@ public class SigninPromoCoordinator {
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         mMediator.getModel(), promoView, SigninPromoViewBinder::bind);
-        mImpressionTracker = new ImpressionTracker(view);
+        mImpressionTracker = new ImpressionTracker(promoView);
         mImpressionTracker.setListener(mMediator::recordImpression);
     }
 

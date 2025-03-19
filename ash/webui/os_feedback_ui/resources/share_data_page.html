@@ -304,7 +304,9 @@
       <!-- System Information -->
       <div id="sysInfoContainer" class="checkbox-field-container">
         <cr-checkbox id="sysInfoCheckbox" aria-labelledby="sysInfoCheckboxLabel"
-            checked="[[checkSysInfoAndMetrics(feedbackContext.fromSettingsSearch)]]">
+            checked="[[checkSysInfoAndMetrics(
+                  feedbackContext.fromSettingsSearch,
+                  feedbackContext.isQueryFingerprint)]]">
           <div id="sysInfoCheckboxLabel" inner-h-t-m-l="[[getSysInfoCheckboxLabel()]]"
               class="checkbox-label"></div>
         </cr-checkbox>

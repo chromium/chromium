@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/raw_ref.h"
 #include "chrome/browser/web_applications/web_app_launch_params.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -22,8 +21,7 @@ class NavigationHandle;
 }  // namespace content
 
 namespace web_app {
-
-class WebAppRegistrar;
+class LaunchQueueDelegate;
 
 // This handles passing WebAppLaunchParams through to its WebContents.
 // There are three scenarios in which launch params are sent to a WebContents:
@@ -42,7 +40,7 @@ class WebAppRegistrar;
 class WebAppLaunchQueue : public content::WebContentsObserver {
  public:
   WebAppLaunchQueue(content::WebContents* web_contents,
-                    const WebAppRegistrar& registrar);
+                    std::unique_ptr<LaunchQueueDelegate> delegate);
 
   WebAppLaunchQueue(const WebAppLaunchQueue&) = delete;
   WebAppLaunchQueue& operator=(const WebAppLaunchQueue&) = delete;
@@ -56,9 +54,6 @@ class WebAppLaunchQueue : public content::WebContentsObserver {
   void FlushForTesting() const;
 
  private:
-  bool IsInScope(const WebAppLaunchParams& launch_params,
-                 const GURL& current_url);
-
   // Reset self back to the initial state.
   void Reset();
 
@@ -69,8 +64,6 @@ class WebAppLaunchQueue : public content::WebContentsObserver {
   void SendLaunchParams(WebAppLaunchParams launch_params,
                         const GURL& current_url);
 
-  const raw_ref<const WebAppRegistrar> registrar_;
-
   // Launch params queued up to be sent to the WebContents.
   std::vector<WebAppLaunchParams> queue_;
 
@@ -80,6 +73,8 @@ class WebAppLaunchQueue : public content::WebContentsObserver {
   // A copy of the last sent launch params ready to resend should the user
   // reload the page.
   std::optional<WebAppLaunchParams> last_sent_queued_launch_params_;
+
+  std::unique_ptr<LaunchQueueDelegate> delegate_;
 };
 
 }  // namespace web_app

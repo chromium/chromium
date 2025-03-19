@@ -4,6 +4,7 @@
 
 #include "chrome/services/sharing/nearby/platform/ble_v2_remote_peripheral.h"
 
+#include "base/compiler_specific.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
 
 namespace {
@@ -17,7 +18,8 @@ nearby::chrome::BleV2RemotePeripheral::UniqueId GenerateUniqueId(
   }
 
   uint64_t unique_id = 0;
-  std::memcpy(&unique_id, address_bytes.data(), address_bytes.size());
+  UNSAFE_TODO(
+      std::memcpy(&unique_id, address_bytes.data(), address_bytes.size()));
   return unique_id;
 }
 

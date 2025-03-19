@@ -452,6 +452,13 @@ struct NetworkContextParams {
   // Signals to IP Protection if this is an incognito network context.
   bool ip_protection_incognito = false;
 
+  // Points to the user-data directory of the active profile, where
+  // Probabilistic Reveal Tokens will be stored if the
+  // `IpPrivacyStoreProbabilisticRevealTokens` feature is enabled. This path
+  // will be populated when IP Protection and the PRT storage feature are
+  // enabled, even for incognito contexts when `file_paths` is empty.
+  mojo_base.mojom.FilePath? ip_protection_data_directory;
+
   // When PAC quick checking is enabled, DNS lookups for PAC script's host are
   // timed out aggressively. This prevents hanging all network request on DNS
   // lookups that are slow or are blockholed, at the cost of making it more
@@ -1037,9 +1044,10 @@ interface NetworkContext {
   // Set Trust Token blocking to |block|.
   SetBlockTrustTokens(bool block);
 
-  // Sets the list of TRACKING_PROTECTION content setting exceptions in IpProtectionCore.
+  // Sets the list of TRACKING_PROTECTION content setting exceptions in
+  // IpProtectionCore.
   SetTrackingProtectionContentSetting(
-    array<content_settings.mojom.ContentSettingPatternSource> settings);
+      array<content_settings.mojom.ContentSettingPatternSource> settings);
 
   // Clears network objects with implicit URL history information. Data related
   // to events that happened prior to |start_time| and after |end_time| may be

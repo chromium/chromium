@@ -206,11 +206,6 @@ void DownloadRequestMaker::Start(DownloadRequestMaker::Callback callback) {
 
   *request_->mutable_population() =
       GetUserPopulationForProfileWithCookieTheftExperiments(profile);
-  if (profile && IsEnhancedProtectionEnabled(*profile->GetPrefs()) &&
-      base::FeatureList::IsEnabled(kDeepScanningCriteria)) {
-    request_->mutable_population()->add_finch_active_groups(
-        "SafeBrowsingDeepScanningCriteria-Enabled");
-  }
   request_->set_request_ap_verdicts(is_under_advanced_protection);
   request_->set_locale(g_browser_process->GetApplicationLocale());
   request_->set_file_basename(target_file_name_.BaseName().AsUTF8Unsafe());

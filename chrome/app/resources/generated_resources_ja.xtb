@@ -624,6 +624,7 @@
 <translation id="1430915738399379752">印刷</translation>
 <translation id="1431188203598586230">最後のソフトウェア アップデート</translation>
 <translation id="1432581352905426595">検索エンジンを管理</translation>
+<translation id="1432650420699700107">サイトがローカル ネットワーク上のデバイスへの接続を要求できるようにする</translation>
 <translation id="1433478348197382180">リーディング モード</translation>
 <translation id="1433980411933182122">起動</translation>
 <translation id="1434696352799406980">起動ページ、新しいタブページ、検索エンジン、固定タブをリセットします。また、すべての拡張機能を無効にし、Cookie などの一時データを削除します。ただし、ブックマーク、履歴、保存したパスワードはそのまま残ります。</translation>
@@ -4052,9 +4053,6 @@
     <ph name="BEGIN_PARAGRAPH2" />これらのレポートの送信は、ChromeOS デバイスの設定でいつでも開始および停止できます。あなたがドメイン管理者である場合は、管理コンソールでこの設定を変更できます。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">夜、小さなコテージハウスの上空に輝くオーロラ。</translation>
 <translation id="3818102823568165369">オペレーティング システムまたは管理者が追加したローカル証明書です。</translation>
-<translation id="3818662907126913619"><ph name="DOMAIN" /> のプロファイルでデバイスを使用するには、デバイスに関する情報を組織に提供する必要があります。
-
-これには、インストールしたソフトウェア、ファイル、ブラウザ、デバイスのオペレーティング システムに関する情報が含まれます。</translation>
 <translation id="3819164369574292143">画面上の項目を拡大表示します。拡大鏡をオンまたはオフにするには、検索+Ctrl+M キーを使用します。拡大した状態で移動するには、Ctrl+Alt+矢印キーを使用します。</translation>
 <translation id="3819257035322786455">バックアップ</translation>
 <translation id="3819261658055281761">このデバイスの長期 API アクセス トークンを保存できませんでした。</translation>
@@ -4372,9 +4370,6 @@
 <translation id="4031527940632463547">センサーがブロックされました</translation>
 <translation id="4033471457476425443">新しいフォルダを追加</translation>
 <translation id="4033963223187371752">セキュリティで保護されたサイトに、セキュリティで保護されていない画像やウェブフレームなどのコンテンツが埋め込まれている場合があります</translation>
-<translation id="4034706080855851454">組織のプロファイルでデバイスを使用するには、デバイスに関する情報を組織に提供する必要があります。
-
-これには、インストールしたソフトウェア、ファイル、ブラウザ、デバイスのオペレーティング システムに関する情報が含まれます。</translation>
 <translation id="4034824040120875894">プリンタ</translation>
 <translation id="4035758313003622889">タスク マネージャ(&amp;T)</translation>
 <translation id="4035877632587724847">許可しない</translation>
@@ -4822,6 +4817,7 @@
 <translation id="4364830672918311045">通知を表示</translation>
 <translation id="4367971618859387374">表示名</translation>
 <translation id="4368960422722232719">タブ マウスオーバーのプレビュー カードにメモリ使用量を表示する</translation>
+<translation id="4369151461324628035">サイトにローカル ネットワーク上のデバイスへの接続を許可しない</translation>
 <translation id="4369215744064167350">ウェブサイトへのアクセスが承認されました</translation>
 <translation id="4369233657762989723">音声入力のオン / オフ</translation>
 <translation id="436926121798828366">これは <ph name="SETTINGS_LINK" /> でいつでも変更できます</translation>
@@ -5374,6 +5370,7 @@
 <translation id="4772914216048388646">整然</translation>
 <translation id="4773112038801431077">Linux のアップグレード</translation>
 <translation id="4773122030389014189">「<ph name="GROUP_NAME" />」タブグループを共有</translation>
+<translation id="4773253008034797668">ローカル ネットワーク上のデバイスへの接続を許可するサイト</translation>
 <translation id="477548766361111120">拡張機能にこのサイトの読み取りと変更を許可する</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> を接続しました</translation>
 <translation id="4776594120007763294">ページを追加して後で読むには、ボタンをクリックしてください</translation>
@@ -7832,6 +7829,7 @@
 <translation id="6563002009564846727">Windows からインポートした証明書を表示する</translation>
 <translation id="6563055593659435495">スマートフォンとの接続を維持できません。スマートフォンが近くにあってロックが解除され、Bluetooth と Wi−Fi がオンになっていることを確認してください。</translation>
 <translation id="6564860838537532172">閲覧履歴を検索すると、過去の検索、最も一致したページのコンテンツ、生成モデルによる出力が Google に送信されます。この機能を改善するため、人間のレビュアーがこれらのデータを確認する場合があります。</translation>
+<translation id="6565144332292237355">サイトはこの機能を使用して、ローカル ネットワーク上のデバイスを検索して接続できます</translation>
 <translation id="6569931898053264308">中量の節約</translation>
 <translation id="6570622975915850879">別のデバイスを使用</translation>
 <translation id="65711204837946324">ダウンロードの権限が必要です</translation>
@@ -11544,6 +11542,7 @@
       <ph name="LIST_ITEM" />Chrome Connectivity Diagnostics を実行する
     <ph name="END_LIST" /></translation>
 <translation id="9161172953291434881">このサイトを信頼してデータの使用を許可しますか？</translation>
+<translation id="9164418710391288146">ローカル ネットワーク上のデバイスへの接続を許可しないサイト</translation>
 <translation id="9165856803582999927"><ph name="APP_NAME" /> で使用するパスキーを作成して保存するデバイスのカメラで、この QR コードをスキャンしてください</translation>
 <translation id="916607977885256133">ピクチャー イン ピクチャー</translation>
 <translation id="9166253503936244008"><ph name="APP_NAME" /> で使用するパスキーを持つデバイスで、この QR コードをスキャンしてください</translation>

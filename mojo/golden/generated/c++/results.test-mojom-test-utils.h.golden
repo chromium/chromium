@@ -15,7 +15,7 @@ namespace golden {
 
 class  ResultInterfaceInterceptorForTesting : public ResultInterface {
   virtual ResultInterface* GetForwardingInterface() = 0;
-  void Method(bool a) override;
+  void Method(bool a, MethodCallback callback) override;
 };
 class  ResultInterfaceAsyncWaiter {
  public:
@@ -25,6 +25,9 @@ class  ResultInterfaceAsyncWaiter {
   ResultInterfaceAsyncWaiter& operator=(const ResultInterfaceAsyncWaiter&) = delete;
 
   ~ResultInterfaceAsyncWaiter();
+  void Method(
+      bool a, ResultInterface_Method_ResponseParam_ResultPtr* out_result);
+  ResultInterface_Method_ResponseParam_ResultPtr Method(bool a);
 
  private:
   ResultInterface* const proxy_;

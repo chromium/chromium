@@ -63,40 +63,171 @@ constexpr CGFloat kHalfCreditCardIconOffset =
     2 * kSmallBorderWidth + 2 * kSpacing + 0.5 * kSuggestionIconWidth;
 
 // Returns the font for the title line of the suggestion.
-UIFont* TitleFont(CGFloat fontSize) {
-  return [UIFont systemFontOfSize:fontSize + kTitleFontPointSizeAdjustment
+UIFont* TitleFont(CGFloat font_size) {
+  return [UIFont systemFontOfSize:font_size + kTitleFontPointSizeAdjustment
                            weight:UIFontWeightMedium];
 }
 
 // Returns the font for the subtitle line of the suggestion.
-UIFont* SubtitleFont(CGFloat fontSize) {
+UIFont* SubtitleFont(CGFloat font_size) {
   UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
-  return [font fontWithSize:fontSize + kSubtitleFontPointSizeAdjustment];
+  return [font fontWithSize:font_size + kSubtitleFontPointSizeAdjustment];
+}
+
+// Returns the font used by a section of the suggestion description text.
+UIFont* TextFont(BOOL bold, BOOL is_title) {
+  CGFloat font_size =
+      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
+          ? kIpadFontSize
+          : kIphoneFontSize;
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    return is_title ? TitleFont(font_size) : SubtitleFont(font_size);
+  } else {
+    return bold ? [UIFont boldSystemFontOfSize:font_size]
+                : [UIFont systemFontOfSize:font_size];
+  }
 }
 
 // Creates a label with the given `text` and `alpha` suitable for use in a
 // suggestion button in the keyboard accessory view.
 UILabel* TextLabel(NSString* text,
-                   UIColor* textColor,
+                   UIColor* text_color,
                    BOOL bold,
-                   BOOL isTitle) {
+                   BOOL is_title) {
   UILabel* label = [[UILabel alloc] init];
   [label setText:text];
-  CGFloat fontSize =
-      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
-          ? kIpadFontSize
-          : kIphoneFontSize;
-  UIFont* font;
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    font = isTitle ? TitleFont(fontSize) : SubtitleFont(fontSize);
-  } else {
-    font = bold ? [UIFont boldSystemFontOfSize:fontSize]
-                : [UIFont systemFontOfSize:fontSize];
-  }
-  [label setFont:font];
-  label.textColor = textColor;
+  [label setFont:TextFont(bold, is_title)];
+  label.textColor = text_color;
   [label setBackgroundColor:[UIColor clearColor]];
   return label;
+}
+
+// Creates a string with the given `text` and `text_color` suitable for use in a
+// suggestion button in the keyboard accessory view.
+NSAttributedString* AsAttributedString(NSString* text,
+                                       UIColor* text_color,
+                                       BOOL bold,
+                                       BOOL is_title) {
+  NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
+  [style setLineSpacing:kVerticalSpacing];
+
+  // If it's not a title, then prepend a new line to the text, so that it shows
+  // up on the next line.
+  return [[NSAttributedString alloc]
+      initWithString:is_title ? text : [NSString stringWithFormat:@"\n%@", text]
+          attributes:@{
+            NSFontAttributeName : TextFont(bold, is_title),
+            NSForegroundColorAttributeName : text_color,
+            NSBackgroundColorAttributeName : [UIColor clearColor],
+            NSParagraphStyleAttributeName : style
+          }];
+}
+
+// Returns a potentially multiline UILabel containing the formatted suggestion
+// information.
+UILabel* AttributedTextLabel(NSString* suggestion_text,
+                             NSString* minor_value,
+                             NSString* display_description) {
+  NSMutableAttributedString* full_text =
+      [[NSMutableAttributedString alloc] init];
+
+  [full_text appendAttributedString:AsAttributedString(
+                                        suggestion_text,
+                                        [UIColor colorNamed:kTextPrimaryColor],
+                                        /*bold=*/YES, /*is_title=*/YES)];
+  NSInteger numberOfLines = 1;
+
+  if ([minor_value length] > 0) {
+    [full_text
+        appendAttributedString:AsAttributedString(
+                                   minor_value,
+                                   [UIColor colorNamed:kTextPrimaryColor],
+                                   /*bold=*/YES, /*is_title=*/NO)];
+    numberOfLines++;
+  }
+
+  if ([display_description length] > 0) {
+    [full_text
+        appendAttributedString:AsAttributedString(
+                                   display_description,
+                                   [UIColor colorNamed:kTextSecondaryColor],
+                                   /*bold=*/NO, /*is_title=*/NO)];
+    numberOfLines++;
+  }
+
+  UILabel* label = [[UILabel alloc] init];
+  label.numberOfLines = numberOfLines;
+  label.attributedText = full_text;
+  return label;
+}
+
+// Splits a credit card label into 2 labels, with one being an incompressible
+// credit card number label. Returns the label as is if this is not a credit
+// card.
+UIView* splitLabel(UILabel* label, BOOL is_credit_card) {
+  if (!is_credit_card) {
+    return label;
+  }
+
+  // Look for a credit card number in the string. Note that U+202A is the
+  // "Left-to-right embedding" character and U+202C is the "Pop directional
+  // formatting" character. Credit card numbers are surrounded by these two
+  // Unicode characters.
+  NSRange range =
+      [label.text rangeOfString:@"\U0000202a•⁠ ⁠•⁠ ⁠"];
+  if (range.location == NSNotFound || range.location < 1) {
+    return label;
+  }
+
+  // Split the string in pre and post credit card number labels.
+  UILabel* credit_card_label = [[UILabel alloc] init];
+  credit_card_label.font = label.font;
+  credit_card_label.text = [label.text substringFromIndex:range.location];
+  credit_card_label.textColor = label.textColor;
+  // The credit card number should not be compressible.
+  [credit_card_label
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisHorizontal];
+
+  // Remove credit card number from the original string.
+  label.text = [label.text substringToIndex:range.location - 1];
+
+  // Stack both labels horizontally.
+  UIStackView* stack_view = [[UIStackView alloc] initWithArrangedSubviews:@[]];
+  stack_view.axis = UILayoutConstraintAxisHorizontal;
+  stack_view.alignment = UIStackViewAlignmentCenter;
+  stack_view.spacing = kSpacing;
+  [stack_view addArrangedSubview:label];
+  [stack_view addArrangedSubview:credit_card_label];
+  return stack_view;
+}
+
+// Returns an array of views, each view containing one piece of formatted
+// suggestion related information.
+NSArray<UIView*>* TextViews(NSString* suggestion_text,
+                            NSString* minor_value,
+                            NSString* display_description,
+                            BOOL is_credit_card) {
+  NSMutableArray<UIView*>* views = [NSMutableArray array];
+  UILabel* value_label =
+      TextLabel(suggestion_text, [UIColor colorNamed:kTextPrimaryColor],
+                /*bold=*/YES, /*is_title=*/YES);
+  [views addObject:splitLabel(value_label, is_credit_card)];
+
+  if ([minor_value length] > 0) {
+    UILabel* minor_value_label =
+        TextLabel(minor_value, [UIColor colorNamed:kTextPrimaryColor],
+                  /*bold=*/YES, /*is_title=*/NO);
+    [views addObject:splitLabel(minor_value_label, is_credit_card)];
+  }
+
+  if ([display_description length] > 0) {
+    UILabel* description =
+        TextLabel(display_description, [UIColor colorNamed:kTextSecondaryColor],
+                  /*bold=*/NO, /*is_title=*/NO);
+    [views addObject:splitLabel(description, is_credit_card)];
+  }
+  return views;
 }
 
 }  // namespace
@@ -142,20 +273,25 @@ UILabel* TextLabel(NSString* text,
       [stackView addArrangedSubview:iconView];
     }
 
+    BOOL isTablet = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
     NSString* suggestionText = suggestion.value;
     if (IsKeyboardAccessoryUpgradeEnabled()) {
-      UIStackView* verticalStackView =
-          [[UIStackView alloc] initWithArrangedSubviews:@[]];
-      verticalStackView.axis = UILayoutConstraintAxisVertical;
-      verticalStackView.alignment = UIStackViewAlignmentLeading;
-      verticalStackView.layoutMarginsRelativeArrangement = YES;
-      verticalStackView.layoutMargins =
-          UIEdgeInsetsMake(0, suggestion.icon ? kSpacing : 0, 0, 0);
-      verticalStackView.spacing = kVerticalSpacing;
-      [stackView addArrangedSubview:verticalStackView];
+      // On phones, store the suggestion information in a stack view so that it
+      // can be selectively truncated if necessary.
+      if (!isTablet) {
+        UIStackView* verticalStackView =
+            [[UIStackView alloc] initWithArrangedSubviews:@[]];
+        verticalStackView.axis = UILayoutConstraintAxisVertical;
+        verticalStackView.alignment = UIStackViewAlignmentLeading;
+        verticalStackView.layoutMarginsRelativeArrangement = YES;
+        verticalStackView.layoutMargins =
+            UIEdgeInsetsMake(0, suggestion.icon ? kSpacing : 0, 0, 0);
+        verticalStackView.spacing = kVerticalSpacing;
+        [stackView addArrangedSubview:verticalStackView];
 
-      // Insert the next subviews vertically instead of horizonatally.
-      stackView = verticalStackView;
+        // Insert the next subviews vertically instead of horizonatally.
+        stackView = verticalStackView;
+      }
 
       if ([suggestionText hasSuffix:kPasswordFormSuggestionSuffix]) {
         suggestionText = [suggestionText
@@ -168,23 +304,26 @@ UILabel* TextLabel(NSString* text,
       }
     }
 
-    UILabel* valueLabel =
-        TextLabel(suggestionText, [UIColor colorNamed:kTextPrimaryColor],
-                  /*bold=*/YES, /*isTitle=*/YES);
-    [stackView addArrangedSubview:[self splitLabel:valueLabel]];
-
-    if ([suggestion.minorValue length] > 0) {
-      UILabel* minorValueLabel = TextLabel(
-          suggestion.minorValue, [UIColor colorNamed:kTextPrimaryColor],
-          /*bold=*/YES, /*isTitle=*/NO);
-      [stackView addArrangedSubview:[self splitLabel:minorValueLabel]];
-    }
-
-    if ([suggestion.displayDescription length] > 0) {
-      UILabel* description = TextLabel(suggestion.displayDescription,
-                                       [UIColor colorNamed:kTextSecondaryColor],
-                                       /*bold=*/NO, /*isTitle=*/NO);
-      [stackView addArrangedSubview:[self splitLabel:description]];
+    if (isTablet && IsKeyboardAccessoryUpgradeEnabled()) {
+      // On tablets, the stage manager causes an issue where an infinite loop
+      // happens if we add stack views here, so we can't use more stack views
+      // until the stage manager issue is fixed. As a workaround, on tablets,
+      // since we don't need to truncate the suggestion text, the stack views
+      // can be replaced by a single attributed string to present the data the
+      // same way without having to rely on a stack of UILabel objects, which,
+      // on the plus side, might actually be more light weight in the end.
+      [stackView addArrangedSubview:AttributedTextLabel(
+                                        suggestionText, suggestion.minorValue,
+                                        suggestion.displayDescription)];
+    } else {
+      // Format the suggestion information using a stack view so that each piece
+      // of information can be truncated individually when truncation is needed.
+      NSArray<UIView*>* views = TextViews(suggestionText, suggestion.minorValue,
+                                          suggestion.displayDescription,
+                                          [self isCreditCardSuggestion]);
+      for (UIView* view in views) {
+        [stackView addArrangedSubview:view];
+      }
     }
 
     [self setBackgroundColor:[self customBackgroundColor]];
@@ -204,7 +343,8 @@ UILabel* TextLabel(NSString* text,
     [self
         setAccessibilityIdentifier:kFormSuggestionLabelAccessibilityIdentifier];
 
-    if (IsKeyboardAccessoryUpgradeEnabled()) {
+    // On phones, set a maximum width to save space on the keyboard accessory.
+    if (!isTablet && IsKeyboardAccessoryUpgradeEnabled()) {
       CGFloat maximumWidth = [self maximumWidth:accessoryTrailingView];
       if (maximumWidth < CGFLOAT_MAX) {
         [self.widthAnchor constraintLessThanOrEqualToConstant:maximumWidth]
@@ -215,6 +355,8 @@ UILabel* TextLabel(NSString* text,
 
   return self;
 }
+
+#pragma mark - UIView
 
 - (void)layoutSubviews {
   [super layoutSubviews];
@@ -318,46 +460,6 @@ UILabel* TextLabel(NSString* text,
       break;
   }
   return maxWidth;
-}
-
-// Splits a credit card label into 2 labels, with one being an incompressible
-// credit card number label.
-- (UIView*)splitLabel:(UILabel*)label {
-  if (![self isCreditCardSuggestion]) {
-    return label;
-  }
-
-  // Look for a credit card number in the string. Note that U+202A is the
-  // "Left-to-right embedding" character and U+202C is the "Pop directional
-  // formatting" character. Credit card numbers are surrounded by these two
-  // Unicode characters.
-  NSRange range =
-      [label.text rangeOfString:@"\U0000202a•⁠ ⁠•⁠ ⁠"];
-  if (range.location == NSNotFound || range.location < 1) {
-    return label;
-  }
-
-  // Split the string in pre and post credit card number labels.
-  UILabel* creditCardLabel = [[UILabel alloc] init];
-  creditCardLabel.font = label.font;
-  creditCardLabel.text = [label.text substringFromIndex:range.location];
-  creditCardLabel.textColor = label.textColor;
-  // The credit card number should not be compressible.
-  [creditCardLabel
-      setContentCompressionResistancePriority:UILayoutPriorityRequired
-                                      forAxis:UILayoutConstraintAxisHorizontal];
-
-  // Remove credit card number from the original string.
-  label.text = [label.text substringToIndex:range.location - 1];
-
-  // Stack both labels horizontally.
-  UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[]];
-  stackView.axis = UILayoutConstraintAxisHorizontal;
-  stackView.alignment = UIStackViewAlignmentCenter;
-  stackView.spacing = kSpacing;
-  [stackView addArrangedSubview:label];
-  [stackView addArrangedSubview:creditCardLabel];
-  return stackView;
 }
 
 @end

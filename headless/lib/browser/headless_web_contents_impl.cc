@@ -151,7 +151,7 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
                                  ? default_bounds
                                  : window_features.bounds;
     raw_child_contents->SetBounds(bounds);
-    return nullptr;
+    return raw_child_contents->web_contents();
   }
 
   content::WebContents* OpenURLFromTab(

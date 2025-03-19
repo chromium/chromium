@@ -204,6 +204,19 @@ each histogram. Maybe add here or add a new performance controls one
   </token>
 </histogram>
 
+<histogram name="PerformanceControls.Intervention.DailyAcceptancePercentage"
+    units="%" expires_after="2025-08-31">
+  <owner>stluong@chromium.org</owner>
+  <owner>estalin@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logs the performance intervention acceptance percentage each day. The
+    acceptance percentage is determined by the last couple times performance
+    intervention is prompted. This will be used to learn the distribution on how
+    often performance intervention is accepted.
+  </summary>
+</histogram>
+
 <histogram name="PerformanceControls.Intervention.Dialog.TabsAfterRemovalCount"
     units="tabs" expires_after="2025-07-06">
   <owner>stluong@chromium.org</owner>

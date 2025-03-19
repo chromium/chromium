@@ -766,7 +766,7 @@ void ProfileMenuViewBase::SetProfileIdentityWithCallToAction(
     hover_button->SetPreferredSize(gfx::Size(
         kMenuWidth - 2 * kIdentityContainerMargin, kHeaderVerticalSize));
     hover_button->SetIconHorizontalMargins(0, 0);
-    hover_button->title()->SetDefaultTextStyle(views::style::STYLE_BODY_5);
+    hover_button->title()->SetTextStyle(views::style::STYLE_BODY_5);
 
     // Swap the layout manager so that the text is centered.
     auto hover_button_box_layout = std::make_unique<views::BoxLayout>(

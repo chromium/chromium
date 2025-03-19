@@ -101,7 +101,7 @@ Matcher<Suggestion> EqualLabels(
 Matcher<Suggestion> EqualsSuggestion(const Suggestion& suggestion) {
   return AllOf(Field(&Suggestion::type, suggestion.type),
                Field(&Suggestion::main_text, suggestion.main_text),
-               Field(&Suggestion::minor_text, suggestion.minor_text),
+               Field(&Suggestion::minor_texts, suggestion.minor_texts),
                Field(&Suggestion::icon, suggestion.icon),
                Field(&Suggestion::labels, suggestion.labels));
 }
@@ -119,11 +119,12 @@ Matcher<Suggestion> EqualsIbanSuggestion(
           Field(&Suggestion::main_text, Suggestion::Text(identifier_string)),
           Field(&Suggestion::payload, payload));
     }
-    return AllOf(
-        Field(&Suggestion::type, SuggestionType::kIbanEntry),
-        Field(&Suggestion::main_text, Suggestion::Text(nickname)),
-        Field(&Suggestion::minor_text, Suggestion::Text(identifier_string)),
-        Field(&Suggestion::payload, payload));
+    return AllOf(Field(&Suggestion::type, SuggestionType::kIbanEntry),
+                 Field(&Suggestion::main_text, Suggestion::Text(nickname)),
+                 Field(&Suggestion::minor_texts,
+                       std::vector<Suggestion::Text>{
+                           Suggestion::Text(identifier_string)}),
+                 Field(&Suggestion::payload, payload));
   }
   if (nickname.empty()) {
     return AllOf(Field(&Suggestion::type, SuggestionType::kIbanEntry),
@@ -2141,7 +2142,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   // to the cardholder name.
   EXPECT_EQ(virtual_card_name_field_suggestion.main_text.value,
             u"Virtual card  Elvis Presley");
-  EXPECT_EQ(virtual_card_name_field_suggestion.minor_text.value, u"");
+  EXPECT_TRUE(virtual_card_name_field_suggestion.minor_texts.empty());
 #elif BUILDFLAG(IS_IOS)
   if (virtual_card_name_field_suggestion.IsAcceptable()) {
     EXPECT_EQ(virtual_card_name_field_suggestion.main_text.value,
@@ -2154,7 +2155,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   // On other platforms, the cardholder name is shown on the first line.
   EXPECT_EQ(virtual_card_name_field_suggestion.main_text.value,
             u"Elvis Presley");
-  EXPECT_EQ(virtual_card_name_field_suggestion.minor_text.value, u"");
+  EXPECT_TRUE(virtual_card_name_field_suggestion.minor_texts.empty());
 #endif
 
 #if BUILDFLAG(IS_IOS)
@@ -2219,13 +2220,13 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
   // separate view.
   EXPECT_EQ(virtual_card_number_field_suggestion.main_text.value,
             u"Virtual card  Visa");
-  EXPECT_EQ(virtual_card_number_field_suggestion.minor_text.value,
+  EXPECT_EQ(virtual_card_number_field_suggestion.minor_texts[0].value,
             CreditCard::GetObfuscatedStringForCardDigits(
                 /*obfuscation_length=*/2, u"1111"));
 #else
   // Card name and the obfuscated last four digits are shown separately.
   EXPECT_EQ(virtual_card_number_field_suggestion.main_text.value, u"Visa");
-  EXPECT_EQ(virtual_card_number_field_suggestion.minor_text.value,
+  EXPECT_EQ(virtual_card_number_field_suggestion.minor_texts[0].value,
             CreditCard::GetObfuscatedStringForCardDigits(
                 /*obfuscation_length=*/4, u"1111"));
 #endif
@@ -2257,7 +2258,7 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 
   // Only the name is displayed on the first line.
   EXPECT_EQ(real_card_name_field_suggestion.main_text.value, u"Elvis Presley");
-  EXPECT_EQ(real_card_name_field_suggestion.minor_text.value, u"");
+  EXPECT_TRUE(real_card_name_field_suggestion.minor_texts.empty());
 
 #if BUILDFLAG(IS_IOS)
   // For IOS, the label is "..1111".
@@ -2300,18 +2301,18 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
       real_card_number_field_suggestion.main_text.value,
       base::StrCat({u"Visa  ", CreditCard::GetObfuscatedStringForCardDigits(
                                    /*obfuscation_length=*/2, u"1111")}));
-  EXPECT_EQ(real_card_number_field_suggestion.minor_text.value, u"");
+  EXPECT_TRUE(real_card_number_field_suggestion.minor_texts.empty());
 #elif BUILDFLAG(IS_ANDROID)
   // For Android, split the first line and populate the card name and
   // the last 4 digits separately.
   EXPECT_EQ(real_card_number_field_suggestion.main_text.value, u"Visa");
-  EXPECT_EQ(real_card_number_field_suggestion.minor_text.value,
+  EXPECT_EQ(real_card_number_field_suggestion.minor_texts[0].value,
             CreditCard::GetObfuscatedStringForCardDigits(2, u"1111"));
 #else
   // For Desktop, split the first line and populate the card name and
   // the last 4 digits separately.
   EXPECT_EQ(real_card_number_field_suggestion.main_text.value, u"Visa");
-  EXPECT_EQ(real_card_number_field_suggestion.minor_text.value,
+  EXPECT_EQ(real_card_number_field_suggestion.minor_texts[0].value,
             CreditCard::GetObfuscatedStringForCardDigits(4, u"1111"));
 #endif
 
@@ -2351,13 +2352,13 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 #if !BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(suggestions[0].main_text.value, u"CVC");
   EXPECT_EQ(suggestions[1].main_text.value, u"CVC");
-  EXPECT_EQ(suggestions[0].minor_text.value, u"");
-  EXPECT_EQ(suggestions[1].minor_text.value, u"");
+  EXPECT_TRUE(suggestions[0].minor_texts.empty());
+  EXPECT_TRUE(suggestions[1].minor_texts.empty());
 #else
   EXPECT_EQ(suggestions[0].main_text.value, u"CVC for Visa");
   EXPECT_EQ(suggestions[1].main_text.value, u"CVC for Mastercard");
-  EXPECT_EQ(suggestions[0].minor_text.value, u"");
-  EXPECT_EQ(suggestions[1].minor_text.value, u"");
+  EXPECT_TRUE(suggestions[0].minor_texts.empty());
+  EXPECT_TRUE(suggestions[1].minor_texts.empty());
 #endif
   EXPECT_THAT(suggestions,
               ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/false));
@@ -2413,13 +2414,13 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(suggestions[0].main_text.value, u"Virtual card  CVC for Visa");
   EXPECT_EQ(suggestions[1].main_text.value, u"CVC for Visa");
-  EXPECT_EQ(suggestions[0].minor_text.value, u"");
-  EXPECT_EQ(suggestions[1].minor_text.value, u"");
+  EXPECT_TRUE(suggestions[0].minor_texts.empty());
+  EXPECT_TRUE(suggestions[1].minor_texts.empty());
 #elif !BUILDFLAG(IS_IOS)
   EXPECT_EQ(suggestions[0].main_text.value, u"CVC");
   EXPECT_EQ(suggestions[1].main_text.value, u"CVC");
-  EXPECT_EQ(suggestions[0].minor_text.value, u"");
-  EXPECT_EQ(suggestions[1].minor_text.value, u"");
+  EXPECT_TRUE(suggestions[0].minor_texts.empty());
+  EXPECT_TRUE(suggestions[1].minor_texts.empty());
 #endif
   EXPECT_THAT(suggestions,
               ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/true));
@@ -3697,7 +3698,7 @@ TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
   ASSERT_EQ(suggestions.size(), 2U);
   EXPECT_EQ(suggestions[0].main_text.value,
             virtual_card.CardNameForAutofillDisplay(virtual_card.nickname()));
-  EXPECT_EQ(suggestions[0].minor_text.value,
+  EXPECT_EQ(suggestions[0].minor_texts[0].value,
             virtual_card.ObfuscatedNumberWithVisibleLastFourDigits());
   // `HasDeactivatedStyle()` returns true only when merchant has opted out of
   // VCN.
@@ -3705,7 +3706,7 @@ TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
 
   EXPECT_EQ(suggestions[1].main_text.value,
             server_card.CardNameForAutofillDisplay(server_card.nickname()));
-  EXPECT_EQ(suggestions[1].minor_text.value,
+  EXPECT_EQ(suggestions[1].minor_texts[0].value,
             server_card.ObfuscatedNumberWithVisibleLastFourDigits());
   // `HasDeactivatedStyle()` is false for the real card.
   EXPECT_EQ(suggestions[1].HasDeactivatedStyle(), false);

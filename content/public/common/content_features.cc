@@ -1090,12 +1090,6 @@ const base::FeatureParam<FontDataServiceTypefaceType>
     kFontDataServiceTypefaceType{&kFontDataServiceAllWebContents, "typeface",
                                  FontDataServiceTypefaceType::kDwrite,
                                  &font_data_service_typeface};
-
-// Whether a utility process configured to use a "UI" message pump should also
-// initialize COM.
-BASE_FEATURE(kUtilityWithUiPumpInitializesCom,
-             "UtilityWithUiPumpInitializesCom",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 // When enabled, OOPIFs will not try to reuse compatible processes from

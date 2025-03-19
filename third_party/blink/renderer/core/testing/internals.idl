@@ -326,6 +326,8 @@ interface Internals {
     void forceLoseCanvasContext(CanvasRenderingContext2D ctx);
     void forceLoseCanvasContext(OffscreenCanvasRenderingContext2D ctx);
     void disableCanvasAcceleration(HTMLCanvasElement canvas);
+    boolean isCanvasImageSourceAccelerated(HTMLCanvasElement imageSource);
+    boolean isCanvasImageSourceAccelerated(OffscreenCanvas imageSource);
 
     DictionaryTest dictionaryTest();
     RecordTest recordTest();

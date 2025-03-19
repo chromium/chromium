@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -64,7 +65,7 @@ void RegistryHandler(void* data,
                      uint32_t version) {
   Globals* globals = static_cast<Globals*>(data);
 
-  if (strcmp(interface, "wl_output") == 0) {
+  if (UNSAFE_TODO(strcmp(interface, "wl_output")) == 0) {
     globals->outputs.push_back(
         {.connection = ZAURA_OUTPUT_CONNECTION_TYPE_UNKNOWN,
          .device_scale_factor = ZAURA_OUTPUT_SCALE_FACTOR_1000,
@@ -74,7 +75,7 @@ void RegistryHandler(void* data,
                       .transform = WL_OUTPUT_TRANSFORM_NORMAL}});
     globals->outputs.back().output.reset(static_cast<wl_output*>(
         wl_registry_bind(registry, id, &wl_output_interface, 2)));
-  } else if (strcmp(interface, "zaura_shell") == 0) {
+  } else if (UNSAFE_TODO(strcmp(interface, "zaura_shell")) == 0) {
     if (version >= 2) {
       globals->aura_shell.reset(static_cast<zaura_shell*>(
           wl_registry_bind(registry, id, &zaura_shell_interface, 5)));

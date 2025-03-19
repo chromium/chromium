@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
@@ -51,6 +52,7 @@ class PasswordCredentialController
 
   // AuthenticatorRequestDialogModel::Observer
   void OnPasswordCredentialSelected(PasswordCredentialPair password) override;
+  void OnStepTransition() override;
 
  private:
   // FormFetcher::Consumer:
@@ -60,6 +62,8 @@ class PasswordCredentialController
       const GURL& url);
 
   content::RenderFrameHost* GetRenderFrameHost() const;
+
+  void OnAuthenticationCompleted(PasswordCredentialPair password, bool success);
 
   const content::GlobalRenderFrameHostId render_frame_host_id_;
   raw_ptr<AuthenticatorRequestDialogModel> model_;
@@ -71,6 +75,10 @@ class PasswordCredentialController
   base::ScopedObservation<AuthenticatorRequestDialogModel,
                           AuthenticatorRequestDialogModel::Observer>
       model_observer_{this};
+
+  std::optional<PasswordCredentialPair> filling_password_;
+
+  base::WeakPtrFactory<PasswordCredentialController> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_WEBAUTHN_PASSWORD_CREDENTIAL_CONTROLLER_H_

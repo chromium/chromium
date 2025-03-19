@@ -2009,6 +2009,40 @@ void CopyPerBuyerSignalsFromIdlToMojo(
       mojom::blink::AuctionAdConfigMaybePromisePerBuyerSignals::NewPromise(0);
 }
 
+bool CopyPerBuyerTKVSignalsFromIdlToMojo(
+    const ScriptState& script_state,
+    ExceptionState& exception_state,
+    const AuctionAdConfig& input,
+    mojom::blink::AuctionAdConfig& output) {
+  if (!input.hasPerBuyerTKVSignals()) {
+    return true;
+  }
+
+  for (const auto& per_buyer_tkv_signal : input.perBuyerTKVSignals()) {
+    scoped_refptr<const SecurityOrigin> buyer =
+        ParseOrigin(per_buyer_tkv_signal.first);
+    if (!buyer) {
+      exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
+          input, "perBuyerTKVSignals buyer", per_buyer_tkv_signal.first,
+          "must be a valid https origin."));
+      return false;
+    }
+
+    String tkv_signals_str;
+    if (!Jsonify(script_state, per_buyer_tkv_signal.second.V8Value(),
+                 tkv_signals_str)) {
+      exception_state.ThrowTypeError(ErrorInvalidAuctionConfigSellerJson(
+          input.seller(), "perBuyerTKVSignals"));
+      return false;
+    }
+
+    output.auction_ad_config_non_shared_params->per_buyer_tkv_signals.insert(
+        buyer, tkv_signals_str);
+  }
+
+  return true;
+}
+
 // Returns nullptr + sets exception on failure, or returns a concrete value.
 //
 // This is shared logic for `perBuyerTimeouts` and `perBuyerCumulativeTimeouts`,
@@ -2667,7 +2701,9 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
       !CopyAggregationCoordinatorOriginFromIdlToMojo(exception_state, config,
                                                      *mojo_config) ||
       !CopyPerBuyerRealTimeReportingTypesFromIdlToMojo(exception_state, config,
-                                                       *mojo_config)) {
+                                                       *mojo_config) ||
+      !CopyPerBuyerTKVSignalsFromIdlToMojo(script_state, exception_state,
+                                           config, *mojo_config)) {
     return mojom::blink::AuctionAdConfigPtr();
   }
 

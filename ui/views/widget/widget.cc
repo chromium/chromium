@@ -522,9 +522,6 @@ void Widget::Init(InitParams params) {
   should_set_initial_bounds = !params.display_id.has_value();
 #endif
 #if BUILDFLAG(IS_WIN)
-  // These are mutually exclusive.
-  CHECK(!(params.force_show_in_taskbar && params.dont_show_in_taskbar));
-
   // force_system_menu_for_frameless only applies to frameless windows.
   CHECK(!params.force_system_menu_for_frameless ||
         params.type == Widget::InitParams::TYPE_WINDOW_FRAMELESS);

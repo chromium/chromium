@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
@@ -65,7 +66,7 @@ mojom::ParsingState ProtoHttpStreamParser::Append(std::string_view data) {
                               kReadBufferSpareCapacity);
   }
   CHECK_GE(read_buffer_->RemainingCapacity(), static_cast<int>(data.size()));
-  memcpy(read_buffer_->data(), data.data(), data.size());
+  UNSAFE_TODO(memcpy(read_buffer_->data(), data.data(), data.size()));
   read_buffer_->set_offset(read_buffer_->offset() + data.size());
   Parse();
   return current_state_;

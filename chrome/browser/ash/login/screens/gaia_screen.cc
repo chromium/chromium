@@ -315,6 +315,11 @@ void GaiaScreen::OnGetAuthFactorsConfiguration(
     std::optional<AuthenticationError> error) {
   bool is_recovery_configured = false;
   bool is_gaia_password_configured = true;
+  if (!view_) {
+    LOG(WARNING) << "The view is nullptr during OnGetAuthFactorsConfiguration";
+    return;
+  }
+  CHECK(user_context);
   if (error.has_value()) {
     LOG(WARNING) << "Failed to get auth factors configuration, code "
                  << error->get_cryptohome_error()

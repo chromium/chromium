@@ -123,7 +123,7 @@ class IbanManagerTest : public testing::Test {
     if constexpr (BUILDFLAG(IS_ANDROID)) {
       if (!iban.nickname().empty()) {
         iban_suggestion.main_text.value = iban.nickname();
-        iban_suggestion.minor_text.value = iban_identifier;
+        iban_suggestion.minor_texts.emplace_back(iban_identifier);
       } else {
         iban_suggestion.main_text.value = iban_identifier;
       }

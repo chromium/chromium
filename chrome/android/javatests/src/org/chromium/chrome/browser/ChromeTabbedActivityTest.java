@@ -616,6 +616,7 @@ public class ChromeTabbedActivityTest {
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         when(mTabGroupSyncService.getGroup(syncId)).thenReturn(savedTabGroup);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {syncId});
+        when(mTabGroupSyncService.isObservingLocalChanges()).thenReturn(true);
 
         boolean ret =
                 ThreadUtils.runOnUiThreadBlocking(

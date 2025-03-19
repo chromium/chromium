@@ -973,7 +973,7 @@ bool V4Store::VerifyChecksum() {
 
   IteratorMap iterator_map;
   HashPrefixStr next_smallest_prefix;
-  HashPrefixMapView map_view = hash_prefix_map_->view();
+  const HashPrefixMapView map_view = hash_prefix_map_->view();
   InitializeIteratorMap(map_view, &iterator_map);
   CHECK_EQ(map_view.size(), iterator_map.size());
   bool has_unmerged = GetNextSmallestUnmergedPrefix(map_view, iterator_map,
@@ -982,6 +982,11 @@ bool V4Store::VerifyChecksum() {
   std::unique_ptr<crypto::SecureHash> checksum_ctx(
       crypto::SecureHash::Create(crypto::SecureHash::SHA256));
   while (has_unmerged) {
+    // This is expensive (see https://crbug.com/373928217), but it's
+    // useful to validate that the DB hasn't changed to debug
+    // https://crbug.com/390144275
+    DCHECK_EQ(map_view.size(), hash_prefix_map_->view().size());
+
     PrefixSize next_smallest_prefix_size = next_smallest_prefix.size();
 
     // Update the iterator map, which means that we have read one hash

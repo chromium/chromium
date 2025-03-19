@@ -78,18 +78,24 @@ interface PageHandler {
   // after ApiInitComplete.
   ApiInitComplete();
 
+  // Make the tab group shared and get the shared link.
+  // Used only in first time copy link button is clicked on Shared flow.
+  // This call may fail due to connectivity problems.
+  // Return nullopt if it fails.
+  // After this call is successful, all subsequent calls will go through
+  // GetShareLink instead.
+  MakeTabGroupShared(string tab_group_id, string group_id, string access_token)
+      => (url.mojom.Url? url);
+
   // `group_id` connects the shared tab group with people group. `access_token`
   // is used to check link validity. Chrome stitches them together with a host
   // and generates an invite link. Owner can share the link to the public.
+  // This call should be always successful.
   GetShareLink(string group_id, string access_token) => (url.mojom.Url url);
 
   // Ask the browser for the group preview.
   GetTabGroupPreview(string group_id, string access_token)
       => (GroupPreview group_preview);
-
-  // `tab_group_id` is the local id of the group in tab strip that gets shared.
-  // `group_id` is the id that connects the people with the shared tab group.
-  AssociateTabGroupWithGroupId(string tab_group_id, string group_id);
 
   // Ask Chrome to open the tab group in current browser once the "Join and
   // Open" is pressed from the Join dialog.

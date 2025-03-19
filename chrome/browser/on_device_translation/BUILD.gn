@@ -35,6 +35,7 @@ source_set("on_device_translation") {
   ]
   deps = [
     "//chrome/browser:browser_process",
+    "//chrome/browser/ai:ai_model_download_progress_manager",
     "//chrome/browser/profiles:profile",
     "//components/component_updater:component_updater",
     "//components/crx_file:crx_file",

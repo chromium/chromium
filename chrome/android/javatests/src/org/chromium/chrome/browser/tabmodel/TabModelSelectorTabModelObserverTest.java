@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.junit.Assert.assertTrue;
+
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -104,8 +105,8 @@ public class TabModelSelectorTabModelObserverTest {
             TabModelSelector selector, TabModelObserver observer) {
         List<TabModel> models = selector.getModels();
         for (int i = 0; i < models.size(); i++) {
-            Assert.assertTrue(models.get(i) instanceof TabModelSelectorTestTabModel);
-            Assert.assertTrue(
+            assertTrue(models.get(i) instanceof TabModelSelectorTestTabModel);
+            assertTrue(
                     ((TabModelSelectorTestTabModel) models.get(i))
                             .getObservers()
                             .contains(observer));

@@ -1,0 +1,4 @@
+include_rules = [
+  "+ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h",
+  "+ios/chrome/browser/ui/content_suggestions/new_tab_page_app_interface.h",
+]

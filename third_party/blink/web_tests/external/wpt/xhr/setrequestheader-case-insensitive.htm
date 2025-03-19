@@ -26,8 +26,10 @@
         client.setRequestHeader("THIS-is-A-test", "2")
         client.setRequestHeader("content-TYPE", "x/x")
         client.send()
-        assert_regexp_match(client.responseText, /content-TYPE/)
-        assert_regexp_match(client.responseText, /THIS-IS-A-TEST: 1, 2/)
+        const contentTypeHeader = client.responseText.match(/content-TYPE/gi)
+        const thisIsATestHeader = client.responseText.match(/THIS-IS-A-TEST: 1, 2/gi)
+        assert_equals(contentTypeHeader, ["content-TYPE"])
+        assert_equals(thisIsATestHeader, ["THIS-IS-A-TEST: 1, 2"])
       })
     </script>
   </body>

@@ -440,6 +440,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{စကားဝှက်ကို သင်၏ Google Account {EMAIL} တွင် သိမ်းလိုက်သည်}other{စကားဝှက်များကို သင်၏ Google Account {EMAIL} တွင် သိမ်းလိုက်သည်}}</translation>
 <translation id="2791174088547598693">စကားဝှက် ထည့်ရန်…</translation>
 <translation id="2797302972324086597">နိုင်ငံကုဒ်</translation>
+<translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} ဖိုင်}other{{COUNT} ဖိုင်}}</translation>
 <translation id="2816489851009559785">မီနူး → ဆက်တင်များ → မူရင်း ဘရောင်ဇာ</translation>
 <translation id="2818821771744632548">သင့် iPhone ပြင်ဆင်သတ်မှတ်မှု၏ လုပ်ဆောင်ချက်တစ်ခုအနေဖြင့် သင့်အကောင့် <ph name="USER_NAME" /> မှ ထွက်သွားသည်။ ထပ်မံလက်မှတ်ထိုးဝင်ရန် အောက်ရှိ “ရှေ့ဆက်ရန်” ကိုတို့ပါ။</translation>
 <translation id="2819667972867209401">ဖွင့်ထားသောအခါ ဒေတာကို သင့် Google Account တွင်သိမ်းသည်။ ပိတ်ထားပါက ဒေတာကို ဤစက်တွင်သာ သိမ်းပြီး သင်အကောင့်မှ ထွက်သောအခါ ဖျက်သည်။</translation>

@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -37,6 +38,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -47,10 +49,13 @@ import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfi
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.widget.ToastManager;
 
 /**
@@ -87,12 +92,16 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
     @Mock private IdentityManager mIdentityManagerMock;
     @Mock private Profile mProfileMock;
     @Mock private HistorySyncHelper mHistorySyncHelperMock;
+    @Mock private UserPrefs.Natives mUserPrefsJni;
+    @Mock private PrefService mPrefService;
 
     @Before
     public void setUp() {
         IdentityServicesProvider.setInstanceForTests(mIdentityProviderMock);
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelperMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJni);
+        lenient().when(mUserPrefsJni.get(any())).thenReturn(mPrefService);
     }
 
     @After
@@ -175,7 +184,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
-        when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(false);
+        when(mPrefService.isManagedPreference(Pref.SIGNIN_ALLOWED)).thenReturn(false);
         when(mIdentityManagerMock.hasPrimaryAccount(anyInt())).thenReturn(false);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -199,7 +208,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
-        when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(true);
+        when(mPrefService.isManagedPreference(Pref.SIGNIN_ALLOWED)).thenReturn(true);
         HistogramWatcher watchSigninDisabledToastShownHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.SigninDisabledNotificationShown", SigninAccessPoint.RECENT_TABS);
@@ -248,7 +257,6 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(true);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
-        when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(false);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

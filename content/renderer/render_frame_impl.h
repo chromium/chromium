@@ -680,6 +680,7 @@ class CONTENT_EXPORT RenderFrameImpl
       const blink::WebURLRequest& request,
       const blink::WebWindowFeatures& features,
       const blink::WebString& frame_name,
+      const gfx::Rect& requested_screen_rect,
       blink::WebNavigationPolicy policy,
       network::mojom::WebSandboxFlags sandbox_flags,
       const blink::SessionStorageNamespaceId& session_storage_namespace_id,

@@ -2820,10 +2820,9 @@ class CacheStorageQuotaClientTest : public CacheStorageManagerTest {
     return future.Get();
   }
 
-  size_t QuotaGetStorageKeysForType() {
+  size_t QuotaGetDefaultStorageKeys() {
     base::RunLoop loop;
-    quota_client_->GetStorageKeysForType(
-        StorageType::kTemporary,
+    quota_client_->GetDefaultStorageKeys(
         base::BindOnce(&CacheStorageQuotaClientTest::StorageKeysCallback,
                        base::Unretained(this), base::Unretained(&loop)));
     loop.Run();
@@ -2862,23 +2861,23 @@ TEST_P(CacheStorageQuotaClientTestP, QuotaGetBucketUsage) {
   EXPECT_LT(0, QuotaGetBucketUsage(bucket_locator1_));
 }
 
-TEST_P(CacheStorageQuotaClientTestP, QuotaGetStorageKeysForType) {
-  EXPECT_EQ(0u, QuotaGetStorageKeysForType());
+TEST_P(CacheStorageQuotaClientTestP, QuotaGetDefaultStorageKeys) {
+  EXPECT_EQ(0u, QuotaGetDefaultStorageKeys());
   EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   EXPECT_TRUE(Open(bucket_locator1_, u"bar"));
   EXPECT_TRUE(Open(bucket_locator2_, u"foo"));
-  EXPECT_EQ(2u, QuotaGetStorageKeysForType());
+  EXPECT_EQ(2u, QuotaGetDefaultStorageKeys());
 }
 
 TEST_P(CacheStorageQuotaClientTestP,
-       QuotaGetStorageKeysForTypeDifferentOwners) {
-  EXPECT_EQ(0u, QuotaGetStorageKeysForType());
+       QuotaGetDefaultStorageKeysDifferentOwners) {
+  EXPECT_EQ(0u, QuotaGetDefaultStorageKeys());
   EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   // The |quota_client_| is registered for
   // storage::mojom::CacheStorageOwner::kCacheAPI, so this Open is ignored.
   EXPECT_TRUE(Open(bucket_locator2_, u"bar",
                    storage::mojom::CacheStorageOwner::kBackgroundFetch));
-  EXPECT_EQ(1u, QuotaGetStorageKeysForType());
+  EXPECT_EQ(1u, QuotaGetDefaultStorageKeys());
 }
 
 TEST_P(CacheStorageQuotaClientTestP, QuotaDeleteBucketData) {

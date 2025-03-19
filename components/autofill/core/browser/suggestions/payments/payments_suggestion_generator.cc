@@ -498,7 +498,8 @@ void AdjustVirtualCardSuggestionContent(Suggestion& suggestion,
   const std::u16string& virtual_card_disabled_label = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_VIRTUAL_CARD_DISABLED_SUGGESTION_OPTION_VALUE);
 #if BUILDFLAG(IS_IOS)
-  suggestion.minor_text.value = suggestion.main_text.value;
+  suggestion.minor_texts = {};
+  suggestion.minor_texts.emplace_back(suggestion.main_text.value);
   if (suggestion.IsAcceptable()) {
     suggestion.main_text.value = virtual_card_label;
   } else {
@@ -526,13 +527,14 @@ void AdjustVirtualCardSuggestionContent(Suggestion& suggestion,
   // Cardholder name field:
   // Before: main_text = cardholder name, minor_text = null, labels = last 4
   // digits.
-  // After: main_text = virtual card label + cardholder name, minor_text =
-  // null, labels = last 4 digits.
+  // After: main_text = virtual card label + cardholder name, minor_text is
+  // empty, labels = last 4 digits.
   if (ShouldSplitCardNameAndLastFourDigits()) {
     suggestion.main_text.value =
         base::StrCat({virtual_card_label, u"  ", suggestion.main_text.value});
   } else {
-    suggestion.minor_text.value = suggestion.main_text.value;
+    suggestion.minor_texts = {};
+    suggestion.minor_texts.emplace_back(suggestion.main_text.value);
     suggestion.main_text.value = virtual_card_label;
   }
   if (trigger_field_type == CREDIT_CARD_NUMBER) {
@@ -841,7 +843,9 @@ Suggestion CreateCreditCardSuggestion(
   auto [main_text, minor_text] = GetSuggestionMainTextAndMinorTextForCard(
       credit_card, client, trigger_field_type);
   suggestion.main_text = std::move(main_text);
-  suggestion.minor_text = std::move(minor_text);
+  if (!minor_text.value.empty()) {
+    suggestion.minor_texts = {std::move(minor_text)};
+  }
   SetSuggestionLabelsForCard(credit_card, client, trigger_field_type,
                              metadata_logging_context, suggestion);
   SetCardArtURL(suggestion, credit_card,
@@ -1338,8 +1342,8 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
             ? card_name
             : base::StrCat({card_name, u" ", network});
     suggestion.main_text.value = card_name;
-    suggestion.minor_text.value =
-        credit_card.ObfuscatedNumberWithVisibleLastFourDigits();
+    suggestion.minor_texts.emplace_back(
+        credit_card.ObfuscatedNumberWithVisibleLastFourDigits());
     std::optional<Suggestion::Text> benefit_label =
         GetCreditCardBenefitSuggestionLabel(credit_card, client);
     if (benefit_label) {
@@ -1442,7 +1446,7 @@ std::vector<Suggestion> GetSuggestionsForIbans(const std::vector<Iban>& ibans) {
       // width limitation, it will be truncated.
       if (!iban.nickname().empty()) {
         suggestion.main_text.value = iban.nickname();
-        suggestion.minor_text.value = std::move(iban_identifier);
+        suggestion.minor_texts.emplace_back(iban_identifier);
       } else {
         suggestion.main_text.value = std::move(iban_identifier);
       }
@@ -1603,6 +1607,7 @@ bool IsCreditCardFooterSuggestion(
     case SuggestionType::kVirtualCreditCardEntry:
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
+    case SuggestionType::kIdentityCredential:
     case SuggestionType::kFillAutofillAi:
     case SuggestionType::kBnplEntry:
     case SuggestionType::kPendingStateSignin:

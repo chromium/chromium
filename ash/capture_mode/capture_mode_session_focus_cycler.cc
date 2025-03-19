@@ -23,6 +23,7 @@
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/recording_type_menu_view.h"
 #include "ash/capture_mode/search_results_panel.h"
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
@@ -38,6 +39,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/types/event_type.h"
+#include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -46,6 +48,7 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(
@@ -81,6 +84,10 @@ constexpr int kSmartActionsButtonIndex = 0;
 constexpr int kIntersectingWindowOutset =
     chromeos::kResizeOutsideBoundsSize + 1;
 constexpr int kWindowOfInterestInset = 1;
+
+// In addition to the default size of the spoken feedback orange highlight, add
+// this amount when focusing the affordance circle with spoken feedback.
+constexpr float kSpokenFeedbackAffordanceExtraOutset = 12.f;
 
 std::vector<raw_ptr<aura::Window, VectorExperimental>>
 GetWindowListIgnoreModalForActiveDesk() {
@@ -603,6 +610,70 @@ void CaptureModeSessionFocusCycler::AdvanceFocus(bool reverse) {
                   user_region, fine_tune_position);
     wm::ConvertPointToScreen(session_->current_root(), &point_of_interest);
     magnifier_utils::MaybeUpdateActiveMagnifierFocus(point_of_interest);
+
+    // Lazily create the widget that hosts the virtual a11y views and the
+    // virtual a11y root.
+    // TODO(crbug.com/401066100): Support multidisplay.
+    if (!ax_widget_ &&
+        Shell::Get()->accessibility_controller()->spoken_feedback().enabled() &&
+        Shell::GetAllRootWindows().size() == 1u) {
+      ax_widget_ = std::make_unique<views::Widget>();
+      views::Widget::InitParams params(
+          views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+          views::Widget::InitParams::TYPE_POPUP);
+      // Using can maximize and a container with a fill layout means the widget
+      // bounds will always match the root window bounds.
+      params.delegate = new views::WidgetDelegate();
+      params.delegate->SetCanMaximize(true);
+      params.layer_type = ui::LAYER_NOT_DRAWN;
+      params.parent = Shell::GetContainer(Shell::GetPrimaryRootWindow(),
+                                          kShellWindowId_WallpaperContainer);
+      ax_widget_->Init(std::move(params));
+      ax_widget_->ShowInactive();
+
+      auto ax_virtual_root = std::make_unique<views::AXVirtualView>();
+      ax_virtual_root->SetRole(ax::mojom::Role::kGenericContainer);
+      ax_widget_->GetRootView()->GetViewAccessibility().AddVirtualChildView(
+          std::move(ax_virtual_root));
+    }
+
+    // Lazily create the virtual a11y view for the currently focused
+    // `fine_tune_position`.
+    if (ax_widget_ && !ax_virtual_views_.contains(fine_tune_position)) {
+      auto ax_virtual_view = std::make_unique<views::AXVirtualView>();
+      ax_virtual_views_[fine_tune_position] = ax_virtual_view.get();
+      ax_virtual_view->SetRole(ax::mojom::Role::kButton);
+      // TODO(crbug.com/401066100): Add strings.
+      ax_virtual_view->SetName(u"To be determined");
+      const views::AXVirtualView::AXVirtualViews& ax_virtual_children =
+          ax_widget_->GetRootView()->GetViewAccessibility().virtual_children();
+      CHECK_EQ(ax_virtual_children.size(), 1u);
+      ax_virtual_children[0]->AddChildView(std::move(ax_virtual_view));
+    }
+
+    if (views::AXVirtualView* affordance_ax_virtual_view =
+            ax_virtual_views_[fine_tune_position]) {
+      // Adjust the bounds and then fire an a11y event.
+      gfx::RectF a11y_rect_in_root;
+      if (fine_tune_position == FineTunePosition::kCenter) {
+        a11y_rect_in_root = gfx::RectF(user_region);
+        a11y_rect_in_root.Outset(kSpokenFeedbackAffordanceExtraOutset);
+      } else {
+        const float rect_size = kSpokenFeedbackAffordanceExtraOutset;
+        const gfx::PointF center_point(
+            capture_mode_util::GetLocationForFineTunePosition(
+                user_region, fine_tune_position));
+        a11y_rect_in_root = gfx::RectF(
+            center_point - gfx::Vector2dF(rect_size / 2.f, rect_size / 2.f),
+            gfx::SizeF(rect_size, rect_size));
+      }
+
+      scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
+          ax_widget_->GetNativeWindow());
+      affordance_ax_virtual_view->SetBounds(a11y_rect_in_root);
+      affordance_ax_virtual_view->NotifyEvent(ax::mojom::Event::kSelection,
+                                              true);
+    }
 
     return;
   }

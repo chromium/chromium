@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.access_loss.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
@@ -58,7 +59,7 @@ public class PasswordAccessLossDialogHelperTest {
     @Mock private Profile mProfile;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
-    @Mock private CustomTabIntentHelper mCustomTabIntentHelper;
+    @Mock private SettingsCustomTabLauncher mSettingsCustomTabIntentLauncher;
     @Mock private BuildInfo mBuildInfo;
     private final Context mContext =
             new ContextThemeWrapper(
@@ -92,7 +93,7 @@ public class PasswordAccessLossDialogHelperTest {
                         mContext,
                         ManagePasswordsReferrer.CHROME_SETTINGS,
                         mModalDialogManagerSupplier,
-                        mCustomTabIntentHelper,
+                        mSettingsCustomTabIntentLauncher,
                         mBuildInfo));
 
         PropertyModel dialogModel = mModalDialogManager.getShownDialogModel();
@@ -124,7 +125,7 @@ public class PasswordAccessLossDialogHelperTest {
                         mContext,
                         ManagePasswordsReferrer.CHROME_SETTINGS,
                         mModalDialogManagerSupplier,
-                        mCustomTabIntentHelper,
+                        mSettingsCustomTabIntentLauncher,
                         mBuildInfo));
 
         PropertyModel dialogModel = mModalDialogManager.getShownDialogModel();
@@ -156,7 +157,7 @@ public class PasswordAccessLossDialogHelperTest {
                         mContext,
                         ManagePasswordsReferrer.CHROME_SETTINGS,
                         mModalDialogManagerSupplier,
-                        mCustomTabIntentHelper,
+                        mSettingsCustomTabIntentLauncher,
                         mBuildInfo));
 
         PropertyModel dialogModel = mModalDialogManager.getShownDialogModel();
@@ -188,7 +189,7 @@ public class PasswordAccessLossDialogHelperTest {
                         mContext,
                         ManagePasswordsReferrer.CHROME_SETTINGS,
                         mModalDialogManagerSupplier,
-                        mCustomTabIntentHelper,
+                        mSettingsCustomTabIntentLauncher,
                         mBuildInfo));
 
         PropertyModel dialogModel = mModalDialogManager.getShownDialogModel();
@@ -222,7 +223,7 @@ public class PasswordAccessLossDialogHelperTest {
                         mContext,
                         ManagePasswordsReferrer.CHROME_SETTINGS,
                         mModalDialogManagerSupplier,
-                        mCustomTabIntentHelper,
+                        mSettingsCustomTabIntentLauncher,
                         mBuildInfo));
 
         PropertyModel dialogModel = mModalDialogManager.getShownDialogModel();
@@ -253,7 +254,7 @@ public class PasswordAccessLossDialogHelperTest {
                         mContext,
                         ManagePasswordsReferrer.CHROME_SETTINGS,
                         mModalDialogManagerSupplier,
-                        mCustomTabIntentHelper,
+                        mSettingsCustomTabIntentLauncher,
                         mBuildInfo));
     }
 }

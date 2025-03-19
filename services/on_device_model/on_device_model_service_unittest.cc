@@ -548,7 +548,10 @@ TEST_F(OnDeviceModelServiceTest, AppendWithImagesAdaptation) {
   auto adaptation = LoadAdaptationWithParams(*model, std::move(params));
 
   mojo::Remote<mojom::Session> session;
-  adaptation->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+  auto session_params = mojom::SessionParams::New();
+  session_params->capabilities.Put(CapabilityFlags::kImageInput);
+  adaptation->StartSession(session.BindNewPipeAndPassReceiver(),
+                           std::move(session_params));
 
   std::vector<ml::InputPiece> pieces;
   pieces.push_back("bleu");
@@ -577,8 +580,6 @@ TEST_F(OnDeviceModelServiceTest, AppendWithImages) {
   mojo::Remote<mojom::Session> session;
   auto params = mojom::SessionParams::New();
   params->capabilities.Put(CapabilityFlags::kImageInput);
-  params->top_k = 1;
-  params->temperature = 0;
   model->StartSession(session.BindNewPipeAndPassReceiver(), std::move(params));
 
   {

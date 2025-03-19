@@ -337,6 +337,7 @@ static_library("browser") {
     "integrators/fast_checkout_client.h",
     "integrators/fast_checkout_delegate.h",
     "integrators/fast_checkout_enums.h",
+    "integrators/identity_credential_delegate.h",
     "integrators/password_form_classification.h",
     "integrators/touch_to_fill_delegate.h",
     "logging/log_buffer_submitter.cc",

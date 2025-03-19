@@ -123,12 +123,6 @@ const UpdateChannel kBetaChannel = UpdateChannel::Create("beta").value();
 using UpdateDiscoveryTaskFuture =
     base::test::TestFuture<IsolatedWebAppUpdateDiscoveryTask::CompletionStatus>;
 
-MATCHER_P(IsDict, dict_matcher, "") {
-  return ExplainMatchResult(
-      Property("GetDict", &base::Value::GetDict, dict_matcher), arg,
-      result_listener);
-}
-
 class MockCommandScheduler : public WebAppCommandScheduler {
  public:
   using WebAppCommandScheduler::WebAppCommandScheduler;
@@ -475,10 +469,10 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
 
   EXPECT_THAT(
       UpdateDiscoveryLog(),
-      UnorderedElementsAre(IsDict(DictionaryHasValue(
-          "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful")))));
-  EXPECT_THAT(UpdateApplyLog(), UnorderedElementsAre(IsDict(DictionaryHasValue(
-                                    "result", base::Value("Success")))));
+      UnorderedElementsAre(DictionaryHasValue(
+          "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful"))));
+  EXPECT_THAT(UpdateApplyLog(), UnorderedElementsAre(DictionaryHasValue(
+                                    "result", base::Value("Success"))));
 }
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
@@ -503,8 +497,8 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
   AssertAppInstalledAtVersion(GetIwa1WebBundleId(), base::Version("1.0.0"));
 
   EXPECT_THAT(UpdateDiscoveryLog(),
-              UnorderedElementsAre(IsDict(DictionaryHasValue(
-                  "result", base::Value("Success::kNoUpdateFound")))));
+              UnorderedElementsAre(DictionaryHasValue(
+                  "result", base::Value("Success::kNoUpdateFound"))));
   EXPECT_THAT(UpdateApplyLog(), IsEmpty());
 }
 
@@ -530,10 +524,10 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
 
   EXPECT_THAT(
       UpdateDiscoveryLog(),
-      UnorderedElementsAre(IsDict(DictionaryHasValue(
-          "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful")))));
-  EXPECT_THAT(UpdateApplyLog(), UnorderedElementsAre(IsDict(DictionaryHasValue(
-                                    "result", base::Value("Success")))));
+      UnorderedElementsAre(DictionaryHasValue(
+          "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful"))));
+  EXPECT_THAT(UpdateApplyLog(), UnorderedElementsAre(DictionaryHasValue(
+                                    "result", base::Value("Success"))));
 
   test_update_server().AddBundle(CreateIwa1Bundle("3.0.0"));
 
@@ -609,10 +603,10 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
 
   AssertAppInstalledAtVersion(GetIwa1WebBundleId(), base::Version("1.0.0"));
 
-  EXPECT_THAT(UpdateDiscoveryLog(),
-              UnorderedElementsAre(IsDict(DictionaryHasValue(
-                  "result",
-                  base::Value("Error::kUpdateManifestNoApplicableVersion")))));
+  EXPECT_THAT(
+      UpdateDiscoveryLog(),
+      UnorderedElementsAre(DictionaryHasValue(
+          "result", base::Value("Error::kUpdateManifestNoApplicableVersion"))));
   EXPECT_THAT(UpdateDiscoveryLog(), SizeIs(1));
   EXPECT_THAT(UpdateApplyLog(), IsEmpty());
 }
@@ -640,8 +634,8 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
 
   EXPECT_THAT(
       UpdateDiscoveryLog(),
-      UnorderedElementsAre(IsDict(DictionaryHasValue(
-          "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful")))));
+      UnorderedElementsAre(DictionaryHasValue(
+          "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful"))));
   EXPECT_THAT(UpdateDiscoveryLog(), SizeIs(1));
   EXPECT_THAT(UpdateApplyLog(), SizeIs(1));
 }
@@ -817,8 +811,8 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
 
   EXPECT_THAT(
       UpdateDiscoveryLog(),
-      UnorderedElementsAre(IsDict(DictionaryHasValue(
-          "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful")))));
+      UnorderedElementsAre(DictionaryHasValue(
+          "result", base::Value("Success::kUpdateFoundAndDryRunSuccessful"))));
   EXPECT_THAT(UpdateApplyLog(), IsEmpty());
 
   fake_ui_manager().SetNumWindowsForApp(GetAppId(GetIwa1WebBundleId()), 0);
@@ -849,18 +843,17 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
     EXPECT_THAT(
         update_discovery_log,
         UnorderedElementsAre(
-            IsDict(DictionaryHasValue(
+            DictionaryHasValue(
                 "result",
-                base::Value("Success::kUpdateFoundAndDryRunSuccessful"))),
-            IsDict(DictionaryHasValue(
+                base::Value("Success::kUpdateFoundAndDryRunSuccessful")),
+            DictionaryHasValue(
                 "result",
-                base::Value("Success::kUpdateFoundAndDryRunSuccessful")))));
+                base::Value("Success::kUpdateFoundAndDryRunSuccessful"))));
 
-    EXPECT_THAT(
-        update_apply_log,
-        UnorderedElementsAre(
-            IsDict(DictionaryHasValue("result", base::Value("Success"))),
-            IsDict(DictionaryHasValue("result", base::Value("Success")))));
+    EXPECT_THAT(update_apply_log,
+                UnorderedElementsAre(
+                    DictionaryHasValue("result", base::Value("Success")),
+                    DictionaryHasValue("result", base::Value("Success"))));
 
     std::vector<base::Value*> times(
         {update_discovery_log[0].GetDict().Find("start_time"),
@@ -929,8 +922,8 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest, StopsWaitingIfIwaIsUninstalled) {
   AssertAppDiscoveryTaskSuccessful(GetIwa1WebBundleId());
 
   EXPECT_THAT(UpdateApplyWaiters(),
-              UnorderedElementsAre(IsDict(DictionaryHasValue(
-                  "app_id", base::Value(GetAppId(GetIwa1WebBundleId()))))));
+              UnorderedElementsAre(DictionaryHasValue(
+                  "app_id", base::Value(GetAppId(GetIwa1WebBundleId())))));
 
   AssertAppInstalledAtVersion(GetIwa1WebBundleId(), base::Version("1.0.0"));
 
@@ -964,18 +957,18 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   EXPECT_THAT(
       UpdateDiscoveryLog(),
       UnorderedElementsAre(
-          IsDict(DictionaryHasValue(
+          DictionaryHasValue(
               "result",
-              base::Value("Success::kUpdateFoundAndDryRunSuccessful"))),
-          IsDict(DictionaryHasValue(
+              base::Value("Success::kUpdateFoundAndDryRunSuccessful")),
+          DictionaryHasValue(
               "result",
-              base::Value("Success::kUpdateFoundAndDryRunSuccessful")))));
+              base::Value("Success::kUpdateFoundAndDryRunSuccessful"))));
   EXPECT_THAT(UpdateApplyWaiters(),
               UnorderedElementsAre(
-                  IsDict(DictionaryHasValue(
-                      "app_id", base::Value(GetAppId(GetIwa1WebBundleId())))),
-                  IsDict(DictionaryHasValue(
-                      "app_id", base::Value(GetAppId(GetIwa2WebBundleId()))))));
+                  DictionaryHasValue(
+                      "app_id", base::Value(GetAppId(GetIwa1WebBundleId()))),
+                  DictionaryHasValue(
+                      "app_id", base::Value(GetAppId(GetIwa2WebBundleId())))));
 
   // Wait for the update apply task of either app 1 or app 2 to start.
   base::test::TestFuture<IsolatedWebAppUrlInfo> future;
@@ -1001,9 +994,8 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   WebAppTestUninstallObserver uninstall_observer(profile());
   uninstall_observer.BeginListeningAndWait({GetAppId(iwa_to_uninstall)});
 
-  EXPECT_THAT(UpdateApplyTasks(),
-              UnorderedElementsAre(IsDict(
-                  DictionaryHasValue("app_id", base::Value(iwa_to_keep)))));
+  EXPECT_THAT(UpdateApplyTasks(), UnorderedElementsAre(DictionaryHasValue(
+                                      "app_id", base::Value(iwa_to_keep))));
   EXPECT_THAT(UpdateApplyLog(), IsEmpty());
 }
 

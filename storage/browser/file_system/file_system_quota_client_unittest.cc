@@ -42,7 +42,6 @@
 #include "url/origin.h"
 
 using ::blink::StorageKey;
-using ::blink::mojom::StorageType;
 
 namespace storage {
 namespace {
@@ -50,9 +49,6 @@ namespace {
 const char kDummyURL1[] = "http://www.dummy.org";
 const char kDummyURL2[] = "http://www.example.com";
 const char kDummyURL3[] = "http://www.bleh";
-
-// Declared to shorten the variable names.
-const StorageType kTemporary = StorageType::kTemporary;
 
 }  // namespace
 
@@ -105,13 +101,12 @@ class FileSystemQuotaClientTest : public testing::Test {
     return usage_;
   }
 
-  const std::vector<StorageKey>& GetStorageKeysForType(
-      storage::mojom::QuotaClient& quota_client,
-      StorageType type) {
+  const std::vector<StorageKey>& GetDefaultStorageKeys(
+      storage::mojom::QuotaClient& quota_client) {
     storage_keys_.clear();
-    quota_client.GetStorageKeysForType(
-        type, base::BindOnce(&FileSystemQuotaClientTest::OnGetStorageKeys,
-                             weak_factory_.GetWeakPtr()));
+    quota_client.GetDefaultStorageKeys(
+        base::BindOnce(&FileSystemQuotaClientTest::OnGetStorageKeys,
+                       weak_factory_.GetWeakPtr()));
     base::RunLoop().RunUntilIdle();
     return storage_keys_;
   }
@@ -473,7 +468,7 @@ TEST_F(FileSystemQuotaClientTest, GetUsage_MultipleTasks) {
   EXPECT_EQ(2, additional_callback_count());
 }
 
-TEST_F(FileSystemQuotaClientTest, GetStorageKeysForType) {
+TEST_F(FileSystemQuotaClientTest, GetDefaultStorageKeys) {
   FileSystemQuotaClient quota_client(GetFileSystemContext());
   InitializeOriginFiles(
       quota_client, {
@@ -482,7 +477,7 @@ TEST_F(FileSystemQuotaClientTest, GetStorageKeysForType) {
                         {true, "", 0, kDummyURL3, kFileSystemTypePersistent},
                     });
 
-  EXPECT_THAT(GetStorageKeysForType(quota_client, kTemporary),
+  EXPECT_THAT(GetDefaultStorageKeys(quota_client),
               testing::UnorderedElementsAre(
                   StorageKey::CreateFromStringForTesting(kDummyURL1),
                   StorageKey::CreateFromStringForTesting(kDummyURL2),

@@ -238,6 +238,10 @@ id<GREYMatcher> BookmarksNavigationBarDoneButton();
 // Returns a matcher for the back button on the Bookmarks navigation bar.
 id<GREYMatcher> BookmarksNavigationBarBackButton();
 
+// Returns a matcher for the back button on the Managed profile creation
+// navigation bar.
+id<GREYMatcher> ManagedProfileCreationNavigationBarBackButton();
+
 // Returns a matcher for the add account accounts button.
 id<GREYMatcher> AddAccountButton();
 

@@ -12,6 +12,10 @@ namespace enterprise_connectors {
 // Controls whether event reporting is enabled on Android
 BASE_DECLARE_FEATURE(kEnterpriseSecurityEventReportingOnAndroid);
 
+// Controls whether url filtering event reporting is enabled on Android, even if
+// `kEnterpriseSecurityEventReportingOnAndroid` is not enabled.
+BASE_DECLARE_FEATURE(kEnterpriseUrlFilteringEventReportingOnAndroid);
+
 }  // namespace enterprise_connectors
 
 #endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_FEATURES_H_

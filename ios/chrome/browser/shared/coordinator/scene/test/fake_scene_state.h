@@ -25,6 +25,8 @@ class ProfileIOS;
                          profile:(ProfileIOS*)profile NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithAppState:(AppState*)appState NS_UNAVAILABLE;
+- (instancetype)initWithAppState:(AppState*)appState
+               propagationPolicy:(ActivationLevelPolicy)policy NS_UNAVAILABLE;
 
 // Window for the associated scene, if any.
 // This is redeclared relative to FakeScene.window, except this is now readwrite

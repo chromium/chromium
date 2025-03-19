@@ -4056,9 +4056,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
     <ph name="BEGIN_PARAGRAPH2" />Puedes permitir o cancelar estos informes en cualquier momento desde la configuración de tu dispositivo Chrome. Si eres el administrador de dominio, puedes cambiar esta configuración en la Consola del administrador.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">Aurora boreal de noche, sobre una pequeña casa de campo.</translation>
 <translation id="3818102823568165369">Certificados locales que agregó el sistema operativo o el administrador.</translation>
-<translation id="3818662907126913619">Tu organización necesita información sobre tu dispositivo si quieres usarlo con tu perfil de <ph name="DOMAIN" />.
-
-Esto puede incluir información sobre el software instalado, los archivos, el navegador y el sistema operativo del dispositivo.</translation>
 <translation id="3819164369574292143">Acerca la imagen para agrandar los elementos en pantalla. Usa Búsqueda + Ctrl + M para activar y desactivar la lupa. Usa Ctrl + Alt + teclas de flecha para moverte por la pantalla después de acercar la vista.</translation>
 <translation id="3819257035322786455">Copia de seguridad</translation>
 <translation id="3819261658055281761">El sistema no pudo obtener un token de acceso a la API a largo plazo para este dispositivo.</translation>
@@ -4376,9 +4373,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4031527940632463547">Se bloqueó el acceso a los sensores</translation>
 <translation id="4033471457476425443">Agregar carpeta nueva</translation>
 <translation id="4033963223187371752">Es posible que los sitios seguros incluyan contenido no seguro, como ciertas imágenes o marcos web</translation>
-<translation id="4034706080855851454">Tu organización necesita información sobre tu dispositivo si quieres usarlo con tu perfil de la organización.
-
-Esto puede incluir información sobre el software instalado, los archivos, el navegador y el sistema operativo del dispositivo.</translation>
 <translation id="4034824040120875894">Impresora</translation>
 <translation id="4035758313003622889">Adminis&amp;trador de &amp;tareas</translation>
 <translation id="4035877632587724847">No permitir</translation>

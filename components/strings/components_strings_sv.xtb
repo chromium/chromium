@@ -54,7 +54,6 @@
 <translation id="1090629319939036170">VR-meny</translation>
 <translation id="1091463901118115503">Fortsätt läsa</translation>
 <translation id="1091779689406092804">skärmbilder</translation>
-<translation id="1094777233105318927">Information om webbläsaren, operativsystemet, enheten, installerad mjukvara och filer</translation>
 <translation id="1096545575934602868">Fältet får ha högst <ph name="MAX_ITEMS_LIMIT" /> poster. Alla poster utöver detta antal ignoreras.</translation>
 <translation id="1097803577928227769">Parker och trädgårdar</translation>
 <translation id="1099928364755383720">automatisk bild-i-bild</translation>
@@ -4481,7 +4480,6 @@ Mer information:
 <translation id="8919895429178014996">Dölj alla objekt</translation>
 <translation id="8922013791253848639">Tillåt alltid annonser på den här webbplatsen</translation>
 <translation id="8922734931659847428">En begränsad lista över webbadresser till sidor som du besöker där <ph name="BEGIN_LINK" />äldre teknikhändelser<ph name="END_LINK" /> inträffar</translation>
-<translation id="8924109546403192898">När säkerhetshändelser flaggas av Chrome skickas relevant data om händelserna till administratören. Exempel på sådan data är webbadresser till sidor du besöker i Chrome, webbadresser till sidor du har kopierat data från, filnamn eller metadata, webbläsar- eller flikkrascher och användarnamnet du loggar in med i webbaserade appar, på dina enheter och i Chrome.</translation>
 <translation id="892588693504540538">Hål uppe till höger</translation>
 <translation id="8926389886865778422">Fråga inte igen.</translation>
 <translation id="8932102934695377596">Klockan går efter</translation>

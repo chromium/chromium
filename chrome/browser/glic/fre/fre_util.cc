@@ -8,8 +8,7 @@
 #include <cstddef>
 
 #include "base/command_line.h"
-#include "base/strings/string_split.h"
-#include "chrome/browser/background/glic/glic_launcher_configuration.h"
+#include "chrome/browser/glic/glic_hotkey.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/common/chrome_features.h"
@@ -17,7 +16,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "net/base/url_util.h"
-#include "ui/base/accelerators/command.h"
 #include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
 
@@ -46,36 +44,6 @@ GURL GetFreURL(Profile* profile) {
   ThemeService* theme_service = ThemeServiceFactory::GetForProfile(profile);
   std::string theme_value = UseDarkMode(theme_service) ? "dark" : "light";
   return net::AppendOrReplaceQueryParameter(base_url, "theme", theme_value);
-}
-
-std::string GetHotkeyString() {
-  // If the hotkey is unset, return an empty string as its representation.
-  std::string hotkey_string = ui::Command::AcceleratorToString(
-      glic::GlicLauncherConfiguration::GetGlobalHotkey());
-  if (hotkey_string.empty()) {
-    return "";
-  }
-
-  // Format the accelerator string so that it can be passed to the glic WebUI
-  // as a URL query parameter. Specifically, each component of the accelerator
-  // will be demarked with the '<' and '>' characters, and all components will
-  // then be joined with the '-' character.
-  std::vector<std::string> hotkey_tokens = base::SplitString(
-      hotkey_string, "+", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  for (std::string& token : hotkey_tokens) {
-    token = "<" + token + ">";
-  }
-
-  // Build the formatted string starting with the first token. There should
-  // always be at least two tokens in the accelerator.
-  std::string formatted_hotkey_string =
-      hotkey_tokens.empty() ? "" : hotkey_tokens.front();
-  for (size_t i = 1; i < hotkey_tokens.size(); i++) {
-    formatted_hotkey_string += "-";
-    formatted_hotkey_string += hotkey_tokens[i];
-  }
-
-  return formatted_hotkey_string;
 }
 
 bool UseDarkMode(ThemeService* theme_service) {

@@ -9,7 +9,6 @@ import android.content.Context;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsCustomTabLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -52,7 +51,6 @@ public class PasswordManagerLauncher {
                         modalDialogManagerSupplier,
                         managePasskeys,
                         account,
-                        LaunchIntentDispatcher::createCustomTabActivityIntent,
                         new SettingsCustomTabLauncherImpl());
     }
 

@@ -4472,26 +4472,22 @@ public class StripLayoutHelperTest {
 
     private StripLayoutHelper createStripLayoutHelper(boolean rtl, boolean incognito) {
         LocalizationUtils.setRtlForTesting(rtl);
-        final StripLayoutHelper stripLayoutHelper =
-                new StripLayoutHelper(
-                        mActivity,
-                        mManagerHost,
-                        mUpdateHost,
-                        mRenderHost,
-                        incognito,
-                        mModelSelectorBtn,
-                        mTabDragSource,
-                        mToolbarContainerView,
-                        mWindowAndroid,
-                        mActionConfirmationManager,
-                        mModalDialogManager,
-                        mDataSharingTabManager,
-                        () -> true,
-                        mBottomSheetController,
-                        () -> mShareDelegate);
-        // Initialize StackScroller
-        stripLayoutHelper.onContextChanged(mActivity);
-        return stripLayoutHelper;
+        return new StripLayoutHelper(
+                mActivity,
+                mManagerHost,
+                mUpdateHost,
+                mRenderHost,
+                incognito,
+                mModelSelectorBtn,
+                mTabDragSource,
+                mToolbarContainerView,
+                mWindowAndroid,
+                mActionConfirmationManager,
+                mModalDialogManager,
+                mDataSharingTabManager,
+                () -> true,
+                mBottomSheetController,
+                () -> mShareDelegate);
     }
 
     private String[] getExpectedAccessibilityDescriptions(int tabIndex) {

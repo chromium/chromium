@@ -5,6 +5,7 @@
 #include "chromeos/ash/services/ime/ime_service.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -104,7 +105,7 @@ class TestImeSharedLibraryWrapper : public ImeSharedLibraryWrapper {
         .close_proto_mode = []() {},
         .proto_mode_supports =
             [](const char* ime_spec) {
-              return strcmp(kInvalidImeSpec, ime_spec) != 0;
+              return UNSAFE_TODO(strcmp(kInvalidImeSpec, ime_spec)) != 0;
             },
         .proto_mode_activate_ime =
             [](const char* ime_spec, ImeClientDelegate* delegate) {

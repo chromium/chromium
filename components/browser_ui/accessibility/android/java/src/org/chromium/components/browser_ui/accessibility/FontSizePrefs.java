@@ -11,6 +11,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 /**
@@ -24,10 +26,11 @@ import org.chromium.content_public.browser.BrowserContextHandle;
  * is no longer boosted, but future work may boost the value based on the user's zoom setting.
  */
 @JNINamespace("browser_ui")
+@NullMarked
 public class FontSizePrefs {
 
     @SuppressLint("StaticFieldLeak")
-    private static FontSizePrefs sFontSizePrefs;
+    private static @Nullable FontSizePrefs sFontSizePrefs;
 
     private final long mFontSizePrefsAndroidPtr;
 

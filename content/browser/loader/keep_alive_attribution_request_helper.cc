@@ -108,19 +108,6 @@ void NotifyBackgroundRegistrationOperation(WeakDocumentPtr weak_document_ptr,
 }  // namespace
 
 // static
-bool KeepAliveAttributionRequestHelper::IsAttributionRequest(
-    const network::ResourceRequest& request) {
-  if (!request.keepalive) {
-    return false;
-  }
-
-  std::optional<RegistrationEligibility> registration_eligibility =
-      attribution_reporting::GetRegistrationEligibility(
-          request.attribution_reporting_eligibility);
-  return registration_eligibility.has_value();
-}
-
-// static
 std::unique_ptr<KeepAliveAttributionRequestHelper>
 KeepAliveAttributionRequestHelper::CreateIfNeeded(
     network::mojom::AttributionReportingEligibility eligibility,

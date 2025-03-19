@@ -27,7 +27,7 @@ AccountSelectionViewTestBase::AccountSelectionViewTestBase() = default;
 
 AccountSelectionViewTestBase::~AccountSelectionViewTestBase() = default;
 
-std::u16string AccountSelectionViewTestBase::GetHoverButtonTitle(
+std::u16string_view AccountSelectionViewTestBase::GetHoverButtonTitle(
     HoverButton* account) {
   return account->title()->GetText();
 }

@@ -54,7 +54,6 @@
 <translation id="1090629319939036170">Meniu RV</translation>
 <translation id="1091463901118115503">Continuă lectura</translation>
 <translation id="1091779689406092804">capturilor de ecran</translation>
-<translation id="1094777233105318927">Informații despre browserul, sistemul de operare, dispozitivul, software-ul instalat și fișierele tale</translation>
 <translation id="1096545575934602868">Acest câmp nu poate să conțină mai mult de <ph name="MAX_ITEMS_LIMIT" /> intrări. Toate intrările suplimentare vor fi șterse.</translation>
 <translation id="1097803577928227769">Parcuri și grădini regionale</translation>
 <translation id="1099928364755383720">picture-in-picture automat</translation>
@@ -1696,6 +1695,7 @@
 <translation id="3964661563329879394">{COUNT,plural, =0{Niciunul}=1{De la 1 site }few{De la # site-uri }other{De la # de site-uri }}</translation>
 <translation id="3965672182149944205">Salvezi adresa?</translation>
 <translation id="3966044442021752214">Siguranța produsului</translation>
+<translation id="3969869202926863008">Accesul la rețeaua locală</translation>
 <translation id="397105322502079400">Se calculează...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> este blocat</translation>
 <translation id="3975852104434126461">Industria automobilelor</translation>
@@ -2052,6 +2052,7 @@
 <translation id="460848736049414407">Blocat de administrator</translation>
 <translation id="4610279718074907952">Site-ul face parte dintr-un grup, definit de <ph name="SET_OWNER" />, care îți poate vedea activitatea</translation>
 <translation id="46128681529823442">Echipament pentru fotbal</translation>
+<translation id="4612904677925722054">Site-ul poate include conținut destinat adulților. Părintele sau tutorele trebuie să spună că poți accesa acest site.</translation>
 <translation id="4619564267100705184">Confirmă-ți identitatea</translation>
 <translation id="4622292761762557753">Transferă oricum</translation>
 <translation id="4622647778991854660">Activează notificările în Centrul de notificări. Deschide <ph name="LINK" />.</translation>
@@ -2649,6 +2650,7 @@
 <translation id="5660122698869360728">Un nou dosar inteligent care te ajută să salvezi toate paginile de cumpărături într-un singur loc și să urmărești automat prețurile, să primești statistici despre prețuri și altele.</translation>
 <translation id="5663955426505430495">Administratorul acestui dispozitiv a instalat extensii pentru funcții suplimentare. Extensiile au acces la unele dintre datele tale.</translation>
 <translation id="5667827081946850877">Cărți audio</translation>
+<translation id="5674082555327905359">Poate solicita permisiunea de a se conecta la orice dispozitiv din rețeaua locală</translation>
 <translation id="5675650730144413517">Pagina nu funcționează</translation>
 <translation id="5675809467256309336">Muzică dance și electronică</translation>
 <translation id="5675959228867414813">Afișează în funcție de dată</translation>
@@ -2922,6 +2924,7 @@
 <translation id="6159908896951210943">Formal</translation>
 <translation id="6160391204859821737">Activează funcțiile pentru confidențialitatea anunțurilor</translation>
 <translation id="6162403104168428984">Actualizezi adresa?</translation>
+<translation id="6164605812717770913">Părintele sau tutorele a spus că nu poți accesa acest site. Îi poți cere să-l deblocheze.</translation>
 <translation id="6165508094623778733">Află mai multe</translation>
 <translation id="6167577165590485365">Ultima încercare de preluare:</translation>
 <translation id="617256461084925519">Google Chrome încearcă să-ți confirme identitatea pentru a-ți completa informațiile de plată.</translation>
@@ -3013,6 +3016,7 @@
 <translation id="6321917430147971392">Verificați setările DNS</translation>
 <translation id="6322182122604171028">Nu am putut folosi Windows Hello</translation>
 <translation id="6326947323444967009">Setează Chrome ca browser prestabilit pentru sistem în setările iOS</translation>
+<translation id="6327065120806001832">accesul la rețeaua locală</translation>
 <translation id="6328639280570009161">Încercați să dezactivați anticiparea rețelei</translation>
 <translation id="6335029926534404762">Încălțăminte sport</translation>
 <translation id="6337133576188860026">Eliberează mai puțin de <ph name="SIZE" />. Este posibil ca unele site-uri să se încarce mai lent la următoarea accesare.</translation>
@@ -4481,7 +4485,6 @@ Detalii suplimentare:
 <translation id="8919895429178014996">Ascunde toate elementele</translation>
 <translation id="8922013791253848639">Permite întotdeauna anunțurile pe acest site</translation>
 <translation id="8922734931659847428">O listă limitată de adrese URL ale paginilor pe care le accesezi și unde au loc <ph name="BEGIN_LINK" />evenimente privind tehnologia veche<ph name="END_LINK" /></translation>
-<translation id="8924109546403192898">Când Chrome semnalează evenimente de securitate, datele relevante despre acele evenimente sunt trimise administratorului tău. Între acestea se pot număra adresele URL ale paginilor pe care le accesezi în Chrome, adresele URL ale paginilor din care ai copiat date, nume de fișiere sau metadate, blocările browserului sau ale filelor și numele de utilizator pe care îl folosești pentru a te conecta la aplicațiile bazate pe web, la dispozitiv și la Chrome.</translation>
 <translation id="892588693504540538">Perforare în dreapta sus</translation>
 <translation id="8926389886865778422">Nu mai întreba</translation>
 <translation id="8932102934695377596">Ora este setată în trecut</translation>

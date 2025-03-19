@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/web_app_audio_focus_id_map.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_launch_queue.h"
+#include "chrome/browser/web_applications/web_app_launch_queue_delegate_impl.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
@@ -108,8 +109,11 @@ const base::UnguessableToken& WebAppTabHelper::GetAudioFocusGroupIdForTesting()
 
 WebAppLaunchQueue& WebAppTabHelper::EnsureLaunchQueue() {
   if (!launch_queue_) {
-    launch_queue_ = std::make_unique<WebAppLaunchQueue>(
-        web_contents(), provider_->registrar_unsafe());
+    std::unique_ptr<LaunchQueueDelegate> delegate =
+        std::make_unique<LaunchQueueDelegateImpl>(
+            provider_->registrar_unsafe());
+    launch_queue_ = std::make_unique<WebAppLaunchQueue>(web_contents(),
+                                                        std::move(delegate));
   }
   return *launch_queue_;
 }

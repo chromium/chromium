@@ -80,7 +80,6 @@
   _signinLogger = [[UserSigninLogger alloc] initWithAccessPoint:self.accessPoint
                                                     promoAction:_promoAction];
   [_signinLogger logSigninStarted];
-  ProfileIOS* profile = self.browser->GetProfile();
   _mediator =
       [[InstantSigninMediator alloc] initWithAccessPoint:self.accessPoint];
   _mediator.delegate = self;
@@ -102,11 +101,11 @@
   bool hasAccountOnDevice = false;
   if (IsUseAccountListFromIdentityManagerEnabled()) {
     signin::IdentityManager* identityManager =
-        IdentityManagerFactory::GetForProfile(profile);
+        IdentityManagerFactory::GetForProfile(self.profile);
     hasAccountOnDevice = !identityManager->GetAccountsOnDevice().empty();
   } else {
     ChromeAccountManagerService* accountManagerService =
-        ChromeAccountManagerServiceFactory::GetForProfile(profile);
+        ChromeAccountManagerServiceFactory::GetForProfile(self.profile);
     hasAccountOnDevice = accountManagerService->HasIdentities();
   }
   if (!hasAccountOnDevice) {

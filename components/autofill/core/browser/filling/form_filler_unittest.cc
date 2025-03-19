@@ -443,6 +443,33 @@ TEST_F(FormFillerTest, UndoSavesFormFillingDataForAutofillAi) {
                                           form.fields().front());
 }
 
+TEST_F(FormFillerTest, UndoPreviewDoesNotChangeTheCache) {
+  FormData form = test::CreateTestAddressFormData();
+  FormsSeen({form});
+  AutofillField* autofill_field =
+      GetAutofillField(form.global_id(), form.fields().front().global_id());
+  AutofillProfile profile = test::GetFullProfile();
+
+  EXPECT_CALL(autofill_driver_, ApplyFormAction)
+      .WillRepeatedly(
+          Return(base::flat_set<FieldGlobalId>{autofill_field->global_id()}));
+
+  form_filler().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, &profile, *GetFormStructure(form),
+      *autofill_field, AutofillTriggerSource::kPopup);
+  ASSERT_TRUE(autofill_field->is_autofilled());
+
+  // A preview of the undo operation won't reset the autofill state.
+  browser_autofill_manager_->UndoAutofill(mojom::ActionPersistence::kPreview,
+                                          form, form.fields().front());
+  EXPECT_TRUE(autofill_field->is_autofilled());
+
+  // An actual undo operation will reset the autofill state.
+  browser_autofill_manager_->UndoAutofill(mojom::ActionPersistence::kFill, form,
+                                          form.fields().front());
+  EXPECT_FALSE(autofill_field->is_autofilled());
+}
+
 TEST_F(FormFillerTest, UndoSavesFieldByFieldFillingData) {
   FormData form = test::CreateTestAddressFormData();
   FormsSeen({form});

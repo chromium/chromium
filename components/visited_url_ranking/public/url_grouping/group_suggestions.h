@@ -35,6 +35,7 @@ struct GroupSuggestion {
     kRecentlyOpened = 1,
     kSwitchedBetween = 2,
     kSimilarSource = 3,
+    kNumReasons
   };
 
   // The contents of the promo to be shown.

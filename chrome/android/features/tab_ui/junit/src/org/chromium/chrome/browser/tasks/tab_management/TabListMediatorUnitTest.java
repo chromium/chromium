@@ -4367,14 +4367,15 @@ public class TabListMediatorUnitTest {
         // Assert that the callback performs as expected.
         assertNotNull(mModelList.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
         when(mTabModel.getTabAt(0)).thenReturn(mTab1);
-        when(mTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
+        when(mTabGroupModelFilter.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
         when(mTabGroupModelFilter.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB1_ID);
         mMediator.onMenuItemClicked(
                 R.id.close_tab_group, TAB_GROUP_ID, /* collaborationId= */ null);
         verify(mTabRemover)
                 .closeTabs(
                         eq(
-                                TabClosureParams.forCloseTabGroup(mTabGroupModelFilter, TAB1_ID)
+                                TabClosureParams.forCloseTabGroup(
+                                                mTabGroupModelFilter, TAB_GROUP_ID)
                                         .allowUndo(true)
                                         .hideTabGroups(true)
                                         .build()),
@@ -4400,7 +4401,7 @@ public class TabListMediatorUnitTest {
         // Assert that the callback performs as expected.
         assertNotNull(mModelList.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
         when(mIncognitoTabModel.getTabAt(0)).thenReturn(mTab1);
-        when(mIncognitoTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
+        when(mIncognitoTabGroupModelFilter.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
         when(mIncognitoTabGroupModelFilter.getGroupLastShownTabId(TAB_GROUP_ID))
                 .thenReturn(TAB1_ID);
         when(mIncognitoTabGroupModelFilter.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
@@ -4428,7 +4429,7 @@ public class TabListMediatorUnitTest {
         // Assert that the callback performs as expected.
         assertNotNull(mModelList.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
         when(mIncognitoTabModel.getTabAt(0)).thenReturn(mTab1);
-        when(mIncognitoTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
+        when(mIncognitoTabGroupModelFilter.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
         when(mIncognitoTabGroupModelFilter.getGroupLastShownTabId(TAB_GROUP_ID))
                 .thenReturn(TAB1_ID);
         mMediator.onMenuItemClicked(
@@ -4437,7 +4438,7 @@ public class TabListMediatorUnitTest {
                 .closeTabs(
                         eq(
                                 TabClosureParams.forCloseTabGroup(
-                                                mIncognitoTabGroupModelFilter, TAB1_ID)
+                                                mIncognitoTabGroupModelFilter, TAB_GROUP_ID)
                                         .allowUndo(true)
                                         .hideTabGroups(false)
                                         .build()),
@@ -4479,14 +4480,15 @@ public class TabListMediatorUnitTest {
         // Assert that the callback performs as expected.
         assertNotNull(mModelList.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
         when(mTabModel.getTabAt(0)).thenReturn(mTab1);
-        when(mTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
+        when(mTabGroupModelFilter.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
         when(mTabGroupModelFilter.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB1_ID);
         mMediator.onMenuItemClicked(
                 R.id.close_tab_group, TAB_GROUP_ID, /* collaborationId= */ null);
         verify(mTabRemover)
                 .closeTabs(
                         eq(
-                                TabClosureParams.forCloseTabGroup(mTabGroupModelFilter, TAB1_ID)
+                                TabClosureParams.forCloseTabGroup(
+                                                mTabGroupModelFilter, TAB_GROUP_ID)
                                         .allowUndo(true)
                                         .hideTabGroups(true)
                                         .build()),

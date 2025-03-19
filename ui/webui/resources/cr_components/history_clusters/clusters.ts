@@ -131,18 +131,19 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
   //============================================================================
   // Properties
   //============================================================================
-  isActive: boolean = true;
-  isEmpty: boolean = true;
-  query: string = '';
-  scrollOffset: number = 0;
-  scrollTarget: HTMLElement = document.documentElement;
-  timeRangeStart?: Date;
-  protected canLoadMore_: boolean = false;
-  protected clusters_: Cluster[] = [];
-  protected hasResult_: boolean = false;
-  protected resultQuery_: string = '';
+  accessor isActive: boolean = true;
+  accessor isEmpty: boolean = true;
+  accessor query: string = '';
+  accessor scrollOffset: number = 0;
+  accessor scrollTarget: HTMLElement = document.documentElement;
+  accessor timeRangeStart: Date|undefined;
+  protected accessor canLoadMore_: boolean = false;
+  protected accessor clusters_: Cluster[] = [];
+  protected accessor hasResult_: boolean = false;
+  protected accessor resultQuery_: string = '';
   private callbackRouter_: PageCallbackRouter;
-  private inSidePanel_: boolean = loadTimeData.getBoolean('inSidePanel');
+  private accessor inSidePanel_: boolean =
+      loadTimeData.getBoolean('inSidePanel');
   private lastOffsetHeight_: number = 0;
   private resizeObserver_: ResizeObserver = new ResizeObserver(() => {
     if (this.lastOffsetHeight_ === 0) {
@@ -162,10 +163,10 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
   private onHistoryDeletedListenerId_: number|null = null;
   private onQueryChangedByUserListenerId_: number|null = null;
   private pageHandler_: PageHandlerRemote;
-  protected showConfirmationDialog_: boolean = false;
-  protected showSpinner_: boolean = false;
+  protected accessor showConfirmationDialog_: boolean = false;
+  protected accessor showSpinner_: boolean = false;
   private scrollTimeout_: number|null = null;
-  private visitsToBeRemoved_: URLVisit[] = [];
+  private accessor visitsToBeRemoved_: URLVisit[] = [];
 
   //============================================================================
   // Overridden methods

@@ -9,7 +9,11 @@
 
 namespace blink {
 
-FrameShapeCache::FrameShapeCache() = default;
+FrameShapeCache::FrameShapeCache() {
+  // `80` and `180` were chosen for Speedometer3 Charts-chartjs.
+  node_map_.ReserveCapacityForSize(80u);
+  shape_map_.ReserveCapacityForSize(180u);
+}
 
 void FrameShapeCache::Trace(Visitor* visitor) const {
   visitor->Trace(node_map_);

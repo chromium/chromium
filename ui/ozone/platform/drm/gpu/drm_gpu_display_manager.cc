@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
@@ -507,7 +508,7 @@ bool DrmGpuDisplayManager::ShouldDisplayEventTriggerConfiguration(
         "] trigger property: " + std::string(drm_property->name) + "=" +
         enum_value + ", ";
     for (const char* blocked_prop : kBlockedEventsByTriggerProperty) {
-      if (strcmp(drm_property->name, blocked_prop) == 0) {
+      if (UNSAFE_TODO(strcmp(drm_property->name, blocked_prop)) == 0) {
         VLOG(1) << log_prefix << trigger_prop_log
                 << "resolution: blocked; display configuration task "
                    "rejected.";

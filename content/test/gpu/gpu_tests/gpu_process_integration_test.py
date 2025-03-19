@@ -313,8 +313,10 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def _GpuProcess_feature_status_under_swiftshader(self,
                                                    test_path: str) -> None:
     # Hit test group 2 with entry 153 from kSoftwareRenderingListEntries.
-    self.RestartBrowserIfNecessaryWithArgs(
-        ['--gpu-blocklist-test-group=2', '--enable-unsafe-swiftshader'])
+    self.RestartBrowserIfNecessaryWithArgs([
+        '--gpu-blocklist-test-group=2', '--enable-unsafe-swiftshader',
+        '--disable-features=AllowD3D11WarpFallback'
+    ])
     self._Navigate(test_path)
     feature_status_list = _GetBrowserBridgeProperty(
         self.tab, 'gpuInfo.featureStatus.featureStatus')
@@ -329,6 +331,32 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # Linux.
     if host_information.IsLinux():
       return
+
+    feature_status_for_hardware_gpu_list = _GetBrowserBridgeProperty(
+        self.tab, 'gpuInfo.featureStatusForHardwareGpu.featureStatus')
+    for name, status in feature_status_for_hardware_gpu_list.items():
+      if name == 'webgl' and status != 'unavailable_off':
+        self.fail('WebGL status for hardware GPU failed: %s' % status)
+      elif name == '2d_canvas' and status != 'enabled':
+        self.fail('2D Canvas status for hardware GPU failed: %s' % status)
+
+  def _GpuProcess_feature_status_under_warp(self, test_path: str) -> None:
+    if not host_information.IsWindows():
+      return
+
+    # Hit test group 2 with entry 153 from kSoftwareRenderingListEntries.
+    self.RestartBrowserIfNecessaryWithArgs([
+        '--gpu-blocklist-test-group=2',
+        '--enable-features=AllowD3D11WarpFallback'
+    ])
+    self._Navigate(test_path)
+    feature_status_list = _GetBrowserBridgeProperty(
+        self.tab, 'gpuInfo.featureStatus.featureStatus')
+    for name, status in feature_status_list.items():
+      if name == 'webgl' and status != 'unavailable_software':
+        self.fail('WebGL status for WARP failed: %s' % status)
+      elif name == '2d_canvas' and status != 'unavailable_software':
+        self.fail('2D Canvas status for WARP failed: %s' % status)
 
     feature_status_for_hardware_gpu_list = _GetBrowserBridgeProperty(
         self.tab, 'gpuInfo.featureStatusForHardwareGpu.featureStatus')
@@ -475,9 +503,15 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # attempt to use an API which would start the GPU process.
     args_list = (
         # Triggering test_group 2 where WebGL is blocklisted.
-        ['--gpu-blocklist-test-group=2', '--enable-unsafe-swiftshader'],
+        [
+            '--gpu-blocklist-test-group=2', '--enable-unsafe-swiftshader',
+            '--disable-features=AllowD3D11WarpFallback'
+        ],
         # Explicitly disable GPU access.
-        [cba.DISABLE_GPU, '--enable-unsafe-swiftshader'])
+        [
+            cba.DISABLE_GPU, '--enable-unsafe-swiftshader',
+            '--disable-features=AllowD3D11WarpFallback'
+        ])
     for args in args_list:
       self.RestartBrowserIfNecessaryWithArgs(args)
       self._NavigateAndWait(test_path)
@@ -526,13 +560,78 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         if tab.EvaluateJavaScript('!gl_context.getExtension("' + ext + '")'):
           self.fail('Expected %s support' % ext)
 
+  def _GpuProcess_warp_for_webgl(self, test_path: str) -> None:
+    if not host_information.IsWindows():
+      return
+
+    # This test loads functional_webgl.html so that there is a deliberate
+    # attempt to use an API which would start the GPU process.
+    # WARP fallback is preferred over SwiftShader if both are enabled.
+    args_list = (
+        # Triggering test_group 2 where WebGL is blocklisted.
+        [
+            '--gpu-blocklist-test-group=2',
+            '--enable-features=AllowD3D11WarpFallback'
+        ],
+        # Explicitly disable GPU access.
+        [cba.DISABLE_GPU, '--enable-features=AllowD3D11WarpFallback'])
+    for args in args_list:
+      self.RestartBrowserIfNecessaryWithArgs(args)
+      self._NavigateAndWait(test_path)
+      # Validate the WebGL unmasked renderer string.
+      renderer = self.tab.EvaluateJavaScript('gl_renderer')
+      if not renderer:
+        self.fail('getParameter(UNMASKED_RENDERER_WEBGL) was null')
+      if 'WARP' not in renderer:
+        self.fail('Expected WARP renderer; instead got ' + renderer)
+      # Validate GPU info.
+      system_info = self.browser.GetSystemInfo()
+      if not system_info:
+        self.fail("Browser doesn't support GetSystemInfo")
+      gpu = system_info.gpu
+      if not gpu:
+        self.fail('Target machine must have a GPU')
+      if not gpu.aux_attributes:
+        self.fail('Browser must support GPU aux attributes')
+      if 'WARP' not in gpu.aux_attributes['gl_renderer']:
+        self.fail('Expected "WARP" in GPU info GL renderer string')
+      if 'Google' not in gpu.aux_attributes['gl_vendor']:
+        self.fail('Expected "Google" in GPU info GL vendor string')
+      device = gpu.devices[0]
+      if not device:
+        self.fail("System Info doesn't have a device")
+      # Validate extensions.
+      ext_list = [
+          'ANGLE_instanced_arrays',
+          'EXT_blend_minmax',
+          'EXT_texture_filter_anisotropic',
+          'OES_element_index_uint',
+          'OES_standard_derivatives',
+          'OES_texture_float',
+          'OES_texture_float_linear',
+          'OES_texture_half_float',
+          'OES_texture_half_float_linear',
+          'OES_vertex_array_object',
+          'WEBGL_compressed_texture_etc1',
+          'WEBGL_debug_renderer_info',
+          'WEBGL_depth_texture',
+          'WEBGL_draw_buffers',
+          'WEBGL_lose_context',
+      ]
+      tab = self.tab
+      for ext in ext_list:
+        if tab.EvaluateJavaScript('!gl_context.getExtension("' + ext + '")'):
+          self.fail('Expected %s support' % ext)
+
   def _GpuProcess_no_swiftshader_for_webgl_without_flags(
       self, test_path: str) -> None:
     # This test loads functional_webgl.html with GPU disabled and verifies that
     # SwiftShader is not available without the --enable-unsafe-swiftshader flag
     # or AllowSwiftShaderFallback killswitch.
     # Because AllowSwiftShaderFallback is currently enabled by default, disable
-    # it to test the upcoming default behavior
+    # it to test the upcoming default behavior.
+    # Make sure to force disable WARP fallback which takes precedence over
+    # SwiftShader fallback when both are enabled.
     disable_hardware_webgl_args_list = [
         # Triggering test_group 2 where WebGL is blocklisted.
         ['--gpu-blocklist-test-group=2'],
@@ -540,12 +639,22 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         [cba.DISABLE_GPU],
     ]
     disable_swiftshader_fallback_feature = [
-        '--disable-features=AllowSwiftShaderFallback'
+        '--disable-features=AllowSwiftShaderFallback',
+        '--disable-features=AllowD3D11WarpFallback'
     ]
     allow_swiftshader_args_list = [
-        ['--enable-unsafe-swiftshader'],
-        ['--use-gl=angle', '--use-angle=swiftshader'],
-        ['--enable-features=AllowSwiftShaderFallback']
+        [
+            '--enable-unsafe-swiftshader',
+            '--disable-features=AllowD3D11WarpFallback'
+        ],
+        [
+            '--use-gl=angle', '--use-angle=swiftshader',
+            '--disable-features=AllowD3D11WarpFallback'
+        ],
+        [
+            '--enable-features=AllowSwiftShaderFallback',
+            '--disable-features=AllowD3D11WarpFallback'
+        ]
     ]
     for disable_hardware_webgl_args in disable_hardware_webgl_args_list:
       self.RestartBrowserIfNecessaryWithArgs(

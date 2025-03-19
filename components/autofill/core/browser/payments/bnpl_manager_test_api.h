@@ -46,7 +46,9 @@ class BnplManagerTestApi {
         std::move(on_bnpl_vcn_fetched_callback);
   }
 
-  void FetchVcnDetails() { bnpl_manager_->FetchVcnDetails(); }
+  void FetchVcnDetails(GURL url) {
+    bnpl_manager_->FetchVcnDetails(std::move(url));
+  }
 
   void OnVcnDetailsFetched(
       PaymentsAutofillClient::PaymentsRpcResult result,

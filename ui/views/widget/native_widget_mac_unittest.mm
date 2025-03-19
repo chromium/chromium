@@ -868,7 +868,8 @@ TEST_F(NativeWidgetMacTest, NonWidgetParent) {
           child->GetNativeWindow());
   EXPECT_EQ(bridged_native_widget_host->parent()
                 ->native_widget_mac()
-                ->GetNativeWindow(),
+                ->GetNativeWindow()
+                .GetNativeNSWindow(),
             native_parent);
 
   const gfx::Rect child_bounds(50, 50, 200, 100);
@@ -879,7 +880,8 @@ TEST_F(NativeWidgetMacTest, NonWidgetParent) {
   child->Show();
   EXPECT_TRUE(child->IsVisible());
   EXPECT_EQ(1u, [[native_parent childWindows] count]);
-  EXPECT_EQ(child->GetNativeWindow(), [native_parent childWindows][0]);
+  EXPECT_EQ(child->GetNativeWindow().GetNativeNSWindow(),
+            [native_parent childWindows][0]);
   EXPECT_EQ(native_parent,
             [child->GetNativeWindow().GetNativeNSWindow() parentWindow]);
 
@@ -898,7 +900,8 @@ TEST_F(NativeWidgetMacTest, NonWidgetParent) {
   [anchor_view removeFromSuperview];
   EXPECT_EQ(bridged_native_widget_host->parent()
                 ->native_widget_mac()
-                ->GetNativeWindow(),
+                ->GetNativeWindow()
+                .GetNativeNSWindow(),
             native_parent);
 
   // Closing the parent should close and destroy the child.
@@ -1725,10 +1728,16 @@ TEST_F(NativeWidgetMacTest, NoopReparentNativeView) {
       NativeWidgetMacNSWindowHost::GetFromNativeWindow(
           dialog->GetNativeWindow());
 
-  EXPECT_EQ(window_host->parent()->native_widget_mac()->GetNativeWindow(),
+  EXPECT_EQ(window_host->parent()
+                ->native_widget_mac()
+                ->GetNativeWindow()
+                .GetNativeNSWindow(),
             parent);
   Widget::ReparentNativeView(dialog->GetNativeView(), [parent contentView]);
-  EXPECT_EQ(window_host->parent()->native_widget_mac()->GetNativeWindow(),
+  EXPECT_EQ(window_host->parent()
+                ->native_widget_mac()
+                ->GetNativeWindow()
+                .GetNativeNSWindow(),
             parent);
 
   [parent close];
@@ -1740,10 +1749,16 @@ TEST_F(NativeWidgetMacTest, NoopReparentNativeView) {
   window_host = NativeWidgetMacNSWindowHost::GetFromNativeWindow(
       dialog->GetNativeWindow());
 
-  EXPECT_EQ(window_host->parent()->native_widget_mac()->GetNativeWindow(),
+  EXPECT_EQ(window_host->parent()
+                ->native_widget_mac()
+                ->GetNativeWindow()
+                .GetNativeNSWindow(),
             parent);
   Widget::ReparentNativeView(dialog->GetNativeView(), [parent contentView]);
-  EXPECT_EQ(window_host->parent()->native_widget_mac()->GetNativeWindow(),
+  EXPECT_EQ(window_host->parent()
+                ->native_widget_mac()
+                ->GetNativeWindow()
+                .GetNativeNSWindow(),
             parent);
 
   parent_widget->CloseNow();

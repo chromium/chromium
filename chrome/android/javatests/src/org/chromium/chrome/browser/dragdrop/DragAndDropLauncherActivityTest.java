@@ -297,8 +297,7 @@ public class DragAndDropLauncherActivityTest {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     int sourceWindowId =
-                            TabWindowManagerSingleton.getInstance()
-                                    .getIndexForWindow(sourceActivity);
+                            TabWindowManagerSingleton.getInstance().getIdForWindow(sourceActivity);
 
                     return DragAndDropLauncherActivity.getTabIntent(
                             mContext,

@@ -4,16 +4,18 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
+
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ObserverList.RewindableIterator;
@@ -49,7 +51,7 @@ public class TabModelSelectorTabObserverTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        Mockito.when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
+        when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
     }
 
     @Test
@@ -256,8 +258,8 @@ public class TabModelSelectorTabObserverTest {
     }
 
     private void assertTabHasObserver(Tab tab, TestTabModelSelectorTabObserver observer) {
-        Assert.assertTrue(tabHasObserver(tab, observer));
-        Assert.assertTrue(
+        assertTrue(tabHasObserver(tab, observer));
+        assertTrue(
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return observer.isRegisteredTab(tab);
@@ -266,9 +268,9 @@ public class TabModelSelectorTabObserverTest {
 
     private void assertTabDoesNotHaveObserver(
             Tab tab, TestTabModelSelectorTabObserver observer, boolean checkUnregistration) {
-        Assert.assertFalse(tabHasObserver(tab, observer));
+        assertFalse(tabHasObserver(tab, observer));
         if (!checkUnregistration) return;
-        Assert.assertTrue(
+        assertTrue(
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return observer.isUnregisteredTab(tab);

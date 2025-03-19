@@ -17,6 +17,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.material.color.MaterialColors;
+
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.util.ValueUtils;
@@ -24,6 +26,7 @@ import org.chromium.ui.util.XrUtils;
 
 /** Util class to handle various color operations shared between hub classes. */
 public final class HubColors {
+    private static final String TAG = "HubColors";
     private static final int[][] SELECTED_AND_NORMAL_STATES =
             new int[][] {new int[] {android.R.attr.state_selected}, new int[] {}};
     private static final int[][] DISABLED_AND_NORMAL_STATES =
@@ -218,9 +221,9 @@ public final class HubColors {
             Context context, @HubColorScheme int colorScheme) {
         switch (colorScheme) {
             case HubColorScheme.DEFAULT:
-                return SemanticColorUtils.getDefaultTextColor(context);
+                return MaterialColors.getColor(context, R.attr.colorOnSurfaceVariant, TAG);
             case HubColorScheme.INCOGNITO:
-                return ContextCompat.getColor(context, R.color.baseline_neutral_60);
+                return context.getColor(R.color.default_text_color_secondary_light);
             default:
                 assert false;
                 return Color.TRANSPARENT;

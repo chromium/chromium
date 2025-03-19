@@ -28,8 +28,11 @@
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/browser/intents/model/intent_type.h"
 #import "ios/chrome/browser/intents/model/intents_constants.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/metrics/model/first_user_action_recorder.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/connection_information.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
@@ -835,13 +838,23 @@ void UserActivityBrowserAgent::HandleRouteToCorrectTab(
     TemplateURLService* template_url_service =
         ios::TemplateURLServiceFactory::GetForProfile(profile_);
 
-    NSData* image_data =
-        connection_information_.startupParameters.imageSearchData;
-    web::NavigationManager::WebLoadParams web_load_params =
-        ImageSearchParamGenerator::LoadParamsForImageData(image_data, GURL(),
-                                                          template_url_service);
+    const BOOL useLens =
+        lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
+            LensEntrypoint::ContextMenu,
+            search_engines::SupportsSearchImageWithLens(template_url_service));
+    if (!useLens) {
+      NSData* image_data =
+          connection_information_.startupParameters.imageSearchData;
+      web::NavigationManager::WebLoadParams web_load_params =
+          ImageSearchParamGenerator::LoadParamsForImageData(
+              image_data, GURL(), template_url_service);
 
-    params.web_params = web_load_params;
+      params.web_params = web_load_params;
+    } else {
+      connection_information_.startupParameters.postOpeningAction =
+          START_LENS_FROM_SHARE_EXTENSION;
+    }
+
   } else if (connection_information_.startupParameters.textQuery) {
     NSString* query = connection_information_.startupParameters.textQuery;
 

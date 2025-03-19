@@ -85,7 +85,8 @@ class PaymentsWindowManager {
   using OnVcn3dsAuthenticationCompleteCallback =
       base::OnceCallback<void(Vcn3dsAuthenticationResponse)>;
 
-  using OnBnplPopupClosedCallback = base::OnceCallback<void(BnplFlowResult)>;
+  using OnBnplPopupClosedCallback =
+      base::OnceCallback<void(BnplFlowResult, GURL)>;
 
   // The contextual data required for the VCN 3DS flow.
   struct Vcn3dsContext {

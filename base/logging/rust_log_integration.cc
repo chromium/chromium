@@ -4,16 +4,18 @@
 
 #include "base/logging/rust_log_integration.h"
 
+#include <stdint.h>
+
 #include "base/logging.h"
 #include "base/logging/log_severity.h"
 
 namespace logging::internal {
 
-BASE_EXPORT void print_rust_log(const char* msg,
-                                const char* file,
-                                int line,
-                                LogSeverity severity,
-                                bool verbose) {
+void print_rust_log(const char* msg,
+                    const char* file,
+                    int32_t line,
+                    int32_t severity,
+                    bool verbose) {
   // TODO(danakj): If `verbose` make the log equivalent to VLOG instead of LOG.
   logging::LogMessage log_message(file, line, severity);
   log_message.stream() << msg;

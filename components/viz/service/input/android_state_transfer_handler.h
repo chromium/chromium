@@ -35,7 +35,10 @@ class VIZ_SERVICE_EXPORT AndroidStateTransferHandler
       AndroidStateTransferHandlerClient& client);
   ~AndroidStateTransferHandler();
 
-  // AndroidInputCallbackClient implementation.
+  // `root_frame_sink_id` could be invalid. In cases when root frame sink is
+  // destroyed and there was an ongoing touch sequence, OS may send a few events
+  // before a touch cancel is sent for the ongoing touch sequence -
+  // https://crbug.com/388478270#comment2 for more context.
   bool OnMotionEvent(base::android::ScopedInputEvent input_event,
                      const FrameSinkId& root_frame_sink_id) override;
 
@@ -65,9 +68,6 @@ class VIZ_SERVICE_EXPORT AndroidStateTransferHandler
       const input::mojom::TouchTransferStatePtr& state);
   void EmitPendingTransfersHistogram();
   void ValidateRootFrameSinkId(const FrameSinkId& root_frame_sink_id);
-
-  // We currently only support a single active root frame sink.
-  FrameSinkId active_root_frame_sink_id_;
 
   bool ignore_remaining_touch_sequence_ = false;
 

@@ -12,6 +12,7 @@ import org.chromium.components.data_sharing.protocol.CreateGroupParams;
 import org.chromium.components.data_sharing.protocol.DeleteGroupParams;
 import org.chromium.components.data_sharing.protocol.LeaveGroupParams;
 import org.chromium.components.data_sharing.protocol.LookupGaiaIdByEmailParams;
+import org.chromium.components.data_sharing.protocol.ReadGroupWithTokenParams;
 import org.chromium.components.data_sharing.protocol.ReadGroupsParams;
 import org.chromium.components.data_sharing.protocol.RemoveMemberParams;
 
@@ -27,6 +28,10 @@ public interface DataSharingSDKDelegate {
             CreateGroupParams params, DataSharingSDKDelegateProtoResponseCallback callback);
 
     void readGroups(ReadGroupsParams params, DataSharingSDKDelegateProtoResponseCallback callback);
+
+    default void readGroupWithToken(
+            ReadGroupWithTokenParams params,
+            DataSharingSDKDelegateProtoResponseCallback callback) {}
 
     /** Callback return DataSharingSDKDelegateProtoResponseCallback.Status as integer. */
     void addMember(AddMemberParams params, Callback<Integer> callback);

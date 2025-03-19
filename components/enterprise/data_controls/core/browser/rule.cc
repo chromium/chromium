@@ -101,11 +101,9 @@ policy::PolicyErrorPath CreateErrorPath(
 }
 
 // Helper to check if a restriction is allowed to be applied to a rule given
-// the currently enabled features.
+// the currently enabled features. If you have a Finch flag controlling whether
+// a type of restriction should be applied or not, check it here.
 bool IgnoreRestriction(Rule::Restriction restriction) {
-  if (restriction == Rule::Restriction::kScreenshot) {
-    return !base::FeatureList::IsEnabled(kEnableScreenshotProtection);
-  }
   return false;
 }
 

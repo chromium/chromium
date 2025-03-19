@@ -201,7 +201,7 @@ bool SigninManagerAndroid::IsSigninAllowed() const {
   return signin_allowed_.GetValue();
 }
 
-bool SigninManagerAndroid::IsSigninAllowedByPolicy(JNIEnv* env) const {
+bool SigninManagerAndroid::IsSigninAllowed(JNIEnv* env) const {
   return IsSigninAllowed();
 }
 
@@ -219,7 +219,7 @@ bool SigninManagerAndroid::MatchesCachedIsAccountManagedEntry(
 
 void SigninManagerAndroid::OnSigninAllowedPrefChanged() const {
   VLOG(1) << "::OnSigninAllowedPrefChanged() " << IsSigninAllowed();
-  Java_SigninManagerImpl_onSigninAllowedByPolicyChanged(
+  Java_SigninManagerImpl_onSigninAllowedChanged(
       base::android::AttachCurrentThread(), java_signin_manager_,
       IsSigninAllowed());
 }

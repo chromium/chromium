@@ -68,7 +68,7 @@ import java.util.Locale;
  * <p>Thread-safe: This class may be accessed from any thread.
  */
 public class MultiWindowUtils implements ActivityStateListener {
-    public static final int INVALID_INSTANCE_ID = TabWindowManager.INVALID_WINDOW_INDEX;
+    public static final int INVALID_INSTANCE_ID = TabWindowManager.INVALID_WINDOW_ID;
     public static final int INVALID_TASK_ID = -1; // Defined in android.app.ActivityTaskManager.
     private static final int DEFAULT_TAB_COUNT_FOR_RELAUNCH = 0;
 
@@ -866,7 +866,7 @@ public class MultiWindowUtils implements ActivityStateListener {
     public static int getInstanceIdForLinkIntent(Activity activity) {
         // INVALID_INSTANCE_ID indicates that a new instance will be used to launch the link intent.
         if (getInstanceCount() < getMaxInstances()) return INVALID_INSTANCE_ID;
-        int windowId = TabWindowManagerSingleton.getInstance().getIndexForWindow(activity);
+        int windowId = TabWindowManagerSingleton.getInstance().getIdForWindow(activity);
         assert windowId != INVALID_INSTANCE_ID
                 : "A valid instance ID was not found for the specified activity.";
         return windowId;

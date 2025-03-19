@@ -8614,6 +8614,7 @@ from previous Chrome versions.
   <int value="-2134700188" label="InstantHotspotOnNearby:disabled"/>
   <int value="-2134653602" label="WebAppSyncGeneratedIconUpdateFix:enabled"/>
   <int value="-2134609104" label="SystemEmojiPickerVariantGrouping:enabled"/>
+  <int value="-2134563284" label="LocalNetworkAccessChecks:enabled"/>
   <int value="-2134333982" label="ShowArcFilesApp:enabled"/>
   <int value="-2134244069" label="HttpFormWarning:enabled"/>
   <int value="-2133892372" label="ResamplingInputEvents:disabled"/>
@@ -14132,6 +14133,8 @@ from previous Chrome versions.
   <int value="8891567" label="CaptionSettings:enabled"/>
   <int value="9609535" label="BrowsingDataLifetimeManager:disabled"/>
   <int value="9692911" label="BatteryBadgeIcon:enabled"/>
+  <int value="9803761"
+      label="EnterpriseUrlFilteringEventReportingOnAndroid:disabled"/>
   <int value="10405060" label="BluetoothSessionizedMetrics:disabled"/>
   <int value="10458238" label="disable-print-preview-simplify"/>
   <int value="10511293" label="LensOverlaySimplifiedSelection:enabled"/>
@@ -15425,6 +15428,8 @@ from previous Chrome versions.
   <int value="514098449" label="LacrosProfileBackwardMigration:disabled"/>
   <int value="514406112" label="WebUIOmniboxPopup:disabled"/>
   <int value="514569020" label="RemoteCopyImageNotification:enabled"/>
+  <int value="515046556"
+      label="EnterpriseUrlFilteringEventReportingOnAndroid:enabled"/>
   <int value="515981953" label="ElasticOverscroll:enabled"/>
   <int value="516143995" label="EnableAriaElementReflection:enabled"/>
   <int value="516603570" label="QuickAnswersRichUi:disabled"/>
@@ -16091,6 +16096,7 @@ from previous Chrome versions.
   <int value="768900239" label="ArcSwitchToKeyMintOnTOverride:disabled"/>
   <int value="770680432" label="DecodeLossyWebPImagesToYUV:enabled"/>
   <int value="771216808" label="EnableAutomaticSharedImageManagement:enabled"/>
+  <int value="771793247" label="LocalNetworkAccessChecks:disabled"/>
   <int value="772237902" label="AutofillDisableLocalCardMigration:enabled"/>
   <int value="772272625" label="simplify-https-indicator"/>
   <int value="772348426" label="AffiliationBasedMatching:enabled"/>
@@ -25847,6 +25853,8 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Slow input"/>
 </enum>
 
+<!-- LINT.IfChange(VideoCodec) -->
+
 <enum name="VideoCodec">
   <int value="0" label="kUnknownVideoCodec"/>
   <int value="1" label="kCodecH264"/>
@@ -25860,6 +25868,10 @@ Called by update_net_error_codes.py.-->
   <int value="9" label="kCodecDolbyVision"/>
   <int value="10" label="kCodecAV1"/>
 </enum>
+
+<!-- LINT.ThenChange(//media/base/video_codecs.h:VideoCodec) -->
+
+<!-- LINT.IfChange(VideoCodecProfile) -->
 
 <enum name="VideoCodecProfile">
   <int value="0" label="H.264 Baseline"/>
@@ -25915,6 +25927,8 @@ Called by update_net_error_codes.py.-->
   <int value="50" label="VVC Main12 444 Still-picture"/>
   <int value="51" label="VVC Main16 444 Still-picture"/>
 </enum>
+
+<!-- LINT.ThenChange(//gpu/config/gpu_info.h:VideoCodecProfile, //media/base/video_codecs.h:VideoCodecProfile) -->
 
 <enum name="VideoDecoderType">
   <int value="0" label="None"/>

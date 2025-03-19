@@ -212,9 +212,8 @@ using base::UserMetricsAction;
 
 // Records that a default browser promo has been shown.
 - (void)recordDefaultBrowserPromoShown {
-  ProfileIOS* profile = self.browser->GetProfile();
   LogToFETDefaultBrowserPromoShown(
-      feature_engagement::TrackerFactory::GetForProfile(profile));
+      feature_engagement::TrackerFactory::GetForProfile(self.profile));
 }
 
 // Presents the default browser promo.

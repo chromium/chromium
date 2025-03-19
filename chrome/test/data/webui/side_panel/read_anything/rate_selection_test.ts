@@ -4,29 +4,29 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ReadAloudSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {MetricsBrowserProxyImpl} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {getItemsInMenu, stubAnimationFrame} from './common.js';
+import {getItemsInMenu, mockMetrics, stubAnimationFrame} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
-import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 suite('RateSelection', () => {
   let toolbar: ReadAnythingToolbarElement;
   let rateButton: CrIconButtonElement;
   let rateEmitted: boolean;
+  let metrics: TestMetricsBrowserProxy;
 
   setup(async () => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    MetricsBrowserProxyImpl.setInstance(new TestMetricsBrowserProxy());
 
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     chrome.readingMode.isReadAloudEnabled = true;
+    metrics = mockMetrics();
 
     toolbar = document.createElement('read-anything-toolbar');
     document.body.appendChild(toolbar);
@@ -96,6 +96,9 @@ suite('RateSelection', () => {
 
       // updates icon on toolbar
       assertEquals('voice-rate:' + rateValue, rateButton.ironIcon);
+      assertEquals(
+          ReadAloudSettingsChange.VOICE_SPEED_CHANGE,
+          await metrics.whenCalled('recordVoiceSpeed'));
 
       // closes menu
       assertFalse(toolbar.$.rateMenu.get().open);

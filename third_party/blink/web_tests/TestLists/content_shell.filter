@@ -1056,6 +1056,7 @@ virtual/scalefactor200/external/wpt/css/filter-effects/filtered-html-is-not-cont
 virtual/scalefactor200/external/wpt/css/filter-effects/clip-under-filter-*
 virtual/scalefactor200/external/wpt/css/filter-effects/effect-reference-on-span.html
 virtual/scalefactor200/external/wpt/css/filter-effects/repaint-added-backdrop-filter.html
+virtual/scalefactor200/external/wpt/css/printing/*
 virtual/scalefactor200/external/wpt/largest-contentful-paint/animated/observe-cross-origin-tao-animated-image.tentative.html
 virtual/scalefactor200/external/wpt/largest-contentful-paint/image-not-fully-visible.html 
 virtual/scalefactor200/external/wpt/largest-contentful-paint/multiple-image-same-src.html

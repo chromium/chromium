@@ -1,5 +1,5 @@
 PASS picker.selectElement_.style.color is "rgb(123, 0, 0)"
-PASS picker.selectElement_.options[0].style.color is "rgb(0, 0, 0)"
+PASS picker.selectElement_.options[0].style.color is ""
 PASS picker.selectElement_.value is "0"
 PASS picker.selectElement_.value is "1"
 PASS picker.selectElement_.value is "1"

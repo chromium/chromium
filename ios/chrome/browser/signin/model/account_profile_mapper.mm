@@ -145,7 +145,9 @@ class AccountProfileMapper::Assigner
   std::string GetPersonalProfileName();
 
   bool IsProfileForGaiaIDFullyInitialized(const GaiaId& gaia_id);
-  void MakePersonalProfileManagedWithGaiaID(const GaiaId& gaia_id);
+  void MakePersonalProfileManagedWithGaiaID(const GaiaId& managed_gaia_id);
+  void MoveManagedAccountToPersonalProfileForTesting(  // IN-TEST
+      const GaiaId& managed_gaia_id);
 
   // SystemIdentityManagerObserver implementation.
   void OnIdentityListChanged() final;
@@ -383,6 +385,35 @@ void AccountProfileMapper::Assigner::MakePersonalProfileManagedWithGaiaID(
       AttachGaiaIdToProfile(new_personal_profile_name, gaia_id);
     }
     AttachGaiaIdToProfile(new_managed_profile_name, managed_gaia_id);
+  }
+
+  // Let observers know about the changes.
+  MaybeUpdateCachedMappingAndNotify();
+}
+
+void AccountProfileMapper::Assigner::
+    MoveManagedAccountToPersonalProfileForTesting(
+        const GaiaId& managed_gaia_id) {
+  CHECK(!IsProfileForGaiaIDFullyInitialized(managed_gaia_id));
+  CHECK(profile_manager_);
+
+  {
+    base::AutoReset<bool> updating_attributes(
+        &is_updating_profile_attributes_storage_, true);
+
+    const std::string personal_profile_name = GetPersonalProfileName();
+
+    ProfileAttributesStorageIOS* storage = GetProfileAttributesStorage();
+    CHECK(storage);
+
+    const std::optional<std::string> old_managed_profile_name =
+        FindProfileNameForGaiaID(managed_gaia_id);
+    CHECK(old_managed_profile_name.has_value());
+
+    DetachGaiaIdFromProfile(*old_managed_profile_name, managed_gaia_id);
+    AttachGaiaIdToProfile(personal_profile_name, managed_gaia_id);
+
+    DeleteProfileNamed(*old_managed_profile_name);
   }
 
   // Let observers know about the changes.
@@ -904,6 +935,11 @@ bool AccountProfileMapper::IsProfileForGaiaIDFullyInitialized(
 void AccountProfileMapper::MakePersonalProfileManagedWithGaiaID(
     const GaiaId& gaia_id) {
   assigner_->MakePersonalProfileManagedWithGaiaID(gaia_id);
+}
+
+void AccountProfileMapper::MoveManagedAccountToPersonalProfileForTesting(
+    const GaiaId& gaia_id) {
+  assigner_->MoveManagedAccountToPersonalProfileForTesting(gaia_id);  // IN-TEST
 }
 
 void AccountProfileMapper::IdentitiesOnDeviceChanged() {

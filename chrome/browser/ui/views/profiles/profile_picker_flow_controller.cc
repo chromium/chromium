@@ -35,7 +35,6 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/profile_customization_bubble_sync_controller.h"
-#include "chrome/browser/ui/views/profiles/profile_customization_bubble_view.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller_impl.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
@@ -106,9 +105,6 @@ void ShowCustomizationBubble(std::optional<SkColor> new_profile_color,
   if (!browser_view || !browser_view->toolbar_button_provider()) {
     return;
   }
-  views::View* anchor_view =
-      browser_view->toolbar_button_provider()->GetAvatarToolbarButton();
-  CHECK(anchor_view);
 
   if (ProfileCustomizationBubbleSyncController::CanThemeSyncStart(
           browser->profile())) {
@@ -117,11 +113,11 @@ void ShowCustomizationBubble(std::optional<SkColor> new_profile_color,
     // no conflict with a synced theme / color.
     ProfileCustomizationBubbleSyncController::
         ApplyColorAndShowBubbleWhenNoValueSynced(
-            browser, anchor_view,
+            browser,
             /*suggested_profile_color=*/new_profile_color.value());
   } else {
     // For non syncing users, simply show the bubble.
-    ProfileCustomizationBubbleView::CreateBubble(browser, anchor_view);
+    browser->signin_view_controller()->ShowModalProfileCustomizationDialog();
   }
 }
 

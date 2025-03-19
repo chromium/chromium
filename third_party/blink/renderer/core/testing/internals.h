@@ -43,6 +43,7 @@ namespace blink {
 
 class Animation;
 class CallbackFunctionTest;
+class CanvasImageSource;
 class CanvasRenderingContext;
 class DOMArrayBuffer;
 class DOMPoint;
@@ -507,6 +508,7 @@ class Internals final : public ScriptWrappable {
   unsigned canvasFontCacheMaxFonts();
   void forceLoseCanvasContext(CanvasRenderingContext* context);
   void disableCanvasAcceleration(HTMLCanvasElement* canvas);
+  bool isCanvasImageSourceAccelerated(const CanvasImageSource*) const;
 
   String selectedHTMLForClipboard();
   String selectedTextForClipboard();

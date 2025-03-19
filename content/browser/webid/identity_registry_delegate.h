@@ -9,6 +9,7 @@
 #include <string>
 
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -34,6 +35,14 @@ class IdentityRegistryDelegate {
   virtual bool OnResolve(GURL idp_config_url,
                          const std::optional<std::string>& account_id,
                          const std::string& token) = 0;
+
+  enum class Method { kClose, kResolve };
+
+  // Notifies the delegate for an origin mismatch so they can output debugging
+  // messages.
+  virtual void OnOriginMismatch(Method method,
+                                const url::Origin& expected,
+                                const url::Origin& actual) {}
 };
 
 }  // namespace content

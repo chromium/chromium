@@ -76,11 +76,22 @@ extern const char kChromeAppGroupCommandCommandPreference[];
 // The command to open a URL. Parameter must contain the URL.
 extern const char kChromeAppGroupOpenURLCommand[];
 
+// The command to open a URL in incognito. Parameter must contain the URL.
+extern NSString* const kChromeAppGroupOpenURLInIcognitoCommand;
+
 // The command to search some text. Parameter must contain the text.
 extern const char kChromeAppGroupSearchTextCommand[];
 
+// The command to search some text in incognito. Parameter must contain the
+// text.
+extern NSString* const kChromeAppGroupIncognitoSearchTextCommand;
+
 // The command to search an image. Data parameter must contain the image.
 extern const char kChromeAppGroupSearchImageCommand[];
+
+// The command to search an image in incognito. Data parameter must contain the
+// image.
+extern NSString* const kChromeAppGroupIncognitoSearchImageCommand;
 
 // The command to trigger a voice search.
 extern const char kChromeAppGroupVoiceSearchCommand[];

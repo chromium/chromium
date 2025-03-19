@@ -30,7 +30,6 @@ class BnplTosViewDesktop : public BnplTosView {
   ~BnplTosViewDesktop() override;
 
  private:
-  void CloseWidget(views::Widget::ClosedReason reason);
   void OpenLink(const GURL& url);
 
   raw_ptr<content::WebContents> web_contents_;

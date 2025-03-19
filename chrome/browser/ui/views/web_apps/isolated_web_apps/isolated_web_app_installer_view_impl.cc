@@ -17,7 +17,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
@@ -73,7 +72,7 @@ views::View* GetRootView(views::View* view) {
 
 gfx::Insets BottomPadding(views::DistanceMetric distance) {
   return gfx::Insets::TLBR(
-      0, 0, ChromeLayoutProvider::Get()->GetDistanceMetric(distance), 0);
+      0, 0, views::LayoutProvider::Get()->GetDistanceMetric(distance), 0);
 }
 
 std::unique_ptr<views::StyledLabel> CreateLabelWithContextAndStyle(
@@ -272,7 +271,7 @@ class InstallerDialogView : public views::BoxLayoutView {
 
     contents_wrapper_->SetProperty(
         views::kMarginsKey,
-        gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
+        gfx::Insets::VH(views::LayoutProvider::Get()->GetDistanceMetric(
                             views::DISTANCE_UNRELATED_CONTROL_VERTICAL),
                         0));
     if (region_name_id.has_value()) {
@@ -616,8 +615,8 @@ gfx::Size IsolatedWebAppInstallerViewImpl::GetMaximumSize() const {
   // `SetCanResize` only works in ash. ash will consider Lacros windows to be
   // non-resizable if their min and max height are the same. To achieve this,
   // we set the max size to the View's preferred size.
-  int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH);
+  int width = views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH);
   return gfx::Size(width, GetHeightForWidth(width));
 }
 
@@ -662,7 +661,7 @@ views::Widget* IsolatedWebAppInstallerViewImpl::ShowChildDialog(
   // the way we want, so we have to manually create a header View that
   // positions the icon correctly.
   auto header = std::make_unique<views::BoxLayoutView>();
-  int inset = ChromeLayoutProvider::Get()->GetDistanceMetric(
+  int inset = views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_UNRELATED_CONTROL_VERTICAL);
   header->SetInsideBorderInsets(gfx::Insets::TLBR(inset, inset, 0, inset));
   auto* icon = header->AddChildView(std::make_unique<NonAccessibleImageView>());
@@ -675,7 +674,7 @@ views::Widget* IsolatedWebAppInstallerViewImpl::ShowChildDialog(
                                                 ui::mojom::ModalType::kChild);
   bubble->SetAnchorView(GetWidget()->GetContentsView());
   bubble->SetArrow(views::BubbleBorder::FLOAT);
-  bubble->set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
+  bubble->set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   bubble->RegisterWidgetInitializedCallback(base::BindOnce(
       [](views::BubbleDialogModelHost* bubble,

@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 
 import android.app.Activity;
@@ -15,7 +18,6 @@ import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -183,14 +185,14 @@ public class TabModelMergingTest {
 
         // ChromeTabbedActivity should have four normal tabs, the one it started with and the three
         // just created.
-        Assert.assertEquals(
+        assertEquals(
                 "Wrong number of tabs in ChromeTabbedActivity",
                 4,
                 mActivity1.getTabModelSelector().getModel(false).getCount());
 
         // ChromeTabbedActivity2 should have three normal tabs, the one it started with and the two
         // just created.
-        Assert.assertEquals(
+        assertEquals(
                 "Wrong number of tabs in ChromeTabbedActivity2",
                 3,
                 mActivity2.getTabModelSelector().getModel(false).getCount());
@@ -297,13 +299,13 @@ public class TabModelMergingTest {
             String expectedSelectedTabUrl,
             final String[] expectedTabUrls) {
         // Assert there are the correct number of tabs.
-        Assert.assertEquals(
+        assertEquals(
                 "Wrong number of normal tabs",
                 expectedTabUrls.length,
                 activity.getTabModelSelector().getModel(false).getCount());
 
         // Assert that the correct tab is selected.
-        Assert.assertEquals(
+        assertEquals(
                 "Wrong tab selected",
                 expectedSelectedTabUrl,
                 ChromeTabUtils.getUrlStringOnUiThread(
@@ -311,7 +313,7 @@ public class TabModelMergingTest {
 
         // Assert that tabs are in the correct order.
         for (int i = 0; i < expectedTabUrls.length; i++) {
-            Assert.assertEquals(
+            assertEquals(
                     "Wrong tab at position " + i,
                     expectedTabUrls[i],
                     ChromeTabUtils.getUrlStringOnUiThread(
@@ -516,7 +518,7 @@ public class TabModelMergingTest {
                 });
 
         // Check that a merge occurred.
-        Assert.assertEquals(
+        assertEquals(
                 "Wrong number of tabs after restart.",
                 mMergeIntoActivity2ExpectedTabs.length,
                 mNewCTA2.getTabModelSelector().getModel(false).getCount());
@@ -540,7 +542,7 @@ public class TabModelMergingTest {
                 mActivity1.getLayoutManager(), LayoutType.TAB_SWITCHER, false);
 
         mergeTabsAndAssert(mActivity1, mMergeIntoActivity1ExpectedTabs);
-        Assert.assertTrue("Overview mode should still be showing", mActivity1.isInOverviewMode());
+        assertTrue("Overview mode should still be showing", mActivity1.isInOverviewMode());
         mActivity1.finishAndRemoveTask();
     }
 
@@ -585,19 +587,19 @@ public class TabModelMergingTest {
                     mActivity2.saveState();
                 });
 
-        Assert.assertEquals(
+        assertEquals(
                 "Wrong number of incognito tabs in ChromeTabbedActivity",
                 1,
                 mActivity1.getTabModelSelector().getModel(true).getCount());
-        Assert.assertEquals(
+        assertEquals(
                 "Wrong number of tabs in ChromeTabbedActivity",
                 5,
                 mActivity1.getTabModelSelector().getTotalTabCount());
-        Assert.assertEquals(
+        assertEquals(
                 "Wrong number of incognito tabs in ChromeTabbedActivity2",
                 1,
                 mActivity2.getTabModelSelector().getModel(true).getCount());
-        Assert.assertEquals(
+        assertEquals(
                 "Wrong number of tabs in ChromeTabbedActivity2",
                 4,
                 mActivity2.getTabModelSelector().getTotalTabCount());

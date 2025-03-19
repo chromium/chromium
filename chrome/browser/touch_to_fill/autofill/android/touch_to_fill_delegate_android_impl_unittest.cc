@@ -32,6 +32,7 @@ namespace {
 
 using test::CreateTestCreditCardFormData;
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::Field;
@@ -49,8 +50,8 @@ Matcher<Suggestion> EqualsSuggestionFields(const std::u16string& main_text,
   return AllOf(
       Field(&Suggestion::main_text,
             Suggestion::Text(main_text, Suggestion::Text::IsPrimary(false))),
-      Field(&Suggestion::minor_text,
-            Suggestion::Text(minor_text, Suggestion::Text::IsPrimary(false))),
+      Field(&Suggestion::minor_texts,
+            std::vector<Suggestion::Text>{Suggestion::Text(minor_text)}),
       Property(&Suggestion::HasDeactivatedStyle, has_deactivated_style));
 }
 

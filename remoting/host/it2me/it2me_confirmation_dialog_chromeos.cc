@@ -62,12 +62,31 @@ std::u16string FormatMessage(const std::string& remote_user_email,
       l10n_util::GetStringUTF16(IDS_SHARE_CONFIRM_DIALOG_CONFIRM));
 }
 
+std::u16string GetAutoAcceptMessage(const std::string& remote_user_email,
+                                    base::TimeDelta time_left) {
+  std::u16string auto_accept_message =
+      base::i18n::MessageFormatter::FormatWithNumberedArgs(
+          l10n_util::GetStringUTF16(
+              IDS_SHARE_CONFIRM_DIALOG_MESSAGE_ADMIN_INITIATED_CRD_UNATTENDED),
+          remote_user_email);
+  auto_accept_message.append(u"\n\n");
+  auto_accept_message.append(l10n_util::GetPluralStringFUTF16(
+      IDS_CRD_AUTO_ACCEPT_COUNTDOWN, time_left.InSeconds()));
+
+  return auto_accept_message;
+}
+
 std::u16string GetTitle() {
   return l10n_util::GetStringUTF16(IDS_MODE_IT2ME);
 }
 
 std::u16string GetConfirmButtonLabel() {
   return l10n_util::GetStringUTF16(IDS_SHARE_CONFIRM_DIALOG_CONFIRM);
+}
+
+std::u16string GetAutoAcceptConfirmButtonLabel() {
+  return l10n_util::GetStringUTF16(
+      IDS_SHARE_CONFIRM_DIALOG_CONFIRM_CRD_UNATTENDED);
 }
 
 std::u16string GetDeclineButtonLabel() {
@@ -144,12 +163,41 @@ class CountdownTimer {
   base::WeakPtrFactory<CountdownTimer> weak_factory_{this};
 };
 
+class MessageLabelProvider {
+ public:
+  MessageLabelProvider(const std::string& remote_user_email,
+                       It2MeConfirmationDialog::DialogStyle style,
+                       base::TimeDelta auto_accept_timeout)
+      : remote_user_email_(remote_user_email),
+        style_(style),
+        auto_accept_timeout_(auto_accept_timeout) {}
+  ~MessageLabelProvider() = default;
+
+  std::u16string GetMessageLabel() const {
+    if (!auto_accept_timeout_.is_zero()) {
+      return GetAutoAcceptMessage(remote_user_email_,
+                                  /*time_left=*/auto_accept_timeout_);
+    }
+
+    return FormatMessage(remote_user_email_, style_);
+  }
+
+  std::u16string GetAutoAcceptMessageLabel(base::TimeDelta time_left) const {
+    return GetAutoAcceptMessage(remote_user_email_, time_left);
+  }
+
+ private:
+  const std::string remote_user_email_;
+  const It2MeConfirmationDialog::DialogStyle style_;
+  const base::TimeDelta auto_accept_timeout_;
+};
+
 }  // namespace
 
 class It2MeConfirmationDialogChromeOS::Core : public ash::SessionObserver {
  public:
   explicit Core(const std::u16string& title_label,
-                const std::u16string& message_label,
+                const MessageLabelProvider message_label_provider_,
                 const std::u16string& ok_label,
                 const std::u16string& cancel_label,
                 const std::optional<ui::ImageModel> icon,
@@ -176,7 +224,9 @@ class It2MeConfirmationDialogChromeOS::Core : public ash::SessionObserver {
 
   ResultCallback callback_;
   std::unique_ptr<MessageBox> message_box_;
-  base::TimeDelta auto_accept_timeout_;
+
+  const MessageLabelProvider message_label_provider_;
+  const base::TimeDelta auto_accept_timeout_;
 
   base::WeakPtrFactory<It2MeConfirmationDialogChromeOS::Core> weak_factory_{
       this};
@@ -184,20 +234,26 @@ class It2MeConfirmationDialogChromeOS::Core : public ash::SessionObserver {
 
 It2MeConfirmationDialogChromeOS::Core::Core(
     const std::u16string& title_label,
-    const std::u16string& message_label,
+    const MessageLabelProvider message_label_provider,
     const std::u16string& ok_label,
     const std::u16string& cancel_label,
     const std::optional<ui::ImageModel> icon,
     const base::TimeDelta auto_accept_timeout,
-    ResultCallback callback) {
+    ResultCallback callback)
+    : message_label_provider_(message_label_provider),
+      auto_accept_timeout_(auto_accept_timeout) {
   session_controller()->AddObserver(this);
   message_box_ = std::make_unique<MessageBox>(
-      title_label, message_label, ok_label, cancel_label, icon,
+      /*title_label=*/title_label,
+      /*message_label=*/message_label_provider_.GetMessageLabel(),
+      /*ok_label=*/ok_label,
+      /*cancel_label=*/cancel_label,
+      /*icon=*/icon,
+      /*result_callback=*/
       base::BindOnce(
           &It2MeConfirmationDialogChromeOS::Core::OnConfirmationDialogResult,
           weak_factory_.GetWeakPtr()));
   callback_ = std::move(callback);
-  auto_accept_timeout_ = auto_accept_timeout;
 }
 
 It2MeConfirmationDialogChromeOS::Core::~Core() {
@@ -249,7 +305,8 @@ void It2MeConfirmationDialogChromeOS::Core::StartAutoAcceptCountDown() {
 
 void It2MeConfirmationDialogChromeOS::Core::UpdateCountdownInDialogUI(
     base::TimeDelta time_left) {
-  // TODO(b:390346397): Update core dialog UI to show countdown.
+  message_box_->SetMessageLabel(
+      message_label_provider_.GetAutoAcceptMessageLabel(time_left));
 }
 
 void It2MeConfirmationDialogChromeOS::Core::OnCountdownComplete() {
@@ -279,10 +336,11 @@ void It2MeConfirmationDialogChromeOS::Show(const std::string& remote_user_email,
   if (base::FeatureList::IsEnabled(
           remoting::features::kEnableCrdSharedSessionToUnattendedDevice)) {
     core_ = std::make_unique<It2MeConfirmationDialogChromeOS::Core>(
-        /*title=*/GetTitle(),
-        /*message_label=*/FormatMessage(remote_user_email, style_),
-        /*ok_button_label=*/GetConfirmButtonLabel(),
-        /*cancel_button_label=*/GetDeclineButtonLabel(),
+        /*title_label=*/GetTitle(),
+        /*message_label_provider=*/
+        MessageLabelProvider(remote_user_email, style_, auto_accept_timeout_),
+        /*ok_label=*/GetShareButtonLabel(),
+        /*cancel_label=*/GetDeclineButtonLabel(),
         /*icon=*/GetDialogIcon(),
         /*auto_accept_timeout=*/auto_accept_timeout_,
         /*callback=*/
@@ -353,15 +411,23 @@ void It2MeConfirmationDialogChromeOS::OnConfirmationDialogResult(
 
 const gfx::VectorIcon& It2MeConfirmationDialogChromeOS::GetIcon() const {
   switch (style_) {
-    case DialogStyle::kConsumer:
+    case It2MeConfirmationDialog::DialogStyle::kConsumer:
       return gfx::VectorIcon::EmptyIcon();
-    case DialogStyle::kEnterprise:
+    case It2MeConfirmationDialog::DialogStyle::kEnterprise:
       return chromeos::kEnterpriseIcon;
   }
 }
 
 const ui::ImageModel It2MeConfirmationDialogChromeOS::GetDialogIcon() const {
   return ui::ImageModel::FromVectorIcon(GetIcon());
+}
+
+std::u16string It2MeConfirmationDialogChromeOS::GetShareButtonLabel() const {
+  if (!auto_accept_timeout_.is_zero()) {
+    return GetAutoAcceptConfirmButtonLabel();
+  }
+
+  return GetConfirmButtonLabel();
 }
 
 views::DialogDelegate&

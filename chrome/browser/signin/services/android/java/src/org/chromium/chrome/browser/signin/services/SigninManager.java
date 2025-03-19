@@ -90,19 +90,23 @@ public interface SigninManager {
      */
     IdentityManager getIdentityManager();
 
-    /** Returns true if sign in can be started now. */
+    /**
+     * Returns true if sign in flow can be started right away, meaning that:
+     *
+     * <p>1. No sign-in is in progress; 2. No account is already signed-in; 3. Sign-in is not
+     * disabled manually via the settings toggle; 4. Sign-in is not disabled by policy; 5. Google
+     * Play Services are available.
+     */
     boolean isSigninAllowed();
 
     /** Returns true if sync opt in can be started now. */
     boolean isSyncOptInAllowed();
 
-    /** Returns true if signin is disabled by policy. */
-    boolean isSigninDisabledByPolicy();
-
     /**
      * Returns whether the user can sign-in (maybe after an update to Google Play services).
+     *
      * @param requireUpdatedPlayServices Indicates whether an updated version of play services is
-     *         required or not.
+     *     required or not.
      */
     boolean isSigninSupported(boolean requireUpdatedPlayServices);
 

@@ -375,8 +375,7 @@ void WidgetBase::DisconnectLayerTreeView(WidgetBase* new_widget,
 }
 
 cc::LayerTreeHost* WidgetBase::LayerTreeHost() const {
-  CHECK(layer_tree_view_);
-  return layer_tree_view_->layer_tree_host();
+  return layer_tree_view_ ? layer_tree_view_->layer_tree_host() : nullptr;
 }
 
 cc::AnimationHost* WidgetBase::AnimationHost() const {

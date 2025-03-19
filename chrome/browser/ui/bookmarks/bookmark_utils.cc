@@ -331,9 +331,7 @@ gfx::ImageSkia GetBookmarkFolderImageFromVectorIcon(
     id = &vector_icons::kFolderManagedRefreshIcon;
   }
 
-  const ui::ThemedVectorIcon icon =
-      color.GetSkColor() ? ui::ThemedVectorIcon(id, *color.GetSkColor())
-                         : ui::ThemedVectorIcon(id, *color.GetColorId());
+  const ui::ThemedVectorIcon icon(id, color);
   folder = icon.GetImageSkia(color_provider);
   return folder;
 }

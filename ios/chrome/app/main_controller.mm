@@ -82,6 +82,7 @@
 #import "ios/chrome/browser/crash_report/model/crash_report_helper.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/device_orientation/ui_bundled/scoped_force_portrait_orientation.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_app_agent.h"
 #import "ios/chrome/browser/download/model/download_directory_util.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
@@ -123,7 +124,6 @@
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/device_orientation/scoped_force_portrait_orientation.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_file_utils.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
@@ -595,8 +595,6 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
   }
 
   RegisterComponentsForUpdate();
-
-  [[PreviousSessionInfo sharedInstance] resetConnectedSceneSessionIDs];
 
   _windowConfigurationRecorder = [[WindowConfigurationRecorder alloc] init];
 }
@@ -1658,10 +1656,8 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
     [self appState:self.appState sceneConnected:sceneState];
     DCHECK(sceneState.profileState);
 
-    while (sceneState.activationLevel < savedLevel) {
-      sceneState.activationLevel = static_cast<SceneActivationLevel>(
-          base::to_underlying(sceneState.activationLevel) + 1);
-    }
+    // Restore the saved activation level.
+    sceneState.activationLevel = savedLevel;
   }
 
   // Wait for the profile to complete its initialisation.

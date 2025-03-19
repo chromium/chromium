@@ -4055,9 +4055,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
     <ph name="BEGIN_PARAGRAPH2" />Këto raporte mund t'i lejosh ose mund të mos i lejosh në çdo kohë në cilësimet e pajisjes sate Chrome. Nëse je administrator domeni, mund ta ndryshosh këtë cilësim në panelin e administratorit.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">Aurora polare gjatë natës, mbi një shtëpizë të vogël.</translation>
 <translation id="3818102823568165369">Certifikatat lokale që janë shtuar nga sistemi yt operativ ose administratori yt.</translation>
-<translation id="3818662907126913619">Për të përdorur pajisjen tënde me profilin tënd të <ph name="DOMAIN" />, organizata jote ka nevojë për informacione për pajisjen.
-
-Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, shfletuesin tënd dhe sistemin operativ të pajisjes.</translation>
 <translation id="3819164369574292143">Zmadhoje për t'i bërë më të mëdhenj artikujt në ekran. Përdor "Kërko" + Ctrl + M për të aktivizuar dhe çaktivizuar zmadhuesin. Përdor Ctrl + Alt + tastet e shigjetave për të lëvizur përreth kur e ke zmadhuar.</translation>
 <translation id="3819257035322786455">Rezervimi</translation>
 <translation id="3819261658055281761">Sistemi nuk arriti të ruante kodin afatgjatë të qasjes së API-së për këtë pajisje.</translation>
@@ -4375,9 +4372,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4031527940632463547">Sensorët u bllokuan</translation>
 <translation id="4033471457476425443">Shto dosje të re</translation>
 <translation id="4033963223187371752">Sajtet e sigurta mund të integrojnë përmbajtje si imazhet ose kornizat e uebit që nuk janë të sigurta</translation>
-<translation id="4034706080855851454">Për të përdorur pajisjen tënde me profilin tënd të organizatës, organizata jote ka nevojë për informacione për pajisjen.
-
-Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, shfletuesin tënd dhe sistemin operativ të pajisjes.</translation>
 <translation id="4034824040120875894">Printeri</translation>
 <translation id="4035758313003622889">&amp;Menaxheri i detyrave</translation>
 <translation id="4035877632587724847">Mos lejo</translation>

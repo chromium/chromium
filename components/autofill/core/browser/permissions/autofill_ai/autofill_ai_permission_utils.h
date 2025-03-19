@@ -12,15 +12,26 @@ class AutofillClient;
 // An AutofillAI-related action that a user may take directly or indirectly
 // (e.g., IPH).
 enum class AutofillAiAction {
+  // Add new AutofillAI data in settings.
   kAddEntityInstanceInSettings,
+  // Emit AutofillAI-related crowdsourcing votes.
   kCrowdsourcingVote,
+  // Edit and delete existing AutofillAI data in settings.
   kEditAndDeleteEntityInstanceInSettings,
+  // Fill AutofillAI data.
   kFilling,
+  // Import (i.e. saving or updating) AutofillAI data on form submission.
   kImport,
+  // Show the IPH for opting into AutofillAI.
   kIphForOptIn,
+  // List existing AutofillAI data in settings.
   kListEntityInstancesInSettings,
+  // Opt into (and out of) the AutofillAI feature.
   kOptIn,
+  // Trigger a run of the server classification model.
   kServerClassificationModel,
+  // Access locally cached results from the server classification model.
+  kUseCachedServerClassificationModelResults,
 };
 
 // Returns whether all permission-related requirements are met for `action`.

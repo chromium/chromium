@@ -24,6 +24,7 @@ class GPUAdapterInfo : public ScriptWrappable {
       const String& architecture,
       uint32_t subgroup_min_size,
       uint32_t subgroup_max_size,
+      bool isFallbackAdapter,
       const String& device = String(),
       const String& description = String(),
       const String& driver = String(),
@@ -44,6 +45,7 @@ class GPUAdapterInfo : public ScriptWrappable {
   const String& description() const;
   uint32_t subgroupMinSize() const;
   uint32_t subgroupMaxSize() const;
+  bool isFallbackAdapter() const;
   const String& driver() const;
   const String& backend() const;
   const String& type() const;
@@ -58,6 +60,7 @@ class GPUAdapterInfo : public ScriptWrappable {
   String architecture_;
   uint32_t subgroup_min_size_;
   uint32_t subgroup_max_size_;
+  bool is_fallback_adapter_;
   String device_;
   String description_;
   String driver_;

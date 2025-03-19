@@ -26,6 +26,7 @@ class MemorySaverOptInIPHController;
 class SidePanelCoordinator;
 class SidePanelUI;
 class TabStripModel;
+class TranslateBubbleController;
 class ToastController;
 class ToastService;
 class DataSharingOpenGroupHelper;
@@ -196,6 +197,10 @@ class BrowserWindowFeatures {
     return shared_tab_group_feedback_controller_.get();
   }
 
+  TranslateBubbleController* translate_bubble_controller() {
+    return translate_bubble_controller_.get();
+  }
+
  protected:
   BrowserWindowFeatures();
 
@@ -265,6 +270,8 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<tab_groups::SharedTabGroupFeedbackController>
       shared_tab_group_feedback_controller_;
+
+  std::unique_ptr<TranslateBubbleController> translate_bubble_controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_

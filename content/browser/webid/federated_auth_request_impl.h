@@ -127,6 +127,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   bool OnResolve(GURL idp_config_url,
                  const std::optional<std::string>& account_id,
                  const std::string& token) override;
+  void OnOriginMismatch(Method method,
+                        const url::Origin& expected,
+                        const url::Origin& actual) override;
 
   // content::FederatedAuthAutofillSource
   const std::optional<std::vector<IdentityRequestAccountPtr>>

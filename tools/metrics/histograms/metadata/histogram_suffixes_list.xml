@@ -282,7 +282,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="SyncPaused" label="Sync paused"/>
   <suffix name="Unknown" label="Unknown"/>
   <affected-histogram name="Autofill.Address.IsEnabled.PageLoad"/>
-  <affected-histogram name="Autofill.CardUploadEnabled"/>
+  <affected-histogram name="Autofill.CardUploadEnabled2"/>
   <affected-histogram name="Autofill.CreditCard.IsEnabled.PageLoad"/>
   <affected-histogram
       name="Autofill.FormEvents.CreditCard.WithBothServerAndLocalData"/>

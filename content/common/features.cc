@@ -149,6 +149,12 @@ BASE_FEATURE(kFedCmFlexibleFields,
              "FedCmFlexibleFields",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Whether to support the newer syntax for the "Use Other Account"
+// and account labels features.
+BASE_FEATURE(kFedCmUseOtherAccountAndLabelsNewSyntax,
+             "FedCmUseOtherAccountAndLabelsNewSyntax",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables sending SameSite=Lax cookies in credentialed FedCM requests
 // (accounts endpoint, ID assertion endpoint and disconnect endpoint).
 BASE_FEATURE(kFedCmSameSiteLax,

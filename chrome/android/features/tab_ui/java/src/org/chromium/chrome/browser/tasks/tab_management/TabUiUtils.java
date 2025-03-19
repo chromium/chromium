@@ -73,9 +73,8 @@ public class TabUiUtils {
             Callback.runNullSafe(didCloseCallback, false);
             return;
         }
-        int rootId = tab.getRootId();
         TabClosureParams closureParams =
-                TabClosureParams.forCloseTabGroup(filter, rootId)
+                TabClosureParams.forCloseTabGroup(filter, tab.getTabGroupId())
                         .hideTabGroups(hideTabGroups)
                         .allowUndo(true)
                         .build();

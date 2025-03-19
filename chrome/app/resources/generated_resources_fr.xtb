@@ -1336,6 +1336,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1918127774159128277">Actualiser les capacités Wi-Fi Direct</translation>
 <translation id="1918141783557917887">Plu&amp;s petit</translation>
 <translation id="1918281588461452432">Lorsque vous parcourez des sites, le contenu de leurs pages est chiffré et enregistré sur votre appareil</translation>
+<translation id="1919096511823372013">Insérez des liens, des emoji et plus. L'IA de Google peut aussi vous aider à rédiger des contenus et créer des images.</translation>
 <translation id="1919872106782726755">Pour configurer l'empreinte de votre enfant, demandez-lui d'appuyer sur le lecteur d'empreinte digitale en haut à droite du clavier, à côté du bouton Marche/Arrêt. Les données de son empreinte sont stockées de façon sécurisée et ne quittent jamais ce <ph name="DEVICE_TYPE" />.</translation>
 <translation id="192015196730532810">Vous pouvez créer votre propre groupe d'onglets.</translation>
 <translation id="1920314570001095522">Il n'y a aucun onglet semblable à organiser, mais ces groupes pourraient vous intéresser</translation>
@@ -4058,9 +4059,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
     <ph name="BEGIN_PARAGRAPH2" />Vous pouvez autoriser ou suspendre l'envoi de ces rapports à tout moment dans les paramètres de votre appareil Chrome. Si vous êtes administrateur de domaine, vous pouvez modifier ce paramètre dans la console d'administration.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">Aurore boréale la nuit, au-dessus d'une petite maison de campagne.</translation>
 <translation id="3818102823568165369">Certificats locaux ajoutés par votre système d'exploitation ou votre administrateur.</translation>
-<translation id="3818662907126913619">Vous devez fournir à votre organisation des informations concernant cet appareil pour pouvoir l'utiliser avec votre profil <ph name="DOMAIN" />.
-
-Cela peut inclure des informations sur les logiciels installés, les fichiers, votre navigateur et le système d'exploitation de l'appareil.</translation>
 <translation id="3819164369574292143">Zoomez pour agrandir des éléments à l'écran. Appuyez sur Recherche+Ctrl+M pour activer ou désactiver la loupe. Appuyez sur Ctrl+Alt+Touches fléchées pour vous déplacer après avoir zoomé.</translation>
 <translation id="3819257035322786455">Sauvegarder</translation>
 <translation id="3819261658055281761">Échec de l'enregistrement du jeton d'accès aux API à long terme pour cet appareil.</translation>
@@ -4378,9 +4376,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4031527940632463547">Capteurs bloqués</translation>
 <translation id="4033471457476425443">Ajouter un dossier</translation>
 <translation id="4033963223187371752">Les sites sécurisés peuvent intégrer du contenu tel que des images ou des cadres Web non sécurisés</translation>
-<translation id="4034706080855851454">Vous devez fournir des informations concernant cet appareil pour pouvoir l'utiliser avec le profil de votre organisation.
-
-Cela peut inclure des informations sur les logiciels installés, les fichiers, votre navigateur et le système d'exploitation de l'appareil.</translation>
 <translation id="4034824040120875894">Imprimante</translation>
 <translation id="4035758313003622889">Gestionnaire de &amp;tâches</translation>
 <translation id="4035877632587724847">Ne pas autoriser</translation>
@@ -8975,6 +8970,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7377451353532943397">Continuer de bloquer l'accès aux capteurs</translation>
 <translation id="7377481913241237033">Connecter un appareil avec un code</translation>
 <translation id="73786666777299047">Ouvrir le Chrome Web Store</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Une autre tâche dans le même groupe de tâches : <ph name="OTHER_TASKS" />}one{<ph name="TASK_ROW" />. # autre tâche dans le même groupe de tâches : <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. # autres tâches dans le même groupe de tâches : <ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380272457268061606">Désactiver la récupération des données locales ?</translation>
 <translation id="7380459290951585794">Vérifiez que votre téléphone est déverrouillé et à proximité, et que le Bluetooth et le Wi-Fi sont activés</translation>
 <translation id="7380622428988553498">Le nom de l'appareil comporte des caractères non valides</translation>

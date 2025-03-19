@@ -151,7 +151,7 @@ source_set("shortcuts") {
     "//ios/chrome/browser/ui/content_suggestions:metrics",
     "//ios/chrome/browser/ui/content_suggestions:public",
     "//ios/chrome/browser/ui/content_suggestions/magic_stack:public",
-    "//ios/chrome/browser/ui/whats_new:util",
+    "//ios/chrome/browser/whats_new/coordinator:util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/common/ui/util:dynamic_type_util",

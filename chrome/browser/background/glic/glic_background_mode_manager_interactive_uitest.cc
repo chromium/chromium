@@ -12,7 +12,7 @@
 #include "chrome/browser/background/startup_launch_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/glic/glic_test_util.h"
+#include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"

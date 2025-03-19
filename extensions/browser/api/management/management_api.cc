@@ -849,9 +849,9 @@ void ManagementUninstallFunctionBase::UninstallExtension() {
   Finish(success, error);
 }
 
-ManagementUninstallFunction::ManagementUninstallFunction() {}
+ManagementUninstallFunction::ManagementUninstallFunction() = default;
 
-ManagementUninstallFunction::~ManagementUninstallFunction() {}
+ManagementUninstallFunction::~ManagementUninstallFunction() = default;
 
 ExtensionFunction::ResponseAction ManagementUninstallFunction::Run() {
   std::optional<management::Uninstall::Params> params =
@@ -863,9 +863,9 @@ ExtensionFunction::ResponseAction ManagementUninstallFunction::Run() {
   return Uninstall(params->id, show_confirm_dialog);
 }
 
-ManagementUninstallSelfFunction::ManagementUninstallSelfFunction() {}
+ManagementUninstallSelfFunction::ManagementUninstallSelfFunction() = default;
 
-ManagementUninstallSelfFunction::~ManagementUninstallSelfFunction() {}
+ManagementUninstallSelfFunction::~ManagementUninstallSelfFunction() = default;
 
 ExtensionFunction::ResponseAction ManagementUninstallSelfFunction::Run() {
   std::optional<management::UninstallSelf::Params> params =
@@ -878,9 +878,11 @@ ExtensionFunction::ResponseAction ManagementUninstallSelfFunction::Run() {
   return Uninstall(extension_->id(), show_confirm_dialog);
 }
 
-ManagementCreateAppShortcutFunction::ManagementCreateAppShortcutFunction() {}
+ManagementCreateAppShortcutFunction::ManagementCreateAppShortcutFunction() =
+    default;
 
-ManagementCreateAppShortcutFunction::~ManagementCreateAppShortcutFunction() {}
+ManagementCreateAppShortcutFunction::~ManagementCreateAppShortcutFunction() =
+    default;
 
 // static
 void ManagementCreateAppShortcutFunction::SetAutoConfirmForTest(
@@ -1061,10 +1063,10 @@ ExtensionFunction::ResponseAction ManagementGenerateAppForLinkFunction::Run() {
 }
 
 ManagementInstallReplacementWebAppFunction::
-    ManagementInstallReplacementWebAppFunction() {}
+    ManagementInstallReplacementWebAppFunction() = default;
 
 ManagementInstallReplacementWebAppFunction::
-    ~ManagementInstallReplacementWebAppFunction() {}
+    ~ManagementInstallReplacementWebAppFunction() = default;
 
 ExtensionFunction::ResponseAction
 ManagementInstallReplacementWebAppFunction::Run() {
@@ -1194,7 +1196,7 @@ ManagementAPI::ManagementAPI(content::BrowserContext* context)
   event_router->RegisterObserver(this, management::OnDisabled::kEventName);
 }
 
-ManagementAPI::~ManagementAPI() {}
+ManagementAPI::~ManagementAPI() = default;
 
 void ManagementAPI::Shutdown() {
   // Ensure that SupervisedUserExtensionsDelegate is released prior to

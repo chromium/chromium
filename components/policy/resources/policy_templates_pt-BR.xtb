@@ -3991,6 +3991,7 @@ No <ph name="MS_WIN_NAME" />, essa política só está disponível em instância
 
 No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="3845318141474759319">Permitir plano de fundo de IA generativa sem melhorar os modelos de IA</translation>
+<translation id="3849923496599301707">Forçar a permissão dos apps do Chrome no modo quiosque</translation>
 <translation id="3851443303439635700">Controla o limite de aninhamento antes que a função setTimeout() do JavaScript comece a ser ajustada.</translation>
 <translation id="3854609566862485607">Esta política controla um rótulo personalizado usado para identificar perfis gerenciados. Para perfis gerenciados, esse rótulo vai aparecer ao lado do avatar na barra de ferramentas. O rótulo personalizado não será traduzido.
 
@@ -5707,6 +5708,11 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 <translation id="5041315457555330432">Permitir que o <ph name="PRODUCT_NAME" /> se conecte apenas a dispositivos em endereços IP particulares, a menos que o recurso CastAllowAllIPs esteja ativado.</translation>
 <translation id="504689994545234073">Ativar o armazenamento local de arquivos do usuário</translation>
 <translation id="5048890362473520096">Ativar o sandbox de LPAC para serviços de impressão</translation>
+<translation id="5049989450078943331">Se a política for definida como "true", os apps do Chrome vão continuar em execução em uma sessão de quiosque, não importando a ativação padrão deles.
+
+Se ela for deixada sem definição ou for definida como "false", será usado o comportamento padrão especificado no dispositivo.
+
+Se o usuário tentar abrir um app do Chrome desativado, vai receber uma mensagem explicando por que isso não foi possível e sugerindo que ele entre em contato com o departamento de TI.</translation>
 <translation id="5055474681190962362">Dia do mês [1-31] em que a reinicialização acontecerá, interpretado no fuso horário local do dispositivo. Usado apenas quando "frequency" for definido como "MONTHLY". Caso seja maior que o número máximo de dias de um mês específico, o último dia do mês será usado.</translation>
 <translation id="5055513974503523022">O plano de fundo de IA generativa para videochamadas permite que os usuários se expressem usando esse recurso personalizado para videochamadas no <ph name="PRODUCT_OS_NAME" />.
 
@@ -6601,6 +6607,7 @@ Se a política for definida como uma lista não vazia e houver uma extensão nes
 Se a política for deixada sem definição ou definida como uma lista vazia, caixas de diálogo de confirmação da verificação serão mostradas ao usuário quando as funções <ph name="GET_SCANNER_LIST_FUNCTION" /> ou <ph name="START_SCAN_FUNCTION" /> forem chamadas.</translation>
 <translation id="5599461642204007579">Configurações de gerenciamento do <ph name="MS_AD_NAME" /></translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5605676983184673391">Permitir a execução dos apps do Chrome em sessões de quiosque.</translation>
 <translation id="5607021831414604820">Ativar relatórios de status do armazenamento do dispositivo</translation>
 <translation id="5608114828230655271">Comportamento padrão do dispositivo</translation>
 <translation id="561001683838346956">Esta política foi removida na versão 124 do <ph name="PRODUCT_NAME" />. A partir dessa versão, hashes não seguros são sempre proibidos. Nas versões anteriores, essa política controlava se o navegador permitia hashes legados não seguros durante o processo de handshake de TLS.
@@ -6724,6 +6731,7 @@ Para informações detalhadas sobre padrões de URL válidos, consulte https://c
 
 Ela só é válida se a origem tiver permissão para usar a API Direct Sockets.
 Consulte <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> e <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" /> para mais detalhes.</translation>
+<translation id="566569751231933416">Usar o comportamento padrão.</translation>
 <translation id="5666457529647159548">Permite que o usuário gerencie certificados do cliente instalados.</translation>
 <translation id="5670249935663090320">Se a política for definida como ativada ou não for definida, o <ph name="PRODUCT_NAME" /> será ativado e poderá ser iniciado pelos usuários no menu de apps, nos menus de contexto da página, nos controles de mídia em sites compatíveis com o Cast e no ícone da barra de ferramentas do Google Cast (se for exibido).
 

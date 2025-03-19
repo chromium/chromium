@@ -37,7 +37,7 @@ lens::mojom::TextPtr CreateTextMojomFromServerResponse(
 // render incorrectly.
 lens::mojom::TextPtr CreateTextMojomFromInteractionResponse(
     const lens::LensOverlayInteractionResponse& response,
-    const lens::CenterRotatedBox& region_crop_box,
+    const lens::ZoomedCrop& region_crop_box,
     const gfx::Size& resized_bitmap_size);
 }  // namespace lens
 

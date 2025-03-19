@@ -6,14 +6,17 @@ package org.chromium.components.messages;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
  * The class describing the change of message scope, including the target scope type, instance id,
- * the {@link ChangeType} and the {@link Priority}.
- * The values of scope type and scope instance ids are maintained by the clients.
+ * the {@link ChangeType} and the {@link Priority}. The values of scope type and scope instance ids
+ * are maintained by the clients.
  */
+@NullMarked
 public class MessageScopeChange {
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({ChangeType.ACTIVE, ChangeType.INACTIVE, ChangeType.DESTROY})

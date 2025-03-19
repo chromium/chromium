@@ -75,10 +75,19 @@ void BackgroundLongTaskScheduler::OnTaskCompleted(BackgroundTask* task) {
   RecordDurationHistogramWithAndWithoutSuffix(
       "Crypto.UnexportableKeys.BackgroundTaskDuration",
       GetBackgroundTaskPrioritySuffixForHistograms(task->GetPriority()),
-      task->GetElapsedTimeSinceCreation());
+      task->GetElapsedTimeSinceScheduled());
 
-  running_task_.reset();
-  MaybeRunNextPendingTask();
+  if (running_task_->ShouldRetry()) {
+    running_task_->ResetStateBeforeRetry();
+    // TODO(crbug.com/390145655): Consider adding retry with back off.
+    // `PostTask()` will schedule the next task so it's not necessary to call
+    // `MaybeRunNextPendingTask()` here.
+    PostTask(std::move(running_task_));
+  } else {
+    running_task_->ReplyWithResult();
+    running_task_.reset();
+    MaybeRunNextPendingTask();
+  }
 }
 
 void BackgroundLongTaskScheduler::MaybeRunNextPendingTask() {
@@ -98,7 +107,7 @@ void BackgroundLongTaskScheduler::MaybeRunNextPendingTask() {
       "Crypto.UnexportableKeys.BackgroundTaskQueueWaitDuration",
       GetBackgroundTaskPrioritySuffixForHistograms(
           running_task_->GetPriority()),
-      running_task_->GetElapsedTimeSinceCreation());
+      running_task_->GetElapsedTimeSinceScheduled());
   running_task_->Run(
       background_task_runner_,
       base::BindOnce(&BackgroundLongTaskScheduler::OnTaskCompleted,

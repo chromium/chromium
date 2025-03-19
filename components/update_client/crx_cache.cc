@@ -90,6 +90,7 @@ CrxCacheImpl::CrxCacheImpl(const base::FilePath& cache_root)
     : cache_root_(cache_root),
       metadata_(base::MakeRefCounted<JsonPrefStore>(
           cache_root_.Append(FILE_PATH_LITERAL("metadata.json")))) {
+  base::CreateDirectory(cache_root_);
   metadata_->ReadPrefs();
   absl::flat_hash_set<std::string> expected_basenames({"metadata.json"});
   absl::flat_hash_set<std::string> found_basenames;

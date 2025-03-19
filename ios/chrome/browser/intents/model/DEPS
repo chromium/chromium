@@ -4,4 +4,5 @@ include_rules = [
   "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/shared/coordinator/scene",
   "+ios/chrome/browser/url_loading/model",
+  "+ios/chrome/browser/lens",
 ]

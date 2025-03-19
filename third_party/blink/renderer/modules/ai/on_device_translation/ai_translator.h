@@ -9,7 +9,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/mojom/on_device_translation/translator.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_translator_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_translator_translate_options.h"
+#include "third_party/blink/renderer/modules/ai/ai_availability.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
@@ -33,6 +35,15 @@ class AITranslator final : public ScriptWrappable {
   GetTranslatorReceiver();
 
   void Trace(Visitor* visitor) const override;
+
+  static ScriptPromise<V8AIAvailability> availability(
+      ScriptState* script_state,
+      AITranslatorCreateCoreOptions* options,
+      ExceptionState& exception_state);
+
+  static ScriptPromise<AITranslator> create(ScriptState* script_state,
+                                            AITranslatorCreateOptions* options,
+                                            ExceptionState& exception_state);
 
   String sourceLanguage() const;
   String targetLanguage() const;

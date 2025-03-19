@@ -436,6 +436,7 @@ HWNDMessageHandler::HWNDMessageHandler(HWNDMessageHandlerDelegate* delegate,
       menu_depth_(0),
       id_generator_(0),
       pen_processor_(&id_generator_, true),
+      user_resize_detector_(delegate),
       touch_down_contexts_(0),
       last_mouse_hwheel_time_(0),
       dwm_transition_desired_(false),
@@ -1920,6 +1921,7 @@ void HWNDMessageHandler::OnEnterMenuLoop(BOOL from_track_popup_menu) {
 }
 
 void HWNDMessageHandler::OnEnterSizeMove() {
+  user_resize_detector_.OnEnterSizeMove();
   delegate_->HandleBeginWMSizeMove();
   SetMsgHandled(FALSE);
 }
@@ -1950,6 +1952,7 @@ void HWNDMessageHandler::OnExitMenuLoop(BOOL is_shortcut_menu) {
 }
 
 void HWNDMessageHandler::OnExitSizeMove() {
+  user_resize_detector_.OnExitSizeMove();
   delegate_->HandleEndWMSizeMove();
   SetMsgHandled(FALSE);
   // If the window was moved to a monitor which has a fullscreen window active,
@@ -2770,6 +2773,8 @@ void HWNDMessageHandler::OnSize(UINT param, const gfx::Size& size) {
 }
 
 void HWNDMessageHandler::OnSizing(UINT param, RECT* rect) {
+  user_resize_detector_.OnSizing();
+
   // If the aspect ratio was not specified for the window, do nothing.
   if (!aspect_ratio_.has_value()) {
     return;

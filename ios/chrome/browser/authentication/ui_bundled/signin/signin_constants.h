@@ -74,6 +74,18 @@ extern NSString* const kConsistencyAccountChooserAddAccountIdentifier;
 // Name of the accessibility identifier for the managed profile creation screen.
 extern NSString* const kManagedProfileCreationScreenAccessibilityIdentifier;
 
+// Name of the accessibility identifier for the browsing data management screen.
+extern NSString* const kBrowsingDataManagementScreenAccessibilityIdentifier;
+
+// Name of the accessibility identifier for the navigation bar of the managed
+// profile creation screen.
+extern NSString* const
+    kManagedProfileCreationNavigationBarAccessibilityIdentifier;
+
+// Name of the accessibility identifier for the browsing data button on the
+// managed profile creation screen.
+extern NSString* const kBrowsingDataButtonAccessibilityIdentifier;
+
 // Name of the accessibility identifier for the keep browsing data separate
 // cell.
 extern NSString* const kKeepBrowsingDataSeparateCellId;

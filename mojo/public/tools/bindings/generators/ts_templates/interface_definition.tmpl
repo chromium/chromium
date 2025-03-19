@@ -1,13 +1,13 @@
 {%- macro generate_return_type(method) %}
 {%-   if method.response_parameters != None %}
 {%-     if method.response_parameters|length == 0 %}Promise<void>
+{%-     elif method.result_response != None -%}
+        Promise<{{method.result_response.success_kind|ts_type}}>
 {%-     else %}Promise<{
 {%-       for response_parameter in method.response_parameters %}
         {{response_parameter.name}}: {{response_parameter.kind|ts_type_maybe_nullable}},
 {%-       endfor %} }>
 {%-     endif %}
-{%-   elif method.result_response != None -%}
-        Promise<{{method.result_response.success_kind|ts_type}}>
 {%-   else %}void
 {%-   endif %}
 {%- endmacro %}
@@ -180,7 +180,7 @@ export class {{interface.name}}CallbackRouter {
     this.helper_internal_.registerHandler(
         {{method.ordinal}},
         {{interface_message_id}}_ParamsSpec.$,
-{%-   if method.response_parameters != None or method.result_response != None %}
+{%-   if method.response_parameters != None %}
         {{interface_message_id}}_ResponseParamsSpec.$,
         this.{{method.name}}.createReceiverHandler(true /* expectsResponse */),
         {{'true' if method.result_response != None else 'false'}});

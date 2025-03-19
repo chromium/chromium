@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "ui/gl/gl_bindings.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
@@ -44,6 +45,12 @@ void GetEGLInitDisplays(bool supports_angle_d3d,
   bool default_angle_metal =
       base::FeatureList::IsEnabled(features::kDefaultANGLEMetal);
   bool default_angle_vulkan = features::IsDefaultANGLEVulkan();
+  const char* default_software_renderer = kANGLEImplementationSwiftShaderName;
+#if BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(features::kAllowD3D11WarpFallback)) {
+    default_software_renderer = kANGLEImplementationD3D11WarpName;
+  }
+#endif
 
   // If we're already requesting software GL, make sure we don't fallback to the
   // GPU
@@ -52,7 +59,7 @@ void GetEGLInitDisplays(bool supports_angle_d3d,
 
   std::string requested_renderer =
       force_software_gl
-          ? kANGLEImplementationSwiftShaderName
+          ? default_software_renderer
           : command_line->GetSwitchValueASCII(switches::kUseANGLE);
 
   bool use_angle_default =
@@ -101,6 +108,8 @@ void GetEGLInitDisplays(bool supports_angle_d3d,
         AddInitDisplay(init_displays, ANGLE_D3D11_NULL);
       } else if (requested_renderer == kANGLEImplementationD3D11on12Name) {
         AddInitDisplay(init_displays, ANGLE_D3D11on12);
+      } else if (requested_renderer == kANGLEImplementationD3D11WarpName) {
+        AddInitDisplay(init_displays, ANGLE_D3D11_WARP);
       }
     }
   }

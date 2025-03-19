@@ -53,6 +53,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Unknown" summary="Unknown"/>
   <variant name="WallpaperSearch" summary="Wallpaper search"/>
   <variant name="WritingAssistance" summary="Writing Assistance APIs"/>
+  <variant name="ZeroStateSuggestions" summary="GLIC Zero State Suggestions"/>
 </variants>
 
 <variants name="OptimizationTarget">

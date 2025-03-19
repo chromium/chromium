@@ -19,6 +19,7 @@
 #import "components/omnibox/browser/omnibox_edit_model.h"
 #import "components/omnibox/browser/omnibox_popup_selection.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller_delegate.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_popup_controller.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_view_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -31,6 +32,9 @@
 using base::UserMetricsAction;
 
 @interface OmniboxAutocompleteController () <BooleanObserver>
+
+/// Redefined as a readwrite
+@property(nonatomic, assign, readwrite) BOOL hasSuggestions;
 
 @end
 
@@ -101,15 +105,18 @@ using base::UserMetricsAction;
   if (_autocompleteController) {
     BOOL isFocusing = _autocompleteController->input().focus_type() ==
                       metrics::OmniboxFocusType::INTERACTION_FOCUS;
-    [self.omniboxPopupController
-        newResultsAvailable:_autocompleteController->result()
-                 isFocusing:isFocusing];
+
+    self.hasSuggestions = !_autocompleteController->result().empty();
+    [self.delegate
+        omniboxAutocompleteControllerDidUpdateSuggestions:self
+                                           hasSuggestions:self.hasSuggestions
+                                               isFocusing:isFocusing];
   }
 }
 
 #pragma mark - OmniboxPopup event
 
-- (void)requestResultsWithVisibleSuggestionCount:
+- (void)requestSuggestionsWithVisibleSuggestionCount:
     (NSUInteger)visibleSuggestionCount {
   if (!_autocompleteController) {
     return;

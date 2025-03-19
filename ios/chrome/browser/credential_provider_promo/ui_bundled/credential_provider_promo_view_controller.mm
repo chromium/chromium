@@ -198,8 +198,8 @@ NSString* const kCredentialProviderPromoAccessibilityId =
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
   presentationController.detents = @[
     IOSPasskeysM2Enabled() ? self.alertScreen.preferredHeightDetent
-                           : UISheetPresentationControllerDetent.mediumDetent,
-    UISheetPresentationControllerDetent.largeDetent
+                           : [UISheetPresentationControllerDetent mediumDetent],
+    [UISheetPresentationControllerDetent largeDetent]
   ];
   presentationController.preferredCornerRadius = kPreferredCornerRadius;
 }

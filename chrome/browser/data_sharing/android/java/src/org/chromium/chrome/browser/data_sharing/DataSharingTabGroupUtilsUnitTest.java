@@ -473,6 +473,7 @@ public class DataSharingTabGroupUtilsUnitTest {
         } else {
             when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
         }
+        when(mTabGroupSyncService.isObservingLocalChanges()).thenReturn(true);
 
         return mockTabModel;
     }

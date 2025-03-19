@@ -580,12 +580,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.GetDefaultPrinterNameTime" units="ms"
-    expires_after="2025-03-14">
+    expires_after="2025-07-27">
   <owner>awscreen@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
     Time to acquire the name of the default printer from the print backend, as
-    needed by Print Preview.
+    needed by Print Preview. Warning: this histogram was expired from 2025-03-14
+    to 2025-03-18; data may be missing.
   </summary>
 </histogram>
 

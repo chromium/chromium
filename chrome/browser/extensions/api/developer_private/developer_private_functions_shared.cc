@@ -441,16 +441,6 @@ DeveloperPrivateUpdateExtensionConfigurationFunction::Run() {
   return RespondNow(NoArguments());
 }
 
-ExtensionFunction::ResponseAction
-DeveloperPrivateIsProfileManagedFunction::Run() {
-  Profile* profile = Profile::FromBrowserContext(browser_context());
-  return RespondNow(WithArguments(
-      profile && supervised_user::AreExtensionsPermissionsEnabled(profile)));
-}
-
-DeveloperPrivateIsProfileManagedFunction::
-    ~DeveloperPrivateIsProfileManagedFunction() = default;
-
 DeveloperPrivateDeleteExtensionErrorsFunction::
     ~DeveloperPrivateDeleteExtensionErrorsFunction() = default;
 

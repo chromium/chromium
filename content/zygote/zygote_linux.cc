@@ -111,7 +111,7 @@ bool Zygote::ProcessRequests() {
   // We need to accept SIGCHLD, even though our handler is a no-op because
   // otherwise we cannot wait on children. (According to POSIX 2001.)
   struct sigaction action;
-  memset(&action, 0, sizeof(action));
+  UNSAFE_TODO(memset(&action, 0, sizeof(action)));
   action.sa_handler = &SIGCHLDHandler;
   PCHECK(sigaction(SIGCHLD, &action, nullptr) == 0);
 

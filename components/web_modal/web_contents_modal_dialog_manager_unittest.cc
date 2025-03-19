@@ -17,6 +17,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "components/web_modal/web_contents_modal_dialog_manager_unittest_mac_helper.h"
+#endif
+
 namespace web_modal {
 
 class MockCloseOnNavigationObserver
@@ -108,7 +112,7 @@ class TestNativeWebContentsModalDialogManager
 class WebContentsModalDialogManagerTest
     : public content::RenderViewHostTestHarness {
  public:
-  WebContentsModalDialogManagerTest() : next_dialog_id(1), manager(nullptr) {}
+  WebContentsModalDialogManagerTest() = default;
 
   WebContentsModalDialogManagerTest(const WebContentsModalDialogManagerTest&) =
       delete;
@@ -127,6 +131,9 @@ class WebContentsModalDialogManagerTest
   }
 
   void TearDown() override {
+#if BUILDFLAG(IS_MAC)
+    TearDownFakeNativeWindowsForTesting();
+#endif
     manager = nullptr;
     test_api.reset();
     content::RenderViewHostTestHarness::TearDown();
@@ -134,19 +141,20 @@ class WebContentsModalDialogManagerTest
 
  protected:
   gfx::NativeWindow MakeFakeDialog() {
+#if BUILDFLAG(IS_MAC)
+    return FakeNativeWindowForTesting();
+#else
     // WebContentsModalDialogManager treats the dialog window as an opaque
     // type, so creating fake dialog windows using reinterpret_cast is valid.
-#if BUILDFLAG(IS_APPLE)
-    NSWindow* window = reinterpret_cast<NSWindow*>(next_dialog_id++);
-    return gfx::NativeWindow(window);
-#else
     return reinterpret_cast<gfx::NativeWindow>(next_dialog_id++);
 #endif
   }
 
-  int next_dialog_id;
+#if !BUILDFLAG(IS_MAC)
+  int next_dialog_id = 1;
+#endif
   std::unique_ptr<TestWebContentsModalDialogManagerDelegate> delegate;
-  raw_ptr<WebContentsModalDialogManager> manager;
+  raw_ptr<WebContentsModalDialogManager> manager = nullptr;
   std::unique_ptr<WebContentsModalDialogManager::TestApi> test_api;
 };
 

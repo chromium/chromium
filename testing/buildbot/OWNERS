@@ -85,6 +85,10 @@ per-file internal.chromeos.fyi.json=skylab-test-cros-roller@chops-service-accoun
 per-file internal.optimization_guide.json=file://components/optimization_guide/OWNERS
 per-file internal.optimization_guide.json=mgeorgaklis@google.com
 
+# TranslateKit Owners
+per-file internal.translatekit.json=memmott@chromium.org
+per-file internal.translatekit.json=mych@chromium.org
+
 # Perf owners
 per-file *chromium.perf*.json=hypan@google.com
 per-file *chromium.perf*.json=jeffyoon@google.com

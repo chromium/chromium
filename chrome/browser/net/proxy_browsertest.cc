@@ -266,6 +266,7 @@ IN_PROC_BROWSER_TEST_F(HangingPacRequestProxyScriptBrowserTest, Shutdown) {
   // best to be safe.
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = GURL("http://blah/");
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   auto simple_loader = network::SimpleURLLoader::Create(
       std::move(resource_request), TRAFFIC_ANNOTATION_FOR_TESTS);
 

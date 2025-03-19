@@ -1,8 +1,32 @@
+const publicKeyConfig = `{
+  "originScopedKeys": {
+    "https://a.test:8443": {
+      "keys":[{
+        "id":"14345678-9abc-def0-1234-56789abcdef0",
+        "key":"oV9AZYb6xHuZWXDxhdnYkcdNzx65Gn1QpYsBaD5gBS0="}]
+    }
+  }
+}`;
+
+// 32 random'ish bits in hex.
+function rand32() {
+  return Math.abs((Math.random() * 0x100000000) & 0xFFFFFFFF).toString(16)
+}
+
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp, session, page} = await testRunner.startBlank(
       `Tests that interest groups are read and cleared.`);
   const baseOrigin = 'https://a.test:8443/';
   const base = baseOrigin + 'inspector-protocol/resources/';
+
+  // We generate a random coordinator hostname to isolate tests.
+  let coordinator = "https://cd" + rand32() + rand32() + rand32() + rand32() +
+                    ".test";
+  await dp.Browser.addPrivacySandboxCoordinatorKeyConfig({
+    api: 'TrustedKeyValue',
+    coordinatorOrigin: coordinator,
+    keyConfig: publicKeyConfig
+  });
 
   // Order by phase.
   function typeSortKey(type) {
@@ -64,6 +88,8 @@
         name: ${id},
         owner: "${baseOrigin}",
         biddingLogicURL: "${base}fledge_bidding_logic.js.php",
+        trustedBiddingSignalsURL: "${base}fledge_bidding_signals.js.php",
+        trustedBiddingSignalsCoordinator: "${coordinator}",
         ads: [{
           renderURL: 'https://example.com/render' + ${id},
           metadata: {ad: 'metadata', here: [1, 2, 3]}
@@ -77,6 +103,8 @@
       (async function() {
         config = await navigator.runAdAuction({
             decisionLogicURL: "${base}fledge_decision_logic.js.php",
+            trustedScoringSignalsURL: "${base}fledge_scoring_signals.js.php",
+            trustedScoringSignalsCoordinator: "${coordinator}",
             seller: "${baseOrigin}",
             interestGroupBuyers: ["${baseOrigin}"],
             resolveToConfig: true});

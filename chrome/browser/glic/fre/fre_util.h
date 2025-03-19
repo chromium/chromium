@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_GLIC_FRE_FRE_UTIL_H_
 #define CHROME_BROWSER_GLIC_FRE_FRE_UTIL_H_
 
-#include <string>
-
 class GURL;
 class Profile;
 class ThemeService;
@@ -19,7 +17,6 @@ class StoragePartitionConfig;
 namespace glic {
 
 GURL GetFreURL(Profile* profile);
-std::string GetHotkeyString();
 bool UseDarkMode(ThemeService* theme_service);
 
 // Returns the storage partition config used for the Glic first-run experience.

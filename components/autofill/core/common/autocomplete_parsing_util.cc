@@ -165,7 +165,8 @@ std::string AutocompleteParsingResult::ToString() const {
   return base::StrCat({"section='", section, "' ", "mode='",
                        HtmlFieldModeToStringView(mode), "' ", "field_type='",
                        FieldTypeToStringView(field_type), "' ", "webauthn='",
-                       base::ToString(webauthn), "'"});
+                       base::ToString(webauthn), "webidentity='",
+                       base::ToString(webidentity), "'"});
 }
 
 bool AutocompleteParsingResult::operator==(
@@ -217,6 +218,15 @@ std::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
   // Parse the "webauthn" token.
   if (tokens.back() == "webauthn") {
     result.webauthn = true;
+    tokens.pop_back();
+    if (tokens.empty()) {
+      return result;
+    }
+  }
+
+  // Parse the "webidentity" token.
+  if (tokens.back() == "webidentity") {
+    result.webidentity = true;
     tokens.pop_back();
     if (tokens.empty()) {
       return result;
@@ -285,6 +295,14 @@ bool IsAutocompleteTypeWrongButWellIntended(
 
   // Parse the "webauthn" token.
   if (tokens.back() == "webauthn") {
+    tokens.pop_back();
+    if (tokens.empty()) {
+      return false;
+    }
+  }
+
+  // Parse the "webidentity" token.
+  if (tokens.back() == "webidentity") {
     tokens.pop_back();
     if (tokens.empty()) {
       return false;

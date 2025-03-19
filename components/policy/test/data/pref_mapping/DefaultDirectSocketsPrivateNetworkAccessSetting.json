@@ -4,7 +4,7 @@
       "win",
       "linux",
       "mac",
-      "chromeos_ash"
+      "chromeos"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "profile.managed_default_content_settings.direct_sockets_pna",

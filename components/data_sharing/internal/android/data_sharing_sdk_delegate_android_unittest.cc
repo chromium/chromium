@@ -63,9 +63,28 @@ class DataSharingSDKDelegateAndroidTest : public testing::Test {
     data_sharing_pb::ReadGroupsParams params;
     for (int id = 1; id <= groups_count; id++) {
       std::string group_id = "test_group_id_" + base::NumberToString(id);
-      params.add_group_ids(group_id);
+      params.add_group_params()->set_group_id(group_id);
     }
     delegate_->ReadGroups(
+        params, base::BindLambdaForTesting(
+                    [&run_loop, &outcome](
+                        const base::expected<data_sharing_pb::ReadGroupsResult,
+                                             absl::Status>& result) {
+                      if (result.has_value()) {
+                        outcome = result.value();
+                      }
+                      run_loop.Quit();
+                    }));
+    run_loop.Run();
+    return outcome;
+  }
+
+  data_sharing_pb::ReadGroupsResult TestReadGroupWithToken() {
+    data_sharing_pb::ReadGroupsResult outcome;
+    base::RunLoop run_loop;
+    data_sharing_pb::ReadGroupWithTokenParams params;
+    params.set_group_id("test_group_id_0");
+    delegate_->ReadGroupWithToken(
         params, base::BindLambdaForTesting(
                     [&run_loop, &outcome](
                         const base::expected<data_sharing_pb::ReadGroupsResult,
@@ -200,6 +219,15 @@ TEST_F(DataSharingSDKDelegateAndroidTest, TestReadGroups) {
     EXPECT_EQ(outcome.group_data(id - 1).group_id(), group_id);
     EXPECT_EQ(outcome.group_data(id - 1).display_name(), group_name);
   }
+}
+
+TEST_F(DataSharingSDKDelegateAndroidTest, TestReadGroupWithToken) {
+  data_sharing_pb::ReadGroupsResult outcome = TestReadGroupWithToken();
+  EXPECT_EQ(outcome.group_data_size(), 1);
+  std::string group_id = "test_group_id_0";
+  std::string group_name = "test_group_name_0";
+  EXPECT_EQ(outcome.group_data(0).group_id(), group_id);
+  EXPECT_EQ(outcome.group_data(0).display_name(), group_name);
 }
 
 TEST_F(DataSharingSDKDelegateAndroidTest, TestAddMember) {

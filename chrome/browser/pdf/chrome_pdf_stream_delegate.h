@@ -24,6 +24,8 @@ class ChromePdfStreamDelegate : public pdf::PdfStreamDelegate {
       content::FrameTreeNodeId frame_tree_node_id) override;
   bool ShouldAllowPdfFrameNavigation(
       content::NavigationHandle* navigation_handle) override;
+  bool ShouldAllowPdfExtensionFrameNavigation(
+      content::NavigationHandle* navigation_handle) override;
 };
 
 #endif  // CHROME_BROWSER_PDF_CHROME_PDF_STREAM_DELEGATE_H_

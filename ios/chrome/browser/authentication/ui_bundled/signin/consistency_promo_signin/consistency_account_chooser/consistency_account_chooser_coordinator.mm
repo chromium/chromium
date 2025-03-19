@@ -38,9 +38,9 @@
   self.mediator = [[ConsistencyAccountChooserMediator alloc]
       initWithSelectedIdentity:selectedIdentity
                identityManager:IdentityManagerFactory::GetForProfile(
-                                   self.browser->GetProfile())
+                                   self.profile)
          accountManagerService:ChromeAccountManagerServiceFactory::
-                                   GetForProfile(self.browser->GetProfile())];
+                                   GetForProfile(self.profile)];
 
   self.accountChooserViewController =
       [[ConsistencyAccountChooserViewController alloc] init];
@@ -76,8 +76,7 @@
             (ConsistencyAccountChooserTableViewController*)viewController
                          didSelectIdentityWithGaiaID:(NSString*)gaiaID {
   ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForProfile(
-          self.browser->GetProfile());
+      ChromeAccountManagerServiceFactory::GetForProfile(self.profile);
 
   id<SystemIdentity> identity =
       accountManagerService->GetIdentityOnDeviceWithGaiaID(GaiaId(gaiaID));

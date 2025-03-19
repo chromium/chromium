@@ -5,7 +5,9 @@
 #include "components/input/fling_controller.h"
 
 #include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "components/input/features.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/gestures/blink/web_gesture_curve_impl.h"
 
@@ -189,7 +191,9 @@ void FlingController::ProcessGestureFlingCancel(
   EndCurrentFling(gesture_event.event.TimeStamp());
 }
 
-void FlingController::ProgressFling(base::TimeTicks current_time) {
+void FlingController::ProgressFling(
+    base::TimeTicks current_time,
+    std::optional<base::TimeTicks> first_coalesced_frame_begin_time) {
   if (!fling_curve_)
     return;
 
@@ -241,7 +245,12 @@ void FlingController::ProgressFling(base::TimeTicks current_time) {
 
   if (std::abs(delta_to_scroll.x()) > kMinInertialScrollDelta ||
       std::abs(delta_to_scroll.y()) > kMinInertialScrollDelta) {
-    GenerateAndSendFlingProgressEvents(current_time, delta_to_scroll);
+    base::TimeTicks event_generation_time =
+        base::FeatureList::IsEnabled(
+            features::kUseFirstCoalescedFrameAsFlingGenerationTimestamp)
+            ? first_coalesced_frame_begin_time.value_or(current_time)
+            : current_time;
+    GenerateAndSendFlingProgressEvents(event_generation_time, delta_to_scroll);
     last_progress_time_ = current_time;
   }
 
@@ -259,12 +268,12 @@ void FlingController::StopFling() {
 }
 
 void FlingController::GenerateAndSendWheelEvents(
-    base::TimeTicks current_time,
+    base::TimeTicks event_generation_time,
     const gfx::Vector2dF& delta,
     blink::WebMouseWheelEvent::Phase phase) {
   MouseWheelEventWithLatencyInfo synthetic_wheel(
       WebInputEvent::Type::kMouseWheel, current_fling_parameters_.modifiers,
-      current_time, ui::LatencyInfo());
+      event_generation_time, ui::LatencyInfo());
   synthetic_wheel.event.delta_units =
       ui::ScrollGranularity::kScrollByPrecisePixel;
   synthetic_wheel.event.delta_x = delta.x();
@@ -282,11 +291,11 @@ void FlingController::GenerateAndSendWheelEvents(
 }
 
 void FlingController::GenerateAndSendGestureScrollEvents(
-    base::TimeTicks current_time,
+    base::TimeTicks event_generation_time,
     WebInputEvent::Type type,
     const gfx::Vector2dF& delta /* = gfx::Vector2dF() */) {
   GestureEventWithLatencyInfo synthetic_gesture(
-      type, current_fling_parameters_.modifiers, current_time,
+      type, current_fling_parameters_.modifiers, event_generation_time,
       ui::LatencyInfo());
   synthetic_gesture.event.SetPositionInWidget(current_fling_parameters_.point);
   synthetic_gesture.event.SetPositionInScreen(
@@ -311,20 +320,21 @@ void FlingController::GenerateAndSendGestureScrollEvents(
 }
 
 void FlingController::GenerateAndSendFlingProgressEvents(
-    base::TimeTicks current_time,
+    base::TimeTicks event_generation_time,
     const gfx::Vector2dF& delta) {
   switch (current_fling_parameters_.source_device) {
     case blink::WebGestureDevice::kTouchpad: {
       blink::WebMouseWheelEvent::Phase phase =
           first_fling_update_sent() ? blink::WebMouseWheelEvent::kPhaseChanged
                                     : blink::WebMouseWheelEvent::kPhaseBegan;
-      GenerateAndSendWheelEvents(current_time, delta, phase);
+      GenerateAndSendWheelEvents(event_generation_time, delta, phase);
       break;
     }
     case blink::WebGestureDevice::kTouchscreen:
     case blink::WebGestureDevice::kSyntheticAutoscroll:
       GenerateAndSendGestureScrollEvents(
-          current_time, WebInputEvent::Type::kGestureScrollUpdate, delta);
+          event_generation_time, WebInputEvent::Type::kGestureScrollUpdate,
+          delta);
       break;
     case blink::WebGestureDevice::kUninitialized:
     case blink::WebGestureDevice::kScrollbar:

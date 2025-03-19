@@ -1358,7 +1358,7 @@ Called by update_extension_histograms.py.-->
   <int value="555" label="SYNCFILESYSTEM_GETSERVICESTATUS"/>
   <int value="556" label="ECHOPRIVATE_SETOFFERINFO"/>
   <int value="557" label="ECHOPRIVATE_GETOFFERINFO"/>
-  <int value="558" label="DEVELOPERPRIVATE_ISPROFILEMANAGED"/>
+  <int value="558" label="DELETED_DEVELOPERPRIVATE_ISPROFILEMANAGED"/>
   <int value="559" label="DELETED_FILEMANAGERPRIVATE_INSTALLWEBSTOREITEM"/>
   <int value="560" label="FILEMANAGERPRIVATEINTERNAL_STARTCOPY"/>
   <int value="561" label="FILEMANAGERPRIVATE_CANCELCOPY"/>

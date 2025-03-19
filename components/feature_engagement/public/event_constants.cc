@@ -97,6 +97,7 @@ const char kCredentialProviderExtensionPromoSnoozed[] =
 const char kDockingPromoRemindMeLater[] = "docking_promo_remind_me_later";
 const char kOpenUrlFromOmnibox[] = "open_url_from_omnibox";
 const char kHistoryOnOverflowMenuUsed[] = "history_on_overflow_menu_used";
+const char kSettingsOnOverflowMenuUsed[] = "settings_on_overflow_menu_used";
 const char kLensButtonKeyboardUsed[] = "lens_keyboard_used";
 const char kIOSMultiGestureRefreshUsed[] = "multi_gesture_refresh_used";
 const char kIOSPullToRefreshUsed[] = "pull_to_refresh_feature_used";

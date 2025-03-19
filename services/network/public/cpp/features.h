@@ -296,6 +296,14 @@ BASE_DECLARE_FEATURE_PARAM(int, kInterestGroupStorageMaxOpsBeforeMaintenance);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kGetCookiesOnSet);
 
+// If enabled, permissions policies relevant to a request are populated on
+// `network:ResourceRequest`.
+//
+// Note: Policies are not guaranteed to be added on every path. If
+// `PermissionsPolicy` on the request is nullopt, you need to set it somewhere.
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE(kPopulatePermissionsPolicyOnRequest);
+
 }  // namespace network::features
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_FEATURES_H_

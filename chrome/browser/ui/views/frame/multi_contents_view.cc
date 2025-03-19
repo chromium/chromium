@@ -5,37 +5,45 @@
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 
 #include "base/feature_list.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_resize_area.h"
+#include "chrome/browser/ui/views/frame/top_container_background.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/scoped_canvas.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
 const int kMinWebContentsWidth = 20;
+const int kContentCornerRadius = 8;
+const int kSplitViewContentInset = 10;
 }  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MultiContentsView,
                                       kMultiContentsViewElementId);
 
 MultiContentsView::MultiContentsView(
-    content::BrowserContext* browser_context,
+    BrowserView* browser_view,
     WebContentsPressedCallback inactive_view_pressed_callback)
-    : inactive_view_pressed_callback_(inactive_view_pressed_callback) {
-  start_contents_view_ =
-      AddChildView(std::make_unique<ContentsWebView>(browser_context));
+    : browser_view_(browser_view),
+      inactive_view_pressed_callback_(inactive_view_pressed_callback) {
+  start_contents_view_ = AddChildView(
+      std::make_unique<ContentsWebView>(browser_view_->GetProfile()));
   start_contents_view_->set_is_primary_web_contents_for_window(true);
 
   resize_area_ = AddChildView(std::make_unique<MultiContentsResizeArea>(this));
   resize_area_->SetVisible(false);
 
-  end_contents_view_ =
-      AddChildView(std::make_unique<ContentsWebView>(browser_context));
+  end_contents_view_ = AddChildView(
+      std::make_unique<ContentsWebView>(browser_view_->GetProfile()));
   end_contents_view_->SetVisible(false);
 
   SetProperty(views::kElementIdentifierKey, kMultiContentsViewElementId);
@@ -124,23 +132,33 @@ void MultiContentsView::OnResize(int resize_amount, bool done_resizing) {
   InvalidateLayout();
 }
 
-// TODO(crbug.com/397777917): Consider using FlexSpecification weights instead
-// of overriding layout once this bug is resolved.
+// TODO(crbug.com/397777917): Consider using FlexSpecification weights and
+// interior margins instead of overriding layout once this bug is resolved.
 void MultiContentsView::Layout(PassKey) {
   const gfx::Rect available_space(GetContentsBounds());
   ViewWidths widths = GetViewWidths(available_space);
-  const gfx::Rect start_rect(
-      available_space.origin(),
-      gfx::Size(widths.start_width, available_space.height()));
+  gfx::Rect start_rect(available_space.origin(),
+                       gfx::Size(widths.start_width, available_space.height()));
   const gfx::Rect resize_rect(
       start_rect.top_right(),
       gfx::Size(widths.resize_width, available_space.height()));
-  const gfx::Rect end_rect(
-      resize_rect.top_right(),
-      gfx::Size(widths.end_width, available_space.height()));
+  gfx::Rect end_rect(resize_rect.top_right(),
+                     gfx::Size(widths.end_width, available_space.height()));
+  if (IsInSplitView()) {
+    start_rect.Inset(gfx::Insets(kSplitViewContentInset).set_right(0));
+    end_rect.Inset(gfx::Insets(kSplitViewContentInset).set_left(0));
+    start_contents_view_->layer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF{kContentCornerRadius});
+    end_contents_view_->layer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF{kContentCornerRadius});
+  }
   start_contents_view_->SetBoundsRect(start_rect);
   resize_area_->SetBoundsRect(resize_rect);
   end_contents_view_->SetBoundsRect(end_rect);
+}
+
+void MultiContentsView::OnPaint(gfx::Canvas* canvas) {
+  TopContainerBackground::PaintBackground(canvas, this, browser_view_);
 }
 
 MultiContentsView::ViewWidths MultiContentsView::GetViewWidths(

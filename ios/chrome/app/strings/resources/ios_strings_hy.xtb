@@ -440,6 +440,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Գաղտնաբառը պահվեց ձեր Google հաշվում ({EMAIL})}one{Գաղտնաբառը պահվեց ձեր Google հաշվում ({EMAIL})}other{Գաղտնաբառերը պահվեցին ձեր Google հաշվում ({EMAIL})}}</translation>
 <translation id="2791174088547598693">Ավելացնել գաղտնաբառ…</translation>
 <translation id="2797302972324086597">Երկրի կոդը</translation>
+<translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} ֆայլ}one{{COUNT} ֆայլ}other{{COUNT} ֆայլ}}</translation>
 <translation id="2816489851009559785">Ընտրացանկ → Կարգավորումներ → Կանխադրված դիտարկիչ</translation>
 <translation id="2818821771744632548">Ձեր iPhone-ը վերակայելիս դուք դուրս եք գրվել ձեր <ph name="USER_NAME" /> հաշվից։ Մուտք գործելու համար ստորև սեղմեք «Շարունակել»։</translation>
 <translation id="2819667972867209401">Երբ միացված է, տվյալները պահվում են ձեր Google հաշվում։ Հակառակ դեպքում տվյալները կպահվեն միայն այս սարքում և կջնջվեն, երբ դուրս գաք հաշվից։</translation>

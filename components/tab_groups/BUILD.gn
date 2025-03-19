@@ -16,6 +16,7 @@ component("tab_groups") {
     "tab_group_info.h",
     "tab_group_visual_data.cc",
     "tab_group_visual_data.h",
+    "token_id.h",
   ]
 
   defines = [ "IS_TAB_GROUPS_IMPL" ]

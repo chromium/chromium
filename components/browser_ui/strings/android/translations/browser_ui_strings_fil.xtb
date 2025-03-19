@@ -87,6 +87,7 @@
 <translation id="2215727959747642672">Pag-edit ng file</translation>
 <translation id="2218389616572918761">Puwedeng hilingin ng mga site ang iyong mikropono</translation>
 <translation id="2228071138934252756">Para payagan ang <ph name="APP_NAME" /> na i-access ang iyong camera, i-on din ang camera sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
+<translation id="2231160360698766265">Puwedeng mag-play ang mga site ng mga pinoprotektahang content</translation>
 <translation id="2235344399760031203">Bina-block ang third-party na cookies</translation>
 <translation id="2238944249568001759">Mga iminumungkahing paghahanap batay sa iyong huling tab</translation>
 <translation id="2241587408274973373">Mga card ng page na bagong tab</translation>
@@ -523,6 +524,7 @@
 <translation id="789180354981963912">I-block ang third-party na cookies sa Incognito:</translation>
 <translation id="789722939441020330">Huwag payagan ang mga site na awtomatikong mag-download ng maraming file</translation>
 <translation id="7940722705963108451">Ipaalala sa akin</translation>
+<translation id="7948081750384205628">Matuto pa tungkol sa <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Puwedeng hilingin ng mga site na makita ang text at mga larawan sa iyong clipboard</translation>
 <translation id="7986741934819883144">Pumili ng contact</translation>
 <translation id="7990211076305263060">Kapag naka-on, puwedeng hilingin ng mga site na gamitin ang iyong mikropono. Kapag naka-off, hindi magagamit ng mga site ang iyong mikropono.</translation>
@@ -630,6 +632,7 @@
 <translation id="9138217887606523162"><ph name="ZOOM_LEVEL" /> %% ang kasalukuyang pag-zoom</translation>
 <translation id="9156722768168878035">Hayaang ipakita ng Chrome ang iyong mga kamakailang tab sa listahan ng app at mga resulta ng paghahanap ng device mo. Puwede mo itong i-off anumang oras sa mga setting ng Chrome.</translation>
 <translation id="9162462602695099906">Mapanganib ang page na ito</translation>
+<translation id="9182556968660520230">Huwag payagan ang mga site na mag-play ng pinoprotektahang content</translation>
 <translation id="947156494302904893">Magagawa ng mga site na binibisita mo na i-verify na totoong tao ka at hindi ka bot</translation>
 <translation id="959682366969460160">Maging organisado</translation>
 <translation id="967624055006145463">Naka-store na data</translation>

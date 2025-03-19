@@ -21,7 +21,7 @@
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_action_provider.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_metrics.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
-#import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
+#import "ios/chrome/browser/whats_new/coordinator/whats_new_util.h"
 
 namespace {
 // The dictionary key used for storing rankings.

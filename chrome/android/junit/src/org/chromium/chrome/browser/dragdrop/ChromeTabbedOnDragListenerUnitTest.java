@@ -57,8 +57,10 @@ public class ChromeTabbedOnDragListenerUnitTest {
     @Mock private Tab mTab;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
     private OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplierImpl;
-    private ClipDescription mClipDescription =
+    private ClipDescription mTabClipDescription =
             new ClipDescription(null, new String[] {"chrome/tab"});
+    private ClipDescription mTabGroupClipDescription =
+            new ClipDescription(null, new String[] {"chrome/tab-group"});
     private Context mContext;
     private ChromeTabbedOnDragListener mChromeTabbedOnDragListener;
     private View mCompositorViewHolder;
@@ -95,6 +97,15 @@ public class ChromeTabbedOnDragListenerUnitTest {
 
     @Test
     public void testOnDrag_ActionDragStarted() {
+        doTestOnDragActionDragStarted(/* isGroupDrag= */ false);
+    }
+
+    @Test
+    public void testOnDrag_ActionDragStarted_TabGroup() {
+        doTestOnDragActionDragStarted(/* isGroupDrag= */ true);
+    }
+
+    private void doTestOnDragActionDragStarted(boolean isGroupDrag) {
         // Drag started should return false, since drag source is not chrome tab.
         assertFalse(
                 "Drag started should return false.",
@@ -108,7 +119,8 @@ public class ChromeTabbedOnDragListenerUnitTest {
                 "Drag started should return true.",
                 mChromeTabbedOnDragListener.onDrag(
                         mCompositorViewHolder,
-                        mockDragEvent(DragEvent.ACTION_DRAG_STARTED, false)));
+                        mockDragEvent(
+                                DragEvent.ACTION_DRAG_STARTED, /* result= */ false, isGroupDrag)));
     }
 
     @Test
@@ -116,10 +128,21 @@ public class ChromeTabbedOnDragListenerUnitTest {
         // Drag started should return false, since dragged state is not set.
         DragDropGlobalState.clearForTesting();
         assertFalse(
-                "Drag started should return false.",
+                "Tab drag started should return false.",
                 mChromeTabbedOnDragListener.onDrag(
                         mCompositorViewHolder,
-                        mockDragEvent(DragEvent.ACTION_DRAG_STARTED, false)));
+                        mockDragEvent(
+                                DragEvent.ACTION_DRAG_STARTED,
+                                /* result= */ false,
+                                /* isGroupDrag= */ false)));
+        assertFalse(
+                "Tab group drag started should return false.",
+                mChromeTabbedOnDragListener.onDrag(
+                        mCompositorViewHolder,
+                        mockDragEvent(
+                                DragEvent.ACTION_DRAG_STARTED,
+                                /* result= */ false,
+                                /* isGroupDrag= */ true)));
     }
 
     @Test
@@ -133,20 +156,31 @@ public class ChromeTabbedOnDragListenerUnitTest {
                         .expectNoRecords("Android.DragDrop.Tab.Type")
                         .expectNoRecords("Android.DragDrop.Tab.Type.DesktopWindow")
                         .build();
+        doTestOnDragActionDropInTabSwitcher(/* isGroupDrag= */ false);
+        histogramExpectation.assertExpected();
+    }
+
+    @Test
+    public void testOnDrag_ActionDrop_TabSwitcher_TabGroup() {
+        doTestOnDragActionDropInTabSwitcher(/* isGroupDrag= */ true);
+    }
+
+    private void doTestOnDragActionDropInTabSwitcher(boolean isGroupDrag) {
         // Call drag start to set states.
         assertTrue(
                 "Drag started should return true.",
                 mChromeTabbedOnDragListener.onDrag(
                         mCompositorViewHolder,
-                        mockDragEvent(DragEvent.ACTION_DRAG_STARTED, false)));
+                        mockDragEvent(
+                                DragEvent.ACTION_DRAG_STARTED, /* result= */ false, isGroupDrag)));
 
         // Drop should return false, since it is trying to drop into tab switcher.
         when(mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER)).thenReturn(true);
         assertFalse(
                 "Action drop should return false",
                 mChromeTabbedOnDragListener.onDrag(
-                        mCompositorViewHolder, mockDragEvent(DragEvent.ACTION_DROP, false)));
-        histogramExpectation.assertExpected();
+                        mCompositorViewHolder,
+                        mockDragEvent(DragEvent.ACTION_DROP, /* result= */ false, isGroupDrag)));
     }
 
     @Test
@@ -163,26 +197,37 @@ public class ChromeTabbedOnDragListenerUnitTest {
                         .expectNoRecords("Android.DragDrop.Tab.Type")
                         .expectNoRecords("Android.DragDrop.Tab.Type.DesktopWindow")
                         .build();
+        doTestOnDragActionDropInSameInstance(/* isGroupDrag= */ false);
+        histogramExpectation.assertExpected();
+    }
+
+    @Test
+    public void testOnDrag_ActionDrop_SameInstance_TabGroup() {
+        doTestOnDragActionDropInSameInstance(/* isGroupDrag= */ true);
+    }
+
+    private void doTestOnDragActionDropInSameInstance(boolean isGroupDrag) {
         // Call drag start to set states.
         assertTrue(
                 "Drag started should return true.",
                 mChromeTabbedOnDragListener.onDrag(
                         mCompositorViewHolder,
-                        mockDragEvent(DragEvent.ACTION_DRAG_STARTED, false)));
+                        mockDragEvent(
+                                DragEvent.ACTION_DRAG_STARTED, /* result= */ false, isGroupDrag)));
         // Drop should return false, since the destination instance is the same as the source
         // instance.
         when(mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER)).thenReturn(false);
         assertFalse(
                 "Action drop should return false",
                 mChromeTabbedOnDragListener.onDrag(
-                        mCompositorViewHolder, mockDragEvent(DragEvent.ACTION_DROP, false)));
-        histogramExpectation.assertExpected();
+                        mCompositorViewHolder,
+                        mockDragEvent(DragEvent.ACTION_DROP, /* result= */ false, isGroupDrag)));
     }
 
     @Test
     public void testOnDrag_ActionDrop_Success() {
         // Verify action drop is success.
-        verifyActionDropSuccess(/* isInDesktopWindow= */ false);
+        verifyActionDropSuccess(/* isInDesktopWindow= */ false, /* isGroupDrag= */ false);
 
         // Verify user action `TabRemovedFromGroup` is not recorded.
         assertEquals(
@@ -193,9 +238,15 @@ public class ChromeTabbedOnDragListenerUnitTest {
     }
 
     @Test
+    public void testOnDrag_ActionDrop_Success_tabGroup() {
+        // Verify action drop is success.
+        verifyActionDropSuccess(/* isInDesktopWindow= */ false, /* isGroupDrag= */ true);
+    }
+
+    @Test
     public void testOnDrag_ActionDrop_Success_DesktopWindow() {
         // Verify action drop is success.
-        verifyActionDropSuccess(/* isInDesktopWindow= */ true);
+        verifyActionDropSuccess(/* isInDesktopWindow= */ true, /* isGroupDrag= */ false);
 
         // Verify user action `TabRemovedFromGroup` is not recorded.
         assertEquals(
@@ -216,7 +267,7 @@ public class ChromeTabbedOnDragListenerUnitTest {
                                 .build());
 
         // Verify action drop is success.
-        verifyActionDropSuccess(/* isInDesktopWindow= */ false);
+        verifyActionDropSuccess(/* isInDesktopWindow= */ false, /* isGroupDrag= */ false);
 
         // Verify user action `TabRemovedFromGroup` is recorded.
         assertEquals(
@@ -225,7 +276,7 @@ public class ChromeTabbedOnDragListenerUnitTest {
                 mUserActionTest.getActionCount("MobileToolbarReorderTab.TabRemovedFromGroup"));
     }
 
-    private void verifyActionDropSuccess(boolean isInDesktopWindow) {
+    private void verifyActionDropSuccess(boolean isInDesktopWindow, boolean isGroupDrag) {
         HistogramWatcher.Builder histogramExpectationBuilder =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
@@ -241,7 +292,8 @@ public class ChromeTabbedOnDragListenerUnitTest {
                 "Drag started should return true.",
                 mChromeTabbedOnDragListener.onDrag(
                         mCompositorViewHolder,
-                        mockDragEvent(DragEvent.ACTION_DRAG_STARTED, false)));
+                        mockDragEvent(
+                                DragEvent.ACTION_DRAG_STARTED, /* result= */ false, isGroupDrag)));
 
         // Drop should return true, since the destination instance is not the same as the source
         // instance.
@@ -250,12 +302,17 @@ public class ChromeTabbedOnDragListenerUnitTest {
         assertTrue(
                 "Action drop should return true",
                 mChromeTabbedOnDragListener.onDrag(
-                        mCompositorViewHolder, mockDragEvent(DragEvent.ACTION_DROP, false)));
+                        mCompositorViewHolder,
+                        mockDragEvent(
+                                DragEvent.ACTION_DROP,
+                                /* result= */ false,
+                                /* isGroupDrag= */ false)));
         histogramWatcher.assertExpected();
     }
 
-    private DragEvent mockDragEvent(int action, boolean result) {
-        return mockDragEvent(action, result, mClipDescription);
+    private DragEvent mockDragEvent(int action, boolean result, boolean isGroupDrag) {
+        return mockDragEvent(
+                action, result, isGroupDrag ? mTabGroupClipDescription : mTabClipDescription);
     }
 
     private DragEvent mockDragEvent(int action, boolean result, ClipDescription clipDescription) {

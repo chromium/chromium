@@ -379,6 +379,10 @@ class PLATFORM_EXPORT ResourceFetcher
   // changed such that the load should no longer be deferred.
   void ReloadImagesIfNotDeferred();
 
+  // Populates the provided request's permissions policy.
+  void PopulateResourceRequestPermissionsPolicy(
+      network::ResourceRequest* request);
+
   // Check if a resource is preloaded by earlyhints when response received.
   void MarkEarlyHintConsumedIfNeeded(uint64_t inspector_id,
                                      Resource* resource,
@@ -387,6 +391,7 @@ class PLATFORM_EXPORT ResourceFetcher
   void EnableDeferUnusedPreloadForTesting() {
     defer_unused_preload_enabled_for_testing_ = true;
   }
+
   using LcppDeferUnusedPreloadPreloadedReason =
       features::LcppDeferUnusedPreloadPreloadedReason;
   void SetDeferUnusedPreloadPreloadedReasonForTesting(

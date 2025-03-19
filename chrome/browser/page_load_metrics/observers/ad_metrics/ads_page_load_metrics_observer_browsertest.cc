@@ -1650,9 +1650,8 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
 
 // Verify that privacy sensitive permissions policy use counters are recorded
 // correctly when ad script is in the stack.
-// TODO(crbug.com/398639862): De-flake and reenable test.
 IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
-                       DISABLED_ReceivedPrivacyPermissionsUseCounters) {
+                       ReceivedPrivacyPermissionsUseCounters) {
   SetRulesetWithRules(
       {subresource_filter::testing::CreateSuffixRule("ad_script.js")});
   base::HistogramTester histogram_tester;
@@ -1703,8 +1702,26 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
   ad_script_response->Done();
 
   waiter->AddMinimumNetworkBytesExpectation(5000);
-  waiter->Wait();
 
+  std::array<network::mojom::PermissionsPolicyFeature, 9> features = {
+      network::mojom::PermissionsPolicyFeature::kBluetooth,
+      network::mojom::PermissionsPolicyFeature::kCamera,
+      network::mojom::PermissionsPolicyFeature::kClipboardRead,
+      network::mojom::PermissionsPolicyFeature::kClipboardWrite,
+      network::mojom::PermissionsPolicyFeature::kDisplayCapture,
+      network::mojom::PermissionsPolicyFeature::kGeolocation,
+      network::mojom::PermissionsPolicyFeature::kMicrophone,
+      network::mojom::PermissionsPolicyFeature::kSerial,
+      network::mojom::PermissionsPolicyFeature::kUsb};
+
+  for (auto feature : features) {
+    waiter->AddUseCounterFeatureExpectation(
+        {blink::mojom::UseCounterFeatureType::
+             kPermissionsPolicyEnabledPrivacySensitive,
+         static_cast<blink::UseCounterFeature::EnumValue>(feature)});
+  }
+
+  waiter->Wait();
   // Close all tabs instead of navigating as the embedded_test_server will
   // hang waiting for loads to finish when we have an unfinished
   // ControllableHttpResponse.
@@ -1712,33 +1729,7 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
 
   histogram_tester.ExpectTotalCount(
       "Blink.UseCounter.PermissionsPolicy.PrivacySensitive.Enabled", 9);
-  histogram_tester.ExpectBucketCount(
-      "Blink.UseCounter.PermissionsPolicy.PrivacySensitive.Enabled",
-      network::mojom::PermissionsPolicyFeature::kBluetooth, 1);
-  histogram_tester.ExpectBucketCount(
-      "Blink.UseCounter.PermissionsPolicy.PrivacySensitive.Enabled",
-      network::mojom::PermissionsPolicyFeature::kCamera, 1);
-  histogram_tester.ExpectBucketCount(
-      "Blink.UseCounter.PermissionsPolicy.PrivacySensitive.Enabled",
-      network::mojom::PermissionsPolicyFeature::kClipboardRead, 1);
-  histogram_tester.ExpectBucketCount(
-      "Blink.UseCounter.PermissionsPolicy.PrivacySensitive.Enabled",
-      network::mojom::PermissionsPolicyFeature::kClipboardWrite, 1);
-  histogram_tester.ExpectBucketCount(
-      "Blink.UseCounter.PermissionsPolicy.PrivacySensitive.Enabled",
-      network::mojom::PermissionsPolicyFeature::kDisplayCapture, 1);
-  histogram_tester.ExpectBucketCount(
-      "Blink.UseCounter.PermissionsPolicy.PrivacySensitive.Enabled",
-      network::mojom::PermissionsPolicyFeature::kGeolocation, 1);
-  histogram_tester.ExpectBucketCount(
-      "Blink.UseCounter.PermissionsPolicy.PrivacySensitive.Enabled",
-      network::mojom::PermissionsPolicyFeature::kMicrophone, 1);
-  histogram_tester.ExpectBucketCount(
-      "Blink.UseCounter.PermissionsPolicy.PrivacySensitive.Enabled",
-      network::mojom::PermissionsPolicyFeature::kSerial, 1);
-  histogram_tester.ExpectBucketCount(
-      "Blink.UseCounter.PermissionsPolicy.PrivacySensitive.Enabled",
-      network::mojom::PermissionsPolicyFeature::kUsb, 1);
+
   auto entries = ukm_recorder.GetEntriesByName(
       ukm::builders::Permissions_PrivacySensitive_UseCounter::kEntryName);
   EXPECT_EQ(9u, entries.size());

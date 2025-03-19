@@ -87,6 +87,7 @@
 <translation id="2215727959747642672">檔案編輯</translation>
 <translation id="2218389616572918761">網站可以要求使用麥克風</translation>
 <translation id="2228071138934252756">如要允許 <ph name="APP_NAME" /> 存取裝置的相機，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟相機。</translation>
+<translation id="2231160360698766265">網站可以播放受保護的內容</translation>
 <translation id="2235344399760031203">已封鎖第三方 Cookie</translation>
 <translation id="2238944249568001759">根據最近開啟的分頁提供搜尋建議</translation>
 <translation id="2241587408274973373">新分頁資訊卡</translation>
@@ -630,6 +631,7 @@
 <translation id="9138217887606523162">目前的縮放比例為 <ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="9156722768168878035">允許 Chrome 在裝置的應用程式清單和搜尋結果顯示最近開啟的分頁。你隨時可以前往 Chrome 設定頁面關閉這項功能。</translation>
 <translation id="9162462602695099906">這是危險網頁</translation>
+<translation id="9182556968660520230">禁止網站播放受保護內容</translation>
 <translation id="947156494302904893">你造訪的網站可驗證你是真人，而不是機器人</translation>
 <translation id="959682366969460160">保持井然有序</translation>
 <translation id="967624055006145463">已儲存的資料</translation>

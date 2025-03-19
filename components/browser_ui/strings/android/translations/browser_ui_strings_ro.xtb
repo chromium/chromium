@@ -87,6 +87,7 @@
 <translation id="2215727959747642672">Editează fișiere</translation>
 <translation id="2218389616572918761">Site-urile pot solicita permisiunea de a folosi microfonul</translation>
 <translation id="2228071138934252756">Pentru a permite aplicației <ph name="APP_NAME" /> să acceseze camera, activează camera și în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
+<translation id="2231160360698766265">Site-urile pot reda conținut protejat</translation>
 <translation id="2235344399760031203">Cookie-urile terță parte sunt blocate</translation>
 <translation id="2238944249568001759">Căutări sugerate pe baza ultimei file</translation>
 <translation id="2241587408274973373">Carduri din pagina Filă nouă</translation>
@@ -630,6 +631,7 @@
 <translation id="9138217887606523162">Nivelul de zoom actual este <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9156722768168878035">Permite ca Chrome să-ți afișeze filele recente în lista de aplicații și în rezultatele căutării de pe dispozitiv. Poți dezactiva oricând această opțiune din setările Chrome.</translation>
 <translation id="9162462602695099906">Pagina este periculoasă</translation>
+<translation id="9182556968660520230">Nu permite site-urilor să redea conținut protejat</translation>
 <translation id="947156494302904893">Site-urile pe care le accesezi pot confirma că ești o persoană reală, nu o aplicație bot</translation>
 <translation id="959682366969460160">Organizează-te</translation>
 <translation id="967624055006145463">Date stocate</translation>

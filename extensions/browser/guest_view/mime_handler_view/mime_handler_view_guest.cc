@@ -542,7 +542,8 @@ void MimeHandlerViewGuest::DidFinishNavigation(
   guest_view::GuestView<MimeHandlerViewGuest>::DidFinishNavigation(
       navigation_handle);
 
-  if (!IsObservedNavigationWithinGuest(navigation_handle)) {
+  if (!IsObservedNavigationWithinGuest(navigation_handle) ||
+      !navigation_handle->HasCommitted()) {
     return;
   }
 

@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessLossExportFlowCoordinator;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -39,7 +40,7 @@ public class PasswordAccessLossDialogHelper {
      * @param context used to provide resources and start intents from the dialog.
      * @param referrer indicates where the request to show the password settings UI comes from.
      * @param modalDialogManagerSupplier displays the dialog.
-     * @param customTabIntentHelper needed to show help.
+     * @param settingsCustomTabLauncher used to open help URLs in a custom tab.
      * @param buildInfo needed to extract GMS Core version.
      * @return whether the dialog was displayed or not.
      */
@@ -48,14 +49,14 @@ public class PasswordAccessLossDialogHelper {
             Context context,
             @ManagePasswordsReferrer int referrer,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            CustomTabIntentHelper customTabIntentHelper,
+            SettingsCustomTabLauncher settingsCustomTabLauncher,
             BuildInfo buildInfo) {
         PrefService prefService = UserPrefs.get(profile);
         @PasswordAccessLossWarningType int warningType = getAccessLossWarningType(prefService);
         if (warningType == PasswordAccessLossWarningType.NO_GMS_CORE
                 && prefService.getBoolean(Pref.EMPTY_PROFILE_STORE_LOGIN_DATABASE)) {
             new PasswordAccessLossPostExportDialogController(
-                            context, modalDialogManagerSupplier.get(), customTabIntentHelper)
+                            context, modalDialogManagerSupplier.get(), settingsCustomTabLauncher)
                     .showPostExportDialog();
             return true;
         }
@@ -74,7 +75,7 @@ public class PasswordAccessLossDialogHelper {
                             warningType,
                             GmsUpdateLauncher::launch,
                             startExportFlow,
-                            customTabIntentHelper);
+                            settingsCustomTabLauncher);
             return true;
         }
 

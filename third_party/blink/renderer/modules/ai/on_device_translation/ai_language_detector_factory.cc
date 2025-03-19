@@ -55,18 +55,26 @@ class AILanguageDetectorCreateTask
     : public GarbageCollected<AILanguageDetectorCreateTask> {
  public:
   AILanguageDetectorCreateTask(
+      ScriptState* script_state,
       ExecutionContext* execution_context,
       scoped_refptr<base::SequencedTaskRunner>& task_runner,
       ScriptPromiseResolver<AILanguageDetector>* resolver,
       LanguageDetectionModel* model,
       const AILanguageDetectorCreateOptions* options)
       : task_runner_(task_runner),
+        script_state_(script_state),
         resolver_(resolver),
-        language_detection_model_(model) {
+        language_detection_model_(model),
+        abort_signal_(options->getSignalOr(nullptr)) {
     if (options->hasMonitor()) {
       monitor_ = MakeGarbageCollected<AICreateMonitor>(execution_context,
                                                        task_runner_);
       std::ignore = options->monitor()->Invoke(nullptr, monitor_);
+    }
+    if (options->hasSignal()) {
+      CHECK(!options->signal()->aborted());
+      abort_handle_ = abort_signal_->AddAlgorithm(WTF::BindOnce(
+          &AILanguageDetectorCreateTask::OnAborted, WrapWeakPersistent(this)));
     }
   }
 
@@ -78,9 +86,12 @@ class AILanguageDetectorCreateTask
   }
 
   void Trace(Visitor* visitor) const {
+    visitor->Trace(script_state_);
     visitor->Trace(resolver_);
     visitor->Trace(monitor_);
     visitor->Trace(language_detection_model_);
+    visitor->Trace(abort_signal_);
+    visitor->Trace(abort_handle_);
   }
 
  private:
@@ -104,12 +115,21 @@ class AILanguageDetectorCreateTask
       }
     }
   }
+  void OnAborted() {
+    if (!resolver_) {
+      return;
+    }
+    resolver_->Reject(abort_signal_->reason(script_state_));
+  }
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
+  Member<ScriptState> script_state_;
   Member<AICreateMonitor> monitor_;
   Member<ScriptPromiseResolver<AILanguageDetector>> resolver_;
   Member<LanguageDetectionModel> language_detection_model_;
+  Member<AbortSignal> abort_signal_;
+  Member<AbortSignal::AlgorithmHandle> abort_handle_;
 };
 
 }  // namespace
@@ -187,7 +207,7 @@ ScriptPromise<AILanguageDetector> AILanguageDetectorFactory::create(
           script_state);
   AILanguageDetectorCreateTask* create_task =
       MakeGarbageCollected<AILanguageDetectorCreateTask>(
-          GetExecutionContext(), task_runner_, resolver,
+          script_state, GetExecutionContext(), task_runner_, resolver,
           language_detection_model_, options);
   GetLanguageDetectionDriverRemote()->GetLanguageDetectionModel(WTF::BindOnce(
       [](RejectOnDestructionHelper<AILanguageDetector> resolver_holder,

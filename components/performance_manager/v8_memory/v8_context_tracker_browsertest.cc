@@ -13,7 +13,6 @@
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/test_support/performance_manager_browsertest_harness.h"
-#include "components/performance_manager/test_support/run_in_graph.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -54,63 +53,60 @@ class V8ContextTrackerTest : public PerformanceManagerBrowserTestHarness {
   }
 
   void SetUpOnMainThread() override {
-    RunInGraph([&](Graph* graph) {
-      auto* v8ct = V8ContextTracker::GetFromGraph(graph);
-      ASSERT_TRUE(v8ct);
+    Graph* graph = PerformanceManager::GetGraph();
+    auto* v8ct = V8ContextTracker::GetFromGraph(graph);
+    ASSERT_TRUE(v8ct);
 
-      // The browser could start with execution contexts and/or v8 contexts (for
-      // example if it creates a spare renderer loading about:blank, or
-      // something preloads a utility context).
-      current_counts_.v8_context_count = v8ct->GetV8ContextCountForTesting();
-      current_counts_.execution_context_count =
-          v8ct->GetExecutionContextCountForTesting();
+    // The browser could start with execution contexts and/or v8 contexts (for
+    // example if it creates a spare renderer loading about:blank, or
+    // something preloads a utility context).
+    current_counts_.v8_context_count = v8ct->GetV8ContextCountForTesting();
+    current_counts_.execution_context_count =
+        v8ct->GetExecutionContextCountForTesting();
 
-      // There should not be any detached or destroyed contexts on start.
-      EXPECT_EQ(v8ct->GetDetachedV8ContextCountForTesting(), 0u);
-      EXPECT_EQ(v8ct->GetDestroyedExecutionContextCountForTesting(), 0u);
-    });
+    // There should not be any detached or destroyed contexts on start.
+    EXPECT_EQ(v8ct->GetDetachedV8ContextCountForTesting(), 0u);
+    EXPECT_EQ(v8ct->GetDestroyedExecutionContextCountForTesting(), 0u);
     Super::SetUpOnMainThread();
   }
 
   void ExpectCountIncrease(
       ContextCounts count_change,
       const base::Location& location = base::Location::Current()) {
-    RunInGraph([&](Graph* graph) {
-      SCOPED_TRACE(location.ToString());
-      auto* v8ct = V8ContextTracker::GetFromGraph(graph);
-      ASSERT_TRUE(v8ct);
+    Graph* graph = PerformanceManager::GetGraph();
+    SCOPED_TRACE(location.ToString());
+    auto* v8ct = V8ContextTracker::GetFromGraph(graph);
+    ASSERT_TRUE(v8ct);
 
-      // There may be extra V8 contexts created, such as for lazily-created
-      // utility contexts.
-      EXPECT_GE(
-          v8ct->GetV8ContextCountForTesting(),
-          current_counts_.v8_context_count + count_change.v8_context_count)
-          << "expected increase " << count_change.v8_context_count;
-      current_counts_.v8_context_count = v8ct->GetV8ContextCountForTesting();
+    // There may be extra V8 contexts created, such as for lazily-created
+    // utility contexts.
+    EXPECT_GE(v8ct->GetV8ContextCountForTesting(),
+              current_counts_.v8_context_count + count_change.v8_context_count)
+        << "expected increase " << count_change.v8_context_count;
+    current_counts_.v8_context_count = v8ct->GetV8ContextCountForTesting();
 
-      EXPECT_EQ(v8ct->GetExecutionContextCountForTesting(),
-                current_counts_.execution_context_count +
-                    count_change.execution_context_count)
-          << "expected increase " << count_change.execution_context_count;
-      current_counts_.execution_context_count =
-          v8ct->GetExecutionContextCountForTesting();
+    EXPECT_EQ(v8ct->GetExecutionContextCountForTesting(),
+              current_counts_.execution_context_count +
+                  count_change.execution_context_count)
+        << "expected increase " << count_change.execution_context_count;
+    current_counts_.execution_context_count =
+        v8ct->GetExecutionContextCountForTesting();
 
-      EXPECT_EQ(v8ct->GetDetachedV8ContextCountForTesting(),
-                current_counts_.detached_v8_context_count +
-                    count_change.detached_v8_context_count)
-          << "expected increase " << count_change.detached_v8_context_count;
-      current_counts_.detached_v8_context_count =
-          v8ct->GetDetachedV8ContextCountForTesting();
+    EXPECT_EQ(v8ct->GetDetachedV8ContextCountForTesting(),
+              current_counts_.detached_v8_context_count +
+                  count_change.detached_v8_context_count)
+        << "expected increase " << count_change.detached_v8_context_count;
+    current_counts_.detached_v8_context_count =
+        v8ct->GetDetachedV8ContextCountForTesting();
 
-      EXPECT_EQ(v8ct->GetDestroyedExecutionContextCountForTesting(),
-                current_counts_.destroyed_execution_context_count +
-                    count_change.destroyed_execution_context_count)
-          << "expected increase "
-          << count_change.destroyed_execution_context_count;
-      ;
-      current_counts_.destroyed_execution_context_count =
-          v8ct->GetDestroyedExecutionContextCountForTesting();
-    });
+    EXPECT_EQ(v8ct->GetDestroyedExecutionContextCountForTesting(),
+              current_counts_.destroyed_execution_context_count +
+                  count_change.destroyed_execution_context_count)
+        << "expected increase "
+        << count_change.destroyed_execution_context_count;
+    ;
+    current_counts_.destroyed_execution_context_count =
+        v8ct->GetDestroyedExecutionContextCountForTesting();
   }
 
  private:
@@ -142,15 +138,14 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, SameOriginIframeAttributionData) {
   auto frame_node =
       PerformanceManager::GetFrameNodeForRenderFrameHost(child_rfh);
 
-  RunInGraph([&frame_node](Graph* graph) {
-    ASSERT_TRUE(frame_node);
-    auto* v8_context_tracker = V8ContextTracker::GetFromGraph(graph);
-    ASSERT_TRUE(v8_context_tracker);
-    auto* ec_state = v8_context_tracker->GetExecutionContextState(
-        frame_node->GetFrameToken());
-    ASSERT_TRUE(ec_state);
-    ASSERT_TRUE(ec_state->iframe_attribution_data);
-  });
+  Graph* graph = PerformanceManager::GetGraph();
+  ASSERT_TRUE(frame_node);
+  auto* v8_context_tracker = V8ContextTracker::GetFromGraph(graph);
+  ASSERT_TRUE(v8_context_tracker);
+  auto* ec_state =
+      v8_context_tracker->GetExecutionContextState(frame_node->GetFrameToken());
+  ASSERT_TRUE(ec_state);
+  ASSERT_TRUE(ec_state->iframe_attribution_data);
 }
 
 // TODO(crbug.com/40931300): Re-enable on Mac.
@@ -174,18 +169,17 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest,
   auto frame_node =
       PerformanceManager::GetFrameNodeForRenderFrameHost(child_rfh);
 
-  RunInGraph([&frame_node](Graph* graph) {
-    ASSERT_TRUE(frame_node);
-    auto* v8_context_tracker = V8ContextTracker::GetFromGraph(graph);
-    ASSERT_TRUE(v8_context_tracker);
-    auto* ec_state = v8_context_tracker->GetExecutionContextState(
-        frame_node->GetFrameToken());
-    ASSERT_TRUE(ec_state);
-    ASSERT_TRUE(ec_state->iframe_attribution_data)
-        << "url " << frame_node->GetURL() << ", current "
-        << frame_node->IsCurrent() << ", state "
-        << frame_node->GetLifecycleState();
-  });
+  Graph* graph = PerformanceManager::GetGraph();
+  ASSERT_TRUE(frame_node);
+  auto* v8_context_tracker = V8ContextTracker::GetFromGraph(graph);
+  ASSERT_TRUE(v8_context_tracker);
+  auto* ec_state =
+      v8_context_tracker->GetExecutionContextState(frame_node->GetFrameToken());
+  ASSERT_TRUE(ec_state);
+  ASSERT_TRUE(ec_state->iframe_attribution_data)
+      << "url " << frame_node->GetURL() << ", current "
+      << frame_node->IsCurrent() << ", state "
+      << frame_node->GetLifecycleState();
 }
 
 // TODO(crbug.com/40931300): Re-enable on Mac.

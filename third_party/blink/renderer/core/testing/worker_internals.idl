@@ -13,4 +13,6 @@ interface WorkerInternals {
     [CallWith=ScriptState] void collectGarbage();
 
     void forceLoseCanvasContext(OffscreenCanvasRenderingContext2D ctx);
+    boolean isCanvasImageSourceAccelerated(HTMLCanvasElement imageSource);
+    boolean isCanvasImageSourceAccelerated(OffscreenCanvas imageSource);
 };

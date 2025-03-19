@@ -20,6 +20,7 @@
 #include "components/language/core/common/language_experiments.h"
 #include "components/translate/core/common/translate_errors.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/actions/actions.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/menus/simple_menu_model.h"
@@ -37,6 +38,8 @@ class LabelButton;
 class View;
 }  // namespace views
 
+// The bubble shown when translating a partial text (e.g. selecting a some
+// text from the contents).
 class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
                                    public ui::SimpleMenuModel::Delegate,
                                    public views::TabbedPaneListener {
@@ -60,7 +63,8 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSourceLanguageDoneButton);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kErrorMessage);
 
-  PartialTranslateBubbleView(views::View* anchor_view,
+  PartialTranslateBubbleView(base::WeakPtr<actions::ActionItem> action_item,
+                             views::View* anchor_view,
                              std::unique_ptr<PartialTranslateBubbleModel> model,
                              content::WebContents* web_contents,
                              base::OnceClosure on_closing);
@@ -318,6 +322,10 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
   base::OnceClosure on_closing_;
 
   raw_ptr<content::WebContents> web_contents_;
+
+  // The action item that this bubble is associated with. This bubble updates
+  // the action item's "IsShowingBubbleProperty" as needed.
+  const base::WeakPtr<actions::ActionItem> action_item_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TRANSLATE_PARTIAL_TRANSLATE_BUBBLE_VIEW_H_

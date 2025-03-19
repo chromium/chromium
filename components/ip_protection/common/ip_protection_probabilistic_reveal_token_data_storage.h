@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PROBABILISTIC_REVEAL_TOKEN_DATA_STORAGE_H_
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_PROBABILISTIC_REVEAL_TOKEN_DATA_STORAGE_H_
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "sql/database.h"
@@ -19,7 +21,7 @@ struct TryGetProbabilisticRevealTokensOutcome;
 class IpProtectionProbabilisticRevealTokenDataStorage {
  public:
   explicit IpProtectionProbabilisticRevealTokenDataStorage(
-      const base::FilePath& path_to_database);
+      std::optional<base::FilePath> path_to_database);
   IpProtectionProbabilisticRevealTokenDataStorage(
       const IpProtectionProbabilisticRevealTokenDataStorage&) = delete;
   IpProtectionProbabilisticRevealTokenDataStorage& operator=(
@@ -44,7 +46,7 @@ class IpProtectionProbabilisticRevealTokenDataStorage {
   bool CreateSchema() VALID_CONTEXT_REQUIRED(sequence_checker_);
   void DatabaseErrorCallback(int extended_error, sql::Statement* stmt);
 
-  const base::FilePath path_to_database_;
+  std::optional<base::FilePath> path_to_database_;
 
   sql::Database db_ GUARDED_BY_CONTEXT(sequence_checker_);
 

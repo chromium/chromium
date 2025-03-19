@@ -255,8 +255,9 @@ void AddMSAuthHeadersFromSSOCookiesResponse(
 #pragma mark - ASAuthorizationControllerPresentationContextProviding
 - (ASPresentationAnchor)presentationAnchorForAuthorizationController:
     (ASAuthorizationController*)controller {
-  // TODO (crbug/340868357): Pick the window where the url is being used.
-  return platform_util::GetActiveWindow();
+  // TODO(https://crbug.com/340868357): Pick the window where the url is being
+  // used.
+  return platform_util::GetActiveWindow().GetNativeNSWindow();
 }
 
 @end

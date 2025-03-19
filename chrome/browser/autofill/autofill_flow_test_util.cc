@@ -197,6 +197,12 @@ struct ShowAutofillSuggestionsParams {
       }
     }
 
+    // AutofillAgent throttles AskForValuesToFill() calls at 1 per 100 ms.
+    // The FocusField() call above may have already called AskForValuesToFill()
+    // -- namely when a screen reader is enabled. We therefore wait the throttle
+    // period out.
+    test->DoNothingAndWaitAndIgnoreEvents(base::Milliseconds(200));
+
     bool has_preview = 0 < p.num_profile_suggestions;
     if (p.show_method.arrow) {
       // Press arrow down to open the popup and select first suggestion.

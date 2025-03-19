@@ -160,6 +160,7 @@ descentOverride
 direction
 display
 dominantBaseline
+dynamicRangeLimit
 emptyCells
 fallback
 fieldSizing

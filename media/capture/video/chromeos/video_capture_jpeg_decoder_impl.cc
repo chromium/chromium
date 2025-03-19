@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
@@ -100,7 +101,7 @@ void VideoCaptureJpegDecoderImpl::DecodeCapturedData(
       return;
     }
   }
-  memcpy(in_shared_mapping_.memory(), data, in_buffer_size);
+  UNSAFE_TODO(memcpy(in_shared_mapping_.memory(), data, in_buffer_size));
 
   // No need to lock for |task_id_| since IsDecoding_Locked() is false.
   task_id_ = next_task_id_;

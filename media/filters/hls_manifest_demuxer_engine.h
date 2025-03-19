@@ -13,7 +13,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
-#include "crypto/encryptor.h"
 #include "media/base/media_export.h"
 #include "media/base/media_log.h"
 #include "media/base/media_track.h"
@@ -185,7 +184,7 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
 
   // Posted by `::OnRenditionsReselected()`
   void AdaptationAction(const hls::VariantStream* variant,
-                        const hls::AudioRendition* audio_override_rendition,
+                        const hls::Rendition* audio_override_rendition,
                         HlsDemuxerStatusCallback status_cb);
 
   // The `prior_delay` arg represents the time that was previously calculated
@@ -232,15 +231,13 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   void OnMultivariantPlaylist(
       HlsDemuxerStatusCallback parse_complete_cb,
       scoped_refptr<hls::MultivariantPlaylist> playlist);
-  void OnRenditionsReselected(
-      hls::AdaptationReason reason,
-      const hls::VariantStream* variant,
-      const hls::AudioRendition* audio_override_rendition);
+  void OnRenditionsReselected(hls::AdaptationReason reason,
+                              const hls::VariantStream* variant,
+                              const hls::Rendition* audio_override_rendition);
 
-  void OnRenditionsSelected(
-      HlsDemuxerStatusCallback on_complete,
-      const hls::VariantStream* variant,
-      const hls::AudioRendition* audio_override_rendition);
+  void OnRenditionsSelected(HlsDemuxerStatusCallback on_complete,
+                            const hls::VariantStream* variant,
+                            const hls::Rendition* audio_override_rendition);
 
   void LoadPlaylist(PlaylistParseInfo parse_info,
                     HlsDemuxerStatusCallback on_complete);

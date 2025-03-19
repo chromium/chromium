@@ -34,6 +34,7 @@ enum class CSSMathOperator {
   kCalcSize,
   kMediaProgress,
   kContainerProgress,
+  kPow,
   kInvalid
 };
 

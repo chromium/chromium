@@ -1311,6 +1311,10 @@ constexpr base::FeatureParam<double>
         /*name=*/kIOSOneTapMiniMapRestrictionMinAlphanumProportionParamName,
         /*default_value=*/0};
 
+BASE_FEATURE(kIOSOneTapMiniMapRemoveSectionsBreaks,
+             "IOSOneTapMiniMapRemoveSectionsBreaks",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsNotificationCollisionManagementEnabled() {
   return base::FeatureList::IsEnabled(kNotificationCollisionManagement);
 }

@@ -11,8 +11,7 @@
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion.h"
 
 @interface OmniboxPopupController ()
-// Redefine as readwrite.
-@property(nonatomic, assign, readwrite) BOOL hasSuggestions;
+
 @end
 
 @implementation OmniboxPopupController
@@ -23,52 +22,11 @@
 
 #pragma mark - OmniboxAutocomplete event
 
-- (void)newResultsAvailable:(const AutocompleteResult&)results
-                 isFocusing:(BOOL)isFocusing {
-  BOOL hasSuggestions = !results.empty();
-  self.hasSuggestions = hasSuggestions;
-  [self.delegate popupControllerDidUpdateSuggestions:self
-                                      hasSuggestions:hasSuggestions
-                                          isFocusing:isFocusing];
-}
-
 - (void)updateWithSortedResults:(const AutocompleteResult&)results {
   NSArray<id<AutocompleteSuggestionGroup>>* suggestionGroups =
       [self.autocompleteResultWrapper wrapAutocompleteResultInGroups:results];
   [self.delegate popupController:self
       didUpdateSuggestionsGroups:suggestionGroups];
-}
-
-#pragma mark - OmniboxPopup event
-
-- (void)requestSuggestionsWithVisibleSuggestionCount:
-    (NSUInteger)visibleSuggestionCount {
-  [self.omniboxAutocompleteController
-      requestResultsWithVisibleSuggestionCount:visibleSuggestionCount];
-}
-
-- (void)selectMatchForOpening:(const AutocompleteMatch&)match
-                        inRow:(NSUInteger)row
-                       openIn:(WindowOpenDisposition)disposition {
-  [self.omniboxAutocompleteController selectMatchForOpening:match
-                                                      inRow:row
-                                                     openIn:disposition];
-}
-
-- (void)selectMatchForAppending:(const AutocompleteMatch&)match {
-  [self.omniboxAutocompleteController selectMatchForAppending:match];
-}
-
-- (void)selectMatchForDeletion:(const AutocompleteMatch&)match {
-  [self.omniboxAutocompleteController selectMatchForDeletion:match];
-}
-
-- (void)onScroll {
-  [self.omniboxAutocompleteController onScroll];
-}
-
-- (void)onCallAction {
-  [self.omniboxAutocompleteController onCallAction];
 }
 
 #pragma mark - OmniboxText events
