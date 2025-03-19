@@ -414,6 +414,7 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="ANGLE OpenGL ES EGL"/>
   <int value="17" label="ANGLE Metal"/>
   <int value="18" label="ANGLE Metal NULL"/>
+  <int value="19" label="ANGLE D3D11 WARP"/>
 </enum>
 
 <enum name="FrameIntervalMatcherType">

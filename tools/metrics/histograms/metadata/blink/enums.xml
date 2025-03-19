@@ -7940,6 +7940,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="7" label="WebGL1, SwiftShader"/>
   <int value="8" label="WebGL1, Metal"/>
   <int value="9" label="WebGL1, Default"/>
+  <int value="10" label="WebGL1, D3D11Warp"/>
   <int value="20" label="WebGL2, None"/>
   <int value="21" label="WebGL2, D3D9 (should never happen)"/>
   <int value="22" label="WebGL2, D3D11"/>
@@ -7950,6 +7951,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="27" label="WebGL2, SwiftShader"/>
   <int value="28" label="WebGL2, Metal"/>
   <int value="29" label="WebGL2, Default"/>
+  <int value="30" label="WebGL2, D3D11Warp"/>
 </enum>
 
 <enum name="WebOTPBackendAvailability">
