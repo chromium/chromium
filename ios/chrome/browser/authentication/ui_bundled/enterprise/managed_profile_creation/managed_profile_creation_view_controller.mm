@@ -112,6 +112,8 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   // Maybe add the data migration button
   if (self.canShowBrowsingDataMigration) {
     _tableView = [self createTableView];
+    _tableView.accessibilityIdentifier =
+        kBrowsingDataButtonAccessibilityIdentifier;
     [self.specificContentView addSubview:_tableView];
     [NSLayoutConstraint activateConstraints:@[
       [_tableView.topAnchor
