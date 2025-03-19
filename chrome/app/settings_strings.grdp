@@ -3457,7 +3457,7 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_DELETE_DISPLAYED_STORAGE_CONFIRMATION" desc="Text for the dialog that warns about deleting storage used by displayed sites.">
     This will delete <ph name="TOTAL_USAGE">$1<ex>8 GB</ex></ph> of data stored by displayed sites
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_DELETE_RWS_STORAGE_CONFIRMATION" desc="Text for the dialog that warns about deleting storage used by a site and its related sites." translateable="false">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_DELETE_RWS_STORAGE_CONFIRMATION" desc="Text for the dialog that warns about deleting storage used by a site and its related sites.">
     This will delete <ph name="TOTAL_USAGE">$1<ex>8 GB</ex></ph> of data stored by <ph name="SITE_NAME">$2<ex>www.example.com</ex></ph> and related sites
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_DELETE_ALL_STORAGE_CONFIRMATION_INSTALLED" desc="Text for the dialog that warns about deleting storage used by all sites, shown when there are installed apps.">
@@ -3466,7 +3466,7 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_DELETE_DISPLAYED_STORAGE_CONFIRMATION_INSTALLED" desc="Text for the dialog that warns about deleting storage used by displayed sites, shown when there are installed apps.">
     This will delete <ph name="TOTAL_USAGE">$1<ex>8 GB</ex></ph> of data stored by displayed sites and installed apps
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_DELETE_RWS_STORAGE_CONFIRMATION_INSTALLED" desc="Text for the dialog that warns about deleting storage used by a site and its related sites, shown when there are installed apps." translateable="false">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_DELETE_RWS_STORAGE_CONFIRMATION_INSTALLED" desc="Text for the dialog that warns about deleting storage used by a site and its related sites, shown when there are installed apps.">
     This will delete <ph name="TOTAL_USAGE">$1<ex>8 GB</ex></ph> of data stored by <ph name="SITE_NAME">$2<ex>www.example.com</ex></ph>, related sites, and installed apps
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CLEAR_ALL_STORAGE_SIGN_OUT" desc="Text for the dialog that warns about being signed out when clearing storage used by all sites.">
@@ -3475,7 +3475,7 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_CLEAR_DISPLAYED_STORAGE_SIGN_OUT" desc="Text for the dialog that warns about being signed out when clearing storage used by displayed sites.">
     You'll be signed out of displayed sites, including in open tabs
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_CLEAR_RWS_STORAGE_SIGN_OUT" desc="Text for the dialog that warns about being signed out when clearing storage used by related sites." translateable="false">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_CLEAR_RWS_STORAGE_SIGN_OUT" desc="Text for the dialog that warns about being signed out of the related sites mentioned previously in the dialog when clearing storage.">
     You'll be signed out of these sites, including in open tabs
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_RESET_DIALOG_TITLE" desc="Title of a dialog that asks users to confirm that they want to reset all permissions for a site.">
