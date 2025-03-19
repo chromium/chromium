@@ -927,7 +927,6 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
 
   scoped_refptr<CanvasResource> ProduceCanvasResource(
       FlushReason reason) override {
-    DCHECK(IsSingleBuffered());
     TRACE_EVENT0("blink",
                  "CanvasResourceProviderSwapChain::ProduceCanvasResource");
     if (!IsValid())
