@@ -132,6 +132,11 @@ void SetFallbackImageToImageView(UIImageView* image_view,
     _priceNotificationsChip = [[PriceNotificationsPriceChipView alloc] init];
     _priceNotificationsChip.translatesAutoresizingMaskIntoConstraints = NO;
     _priceNotificationsChip.isAccessibilityElement = YES;
+    _priceNotificationsChip.previousPriceFont =
+        CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightMedium);
+    _priceNotificationsChip.currentPriceFont =
+        CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightMedium);
+    _priceNotificationsChip.strikeoutPreviousPrice = YES;
     [_priceNotificationsChip
          setPriceDrop:_item.shopCardData.priceDrop->current_price
         previousPrice:_item.shopCardData.priceDrop->previous_price];
