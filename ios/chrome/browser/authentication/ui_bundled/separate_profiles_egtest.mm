@@ -795,6 +795,27 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
                  isEqualToString:[ChromeEarlGrey currentProfileName]],
              @"Profile should be personal");
 
+  // Dismiss the identity confirmation snackbar, as it covers "confirm" remove
+  // idenity button.
+  NSString* snackbarMessage = l10n_util::GetNSStringF(
+      IDS_IOS_ACCOUNT_MENU_SWITCH_CONFIRMATION_TITLE,
+      base::SysNSStringToUTF16(managedIdentity.userGivenName));
+  id<GREYMatcher> snackbar_matcher =
+      grey_allOf(grey_text(snackbarMessage), grey_sufficientlyVisible(), nil);
+  ConditionBlock wait_for_appearance = ^{
+    NSError* error;
+    [[EarlGrey selectElementWithMatcher:snackbar_matcher]
+        assertWithMatcher:grey_notNil()
+                    error:&error];
+
+    return error == nil;
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(10),
+                                                          wait_for_appearance),
+             @"Snackbar did not appear.");
+  [[EarlGrey selectElementWithMatcher:snackbar_matcher]
+      performAction:grey_tap()];
+
   // Remove `managedIdentity` from device.
   OpenManageAccountsView();
   [[EarlGrey
