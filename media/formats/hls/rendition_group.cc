@@ -1,8 +1,8 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/formats/hls/audio_rendition.h"
+#include "media/formats/hls/rendition_group.h"
 
 #include <optional>
 #include <variant>
@@ -10,48 +10,31 @@
 #include "base/types/pass_key.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/quirks.h"
+#include "media/formats/hls/rendition.h"
 #include "media/formats/hls/tags.h"
 
 namespace media::hls {
 
-struct AudioRendition::CtorArgs {
-  decltype(AudioRendition::uri_) uri;
-  decltype(AudioRendition::name_) name;
-  decltype(AudioRendition::language_) language;
-  decltype(AudioRendition::associated_language_) associated_language;
-  decltype(AudioRendition::stable_rendition_id_) stable_rendition_id;
-  decltype(AudioRendition::channels_) channels;
-  decltype(AudioRendition::autoselect_) autoselect;
-};
-
-AudioRendition::AudioRendition(base::PassKey<AudioRenditionGroup>,
-                               CtorArgs args)
-    : uri_(std::move(args.uri)),
-      name_(std::move(args.name)),
-      language_(std::move(args.language)),
-      stable_rendition_id_(std::move(args.stable_rendition_id)),
-      channels_(std::move(args.channels)),
-      autoselect_(std::move(args.autoselect)) {}
-
-AudioRendition::AudioRendition(AudioRendition&&) = default;
-
-AudioRendition::~AudioRendition() = default;
-
-AudioRenditionGroup::AudioRenditionGroup(base::PassKey<MultivariantPlaylist>,
-                                         std::string id)
+RenditionGroup::RenditionGroup(base::PassKey<MultivariantPlaylist>,
+                               std::string id)
     : id_(std::move(id)) {}
 
-AudioRenditionGroup::~AudioRenditionGroup() = default;
+RenditionGroup::~RenditionGroup() = default;
 
-ParseStatus::Or<std::monostate> AudioRenditionGroup::AddRendition(
+ParseStatus::Or<std::monostate> RenditionGroup::AddRendition(
     base::PassKey<MultivariantPlaylist>,
     XMediaTag tag,
     const GURL& playlist_uri) {
-  DCHECK(tag.type == MediaType::kAudio);
-  DCHECK(tag.instream_id == std::nullopt);
   DCHECK(tag.group_id.Str() == id_);
-  DCHECK(tag.forced == false);
   DCHECK(playlist_uri.is_valid());
+
+  // INSTREAM-ID MUST NOT be specified for any rendition with a TYPE other than
+  // CLOSED-CAPTIONS. We don't support CLOSED-CAPTIONS.
+  DCHECK(tag.instream_id == std::nullopt);
+
+  // FORCED MUST NOT be present unless the TYPE is SUBTITLES. We don't support
+  // the SUBTITLES type.
+  DCHECK(tag.forced == false);
 
   std::optional<GURL> uri;
   if (tag.uri.has_value()) {
@@ -89,8 +72,8 @@ ParseStatus::Or<std::monostate> AudioRenditionGroup::AddRendition(
   }
 
   auto& rendition = renditions_.emplace_back(
-      base::PassKey<AudioRenditionGroup>(),
-      AudioRendition::CtorArgs{
+      base::PassKey<RenditionGroup>(),
+      Rendition::CtorArgs{
           .uri = std::move(uri),
           .name = name,
           .language = std::move(language),
