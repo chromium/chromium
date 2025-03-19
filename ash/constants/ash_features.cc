@@ -210,6 +210,11 @@ constexpr base::FeatureParam<base::TimeDelta>
         &kBocaCustomPolling, "InSessionPollingIntervalInSeconds",
         base::Seconds(60)};
 
+// Enables or disables Boca OnTask mute ARC audio requests on ChromeOS.
+BASE_FEATURE(kBocaOnTaskMuteArcAudio,
+             "BocaOnTaskMuteArcAudio",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables the Boca OnTask pod on ChromeOS.
 BASE_FEATURE(kBocaOnTaskPod,
              "BocaOnTaskPod",
@@ -3369,6 +3374,10 @@ bool IsBocaExtensionConsumerEnabled() {
 
 bool IsBocaCustomPollingEnabled() {
   return base::FeatureList::IsEnabled(kBocaCustomPolling);
+}
+
+bool IsBocaOnTaskMuteArcAudioEnabled() {
+  return base::FeatureList::IsEnabled(kBocaOnTaskMuteArcAudio);
 }
 
 bool IsBocaOnTaskPodEnabled() {

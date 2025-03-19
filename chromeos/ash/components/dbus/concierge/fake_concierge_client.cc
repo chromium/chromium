@@ -449,6 +449,7 @@ void FakeConciergeClient::MuteVmAudio(
     const vm_tools::concierge::MuteVmAudioRequest& request,
     chromeos::DBusMethodCallback<vm_tools::concierge::SuccessFailureResponse>
         callback) {
+  mute_vm_audio_call_count_++;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), mute_vm_audio_response_));
 }
