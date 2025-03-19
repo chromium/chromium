@@ -775,6 +775,10 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
 #if BUILDFLAG(ENABLE_PDF_INK2)
   // The last saved image snapshot for rendering of Ink inputs.
   std::optional<cc::PaintImage> snapshot_ink_inputs_;
+
+  // Tracks if `snapshot_` still needs to be updated to reflect a newly
+  // added Ink stroke.
+  bool snapshot_needs_update_for_ink_input_ = false;
 #endif
 
   // Translate from snapshot to device pixels.
