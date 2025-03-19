@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
 #include "base/containers/span_writer.h"
@@ -30,7 +31,9 @@
 #include "bidding_and_auction_server_key_fetcher.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/interest_group/auction_downloader_delegate.h"
+#include "content/browser/interest_group/devtools_enums.h"
 #include "content/browser/renderer_host/private_network_access_util.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
@@ -307,6 +310,7 @@ TrustedSignalsFetcher::~TrustedSignalsFetcher() = default;
 void TrustedSignalsFetcher::FetchBiddingSignals(
     network::mojom::URLLoaderFactory* url_loader_factory,
     FrameTreeNodeId frame_tree_node_id,
+    base::flat_set<std::string> devtools_auction_ids,
     const url::Origin& main_frame_origin,
     network::mojom::IPAddressSpace ip_address_space,
     base::UnguessableToken network_partition_nonce,
@@ -316,7 +320,8 @@ void TrustedSignalsFetcher::FetchBiddingSignals(
     const std::map<int, std::vector<BiddingPartition>>& compression_groups,
     Callback callback) {
   EncryptRequestBodyAndStart(
-      url_loader_factory, frame_tree_node_id, main_frame_origin,
+      url_loader_factory, InterestGroupAuctionFetchType::kBidderTrustedSignals,
+      frame_tree_node_id, std::move(devtools_auction_ids), main_frame_origin,
       ip_address_space, network_partition_nonce, script_origin,
       trusted_bidding_signals_url, bidding_and_auction_key,
       BuildSignalsRequestBody(main_frame_origin.host(), compression_groups),
@@ -326,6 +331,7 @@ void TrustedSignalsFetcher::FetchBiddingSignals(
 void TrustedSignalsFetcher::FetchScoringSignals(
     network::mojom::URLLoaderFactory* url_loader_factory,
     FrameTreeNodeId frame_tree_node_id,
+    base::flat_set<std::string> devtools_auction_ids,
     const url::Origin& main_frame_origin,
     network::mojom::IPAddressSpace ip_address_space,
     base::UnguessableToken network_partition_nonce,
@@ -335,7 +341,8 @@ void TrustedSignalsFetcher::FetchScoringSignals(
     const std::map<int, std::vector<ScoringPartition>>& compression_groups,
     Callback callback) {
   EncryptRequestBodyAndStart(
-      url_loader_factory, frame_tree_node_id, main_frame_origin,
+      url_loader_factory, InterestGroupAuctionFetchType::kSellerTrustedSignals,
+      frame_tree_node_id, std::move(devtools_auction_ids), main_frame_origin,
       ip_address_space, network_partition_nonce, script_origin,
       trusted_scoring_signals_url, bidding_and_auction_key,
       BuildSignalsRequestBody(main_frame_origin.host(), compression_groups),
@@ -344,7 +351,9 @@ void TrustedSignalsFetcher::FetchScoringSignals(
 
 void TrustedSignalsFetcher::EncryptRequestBodyAndStart(
     network::mojom::URLLoaderFactory* url_loader_factory,
+    InterestGroupAuctionFetchType fetch_type,
     FrameTreeNodeId frame_tree_node_id,
+    base::flat_set<std::string> devtools_auction_ids,
     const url::Origin& main_frame_origin,
     network::mojom::IPAddressSpace ip_address_space,
     base::UnguessableToken network_partition_nonce,
@@ -418,6 +427,13 @@ void TrustedSignalsFetcher::EncryptRequestBodyAndStart(
       AuctionDownloaderDelegate::MaybeCreate(frame_tree_node_id));
   ohttp_context_ = std::make_unique<quiche::ObliviousHttpRequest::Context>(
       std::move(maybe_ciphertext_request_body).value().ReleaseContext());
+  if (frame_tree_node_id &&
+      devtools_instrumentation::NeedInterestGroupAuctionEvents(
+          frame_tree_node_id)) {
+    devtools_instrumentation::OnInterestGroupAuctionNetworkRequestCreated(
+        frame_tree_node_id, fetch_type, auction_downloader_->request_id(),
+        std::move(devtools_auction_ids).extract());
+  }
 }
 
 void TrustedSignalsFetcher::OnRequestComplete(

@@ -146,6 +146,8 @@ class CONTENT_EXPORT AuctionDownloader {
 
   const GURL& source_url() const { return source_url_; }
 
+  const std::string& request_id() const { return request_id_; }
+
   // Checks if the response is allowed for Protected Audience-related requests,
   // based on the headers. Returns an error string and sets `status_out` on
   // error.
@@ -205,7 +207,7 @@ class CONTENT_EXPORT AuctionDownloader {
   const MimeType mime_type_;
   const std::optional<size_t> num_igs_for_trusted_bidding_signals_kvv1_;
   // A UnguessableToken string to be used in devtools.
-  std::string request_id_;
+  const std::string request_id_;
 
   // The time the response started, used for UMA.
   std::optional<base::TimeTicks> response_started_time_;

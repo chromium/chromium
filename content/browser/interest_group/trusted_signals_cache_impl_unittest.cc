@@ -16,6 +16,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
@@ -89,6 +90,9 @@ std::string CreateString(std::uint32_t i, size_t length = 3) {
 struct BiddingParams {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
   FrameTreeNodeId frame_tree_node_id;
+  // Actual requests may only have a single devtools ID, but this struct is also
+  // be used to represent the result of multiple merged requests.
+  std::set<std::string> devtools_auction_ids{"devtools_auction_id1"};
   url::Origin main_frame_origin;
   network::mojom::IPAddressSpace ip_address_space =
       network::mojom::IPAddressSpace::kPublic;
@@ -114,6 +118,9 @@ struct BiddingParams {
 struct ScoringParams {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
   FrameTreeNodeId frame_tree_node_id;
+  // While ScoringParams are never merged, so this will always only have one ID,
+  // use a set here to mirror BiddingParams.
+  std::set<std::string> devtools_auction_ids{"devtools_auction_id1"};
   url::Origin main_frame_origin;
   network::mojom::IPAddressSpace ip_address_space =
       network::mojom::IPAddressSpace::kPublic;
@@ -180,6 +187,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
       BiddingAndAuctionServerKey bidding_and_auction_key;
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
       FrameTreeNodeId frame_tree_node_id;
+      base::flat_set<std::string> devtools_auction_ids;
       url::Origin main_frame_origin;
       network::mojom::IPAddressSpace ip_address_space;
       base::UnguessableToken network_partition_nonce;
@@ -198,6 +206,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
       BiddingAndAuctionServerKey bidding_and_auction_key;
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
       FrameTreeNodeId frame_tree_node_id;
+      base::flat_set<std::string> devtools_auction_ids;
       url::Origin main_frame_origin;
       network::mojom::IPAddressSpace ip_address_space;
       base::UnguessableToken network_partition_nonce;
@@ -220,6 +229,7 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
     void FetchBiddingSignals(
         network::mojom::URLLoaderFactory* url_loader_factory,
         FrameTreeNodeId frame_tree_node_id,
+        base::flat_set<std::string> devtools_auction_ids,
         const url::Origin& main_frame_origin,
         network::mojom::IPAddressSpace ip_address_space,
         base::UnguessableToken network_partition_nonce,
@@ -250,15 +260,16 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
       cache_->OnPendingBiddingSignalsFetch(PendingBiddingSignalsFetch(
           trusted_signals_url, bidding_and_auction_key,
           static_cast<network::SharedURLLoaderFactory*>(url_loader_factory),
-          frame_tree_node_id, main_frame_origin, ip_address_space,
-          network_partition_nonce, script_origin,
-          std::move(compression_groups_copy), std::move(callback),
-          weak_ptr_factory_.GetWeakPtr()));
+          frame_tree_node_id, std::move(devtools_auction_ids),
+          main_frame_origin, ip_address_space, network_partition_nonce,
+          script_origin, std::move(compression_groups_copy),
+          std::move(callback), weak_ptr_factory_.GetWeakPtr()));
     }
 
     void FetchScoringSignals(
         network::mojom::URLLoaderFactory* url_loader_factory,
         FrameTreeNodeId frame_tree_node_id,
+        base::flat_set<std::string> devtools_auction_ids,
         const url::Origin& main_frame_origin,
         network::mojom::IPAddressSpace ip_address_space,
         base::UnguessableToken network_partition_nonce,
@@ -290,10 +301,10 @@ class TestTrustedSignalsCache : public TrustedSignalsCacheImpl {
           trusted_signals_url, bidding_and_auction_key,
           reinterpret_cast<network::SharedURLLoaderFactory*>(
               url_loader_factory),
-          frame_tree_node_id, main_frame_origin, ip_address_space,
-          network_partition_nonce, script_origin,
-          std::move(compression_groups_copy), std::move(callback),
-          weak_ptr_factory_.GetWeakPtr()));
+          frame_tree_node_id, std::move(devtools_auction_ids),
+          main_frame_origin, ip_address_space, network_partition_nonce,
+          script_origin, std::move(compression_groups_copy),
+          std::move(callback), weak_ptr_factory_.GetWeakPtr()));
     }
 
     const raw_ptr<TestTrustedSignalsCache> cache_;
@@ -534,6 +545,8 @@ void ValidateFetchParams(const FetcherFetchType& fetch,
                          int expected_partition_id) {
   EXPECT_EQ(fetch.url_loader_factory, params.url_loader_factory);
   EXPECT_EQ(fetch.frame_tree_node_id, params.frame_tree_node_id);
+  EXPECT_THAT(fetch.devtools_auction_ids,
+              testing::ElementsAreArray(params.devtools_auction_ids));
   EXPECT_EQ(fetch.main_frame_origin, params.main_frame_origin);
   EXPECT_EQ(fetch.ip_address_space, params.ip_address_space);
   EXPECT_EQ(fetch.trusted_signals_url, params.trusted_signals_url);
@@ -894,6 +907,8 @@ class TrustedSignalsCacheTest : public testing::Test {
     TestCase out;
     out.params1 = CreateDefaultParams();
     out.params2 = CreateDefaultParams();
+    out.params2.devtools_auction_ids = {"devtools_auction_id2"};
+
     return out;
   }
 
@@ -1214,6 +1229,7 @@ class TrustedSignalsCacheTest : public testing::Test {
     BiddingParams merged_bidding_params{
         bidding_params1.url_loader_factory,
         bidding_params1.frame_tree_node_id,
+        bidding_params1.devtools_auction_ids,
         bidding_params1.main_frame_origin,
         bidding_params1.ip_address_space,
         bidding_params1.script_origin,
@@ -1225,6 +1241,9 @@ class TrustedSignalsCacheTest : public testing::Test {
         bidding_params1.trusted_bidding_signals_keys,
         bidding_params1.additional_params.Clone()};
 
+    merged_bidding_params.devtools_auction_ids.insert(
+        bidding_params2.devtools_auction_ids.begin(),
+        bidding_params2.devtools_auction_ids.end());
     merged_bidding_params.interest_group_names.insert(
         bidding_params2.interest_group_names.begin(),
         bidding_params2.interest_group_names.end());
@@ -1265,6 +1284,7 @@ class TrustedSignalsCacheTest : public testing::Test {
     CHECK_EQ(1u, bidding_params.interest_group_names.size());
     auto handle = trusted_signals_cache_->RequestTrustedBiddingSignals(
         bidding_params.url_loader_factory, bidding_params.frame_tree_node_id,
+        *bidding_params.devtools_auction_ids.begin(),
         bidding_params.main_frame_origin, bidding_params.ip_address_space,
         bidding_params.script_origin,
         *bidding_params.interest_group_names.begin(),
@@ -1291,6 +1311,7 @@ class TrustedSignalsCacheTest : public testing::Test {
     int partition_id = -1;
     auto handle = trusted_signals_cache_->RequestTrustedScoringSignals(
         scoring_params.url_loader_factory, scoring_params.frame_tree_node_id,
+        *scoring_params.devtools_auction_ids.begin(),
         scoring_params.main_frame_origin, scoring_params.ip_address_space,
         scoring_params.script_origin, scoring_params.trusted_signals_url,
         scoring_params.coordinator, scoring_params.interest_group_owner,
@@ -2793,14 +2814,14 @@ TYPED_TEST(TrustedSignalsCacheTest, DifferentParamsAfterFetchComplete) {
 // Only one fetch is made.
 TYPED_TEST(TrustedSignalsCacheTest,
            DifferentParamsCancelSecondBeforeFetchStart) {
-  for (const auto& test_case : this->CreateTestCases()) {
+  for (auto& test_case : this->CreateTestCases()) {
     SCOPED_TRACE(test_case.description);
 
     // Start with a clean slate for each test. Not strictly necessary, but
     // limits what's under test a bit.
     this->CreateCache();
-    const auto& params1 = test_case.params1;
-    const auto& params2 = test_case.params2;
+    auto params1 = std::move(test_case.params1);
+    auto params2 = std::move(test_case.params2);
 
     // Don't bother to compare handles here - that's covered by another test.
     auto [handle1, partition_id1] = this->RequestTrustedSignals(params1);
@@ -2817,7 +2838,15 @@ TYPED_TEST(TrustedSignalsCacheTest,
       // both to the caller and to the created fetches.
       case RequestRelation::kDifferentFetches:
       case RequestRelation::kDifferentCompressionGroups: {
-        // Fetch should not be affected by the second (now cancelled) fetch.
+        // Fetch should not be affected by the first (cancelled) fetch, other
+        // than including its devtools auction ID in the different compression
+        // group case.
+        if (test_case.request_relation ==
+            RequestRelation::kDifferentCompressionGroups) {
+          params1.devtools_auction_ids.insert(
+              params2.devtools_auction_ids.begin(),
+              params2.devtools_auction_ids.end());
+        }
         ValidateFetchParams(fetch1, params1,
                             /*expected_compression_group_id=*/0, partition_id1);
         RespondToFetchWithSuccess(fetch1);
@@ -2852,6 +2881,10 @@ TYPED_TEST(TrustedSignalsCacheTest,
         EXPECT_EQ(fetch1.trusted_signals_url, params1.trusted_signals_url);
         ASSERT_EQ(fetch1.compression_groups.size(), 1u);
         EXPECT_EQ(fetch1.compression_groups.begin()->first, 0);
+        EXPECT_THAT(fetch1.devtools_auction_ids,
+                    testing::UnorderedElementsAre(
+                        *params1.devtools_auction_ids.begin(),
+                        *params2.devtools_auction_ids.begin()));
 
         const auto& partitions = fetch1.compression_groups.begin()->second;
         ASSERT_EQ(partitions.size(), 2u);
@@ -2912,14 +2945,14 @@ TYPED_TEST(TrustedSignalsCacheTest,
 // partition 1 request.
 TYPED_TEST(TrustedSignalsCacheTest,
            DifferentParamsCancelFirstBeforeFetchStart) {
-  for (const auto& test_case : this->CreateTestCases()) {
+  for (auto& test_case : this->CreateTestCases()) {
     SCOPED_TRACE(test_case.description);
 
     // Start with a clean slate for each test. Not strictly necessary, but
     // limits what's under test a bit.
     this->CreateCache();
-    const auto& params1 = test_case.params1;
-    const auto& params2 = test_case.params2;
+    auto params1 = std::move(test_case.params1);
+    auto params2 = std::move(test_case.params2);
 
     // Don't bother to compare handles here - that's covered by another test.
     auto [handle1, partition_id1] = this->RequestTrustedSignals(params1);
@@ -2936,7 +2969,15 @@ TYPED_TEST(TrustedSignalsCacheTest,
         // same both to the caller and to the created fetches.
       case RequestRelation::kDifferentFetches:
       case RequestRelation::kDifferentCompressionGroups: {
-        // Fetch should not be affected by the first (cancelled) fetch.
+        // Fetch should not be affected by the first (cancelled) fetch, other
+        // than including its devtools auction ID in the different compression
+        // group case.
+        if (test_case.request_relation ==
+            RequestRelation::kDifferentCompressionGroups) {
+          params2.devtools_auction_ids.insert(
+              params1.devtools_auction_ids.begin(),
+              params1.devtools_auction_ids.end());
+        }
         ValidateFetchParams(fetch1, params2,
                             /*expected_compression_group_id=*/0, partition_id2);
         RespondToFetchWithSuccess(fetch1);
@@ -2969,6 +3010,10 @@ TYPED_TEST(TrustedSignalsCacheTest,
         EXPECT_EQ(fetch1.trusted_signals_url, params2.trusted_signals_url);
         ASSERT_EQ(fetch1.compression_groups.size(), 1u);
         EXPECT_EQ(fetch1.compression_groups.begin()->first, 0);
+        EXPECT_THAT(fetch1.devtools_auction_ids,
+                    testing::UnorderedElementsAre(
+                        *params1.devtools_auction_ids.begin(),
+                        *params2.devtools_auction_ids.begin()));
 
         const auto& partitions = fetch1.compression_groups.begin()->second;
         ASSERT_EQ(partitions.size(), 2u);
