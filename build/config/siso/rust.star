@@ -87,9 +87,10 @@ def __rust_link_handler(ctx, cmd):
             linker = arg.removeprefix("-Clinker=")
             if linker.startswith("\""):
                 linker = linker[1:len(linker) - 1]
+            linker_base = path.dir(path.dir(linker))
 
             # TODO(crbug.com/380798907): expand input_deps, instead of using label?
-            inputs.append(ctx.fs.canonpath(linker) + ":link")
+            inputs.append(ctx.fs.canonpath(linker_base) + ":link")
     if use_android_toolchain and target:
         # e.g. target=aarch64-linux-android26
         android_ver = ""
