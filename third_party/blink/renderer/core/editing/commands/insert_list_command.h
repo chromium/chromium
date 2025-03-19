@@ -72,10 +72,12 @@ class CORE_EXPORT InsertListCommand final : public CompositeEditCommand {
 
   // This function will return the node which we are listifying. This is required
   // to get |listified_placeholder| in ToggleSelectedListItem function.
-  Node* ListifyParagraph(const VisiblePosition& original_start,
+  Node* ListifyParagraph(const VisibleSelection& initial_selection,
+                         const VisiblePosition& original_start,
                          const HTMLQualifiedName& list_tag,
                          EditingState*);
-  void MoveParagraphOverPositionIntoEmptyListItem(const VisiblePosition&,
+  void MoveParagraphOverPositionIntoEmptyListItem(const VisibleSelection&,
+                                                  const VisiblePosition&,
                                                   HTMLLIElement*,
                                                   EditingState*);
 

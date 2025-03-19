@@ -3967,6 +3967,11 @@
       status: "stable",
     },
     {
+      // See https://crbug.com/395544401
+      name: "SelectionUpdateToInitialSelectionInListify",
+      status: "stable",
+    },
+    {
       // Killswitch M136.
       name: "SelectionVisibilityAfterPaint",
       status: "stable",
