@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_GLIC_TEST_UTIL_H_
-#define CHROME_BROWSER_GLIC_GLIC_TEST_UTIL_H_
+#ifndef CHROME_BROWSER_GLIC_TEST_SUPPORT_GLIC_TEST_UTIL_H_
+#define CHROME_BROWSER_GLIC_TEST_SUPPORT_GLIC_TEST_UTIL_H_
 
 class Profile;
 
@@ -19,4 +19,4 @@ void SetFRECompletion(Profile* profile, bool completed);
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_GLIC_TEST_UTIL_H_
+#endif  // CHROME_BROWSER_GLIC_TEST_SUPPORT_GLIC_TEST_UTIL_H_

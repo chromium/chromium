@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_INTERACTIVE_GLIC_TEST_H_
-#define CHROME_BROWSER_GLIC_INTERACTIVE_GLIC_TEST_H_
+#ifndef CHROME_BROWSER_GLIC_TEST_SUPPORT_INTERACTIVE_GLIC_TEST_H_
+#define CHROME_BROWSER_GLIC_TEST_SUPPORT_INTERACTIVE_GLIC_TEST_H_
 
 #include <map>
 #include <sstream>
@@ -16,10 +16,10 @@
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/glic/glic_test_environment.h"
-#include "chrome/browser/glic/glic_test_util.h"
 #include "chrome/browser/glic/host/glic_cookie_synchronizer.h"
-#include "chrome/browser/glic/interactive_test_util.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
+#include "chrome/browser/glic/test_support/glic_test_util.h"
+#include "chrome/browser/glic/test_support/interactive_test_util.h"
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -402,4 +402,4 @@ using InteractiveGlicFeaturePromoTest =
 
 }  // namespace glic::test
 
-#endif  // CHROME_BROWSER_GLIC_INTERACTIVE_GLIC_TEST_H_
+#endif  // CHROME_BROWSER_GLIC_TEST_SUPPORT_INTERACTIVE_GLIC_TEST_H_

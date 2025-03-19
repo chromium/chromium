@@ -186,14 +186,14 @@ mojom("mojo_bindings") {
 source_set("test_support") {
   testonly = true
   sources = [
-    "glic_test_environment.cc",
-    "glic_test_environment.h",
-    "glic_test_util.cc",
-    "glic_test_util.h",
-    "interactive_glic_test.cc",
-    "interactive_glic_test.h",
-    "interactive_test_util.cc",
-    "interactive_test_util.h",
+    "test_support/glic_test_environment.cc",
+    "test_support/glic_test_environment.h",
+    "test_support/glic_test_util.cc",
+    "test_support/glic_test_util.h",
+    "test_support/interactive_glic_test.cc",
+    "test_support/interactive_glic_test.h",
+    "test_support/interactive_test_util.cc",
+    "test_support/interactive_test_util.h",
   ]
   deps = [
     ":glic",
@@ -268,10 +268,10 @@ source_set("interactive_ui_tests") {
     "browser_ui/glic_border_view_interactive_uitest.cc",
     "browser_ui/glic_tab_indicator_helper_interactive_uitest.cc",
     "fre/glic_fre_controller_interactive_uitest.cc",
-    "glic_permission_enforcement_interactive_uitest.cc",
     "glic_settings_util_interactive_uitest.cc",
     "host/glic_annotation_manager_interactive_uitest.cc",
     "host/glic_api_uitest.cc",
+    "host/glic_permission_enforcement_interactive_uitest.cc",
     "host/glic_ui_interactive_uitest.cc",
     "widget/glic_window_animator_interactive_uitest.cc",
     "widget/glic_window_controller_interactive_uitest.cc",
