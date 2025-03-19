@@ -5,6 +5,8 @@
 #ifndef BASE_CONTAINERS_LINKED_LIST_H_
 #define BASE_CONTAINERS_LINKED_LIST_H_
 
+#include <utility>
+
 #include "base/base_export.h"
 #include "base/memory/raw_ptr_exclusion.h"
 
@@ -82,6 +84,9 @@
 
 namespace base {
 
+template <typename T>
+class LinkedList;
+
 namespace internal {
 
 // Base class for LinkNode<T> type
@@ -106,6 +111,10 @@ class BASE_EXPORT LinkNodeBase {
 
   LinkNodeBase* previous_base() const { return previous_; }
   LinkNodeBase* next_base() const { return next_; }
+
+  // Make `previous_` and `next_` point to `this`. Can only be called when
+  // `next_` and `previous_` are nullptr or already point to `this`.
+  void MakeSelfReferencingBase();
 
  private:
   // `previous_` and `next_` are not a raw_ptr<...> for performance reasons:
@@ -147,6 +156,12 @@ class LinkNode : public internal::LinkNodeBase {
   const T* value() const { return static_cast<const T*>(this); }
 
   T* value() { return static_cast<T*>(this); }
+
+ private:
+  friend class LinkedList<T>;
+
+  // Make this node point to itself like a LinkedList root node.
+  void MakeSelfReferencing() { MakeSelfReferencingBase(); }
 };
 
 template <typename T>
@@ -161,9 +176,10 @@ class LinkedList {
 
   // Use move constructor with care. Returning a LinkedList from a function may
   // be unsafe if the nodes are allocated on the stack. This operation is O(1)
-  // as only head and tail nodes are modified. `other` is left in an invalid
-  // state (head() and tail() are null).
-  LinkedList(LinkedList&& other) = default;
+  // as only head and tail nodes are modified. `other` is left empty.
+  LinkedList(LinkedList&& other) : root_(std::move(other.root_)) {
+    other.root_.MakeSelfReferencing();
+  }
 
   // Appends |e| to the end of the linked list.
   void Append(LinkNode<T>* e) { e->InsertBefore(&root_); }

@@ -368,6 +368,12 @@ TEST(LinkedList, LinkedListMoveConstructor) {
     LinkedList<Node> new_list = std::move(original_list);
 
     ExpectListContents(new_list, expected_contents);
+
+    EXPECT_TRUE(original_list.empty());  // NOLINT(bugprone-use-after-move)
+    // NOLINTNEXTLINE(bugprone-use-after-move)
+    EXPECT_EQ(original_list.head(), original_list.tail());
+    // NOLINTNEXTLINE(bugprone-use-after-move)
+    EXPECT_EQ(original_list.tail(), original_list.end());
   }
 }
 

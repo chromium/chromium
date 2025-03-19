@@ -63,4 +63,15 @@ void LinkNodeBase::InsertAfterBase(LinkNodeBase* e) {
   e->next_ = this;
 }
 
+void LinkNodeBase::MakeSelfReferencingBase() {
+  if (next_ == this) {
+    CHECK_EQ(previous_, this);
+    return;
+  }
+  CHECK_EQ(next_, nullptr);
+  CHECK_EQ(previous_, nullptr);
+  next_ = this;
+  previous_ = this;
+}
+
 }  // namespace base::internal
