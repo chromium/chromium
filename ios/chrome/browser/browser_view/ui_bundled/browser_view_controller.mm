@@ -287,8 +287,6 @@ enum HeaderBehaviour {
 // Coordinator for the popup menus.
 @property(nonatomic, strong) PopupMenuCoordinator* popupMenuCoordinator;
 
-@property(nonatomic, strong) BubblePresenter* bubblePresenter;
-
 // Presenter used to display accessories over the toolbar (e.g. Find In Page).
 @property(nonatomic, strong)
     ToolbarAccessoryPresenter* toolbarAccessoryPresenter;
@@ -807,8 +805,6 @@ enum HeaderBehaviour {
     self.legacyTabStripCoordinator = nil;
   }
   self.tabStripView = nil;
-
-  _bubblePresenter = nil;
 
   [self.contentArea removeGestureRecognizer:self.contentAreaGestureRecognizer];
 

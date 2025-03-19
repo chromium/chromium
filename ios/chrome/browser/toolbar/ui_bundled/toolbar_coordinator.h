@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_height_delegate.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_ui_updating.h"
 
-@class BubblePresenter;
 @protocol OmniboxPopupPresenterDelegate;
 @protocol OmniboxFocusDelegate;
 @protocol SharingPositioner;
@@ -38,8 +37,6 @@
     popupPresenterDelegate;
 /// Delegate that handles the toolbars height.
 @property(nonatomic, weak) id<ToolbarHeightDelegate> toolbarHeightDelegate;
-// Bubble presenter for displaying IPH bubbles relating to the toolbars.
-@property(nonatomic, strong) BubblePresenter* bubblePresenter;
 
 /// Initializes this coordinator with its `browser` and a nil base view
 /// controller.

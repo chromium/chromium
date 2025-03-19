@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 
-@class BubblePresenter;
 @protocol BrowserCoordinatorCommands;
 @protocol EditViewAnimatee;
 @protocol FakeboxButtonsSnapshotProvider;
@@ -31,9 +30,6 @@
 
 @property(nonatomic, weak) id<OmniboxPopupPresenterDelegate>
     popupPresenterDelegate;
-
-// Bubble presenter for displaying IPH bubbles relating to the toolbars.
-@property(nonatomic, strong) BubblePresenter* bubblePresenter;
 
 // Initializes this Coordinator with its `browser` and a nil base view
 // controller.
