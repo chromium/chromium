@@ -383,6 +383,13 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       bool enabled,
       SetTabContextPermissionStateCallback callback) override {
     pref_service_->SetBoolean(prefs::kGlicTabContextEnabled, enabled);
+    if (enabled) {
+      base::RecordAction(
+          base::UserMetricsAction("GlicTabContextPermissionEnabled"));
+    } else {
+      base::RecordAction(
+          base::UserMetricsAction("GlicTabContextPermissionDisabled"));
+    }
     std::move(callback).Run();
   }
 

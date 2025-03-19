@@ -12426,6 +12426,20 @@ should be able to be added at any place in this file.
   <description>Tracks when glic webui crashes.</description>
 </action>
 
+<action name="GlicTabContextPermissionDisabled">
+  <owner>erikchen@chromium.org</owner>
+  <owner>pauladedeji@google.com</owner>
+  <description>
+    Tracks when glic tab context permission is disabled.
+  </description>
+</action>
+
+<action name="GlicTabContextPermissionEnabled">
+  <owner>erikchen@chromium.org</owner>
+  <owner>pauladedeji@google.com</owner>
+  <description>Tracks when glic tab context permission is enabled.</description>
+</action>
+
 <action name="GlicWebClientSessionEnd">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
