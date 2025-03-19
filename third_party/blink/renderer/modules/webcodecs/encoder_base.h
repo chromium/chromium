@@ -136,10 +136,16 @@ class MODULES_EXPORT EncoderBase
 
   virtual bool CanReconfigure(InternalConfigType& original_config,
                               InternalConfigType& new_config) = 0;
-  virtual InternalConfigType* ParseConfig(const ConfigType*,
-                                          ExceptionState&) = 0;
+  virtual InternalConfigType* OnNewConfigure(const ConfigType*,
+                                             ExceptionState&) = 0;
   virtual bool VerifyCodecSupport(InternalConfigType*,
                                   String* js_error_message) = 0;
+
+  // Called for each new input passed to encode(). If an exception is thrown on
+  // `exception_state` the encode() call will be aborted and the exception will
+  // be passed back to the caller.
+  virtual void OnNewEncode(InputType* input,
+                           ExceptionState& exception_state) = 0;
 
   // ReclaimableCodec implementation.
   void OnCodecReclaimed(DOMException*) override;
