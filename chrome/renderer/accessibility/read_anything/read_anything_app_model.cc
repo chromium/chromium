@@ -431,22 +431,6 @@ void ReadAnythingAppModel::AddTree(
   tree_infos_[tree_id] = std::move(tree_info);
 }
 
-void ReadAnythingAppModel::EraseTree(const ui::AXTreeID& tree_id) {
-  auto it = tree_infos_.find(tree_id);
-  if (it == tree_infos_.end()) {
-    return;
-  }
-  ui::AXTree* ax_tree = it->second->manager->ax_tree();
-  for (auto& observer : observers_) {
-    observer.OnTreeRemoved(ax_tree);
-  }
-
-  tree_infos_.erase(it);
-
-  // Ensure any pending updates associated with the erased tree are removed.
-  pending_updates_map_.erase(tree_id);
-}
-
 void ReadAnythingAppModel::AddUrlInformationForTreeId(
     const ui::AXTreeID& tree_id) {
   // If the tree isn't yet created, do nothing.
@@ -598,20 +582,30 @@ void ReadAnythingAppModel::AccessibilityEventReceived(
 }
 
 void ReadAnythingAppModel::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
-  // OnAXTreeDestroyed is called whenever the AXActionHandler in the browser
-  // learns that an AXTree was destroyed. This could be from any tab, not just
-  // the active one; therefore many tree_ids will not be found in
-  // tree_infos_.
-  if (!ContainsTree(tree_id)) {
+  // `OnAXTreeDestroyed()` is called whenever the `AXActionHandler` in the
+  // browser learns that an `AXTree` was destroyed. This could be from any tab,
+  // not just the active one; therefore many `tree_id`s will not be found in
+  // `tree_infos_`.
+  const auto it = tree_infos_.find(tree_id);
+  if (it == tree_infos_.end()) {
     return;
   }
+
   if (active_tree_id_ == tree_id) {
     // TODO(crbug.com/40802192): If distillation is in progress, cancel the
     // distillation request.
     active_tree_id_ = ui::AXTreeIDUnknown();
-    SetUkmSourceId(ukm::kInvalidSourceId);
   }
-  EraseTree(tree_id);
+
+  for (ui::AXTree* const ax_tree = it->second->manager->ax_tree();
+       auto& observer : observers_) {
+    observer.OnTreeRemoved(ax_tree);
+  }
+
+  tree_infos_.erase(it);
+
+  // Any pending updates associated with the erased tree should also be dropped.
+  pending_updates_map_.erase(tree_id);
 }
 
 const ukm::SourceId& ReadAnythingAppModel::UkmSourceId() {
@@ -691,10 +685,6 @@ ReadAnythingAppModel::GetPendingUpdatesForTesting() {
 std::map<ui::AXTreeID, std::unique_ptr<ReadAnythingAppModel::AXTreeInfo>>*
 ReadAnythingAppModel::GetTreesForTesting() {
   return &tree_infos_;
-}
-
-void ReadAnythingAppModel::EraseTreeForTesting(const ui::AXTreeID& tree_id) {
-  EraseTree(tree_id);
 }
 
 void ReadAnythingAppModel::OnScroll(bool on_selection,

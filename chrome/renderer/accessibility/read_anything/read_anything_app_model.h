@@ -264,8 +264,6 @@ class ReadAnythingAppModel {
   std::map<ui::AXTreeID, std::unique_ptr<ReadAnythingAppModel::AXTreeInfo>>*
   GetTreesForTesting();
 
-  void EraseTreeForTesting(const ui::AXTreeID& tree_id);
-
   void AdjustTextSize(int increment);
   void ResetTextSize();
   void ToggleLinksEnabled();
@@ -279,8 +277,6 @@ class ReadAnythingAppModel {
   void RemoveObserver(ModelObserver* observer);
 
  private:
-  void EraseTree(const ui::AXTreeID& tree_id);
-
   void ResetSelection();
   void UpdateSelection();
   void ComputeSelectionNodeIds();
