@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("device_orientation") {
+source_set("ui_bundled") {
   sources = [
     "portait_orientation_manager.h",
     "scoped_force_portrait_orientation.h",
@@ -16,7 +16,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "scoped_force_portrait_orientation_unittest.mm" ]
   deps = [
-    ":device_orientation",
+    ":ui_bundled",
     "//testing/gtest",
   ]
 }

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/device_orientation/scoped_force_portrait_orientation.h"
+#import "ios/chrome/browser/device_orientation/ui_bundled/scoped_force_portrait_orientation.h"
 
-#import "ios/chrome/browser/ui/device_orientation/portait_orientation_manager.h"
+#import "ios/chrome/browser/device_orientation/ui_bundled/portait_orientation_manager.h"
 #import "ui/base/device_form_factor.h"
 
 ScopedForcePortraitOrientation::ScopedForcePortraitOrientation(
