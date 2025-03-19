@@ -9,8 +9,10 @@ import android.util.Pair;
 
 import org.chromium.base.Token;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.chrome.browser.multiwindow.WindowId;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -30,24 +32,28 @@ import java.util.List;
  * <p>This is the highest level of the hierarchy of Tab containers.
  */
 public interface TabWindowManager {
+    /**
+     * An index that represents the invalid state (i.e. when the window wasn't found in the list).
+     */
+    @WindowId int INVALID_WINDOW_ID = -1;
+
     // Maximum number of TabModelSelectors since Android N that supports split screen.
-    public static final int MAX_SELECTORS_LEGACY = 3;
+    int MAX_SELECTORS_LEGACY = 3;
 
     // Maximum number of TabModelSelectors since Android S that supports multiple instances of
     // ChromeTabbedActivity.
-    public static final int MAX_SELECTORS_S = 5;
+    int MAX_SELECTORS_S = 5;
 
     // Maximum number of TabModelSelectors. Set high enough that it is functionally unlimited.
-    public static final int MAX_SELECTORS = 1000;
+    int MAX_SELECTORS = 1000;
 
-    static final String ASSERT_INDICES_MATCH_HISTOGRAM_NAME =
-            "Android.MultiWindowMode.AssertIndicesMatch";
-    static final String ASSERT_INDICES_MATCH_HISTOGRAM_SUFFIX_NOT_REASSIGNED = ".NotReassigned";
-    static final String ASSERT_INDICES_MATCH_HISTOGRAM_SUFFIX_REASSIGNED = ".Reassigned";
+    String ASSERT_INDICES_MATCH_HISTOGRAM_NAME = "Android.MultiWindowMode.AssertIndicesMatch";
+    String ASSERT_INDICES_MATCH_HISTOGRAM_SUFFIX_NOT_REASSIGNED = ".NotReassigned";
+    String ASSERT_INDICES_MATCH_HISTOGRAM_SUFFIX_REASSIGNED = ".Reassigned";
 
-    public interface Observer {
+    interface Observer {
         /** Called when a tab model selector is added for an activity opening. */
-        public void onTabModelSelectorAdded(TabModelSelector selector);
+        void onTabModelSelectorAdded(TabModelSelector selector);
     }
 
     /** Add an observer. */
@@ -57,14 +63,14 @@ public interface TabWindowManager {
     void removeObserver(Observer observer);
 
     /**
-     * @return The maximum number of simultaneous TabModelSelector instances in this Application.
+     * Returns the maximum number of simultaneous TabModelSelector instances in this Application.
      */
     int getMaxSimultaneousSelectors();
 
     /**
      * Called to request a {@link TabModelSelector} based on {@code index}. Note that the {@link
      * TabModelSelector} returned might not actually be the one related to {@code index} and {@link
-     * #getIndexForWindow(Activity)} should be called to grab the actual index if required.
+     * #getIdForWindow(Activity)} should be called to grab the actual index if required.
      *
      * @param activity The activity to bind the selector to.
      * @param modalDialogManager The {@link ModalDialogManager} for the activity.
@@ -72,43 +78,34 @@ public interface TabWindowManager {
      * @param tabCreatorManager An instance of {@link TabCreatorManager}.
      * @param nextTabPolicySupplier An instance of {@link NextTabPolicySupplier}.
      * @param mismatchedIndicesHandler An instance of {@link MismatchedIndicesHandler}.
-     * @param index The index of the requested {@link TabModelSelector}. Not guaranteed to be the
-     *     index of the {@link TabModelSelector} returned.
-     * @return {@link Pair} of the index and the {@link TabModelSelector} assigned to that index, or
-     *     {@code null} if there are too many {@link TabModelSelector}s already built.
+     * @param windowId The suggested id of the window that the selector should correspond to. Not
+     *     guaranteed to be the index of the {@link TabModelSelector} returned.
+     * @return {@link Pair} of the window id and the assigned {@link TabModelSelector}, or {@code
+     *     null} if there are too many {@link TabModelSelector}s already built.
      */
-    Pair<Integer, TabModelSelector> requestSelector(
+    Pair<@WindowId Integer, TabModelSelector> requestSelector(
             Activity activity,
             ModalDialogManager modalDialogManager,
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             TabCreatorManager tabCreatorManager,
             NextTabPolicySupplier nextTabPolicySupplier,
             MismatchedIndicesHandler mismatchedIndicesHandler,
-            int index);
-
-    /**
-     * An index that represents the invalid state (i.e. when the window wasn't found in the list).
-     */
-    int INVALID_WINDOW_INDEX = -1;
+            @WindowId int windowId);
 
     /**
      * Finds the current index of the {@link TabModelSelector} bound to {@code window}.
-     * @param activity The {@link Activity} to find the index of the {@link TabModelSelector}
-     *                 for.  This uses the underlying {@link Activity} stored in the
-     *                 {@link WindowAndroid}.
-     * @return         The index of the {@link TabModelSelector} or {@link #INVALID_WINDOW_INDEX} if
-     *                 not found.
+     *
+     * @param activity The {@link Activity} to find the index of the {@link TabModelSelector} for.
+     *     This uses the underlying {@link Activity} stored in the {@link WindowAndroid}.
+     * @return The index of the {@link TabModelSelector} or {@link #INVALID_WINDOW_ID} if not found.
      */
-    int getIndexForWindow(Activity activity);
+    @WindowId
+    int getIdForWindow(Activity activity);
 
-    /**
-     * @return The number of {@link TabModelSelector}s currently assigned to {@link Activity}s.
-     */
+    /** Returns the number of {@link TabModelSelector}s currently assigned to {@link Activity}s. */
     int getNumberOfAssignedTabModelSelectors();
 
-    /**
-     * @return The total number of incognito tabs across all tab model selectors.
-     */
+    /** Returns the total number of incognito tabs across all tab model selectors. */
     int getIncognitoTabCount();
 
     /**
@@ -123,14 +120,14 @@ public interface TabWindowManager {
      * @param tabId The ID of the tab in question.
      * @return Specified {@link Tab} or {@code null} if the {@link Tab} is not found.
      */
-    Tab getTabById(int tabId);
+    Tab getTabById(@TabId int tabId);
 
     /**
      * @param tabId The ID of the tab in question.
      * @param windowId The ID of the window that holds the tab.
      * @return Specified {@link Tab} or {@code null} if the {@link Tab} is not found.
      */
-    Tab getTabById(int tabId, int windowId);
+    Tab getTabById(@TabId int tabId, @WindowId int windowId);
 
     /**
      * @param windowId The ID of the window that holds the tab group.
@@ -138,24 +135,24 @@ public interface TabWindowManager {
      * @param isIncognito Whether the grouped tabs are incognito tabs.
      * @return A list of tabs associated with the root ID, or {@code null} if no tabs are found.
      */
-    List<Tab> getGroupedTabsByWindow(int windowId, Token tabGroupId, boolean isIncognito);
+    List<Tab> getGroupedTabsByWindow(@WindowId int windowId, Token tabGroupId, boolean isIncognito);
 
     /**
-     * Finds the {@link TabModelSelector} bound to an Activity instance of a given index.
+     * Finds the {@link TabModelSelector} bound to an Activity instance of a given id.
      *
-     * @param index The index of {@link TabModelSelector} to get.
+     * @param windowId The window id of {@link TabModelSelector} to get.
      * @return Specified {@link TabModelSelector} or {@code null} if not found.
      */
-    TabModelSelector getTabModelSelectorById(int index);
+    TabModelSelector getTabModelSelectorById(@WindowId int windowId);
 
     /** Gets a Collection of all TabModelSelectors. */
     Collection<TabModelSelector> getAllTabModelSelectors();
 
     /** Returns whether the tab with the given id can safely be deleted. */
-    boolean canTabStateBeDeleted(int tabId);
+    boolean canTabStateBeDeleted(@TabId int tabId);
 
     /** Returns whether the tab with the given id can safely be deleted. */
-    boolean canTabThumbnailBeDeleted(int tabId);
+    boolean canTabThumbnailBeDeleted(@TabId int tabId);
 
     /** Sets the given archived {@link TabModelSelector} singleton instance. */
     void setArchivedTabModelSelector(TabModelSelector archivedTabModelSelector);

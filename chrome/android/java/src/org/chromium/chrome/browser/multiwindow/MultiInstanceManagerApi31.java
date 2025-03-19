@@ -640,7 +640,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     static Activity getActivityById(int id) {
         TabWindowManager windowManager = TabWindowManagerSingleton.getInstance();
         for (Activity activity : getAllRunningActivities()) {
-            if (id == windowManager.getIndexForWindow(activity)) return activity;
+            if (id == windowManager.getIdForWindow(activity)) return activity;
         }
         return null;
     }
@@ -807,7 +807,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         var windowIdsOfRunningTabbedActivities = new SparseIntArray();
         for (Activity activity : activities) {
             if (!(activity instanceof ChromeTabbedActivity)) continue;
-            int windowId = TabWindowManagerSingleton.getInstance().getIndexForWindow(activity);
+            int windowId = TabWindowManagerSingleton.getInstance().getIdForWindow(activity);
             windowIdsOfRunningTabbedActivities.put(windowId, windowId);
         }
         return windowIdsOfRunningTabbedActivities;

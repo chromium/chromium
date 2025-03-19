@@ -198,7 +198,7 @@ public class TabDragSource implements View.OnDragListener {
         TabGroupModelFilter tabGroupModelFilter =
                 mTabModelSelector.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter();
         boolean isTabInGroup = tabGroupModelFilter.isTabInTabGroup(tabBeingDragged);
-        int windowId = TabWindowManagerSingleton.getInstance().getIndexForWindow(getActivity());
+        int windowId = TabWindowManagerSingleton.getInstance().getIdForWindow(getActivity());
 
         // Build shared state with all info.
         ChromeDropDataAndroid dropData =
@@ -259,7 +259,7 @@ public class TabDragSource implements View.OnDragListener {
         TabGroupModelFilter tabGroupModelFilter =
                 mTabModelSelector.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter();
         List<Tab> groupedTabs = tabGroupModelFilter.getTabsInGroup(tabGroupId);
-        int windowId = TabWindowManagerSingleton.getInstance().getIndexForWindow(getActivity());
+        int windowId = TabWindowManagerSingleton.getInstance().getIdForWindow(getActivity());
         TabGroupMetadata metadata =
                 TabGroupMetadataExtractor.extractTabGroupMetadata(
                         groupedTabs, windowId, mTabModelSelector.getCurrentTabId());

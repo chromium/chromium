@@ -137,7 +137,7 @@ public class TabWindowManagerTest {
         assertEquals(0, assignment0.first.intValue());
         TabModelSelector selector0 = assignment0.second;
         Assert.assertNotNull("Was not able to build the TabModelSelector", selector0);
-        assertEquals("Unexpected model index", 0, mSubject.getIndexForWindow(activity0));
+        assertEquals("Unexpected model index", 0, mSubject.getIdForWindow(activity0));
 
         destroyActivity(activityController0);
     }
@@ -176,8 +176,8 @@ public class TabWindowManagerTest {
         assertEquals(1, assignment1.first.intValue());
         Assert.assertNotNull("Was not able to build the TabModelSelector", assignment0.second);
         Assert.assertNotNull("Was not able to build the TabModelSelector", assignment1.second);
-        assertEquals("Unexpected model index", 0, mSubject.getIndexForWindow(activity0));
-        assertEquals("Unexpected model index", 1, mSubject.getIndexForWindow(activity1));
+        assertEquals("Unexpected model index", 0, mSubject.getIdForWindow(activity0));
+        assertEquals("Unexpected model index", 1, mSubject.getIdForWindow(activity1));
 
         destroyActivity(activityController0);
         destroyActivity(activityController1);
@@ -263,8 +263,8 @@ public class TabWindowManagerTest {
         assertEquals(1, assignment1.first.intValue());
         Assert.assertNotNull("Was not able to build the TabModelSelector", assignment0.second);
         Assert.assertNotNull("Was not able to build the TabModelSelector", assignment1.second);
-        assertEquals("Unexpected model index", 0, mSubject.getIndexForWindow(activity0));
-        assertEquals("Unexpected model index", 1, mSubject.getIndexForWindow(activity1));
+        assertEquals("Unexpected model index", 0, mSubject.getIdForWindow(activity0));
+        assertEquals("Unexpected model index", 1, mSubject.getIdForWindow(activity1));
 
         destroyActivity(activityController0);
         destroyActivity(activityController1);
@@ -308,8 +308,8 @@ public class TabWindowManagerTest {
         assertEquals(0, assignment1.first.intValue());
         Assert.assertNotNull("Was not able to build the TabModelSelector", assignment0.second);
         Assert.assertNotNull("Was not able to build the TabModelSelector", assignment1.second);
-        assertEquals("Unexpected model index", 2, mSubject.getIndexForWindow(activity0));
-        assertEquals("Unexpected model index", 0, mSubject.getIndexForWindow(activity1));
+        assertEquals("Unexpected model index", 2, mSubject.getIdForWindow(activity0));
+        assertEquals("Unexpected model index", 0, mSubject.getIdForWindow(activity1));
 
         destroyActivity(activityController0);
         destroyActivity(activityController1);
@@ -337,14 +337,14 @@ public class TabWindowManagerTest {
 
         assertEquals(0, assignment0.first.intValue());
         Assert.assertNotNull("Was not able to build the TabModelSelector", assignment0.second);
-        assertEquals("Unexpected model index", 0, mSubject.getIndexForWindow(activity0));
+        assertEquals("Unexpected model index", 0, mSubject.getIdForWindow(activity0));
 
         destroyActivity(activityController0);
 
         assertEquals(
                 "Still found model",
-                TabWindowManager.INVALID_WINDOW_INDEX,
-                mSubject.getIndexForWindow(activity0));
+                TabWindowManager.INVALID_WINDOW_ID,
+                mSubject.getIdForWindow(activity0));
     }
 
     /**
@@ -369,14 +369,14 @@ public class TabWindowManagerTest {
 
         assertEquals(0, assignment0.first.intValue());
         Assert.assertNotNull("Was not able to build the TabModelSelector", assignment0.second);
-        assertEquals("Unexpected model index", 0, mSubject.getIndexForWindow(activity0));
+        assertEquals("Unexpected model index", 0, mSubject.getIdForWindow(activity0));
 
         destroyActivity(activityController0);
 
         assertEquals(
                 "Still found model",
-                TabWindowManager.INVALID_WINDOW_INDEX,
-                mSubject.getIndexForWindow(activity0));
+                TabWindowManager.INVALID_WINDOW_ID,
+                mSubject.getIdForWindow(activity0));
 
         ActivityController<Activity> activityController1 = createActivity();
         Activity activity1 = activityController1.get();
@@ -392,7 +392,7 @@ public class TabWindowManagerTest {
 
         assertEquals(0, assignment1.first.intValue());
         Assert.assertNotNull("Was not able to build the TabModelSelector", assignment1.second);
-        assertEquals("Unexpected model index", 0, mSubject.getIndexForWindow(activity1));
+        assertEquals("Unexpected model index", 0, mSubject.getIdForWindow(activity1));
 
         destroyActivity(activityController1);
     }
@@ -435,15 +435,15 @@ public class TabWindowManagerTest {
         assertEquals(1, assignment1.first.intValue());
         Assert.assertNotNull("Was not able to build the TabModelSelector", assignment0.second);
         Assert.assertNotNull("Was not able to build the TabModelSelector", assignment1.second);
-        assertEquals("Unexpected model index", 0, mSubject.getIndexForWindow(activity0));
-        assertEquals("Unexpected model index", 1, mSubject.getIndexForWindow(activity1));
+        assertEquals("Unexpected model index", 0, mSubject.getIdForWindow(activity0));
+        assertEquals("Unexpected model index", 1, mSubject.getIdForWindow(activity1));
 
         destroyActivity(activityController1);
 
         assertEquals(
                 "Still found model",
-                TabWindowManager.INVALID_WINDOW_INDEX,
-                mSubject.getIndexForWindow(activity1));
+                TabWindowManager.INVALID_WINDOW_ID,
+                mSubject.getIdForWindow(activity1));
 
         ActivityController<Activity> activityController2 = createActivity();
         Activity activity2 = activityController2.get();
@@ -459,8 +459,8 @@ public class TabWindowManagerTest {
 
         assertEquals(1, assignment2.first.intValue());
         Assert.assertNotNull("Was not able to build the TabModelSelector", assignment2.second);
-        assertEquals("Unexpected model index", 0, mSubject.getIndexForWindow(activity0));
-        assertEquals("Unexpected model index", 1, mSubject.getIndexForWindow(activity2));
+        assertEquals("Unexpected model index", 0, mSubject.getIdForWindow(activity0));
+        assertEquals("Unexpected model index", 1, mSubject.getIdForWindow(activity2));
 
         destroyActivity(activityController0);
         destroyActivity(activityController2);
@@ -710,12 +710,12 @@ public class TabWindowManagerTest {
         // requested index 0.
         assertEquals(
                 "Index for activity0 should be cleared.",
-                TabWindowManager.INVALID_WINDOW_INDEX,
-                mSubject.getIndexForWindow(activity0));
+                TabWindowManager.INVALID_WINDOW_ID,
+                mSubject.getIdForWindow(activity0));
         assertEquals(
                 "Requested index for activity1 should be used.",
                 0,
-                mSubject.getIndexForWindow(activity1));
+                mSubject.getIdForWindow(activity1));
 
         destroyActivity(activityController0);
         destroyActivity(activityController1);

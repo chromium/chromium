@@ -367,7 +367,7 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
                         isActivityAtRequestedIndexInSameTask);
         if (!handled) return originallyAssignedIndexForNewActivity;
         int releasedIndex = clearSelectorAndIndexAssignments(activityAtRequestedIndex);
-        if (releasedIndex == INVALID_WINDOW_INDEX) {
+        if (releasedIndex == INVALID_WINDOW_ID) {
             // If the index mapping is already cleared for |activityAtRequestedIndex| by this time,
             // simply return the requested index.
             return requestedIndex;
@@ -378,12 +378,12 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
     }
 
     @Override
-    public int getIndexForWindow(Activity activity) {
-        if (activity == null) return TabWindowManager.INVALID_WINDOW_INDEX;
+    public int getIdForWindow(Activity activity) {
+        if (activity == null) return TabWindowManager.INVALID_WINDOW_ID;
         TabModelSelector selector = mAssignments.get(activity);
-        if (selector == null) return TabWindowManager.INVALID_WINDOW_INDEX;
+        if (selector == null) return TabWindowManager.INVALID_WINDOW_ID;
         int index = mSelectorsToIndex.get(selector);
-        return index == -1 ? TabWindowManager.INVALID_WINDOW_INDEX : index;
+        return index == -1 ? TabWindowManager.INVALID_WINDOW_ID : index;
     }
 
     @Override
@@ -499,7 +499,7 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
     }
 
     private int clearSelectorAndIndexAssignments(Activity activity) {
-        if (!mAssignments.containsKey(activity)) return INVALID_WINDOW_INDEX;
+        if (!mAssignments.containsKey(activity)) return INVALID_WINDOW_ID;
         TabModelSelector selector = mAssignments.remove(activity);
         int index = mSelectorsToIndex.get(selector);
         if (index >= 0) {

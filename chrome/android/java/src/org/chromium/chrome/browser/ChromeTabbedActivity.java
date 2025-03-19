@@ -313,7 +313,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
 
     protected static final String WINDOW_INDEX = "window_index";
 
-    private static final int INVALID_WINDOW_ID = TabWindowManager.INVALID_WINDOW_INDEX;
+    private static final int INVALID_WINDOW_ID = TabWindowManager.INVALID_WINDOW_ID;
 
     // How long to delay closing the current tab when our app is minimized.  Have to delay this
     // so that we don't show the contents of the next tab while minimizing.
@@ -2752,7 +2752,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
         }
 
         if (mMultiInstanceManager != null) {
-            int assignedIndex = TabWindowManagerSingleton.getInstance().getIndexForWindow(this);
+            int assignedIndex = TabWindowManagerSingleton.getInstance().getIdForWindow(this);
             // The given index and the one computed by TabWindowManager should be one and the same.
             int taskId = ApplicationStatus.getTaskId(this);
             Map<String, Integer> taskMap =
@@ -3593,7 +3593,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
             super.onSaveInstanceState(outState);
             CipherLazyHolder.sCipherInstance.saveToBundle(outState);
             outState.putInt(
-                    WINDOW_INDEX, TabWindowManagerSingleton.getInstance().getIndexForWindow(this));
+                    WINDOW_INDEX, TabWindowManagerSingleton.getInstance().getIdForWindow(this));
             Boolean is_incognito = getCurrentTabModel().isIncognito();
             outState.putBoolean(IS_INCOGNITO_SELECTED, is_incognito);
             // If it's Incognito and native is initialized and profile exists, serialize duration
