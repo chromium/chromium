@@ -22,7 +22,7 @@ URL: https://github.com/mochajs/mocha
 Version: 10.4.0
 Revision: 0501b9a278ae40a01f989d70801f4886ee686445
 License: MIT
-License File: LICENSE
+License File: node_modules/mocha/LICENSE
 Security Critical: no
 Shipped: no
 
@@ -43,7 +43,7 @@ Version: 5.1.1
 Revision: 37263c08b85f1f7a55d9522607a9b40f2ee651cd
 Date: 2024-06-20
 License: MIT
-License File: LICENSE
+License File: node_modules/chai/LICENSE
 Security Critical: no
 Shipped: no
 
@@ -464,7 +464,7 @@ Short Name: lit
 URL: https://lit.dev
 Version: 3.0.2
 License: BSD-3-Clause
-License File: LICENSE
+License File: node_modules/lit/LICENSE
 Security Critical: no
 Shipped: yes
 License Android Compatible: yes
@@ -489,7 +489,7 @@ Short Name: @mediapipe/tasks-vision
 URL: https://www.npmjs.com/package/@mediapipe/tasks-vision
 Version: 0.10.9
 License: Apache-2.0
-License File: LICENSE
+License File: Apache-LICENSE-2.0.txt
 Security Critical: no
 Shipped: yes
 License Android Compatible: Yes
@@ -503,26 +503,6 @@ component extension, which is only run on ChromeOS:
 separately via DLC)
 - vision_bundle.mjs, used to run the Face Landmarker API and supporting code
 - vision.d.ts, used during TypeScript compilation
-
--------------------- DEPENDENCY DIVIDER --------------------
-
-Name: Type Definitions for Dom View Transitions API
-Short Name: @types/dom-view-transitions
-URL: https://www.npmjs.com/package/@types/dom-view-transitions
-Version: 1.0.4
-License: MIT
-License File: LICENSE
-Security Critical: no
-Shipped: no
-
-Description:
-This package contains type definitions for dom-view-transitions
-(https://drafts.csswg.org/css-view-transitions-1/).
-
-The types are only used when type checking the Dom View Transitions API.
-
-Local Modifications:
-(none)
 
 -------------------- DEPENDENCY DIVIDER --------------------
 
@@ -566,7 +546,7 @@ Short Name: msal-browser
 URL: https://www.npmjs.com/package/@azure/msal-browser
 Version: 4.2.1
 License: MIT
-License File: MSAL_LICENSE
+License File: node_modules/@azure/msal-browser/LICENSE
 Security Critical: yes
 Shipped: yes
 License Android Compatible: yes
