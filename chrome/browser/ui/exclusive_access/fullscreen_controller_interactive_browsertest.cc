@@ -997,6 +997,12 @@ class AutomaticFullscreenTest : public FullscreenControllerInteractiveTest,
 };
 
 IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, RequestFullscreenNoGesture) {
+#if BUILDFLAG(IS_MAC)
+  if (GetParam()) {
+    GTEST_SKIP() << "Flaky. See https://crbug.com/404887514";
+  }
+#endif
+
   base::HistogramTester histograms;
   EXPECT_TRUE(RequestFullscreen());
 
@@ -1020,12 +1026,24 @@ IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, ImmediatelyAfterExit) {
 }
 
 IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, WithGestureAfterExit) {
+#if BUILDFLAG(IS_MAC)
+  if (GetParam()) {
+    GTEST_SKIP() << "Flaky. See https://crbug.com/404887514";
+  }
+#endif
+
   EXPECT_TRUE(RequestFullscreen());
   EXPECT_TRUE(ExitFullscreen());
   EXPECT_TRUE(RequestFullscreen(/*gesture=*/true));
 }
 
 IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, EventuallyAfterExit) {
+#if BUILDFLAG(IS_MAC)
+  if (GetParam()) {
+    GTEST_SKIP() << "Flaky. See https://crbug.com/404887514";
+  }
+#endif
+
   EXPECT_TRUE(RequestFullscreen());
   EXPECT_TRUE(ExitFullscreen());
   base::RunLoop run_loop;
@@ -1049,6 +1067,12 @@ IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, PopupImmediatelyAfterExit) {
 }
 
 IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, PopupEventuallyAfterExit) {
+#if BUILDFLAG(IS_MAC)
+  if (GetParam()) {
+    GTEST_SKIP() << "Flaky. See https://crbug.com/404887514";
+  }
+#endif
+
   EXPECT_TRUE(RequestFullscreen());
   EXPECT_TRUE(ExitFullscreen());
   base::RunLoop run_loop;
@@ -1101,6 +1125,12 @@ IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest,
 }
 
 IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, BlockingContentsDoesNotExit) {
+#if BUILDFLAG(IS_MAC)
+  if (GetParam()) {
+    GTEST_SKIP() << "Flaky. See https://crbug.com/404887514";
+  }
+#endif
+
   EXPECT_TRUE(RequestFullscreen());
   EXPECT_TRUE(web_contents_->IsFullscreen());
   // Blocking the tab for a modal dialog does not exit fullscreen if the origin
@@ -1139,6 +1169,12 @@ IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, CrossOriginIFrameDenied) {
 }
 
 IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, CrossOriginIFrameGranted) {
+#if BUILDFLAG(IS_MAC)
+  if (GetParam()) {
+    GTEST_SKIP() << "Flaky. See https://crbug.com/404887514";
+  }
+#endif
+
   // Append a cross-origin iframe with the permission policy.
   const GURL src = embedded_https_test_server().GetURL("b.com", "/simple.html");
   content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
