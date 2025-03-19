@@ -180,6 +180,13 @@ void DataSharingSDKDelegateDesktop::ShowErrorDialog(int status_code) {
   // No-op for this class.
 }
 
+void DataSharingSDKDelegateDesktop::OnShareLinkRequested(
+    const std::string& group_id,
+    const std::string& access_token,
+    base::OnceCallback<void(const std::optional<GURL>&)> callback) {
+  // No-op for this class.
+}
+
 void DataSharingSDKDelegateDesktop::Shutdown() {
   // Since WebContents depends on BrowserContext, it needs to be destroyed
   // before the BrowserContext is destroyed.

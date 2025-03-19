@@ -250,27 +250,6 @@ std::optional<GURL> data_sharing::GenerateWebUIUrl(RequestInfo request_info,
   return std::make_optional(url);
 }
 
-void data_sharing::AssociateTabGroupWithGroupId(const std::string& tab_group_id,
-                                                const std::string& group_id,
-                                                Profile* profile) {
-  tab_groups::TabGroupSyncService* service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile);
-  // `tab_group_id` is served by webui and should never be null when it gets
-  // here.
-  std::optional<base::Token> token = base::Token::FromString(tab_group_id);
-  CHECK(token);
-  tab_groups::TabGroupId local_tab_group_id(
-      tab_groups::TabGroupId::FromRawToken(token.value()));
-  std::optional<tab_groups::SavedTabGroup> group =
-      service->GetGroup(local_tab_group_id);
-  if (group && !group->is_shared_tab_group()) {
-    // TODO(crbug.com/382557489): implement the callback.
-    service->MakeTabGroupShared(
-        local_tab_group_id, group_id,
-        tab_groups::TabGroupSyncService::TabGroupSharingCallback());
-  }
-}
-
 GURL data_sharing::GetShareLink(const std::string& group_id,
                                 const std::string& access_token,
                                 Profile* profile) {

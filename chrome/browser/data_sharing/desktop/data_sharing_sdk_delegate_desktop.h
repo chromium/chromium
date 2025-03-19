@@ -73,6 +73,10 @@ class DataSharingSDKDelegateDesktop : public DataSharingSDKDelegate,
   // DataSharingUI::Delegate:
   void ApiInitComplete() override;
   void ShowErrorDialog(int status_code) override;
+  void OnShareLinkRequested(
+      const std::string& group_id,
+      const std::string& access_token,
+      base::OnceCallback<void(const std::optional<GURL>&)> callback) override;
 
   void AddAccessToken(
       const data_sharing_pb::AddAccessTokenParams& params,

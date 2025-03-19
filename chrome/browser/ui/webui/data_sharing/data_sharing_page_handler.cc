@@ -70,6 +70,21 @@ void DataSharingPageHandler::ApiInitComplete() {
   webui_controller_->ApiInitComplete();
 }
 
+void DataSharingPageHandler::MakeTabGroupShared(
+    const std::string& tab_group_id,
+    const std::string& group_id,
+    const std::string& access_token,
+    MakeTabGroupSharedCallback callback) {
+  // This call is only allowed to call once per lifetime of this class.
+  // All subsequent calls should go through GetSharedLink instead.
+  // TODO(crbug.com/396133860): Replace CHECK with call to terminate the
+  // renderer instead.
+  CHECK(!has_made_tab_group_shared_);
+  has_made_tab_group_shared_ = true;
+  webui_controller_->OnShareLinkRequested(group_id, access_token,
+                                          std::move(callback));
+}
+
 void DataSharingPageHandler::GetShareLink(const std::string& group_id,
                                           const std::string& access_token,
                                           GetShareLinkCallback callback) {
@@ -83,13 +98,6 @@ void DataSharingPageHandler::GetTabGroupPreview(
     GetTabGroupPreviewCallback callback) {
   data_sharing::GetTabGroupPreview(group_id, access_token, GetProfile(),
                                    std::move(callback));
-}
-
-void DataSharingPageHandler::AssociateTabGroupWithGroupId(
-    const std::string& tab_group_id,
-    const std::string& group_id) {
-  data_sharing::AssociateTabGroupWithGroupId(tab_group_id, group_id,
-                                             GetProfile());
 }
 
 void DataSharingPageHandler::OpenTabGroup(const std::string& group_id) {
