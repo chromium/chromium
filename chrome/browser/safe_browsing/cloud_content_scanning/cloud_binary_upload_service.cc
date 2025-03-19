@@ -5,6 +5,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service.h"
 
 #include <algorithm>
+#include <memory>
 
 #include "base/base64.h"
 #include "base/command_line.h"
@@ -699,10 +700,8 @@ void CloudBinaryUploadService::InstanceIDUnregisteredCallback(
   // Calling RunAuthorizationCallbacks after the instance ID of the initial
   // authentication is unregistered avoids registration/unregistration conflicts
   // with normal requests.
-  if (authorization_callbacks_.contains(token_and_connector) &&
-      !authorization_callbacks_[token_and_connector].empty() &&
-      can_upload_enterprise_data_.contains(token_and_connector)) {
-    RunAuthorizationCallbacks(dm_token, connector);
+  if (can_upload_enterprise_data_.contains(token_and_connector)) {
+    MaybeRunAuthorizationCallbacks(dm_token, connector);
   }
 }
 
@@ -859,8 +858,11 @@ void CloudBinaryUploadService::IsAuthorized(
   if (!can_upload_enterprise_data_.contains(token_and_connector) ||
       can_upload_enterprise_data_[token_and_connector] != Result::SUCCESS) {
     // Send a request to check if the browser can upload data.
-    authorization_callbacks_[token_and_connector].push_back(
-        std::move(callback));
+    auto [iter, inserted] = authorization_callbacks_.try_emplace(
+        token_and_connector,
+        std::make_unique<base::OnceCallbackList<void(Result)>>());
+    iter->second->AddUnsafe(std::move(callback));
+
     if (!pending_validate_data_upload_request_.contains(token_and_connector)) {
       pending_validate_data_upload_request_.insert(token_and_connector);
       enterprise_connectors::CloudAnalysisSettings settings;
@@ -902,17 +904,26 @@ void CloudBinaryUploadService::ValidateDataUploadRequestConnectorCallback(
   can_upload_enterprise_data_[token_and_connector] = result;
 }
 
-void CloudBinaryUploadService::RunAuthorizationCallbacks(
+void CloudBinaryUploadService::MaybeRunAuthorizationCallbacks(
     const std::string& dm_token,
     enterprise_connectors::AnalysisConnector connector) {
   TokenAndConnector token_and_connector = {dm_token, connector};
-  DCHECK(can_upload_enterprise_data_.contains(token_and_connector));
-
-  auto it = authorization_callbacks_[token_and_connector].begin();
-  while (it != authorization_callbacks_[token_and_connector].end()) {
-    std::move(*it).Run(can_upload_enterprise_data_[token_and_connector]);
-    it = authorization_callbacks_[token_and_connector].erase(it);
+  if (!can_upload_enterprise_data_.contains(token_and_connector)) {
+    return;
   }
+
+  // TODO(crbug.com/402435358): Add test coverage to catch this regression
+  // after FCM service is completely removed.
+  auto it = authorization_callbacks_.find(token_and_connector);
+  if (it == authorization_callbacks_.end()) {
+    return;
+  }
+  // To avoid race condition, save the callback and erase it from the map
+  // before running it.
+  std::unique_ptr<base::OnceCallbackList<void(Result)>> callbacks =
+      std::move(it->second);
+  authorization_callbacks_.erase(it);
+  callbacks->Notify(can_upload_enterprise_data_[token_and_connector]);
 }
 
 void CloudBinaryUploadService::ResetAuthorizationData(const GURL& url) {
