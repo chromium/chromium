@@ -21,6 +21,16 @@ class SequencedTaskRunner;
 namespace unexportable_keys {
 
 // Interface for tasks scheduled on `BackgroundLongTaskScheduler`.
+//
+// A typical task lifetime is the following:
+//   1) Task is created.
+//   2) Task is added to a `BackgroundLongTaskScheduler` queue.
+//   3) `BackgroundLongTaskScheduler` calls `Run()`.
+//   4) Task completes.
+//      a) If the the task should not be retried, `BackgroundLongTaskScheduler`
+//         calls `ReplyWithResult()` and deletes the task, otherwise
+//      b) `BackgroundLongTaskScheduler` calls `ResetStateBeforeRetry()` and
+//         goes back to step 2)
 class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) BackgroundTask {
  public:
   // Different statuses that the task can have.
@@ -44,6 +54,9 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) BackgroundTask {
   // Must be called after the task is completed, and no more than once.
   virtual void ReplyWithResult() = 0;
 
+  // Resets the task state before `Run()` can be run again.
+  virtual void ResetStateBeforeRetry() = 0;
+
   // Returns the current status of the task.
   virtual Status GetStatus() const = 0;
 
@@ -53,12 +66,20 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) BackgroundTask {
   // Returns the task type.
   virtual BackgroundTaskType GetType() const = 0;
 
-  // Returns the elapsed time since the task creation.
-  virtual base::TimeDelta GetElapsedTimeSinceCreation() const = 0;
+  // Returns the elapsed time since the task was scheduled.
+  virtual base::TimeDelta GetElapsedTimeSinceScheduled() const = 0;
 
   // Returns the elapsed time since the task was run.
   // Returns std::nullopt if the task hasn't been run yet.
   virtual std::optional<base::TimeDelta> GetElapsedTimeSinceRun() const = 0;
+
+  // Returns the number of times this task was retried.
+  virtual size_t GetRetryCount() const = 0;
+
+  // Returns whether the task should be retried.
+  // Must be called after the task is completed but before `ReplyWithResult()`
+  // or `ResetStateBeforeRetry()`.
+  virtual bool ShouldRetry() const = 0;
 };
 
 }  // namespace unexportable_keys
