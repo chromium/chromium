@@ -53,6 +53,7 @@ class PLATFORM_EXPORT PlainTextItem {
 
  private:
   friend class PlainTextNode;
+  friend class FrameShapeCacheTest;
 
   Member<ShapeResult> shape_result_;
   // This is mutable for on-demand creation.
@@ -101,6 +102,7 @@ class PLATFORM_EXPORT PlainTextNode : public GarbageCollected<PlainTextNode> {
 
  private:
   friend class PlainTextNodeTest;
+  friend class FrameShapeCacheTest;
 
   // Up-converts to UTF-16 as needed and normalizes spaces and Unicode control
   // characters as per the CSS Text Module Level 3 specification.
