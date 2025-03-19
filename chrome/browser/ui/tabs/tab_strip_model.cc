@@ -13,6 +13,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -60,6 +61,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
@@ -414,6 +416,12 @@ void TabStripModel::InsertDetachedTabGroupAt(
   CHECK(group_model_);
   CHECK(!group_model_->ContainsTabGroup(group->collection_->GetTabGroupId()));
 
+  // Notify tab is added to model.
+  for (size_t i = 0; i < group->collection_->ChildCount(); i++) {
+    tabs::TabModel* tab = group->collection_->GetTabAtIndex(i);
+    tab->OnAddedToModel(this);
+  }
+
   InsertDetachedTabGroupImpl(std::move(group), index);
 }
 
@@ -432,8 +440,6 @@ void TabStripModel::OnChange(const TabStripModelChange& change,
 
 std::unique_ptr<DetachedTabGroup> TabStripModel::DetachTabGroupImpl(
     const tab_groups::TabGroupId& group_id) {
-  // TODO(392952244): Remove once observers have been migrated.
-  NOTIMPLEMENTED();
 
   // Prepare for group to be removed.
   const gfx::Range tabs_in_group =
@@ -448,6 +454,9 @@ std::unique_ptr<DetachedTabGroup> TabStripModel::DetachTabGroupImpl(
   const bool closing_all_tabs =
       static_cast<int>(tabs_in_group.length()) == GetTabCount();
   TabStripModelChange::Remove remove;
+
+  // Calculate the next selected index before fixing openers.
+  std::optional<int> next_selected_index = DetermineNewSelectedIndex(group_id);
 
   for (int index = static_cast<int>(tabs_in_group.end()) - 1;
        index >= static_cast<int>(tabs_in_group.start()); --index) {
@@ -487,8 +496,6 @@ std::unique_ptr<DetachedTabGroup> TabStripModel::DetachTabGroupImpl(
   if (closing_all_tabs) {
     selection_model_.Clear();
   } else {
-    std::optional<int> next_selected_index =
-        DetermineNewSelectedIndex(group_id);
 
     // Remove all the selected tabs from the model.
     for (int index = static_cast<int>(tabs_in_group.end()) - 1;
@@ -517,6 +524,12 @@ std::unique_ptr<DetachedTabGroup> TabStripModel::DetachTabGroupImpl(
   OnTabGroupDetached(group_collection.get());
   group_model_->RemoveTabGroup(group_id, base::PassKey<TabStripModel>());
 
+  // Notify tab is removed from model
+  for (size_t i = 0; i < group_collection->ChildCount(); i++) {
+    tabs::TabModel* tab = group_collection->GetTabAtIndex(i);
+    tab->OnRemovedFromModel();
+  }
+
   // Send remove notifications for tabs. There is no need to send group
   // notifications again since tabs are part of the same group.
   TabStripModelChange change(std::move(remove));
@@ -535,8 +548,6 @@ std::unique_ptr<DetachedTabGroup> TabStripModel::DetachTabGroupImpl(
 void TabStripModel::InsertDetachedTabGroupImpl(
     std::unique_ptr<DetachedTabGroup> detached_group,
     int index) {
-  // TODO(392952244): Remove once observers have been migrated.
-  NOTIMPLEMENTED();
 
   CHECK(detached_group->collection_);
 
@@ -2338,6 +2349,64 @@ int TabStripModel::GetIndexOfNextWebContentsOpenedBy(const WebContents* opener,
   return kNoTab;
 }
 
+int TabStripModel::GetIndexOfNextWebContentsOpenedBy(
+    const tab_groups::TabGroupId& group_id) const {
+  const gfx::Range tabs_in_group =
+      group_model_->GetTabGroup(group_id)->ListTabs();
+  std::set<tabs::TabInterface*> group_tabs;
+
+  for (size_t i = tabs_in_group.start(); i < tabs_in_group.end(); i++) {
+    group_tabs.insert(GetTabModelAtIndex(i));
+  }
+
+  for (size_t i = tabs_in_group.end(); i < static_cast<size_t>(count()); i++) {
+    if (group_tabs.find(GetTabModelAtIndex(i)->opener()) != group_tabs.end()) {
+      return i;
+    }
+  }
+
+  for (int i = tabs_in_group.start() - 1; i >= 0; i--) {
+    if (group_tabs.find(GetTabModelAtIndex(i)->opener()) != group_tabs.end()) {
+      return i;
+    }
+  }
+
+  return kNoTab;
+}
+
+int TabStripModel::GetIndexOfNextWebContentsOpenedByOpenerOf(
+    const tab_groups::TabGroupId& group_id) const {
+  const gfx::Range tabs_in_group =
+      group_model_->GetTabGroup(group_id)->ListTabs();
+  std::set<tabs::TabInterface*> group_openers;
+
+  for (size_t i = tabs_in_group.start(); i < tabs_in_group.end(); ++i) {
+    if (GetTabModelAtIndex(i)->opener()) {
+      group_openers.insert(GetTabModelAtIndex(i)->opener());
+    }
+  }
+
+  if (group_openers.empty()) {
+    return kNoTab;
+  }
+
+  for (size_t i = tabs_in_group.end(); i < static_cast<size_t>(count()); i++) {
+    if (group_openers.find(GetTabModelAtIndex(i)->opener()) !=
+        group_openers.end()) {
+      return i;
+    }
+  }
+
+  for (int i = tabs_in_group.start() - 1; i >= 0; i--) {
+    if (group_openers.find(GetTabModelAtIndex(i)->opener()) !=
+        group_openers.end()) {
+      return i;
+    }
+  }
+
+  return kNoTab;
+}
+
 std::optional<int> TabStripModel::GetNextExpandedActiveTab(
     int start_index,
     std::optional<tab_groups::TabGroupId> collapsing_group) const {
@@ -3594,6 +3663,21 @@ int TabStripModel::GetTabIndexAfterClosing(int index,
   return index;
 }
 
+int TabStripModel::GetTabIndexAfterClosing(
+    int index,
+    const tab_groups::TabGroupId& removed_group_id) const {
+  const gfx::Range tabs_in_group =
+      group_model_->GetTabGroup(removed_group_id)->ListTabs();
+
+  const int last_tab_in_group = static_cast<int>(tabs_in_group.end() - 1);
+
+  if (index > last_tab_in_group) {
+    index = std::max(0, index - static_cast<int>(tabs_in_group.length()));
+  }
+
+  return index;
+}
+
 void TabStripModel::OnActiveTabChanged(
     const TabStripSelectionChange& selection) {
   if (!selection.active_tab_changed() || empty()) {
@@ -3718,10 +3802,34 @@ void TabStripModel::GroupCloseStopped(const tab_groups::TabGroupId& group) {
 
 std::optional<int> TabStripModel::DetermineNewSelectedIndex(
     const tab_groups::TabGroupId& removed_group_id) const {
-  // TODO(396498447): Use opener and group information to compute this.
   const gfx::Range tabs_in_group =
       group_model_->GetTabGroup(removed_group_id)->ListTabs();
 
+  // First preference is a tab the group opened.
+  int new_selected_index = GetIndexOfNextWebContentsOpenedBy(removed_group_id);
+  if (new_selected_index != TabStripModel::kNoTab &&
+      !IsTabCollapsed(new_selected_index)) {
+    return GetTabIndexAfterClosing(new_selected_index, removed_group_id);
+  }
+
+  // Second preference is a tab the group's opener opened.
+  new_selected_index =
+      GetIndexOfNextWebContentsOpenedByOpenerOf(removed_group_id);
+
+  if (new_selected_index != TabStripModel::kNoTab) {
+    return GetTabIndexAfterClosing(new_selected_index, removed_group_id);
+  }
+
+  // third preference is the group's opener.
+  for (size_t i = tabs_in_group.start(); i < tabs_in_group.end(); ++i) {
+    tabs::TabInterface* opener = GetTabModelAtIndex(i)->opener();
+    if (opener && opener->GetGroup() != removed_group_id) {
+      new_selected_index = GetIndexOfTab(opener);
+      return GetTabIndexAfterClosing(new_selected_index, removed_group_id);
+    }
+  }
+
+  // Otherwise, prefer picking the tab after the last tab in the group.
   const int first_tab_in_group = static_cast<int>(tabs_in_group.start());
   const int last_tab_in_group = static_cast<int>(tabs_in_group.end() - 1);
 
