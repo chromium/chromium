@@ -283,9 +283,18 @@ void FormDataImporter::ImportAndProcessFormData(
   credit_card_save_manager_->SetPreliminarilyImportedAutofillProfile(
       preliminary_imported_address_profiles);
 
-  bool cc_prompt_potentially_shown = ProcessExtractedCreditCard(
-      submitted_form, extracted_data.extracted_credit_card,
-      credit_card_save_manager_->IsCreditCardUploadEnabled(), ukm_source_id);
+  bool cc_prompt_potentially_shown = false;
+  if (credit_card_import_type_ != CreditCardImportType::kNoCard) {
+    // Only check IsCreditCardUploadEnabled() if payment method autofill is
+    // enabled and a credit card was extracted from the form, in order to
+    // prevent the metrics it logs from being diluted by cases where payment
+    // method autofill is off or there was no credit card to process.
+    bool credit_card_upload_enabled =
+        credit_card_save_manager_->IsCreditCardUploadEnabled();
+    cc_prompt_potentially_shown = ProcessExtractedCreditCard(
+        submitted_form, extracted_data.extracted_credit_card,
+        credit_card_upload_enabled, ukm_source_id);
+  }
   fetched_card_instrument_id_.reset();
 
   bool iban_prompt_potentially_shown = false;
@@ -816,11 +825,6 @@ bool FormDataImporter::ProcessExtractedCreditCard(
     const std::optional<CreditCard>& extracted_credit_card,
     bool is_credit_card_upstream_enabled,
     ukm::SourceId ukm_source_id) {
-  // If no card was successfully extracted from the form, return.
-  if (credit_card_import_type_ == CreditCardImportType::kNoCard) {
-    return false;
-  }
-
   // If a flow without interactive authentication was completed and the user
   // didn't update the result that was filled into the form, re-auth opt-in flow
   // might be offered.
