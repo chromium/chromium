@@ -4,18 +4,14 @@
 
 #include "third_party/blink/renderer/modules/ai/on_device_translation/create_translator_client.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
+#include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor_callback.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/modules/ai/ai.h"
 #include "third_party/blink/renderer/modules/ai/ai_create_monitor.h"
 #include "third_party/blink/renderer/modules/ai/ai_interface_proxy.h"
-#include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
 #include "third_party/blink/renderer/modules/ai/ai_utils.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -84,22 +80,18 @@ bool RequiresUserActivation(CanCreateTranslatorResult result) {
 
 CreateTranslatorClient::CreateTranslatorClient(
     ScriptState* script_state,
-    AITranslatorFactory* translation,
     AITranslatorCreateOptions* options,
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
     ScriptPromiseResolver<AITranslator>* resolver)
-    : AIMojoClient(script_state,
-                   translation,
-                   resolver,
-                   options->getSignalOr(nullptr)),
-      translation_(translation),
+    : ExecutionContextClient(ExecutionContext::From(script_state)),
+      AIMojoClient(script_state, this, resolver, options->getSignalOr(nullptr)),
       source_language_(options->sourceLanguage()),
       target_language_(options->targetLanguage()),
-      receiver_(this, translation_->GetExecutionContext()),
-      task_runner_(task_runner) {
+      receiver_(this, GetExecutionContext()),
+      task_runner_(
+          GetExecutionContext()->GetTaskRunner(TaskType::kInternalDefault)) {
   if (options->hasMonitor()) {
-    monitor_ = MakeGarbageCollected<AICreateMonitor>(
-        translation_->GetExecutionContext(), task_runner);
+    monitor_ = MakeGarbageCollected<AICreateMonitor>(GetExecutionContext(),
+                                                     task_runner_);
     std::ignore = options->monitor()->Invoke(nullptr, monitor_);
   }
 }
@@ -107,7 +99,7 @@ CreateTranslatorClient::~CreateTranslatorClient() = default;
 
 void CreateTranslatorClient::Trace(Visitor* visitor) const {
   AIMojoClient::Trace(visitor);
-  visitor->Trace(translation_);
+  ExecutionContextClient::Trace(visitor);
   visitor->Trace(receiver_);
   visitor->Trace(monitor_);
 }
@@ -133,7 +125,7 @@ void CreateTranslatorClient::OnResult(
         std::move(source_language_), std::move(target_language_)));
   } else {
     CHECK(result->is_error());
-    translation_->GetExecutionContext()->AddConsoleMessage(
+    GetExecutionContext()->AddConsoleMessage(
         mojom::blink::ConsoleMessageSource::kJavaScript,
         mojom::blink::ConsoleMessageLevel::kWarning,
         ConvertCreateTranslatorErrorToDebugString(result->get_error()));
@@ -162,8 +154,7 @@ void CreateTranslatorClient::OnGotAvailability(
 
   receiver_.Bind(client.InitWithNewPipeAndPassReceiver(), task_runner_);
 
-  AIInterfaceProxy::GetTranslationManagerRemote(
-      translation_->GetExecutionContext())
+  AIInterfaceProxy::GetTranslationManagerRemote(GetExecutionContext())
       ->CreateTranslator(
           std::move(client),
           mojom::blink::TranslatorCreateOptions::New(

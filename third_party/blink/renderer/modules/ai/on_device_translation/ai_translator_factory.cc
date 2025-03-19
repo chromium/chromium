@@ -25,8 +25,7 @@ using mojom::blink::CreateTranslatorError;
 }  // namespace
 
 AITranslatorFactory::AITranslatorFactory(ExecutionContext* context)
-    : ExecutionContextClient(context),
-      task_runner_(context->GetTaskRunner(TaskType::kInternalDefault)) {}
+    : ExecutionContextClient(context) {}
 
 ScriptPromise<V8AIAvailability> AITranslatorFactory::availability(
     ScriptState* script_state,
@@ -85,8 +84,8 @@ ScriptPromise<AITranslator> AITranslatorFactory::create(
       MakeGarbageCollected<ScriptPromiseResolver<AITranslator>>(script_state);
 
   CreateTranslatorClient* create_translator_client =
-      MakeGarbageCollected<CreateTranslatorClient>(script_state, this, options,
-                                                   task_runner_, resolver);
+      MakeGarbageCollected<CreateTranslatorClient>(script_state, options,
+                                                   resolver);
 
   GetTranslationManagerRemote()->CanCreateTranslator(
       mojom::blink::TranslatorLanguageCode::New(options->sourceLanguage()),

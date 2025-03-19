@@ -39,9 +39,6 @@ class AITranslatorFactory final : public ScriptWrappable,
   GetTranslationManagerRemote();
 
   void Trace(Visitor* visitor) const override;
-
- private:
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
 }  // namespace blink

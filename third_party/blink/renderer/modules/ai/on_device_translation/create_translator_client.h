@@ -5,10 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AI_ON_DEVICE_TRANSLATION_CREATE_TRANSLATOR_CLIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_ON_DEVICE_TRANSLATION_CREATE_TRANSLATOR_CLIENT_H_
 
+#include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
-#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 
 namespace blink {
@@ -16,12 +16,11 @@ namespace blink {
 class CreateTranslatorClient
     : public GarbageCollected<CreateTranslatorClient>,
       public mojom::blink::TranslationManagerCreateTranslatorClient,
+      public ExecutionContextClient,
       public AIMojoClient<AITranslator> {
  public:
   CreateTranslatorClient(ScriptState* script_state,
-                         AITranslatorFactory* translation,
                          AITranslatorCreateOptions* options,
-                         scoped_refptr<base::SequencedTaskRunner> task_runner,
                          ScriptPromiseResolver<AITranslator>* resolver);
   ~CreateTranslatorClient() override;
 
@@ -37,8 +36,6 @@ class CreateTranslatorClient
   void ResetReceiver() override;
 
  private:
-  Member<AITranslatorFactory> translation_;
-
   Member<AICreateMonitor> monitor_;
   String source_language_;
   String target_language_;
