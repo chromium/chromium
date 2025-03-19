@@ -9,7 +9,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/autofill/autofill_ai/save_or_update_autofill_ai_data_controller.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
-#include "chrome/browser/ui/views/autofill/popup/autofill_ai/autofill_ai_icon_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -43,6 +42,12 @@ constexpr int kBubbleWidth = 320;
 
 constexpr int kNewOrUpdatedAttributeDotSize = 4;
 constexpr int kNewOrUpdatedAttributeDotSpacing = 4;
+
+int GetVerticaSpaceBetweenDialogSections() {
+  return ChromeLayoutProvider::Get()->GetDistanceMetric(
+             DISTANCE_CONTROL_LIST_VERTICAL) *
+         2;
+}
 
 std::unique_ptr<views::View> GetAttributeValueView(
     const SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateDetails&
@@ -166,14 +171,10 @@ SaveOrUpdateAutofillAiDataBubbleView::SaveOrUpdateAutofillAiDataBubbleView(
       views::DialogContentType::kControl, views::DialogContentType::kControl));
   SetAccessibleTitle(controller_->GetDialogTitle());
 
-  const int kVerticalSpacingBetweenAttributes =
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          DISTANCE_CONTROL_LIST_VERTICAL);
-
   auto* main_content_wrapper = AddChildView(
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
-          .SetBetweenChildSpacing(kVerticalSpacingBetweenAttributes * 2)
+          .SetBetweenChildSpacing(GetVerticaSpaceBetweenDialogSections())
           .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
           .Build());
 
@@ -195,13 +196,15 @@ SaveOrUpdateAutofillAiDataBubbleView::SaveOrUpdateAutofillAiDataBubbleView(
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .SetAccessibleRole(ax::mojom::Role::kDescriptionList)
-          .SetBetweenChildSpacing(kVerticalSpacingBetweenAttributes * 2)
+          .SetBetweenChildSpacing(GetVerticaSpaceBetweenDialogSections())
           .Build());
   auto* new_entity_added_or_updated_attributes_container =
       attributes_wrapper->AddChildView(
           views::Builder<views::BoxLayoutView>()
               .SetOrientation(views::BoxLayout::Orientation::kVertical)
-              .SetBetweenChildSpacing(kVerticalSpacingBetweenAttributes)
+              .SetBetweenChildSpacing(
+                  ChromeLayoutProvider::Get()->GetDistanceMetric(
+                      DISTANCE_CONTROL_LIST_VERTICAL))
               .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
               .Build());
   new_entity_added_or_updated_attributes_container->SetID(
@@ -214,7 +217,9 @@ SaveOrUpdateAutofillAiDataBubbleView::SaveOrUpdateAutofillAiDataBubbleView(
         attributes_wrapper->AddChildView(
             views::Builder<views::BoxLayoutView>()
                 .SetOrientation(views::BoxLayout::Orientation::kVertical)
-                .SetBetweenChildSpacing(kVerticalSpacingBetweenAttributes)
+                .SetBetweenChildSpacing(
+                    ChromeLayoutProvider::Get()->GetDistanceMetric(
+                        DISTANCE_CONTROL_LIST_VERTICAL))
                 .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
                 .Build());
     new_entity_unchanged_attributes_container->SetID(
@@ -270,14 +275,10 @@ void SaveOrUpdateAutofillAiDataBubbleView::Hide() {
 }
 
 void SaveOrUpdateAutofillAiDataBubbleView::AddedToWidget() {
-  const int kHorizontalSpacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_RELATED_LABEL_HORIZONTAL_LIST);
   auto header_container =
       views::Builder<views::BoxLayoutView>()
-          .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-          .SetBetweenChildSpacing(kHorizontalSpacing)
-          .SetMainAxisAlignment(views::LayoutAlignment::kStart)
-          .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+          .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .SetBetweenChildSpacing(GetVerticaSpaceBetweenDialogSections())
           // The bottom padding has to be subtracted by the distance between the
           // information that will be saved, so to avoid double padding.
           .SetInsideBorderInsets(gfx::Insets::TLBR(
@@ -287,8 +288,15 @@ void SaveOrUpdateAutofillAiDataBubbleView::AddedToWidget() {
                                   DISTANCE_CONTROL_LIST_VERTICAL)),
               kHeaderPadding))
           .Build();
-  header_container->AddChildView(
-      autofill_ai::CreateLargeAutofillAiIconImageView());
+  if (controller_->IsSavePrompt()) {
+    std::pair<int, int> images = controller_->GetTitleImagesResourceId();
+    header_container->AddChildView(
+        std::make_unique<ThemeTrackingNonAccessibleImageView>(
+            ui::ImageModel::FromResourceId(images.first),
+            ui::ImageModel::FromResourceId(images.second),
+            base::BindRepeating(&views::BubbleDialogDelegate::background_color,
+                                base::Unretained(this))));
+  }
   header_container->AddChildView(
       views::Builder<views::Label>()
           .SetText(controller_->GetDialogTitle())
