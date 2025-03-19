@@ -250,7 +250,10 @@ void LockedSessionWindowTracker::TabChangedAt(content::WebContents* contents,
   if (change_type == TabChangeType::kAll) {
     RefreshUrlBlocklist();
   }
-  if (on_task_pod_controller_) {
+  // When all tabs are closing, the tab strip model is still active, but the
+  // active tab is no longer valid. This can cause a crash if we try to access
+  // the navigation context of the active tab.
+  if (!browser_->tab_strip_model()->closing_all() && on_task_pod_controller_) {
     on_task_pod_controller_->OnPageNavigationContextChanged();
   }
 
@@ -282,7 +285,10 @@ void LockedSessionWindowTracker::OnTabStripModelChanged(
     const TabStripSelectionChange& selection) {
   if (selection.active_tab_changed()) {
     RefreshUrlBlocklist();
-    if (on_task_pod_controller_) {
+    // When all tabs are closing, the tab strip model is still active, but the
+    // active tab is no longer valid. This can cause a crash if we try to access
+    // the navigation context of the active tab.
+    if (!tab_strip_model->closing_all() && on_task_pod_controller_) {
       on_task_pod_controller_->OnPageNavigationContextChanged();
     }
     if (selection.new_contents) {
