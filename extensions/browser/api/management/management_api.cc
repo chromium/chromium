@@ -851,7 +851,7 @@ void ManagementUninstallFunctionBase::UninstallExtension() {
 
 ManagementUninstallFunction::ManagementUninstallFunction() = default;
 
-ManagementUninstallFunction::~ManagementUninstallFunction() {}
+ManagementUninstallFunction::~ManagementUninstallFunction() = default;
 
 ExtensionFunction::ResponseAction ManagementUninstallFunction::Run() {
   std::optional<management::Uninstall::Params> params =
@@ -865,7 +865,7 @@ ExtensionFunction::ResponseAction ManagementUninstallFunction::Run() {
 
 ManagementUninstallSelfFunction::ManagementUninstallSelfFunction() = default;
 
-ManagementUninstallSelfFunction::~ManagementUninstallSelfFunction() {}
+ManagementUninstallSelfFunction::~ManagementUninstallSelfFunction() = default;
 
 ExtensionFunction::ResponseAction ManagementUninstallSelfFunction::Run() {
   std::optional<management::UninstallSelf::Params> params =
@@ -881,7 +881,8 @@ ExtensionFunction::ResponseAction ManagementUninstallSelfFunction::Run() {
 ManagementCreateAppShortcutFunction::ManagementCreateAppShortcutFunction() =
     default;
 
-ManagementCreateAppShortcutFunction::~ManagementCreateAppShortcutFunction() {}
+ManagementCreateAppShortcutFunction::~ManagementCreateAppShortcutFunction() =
+    default;
 
 // static
 void ManagementCreateAppShortcutFunction::SetAutoConfirmForTest(
@@ -1065,7 +1066,7 @@ ManagementInstallReplacementWebAppFunction::
     ManagementInstallReplacementWebAppFunction() = default;
 
 ManagementInstallReplacementWebAppFunction::
-    ~ManagementInstallReplacementWebAppFunction() {}
+    ~ManagementInstallReplacementWebAppFunction() = default;
 
 ExtensionFunction::ResponseAction
 ManagementInstallReplacementWebAppFunction::Run() {
@@ -1195,7 +1196,7 @@ ManagementAPI::ManagementAPI(content::BrowserContext* context)
   event_router->RegisterObserver(this, management::OnDisabled::kEventName);
 }
 
-ManagementAPI::~ManagementAPI() {}
+ManagementAPI::~ManagementAPI() = default;
 
 void ManagementAPI::Shutdown() {
   // Ensure that SupervisedUserExtensionsDelegate is released prior to
