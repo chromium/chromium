@@ -6440,6 +6440,7 @@ void Element::ParseAttribute(const AttributeModificationParams& params) {
   } else if (params.name.Matches(html_names::kInteresttargetAttr)) {
     if (RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
             GetDocument().GetExecutionContext())) {
+      UseCounter::Count(GetDocument(), WebFeature::kInterestTarget);
       if (!params.old_value.IsNull() && params.old_value != params.new_value) {
         // We are changing the value of the `interesttarget` attribute, which
         // might "point" it at a different target element. So clear the

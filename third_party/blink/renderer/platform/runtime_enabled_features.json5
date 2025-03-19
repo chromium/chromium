@@ -2379,6 +2379,7 @@
       name: "HTMLInterestTargetAttribute",
       status: "experimental",
       origin_trial_feature_name: "HTMLInterestTargetAttribute",
+      origin_trial_allows_third_party: true,
     },
     {
       // A flag, just for local testing to make the
