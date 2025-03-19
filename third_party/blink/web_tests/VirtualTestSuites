@@ -94,6 +94,8 @@
     "owners": ["clamy@google.com"],
     "expires": "May 2, 2025"
   },
+
+  "This never expires because it tests a shipping configuration",
   {
     "prefix": "gpu",
     "owners": ["fserb@chromium.org", "jpgravel@chromium.org"],
