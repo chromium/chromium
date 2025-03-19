@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import androidx.annotation.NonNull;
@@ -17,7 +18,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
@@ -218,7 +218,7 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
                 mock(TabModelSelectorTabRegistrationObserver.Observer.class);
         mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(observer);
         verify(observer).onTabRegistered(normalTab2);
-        Mockito.verifyNoMoreInteractions(observer);
+        verifyNoMoreInteractions(observer);
     }
 
     @Test
@@ -326,7 +326,7 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
                 .getTabRemover()
                 .removeTab(normalTab1, /* allowDialog= */ false);
 
-        Mockito.verifyNoMoreInteractions(observer);
+        verifyNoMoreInteractions(observer);
     }
 
     @Test
@@ -371,7 +371,7 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
                 .getTabRemover()
                 .removeTab(normalTab1, /* allowDialog= */ false);
 
-        Mockito.verifyNoMoreInteractions(observer);
+        verifyNoMoreInteractions(observer);
     }
 
     private static class TestTabModelSelector extends TabModelSelectorBase {

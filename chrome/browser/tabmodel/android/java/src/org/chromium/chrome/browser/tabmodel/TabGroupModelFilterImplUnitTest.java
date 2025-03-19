@@ -46,7 +46,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.verification.VerificationMode;
 import org.robolectric.annotation.Config;
@@ -2142,7 +2141,7 @@ public class TabGroupModelFilterImplUnitTest {
 
     @Test
     public void mergeGroupToGroupNonAdjacent_doNotNotifyFilterObserver() {
-        SharedPreferences.Editor titleEditor = Mockito.mock(SharedPreferences.Editor.class);
+        SharedPreferences.Editor titleEditor = mock(SharedPreferences.Editor.class);
         when(mSharedPreferencesTitle.edit()).thenReturn(titleEditor);
         when(titleEditor.remove(anyString())).thenReturn(titleEditor);
 
