@@ -385,16 +385,13 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
   _locationButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_ACCNAME_LOCATION);
 
-  _accessibleElements = [[NSMutableArray alloc] init];
-  [_accessibleElements addObject:_locationButton];
-  [_accessibleElements addObject:_trailingButton];
-
   // These two elements must remain accessible for egtests, but will not be
   // included in accessibility navigation as they are not added to the
   // accessibleElements array.
   _locationIconImageView.isAccessibilityElement = YES;
   _locationLabel.isAccessibilityElement = YES;
 
+  _accessibleElements = [[NSMutableArray alloc] init];
   [self updateAccessibility];
 }
 
