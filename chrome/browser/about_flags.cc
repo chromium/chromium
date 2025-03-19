@@ -11398,6 +11398,14 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(safe_browsing::kEnterpriseRealTimeUrlCheckOnAndroid)},
 
+    {"enterprise-url-filtering-event-reporting-on-android",
+     flag_descriptions::kEnterpriseUrlFilteringEventReportingOnAndroidName,
+     flag_descriptions::
+         kEnterpriseUrlFilteringEventReportingOnAndroidDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(enterprise_connectors::
+                            kEnterpriseUrlFilteringEventReportingOnAndroid)},
+
     {"enterprise-security-event-reporting-on-android",
      flag_descriptions::kEnterpriseSecurityEventReportingOnAndroidName,
      flag_descriptions::kEnterpriseSecurityEventReportingOnAndroidDescription,

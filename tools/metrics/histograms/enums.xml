@@ -14132,6 +14132,8 @@ from previous Chrome versions.
   <int value="8891567" label="CaptionSettings:enabled"/>
   <int value="9609535" label="BrowsingDataLifetimeManager:disabled"/>
   <int value="9692911" label="BatteryBadgeIcon:enabled"/>
+  <int value="9803761"
+      label="EnterpriseUrlFilteringEventReportingOnAndroid:disabled"/>
   <int value="10405060" label="BluetoothSessionizedMetrics:disabled"/>
   <int value="10458238" label="disable-print-preview-simplify"/>
   <int value="10511293" label="LensOverlaySimplifiedSelection:enabled"/>
@@ -15425,6 +15427,8 @@ from previous Chrome versions.
   <int value="514098449" label="LacrosProfileBackwardMigration:disabled"/>
   <int value="514406112" label="WebUIOmniboxPopup:disabled"/>
   <int value="514569020" label="RemoteCopyImageNotification:enabled"/>
+  <int value="515046556"
+      label="EnterpriseUrlFilteringEventReportingOnAndroid:enabled"/>
   <int value="515981953" label="ElasticOverscroll:enabled"/>
   <int value="516143995" label="EnableAriaElementReflection:enabled"/>
   <int value="516603570" label="QuickAnswersRichUi:disabled"/>
