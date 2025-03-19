@@ -159,7 +159,7 @@ public class TabGroupListBottomSheetMediator {
         assert !tabs.isEmpty();
         Tab tab = tabs.get(0);
 
-        if (tabs.size() == 1) {
+        if (tabs.size() == 1 && tab.getTabGroupId() == null) {
             mFilter.createSingleTabGroup(tab);
         } else {
             mFilter.mergeListOfTabsToGroup(tabs, tab, /* notify= */ true);
