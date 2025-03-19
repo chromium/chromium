@@ -67,4 +67,7 @@ BASE_DECLARE_FEATURE(kLensPrewarmHardStickinessInInputSelection);
 // Whether to prewarm hard stickiness in query formulation.
 BASE_DECLARE_FEATURE(kLensPrewarmHardStickinessInQueryFormulation);
 
+// Whether to enable the fetch srp API.
+BASE_DECLARE_FEATURE(kLensFetchSrpApiEnabled);
+
 #endif  // IOS_CHROME_BROWSER_LENS_UI_BUNDLED_FEATURES_H_

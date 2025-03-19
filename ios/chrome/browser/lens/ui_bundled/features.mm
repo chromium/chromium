@@ -83,3 +83,7 @@ BASE_FEATURE(kLensPrewarmHardStickinessInInputSelection,
 BASE_FEATURE(kLensPrewarmHardStickinessInQueryFormulation,
              "LensPrewarmHardStickinessInQueryFormulation",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensFetchSrpApiEnabled,
+             "LensFetchSrpApiEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);

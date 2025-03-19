@@ -414,6 +414,9 @@ extern const char kLensClearcutBackgroundUploadEnabledDescription[];
 extern const char kLensClearcutLoggerFastQosEnabledName[];
 extern const char kLensClearcutLoggerFastQosEnabledDescription[];
 
+extern const char kLensFetchSrpApiEnabledName[];
+extern const char kLensFetchSrpApiEnabledDescription[];
+
 extern const char kLensFiltersAblationModeEnabledName[];
 extern const char kLensFiltersAblationModeEnabledDescription[];
 
