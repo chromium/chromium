@@ -47,6 +47,7 @@
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/autofill/core/common/logging/log_macros.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
@@ -472,13 +473,15 @@ FillingProduct FormFiller::UndoAutofill(
     field.set_value(previous_state.value);
     field.set_is_autofilled(previous_state.is_autofilled);
 
-    // Update the cached AutofillField in the browser.
-    // TODO(crbug.com/40232021): Consider updating the value too.
-    autofill_field.set_is_autofilled(previous_state.is_autofilled);
-    autofill_field.set_autofill_source_profile_guid(
-        previous_state.autofill_source_profile_guid);
-    autofill_field.set_autofilled_type(previous_state.autofilled_type);
-    autofill_field.set_filling_product(previous_state.filling_product);
+    // Update the cached AutofillField in the browser if the operation isn't a
+    // preview.
+    if (action_persistence == mojom::ActionPersistence::kFill) {
+      autofill_field.set_is_autofilled(previous_state.is_autofilled);
+      autofill_field.set_autofill_source_profile_guid(
+          previous_state.autofill_source_profile_guid);
+      autofill_field.set_autofilled_type(previous_state.autofilled_type);
+      autofill_field.set_filling_product(previous_state.filling_product);
+    }
   }
   form.set_fields(std::move(fields));
 
