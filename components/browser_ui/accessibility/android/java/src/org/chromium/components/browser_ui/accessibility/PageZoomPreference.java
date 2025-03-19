@@ -4,6 +4,7 @@
 
 package org.chromium.components.browser_ui.accessibility;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.content_public.browser.HostZoomMap.AVAILABLE_ZOOM_FACTORS;
 
 import android.content.Context;
@@ -15,17 +16,19 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDelegate.IntegerPreferenceDelegate;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.ui.widget.ChromeImageButton;
 
 /** Custom preference for the page zoom section of Accessibility Settings. */
+@NullMarked
 public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarChangeListener {
     private int mInitialValue;
     private SeekBar mSeekBar;
@@ -33,11 +36,11 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
     private ChromeImageButton mIncreaseButton;
     private TextView mCurrentValueText;
 
-    private SeekBar mTextSizeContrastSeekBar;
-    private ChromeImageButton mTextSizeContrastDecreaseButton;
-    private ChromeImageButton mTextSizeContrastIncreaseButton;
-    private TextView mTextSizeContrastCurrentLevelText;
-    private IntegerPreferenceDelegate mTextSizeContrastDelegate;
+    private @Nullable SeekBar mTextSizeContrastSeekBar;
+    private @Nullable ChromeImageButton mTextSizeContrastDecreaseButton;
+    private @Nullable ChromeImageButton mTextSizeContrastIncreaseButton;
+    private @Nullable TextView mTextSizeContrastCurrentLevelText;
+    private @Nullable IntegerPreferenceDelegate mTextSizeContrastDelegate;
     private static final int TEXT_SIZE_CONTRAST_BUTTON_INCREMENT = 10;
 
     // Values taken from dimens of text_size_* in //ui/android/java/res/values/dimens.xml
@@ -56,47 +59,58 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
     private float mCurrentMultiplier;
     private int mTextSizeContrastFactor;
 
-    public PageZoomPreference(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public PageZoomPreference(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
         setLayoutResource(R.layout.page_zoom_preference);
     }
 
+    @Initializer
     @Override
-    public void onBindViewHolder(@NonNull PreferenceViewHolder holder) {
+    public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
         // Re-use the main control layout, but remove extra padding and background.
         LinearLayout container = (LinearLayout) holder.findViewById(R.id.page_zoom_view_container);
+        assumeNonNull(container);
         int top = container.getPaddingTop();
         int bot = container.getPaddingBottom();
         container.setBackground(null);
         container.setPadding(0, top, 0, bot);
 
-        mPreviewLargeText = (TextView) holder.findViewById(R.id.page_zoom_preview_large_text);
-        mPreviewMediumText = (TextView) holder.findViewById(R.id.page_zoom_preview_medium_text);
-        mPreviewSmallText = (TextView) holder.findViewById(R.id.page_zoom_preview_small_text);
+        mPreviewLargeText =
+                assumeNonNull((TextView) holder.findViewById(R.id.page_zoom_preview_large_text));
+        mPreviewMediumText =
+                assumeNonNull((TextView) holder.findViewById(R.id.page_zoom_preview_medium_text));
+        mPreviewSmallText =
+                assumeNonNull((TextView) holder.findViewById(R.id.page_zoom_preview_small_text));
 
         var resources = getContext().getResources();
         mDefaultPreviewImageSize =
                 resources.getDimensionPixelSize(R.dimen.page_zoom_preview_image_size);
-        mPreviewImage = (ImageView) holder.findViewById(R.id.page_zoom_preview_image);
+        mPreviewImage =
+                assumeNonNull((ImageView) holder.findViewById(R.id.page_zoom_preview_image));
         mPreviewImageParams =
                 new LinearLayout.LayoutParams(mPreviewImage.getWidth(), mPreviewImage.getHeight());
 
         // Set up Page Zoom slider.
-        mCurrentValueText = (TextView) holder.findViewById(R.id.page_zoom_current_value_text);
+        mCurrentValueText =
+                assumeNonNull((TextView) holder.findViewById(R.id.page_zoom_current_value_text));
         mCurrentValueText.setText(resources.getString(R.string.page_zoom_level, 100));
 
         mDecreaseButton =
-                (ChromeImageButton) holder.findViewById(R.id.page_zoom_decrease_zoom_button);
+                assumeNonNull(
+                        (ChromeImageButton)
+                                holder.findViewById(R.id.page_zoom_decrease_zoom_button));
         mDecreaseButton.setOnClickListener(v -> onHandleDecreaseClicked());
 
         mIncreaseButton =
-                (ChromeImageButton) holder.findViewById(R.id.page_zoom_increase_zoom_button);
+                assumeNonNull(
+                        (ChromeImageButton)
+                                holder.findViewById(R.id.page_zoom_increase_zoom_button));
         mIncreaseButton.setOnClickListener(v -> onHandleIncreaseClicked());
 
-        mSeekBar = (SeekBar) holder.findViewById(R.id.page_zoom_slider);
+        mSeekBar = assumeNonNull((SeekBar) holder.findViewById(R.id.page_zoom_slider));
         mSeekBar.setOnSeekBarChangeListener(this);
         mSeekBar.setMax(PageZoomUtils.PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE);
         mSeekBar.setProgress(mInitialValue);
@@ -105,13 +119,16 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
 
         // Set up text size contrast slider.
         if (ContentFeatureMap.isEnabled(ContentFeatureList.SMART_ZOOM)) {
-            holder.findViewById(R.id.text_size_contrast_title).setVisibility(View.VISIBLE);
-            holder.findViewById(R.id.text_size_contrast_summary).setVisibility(View.VISIBLE);
-            holder.findViewById(R.id.text_size_contrast_layout_container)
+            assumeNonNull(holder.findViewById(R.id.text_size_contrast_title))
+                    .setVisibility(View.VISIBLE);
+            assumeNonNull(holder.findViewById(R.id.text_size_contrast_summary))
+                    .setVisibility(View.VISIBLE);
+            assumeNonNull(holder.findViewById(R.id.text_size_contrast_layout_container))
                     .setVisibility(View.VISIBLE);
 
             mTextSizeContrastCurrentLevelText =
                     (TextView) holder.findViewById(R.id.text_size_contrast_current_value_text);
+            assumeNonNull(mTextSizeContrastCurrentLevelText);
             mTextSizeContrastCurrentLevelText.setText(
                     resources.getString(R.string.text_size_contrast_level, 0));
             mTextSizeContrastCurrentLevelText.setVisibility(View.VISIBLE);
@@ -119,6 +136,7 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
             mTextSizeContrastDecreaseButton =
                     (ChromeImageButton)
                             holder.findViewById(R.id.text_size_contrast_decrease_zoom_button);
+            assumeNonNull(mTextSizeContrastDecreaseButton);
             mTextSizeContrastDecreaseButton.setOnClickListener(
                     v -> onHandleContrastDecreaseClicked());
             mTextSizeContrastDecreaseButton.setVisibility(View.VISIBLE);
@@ -126,14 +144,17 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
             mTextSizeContrastIncreaseButton =
                     (ChromeImageButton)
                             holder.findViewById(R.id.text_size_contrast_increase_zoom_button);
+            assumeNonNull(mTextSizeContrastIncreaseButton);
             mTextSizeContrastIncreaseButton.setOnClickListener(
                     v -> onHandleContrastIncreaseClicked());
             mTextSizeContrastIncreaseButton.setVisibility(View.VISIBLE);
 
             mTextSizeContrastSeekBar =
                     (SeekBar) holder.findViewById(R.id.text_size_contrast_slider);
+            assumeNonNull(mTextSizeContrastSeekBar);
             mTextSizeContrastSeekBar.setOnSeekBarChangeListener(this);
             mTextSizeContrastSeekBar.setMax(PageZoomUtils.TEXT_SIZE_CONTRAST_MAX_LEVEL);
+            assumeNonNull(mTextSizeContrastDelegate);
             mTextSizeContrastFactor = mTextSizeContrastDelegate.getValue();
             mTextSizeContrastSeekBar.setProgress(mTextSizeContrastFactor);
             mTextSizeContrastSeekBar.setVisibility(View.VISIBLE);
@@ -169,6 +190,7 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
                     (int) Math.round(100 * PageZoomUtils.convertSeekBarValueToZoomLevel(progress));
             mCurrentValueText.setText(getContext().getString(R.string.page_zoom_level, zoomLevel));
         } else if (seekBar.getId() == R.id.text_size_contrast_slider) {
+            assumeNonNull(mTextSizeContrastCurrentLevelText);
             mTextSizeContrastCurrentLevelText.setText(
                     getContext().getString(R.string.text_size_contrast_level, progress));
         }
@@ -213,6 +235,8 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
             mIncreaseButton.setEnabled(
                     newZoomFactor < AVAILABLE_ZOOM_FACTORS[AVAILABLE_ZOOM_FACTORS.length - 1]);
         } else if (seekBar.getId() == R.id.text_size_contrast_slider) {
+            assumeNonNull(mTextSizeContrastDecreaseButton);
+            assumeNonNull(mTextSizeContrastIncreaseButton);
             mTextSizeContrastDecreaseButton.setEnabled(progress > 0);
             mTextSizeContrastIncreaseButton.setEnabled(
                     progress < PageZoomUtils.TEXT_SIZE_CONTRAST_MAX_LEVEL);
@@ -268,6 +292,7 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
     }
 
     private void onHandleContrastDecreaseClicked() {
+        assumeNonNull(mTextSizeContrastSeekBar);
         // Decrease the contrast slider by defined increment.
         mTextSizeContrastSeekBar.setProgress(
                 mTextSizeContrastSeekBar.getProgress() - TEXT_SIZE_CONTRAST_BUTTON_INCREMENT);
@@ -275,6 +300,7 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
     }
 
     private void onHandleContrastIncreaseClicked() {
+        assumeNonNull(mTextSizeContrastSeekBar);
         // Increase the contrast slider by defined increment.
         mTextSizeContrastSeekBar.setProgress(
                 mTextSizeContrastSeekBar.getProgress() + TEXT_SIZE_CONTRAST_BUTTON_INCREMENT);
@@ -282,6 +308,8 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
     }
 
     private void saveTextSizeContrastValueToPreferences() {
+        assumeNonNull(mTextSizeContrastDelegate);
+        assumeNonNull(mTextSizeContrastSeekBar);
         mTextSizeContrastDelegate.setValue(mTextSizeContrastSeekBar.getProgress());
     }
 
@@ -296,11 +324,12 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
         updateViewsOnProgressChanged(progress, mSeekBar);
     }
 
-    public SeekBar getTextSizeContrastSliderForTesting() {
+    public @Nullable SeekBar getTextSizeContrastSliderForTesting() {
         return mTextSizeContrastSeekBar;
     }
 
     public void setTextContrastValueForTesting(int contrast) {
+        assumeNonNull(mTextSizeContrastSeekBar);
         mTextSizeContrastSeekBar.setProgress(contrast);
         updateViewsOnProgressChanged(contrast, mTextSizeContrastSeekBar);
     }

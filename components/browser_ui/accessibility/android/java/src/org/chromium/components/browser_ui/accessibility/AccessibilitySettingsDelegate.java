@@ -4,6 +4,7 @@
 
 package org.chromium.components.browser_ui.accessibility;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
@@ -11,6 +12,7 @@ import org.chromium.content_public.browser.BrowserContextHandle;
  * An interface implemented by the embedder that allows the Accessibility Settings UI to access
  * embedder-specific logic.
  */
+@NullMarked
 public interface AccessibilitySettingsDelegate {
     /** An interface to control a single integer preference. */
     interface IntegerPreferenceDelegate {

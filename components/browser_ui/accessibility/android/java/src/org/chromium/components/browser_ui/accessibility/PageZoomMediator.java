@@ -9,18 +9,21 @@ import static org.chromium.components.browser_ui.accessibility.PageZoomUtils.con
 import static org.chromium.content_public.browser.HostZoomMap.AVAILABLE_ZOOM_FACTORS;
 import static org.chromium.content_public.browser.HostZoomMap.setSystemFontScale;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * Internal Mediator for the page zoom feature. Created by the |PageZoomCoordinator|, and should
- * not be accessed outside the component.
+ * Internal Mediator for the page zoom feature. Created by the |PageZoomCoordinator|, and should not
+ * be accessed outside the component.
  */
+@NullMarked
 public class PageZoomMediator {
     private final PropertyModel mModel;
     private WebContents mWebContents;
@@ -44,8 +47,10 @@ public class PageZoomMediator {
 
     /**
      * Set the web contents that should be controlled by this instance.
-     * @param webContents   The WebContents this instance should control.
+     *
+     * @param webContents The WebContents this instance should control.
      */
+    @Initializer
     protected void setWebContents(WebContents webContents) {
         mWebContents = webContents;
         initialize();
@@ -66,7 +71,7 @@ public class PageZoomMediator {
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    void handleDecreaseClicked(Void unused) {
+    void handleDecreaseClicked(@Nullable Void unused) {
         // When decreasing zoom, "snap" to the greatest preset value that is less than the current.
         double currentZoomFactor = getZoomLevel(mWebContents);
         int index = PageZoomUtils.getNextIndex(true, currentZoomFactor);
@@ -77,7 +82,7 @@ public class PageZoomMediator {
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    void handleIncreaseClicked(Void unused) {
+    void handleIncreaseClicked(@Nullable Void unused) {
         // When increasing zoom, "snap" to the smallest preset value that is more than the current.
         double currentZoomFactor = getZoomLevel(mWebContents);
         int index = PageZoomUtils.getNextIndex(false, currentZoomFactor);
@@ -88,7 +93,7 @@ public class PageZoomMediator {
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    void handleResetClicked(Void unused) {
+    void handleResetClicked(@Nullable Void unused) {
         // Reset as if the user moved the seekbar to the default zoom value
         handleSeekBarValueChanged(
                 PageZoomUtils.convertZoomFactorToSeekBarValue(mDefaultZoomFactor));
@@ -105,6 +110,7 @@ public class PageZoomMediator {
         mLatestZoomValue = PageZoomUtils.convertSeekBarValueToZoomLevel(newValue);
     }
 
+    @Initializer
     private void initialize() {
         // We must first fetch the current zoom factor for the given web contents.
         double currentZoomFactor = getZoomLevel(mWebContents);
@@ -145,12 +151,12 @@ public class PageZoomMediator {
 
     // Pass-through methods to HostZoomMap, which has static methods to call through JNI.
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    void setZoomLevel(@NonNull WebContents webContents, double newZoomLevel) {
+    void setZoomLevel(WebContents webContents, double newZoomLevel) {
         HostZoomMap.setZoomLevel(webContents, newZoomLevel);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    double getZoomLevel(@NonNull WebContents webContents) {
+    double getZoomLevel(WebContents webContents) {
         return HostZoomMap.getZoomLevel(webContents);
     }
 }
