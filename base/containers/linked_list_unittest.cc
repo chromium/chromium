@@ -4,7 +4,11 @@
 
 #include "base/containers/linked_list.h"
 
+#include <utility>
+#include <vector>
+
 #include "base/containers/span.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -343,6 +347,28 @@ TEST(LinkedList, NodeMoveConstructor) {
   EXPECT_EQ(&n3, n2_new.next());
   EXPECT_EQ(&n2_new, n3.previous());
   EXPECT_EQ(2, n2_new.id());
+}
+
+TEST(LinkedList, LinkedListMoveConstructor) {
+  // Moving list sizes 0 (head==end), 1 (head==tail), 2 (head!=tail) all stress
+  // different cases. Also test size 3 in case it does something weird.
+  for (size_t size = 0; size <= 3; ++size) {
+    SCOPED_TRACE(StringPrintf("List size %zu", size));
+    LinkedList<Node> original_list;
+
+    std::vector<Node> nodes;
+    std::vector<int> expected_contents;
+    nodes.reserve(size);
+    for (int id = 0; id < size; ++id) {
+      nodes.emplace_back(id);
+      original_list.Append(&nodes.back());
+      expected_contents.push_back(id);
+    }
+
+    LinkedList<Node> new_list = std::move(original_list);
+
+    ExpectListContents(new_list, expected_contents);
+  }
 }
 
 TEST(LinkedListDeathTest, ChecksOnInsertBeforeWhenInList) {

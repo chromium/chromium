@@ -159,6 +159,12 @@ class LinkedList {
   LinkedList(const LinkedList&) = delete;
   LinkedList& operator=(const LinkedList&) = delete;
 
+  // Use move constructor with care. Returning a LinkedList from a function may
+  // be unsafe if the nodes are allocated on the stack. This operation is O(1)
+  // as only head and tail nodes are modified. `other` is left in an invalid
+  // state (head() and tail() are null).
+  LinkedList(LinkedList&& other) = default;
+
   // Appends |e| to the end of the linked list.
   void Append(LinkNode<T>* e) { e->InsertBefore(&root_); }
 
