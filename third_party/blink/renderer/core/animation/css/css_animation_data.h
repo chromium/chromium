@@ -65,6 +65,7 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   const Vector<StyleTimeline>& TriggerTimelineList() const {
     return trigger_timeline_list_;
   }
+  const StyleTimeline& GetTriggerTimeline(size_t index) const;
   const Vector<std::optional<TimelineOffset>>& TriggerRangeStartList() const {
     return trigger_range_start_list_;
   }
