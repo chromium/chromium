@@ -570,11 +570,6 @@
       },
     },
     {
-      // https://docs.google.com/document/d/1FY3AINZW_h2GU81U-XPQz8bKT6wgt0u7Z9GF4o7_Llk/edit?resourcekey=0-lQnRY9BK0iclRRV62LgVDQ
-      name: "BeaconLeakageLogging",
-      public: true,
-    },
-    {
       name: "BidiCaretAffinity",
     },
     {
