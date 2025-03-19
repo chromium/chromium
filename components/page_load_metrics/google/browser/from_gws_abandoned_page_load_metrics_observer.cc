@@ -179,6 +179,17 @@ void FromGWSAbandonedPageLoadMetricsObserver::LogUKMHistograms(
       ukm::ConvertToSourceId(navigation_id(), ukm::SourceIdType::NAVIGATION_ID);
 
   ukm::builders::Navigation_FromGoogleSearch_Abandoned builder(source_id);
+  // Check if the abandoned milestone is redirect related. If it is, then we
+  // check whether a second redirect happened and override the abandoned
+  // milestone if possible.
+  if (milestone == NavigationMilestone::kFirstRedirectResponseLoaderCallback) {
+    if (!second_redirect_response_start_time_.is_null()) {
+      milestone = NavigationMilestone::kSecondRedirectResponseStart;
+    } else if (!second_redirect_request_start_time_.is_null()) {
+      milestone = NavigationMilestone::kSecondRedirectedRequestStart;
+    }
+  }
+
   LogUKMHistogramsForAbandonMetrics(builder, abandon_reason, milestone,
                                     event_time, relative_start_time);
   builder.Record(ukm::UkmRecorder::Get());
