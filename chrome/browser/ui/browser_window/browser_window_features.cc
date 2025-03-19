@@ -19,6 +19,7 @@
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
@@ -161,7 +162,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   memory_saver_bubble_controller_ =
       std::make_unique<memory_saver::MemorySaverBubbleController>(browser);
 
-  translate_bubble_controller_ = std::make_unique<TranslateBubbleController>();
+  translate_bubble_controller_ = std::make_unique<TranslateBubbleController>(
+      browser->GetActions()->root_action_item());
 }
 
 void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
