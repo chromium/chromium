@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/handle.h"
@@ -38,12 +39,16 @@ namespace internal {
 // Encapsulates a thread-local ipcz node which is brought up lazily by any
 // DirectReceiver when binding a pipe on a specific thread. The underlying node
 // is ref-counted such that a thread's node is automatically torn down when its
-// last DirectReceiver goes away.
+// last DirectReceiver goes away. (Except in sandboxed processes on Windows,
+// which only allow a fixed number of ThreadLocalNodes, so once created they're
+// never deleted.)
+// TODO(crbug.com/40266729): Remove the refcounting completely. It's unneeded
+// complexity.
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ThreadLocalNode
     : public base::RefCounted<ThreadLocalNode> {
  public:
   // Construction requires a PassKey private to this class. In practice,
-  // constructed only within the static `Get()` method as needed.`
+  // constructed only within the static `Get()` method as needed.
   explicit ThreadLocalNode(base::PassKey<ThreadLocalNode>);
 
   // Gets the current thread's ThreadLocalNode instance, initializing a new one
@@ -162,6 +167,19 @@ class DirectReceiver {
 
 // Indicates whether DirectReceiver can be supported in the calling process.
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS) bool IsDirectReceiverSupported();
+
+#if BUILDFLAG(IS_WIN)
+
+// The Windows sandbox blocks named pipe creation, so in a sandboxed process
+// this must be called before the sandbox is locked down. This is safe to call
+// in an unsandboxed process but is not required.
+//
+// This restricts DirectReceiver to a single thread, although the number of
+// threads could be increased by creating more transports if needed.
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS)
+void CreateDirectReceiverTransportBeforeSandbox();
+
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace mojo
 
