@@ -3716,8 +3716,10 @@ if (!is_android) {
         "//chrome/browser/on_device_translation/on_device_translation_browsertest.cc",
       ]
       deps += [
+        "//chrome/browser/ai:test_support",
         "//chrome/browser/on_device_translation",
         "//chrome/browser/on_device_translation:test_support",
+        "//components/component_updater:test_support",
         "//components/services/on_device_translation:test_support",
         "//components/services/on_device_translation/public/cpp:cpp",
       ]

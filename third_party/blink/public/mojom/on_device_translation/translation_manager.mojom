@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom";
 import "third_party/blink/public/mojom/on_device_translation/translator.mojom";
 
 
@@ -124,6 +125,9 @@ struct TranslatorCreateOptions {
   TranslatorLanguageCode source_lang;
   // This is `AITranslatorCreateOptions`'s `targetLanguage` of Translator API.
   TranslatorLanguageCode target_lang;
+  // A remote to the `AICreateMonitor` that we can report download progress
+  // events to.
+  pending_remote<ModelDownloadProgressObserver>? observer_remote;
 };
 
 // The availability of a translation.

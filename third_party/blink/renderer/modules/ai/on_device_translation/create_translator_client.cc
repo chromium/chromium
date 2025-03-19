@@ -111,14 +111,6 @@ void CreateTranslatorClient::OnResult(
     return;
   }
   if (result->is_translator()) {
-    // TODO (crbug.com/391715395): Pass the real download progress rather than
-    // mocking one.
-    if (monitor_) {
-      monitor_->OnDownloadProgressUpdate(0, kNormalizedDownloadProgressMax);
-      monitor_->OnDownloadProgressUpdate(kNormalizedDownloadProgressMax,
-                                         kNormalizedDownloadProgressMax);
-    }
-
     GetResolver()->Resolve(MakeGarbageCollected<AITranslator>(
         std::move(result->get_translator()), task_runner_,
         std::move(source_language_), std::move(target_language_)));
@@ -153,12 +145,20 @@ void CreateTranslatorClient::OnGotAvailability(
 
   receiver_.Bind(client.InitWithNewPipeAndPassReceiver(), task_runner_);
 
+  mojo::PendingRemote<mojom::blink::ModelDownloadProgressObserver>
+      progress_observer;
+
+  if (monitor_) {
+    progress_observer = monitor_->BindRemote();
+  }
+
   AIInterfaceProxy::GetTranslationManagerRemote(GetExecutionContext())
       ->CreateTranslator(
           std::move(client),
           mojom::blink::TranslatorCreateOptions::New(
               mojom::blink::TranslatorLanguageCode::New(source_language_),
-              mojom::blink::TranslatorLanguageCode::New(target_language_)));
+              mojom::blink::TranslatorLanguageCode::New(target_language_),
+              std::move(progress_observer)));
 }
 
 void CreateTranslatorClient::ResetReceiver() {
