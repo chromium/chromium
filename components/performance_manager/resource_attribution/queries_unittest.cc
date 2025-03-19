@@ -307,34 +307,6 @@ TEST_F(ResourceAttrQueriesPMTest, QueryBuilder_QueryOnce_CPUAndMemory) {
   run_loop.Run();
 }
 
-TEST_F(ResourceAttrQueriesPMTest, QueryBuilder_QueryOnceWithTaskRunner) {
-  auto main_thread_task_runner = base::SequencedTaskRunner::GetCurrentDefault();
-  base::RunLoop run_loop;
-  auto expect_results_on_main_thread = [this, main_thread_task_runner,
-                                        quit_closure = run_loop.QuitClosure()](
-                                           const QueryResultMap& results) {
-    EXPECT_THAT(results,
-                ElementsAre(ResultForContextMatches<MemorySummaryResult>(
-                    main_frame_context(),
-                    FakeMemorySummaryResult(MeasurementAlgorithm::kSplit))));
-    EXPECT_TRUE(main_thread_task_runner->RunsTasksInCurrentSequence());
-    std::move(quit_closure).Run();
-  };
-
-  // Create the query on the graph sequence, but tell it to run the result
-  // callback on the main thread.
-  performance_manager::RunInGraph([&] {
-    QueryBuilder()
-        .AddResourceContext(main_frame_context())
-        .AddResourceType(ResourceType::kMemorySummary)
-        .QueryOnce(base::BindLambdaForTesting(expect_results_on_main_thread),
-                   main_thread_task_runner);
-  });
-
-  // Block the main thread until the result is received.
-  run_loop.Run();
-}
-
 TEST_F(ResourceAttrQueriesPMTest, AddRemoveScopedQuery) {
   QueryScheduler* scheduler = nullptr;
   performance_manager::RunInGraph([&](Graph* graph) {
@@ -468,6 +440,8 @@ TEST_F(ResourceAttrQueriesPMTest, Observers) {
 
   // Observer can be notified from the graph sequence when installed on any
   // thread.
+  // TODO(crbug.com/40755583): This test can be simplified once observers use
+  // ObserverList instead of ObserverListThreadSafe.
   MockQueryResultObserver main_thread_observer;
   scoped_query.AddObserver(&main_thread_observer);
   auto main_thread_task_runner = base::SequencedTaskRunner::GetCurrentDefault();

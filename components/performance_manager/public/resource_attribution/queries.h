@@ -13,7 +13,6 @@
 #include "base/observer_list_threadsafe.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
@@ -39,7 +38,7 @@ class QueryResultObserver {
 };
 
 // Repeatedly makes resource attribution queries on a schedule as long as it's
-// in scope.
+// in scope. All methods must be called on the UI thread.
 class ScopedResourceUsageQuery {
  public:
   ~ScopedResourceUsageQuery();
@@ -50,25 +49,21 @@ class ScopedResourceUsageQuery {
   ScopedResourceUsageQuery(const ScopedResourceUsageQuery&) = delete;
   ScopedResourceUsageQuery& operator=(const ScopedResourceUsageQuery&) = delete;
 
-  // Adds an observer that will be notified on the calling sequence. Can be
-  // called from any sequence.
+  // Adds an observer that will be notified whenever query results are updated.
   void AddObserver(QueryResultObserver* observer);
 
-  // Removes an observer. Must be called from the same sequence as
-  // AddObserver().
+  // Removes an observer that was added with AddObserver().
   void RemoveObserver(QueryResultObserver* observer);
 
   // Starts sending scheduled queries. They will repeat as long as the
-  // ScopedResourceUsageQuery object exists. This must be called on the sequence
-  // the object was created on.
+  // ScopedResourceUsageQuery object exists.
   // TODO(crbug.com/40926264): Repeating queries will be sent on a timer with
   // `delay` between queries. Replace this with the full scheduling hints
   // described at https://bit.ly/resource-attribution-api#heading=h.upcqivkhbs4t
   void Start(base::TimeDelta delay);
 
   // Sends an immediate query, in addition to the schedule of repeated queries
-  // triggered by Start(). This must be called on the sequence the
-  // ScopedResourceUsageQuery object was created on.
+  // triggered by Start().
   void QueryOnce();
 
   // Restricted implementation methods:
@@ -97,6 +92,7 @@ class ScopedResourceUsageQuery {
                            std::unique_ptr<internal::QueryParams> params);
 
  private:
+  // TODO(crbug.com/40755583): This no longer needs to be thread-safe.
   using ObserverList = base::ObserverListThreadSafe<
       QueryResultObserver,
       base::RemoveObserverPolicy::kAddingSequenceOnly>;
@@ -186,14 +182,12 @@ class QueryBuilder {
   // invalid.
   ScopedResourceUsageQuery CreateScopedQuery();
 
-  // Runs the query and calls `callback` with the result. `callback` will be
-  // invoked on `task_runner`. Once this is called the QueryBuilder becomes
-  // invalid.
+  // Runs the query and calls `callback` with the result. Once this is called
+  // the QueryBuilder becomes invalid. This must be called on the UI thread,
+  // which is also the thread `callback` will be invoked on.
   // TODO(crbug.com/40926264): This takes an immediate measurement. Implement
   // more notification schedules.
-  void QueryOnce(base::OnceCallback<void(const QueryResultMap&)> callback,
-                 scoped_refptr<base::TaskRunner> task_runner =
-                     base::SequencedTaskRunner::GetCurrentDefault());
+  void QueryOnce(base::OnceCallback<void(const QueryResultMap&)> callback);
 
   // Makes a copy of the QueryBuilder to use as a base for similar queries.
   QueryBuilder Clone() const;
