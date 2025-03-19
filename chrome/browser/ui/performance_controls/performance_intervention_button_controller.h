@@ -16,6 +16,10 @@
 class Browser;
 class TabStripModel;
 
+namespace feature_engagement {
+class Tracker;
+}
+
 namespace {
 
 using performance_manager::user_tuning::PerformanceDetectionManager;
@@ -41,6 +45,8 @@ class PerformanceInterventionButtonController
   PerformanceInterventionButtonController& operator=(
       const PerformanceInterventionButtonController&) = delete;
 
+  static int GetAcceptancePercentage();
+
   // PerformanceDetectionManager::ActionableTabsObserver:
   void OnActionableTabListChanged(
       PerformanceDetectionManager::ResourceType type,
@@ -61,7 +67,7 @@ class PerformanceInterventionButtonController
     return actionable_cpu_tabs_;
   }
 
-  int GetAcceptancePercentage();
+  bool ShouldShowNotification(feature_engagement::Tracker* tracker);
 
  private:
   void HideToolbarButton(bool accept_intervention);
@@ -77,8 +83,6 @@ class PerformanceInterventionButtonController
   // Otherwise, returns false.
   bool ContainsNonLastActiveProfile(
       const PerformanceDetectionManager::ActionableTabsResult& result);
-
-  bool ShouldShowNotification();
 
   raw_ptr<PerformanceInterventionButtonControllerDelegate> delegate_ = nullptr;
   const raw_ptr<Browser> browser_;
