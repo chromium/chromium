@@ -1546,12 +1546,15 @@ bool CanvasResourceProvider::OverwriteImage(
     return false;
   }
 
-  raster->WaitSyncTokenCHROMIUM(ready_sync_token.GetConstData());
+  std::unique_ptr<gpu::RasterScopedAccess> ri_access =
+      shared_image->BeginRasterAccess(raster, ready_sync_token,
+                                      /*readonly=*/true);
   raster->CopySharedImage(shared_image->mailbox(), dst_client_si->mailbox(),
                           /*xoffset=*/0,
                           /*yoffset=*/0, copy_rect.x(), copy_rect.y(),
                           copy_rect.width(), copy_rect.height());
-  raster->GenUnverifiedSyncTokenCHROMIUM(completion_sync_token.GetData());
+  completion_sync_token =
+      gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
   return true;
 }
 
