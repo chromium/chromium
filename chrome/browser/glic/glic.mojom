@@ -186,6 +186,7 @@ struct WebClientInitialState {
   bool location_permission_enabled;
   bool tab_context_permission_enabled;
   bool os_location_permission_enabled;
+  string hotkey;
   mojo_base.mojom.Version chrome_version;
   // Whether the glic panel can currently be attached to a browser window.
   bool can_attach;
@@ -565,6 +566,9 @@ interface WebClient {
 
   // The user started or stopped manually resizing the window.
   NotifyManualResizeChanged(bool resizing);
+
+  // The OS Hotkey has changed.
+  NotifyOsHotkeyStateChanged(string hotkey);
 };
 
 // Information extracted from a tab.

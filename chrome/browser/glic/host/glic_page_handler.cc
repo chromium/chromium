@@ -20,6 +20,7 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/glic_hotkey.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_metrics.h"
@@ -259,6 +260,13 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     state->panel_is_active = active_state_calculator_.IsActive();
 
     state->sizing_mode = GetWebClientSizingMode();
+
+    local_state_pref_change_registrar_.Init(g_browser_process->local_state());
+    local_state_pref_change_registrar_.Add(
+        prefs::kGlicLauncherHotkey,
+        base::BindRepeating(&GlicWebClientHandler::OnLocalStatePrefChanged,
+                            base::Unretained(this)));
+    state->hotkey = GetHotkeyString();
 
     std::move(callback).Run(std::move(state));
     glic_service_->WebClientCreated();
@@ -555,6 +563,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       glic_service_->window_controller().SetWebClient(nullptr);
     }
     pref_change_registrar_.Reset();
+    local_state_pref_change_registrar_.Reset();
     glic_service_->window_controller().RemoveStateObserver(this);
     focus_changed_subscription_ = {};
     browser_attach_observation_.reset();
@@ -572,6 +581,14 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       web_client_->NotifyTabContextPermissionStateChanged(is_enabled);
     } else {
       DCHECK(false) << "Unknown Glic permission pref changed: " << pref_name;
+    }
+  }
+
+  void OnLocalStatePrefChanged(const std::string& pref_name) {
+    if (pref_name == prefs::kGlicLauncherHotkey) {
+      web_client_->NotifyOsHotkeyStateChanged(GetHotkeyString());
+    } else {
+      CHECK(false) << "Unknown local state pref changed: " << pref_name;
     }
   }
 
@@ -594,6 +611,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   PrefChangeRegistrar pref_change_registrar_;
+  PrefChangeRegistrar local_state_pref_change_registrar_;
   raw_ptr<Profile> profile_;
   raw_ptr<GlicPageHandler> page_handler_;
   raw_ptr<GlicKeyedService> glic_service_;

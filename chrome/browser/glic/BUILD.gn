@@ -91,6 +91,8 @@ source_set("impl") {
     "fre/glic_fre_page_handler.h",
     "fre/glic_fre_ui.cc",
     "glic_enabling.cc",
+    "glic_hotkey.cc",
+    "glic_hotkey.h",
     "glic_keyed_service.cc",
     "glic_keyed_service_factory.cc",
     "glic_metrics.cc",
