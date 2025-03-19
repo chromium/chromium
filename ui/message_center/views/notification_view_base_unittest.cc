@@ -27,6 +27,8 @@
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
+#include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/notification_header_view.h"
 #include "ui/message_center/views/notification_view.h"
@@ -36,8 +38,10 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/radio_button.h"
+#include "ui/views/controls/progress_bar.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/widget_test.h"
@@ -1158,6 +1162,17 @@ TEST_F(NotificationViewBaseTest, ShowProgress) {
   EXPECT_TRUE(notification_view()
                   ->header_row_->summary_text_for_testing()
                   ->GetVisible());
+}
+
+TEST_F(NotificationViewBaseTest, ProgressBarDoesNotOverpaint) {
+  std::unique_ptr<Notification> notification = CreateSimpleNotification();
+  notification->set_type(NOTIFICATION_TYPE_PROGRESS);
+  UpdateNotificationViews(*notification);
+  EXPECT_EQ(notification_view()
+                ->progress_bar_view_for_testing()
+                ->CalculatePreferredSize(views::SizeBounds())
+                .height(),
+            4);
 }
 
 TEST_F(NotificationViewBaseTest, ShowTimestamp) {

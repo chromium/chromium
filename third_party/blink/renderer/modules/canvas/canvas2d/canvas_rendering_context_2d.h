@@ -302,6 +302,8 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   void ColorSchemeMayHaveChanged() override;
 
+  CanvasResourceProvider* GetOrCreateCanvas2DResourceProvider() override;
+
   FilterOperations filter_operations_;
   HashMap<String, FontDescription> fonts_resolved_using_current_style_;
   bool should_prune_local_font_cache_;

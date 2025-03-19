@@ -275,6 +275,7 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kTitle:
     case SuggestionType::kUndoOrClear:
     case SuggestionType::kViewPasswordDetails:
+    case SuggestionType::kIdentityCredential:
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kPendingStateSignin:
@@ -688,6 +689,9 @@ void AutofillExternalDelegate::DidSelectSuggestion(
         PreviewAddressFieldByFieldFillingSuggestion(*profile, suggestion);
       }
       break;
+    case SuggestionType::kIdentityCredential:
+      // TODO(crbug.com/380367784): support previewing.
+      break;
     case SuggestionType::kComposeDisable:
     case SuggestionType::kComposeGoToSettings:
     case SuggestionType::kComposeNeverShowOnThisSiteAgain:
@@ -881,20 +885,19 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
                                     suggestion.payload)) {
         FillAddressFieldByFieldFillingSuggestion(*profile, suggestion,
                                                  metadata);
-        // TODO(crbug.com/381994105): Consider deleting this metric in favor or
-        // Autofill.AddressSuggestionOnTypingAcceptance.PerFieldType.
-        base::UmaHistogramEnumeration(
-            "Autofill.AddressSuggestionOnTyping.AddressFieldTypeUsed",
+        autofill_metrics::LogAddressAutofillOnTypingSuggestionAccepted(
             suggestion.field_by_field_filling_type_used.value(),
-            FieldType::MAX_VALID_FIELD_TYPE);
-        const AutofillField* autofill_trigger_field = GetQueriedAutofillField();
-        base::UmaHistogramBoolean(
-            "Autofill.AddressSuggestionOnTypingAcceptance.FieldClassication",
-            autofill_trigger_field &&
-                autofill_trigger_field->Type().GetStorableType() >
-                    FieldType::EMPTY_TYPE);
+            GetQueriedAutofillField());
       }
       break;
+    case SuggestionType::kIdentityCredential: {
+      // TODO(crbug.com/380367784): support filling too.
+      if (const IdentityCredentialDelegate* identity_credential_delegate =
+              manager_->client().GetIdentityCredentialDelegate()) {
+        identity_credential_delegate->NotifySuggestionAccepted(suggestion);
+      }
+      break;
+    }
     case SuggestionType::kTitle:
     case SuggestionType::kSeparator:
     case SuggestionType::kPasswordEntry:
@@ -1016,6 +1019,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kDatalistEntry:
     case SuggestionType::kMerchantPromoCodeEntry:
     case SuggestionType::kSeePromoCodeDetails:
+    case SuggestionType::kIdentityCredential:
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kTitle:

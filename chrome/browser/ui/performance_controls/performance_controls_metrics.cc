@@ -7,14 +7,19 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
+#include "chrome/browser/ui/performance_controls/performance_intervention_button_controller.h"
 #include "chrome/common/pref_names.h"
 #include "components/metrics/daily_event.h"
+#include "components/performance_manager/public/features.h"
+#include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
 
 namespace {
@@ -60,6 +65,19 @@ class DailyEventObserver : public metrics::DailyEvent::Observer {
                       ".RateLimitedCount"}),
         GetAndResetPref(
             prefs::kPerformanceInterventionBackgroundCpuRateLimitedCount));
+
+    PrefService* const pref_service = g_browser_process->local_state();
+    if (base::FeatureList::IsEnabled(
+            performance_manager::features::
+                kPerformanceInterventionNotificationImprovements) &&
+        !pref_service
+             ->GetList(performance_manager::user_tuning::prefs::
+                           kPerformanceInterventionNotificationAcceptHistory)
+             .empty()) {
+      base::UmaHistogramPercentage(
+          "PerformanceControls.Intervention.DailyAcceptancePercentage",
+          PerformanceInterventionButtonController::GetAcceptancePercentage());
+    }
   }
 
   int GetAndResetPref(std::string pref_name) {

@@ -2619,6 +2619,121 @@ TEST_F(LensOverlayQueryControllerTest,
 }
 
 TEST_F(LensOverlayQueryControllerTest,
+       SendPartialPageContentRequest_UpdatedContentFields_SendsRequest) {
+  feature_list_.Reset();
+  base::FieldTrialParams params =
+      kDefaultLensOverlayContextualSearchboxParams.params;
+  params.insert({"use-updated-content-fields", "true"});
+  feature_list_.InitWithFeaturesAndParameters(
+      {{lens::features::kLensOverlayLatencyOptimizations,
+        {{"enable-cluster-info-optimization", "true"}}},
+       {lens::features::kLensOverlayContextualSearchbox, params}},
+      {});
+  TestLensOverlayQueryController query_controller(
+      /**full_image_callback=*/base::DoNothing(),
+      //   full_image_response_future.GetRepeatingCallback(),
+      /**url_callback=*/base::DoNothing(),
+      /**interaction_callback=*/base::NullCallback(),
+      /**suggest_inputs_callback=*/base::DoNothing(),
+      /**thumbnail_created_callback=*/base::DoNothing(), base::NullCallback(),
+      fake_variations_client_.get(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false, GetGen204Controller());
+
+  // Set up the server responses.
+  lens::LensOverlayServerClusterInfoResponse fake_cluster_info_response;
+  fake_cluster_info_response.set_server_session_id(kTestServerSessionId);
+  fake_cluster_info_response.set_search_session_id(kTestSearchSessionId);
+  query_controller.set_fake_cluster_info_response(fake_cluster_info_response);
+  lens::LensOverlayObjectsResponse fake_objects_response;
+  fake_objects_response.mutable_cluster_info()->set_server_session_id(
+      kTestServerSessionId);
+  query_controller.set_fake_objects_response(fake_objects_response);
+
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  std::map<std::string, std::string> additional_search_query_params;
+  query_controller.StartQueryFlow(
+      bitmap, GURL(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(), kFakePdfPageContents,
+      lens::MimeType::kPdf, 0, base::TimeTicks::Now());
+
+  const std::vector<std::u16string> kFakeSubstantialPartialContent(
+      {u"this is a page with enough content to make it substantial",
+       u"this is a second page substantial enought content"});
+  query_controller.SendPartialPageContentRequest(
+      kFakeSubstantialPartialContent);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return query_controller.num_partial_page_content_requests_sent() == 1;
+  }));
+
+  // Check the request is correct.
+  auto sent_request =
+      query_controller.sent_partial_page_content_objects_request();
+  ASSERT_EQ(1, sent_request.request_context().request_id().sequence_id());
+  ASSERT_EQ(lens::RequestType::REQUEST_TYPE_EARLY_PARTIAL_PDF,
+            sent_request.payload().request_type());
+  ASSERT_TRUE(sent_request.payload().content_data().empty());
+  ASSERT_TRUE(sent_request.payload().has_content());
+  EXPECT_EQ(1, sent_request.payload().content().content_data().size());
+  auto sent_content = sent_request.payload().content();
+  EXPECT_EQ(sent_content.content_data(0).content_type(),
+            lens::ContentData::CONTENT_TYPE_EARLY_PARTIAL_PDF);
+  lens::LensOverlayDocument partial_pdf_document;
+  EXPECT_TRUE(partial_pdf_document.ParseFromString(
+      sent_content.content_data(0).data()));
+  ASSERT_EQ(2, partial_pdf_document.pages_size());
+  ASSERT_EQ(1, partial_pdf_document.pages(0).page_number());
+  ASSERT_EQ("this is a page with enough content to make it substantial",
+            partial_pdf_document.pages(0).text_segments(0));
+  ASSERT_EQ(2, partial_pdf_document.pages(1).page_number());
+  ASSERT_EQ("this is a second page substantial enought content",
+            partial_pdf_document.pages(1).text_segments(0));
+
+  // Send a new page content request to increment the sequence id.
+  query_controller.SendUpdatedPageContent(kFakePdfPageContents,
+                                          lens::MimeType::kPdf,
+                                          GURL(kTestPageUrl), SkBitmap());
+
+  // Send a new request.
+  const std::vector<std::u16string> kNewFakeSubstantialPartialContent(
+      {u"this is a new page1 with substantial enough content to be sent"});
+  query_controller.SendPartialPageContentRequest(
+      kNewFakeSubstantialPartialContent);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return query_controller.num_partial_page_content_requests_sent() == 2;
+  }));
+
+  // Check the request is correct.
+  sent_request = query_controller.sent_partial_page_content_objects_request();
+  ASSERT_EQ(3, sent_request.request_context().request_id().sequence_id());
+  ASSERT_EQ(lens::RequestType::REQUEST_TYPE_EARLY_PARTIAL_PDF,
+            sent_request.payload().request_type());
+  ASSERT_TRUE(sent_request.payload().content_data().empty());
+  ASSERT_TRUE(sent_request.payload().has_content());
+  EXPECT_EQ(1, sent_request.payload().content().content_data().size());
+  sent_content = sent_request.payload().content();
+  EXPECT_EQ(sent_content.content_data(0).content_type(),
+            lens::ContentData::CONTENT_TYPE_EARLY_PARTIAL_PDF);
+  EXPECT_TRUE(partial_pdf_document.ParseFromString(
+      sent_content.content_data(0).data()));
+  ASSERT_EQ(1, partial_pdf_document.pages_size());
+  ASSERT_EQ(1, partial_pdf_document.pages(0).page_number());
+  ASSERT_EQ("this is a new page1 with substantial enough content to be sent",
+            partial_pdf_document.pages(0).text_segments(0));
+
+  // Send an empty request.
+  const std::vector<std::u16string> kEmptyPartialContent({});
+  query_controller.ResetPageContentData();
+  query_controller.SendPartialPageContentRequest(kEmptyPartialContent);
+
+  // Check that no request is sent.
+  query_controller.EndQuery();
+  ASSERT_EQ(query_controller.num_partial_page_content_requests_sent(), 2);
+}
+
+TEST_F(LensOverlayQueryControllerTest,
        FetchInteraction_UsesSameAnalyticsIdForLensRequestAndUrl) {
   base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
                          lens::mojom::TextPtr, bool>

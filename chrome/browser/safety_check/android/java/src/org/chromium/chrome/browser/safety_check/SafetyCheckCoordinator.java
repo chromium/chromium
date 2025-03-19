@@ -13,7 +13,6 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.chrome.browser.password_manager.CustomTabIntentHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -52,12 +51,8 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
      * @param passwordStoreBridge Provides access to stored passwords.
      * @param passwordManagerHelper An instance of {@link PasswordManagerHelper} that provides
      *     access to password management capabilities.
-     * @param customTabIntentHelper Provides an intent to open a p-link help center article in a
-     *     custom tab.
      * @param settingsCustomTabLauncher Used by password manager to open a help center article in a
      *     custom tab.
-     *     <p>TODO(crbug.com/402412416): Replace customTabIntentHelper with
-     *     settingsCustomTabLauncher completely.
      */
     public static void create(
             SafetyCheckSettingsFragment settingsFragment,
@@ -70,7 +65,6 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
             PrefService prefService,
             PasswordStoreBridge passwordStoreBridge,
             PasswordManagerHelper passwordManagerHelper,
-            CustomTabIntentHelper customTabIntentHelper,
             SettingsCustomTabLauncher settingsCustomTabLauncher) {
         new SafetyCheckCoordinator(
                 settingsFragment,
@@ -83,7 +77,6 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
                 prefService,
                 passwordStoreBridge,
                 passwordManagerHelper,
-                customTabIntentHelper,
                 settingsCustomTabLauncher);
     }
 
@@ -98,7 +91,6 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
             PrefService prefService,
             PasswordStoreBridge passwordStoreBridge,
             PasswordManagerHelper passwordManagerHelper,
-            CustomTabIntentHelper customTabIntentHelper,
             SettingsCustomTabLauncher settingsCustomTabLauncher) {
         mSettingsFragment = settingsFragment;
         mUpdatesClient = updatesClient;
@@ -147,7 +139,6 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
                                                     passwordStoreBridge,
                                                     passwordManagerHelper,
                                                     modalDialogManagerSupplier,
-                                                    customTabIntentHelper,
                                                     settingsCustomTabLauncher);
                                 }
                             }

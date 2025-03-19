@@ -139,7 +139,7 @@ class SearchEnginePreconnectorBrowserTest
 
 bool SearchEnginePreconnectorBrowserTest::PreconnectFromKeyedServiceEnabled()
     const {
-  return false;
+  return SearchEnginePreconnector::ShouldBeEnabledAsKeyedService();
 }
 
 // static
@@ -517,9 +517,11 @@ class SearchEnginePreconnectorDesktopAutoStartBrowserTest
  public:
   SearchEnginePreconnectorDesktopAutoStartBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kPreconnectToSearch, {{"startup_delay_ms", "0"}}},
-         {net::features::kSearchEnginePreconnectInterval,
-          {{"preconnect_interval", "0"}}}},
+        {
+            {features::kPreconnectToSearch, {{"startup_delay_ms", "0"}}},
+            {net::features::kSearchEnginePreconnectInterval,
+             {{"preconnect_interval", "0"}}},
+        },
         {});
   }
 

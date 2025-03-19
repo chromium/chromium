@@ -54,7 +54,6 @@
 <translation id="1090629319939036170">VR-valikko</translation>
 <translation id="1091463901118115503">Jatka lukemista</translation>
 <translation id="1091779689406092804">kuvakaappaukset</translation>
-<translation id="1094777233105318927">Tietoja selaimesta, käyttöjärjestelmästä, laitteesta, asennetuista ohjelmistoista ja tiedostoista</translation>
 <translation id="1096545575934602868">Kentässä voi olla korkeintaan <ph name="MAX_ITEMS_LIMIT" /> kohtaa. Muut kohdat ohitetaan.</translation>
 <translation id="1097803577928227769">Kansallispuistot ja julkiset puutarhat</translation>
 <translation id="1099928364755383720">automaattinen pikkuruutu</translation>
@@ -4482,7 +4481,6 @@ Lisätietoja:
 <translation id="8919895429178014996">Piilota kaikki kohteet</translation>
 <translation id="8922013791253848639">Salli aina mainokset tällä sivustolla.</translation>
 <translation id="8922734931659847428">Rajallinen lista sellaisten avaamiesi sivujen URL-osoitteista, joilla esiintyy <ph name="BEGIN_LINK" />vanhoja teknologiatapahtumia<ph name="END_LINK" />.</translation>
-<translation id="8924109546403192898">Kun Chrome merkitsee tietoturvatapahtuman, tapahtumasta lähetetään olennaista dataa järjestelmänvalvojallesi. Data voi sisältää Chromessa avaamiesi sivujen URL-osoitteita, niiden sivustojen URL-osoitteet, joista kopioit dataa, tiedostonimiä, metadataa, selaimen tai välilehden kaatumisia ja käyttäjätunnuksen, jolla kirjaudut sisään verkkopohjaisiin sovelluksiin, laitteellesi ja Chromeen.</translation>
 <translation id="892588693504540538">Reikä oikeassa yläkulmassa</translation>
 <translation id="8926389886865778422">Älä kysy uudestaan</translation>
 <translation id="8932102934695377596">Kellosi jätättää</translation>

@@ -10,7 +10,10 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/ui/passwords/passwords_model_delegate.h"
+#include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "content/public/browser/render_frame_host.h"
@@ -18,6 +21,7 @@
 
 using content::GlobalRenderFrameHostId;
 using content::RenderFrameHost;
+using content::WebContents;
 using password_manager::PasswordForm;
 using password_manager::PasswordFormDigest;
 
@@ -31,14 +35,23 @@ PasswordFormDigest GetSynthesizedFormForUrl(GURL url) {
 
 password_manager::PasswordManagerClient* GetPasswordManagerClient(
     RenderFrameHost& render_frame_host) {
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(&render_frame_host);
+  WebContents* web_contents =
+      WebContents::FromRenderFrameHost(&render_frame_host);
 
   if (!web_contents) {
     return nullptr;
   }
 
   return ChromePasswordManagerClient::FromWebContents(web_contents);
+}
+
+std::u16string GetAuthenticationMessage(std::string_view rp_id) {
+#if BUILDFLAG(IS_LINUX)
+  return u"";
+#else
+  return l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_FILLING_REAUTH,
+                                    base::UTF8ToUTF16(rp_id));
+#endif  // BUILDFLAG(IS_LINUX)
 }
 
 }  // namespace
@@ -77,13 +90,33 @@ void PasswordCredentialController::SetPasswordSelectedCallback(
 
 void PasswordCredentialController::OnPasswordCredentialSelected(
     PasswordCredentialPair password) {
-  // TODO(crbug.com/392549444): Consider adding screen lock auth, etc. for
-  // password selection. For prototyping this should be alright.
+  if (!IsAuthRequired() || model_->local_auth_token.has_value()) {
+    password_selected_callback_.Run(password_manager::CredentialInfo(
+        password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD,
+        password.first, password.first, GURL(), password.second,
+        url::SchemeHostPort()));
+    return;
+  }
+  filling_password_ = std::move(password);
+  model_->SetStep(AuthenticatorRequestDialogModel::Step::kPasswordOsAuth);
+}
 
-  password_selected_callback_.Run(password_manager::CredentialInfo(
-      password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD,
-      password.first, password.first, GURL(), password.second,
-      url::SchemeHostPort()));
+void PasswordCredentialController::OnStepTransition() {
+  if (model_->step() ==
+      AuthenticatorRequestDialogModel::Step::kPasswordOsAuth) {
+    CHECK(filling_password_.has_value());
+    auto manage_passwords_ui_controller = PasswordsModelDelegateFromWebContents(
+        WebContents::FromRenderFrameHost(GetRenderFrameHost()));
+    if (!manage_passwords_ui_controller) {
+      return;
+    }
+    manage_passwords_ui_controller->AuthenticateUserWithMessage(
+        GetAuthenticationMessage(model_->relying_party_id),
+        base::BindOnce(&PasswordCredentialController::OnAuthenticationCompleted,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(filling_password_.value())));
+    return;
+  }
 }
 
 void PasswordCredentialController::OnFetchCompleted() {
@@ -112,4 +145,17 @@ RenderFrameHost* PasswordCredentialController::GetRenderFrameHost() const {
   RenderFrameHost* ret = RenderFrameHost::FromID(render_frame_host_id_);
   CHECK(ret);
   return ret;
+}
+
+void PasswordCredentialController::OnAuthenticationCompleted(
+    PasswordCredentialPair password,
+    bool success) {
+  if (!success) {
+    model_->CancelAuthenticatorRequest();
+    return;
+  }
+  password_selected_callback_.Run(password_manager::CredentialInfo(
+      password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD,
+      password.first, password.first, GURL(), password.second,
+      url::SchemeHostPort()));
 }

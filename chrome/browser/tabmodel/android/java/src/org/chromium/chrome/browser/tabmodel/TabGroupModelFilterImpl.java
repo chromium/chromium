@@ -693,14 +693,6 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     }
 
     @Override
-    public List<Tab> getRelatedTabListForRootId(int tabRootId) {
-        if (tabRootId == Tab.INVALID_TAB_ID) return sEmptyRelatedTabList;
-        TabGroup group = mRootIdToGroupMap.get(tabRootId);
-        if (group == null) return sEmptyRelatedTabList;
-        return getRelatedTabList(group.getTabIdList());
-    }
-
-    @Override
     public List<Tab> getTabsInGroup(@Nullable Token tabGroupId) {
         if (tabGroupId == null) return sEmptyRelatedTabList;
 

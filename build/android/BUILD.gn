@@ -37,6 +37,9 @@ if (enable_java_templates) {
   java_library("build_java") {
     supports_android = true
 
+    # Caused odd errors: https://crbug.com/404877460
+    jacoco_never_instrument = true
+
     # Required to prevent circular dependency from //tools/android/errorprone_plugin.
     enable_errorprone = false
     srcjar_deps = [

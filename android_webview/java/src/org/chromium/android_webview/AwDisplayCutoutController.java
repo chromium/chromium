@@ -6,14 +6,15 @@ package org.chromium.android_webview;
 
 import android.graphics.Rect;
 import android.os.Build;
-import android.view.DisplayCutout;
 import android.view.View;
 import android.view.WindowInsets;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.view.WindowInsetsCompat;
 
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.Log;
 
@@ -22,6 +23,14 @@ import org.chromium.base.Log;
  *
  * <p>This object should be constructed in WebView's constructor to support set listener logic for
  * Android P and above.
+ *
+ * <p>This controller is responsible for providing the values for the safe-area-insets CSS
+ * properties for WebViews that occupy the entire screen height and width. The safe-area-insets
+ * include the space for the display cutout as well as system bars.
+ *
+ * <p>To test the proper application of insets to web content, you can load a page such as
+ * https://dpogue.ca/safe-area-inset-test/ that uses safe-area-inset CSS properties in the WebView
+ * Shell app and toggle it to display in fullscreen.
  */
 @Lifetime.WebView
 public class AwDisplayCutoutController {
@@ -58,6 +67,10 @@ public class AwDisplayCutoutController {
 
         public Insets(int left, int top, int right, int bottom) {
             set(left, top, right, bottom);
+        }
+
+        public Insets(androidx.core.graphics.Insets insets) {
+            set(insets.left, insets.top, insets.right, insets.bottom);
         }
 
         public Rect toRect(Rect rect) {
@@ -99,6 +112,7 @@ public class AwDisplayCutoutController {
 
     private final Delegate mDelegate;
     private View mContainerView;
+    private boolean mIncludeSystemBars;
 
     /**
      * Creates the {@link AwDisplayCutoutController} if required.
@@ -124,6 +138,8 @@ public class AwDisplayCutoutController {
     public AwDisplayCutoutController(Delegate delegate, View containerView) {
         mDelegate = delegate;
         mContainerView = containerView;
+        mIncludeSystemBars =
+                AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_SAFE_AREA_INCLUDES_SYSTEM_BARS);
         registerContainerView(containerView);
     }
 
@@ -143,8 +159,8 @@ public class AwDisplayCutoutController {
         // our logic, which seems like a natural behavior.
         // For Android S, WebViewChromium can get onApplyWindowInsets(WindowInsets) call, so we do
         // not need to set the listener.
-        // TODO(crbug.com/40699457): do not set listener and plumb WebViewChromium to handle
-        // onApplyWindowInsets in S and above.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) return;
+
         containerView.setOnApplyWindowInsetsListener(
                 (view, insets) -> {
                     // Ignore if this is not the current container view.
@@ -176,22 +192,19 @@ public class AwDisplayCutoutController {
      * @param insets The window (display) insets.
      */
     @VisibleForTesting
-    @RequiresApi(Build.VERSION_CODES.P)
     public WindowInsets onApplyWindowInsets(final WindowInsets insets) {
         if (DEBUG) Log.i(TAG, "onApplyWindowInsets: " + insets.toString());
-        // TODO(crbug.com/40699457): add a throttling logic.
-        DisplayCutout cutout = insets.getDisplayCutout();
-        // DisplayCutout can be null if there is no notch, or layoutInDisplayCutoutMode is DEFAULT
-        // (before R) or consumed in the parent view.
-        if (cutout != null) {
-            Insets displayCutoutInsets =
-                    new Insets(
-                            cutout.getSafeInsetLeft(),
-                            cutout.getSafeInsetTop(),
-                            cutout.getSafeInsetRight(),
-                            cutout.getSafeInsetBottom());
-            onApplyWindowInsetsInternal(displayCutoutInsets);
+
+        int insetTypes = WindowInsetsCompat.Type.displayCutout();
+        if (mIncludeSystemBars) {
+            insetTypes |= WindowInsetsCompat.Type.systemBars();
         }
+
+        // TODO(crbug.com/40699457): add a throttling logic.
+        Insets safeArea =
+                new Insets(WindowInsetsCompat.toWindowInsetsCompat(insets).getInsets(insetTypes));
+        onApplyWindowInsetsInternal(safeArea);
+
         return insets;
     }
 

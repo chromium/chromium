@@ -31,7 +31,7 @@ class NET_EXPORT SetsMutation {
                    replacement_sets,
                std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>
                    addition_sets,
-               base::flat_map<SchemefulSite, SchemefulSite> aliases = {});
+               base::flat_map<SchemefulSite, SchemefulSite> aliases);
 
   ~SetsMutation();
 

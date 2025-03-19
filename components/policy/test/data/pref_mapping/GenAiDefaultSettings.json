@@ -155,8 +155,7 @@
   },
   {
     "os": [
-      "chromeos_lacros",
-      "chromeos_ash"
+      "chromeos"
     ],
     "policy_pref_mapping_tests": [
       {

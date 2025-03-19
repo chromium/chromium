@@ -129,6 +129,31 @@ class SharedStorageDatabase {
     kMaxValue = kExpired,
   };
 
+  struct BatchUpdateResult {
+    BatchUpdateResult(OperationResult overall_result,
+                      std::vector<OperationResult> inner_method_results);
+    ~BatchUpdateResult();
+
+    BatchUpdateResult(const BatchUpdateResult&) = delete;
+    BatchUpdateResult& operator=(const BatchUpdateResult&) = delete;
+    BatchUpdateResult(BatchUpdateResult&&);
+    BatchUpdateResult& operator=(BatchUpdateResult&&);
+
+    // Indicates the overall result of the batch update operation. If the entire
+    // batch succeeded, it will be `kSuccess`. Otherwise, it will hold the first
+    // error encountered, either from the batch itself or from an individual
+    // inner method. If an inner method failed, this will match the last element
+    // of `inner_method_results`.
+    OperationResult overall_result = OperationResult::kSqlError;
+
+    // Stores the results of each inner method, in the order they were executed.
+    // Contains results up to and including the first failed method or all
+    // methods if the entire batch succeeded. Note that even if an inner method
+    // succeeds, it will be rolled back if a subsequent operation within the
+    // same transaction fails.
+    std::vector<OperationResult> inner_method_results;
+  };
+
   // Bundles a retrieved string `data` and its last write time `last_used_time`
   // from the database along with a field `result` indicating whether the
   // transaction was free of SQL errors.
@@ -311,6 +336,14 @@ class SharedStorageDatabase {
   [[nodiscard]] OperationResult Clear(
       url::Origin context_origin,
       DataClearSource source = DataClearSource::kSite);
+
+  // Executes `methods_with_options` as a transaction. If any method fails, the
+  // entire batch operation is rolled back, and a failure result is returned.
+  [[nodiscard]] BatchUpdateResult BatchUpdate(
+      const url::Origin& context_origin,
+      const std::vector<
+          network::mojom::SharedStorageModifierMethodWithOptionsPtr>&
+          methods_with_options);
 
   // Returns the number of unexpired entries for `context_origin` in the
   // database, or -1 on error.

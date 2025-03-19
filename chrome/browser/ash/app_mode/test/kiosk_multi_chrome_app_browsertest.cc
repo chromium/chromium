@@ -2,26 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+#include <iterator>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/check_deref.h"
-#include "base/json/json_writer.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/gtest_tags.h"
 #include "chrome/browser/ash/app_mode/fake_cws.h"
+#include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
-#include "chrome/browser/ash/app_mode/kiosk_controller.h"
+#include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ash/app_mode/test_kiosk_extension_builder.h"
-#include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
-#include "chrome/browser/ash/login/app_mode/test/test_app_data_load_waiter.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -32,53 +30,198 @@
 
 namespace ash {
 
+using kiosk::test::CloseAppWindow;
 using kiosk::test::CurrentProfile;
 using kiosk::test::InstalledChromeAppVersion;
 using kiosk::test::IsChromeAppInstalled;
+using kiosk::test::TheKioskApp;
 
 namespace {
 
-// Testing apps for testing kiosk multi-app feature. All the crx files are in
-//    chrome/test/data/chromeos/app_mode/webstore/downloads.
+// Workflow COM_KIOSK_CUJ3_TASK6_WF1.
+constexpr std::string_view kSecondaryExtensionTag =
+    "screenplay-22a4b826-851a-4065-a32b-273a0e261bf3";
 
-// Source files are in
-//     chrome/test/data/chromeos/app_mode/multi_app_kiosk/src/primary_app
-constexpr char kPrimaryAppId[] = "fclmjfpgiaifbnbnlpmdjhicolkapihc";
+KioskMixin::CwsChromeAppOption PrimaryAppV1() {
+  // Source files are in
+  // //chrome/test/data/chromeos/app_mode/apps_and_extensions/multi_app_kiosk/
+  //     src/primary_app
+  constexpr std::string_view kAppId = "fclmjfpgiaifbnbnlpmdjhicolkapihc";
 
-// Source files are in
-//     chrome/test/data/chromeos/app_mode/multi_app_kiosk/src/secondary_app_1
-constexpr char kSecondaryApp1Id[] = "elbhpkeieolijdlflcplbbabceggjknh";
+  return KioskMixin::CwsChromeAppOption{
+      /*account_id=*/"multi-chrome-app-primary-app@localhost",
+      /*app_id=*/kAppId,
+      /*crx_filename=*/base::StrCat({kAppId, "-1.0.0.crx"}),
+      /*crx_version=*/"1.0.0"};
+}
 
-// Source files are in
-//     chrome/test/data/chromeos/app_mode/multi_app_kiosk/src/secondary_app_2
-constexpr char kSecondaryApp2Id[] = "coamgmmgmjeeaodkbpdajekljacgfhkc";
+KioskMixin::CwsChromeAppOption PrimaryAppV2() {
+  auto app_v2 = PrimaryAppV1();
+  app_v2.crx_filename = base::StrCat({app_v2.app_id, "-2.0.0.crx"});
+  app_v2.crx_version = "2.0.0";
+  return app_v2;
+}
 
-// Source files are in
-//     chrome/test/data/chromeos/app_mode/multi_app_kiosk/src/secondary_app_3
-constexpr char kSecondaryApp3Id[] = "miccbahcahimnejpdoaafjeolookhoem";
+KioskMixin::CwsChromeAppOption PrimaryAppV3() {
+  auto app_v3 = PrimaryAppV1();
+  app_v3.crx_filename = base::StrCat({app_v3.app_id, "-3.0.0.crx"});
+  app_v3.crx_version = "3.0.0";
+  return app_v3;
+}
 
-// Source files are in
-//     chrome/test/data/chromeos/app_mode/multi_app_kiosk/src/
-//         secondary_extensions_1
-constexpr char kSecondaryExtensionId[] = "pegeblegnlhnpgghhjblhchdllfijodp";
+KioskMixin::CwsChromeAppOption PrimaryAppV24() {
+  auto app_v24 = PrimaryAppV1();
+  app_v24.crx_filename = base::StrCat({app_v24.app_id, "-24.0.0.crx"});
+  app_v24.crx_version = "24.0.0";
+  return app_v24;
+}
 
-// Source files are in
-//     chrome/test/data/chromeos/app_mode/multi_app_kiosk/src/
-//         shared_module_primary_app
-constexpr char kSharedModulePrimaryAppId[] = "kidkeddeanfhailinhfokehpolmfdppa";
+KioskMixin::CwsChromeAppOption SharedModulePrimaryAppV1() {
+  // Source files are in
+  // //chrome/test/data/chromeos/app_mode/apps_and_extensions/multi_app_kiosk/
+  //     src/shared_module_primary_app
+  constexpr std::string_view kAppId = "kidkeddeanfhailinhfokehpolmfdppa";
 
-// Source files are in
-//     chrome/test/data/chromeos/app_mode/multi_app_kiosk/src/secondary_app
-constexpr char kSecondaryAppId[] = "ffceghmcpipkneddgikbgoagnheejdbf";
+  return KioskMixin::CwsChromeAppOption{
+      /*account_id=*/"multi-chrome-app-shared-module-primary-app@localhost",
+      /*app_id=*/kAppId,
+      /*crx_filename=*/base::StrCat({kAppId, "-1.0.0.crx"}),
+      /*crx_version=*/"1.0.0"};
+}
 
-// Source files are in
-//     chrome/test/data/chromeos/app_mode/multi_app_kiosk/src/shared_module
-constexpr char kSharedModuleId[] = "hpanhkopkhnkpcmnedlnjmkfafmlamak";
+KioskMixin::CwsChromeAppOption SharedModulePrimaryAppV2() {
+  auto app_v2 = SharedModulePrimaryAppV1();
+  app_v2.crx_filename = base::StrCat({app_v2.app_id, "-2.0.0.crx"});
+  app_v2.crx_version = "2.0.0";
+  return app_v2;
+}
 
-// Source files are in
-//     chrome/test/data/chromeos/app_mode/multi_app_kiosk/src/
-//         secondary_extension
-constexpr char kSecondaryExtId[] = "meaknlbicgahoejcchpnkenkmbekcddf";
+KioskMixin::CwsChromeAppOption PrimaryAppWithSecondaryAppAndExtensionV1() {
+  // Source files are in
+  // //chrome/test/data/chromeos/app_mode/apps_and_extensions/multi_app_kiosk/
+  //     src/primary_app_with_secondary_app_and_extension
+  constexpr std::string_view kAppId = "meoofpdmandomdeepdejefgcodglecaj";
+
+  return KioskMixin::CwsChromeAppOption{
+      /*account_id=*/"multi-chrome-app-with-app-and-extension@localhost",
+      /*app_id=*/kAppId,
+      /*crx_filename=*/base::StrCat({kAppId, "-1.0.0.crx"}),
+      /*crx_version=*/"1.0.0"};
+}
+
+// Helper struct to hold information about one of the secondary apps.
+struct AppInfo {
+  AppInfo(std::string_view id,
+          std::string_view version,
+          extensions::Manifest::Type type)
+      : id(std::string(id)),
+        version(std::string(version)),
+        crx_filename(base::StrCat({id, "-", version, ".crx"})),
+        type(type) {}
+  AppInfo(const AppInfo&) = default;
+  AppInfo& operator=(const AppInfo&) = default;
+  AppInfo(AppInfo&&) = default;
+  AppInfo& operator=(AppInfo&&) = default;
+  ~AppInfo() = default;
+
+  std::string id;
+  std::string version;
+  std::string crx_filename;
+  extensions::Manifest::Type type;
+};
+
+void ServeAppsInCws(FakeCWS& fake_cws, const std::vector<AppInfo>& apps) {
+  for (const auto& app : apps) {
+    fake_cws.SetUpdateCrx(app.id, app.crx_filename, app.version);
+  }
+}
+
+AppInfo SecondaryApp1() {
+  // Source files are in
+  // //chrome/test/data/chromeos/app_mode/apps_and_extensions/multi_app_kiosk/
+  //     src/secondary_app_1
+  return AppInfo{
+      /*id=*/"elbhpkeieolijdlflcplbbabceggjknh",
+      /*version=*/"1.0.0",
+      /*type=*/extensions::Manifest::TYPE_PLATFORM_APP,
+  };
+}
+
+AppInfo SecondaryApp2() {
+  // Source files are in
+  // //chrome/test/data/chromeos/app_mode/apps_and_extensions/multi_app_kiosk/
+  //      src/secondary_app_2
+  return AppInfo{
+      /*id=*/"coamgmmgmjeeaodkbpdajekljacgfhkc",
+      /*version=*/"1.0.0",
+      /*type=*/extensions::Manifest::TYPE_PLATFORM_APP,
+  };
+}
+
+AppInfo SecondaryApp3() {
+  // Source files are in
+  // //chrome/test/data/chromeos/app_mode/apps_and_extensions/multi_app_kiosk/
+  //      src/secondary_app_3
+  return AppInfo{
+      /*id=*/"miccbahcahimnejpdoaafjeolookhoem",
+      /*version=*/"1.0.0",
+      /*type=*/extensions::Manifest::TYPE_PLATFORM_APP,
+  };
+}
+
+AppInfo SecondaryExtension1() {
+  // Source files are in
+  // //chrome/test/data/chromeos/app_mode/apps_and_extensions/multi_app_kiosk/
+  //      src/secondary_extensions_1
+  return AppInfo{
+      /*id=*/"pegeblegnlhnpgghhjblhchdllfijodp",
+      /*version=*/"1.0.0",
+      /*type=*/extensions::Manifest::TYPE_EXTENSION,
+  };
+}
+
+AppInfo SharedModuleAppV1() {
+  // Source files are in
+  // //chrome/test/data/chromeos/app_mode/apps_and_extensions/multi_app_kiosk/
+  //      src/shared_module
+  return AppInfo{
+      /*id=*/"hpanhkopkhnkpcmnedlnjmkfafmlamak",
+      /*version=*/"1.0.0",
+      /*type=*/extensions::Manifest::TYPE_SHARED_MODULE,
+  };
+}
+
+AppInfo SharedModuleAppV2() {
+  auto app_v1 = SharedModuleAppV1();
+  return AppInfo{app_v1.id, /*version=*/"2.0.0", app_v1.type};
+}
+
+AppInfo SecondaryAppV1() {
+  // Source files are in
+  // //chrome/test/data/chromeos/app_mode/apps_and_extensions/multi_app_kiosk/
+  //     src/secondary_app
+  return AppInfo{
+      /*id=*/"ffceghmcpipkneddgikbgoagnheejdbf",
+      /*version=*/"1.0.0",
+      /*type=*/extensions::Manifest::TYPE_PLATFORM_APP,
+  };
+}
+
+AppInfo SecondaryAppV2WithSharedModule() {
+  auto app_v1 = SecondaryAppV1();
+  return AppInfo{app_v1.id, /*version=*/"2.0.0", app_v1.type};
+}
+
+AppInfo SecondaryExtension() {
+  // Source files are in
+  // //chrome/test/data/chromeos/app_mode/apps_and_extensions/multi_app_kiosk/
+  //      src/secondary_extension
+  return AppInfo{
+      /*id=*/"meaknlbicgahoejcchpnkenkmbekcddf",
+      /*version=*/"1.0.0",
+      /*type=*/extensions::Manifest::TYPE_EXTENSION,
+  };
+}
 
 extensions::Manifest::Type ManifestType(const extensions::ExtensionId id) {
   const auto& app_or_extension =
@@ -87,364 +230,219 @@ extensions::Manifest::Type ManifestType(const extensions::ExtensionId id) {
   return app_or_extension.GetType();
 }
 
-struct TestAppInfo {
-  TestAppInfo(std::string_view id,
-              std::string_view version,
-              extensions::Manifest::Type type)
-      : id(std::string(id)),
-        version(std::string(version)),
-        crx_filename(base::StrCat({id, "-", version, ".crx"})),
-        type(type) {}
-  TestAppInfo(const TestAppInfo&) = default;
-  TestAppInfo& operator=(const TestAppInfo&) = default;
-  TestAppInfo(TestAppInfo&&) = default;
-  TestAppInfo& operator=(TestAppInfo&&) = default;
-  ~TestAppInfo() = default;
+void ExpectAppsAreInstalled(Profile& profile,
+                            const KioskApp& kiosk_app,
+                            const KioskMixin::CwsChromeAppOption& primary_app,
+                            const std::vector<AppInfo>& secondary_apps) {
+  EXPECT_EQ(kiosk_app.id().app_id.value(), primary_app.app_id);
+  EXPECT_EQ(InstalledChromeAppVersion(profile, kiosk_app),
+            primary_app.crx_version);
+  for (const auto& app : secondary_apps) {
+    EXPECT_EQ(InstalledChromeAppVersion(profile, app.id), app.version);
+    EXPECT_EQ(ManifestType(app.id), app.type);
+  }
+}
 
-  std::string id;
-  std::string version;
-  std::string crx_filename;
-  extensions::Manifest::Type type;
+// Parameter data used in `KioskMultiChromeAppTest`.
+struct TestParam {
+  TestParam(std::string_view name,
+            KioskMixin::CwsChromeAppOption pre_primary_app,
+            std::vector<AppInfo> pre_secondary_apps,
+            KioskMixin::CwsChromeAppOption primary_app,
+            std::vector<AppInfo> secondary_apps,
+            std::string_view feature_tag = "")
+      : name(std::string(name)),
+        pre_primary_app(std::move(pre_primary_app)),
+        pre_secondary_apps(std::move(pre_secondary_apps)),
+        primary_app(std::move(primary_app)),
+        secondary_apps(std::move(secondary_apps)),
+        feature_tag(feature_tag) {}
+  TestParam(std::string_view name,
+            KioskMixin::CwsChromeAppOption primary_app,
+            std::vector<AppInfo> secondary_apps,
+            std::string_view feature_tag = "")
+      : TestParam(name,
+                  /*pre_primary_app=*/primary_app,
+                  /*pre_secondary_apps=*/{},
+                  std::move(primary_app),
+                  std::move(secondary_apps),
+                  feature_tag) {}
+  TestParam(const TestParam&) = default;
+  TestParam(TestParam&&) = default;
+  ~TestParam() = default;
+
+  //  The name of this test parameter to be set in gtest.
+  std::string name;
+  //  The primary Kiosk app to be used in the PRE_ test.
+  KioskMixin::CwsChromeAppOption pre_primary_app;
+  //  The secondary apps to be used in the PRE_ test.
+  std::vector<AppInfo> pre_secondary_apps;
+  //  The primary Kiosk app to be used in the (not PRE_) test.
+  KioskMixin::CwsChromeAppOption primary_app;
+  //  The secondary apps to be used in the (not PRE_) test.
+  std::vector<AppInfo> secondary_apps;
+  // The feature ID tag of this tests, if any. Can be empty.
+  std::string_view feature_tag;
 };
 
-void SetupAppDetailInFakeCws(FakeCWS& fake_cws, const TestAppInfo& app) {
-  scoped_refptr<const extensions::Extension> extension =
-      TestKioskExtensionBuilder(extensions::Manifest::TYPE_PLATFORM_APP, app.id)
-          .set_version(app.version)
-          .Build();
-  std::string manifest_json;
-  base::JSONWriter::Write(*extension->manifest()->value(), &manifest_json);
-  // Set some generic app information, not necessarily correct. This prevents
-  // `KioskAppData` from removing the app.
-  // Icon placeholder, as required by `KioskChromeAppManager`.
-  constexpr char kFakeIconURL[] = "/chromeos/app_mode/red16x16.png";
-  fake_cws.SetAppDetails(app.id, /*localized_name=*/"Test App",
-                         /*icon_url=*/kFakeIconURL, manifest_json);
+std::string TestParamName(const testing::TestParamInfo<TestParam>& info) {
+  return info.param.name;
+}
+
+void AddFeatureTag(std::string_view feature_tag) {
+  if (feature_tag.empty()) {
+    return;
+  }
+  base::AddFeatureIdTagToTestResult(std::string(feature_tag));
 }
 
 }  // namespace
 
-class KioskMultiChromeAppTest : public KioskBaseTest {
+// Verifies Chrome apps with secondary apps and shared modules work in Kiosk.
+class KioskMultiChromeAppTest : public MixinBasedInProcessBrowserTest,
+                                public testing::WithParamInterface<TestParam> {
  public:
   KioskMultiChromeAppTest() = default;
-
   KioskMultiChromeAppTest(const KioskMultiChromeAppTest&) = delete;
   KioskMultiChromeAppTest& operator=(const KioskMultiChromeAppTest&) = delete;
-
   ~KioskMultiChromeAppTest() override = default;
 
- protected:
   void SetUpOnMainThread() override {
-    // For update tests, we cache the app in the PRE part, and then we load it
-    // in the test, so we need to both store the apps list on teardown (so that
-    // the app manager would accept existing files in its extension cache on the
-    // next startup) and copy the list to our stub settings provider as well.
-    settings_helper_.CopyStoredValue(kAccountsPrefDeviceLocalAccounts);
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+    ServeAppsInCws(kiosk_.fake_cws(), CurrentSecondaryApps());
 
-    KioskBaseTest::SetUpOnMainThread();
+    ASSERT_TRUE(kiosk_.LaunchManually(TheKioskApp()));
+    EXPECT_TRUE(kiosk_.WaitSessionLaunched());
   }
 
-  void TearDownOnMainThread() override {
-    settings_helper_.StoreCachedDeviceSetting(kAccountsPrefDeviceLocalAccounts);
-    KioskBaseTest::TearDownOnMainThread();
+  const KioskMixin::CwsChromeAppOption& CurrentPrimaryApp() {
+    return GetTestPreCount() == 1 ? GetParam().pre_primary_app
+                                  : GetParam().primary_app;
   }
 
-  void PreCacheApp(const std::string& app_id,
-                   const std::string& version,
-                   const std::string& crx_file,
-                   bool wait_for_app_data) {
-    SetTestApp(app_id, version, crx_file);
-
-    KioskChromeAppManager* manager = KioskChromeAppManager::Get();
-    TestAppDataLoadWaiter waiter(manager, app_id, version);
-    ReloadKioskApps();
-    if (wait_for_app_data) {
-      waiter.WaitForAppData();
-    } else {
-      waiter.Wait();
-    }
-    EXPECT_TRUE(waiter.loaded());
-
-    auto crx_info = manager->GetCachedCrx(app_id);
-    ASSERT_TRUE(crx_info.has_value());
-    auto& [_, cached_version] = crx_info.value();
-    EXPECT_EQ(version, cached_version);
+  const std::vector<AppInfo>& CurrentSecondaryApps() {
+    return GetTestPreCount() == 1 ? GetParam().pre_secondary_apps
+                                  : GetParam().secondary_apps;
   }
 
-  void LaunchKioskWithSecondaryApps(
-      const TestAppInfo& primary_app,
-      const std::vector<TestAppInfo>& secondary_apps) {
-    // Pre-cache the primary app.
-    PreCacheApp(primary_app.id, primary_app.version, primary_app.crx_filename,
-                /*wait_for_app_data=*/false);
-
-    fake_cws().SetNoUpdate(primary_app.id);
-    for (const auto& app : secondary_apps) {
-      fake_cws().SetUpdateCrx(app.id, app.crx_filename, app.version);
-    }
-
-    // Launch the primary app.
-    SimulateNetworkOnline();
-    ASSERT_TRUE(LaunchApp(test_app_id()));
-    WaitForAppLaunchWithOptions(false, true);
-
-    // Verify the primary app and the secondary apps are all installed.
-    EXPECT_EQ(InstalledChromeAppVersion(CurrentProfile(), primary_app.id),
-              primary_app.version);
-    for (const auto& app : secondary_apps) {
-      EXPECT_EQ(InstalledChromeAppVersion(CurrentProfile(), app.id),
-                app.version);
-      EXPECT_EQ(ManifestType(app.id), app.type);
-    }
+  std::vector<AppInfo> AppsRemovedAfterUpdate() {
+    const auto& pre_update_apps = GetParam().pre_secondary_apps;
+    const auto& post_update_apps = GetParam().secondary_apps;
+    // Copy all `pre_update_apps` that are not in `post_update_apps`.
+    std::vector<AppInfo> result;
+    std::ranges::copy_if(pre_update_apps, std::back_inserter(result),
+                         [&post_update_apps](const auto& pre_update_app) {
+                           return std::ranges::none_of(
+                               post_update_apps,
+                               [&pre_update_app](const auto& post_update_app) {
+                                 return pre_update_app.id == post_update_app.id;
+                               });
+                         });
+    return result;
   }
 
-  void LaunchTestKioskAppWithTwoSecondaryApps() {
-    TestAppInfo primary_app{/*id=*/kPrimaryAppId,
-                            /*version=*/"1.0.0",
-                            /*type=*/extensions::Manifest::TYPE_PLATFORM_APP};
-
-    TestAppInfo secondary_app_1{
-        /*id=*/kSecondaryApp1Id,
-        /*version=*/"1.0.0",
-        /*type=*/extensions::Manifest::TYPE_PLATFORM_APP};
-
-    TestAppInfo secondary_app_2{
-        /*id=*/kSecondaryApp2Id,
-        /*version=*/"1.0.0",
-        /*type=*/extensions::Manifest::TYPE_PLATFORM_APP};
-
-    SetupAppDetailInFakeCws(fake_cws(), primary_app);
-    SetupAppDetailInFakeCws(fake_cws(), secondary_app_1);
-    SetupAppDetailInFakeCws(fake_cws(), secondary_app_2);
-
-    LaunchKioskWithSecondaryApps(primary_app,
-                                 {secondary_app_1, secondary_app_2});
-  }
-
-  void LaunchTestKioskAppWithSecondaryExtension() {
-    TestAppInfo primary_app{/*id=*/kPrimaryAppId,
-                            /*version=*/"24.0.0",
-                            /*type=*/extensions::Manifest::TYPE_PLATFORM_APP};
-
-    SetupAppDetailInFakeCws(fake_cws(), primary_app);
-
-    LaunchKioskWithSecondaryApps(
-        primary_app,
-        {TestAppInfo{/*id=*/kSecondaryExtensionId,
-                     /*version=*/"1.0.0",
-                     /*type=*/extensions::Manifest::TYPE_EXTENSION}});
-  }
-
-  void LaunchAppWithSharedModuleAndSecondaryApp() {
-    TestAppInfo primary_app{/*id=*/kSharedModulePrimaryAppId,
-                            /*version=*/"1.0.0",
-                            /*type=*/extensions::Manifest::TYPE_PLATFORM_APP};
-
-    TestAppInfo secondary_app{/*id=*/kSecondaryAppId,
-                              /*version=*/"1.0.0",
-                              /*type=*/extensions::Manifest::TYPE_PLATFORM_APP};
-
-    // `FakeCWS` sets up shared modules the same way as secondary apps.
-    TestAppInfo shared_module{
-        /*id=*/kSharedModuleId,
-        /*version=*/"1.0.0",
-        /*type=*/extensions::Manifest::TYPE_SHARED_MODULE};
-
-    SetupAppDetailInFakeCws(fake_cws(), primary_app);
-
-    LaunchKioskWithSecondaryApps(primary_app, {secondary_app, shared_module});
-    EXPECT_EQ(InstalledChromeAppVersion(CurrentProfile(), shared_module.id),
-              shared_module.version);
-  }
-
-  void LaunchAppWithSharedModule() {
-    TestAppInfo primary_app{/*id=*/kSharedModulePrimaryAppId,
-                            /*version=*/"2.0.0",
-                            /*type=*/extensions::Manifest::TYPE_PLATFORM_APP};
-
-    SetupAppDetailInFakeCws(fake_cws(), primary_app);
-
-    LaunchKioskWithSecondaryApps(
-        primary_app,
-        {TestAppInfo{/*id=*/kSharedModuleId,
-                     /*version=*/"1.0.0",
-                     /*type=*/extensions::Manifest::TYPE_SHARED_MODULE}});
-  }
-
-  bool PrimaryAppUpdateIsPending() const {
-    Profile* app_profile = ProfileManager::GetPrimaryUserProfile();
-    return !!extensions::ExtensionSystem::Get(app_profile)
-                 ->extension_service()
-                 ->GetPendingExtensionUpdate(test_app_id());
-  }
-
-  FakeCWS& fake_cws() { return CHECK_DEREF(KioskBaseTest::fake_cws()); }
+  KioskMixin kiosk_{
+      &mixin_host_,
+      /*cached_configuration=*/KioskMixin::Config{/*name=*/{},
+                                                  {},
+                                                  {CurrentPrimaryApp()}}};
 };
 
-// Launch a primary kiosk app which has two secondary apps.
-IN_PROC_BROWSER_TEST_F(KioskMultiChromeAppTest,
-                       LaunchTestKioskAppWithTwoSecondaryApps) {
-  LaunchTestKioskAppWithTwoSecondaryApps();
+IN_PROC_BROWSER_TEST_P(KioskMultiChromeAppTest, InstallsAndLaunchesMultiApp) {
+  AddFeatureTag(GetParam().feature_tag);
+  ExpectAppsAreInstalled(CurrentProfile(), TheKioskApp(), CurrentPrimaryApp(),
+                         CurrentSecondaryApps());
 }
 
-IN_PROC_BROWSER_TEST_F(KioskMultiChromeAppTest,
-                       PRE_UpdateMultiAppKioskRemoveOneApp) {
-  LaunchTestKioskAppWithTwoSecondaryApps();
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    KioskMultiChromeAppTest,
+    testing::Values(
+        TestParam{
+            /*name=*/"ChromeAppWithTwoSecondaryApps",
+            /*primary_app=*/PrimaryAppV1(),
+            /*secondary_apps=*/{SecondaryApp1(), SecondaryApp2()},
+        },
+        TestParam{
+            /*name=*/"ChromeAppWithSecondaryExtension",
+            /*primary_app=*/PrimaryAppV24(),
+            /*secondary_apps=*/{SecondaryExtension1()},
+            /*feature_tag=*/kSecondaryExtensionTag,
+        },
+        TestParam{
+            /*name=*/"SharedModuleChromeAppWithSecondaryApp",
+            /*primary_app=*/SharedModulePrimaryAppV1(),
+            /*secondary_apps=*/{SharedModuleAppV1(), SecondaryAppV1()},
+        },
+        TestParam{
+            /*name=*/"ChromeAppWithSecondarySharedModuleAppAndExtension",
+            /*primary_app=*/PrimaryAppWithSecondaryAppAndExtensionV1(),
+            /*secondary_apps=*/
+            {
+                SharedModuleAppV1(),
+                SecondaryAppV2WithSharedModule(),
+                SecondaryExtension(),
+            },
+        }),
+    TestParamName);
+
+// Verifies Chrome app updates adding or removing secondary apps and shared
+// modules work in Kiosk.
+using KioskMultiChromeAppUpdateTest = KioskMultiChromeAppTest;
+
+IN_PROC_BROWSER_TEST_P(KioskMultiChromeAppUpdateTest, PRE_UpdatesMultiApp) {
+  auto& profile = CurrentProfile();
+
+  ExpectAppsAreInstalled(profile, TheKioskApp(), CurrentPrimaryApp(),
+                         CurrentSecondaryApps());
 }
 
-// Update the primary app to version 2 which removes one of the secondary app
-// from its manifest.
-IN_PROC_BROWSER_TEST_F(KioskMultiChromeAppTest,
-                       UpdateMultiAppKioskRemoveOneApp) {
-  TestAppInfo primary_app{/*id=*/kPrimaryAppId,
-                          /*version=*/"2.0.0",
-                          /*type=*/extensions::Manifest::TYPE_PLATFORM_APP};
+IN_PROC_BROWSER_TEST_P(KioskMultiChromeAppUpdateTest, UpdatesMultiApp) {
+  auto& profile = CurrentProfile();
 
-  SetTestApp(primary_app.id);
-  fake_cws().SetUpdateCrx(primary_app.id, primary_app.crx_filename,
-                          primary_app.version);
-  SetupAppDetailInFakeCws(fake_cws(), primary_app);
-  fake_cws().SetNoUpdate(kSecondaryApp1Id);
-  fake_cws().SetNoUpdate(kSecondaryApp2Id);
+  ExpectAppsAreInstalled(profile, TheKioskApp(), CurrentPrimaryApp(),
+                         CurrentSecondaryApps());
 
-  SimulateNetworkOnline();
-  EXPECT_TRUE(LaunchApp(test_app_id()));
-  WaitForAppLaunchWithOptions(false, true);
-
-  // Verify the secondary app kSecondaryApp1Id is removed.
-  EXPECT_EQ("2.0.0",
-            InstalledChromeAppVersion(CurrentProfile(), test_app_id()));
-  EXPECT_FALSE(IsChromeAppInstalled(CurrentProfile(), kSecondaryApp1Id));
-  EXPECT_EQ(InstalledChromeAppVersion(CurrentProfile(), kSecondaryApp2Id),
-            "1.0.0");
+  for (const auto& removed_app : AppsRemovedAfterUpdate()) {
+    EXPECT_FALSE(IsChromeAppInstalled(profile, removed_app.id));
+  }
 }
 
-IN_PROC_BROWSER_TEST_F(KioskMultiChromeAppTest,
-                       PRE_UpdateMultiAppKioskAddOneApp) {
-  LaunchTestKioskAppWithTwoSecondaryApps();
-}
-
-// Update the primary app to version 3 which adds a new secondary app in its
-// manifest.
-IN_PROC_BROWSER_TEST_F(KioskMultiChromeAppTest, UpdateMultiAppKioskAddOneApp) {
-  TestAppInfo primary_app{/*id=*/kPrimaryAppId,
-                          /*version=*/"3.0.0",
-                          /*type=*/extensions::Manifest::TYPE_PLATFORM_APP};
-
-  SetTestApp(primary_app.id);
-  fake_cws().SetUpdateCrx(primary_app.id, primary_app.crx_filename,
-                          primary_app.version);
-  SetupAppDetailInFakeCws(fake_cws(), primary_app);
-  fake_cws().SetNoUpdate(kSecondaryApp1Id);
-  fake_cws().SetNoUpdate(kSecondaryApp2Id);
-
-  TestAppInfo secondary_app{/*id=*/kSecondaryApp3Id,
-                            /*version=*/"1.0.0",
-                            /*type=*/extensions::Manifest::TYPE_PLATFORM_APP};
-
-  fake_cws().SetUpdateCrx(secondary_app.id, secondary_app.crx_filename,
-                          secondary_app.version);
-  SetupAppDetailInFakeCws(fake_cws(), secondary_app);
-
-  SimulateNetworkOnline();
-  EXPECT_TRUE(LaunchApp(test_app_id()));
-  WaitForAppLaunchWithOptions(false, true);
-
-  // Verify the secondary app kSecondaryApp3Id is installed.
-  EXPECT_EQ("3.0.0", GetInstalledAppVersion().GetString());
-  EXPECT_EQ(InstalledChromeAppVersion(CurrentProfile(), kSecondaryApp1Id),
-            "1.0.0");
-  EXPECT_EQ(InstalledChromeAppVersion(CurrentProfile(), kSecondaryApp2Id),
-            "1.0.0");
-  EXPECT_EQ(InstalledChromeAppVersion(CurrentProfile(), kSecondaryApp3Id),
-            "1.0.0");
-}
-
-IN_PROC_BROWSER_TEST_F(KioskMultiChromeAppTest,
-                       LaunchKioskAppWithSecondaryExtension) {
-  base::AddFeatureIdTagToTestResult(
-      "screenplay-22a4b826-851a-4065-a32b-273a0e261bf3");
-
-  LaunchTestKioskAppWithSecondaryExtension();
-}
-
-IN_PROC_BROWSER_TEST_F(KioskMultiChromeAppTest,
-                       LaunchAppWithSharedModuleAndSecondaryApp) {
-  LaunchAppWithSharedModuleAndSecondaryApp();
-}
-
-IN_PROC_BROWSER_TEST_F(KioskMultiChromeAppTest,
-                       PRE_UpdateAppWithSharedModuleRemoveAllSecondaryApps) {
-  LaunchAppWithSharedModuleAndSecondaryApp();
-}
-
-IN_PROC_BROWSER_TEST_F(KioskMultiChromeAppTest,
-                       UpdateAppWithSharedModuleRemoveAllSecondaryApps) {
-  SetTestApp(kSharedModulePrimaryAppId);
-  fake_cws().SetUpdateCrx(kSharedModulePrimaryAppId,
-                          std::string(kSharedModulePrimaryAppId) + "-2.0.0.crx",
-                          "2.0.0");
-  fake_cws().SetNoUpdate(kSecondaryApp1Id);
-  fake_cws().SetNoUpdate(kSharedModuleId);
-
-  SimulateNetworkOnline();
-  EXPECT_TRUE(LaunchApp(test_app_id()));
-  WaitForAppLaunchWithOptions(false, true);
-
-  // Verify the secondary app is removed.
-  EXPECT_EQ(InstalledChromeAppVersion(CurrentProfile(), kSharedModuleId),
-            "1.0.0");
-  EXPECT_FALSE(IsChromeAppInstalled(CurrentProfile(), kSecondaryApp1Id));
-}
-
-IN_PROC_BROWSER_TEST_F(KioskMultiChromeAppTest,
-                       PRE_LaunchAppWithUpdatedModule) {
-  LaunchAppWithSharedModule();
-  // Verify the shared module is installed with version 1.0.0.
-  EXPECT_EQ(InstalledChromeAppVersion(CurrentProfile(), kSharedModuleId),
-            "1.0.0");
-}
-
-// This simulates the case the shared module is updated to a newer version.
-// See crbug.com/555083.
-IN_PROC_BROWSER_TEST_F(KioskMultiChromeAppTest, LaunchAppWithUpdatedModule) {
-  // No update for primary app, while the shared module is set up to a new
-  // version on cws.
-  SetTestApp(kSharedModulePrimaryAppId);
-  fake_cws().SetNoUpdate(kSharedModulePrimaryAppId);
-  fake_cws().SetUpdateCrx(kSharedModuleId,
-                          std::string(kSharedModuleId) + "-2.0.0.crx", "2.0.0");
-
-  SimulateNetworkOnline();
-  EXPECT_TRUE(LaunchApp(test_app_id()));
-  WaitForAppLaunchWithOptions(false, true);
-
-  // Verify the shared module is updated to the new version after primary app
-  // is launched.
-  EXPECT_EQ(InstalledChromeAppVersion(CurrentProfile(), kSharedModuleId),
-            "2.0.0");
-}
-
-IN_PROC_BROWSER_TEST_F(KioskMultiChromeAppTest,
-                       LaunchAppWithSecondaryArcLikeAppAndExtension) {
-  TestAppInfo primary_app{/*id=*/kSharedModulePrimaryAppId,
-                          /*version=*/"3.0.0",
-                          /*type=*/extensions::Manifest::TYPE_PLATFORM_APP};
-
-  SetupAppDetailInFakeCws(fake_cws(), primary_app);
-
-  LaunchKioskWithSecondaryApps(
-      primary_app,
-      {TestAppInfo{/*id=*/kSharedModuleId,
-                   /*version=*/"1.0.0",
-                   /*type=*/extensions::Manifest::TYPE_SHARED_MODULE},
-       // The secondary app has a shared module, which is similar to an ARC app.
-       TestAppInfo{/*id=*/kSecondaryAppId,
-                   /*version=*/"2.0.0",
-                   /*type=*/extensions::Manifest::TYPE_PLATFORM_APP},
-       TestAppInfo{/*id=*/kSecondaryExtId,
-                   /*version=*/"1.0.0",
-                   /*type=*/extensions::Manifest::TYPE_EXTENSION}});
-}
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    KioskMultiChromeAppUpdateTest,
+    testing::Values(
+        TestParam{
+            /*name=*/"RemovesOneSecondaryApp",
+            /*pre_primary_app=*/PrimaryAppV1(),
+            /*pre_secondary_apps=*/{SecondaryApp1(), SecondaryApp2()},
+            /*primary_app=*/PrimaryAppV2(),
+            /*secondary_apps=*/{SecondaryApp2()},
+        },
+        TestParam{
+            /*name=*/"AddsOneApp",  // AddsOneSecondaryApp
+            /*pre_primary_app=*/PrimaryAppV1(),
+            /*pre_secondary_apps=*/{SecondaryApp1(), SecondaryApp2()},
+            /*primary_app=*/PrimaryAppV3(),
+            /*secondary_apps=*/
+            {SecondaryApp1(), SecondaryApp2(), SecondaryApp3()},
+        },
+        TestParam{
+            /*name=*/"RemovesSecondaryAppsButKeepsOneSharedModule",
+            /*pre_primary_app=*/SharedModulePrimaryAppV1(),
+            /*pre_secondary_apps=*/
+            {SecondaryAppV1(), SharedModuleAppV1()},
+            /*primary_app=*/SharedModulePrimaryAppV2(),
+            /*secondary_apps=*/{SharedModuleAppV1()},
+        },
+        TestParam{
+            /*name=*/"UpdatesSharedModule",
+            /*pre_primary_app=*/SharedModulePrimaryAppV1(),
+            /*pre_secondary_apps=*/
+            {SecondaryAppV1(), SharedModuleAppV1()},
+            /*primary_app=*/SharedModulePrimaryAppV1(),
+            /*secondary_apps=*/{SecondaryAppV1(), SharedModuleAppV2()},
+        }),
+    TestParamName);
 
 }  // namespace ash

@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -39,6 +40,8 @@ namespace {
 using ::testing::NiceMock;
 using ::testing::Return;
 
+std::vector<std::string_view> minor_texts = {"Minor text"};
+
 Suggestion CreatePasswordSuggestion(const std::u16string& main_text) {
   Suggestion suggestion(main_text, SuggestionType::kPasswordEntry);
   suggestion.icon = Suggestion::Icon::kKey;
@@ -57,19 +60,19 @@ Suggestion CreateSuggestionWithChildren(const std::u16string& main_text,
 // screenshot names, avoid special symbols and keep them unique.
 const Suggestion kSuggestions[] = {
     Suggestion("Address_entry",
-               "Minor text",
+               minor_texts,
                "label",
                Suggestion::Icon::kLocation,
                SuggestionType::kAddressEntry),
     CreatePasswordSuggestion(u"Password_entry"),
     Suggestion("Autofill_options",
-               "Minor text",
+               minor_texts,
                "label",
                Suggestion::Icon::kSettings,
                SuggestionType::kManageAddress),
     Suggestion(u"Autocomplete", SuggestionType::kAutocompleteEntry),
     Suggestion("Compose",
-               "Minor text",
+               minor_texts,
                "label",
                Suggestion::Icon::kMagic,
                SuggestionType::kComposeResumeNudge),
@@ -235,7 +238,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_F(CreatePopupRowViewTest, FilterMatchHighlighting) {
   CreateRowView(
-      Suggestion("Address_entry", "Minor text", "label",
+      Suggestion("Address_entry", minor_texts, "label",
                  Suggestion::Icon::kLocation, SuggestionType::kAddressEntry),
       /*selected_cell=*/std::nullopt,
       AutofillPopupController::SuggestionFilterMatch{.main_text_match =
@@ -263,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(CreatePopupRowViewTest, PasswordCustomIconLoader) {
                 IDR_DISABLE));
       });
 
-  Suggestion suggestion("Password_entry", "Minor text", "label",
+  Suggestion suggestion("Password_entry", minor_texts, "label",
                         Suggestion::Icon::kKey, SuggestionType::kPasswordEntry);
   suggestion.custom_icon =
       Suggestion::FaviconDetails(/*domain_url=*/GURL("https://google.com"));
@@ -286,7 +289,7 @@ class CreatePopupRowViewWithNoUserEducationRateLimitTest
 
 IN_PROC_BROWSER_TEST_F(CreatePopupRowViewWithNoUserEducationRateLimitTest,
                        ComposeWithNewBadge) {
-  Suggestion suggestion("Compose with a badge", "Minor text", "label",
+  Suggestion suggestion("Compose with a badge", minor_texts, "label",
                         Suggestion::Icon::kMagic,
                         SuggestionType::kComposeProactiveNudge);
   suggestion.feature_for_new_badge =

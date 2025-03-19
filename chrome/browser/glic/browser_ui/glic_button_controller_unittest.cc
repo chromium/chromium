@@ -12,7 +12,7 @@
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
-#include "chrome/browser/glic/glic_test_util.h"
+#include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"

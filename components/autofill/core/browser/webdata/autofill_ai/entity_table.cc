@@ -93,32 +93,50 @@ void HandleTestSwitchesIfNeeded(sql::Database* db, EntityTable& table) {
   }
 
   if (add) {
+    auto create_attribute = [](AttributeTypeName type_name,
+                               std::u16string value) -> AttributeInstance {
+      auto type = AttributeType(type_name);
+      auto instance = AttributeInstance(AttributeType(type));
+      instance.SetInfo(instance.type().field_type(), value, /*app_locale=*/"",
+                       /*format_string=*/
+                       IsDateFieldType(type.field_type()) ? u"YYYY-MM-DD" : u"",
+                       VerificationStatus::kNoStatus);
+      return instance;
+    };
+
     using enum AttributeTypeName;
-    {
-      // Add a passport instance.
-      AttributeInstance number((AttributeType(kPassportNumber)));
-      AttributeInstance name((AttributeType(kPassportName)));
-      AttributeInstance country((AttributeType(kPassportCountry)));
-      AttributeInstance expiry_date((AttributeType(kPassportExpirationDate)));
-      AttributeInstance issue_date((AttributeType(kPassportIssueDate)));
-      number.SetInfo(PASSPORT_NUMBER, u"123", /*app_locale=*/"",
-                     /*format_string=*/u"", VerificationStatus::kNoStatus);
-      name.SetInfo(NAME_FULL, u"Pippi Långstrump", /*app_locale=*/"",
-                   /*format_string=*/u"", VerificationStatus::kNoStatus);
-      country.SetInfo(ADDRESS_HOME_COUNTRY, u"Sweden", /*app_locale=*/"",
-                      /*format_string=*/u"", VerificationStatus::kNoStatus);
-      expiry_date.SetInfo(PASSPORT_EXPIRATION_DATE, u"2098-09-01",
-                          /*app_locale=*/"", /*format_string=*/u"YYYY-MM-DD",
-                          VerificationStatus::kNoStatus);
-      issue_date.SetInfo(PASSPORT_ISSUE_DATE, u"1998-10-11",
-                         /*app_locale=*/"", /*format_string=*/u"YYYY-MM-DD",
-                         VerificationStatus::kNoStatus);
-      table.AddOrUpdateEntityInstance(EntityInstance(
-          EntityType(EntityTypeName::kPassport),
-          {number, name, country, expiry_date, issue_date},
-          base::Uuid::ParseLowercase("00000000-0000-4000-8000-000000000000"),
-          "Passie", base::Time::Now()));
-    }
+
+    table.AddOrUpdateEntityInstance(EntityInstance(
+        EntityType(EntityTypeName::kPassport),
+        {create_attribute(kPassportNumber, u"123"),
+         create_attribute(kPassportName, u"Pippi Långstrump"),
+         create_attribute(kPassportCountry, u"Sweden"),
+         create_attribute(kPassportExpirationDate, u"2035-03-31"),
+         create_attribute(kPassportIssueDate, u"1998-10-11")},
+        base::Uuid::ParseLowercase("00000000-0000-4000-8000-123000000000"),
+        "My passport", base::Time::Now()));
+
+    table.AddOrUpdateEntityInstance(EntityInstance(
+        EntityType(EntityTypeName::kDriversLicense),
+        {create_attribute(kDriversLicenseNumber, u"456"),
+         create_attribute(kDriversLicenseName, u"Jim Hacker"),
+         create_attribute(kDriversLicenseState, u"California"),
+         create_attribute(kDriversLicenseExpirationDate, u"2069-12-31"),
+         create_attribute(kDriversLicenseIssueDate, u"1969-12-24")},
+        base::Uuid::ParseLowercase("00000000-0000-4000-8000-456000000000"),
+        "My license", base::Time::Now()));
+
+    table.AddOrUpdateEntityInstance(EntityInstance(
+        EntityType(EntityTypeName::kVehicle),
+        {create_attribute(kVehicleMake, u"BMW"),
+         create_attribute(kVehicleModel, u"3 series"),
+         create_attribute(kVehicleYear, u"2024"),
+         create_attribute(kVehicleOwner, u"Humphrey Appleby"),
+         create_attribute(kVehiclePlateNumber, u"SUNNY1133"),
+         create_attribute(kVehiclePlateState, u"California"),
+         create_attribute(kVehicleVin, u"3D73Y4CL2AG194665")},
+        base::Uuid::ParseLowercase("00000000-0000-4000-8000-789000000000"),
+        "My wroom wroom car", base::Time::Now()));
   }
 }
 

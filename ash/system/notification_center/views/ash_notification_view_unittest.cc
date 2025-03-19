@@ -41,6 +41,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/data_transfer_policy/mock_data_transfer_policy_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
@@ -66,6 +67,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_utils.h"
 
@@ -1374,6 +1376,19 @@ TEST_F(AshNotificationViewTest, LeftContentAndTitleRowHeightMatches) {
 
   EXPECT_EQ(GetLeftContent(notification_view())->height(),
             GetTitleRow(notification_view())->height());
+}
+
+TEST_F(AshNotificationViewTest, ProgressBarDoesNotOverpaint) {
+  std::unique_ptr<Notification> notification = CreateTestNotification(
+      /*has_image=*/false, /*show_snooze_button=*/false, /*has_message=*/true,
+      message_center::NOTIFICATION_TYPE_PROGRESS);
+  notification_view()->UpdateWithNotification(*notification);
+
+  EXPECT_EQ(notification_view()
+                ->progress_bar_view_for_testing()
+                ->CalculatePreferredSize(views::SizeBounds())
+                .height(),
+            4);
 }
 
 // AshNotificationLimitTest ----------------------------------------------------

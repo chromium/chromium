@@ -58,8 +58,9 @@ export class CustomizeColorSchemeModeElement extends
     };
   }
 
-  protected currentMode_: ColorSchemeModeOption = colorSchemeModeOptions[0]!;
-  protected readonly colorSchemeModeOptions_: ColorSchemeModeOption[] =
+  protected accessor currentMode_: ColorSchemeModeOption =
+      colorSchemeModeOptions[0]!;
+  protected accessor colorSchemeModeOptions_: ColorSchemeModeOption[] =
       colorSchemeModeOptions;
 
   private handler_: CustomizeColorSchemeModeHandlerInterface =

@@ -53,8 +53,7 @@ class UsageTrackerTestQuotaClient : public mojom::QuotaClient {
         FROM_HERE, base::BindOnce(std::move(callback), usage));
   }
 
-  void GetStorageKeysForType(StorageType type,
-                             GetStorageKeysForTypeCallback callback) override {
+  void GetDefaultStorageKeys(GetDefaultStorageKeysCallback callback) override {
     std::set<StorageKey> storage_keys;
     for (const auto& bucket_usage_pair : bucket_usage_map_) {
       storage_keys.emplace(bucket_usage_pair.first.storage_key);
@@ -72,8 +71,7 @@ class UsageTrackerTestQuotaClient : public mojom::QuotaClient {
         FROM_HERE, base::BindOnce(std::move(callback), QuotaStatusCode::kOk));
   }
 
-  void PerformStorageCleanup(blink::mojom::StorageType type,
-                             PerformStorageCleanupCallback callback) override {
+  void PerformStorageCleanup(PerformStorageCleanupCallback callback) override {
     std::move(callback).Run();
   }
 

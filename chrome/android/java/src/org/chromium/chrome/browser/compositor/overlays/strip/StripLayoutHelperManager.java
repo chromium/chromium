@@ -441,6 +441,7 @@ public class StripLayoutHelperManager
             DataSharingTabManager dataSharingTabManager,
             @NonNull BottomSheetController bottomSheetController,
             @NonNull Supplier<ShareDelegate> shareDelegateSupplier) {
+        mContext = context;
         Resources res = context.getResources();
         mUpdateHost = updateHost;
         mLayerTitleCacheSupplier = layerTitleCacheSupplier;
@@ -571,7 +572,6 @@ public class StripLayoutHelperManager
                     mIncognitoHelper.setLayerTitleCache(layerTitleCache);
                 });
 
-        onContextChanged(context);
         if (mDesktopWindowStateManager != null) {
             mDesktopWindowStateManager.addObserver(this);
             mIsTopResumedActivity = !mDesktopWindowStateManager.isInUnfocusedDesktopWindow();
@@ -1481,17 +1481,6 @@ public class StripLayoutHelperManager
                 mIsIncognito,
                 AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager),
                 mIsTopResumedActivity);
-    }
-
-    /**
-     * Updates all internal resources and dimensions.
-     *
-     * @param context The current Android Context.
-     */
-    public void onContextChanged(Context context) {
-        mContext = context;
-        mNormalHelper.onContextChanged(context);
-        mIncognitoHelper.onContextChanged(context);
     }
 
     @Override

@@ -181,6 +181,10 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   private spinnerDebouncerCallbackHandle_?: number;
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
 
+  // Corresponds to UI setup being complete on the toolbar when
+  // connectedCallback has finished executing.
+  private isSetupComplete_: boolean = false;
+
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
     if (changedProperties.has('isSpeechActive') ||
@@ -307,6 +311,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.initFonts_();
     this.loadFontsStylesheet();
     this.initializeMenuButtons_();
+    this.isSetupComplete_ = true;
   }
 
   override disconnectedCallback() {
@@ -847,14 +852,16 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     // If the previously focused item becomes disabled or disappears from the
     // toolbar because of speech starting or stopping, put the focus on the
     // play/pause button so keyboard navigation continues working.
-    if (this.isReadAloudPlayable && (this.shadowRoot !== null) &&
+    // If we're still loading the reading mode panel on
+    // a first open, we shouldn't attempt to refocus the play button or the
+    // rate menu.
+    if (this.isSetupComplete_ && (this.shadowRoot !== null) &&
         (this.shadowRoot.activeElement === null ||
          this.shadowRoot.activeElement.clientHeight === 0)) {
-      // TODO: crbug.com/404570701 - If we lose focus just because read aloud
-      // is no longer playable (e.g. from clicking a link in the panel via
-      // keyboard navigation), the rate menu should be focused instead.
-      this.$.toolbarContainer.querySelector<HTMLElement>('#play-pause')
-          ?.focus();
+      // If the play / pause button is enabled, we should focus it. Otherwise,
+      // we should focus the rate menu.
+      const tagToFocus = this.isReadAloudEnabled_ ? '#play-pause' : '#rate';
+      this.$.toolbarContainer.querySelector<HTMLElement>(tagToFocus)?.focus();
     }
 
     if (this.isSpeechActive !== this.wasSpeechActive_) {

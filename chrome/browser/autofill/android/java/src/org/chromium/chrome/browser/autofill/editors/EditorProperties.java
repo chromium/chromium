@@ -12,7 +12,6 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Fiel
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
 
 import android.text.TextWatcher;
-import android.util.Pair;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -20,6 +19,7 @@ import androidx.annotation.Nullable;
 import com.google.common.collect.ObjectArrays;
 
 import org.chromium.base.Callback;
+import org.chromium.components.autofill.DropdownKeyValue;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -110,28 +110,6 @@ public class EditorProperties {
         int DROPDOWN = 1;
         // User can fill in a sequence of characters subject to input type restrictions.
         int TEXT_INPUT = 2;
-    }
-
-    /** A convenience class for displaying keyed values in a dropdown. */
-    public static class DropdownKeyValue extends Pair<String, String> {
-        public DropdownKeyValue(String key, String value) {
-            super(key, value);
-        }
-
-        /** @return The key identifier. */
-        public String getKey() {
-            return super.first;
-        }
-
-        /** @return The human-readable localized display value. */
-        public String getValue() {
-            return super.second;
-        }
-
-        @Override
-        public String toString() {
-            return super.second.toString();
-        }
     }
 
     /** Field properties common to every field. */

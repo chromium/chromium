@@ -569,9 +569,6 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedWithSuccessfulSwitch) {
   [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
                           targetRect:target];
   VerifyMock();
-
-  OCMExpect([delegate_mock_
-      triggerAccountSwitchSnackbarWithIdentity:kSecondaryIdentity]);
   OCMExpect([delegate_mock_
       mediatorWantsToBeDismissed:mediator_
                       withResult:SigninCoordinatorResultSuccess

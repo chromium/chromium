@@ -54,7 +54,6 @@
 <translation id="1090629319939036170">VR izvēlne</translation>
 <translation id="1091463901118115503">Turpināt lasīt</translation>
 <translation id="1091779689406092804">ekrānuzņēmumi</translation>
-<translation id="1094777233105318927">Informācija par jūsu pārlūku, OS, ierīci, instalēto programmatūru un failiem</translation>
 <translation id="1096545575934602868">Šajā laukā drīkst būt ne vairāk kā <ph name="MAX_ITEMS_LIMIT" /> ierakstu. Visi turpmākie ieraksti tiks atmesti.</translation>
 <translation id="1097803577928227769">Reģionālie parki un dārzi</translation>
 <translation id="1099928364755383720">režīma “Attēls attēlā” automātiska aktivizēšana</translation>
@@ -4479,7 +4478,6 @@ Papildu informācija:
 <translation id="8919895429178014996">Paslēpt visus vienumus</translation>
 <translation id="8922013791253848639">Vienmēr atļaut reklāmu rādīšanu šajā vietnē</translation>
 <translation id="8922734931659847428">Ierobežots to jūsu apmeklēto lapu vietrāžu URL saraksts, kuros rodas <ph name="BEGIN_LINK" />mantotās tehnoloģijas notikumi<ph name="END_LINK" /></translation>
-<translation id="8924109546403192898">Ja pārlūkā Chrome tiek atzīmēti ar drošību saistīti notikumi, atbilstošie dati par notikumiem tiek nosūtīti administratoram. Šie dati var ietvert: pārlūkprogrammā Chrome apmeklēto lapu vietrāžus URL; to lapu vietrāžus URL, no kurām kopējāt datus; failu nosaukumus vai metadatus; pārlūkprogrammas vai ciļņu avārijas; lietotājvārdu, ko izmantojat, lai pierakstītos tīmekļa lietojumprogrammās, ierīcē un pārlūkā Chrome.</translation>
 <translation id="892588693504540538">Caurums augšējā labajā malā</translation>
 <translation id="8926389886865778422">Nejautāt atkārtoti</translation>
 <translation id="8932102934695377596">Norādītais laiks ir pārāk tālu pagātnē</translation>

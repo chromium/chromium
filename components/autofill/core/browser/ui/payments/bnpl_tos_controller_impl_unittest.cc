@@ -100,24 +100,34 @@ TEST_F(BnplTosControllerImplTest, ShowView_MultipleTimes) {
                     accept_callback_.Get(), cancel_callback_.Get());
 }
 
-TEST_F(BnplTosControllerImplTest, OnClosed_UserAccepted) {
+TEST_F(BnplTosControllerImplTest, Dismiss) {
+  // The view should start out as being shown.
+  EXPECT_TRUE(View() != nullptr);
   // Avoid dangling pointer.
   view_ = nullptr;
 
-  EXPECT_CALL(accept_callback_, Run());
-  EXPECT_CALL(cancel_callback_, Run()).Times(0);
-  controller_->OnViewClosing(/*user_accepted=*/true);
+  controller_->Dismiss();
+
   EXPECT_EQ(View(), nullptr);
 }
 
-TEST_F(BnplTosControllerImplTest, OnClosed_UserCancelled) {
+TEST_F(BnplTosControllerImplTest, OnUserAccepted) {
+  EXPECT_CALL(accept_callback_, Run());
+  controller_->OnUserAccepted();
+
+  // View should still be shown.
+  EXPECT_TRUE(View() != nullptr);
+}
+
+TEST_F(BnplTosControllerImplTest, OnUserCancelled) {
   // Avoid dangling pointer.
   view_ = nullptr;
 
   EXPECT_CALL(cancel_callback_, Run());
-  EXPECT_CALL(accept_callback_, Run()).Times(0);
-  controller_->OnViewClosing(/*user_accepted=*/false);
-  EXPECT_EQ(View(), nullptr);
+  controller_->OnUserCancelled();
+
+  // View should be dismissed.
+  EXPECT_TRUE(View() == nullptr);
 }
 
 TEST_F(BnplTosControllerImplTest, GetOkButtonLabel) {

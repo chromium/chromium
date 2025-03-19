@@ -198,6 +198,8 @@ std::string GetDisplayTypeString(gl::DisplayType type) {
       return "ANGLE_METAL";
     case gl::ANGLE_METAL_NULL:
       return "ANGLE_METAL_NULL";
+    case gl::ANGLE_D3D11_WARP:
+      return "ANGLE_D3D11_WARP";
     default:
       NOTREACHED();
   }

@@ -113,6 +113,11 @@ class MockTranslationManagerImpl : public TranslationManagerImpl {
 
   MOCK_METHOD(base::TimeDelta, GetTranslatorDownloadDelay, (), (override));
 
+  MOCK_METHOD(component_updater::ComponentUpdateService*,
+              GetComponentUpdateService,
+              (),
+              (override));
+
  private:
   base::AutoReset<TranslationManagerImpl*> mock_translation_manager_impl_;
 };

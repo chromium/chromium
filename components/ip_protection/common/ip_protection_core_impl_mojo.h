@@ -7,7 +7,9 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
+#include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/ip_protection/common/ip_protection_core_impl.h"
@@ -36,7 +38,8 @@ class IpProtectionCoreImplMojo : public IpProtectionCoreImpl,
       MaskedDomainListManager* masked_domain_list_manager,
       ProbabilisticRevealTokenRegistry* probabilistic_reveal_token_registry,
       bool is_ip_protection_enabled,
-      bool ip_protection_incognito);
+      bool ip_protection_incognito,
+      std::optional<base::FilePath> data_directory);
   ~IpProtectionCoreImplMojo() override;
 
   // Create an instance with parameters for IpProtectionCoreImpl and a

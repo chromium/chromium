@@ -90,4 +90,9 @@ bool IsFedCmAlternativeIdentifiersEnabled() {
 bool IsFedCmCooldownOnIgnoreEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmCooldownOnIgnore);
 }
+
+bool IsFedCmUseOtherAccountAndLabelsNewSyntaxEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kFedCmUseOtherAccountAndLabelsNewSyntax);
+}
 }  // namespace content

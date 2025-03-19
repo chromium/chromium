@@ -862,6 +862,24 @@ TEST_F(AuctionConfigMojomTraitsTest, CreativeScanningDisabled) {
   EXPECT_TRUE(SerializeAndDeserialize(auction_config));
 }
 
+TEST_F(AuctionConfigMojomTraitsTest, PerBuyerTKVSignals) {
+  AuctionConfig auction_config = CreateBasicAuctionConfig();
+  auction_config.non_shared_params.per_buyer_tkv_signals = {
+      {url::Origin::Create(GURL("https://example.com")), "foo"},
+  };
+  EXPECT_TRUE(SerializeAndDeserialize(auction_config));
+
+  auction_config.non_shared_params.per_buyer_tkv_signals = {
+      {url::Origin::Create(GURL("http://example.com")), "foo"},
+  };
+  EXPECT_FALSE(SerializeAndDeserialize(auction_config));
+
+  auction_config.non_shared_params.per_buyer_tkv_signals = {
+      {url::Origin::Create(GURL("data:,foo")), "foo"},
+  };
+  EXPECT_FALSE(SerializeAndDeserialize(auction_config));
+}
+
 // Can't have `expects_additional_bids` with empty interestGroupBuyers.
 TEST_F(AuctionConfigMojomTraitsTest, AdditionalBidsEmptyInterestGroupBuyers) {
   AuctionConfig auction_config = CreateFullAuctionConfig();

@@ -81,7 +81,11 @@ def _print_stats(marked_all, nomark_all, unmarked_all):
     count_nomark = len(nomark_all)
     count_unmarked = len(unmarked_all)
     total = count_marked + count_nomark
-    stat = lambda c, t: f'{c}/{t} ({round(c/t*100)}%)'
+
+    def stat(c, t):
+        pct_string = str(round(c / t * 100)) if t != 0 else '-'
+        return f'{c}/{t} ({pct_string}%)'
+
     print()
     print(f'Overall:')
     print(f'  @NullMarked:', stat(count_marked, total))
@@ -108,8 +112,9 @@ def _read_file_list(filepath):
 
 
 def _write_file_list(filepath, filelist):
+    sorted_filelist = sorted(filelist)
     with open(filepath, 'wt') as f:
-        f.writelines(f'{str(p)}\n' for p in filelist)
+        f.writelines(f'{str(p)}\n' for p in sorted_filelist)
 
 
 def main():
@@ -183,6 +188,7 @@ def main():
             (date.today(), len(marked), len(nomark), len(unmarked),
              len(marked_tests), len(nomark_tests), len(unmarked_tests)))
     else:
+        print(date.today())
         print('==== Non-test Files ====')
         _print_stats(marked, nomark, unmarked)
         print()

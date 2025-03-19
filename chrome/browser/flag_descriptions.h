@@ -724,6 +724,9 @@ extern const char kManagedProfileRequiredInterstitialDescription[];
 extern const char kEnterpriseRealTimeUrlCheckOnAndroidName[];
 extern const char kEnterpriseRealTimeUrlCheckOnAndroidDescription[];
 
+extern const char kEnterpriseUrlFilteringEventReportingOnAndroidName[];
+extern const char kEnterpriseUrlFilteringEventReportingOnAndroidDescription[];
+
 extern const char kEnterpriseSecurityEventReportingOnAndroidName[];
 extern const char kEnterpriseSecurityEventReportingOnAndroidDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -4516,8 +4519,11 @@ extern const char kScreenlockReauthCardDescription[];
     BUILDFLAG(IS_CHROMEOS)
 extern const char kFollowingFeedSidepanelName[];
 extern const char kFollowingFeedSidepanelDescription[];
+
+extern const char kLocalNetworkAccessChecksName[];
+extern const char kLocalNetworkAccessChecksDescription[];
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        //  BUILDFLAG(IS_CHROMEOS)
+        // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
 extern const char kTaskManagerClankName[];

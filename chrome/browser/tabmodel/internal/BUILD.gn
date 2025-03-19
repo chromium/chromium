@@ -32,6 +32,7 @@ android_library("java") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/multiwindow:java",
     "//chrome/browser/util:java",
     "//components/cached_flags:java",
     "//third_party/androidx:androidx_annotation_annotation_java",

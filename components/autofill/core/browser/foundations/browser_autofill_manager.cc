@@ -279,6 +279,7 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
     case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kShowAccountCards:
     case SuggestionType::kVirtualCreditCardEntry:
+    case SuggestionType::kIdentityCredential:
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kDevtoolsTestAddresses:
@@ -2032,12 +2033,9 @@ void BrowserAutofillManager::OnSelectFieldOptionsDidChangeImpl(
       base::span_from_ref<raw_ptr<FormStructure, VectorExperimental>>(
           form_structure));
 
-  if (form_filler_->ShouldTriggerRefill(
-          *form_structure, RefillTriggerReason::kSelectOptionsChanged)) {
-    form_filler_->TriggerRefill(form,
-                                AutofillTriggerSource::kSelectOptionsChanged,
-                                RefillTriggerReason::kSelectOptionsChanged);
-  }
+  form_filler_->MaybeTriggerRefill(
+      form, *form_structure, RefillTriggerReason::kSelectOptionsChanged,
+      AutofillTriggerSource::kSelectOptionsChanged);
 }
 
 void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
@@ -2089,9 +2087,10 @@ void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
   }
   AnalyzeJavaScriptChangedAutofilledValue(*form_structure, *autofill_field,
                                           field.value().empty());
-  form_filler_->MaybeTriggerRefillForExpirationDate(
-      form, field, *form_structure, old_value,
-      AutofillTriggerSource::kJavaScriptChangedAutofilledValue);
+  form_filler_->MaybeTriggerRefill(
+      form, *form_structure, RefillTriggerReason::kExpirationDateFormatted,
+      AutofillTriggerSource::kJavaScriptChangedAutofilledValue, field,
+      old_value);
 }
 
 void BrowserAutofillManager::OnLoadedServerPredictionsImpl(
@@ -2753,14 +2752,11 @@ void BrowserAutofillManager::OnFormProcessed(
   }
 
   // If a form with the same FormGlobalId was previously filled, the structure
-  // of the form changed, and there has not been a refill attempt on that form
-  // yet, start the process of triggering a refill.
-  if (form_filler_->ShouldTriggerRefill(form_structure,
-                                        RefillTriggerReason::kFormChanged)) {
-    form_filler_->ScheduleRefill(form, form_structure,
-                                 AutofillTriggerSource::kFormsSeen,
-                                 RefillTriggerReason::kFormChanged);
-  }
+  // of the form changed, and we might be able to refill the form with other
+  // information.
+  form_filler_->MaybeTriggerRefill(form, form_structure,
+                                   RefillTriggerReason::kFormChanged,
+                                   AutofillTriggerSource::kFormsSeen);
 }
 
 void BrowserAutofillManager::UpdateInitialInteractionTimestamp(
@@ -2897,6 +2893,17 @@ BrowserAutofillManager::GetAvailableAddressAndCreditCardSuggestions(
   if (EvaluateAblationStudy(suggestions, CHECK_DEREF(autofill_field),
                             context)) {
     return {};
+  }
+
+  // TODO(crbug.com/380367784): Figure out how verified identity attributes
+  // (e.g. email addresses) rank compared to other sources.
+  if (const IdentityCredentialDelegate* identity_credential_delegate =
+          client().GetIdentityCredentialDelegate()) {
+    std::vector<Suggestion> verified_profiles =
+        identity_credential_delegate->GetVerifiedAutofillSuggestions(
+            *autofill_field);
+    suggestions.insert(suggestions.end(), verified_profiles.begin(),
+                       verified_profiles.end());
   }
 
   if (suggestions.empty() ||

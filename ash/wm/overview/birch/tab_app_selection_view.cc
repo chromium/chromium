@@ -346,7 +346,8 @@ class TabAppSelectionView::UserFeedbackView : public views::BoxLayoutView {
   explicit UserFeedbackView(TabAppSelectionView* owner) : owner_(owner) {
     SetOrientation(views::BoxLayout::Orientation::kHorizontal);
     SetInsideBorderInsets(kUserFeedbackInsets);
-    SetMainAxisAlignment(views::LayoutAlignment::kCenter);
+    SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter);
+    SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
     SetBackground(views::CreateRoundedRectBackground(
         cros_tokens::kCrosSysSystemOnBaseOpaque,
         kUserFeedbackContainerCornerRadius, 0));

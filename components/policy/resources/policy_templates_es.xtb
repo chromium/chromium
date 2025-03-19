@@ -501,6 +501,7 @@ Si se le asigna el valor "PromptInTab", cuando la autenticación del usuario cad
       Esto se aplica al descarte de la presión de memoria y del modo Alta eficiencia.
       Se descargarán las páginas descartadas y se recuperarán todos sus recursos. Las pestañas asociadas a dichas páginas permanecerán en la barra de pestañas, pero, si las haces visibles, se volverán a cargar completamente.
       </translation>
+<translation id="1386369130542976774">Especifica intervalos semanales en los que no se pueden usar los dispositivos ChromeOS</translation>
 <translation id="138847842893090358">Envía el estado de las actualizaciones del sistema operativo</translation>
 <translation id="1389138080311956934">Ahorro de memoria máximo.</translation>
 <translation id="1390529781843037070">Si se habilita esta política o no se le asigna ningún valor, los usuarios pueden imprimir en <ph name="CLOUD_PRINT_NAME" /> desde el cuadro de diálogo de impresión de <ph name="PRODUCT_NAME" />. <ph name="PRODUCT_NAME" /> puede enviar documentos a <ph name="CLOUD_PRINT_NAME" /> para imprimirlos. No impide que los usuarios envíen trabajos de impresión desde sitios web.
@@ -4088,6 +4089,16 @@ Nota: Si el ajuste implica que ni el host ni el cliente admitan métodos de aute
 
       Si se asigna el valor true a esta política, se habilitarán los paquetes de cifrado 3DES en TLS. Si se le asigna el valor false, se inhabilitarán estos paquetes. Si no se le asigna ningún valor, los paquetes de cifrado 3DES estarán inhabilitados de forma predeterminada. Esta política se puede usar para mantener temporalmente la compatibilidad con un servidor obsoleto. Se trata de una solución provisional y se debería volver a configurar el servidor.
       </translation>
+<translation id="4016078577612157250">Especifica intervalos semanales en los que no se pueden usar los dispositivos ChromeOS.
+
+Durante los intervalos restringidos, se cierran todas las sesiones en curso y los usuarios no pueden iniciar sesión.
+
+Consideraciones:
+
+* No se admiten intervalos que se solapen.
+* La programación de restricciones de dispositivos usa la zona horaria del dispositivo.
+* Para impedir que los usuarios editen la zona horaria de su dispositivo, usa SystemTimezone.
+* Para impedir que los usuarios editen la hora de su dispositivo, usa SystemFeaturesDisableList para inhabilitar Crosh y URLBlocklist para bloquear chrome://set-time.</translation>
 <translation id="4016367078069682737">Esta política se quitó en la versión M61.
 
       Especifica cómo debe comportarse un dispositivo que se ha enviado con eCryptfs y tiene que transferirse al sistema de cifrado ext4.

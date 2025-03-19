@@ -24,12 +24,18 @@ source_set("msi_custom_action_sources") {
   libs = [ "msi.lib" ]
 }
 
+updater_process_version_rc_template("msi_version") {
+  original_filename = "${updater_product_full_name}MsiInstallerCustomAction.dll"
+  rc = "msi_version.rc"
+  product_fullname = "$updater_metainstaller_name"
+}
+
 shared_library("msi_custom_action") {
   sources = [ "msi_custom_action.def" ]
 
   deps = [
     ":msi_custom_action_sources",
-    ":version",
+    ":msi_version",
     "//chrome/updater:constants_prod",
   ]
 
@@ -80,7 +86,7 @@ source_set("lib_with_resources") {
   deps = [ "//build:branding_buildflags" ]
 }
 
-updater_process_version_rc_template("version") {
+updater_process_version_rc_template("installer_version") {
   original_filename = "UpdaterSetup.exe"
   rc = "installer_version.rc"
   product_fullname = "$updater_metainstaller_name"
@@ -162,8 +168,8 @@ template("generate_installer") {
 
     deps = [
              ":$archive_name",
+             ":installer_version",
              ":lib_with_resources",
-             ":version",
              "//build/win:default_exe_manifest",
              "//chrome/updater:base",
              "//chrome/updater:branding_header",

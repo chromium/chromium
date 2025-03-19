@@ -4075,9 +4075,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
     <ph name="BEGIN_PARAGRAPH2" />Gallwch ddechrau neu stopio caniatáu'r adroddiadau hyn unrhyw amser yn eich gosodiadau dyfais Chrome. Os ydych yn weinyddwr parth, gallwch newid y gosodiad hwn yn y consol gweinyddwr.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">Gwawl y Gogledd gyda'r nos, dros fwthyn bach.</translation>
 <translation id="3818102823568165369">Tystysgrifau lleol sydd wedi'u hychwanegu gan eich system weithredu neu'ch gweinyddwr.</translation>
-<translation id="3818662907126913619">Er mwyn defnyddio'ch dyfais gyda'ch proffil <ph name="DOMAIN" />, mae angen gwybodaeth ar eich sefydliad am y ddyfais.
-
-Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porwr, a system weithredu'r ddyfais.</translation>
 <translation id="3819164369574292143">Chwyddwch i mewn i wneud eitemau ar y sgrîn yn fwy. Defnyddiwch Search + Ctrl + M i droi chwyddwydr ymlaen a'i ddiffodd. Defnyddiwch y bysellau saeth Ctrl + Alt + i symud o gwmpas pan fyddwch wedi chwyddo i mewn.</translation>
 <translation id="3819257035322786455">Gwneud copi wrth gefn</translation>
 <translation id="3819261658055281761">Gwnaeth y system fethu â storio'r tocyn mynediad API hirdymor ar gyfer y ddyfais hon.</translation>
@@ -4395,9 +4392,6 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4031527940632463547">Rhwystrwyd synwyryddion</translation>
 <translation id="4033471457476425443">Ychwanegu ffolder newydd</translation>
 <translation id="4033963223187371752">Mae'n bosib y bydd gwefannau diogel yn plannu cynnwys megis lluniau neu fframiau gwe nad ydynt yn ddiogel</translation>
-<translation id="4034706080855851454">Er mwyn defnyddio'ch dyfais gyda phroffil eich sefydliad, mae angen gwybodaeth ar eich sefydliad am y ddyfais.
-
-Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porwr, a system weithredu'r ddyfais.</translation>
 <translation id="4034824040120875894">Argraffydd</translation>
 <translation id="4035758313003622889">&amp;Rheolwr tasgau</translation>
 <translation id="4035877632587724847">Peidio â chaniatáu</translation>

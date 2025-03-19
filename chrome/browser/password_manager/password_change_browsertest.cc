@@ -36,6 +36,7 @@
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
@@ -172,8 +173,11 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
   }
 
   void SetPrivacyNoticeAcceptedPref() {
-    browser()->profile()->GetPrefs()->SetBoolean(
-        password_manager::prefs::kPasswordChangeFlowNoticeAgreement, true);
+    ON_CALL(*mock_optimization_guide_keyed_service(),
+            ShouldFeatureBeCurrentlyEnabledForUser(
+                optimization_guide::UserVisibleFeatureKey::
+                    kPasswordChangeSubmission))
+        .WillByDefault(testing::Return(true));
   }
 
   TestModelQualityLogsUploaderService& logs_uploader() {

@@ -95,7 +95,7 @@
   InfobarTranslateTableViewController* modalViewController =
       [[InfobarTranslateTableViewController alloc]
           initWithDelegate:modalMediator
-               prefService:self.browser->GetProfile()->GetPrefs()];
+               prefService:self.profile->GetPrefs()];
   modalMediator.consumer = modalViewController;
   modalMediator.translateMediatorDelegate = self;
   modalViewController.presentationHandler = self;

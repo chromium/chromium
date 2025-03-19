@@ -8,10 +8,12 @@
 import {AutomationPredicate} from '/common/automation_predicate.js';
 import {AutomationUtil} from '/common/automation_util.js';
 import {CursorRange} from '/common/cursors/range.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import type {ChromeVoxEvent} from '../../common/custom_automation_event.js';
 import {CustomAutomationEvent} from '../../common/custom_automation_event.js';
 import {Msgs} from '../../common/msgs.js';
+import {CaptionsHandler} from '../captions_handler.js';
 import {ChromeVox} from '../chromevox.js';
 import type {ChromeVoxRangeObserver} from '../chromevox_range.js';
 import {ChromeVoxRange} from '../chromevox_range.js';
@@ -174,6 +176,21 @@ export class RangeAutomationHandler extends BaseAutomationHandler
       return;
     }
 
+    // Don't report changes while captions are focused because such changes are
+    // incessant and reset the output on a braille display to the beginning of
+    // the text, which renders the captions unreadable.
+    //
+    // The first attribute change event is allowed to pass through so that the
+    // captions can receive focus.
+    if (CaptionsHandler.inCaptions()) {
+      if (CaptionsHandler.hasAttributeChanged) {
+        return;
+      } else {
+        CaptionsHandler.handleAttributeChanged();
+      }
+    }
+
+
     // Report attribute changes for specific generated events.
     if (evt.type === chrome.automation.EventType.SORT_CHANGED) {
       let msgId;
@@ -290,3 +307,5 @@ export class RangeAutomationHandler extends BaseAutomationHandler
  * disruptive.
  */
 const ATTRIBUTE_DELAY_MS = 1500;
+
+TestImportManager.exportForTesting(RangeAutomationHandler);

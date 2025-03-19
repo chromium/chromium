@@ -103,8 +103,9 @@ void TestAutofillExternalDelegate::CheckSuggestions(
     SCOPED_TRACE(base::StringPrintf("i: %" PRIuS, i));
     EXPECT_EQ(expected_suggestions[i].main_text.value,
               suggestions_[i].main_text.value);
-    EXPECT_EQ(expected_suggestions[i].minor_text.value,
-              suggestions_[i].minor_text.value);
+    ASSERT_EQ(expected_suggestions[i].minor_texts.size(),
+              suggestions_[i].minor_texts.size());
+    EXPECT_EQ(expected_suggestions[i].minor_texts, suggestions_[i].minor_texts);
     EXPECT_EQ(expected_suggestions[i].labels, suggestions_[i].labels);
     EXPECT_EQ(expected_suggestions[i].icon, suggestions_[i].icon);
     EXPECT_EQ(expected_suggestions[i].type, suggestions_[i].type);

@@ -1601,7 +1601,11 @@ WebFrameWidgetImpl::GetAssociatedFrameWidgetHost() const {
 void WebFrameWidgetImpl::RequestDecode(
     const cc::DrawImage& image,
     base::OnceCallback<void(bool)> callback) {
-  widget_base_->LayerTreeHost()->QueueImageDecode(image, std::move(callback));
+  if (auto* layer_tree_host = widget_base_->LayerTreeHost()) {
+    layer_tree_host->QueueImageDecode(image, std::move(callback));
+  } else {
+    std::move(callback).Run(false);
+  }
 }
 
 void WebFrameWidgetImpl::Trace(Visitor* visitor) const {

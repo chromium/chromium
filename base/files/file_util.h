@@ -472,8 +472,8 @@ BASE_EXPORT bool CreateTemporaryDirInDir(const FilePath& base_dir,
 // Returns false on failure and sets *error appropriately if it is non-NULL.
 //
 // The created directories can only be accessed by the current user, except on
-// ChromeOS, where the directories created under `~/MyFiles` can also be
-// accessed by ChromeOS services.
+// ChromeOS, where the directories created under `~/MyFiles` or `/media` can
+// also be accessed by ChromeOS services.
 BASE_EXPORT bool CreateDirectoryAndGetError(const FilePath& full_path,
                                             File::Error* error);
 

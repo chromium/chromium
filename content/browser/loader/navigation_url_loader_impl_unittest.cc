@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -45,6 +46,7 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -696,6 +698,59 @@ TEST_F(NavigationURLLoaderImplTest, AdTaggedNavigation) {
 
   ASSERT_TRUE(most_recent_resource_request_);
   EXPECT_TRUE(most_recent_resource_request_->is_ad_tagged);
+}
+
+TEST_F(NavigationURLLoaderImplTest, PopulatePermissionsPolicyOnRequest) {
+  // TODO(crbug.com/382291442): Remove `scoped_feature_list` once launched.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      network::features::kPopulatePermissionsPolicyOnRequest);
+
+  ASSERT_TRUE(http_test_server_.Start());
+
+  const GURL url = http_test_server_.GetURL("/foo");
+  const url::Origin origin = url::Origin::Create(url);
+
+  TestNavigationURLLoaderDelegate delegate;
+  std::unique_ptr<NavigationURLLoader> loader = CreateTestLoader(
+      url,
+      base::StringPrintf("%s: %s", net::HttpRequestHeaders::kOrigin,
+                         url.DeprecatedGetOriginAsURL().spec().c_str()),
+      "GET", &delegate, blink::NavigationDownloadPolicy(),
+      /*is_main_frame=*/true, /*upgrade_if_insecure=*/false);
+  loader->Start();
+  delegate.WaitForResponseStarted();
+
+  ASSERT_TRUE(most_recent_resource_request_);
+  EXPECT_EQ(most_recent_resource_request_->permissions_policy,
+            std::make_optional(
+                *web_contents_->GetPrimaryMainFrame()->GetPermissionsPolicy()));
+}
+
+// TODO(crbug.com/382291442): Remove test once feature is launched.
+TEST_F(NavigationURLLoaderImplTest,
+       PopulatePermissionsPolicyOnRequest_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      network::features::kPopulatePermissionsPolicyOnRequest);
+
+  ASSERT_TRUE(http_test_server_.Start());
+
+  const GURL url = http_test_server_.GetURL("/foo");
+  const url::Origin origin = url::Origin::Create(url);
+
+  TestNavigationURLLoaderDelegate delegate;
+  std::unique_ptr<NavigationURLLoader> loader = CreateTestLoader(
+      url,
+      base::StringPrintf("%s: %s", net::HttpRequestHeaders::kOrigin,
+                         url.DeprecatedGetOriginAsURL().spec().c_str()),
+      "GET", &delegate, blink::NavigationDownloadPolicy(),
+      /*is_main_frame=*/true, /*upgrade_if_insecure=*/false);
+  loader->Start();
+  delegate.WaitForResponseStarted();
+
+  ASSERT_TRUE(most_recent_resource_request_);
+  EXPECT_FALSE(most_recent_resource_request_->permissions_policy);
 }
 
 }  // namespace content

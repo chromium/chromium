@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
-#include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -40,6 +39,7 @@
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/policy/core/common/device_local_account_type.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -331,7 +331,13 @@ class AutoLaunchedNonKioskEnabledAppTest : public AutoLaunchedKioskTest {
 
   ~AutoLaunchedNonKioskEnabledAppTest() override = default;
 
-  std::string GetTestAppId() const override { return kTestNonKioskEnabledApp; }
+  std::string GetTestAppId() const override {
+    // Chrome app without the `kiosk_enabled` field in the manifest. The source
+    // code is in:
+    //   //chrome/test/data/chromeos/app_mode/apps_and_extensions/
+    //     non_kiosk_enabled_app/src/
+    return "gbcgichpbeeimejckkpgnaighpndpped";
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(AutoLaunchedNonKioskEnabledAppTest, NotLaunched) {
@@ -339,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(AutoLaunchedNonKioskEnabledAppTest, NotLaunched) {
   // session flags.
   ASSERT_TRUE(termination_subscription_);
 
-  EXPECT_TRUE(IsKioskAppAutoLaunched(kTestNonKioskEnabledApp));
+  EXPECT_TRUE(IsKioskAppAutoLaunched(GetTestAppId()));
 
   ExtensionTestMessageListener listener("launchRequested");
 

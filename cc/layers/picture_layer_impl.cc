@@ -31,6 +31,7 @@
 #include "cc/paint/display_item_list.h"
 #include "cc/tiles/tile_manager.h"
 #include "cc/tiles/tiling_set_raster_queue_all.h"
+#include "cc/trees/draw_property_utils.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/occlusion.h"
@@ -1790,51 +1791,12 @@ bool PictureLayerImpl::CalculateRasterTranslation(
     return false;
   }
 
-  const gfx::Transform& screen_transform = ScreenSpaceTransform();
-  gfx::Transform draw_transform = DrawTransform();
-
-  if (!screen_transform.IsScaleOrTranslation() ||
-      !draw_transform.IsScaleOrTranslation()) {
-    return false;
+  if (auto offset = draw_property_utils::PixelAlignmentOffset(
+          ScreenSpaceTransform(), DrawTransform())) {
+    raster_translation = *offset;
+    return true;
   }
-
-  // It is only useful to align the content space to the target space if their
-  // relative pixel ratio is some small rational number. Currently we only
-  // align if the relative pixel ratio is 1:1 (i.e. the scale components of
-  // both the screen transform and the draw transform are approximately the same
-  // as |raster_contents_scale_|). Good match if the maximum alignment error on
-  // a layer of size 10000px does not exceed 0.001px.
-  static constexpr float kPixelErrorThreshold = 0.001f;
-  static constexpr float kScaleErrorThreshold = kPixelErrorThreshold / 10000;
-  auto is_raster_scale = [this](const gfx::Transform& transform) -> bool {
-    // The matrix has the X scale at (0,0), and the Y scale at (1,1).
-    gfx::Vector2dF scale_diff = transform.To2dScale() - raster_contents_scale_;
-    return std::abs(scale_diff.x()) <= kScaleErrorThreshold &&
-           std::abs(scale_diff.y()) <= kScaleErrorThreshold;
-  };
-  if (!is_raster_scale(screen_transform) || !is_raster_scale(draw_transform))
-    return false;
-
-  // Extract the fractional part of layer origin in the screen space and in the
-  // target space.
-  auto fraction = [](float f) -> float { return f - floorf(f); };
-  gfx::Vector2dF screen_translation = screen_transform.To2dTranslation();
-  float screen_x_fraction = fraction(screen_translation.x());
-  float screen_y_fraction = fraction(screen_translation.y());
-  gfx::Vector2dF draw_translation = draw_transform.To2dTranslation();
-  float target_x_fraction = fraction(draw_translation.x());
-  float target_y_fraction = fraction(draw_translation.y());
-
-  // If the origin is different in the screen space and in the target space,
-  // it means the render target is not aligned to physical pixels, and the
-  // text content will be blurry regardless of raster translation.
-  if (std::abs(screen_x_fraction - target_x_fraction) > kPixelErrorThreshold ||
-      std::abs(screen_y_fraction - target_y_fraction) > kPixelErrorThreshold) {
-    return false;
-  }
-
-  raster_translation = gfx::Vector2dF(target_x_fraction, target_y_fraction);
-  return true;
+  return false;
 }
 
 float PictureLayerImpl::MinimumContentsScale() const {

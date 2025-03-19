@@ -8,7 +8,6 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_dialog_factory.h"
 #include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -31,6 +30,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
 
@@ -49,8 +49,8 @@ LocalCardMigrationErrorDialogView::LocalCardMigrationErrorDialogView(
   // user can see the error message.
   SetModalType(ui::mojom::ModalType::kWindow);
   SetShowCloseButton(false);
-  set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH));
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   set_close_on_deactivate(false);
   set_margins(gfx::Insets());
@@ -84,7 +84,7 @@ void LocalCardMigrationErrorDialogView::Init() {
     return;
   }
 
-  ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
+  views::LayoutProvider* provider = views::LayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       kMigrationDialogMainContainerChildSpacing));

@@ -44,6 +44,8 @@ if (renderer_ipc_fuzzing_enabled && !is_msan) {
   in_process_fuzzer("mojo_js_in_process_fuzzer") {
     sources = [ "mojo_js_in_process_fuzzer.cc" ]
 
+    centipede_options = [ "symbolizer_path=/dev/null" ]
+
     deps = [
       ":mojo_js_fuzzer_grammar",
       "//chrome/test/fuzzing:in_process_proto_fuzzer_runner",

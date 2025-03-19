@@ -61,6 +61,7 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
         stub_reauth_module_([[StubReauthenticationModule alloc] init]),
         agent_([[IncognitoReauthSceneAgent alloc]
             initWithReauthModule:stub_reauth_module_]) {
+    scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
     [scene_state_ addAgent:agent_];
   }
 

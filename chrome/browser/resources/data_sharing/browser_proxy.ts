@@ -14,7 +14,8 @@ export interface BrowserProxy {
   handler?: PageHandlerInterface;
   showUi(): void;
   closeUi(status: Code): void;
-  makeTabGroupShared(tabGroupId: string, groupId: string): void;
+  makeTabGroupShared(tabGroupId: string, groupId: string, tokenSecret: string):
+      Promise<string|undefined>;
   aboutToUnShareTabGroup(tabGroupId: string): void;
   onTabGroupUnShareComplete(tabGroupId: string): void;
   getShareLink(groupId: string, tokenSecret: string): Promise<string>;
@@ -44,17 +45,18 @@ export class BrowserProxyImpl implements BrowserProxy {
     this.handler.closeUI(status);
   }
 
-  // Called with when the owner presses copy link in share dialog.
-  makeTabGroupShared(tabGroupId: string, groupId: string) {
-    this.handler.associateTabGroupWithGroupId(tabGroupId, groupId);
-  }
-
   aboutToUnShareTabGroup(tabGroupId: string) {
     this.handler.aboutToUnShareTabGroup(tabGroupId);
   }
 
   onTabGroupUnShareComplete(tabGroupId: string) {
     this.handler.onTabGroupUnShareComplete(tabGroupId);
+  }
+
+  makeTabGroupShared(tabGroupId: string, groupId: string, tokenSecret: string):
+      Promise<string|undefined> {
+    return this.handler.makeTabGroupShared(tabGroupId, groupId, tokenSecret)
+        .then(res => res.url ? res.url.url : undefined);
   }
 
   getShareLink(groupId: string, tokenSecret: string): Promise<string> {

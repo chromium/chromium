@@ -1551,6 +1551,7 @@ crbug.com/470482 fast/cookies/local-file-can-set-cookies.html [ Crash Failure Pa
 
 crbug.com/411164 [ Win ] http/tests/security/powerfulFeatureRestrictions/serviceworker-on-insecure-origin.html [ Pass ]
 
+crbug.com/404887281 [ Mac ] css3/viewport-percentage-lengths/viewport-percentage-vertical-align.html [ Failure ]
 
 # Flaky tests on Mac after enabling scroll animations in web_tests
 crbug.com/944583 [ Debug Mac13 ] fast/events/platform-wheelevent-paging-xy-in-scrolling-div.html [ Failure Pass ]
@@ -2626,6 +2627,7 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/404571518 [ Mac12 ] virtual/gpu/external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html?mimeType=video/webm;codecs=av1,opus [ Failure Timeout ]
 crbug.com/404288142 external/wpt/html/canvas/offscreen/manual/text/canvas.2d.offscreen.worker.lang.html [ Timeout ]
 crbug.com/404288142 external/wpt/html/canvas/offscreen/manual/text/canvas.2d.offscreen.worker.lang.inherit.html [ Timeout ]
 crbug.com/403967924 [ Linux ] external/wpt/css/css-ui/caret-eol-001.html [ Failure ]
@@ -7073,10 +7075,10 @@ crbug.com/1409463 external/wpt/html/browsers/the-window-object/open-close/open-f
 crbug.com/1001078 external/wpt/css/mediaqueries/mq-non-matching-lazy-load.tentative.html [ Failure ]
 
 crbug.com/378787482 external/wpt/pointerevents/compat/pointerevent_touch_target_after_pointerdown_target_removed.tentative.html [ Failure ]
+crbug.com/368980630 [ Mac ] external/wpt/pointerevents/pointerevent_to_slotted_target.html?pen [ Failure Pass ]
 
 # Sheriff 2023-02-07
 crbug.com/1413770 wpt_internal/storage/estimate-usage-details-filesystem.https.tentative.any.worker.html [ Failure Pass ]
-
 
 # Flaky tests. Disabling while investigating a deflake solution.
 crbug.com/1412866 http/tests/inspector-protocol/tracing/advanced-painting-instrumentation.js [ Failure Pass ]
@@ -7086,7 +7088,6 @@ crbug.com/1417178 [ Linux ] external/wpt/html/browsers/browsing-the-web/overlapp
 
 # This test time out because it triggers the legacy SVC path.
 crbug.com/webrtc/14889 external/wpt/webrtc/simulcast/vp9.https.html [ Skip Timeout ]
-
 
 # Sheriff 2023-03-23
 crbug.com/952717 [ Win ] http/tests/xmlhttprequest/redirect-cross-origin-post.html [ Failure Pass ]
@@ -8878,10 +8879,6 @@ crbug.com/380327348 media/encrypted-media/encrypted-media-async-setcert-with-gc.
 crbug.com/381407888 [ Win11-arm64 ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Failure Pass ]
 crbug.com/381407888 [ Mac ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Failure Pass ]
 
-# This test passes or fails depending if the bot that runs it has H265 hardware support.
-# TODO(crbug.com/388299759): Remove this line in favor of platform specific -expected.txt lines.
-crbug.com/388299759 external/wpt/webrtc/protocol/h265-level-id.https.html [ Failure Pass ]
-
 # Gardener 2024-11-27
 crbug.com/381142479 virtual/threaded/external/wpt/css/css-view-transitions/navigation/pagereveal-ctor.html [ Failure Pass ]
 crbug.com/378680890 [ Mac ] fast/peerconnection/RTCPeerConnection-many.html [ Pass Timeout ]
@@ -9089,3 +9086,10 @@ crbug.com/404060200 [ Mac12 ] external/wpt/partitioned-popins/partitioned-popins
 crbug.com/402494870 virtual/fractional-scroll-offsets/external/wpt/css/css-position/sticky/position-sticky-offset-print.html [ Failure Pass ]
 crbug.com/402494870 virtual/scalefactor200/external/wpt/css/printing/pseudo-animations-print.html [ Failure Pass ]
 crbug.com/402494870 virtual/scalefactor200/external/wpt/css/printing/zero-size-002-print.tentative.html [ Failure Pass ]
+
+# Gardener 2025-03-19
+crbug.com/402521712 [ Linux ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedFrame-timestamps.html [ Failure ]
+crbug.com/404571518 [ Win11 ] external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html?mimeType=video/mp4;codecs=av01,mp4a.40.2 [ Failure ]
+crbug.com/404571518 [ Win11 ] external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html?mimeType=video/mp4;codecs=avc3.64003E,mp4a.40.2 [ Failure ]
+crbug.com/404571518 [ Win11 ] external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html?mimeType=video/webm;codecs=vp9,opus [ Failure ]
+crbug.com/404571518 [ Win11 ] virtual/gpu/external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html?mimeType=video/mp4;codecs=avc3.64003E,mp4a.40.2 [ Failure ]

@@ -179,10 +179,11 @@ void UnexportableKeyTaskManager::SignSlowlyAsync(
 
   // TODO(b/263249728): deduplicate tasks with the same parameters.
   // TODO(b/263249728): implement a cache of recent signings.
-  auto task =
-      std::make_unique<SignTask>(std::move(signing_key), data, priority,
-                                 base::BindOnce(&OptionalToServiceErrorOr)
-                                     .Then(std::move(callback_wrapper)));
+  // TODO(crbug.com/400903525): expose `max_retries` as a parameter.
+  auto task = std::make_unique<SignTask>(
+      std::move(signing_key), data, priority, /*max_retries=*/0,
+      base::BindOnce(&OptionalToServiceErrorOr)
+          .Then(std::move(callback_wrapper)));
   task_scheduler_.PostTask(std::move(task));
 }
 

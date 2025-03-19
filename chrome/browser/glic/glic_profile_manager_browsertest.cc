@@ -11,7 +11,7 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
-#include "chrome/browser/glic/glic_test_util.h"
+#include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"

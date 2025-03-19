@@ -184,6 +184,8 @@ blink_core_sources_paint = [
   "theme_painter_default.cc",
   "theme_painter_default.h",
   "theme_painter.h",
+  "timing/container_timing.cc",
+  "timing/container_timing.h",
   "timing/element_timing_utils.cc",
   "timing/element_timing_utils.h",
   "timing/first_meaningful_paint_detector.cc",

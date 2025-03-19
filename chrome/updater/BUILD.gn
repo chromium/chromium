@@ -999,6 +999,7 @@ if (is_win || is_mac || is_linux) {
         "app/server/win:updater_internal_idl",
         "app/server/win:updater_legacy_idl",
         "win/installer:lib",
+        "win/installer:msi_custom_action",
         "win/installer:msi_custom_action_sources",
         "win/test:test_executables",
         "win/test:test_strings",

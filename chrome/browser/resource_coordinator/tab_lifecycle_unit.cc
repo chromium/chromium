@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/process/process_metrics.h"
 #include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_window.h"
@@ -44,6 +45,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom.h"
 #include "url/gurl.h"
 
@@ -462,11 +464,30 @@ void TabLifecycleUnitSource::TabLifecycleUnit::AttemptFastKillForDiscard(
 bool TabLifecycleUnitSource::TabLifecycleUnit::Discard(
     LifecycleUnitDiscardReason reason,
     uint64_t tab_memory_footprint_estimate) {
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(DiscardTabOutcome)
+  enum class DiscardTabOutcome {
+    kSuccess = 0,
+    kNotInTabStripModel = 1,
+    kAlreadyDiscarded = 2,
+    kMaxValue = kAlreadyDiscarded
+  };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/tab/enums.xml:DiscardTabOutcome)
+
+  std::optional<DiscardTabOutcome> outcome;
+  absl::Cleanup record_discard_outcome = [&]() {
+    CHECK(outcome.has_value());
+    base::UmaHistogramEnumeration("Discarding.DiscardTabOutcome",
+                                  outcome.value());
+  };
+
   // Can't discard a tab when it isn't in a tabstrip.
   if (!tab_strip_model_) {
     // Logs are used to diagnose user feedback reports.
     MEMORY_LOG(ERROR) << "Skipped discarding unit " << GetID()
                       << " because it isn't in a tab strip.";
+    outcome = DiscardTabOutcome::kNotInTabStripModel;
     return false;
   }
 
@@ -474,6 +495,7 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::Discard(
     // Logs are used to diagnose user feedback reports.
     MEMORY_LOG(ERROR) << "Skipped discarding unit " << GetID()
                       << " because it's already discarded.";
+    outcome = DiscardTabOutcome::kAlreadyDiscarded;
     return false;
   }
 
@@ -485,6 +507,7 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::Discard(
     FinishDiscard(reason, tab_memory_footprint_estimate);
   }
 
+  outcome = DiscardTabOutcome::kSuccess;
   return true;
 }
 

@@ -54,7 +54,6 @@
 <translation id="1090629319939036170">Nabídka VR</translation>
 <translation id="1091463901118115503">Pokračovat ve čtení</translation>
 <translation id="1091779689406092804">snímky obrazovky</translation>
-<translation id="1094777233105318927">Informace o prohlížeči, operačním systému, zařízení, nainstalovaném softwaru a souborech</translation>
 <translation id="1096545575934602868">Toto pole nesmí mít více než <ph name="MAX_ITEMS_LIMIT" /> položek. Všechny další položky budou zahozeny.</translation>
 <translation id="1097803577928227769">Místní parky a zahrady</translation>
 <translation id="1099928364755383720">automatický obraz v obraze</translation>
@@ -4475,7 +4474,6 @@ Další podrobnosti:
 <translation id="8919895429178014996">Skrýt všechny položky</translation>
 <translation id="8922013791253848639">Na tomto webu reklamy vždy povolovat</translation>
 <translation id="8922734931659847428">Omezený seznam navštívených adres URL stránek, na kterých dochází k <ph name="BEGIN_LINK" />událostem starších technologií<ph name="END_LINK" /></translation>
-<translation id="8924109546403192898">Když Chrome nahlásí události týkající se zabezpečení, administrátorovi se odešlou relevantní data o událostech. Mohou být zahrnuty adresy URL stránek, které v Chromu navštěvujete, adresy URL stránek, ze kterých jste zkopírovali data, názvy nebo metadata souborů, selhání prohlížeče nebo karet a uživatelské jméno, pomocí něhož se přihlašujete do webových aplikací, do zařízení a do Chromu.</translation>
 <translation id="892588693504540538">Děrování vpravo nahoře</translation>
 <translation id="8926389886865778422">Dotaz již nezobrazovat</translation>
 <translation id="8932102934695377596">Vaše hodiny se zpožďují</translation>

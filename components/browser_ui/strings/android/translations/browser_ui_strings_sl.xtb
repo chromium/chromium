@@ -87,6 +87,7 @@
 <translation id="2215727959747642672">Urejanje datotek</translation>
 <translation id="2218389616572918761">Spletna mesta lahko zahtevajo uporabo mikrofona</translation>
 <translation id="2228071138934252756">Če želite aplikaciji <ph name="APP_NAME" /> omogočiti dostop do fotoaparata, fotoaparat vklopite tudi v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
+<translation id="2231160360698766265">Spletna mesta lahko predvajajo zaščiteno vsebino</translation>
 <translation id="2235344399760031203">Piškotki tretjih oseb so blokirani</translation>
 <translation id="2238944249568001759">Predlagana iskanja na podlagi zadnjega zavihka</translation>
 <translation id="2241587408274973373">Kartice strani s povezavami</translation>
@@ -630,6 +631,7 @@
 <translation id="9138217887606523162">Trenutna povečava/pomanjšava je <ph name="ZOOM_LEVEL" /> %%.</translation>
 <translation id="9156722768168878035">Chrome naj prikaže vaše nedavne zavihke na seznamu aplikacij in v rezultatih iskanja naprave. To lahko kadar koli izklopite v nastavitvah Chroma.</translation>
 <translation id="9162462602695099906">Ta stran je nevarna.</translation>
+<translation id="9182556968660520230">Spletnim mestom ni dovoljeno predvajanje zaščitene vsebine.</translation>
 <translation id="947156494302904893">Spletna mesta, ki jih obiščete, lahko preverijo, ali ste resnična oseba in ne bot</translation>
 <translation id="959682366969460160">Postanite bolj organizirani</translation>
 <translation id="967624055006145463">Shranjeni podatki</translation>

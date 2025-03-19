@@ -538,11 +538,10 @@ std::unique_ptr<SharedImageTexture> ClientSharedImage::CreateGLTexture(
 
 std::unique_ptr<RasterScopedAccess> ClientSharedImage::BeginRasterAccess(
     InterfaceBase* raster_interface,
-    ClientSharedImage* shared_image,
     const SyncToken& sync_token,
     bool readonly) {
-  return base::WrapUnique(new RasterScopedAccess(raster_interface, shared_image,
-                                                 sync_token, readonly));
+  return base::WrapUnique(
+      new RasterScopedAccess(raster_interface, this, sync_token, readonly));
 }
 
 #if BUILDFLAG(IS_WIN)

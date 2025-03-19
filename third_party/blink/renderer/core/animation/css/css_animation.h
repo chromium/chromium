@@ -12,6 +12,8 @@
 
 namespace blink {
 
+class AnimationTrigger;
+
 class CORE_EXPORT CSSAnimation : public Animation {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -20,7 +22,8 @@ class CORE_EXPORT CSSAnimation : public Animation {
                AnimationTimeline*,
                AnimationEffect*,
                wtf_size_t animation_index,
-               const String& animation_name);
+               const String& animation_name,
+               AnimationTrigger* trigger);
 
   bool IsCSSAnimation() const final { return true; }
 
@@ -79,6 +82,10 @@ class CORE_EXPORT CSSAnimation : public Animation {
   bool GetIgnoreCSSRangeEnd() { return ignore_css_range_end_; }
   void ResetIgnoreCSSRangeEnd() { ignore_css_range_end_ = false; }
 
+  void setTrigger(AnimationTrigger* trigger) override;
+  bool GetIgnoreCSSTrigger() { return ignore_css_trigger_; }
+  void ResetIgnoreCSSTrigger() { ignore_css_trigger_ = false; }
+
   void Trace(blink::Visitor* visitor) const override {
     Animation::Trace(visitor);
     visitor->Trace(owning_element_);
@@ -123,6 +130,8 @@ class CORE_EXPORT CSSAnimation : public Animation {
   // When set changes to 'animation-range-*' will be ignored.
   bool ignore_css_range_start_ = false;
   bool ignore_css_range_end_ = false;
+  // When set, changes to 'animation-trigger*' will be ignored.
+  bool ignore_css_trigger_ = false;
 
   // The owning element of an animation refers to the element or pseudo-element
   // whose animation-name property was applied that generated the animation

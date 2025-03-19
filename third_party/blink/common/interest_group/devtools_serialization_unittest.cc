@@ -62,6 +62,8 @@ TEST(SerializeAuctionConfigTest, SerializeComponents) {
       "pending": false,
       "value": null
    },
+   "perBuyerTKVSignals": {
+   },
    "perBuyerTimeouts": {
       "pending": false,
       "value": {
@@ -171,6 +173,9 @@ TEST(SerializeAuctionConfigTest, FullConfig) {
       "value": {
          "https://buyer.test": "[7]"
       }
+   },
+   "perBuyerTKVSignals": {
+      "https://buyer.test": "[8]"
    },
    "perBuyerTimeouts": {
       "pending": false,

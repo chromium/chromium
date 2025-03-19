@@ -109,16 +109,22 @@ promise_test(async t => {
 
 promise_test(async t => {
   let monitorCalled = false;
+  let createdTranslator = false;
   const progressEvents = [];
   function monitor(m) {
     monitorCalled = true;
 
     m.addEventListener('downloadprogress', e => {
+      // No progress events should have been fired after we've created the
+      // translator.
+      assert_false(createdTranslator);
+
       progressEvents.push(e);
     });
   }
 
   await createTranslator({sourceLanguage: 'en', targetLanguage: 'ja', monitor});
+  createdTranslator = true;
 
   // Monitor callback must be called.
   assert_true(monitorCalled);

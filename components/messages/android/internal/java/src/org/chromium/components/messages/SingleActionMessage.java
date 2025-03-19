@@ -4,20 +4,24 @@
 
 package org.chromium.components.messages;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.messages.MessageContainer.MessageContainerA11yDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Coordinator to show / hide a banner message on given container and delegate events. */
+@NullMarked
 public class SingleActionMessage implements MessageStateHandler, MessageContainerA11yDelegate {
     /**
      * The interface that consumers of SingleActionMessage should implement to receive notification
@@ -28,8 +32,8 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
         void invoke(PropertyModel messageProperties, int dismissReason);
     }
 
-    @Nullable private MessageBannerCoordinator mMessageBanner;
-    private MessageBannerView mView;
+    private @MonotonicNonNull MessageBannerCoordinator mMessageBanner;
+    private @MonotonicNonNull MessageBannerView mView;
     private final MessageContainer mContainer;
     private final PropertyModel mModel;
     private final DismissCallback mDismissHandler;
@@ -99,7 +103,6 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
      * @param toIndex The target position of the message view.
      * @return The animator to move the message view.
      */
-    @NonNull
     @Override
     public Animator show(int fromIndex, int toIndex) {
         if (mMessageBanner == null) {
@@ -123,6 +126,7 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
                                 mDismissHandler.invoke(mModel, DismissReason.TIMER);
                             });
         }
+        assumeNonNull(mView);
 
         // Update elevation to ensure background view is always behind the front one.
         int elevationDimen =
@@ -165,10 +169,11 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
      * @param animate Whether to show animation.
      * @return The animator to move the message view.
      */
-    @Nullable
     @Override
-    public Animator hide(int fromIndex, int toIndex, boolean animate) {
+    public @Nullable Animator hide(int fromIndex, int toIndex, boolean animate) {
         notifyVisibilityChange(false);
+        assumeNonNull(mMessageBanner);
+        assumeNonNull(mView);
         return mMessageBanner.hide(
                 fromIndex, toIndex, animate, () -> mContainer.removeMessage(mView));
     }
@@ -199,11 +204,13 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
 
     @Override
     public void onA11yFocused() {
+        assumeNonNull(mMessageBanner);
         mMessageBanner.cancelTimer();
     }
 
     @Override
     public void onA11yFocusCleared() {
+        assumeNonNull(mMessageBanner);
         mMessageBanner.startTimer();
     }
 

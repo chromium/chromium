@@ -82,7 +82,9 @@ gfx::Size SolidSidedBorder::GetMinimumSize() const {
 }
 
 void SolidSidedBorder::OnViewThemeChanged(View* view) {
-  view->SchedulePaint();
+  if (color().GetColorId()) {
+    view->SchedulePaint();
+  }
 }
 
 // A border with a rounded rectangle and single color.
@@ -141,7 +143,9 @@ gfx::Size RoundedRectBorder::GetMinimumSize() const {
 }
 
 void RoundedRectBorder::OnViewThemeChanged(View* view) {
-  view->SchedulePaint();
+  if (color().GetColorId()) {
+    view->SchedulePaint();
+  }
 }
 
 class EmptyBorder : public Border {

@@ -132,7 +132,6 @@ ui::PlatformWindowInitProperties ConvertWidgetInitParamsToInitProperties(
   properties.accept_events = params.accept_events;
   properties.activatable =
       params.activatable == Widget::InitParams::Activatable::kYes;
-  properties.force_show_in_taskbar = params.force_show_in_taskbar;
   properties.z_order = params.EffectiveZOrderLevel();
   properties.keep_on_top = properties.z_order != ui::ZOrderLevel::kNormal;
   properties.is_security_surface =

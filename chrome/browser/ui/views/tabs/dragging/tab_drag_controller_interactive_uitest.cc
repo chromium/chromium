@@ -735,7 +735,7 @@ class DetachToBrowserTabDragControllerTest
 
   gfx::NativeWindow GetWindowHint(const views::View* view) {
     return view->GetWidget() ? view->GetWidget()->GetNativeWindow()
-                             : ui_controls::kNoWindowHint;
+                             : gfx::NativeWindow();
   }
 
   // The following methods update one of the mouse or touch input depending upon
@@ -2144,7 +2144,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                          &DetachToBrowserTabDragControllerTest::DragInputTo,
                          base::Unretained(this),
                          initial_drag_position + gfx::Vector2d(0, 2 * detach_y),
-                         ui_controls::kNoWindowHint)))
+                         gfx::NativeWindow())))
           .Then(base::BindOnce(&DetachToBrowserTabDragControllerTest::
                                    ReleaseInputAfterWindowDetached,
                                base::Unretained(this), tab_0_width)));
@@ -4952,7 +4952,7 @@ void CursorDeviceScaleFactorStep(
         base::BindOnce(&CursorDeviceScaleFactorStep, test,
                        not_attached_tab_strip, index + 1),
         // The window hint isn't used on Ash.
-        ui_controls::kNoWindowHint));
+        gfx::NativeWindow()));
   } else {
     // Finishes a series of CursorDeviceScaleFactorStep calls and ends drag.
     ASSERT_TRUE(
@@ -5038,7 +5038,7 @@ void CancelDragTabToWindowInSeparateDisplayStep2(
       base::BindOnce(&CancelDragTabToWindowInSeparateDisplayStep3, test,
                      tab_strip),
       // The window hint isn't used on Ash.
-      ui_controls::kNoWindowHint));
+      gfx::NativeWindow()));
 }
 
 }  // namespace
@@ -5176,7 +5176,7 @@ void PressSecondFingerWhileDetachedStep2(
       test->browser_list()->get(num_browsers - 1)->window()->IsActive());
 
   // The window hint isn't used on Ash.
-  gfx::NativeWindow window_hint = ui_controls::kNoWindowHint;
+  gfx::NativeWindow window_hint = gfx::NativeWindow();
   // Continue dragging after adding a second finger.
   EXPECT_TRUE(test->PressInput(gfx::Point(), window_hint, 1));
   EXPECT_TRUE(test->DragInputToNotifyWhenDone(
@@ -5242,7 +5242,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestTouch,
             target,
             base::BindLambdaForTesting([&]() { ASSERT_TRUE(ReleaseInput()); }),
             // The window hint isn't used on Ash.
-            ui_controls::kNoWindowHint));
+            gfx::NativeWindow()));
       }),
       1);
 

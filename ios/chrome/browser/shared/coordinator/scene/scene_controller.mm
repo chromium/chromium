@@ -28,7 +28,6 @@
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #import "components/prefs/pref_service.h"
-#import "components/previous_session_info/previous_session_info.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -155,6 +154,7 @@
 #import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
+#import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -175,13 +175,13 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_coordinator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_coordinator_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
-#import "ios/chrome/browser/ui/whats_new/promo/whats_new_scene_agent.h"
 #import "ios/chrome/browser/url_loading/model/scene_url_loading_service.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/web/model/page_placeholder_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/model/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
+#import "ios/chrome/browser/whats_new/coordinator/promo/whats_new_scene_agent.h"
 #import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 #import "ios/chrome/browser/youtube_incognito/coordinator/youtube_incognito_coordinator.h"
 #import "ios/chrome/browser/youtube_incognito/coordinator/youtube_incognito_coordinator_delegate.h"
@@ -938,10 +938,6 @@ void OnListFamilyMembersResponse(
       level > SceneActivationLevelBackground && !self.sceneState.UIEnabled;
   if (initializingUIInColdStart) {
     [self initializeUI];
-    // Add the scene to the list of connected scene, to restore in case of
-    // crashes.
-    [[PreviousSessionInfo sharedInstance]
-        addSceneSessionID:self.sceneState.sceneSessionID];
   }
 
   // When the scene transitions to inactive (such as when it's being shown in
@@ -976,15 +972,6 @@ void OnListFamilyMembersResponse(
   }
   if (level == SceneActivationLevelBackground) {
     [self recordWindowCreationForSceneState:self.sceneState];
-  }
-
-  if (self.sceneState.UIEnabled && level <= SceneActivationLevelDisconnected) {
-    if (base::ios::IsMultipleScenesSupported()) {
-      // If Multiple scenes are not supported, the session shouldn't be
-      // removed as it can be used for normal restoration.
-      [[PreviousSessionInfo sharedInstance]
-          removeSceneSessionID:self.sceneState.sceneSessionID];
-    }
   }
 }
 
@@ -2888,9 +2875,25 @@ using UserFeedbackDataCallback =
         [weakSelf showDefaultBrowserSettingsWithSourceForUMA:
                       DefaultBrowserSettingsPageSource::kExternalAction];
       };
+    case START_LENS_FROM_SHARE_EXTENSION:
+      return ^{
+        [weakSelf searchShareExtensionImageWithLens];
+      };
     default:
       return nil;
   }
+}
+
+// Starts a lens search for share extension.
+- (void)searchShareExtensionImageWithLens {
+  id<LensCommands> lensHandler = HandlerForProtocol(
+      self.currentInterface.browser->GetCommandDispatcher(), LensCommands);
+  UIImage* image = [UIImage imageWithData:_startupParameters.imageSearchData];
+  SearchImageWithLensCommand* command = [[SearchImageWithLensCommand alloc]
+      initWithImage:image
+         // TODO(crbug.com/403235333): Add Lens entry point for Share extension.
+         entryPoint:LensEntrypoint::ContextMenu];
+  [lensHandler searchImageWithLens:command];
 }
 
 // Starts a voice search on the current BVC.

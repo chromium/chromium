@@ -2,7 +2,7 @@
 [
   {
     "os": [
-      "chromeos_ash"
+      "chromeos"
     ],
     "note": "Test for DevicePowerBatteryChargingOptimization and DevicePowerAdaptiveChargingEnabled policy.",
     "policy_pref_mapping_tests": [

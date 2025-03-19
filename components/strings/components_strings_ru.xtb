@@ -54,7 +54,6 @@
 <translation id="1090629319939036170">Меню VR</translation>
 <translation id="1091463901118115503">Читать дальше</translation>
 <translation id="1091779689406092804">скриншотов</translation>
-<translation id="1094777233105318927">Информация о вашем браузере, ОС, устройстве, установленном ПО и файлах.</translation>
 <translation id="1096545575934602868">Максимальное число записей в этом поле: <ph name="MAX_ITEMS_LIMIT" />. Остальные записи не будут сохранены.</translation>
 <translation id="1097803577928227769">Парки и скверы</translation>
 <translation id="1099928364755383720">Автоматический показ картинки в картинке</translation>
@@ -604,6 +603,7 @@
 <translation id="2040894699575719559">Доступ к местоположению закрыт</translation>
 <translation id="2041788246978549610">Использование доступных микрофонов (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Лоток 7</translation>
+<translation id="2043896419861982462">Чтобы скрыть варианты рассрочки, перейдите в <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2045871135676061132">Конверт Personal</translation>
 <translation id="2046951263634619614">Книжные магазины</translation>
 <translation id="2048261947532620704">Перевод страницы…</translation>
@@ -761,6 +761,7 @@
 <translation id="2293443924986248631">Когда эта настройка включена, сайты не могут использовать файлы cookie, которые отслеживают ваши действия в интернете. Из-за этого некоторые функции на сайтах могут работать некорректно.</translation>
 <translation id="2295831393422400053">Включите параметр "Улучшить функции поиска и просмотра страниц", чтобы использовать генератор текстов</translation>
 <translation id="2296244067976588032">Ключ доступа • Связка ключей iCloud</translation>
+<translation id="2296331629987861142">Удобная рассрочка (есть требования, взимается комиссия)</translation>
 <translation id="2300306941146563769">Не загружен</translation>
 <translation id="2301098101308036335">Какие сайты посещают пользователи и в какое время.</translation>
 <translation id="230286397113210245">Кнопка "Открыть окно в режиме инкогнито". Нажмите ее, чтобы открыть такое окно.</translation>
@@ -1020,6 +1021,7 @@
 <translation id="2775884851269838147">Первая страница печати</translation>
 <translation id="2781185443919227679">Пляжи и острова</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781799097551205934">Подготовка к оплате</translation>
 <translation id="2782088940970074970">Прокат автомобилей</translation>
 <translation id="278436560439594386">Бытовая техника</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
@@ -1047,6 +1049,7 @@
 <translation id="2859383374160668142">Вы можете посмотреть информацию о снижении цены на интересующие вас товары в любое время</translation>
 <translation id="2859806420264540918">Этот сайт показывает навязчивую или вводящую в заблуждение рекламу.</translation>
 <translation id="28618371182701850">Электромобили и гибридные автомобили</translation>
+<translation id="287387905105155974">Всплывающая подсказка</translation>
 <translation id="28761159517501904">Фильмы</translation>
 <translation id="2876489322757410363">Вы выйдете из режима инкогнито, чтобы выполнить оплату во внешнем приложении. Продолжить?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы задать параметры Безопасного просмотра и других функций в настройках Chrome.</translation>
@@ -1106,6 +1109,7 @@
 <translation id="2959274854674276289">Вегетарианская кухня</translation>
 <translation id="2961809451460302960">Страхование жизни</translation>
 <translation id="2962073860865348475">12 x 18 дюймов</translation>
+<translation id="2965779286557330949">Ещё несколько секунд…</translation>
 <translation id="2967082089043584472">Добавлено в таблицу "<ph name="SET" />"</translation>
 <translation id="2967098518029543669">сохраните его в аккаунте Google</translation>
 <translation id="297173220375858963">Настольные издательские системы</translation>
@@ -1478,6 +1482,7 @@
 <translation id="3600106876108433070">Подробнее о сравнительных таблицах…</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Кнопка "Открыть настройки конфиденциальности в аккаунте Google". Нажмите ее, чтобы открыть настройки конфиденциальности в аккаунте Google.</translation>
+<translation id="3602695245205338770">Выберите сервис оплаты в рассрочку</translation>
 <translation id="3603507503523709">Приложение заблокировано администратором</translation>
 <translation id="3605899229568538311">5 x 5 дюймов</translation>
 <translation id="3606917451836803637">Телевизионные шоу и программы</translation>
@@ -2272,6 +2277,7 @@
 <translation id="5001526427543320409">Сторонние файлы cookie</translation>
 <translation id="5002932099480077015">Chrome будет хранить на этом устройстве данные карты для быстрого заполнения форм.</translation>
 <translation id="5007392906805964215">Посмотреть</translation>
+<translation id="5010599530303458903">Оплата ежемесячно или с разделением суммы на четыре части без процентов (есть требования)</translation>
 <translation id="5011561501798487822">Автоматически определенный язык</translation>
 <translation id="5015510746216210676">Имя компьютера:</translation>
 <translation id="5017554619425969104">Скопированный текст</translation>
@@ -3235,6 +3241,7 @@
 <translation id="6706005862292023715">Шторы и декорирование окон</translation>
 <translation id="6706210727756204531">Область применения</translation>
 <translation id="6706678697074905703">Не удалось сохранить код IBAN в аккаунте Google. Вместо этого код был сохранен в Chrome на устройстве.</translation>
+<translation id="6707388108229299854">Чтобы адрес был доступен на всех ваших устройствах, подтвердите личность.</translation>
 <translation id="6709133671862442373">Новости</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="6710594484020273272">&lt;Введите поисковый запрос&gt;</translation>
@@ -3913,6 +3920,7 @@
 <translation id="7887885240995164102">Включить режим "Картинка в картинке"</translation>
 <translation id="7888575728750733395">Способ цветового пересчета для печати</translation>
 <translation id="7890748547282909375">Чтобы сохранить скриншот, войдите в Microsoft OneDrive.</translation>
+<translation id="7892865709991296481">платежные настройки</translation>
 <translation id="7894280532028510793">Если все правильно, <ph name="BEGIN_LINK" />выполните диагностику сети<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Конверт 178 x 229 мм</translation>
 <translation id="7905064834449738336">Chromium предупреждает, если используемый вами пароль был опубликован в интернете. При этом имена пользователей и сами пароли зашифрованы и никому не видны, даже сотрудникам Google.</translation>
@@ -4479,7 +4487,6 @@
 <translation id="8919895429178014996">Скрыть все объекты</translation>
 <translation id="8922013791253848639">Всегда разрешать рекламу на этом сайте</translation>
 <translation id="8922734931659847428">URL только тех посещенных вами страниц, на которых зафиксированы <ph name="BEGIN_LINK" />события, связанные с устаревшими технологиями<ph name="END_LINK" />.</translation>
-<translation id="8924109546403192898">Когда Chrome сообщает о событиях безопасности, вашему администратору отправляется информация о них. К ней относятся URL страниц, которые вы посещали в Chrome или с которых копировали данные, названия файлов и метаданные, сведения о сбоях браузера и вкладок, а также имя, которое вы используете для входа в веб-приложения, систему на устройстве и в Chrome.</translation>
 <translation id="892588693504540538">Отверстие в правом верхнем углу</translation>
 <translation id="8926389886865778422">Больше не спрашивать</translation>
 <translation id="8932102934695377596">Часы отстают</translation>

@@ -512,6 +512,15 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
       device_pixel_ratio_(DevicePixelRatioFromDocument(document)) {}
 
 ViewTransitionStyleTracker::ViewTransitionStyleTracker(
+    Element& element,
+    const blink::ViewTransitionToken& transition_token)
+    : document_(element.GetDocument()),
+      element_(element),
+      transition_token_(transition_token),
+      device_pixel_ratio_(DevicePixelRatioFromDocument(element.GetDocument())) {
+}
+
+ViewTransitionStyleTracker::ViewTransitionStyleTracker(
     Document& document,
     ViewTransitionState transition_state)
     : document_(document),
@@ -701,9 +710,26 @@ void ViewTransitionStyleTracker::AddTransitionElementsFromCSS() {
 
   Vector<AtomicString> containing_group_stack;
 
+  PaintLayer* paint_layer = nullptr;
+  if (RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()) {
+    if (element_ && element_->parentElement()) {
+      // Element is not detached and not the root document element.
+      paint_layer = element_->GetLayoutObject()->EnclosingLayer();
+    } else if (!element_ || element_ == document_->documentElement()) {
+      paint_layer = document_->GetLayoutView()->PaintingLayer();
+    }
+    if (!paint_layer) {
+      return;
+    }
+  } else {
+    paint_layer = document_->GetLayoutView()->PaintingLayer();
+  }
+
+  // PaintLayer* paint_layer = document_->GetLayoutView()->PaintingLayer();
+
   AddTransitionElementsFromCSSRecursive(
-      document_->GetLayoutView()->PaintingLayer(), document_.Get(),
-      containing_group_stack, /*nearest_group_with_contain=*/g_null_atom);
+      paint_layer, document_.Get(), containing_group_stack,
+      /*nearest_group_with_contain=*/g_null_atom);
 }
 
 AtomicString ViewTransitionStyleTracker::GenerateAutoName(
@@ -2083,6 +2109,7 @@ bool ViewTransitionStyleTracker::HasLiveNewContent() const {
 
 void ViewTransitionStyleTracker::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
+  visitor->Trace(element_);
   visitor->Trace(element_data_map_);
   visitor->Trace(pending_transition_element_names_);
   visitor->Trace(ua_style_sheet_);

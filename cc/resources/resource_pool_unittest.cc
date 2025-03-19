@@ -57,8 +57,7 @@ class ResourcePoolTest : public testing::Test {
   void SetBackingOnResource(const ResourcePool::InUsePoolResource& resource) {
     auto backing = std::make_unique<ResourcePool::Backing>(
         resource.size(), resource.format(), resource.color_space());
-    backing->SetSharedImageForTesting(
-        gpu::ClientSharedImage::CreateForTesting());
+    backing->CreateSharedImageForTesting();
     backing->mailbox_sync_token.Set(
         gpu::GPU_IO, gpu::CommandBufferId::FromUnsafeValue(1), 1);
     resource.set_backing(std::move(backing));
@@ -687,24 +686,16 @@ TEST_F(ResourcePoolTest, MetadataSentToDisplayCompositor) {
   size_t count_limit = 100;
   resource_pool_->SetResourceUsageLimits(bytes_limit, count_limit);
 
-  // These values are all non-default values so we can tell they are propagated.
-  gpu::SharedImageMetadata metadata;
-  metadata.size = gfx::Size(100, 101);
-  metadata.format = viz::SinglePlaneFormat::kRGBA_4444;
-  EXPECT_NE(gfx::BufferFormat::RGBA_8888,
-            viz::SinglePlaneSharedImageFormatToBufferFormat(metadata.format));
-  metadata.color_space = gfx::ColorSpace::CreateSRGB();
   gpu::SyncToken sync_token(gpu::CommandBufferNamespace::GPU_IO,
                             gpu::CommandBufferId::FromUnsafeValue(0x123), 7);
-  metadata.usage = gpu::SharedImageUsage::SHARED_IMAGE_USAGE_SCANOUT;
 
+  // These values are all non-default values so we can tell they are propagated.
   ResourcePool::InUsePoolResource resource = resource_pool_->AcquireResource(
-      metadata.size, metadata.format, metadata.color_space);
+      gfx::Size(100, 101), viz::SinglePlaneFormat::kRGBA_4444,
+      gfx::ColorSpace::CreateSRGB());
   SetBackingOnResource(resource);
 
-  resource.backing()->SetSharedImageForTesting(
-      gpu::ClientSharedImage::CreateForTesting(metadata,
-                                               GL_TEXTURE_RECTANGLE_ARB));
+  resource.backing()->CreateSharedImageForTesting(GL_TEXTURE_RECTANGLE_ARB);
 
   // More non-default values.
   resource.backing()->mailbox_sync_token = sync_token;
@@ -729,8 +720,8 @@ TEST_F(ResourcePoolTest, MetadataSentToDisplayCompositor) {
   EXPECT_EQ(transfer[0].sync_token(), sync_token);
   EXPECT_EQ(transfer[0].texture_target(),
             resource.backing()->shared_image()->GetTextureTarget());
-  EXPECT_EQ(transfer[0].size, metadata.size);
-  EXPECT_EQ(transfer[0].format, metadata.format);
+  EXPECT_EQ(transfer[0].size, resource.backing()->shared_image()->size());
+  EXPECT_EQ(transfer[0].format, resource.backing()->shared_image()->format());
   EXPECT_EQ(
       transfer[0].synchronization_type,
       viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted);

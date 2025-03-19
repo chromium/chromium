@@ -47,16 +47,23 @@ void DataSharingSDKDelegateIOS::ReadGroups(
     param.collabID = base::SysUTF8ToNSString(group_param.group_id());
     param.consistencyToken =
         base::SysUTF8ToNSString(group_param.consistency_token());
-    std::string token_secret = group_param.access_token();
-    if (!token_secret.empty()) {
-      param.tokenSecret = base::SysUTF8ToNSString(token_secret);
-    }
     [groupsParam addObject:param];
   }
-  ShareKitReadConfiguration* config = [[ShareKitReadConfiguration alloc] init];
+  ShareKitReadGroupsConfiguration* config =
+      [[ShareKitReadGroupsConfiguration alloc] init];
   config.groupsParam = groupsParam;
   config.callback = base::CallbackToBlock(std::move(callback));
   share_kit_service_->ReadGroups(config);
+}
+
+void DataSharingSDKDelegateIOS::ReadGroupWithToken(
+    const data_sharing_pb::ReadGroupWithTokenParams& params,
+    base::OnceCallback<void(
+        const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&)>
+        callback) {
+  // TODO(crbug.com/402208925): Implement this.
+  std::move(callback).Run(base::unexpected(absl::Status(
+      absl::StatusCode::kUnimplemented, "Read Groups not implemented")));
 }
 
 void DataSharingSDKDelegateIOS::AddMember(

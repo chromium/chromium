@@ -155,6 +155,21 @@ void RecordDataDurationHistogram(base::TimeDelta data_duration) {
 
 }  // namespace
 
+SharedStorageDatabase::BatchUpdateResult::BatchUpdateResult(
+    OperationResult overall_result,
+    std::vector<OperationResult> inner_method_results)
+    : overall_result(overall_result),
+      inner_method_results(std::move(inner_method_results)) {}
+
+SharedStorageDatabase::BatchUpdateResult::~BatchUpdateResult() = default;
+
+SharedStorageDatabase::BatchUpdateResult::BatchUpdateResult(
+    BatchUpdateResult&&) = default;
+
+SharedStorageDatabase::BatchUpdateResult&
+SharedStorageDatabase::BatchUpdateResult::operator=(BatchUpdateResult&&) =
+    default;
+
 SharedStorageDatabase::GetResult::GetResult() = default;
 
 SharedStorageDatabase::GetResult::GetResult(GetResult&&) = default;
@@ -468,6 +483,113 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Clear(
     return OperationResult::kSqlError;
   }
   return OperationResult::kSuccess;
+}
+
+SharedStorageDatabase::BatchUpdateResult SharedStorageDatabase::BatchUpdate(
+    const url::Origin& context_origin,
+    const std::vector<
+        network::mojom::SharedStorageModifierMethodWithOptionsPtr>&
+        methods_with_options) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (LazyInit(DBCreationPolicy::kCreateIfAbsent) != InitStatus::kSuccess) {
+    return BatchUpdateResult(/*overall_result=*/OperationResult::kInitFailure,
+                             /*inner_method_results=*/{});
+  }
+
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin()) {
+    return BatchUpdateResult(/*overall_result=*/OperationResult::kSqlError,
+                             /*inner_method_results=*/{});
+  }
+
+  std::vector<OperationResult> results;
+
+  bool inner_method_failed = false;
+
+  for (auto& method_with_options : methods_with_options) {
+    network::mojom::SharedStorageModifierMethodPtr& method =
+        method_with_options->method;
+
+    switch (method->which()) {
+      case network::mojom::SharedStorageModifierMethod::Tag::kSetMethod: {
+        network::mojom::SharedStorageSetMethodPtr& set_method =
+            method->get_set_method();
+
+        SetBehavior set_behavior = set_method->ignore_if_present
+                                       ? SetBehavior::kIgnoreIfPresent
+                                       : SetBehavior::kDefault;
+
+        OperationResult result = Set(context_origin, set_method->key,
+                                     set_method->value, set_behavior);
+        results.push_back(result);
+
+        if (result != OperationResult::kSet &&
+            result != OperationResult::kIgnored) {
+          inner_method_failed = true;
+        }
+        break;
+      }
+      case network::mojom::SharedStorageModifierMethod::Tag::kAppendMethod: {
+        network::mojom::SharedStorageAppendMethodPtr& append_method =
+            method->get_append_method();
+
+        OperationResult result =
+            Append(context_origin, append_method->key, append_method->value);
+        results.push_back(result);
+
+        if (result != OperationResult::kSet) {
+          inner_method_failed = true;
+        }
+        break;
+      }
+      case network::mojom::SharedStorageModifierMethod::Tag::kDeleteMethod: {
+        network::mojom::SharedStorageDeleteMethodPtr& delete_method =
+            method->get_delete_method();
+
+        OperationResult result = Delete(context_origin, delete_method->key);
+        results.push_back(result);
+
+        if (result != OperationResult::kSuccess) {
+          inner_method_failed = true;
+        }
+        break;
+      }
+      case network::mojom::SharedStorageModifierMethod::Tag::kClearMethod: {
+        OperationResult result = Clear(context_origin);
+        results.push_back(result);
+
+        if (result != OperationResult::kSuccess) {
+          inner_method_failed = true;
+        }
+        break;
+      }
+    }
+
+    if (inner_method_failed) {
+      break;
+    }
+  }
+
+  if (inner_method_failed) {
+    CHECK(!results.empty());
+
+    OperationResult last_method_result = results.back();
+    CHECK_NE(last_method_result, OperationResult::kSuccess);
+
+    return BatchUpdateResult(/*overall_result=*/last_method_result,
+                             /*inner_method_results=*/std::move(results));
+  }
+
+  CHECK_EQ(results.size(), methods_with_options.size());
+
+  if (!transaction.Commit()) {
+    return BatchUpdateResult(/*overall_result=*/OperationResult::kSqlError,
+                             /*inner_method_results=*/std::move(results));
+  }
+
+  return BatchUpdateResult(/*overall_result=*/OperationResult::kSuccess,
+                           /*inner_method_results=*/std::move(results));
 }
 
 int64_t SharedStorageDatabase::Length(url::Origin context_origin) {

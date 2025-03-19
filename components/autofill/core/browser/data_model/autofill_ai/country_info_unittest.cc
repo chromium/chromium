@@ -48,6 +48,14 @@ TEST(CountryInfoTest, SetCodeReadCode) {
   EXPECT_EQ(country.GetCountryCode(), "DE");
 }
 
+// Tests that we can construct an object with a lowercase country code, but
+// reading the country code would return the uppercase version of it.
+TEST(CountryInfoTest, SetCodeLowercaseReadCodeUppercase) {
+  CountryInfo country;
+  country.SetCountryFromCountryCode(u"de");
+  EXPECT_EQ(country.GetCountryCode(), "DE");
+}
+
 }  // namespace
 
 }  // namespace autofill

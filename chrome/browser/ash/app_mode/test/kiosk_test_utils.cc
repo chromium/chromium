@@ -11,23 +11,27 @@
 #include "apps/test/app_window_waiter.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/functional/function_ref.h"
 #include "base/notimplemented.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
+#include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_web_app_install_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
@@ -159,6 +163,29 @@ bool PressBailoutAccelerator() {
       LoginAcceleratorAction::kAppLaunchBailout);
 }
 
+Browser* OpenA11ySettings(Profile& profile) {
+  auto& session = CHECK_DEREF(KioskController::Get().GetKioskSystemSession());
+  auto& settings_manager =
+      CHECK_DEREF(chrome::SettingsWindowManager::GetInstance());
+
+  settings_manager.ShowOSSettings(
+      &profile, chromeos::settings::mojom::kManageAccessibilitySubpagePath);
+
+  EXPECT_FALSE(DidKioskCloseNewWindow());
+
+  Browser& settings_browser =
+      CHECK_DEREF(session.GetSettingsBrowserForTesting());
+  return &settings_browser;
+}
+
+bool DidKioskCloseNewWindow() {
+  auto& session = CHECK_DEREF(KioskController::Get().GetKioskSystemSession());
+  base::test::TestFuture<bool> new_window_closed;
+  session.SetOnHandleBrowserCallbackForTesting(
+      new_window_closed.GetRepeatingCallback());
+  return new_window_closed.Take();
+}
+
 void CloseAppWindow(const KioskApp& app) {
   switch (app.id().type) {
     case KioskAppType::kChromeApp: {
@@ -196,6 +223,7 @@ void CachePolicy(const std::string& account_id,
   const std::string policy_blob = builder.GetBlob();
   auto& manager = CHECK_DEREF(FakeSessionManagerClient::Get());
   manager.set_device_local_account_policy(account_id, policy_blob);
+  manager.device_local_account_policy(account_id);
 }
 
 }  // namespace ash::kiosk::test

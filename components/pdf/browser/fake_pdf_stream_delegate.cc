@@ -53,4 +53,9 @@ bool FakePdfStreamDelegate::ShouldAllowPdfFrameNavigation(
   return should_allow_pdf_frame_navigation_;
 }
 
+bool FakePdfStreamDelegate::ShouldAllowPdfExtensionFrameNavigation(
+    content::NavigationHandle* navigation_handle) {
+  return should_allow_pdf_extension_frame_navigation_;
+}
+
 }  // namespace pdf

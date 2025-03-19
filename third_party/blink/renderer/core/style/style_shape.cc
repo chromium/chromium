@@ -134,9 +134,7 @@ class SegmentVisitor {
 };
 }  // namespace
 
-void StyleShape::GetPath(Path& path,
-                         const gfx::RectF& box_rect,
-                         float zoom) const {
+Path StyleShape::GetPath(const gfx::RectF& box_rect, float zoom) const {
   SVGPathBuilder builder(GetWindRule());
 
   builder.EmitSegment(
@@ -150,7 +148,7 @@ void StyleShape::GetPath(Path& path,
 
   // TODO(crbug.com/384870258): retain an LRU size->path cache.
   builder.Translate(box_rect.OffsetFromOrigin());
-  path = builder.Finalize();
+  return builder.Finalize();
 }
 
 }  // namespace blink

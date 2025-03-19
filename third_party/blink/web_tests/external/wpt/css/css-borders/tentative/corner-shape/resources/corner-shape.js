@@ -123,7 +123,7 @@ function render_rect_with_corner_shapes(style, ctx, width, height) {
   draw_outer_corner("bottom-left");
   draw_outer_corner("top-left");
   ctx.closePath();
-  ctx.clip("nonzero");
+  ctx.fill("nonzero");
 
   const inner_rect = [
     style["border-left-width"],

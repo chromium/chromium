@@ -138,12 +138,20 @@ suite('FeedbackFlowTestSuite', () => {
     }
   }
 
-  function setFromSettingsSearchFlag(fromSettingsSearch: boolean) {
-    if (fromSettingsSearch) {
-      const queryParams = new URLSearchParams(window.location.search);
-      const fromSettingsSearch = 'true';
-      queryParams.set(
-          AdditionalContextQueryParam.FROM_SETTINGS_SEARCH, fromSettingsSearch);
+  function setSettingsSearchFlags(
+      fromSettingsSearch: boolean, isQueryFingerprint: boolean) {
+    if (fromSettingsSearch || isQueryFingerprint) {
+      const queryParams = new URLSearchParams();
+
+      if (fromSettingsSearch) {
+        queryParams.set(
+            AdditionalContextQueryParam.FROM_SETTINGS_SEARCH, 'true');
+      }
+
+      if (isQueryFingerprint) {
+        queryParams.set(
+            AdditionalContextQueryParam.IS_QUERY_FINGERPRINT, 'true');
+      }
 
       window.history.replaceState(null, '', '?' + queryParams.toString());
     } else {
@@ -152,6 +160,30 @@ suite('FeedbackFlowTestSuite', () => {
           '?' +
               '');
     }
+  }
+
+  async function fillDescriptionAndClickContinue(): Promise<void> {
+    const activePage = getActivePage<SearchPageElement>();
+    strictQuery('textarea', activePage.shadowRoot, HTMLTextAreaElement).value =
+        'text';
+    strictQuery('#buttonContinue', activePage.shadowRoot, CrButtonElement)
+        .click();
+    await flushTasks();
+  }
+
+  function checkAndGetSysInfoAndMetricsCheckbox(): CrCheckboxElement {
+    const newActivePage = getActivePage<ShareDataPageElement>();
+    assertEquals('shareDataPage', newActivePage.id);
+
+    const sysInfoAndMetricsCheckboxContainer =
+        strictQuery('#sysInfoContainer', newActivePage.shadowRoot, HTMLElement);
+    assertTrue(!!sysInfoAndMetricsCheckboxContainer);
+
+    const sysInfoAndMetricsCheckbox = strictQuery(
+        '#sysInfoCheckbox', newActivePage.shadowRoot, CrCheckboxElement);
+    assertTrue(!!sysInfoAndMetricsCheckbox);
+
+    return sysInfoAndMetricsCheckbox;
   }
 
   // Test that the search page is shown by default.
@@ -813,68 +845,82 @@ suite('FeedbackFlowTestSuite', () => {
   });
 
   // Test the sys info and metrics checkbox will not be checked if
-  // fromSettingsSearch flag has been passed.
+  // fromSettingsSearch flag has been passed and the search query does not
+  // contain the word "fingerprint".
   test(
-      'SysinfoAndMetricsCheckboxIsUncheckedWhenFeedbackIsSentFromSettingsSearch',
+      'SysinfoAndMetricsCheckboxIsUncheckedWhenFeedbackIsSentFromSettingsSearchAndQueryDoesNotContainFingerprint',
       async () => {
-        // Replacing the query string to set the fromSettingsSearch flag as
-        // true.
-        setFromSettingsSearchFlag(true);
+        testWithInternalAccount();
+        setSettingsSearchFlags(true, false);
         await initializePage();
         const feedbackContext = getFeedbackContext();
         assertTrue(feedbackContext.fromSettingsSearch);
+        assertFalse(feedbackContext.isQueryFingerprint);
 
-        const activePage = getActivePage<SearchPageElement>();
-        strictQuery('textarea', activePage.shadowRoot, HTMLTextAreaElement)
-            .value = 'text';
-        strictQuery('#buttonContinue', activePage.shadowRoot, CrButtonElement)
-            .click();
-        await flushTasks();
+        await fillDescriptionAndClickContinue();
 
-        // Check the sys info and metrics checkbox component is unchecked when
-        // the feedback app has opened through settings search
-        const newActivePage = getActivePage<ShareDataPageElement>();
-        assertEquals('shareDataPage', newActivePage.id);
-
-        const sysInfoAndMetricsCheckboxContainer = strictQuery(
-            '#sysInfoContainer', newActivePage.shadowRoot, HTMLElement);
-        assertTrue(!!sysInfoAndMetricsCheckboxContainer);
-
-        const sysInfoAndMetricsCheckbox = strictQuery(
-            '#sysInfoCheckbox', newActivePage.shadowRoot, CrCheckboxElement);
-        assertTrue(!!sysInfoAndMetricsCheckbox);
+        const sysInfoAndMetricsCheckbox =
+            checkAndGetSysInfoAndMetricsCheckbox();
         assertFalse(sysInfoAndMetricsCheckbox.checked);
       });
 
   // Test the sys info and metrics checkbox will be checked if
-  // fromSettingsSearch flag not passed.
+  // fromSettingsSearch flag has been passed and the search query contains the
+  // word "fingerprint".
   test(
-      'SysinfoAndMetricsCheckboxIsCheckedWhenFeedbackIsNotSentFromSettingsSearch',
+      'SysinfoAndMetricsCheckboxIsCheckedWhenFeedbackIsSentFromSettingsSearchAndQueryContainsFingerprint',
       async () => {
-        // Replacing the query string to set the fromSettingsSearch flag as
-        // false.
-        setFromSettingsSearchFlag(false);
+        testWithInternalAccount();
+        setSettingsSearchFlags(true, true);
+        await initializePage();
+        const feedbackContext = getFeedbackContext();
+        assertTrue(feedbackContext.fromSettingsSearch);
+        assertTrue(feedbackContext.isQueryFingerprint);
+
+        await fillDescriptionAndClickContinue();
+
+        const sysInfoAndMetricsCheckbox =
+            checkAndGetSysInfoAndMetricsCheckbox();
+        assertTrue(sysInfoAndMetricsCheckbox.checked);
+      });
+
+  // Test the sys info and metrics checkbox will be checked if
+  // fromSettingsSearch flag not passed and the search query contains the word
+  // "fingerprint".
+  test(
+      'SysinfoAndMetricsCheckboxIsCheckedWhenFeedbackIsNotSentFromSettingsSearchAndQueryContainsFingerprint',
+      async () => {
+        testWithInternalAccount();
+        setSettingsSearchFlags(false, true);
         await initializePage();
         const feedbackContext = getFeedbackContext();
         assertFalse(feedbackContext.fromSettingsSearch);
+        assertTrue(feedbackContext.isQueryFingerprint);
 
-        const activePage = getActivePage<SearchPageElement>();
-        strictQuery('textarea', activePage.shadowRoot, HTMLTextAreaElement)
-            .value = 'text';
-        strictQuery('#buttonContinue', activePage.shadowRoot, CrButtonElement)
-            .click();
-        await flushTasks();
+        await fillDescriptionAndClickContinue();
 
-        const newActivePage = getActivePage<ShareDataPageElement>();
-        assertEquals('shareDataPage', newActivePage.id);
+        const sysInfoAndMetricsCheckbox =
+            checkAndGetSysInfoAndMetricsCheckbox();
+        assertTrue(sysInfoAndMetricsCheckbox.checked);
+      });
 
-        const sysInfoAndMetricsContainer = strictQuery(
-            '#sysInfoContainer', newActivePage.shadowRoot, HTMLElement);
-        assertTrue(!!sysInfoAndMetricsContainer);
+  // Test the sys info and metrics checkbox will be checked if
+  // fromSettingsSearch flag not passed and the search query does not contain
+  // the word "fingerprint".
+  test(
+      'SysinfoAndMetricsCheckboxIsCheckedWhenFeedbackIsNotSentFromSettingsSearchAndQueryDoesNotContainFingerprint',
+      async () => {
+        testWithInternalAccount();
+        setSettingsSearchFlags(false, false);
+        await initializePage();
+        const feedbackContext = getFeedbackContext();
+        assertFalse(feedbackContext.fromSettingsSearch);
+        assertFalse(feedbackContext.isQueryFingerprint);
 
-        const sysInfoAndMetricsCheckbox = strictQuery(
-            '#sysInfoCheckbox', newActivePage.shadowRoot, CrCheckboxElement);
-        assertTrue(!!sysInfoAndMetricsCheckbox);
+        await fillDescriptionAndClickContinue();
+
+        const sysInfoAndMetricsCheckbox =
+            checkAndGetSysInfoAndMetricsCheckbox();
         assertTrue(sysInfoAndMetricsCheckbox.checked);
       });
 

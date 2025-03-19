@@ -1647,11 +1647,9 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
   // This handles cases when we have multiple scroll events. Events for dropped
   // frames are reported by the reporter for next presented frame which could
   // lead to having multiple scroll events.
-  // TODO(crbug.com/402148798): Deprecate usage of latest_event.
-  ScrollUpdateEventMetrics* earliest_event = nullptr;
-  base::TimeTicks earliest_event_generation_ts = base::TimeTicks::Max();
+  // TODO(crbug.com/402148798): Calculate and use earliest_event instead of
+  // latest_event.
   ScrollUpdateEventMetrics* latest_event = nullptr;
-  base::TimeTicks latest_event_generation_ts = base::TimeTicks::Min();
   base::TimeTicks last_coalesced_ts = base::TimeTicks::Min();
   for (auto& event : events_metrics_) {
     TRACE_EVENT("input", "GestureType", "gesture", event->type());
@@ -1661,26 +1659,20 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
     }
 
     total_predicted_delta += scroll_update->predicted_delta();
-    base::TimeTicks generation_ts = scroll_update->GetDispatchStageTimestamp(
-        EventMetrics::DispatchStage::kGenerated);
     if (!had_gesture_scrolls) {
-      earliest_event = scroll_update;
-      earliest_event_generation_ts = generation_ts;
       latest_event = scroll_update;
-      latest_event_generation_ts = generation_ts;
     }
     had_gesture_scrolls = true;
-    if (generation_ts < earliest_event_generation_ts) {
-      earliest_event = scroll_update;
-      earliest_event_generation_ts = generation_ts;
-    } else if (generation_ts > latest_event_generation_ts) {
+    if (latest_event->GetDispatchStageTimestamp(
+            EventMetrics::DispatchStage::kGenerated) <
+        event->GetDispatchStageTimestamp(
+            EventMetrics::DispatchStage::kGenerated)) {
       latest_event = scroll_update;
-      latest_event_generation_ts = generation_ts;
     }
     last_coalesced_ts =
         std::max(last_coalesced_ts, scroll_update->last_timestamp());
 
-    switch (scroll_update->type()) {
+    switch (event->type()) {
       case EventMetrics::EventType::kFirstGestureScrollUpdate:
         is_scroll_start = true;
         [[fallthrough]];
@@ -1727,9 +1719,8 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
   }
   if (global_trackers_.scroll_jank_dropped_frame_tracker) {
     global_trackers_.scroll_jank_dropped_frame_tracker
-        ->ReportLatestPresentationData(*earliest_event, *latest_event,
-                                       last_coalesced_ts, end_timestamp,
-                                       args_.interval);
+        ->ReportLatestPresentationData(*latest_event, last_coalesced_ts,
+                                       end_timestamp, args_.interval);
   }
   if (global_trackers_.scroll_jank_ukm_reporter) {
     global_trackers_.scroll_jank_ukm_reporter

@@ -702,8 +702,8 @@ A pipeline object has the following members:
  *  `pipeline_id`: A string describing the pipeline strategy. This string is
     echoed back to the server in `event` objects to help the server attribute
     events to a particular pipeline. Pipeline IDs are not necessarily globally
-    unique; for example, a server might use an ID of "h1 -> h2 via zucchini" to
-    identify a pipeline that updates an application from h1 to h2, using a
+    unique; for example, a server might use an ID of "zucc:h1sha256->h2sha256"
+    to identify a pipeline that updates an application from h1 to h2, using a
     zucchini patch, and reuse that ID across many update check responses.
  *  `operations`: A list of `operation` objects.
 
@@ -875,23 +875,22 @@ For `eventtype == 3` events:
 
 For `eventtype == 14` events:
  *   `download_time_ms`: The time elapsed between the start of the download and
-     the end of the download, in milliseconds. -1 if unavailable.
-     Default: -1.
- *   `downloaded_bytes`: The number of bytes successfully received from the
-     download server. Default: 0.
+     the end of the download, in milliseconds. -1 if unavailable. Default: -1.
+ *   `downloaded`: The number of bytes successfully received from the download
+     server. Default: 0.
  *   `downloader`: A string identifying the download algorithm / stack. Known
      values:
      *   "" (empty string): Unknown downloader.
      *   "nsurlsession_background": MacOS background NSURLSession.
      *   "bits": Microsoft BITS.
      *   "direct": The Chromium network stack.
- *   `expected_bytes`: The number of bytes expected to be downloaded. Default:
-     0.
+ *   `total`: The size in bytes of the payload provided in the given url.
+     Default: 0.
  *   `pipeline_id`: The `pipeline_id` set in the request for this operation's
      pipeline.
  *   `url`: The URL from which the download was attempted.
 
-For `eventtype` == 60, 61, 62, or 63 events:
+For `eventtype == 60, 61, 62, or 63` events:
  *   All the members of `eventtype == 3` events.
  *   `pipeline_id`: The `pipeline_id` set in the request for this operation's
      pipeline.

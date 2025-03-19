@@ -613,11 +613,11 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
       // the other elements.
       value = SysUTF16ToNSString(popup_suggestion.main_text.value);
 
-      if (!popup_suggestion.minor_text.value.empty()) {
+      if (!popup_suggestion.minor_texts.empty()) {
         // For Virtual Cards, the main_text is just "Virtual card" so we need to
         // include the minor_text (which is the card name + last 4 digits ||
         // card holder's name) as the minorValue.
-        minorValue = SysUTF16ToNSString(popup_suggestion.minor_text.value);
+        minorValue = SysUTF16ToNSString(popup_suggestion.minor_texts[0].value);
       }
 
       if (!popup_suggestion.labels.empty() &&

@@ -12,6 +12,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
 
@@ -23,6 +24,8 @@ namespace autofill {
 BEGIN_METADATA(BnplTosDialog)
 END_METADATA
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BnplTosDialog, kThrobberId);
+
 BnplTosDialog::BnplTosDialog(
     base::WeakPtr<BnplTosController> controller,
     base::RepeatingCallback<void(const GURL&)> link_opener)
@@ -31,8 +34,12 @@ BnplTosDialog::BnplTosDialog(
   // Widget as a child view.
   // TODO(crbug.com/338254375): Remove the following two lines once this is the
   // default state for widgets and the delegates.
-  SetOwnedByWidget(false);
+  SetOwnedByWidget(/*delete_self=*/false);
   SetOwnershipOfNewWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  SetAcceptCallbackWithClose(
+      base::BindRepeating(&BnplTosDialog::OnAccepted, base::Unretained(this)));
+  SetCancelCallbackWithClose(
+      base::BindRepeating(&BnplTosDialog::OnCancelled, base::Unretained(this)));
 
   ChromeLayoutProvider* chrome_layout_provider = ChromeLayoutProvider::Get();
 
@@ -43,47 +50,57 @@ BnplTosDialog::BnplTosDialog(
       views::DialogContentType::kControl, views::DialogContentType::kControl));
   SetShowCloseButton(false);
   SetButtonStyle(ui::mojom::DialogButton::kCancel, ui::ButtonStyle::kDefault);
-  SetButtonLabel(ui::mojom::DialogButton::kOk,
-                 controller_.get()->GetOkButtonLabel());
+  SetButtonLabel(ui::mojom::DialogButton::kOk, controller_->GetOkButtonLabel());
   SetButtonLabel(ui::mojom::DialogButton::kCancel,
-                 controller_.get()->GetCancelButtonLabel());
+                 controller_->GetCancelButtonLabel());
+  SetLayoutManager(std::make_unique<BoxLayout>());
 
-  SetLayoutManager(std::make_unique<BoxLayout>(
-      BoxLayout::Orientation::kVertical, gfx::Insets(),
-      chrome_layout_provider->GetDistanceMetric(
-          views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
+  container_view_ = AddChildView(std::make_unique<views::View>());
+  container_view_->SetUseDefaultFillLayout(true);
 
-  BoxLayoutView* content_view = AddChildView(std::make_unique<BoxLayoutView>());
-  content_view->SetOrientation(BoxLayout::Orientation::kVertical);
-  content_view->SetBetweenChildSpacing(
+  content_view_ =
+      container_view_->AddChildView(std::make_unique<BoxLayoutView>());
+  content_view_->SetOrientation(BoxLayout::Orientation::kVertical);
+  content_view_->SetBetweenChildSpacing(
       chrome_layout_provider->GetDistanceMetric(
           views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
 
-  content_view->AddChildView(CreateTextWithIconView(
-      controller_.get()->GetReviewText(), /*text_link_info=*/std::nullopt,
+  content_view_->AddChildView(CreateTextWithIconView(
+      controller_->GetReviewText(), /*text_link_info=*/std::nullopt,
       vector_icons::kChecklistIcon));
 
-  content_view->AddChildView(CreateTextWithIconView(
-      controller_.get()->GetApproveText(), /*text_link_info=*/std::nullopt,
+  content_view_->AddChildView(CreateTextWithIconView(
+      controller_->GetApproveText(), /*text_link_info=*/std::nullopt,
       vector_icons::kReceiptLongIcon));
 
-  TextWithLink link_text = controller_.get()->GetLinkText();
+  TextWithLink link_text = controller_->GetLinkText();
   TextLinkInfo link_info;
   link_info.offset = link_text.offset;
   link_info.callback = base::BindRepeating(link_opener_, link_text.url);
-  content_view->AddChildView(CreateTextWithIconView(
+  content_view_->AddChildView(CreateTextWithIconView(
       link_text.text, std::move(link_info), vector_icons::kAddLinkIcon));
 
-  content_view->AddChildView(std::make_unique<views::Separator>())
+  content_view_->AddChildView(std::make_unique<views::Separator>())
       ->SetProperty(
           views::kMarginsKey,
           gfx::Insets().set_top(ChromeLayoutProvider::Get()->GetDistanceMetric(
               DISTANCE_CONTENT_LIST_VERTICAL_MULTI)));
 
-  content_view->AddChildView(CreateLegalMessageView(
-      controller_.get()->GetLegalMessageLines(),
-      base::UTF8ToUTF16(controller_.get()->GetAccountInfo().email),
-      GetProfileAvatar(controller_.get()->GetAccountInfo()), link_opener_));
+  content_view_->AddChildView(CreateLegalMessageView(
+      controller_->GetLegalMessageLines(),
+      base::UTF8ToUTF16(controller_->GetAccountInfo().email),
+      GetProfileAvatar(controller_->GetAccountInfo()), link_opener_));
+
+  throbber_view_ =
+      container_view_->AddChildView(std::make_unique<BoxLayoutView>());
+  throbber_view_->SetVisible(false);
+  throbber_view_->SetMainAxisAlignment(
+      views::BoxLayout::MainAxisAlignment::kCenter);
+  throbber_view_->SetCrossAxisAlignment(BoxLayout::CrossAxisAlignment::kCenter);
+  throbber_ = throbber_view_->AddChildView(
+      std::make_unique<views::Throbber>(kDialogThrobberDiameter));
+  throbber_->SetProperty(views::kElementIdentifierKey,
+                         BnplTosDialog::kThrobberId);
 }
 
 BnplTosDialog::~BnplTosDialog() = default;
@@ -92,16 +109,12 @@ void BnplTosDialog::AddedToWidget() {
   // The view needs to be added to the widget before we can get the bubble frame
   // view.
   GetBubbleFrameView()->SetTitleView(
-      std::make_unique<TitleWithIconAfterLabelView>(
-          controller_.get()->GetTitle(), GetTitleIcon()));
-}
-
-BnplTosController* BnplTosDialog::controller() const {
-  return controller_.get();
+      std::make_unique<TitleWithIconAfterLabelView>(controller_->GetTitle(),
+                                                    GetTitleIcon()));
 }
 
 TitleWithIconAfterLabelView::Icon BnplTosDialog::GetTitleIcon() const {
-  const std::string& issuer_id = controller_.get()->GetIssuerId();
+  const std::string& issuer_id = controller_->GetIssuerId();
 
   if (issuer_id == kBnplAffirmIssuerId) {
     return TitleWithIconAfterLabelView::Icon::GOOGLE_PAY_AND_AFFIRM;
@@ -113,6 +126,29 @@ TitleWithIconAfterLabelView::Icon BnplTosDialog::GetTitleIcon() const {
   // TODO: crbug.com/401282730 - Return Google Pay Icon as a graceful failure
   // case until the BNPL issuer ID is converted into an enum.
   return TitleWithIconAfterLabelView::Icon::GOOGLE_PAY;
+}
+
+bool BnplTosDialog::OnAccepted() {
+  SetButtonEnabled(ui::mojom::DialogButton::kOk, false);
+
+  throbber_->SizeToPreferredSize();
+  throbber_->Start();
+  content_view_->SetVisible(false);
+  throbber_view_->SetVisible(true);
+
+  // This call will destroy `this` and no members should be referenced
+  // afterwards.
+  controller_->OnUserAccepted();
+
+  return false;
+}
+
+bool BnplTosDialog::OnCancelled() {
+  // This call will destroy `this` and no members should be referenced
+  // afterwards.
+  controller_->OnUserCancelled();
+
+  return false;
 }
 
 }  // namespace autofill

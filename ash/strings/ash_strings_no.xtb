@@ -241,6 +241,8 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1755556344721611131">Diagnostikk-appen</translation>
 <translation id="1756833229520115364">Kunne ikke lagre malen. For mange vinduer eller faner.</translation>
 <translation id="1757857692711134412">Avslått til solnedgang</translation>
+<translation id="1763084151787818322">Andre handlinger</translation>
+<translation id="1768138163688567246">Lukk «Søk på skjermen»</translation>
 <translation id="1768366657309696705">Hurtigtasten <ph name="LAUNCHER_KEY_NAME" /> + punktum er endret. For å bruke Insert-tasten, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + Shift + tilbaketasten.</translation>
 <translation id="1770726142253415363">Flyttet til rad <ph name="ROW_NUMBER" />, kolonne <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Rull til høyre</translation>
@@ -1942,6 +1944,7 @@ Nylig installert</translation>
 <translation id="742594950370306541">Kameraet er i bruk.</translation>
 <translation id="742608627846767349">God morgen</translation>
 <translation id="743058460480092004">Kameraet og mikrofonen er i bruk.</translation>
+<translation id="7440404390546433462">Google Søk</translation>
 <translation id="7441711280402516925">Spiller av · Bytt til fane</translation>
 <translation id="7453330308669753048">Resultatet er fjernet fra søkeloggen</translation>
 <translation id="7459485586006128091">Wifi-sonen er slått av på grunn av en intern feil. Prøv å koble til på nytt om noen minutter.</translation>

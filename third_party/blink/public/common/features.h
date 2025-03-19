@@ -255,6 +255,7 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
                                                kMaxDiskDataAllocatorCapacityMB);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLessAggressiveParkableString);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCombineNewWindowIPCs);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kConsumeCodeCacheOffThread);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kContentCaptureConstantStreaming);
@@ -1215,6 +1216,12 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     int,
     kMemoryCacheStrongReferenceResourceSizeThresholdParam);
+
+// Enables v8 memory saver mode on low memory thresholds.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMemorySaverModeRenderTuning);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kAvailableMemoryThresholdParamMb);
 
 // Improvements to MHTML for more accurate snapshots.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMHTML_Improvements);

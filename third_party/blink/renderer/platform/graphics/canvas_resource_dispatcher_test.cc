@@ -129,7 +129,7 @@ class CanvasResourceDispatcherTest
     dispatcher_ = std::make_unique<MockCanvasResourceDispatcher>(
         agent_group_scheduler_compositor_task_runner);
     resource_provider_ =
-        CanvasResourceProvider::CreateSoftwareSharedImageProvider(
+        CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
             gfx::Size(kWidth, kHeight), GetN32FormatForCanvas(),
             kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
             CanvasResourceProvider::ShouldInitialize::kCallClear,

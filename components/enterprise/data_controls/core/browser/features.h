@@ -9,13 +9,6 @@
 
 namespace data_controls {
 
-// Controls enabling screenshot blocking Data Controls rules for supported
-// desktop browser platforms (Windows, Mac).
-//
-// Use `kEnableDesktopDataControls` to gate the implementation ofother rule
-// types.
-BASE_DECLARE_FEATURE(kEnableScreenshotProtection);
-
 // Controls enabling Data Controls rules for clipboard copy / paste on Android.
 BASE_DECLARE_FEATURE(kEnableClipboardDataControlsAndroid);
 

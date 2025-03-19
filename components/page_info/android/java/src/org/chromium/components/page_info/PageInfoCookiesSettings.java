@@ -21,6 +21,7 @@ import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -46,7 +47,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
 
     private ChromeSwitchPreference mCookieSwitch;
     private ChromeImageViewPreference mCookieInUse;
-    private ChromeImageViewPreference mRwsInUse;
+    private ChromeBasePreference mRwsInUse;
     private TextMessagePreference mThirdPartyCookiesTitle;
     private TextMessagePreference mThirdPartyCookiesSummary;
     private Runnable mOnClearCallback;
@@ -355,19 +356,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                 : "RWS access should be enabled to show info.";
 
         mRwsInUse.setVisible(true);
-        mRwsInUse.setTitle(R.string.cookie_info_rws_title);
-        mRwsInUse.setSummary(
-                String.format(getString(R.string.cookie_info_rws_summary), rwsInfo.getOwner()));
         mRwsInUse.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.tenancy));
-        mRwsInUse.setManagedPreferenceDelegate(
-                new ForwardingManagedPreferenceDelegate(
-                        getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
-                    @Override
-                    public boolean isPreferenceControlledByPolicy(Preference preference) {
-                        return getSiteSettingsDelegate()
-                                .isPartOfManagedRelatedWebsiteSet(currentOrigin);
-                    }
-                });
         if (getSiteSettingsDelegate().shouldShowPrivacySandboxRwsUi()) {
             mRwsInUse.setTitle(R.string.page_info_rws_v2_button_title);
             mRwsInUse.setSummary(
@@ -381,6 +370,19 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                             mPageInfoControllerDelegate.showSiteSettings(currentWebsite);
                         }
                         return false;
+                    });
+        } else {
+            mRwsInUse.setTitle(R.string.cookie_info_rws_title);
+            mRwsInUse.setSummary(
+                    String.format(getString(R.string.cookie_info_rws_summary), rwsInfo.getOwner()));
+            mRwsInUse.setManagedPreferenceDelegate(
+                    new ForwardingManagedPreferenceDelegate(
+                            getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
+                        @Override
+                        public boolean isPreferenceControlledByPolicy(Preference preference) {
+                            return getSiteSettingsDelegate()
+                                    .isPartOfManagedRelatedWebsiteSet(currentOrigin);
+                        }
                     });
         }
 

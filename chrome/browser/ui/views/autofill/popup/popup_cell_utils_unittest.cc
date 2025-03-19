@@ -68,14 +68,14 @@ TEST(PopupCellUtilsTest, SettingIsLoadingMaintainsPreferredSize) {
 
   auto first_content_view = std::make_unique<PopupRowContentView>();
   popup_cell_utils::AddSuggestionContentToView(
-      suggestion, make_main_label(), /*minor_text_label=*/nullptr,
+      suggestion, make_main_label(), /*minor_text_labels=*/{},
       /*description_label=*/nullptr, /*subtext_views=*/{}, make_icon(),
       *first_content_view);
 
   suggestion.is_loading = Suggestion::IsLoading(true);
   auto second_content_view = std::make_unique<PopupRowContentView>();
   popup_cell_utils::AddSuggestionContentToView(
-      suggestion, make_main_label(), /*minor_text_label=*/nullptr,
+      suggestion, make_main_label(), /*minor_text_labels=*/{},
       /*description_label=*/nullptr, /*subtext_views=*/{}, make_icon(),
       *second_content_view);
 

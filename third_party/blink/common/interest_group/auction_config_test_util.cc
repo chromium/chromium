@@ -4,6 +4,8 @@
 
 #include "third_party/blink/common/interest_group/auction_config_test_util.h"
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "url/gurl.h"
@@ -57,6 +59,8 @@ AuctionConfig CreateFullAuctionConfig() {
   non_shared_params.per_buyer_signals =
       blink::AuctionConfig::MaybePromisePerBuyerSignals::FromValue(
           std::move(per_buyer_signals));
+
+  non_shared_params.per_buyer_tkv_signals[buyer] = "[8]";
 
   AuctionConfig::BuyerTimeouts buyer_timeouts;
   buyer_timeouts.per_buyer_timeouts.emplace();

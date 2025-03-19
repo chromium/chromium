@@ -4,6 +4,8 @@
 # found in the LICENSE file.
 """Unittests for iossim_util.py."""
 
+from copy import deepcopy
+import plistlib
 import mock
 import unittest
 
@@ -446,54 +448,49 @@ class GetiOSSimUtil(test_runner_test.TestCase):
 
       self.assertEqual(mock_delete_simulator_runtime.call_count, 0)
 
-  def test_disable_hardware_keyboard(self, _, _2):
+  @mock.patch('builtins.open', new_callable=mock.mock_open)
+  @mock.patch.object(plistlib, 'dump')
+  @mock.patch.object(plistlib, 'load')
+  def test_disable_hardware_keyboard(self, mock_load, mock_dump, mock_open, _,
+                                     _2):
     """Ensures right commands are issued to disable hardware keyboard"""
 
-    self.mock(os.path, 'exists', lambda *args: False)
+    def reset():
+      mock_load.reset_mock()
+      mock_dump.reset_mock()
     self.mock(os.path, 'expanduser', lambda *args: 'PATH')
-
-    check_call_mock = mock.Mock()
-    self.mock(subprocess, 'check_call', check_call_mock)
-    check_calls = [
-        mock.call(['plutil', '-create', 'binary1', 'PATH']),
-        mock.call(
-            ['plutil', '-insert', 'DevicePreferences', '-dictionary', 'PATH']),
-        mock.call([
-            'plutil', '-insert', 'DevicePreferences.UDID', '-dictionary', 'PATH'
-        ]),
-        mock.call([
-            'plutil', '-replace',
-            'DevicePreferences.UDID.ConnectHardwareKeyboard', '-bool', 'NO',
-            'PATH'
-        ])
-    ]
-
-    dict_mock = mock.Mock()
-    self.mock(mac_util, 'plist_as_dict', dict_mock)
+    udid = '0CAF5FCB-8C07-41B1-8624-D08BCCEC360C'
+    expected = {'DevicePreferences': {udid: {'ConnectHardwareKeyboard': False}}}
 
     # file does not exist
-    dict_mock.return_value = ({}, None)
-    iossim_util.disable_hardware_keyboard('UDID')
-    check_call_mock.assert_has_calls(check_calls)
+    self.mock(os.path, 'exists', lambda *args: False)
+    iossim_util.disable_hardware_keyboard(udid)
+    mock_load.assert_not_called()
+    mock_dump.assert_called_with(expected, mock_open(), fmt=plistlib.FMT_BINARY)
+    reset()
 
     # file exists but is empty
     self.mock(os.path, 'exists', lambda *args: True)
-    check_call_mock.reset_mock()
-    dict_mock.return_value = ({}, None)
-    iossim_util.disable_hardware_keyboard('UDID')
-    check_call_mock.assert_has_calls(check_calls[1:])
+    mock_load.return_value = {}
+    iossim_util.disable_hardware_keyboard(udid)
+    mock_load.assert_called()
+    mock_dump.assert_called_with(expected, mock_open(), fmt=plistlib.FMT_BINARY)
+    reset()
 
-    #Device Prefs Dictionary Exists but not Prefs for UDID
-    check_call_mock.reset_mock()
-    dict_mock.return_value = ({'DevicePreferences': {}}, None)
-    iossim_util.disable_hardware_keyboard('UDID')
-    check_call_mock.assert_has_calls(check_calls[2:])
-
-    # Prefs for UDID exists
-    check_call_mock.reset_mock()
-    dict_mock.return_value = ({'DevicePreferences': {'UDID': {}}}, None)
-    iossim_util.disable_hardware_keyboard('UDID')
-    check_call_mock.assert_has_calls(check_calls[3:])
+    # DevicePreferences dictionary and udid exist
+    load_return_val = {
+        'DevicePreferences': {
+            udid: {
+                'SimulatorExternalDisplay': 2114
+            }
+        }
+    }
+    expected = deepcopy(load_return_val)
+    expected['DevicePreferences'][udid]['ConnectHardwareKeyboard'] = False
+    mock_load.return_value = load_return_val
+    iossim_util.disable_hardware_keyboard(udid)
+    mock_load.assert_called()
+    mock_dump.assert_called_with(expected, mock_open(), fmt=plistlib.FMT_BINARY)
 
   def test_disable_simulator_keyboard_tutorial(self, _, _2):
     with mock.patch('iossim_util.boot_simulator_if_not_booted') \

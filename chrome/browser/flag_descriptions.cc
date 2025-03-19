@@ -1276,6 +1276,12 @@ const char kEnterpriseRealTimeUrlCheckOnAndroidDescription[] =
     "Enables enterprise real-time URL checks if the "
     "EnterpriseRealTimeUrlCheckMode policy is set.";
 
+const char kEnterpriseUrlFilteringEventReportingOnAndroidName[] =
+    "Allow enterprise url filtering event reporting";
+const char kEnterpriseUrlFilteringEventReportingOnAndroidDescription[] =
+    "Enables enterprise url filtering event reporting when the "
+    "OnSecurityEventEnterpriseConnector policy is turned on ";
+
 const char kEnterpriseSecurityEventReportingOnAndroidName[] =
     "Allow enterprise security event reporting";
 const char kEnterpriseSecurityEventReportingOnAndroidDescription[] =
@@ -7621,8 +7627,13 @@ const char kZeroCopyVideoCaptureDescription[] =
 const char kFollowingFeedSidepanelName[] = "Following feed in the sidepanel";
 const char kFollowingFeedSidepanelDescription[] =
     "Enables the following feed in the sidepanel.";
+
+const char kLocalNetworkAccessChecksName[] = "Local Network Access Checks";
+const char kLocalNetworkAccessChecksDescription[] =
+    "Enables Local Network Access checks. "
+    "See: https://chromestatus.com/feature/5152728072060928";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        //  BUILDFLAG(IS_CHROMEOS)
+        // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
 const char kTaskManagerClankName[] = "Task Manager on Clank";

@@ -4,6 +4,13 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+
 import android.content.Context;
 import android.os.Looper;
 import android.util.Pair;
@@ -13,13 +20,11 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -160,7 +165,7 @@ public class TabPersistentStoreTest {
             // Use of a mockito object here is ok as this object is not important to the test. A
             // real object is not available from {@link ChromeActivity} due to the test structure.
             // {@link TabModelImpl} requires a non-null {@link TabContentManager} to initialize.
-            mMockTabContentManager = Mockito.mock(TabContentManager.class);
+            mMockTabContentManager = mock(TabContentManager.class);
             mTabPersistentStore =
                     ThreadUtils.runOnUiThreadBlocking(
                             new Callable<TabPersistentStore>() {
@@ -496,24 +501,24 @@ public class TabPersistentStoreTest {
                     store.addObserver(mockObserver);
 
                     // Should not prefetch with no prior active tab preference stored.
-                    Assert.assertNull(store.getPrefetchTabStateActiveTabTaskForTesting());
+                    assertNull(store.getPrefetchTabStateActiveTabTaskForTesting());
 
                     // Make sure the metadata file loads properly and in order.
                     store.loadState(/* ignoreIncognitoFiles= */ false);
                 });
 
         mockObserver.initializedCallback.waitForCallback(0, 1);
-        Assert.assertEquals(numExpectedTabs, mockObserver.mTabCountAtStartup);
+        assertEquals(numExpectedTabs, mockObserver.mTabCountAtStartup);
 
         mockObserver.detailsReadCallback.waitForCallback(0, numExpectedTabs);
-        Assert.assertEquals(numExpectedTabs, mockObserver.details.size());
+        assertEquals(numExpectedTabs, mockObserver.details.size());
         for (int i = 0; i < numExpectedTabs; i++) {
             TabRestoredDetails details = mockObserver.details.get(i);
-            Assert.assertEquals(i, details.index);
-            Assert.assertEquals(info.contents[i].tabId, details.id);
-            Assert.assertEquals(info.contents[i].url, details.url);
-            Assert.assertEquals(details.id == info.selectedTabId, details.isStandardActiveIndex);
-            Assert.assertEquals(false, details.isIncognitoActiveIndex);
+            assertEquals(i, details.index);
+            assertEquals(info.contents[i].tabId, details.id);
+            assertEquals(info.contents[i].url, details.url);
+            assertEquals(details.id == info.selectedTabId, details.isStandardActiveIndex);
+            assertEquals(false, details.isIncognitoActiveIndex);
         }
 
         HistogramWatcher watcher =
@@ -528,13 +533,13 @@ public class TabPersistentStoreTest {
                     store.restoreTabs(true);
                 });
         regularCreator.callback.waitForCallback(0, 1);
-        Assert.assertEquals(info.selectedTabId, regularCreator.idOfFirstCreatedTab);
+        assertEquals(info.selectedTabId, regularCreator.idOfFirstCreatedTab);
 
         // Confirm that all the TabStates were read from storage (i.e. non-null).
         mockObserver.stateLoadedCallback.waitForCallback(0, 1);
         for (int i = 0; i < info.contents.length; i++) {
             int tabId = info.contents[i].tabId;
-            Assert.assertNotNull(regularCreator.created.get(tabId));
+            assertNotNull(regularCreator.created.get(tabId));
         }
         watcher.assertExpected();
     }
@@ -551,7 +556,7 @@ public class TabPersistentStoreTest {
 
         // All Tabs should be a candidate for the FlatBuffer migration as they were restored
         // using legacy TabState.
-        Assert.assertEquals(tabs.length, store.getTabsToMigrateForTesting().size());
+        assertEquals(tabs.length, store.getTabsToMigrateForTesting().size());
         TabPersistentStore.onDeferredStartup();
         setAllTabStatesForTesting(tabs);
 
@@ -583,8 +588,7 @@ public class TabPersistentStoreTest {
                             /* tabId= */ tab.getId(),
                             /* encrypted= */ false,
                             /* isFlatbuffer= */ true);
-            Assert.assertTrue(
-                    "FlatBuffer file should exist " + flatBufferFile, flatBufferFile.exists());
+            assertTrue("FlatBuffer file should exist " + flatBufferFile, flatBufferFile.exists());
         }
     }
 
@@ -656,9 +660,9 @@ public class TabPersistentStoreTest {
         // There should be no TabState files for tabs[0] to start with - legacy or FlatBuffer.
         File legacyFile = getLegacyTabStateFile(tabs[0]);
         File flatBufferFile = getFlatBufferTabStateFile(tabs[0]);
-        Assert.assertFalse(
+        assertFalse(
                 "Legacy TabState File " + legacyFile + " should not exist", legacyFile.exists());
-        Assert.assertFalse(
+        assertFalse(
                 "FlatBuffer TabState File " + flatBufferFile + " should not exist",
                 flatBufferFile.exists());
 
@@ -674,9 +678,8 @@ public class TabPersistentStoreTest {
                 });
         helper.waitForCallback(0);
 
-        Assert.assertTrue(
-                "Legacy TabState File " + legacyFile + " should exist", legacyFile.exists());
-        Assert.assertFalse(
+        assertTrue("Legacy TabState File " + legacyFile + " should exist", legacyFile.exists());
+        assertFalse(
                 "FlatBuffer TabState File " + flatBufferFile + " should not exist",
                 flatBufferFile.exists());
     }
@@ -701,8 +704,8 @@ public class TabPersistentStoreTest {
                 });
         waitForAllSavesAndMigrations(store);
 
-        Assert.assertEquals(PREV_ROOT_ID, getRootIdFromLegacyTabStateFile(tabs[0]));
-        Assert.assertEquals(PREV_ROOT_ID, getRootIdFromFlatBufferTabStateFile(tabs[0]));
+        assertEquals(PREV_ROOT_ID, getRootIdFromLegacyTabStateFile(tabs[0]));
+        assertEquals(PREV_ROOT_ID, getRootIdFromFlatBufferTabStateFile(tabs[0]));
 
         // Next save of tabs[0] should result in a legacy and FlatBuffer files with NEW_ROOT_ID
         updateRootIdForTabStateSave(tabs[0].getId(), NEW_ROOT_ID);
@@ -720,8 +723,8 @@ public class TabPersistentStoreTest {
         helper.waitForCallback(0);
         // There should be parity between legacy and FlatBuffer TabState files with respect
         // to the attribute change (in this case root id).
-        Assert.assertEquals(NEW_ROOT_ID, getRootIdFromLegacyTabStateFile(tabs[0]));
-        Assert.assertEquals(NEW_ROOT_ID, getRootIdFromFlatBufferTabStateFile(tabs[0]));
+        assertEquals(NEW_ROOT_ID, getRootIdFromLegacyTabStateFile(tabs[0]));
+        assertEquals(NEW_ROOT_ID, getRootIdFromFlatBufferTabStateFile(tabs[0]));
     }
 
     @Test
@@ -741,12 +744,12 @@ public class TabPersistentStoreTest {
                 () -> {
                     store.getTabsToMigrateForTesting().clear();
                     store.setMigrateTabTaskForTesting(store.new MigrateTabTask(tabs[0], 1));
-                    Assert.assertNotNull(store.getMigrateTabTaskForTesting());
-                    Assert.assertEquals(0, store.getTabsToMigrateForTesting().size());
+                    assertNotNull(store.getMigrateTabTaskForTesting());
+                    assertEquals(0, store.getTabsToMigrateForTesting().size());
                     store.saveState();
-                    Assert.assertNull(store.getMigrateTabTaskForTesting());
-                    Assert.assertEquals(1, store.getTabsToMigrateForTesting().size());
-                    Assert.assertEquals(tabs[0], store.getTabsToMigrateForTesting().getFirst());
+                    assertNull(store.getMigrateTabTaskForTesting());
+                    assertEquals(1, store.getTabsToMigrateForTesting().size());
+                    assertEquals(tabs[0], store.getTabsToMigrateForTesting().getFirst());
                     helper.notifyCalled();
                 });
         helper.waitForCallback(0);
@@ -773,10 +776,10 @@ public class TabPersistentStoreTest {
         waitForAllSavesAndMigrations(store);
 
         File flatBufferFile = getFlatBufferTabStateFile(tabs[0]);
-        Assert.assertTrue(
+        assertTrue(
                 "FlatBuffer TabState File " + flatBufferFile + " should exist",
                 flatBufferFile.exists());
-        Assert.assertEquals(PREV_ROOT_ID, getRootIdFromFlatBufferTabStateFile(tabs[0]));
+        assertEquals(PREV_ROOT_ID, getRootIdFromFlatBufferTabStateFile(tabs[0]));
 
         updateRootIdForTabStateSave(tabs[0].getId(), NEW_ROOT_ID);
 
@@ -785,12 +788,12 @@ public class TabPersistentStoreTest {
                 () -> {
                     store.getTabsToMigrateForTesting().clear();
                     store.getTabsToMigrateForTesting().add(tabs[0]);
-                    Assert.assertEquals(1, store.getTabsToMigrateForTesting().size());
-                    Assert.assertEquals(tabs[0], store.getTabsToMigrateForTesting().getFirst());
+                    assertEquals(1, store.getTabsToMigrateForTesting().size());
+                    assertEquals(tabs[0], store.getTabsToMigrateForTesting().getFirst());
                     store.setMigrateTabTaskForTesting(store.new MigrateTabTask(tabs[0], 1));
                     store.updateMigratedFiles();
-                    Assert.assertEquals(0, store.getTabsToMigrateForTesting().size());
-                    Assert.assertEquals(NEW_ROOT_ID, getRootIdFromFlatBufferTabStateFile(tabs[0]));
+                    assertEquals(0, store.getTabsToMigrateForTesting().size());
+                    assertEquals(NEW_ROOT_ID, getRootIdFromFlatBufferTabStateFile(tabs[0]));
                     helper.notifyCalled();
                 });
         helper.waitForCallback(0);
@@ -957,7 +960,7 @@ public class TabPersistentStoreTest {
                             ShoppingPersistedTabData.from(newTab)
                                     .existsInStorage(
                                             (res) -> {
-                                                Assert.assertTrue(res);
+                                                assertTrue(res);
                                                 helper.notifyCalled();
                                             });
                             return newTab;
@@ -973,7 +976,7 @@ public class TabPersistentStoreTest {
                     ShoppingPersistedTabData.from(tab)
                             .existsInStorage(
                                     (res) -> {
-                                        Assert.assertEquals(expectedExists, res);
+                                        assertEquals(expectedExists, res);
                                         helper.notifyCalled();
                                     });
                 });
@@ -1010,7 +1013,7 @@ public class TabPersistentStoreTest {
                     firstStore.loadState(/* ignoreIncognitoFiles= */ false);
                 });
         firstObserver.initializedCallback.waitForCallback(0, 1);
-        Assert.assertEquals(numExpectedTabs, firstObserver.mTabCountAtStartup);
+        assertEquals(numExpectedTabs, firstObserver.mTabCountAtStartup);
         firstObserver.detailsReadCallback.waitForCallback(0, numExpectedTabs);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -1046,10 +1049,10 @@ public class TabPersistentStoreTest {
                     secondStore.loadState(/* ignoreIncognitoFiles= */ false);
                 });
         secondObserver.initializedCallback.waitForCallback(0, 1);
-        Assert.assertEquals(numExpectedTabs, secondObserver.mTabCountAtStartup);
+        assertEquals(numExpectedTabs, secondObserver.mTabCountAtStartup);
 
         secondObserver.detailsReadCallback.waitForCallback(0, numExpectedTabs);
-        Assert.assertEquals(numExpectedTabs, secondObserver.details.size());
+        assertEquals(numExpectedTabs, secondObserver.details.size());
         for (int i = 0; i < numExpectedTabs; i++) {
             TabRestoredDetails details = secondObserver.details.get(i);
 
@@ -1063,12 +1066,12 @@ public class TabPersistentStoreTest {
             }
 
             // TODO(dfalcantara): This won't be properly set until we have tab ordering preserved.
-            // Assert.assertEquals(details.id ==
+            // assertEquals(details.id ==
             // TestTabModelDirectory.TAB_MODEL_METADATA_V4_SELECTED_ID,
             //        details.isStandardActiveIndex);
 
-            Assert.assertEquals(currentInfo.url, details.url);
-            Assert.assertEquals(false, details.isIncognitoActiveIndex);
+            assertEquals(currentInfo.url, details.url);
+            assertEquals(false, details.isIncognitoActiveIndex);
         }
 
         // Restore all of the TabStates.  Confirm that all the TabStates were read (i.e. non-null).
@@ -1080,7 +1083,7 @@ public class TabPersistentStoreTest {
         secondObserver.stateLoadedCallback.waitForCallback(0, 1);
         for (int i = 0; i < numExpectedTabs; i++) {
             int tabId = TestTabModelDirectory.TAB_MODEL_METADATA_V4.contents[i].tabId;
-            Assert.assertNotNull(secondCreator.created.get(tabId));
+            assertNotNull(secondCreator.created.get(tabId));
         }
     }
 
@@ -1119,17 +1122,17 @@ public class TabPersistentStoreTest {
                     store.loadState(/* ignoreIncognitoFiles= */ false);
                 });
         mockObserver.initializedCallback.waitForCallback(0, 1);
-        Assert.assertEquals(numExpectedTabs, mockObserver.mTabCountAtStartup);
+        assertEquals(numExpectedTabs, mockObserver.mTabCountAtStartup);
 
         mockObserver.detailsReadCallback.waitForCallback(0, numExpectedTabs);
-        Assert.assertEquals(numExpectedTabs, mockObserver.details.size());
+        assertEquals(numExpectedTabs, mockObserver.details.size());
         for (int i = 0; i < numExpectedTabs; i++) {
             TabRestoredDetails details = mockObserver.details.get(i);
-            Assert.assertEquals(i, details.index);
-            Assert.assertEquals(info.contents[i].tabId, details.id);
-            Assert.assertEquals(info.contents[i].url, details.url);
-            Assert.assertEquals(details.id == info.selectedTabId, details.isStandardActiveIndex);
-            Assert.assertEquals(false, details.isIncognitoActiveIndex);
+            assertEquals(i, details.index);
+            assertEquals(info.contents[i].tabId, details.id);
+            assertEquals(info.contents[i].url, details.url);
+            assertEquals(details.id == info.selectedTabId, details.isStandardActiveIndex);
+            assertEquals(false, details.isIncognitoActiveIndex);
         }
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -1139,8 +1142,8 @@ public class TabPersistentStoreTest {
                     store.restoreTabs(true);
                 });
         mockObserver.stateLoadedCallback.waitForCallback(0, 1);
-        Assert.assertEquals(numExpectedTabs, mockSelector.getModel(false).getCount());
-        Assert.assertEquals(0, mockSelector.getModel(true).getCount());
+        assertEquals(numExpectedTabs, mockSelector.getModel(false).getCount());
+        assertEquals(0, mockSelector.getModel(true).getCount());
     }
 
     @Test
@@ -1177,9 +1180,9 @@ public class TabPersistentStoreTest {
                     store.loadState(/* ignoreIncognitoFiles= */ false);
                 });
         mockObserver.initializedCallback.waitForCallback(0, 1);
-        Assert.assertEquals(numExpectedTabs, mockObserver.mTabCountAtStartup);
+        assertEquals(numExpectedTabs, mockObserver.mTabCountAtStartup);
         mockObserver.detailsReadCallback.waitForCallback(0, numExpectedTabs);
-        Assert.assertEquals(numExpectedTabs, mockObserver.details.size());
+        assertEquals(numExpectedTabs, mockObserver.details.size());
 
         // TODO(dfalcantara): Expand MockTabModel* to support Incognito Tab decryption.
 
@@ -1190,8 +1193,8 @@ public class TabPersistentStoreTest {
                     store.restoreTabs(true);
                 });
         mockObserver.stateLoadedCallback.waitForCallback(0, 1);
-        Assert.assertEquals(info.numRegularTabs, mockSelector.getModel(false).getCount());
-        Assert.assertEquals(0, mockSelector.getModel(true).getCount());
+        assertEquals(info.numRegularTabs, mockSelector.getModel(false).getCount());
+        assertEquals(0, mockSelector.getModel(true).getCount());
     }
 
     @Test
@@ -1248,26 +1251,26 @@ public class TabPersistentStoreTest {
         MockTabPersistentStoreObserver otherMockObserver = testSelector.mTabPersistentStoreObserver;
 
         // Assert state on tab details restored from metadata file.
-        Assert.assertTrue(
+        assertTrue(
                 "First restored tab should be incognito.",
                 otherMockObserver.details.get(0).isIncognito);
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect URL for first restored tab.",
                 incognitoTab.url,
                 otherMockObserver.details.get(0).url);
 
-        Assert.assertFalse(
+        assertFalse(
                 "Second restored tab should be regular.",
                 otherMockObserver.details.get(1).isIncognito);
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect URL for second restored tab.",
                 regularTab.url,
                 otherMockObserver.details.get(1).url);
 
-        Assert.assertFalse(
+        assertFalse(
                 "Third restored tab should be regular.",
                 otherMockObserver.details.get(2).isIncognito);
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect URL for third restored tab.",
                 regularTab2.url,
                 otherMockObserver.details.get(2).url);
@@ -1299,7 +1302,7 @@ public class TabPersistentStoreTest {
         ThreadUtils.runOnUiThreadBlocking(() -> store.addObserver(mockObserver));
         store.waitForMigrationToFinish();
 
-        Assert.assertNotNull(store.getPrefetchTabStateActiveTabTaskForTesting());
+        assertNotNull(store.getPrefetchTabStateActiveTabTaskForTesting());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1312,7 +1315,7 @@ public class TabPersistentStoreTest {
                     // Confirm that the pre-fetched active tab state was used, must be done here on
                     // the
                     // UI thread as the message to finish the task is posted here.
-                    Assert.assertEquals(
+                    assertEquals(
                             AsyncTask.Status.FINISHED,
                             store.getPrefetchTabStateActiveTabTaskForTesting().getStatus());
 
@@ -1322,7 +1325,7 @@ public class TabPersistentStoreTest {
                     store.saveState();
                 });
 
-        Assert.assertEquals(
+        assertEquals(
                 info.selectedTabId,
                 mPreferences.readInt(ChromePreferenceKeys.TABMODEL_ACTIVE_TAB_ID, -1));
     }
@@ -1346,9 +1349,9 @@ public class TabPersistentStoreTest {
             // the initial restoration.
             Tab currentTab = ThreadUtils.runOnUiThreadBlocking(selector::getCurrentTab);
             if (i == 0) {
-                Assert.assertEquals(info.selectedTabId, currentTab.getId());
+                assertEquals(info.selectedTabId, currentTab.getId());
             } else {
-                Assert.assertEquals(info.contents[0].tabId, currentTab.getId());
+                assertEquals(info.contents[0].tabId, currentTab.getId());
             }
 
             ThreadUtils.runOnUiThreadBlocking(
@@ -1367,10 +1370,10 @@ public class TabPersistentStoreTest {
                                     mMockDirectory.getDataDirectory(),
                                     info.contents[j].tabId,
                                     sCipherFactory);
-                    Assert.assertEquals(
+                    assertEquals(
                             info.contents[j].title,
                             currentState.contentsState.getDisplayTitleFromState());
-                    Assert.assertEquals(
+                    assertEquals(
                             info.contents[j].url,
                             currentState.contentsState.getVirtualUrlFromState());
                 }
@@ -1417,12 +1420,12 @@ public class TabPersistentStoreTest {
     @Feature({"TabPersistentStore"})
     public void testTabRestoreMethodEnumValues() {
         // These enums are recorded in the metrics and should not be changed.
-        Assert.assertEquals(0, TabRestoreMethod.TAB_STATE);
-        Assert.assertEquals(1, TabRestoreMethod.CRITICAL_PERSISTED_TAB_DATA);
-        Assert.assertEquals(2, TabRestoreMethod.CREATE_NEW_TAB);
-        Assert.assertEquals(3, TabRestoreMethod.FAILED_TO_RESTORE);
-        Assert.assertEquals(4, TabRestoreMethod.SKIPPED_NTP);
-        Assert.assertEquals(5, TabRestoreMethod.SKIPPED_EMPTY_URL);
+        assertEquals(0, TabRestoreMethod.TAB_STATE);
+        assertEquals(1, TabRestoreMethod.CRITICAL_PERSISTED_TAB_DATA);
+        assertEquals(2, TabRestoreMethod.CREATE_NEW_TAB);
+        assertEquals(3, TabRestoreMethod.FAILED_TO_RESTORE);
+        assertEquals(4, TabRestoreMethod.SKIPPED_NTP);
+        assertEquals(5, TabRestoreMethod.SKIPPED_EMPTY_URL);
     }
 
     private TestTabModelSelector createAndRestoreRealTabModelImpls(TabModelMetaDataInfo info)
@@ -1478,10 +1481,10 @@ public class TabPersistentStoreTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> store.loadState(/* ignoreIncognitoFiles= */ !restoreIncognito));
         mockObserver.initializedCallback.waitForCallback(0, 1);
-        Assert.assertEquals(numExpectedTabs, mockObserver.mTabCountAtStartup);
+        assertEquals(numExpectedTabs, mockObserver.mTabCountAtStartup);
         mockObserver.detailsReadCallback.waitForCallback(0, info.contents.length);
 
-        Assert.assertEquals(numExpectedTabs, mockObserver.details.size());
+        assertEquals(numExpectedTabs, mockObserver.details.size());
 
         // Restore the TabStates, check that things were restored correctly, in the right tab order.
         ThreadUtils.runOnUiThreadBlocking(
@@ -1491,11 +1494,11 @@ public class TabPersistentStoreTest {
         mockObserver.stateLoadedCallback.waitForCallback(0, 1);
 
         int numIncognitoExpected = restoreIncognito ? info.numIncognitoTabs : 0;
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect number of regular tabs.",
                 info.numRegularTabs,
                 selector.getModel(false).getCount());
-        Assert.assertEquals(
+        assertEquals(
                 "Incorrect number of incognito tabs.",
                 numIncognitoExpected,
                 selector.getModel(true).getCount());
@@ -1506,7 +1509,7 @@ public class TabPersistentStoreTest {
 
             if (expectMatchingIds) {
                 if (restoredFromDisk(tab)) {
-                    Assert.assertEquals(
+                    assertEquals(
                             "Incorrect regular tab at position " + i,
                             info.contents[tabInfoIndex].tabId,
                             tab.getId());
@@ -1516,8 +1519,7 @@ public class TabPersistentStoreTest {
                                     () -> {
                                         return tab.getUrl().getSpec();
                                     });
-                    Assert.assertEquals(
-                            "Unexpected URL on Tab", info.contents[tabInfoIndex].url, url);
+                    assertEquals("Unexpected URL on Tab", info.contents[tabInfoIndex].url, url);
                 }
             }
             tabInfoIndex++;
@@ -1527,7 +1529,7 @@ public class TabPersistentStoreTest {
             Tab tab = selector.getModel(true).getTabAt(i);
             if (expectMatchingIds) {
                 if (restoredFromDisk(tab)) {
-                    Assert.assertEquals(
+                    assertEquals(
                             "Incorrect incognito tab at position " + i,
                             info.contents[i].tabId,
                             tab.getId());
@@ -1537,8 +1539,7 @@ public class TabPersistentStoreTest {
                                     () -> {
                                         return tab.getUrl().getSpec();
                                     });
-                    Assert.assertEquals(
-                            "Unexpected URL on Tab", info.contents[tabInfoIndex].url, url);
+                    assertEquals("Unexpected URL on Tab", info.contents[tabInfoIndex].url, url);
                 }
             }
         }
@@ -1571,13 +1572,13 @@ public class TabPersistentStoreTest {
                                     TabClosureParams.closeAllTabs().build(),
                                     /* allowDialog= */ false);
                 });
-        Assert.assertEquals(info.numRegularTabs, closedTabIds.size());
+        assertEquals(info.numRegularTabs, closedTabIds.size());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Cancel closing each tab.
                     for (Integer id : closedTabIds) regularModel.cancelTabClosure(id);
                 });
-        Assert.assertEquals(info.numRegularTabs, regularModel.getCount());
+        assertEquals(info.numRegularTabs, regularModel.getCount());
     }
 }

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_FORM_FILLER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_FORM_FILLER_H_
 
+#include <optional>
 #include <string>
 #include <variant>
 
@@ -19,6 +20,7 @@
 #include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/filling/form_autofill_history.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/autofill_constants.h"
 
@@ -141,39 +143,18 @@ class FormFiller {
       AutofillTriggerSource trigger_source,
       bool is_refill = false);
 
-  // Whether there should be an attempts to refill the form. Returns true if all
-  // the following are satisfied:
-  // - There have been no refills on this page yet.
-  // - A non-empty form name was recorded in a previous fill
-  // - That form name matched the currently parsed form name
-  // - It's been less than kLimitBeforeRefill since the original fill.
-  // - `refill_trigger_reason != kFormChanged`, or `form_structure` and the
-  //   previously filled form have different structures.
-  bool ShouldTriggerRefill(const FormStructure& form_structure,
-                           RefillTriggerReason refill_trigger_reason);
-
-  // Schedules a call of TriggerRefill. Virtual for testing.
-  virtual void ScheduleRefill(const FormData& form,
-                              const FormStructure& form_structure,
-                              AutofillTriggerSource trigger_source,
-                              RefillTriggerReason refill_trigger_reason);
-
-  // Attempts to refill the form that was changed dynamically. Should only be
-  // called if ShouldTriggerRefill returns true.
-  void TriggerRefill(const FormData& form,
-                     AutofillTriggerSource trigger_source,
-                     RefillTriggerReason refill_trigger_reason);
-
-  // This function is called by JavaScriptChangedAutofilledValue and may trigger
-  // a refill in case the website used JavaScript to reformat an expiration date
-  // like "05/2023" into "05 / 20" (i.e. it broke the year by cutting the last
-  // two digits instead of stripping the first two digits).
-  void MaybeTriggerRefillForExpirationDate(
+  // May or may not trigger a refill operation on `form`. `field` and
+  // `old_value` are only needed when `refill_trigger_reason` is
+  // `RefillTriggerReason::kExpirationDateFormatted`, and in that case `field`
+  // is the one that was reformatted and `old_value` is the value `field` had
+  // before the reformatting.
+  void MaybeTriggerRefill(
       const FormData& form,
-      const FormFieldData& field,
       const FormStructure& form_structure,
-      const std::u16string& old_value,
-      AutofillTriggerSource trigger_source);
+      RefillTriggerReason refill_trigger_reason,
+      AutofillTriggerSource trigger_source,
+      base::optional_ref<const FormFieldData> field = std::nullopt,
+      base::optional_ref<const std::u16string> old_value = std::nullopt);
 
  private:
   friend class FormFillerTestApi;
@@ -221,6 +202,29 @@ class FormFiller {
                         std::unique_ptr<RefillContext> context);
 
   RefillContext* GetRefillContext(FormGlobalId form_id);
+
+  // Returns whether there should be an attempts to refill the form. Returns
+  // true if all the following are satisfied:
+  // - There have been no refills on this page yet.
+  // - A non-empty form name was recorded in a previous fill
+  // - That form name matched the currently parsed form name
+  // - It's been less than kLimitBeforeRefill since the original fill.
+  // - `refill_trigger_reason != kFormChanged`, or `form_structure` and the
+  //   previously filled form have different structures.
+  bool ShouldTriggerRefill(const FormStructure& form_structure,
+                           RefillTriggerReason refill_trigger_reason);
+
+  // Schedules a call of TriggerRefill. Virtual for testing.
+  virtual void ScheduleRefill(const FormData& form,
+                              const FormStructure& form_structure,
+                              AutofillTriggerSource trigger_source,
+                              RefillTriggerReason refill_trigger_reason);
+
+  // Attempts to refill the form that was changed dynamically. Should only be
+  // called if `FormFiller::ShouldTriggerRefill()` returns true.
+  void TriggerRefill(const FormData& form,
+                     AutofillTriggerSource trigger_source,
+                     RefillTriggerReason refill_trigger_reason);
 
   // Stores the value to be filled into a field, along with its field type and
   // if it's an override.

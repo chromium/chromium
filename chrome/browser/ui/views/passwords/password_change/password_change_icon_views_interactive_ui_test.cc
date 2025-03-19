@@ -5,16 +5,22 @@
 #include "base/test/run_until.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/passwords/manage_passwords_test.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller_mock.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/views/passwords/password_change/password_change_icon_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_test.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
@@ -24,7 +30,6 @@ using testing::Return;
 
 class PasswordChangeIconViewsTest : public ManagePasswordsTest {
  public:
- public:
   PasswordChangeIconViewsTest() = default;
 
   PasswordChangeIconViewsTest(const PasswordChangeIconViewsTest&) = delete;
@@ -32,6 +37,10 @@ class PasswordChangeIconViewsTest : public ManagePasswordsTest {
       delete;
 
   ~PasswordChangeIconViewsTest() override = default;
+
+ protected:
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
 
   PasswordChangeIconViews* GetView() {
     views::View* const view =
@@ -43,8 +52,39 @@ class PasswordChangeIconViewsTest : public ManagePasswordsTest {
   }
 
   void SetPrivacyNoticeAcceptedPref() {
-    browser()->profile()->GetPrefs()->SetBoolean(
-        password_manager::prefs::kPasswordChangeFlowNoticeAgreement, true);
+    browser()->profile()->GetPrefs()->SetInteger(
+        optimization_guide::prefs::GetSettingEnabledPrefName(
+            optimization_guide::UserVisibleFeatureKey::
+                kPasswordChangeSubmission),
+        static_cast<int>(
+            optimization_guide::prefs::FeatureOptInState::kEnabled));
+  }
+
+  void EnableSignIn() {
+    auto account_info =
+        identity_test_env_adaptor_->identity_test_env()
+            ->MakePrimaryAccountAvailable("user@gmail.com",
+                                          signin::ConsentLevel::kSignin);
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    mutator.set_can_use_model_execution_features(true);
+    identity_test_env_adaptor_->identity_test_env()
+        ->UpdateAccountInfoForAccount(account_info);
+    identity_test_env_adaptor_->identity_test_env()
+        ->SetAutomaticIssueOfAccessTokens(true);
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    ManagePasswordsTest::SetUpBrowserContextKeyedServices(context);
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+  }
+
+  void SetUpOnMainThread() override {
+    ManagePasswordsTest::SetUpOnMainThread();
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
+            browser()->profile());
   }
 };
 
@@ -57,6 +97,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeIconViewsTest,
 IN_PROC_BROWSER_TEST_F(
     PasswordChangeIconViewsTest,
     ViewIsVisibleWhenChangingPasswordWaitingForPrivacyNotice) {
+  EnableSignIn();
   SetupPasswordChange();
   EXPECT_TRUE(GetView()->GetVisible());
   EXPECT_EQ(vector_icons::kPasswordManagerIcon.name,
@@ -66,6 +107,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     PasswordChangeIconViewsTest,
     ViewIsVisibleWhenChangingPasswordWaitingForPasswordForm) {
+  EnableSignIn();
   SetPrivacyNoticeAcceptedPref();
   SetupPasswordChange();
   EXPECT_TRUE(GetView()->GetVisible());
@@ -77,6 +119,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeIconViewsTest,
                        ViewIsVisibleWhenChangingPasswordFinished) {
+  EnableSignIn();
   SetPrivacyNoticeAcceptedPref();
   SetupPasswordChange();
   // Wait until the password change flow runs. The flow will fail

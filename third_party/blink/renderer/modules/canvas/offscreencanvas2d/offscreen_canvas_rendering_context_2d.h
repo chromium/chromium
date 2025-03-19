@@ -183,6 +183,8 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
 
   scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason);
 
+  CanvasResourceProvider* GetOrCreateCanvas2DResourceProvider() override;
+
   SkIRect dirty_rect_for_commit_;
 
   bool is_valid_size_ = false;

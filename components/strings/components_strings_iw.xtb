@@ -54,7 +54,6 @@
 <translation id="1090629319939036170">‏תפריט VR</translation>
 <translation id="1091463901118115503">הקראה רצופה</translation>
 <translation id="1091779689406092804">צילומי מסך</translation>
-<translation id="1094777233105318927">מידע על הדפדפן, מערכת ההפעלה, המכשיר, התוכנות שהותקנו והקבצים</translation>
 <translation id="1096545575934602868">השדה הזה יכול לכלול עד <ph name="MAX_ITEMS_LIMIT" /> רשומות. כל הרשומות הנוספות יימחקו.</translation>
 <translation id="1097803577928227769">פארקים וגנים אזוריים</translation>
 <translation id="1099928364755383720">הפעלה אוטומטית של 'תמונה בתוך תמונה'</translation>
@@ -604,6 +603,7 @@
 <translation id="2040894699575719559">המיקום נחסם</translation>
 <translation id="2041788246978549610">שימוש במיקרופונים הזמינים (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">מגש 7</translation>
+<translation id="2043896419861982462">כדי להסתיר את האפשרויות לתשלום בתשלומים, צריך לעבור אל <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="2045871135676061132">מעטפה אישית</translation>
 <translation id="2046951263634619614">קמעונאי ספרים</translation>
 <translation id="2048261947532620704">הדף בתהליך תרגום…</translation>
@@ -761,6 +761,7 @@
 <translation id="2293443924986248631">‏כשהאפשרות מופעלת, אתרים לא יכולים להשתמש בקובצי cookie כדי לעקוב אחריך באינטרנט. ייתכנו שיבושים בפעולה של תכונות באתרים מסוימים.</translation>
 <translation id="2295831393422400053">הפעלת ההגדרה 'שיפור החיפושים והגלישה' לצורך שימוש בתכונה 'עזרה בכתיבה'</translation>
 <translation id="2296244067976588032">‏מפתח גישה • iCloud Keychain</translation>
+<translation id="2296331629987861142">משלמים בתשלומים נוחים (בכפוף לזכאות, בכפוף לעמלות)</translation>
 <translation id="2300306941146563769">לא הועלה</translation>
 <translation id="2301098101308036335">אתרים שבהם מבקרים וזמני הביקורים.</translation>
 <translation id="230286397113210245">הכפתור לפתיחת חלון פרטי, מפעילים אותו כדי לפתוח חלון פרטי חדש ולגלוש באופן פרטי</translation>
@@ -1020,6 +1021,7 @@
 <translation id="2775884851269838147">דף מודפס ראשון</translation>
 <translation id="2781185443919227679">חופים ואיים</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781799097551205934">מתכוננים לתשלום בקופה</translation>
 <translation id="2782088940970074970">השכרות רכב</translation>
 <translation id="278436560439594386">מוצרי חשמל ביתיים</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
@@ -1047,6 +1049,7 @@
 <translation id="2859383374160668142">תמיד אפשר לראות ירידות במחיר של מוצרים שבמעקב.</translation>
 <translation id="2859806420264540918">באתר הזה מוצגות מודעות מפריעות או מטעות.</translation>
 <translation id="28618371182701850">רכבים חשמליים והיברידיים</translation>
+<translation id="287387905105155974">בועת עזרה</translation>
 <translation id="28761159517501904">סרטים</translation>
 <translation id="2876489322757410363">בחרת לצאת מהמצב האנונימי כדי לשלם באמצעות אפליקציה חיצונית. להמשיך?</translation>
 <translation id="2876949457278336305">‏<ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, לוחצים על Tab ואז על Enter כדי לנהל את הגלישה הבטוחה ועוד בהגדרות Chrome</translation>
@@ -1106,6 +1109,7 @@
 <translation id="2959274854674276289">מטבח צמחוני</translation>
 <translation id="2961809451460302960">ביטוח חיים</translation>
 <translation id="2962073860865348475">‏12x18 אינץ'</translation>
+<translation id="2965779286557330949">רק עוד כמה שניות…</translation>
 <translation id="2967082089043584472">נוסף אל <ph name="SET" /></translation>
 <translation id="2967098518029543669">‏צריך לשמור אותה בחשבון Google</translation>
 <translation id="297173220375858963">הוצאה לאור שולחנית</translation>
@@ -1479,6 +1483,7 @@
 <translation id="3600106876108433070">מידע על טבלאות השוואה</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">‏הכפתור לניהול הגדרות הפרטיות ב-Google, מפעילים אותו כדי להיכנס להגדרות הפרטיות בחשבון Google</translation>
+<translation id="3602695245205338770">בחירת ספק לתשלום בתשלומים</translation>
 <translation id="3603507503523709">האפליקציה נחסמה על ידי מנהל המערכת</translation>
 <translation id="3605899229568538311">‏5x5 אינץ'</translation>
 <translation id="3606917451836803637">תוכניות וסדרות טלוויזיה</translation>
@@ -2277,6 +2282,7 @@ Del</translation>
 <translation id="5001526427543320409">‏קובצי cookie של צד שלישי</translation>
 <translation id="5002932099480077015">‏אם האפשרות הזו תופעל, Chrome יאחסן עותק של הכרטיס שלך במכשיר הזה למילוי מהיר יותר של טפסים.</translation>
 <translation id="5007392906805964215">עיון</translation>
+<translation id="5010599530303458903">תשלום חודשי או ב-4 תשלומים ללא ריבית (בכפוף לזכאות)</translation>
 <translation id="5011561501798487822">השפה שזוהתה</translation>
 <translation id="5015510746216210676">שם המחשב:</translation>
 <translation id="5017554619425969104">טקסט שהעתקת</translation>
@@ -3241,6 +3247,7 @@ Del</translation>
 <translation id="6706005862292023715">וילונות והצללה לחלונות</translation>
 <translation id="6706210727756204531">היקף</translation>
 <translation id="6706678697074905703">‏לא ניתן לשמור את ה-IBAN הזה בחשבון שלך ב-Google. במקום זאת, הוא נשמר ב-Chrome במכשיר הזה.</translation>
+<translation id="6707388108229299854">כדי לקבל את הכתובת הזו בכל המכשירים, עליך לאמת את הזהות שלך</translation>
 <translation id="6709133671862442373">חדשות</translation>
 <translation id="6710213216561001401">הקודם</translation>
 <translation id="6710594484020273272">&lt;יש להקליד מונח חיפוש&gt;</translation>
@@ -3919,6 +3926,7 @@ Del</translation>
 <translation id="7887885240995164102">מעבר אל מצב 'תמונה בתוך תמונה'</translation>
 <translation id="7888575728750733395">‏Rendering Intent בהדפסה</translation>
 <translation id="7890748547282909375">‏צריך להיכנס לחשבון ב-Microsoft OneDrive כדי לשמור צילום מסך</translation>
+<translation id="7892865709991296481">הגדרות תשלומים</translation>
 <translation id="7894280532028510793">אם האיות תקין, <ph name="BEGIN_LINK" />יש לנסות להפעיל את אבחון הרשת<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">‏מעטפה – 7x9 אינץ'</translation>
 <translation id="7905064834449738336">‏אם משתמשים בסיסמה והיא פורסמה באינטרנט, מוצגת אזהרה ב-Chromium. כשהבדיקה הזו מתבצעת, הסיסמאות ושמות המשתמשים מוצפנים, כך שאיש לא יכול לקרוא אותם, כולל Google.</translation>
@@ -4485,7 +4493,6 @@ Del</translation>
 <translation id="8919895429178014996">הסתרת כל הפריטים</translation>
 <translation id="8922013791253848639">תמיד לאפשר מודעות באתר הזה</translation>
 <translation id="8922734931659847428">‏רשימה חלקית של כתובות URL של דפים עם <ph name="BEGIN_LINK" />אירועי שימוש בטכנולוגיה מדור קודם<ph name="END_LINK" /> שביקרת בהם</translation>
-<translation id="8924109546403192898">‏כאשר אירועי אבטחה מדווחים על ידי Chrome, נתונים רלוונטיים לגבי האירועים האלה נשלחים לאדמין. הנתונים האלה יכולים לכלול את כתובות ה-URL של הדפים שבהם ביקרת ב-Chrome, כתובות URL של דפים שמהם העתקת נתונים, שמות קבצים או מטא-נתונים, קריסות של כרטיסיות או הדפדפן ואת שם המשתמש שבאמצעותו נכנסת לאפליקציות מבוססות-אינטרנט, למכשיר שלך ול-Chrome.</translation>
 <translation id="892588693504540538">ניקוב בפינה הימנית העליונה</translation>
 <translation id="8926389886865778422">אין לשאול שוב</translation>
 <translation id="8932102934695377596">השעון שלך מאחר</translation>

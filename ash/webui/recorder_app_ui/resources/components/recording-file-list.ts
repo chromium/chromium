@@ -244,7 +244,7 @@ export class RecordingFileList extends ReactiveLitElement {
       >
       </cra-menu-item>
       <cra-menu-item
-        headline=${i18n.recordingListSortByNameOption}
+        headline=${i18n.recordingListSortByTitleOption}
         ?checked=${settings.value.recordingSortType === RecordingSortType.NAME}
         data-role="menuitemradio"
         @cros-menu-item-triggered=${() => {

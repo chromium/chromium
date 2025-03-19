@@ -77,6 +77,8 @@ class COMPONENT_EXPORT(GEOMETRY) Vector2dF {
   // Divides each component of the vector by the given scale factors.
   void InvScale(float inv_x_scale, float inv_y_scale);
 
+  void Normalize() { InvScale(Length()); }
+
   void Transpose() {
     using std::swap;
     swap(x_, y_);
@@ -135,6 +137,13 @@ inline Vector2dF ScaleVector2d(const Vector2dF& v, float scale) {
 
 inline Vector2dF TransposeVector2d(const Vector2dF& v) {
   return Vector2dF(v.y(), v.x());
+}
+
+// Return a unit vector with the same direction as v.
+inline Vector2dF NormalizeVector2d(const Vector2dF& v) {
+  Vector2dF normal(v);
+  normal.Normalize();
+  return normal;
 }
 
 // This is declared here for use in gtest-based unit tests but is defined in

@@ -23,7 +23,6 @@
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
 namespace storage {
 
@@ -31,7 +30,7 @@ class QuotaManagerProxy;
 
 // Default StorageKey data that the QuotaDatabase does not know about yet,
 // and is to be fetched during QuotaDatabase bootstrapping via
-// QuotaClient::GetStorageKeysForType.
+// QuotaClient::GetDefaultStorageKeys.
 struct UnmigratedStorageKeyData {
   const char* origin;
   int64_t usage;
@@ -66,18 +65,15 @@ class MockQuotaClient : public mojom::QuotaClient {
   // QuotaClient.
   void GetBucketUsage(const BucketLocator& bucket,
                       GetBucketUsageCallback callback) override;
-  void GetStorageKeysForType(blink::mojom::StorageType type,
-                             GetStorageKeysForTypeCallback callback) override;
+  void GetDefaultStorageKeys(GetDefaultStorageKeysCallback callback) override;
   void DeleteBucketData(const BucketLocator& bucket,
                         DeleteBucketDataCallback callback) override;
-  void PerformStorageCleanup(blink::mojom::StorageType type,
-                             PerformStorageCleanupCallback callback) override;
+  void PerformStorageCleanup(PerformStorageCleanupCallback callback) override;
 
  private:
   void RunGetBucketUsage(const BucketLocator& bucket,
                          GetBucketUsageCallback callback);
-  void RunGetStorageKeysForType(blink::mojom::StorageType type,
-                                GetStorageKeysForTypeCallback callback);
+  void RunGetDefaultStorageKeys(GetDefaultStorageKeysCallback callback);
   void RunDeleteBucketData(const BucketLocator& bucket,
                            DeleteBucketDataCallback callback);
 

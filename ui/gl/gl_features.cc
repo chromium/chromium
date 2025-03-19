@@ -348,6 +348,22 @@ bool IsSwiftShaderAllowed(const base::CommandLine* command_line) {
          IsSwiftShaderAllowedByFeature();
 }
 
+#if BUILDFLAG(IS_WIN)
+BASE_FEATURE(kAllowD3D11WarpFallback,
+             "AllowD3D11WarpFallback",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+bool IsAnySoftwareGLAllowed(const base::CommandLine* command_line) {
+#if BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(kAllowD3D11WarpFallback)) {
+    return true;
+  }
+#endif
+
+  return IsSwiftShaderAllowed(command_line);
+}
+
 base::TimeDelta GetGLCompileShaderDelay() {
 #if BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
   if (UsePassthroughCommandDecoder()) {

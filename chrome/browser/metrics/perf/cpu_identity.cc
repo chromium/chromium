@@ -8,6 +8,7 @@
 
 #include <algorithm>  // for std::lower_bound()
 
+#include "base/compiler_specific.h"
 #include "base/cpu.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -112,7 +113,7 @@ const CpuUarchTableEntry* kCpuUarchTableEnd = std::end(kCpuUarchTable);
 
 bool CpuUarchTableCmp(const CpuUarchTableEntry& a,
                       const CpuUarchTableEntry& b) {
-  return strcmp(a.family_model, b.family_model) < 0;
+  return UNSAFE_TODO(strcmp(a.family_model, b.family_model)) < 0;
 }
 
 }  // namespace internal

@@ -94,7 +94,7 @@ using l10n_util::GetNSStringF;
 - (void)start {
   [super start];
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
+      AuthenticationServiceFactory::GetForProfile(self.profile);
   DCHECK(
       authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSignin));
   // TODO(crbug.com/40105436): Should test if reauth is still needed. If still
@@ -102,9 +102,8 @@ using l10n_util::GetNSStringF;
   // If not, the coordinator can be closed successfuly, by calling
   // -[TrustedVaultReauthenticationCoordinator
   // reauthentificationCompletedWithSuccess:]
-  self.identity =
-      AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile())
-          ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  self.identity = AuthenticationServiceFactory::GetForProfile(self.profile)
+                      ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   __weak __typeof(self) weakSelf = self;
   void (^callback)(BOOL success, NSError* error) =
       ^(BOOL success, NSError* error) {
@@ -113,15 +112,13 @@ using l10n_util::GetNSStringF;
   switch (self.intent) {
     case SigninTrustedVaultDialogIntentFetchKeys:
       _dialogCancelCallback =
-          TrustedVaultClientBackendFactory::GetForProfile(
-              self.browser->GetProfile())
+          TrustedVaultClientBackendFactory::GetForProfile(self.profile)
               ->Reauthentication(self.identity, _securityDomainID,
                                  self.baseViewController, callback);
       break;
     case SigninTrustedVaultDialogIntentDegradedRecoverability:
       _dialogCancelCallback =
-          TrustedVaultClientBackendFactory::GetForProfile(
-              self.browser->GetProfile())
+          TrustedVaultClientBackendFactory::GetForProfile(self.profile)
               ->FixDegradedRecoverability(self.identity, _securityDomainID,
                                           self.baseViewController, callback);
       break;

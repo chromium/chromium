@@ -10,6 +10,8 @@
 #include "base/rand_util.h"
 #include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/component_updater/translate_kit_component_installer.h"
 #include "chrome/browser/on_device_translation/component_manager.h"
 #include "chrome/browser/on_device_translation/language_pack_util.h"
 #include "chrome/browser/on_device_translation/pref_names.h"
@@ -18,6 +20,7 @@
 #include "chrome/browser/on_device_translation/translation_metrics.h"
 #include "chrome/browser/on_device_translation/translator.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/crx_file/id_util.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/on_device_translation/public/cpp/features.h"
@@ -26,6 +29,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -294,6 +298,11 @@ base::TimeDelta TranslationManagerImpl::GetTranslatorDownloadDelay() {
   return base::RandTimeDelta(base::Seconds(2), base::Seconds(3));
 }
 
+component_updater::ComponentUpdateService*
+TranslationManagerImpl::GetComponentUpdateService() {
+  return g_browser_process->component_updater();
+}
+
 void TranslationManagerImpl::CreateTranslatorImpl(
     mojo::PendingRemote<blink::mojom::TranslationManagerCreateTranslatorClient>
         client,
@@ -368,6 +377,25 @@ void TranslationManagerImpl::CreateTranslator(
         ->OnResult(blink::mojom::CreateTranslatorResult::NewError(
             blink::mojom::CreateTranslatorError::kAcceptLanguagesCheckFailed));
     return;
+  }
+
+  if (options->observer_remote) {
+    base::flat_set<std::string> component_ids = {
+        component_updater::TranslateKitComponentInstallerPolicy::
+            GetExtensionId()};
+    std::set<LanguagePackKey> language_pack_keys =
+        CalculateRequiredLanguagePacks(options->source_lang->code,
+                                       options->target_lang->code);
+
+    for (const LanguagePackKey& language_pack_key : language_pack_keys) {
+      const LanguagePackComponentConfig& config =
+          GetLanguagePackComponentConfig(language_pack_key);
+      component_ids.insert(
+          crx_file::id_util::GenerateIdFromHash(config.public_key_sha));
+    }
+    model_download_progress_manager_.AddObserver(
+        GetComponentUpdateService(), std::move(options->observer_remote),
+        std::move(component_ids));
   }
 
   base::OnceClosure create_translator =

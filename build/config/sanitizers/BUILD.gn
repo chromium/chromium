@@ -14,6 +14,12 @@ if (is_ios) {
   import("//build/config/apple/mobile_config.gni")
 }
 
+declare_args() {
+  # Allow building official with ASAN enabled to help with
+  # debugging https://crbug.com/371135823.
+  ios_allow_asan_for_official_to_debug_371135823 = false
+}
+
 # libfuzzer can't cope with shared objects being unloaded, which sometimes
 # occurs for large fuzzers that involve our graphics stack. Shim out dlclose
 # so that this doesn't occur.
@@ -313,10 +319,12 @@ config("common_sanitizer_flags") {
   if (using_sanitizer) {
     assert(is_clang, "sanitizers only supported with clang")
 
-    # Allow non-default toolchains to enable sanitizers in toolchain_args even
-    # in official builds.
-    assert(current_toolchain != default_toolchain || !is_official_build,
-           "sanitizers not supported in official builds")
+    if (!is_ios || !ios_allow_asan_for_official_to_debug_371135823) {
+      # Allow non-default toolchains to enable sanitizers in toolchain_args even
+      # in official builds.
+      assert(current_toolchain != default_toolchain || !is_official_build,
+             "sanitizers not supported in official builds")
+    }
 
     cflags += [
       # Column info in debug data confuses Visual Studio's debugger, so don't

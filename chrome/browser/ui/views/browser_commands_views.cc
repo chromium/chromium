@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -32,10 +33,7 @@ views::View* GetActiveWindowRootView(const Browser* browser) {
   }
   gfx::NativeWindow active_window = client->GetActiveWindow();
 #elif BUILDFLAG(IS_MAC)
-  NSWindow* active_window = platform_util::GetActiveWindow();
-  if (!active_window) {
-    return nullptr;
-  }
+  gfx::NativeWindow active_window = platform_util::GetActiveWindow();
 #endif
 
   views::Widget* widget =

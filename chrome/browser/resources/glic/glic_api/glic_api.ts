@@ -319,6 +319,9 @@ export declare interface GlicBrowserHost {
   /** Returns the state of the OS granted location permission. */
   getOsLocationPermissionState?(): ObservableValue<boolean>;
 
+  /** Returns the state of the OS hotkey. */
+  getOsHotkeyState?(): ObservableValue<{hotkey: string}>;
+
   /**
    * Set the state of the microphone permission in settings. Returns a promise
    * that resolves when the browser has stored the new pref value.

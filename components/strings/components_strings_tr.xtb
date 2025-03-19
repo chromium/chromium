@@ -54,7 +54,6 @@
 <translation id="1090629319939036170">VR Menüsü</translation>
 <translation id="1091463901118115503">Okumaya devam edin</translation>
 <translation id="1091779689406092804">ekran görüntülerini</translation>
-<translation id="1094777233105318927">Tarayıcınız, işletim sisteminiz, cihazınız, yüklü yazılımlar ve dosyalar hakkında bilgiler</translation>
 <translation id="1096545575934602868">Bu alanda en çok <ph name="MAX_ITEMS_LIMIT" /> giriş olabilir. Diğer tüm girişler silinecektir.</translation>
 <translation id="1097803577928227769">Bölgesel Parklar ve Bahçeler</translation>
 <translation id="1099928364755383720">otomatik pencere içinde pencere</translation>
@@ -4481,7 +4480,6 @@ Ek ayrıntılar:
 <translation id="8919895429178014996">Tüm öğeleri gizleyin</translation>
 <translation id="8922013791253848639">Bu sitede her zaman reklamlara izin ver</translation>
 <translation id="8922734931659847428"><ph name="BEGIN_LINK" />Eski teknoloji etkinliklerinin<ph name="END_LINK" /> gerçekleştiği, ziyaret ettiğiniz sayfaların URL'lerinin sınırlı bir listesi</translation>
-<translation id="8924109546403192898">Güvenlik işlemleri Chrome tarafından işaretlendiğinde bu işlemlerle ilgili veriler yöneticinize gönderilir. Bu veriler; Chrome'da ziyaret ettiğiniz sayfaların URL'si, veri kopyaladığınız sayfaların URL'si, dosya adları veya meta veriler, tarayıcı ya da sekme kilitlenmelerinin yanı sıra web tabanlı uygulamalarda, cihazınızda ve Chrome'da oturum açmak için kullandığınız kullanıcı adını içerir.</translation>
 <translation id="892588693504540538">Sağ üstte delik</translation>
 <translation id="8926389886865778422">Bir daha sorma</translation>
 <translation id="8932102934695377596">Saatiniz geri</translation>

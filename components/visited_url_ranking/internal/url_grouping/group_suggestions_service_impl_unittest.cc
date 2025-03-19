@@ -28,12 +28,13 @@ constexpr char kTestUrl[] = "https://www.example1.com/";
 
 URLVisitAggregate CreateVisitForTab(base::TimeDelta time_since_active,
                                     int tab_id) {
-  base::Time now = base::Time::Now();
-  auto candidate = CreateSampleURLVisitAggregate(
-      GURL(kTestUrl), 1, now - time_since_active, {Fetcher::kTabModel});
+  base::Time timestamp = base::Time::Now() - time_since_active;
+  auto candidate = CreateSampleURLVisitAggregate(GURL(kTestUrl), 1, timestamp,
+                                                 {Fetcher::kTabModel});
   auto tab_data_it = candidate.fetcher_data_map.find(Fetcher::kTabModel);
-  std::get_if<URLVisitAggregate::TabData>(&tab_data_it->second)
-      ->last_active_tab.id = tab_id;
+  auto* tab = std::get_if<URLVisitAggregate::TabData>(&tab_data_it->second);
+  tab->last_active_tab.id = tab_id;
+  tab->last_active_tab.tab_metadata.tab_creation_time = timestamp;
   return candidate;
 }
 
@@ -75,11 +76,12 @@ class GroupSuggestionsServiceImplTest : public testing::Test {
 
   std::vector<URLVisitAggregate> GetSampleCandidates() {
     std::vector<URLVisitAggregate> candidates;
-    // Add 2 tabs within 600 seconds and one obver 600. The first 2 tabs should
+    // Add 3 tabs within 600 seconds and one over 600. The first 3 tabs should
     // be grouped.
     candidates.push_back(CreateVisitForTab(base::Seconds(60), 111));
     candidates.push_back(CreateVisitForTab(base::Seconds(250), 112));
-    candidates.push_back(CreateVisitForTab(base::Seconds(800), 113));
+    candidates.push_back(CreateVisitForTab(base::Seconds(300), 114));
+    candidates.push_back(CreateVisitForTab(base::Seconds(800), 116));
     return candidates;
   }
 
@@ -109,7 +111,7 @@ TEST_F(GroupSuggestionsServiceImplTest, EndToEnd) {
         EXPECT_EQ(suggestion.suggestion_reason,
                   GroupSuggestion::SuggestionReason::kRecentlyOpened);
         EXPECT_FALSE(suggestion.suggestion_id.is_null());
-        EXPECT_THAT(suggestion.tab_ids, ElementsAre(111, 112));
+        EXPECT_THAT(suggestion.tab_ids, ElementsAre(111, 112, 114));
         EXPECT_FALSE(suggestion.promo_contents.empty());
         EXPECT_FALSE(suggestion.promo_header.empty());
       }));

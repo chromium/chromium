@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -48,7 +47,6 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
-#include "components/enterprise/data_controls/core/browser/features.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/common/policy_types.h"
@@ -536,9 +534,6 @@ class BrowserViewDataProtectionTest : public InProcessBrowserTest {
       const BrowserViewDataProtectionTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitWithFeatures(
-        {data_controls::kEnableScreenshotProtection}, {});
-
     // Set a DM token since the enterprise real-time URL service expects one.
     policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
 
@@ -581,7 +576,6 @@ class BrowserViewDataProtectionTest : public InProcessBrowserTest {
 
  private:
   base::CallbackListSubscription create_services_subscription_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace

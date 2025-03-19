@@ -268,8 +268,9 @@ void SessionWatcher::DisconnectSession(ErrorCode error,
                                        const base::Location& error_location) {
   if (!caller_task_runner_->BelongsToCurrentThread()) {
     caller_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&SessionWatcher::DisconnectSession, this,
-                                  error, error_details, error_location));
+        FROM_HERE,
+        base::BindOnce(&SessionWatcher::DisconnectSession, this, error,
+                       std::string(error_details), error_location));
     return;
   }
 

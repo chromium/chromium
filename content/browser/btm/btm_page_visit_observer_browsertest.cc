@@ -19,6 +19,8 @@
 #include "content/public/test/prerender_test_util.h"
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_status_code.h"
+#include "net/test/embedded_test_server/controllable_http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-shared.h"
 #include "url/gurl.h"
@@ -201,6 +203,71 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, Redirects) {
   EXPECT_FALSE(second_server_redirect.did_write_cookies);
 
   EXPECT_EQ(recorder.visits().size(), 2u);
+}
+
+IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, RedirectToSelf) {
+  // ControllableHttpResponse registers a request handler which is only
+  // allowed before EmbeddedTestServer is started, so we create a separate
+  // test server which we can start after constructing ControllableHttpResponse.
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.AddDefaultHandlers(GetTestDataFilePath());
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+
+  // Create a ControllableHttpResponse to intercept the first request to
+  // `title1.html`.
+  net::test_server::ControllableHttpResponse response(&https_server,
+                                                      "/title1.html");
+  ASSERT_TRUE(https_server.Start());
+
+  const GURL url1 = https_server.GetURL("a.test", "/empty.html");
+  const GURL url2 = https_server.GetURL("b.test", "/title1.html");
+  const GURL url3 = https_server.GetURL("c.test", "/empty.html");
+  WebContents* web_contents = shell()->web_contents();
+  BtmPageVisitRecorder recorder(web_contents);
+
+  ASSERT_TRUE(NavigateToURL(web_contents, url1));
+
+  // Intercept the first navigation to `url2` and force it to redirect to
+  // itself.
+  TestNavigationObserver observer(web_contents);
+  shell()->LoadURL(url2);
+  response.WaitForRequest();
+  response.Send(net::HTTP_MOVED_PERMANENTLY, "text/html",
+                "<!doctype html><p>Redirecting to /title1.html",
+                /*cookies=*/{},
+                // Disable the cache otherwise the navigation will get stuck in
+                // an infinite redirection loop.
+                {"Location: /title1.html", "Cache-control: no-store"});
+  response.Done();
+  observer.Wait();
+
+  // Write cookies after the page redirects to itself, then navigate to `url3`.
+  ASSERT_TRUE(ExecJs(web_contents, "window.cookieStore.set('foo', 'bar');"));
+  ASSERT_TRUE(NavigateToURL(web_contents, url3));
+  ASSERT_TRUE(recorder.WaitForSize(3));
+
+  const BtmPageVisitObserver::VisitTuple& second_visit = recorder.visits()[1];
+  EXPECT_EQ(second_visit.url, url2);
+  EXPECT_EQ(second_visit.navigation.server_redirects.size(), 1u);
+
+  const BtmServerRedirectInfo& first_server_redirect =
+      second_visit.navigation.server_redirects[0];
+  EXPECT_THAT(first_server_redirect,
+              HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
+  // A non-navigation cookie write shouldn't be attributed to previous
+  // redirects. (We sometimes incorrectly attribute them to previous redirects
+  // for navigation cookie writes.)
+  EXPECT_FALSE(first_server_redirect.did_write_cookies);
+
+  const BtmPageVisitObserver::VisitTuple& third_visit = recorder.visits()[2];
+  EXPECT_THAT(third_visit.prev_page,
+              HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
+  // The non-navigation cookie write is correctly attributed to the previous
+  // page.
+  EXPECT_TRUE(third_visit.prev_page.had_qualifying_storage_access);
+  EXPECT_EQ(third_visit.url, url3);
+
+  EXPECT_EQ(recorder.visits().size(), 3u);
 }
 
 IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest, IframeRedirect) {

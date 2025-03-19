@@ -646,7 +646,7 @@ def IsGitDirty():
     #
     # Since the roll script won't add new files outside //third_party/rust
     # though, ignore untracked changes there.
-    if Git("status", "--porcelain", "third_party/rust") and Git(
+    if Git("status", "--porcelain", "third_party/rust") or Git(
             "status", "--porcelain", "--untracked-files=no"):
         return True
     else:

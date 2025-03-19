@@ -58,6 +58,8 @@ class MessageBox::Core : public views::DialogDelegateView {
   views::Widget* GetWidget() override;
   const views::Widget* GetWidget() const override;
 
+  void SetMessageLabel(const std::u16string& message_label);
+
   // Called by MessageBox::Core when it is destroyed.
   void OnMessageBoxDestroyed();
 
@@ -162,6 +164,10 @@ const views::Widget* MessageBox::Core::GetWidget() const {
   return message_box_view_->GetWidget();
 }
 
+void MessageBox::Core::SetMessageLabel(const std::u16string& message_label) {
+  message_box_view_->SetMessageLabel(message_label);
+}
+
 void MessageBox::Core::OnMessageBoxDestroyed() {
   DCHECK(message_box_);
   message_box_ = nullptr;
@@ -196,6 +202,10 @@ void MessageBox::ShowInParentContainer(gfx::NativeView parent) {
 
 void MessageBox::ChangeParentContainer(gfx::NativeView parent) {
   core_->ChangeParentContainer(parent);
+}
+
+void MessageBox::SetMessageLabel(const std::u16string& message_label) {
+  core_->SetMessageLabel(message_label);
 }
 
 views::DialogDelegate& MessageBox::GetDialogDelegate() {

@@ -4,11 +4,13 @@
 
 package org.chromium.components.messages;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.messages.MessageScopeChange.ChangeType;
 import org.chromium.ui.util.TokenHolder;
 
@@ -23,6 +25,7 @@ import java.util.Objects;
  * A class managing the queue of messages. Its primary role is to decide when to show/hide current
  * message and which message to show next.
  */
+@NullMarked
 class MessageQueueManager implements ScopeChangeController.Delegate {
     static final String TAG = "MessageQueueManager";
 
@@ -135,12 +138,13 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
      * state from the queue.
      */
     private void dismissMessageInternal(
-            @NonNull MessageState messageState, @DismissReason int dismissReason) {
+            MessageState messageState, @DismissReason int dismissReason) {
         MessageStateHandler message = messageState.handler;
         ScopeKey scopeKey = messageState.scopeKey;
 
         // Remove the scope from the map if the messageQueue is empty.
         List<MessageState> messageQueue = mMessageQueues.get(scopeKey);
+        assumeNonNull(messageQueue);
         messageQueue.remove(messageState);
         Log.w(
                 TAG,
@@ -284,7 +288,7 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
     //   (a is not lower priority than b);
     // * If a is not highPriority and b is high priority, return true (a is lower priority than b);
     @VisibleForTesting
-    boolean isLowerPriority(@Nullable MessageState a, @NonNull MessageState b) {
+    boolean isLowerPriority(@Nullable MessageState a, MessageState b) {
         if (a == null) return true;
         if (a.highPriority != b.highPriority) return b.highPriority;
         return a.id > b.id;

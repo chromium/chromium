@@ -165,9 +165,6 @@ android_resources("autofill_payments_java_resources") {
 
 android_resources("autofill_java_resources") {
   sources = [
-    "java/res/drawable/home_logo.xml",
-    "java/res/drawable/location_on_logo.xml",
-    "java/res/drawable/work_logo.xml",
     "java/res/layout/autofill_dropdown_item.xml",
     "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
@@ -176,6 +173,16 @@ android_resources("autofill_java_resources") {
     ":autofill_strings_grd",
     "//components/browser_ui/widget/android/shared_with_webview:java_resources",
     "//ui/android:ui_java_resources",
+  ]
+}
+
+# This target is only used by the Chrome browser and not included into the
+# WebView targets.
+android_resources("autofill_browser_resources") {
+  sources = [
+    "browser/java/res/drawable/home_logo.xml",
+    "browser/java/res/drawable/location_on_logo.xml",
+    "browser/java/res/drawable/work_logo.xml",
   ]
 }
 
@@ -244,6 +251,7 @@ android_library("main_autofill_java") {
     "java/src/org/chromium/components/autofill/AutofillPopup.java",
     "java/src/org/chromium/components/autofill/AutofillProfile.java",
     "java/src/org/chromium/components/autofill/AutofillSuggestion.java",
+    "java/src/org/chromium/components/autofill/DropdownKeyValue.java",
     "java/src/org/chromium/components/autofill/SubKeyRequester.java",
   ]
   srcjar_deps = [

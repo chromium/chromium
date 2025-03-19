@@ -140,7 +140,6 @@ public class GroupWindowCheckerUnitTest {
         when(mTabList.getCount()).thenReturn(1);
         when(mTabList.getTabAt(0)).thenReturn(mTab1);
         when(mTab1.getTabGroupId()).thenReturn(token);
-        when(mTab1.getRootId()).thenReturn(1);
         when(mTab1.isClosing()).thenReturn(true);
 
         @GroupWindowState int state = mSyncUtils.getState(group);

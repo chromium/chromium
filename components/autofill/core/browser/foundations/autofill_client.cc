@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/integrators/autofill_ai_delegate.h"
 #include "components/autofill/core/browser/integrators/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/integrators/autofill_plus_address_delegate.h"
+#include "components/autofill/core/browser/integrators/identity_credential_delegate.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/studies/autofill_ablation_study.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
@@ -91,6 +92,10 @@ AutofillAiModelCache* AutofillClient::GetAutofillAiModelCache() {
 }
 
 AutofillAiModelExecutor* AutofillClient::GetAutofillAiModelExecutor() {
+  return nullptr;
+}
+
+IdentityCredentialDelegate* AutofillClient::GetIdentityCredentialDelegate() {
   return nullptr;
 }
 

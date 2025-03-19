@@ -7,6 +7,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_change/change_form_submission_verifier.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
@@ -15,6 +17,10 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/generation/password_generator.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -308,8 +314,11 @@ const std::u16string& PasswordChangeDelegateImpl::GetGeneratedPassword() const {
 void PasswordChangeDelegateImpl::OnPrivacyNoticeAccepted() {
   Profile* profile =
       Profile::FromBrowserContext(originator_->GetBrowserContext());
-  profile->GetPrefs()->SetBoolean(
-      password_manager::prefs::kPasswordChangeFlowNoticeAgreement, true);
+  // Enable via the Optimization Guide's pref.
+  profile->GetPrefs()->SetInteger(
+      optimization_guide::prefs::GetSettingEnabledPrefName(
+          optimization_guide::UserVisibleFeatureKey::kPasswordChangeSubmission),
+      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
   StartPasswordChange();
 }
 
@@ -364,16 +373,16 @@ void PasswordChangeDelegateImpl::OnChangeFormSubmissionVerified(bool result) {
 
   submission_verifier_.reset();
 }
-
 bool PasswordChangeDelegateImpl::IsPrivacyNoticeAcknowledged() const {
-  // TODO(391147412): Use OptimizationGuideKeyedService
-  // ShouldFeatureAllowModelExecutionForSignedInUser() instead.
   Profile* profile =
       Profile::FromBrowserContext(originator_->GetBrowserContext());
-  return profile->GetPrefs()->GetBoolean(
-      password_manager::prefs::kPasswordChangeFlowNoticeAgreement);
+  const OptimizationGuideKeyedService* const opt_guide_keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  return opt_guide_keyed_service != nullptr &&
+         opt_guide_keyed_service->ShouldFeatureBeCurrentlyEnabledForUser(
+             optimization_guide::UserVisibleFeatureKey::
+                 kPasswordChangeSubmission);
 }
-
 content::PageNavigator* PasswordChangeDelegateImpl::GetNavigator() {
   if (test_navigator_) {
     return test_navigator_;

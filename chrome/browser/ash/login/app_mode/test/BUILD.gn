@@ -11,8 +11,6 @@ static_library("test_support") {
     "ash_accelerator_helpers.cc",
     "kiosk_apps_mixin.cc",
     "kiosk_apps_mixin.h",
-    "kiosk_base_test.cc",
-    "kiosk_base_test.h",
     "managed_guest_session_test_helpers.cc",
     "managed_guest_session_test_helpers.h",
     "new_aura_window_watcher.cc",

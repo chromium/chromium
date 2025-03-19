@@ -133,7 +133,6 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
                     UserPrefs.get(mProfile),
                     new PasswordStoreBridge(mProfile),
                     PasswordManagerHelper.getForProfile(mProfile),
-                    LaunchIntentDispatcher::createCustomTabActivityIntent,
                     new SettingsCustomTabLauncherImpl());
         }
         if (fragment instanceof PasswordCheckFragmentView) {

@@ -464,7 +464,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/content_suggestions/magic_stack:constants",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list:constants",
     "//ios/chrome/browser/ui/popup_menu:constants",
-    "//ios/chrome/browser/ui/whats_new:constants",
+    "//ios/chrome/browser/whats_new/public:constants",
     "//ios/chrome/common/ui/confirmation_alert:constants",
     "//ios/chrome/common/ui/promo_style:constants",
     "//ios/chrome/test:eg_test_support+eg2",

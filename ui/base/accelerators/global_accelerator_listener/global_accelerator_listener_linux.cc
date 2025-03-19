@@ -155,6 +155,12 @@ void GlobalAcceleratorListenerLinux::OnCommandsChanged(
     return;
   }
 
+  // If no command is global, there's no need to register shortcuts.
+  if (std::ranges::none_of(
+          commands, [](const auto& pair) { return pair.second.global(); })) {
+    return;
+  }
+
   SessionKey session_key = {accelerator_group_id, profile_id};
   auto it = session_map_.find(session_key);
   if (it != session_map_.end()) {

@@ -7,7 +7,7 @@
 #include "base/check_deref.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/glic/glic_test_environment.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_window.h"

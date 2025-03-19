@@ -116,6 +116,7 @@ constexpr int kEnableAllNotifications =
 
 NSString* const kTipsNotificationId = @"kTipsNotificationId";
 NSString* const kTipsNotificationTypeKey = @"kTipsNotificationTypeKey";
+NSString* const kReactivationKey = @"kReactivationKey";
 const char kTipsNotificationsSentPref[] = "tips_notifications.sent_bitfield";
 const char kTipsNotificationsLastSent[] = "tips_notifiations.last_sent";
 const char kTipsNotificationsLastTriggered[] =
@@ -132,10 +133,16 @@ bool IsTipsNotification(UNNotificationRequest* request) {
   return [request.identifier isEqualToString:kTipsNotificationId];
 }
 
-NSDictionary* UserInfoForTipsNotificationType(TipsNotificationType type) {
+bool IsProactiveTipsNotification(UNNotificationRequest* request) {
+  return [request.content.userInfo[kReactivationKey] isEqual:@YES];
+}
+
+NSDictionary* UserInfoForTipsNotificationType(TipsNotificationType type,
+                                              bool for_reactivation) {
   return @{
     kTipsNotificationId : @YES,
     kTipsNotificationTypeKey : @(static_cast<int>(type)),
+    kReactivationKey : for_reactivation ? @YES : @NO,
   };
 }
 
@@ -155,19 +162,20 @@ UNNotificationRequest* TipsNotificationRequest(
     TipsNotificationUserType user_type) {
   return [UNNotificationRequest
       requestWithIdentifier:kTipsNotificationId
-                    content:ContentForTipsNotificationType(type)
+                    content:ContentForTipsNotificationType(type,
+                                                           for_reactivation)
                     trigger:TipsNotificationTrigger(for_reactivation,
                                                     user_type)];
 }
 
-UNNotificationContent* ContentForTipsNotificationType(
-    TipsNotificationType type) {
+UNNotificationContent* ContentForTipsNotificationType(TipsNotificationType type,
+                                                      bool for_reactivation) {
   UNMutableNotificationContent* content =
       [[UNMutableNotificationContent alloc] init];
   ContentIDs content_ids = ContentIDsForType(type);
   content.title = l10n_util::GetNSString(content_ids.title);
   content.body = l10n_util::GetNSString(content_ids.body);
-  content.userInfo = UserInfoForTipsNotificationType(type);
+  content.userInfo = UserInfoForTipsNotificationType(type, for_reactivation);
   content.sound = UNNotificationSound.defaultSound;
   return content;
 }

@@ -756,7 +756,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Auth.MainAccountResolution.Status{ArcUserTypes}"
-    enum="ArcAuthMainAccountResolutionStatus" expires_after="2025-04-27">
+    enum="ArcAuthMainAccountResolutionStatus" expires_after="2026-03-19">
   <owner>jhorwich@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -2952,6 +2952,20 @@ chromium-metrics-reviews@google.com.
     window shown in tablet mode.
   </summary>
   <token key="ChromeOSAppType" variants="ChromeOSAppType"/>
+</histogram>
+
+<histogram name="Arc.{MuteType}AudioSuccess" enum="BooleanSuccess"
+    expires_after="2025-09-04">
+  <owner>vshenvi@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records the success outcome of the ARC VM mute or unmute audio operation.
+    Normally triggered when entering or exiting locked fullscreen mode.
+  </summary>
+  <token key="MuteType">
+    <variant name="Mute"/>
+    <variant name="Unmute"/>
+  </token>
 </histogram>
 
 </histograms>

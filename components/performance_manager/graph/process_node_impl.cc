@@ -154,6 +154,25 @@ void ProcessNodeImpl::OnRemoteIframeAttached(
     mojom::IframeAttributionDataPtr iframe_attribution_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
+
+  // Only dispatch if the frame and its parent still exist when the mojo message
+  // reaches the browser process. If the frame still exists but now has no
+  // parent, we don't need to record IframeAttribution data for it since it's
+  // now unreachable.
+  //
+  // An example of this is the custom <webview> element used in Chrome UI
+  // (extensions/renderer/resources/guest_view/web_view/web_view.js). This
+  // element has an inner web contents with an opener relationship to the
+  // webview, but no parent-child relationship. However since it is a custom
+  // element implemented on top of <iframe>, the renderer has no way to
+  // distinguish it from a regular iframe. At the moment the contents is
+  // attached it has a transient parent frame, which is reported through
+  // OnRemoteIframeAttached, but the parent frame disappears shortly
+  // afterward.
+  //
+  // TODO(crbug.com/40132061): Write an end-to-end browsertest that covers
+  // this case once all parts of the measure memory API are hooked up.
+
   if (auto* tracker = v8_memory::V8ContextTracker::GetFromGraph(graph())) {
     auto* ec_registry =
         execution_context::ExecutionContextRegistry::GetFromGraph(graph());

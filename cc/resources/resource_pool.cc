@@ -66,6 +66,23 @@ void ResourcePool::Backing::CreateSharedImage(
   CHECK(shared_image());
 }
 
+void ResourcePool::Backing::CreateSharedImageForTesting() {
+  CreateSharedImageForTesting(GL_TEXTURE_2D);  // IN-TEST
+}
+
+void ResourcePool::Backing::CreateSharedImageForTesting(
+    uint32_t texture_target) {
+  gpu::SharedImageMetadata metadata;
+  metadata.format = format();
+  metadata.size = size();
+  metadata.color_space = color_space();
+  metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
+  metadata.alpha_type = kOpaque_SkAlphaType;
+  metadata.usage = gpu::SHARED_IMAGE_USAGE_SCANOUT;
+  shared_image_ =
+      gpu::ClientSharedImage::CreateForTesting(metadata, texture_target);
+}
+
 void ResourcePool::Backing::CreateSharedImageForSoftwareCompositor(
     gpu::SharedImageInterface* sii,
     std::string_view debug_label) {

@@ -494,7 +494,12 @@ TEST_F(GpuDataManagerImplPrivateTest, NoDefaultFallbackToSwiftShaderForGanesh) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kDisableSkiaGraphite);
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kAllowSwiftShaderFallback);
+  feature_list.InitWithFeatures({}, {
+                                        features::kAllowSwiftShaderFallback,
+#if BUILDFLAG(IS_WIN)
+                                        features::kAllowD3D11WarpFallback,
+#endif  // BUILDFLAG(IS_WIN)
+                                    });
 
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
@@ -513,7 +518,7 @@ TEST_F(GpuDataManagerImplPrivateTest, ExplicitFallbackToSwiftShaderForGanesh) {
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
 
   manager->FallBackToNextGpuMode();
-  EXPECT_EQ(gpu::GpuMode::SWIFTSHADER, manager->GetGpuMode());
+  EXPECT_EQ(gpu::GpuMode::SOFTWARE_GL, manager->GetGpuMode());
 }
 
 TEST_F(GpuDataManagerImplPrivateTest,
@@ -587,7 +592,7 @@ TEST_F(GpuDataManagerImplPrivateTest,
   manager->FallBackToNextGpuMode();
   manager->FallBackToNextGpuMode();
 
-  EXPECT_EQ(gpu::GpuMode::SWIFTSHADER, manager->GetGpuMode());
+  EXPECT_EQ(gpu::GpuMode::SOFTWARE_GL, manager->GetGpuMode());
 }
 
 TEST_F(GpuDataManagerImplPrivateTest,
@@ -637,7 +642,12 @@ TEST_F(GpuDataManagerImplPrivateTest,
 #if !defined(CAST_AUDIO_ONLY)
 TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithGpuDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kAllowSwiftShaderFallback);
+  feature_list.InitWithFeatures({}, {
+                                        features::kAllowSwiftShaderFallback,
+#if BUILDFLAG(IS_WIN)
+                                        features::kAllowD3D11WarpFallback,
+#endif  // BUILDFLAG(IS_WIN)
+                                    });
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kDisableGpu);
   ScopedGpuDataManagerImplPrivate manager;
@@ -680,11 +690,14 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromVulkanToGL) {
 TEST_F(GpuDataManagerImplPrivateTest, VulkanInitializationFails) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({features::kVulkan},
+                                {
 #if BUILDFLAG(ENABLE_SWIFTSHADER)
-                                {features::kAllowSwiftShaderFallback});
-#else
-                                {});
+                                    features::kAllowSwiftShaderFallback,
 #endif  // BUILDFLAG(ENABLE_SWIFTSHADER)
+#if BUILDFLAG(IS_WIN)
+                                    features::kAllowD3D11WarpFallback,
+#endif  // BUILDFLAG(IS_WIN)
+                                });
 
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::HARDWARE_VULKAN, manager->GetGpuMode());
@@ -710,7 +723,12 @@ TEST_F(GpuDataManagerImplPrivateTest, VulkanInitializationFails) {
 TEST_F(GpuDataManagerImplPrivateTest, FallbackFromVulkanWithGLDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({features::kVulkan},
-                                {features::kAllowSwiftShaderFallback});
+                                {
+                                    features::kAllowSwiftShaderFallback,
+#if BUILDFLAG(IS_WIN)
+                                    features::kAllowD3D11WarpFallback,
+#endif  // BUILDFLAG(IS_WIN)
+                                });
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::HARDWARE_VULKAN, manager->GetGpuMode());
 

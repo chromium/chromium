@@ -110,17 +110,18 @@ export class HelpBubbleElement extends CrLitElement {
     };
   }
 
-  nativeId: string = '';
-  bodyText: string = '';
-  titleText: string = '';
-  closeButtonAltText: string = '';
-  closeButtonTabIndex: number = 0;
-  position: HelpBubbleArrowPosition = HelpBubbleArrowPosition.TOP_CENTER;
-  buttons: HelpBubbleButtonParams[] = [];
-  sortedButtons: HelpBubbleButtonParams[] = [];
-  progress: Progress|null = null;
-  bodyIconName: string|null = null;
-  bodyIconAltText: string = '';
+  accessor nativeId: string = '';
+  accessor bodyText: string = '';
+  accessor titleText: string = '';
+  accessor closeButtonAltText: string = '';
+  accessor closeButtonTabIndex: number = 0;
+  accessor position: HelpBubbleArrowPosition =
+      HelpBubbleArrowPosition.TOP_CENTER;
+  accessor buttons: HelpBubbleButtonParams[] = [];
+  accessor sortedButtons: HelpBubbleButtonParams[] = [];
+  accessor progress: Progress|null = null;
+  accessor bodyIconName: string|null = null;
+  accessor bodyIconAltText: string = '';
 
   timeoutMs: number|null = null;
   timeoutTimerId: number|null = null;
@@ -140,7 +141,7 @@ export class HelpBubbleElement extends CrLitElement {
    * Backing data for the dom-repeat that generates progress indicators.
    * The elements are placeholders only.
    */
-  protected progressData_: boolean[] = [];
+  protected accessor progressData_: boolean[] = [];
 
   /**
    * Watches the offsetParent for resize events, allowing the bubble to be

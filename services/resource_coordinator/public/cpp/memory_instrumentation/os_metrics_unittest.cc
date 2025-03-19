@@ -288,16 +288,6 @@ TEST(OSMetricsTest, CountMappings) {
   munmap(addr, kPageCount * page_size);
 }
 
-TEST(OSMetricsTest, Pss) {
-  mojom::RawOSMemDump dump;
-  dump.platform_private_footprint = mojom::PlatformPrivateFootprint::New();
-  ASSERT_TRUE(OSMetrics::FillOSMemoryDump(base::kNullProcessHandle, &dump));
-  uint32_t pss = dump.pss_kb;
-
-  // We don't know the exact value here, but it should be greater than 0.
-  EXPECT_GT(pss, 0u);
-}
-
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
 

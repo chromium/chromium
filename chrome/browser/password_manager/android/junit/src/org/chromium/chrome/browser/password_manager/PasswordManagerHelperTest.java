@@ -312,7 +312,6 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_EMAIL_ADDRESS,
-                mCustomTabIntentHelper,
                 mSettingsCustomTabLauncher);
 
         assertNotNull(mModalDialogManager.getCurrentDialogForTest());
@@ -331,7 +330,6 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_NO_EMAIL_ADDRESS,
-                mCustomTabIntentHelper,
                 mSettingsCustomTabLauncher);
 
         PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
@@ -355,7 +353,6 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_EMAIL_ADDRESS,
-                mCustomTabIntentHelper,
                 mSettingsCustomTabLauncher);
 
         assertNull(mModalDialogManager.getCurrentDialogForTest());
@@ -407,7 +404,6 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_EMAIL_ADDRESS,
-                mCustomTabIntentHelper,
                 mSettingsCustomTabLauncher);
 
         verify(mCredentialManagerLauncherMock)
@@ -434,7 +430,6 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_EMAIL_ADDRESS,
-                mCustomTabIntentHelper,
                 mSettingsCustomTabLauncher);
 
         verify(mockContext).startActivity(any());
@@ -455,7 +450,6 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_NO_EMAIL_ADDRESS,
-                mCustomTabIntentHelper,
                 mSettingsCustomTabLauncher);
 
         verify(mockContext).startActivity(any());
@@ -477,7 +471,6 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_NO_EMAIL_ADDRESS,
-                mCustomTabIntentHelper,
                 mSettingsCustomTabLauncher);
 
         verify(mCredentialManagerLauncherMock)
@@ -512,7 +505,6 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_EMAIL_ADDRESS,
-                mCustomTabIntentHelper,
                 mSettingsCustomTabLauncher);
 
         histogram.assertExpected();
@@ -545,7 +537,6 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_NO_EMAIL_ADDRESS,
-                mCustomTabIntentHelper,
                 mSettingsCustomTabLauncher);
 
         histogram.assertExpected();
@@ -576,7 +567,6 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_EMAIL_ADDRESS,
-                mCustomTabIntentHelper,
                 mSettingsCustomTabLauncher);
 
         histogram.assertExpected();
@@ -610,7 +600,6 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_NO_EMAIL_ADDRESS,
-                mCustomTabIntentHelper,
                 mSettingsCustomTabLauncher);
 
         histogram.assertExpected();
@@ -642,7 +631,6 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_EMAIL_ADDRESS,
-                mCustomTabIntentHelper,
                 mSettingsCustomTabLauncher);
 
         histogram.assertExpected();
@@ -676,7 +664,6 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_NO_EMAIL_ADDRESS,
-                mCustomTabIntentHelper,
                 mSettingsCustomTabLauncher);
 
         histogram.assertExpected();
@@ -1019,7 +1006,6 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_EMAIL_ADDRESS,
-                mCustomTabIntentHelper,
                 mSettingsCustomTabLauncher);
 
         histogram.assertExpected();
@@ -1054,7 +1040,6 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_EMAIL_ADDRESS,
-                mCustomTabIntentHelper,
                 mSettingsCustomTabLauncher);
 
         histogram.assertExpected();
@@ -1090,7 +1075,6 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_NO_EMAIL_ADDRESS,
-                mCustomTabIntentHelper,
                 mSettingsCustomTabLauncher);
 
         histogram.assertExpected();
@@ -1134,7 +1118,6 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_EMAIL_ADDRESS,
-                mCustomTabIntentHelper,
                 mSettingsCustomTabLauncher);
 
         histogram.assertExpected();
@@ -1169,7 +1152,6 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_NO_EMAIL_ADDRESS,
-                mCustomTabIntentHelper,
                 mSettingsCustomTabLauncher);
 
         histogram.assertExpected();
@@ -1205,7 +1187,6 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_NO_EMAIL_ADDRESS,
-                mCustomTabIntentHelper,
                 mSettingsCustomTabLauncher);
 
         PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
@@ -1232,7 +1213,6 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_NO_EMAIL_ADDRESS,
-                mCustomTabIntentHelper,
                 mSettingsCustomTabLauncher);
 
         assertNull(mModalDialogManager.getCurrentDialogForTest());
@@ -1261,7 +1241,6 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_NO_EMAIL_ADDRESS,
-                mCustomTabIntentHelper,
                 mSettingsCustomTabLauncher);
 
         verify(mockController)
@@ -1291,7 +1270,6 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_NO_EMAIL_ADDRESS,
-                mCustomTabIntentHelper,
                 mSettingsCustomTabLauncher);
 
         verify(mockController)
@@ -1321,7 +1299,6 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_NO_EMAIL_ADDRESS,
-                mCustomTabIntentHelper,
                 mSettingsCustomTabLauncher);
 
         verify(mockController)
@@ -1348,7 +1325,6 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_NO_EMAIL_ADDRESS,
-                mCustomTabIntentHelper,
                 mSettingsCustomTabLauncher);
         PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
         assertNotNull(dialogModel);
@@ -1376,7 +1352,6 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_NO_EMAIL_ADDRESS,
-                mCustomTabIntentHelper,
                 mSettingsCustomTabLauncher);
         PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
         assertNotNull(dialogModel);
@@ -1404,7 +1379,6 @@ public class PasswordManagerHelperTest {
                 mModalDialogManagerSupplier,
                 /* managePasskeys= */ false,
                 TEST_NO_EMAIL_ADDRESS,
-                mCustomTabIntentHelper,
                 mSettingsCustomTabLauncher);
 
         // Check that the unavailability dialog is not shown.

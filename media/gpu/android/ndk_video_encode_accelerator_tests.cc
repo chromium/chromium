@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/android/build_info.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -117,7 +118,7 @@ class NdkVideoEncoderAcceleratorTest
 
     const base::UnsafeSharedMemoryRegion& region = buffer->GetRegion();
     auto mapping = region.Map();
-    memset(mapping.memory(), 0, mapping.size());
+    UNSAFE_TODO(memset(mapping.memory(), 0, mapping.size()));
 
     auto id = ++last_buffer_id_;
     accelerator_->UseOutputBitstreamBuffer(

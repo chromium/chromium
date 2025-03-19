@@ -7276,6 +7276,7 @@ void RenderFrameHostImpl::ShowCreatedWindow(
     blink::mojom::WindowFeaturesPtr window_features,
     bool user_gesture,
     ShowCreatedWindowCallback callback) {
+  CHECK(!base::FeatureList::IsEnabled(blink::features::kCombineNewWindowIPCs));
   // This needs to be sent to the opener frame's delegate since it stores
   // the handle to this class's associated RenderWidgetHostView.
   RenderFrameHostImpl* opener_frame_host =
@@ -9784,7 +9785,16 @@ void RenderFrameHostImpl::CreateNewWindow(
                                    .AsMojom();
   }
 
+  // NOTE: if the call to ShowCreatedWindow() below returns nullptr, then
+  // new_frame_tree, new_main_rfh, and new_main_rwh will all have been destroyed
+  // and point to freed memory! To preserve legacy behavior, we still need to
+  // send a fully-populated reply along with kSuccess, so we construct the reply
+  // here prior to ShowCreatedWindow().
+
   blink::VisualProperties visual_properties;
+  // If we can't get an accurate set of VisualProperties after ShowCreatedWindow
+  // below, we at least want to transmit screen info based on the screen of the
+  // initiating frame, which is what new_rwh is constructed with.
   visual_properties.screen_infos = new_rwh->GetScreenInfos();
   mojom::CreateNewWindowReplyPtr reply = mojom::CreateNewWindowReply::New(
       new_main_rfh->GetFrameToken(), new_main_rfh->GetRoutingID(),
@@ -9796,14 +9806,36 @@ void RenderFrameHostImpl::CreateNewWindow(
           new_main_rfh->GetSiteInstance()->browsing_instance_token(),
           new_main_rfh->GetSiteInstance()->coop_related_group_token()),
       delegate_->GetColorProviderColorMaps(),
-      std::move(partitioned_popin_params));
+      std::move(partitioned_popin_params), /*widget_screen_rect=*/std::nullopt,
+      /*window_screen_rect=*/std::nullopt);
+
+  new_main_rfh->render_view_host()->RenderViewCreated(new_main_rfh);
+
+  if (base::FeatureList::IsEnabled(blink::features::kCombineNewWindowIPCs)) {
+    // ShowCreatedWindow will return nullptr if the new WebContents has been
+    // destroyed, as described above (see NOTE).
+    WebContents* shown_contents = delegate()->ShowCreatedWindow(
+        this, new_rwh->GetRoutingID(), params->disposition, *params->features,
+        params->consumes_user_activation);
+
+    if (!shown_contents) {
+      // These point to freed memory, so null them out to prevent inadvertent
+      // UAF in the feature (see NOTE above).
+      new_frame_tree = nullptr;
+      new_main_rfh = nullptr;
+      new_rwh = nullptr;
+    } else if (new_main_rfh->GetView()) {
+      // Cannot populate window geometry until after ShowCreatedWindow().
+      reply->widget_screen_rect.emplace(
+          new_main_rfh->GetView()->GetViewBounds());
+      reply->window_screen_rect.emplace(
+          new_main_rfh->GetView()->GetBoundsInRootWindow());
+      reply->visual_properties = new_rwh->GetInitialVisualProperties();
+    }
+  }
 
   std::move(callback).Run(mojom::CreateNewWindowStatus::kSuccess,
                           std::move(reply));
-
-  // The mojom reply callback with kSuccess causes the renderer to create the
-  // renderer-side objects.
-  new_main_rfh->render_view_host()->RenderViewCreated(new_main_rfh);
 }
 
 void RenderFrameHostImpl::SendLegacyTechEvent(

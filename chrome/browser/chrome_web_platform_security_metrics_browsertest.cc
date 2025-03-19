@@ -162,6 +162,8 @@ class ChromeWebPlatformSecurityMetricsBrowserTest : public policy::PolicyTest {
         // Subsampling metrics recording makes the test observing the metrics
         // fail almost every time. Disable subsampling.
         blink::features::kSubSampleWindowProxyUsageMetrics,
+        // PNA metrics may not record correctly if LNA checks are enabled.
+        network::features::kLocalNetworkAccessChecks,
     };
   }
 

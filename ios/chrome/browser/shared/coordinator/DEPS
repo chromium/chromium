@@ -1,7 +1,4 @@
 include_rules = [
-  # TODO(crbug.com/40259387): Remove this include once the folders have been
-  # moved.
-  "+ios/chrome/browser/ui",
   "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
 
   # Use ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h instead

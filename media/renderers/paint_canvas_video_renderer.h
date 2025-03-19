@@ -273,19 +273,12 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
   // Used for DCHECKs to ensure method calls executed in the correct thread.
   SEQUENCE_CHECKER(sequence_checker_);
 
-  struct YUVTextureCache {
-    YUVTextureCache();
-    ~YUVTextureCache();
-    void Reset();
+  // The RGB shared image cache backing the texture.
+  std::unique_ptr<VideoFrameSharedImageCache> rgb_shared_image_cache_;
 
-    // The RGB shared image cache backing the texture.
-    std::unique_ptr<VideoFrameSharedImageCache> rgb_shared_image_cache;
-
-    // Cache of YUV shared images that are created to upload CPU video frame
-    // data to the GPU.
-    std::unique_ptr<VideoFrameSharedImageCache> yuv_shared_image_cache;
-  };
-  YUVTextureCache yuv_cache_;
+  // Cache of YUV shared images that are created to upload CPU video frame
+  // data to the GPU.
+  std::unique_ptr<VideoFrameSharedImageCache> yuv_shared_image_cache_;
 };
 
 }  // namespace media

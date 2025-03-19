@@ -4,6 +4,8 @@
 
 #include "components/input/features.h"
 
+#include "base/feature_list.h"
+
 namespace input::features {
 
 #if BUILDFLAG(IS_ANDROID)
@@ -28,5 +30,10 @@ BASE_FEATURE(kIgnoreBubblingCollisionIfSourceDevicesMismatch,
 BASE_FEATURE(kScrollBubblingFix,
              "ScrollBubblingFix",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Flag guard for fix for crbug.com/404464598.
+BASE_FEATURE(kUseFirstCoalescedFrameAsFlingGenerationTimestamp,
+             "UseFirstCoalescedFrameAsFlingGenerationTimestamp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace input::features

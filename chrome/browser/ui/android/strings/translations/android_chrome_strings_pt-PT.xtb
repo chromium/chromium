@@ -582,6 +582,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="3721119614952978349">Eu e a Google</translation>
 <translation id="3737319253362202215">Definições de tradução</translation>
 <translation id="3738139272394829648">Tocar para pesquisar</translation>
+<translation id="3739455665973395693">Não existem palavras-passe comprometidas na sua Conta Google</translation>
 <translation id="3739899004075612870">Adicionado aos marcadores no <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">A pesquisa por voz não está disponível neste dispositivo</translation>
 <translation id="376561056759077985">Alguns dados ainda não foram guardados</translation>
@@ -635,6 +636,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="3985215325736559418">Quer transferir <ph name="FILE_NAME" /> novamente?</translation>
 <translation id="3987993985790029246">Cop. link</translation>
 <translation id="4000212216660919741">Em casa offline</translation>
+<translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 palavra-passe comprometida na sua Conta Google}other{# palavras-passe comprometidas na sua Conta Google}}</translation>
 <translation id="4016425174436051808">Não é possível seguir. Algo correu mal.</translation>
 <translation id="4024768890073681126">O teu navegador é gerido por um dos teus pais</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
@@ -829,6 +831,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="488187801263602086">Mudar o nome do ficheiro</translation>
 <translation id="4885273946141277891">Número não suportado de instâncias do Chrome.</translation>
+<translation id="4890973535105146893">Não existem palavras-passe guardadas na sua Conta Google</translation>
 <translation id="4905823827770127520">Inclua um link para a página</translation>
 <translation id="4908869848243824489">Discover da Google</translation>
 <translation id="4910889077668685004">Apps de pagamento</translation>
@@ -1701,6 +1704,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="869891660844655955">Data de expiração</translation>
 <translation id="8699120352855309748">Não se disponibilizar para traduzir estes idiomas</translation>
 <translation id="8712637175834984815">OK</translation>
+<translation id="8715286883001906001">Reforce as palavras-passe na sua Conta Google</translation>
 <translation id="8723453889042591629">Traduza rapidamente esta página. Para editar este atalho, toque sem soltar.</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
 <translation id="8731268612289859741">Código de segurança</translation>
@@ -1828,6 +1832,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="970715775301869095">Faltam <ph name="MINUTES" /> minutos</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Fechar todos os separadores</translation>
+<translation id="984756705737569814">Não é possível verificar as palavras-passe na sua Conta Google</translation>
 <translation id="987264212798334818">Geral</translation>
 <translation id="988091779042748639">Para eliminar o histórico de navegação da Navegação anónima no seu dispositivo, feche todos os separadores de navegação anónima.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> separadores</translation>

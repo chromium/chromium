@@ -204,6 +204,12 @@ BASE_FEATURE(kWebViewPrefetchNativeLibrary,
 const base::FeatureParam<bool> kWebViewPrefetchFromRenderer{
     &kWebViewPrefetchNativeLibrary, "WebViewPrefetchFromRenderer", false};
 
+// Include system bars in safe-area-inset CSS environment values for WebViews
+// that take up the entire screen
+BASE_FEATURE(kWebViewSafeAreaIncludesSystemBars,
+             "WebViewSafeAreaIncludesSystemBars",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If enabled TYPE_SCROLLED accessibility events are sent every 100ms when user
 // is scrolling irrespective of GestureScrollUpdate being consumed or not.
 // If disabled events are sent on GSU consumed ack.

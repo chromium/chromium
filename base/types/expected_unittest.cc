@@ -214,20 +214,14 @@ TEST(Expected, CopyConstructor) {
     constexpr expected<int, Error> ex1 = 42;
     constexpr expected<int, Error> ex2 = ex1;
     static_assert(ex2.has_value());
-    // Note: In theory this could be constexpr, but is currently not due to
-    // implementation details of std::get [1].
-    // TODO: Make this a static_assert once this is fixed in Abseil, or we use
-    // std::variant. Similarly in the tests below.
-    // [1]
-    // https://github.com/abseil/abseil-cpp/blob/50739/absl/types/internal/variant.h#L548
-    EXPECT_EQ(ex2.value(), 42);
+    static_assert(ex2.value() == 42);
   }
 
   {
     constexpr expected<int, Error> ex1 = unexpected(Error::kFail);
     constexpr expected<int, Error> ex2 = ex1;
     static_assert(!ex2.has_value());
-    EXPECT_EQ(ex2.error(), Error::kFail);
+    static_assert(ex2.error() == Error::kFail);
   }
 }
 

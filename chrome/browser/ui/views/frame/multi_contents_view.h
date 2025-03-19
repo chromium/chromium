@@ -14,6 +14,7 @@
 #include "ui/views/controls/resize_area_delegate.h"
 #include "ui/views/view.h"
 
+class BrowserView;
 class ContentsWebView;
 class MultiContentsResizeArea;
 
@@ -22,9 +23,11 @@ class WebMouseEvent;
 }  // namespace blink
 
 namespace content {
-class BrowserContext;
 class WebContents;
 }  // namespace content
+namespace gfx {
+class Canvas;
+}  // namespace gfx
 
 // MultiContentsView shows up to two contents web views side by side, and
 // manages their layout relative to each other.
@@ -43,7 +46,7 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
     double end_width = 0;
   };
 
-  MultiContentsView(content::BrowserContext* browser_context,
+  MultiContentsView(BrowserView* browser_view,
                     WebContentsPressedCallback inactive_view_pressed_callback);
   MultiContentsView(const MultiContentsView&) = delete;
   MultiContentsView& operator=(const MultiContentsView&) = delete;
@@ -80,6 +83,7 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
 
   // views::View:
   void Layout(PassKey) override;
+  void OnPaint(gfx::Canvas* canvas) override;
 
   ContentsWebView* start_contents_view_for_testing() const {
     return start_contents_view_;
@@ -97,6 +101,8 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
   ViewWidths GetViewWidths(gfx::Rect available_space);
 
   ViewWidths ClampToMinWidth(ViewWidths widths);
+
+  raw_ptr<BrowserView> browser_view_;
 
   // The left contents, in LTR.
   raw_ptr<ContentsWebView> start_contents_view_ = nullptr;

@@ -4071,9 +4071,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
     <ph name="BEGIN_PARAGRAPH2" />Voit sallia tai estää raporttien lähettämisen milloin tahansa Chrome-laitteen asetuksissa. Jos olet verkkotunnuksen järjestelmänvalvoja, voit muuttaa asetusta hallintakonsolissa.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">Revontulet yöllä pienen mökkitalon yllä.</translation>
 <translation id="3818102823568165369">Käyttöjärjestelmän tai järjestelmänvalvojan lisäämät paikalliset varmenteet.</translation>
-<translation id="3818662907126913619">Organisaatiosi tarvitsee tietoja laitteesta, jotta voit käyttää sitä profiilin (<ph name="DOMAIN" />) kanssa.
-
-Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, selaimesi ja laitteen käyttöjärjestelmä.</translation>
 <translation id="3819164369574292143">Suurenna näytöllä olevia kohteita lähentämällä. Laita suurennus päälle tai pois päältä painamalla Haku + Ctrl + M. Siirry lähennetyllä alueella painamalla Ctrl + Alt + nuolinäppäin.</translation>
 <translation id="3819257035322786455">Varmuuskopiointi</translation>
 <translation id="3819261658055281761">Järjestelmä ei voinut tallentaa laitteen pitkäaikaista API-käyttötunnusta.</translation>
@@ -4388,9 +4385,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4031527940632463547">Tunnistimet estetty</translation>
 <translation id="4033471457476425443">Kansion lisääminen</translation>
 <translation id="4033963223187371752">Turvalliset sivustot voivat upottaa sisältöä, kuten kuvia ja verkkokehyksiä, jotka eivät ole turvallisia</translation>
-<translation id="4034706080855851454">Organisaatiosi tarvitsee tietoja laitteesta, jotta voit käyttää sitä organisaation profiilin kanssa.
-
-Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, selaimesi ja laitteen käyttöjärjestelmä.</translation>
 <translation id="4034824040120875894">Tulostin</translation>
 <translation id="4035758313003622889">&amp;Tehtävänhallinta</translation>
 <translation id="4035877632587724847">Älä salli</translation>

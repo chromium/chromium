@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
-#include "media/formats/hls/audio_rendition.h"
+#include "media/formats/hls/rendition.h"
 #include "media/formats/hls/types.h"
 #include "url/gurl.h"
 
@@ -23,7 +23,7 @@ VariantStream::VariantStream(
     std::optional<std::vector<std::string>> codecs,
     std::optional<types::DecimalResolution> resolution,
     std::optional<types::DecimalFloatingPoint> frame_rate,
-    scoped_refptr<AudioRenditionGroup> audio_rendition_group,
+    scoped_refptr<RenditionGroup> audio_rendition_group,
     std::optional<std::string> video_rendition_group_name)
     : primary_rendition_uri_(std::move(primary_rendition_uri)),
       bandwidth_(bandwidth),

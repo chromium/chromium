@@ -137,7 +137,6 @@
   self.locationBarCoordinator =
       [[LocationBarCoordinator alloc] initWithBrowser:browser];
   self.locationBarCoordinator.delegate = self.omniboxFocusDelegate;
-  self.locationBarCoordinator.bubblePresenter = self.bubblePresenter;
   self.locationBarCoordinator.popupPresenterDelegate =
       self.popupPresenterDelegate;
   [self.locationBarCoordinator start];

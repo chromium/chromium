@@ -434,11 +434,31 @@ bool PreReadFileSlow(const FilePath& file_path, int64_t max_bytes) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 
-// Checks if the given path is under ~/MyFiles.
-bool IsUnderMyFiles(const FilePath& path) {
+// Checks if the given path is under ~/MyFiles or /media.
+// Recognizes the following patterns:
+// - "/home/chronos/user/MyFiles/<dir>[/...]"
+// - "/home/chronos/u-<id>/MyFiles/<dir>[/...]"
+// - "/media/<dir>[/...]"
+bool IsVisibleToUser(const FilePath& path) {
+  if (!path.IsAbsolute()) {
+    return false;
+  }
+
   const std::vector parts = path.GetComponents();
-  return parts.size() > 5 && parts[0] == "/" && parts[1] == "home" &&
-         parts[2] == "chronos" && parts[3].starts_with("u-") &&
+
+  // Since the path is absolute, the first part should be the root directory.
+  DCHECK(!parts.empty());
+  DCHECK_EQ(parts[0], "/");
+
+  // Is path under /media?
+  if (parts.size() > 2 && parts[1] == "media" && !parts[2].empty()) {
+    return true;
+  }
+
+  // Is path under ~/MyFiles?
+  return parts.size() > 5 && parts[1] == "home" && parts[2] == "chronos" &&
+         (parts[3] == "user" ||
+          (parts[3].starts_with("u-") && parts[3].size() > 2)) &&
          parts[4] == "MyFiles" && !parts[5].empty();
 }
 
@@ -937,7 +957,7 @@ bool CreateDirectoryAndGetError(const FilePath& full_path, File::Error* error) {
     mode_t mode = S_IRWXU;
 
 #if BUILDFLAG(IS_CHROMEOS)
-    if (IsUnderMyFiles(subpath)) {
+    if (IsVisibleToUser(subpath)) {
       mode |= S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)

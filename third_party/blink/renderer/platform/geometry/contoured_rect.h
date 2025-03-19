@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_CONTOURED_RECT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_CONTOURED_RECT_H_
 
+#include <optional>
+
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -37,6 +39,7 @@ class PLATFORM_EXPORT ContouredRect {
    public:
     static constexpr float kRound = 2;
     static constexpr float kBevel = 1;
+    static constexpr float kNotch = 1 / 1000;
 
     constexpr CornerCurvature() = default;
     constexpr CornerCurvature(float top_left,
@@ -106,32 +109,37 @@ class PLATFORM_EXPORT ContouredRect {
 
   constexpr bool IsEmpty() const { return rect_.IsEmpty(); }
 
-  void SetRoundedRect(const FloatRoundedRect& rect) { rect_ = rect; }
   void SetCornerCurvature(const CornerCurvature& curvature) {
     corner_curvature_ = curvature;
   }
 
   void Move(const gfx::Vector2dF& offset) { rect_.Move(offset); }
-  void Outset(const gfx::OutsetsF& outsets);
-  void Outset(float outset) { Outset(gfx::OutsetsF(outset)); }
-  void Inset(const gfx::InsetsF& insets) { Outset(insets.ToOutsets()); }
-  void Inset(float inset) { Inset(gfx::InsetsF(inset)); }
-  void OutsetForMarginOrShadow(const gfx::OutsetsF& outsets);
+  void Inset(const gfx::InsetsF& insets) { rect_.Inset(insets); }
+  void Inset(float inset) { rect_.Inset(inset); }
   void OutsetForMarginOrShadow(float outset) {
-    OutsetForMarginOrShadow(gfx::OutsetsF(outset));
+    rect_.OutsetForMarginOrShadow(outset);
   }
 
-  void OutsetForShapeMargin(float outset);
+  void Outset(const gfx::OutsetsF& outsets) { rect_.Outset(outsets); }
+  void OutsetForMarginOrShadow(const gfx::OutsetsF& outsets) {
+    rect_.OutsetForMarginOrShadow(outsets);
+  }
+
   bool IntersectsQuad(const gfx::QuadF&) const;
 
   // Whether the radii are constrained in the size of rect().
   bool IsRenderable() const { return rect_.IsRenderable(); }
   String ToString() const;
   Path GetPath() const;
+  FloatRoundedRect GetOriginRect() const {
+    return origin_rect_.value_or(rect_);
+  }
+  void SetOriginRect(const FloatRoundedRect& rect) { origin_rect_ = rect; }
 
  private:
   FloatRoundedRect rect_;
   CornerCurvature corner_curvature_;
+  std::optional<FloatRoundedRect> origin_rect_;
 };
 
 }  // namespace blink
