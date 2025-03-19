@@ -5184,17 +5184,6 @@
             ],
             "experiments": [
                 {
-                    "name": "Launch",
-                    "enable_features": [
-                        "EnableLensOverlay",
-                        "LensClearcutLoggerFastQosEnabled"
-                    ],
-                    "disable_features": [
-                        "LensOverlayEnableLocationBarEntrypoint",
-                        "LensOverlayEnableLocationBarEntrypointOnSRP"
-                    ]
-                },
-                {
                     "name": "Enabled",
                     "enable_features": [
                         "EnableLensOverlay",
@@ -5205,6 +5194,17 @@
                         "LensOverlayEnableLocationBarEntrypoint"
                     ],
                     "disable_features": [
+                        "LensOverlayEnableLocationBarEntrypointOnSRP"
+                    ]
+                },
+                {
+                    "name": "LaunchM133",
+                    "enable_features": [
+                        "EnableLensOverlay",
+                        "LensClearcutLoggerFastQosEnabled"
+                    ],
+                    "disable_features": [
+                        "LensOverlayEnableLocationBarEntrypoint",
                         "LensOverlayEnableLocationBarEntrypointOnSRP"
                     ]
                 }
