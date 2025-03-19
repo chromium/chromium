@@ -102,11 +102,16 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
                       std::optional<AIPageContentResult> page_content) {
     page_content_ = std::move(page_content->proto);
     metadata_ = std::move(page_content->metadata);
+    document_identifiers_ = std::move(page_content->document_identifiers);
     std::move(quit_closure).Run();
   }
 
   const proto::AnnotatedPageContent& page_content() { return *page_content_; }
   const AIPageContentMetadata& metadata() { return *metadata_; }
+  const base::flat_map<std::string, content::WeakDocumentPtr>&
+  document_identifiers() {
+    return document_identifiers_;
+  }
 
   void LoadData(blink::mojom::AIPageContentOptionsPtr request =
                     DefaultAIPageContentOptions()) {
@@ -148,6 +153,7 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   std::optional<proto::AnnotatedPageContent> page_content_;
   std::optional<AIPageContentMetadata> metadata_;
+  base::flat_map<std::string, content::WeakDocumentPtr> document_identifiers_;
 };
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, AIPageContent) {
@@ -643,6 +649,33 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
   EXPECT_EQ(child_frame_metadata2.meta_tags.size(), 1u);
   EXPECT_EQ(child_frame_metadata2.meta_tags[0].name, "author");
   EXPECT_EQ(child_frame_metadata2.meta_tags[0].content, "Gary");
+}
+
+IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
+                       AIPageContentFrameIdentifiersTheSame) {
+  LoadPage(https_server()->GetURL("a.com", "/fenced_frame/basic.html"),
+           /* with_page_content = */ false);
+
+  const GURL fenced_frame_url =
+      https_server()->GetURL("b.com", "/fenced_frame/simple.html");
+  auto* fenced_frame_rfh = fenced_frame_helper_.CreateFencedFrame(
+      web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
+  ASSERT_NE(nullptr, fenced_frame_rfh);
+  LoadData();
+  auto document_identifiers_1 = document_identifiers();
+  LoadData();
+  auto document_identifiers_2 = document_identifiers();
+  EXPECT_EQ(2u, document_identifiers_1.size());
+  EXPECT_EQ(2u, document_identifiers_2.size());
+  for (const auto& [document_identifier_key, doc_ptr] :
+       document_identifiers_1) {
+    EXPECT_NE(document_identifiers_2.end(),
+              document_identifiers_2.find(document_identifier_key));
+    EXPECT_NE(nullptr, doc_ptr.AsRenderFrameHostIfValid());
+    EXPECT_EQ(doc_ptr.AsRenderFrameHostIfValid(),
+              document_identifiers_2[document_identifier_key]
+                  .AsRenderFrameHostIfValid());
+  }
 }
 
 }  // namespace

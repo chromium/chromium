@@ -4,9 +4,11 @@
 
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
 
+#include <string>
 #include <vector>
 
 #include "base/notreached.h"
+#include "base/supports_user_data.h"
 #include "components/optimization_guide/content/browser/ai_page_content_metadata.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -79,6 +81,15 @@ optimization_guide::proto::AnnotatedRole ConvertAnnotatedRole(
       return optimization_guide::proto::ANNOTATED_ROLE_CONTENT_HIDDEN;
   }
   NOTREACHED();
+}
+
+void AddDocumentIdentifier(content::GlobalRenderFrameHostToken frame_token,
+                           FrameTokenSet& frame_token_set,
+                           std::string serialized_server_token,
+                           optimization_guide::proto::FrameData* frame_data) {
+  frame_token_set.insert(frame_token);
+  frame_data->mutable_document_identifier()->set_serialized_token(
+      serialized_server_token);
 }
 
 void ConvertRect(const gfx::Rect& mojom_rect,
@@ -469,13 +480,15 @@ void ConvertFrameData(
     const RenderFrameInfo& render_frame_info,
     const blink::mojom::AIPageContentFrameData& mojom_frame_data,
     optimization_guide::proto::FrameData* proto_frame_data,
-    AIPageContentMetadata& metadata) {
+    AIPageContentMetadata& metadata,
+    FrameTokenSet& frame_token_set) {
   ConvertFrameMetadata(render_frame_info.url, mojom_frame_data, metadata);
   ConvertFrameInteractionInfo(
       *mojom_frame_data.frame_interaction_info,
       proto_frame_data->mutable_frame_interaction_info());
-
-  // TODO(crbug.com/402086380): FrameIdentifiers still need to be populated.
+  AddDocumentIdentifier(render_frame_info.global_frame_token, frame_token_set,
+                        render_frame_info.serialized_server_token,
+                        proto_frame_data);
 }
 
 // `mojom_iframe_data` holds information about the iframe provided by the
@@ -490,6 +503,7 @@ void ConvertIframeData(
     const blink::mojom::AIPageContentIframeData& mojom_iframe_data,
     const blink::mojom::AIPageContentFrameData& mojom_local_frame_data,
     AIPageContentMetadata& metadata,
+    FrameTokenSet& frame_token_set,
     optimization_guide::proto::IframeData* proto_iframe_data) {
   if (!render_frame_info.source_origin.opaque()) {
     proto_iframe_data->set_url(render_frame_info.source_origin.Serialize());
@@ -497,12 +511,14 @@ void ConvertIframeData(
   proto_iframe_data->set_likely_ad_frame(mojom_iframe_data.likely_ad_frame);
 
   ConvertFrameData(render_frame_info, mojom_local_frame_data,
-                   proto_iframe_data->mutable_frame_data(), metadata);
+                   proto_iframe_data->mutable_frame_data(), metadata,
+                   frame_token_set);
 }
 
 bool ConvertNode(content::GlobalRenderFrameHostToken source_frame_token,
                  const blink::mojom::AIPageContentNode& mojom_node,
                  const AIPageContentMap& page_content_map,
+                 FrameTokenSet& frame_token_set,
                  GetRenderFrameInfo get_render_frame_info,
                  AIPageContentMetadata& metadata,
                  optimization_guide::proto::ContentNode* proto_node) {
@@ -552,7 +568,8 @@ bool ConvertNode(content::GlobalRenderFrameHostToken source_frame_token,
       auto* proto_child_frame_node = proto_node->add_children_nodes();
       if (!ConvertNode(render_frame_info->global_frame_token,
                        *frame_page_content.root_node, page_content_map,
-                       get_render_frame_info, metadata,
+                       frame_token_set, get_render_frame_info, metadata,
+
                        proto_child_frame_node)) {
         return false;
       }
@@ -567,7 +584,7 @@ bool ConvertNode(content::GlobalRenderFrameHostToken source_frame_token,
     auto* proto_iframe_data =
         proto_node->mutable_content_attributes()->mutable_iframe_data();
     ConvertIframeData(*render_frame_info, iframe_data, *frame_data, metadata,
-                      proto_iframe_data);
+                      frame_token_set, proto_iframe_data);
   }
 
   const auto source_frame_for_children =
@@ -576,7 +593,8 @@ bool ConvertNode(content::GlobalRenderFrameHostToken source_frame_token,
   for (const auto& mojom_child : mojom_node.children_nodes) {
     auto* proto_child = proto_node->add_children_nodes();
     if (!ConvertNode(source_frame_for_children, *mojom_child, page_content_map,
-                     get_render_frame_info, metadata, proto_child)) {
+                     frame_token_set, get_render_frame_info, metadata,
+                     proto_child)) {
       return false;
     }
   }
@@ -591,6 +609,7 @@ bool ConvertAIPageContentToProto(
     content::GlobalRenderFrameHostToken main_frame_token,
     const AIPageContentMap& page_content_map,
     GetRenderFrameInfo get_render_frame_info,
+    FrameTokenSet& frame_token_set,
     optimization_guide::AIPageContentResult& page_content_result) {
   auto it = page_content_map.find(main_frame_token);
   if (it == page_content_map.end()) {
@@ -608,10 +627,9 @@ bool ConvertAIPageContentToProto(
 
   ConvertFrameData(*render_frame_info, *main_frame_page_content.frame_data,
                    page_content_result.proto.mutable_main_frame_data(),
-                   page_content_result.metadata);
-
+                   page_content_result.metadata, frame_token_set);
   if (!ConvertNode(main_frame_token, *main_frame_page_content.root_node,
-                   page_content_map, get_render_frame_info,
+                   page_content_map, frame_token_set, get_render_frame_info,
                    page_content_result.metadata,
                    page_content_result.proto.mutable_root_node())) {
     return false;
@@ -632,5 +650,8 @@ bool ConvertAIPageContentToProto(
 
   return true;
 }
+
+RenderFrameInfo::RenderFrameInfo() = default;
+RenderFrameInfo::RenderFrameInfo(const RenderFrameInfo& other) = default;
 
 }  // namespace optimization_guide
