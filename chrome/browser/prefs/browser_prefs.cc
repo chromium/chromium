@@ -1076,6 +1076,10 @@ inline constexpr char kUserMicrophoneCaptionLanguageCode[] =
     "accessibility.captions.user_microphone_language_code";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// Deprecated 03/2025.
+inline constexpr char kPasswordChangeFlowNoticeAgreement[] =
+    "password_manager.password_change_flow_notice_agreement";
+
 #if BUILDFLAG(IS_CHROMEOS)
 // Deprecated 02/2025.
 constexpr char kScannerFeedbackEnabled[] = "ash.scanner.feedback_enabled";
@@ -1541,6 +1545,9 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kHmrFeedbackAllowed, true);
   registry->RegisterDictionaryPref(kSharedStorage);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Deprecated 03/2025.
+  registry->RegisterBooleanPref(kPasswordChangeFlowNoticeAgreement, false);
 }
 
 }  // namespace
@@ -2815,6 +2822,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kHmrFeedbackAllowed);
   profile_prefs->ClearPref(kSharedStorage);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Added 03/2025.
+  profile_prefs->ClearPref(kPasswordChangeFlowNoticeAgreement);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
