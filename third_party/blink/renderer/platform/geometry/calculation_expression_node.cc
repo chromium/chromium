@@ -407,6 +407,17 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
       return base::MakeRefCounted<CalculationExpressionOperationNode>(
           std::move(children), op);
     }
+    case CalculationOperator::kPow: {
+      DCHECK_EQ(children.size(), 2u);
+      if (children.front()->IsNumber() && children.back()->IsNumber()) {
+        float value = std::pow(
+            To<CalculationExpressionNumberNode>(*children.front()).Value(),
+            To<CalculationExpressionNumberNode>(*children.back()).Value());
+        return base::MakeRefCounted<CalculationExpressionNumberNode>(value);
+      }
+      return base::MakeRefCounted<CalculationExpressionOperationNode>(
+          std::move(children), op);
+    }
     case CalculationOperator::kInvalid:
       NOTREACHED();
   }
@@ -557,6 +568,12 @@ float CalculationExpressionOperationNode::Evaluate(
       float to = children_[2]->Evaluate(max_value, input);
       return (progress - from) / (to - from);
     }
+    case CalculationOperator::kPow: {
+      DCHECK_EQ(children_.size(), 2u);
+      float a = children_[0]->Evaluate(max_value, input);
+      float b = children_[1]->Evaluate(max_value, input);
+      return std::pow(a, b);
+    }
     case CalculationOperator::kInvalid:
       break;
       // TODO(crbug.com/1284199): Support other math functions.
@@ -620,7 +637,8 @@ CalculationExpressionOperationNode::Zoom(double factor) const {
     case CalculationOperator::kSign:
     case CalculationOperator::kProgress:
     case CalculationOperator::kMediaProgress:
-    case CalculationOperator::kContainerProgress: {
+    case CalculationOperator::kContainerProgress:
+    case CalculationOperator::kPow: {
       DCHECK(children_.size());
       Vector<scoped_refptr<const CalculationExpressionNode>> cloned_operands;
       cloned_operands.reserve(children_.size());
@@ -735,6 +753,7 @@ CalculationExpressionOperationNode::ResolvedResultType() const {
     case CalculationOperator::kContainerProgress:
     case CalculationOperator::kProgress:
     case CalculationOperator::kMediaProgress:
+    case CalculationOperator::kPow:
       return ResultType::kNumber;
     case CalculationOperator::kInvalid:
       NOTREACHED();

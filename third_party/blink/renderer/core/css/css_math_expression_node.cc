@@ -1578,9 +1578,21 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateExponentialFunction(
   switch (function_id) {
     case CSSValueID::kPow: {
       DCHECK_EQ(operands.size(), 2u);
-      double a = ValueAsNumber(operands[0], error);
-      double b = ValueAsNumber(operands[1], error);
-      value = std::pow(a, b);
+      CalculationResultCategory category =
+          DetermineComparisonCategory(operands);
+      if (category != kCalcNumber) {
+        return nullptr;
+      }
+      if (CanEagerlySimplify(operands)) {
+        std::optional<double> a = operands[0]->ComputeValueInCanonicalUnit();
+        std::optional<double> b = operands[1]->ComputeValueInCanonicalUnit();
+        CHECK(a.has_value());
+        CHECK(b.has_value());
+        value = std::pow(a.value(), b.value());
+      } else {
+        return MakeGarbageCollected<CSSMathExpressionOperation>(
+            category, std::move(operands), CSSMathOperator::kPow);
+      }
       break;
     }
     case CSSValueID::kSqrt: {
@@ -2255,6 +2267,7 @@ std::optional<PixelsAndPercent> CSSMathExpressionOperation::ToPixelsAndPercent(
     case CSSMathOperator::kProgress:
     case CSSMathOperator::kMediaProgress:
     case CSSMathOperator::kContainerProgress:
+    case CSSMathOperator::kPow:
       return std::nullopt;
     case CSSMathOperator::kInvalid:
       NOTREACHED();
@@ -2328,7 +2341,8 @@ CSSMathExpressionOperation::ToCalculationExpression(
     case CSSMathOperator::kProgress:
     case CSSMathOperator::kMediaProgress:
     case CSSMathOperator::kContainerProgress:
-    case CSSMathOperator::kCalcSize: {
+    case CSSMathOperator::kCalcSize:
+    case CSSMathOperator::kPow: {
       Vector<scoped_refptr<const CalculationExpressionNode>> operands;
       operands.reserve(operands_.size());
       for (const CSSMathExpressionNode* operand : operands_) {
@@ -2359,6 +2373,8 @@ CSSMathExpressionOperation::ToCalculationExpression(
         op = CalculationOperator::kMediaProgress;
       } else if (operator_ == CSSMathOperator::kContainerProgress) {
         op = CalculationOperator::kContainerProgress;
+      } else if (operator_ == CSSMathOperator::kPow) {
+        op = CalculationOperator::kPow;
       } else {
         CHECK(operator_ == CSSMathOperator::kCalcSize);
         op = CalculationOperator::kCalcSize;
@@ -2501,6 +2517,7 @@ bool CSSMathExpressionOperation::AccumulateLengthArray(
     case CSSMathOperator::kCalcSize:
     case CSSMathOperator::kMediaProgress:
     case CSSMathOperator::kContainerProgress:
+    case CSSMathOperator::kPow:
       return false;
     case CSSMathOperator::kInvalid:
       NOTREACHED();
@@ -2601,7 +2618,8 @@ String CSSMathExpressionOperation::CustomCSSText() const {
     case CSSMathOperator::kHypot:
     case CSSMathOperator::kAbs:
     case CSSMathOperator::kSign:
-    case CSSMathOperator::kCalcSize: {
+    case CSSMathOperator::kCalcSize:
+    case CSSMathOperator::kPow: {
       StringBuilder result;
       result.Append(ToString(operator_));
       result.Append('(');
@@ -2730,6 +2748,7 @@ CSSPrimitiveValue::UnitType CSSMathExpressionOperation::ResolvedUnitType()
         case CSSMathOperator::kProgress:
         case CSSMathOperator::kMediaProgress:
         case CSSMathOperator::kContainerProgress:
+        case CSSMathOperator::kPow:
           return CSSPrimitiveValue::UnitType::kNumber;
         case CSSMathOperator::kCalcSize: {
           DCHECK_EQ(operands_.size(), 2u);
@@ -2902,7 +2921,10 @@ double CSSMathExpressionOperation::EvaluateOperator(
       // But for now just handle the simplest case.
       return operands[1];
     }
-
+    case CSSMathOperator::kPow: {
+      DCHECK_EQ(operands.size(), 2u);
+      return std::pow(operands[0], operands[1]);
+    }
     case CSSMathOperator::kInvalid:
       NOTREACHED();
   }
@@ -4462,6 +4484,14 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
       CHECK_EQ(children.size(), 2u);
       return CSSMathExpressionOperation::CreateCalcSizeOperation(
           Create(*children.front()), Create(*children.back()));
+    }
+    case CalculationOperator::kPow: {
+      DCHECK_EQ(children.size(), 2u);
+      CSSMathExpressionOperation::Operands operands;
+      operands.push_back(Create(*children.front()));
+      operands.push_back(Create(*children.back()));
+      return CSSMathExpressionOperation::CreateSignRelatedFunction(
+          std::move(operands), CSSValueID::kPow);
     }
     case CalculationOperator::kInvalid:
       NOTREACHED();
