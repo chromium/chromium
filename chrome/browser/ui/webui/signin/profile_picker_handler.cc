@@ -384,6 +384,15 @@ void ProfilePickerHandler::TryLaunchLockedProfile(
 
   // Reauth attempt.
   if (entry.CanBeManaged()) {
+    // Glic version cannot run the reauth steps, show a dialog instead that
+    // will redirect the user to the regular version of the picker.
+    if (is_glic_version_) {
+      DisplayForceSigninErrorDialog(
+          /*profile_path=*/base::FilePath(),
+          ForceSigninUIError::ReauthNotSupportedByGlicFlow());
+      return;
+    }
+
     g_browser_process->profile_manager()->LoadProfileByPath(
         entry.GetPath(), /*incognito=*/false,
         base::BindOnce(&ProfilePickerHandler::OnProfileLoadedForSwitchToReauth,
