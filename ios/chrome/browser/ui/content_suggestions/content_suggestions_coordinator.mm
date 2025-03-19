@@ -613,8 +613,8 @@ using segmentation_platform::TipIdentifier;
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
   presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
   presentationController.detents = @[
-    UISheetPresentationControllerDetent.mediumDetent,
-    UISheetPresentationControllerDetent.largeDetent
+    [UISheetPresentationControllerDetent mediumDetent],
+    [UISheetPresentationControllerDetent largeDetent]
   ];
   if (expanded) {
     presentationController.selectedDetentIdentifier =
@@ -775,8 +775,8 @@ using segmentation_platform::TipIdentifier;
     presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached =
         YES;
     presentationController.detents = @[
-      UISheetPresentationControllerDetent.mediumDetent,
-      UISheetPresentationControllerDetent.largeDetent
+      [UISheetPresentationControllerDetent mediumDetent],
+      [UISheetPresentationControllerDetent largeDetent]
     ];
     [_magicStackCollectionView presentViewController:navViewController
                                             animated:YES
