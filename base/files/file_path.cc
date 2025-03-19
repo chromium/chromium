@@ -71,8 +71,8 @@ StringViewType::size_type FindDriveLetter(StringViewType path) {
 
 #if defined(FILE_PATH_USES_DRIVE_LETTERS)
 bool EqualDriveLetterCaseInsensitive(StringViewType a, StringViewType b) {
-  size_t a_letter_pos = FindDriveLetter(a);
-  size_t b_letter_pos = FindDriveLetter(b);
+  StringType::size_type a_letter_pos = FindDriveLetter(a);
+  StringType::size_type b_letter_pos = FindDriveLetter(b);
 
   if (a_letter_pos == StringType::npos || b_letter_pos == StringType::npos) {
     return a == b;
@@ -248,7 +248,7 @@ std::vector<FilePath::StringType> FilePath::GetComponents() const {
   // Capture root, if any.
   base = current.BaseName();
   if (!base.value().empty() && base.value() != kCurrentDirectory) {
-    ret_val.push_back(current.BaseName().value());
+    ret_val.push_back(base.value());
   }
 
   // Capture drive letter, if any.
@@ -281,7 +281,7 @@ bool FilePath::AppendRelativePath(const FilePath& child, FilePath* path) const {
 
 #if defined(FILE_PATH_USES_DRIVE_LETTERS)
   // Windows can access case sensitive filesystems, so component
-  // comparisions must be case sensitive, but drive letters are
+  // comparisons must be case sensitive, but drive letters are
   // never case sensitive.
   if ((FindDriveLetter(*parent_comp) != StringType::npos) &&
       (FindDriveLetter(*child_comp) != StringType::npos)) {
@@ -328,47 +328,25 @@ FilePath FilePath::DirName() const {
   FilePath new_path(path_);
   new_path.StripTrailingSeparatorsInternal();
 
-  // The drive letter, if any, always needs to remain in the output.  If there
-  // is no drive letter, as will always be the case on platforms which do not
-  // support drive letters, letter will be npos, or -1, so the comparisons and
-  // resizes below using letter will still be valid.
-  StringType::size_type letter = FindDriveLetter(new_path.path_);
-
   StringType::size_type last_separator = new_path.path_.find_last_of(
       kSeparators, StringType::npos, kSeparatorsLength - 1);
   if (last_separator == StringType::npos) {
-    // path_ is in the current directory.
-    new_path.path_.resize(letter + 1);
-  } else if (last_separator == letter + 1) {
-    // path_ is in the root directory.
-    new_path.path_.resize(letter + 2);
-  } else if (last_separator == letter + 2 &&
-             IsSeparator(new_path.path_[letter + 1])) {
-    // path_ is in "//" (possibly with a drive letter); leave the double
-    // separator intact indicating alternate root.
-    new_path.path_.resize(letter + 3);
-  } else if (last_separator != 0) {
-    bool trim_to_basename = true;
-#if BUILDFLAG(IS_POSIX)
-    // On Posix, more than two leading separators are always collapsed to one.
-    // See
-    // https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap04.html#tag_04_13
-    // So, do not strip any of the separators, let
-    // StripTrailingSeparatorsInternal() take care of the extra.
-    if (AreAllSeparators(new_path.path_.substr(0, last_separator + 1))) {
-      new_path.path_.resize(last_separator + 1);
-      trim_to_basename = false;
+    // path_ is in the current directory.  The drive letter, if any, always
+    // needs to remain in the output.  If there is no drive letter, as will
+    // always be the case on platforms which do not support drive letters,
+    // return the current directory.
+    StringType::size_type letter = FindDriveLetter(new_path.path_);
+    if (letter != StringType::npos) {
+      new_path.path_.resize(letter + 1);
+    } else {
+      new_path.path_ = kCurrentDirectory;
     }
-#endif  // BUILDFLAG(IS_POSIX)
-    if (trim_to_basename) {
-      // path_ is somewhere else, trim the basename.
-      new_path.path_.resize(last_separator);
-    }
-  }
+  } else {
+    // path_ is not in the current directory so trim the basename.
+    new_path.path_.resize(last_separator + 1);
 
-  new_path.StripTrailingSeparatorsInternal();
-  if (!new_path.path_.length()) {
-    new_path.path_ = kCurrentDirectory;
+    // Remove any remaining trailing separator(s).
+    new_path.StripTrailingSeparatorsInternal();
   }
 
   return new_path;
