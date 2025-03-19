@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -27,16 +29,25 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 
+import java.util.Set;
+
 /** Unit tests for KeyboardShortcuts. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class KeyboardShortcutsTest {
+
+    // Want this to be less than 8 so we can test that "go to tab" keyboard shortcut is not called.
+    private static final int SMALL_NUMBER_OF_TABS = 7;
+    // Want this to be greater than 10 so we can test "go to tab" keyboard shortcut.
+    private static final int LARGE_NUMBER_OF_TABS = 11;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -49,6 +60,8 @@ public class KeyboardShortcutsTest {
     public void setUp() {
         when(mTabModelSelector.getCurrentModel()).thenAnswer(invocation -> mTabModel);
     }
+
+    // Bookmarks shortcuts
 
     @Test
     @SmallTest
@@ -93,6 +106,138 @@ public class KeyboardShortcutsTest {
                 /* expectHandled= */ false, /* isCurrentTabVisible= */ true, /* metaState= */ 0);
     }
 
+    // Go To Tab shortcuts
+
+    @Test
+    @SmallTest
+    @Feature("Keyboard Shortcuts")
+    public void testGoToTab_withNumberKeys_smallNumberOfTabs() {
+        when(mTabModel.getCount()).thenReturn(SMALL_NUMBER_OF_TABS);
+        for (int keyCode = KeyEvent.KEYCODE_1; keyCode <= KeyEvent.KEYCODE_8; keyCode++) {
+            for (int metaState : Set.of(KeyEvent.META_CTRL_ON, KeyEvent.META_ALT_ON)) {
+                assertGoToTab(
+                        (keyCode - KeyEvent.KEYCODE_0 - 1) < SMALL_NUMBER_OF_TABS,
+                        keyCode,
+                        metaState);
+                clearInvocations(mTabModel);
+            }
+        }
+    }
+
+    @Test
+    @SmallTest
+    @Feature("Keyboard Shortcuts")
+    public void testGoToTab_withNumberKeys_largeNumberOfTabs() {
+        when(mTabModel.getCount()).thenReturn(LARGE_NUMBER_OF_TABS);
+        for (int keyCode = KeyEvent.KEYCODE_1; keyCode <= KeyEvent.KEYCODE_8; keyCode++) {
+            for (int metaState : Set.of(KeyEvent.META_CTRL_ON, KeyEvent.META_ALT_ON)) {
+                assertGoToTab(true, keyCode, metaState);
+                clearInvocations(mTabModel);
+            }
+        }
+    }
+
+    @Test
+    @SmallTest
+    @Feature("Keyboard Shortcuts")
+    public void testGoToTab_withNumPad_smallNumberOfTabs() {
+        when(mTabModel.getCount()).thenReturn(SMALL_NUMBER_OF_TABS);
+        for (int keyCode = KeyEvent.KEYCODE_NUMPAD_1;
+                keyCode <= KeyEvent.KEYCODE_NUMPAD_8;
+                keyCode++) {
+            for (int metaState : Set.of(KeyEvent.META_CTRL_ON, KeyEvent.META_ALT_ON)) {
+                assertGoToTab(
+                        (keyCode - KeyEvent.KEYCODE_NUMPAD_0 - 1) < SMALL_NUMBER_OF_TABS,
+                        keyCode,
+                        metaState);
+                clearInvocations(mTabModel);
+            }
+        }
+    }
+
+    @Test
+    @SmallTest
+    @Feature("Keyboard Shortcuts")
+    public void testGoToTab_withNumPad_largeNumberOfTabs() {
+        when(mTabModel.getCount()).thenReturn(LARGE_NUMBER_OF_TABS);
+        for (int keyCode = KeyEvent.KEYCODE_NUMPAD_1;
+                keyCode <= KeyEvent.KEYCODE_NUMPAD_8;
+                keyCode++) {
+            for (int metaState : Set.of(KeyEvent.META_CTRL_ON, KeyEvent.META_ALT_ON)) {
+                assertGoToTab(true, keyCode, metaState);
+                clearInvocations(mTabModel);
+            }
+        }
+    }
+
+    @Test
+    @SmallTest
+    @Feature("Keyboard Shortcuts")
+    public void testGoToLastTab_smallNumberOfTabs() {
+        when(mTabModel.getCount()).thenReturn(SMALL_NUMBER_OF_TABS);
+        for (int keyCode : Set.of(KeyEvent.KEYCODE_9, KeyEvent.KEYCODE_NUMPAD_9)) {
+            for (int metaState : Set.of(KeyEvent.META_CTRL_ON, KeyEvent.META_ALT_ON)) {
+                boolean expectHandled = (keyCode - KeyEvent.KEYCODE_0) < SMALL_NUMBER_OF_TABS;
+                String message =
+                        String.format(
+                                "expected handling of key event with keycode %s and metaState %s to"
+                                        + " be %s",
+                                keyCode, metaState, expectHandled);
+                assertTrue(
+                        message,
+                        KeyboardShortcuts.onKeyDown(
+                                new KeyEvent(
+                                        /* downTime= */ SystemClock.uptimeMillis(),
+                                        /* eventTime= */ SystemClock.uptimeMillis(),
+                                        KeyEvent.ACTION_DOWN,
+                                        keyCode,
+                                        /* repeat= */ 0,
+                                        metaState),
+                                /* isCurrentTabVisible= */ true,
+                                /* tabSwitchingEnabled= */ true,
+                                mTabModelSelector,
+                                mMenuOrKeyboardActionController,
+                                mToolbarManager));
+                verify(mTabModel, times(1))
+                        .setIndex(SMALL_NUMBER_OF_TABS - 1, TabSelectionType.FROM_USER);
+                clearInvocations(mTabModel);
+            }
+        }
+    }
+
+    @Test
+    @SmallTest
+    @Feature("Keyboard Shortcuts")
+    public void testGoToLastTab_largeNumberOfTabs() {
+        when(mTabModel.getCount()).thenReturn(LARGE_NUMBER_OF_TABS);
+        for (int keyCode : Set.of(KeyEvent.KEYCODE_9, KeyEvent.KEYCODE_NUMPAD_9)) {
+            for (int metaState : Set.of(KeyEvent.META_CTRL_ON, KeyEvent.META_ALT_ON)) {
+                String message =
+                        String.format(
+                                "expected key event with keycode %s and metaState %s to be handled",
+                                keyCode, metaState);
+                assertTrue(
+                        message,
+                        KeyboardShortcuts.onKeyDown(
+                                new KeyEvent(
+                                        /* downTime= */ SystemClock.uptimeMillis(),
+                                        /* eventTime= */ SystemClock.uptimeMillis(),
+                                        KeyEvent.ACTION_DOWN,
+                                        keyCode,
+                                        /* repeat= */ 0,
+                                        metaState),
+                                /* isCurrentTabVisible= */ true,
+                                /* tabSwitchingEnabled= */ true,
+                                mTabModelSelector,
+                                mMenuOrKeyboardActionController,
+                                mToolbarManager));
+                verify(mTabModel, times(1))
+                        .setIndex(LARGE_NUMBER_OF_TABS - 1, TabSelectionType.FROM_USER);
+                clearInvocations(mTabModel);
+            }
+        }
+    }
+
     private void testOpenBookmarks(
             boolean expectHandled, boolean isCurrentTabVisible, int metaState) {
         assertEquals(
@@ -115,5 +260,36 @@ public class KeyboardShortcutsTest {
                 .onMenuOrKeyboardAction(
                         /* id= */ eq(R.id.all_bookmarks_menu_id),
                         /* fromMenu= */ expectHandled ? eq(false) : anyBoolean());
+    }
+
+    private void assertGoToTab(boolean expectHandled, int keyCode, int metaState) {
+        String message =
+                String.format(
+                        "expected handling of key event with keycode %s and metaState %s to be %s",
+                        keyCode, metaState, expectHandled);
+        // Note: we always expect (CTRL or ALT) + [1-9] to be a "go to tab" shortcut; we expect
+        // onKeyDown to always be true. However, setting the index of the tab model won't happen if
+        // the number is out of range.
+        assertTrue(
+                message,
+                KeyboardShortcuts.onKeyDown(
+                        new KeyEvent(
+                                /* downTime= */ SystemClock.uptimeMillis(),
+                                /* eventTime= */ SystemClock.uptimeMillis(),
+                                KeyEvent.ACTION_DOWN,
+                                keyCode,
+                                /* repeat= */ 0,
+                                metaState),
+                        /* isCurrentTabVisible= */ true,
+                        /* tabSwitchingEnabled= */ true,
+                        mTabModelSelector,
+                        mMenuOrKeyboardActionController,
+                        mToolbarManager));
+        int numCode =
+                (KeyEvent.KEYCODE_1 <= keyCode && keyCode <= KeyEvent.KEYCODE_8)
+                        ? keyCode - KeyEvent.KEYCODE_0
+                        : keyCode - KeyEvent.KEYCODE_NUMPAD_0;
+        verify(mTabModel, expectHandled ? times(1) : never())
+                .setIndex(numCode - 1, TabSelectionType.FROM_USER);
     }
 }
