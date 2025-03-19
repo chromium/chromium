@@ -88,6 +88,37 @@ struct TestSuiteResultsAggregator {
   TimeDelta elapsed_time;
 };
 
+// Create value for `TestResultPart`.
+Value::Dict CreateTestResultPartValue(const TestResultPart& part) {
+  Value::Dict value;
+
+  value.Set("type", part.TypeAsString());
+  value.Set("file", part.file_name);
+  value.Set("line", part.line_number);
+
+  bool lossless_summary = IsStringUTF8(part.summary);
+  if (lossless_summary) {
+    value.Set("summary", part.summary);
+  } else {
+    value.Set("summary", "<non-UTF-8 snippet, see summary_base64>");
+  }
+  value.Set("lossless_summary", lossless_summary);
+
+  value.Set("summary_base64", base::Base64Encode(part.summary));
+
+  bool lossless_message = IsStringUTF8(part.message);
+  if (lossless_message) {
+    value.Set("message", part.message);
+  } else {
+    value.Set("message", "<non-UTF-8 snippet, see message_base64>");
+  }
+  value.Set("lossless_message", lossless_message);
+
+  value.Set("message_base64", base::Base64Encode(part.message));
+
+  return value;
+}
+
 }  // namespace
 
 TestResultsTracker::TestResultsTracker() : iteration_(-1), out_(nullptr) {}
@@ -538,35 +569,8 @@ bool TestResultsTracker::SaveSummaryAsJSON(
         Value::List test_result_parts;
         for (const TestResultPart& result_part :
              test_result.test_result_parts) {
-          Value::Dict result_part_value;
-
-          result_part_value.Set("type", result_part.TypeAsString());
-          result_part_value.Set("file", result_part.file_name);
-          result_part_value.Set("line", result_part.line_number);
-
-          bool lossless_summary = IsStringUTF8(result_part.summary);
-          if (lossless_summary) {
-            result_part_value.Set("summary", result_part.summary);
-          } else {
-            result_part_value.Set("summary",
-                                  "<non-UTF-8 snippet, see summary_base64>");
-          }
-          result_part_value.Set("lossless_summary", lossless_summary);
-
-          std::string encoded_summary = base::Base64Encode(result_part.summary);
-          result_part_value.Set("summary_base64", encoded_summary);
-
-          bool lossless_message = IsStringUTF8(result_part.message);
-          if (lossless_message) {
-            result_part_value.Set("message", result_part.message);
-          } else {
-            result_part_value.Set("message",
-                                  "<non-UTF-8 snippet, see message_base64>");
-          }
-          result_part_value.Set("lossless_message", lossless_message);
-
-          std::string encoded_message = base::Base64Encode(result_part.message);
-          result_part_value.Set("message_base64", encoded_message);
+          Value::Dict result_part_value =
+              CreateTestResultPartValue(result_part);
 
           test_result_parts.Append(std::move(result_part_value));
         }
