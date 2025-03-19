@@ -227,6 +227,28 @@ Suggestion::AutofillProfilePayload::operator=(AutofillProfilePayload&&) =
 
 Suggestion::AutofillProfilePayload::~AutofillProfilePayload() = default;
 
+Suggestion::IdentityCredentialPayload::IdentityCredentialPayload() = default;
+Suggestion::IdentityCredentialPayload::IdentityCredentialPayload(
+    GURL configURL,
+    std::string account_id)
+    : config_url(std::move(configURL)), account_id(std::move(account_id)) {}
+
+Suggestion::IdentityCredentialPayload::IdentityCredentialPayload(
+    const IdentityCredentialPayload&) = default;
+
+Suggestion::IdentityCredentialPayload::IdentityCredentialPayload(
+    IdentityCredentialPayload&&) = default;
+
+Suggestion::IdentityCredentialPayload&
+Suggestion::IdentityCredentialPayload::operator=(
+    const IdentityCredentialPayload&) = default;
+
+Suggestion::IdentityCredentialPayload&
+Suggestion::IdentityCredentialPayload::operator=(IdentityCredentialPayload&&) =
+    default;
+
+Suggestion::IdentityCredentialPayload::~IdentityCredentialPayload() = default;
+
 Suggestion::PaymentsPayload::PaymentsPayload() = default;
 
 Suggestion::PaymentsPayload::PaymentsPayload(

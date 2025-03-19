@@ -279,6 +279,7 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
     case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kShowAccountCards:
     case SuggestionType::kVirtualCreditCardEntry:
+    case SuggestionType::kIdentityCredential:
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kDevtoolsTestAddresses:
@@ -2897,6 +2898,17 @@ BrowserAutofillManager::GetAvailableAddressAndCreditCardSuggestions(
   if (EvaluateAblationStudy(suggestions, CHECK_DEREF(autofill_field),
                             context)) {
     return {};
+  }
+
+  // TODO(crbug.com/380367784): Figure out how verified identity attributes
+  // (e.g. email addresses) rank compared to other sources.
+  if (const IdentityCredentialDelegate* identity_credential_delegate =
+          client().GetIdentityCredentialDelegate()) {
+    std::vector<Suggestion> verified_profiles =
+        identity_credential_delegate->GetVerifiedAutofillSuggestions(
+            *autofill_field);
+    suggestions.insert(suggestions.end(), verified_profiles.begin(),
+                       verified_profiles.end());
   }
 
   if (suggestions.empty() ||

@@ -275,6 +275,7 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kTitle:
     case SuggestionType::kUndoOrClear:
     case SuggestionType::kViewPasswordDetails:
+    case SuggestionType::kIdentityCredential:
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kPendingStateSignin:
@@ -688,6 +689,9 @@ void AutofillExternalDelegate::DidSelectSuggestion(
         PreviewAddressFieldByFieldFillingSuggestion(*profile, suggestion);
       }
       break;
+    case SuggestionType::kIdentityCredential:
+      // TODO(crbug.com/380367784): support previewing.
+      break;
     case SuggestionType::kComposeDisable:
     case SuggestionType::kComposeGoToSettings:
     case SuggestionType::kComposeNeverShowOnThisSiteAgain:
@@ -886,6 +890,14 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
             GetQueriedAutofillField());
       }
       break;
+    case SuggestionType::kIdentityCredential: {
+      // TODO(crbug.com/380367784): support filling too.
+      if (const IdentityCredentialDelegate* identity_credential_delegate =
+              manager_->client().GetIdentityCredentialDelegate()) {
+        identity_credential_delegate->NotifySuggestionAccepted(suggestion);
+      }
+      break;
+    }
     case SuggestionType::kTitle:
     case SuggestionType::kSeparator:
     case SuggestionType::kPasswordEntry:
@@ -1007,6 +1019,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kDatalistEntry:
     case SuggestionType::kMerchantPromoCodeEntry:
     case SuggestionType::kSeePromoCodeDetails:
+    case SuggestionType::kIdentityCredential:
     case SuggestionType::kWebauthnCredential:
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kTitle:

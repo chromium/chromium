@@ -113,6 +113,9 @@ enum class SuggestionType {
   kMerchantPromoCodeEntry = 41,
   kSeePromoCodeDetails = 42,
 
+  // Federated profiles suggestions.
+  kIdentityCredential = 66,
+
   // Webauthn suggestions.
   kWebauthnCredential = 43,
   kWebauthnSignInWithAnotherDevice = 44,
@@ -148,7 +151,8 @@ enum class SuggestionType {
   // state. On click the user will be directed to sign in.
   kPendingStateSignin = 65,
 
-  kMaxValue = kPendingStateSignin
+  // Next ID: 67
+  kMaxValue = kIdentityCredential
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SuggestionType)
 
