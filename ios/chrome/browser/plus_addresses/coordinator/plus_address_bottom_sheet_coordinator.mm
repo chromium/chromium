@@ -55,7 +55,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
+  ProfileIOS* profile = self.profile->GetOriginalProfile();
   plus_addresses::PlusAddressService* plusAddressService =
       PlusAddressServiceFactory::GetForProfile(profile);
   plus_addresses::PlusAddressSettingService* plusAddressSettingService =
@@ -78,7 +78,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
                        activeUrl:activeWebState->GetLastCommittedURL()
                        urlLoader:UrlLoadingBrowserAgent::FromBrowser(
                                      self.browser)
-                       incognito:self.browser->GetProfile()->IsOffTheRecord()];
+                       incognito:self.profile->IsOffTheRecord()];
   _viewController = [[PlusAddressBottomSheetViewController alloc]
                     initWithDelegate:_mediator
       withBrowserCoordinatorCommands:HandlerForProtocol(
