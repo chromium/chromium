@@ -69,19 +69,19 @@ struct AIPageContentGeometry {
 
 // Represents a selection in the page. This is a frame-level concept.
 struct AIPageContentSelection {
-  // The content node ID of the start node. Note that this could be the same as
+  // The DOMNodeId of the start node. Note that this could be the same as
   // the end node ID. Consumers are responsible for checking that the start node
   // comes before (or is the same as) the end node.
-  int32 start_node_id;
+  int32 start_dom_node_id;
 
   // The character offset of the start of the selection from the start of the
   // text contained in start node.
   int32 start_offset;
 
-  // The content node ID of the end node. Note that this could be the same as
+  // The DOMNodeId of the end node. Note that this could be the same as
   // the start node ID. Consumers are responsible for checking that the end node
   // comes after (or is the same as) the start node.
-  int32 end_node_id;
+  int32 end_dom_node_id;
 
   // The character offset of the start of the selection from the start of the
   // text contained in end node.
@@ -96,12 +96,12 @@ struct AIPageContentSelection {
 // there can only be one unique value. Includes interaction information for
 // the main frame and embedded iframes.
 struct AIPageContentPageInteractionInfo {
-  // The content node ID of the content node that is currently focused.
-  int32? focused_node_id;
+  // The DOMNodeId of the content node that is currently focused.
+  int32? focused_dom_node_id;
 
-  // The content node ID of the content node that is currently focused by a
+  // The DOMNodeId of the content node that is currently focused by a
   // screen reader or other accessibility tool.
-  int32? accessibility_focused_node_id;
+  int32? accessibility_focused_dom_node_id;
 
   // The last known mouse position, in the page coordinate system.
   gfx.mojom.Point? mouse_position;
@@ -281,17 +281,9 @@ struct AIPageContentFormControlData {
 };
 
 struct AIPageContentAttributes {
-  // An ID for this content node, unique across all frames in the page.
-  // The value may change across calls to GetAIPageContent for the same DOM
-  // node; it is not guaranteed to be stable.
-  int32 content_node_id;
-
-  // The IDs of the DOM nodes whose content is represented by this ContentNode.
-  array<int32> dom_node_ids;
-
-  // If this content node represents an entire subtree, this is the ID of the
-  // common ancestor of all the nodes in the subtree.
-  int32? common_ancestor_dom_node_id;
+  // If this content node maps to a DOM node, this is the ID for that node. This
+  // can be used to route events to the corresponding DOM node.
+  int32? dom_node_id;
 
   AIPageContentAttributeType attribute_type;
 
