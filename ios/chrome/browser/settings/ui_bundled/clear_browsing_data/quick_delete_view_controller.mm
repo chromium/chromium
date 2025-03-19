@@ -239,13 +239,10 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
         DeleteBrowsingDataDialogAction::kBrowsingDataSelected);
     [self.presentationHandler showBrowsingDataPageWithTimeRange:_timeRange];
   } else if (itemType == ItemIdentifierTimeRange) {
-    // TODO(crbug.com/383066554): Investigate why a row other than the browsing
-    // data triggers this code path.
-    NOTREACHED(base::NotFatalUntil::M137);
+    // No-op, should be handled by the UIButton inside the
+    // ItemIdentifierTimeRange.
   } else {
-    // TODO(crbug.com/383066554): Investigate why a row other than the browsing
-    // data triggers this code path.
-    NOTREACHED(base::NotFatalUntil::M137) << itemType;
+    NOTREACHED() << itemType;
   }
 }
 
