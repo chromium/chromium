@@ -121,7 +121,7 @@ public class SigninManagerImplTest {
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtils);
         BookmarkModel.setInstanceForTesting(FakeBookmarkModel.createModel());
 
-        when(mNativeMock.isSigninAllowedByPolicy(NATIVE_SIGNIN_MANAGER)).thenReturn(true);
+        when(mNativeMock.isSigninAllowed(NATIVE_SIGNIN_MANAGER)).thenReturn(true);
         // Pretend Google Play services are available as it is required for the sign-in
         when(mExternalAuthUtils.isGooglePlayServicesMissing(any())).thenReturn(false);
         // Suppose that the accounts are already seeded

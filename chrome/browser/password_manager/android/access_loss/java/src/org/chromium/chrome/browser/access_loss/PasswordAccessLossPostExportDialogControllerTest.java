@@ -4,29 +4,27 @@
 
 package org.chromium.chrome.browser.access_loss;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.spy;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.view.View;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.password_manager.CustomTabIntentHelper;
 import org.chromium.chrome.browser.password_manager.HelpUrlLauncher;
+import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -37,9 +35,11 @@ import org.chromium.ui.widget.ChromeImageButton;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PasswordAccessLossPostExportDialogControllerTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Activity mActivity;
     private FakeModalDialogManager mModalDialogManager;
-    private CustomTabIntentHelper mCustomTabIntentHelper;
+
+    @Mock private SettingsCustomTabLauncher mSettingsCustomTabLauncher;
     PasswordAccessLossPostExportDialogController mController;
 
     @Before
@@ -47,14 +47,13 @@ public class PasswordAccessLossPostExportDialogControllerTest {
         mActivity = Robolectric.buildActivity(Activity.class).create().start().resume().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mModalDialogManager = new FakeModalDialogManager(ModalDialogManager.ModalDialogType.APP);
-        mCustomTabIntentHelper = (Context context, Intent intent) -> intent;
     }
 
     @Test
     public void testDialogDismissed() {
         mController =
                 new PasswordAccessLossPostExportDialogController(
-                        mActivity, mModalDialogManager, mCustomTabIntentHelper);
+                        mActivity, mModalDialogManager, mSettingsCustomTabLauncher);
         mController.showPostExportDialog();
         assertNotNull(mModalDialogManager.getShownDialogModel());
 
@@ -64,18 +63,16 @@ public class PasswordAccessLossPostExportDialogControllerTest {
 
     @Test
     public void testOpensGmsCoreSupportedDevicesHelpArticle() {
-        Activity spyActivity = spy(mActivity);
         mController =
                 new PasswordAccessLossPostExportDialogController(
-                        spyActivity, mModalDialogManager, mCustomTabIntentHelper);
+                        mActivity, mModalDialogManager, mSettingsCustomTabLauncher);
         mController.showPostExportDialog();
 
         getHelpButton().performClick();
-        ArgumentCaptor<Intent> intentArgumentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(intentArgumentCaptor.capture(), any());
-        assertEquals(
-                Uri.parse(HelpUrlLauncher.GOOGLE_PLAY_SUPPORTED_DEVICES_SUPPORT_URL),
-                intentArgumentCaptor.getValue().getData());
+        verify(mSettingsCustomTabLauncher)
+                .openUrlInCct(
+                        eq(mActivity),
+                        eq(HelpUrlLauncher.GOOGLE_PLAY_SUPPORTED_DEVICES_SUPPORT_URL));
     }
 
     private ChromeImageButton getHelpButton() {

@@ -768,8 +768,7 @@ void TileManager::InitializeTilesWithResourcesForTesting(
     // The raster here never really happened, cuz tests. So just add an
     // arbitrary sync token.
     if (resource.backing()) {
-      resource.backing()->SetSharedImageForTesting(  // IN-TEST
-          gpu::ClientSharedImage::CreateForTesting());
+      resource.backing()->CreateSharedImageForTesting();  // IN-TEST
       resource.backing()->mailbox_sync_token.Set(
           gpu::GPU_IO, gpu::CommandBufferId::FromUnsafeValue(1), 1);
     }

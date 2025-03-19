@@ -27,13 +27,14 @@ public class TabState {
 
     public int parentId = Tab.INVALID_TAB_ID;
 
-    // TODO(crbug.com/41497290): deprecate this field once tabGroupId has finished replacing it.
     /**
-     * The legacy tab group ID. This field is planned to be replaced by {@link tabGroupId}. While
-     * the "AndroidTabGroupStableIds" is rolled out, tab groups will be associated with both a
-     * rootId and a tabGroupId. Each tab group will have one unique value for each of these fields.
+     * The legacy tab group ID. This field is replaced by {@link tabGroupId}.
+     *
+     * @deprecated Use {@link tabGroupId} instead. This field will continue to exist and be updated
+     *     in the near term. However, any new code should use {@link tabGroupId} and old code should
+     *     migrate off of root id.
      */
-    public int rootId;
+    @Deprecated public int rootId;
 
     /** The tab group ID. */
     public @Nullable Token tabGroupId;
@@ -68,16 +69,7 @@ public class TabState {
     // been migrated onto the new FlatBuffer format.
     public @Nullable File legacyFileToDelete;
 
-    public boolean isIncognito() {
-        return isIncognito;
-    }
-
-    /** @return The theme color of the tab or {@link #UNSPECIFIED_THEME_COLOR} if not set. */
-    public int getThemeColor() {
-        return themeColor;
-    }
-
-    /** @return True if the tab has a theme color set. */
+    /** Returns true if the tab has a theme color set. */
     public boolean hasThemeColor() {
         return themeColor != UNSPECIFIED_THEME_COLOR
                 && !ColorUtils.isThemeColorTooBright(themeColor);

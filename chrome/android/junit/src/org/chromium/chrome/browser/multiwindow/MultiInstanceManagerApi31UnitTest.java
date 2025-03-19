@@ -438,6 +438,14 @@ public class MultiInstanceManagerApi31UnitTest {
 
         when(mDesktopWindowStateManagerSupplier.get()).thenReturn(mDesktopWindowStateManager);
         when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(mAppHeaderState);
+        TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
+        when(mTabModelSelector.getTabGroupModelFilterProvider())
+                .thenReturn(mTabGroupModelFilterProvider);
+        when(mTabGroupModelFilterProvider.getTabGroupModelFilter(anyBoolean()))
+                .thenReturn(mTabGroupModelFilter);
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(mNormalTabModel);
+        when(mNormalTabModel.getProfile()).thenReturn(mProfile);
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
     }
 
     @After
@@ -1273,10 +1281,28 @@ public class MultiInstanceManagerApi31UnitTest {
     @Test
     @Config(sdk = 31)
     @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_DRAG_DROP_ANDROID)
-    public void testReparentGroupToRunningActivity_PausesPersistentStore() {
+    public void testReparentGroupToRunningActivity() {
+        // Setup.
+        mMultiInstanceManager.mTestBuildInstancesList = true;
+        TabGroupMetadata tabGroupMetadata =
+                new TabGroupMetadata(
+                        /* rootId= */ -1,
+                        /* selectedTabId= */ -1,
+                        INSTANCE_ID_1,
+                        /* tabGroupId= */ null,
+                        /* tabIdsToUrls= */ null,
+                        /* tabGroupColor= */ 0,
+                        /* tabGroupTitle= */ null,
+                        /* tabGroupCollapsed= */ false,
+                        /* isIncognito= */ false);
+        allocInstanceIndex(INSTANCE_ID_1, mTabbedActivityTask62, true);
+
         // Trigger a group reparent.
         mMultiInstanceManager.reparentTabGroupToRunningActivity(
-                mTabbedActivityTask62, /* tabGroupMetadata= */ null, /* tabAtIndex= */ 0);
+                mTabbedActivityTask62, tabGroupMetadata, /* tabAtIndex= */ 0);
+
+        // Verify we pause the TabGroupSyncService to stop observing local changes.
+        verify(mTabGroupSyncService).setLocalObservationMode(/* observeLocalChanges */ false);
 
         // Verify we pause the TabPersistentStore.
         verify(mTabPersistentStore).pauseSaveTabList();
@@ -1286,6 +1312,9 @@ public class MultiInstanceManagerApi31UnitTest {
         verify(mTabbedActivityTask62, never()).onNewIntent(any());
         mOnSaveTabListRunnableCaptor.getValue().run();
         verify(mTabbedActivityTask62).onNewIntent(any());
+
+        // Verify we resume the TabGroupSyncService to begin observing local changes.
+        verify(mTabGroupSyncService).setLocalObservationMode(/* observeLocalChanges */ true);
     }
 
     @Test
@@ -1385,15 +1414,7 @@ public class MultiInstanceManagerApi31UnitTest {
     @Config(sdk = 31)
     @DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER)
     public void testCleanupSyncedTabGroupsIfOnlyInstance() {
-        TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         mMultiInstanceManager.mTestBuildInstancesList = true;
-        when(mTabModelSelector.getTabGroupModelFilterProvider())
-                .thenReturn(mTabGroupModelFilterProvider);
-        when(mTabGroupModelFilterProvider.getTabGroupModelFilter(anyBoolean()))
-                .thenReturn(mTabGroupModelFilter);
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mNormalTabModel);
-        when(mNormalTabModel.getProfile()).thenReturn(mProfile);
-        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
 
         allocInstanceIndex(INSTANCE_ID_1, mTabbedActivityTask62, true);

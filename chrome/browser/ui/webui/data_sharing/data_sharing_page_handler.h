@@ -40,6 +40,11 @@ class DataSharingPageHandler : public data_sharing::mojom::PageHandler {
 
   void ApiInitComplete() override;
 
+  void MakeTabGroupShared(const std::string& tab_group_id,
+                          const std::string& group_id,
+                          const std::string& access_token,
+                          MakeTabGroupSharedCallback callback) override;
+
   void GetShareLink(const std::string& group_id,
                     const std::string& access_token,
                     GetShareLinkCallback callback) override;
@@ -47,9 +52,6 @@ class DataSharingPageHandler : public data_sharing::mojom::PageHandler {
   void GetTabGroupPreview(const std::string& group_id,
                           const std::string& access_token,
                           GetTabGroupPreviewCallback callback) override;
-
-  void AssociateTabGroupWithGroupId(const std::string& tab_group_id,
-                                    const std::string& group_id) override;
 
   void OpenTabGroup(const std::string& group_id) override;
 
@@ -83,6 +85,9 @@ class DataSharingPageHandler : public data_sharing::mojom::PageHandler {
   mojo::Remote<data_sharing::mojom::Page> page_;
 
   bool api_initialized_ = false;
+
+  // Whether the renderer has attempted to make tab group shared.
+  bool has_made_tab_group_shared_ = false;
 
   base::WeakPtrFactory<DataSharingPageHandler> weak_ptr_factory_{this};
 };

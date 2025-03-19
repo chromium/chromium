@@ -15,7 +15,7 @@ CSSTransition::CSSTransition(ExecutionContext* execution_context,
                              AnimationEffect* content,
                              uint64_t transition_generation,
                              const PropertyHandle& transition_property)
-    : Animation(execution_context, timeline, content),
+    : Animation(execution_context, timeline, content, /*trigger=*/nullptr),
       transition_property_(transition_property) {
   // The owning_element does not always equal to the target element of an
   // animation.

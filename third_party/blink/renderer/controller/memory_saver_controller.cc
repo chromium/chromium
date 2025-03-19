@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/controller/memory_saver_controller.h"
 
 #include "base/system/sys_info.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
@@ -17,15 +18,6 @@ namespace blink {
 namespace {
 
 constexpr uint64_t kMB = 1024 * 1024;
-
-BASE_FEATURE(kMemorySaverModeRenderTuning,
-             "MemorySaverModeRenderTuning",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(int,
-                   kAvailableMemoryThresholdParamMb,
-                   &kMemorySaverModeRenderTuning,
-                   "available_memory_threshold_mb",
-                   740);
 
 }  // namespace
 
@@ -42,7 +34,7 @@ MemorySaverController::MemorySaverController() {
   if (base::SysInfo::AmountOfPhysicalMemory() >= 4000 * kMB) {
     return;
   }
-  if (base::FeatureList::IsEnabled(kMemorySaverModeRenderTuning)) {
+  if (base::FeatureList::IsEnabled(features::kMemorySaverModeRenderTuning)) {
     sample_timer_.Start(FROM_HERE, base::Seconds(5), this,
                         &MemorySaverController::Sample);
   }
@@ -50,7 +42,7 @@ MemorySaverController::MemorySaverController() {
 
 void MemorySaverController::Sample() {
   uint64_t available_ram = base::SysInfo::AmountOfAvailablePhysicalMemory();
-  if (available_ram < kAvailableMemoryThresholdParamMb.Get() * kMB) {
+  if (available_ram < features::kAvailableMemoryThresholdParamMb.Get() * kMB) {
     if (!memory_saver_enabled_) {
       SetMemorySaverModeForAllIsolates(true);
       memory_saver_enabled_ = true;

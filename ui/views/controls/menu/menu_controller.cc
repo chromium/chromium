@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/callback_list.h"
+#include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
@@ -2470,7 +2471,9 @@ void MenuController::BuildPathsAndCalculateDiff(
     std::vector<MenuItemView*>* old_path,
     std::vector<MenuItemView*>* new_path,
     size_t* first_diff_at) {
-  DCHECK(old_path && new_path && first_diff_at);
+  DCHECK(old_path);
+  DCHECK(new_path);
+  DCHECK(first_diff_at);
   BuildMenuItemPath(old_item, old_path);
   BuildMenuItemPath(new_item, new_path);
 

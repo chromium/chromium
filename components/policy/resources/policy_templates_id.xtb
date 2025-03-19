@@ -4004,6 +4004,7 @@ Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia di instance yang dihu
 
 Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia di instance yang dikelola melalui MDM, dihubungkan ke domain melalui MCX, atau didaftarkan di <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="3845318141474759319">Mengizinkan Wallpaper AI Generatif tanpa meningkatkan kualitas model AI</translation>
+<translation id="3849923496599301707">Mengizinkan Aplikasi Chrome secara Paksa dalam mode Kios</translation>
 <translation id="3851443303439635700">Mengontrol batas bertingkat sebelum fungsi setTimeout() JavaScript mulai dibatasi</translation>
 <translation id="3854609566862485607">Kebijakan ini mengontrol label khusus yang digunakan untuk mengidentifikasi profil terkelola. Untuk profil terkelola, label ini akan ditampilkan di samping avatar di toolbar. Label khusus tidak akan diterjemahkan.
 
@@ -5721,6 +5722,11 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia di instance yang dike
 <translation id="5041315457555330432">Izinkan <ph name="PRODUCT_NAME" /> untuk hanya terhubung ke perangkat di alamat IP pribadi, kecuali jika fitur CastAllowAllIPs diaktifkan.</translation>
 <translation id="504689994545234073">Aktifkan penyimpanan file pengguna secara lokal</translation>
 <translation id="5048890362473520096">Mengaktifkan LPAC Sandbox untuk layanan pencetakan</translation>
+<translation id="5049989450078943331">Jika kebijakan ini disetel ke Benar (True), Aplikasi Chrome akan terus berjalan dalam sesi Kios, terlepas dari pengaktifan Aplikasi Chrome default.
+
+Jika kebijakan ini tidak disetel atau disetel ke Salah (False), perilaku default yang ditentukan di perangkat akan digunakan.
+
+Mencoba meluncurkan Aplikasi Chrome yang dinonaktifkan akan menampilkan pesan kepada pengguna yang menjelaskan alasan aplikasi tidak diluncurkan dan menyarankan untuk menghubungi departemen IT-nya.</translation>
 <translation id="5055474681190962362">Hari dalam sebulan [1-31] saat mulai ulang harus dilakukan, disesuaikan dengan zona waktu lokal perangkat. Hanya digunakan saat 'frequency'-nya 'MONTHLY'. Jika lebih dari jumlah hari maksimum dalam bulan tertentu, hari terakhir bulan itu akan dipilih.</translation>
 <translation id="5055513974503523022">Latar Belakang Konferensi Video AI Generatif memungkinkan pengguna mengekspresikan diri menggunakan fitur AI generatif untuk membuat latar belakang konferensi video yang dipersonalisasi di <ph name="PRODUCT_OS_NAME" />.
 
@@ -6617,6 +6623,7 @@ Jika kebijakan ini disetel ke daftar yang tidak kosong dan suatu ekstensi ada da
 Jika kebijakan ini tidak disetel atau disetel ke daftar kosong, dialog konfirmasi pemindaian akan ditampilkan kepada pengguna saat <ph name="GET_SCANNER_LIST_FUNCTION" /> atau <ph name="START_SCAN_FUNCTION" /> dipanggil.</translation>
 <translation id="5599461642204007579">Setelan pengelolaan <ph name="MS_AD_NAME" /></translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5605676983184673391">Izinkan Aplikasi Chrome berjalan dalam sesi Kiosk.</translation>
 <translation id="5607021831414604820">Aktifkan pelaporan status penyimpanan perangkat</translation>
 <translation id="5608114828230655271">Perilaku default perangkat</translation>
 <translation id="561001683838346956">Kebijakan ini dihapus di <ph name="PRODUCT_NAME" /> 124. Mulai dari versi tersebut, hash yang tidak aman selalu dilarang. Pada versi sebelumnya, kebijakan ini mengontrol apakah browser mengizinkan hash lama yang tidak aman selama proses TLS handshake.
@@ -6740,6 +6747,7 @@ Untuk mengetahui informasi mendetail tentang pola URL yang valid, lihat https://
 
 Perhatikan bahwa kebijakan ini hanya berlaku jika origin tersebut diizinkan menggunakan Direct Sockets API.
 Lihat <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" />, dan <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" /> untuk mengetahui detail selengkapnya.</translation>
+<translation id="566569751231933416">Gunakan Perilaku default.</translation>
 <translation id="5666457529647159548">Mengizinkan pengguna mengelola sertifikat klien yang terinstal.</translation>
 <translation id="5670249935663090320">Jika kebijakan disetel ke Aktif atau tidak disetel, <ph name="PRODUCT_NAME" /> akan diaktifkan dan pengguna dapat meluncurkannya dari menu aplikasi, menu konteks halaman, kontrol media di situs yang kompatibel untuk Cast, dan ikon toolbar Cast (jika ditampilkan).
 

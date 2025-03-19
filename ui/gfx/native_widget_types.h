@@ -49,11 +49,11 @@
 // 'views' and with our Chrome UI code where the elements are also called
 // 'views'.
 //
-// TODO(crbug.com/40267204): Both gfx::NativeEvent and ui::PlatformEvent
+// TODO(https://crbug.com/40267204): Both gfx::NativeEvent and ui::PlatformEvent
 // are typedefs for native event types on different platforms, but they're
 // slightly different and used in different places. They should be merged.
 //
-// TODO(crbug.com/40157665): gfx::NativeCursor is ui::Cursor in Aura;
+// TODO(https://crbug.com/40157665): gfx::NativeCursor is ui::Cursor in Aura;
 // perhaps remove gfx::NativeCursor and use ui::Cursor everywhere?
 
 #if defined(USE_AURA)
@@ -87,8 +87,6 @@ class UIImage;
 #else
 struct objc_object;
 class NSImage;
-class NSView;
-class NSWindow;
 #endif  // __OBJC__
 #endif
 
@@ -126,70 +124,46 @@ using NativeEvent = base::apple::OwnedNSEvent;
 // NativeViews and NativeWindows on macOS are not necessarily in the same
 // process as the NSViews and NSWindows that they represent. Require an explicit
 // function call (GetNativeNSView or GetNativeNSWindow) to retrieve the
-// underlying NSView or NSWindow <https://crbug.com/893719>. These are wrapper
-// classes only and do not maintain any ownership, thus the __unsafe_unretained.
-class COMPONENT_EXPORT(GFX) NativeView {
+// underlying NSView or NSWindow <https://crbug.com/40597366>.
+class COMPONENT_EXPORT(GFX) NativeView : public base::apple::WeakNSView {
  public:
-  constexpr NativeView() = default;
-  // TODO(ccameron): Make this constructor explicit.
-  constexpr NativeView(__unsafe_unretained NSView* ns_view)
-      : ns_view_(ns_view) {}
-
+  // TODO(avi): Remove the nullptr argument and make construction be explicit.
+  NativeView(std::nullptr_t = nullptr);
+#ifdef __OBJC__
+  // TODO(ccameron/avi): Make this constructor explicit.
+  NativeView(NSView* ns_view);
   // This function name is verbose (that is, not just GetNSView) so that it
   // is easily grep-able.
-  NSView* GetNativeNSView() const { return ns_view_; }
-
-  explicit operator bool() const { return ns_view_ != nullptr; }
-  bool operator==(const NativeView& other) const {
-    return ns_view_ == other.ns_view_;
-  }
-  bool operator!=(const NativeView& other) const {
-    return ns_view_ != other.ns_view_;
-  }
-  bool operator<(const NativeView& other) const {
-    return ns_view_ < other.ns_view_;
-  }
+  NSView* GetNativeNSView() const;
+  // This is the base class's getter; please use the explicit GetNativeNSView()
+  // from this class instead.
+  NSView* Get() const = delete;
+#endif  // __OBJC__
   std::string ToString() const;
-
- private:
-#if HAS_FEATURE(objc_arc)
-  __unsafe_unretained NSView* ns_view_ = nullptr;
-#else
-  // RAW_PTR_EXCLUSION: Points to Objective-C object which isn't supported.
-  RAW_PTR_EXCLUSION NSView* ns_view_ = nullptr;
-#endif
 };
-class COMPONENT_EXPORT(GFX) NativeWindow {
+class COMPONENT_EXPORT(GFX) NativeWindow : public base::apple::WeakNSWindow {
  public:
-  constexpr NativeWindow() = default;
-  // TODO(ccameron): Make this constructor explicit.
-  constexpr NativeWindow(__unsafe_unretained NSWindow* ns_window)
-      : ns_window_(ns_window) {}
-
+  // TODO(avi): Remove the nullptr argument and make construction be explicit.
+  NativeWindow(std::nullptr_t = nullptr);
+#ifdef __OBJC__
+  // TODO(ccameron/avi): Make this constructor explicit.
+  NativeWindow(NSWindow* ns_window);
   // This function name is verbose (that is, not just GetNSWindow) so that it
   // is easily grep-able.
-  NSWindow* GetNativeNSWindow() const { return ns_window_; }
-
-  explicit operator bool() const { return ns_window_ != nullptr; }
-  bool operator==(const NativeWindow& other) const {
-    return ns_window_ == other.ns_window_;
-  }
-  bool operator!=(const NativeWindow& other) const {
-    return ns_window_ != other.ns_window_;
-  }
-  bool operator<(const NativeWindow& other) const {
-    return ns_window_ < other.ns_window_;
-  }
+  NSWindow* GetNativeNSWindow() const;
+  // This is the base class's getter; please use the explicit
+  // GetNativeNSWindow() from this class instead.
+  NSWindow* Get() const = delete;
+#endif  // __OBJC__
+  // This is needed to put NativeWindow into maps. This is kinda safe because to
+  // construct the NativeWindow to be the search key, the window has to be alive
+  // and thus the weak pointer hasn't gone away, but it's still not ideal.
+  // TODO(avi): Remove this and `pointer_bits_`.
+  bool operator<(const NativeWindow& other) const;
   std::string ToString() const;
 
  private:
-#if defined(__has_feature) && __has_feature(objc_arc)
-  __unsafe_unretained NSWindow* ns_window_ = nullptr;
-#else
-  // RAW_PTR_EXCLUSION: #global-scope, #union; Also, points to Objective-C
-  // object which isn't supported.
-  RAW_PTR_EXCLUSION NSWindow* ns_window_ = nullptr;
-#endif
+  uintptr_t pointer_bits_ = 0;
 };
 #elif BUILDFLAG(IS_ANDROID)
 using NativeCursor = void*;

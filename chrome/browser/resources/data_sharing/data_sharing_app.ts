@@ -312,6 +312,7 @@ export class DataSharingApp extends CustomElement implements Logger {
   private abandonJoin_: boolean = false;
   private successfullyJoined_: boolean = false;
   private tabGroupId_: string|null = null;
+  private convertedToSharedTabGroup: boolean = false;
 
   static get is() {
     return 'data-sharing-app';
@@ -439,12 +440,24 @@ export class DataSharingApp extends CustomElement implements Logger {
             .runInviteFlow({
               parent,
               translatedMessages: this.translationMap_,
-              getShareLink: (params: DataSharingSdkGetLinkParams):
+              getShareLink: async(params: DataSharingSdkGetLinkParams):
                   Promise<string> => {
-                    this.browserProxy_.makeTabGroupShared(
-                        tabGroupId!, params.groupId);
-                    return this.browserProxy_.getShareLink(
-                        params.groupId, params.tokenSecret!);
+                    // If the tab group is not shared before, go through
+                    // makeTabGroupShared() Otherwise go through getShareLink().
+                    if (!this.convertedToSharedTabGroup) {
+                      const url = await this.browserProxy_.makeTabGroupShared(
+                          tabGroupId!, params.groupId, params.tokenSecret!);
+                      if (url === undefined) {
+                        this.browserProxy_.closeUi(Code.UNKNOWN);
+                        return '';
+                      } else {
+                        this.convertedToSharedTabGroup = true;
+                        return url;
+                      }
+                    } else {
+                      return this.browserProxy_.getShareLink(
+                          params.groupId, params.tokenSecret!);
+                    }
                   },
               // TODO(crbug.com/376348102): Provide group name to share flow.
               groupName: '',

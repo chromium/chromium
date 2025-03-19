@@ -8,13 +8,15 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_animation_trigger_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_animation_trigger_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_timelinerangeoffset.h"
-#include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
 
-class AnimationTrigger : public ScriptWrappable {
+class ExecutionContext;
+
+class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -33,7 +35,10 @@ class AnimationTrigger : public ScriptWrappable {
 
   Type type() { return type_; }
 
-  AnimationTimeline* timeline() { return timeline_.Get(); }
+  AnimationTimeline* timeline() {
+    return timeline_.Get() ? timeline_.Get()->ExposedTimeline() : nullptr;
+  }
+  AnimationTimeline* GetTimelineInternal() { return timeline_.Get(); }
 
   const RangeBoundary* rangeStart(ExecutionContext* execution_context);
   const RangeBoundary* rangeEnd(ExecutionContext* execution_context);
@@ -42,7 +47,6 @@ class AnimationTrigger : public ScriptWrappable {
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(timeline_);
-    visitor->Trace(animation_);
     visitor->Trace(range_start_);
     visitor->Trace(range_end_);
     visitor->Trace(exit_range_start_);
@@ -50,9 +54,23 @@ class AnimationTrigger : public ScriptWrappable {
     ScriptWrappable::Trace(visitor);
   }
 
+  static Type ToV8TriggerType(EAnimationTriggerType type) {
+    switch (type) {
+      case EAnimationTriggerType::kOnce:
+        return Type(Type::Enum::kOnce);
+      case EAnimationTriggerType::kRepeat:
+        return Type(Type::Enum::kRepeat);
+      case EAnimationTriggerType::kAlternate:
+        return Type(Type::Enum::kAlternate);
+      case EAnimationTriggerType::kState:
+        return Type(Type::Enum::kState);
+      default:
+        NOTREACHED();
+    };
+  }
+
  private:
   Member<AnimationTimeline> timeline_;
-  Member<Animation> animation_;
   Type type_;
   Member<const RangeBoundary> range_start_;
   Member<const RangeBoundary> range_end_;

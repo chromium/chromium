@@ -10,6 +10,10 @@
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "ui/views/window/dialog_delegate.h"
 
+namespace views {
+class Throbber;
+}
+
 namespace autofill {
 
 class BnplTosController;
@@ -20,6 +24,7 @@ class BnplTosDialog : public views::DialogDelegateView {
   METADATA_HEADER(BnplTosDialog, views::DialogDelegateView)
 
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kThrobberId);
   explicit BnplTosDialog(
       base::WeakPtr<BnplTosController> controller,
       base::RepeatingCallback<void(const GURL&)> link_opener);
@@ -30,13 +35,18 @@ class BnplTosDialog : public views::DialogDelegateView {
   // DialogDelegate:
   void AddedToWidget() override;
 
-  BnplTosController* controller() const;
-
  private:
   TitleWithIconAfterLabelView::Icon GetTitleIcon() const;
+  bool OnAccepted();
+  bool OnCancelled();
 
   base::WeakPtr<BnplTosController> controller_;
   base::RepeatingCallback<void(const GURL&)> link_opener_;
+
+  raw_ptr<views::View> container_view_ = nullptr;
+  raw_ptr<views::BoxLayoutView> content_view_ = nullptr;
+  raw_ptr<views::BoxLayoutView> throbber_view_ = nullptr;
+  raw_ptr<views::Throbber> throbber_ = nullptr;
 
   base::WeakPtrFactory<BnplTosDialog> weak_ptr_factory_{this};
 };

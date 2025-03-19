@@ -13,6 +13,8 @@ using namespace clang;
 const char kNewOperatorName[] = "operator new";
 const char kCreateName[] = "Create";
 const char kTraceName[] = "Trace";
+const char kTraceMultipleName[] = "TraceMultiple";
+const char kTraceEphemeronName[] = "TraceEphemeron";
 const char kFinalizeName[] = "FinalizeGarbageCollectedObject";
 const char kTraceAfterDispatchName[] = "TraceAfterDispatch";
 const char kRegisterWeakMembersName[] = "RegisterWeakMembers";

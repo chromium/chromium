@@ -718,10 +718,10 @@ void BocaAppHandler::SetSpotlightService(SpotlightService* spotlight_service) {
 }
 
 void BocaAppHandler::SetFloatModeAndBoundsForWindow(
-    bool isFloatMode,
+    bool is_float_mode,
     aura::Window* window,
     SetFloatModeCallback callback) {
-  if (!isFloatMode) {
+  if (!is_float_mode) {
     // We don't unset float mode, do nothing here.
     std::move(callback).Run(false);
     return;

@@ -274,7 +274,6 @@ UIImageView* BrandingImageView() {
     shouldInteractWithURL:(NSURL*)URL
                   inRange:(NSRange)characterRange
               interaction:(UITextItemInteraction)interaction {
-  CHECK(textView == _description);
   if (textView == _noticeMessage) {
     [_delegate openNewTab:PlusAddressURLType::kLearnMore];
   } else {
@@ -289,7 +288,6 @@ UIImageView* BrandingImageView() {
 - (UIAction*)textView:(UITextView*)textView
     primaryActionForTextItem:(UITextItem*)textItem
                defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
-  CHECK(textView == _description);
   PlusAddressURLType type;
   if (textView == _noticeMessage) {
     type = PlusAddressURLType::kLearnMore;

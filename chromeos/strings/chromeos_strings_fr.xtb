@@ -38,10 +38,8 @@
 <translation id="1155154308031262006">Saisissez une requête</translation>
 <translation id="115705039208660697">ananas</translation>
 <translation id="1164939766849482256">Économiseur d'écran De l'aube au crépuscule</translation>
-<translation id="1166688493741195933">Échec de la génération des noms d'enregistrement</translation>
 <translation id="1167755866710282443">Ouvrez le menu pour personnaliser les touches. Faites-le glisser pour le déplacer.</translation>
 <translation id="1171349345463658120">lagon de sable</translation>
-<translation id="1173894706177603556">Renommer</translation>
 <translation id="1174073918202301297">Raccourci ajouté</translation>
 <translation id="11743817593307477">À l'aide des touches fléchées, déplacez cette commande vers l'action souhaitée dans le jeu. Utilisez la touche Entrée pour la positionner ou la touche Échap pour annuler.</translation>
 <translation id="1175697296044146566">Votre <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" />.</translation>
@@ -415,7 +413,6 @@
 <translation id="2787237339470862294">Cette langue n'est pas prise en charge pour le moment</translation>
 <translation id="2787435249130282949">clavier plus lumineux</translation>
 <translation id="2805756323405976993">Applications</translation>
-<translation id="2822702442014805146">Téléchargement en cours du modèle de résumé et de création du nom</translation>
 <translation id="28232023175184696">Impossible d'établir la connexion Internet. Cliquez ici pour réessayer.</translation>
 <translation id="2855718259207180827">laine</translation>
 <translation id="2859243502336719778">Mise à jour critique</translation>
@@ -503,7 +500,6 @@
 <translation id="3340011300870565703">L'écouteur droit de l'appareil a <ph name="BATTERY_PERCENTAGE" /> % de batterie.</translation>
 <translation id="3340978935015468852">paramètres</translation>
 <translation id="3347558044552027859">moderne</translation>
-<translation id="3353477144743332882">Télécharger le résumé et le modèle de création de nom</translation>
 <translation id="3359218928534347896">activer/désactiver le son du micro</translation>
 <translation id="3360306038446926262">Fenêtres</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -566,7 +562,6 @@
 <translation id="3632040286124154621">Bonne suggestion</translation>
 <translation id="3632579075709132555">Activer/Désactiver l'écran de confidentialité</translation>
 <translation id="3634941468757842845">Choisir un thème</translation>
-<translation id="3639873154908477486">Nom (A à Z)</translation>
 <translation id="3644695927181369554">Mauvaise suggestion</translation>
 <translation id="3651050199673793219">Sélectionner une unité de température</translation>
 <translation id="3661106764436337772">Écrivez plus vite et avec plus d'assurance</translation>
@@ -636,6 +631,7 @@
 <translation id="39823212440917567">Les tâches d'impression de plus de <ph name="NUMBER_OF_DAYS" /> jours seront supprimées</translation>
 <translation id="3993704782688964914">Votre <ph name="DEVICE_NAME" /> est maintenant à jour</translation>
 <translation id="3998976413398910035">Gérer les imprimantes</translation>
+<translation id="4002066346123236978">Titre</translation>
 <translation id="4003384961948020559">Échec – Bac de sortie plein</translation>
 <translation id="401147258241215701">obsidienne</translation>
 <translation id="4021031199988160623">Passez en mode ordinateur portable pour tester</translation>
@@ -773,7 +769,6 @@
 <translation id="4594541568452132351">Sélectionner la langue de transcription et télécharger le modèle</translation>
 <translation id="4607282946861182308">Impossible de créer des images de cette requête. Essayez-en une autre.</translation>
 <translation id="4609350030397390689">Baisser la luminosité du clavier</translation>
-<translation id="4623061655523261501">Les noms d'enregistrement ont bien été générés</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> sur <ph name="TOTAL_PAGE_NUMBER" />. Appuyez sur Entrée pour annuler la tâche d'impression.</translation>
 <translation id="463791356324567266">Annulation de la numérisation…</translation>
 <translation id="4644611440022666152">Activer et télécharger</translation>
@@ -836,7 +831,6 @@
 <translation id="4891842000192098784">Contrainte</translation>
 <translation id="4897058166682006107">L'écouteur gauche de l'appareil a <ph name="BATTERY_PERCENTAGE" /> % de batterie.</translation>
 <translation id="4905998861748258752">Activez la fonctionnalité pour sélectionner les options de l'économiseur d'écran</translation>
-<translation id="4910853326379896417">Téléchargement du modèle de résumé et de création du nom terminé</translation>
 <translation id="4910858703033903787">Types d'APN</translation>
 <translation id="4917385247580444890">Très bon</translation>
 <translation id="4917889632206600977">Tâche suspendue - À court de papier</translation>
@@ -874,7 +868,6 @@
 <translation id="5056587122125565772">Créer une image</translation>
 <translation id="5078711626843651677">Les empreintes vocales sont stockées temporairement sur l'appareil jusqu'à ce que l'attribution d'identifiants aux intervenants soit terminée. Vous pouvez désactiver cette option à tout moment dans les paramètres.</translation>
 <translation id="5078983345702708852">futuriste</translation>
-<translation id="5085224064082122501">Impossible de télécharger le modèle de résumé et de création du nom. Réessayez ou redémarrez votre Chromebook.</translation>
 <translation id="5087864757604726239">retour</translation>
 <translation id="5088172560898466307">Nom d'hôte du serveur</translation>
 <translation id="5089810972385038852">État</translation>
@@ -899,7 +892,6 @@
 <translation id="5168185087976003268">État de la batterie</translation>
 <translation id="5170568018924773124">Afficher dans le dossier</translation>
 <translation id="517075088756846356">Débranchez et rebranchez le câble d'alimentation <ph name="DEVICE_NAME" /> pour poursuivre le processus de mise à jour</translation>
-<translation id="5178021559562393163">Impossible de créer des noms. Essayez avec une transcription plus courte.</translation>
 <translation id="5180108905184566358">baobabs</translation>
 <translation id="5180712487038406644">Expressif</translation>
 <translation id="5190187232518914472">Revivez vos souvenirs préférés. Pour ajouter ou modifier un album, accédez à <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
@@ -928,6 +920,7 @@
 <translation id="5286263799730375393">couleur rétroéclairage</translation>
 <translation id="5292579816060236070">Fond d'écran Lever de soleil</translation>
 <translation id="5294769550414936029">version <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">activer/désactiver l'accès à l'appareil photo</translation>
 <translation id="5300814202279832142">Déplacer la fenêtre sur le bureau</translation>
 <translation id="5302048478445481009">Langue</translation>
 <translation id="5303837385540978511">Fond d'écran exclusif <ph name="PRODUCT_NAME" /></translation>
@@ -935,11 +928,9 @@
 <translation id="530883153651464140">Mettre à jour <ph name="DEVICE_NAME" /> vers la version <ph name="VERSION" /></translation>
 <translation id="5315873049536339193">Identité</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
-<translation id="5318310531701770497">Impossible de créer des noms. Essayez avec une transcription plus longue.</translation>
 <translation id="5318334351163689047">Échec de la requête TCP</translation>
 <translation id="53196409393069519">Activer la transcription ?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
-<translation id="5327248766486351172">Nom</translation>
 <translation id="5332948983412042822">Choisissez-en un nouveau maintenant</translation>
 <translation id="5333530671332546086">État du portail inconnu</translation>
 <translation id="5335373365677455232">rose</translation>
@@ -1004,7 +995,6 @@
 <translation id="5680504961595602662"><ph name="SURREAL_LANDSCAPE" /> surréaliste avec <ph name="SURREAL_SUBJECT" /></translation>
 <translation id="5685478548317291523">cerises</translation>
 <translation id="5691511426247308406">Famille</translation>
-<translation id="5692395212036914927">Résumé de l'enregistrement et création du nom</translation>
 <translation id="5695599963893094957">Appuyez sur une touche de votre clavier. Vous pouvez appuyer sur un maximum de quatre touches en même temps.</translation>
 <translation id="5701381305118179107">Centrer</translation>
 <translation id="5703716265115423771">baisser le volume</translation>
@@ -1054,7 +1044,6 @@
 <translation id="5928411637936685857">Bouton Supprimer pour <ph name="ACCELERATOR_INFO" /></translation>
 <translation id="5930669310554144537">Paysage de rêve</translation>
 <translation id="5931523347251946569">Fichier introuvable</translation>
-<translation id="5938286923316838007">Impossible de créer des noms d'enregistrement pour ce contenu</translation>
 <translation id="5939518447894949180">Réinitialiser</translation>
 <translation id="5942727615796467094">L'administrateur de <ph name="MANAGER" /> a défini quand ce <ph name="DEVICE_TYPE" /> peut être utilisé</translation>
 <translation id="594552776027197022">Générer une paire de clés aléatoire</translation>
@@ -1151,7 +1140,6 @@
 <translation id="6359706544163531585">Désactiver le thème clair</translation>
 <translation id="6359919876285606596">Cette action est définitive et irréversible</translation>
 <translation id="636850387210749493">Enregistrement d'entreprise</translation>
-<translation id="6369221585240879141">Impossible de créer des noms d'enregistrement pour cette langue de transcription</translation>
 <translation id="6373461326814131011">étang</translation>
 <translation id="6379086450106841622">Écran tactile</translation>
 <translation id="6381741036071372448">Testez le clavier</translation>
@@ -1272,10 +1260,8 @@
 <translation id="6910312834584889076">Le capot du scanner est ouvert. Refermez-le, puis réessayez.</translation>
 <translation id="6910845598686542904">créer des empreintes vocales des voix détectées dans l'enregistrement ;</translation>
 <translation id="6911383237894364323">Impossible de se connecter aux serveurs multimédias</translation>
-<translation id="6927968682840110570">Nom de l'enregistrement</translation>
 <translation id="6930242544192836755">Durée</translation>
 <translation id="6930597342185648547">À propos de l'arrière-plan</translation>
-<translation id="6939667434404433010">Rechercher le nom de l'enregistrement</translation>
 <translation id="6939766318048400022">Café</translation>
 <translation id="6942253772720771875">Partagez vos commentaires ou décrivez votre problème</translation>
 <translation id="6943893908656559156">Identité à distance (facultatif)</translation>
@@ -1312,7 +1298,6 @@
 <translation id="708426984172631313">ARRÊTÉ</translation>
 <translation id="7086168019478250425">plage bioluminescente</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
-<translation id="7086916854357021265">Génération des noms d'enregistrement…</translation>
 <translation id="7097908713073775559">coloré</translation>
 <translation id="710028965487274708">Échec - Échec de l'autorisation</translation>
 <translation id="7101959270679078188">Déverrouillez le <ph name="DEVICE_NAME" /> pour poursuivre le processus de mise à jour</translation>
@@ -1644,7 +1629,6 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8503836310948963452">Plus que quelques minutes…</translation>
 <translation id="8505011850330200833">Le modèle Gemini nécessite 2 Go d'espace de stockage pour traiter les transcriptions et créer des résumés</translation>
 <translation id="8508640263392900755">Informations sur l'APN</translation>
-<translation id="8509574872955173831">En savoir plus sur le résumé et la création de nom</translation>
 <translation id="8522687886059337719">Vous avez désormais accès à de nouveaux <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fonds d'écran<ph name="END_LINK_WALLPAPER_SUBPAGE" /> et <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />économiseurs d'écran<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">salon de thé</translation>
@@ -1661,7 +1645,6 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8626489604350149811">Plus d'actions pour <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Violet clair</translation>
 <translation id="8647595191512746911">Transcription audio</translation>
-<translation id="8648578954147795914">Noms générés :</translation>
 <translation id="8650852232143958317">Conservez vos fichiers Gmail et Google Drive</translation>
 <translation id="8651481478098336970">couper le son</translation>
 <translation id="8655295600908251630">Version</translation>
@@ -1692,7 +1675,6 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8775713578693478175">APN du modem</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Ce réseau peut avoir un portail captif</translation>
-<translation id="8797082062139985406">Créer un nom à l'aide de l'IA de Google</translation>
 <translation id="8798099450830957504">Par défaut</translation>
 <translation id="8798441408945964110">Nom du fournisseur</translation>
 <translation id="8804164990146287819">Règles de confidentialité</translation>
@@ -1718,7 +1700,6 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8882789155418924367">hiboux</translation>
 <translation id="8885038613856655272">Connectez un micro</translation>
 <translation id="8892443466059986410">Annuler la modification du raccourci</translation>
-<translation id="8897043028305808902">Fichier renommé</translation>
 <translation id="8898840733695078011">Intensité du signal</translation>
 <translation id="8909114361904403025">flèche vers le haut</translation>
 <translation id="8910721771319628100">Seuil de latence dépassé pour le réseau par défaut</translation>

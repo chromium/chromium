@@ -758,13 +758,14 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation(
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation(
-    const PhysicalOffset& sticky_offset) {
+    const PhysicalOffset& pixel_snap_offset) {
   DCHECK(properties_);
 
   if (NeedsPaintPropertyUpdate()) {
     if (NeedsStickyTranslation(object_)) {
       const auto& box_model = To<LayoutBoxModelObject>(object_);
-      auto rounded_sticky_offset = ToRoundedVector2d(sticky_offset);
+      auto rounded_sticky_offset = ToRoundedVector2d(
+          pixel_snap_offset + box_model.StickyPositionOffset());
       TransformPaintPropertyNode::State state{{gfx::Transform::MakeTranslation(
           ToRoundedVector2d(rounded_sticky_offset))}};
       state.direct_compositing_reasons =
@@ -824,26 +825,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation(
               gfx::RectF(layout_constraint
                              ->scroll_container_relative_containing_block_rect);
 
-          constraint->pixel_snap_offset = gfx::Vector2dF(
-              sticky_offset - PhysicalOffset(rounded_sticky_offset));
-          // gfx::Vector2dF rounds differently than PhysicalOffset at
-          // half-integral negative values. This hack works around that
-          // situation.
-          // See https://issues.chromium.org/issues/401693546#comment6
-          //
-          // TODO(crbug.com/404418768 ): Remove this in favor of applying the
-          // same rounding logic (round up instead of away from 0) for our
-          // floating point rounding.
-          float adjustment_left = 0.0;
-          float adjustment_top = 0.0;
-          if (constraint->pixel_snap_offset.x() == -0.5) {
-            adjustment_left = 0.001;
-          }
-          if (constraint->pixel_snap_offset.y() == -0.5) {
-            adjustment_top = 0.001;
-          }
-          constraint->pixel_snap_offset +=
-              gfx::Vector2dF(adjustment_left, adjustment_top);
+          constraint->pixel_snap_offset = gfx::Vector2dF(pixel_snap_offset);
 
           if (const LayoutBoxModelObject* sticky_box_shifting_ancestor =
                   layout_constraint->nearest_sticky_layer_shifting_sticky_box) {
@@ -3307,17 +3289,18 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
 
 void FragmentPaintPropertyTreeBuilder::UpdateForObjectLocation(
     std::optional<gfx::Vector2d>& paint_offset_translation,
-    PhysicalOffset& sticky_offset) {
+    PhysicalOffset& pixel_snap_offset) {
   context_.old_paint_offset = fragment_data_.PaintOffset();
   UpdatePaintOffset();
   UpdateForPaintOffsetTranslation(paint_offset_translation);
 
   if (NeedsStickyTranslation(object_)) {
     const auto& box_model = To<LayoutBoxModelObject>(object_);
-    sticky_offset =
+    pixel_snap_offset = context_.current.paint_offset;
+    auto total_offset =
         context_.current.paint_offset + box_model.StickyPositionOffset();
-    ResetPaintOffset(sticky_offset -
-                     PhysicalOffset(ToRoundedVector2d(sticky_offset)));
+    ResetPaintOffset(total_offset -
+                     PhysicalOffset(ToRoundedVector2d(total_offset)));
   }
 
   PhysicalOffset paint_offset_delta =

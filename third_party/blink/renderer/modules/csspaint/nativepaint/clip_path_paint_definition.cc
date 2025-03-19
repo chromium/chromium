@@ -460,8 +460,7 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
     }
 
     if (basic_shape) {
-      Path path;
-      basic_shape->GetPath(path, reference_size, zoom);
+      const Path path = basic_shape->GetPath(reference_size, zoom);
       paths.push_back(path.GetSkPath());
       prev_type = basic_shape->GetType();
     } else {

@@ -322,7 +322,8 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTestSanityTest, Basic) {
   Test();
 }
 
-IN_PROC_BROWSER_TEST_F(ContentBrowserTestSanityTest, SingleProcess) {
+// Flaky: crbug.com/378048895
+IN_PROC_BROWSER_TEST_F(ContentBrowserTestSanityTest, DISABLED_SingleProcess) {
   Test();
 }
 

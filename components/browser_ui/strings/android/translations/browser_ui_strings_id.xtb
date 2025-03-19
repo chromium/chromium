@@ -87,6 +87,7 @@
 <translation id="2215727959747642672">Pengeditan file</translation>
 <translation id="2218389616572918761">Situs dapat meminta akses ke mikrofon Anda</translation>
 <translation id="2228071138934252756">Untuk mengizinkan <ph name="APP_NAME" /> mengakses kamera Anda, aktifkan juga kamera di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
+<translation id="2231160360698766265">Situs dapat memutar konten yang dilindungi</translation>
 <translation id="2235344399760031203">Cookie pihak ketiga diblokir</translation>
 <translation id="2238944249568001759">Penelusuran yang disarankan berdasarkan tab terakhir Anda</translation>
 <translation id="2241587408274973373">Kartu halaman tab baru</translation>
@@ -630,6 +631,7 @@
 <translation id="9138217887606523162">Zoom saat ini sebesar <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9156722768168878035">Izinkan Chrome menampilkan tab terbaru di daftar aplikasi dan hasil penelusuran perangkat Anda. Anda dapat menonaktifkannya kapan saja di setelan Chrome.</translation>
 <translation id="9162462602695099906">Halaman ini berbahaya</translation>
+<translation id="9182556968660520230">Jangan izinkan situs memutar konten yang dilindungi</translation>
 <translation id="947156494302904893">Situs yang Anda buka dapat memverifikasi bahwa Anda adalah orang sungguhan dan bukan bot</translation>
 <translation id="959682366969460160">Atur dengan mudah</translation>
 <translation id="967624055006145463">Data disimpan</translation>

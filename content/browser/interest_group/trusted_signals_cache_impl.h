@@ -250,6 +250,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   std::unique_ptr<Handle> RequestTrustedBiddingSignals(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       FrameTreeNodeId frame_tree_node_id,
+      const std::string& devtools_auction_id,
       const url::Origin& main_frame_origin,
       network::mojom::IPAddressSpace ip_address_space,
       const url::Origin& interest_group_owner,
@@ -285,6 +286,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   std::unique_ptr<TrustedSignalsCacheImpl::Handle> RequestTrustedScoringSignals(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       FrameTreeNodeId frame_tree_node_id,
+      const std::string& devtools_auction_id,
       const url::Origin& main_frame_origin,
       network::mojom::IPAddressSpace ip_address_space,
       const url::Origin& seller,
@@ -590,6 +592,7 @@ class CONTENT_EXPORT TrustedSignalsCacheImpl
   FindOrCreateCompressionGroupDataAndQueueFetch(
       const FetchKey& fetch_key,
       const url::Origin& joining_origin,
+      const std::string& devtools_auction_id,
       base::optional_ref<const url::Origin>
           interest_group_owner_if_scoring_signals);
 

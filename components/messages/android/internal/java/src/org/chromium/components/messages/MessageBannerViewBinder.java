@@ -41,10 +41,12 @@ import android.view.ViewOutlineProvider;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** View binder of Message banner. */
+@NullMarked
 public class MessageBannerViewBinder {
     @SuppressLint("ClickableViewAccessibility")
     public static void bind(PropertyModel model, MessageBannerView view, PropertyKey propertyKey) {

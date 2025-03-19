@@ -4,8 +4,7 @@
       "win",
       "linux",
       "mac",
-      "chromeos_lacros",
-      "chromeos_ash"
+      "chromeos"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "optimization_guide.model_execution.compose_enterprise_policy_allowed",
@@ -20,8 +19,7 @@
   },
   {
     "os": [
-      "chromeos_lacros",
-      "chromeos_ash"
+      "chromeos"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "settings.managed.help_me_write",

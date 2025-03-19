@@ -23,6 +23,8 @@ id FakeSceneWithIdentifier(NSString* identifier);
                      appState:(AppState*)appState NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithAppState:(AppState*)appState NS_UNAVAILABLE;
+- (instancetype)initWithAppState:(AppState*)appState
+               propagationPolicy:(ActivationLevelPolicy)policy NS_UNAVAILABLE;
 
 @end
 

@@ -34,9 +34,9 @@ namespace ash {
 // the device and can set policies in Kiosk device local accounts based on a
 // `Config`.
 //
-// Prefer this mixin over `KioskBaseTest` and `WebKioskBaseTest` when writing
-// Kiosk browser tests because its set up is more realistic, and the mixin
-// allows tests for Kiosk web apps and Chrome apps in the same fixture.
+// Prefer this mixin over `WebKioskBaseTest` when writing Kiosk browser tests
+// because its set up is more realistic, and the mixin allows tests for Kiosk
+// web apps and Chrome apps in the same fixture.
 class KioskMixin : public InProcessBrowserTestMixin {
  public:
   // Option for a web app configured to use `web_server_`. `url_path` should

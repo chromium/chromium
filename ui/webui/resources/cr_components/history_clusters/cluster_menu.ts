@@ -70,10 +70,11 @@ export class ClusterMenuElement extends ClusterMenuElementBase {
   // Properties
   //============================================================================
 
-  protected allowDeletingHistory_: boolean =
+  protected accessor allowDeletingHistory_: boolean =
       loadTimeData.getBoolean('allowDeletingHistory');
-  protected inSidePanel_: boolean = loadTimeData.getBoolean('inSidePanel');
-  protected renderActionMenu_: boolean = false;
+  protected accessor inSidePanel_: boolean =
+      loadTimeData.getBoolean('inSidePanel');
+  protected accessor renderActionMenu_: boolean = false;
 
   //============================================================================
   // Event handlers

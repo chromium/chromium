@@ -54,7 +54,6 @@
 <translation id="1090629319939036170">Menyja e VR-së</translation>
 <translation id="1091463901118115503">Vazhdo të lexosh</translation>
 <translation id="1091779689406092804">pamjet e ekranit</translation>
-<translation id="1094777233105318927">Informacionet për shfletuesin, sistemin operativ, pajisjen, softuerët e instaluar dhe skedarët</translation>
 <translation id="1096545575934602868">Kjo fushë nuk duhet të ketë më shumë se <ph name="MAX_ITEMS_LIMIT" /> regjistrime. Të gjitha regjistrimet e mëtejshme do të refuzohen.</translation>
 <translation id="1097803577928227769">Parqe dhe kopshte rajonale</translation>
 <translation id="1099928364755383720">modaliteti automatik "figurë brenda figurës"</translation>
@@ -4478,7 +4477,6 @@ Detaje shtesë:
 <translation id="8919895429178014996">Fshih të gjithë artikujt</translation>
 <translation id="8922013791253848639">Lejo gjithmonë reklamat në këtë sajt</translation>
 <translation id="8922734931659847428">Një listë e kufizuar e URL-ve të faqeve që viziton ti ku ka <ph name="BEGIN_LINK" />ngjarje të teknologjisë së vjetër<ph name="END_LINK" /></translation>
-<translation id="8924109546403192898">Kur sinjalizohen ngjarje sigurie nga Chrome, të dhënat përkatëse rreth ngjarjeve i dërgohen administratorit tënd. Kjo mund të përfshijë URL-të e faqeve që viziton në Chrome, URL-të e faqeve nga të cilat ke kopjuar të dhënat, emrat ose metadatat e skedarëve, ndërprerjet aksidentale të shfletuesit ose të skedës dhe emrin e përdoruesit që përdor ti për t'u identifikuar në aplikacionet bazuar në ueb, në pajisjen tënde dhe në Chrome.</translation>
 <translation id="892588693504540538">Shpim lart djathtas</translation>
 <translation id="8926389886865778422">Mos pyet përsëri</translation>
 <translation id="8932102934695377596">Ora ka mbetur prapa</translation>

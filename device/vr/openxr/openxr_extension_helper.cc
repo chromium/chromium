@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "build/build_config.h"
@@ -88,7 +89,8 @@ bool OpenXrExtensionEnumeration::ExtensionSupported(
   return std::ranges::any_of(
       extension_properties_,
       [&extension_name](const XrExtensionProperties& properties) {
-        return strcmp(properties.extensionName, extension_name) == 0;
+        return UNSAFE_TODO(strcmp(properties.extensionName, extension_name)) ==
+               0;
       });
 }
 

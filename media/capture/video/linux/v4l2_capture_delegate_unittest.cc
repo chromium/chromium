@@ -318,7 +318,7 @@ class MockCaptureHandleProvider
     : public VideoCaptureDevice::Client::Buffer::HandleProvider {
  public:
   MockCaptureHandleProvider(const gfx::Size& size, gfx::BufferFormat format) {
-    gmb_ = std::make_unique<FakeGpuMemoryBuffer>(size, format);
+    gmb_handle_ = CreatePixmapHandleForTesting(size, format);
   }
   // Duplicate as an writable (unsafe) shared memory region.
   base::UnsafeSharedMemoryRegion DuplicateAsUnsafeRegion() override {
@@ -333,10 +333,9 @@ class MockCaptureHandleProvider
 
   // Clone a |GpuMemoryBufferHandle| for IPC.
   gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle() override {
-    gfx::GpuMemoryBufferHandle handle;
-    return gmb_->CloneHandle();
+    return gmb_handle_.Clone();
   }
-  std::unique_ptr<FakeGpuMemoryBuffer> gmb_;
+  gfx::GpuMemoryBufferHandle gmb_handle_;
 };
 
 class V4l2CaptureDelegateGPUMemoryBufferTest

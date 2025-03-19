@@ -52,6 +52,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewDoNotSendAccessibilityEventsOnGSU,
     &features::kWebViewHyperlinkContextMenu,
     &features::kWebViewDisableCHIPS,
+    &features::kWebViewSafeAreaIncludesSystemBars,
     &base::features::kPostGetMyMemoryStateToBackground,
     &sensitive_content::features::kSensitiveContent,
     &features::kWebViewWebauthn,

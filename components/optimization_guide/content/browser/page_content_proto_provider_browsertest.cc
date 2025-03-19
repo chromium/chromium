@@ -102,11 +102,16 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
                       std::optional<AIPageContentResult> page_content) {
     page_content_ = std::move(page_content->proto);
     metadata_ = std::move(page_content->metadata);
+    document_identifiers_ = std::move(page_content->document_identifiers);
     std::move(quit_closure).Run();
   }
 
   const proto::AnnotatedPageContent& page_content() { return *page_content_; }
   const AIPageContentMetadata& metadata() { return *metadata_; }
+  const base::flat_map<std::string, content::WeakDocumentPtr>&
+  document_identifiers() {
+    return document_identifiers_;
+  }
 
   void LoadData(blink::mojom::AIPageContentOptionsPtr request =
                     DefaultAIPageContentOptions()) {
@@ -136,12 +141,19 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
     }
   }
 
+  void SelectTextInBody(content::RenderFrameHost* rfh) {
+    const std::string kSelectText =
+        "window.getSelection().selectAllChildren(document.body);";
+    ASSERT_TRUE(content::ExecJs(rfh, kSelectText));
+  }
+
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   std::optional<proto::AnnotatedPageContent> page_content_;
   std::optional<AIPageContentMetadata> metadata_;
+  base::flat_map<std::string, content::WeakDocumentPtr> document_identifiers_;
 };
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, AIPageContent) {
@@ -169,6 +181,18 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, AIPageContent) {
             window_bounds.width());
   EXPECT_EQ(root_geometry.visible_bounding_box().height(),
             window_bounds.height());
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, Selection) {
+  LoadPage(https_server()->GetURL("/simple.html"), false);
+  SelectTextInBody(web_contents()->GetPrimaryMainFrame());
+  LoadData();
+
+  const auto& selection =
+      page_content().main_frame_data().frame_interaction_info().selection();
+  EXPECT_NE(selection.start_node_id(), 0);
+  EXPECT_NE(selection.end_node_id(), 0);
+  EXPECT_EQ(selection.selected_text(), "Non empty simple page");
 }
 
 class PageContentProtoProviderBrowserTestActionableElements
@@ -467,6 +491,28 @@ IN_PROC_BROWSER_TEST_P(
 #endif
 }
 
+IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestSiteIsolation,
+                       Selection) {
+  LoadPage(https_server()->GetURL(
+               "a.com", base::StringPrintf(
+                            "/paragraph_iframe_partially_offscreen.html%s",
+                            QueryParam())),
+           false);
+
+  SelectTextInBody(ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0));
+  LoadData();
+
+  const auto& iframe = page_content().root_node().children_nodes()[0];
+  const auto& selection = iframe.content_attributes()
+                              .iframe_data()
+                              .frame_data()
+                              .frame_interaction_info()
+                              .selection();
+  EXPECT_NE(selection.start_node_id(), 0);
+  EXPECT_NE(selection.end_node_id(), 0);
+  EXPECT_EQ(selection.selected_text(), "text");
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          PageContentProtoProviderBrowserTestSiteIsolation,
                          testing::Bool());
@@ -603,6 +649,33 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
   EXPECT_EQ(child_frame_metadata2.meta_tags.size(), 1u);
   EXPECT_EQ(child_frame_metadata2.meta_tags[0].name, "author");
   EXPECT_EQ(child_frame_metadata2.meta_tags[0].content, "Gary");
+}
+
+IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
+                       AIPageContentFrameIdentifiersTheSame) {
+  LoadPage(https_server()->GetURL("a.com", "/fenced_frame/basic.html"),
+           /* with_page_content = */ false);
+
+  const GURL fenced_frame_url =
+      https_server()->GetURL("b.com", "/fenced_frame/simple.html");
+  auto* fenced_frame_rfh = fenced_frame_helper_.CreateFencedFrame(
+      web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
+  ASSERT_NE(nullptr, fenced_frame_rfh);
+  LoadData();
+  auto document_identifiers_1 = document_identifiers();
+  LoadData();
+  auto document_identifiers_2 = document_identifiers();
+  EXPECT_EQ(2u, document_identifiers_1.size());
+  EXPECT_EQ(2u, document_identifiers_2.size());
+  for (const auto& [document_identifier_key, doc_ptr] :
+       document_identifiers_1) {
+    EXPECT_NE(document_identifiers_2.end(),
+              document_identifiers_2.find(document_identifier_key));
+    EXPECT_NE(nullptr, doc_ptr.AsRenderFrameHostIfValid());
+    EXPECT_EQ(doc_ptr.AsRenderFrameHostIfValid(),
+              document_identifiers_2[document_identifier_key]
+                  .AsRenderFrameHostIfValid());
+  }
 }
 
 }  // namespace

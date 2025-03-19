@@ -11,6 +11,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import android.content.res.Configuration;
@@ -43,6 +44,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.firstrun.FirstRunPageDelegate;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -57,9 +59,12 @@ import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DeviceRestriction;
@@ -127,6 +132,8 @@ public class SigninFirstRunFragmentRenderTest {
     @Mock private IdentityManager mIdentityManagerMock;
     @Mock private IdentityServicesProvider mIdentityServicesProviderMock;
     @Mock private PrivacyPreferencesManagerImpl mPrivacyPreferencesManagerMock;
+    @Mock private UserPrefs.Natives mUserPrefsJni;
+    @Mock private PrefService mPrefService;
 
     private CustomSigninFirstRunFragment mFragment;
 
@@ -174,6 +181,9 @@ public class SigninFirstRunFragmentRenderTest {
         SigninCheckerProvider.setForTests(mSigninCheckerMock);
         when(mPolicyLoadListenerMock.get()).thenReturn(false);
         when(mFirstRunPageDelegateMock.getPolicyLoadListener()).thenReturn(mPolicyLoadListenerMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJni);
+        when(mUserPrefsJni.get(any())).thenReturn(mPrefService);
+        when(mPrefService.getBoolean(Pref.SIGNIN_ALLOWED)).thenReturn(true);
         mFragment = new CustomSigninFirstRunFragment();
         mFragment.setPageDelegate(mFirstRunPageDelegateMock);
         ThreadUtils.runOnUiThreadBlocking(
@@ -282,7 +292,7 @@ public class SigninFirstRunFragmentRenderTest {
     @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
     public void testFragmentWithAccountWhenSigninIsDisabledByPolicy(
             boolean nightModeEnabled, int orientation) throws IOException {
-        when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.SIGNIN_ALLOWED)).thenReturn(false);
         when(mPolicyLoadListenerMock.get()).thenReturn(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
 
@@ -299,7 +309,7 @@ public class SigninFirstRunFragmentRenderTest {
     @ParameterAnnotations.UseMethodParameter(NightModeAndOrientationParameterProvider.class)
     public void testFragmentWithAccountWhenSigninIsDisabledByPolicy_doesNotApplyFREStringVariation(
             boolean nightModeEnabled, int orientation) throws IOException {
-        when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.SIGNIN_ALLOWED)).thenReturn(false);
         when(mPolicyLoadListenerMock.get()).thenReturn(true);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
 

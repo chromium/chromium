@@ -54,7 +54,6 @@
 <translation id="1090629319939036170">የምናባዊ እውነታ ምናሌ</translation>
 <translation id="1091463901118115503">ማንበብ ይቀጥሉ</translation>
 <translation id="1091779689406092804">ቅጽበታዊ ገጽ ዕይታዎች</translation>
-<translation id="1094777233105318927">ስለ የእርስዎ አሳሽ፣ ስርዓተ ክወና፣ መሣሪያ፣ የተጫነ ሶፍትዌር እና ፋይሎች መረጃ</translation>
 <translation id="1096545575934602868">ይህመስክ ከ<ph name="MAX_ITEMS_LIMIT" /> ግቤቶች በላይ ሊኖሩት አይገባም። ሌሎች ተጨማሪ ግቤቶች ሁሉ ይወገዳሉ።</translation>
 <translation id="1097803577928227769">ክልላዊ ፓርኮች እና የአትክልት ስፍራዎች</translation>
 <translation id="1099928364755383720">የራስ-ሰር ስዕል-ላይ-ስዕል</translation>
@@ -1695,6 +1694,7 @@
 <translation id="3964661563329879394">{COUNT,plural, =0{ምንም}=1{ከ1 ጣቢያ }one{ከ# ጣቢያዎች }other{ከ# ጣቢያዎች }}</translation>
 <translation id="3965672182149944205">አድራሻ ይቀመጥ?</translation>
 <translation id="3966044442021752214">የምርት ደህንነት</translation>
+<translation id="3969869202926863008">የአካባቢያዊ አውታረ መረብ መዳረሻ</translation>
 <translation id="397105322502079400">በማስላት ላይ...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ታግዷል</translation>
 <translation id="3975852104434126461">የአውቶሞቲቭ ኢንዱስትሪ</translation>
@@ -2051,6 +2051,7 @@
 <translation id="460848736049414407">በአስተዳዳሪ ታግዷል</translation>
 <translation id="4610279718074907952">ይህ ጣቢያ እንቅስቃሴዎን ማየት በሚችል በ<ph name="SET_OWNER" /> በተገለጸ አንድ ቡድን ውስጥ ነው</translation>
 <translation id="46128681529823442">የእግር ኳስ መሣሪያ</translation>
+<translation id="4612904677925722054">ይህ ጣቢያ የአዋቂ ይዘት ሊኖረው ይችላል። ወላጅ ወይም አሳዳጊ ይህን ድር ጣቢያ ቢጎበኙ ምንም ችግር የለውም ማለት አለባቸው።</translation>
 <translation id="4619564267100705184">እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="4622292761762557753">ቢሆንም አስተላልፍ</translation>
 <translation id="4622647778991854660">በማሳወቂያ ማእከል ውስጥ ማሳወቂያዎችን ያንቁ። <ph name="LINK" /> ይክፈቱ።</translation>
@@ -2648,6 +2649,7 @@
 <translation id="5660122698869360728">ሁሉንም የግዢ ገፆችዎን በአንድ ቦታ እንዲያስቀምጡ እና ዋጋዎችን በራስ ሰር እንዲከታተሉ፣ የዋጋ ግንዛቤዎችን እና ሌሎችንም እንዲያገኙ የሚያግዝ አዲስ ዘመናዊ አቃፊ።</translation>
 <translation id="5663955426505430495">የዚህ መሣሪያ አስተዳዳሪ ለተጨማሪ ተግባራት ቅጥያዎችን ጭኗል። ቅጥያዎች የአንዳንድ ውሂብዎ መዳረሻ አላቸው።</translation>
 <translation id="5667827081946850877">ኦዲዮ መጽሐፍት</translation>
+<translation id="5674082555327905359">በአካባቢያዊ አውታረ መረብዎ ላይ ካለ ማንኛውም መሣሪያ ጋር ለመገናኘት መጠየቅ ይቻላል</translation>
 <translation id="5675650730144413517">ይህ ገፅ እየሠራ አይደለም</translation>
 <translation id="5675809467256309336">የዳንስ እና ኤሌክትሮኒክ ሙዚቃ</translation>
 <translation id="5675959228867414813">በቀን አሳይ</translation>
@@ -2921,6 +2923,7 @@
 <translation id="6159908896951210943">መደበኛ</translation>
 <translation id="6160391204859821737">የማስታወቂያ የግላዊነት ባህሪን ያብሩ</translation>
 <translation id="6162403104168428984">አድራሻ ይዘምን?</translation>
+<translation id="6164605812717770913">ይህን ጣቢያ እርስዎ እንዲጎበኙ ወላጅ ወይም አሳዳጊ አልፈቀዱም። እገዳውን እንዲያነሱ ሊጠይቋቸው ይችላሉ።</translation>
 <translation id="6165508094623778733">የበለጠ ለመረዳት</translation>
 <translation id="6167577165590485365">ለመጨረሻ ጊዜ ለማምጣት የተሞከረው፡-</translation>
 <translation id="617256461084925519">Google Chrome የክፍያ መረጃዎን መሙላት እንዲችል እርስዎ መሆንዎን ለማረጋገጥ እየሞከረ ነው።</translation>
@@ -3012,6 +3015,7 @@
 <translation id="6321917430147971392">የዲኤንኤስ ቅንብሮችዎን ይፈትሹ</translation>
 <translation id="6322182122604171028">Windows Hello ን መጠቀም አልተቻለም</translation>
 <translation id="6326947323444967009">Chromeን በiOS ቅንብሮች ውስጥ እንደ የስርዓቱ ነባሪ አሳሽ ያዋቅሩት</translation>
+<translation id="6327065120806001832">የአካባቢያዊ አውታረ መረብ መዳረሻ</translation>
 <translation id="6328639280570009161">የአውታረ መረብ መገመትን አሰናክለው ይሞክሩ</translation>
 <translation id="6335029926534404762">የአትሌቶች ጫማ</translation>
 <translation id="6337133576188860026">ከ<ph name="SIZE" /> ያነሰ ቦታ ያስለቅቃል። አንዳንድ ጣቢያዎች በሚቀጥለው ጉብኝትዎ ላይ ይበልጥ በዝግታ ሊጫኑ ይችላሉ።</translation>
@@ -4480,7 +4484,6 @@
 <translation id="8919895429178014996">ሁሉንም ንጥሎች ደብቅ</translation>
 <translation id="8922013791253848639">ሁልጊዜ በዚህ ጣቢያ ላይ ማስታወቂያዎችን አሳይ</translation>
 <translation id="8922734931659847428">እርስዎ የሚጎበኟቸው <ph name="BEGIN_LINK" />የቆዩ የቴክኖሎጂ ክስተቶች<ph name="END_LINK" /> የሚከሰቱባቸው ገፆች ዩአርኤሎች የተወሰነ ዝርዝር</translation>
-<translation id="8924109546403192898">የደህንነት ክስተቶች በChrome ሲጠቆሙ ስለ ክስተቶቹ አግባብነት ያለው ውሂብ ለአስተዳዳሪዎ ይላካል። ይህ በChrome ውስጥ የሚጎበኙትን ገጾች ዩአርኤሎች፣ ውሂብ የገለበጡባቸውን ገጾች ዩአርኤሎች፣ የፋይል ስሞች ወይም ዲበ ውሂብ፣ የአሳሽ ወይም የትር ብልሽቶች፣ እና በድር ላይ ለተመሠረቱ መተግበሪያዎች በመለያ ለመግባት የሚጠቀሙበት የተጠቃሚ ስም፣ መሣሪያዎ እና Chromeን ሊያካትት ይችላል።</translation>
 <translation id="892588693504540538">ከላይ ቀኝ በኩል ብሳ</translation>
 <translation id="8926389886865778422">ደግመው አይጠይቁ</translation>
 <translation id="8932102934695377596">የእርስዎ ሰዓት ወደ ኋላ ቀርቷል</translation>

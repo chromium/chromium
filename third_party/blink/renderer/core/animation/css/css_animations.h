@@ -58,6 +58,7 @@ class StylePropertyShorthand;
 class StyleResolver;
 class StyleTimeline;
 class WritingDirectionMode;
+class AnimationTrigger;
 
 class CORE_EXPORT CSSAnimations final {
   DISALLOW_NEW();
@@ -463,6 +464,12 @@ class CORE_EXPORT CSSAnimations final {
   static const ComputedStyle& CalculateAfterChangeStyle(
       TransitionUpdateState& state,
       const PropertyHandle& transitioning_property);
+
+  static AnimationTrigger* ComputeTrigger(Element* element,
+                                          const CSSAnimationData* data,
+                                          wtf_size_t animation_index,
+                                          const CSSAnimationUpdate& update,
+                                          AnimationTrigger* existing_trigger);
 
   class AnimationEventDelegate final : public AnimationEffect::EventDelegate {
    public:

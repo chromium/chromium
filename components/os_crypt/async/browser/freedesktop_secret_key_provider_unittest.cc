@@ -15,7 +15,6 @@
 #include "build/branding_buildflags.h"
 #include "components/dbus/properties/types.h"
 #include "components/dbus/utils/name_has_owner.h"
-#include "crypto/encryptor.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"

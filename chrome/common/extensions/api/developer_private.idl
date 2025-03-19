@@ -590,7 +590,6 @@ namespace developerPrivate {
   };
 
   callback VoidCallback = void ();
-  callback BooleanCallback = void (boolean result);
   callback ExtensionInfosCallback = void (ExtensionInfo[] result);
   callback ExtensionInfoCallback = void (ExtensionInfo result);
   callback ProfileInfoCallback = void (ProfileInfo info);
@@ -698,9 +697,6 @@ namespace developerPrivate {
         optional DOMString privateKeyPath,
         optional long flags,
         optional PackCallback callback);
-
-    // Returns true if the profile is managed.
-    static void isProfileManaged(BooleanCallback callback);
 
     // Reads and returns the contents of a file related to an extension which
     // caused an error.

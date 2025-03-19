@@ -58,6 +58,14 @@ source_set("unit_tests") {
 
   sources = [ "web_contents_modal_dialog_manager_unittest.cc" ]
 
+  if (is_mac) {
+    sources += [
+      "web_contents_modal_dialog_manager_unittest_mac_helper.h",
+      "web_contents_modal_dialog_manager_unittest_mac_helper.mm",
+    ]
+    frameworks = [ "Foundation.framework" ]
+  }
+
   deps = [
     ":test_support",
     ":web_modal",

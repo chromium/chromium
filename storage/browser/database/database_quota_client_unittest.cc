@@ -41,15 +41,10 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace storage {
-
-// Declared to shorten the line lengths.
-static const blink::mojom::StorageType kTemp =
-    blink::mojom::StorageType::kTemporary;
 
 // Mocks DatabaseTracker methods used by DatabaseQuotaClient.
 class MockDatabaseTracker : public DatabaseTracker {
@@ -195,17 +190,15 @@ class DatabaseQuotaClientTest : public testing::TestWithParam<bool> {
     return usage_future.Get();
   }
 
-  static std::vector<blink::StorageKey> GetStorageKeysForType(
-      mojom::QuotaClient& client,
-      blink::mojom::StorageType type) {
+  static std::vector<blink::StorageKey> GetDefaultStorageKeys(
+      mojom::QuotaClient& client) {
     std::vector<blink::StorageKey> result;
     base::RunLoop loop;
-    client.GetStorageKeysForType(
-        type, base::BindLambdaForTesting(
-                  [&](const std::vector<blink::StorageKey>& storage_keys) {
-                    result = storage_keys;
-                    loop.Quit();
-                  }));
+    client.GetDefaultStorageKeys(base::BindLambdaForTesting(
+        [&](const std::vector<blink::StorageKey>& storage_keys) {
+          result = storage_keys;
+          loop.Quit();
+        }));
     loop.Run();
     return result;
   }
@@ -242,14 +235,13 @@ TEST_P(DatabaseQuotaClientTest, GetBucketUsage) {
   EXPECT_EQ(0, GetBucketUsage(client, bucket_b));
 }
 
-TEST_P(DatabaseQuotaClientTest, GetStorageKeysForType) {
+TEST_P(DatabaseQuotaClientTest, GetDefaultStorageKeys) {
   DatabaseQuotaClient client(*mock_tracker_);
 
-  EXPECT_TRUE(GetStorageKeysForType(client, kTemp).empty());
+  EXPECT_TRUE(GetDefaultStorageKeys(client).empty());
 
   mock_tracker_->AddMockDatabase(kStorageKeyA.origin(), "fooDB", 1000);
-  std::vector<blink::StorageKey> storage_keys =
-      GetStorageKeysForType(client, kTemp);
+  std::vector<blink::StorageKey> storage_keys = GetDefaultStorageKeys(client);
   EXPECT_EQ(storage_keys.size(), 1ul);
   EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyA));
 }

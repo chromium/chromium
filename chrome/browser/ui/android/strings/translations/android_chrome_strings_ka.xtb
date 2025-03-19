@@ -582,6 +582,7 @@
 <translation id="3721119614952978349">თქვენ და Google</translation>
 <translation id="3737319253362202215">თარგმნის პარამეტრები</translation>
 <translation id="3738139272394829648">შეეხეთ ეკრანს ძიების დასაწყებად</translation>
+<translation id="3739455665973395693">თქვენს Google ანგარიშში გატეხილი პაროლები არ არის</translation>
 <translation id="3739899004075612870">სანიშნე შენახულია „<ph name="PRODUCT_NAME" />“-ში</translation>
 <translation id="3740525748616366977">ამ მოწყობილობაზე ხმოვანი ძიება მიუწვდომელია</translation>
 <translation id="376561056759077985">ზოგიერთი მონაცემი ჯერ არ არის შენახული</translation>
@@ -635,6 +636,7 @@
 <translation id="3985215325736559418">გსურთ, ხელახლა ჩამოტვირთოთ <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">ბმულის კოპირება</translation>
 <translation id="4000212216660919741">ხაზგარეშე მთავარი გვერდი</translation>
+<translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 გატეხილი პაროლი თქვენს Google ანგარიშში}other{# გატეხილი პაროლი თქვენს Google ანგარიშში}}</translation>
 <translation id="4016425174436051808">თვალის მიდევნება ვერ მოხერხდა. წარმოიქმნა შეფერხება.</translation>
 <translation id="4024768890073681126">თქვენს ბრაუზერს მართავს თქვენი მშობელი</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# სთ}other{# სთ}}</translation>
@@ -829,6 +831,7 @@
 <translation id="4881695831933465202">გახსნა</translation>
 <translation id="488187801263602086">ფაილის გადარქმევა</translation>
 <translation id="4885273946141277891">Chrome-ის ეგზემპლარების მხარდაუჭერელი რაოდენობა.</translation>
+<translation id="4890973535105146893">თქვენს Google ანგარიშში შენახული პაროლები არ არის</translation>
 <translation id="4905823827770127520">ამ გვერდის ბმულის დართვა</translation>
 <translation id="4908869848243824489">Discover by Google</translation>
 <translation id="4910889077668685004">გადახდის აპები</translation>
@@ -1701,6 +1704,7 @@
 <translation id="869891660844655955">ვადის გასვლის თარიღი</translation>
 <translation id="8699120352855309748">ამ ენების თარგმნის შემოთავაზების აკრძალვა</translation>
 <translation id="8712637175834984815">კარგი</translation>
+<translation id="8715286883001906001">გააძლიერეთ პაროლები თქვენს Google ანგარიშში</translation>
 <translation id="8723453889042591629">სწრაფად თარგმნეთ ეს გვერდი. ამ მალსახმობის რედაქტირებისთვის შეეხეთ ხანგრძლივად.</translation>
 <translation id="8725066075913043281">ხელახლა სცადეთ</translation>
 <translation id="8731268612289859741">უსაფრთხოების კოდი</translation>
@@ -1828,6 +1832,7 @@
 <translation id="970715775301869095">დარჩენილია <ph name="MINUTES" /> წთ</translation>
 <translation id="981121421437150478">ოფლაინი</translation>
 <translation id="983192555821071799">ყველა ჩანართის დახურვა</translation>
+<translation id="984756705737569814">თქვენს Google ანგარიშში პაროლების შემოწმება ვერ ხერხდება</translation>
 <translation id="987264212798334818">ზოგადი</translation>
 <translation id="988091779042748639">თქვენი მოწყობილობიდან ინკოგნიტო რეჟიმში დათვალიერების ისტორია რომ წაშალოთ, დახურეთ ყველა ინკოგნიტო ჩანართი.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> ჩანართი</translation>

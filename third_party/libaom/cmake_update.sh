@@ -123,7 +123,6 @@ all_platforms="-DCONFIG_SIZE_LIMIT=1"
 all_platforms+=" -DDECODE_HEIGHT_LIMIT=16384 -DDECODE_WIDTH_LIMIT=16384"
 all_platforms+=" -DCONFIG_AV1_ENCODER=1"
 all_platforms+=" -DCONFIG_AV1_DECODER=0"
-all_platforms+=" -DCONFIG_LIBYUV=0"
 # Use low bit depth.
 all_platforms+=" -DCONFIG_AV1_HIGHBITDEPTH=0"
 # Use real-time only build.

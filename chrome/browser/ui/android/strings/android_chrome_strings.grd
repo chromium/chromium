@@ -4304,6 +4304,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ACCESSIBILITY_INCOGNITO_TAB" desc="Content description for tabs that are in Incognito mode">
         Incognito Tab
       </message>
+      <message name="IDS_MENU_ADD_TO_GROUP" desc="Menu item for adding a tab to a group. [CHAR_LIMIT=27]">
+        Add to group
+      </message>
+      <message name="IDS_MENU_ADD_TO_NEW_GROUP" desc="Menu item for adding a tab to a new group. [CHAR_LIMIT=27]">
+        Add to new group
+      </message>
       <message name="IDS_MENU_BOOKMARKS" desc="Menu item for opening the bookmarks page that contains all the user's bookmarks. [CHAR_LIMIT=27]">
         Bookmarks
       </message>

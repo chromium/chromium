@@ -160,7 +160,9 @@ chromium-metrics-reviews@google.com.
     DiscardPagesOnUIThread function. Will be used to validate that the number of
     failures does not increase if DiscardAttemptMarker is retired (it was
     introduced to prevent repeated attempts to discard a non-discardable tab,
-    but that shouldn't happen in practice).
+    but that shouldn't happen in practice). Use
+    &quot;Discarding.DiscardTabOutcome&quot; to determine why there are samples
+    in the &quot;DiscardTabFailure&quot; bucket.
   </summary>
 </histogram>
 
@@ -179,6 +181,18 @@ chromium-metrics-reviews@google.com.
     been discarded, then the same memory shortfall can be included in all of
     those signals' reclaim targets, resulting in Chrome discarding more tabs
     than is strictly necessary.
+  </summary>
+</histogram>
+
+<histogram name="Discarding.DiscardTabOutcome" enum="DiscardTabOutcome"
+    expires_after="2025-07-01">
+  <owner>fdoray@chromium.org</owner>
+  <owner>joenotcharles@chromium.org</owner>
+  <summary>
+    Reports the outcome of each discard tab attempt by
+    TabLifecycleUnit::Discard. Will be used to understand why we have samples in
+    the &quot;DiscardTabFailure&quot; bucket of
+    &quot;Discarding.DiscardPageOnUIThreadOutcome&quot;.
   </summary>
 </histogram>
 

@@ -20,6 +20,8 @@
 #include "base/synchronization/atomic_flag.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
+#include "gl_display.h"
+#include "gl_switches.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/gl/angle_platform_impl.h"
 #include "ui/gl/egl_util.h"
@@ -286,6 +288,13 @@ EGLDisplay GetDisplayFromType(
       return GetPlatformANGLEDisplay(
           display, EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE, enabled_angle_features,
           disabled_angle_features, extra_display_attribs);
+    case ANGLE_D3D11_WARP:
+      extra_display_attribs.push_back(EGL_PLATFORM_ANGLE_DEVICE_TYPE_ANGLE);
+      extra_display_attribs.push_back(
+          EGL_PLATFORM_ANGLE_DEVICE_TYPE_D3D_WARP_ANGLE);
+      return GetPlatformANGLEDisplay(
+          display, EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE, enabled_angle_features,
+          disabled_angle_features, extra_display_attribs);
     case ANGLE_D3D11_NULL:
       extra_display_attribs.push_back(EGL_PLATFORM_ANGLE_DEVICE_TYPE_ANGLE);
       extra_display_attribs.push_back(
@@ -389,6 +398,8 @@ ANGLEImplementation GetANGLEImplementationFromDisplayType(
     case ANGLE_D3D11_NULL:
     case ANGLE_D3D11on12:
       return ANGLEImplementation::kD3D11;
+    case ANGLE_D3D11_WARP:
+      return ANGLEImplementation::kD3D11Warp;
     case ANGLE_OPENGL:
     case ANGLE_OPENGL_EGL:
     case ANGLE_OPENGL_NULL:
@@ -422,6 +433,8 @@ const char* DisplayTypeString(DisplayType display_type) {
       return "D3D9";
     case ANGLE_D3D11:
       return "D3D11";
+    case ANGLE_D3D11_WARP:
+      return "D3D11Warp";
     case ANGLE_D3D11_NULL:
       return "D3D11Null";
     case ANGLE_OPENGL:

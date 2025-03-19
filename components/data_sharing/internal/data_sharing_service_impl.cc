@@ -223,7 +223,6 @@ void DataSharingServiceImpl::ReadGroupDeprecated(
   }
 
   data_sharing_pb::ReadGroupsParams params;
-  params.add_group_ids(group_id.value());
   data_sharing_pb::ReadGroupsParams::GroupParams* group_params =
       params.add_group_params();
   group_params->set_group_id(group_id.value());
@@ -248,18 +247,11 @@ void DataSharingServiceImpl::ReadNewGroup(
     return;
   }
 
-  data_sharing_pb::ReadGroupsParams params;
+  data_sharing_pb::ReadGroupWithTokenParams params;
   const std::string& group_id = token.group_id.value();
-  params.add_group_ids(group_id);
-  // TODO (ritikagup) : Remove it once migrated to use the access_token in the
-  // group params.
+  params.set_group_id(group_id);
   params.set_access_token(token.access_token);
-  data_sharing_pb::ReadGroupsParams::GroupParams* group_params =
-      params.add_group_params();
-  group_params->set_group_id(group_id);
-  group_params->set_access_token(token.access_token);
-
-  sdk_delegate_->ReadGroups(
+  sdk_delegate_->ReadGroupWithToken(
       params,
       base::BindOnce(&DataSharingServiceImpl::OnReadSingleGroupCompleted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

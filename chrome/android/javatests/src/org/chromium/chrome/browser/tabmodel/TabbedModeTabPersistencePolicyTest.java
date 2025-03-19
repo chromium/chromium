@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.tabmodel;
 
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.when;
+
 import android.app.Activity;
 import android.content.Context;
 
@@ -14,13 +17,11 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -111,8 +112,8 @@ public class TabbedModeTabPersistencePolicyTest {
 
         mCipherFactory = new CipherFactory();
 
-        Mockito.when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
-        Mockito.when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
+        when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
+        when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
     }
 
@@ -246,7 +247,7 @@ public class TabbedModeTabPersistencePolicyTest {
         ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH
     })
     public void testCleanupInstanceState() throws Throwable {
-        Assert.assertNotNull(TabStateDirectory.getOrCreateBaseStateDirectory());
+        assertNotNull(TabStateDirectory.getOrCreateBaseStateDirectory());
 
         // Delete instance 1. Among the tabs (4, 6, 7) (12, 14, 19), only (4, 12, 14)
         // are not used by any other instances, therefore will be the target for cleanup.

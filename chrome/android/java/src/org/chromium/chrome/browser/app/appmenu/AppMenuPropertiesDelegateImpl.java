@@ -22,6 +22,7 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
@@ -62,6 +63,7 @@ import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tinker_tank.TinkerTankDelegate;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
@@ -532,6 +534,10 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 .setVisible(
                         isCurrentTabNotNull
                                 && shouldShowPaintPreview(isNativePage, currentTab, isIncognito));
+
+        menu.findItem(R.id.add_to_group_menu_id)
+                .setVisible(ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled())
+                .setTitle(getAddToGroupMenuItemString());
 
         // Enable image descriptions if touch exploration is currently enabled, but not on the
         // native NTP.
@@ -1441,5 +1447,15 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 && !currentTab.isIncognito()) {
             BrowserUiUtils.recordModuleClickHistogram(ModuleTypeOnStartAndNtp.MENU_BUTTON);
         }
+    }
+
+    public @StringRes int getAddToGroupMenuItemString() {
+        TabGroupModelFilter filter =
+                mTabModelSelector.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter();
+        if (filter != null) {
+            boolean hasGroups = filter.getTabGroupCount() != 0;
+            return hasGroups ? R.string.menu_add_to_group : R.string.menu_add_to_new_group;
+        }
+        return R.string.menu_add_to_group;
     }
 }

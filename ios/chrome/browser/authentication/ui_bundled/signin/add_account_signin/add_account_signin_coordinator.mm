@@ -109,7 +109,7 @@ using signin_metrics::PromoAction;
 
 - (void)start {
   [super start];
-  ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
+  ProfileIOS* profile = self.profile->GetOriginalProfile();
   _authenticationService = AuthenticationServiceFactory::GetForProfile(profile);
   _syncService = SyncServiceFactory::GetForProfile(profile);
   _accountManagerService =
@@ -284,7 +284,7 @@ using signin_metrics::PromoAction;
 - (void)addAccountDone {
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForProfile(
-          self.browser->GetProfile()->GetOriginalProfile());
+          self.profile->GetOriginalProfile());
   // Even if `result` is not "success" for the history opt-in step, the sign-in
   // step did succeed, so pass SigninCoordinatorResultSuccess.
   [self addAccountDoneWithSigninResult:SigninCoordinatorResultSuccess
@@ -340,8 +340,7 @@ using signin_metrics::PromoAction;
   }
 
   if (history_sync::GetSkipReason(_syncService, _authenticationService,
-                                  self.browser->GetProfile()->GetPrefs(),
-                                  YES) !=
+                                  self.profile->GetPrefs(), YES) !=
       history_sync::HistorySyncSkipReason::kNone) {
     [self addAccountDone];
   } else {

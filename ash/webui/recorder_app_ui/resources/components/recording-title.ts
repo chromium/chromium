@@ -318,7 +318,7 @@ export class RecordingTitle extends ReactiveLitElement {
         @focus=${this.startEditTitle}
         @click=${this.startEditTitle}
         ${ref(this.renameContainer)}
-        ${withTooltip(i18n.titleRenameTooltip)}
+        ${withTooltip(i18n.titleEditTooltip)}
       >
         ${this.recordingMetadata?.title ?? ''}
       </div>
@@ -328,7 +328,7 @@ export class RecordingTitle extends ReactiveLitElement {
   override render(): RenderResult {
     return html`
       <cros-snackbar
-        message=${i18n.titleRenameSnackbarMessage}
+        message=${i18n.titleEditSnackbarMessage}
         timeoutMs="4000"
         ${ref(this.snackBar)}
       ></cros-snackbar>

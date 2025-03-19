@@ -46,7 +46,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.verification.VerificationMode;
 import org.robolectric.annotation.Config;
@@ -2045,20 +2044,6 @@ public class TabGroupModelFilterImplUnitTest {
     }
 
     @Test
-    public void testGetRelatedTabListForRootId() {
-        Tab[] group1 = new Tab[] {mTab2, mTab3};
-        Tab[] group2 = new Tab[] {mTab5, mTab6};
-        assertArrayEquals(
-                mTabGroupModelFilter.getRelatedTabListForRootId(TAB2_ROOT_ID).toArray(), group1);
-        assertArrayEquals(
-                mTabGroupModelFilter.getRelatedTabListForRootId(TAB3_ROOT_ID).toArray(), group1);
-        assertArrayEquals(
-                mTabGroupModelFilter.getRelatedTabListForRootId(TAB5_ROOT_ID).toArray(), group2);
-        assertArrayEquals(
-                mTabGroupModelFilter.getRelatedTabListForRootId(TAB6_ROOT_ID).toArray(), group2);
-    }
-
-    @Test
     public void testGetTabsInGroup() {
         Tab[] group1 = new Tab[] {mTab2, mTab3};
         Tab[] group2 = new Tab[] {mTab5, mTab6};
@@ -2156,7 +2141,7 @@ public class TabGroupModelFilterImplUnitTest {
 
     @Test
     public void mergeGroupToGroupNonAdjacent_doNotNotifyFilterObserver() {
-        SharedPreferences.Editor titleEditor = Mockito.mock(SharedPreferences.Editor.class);
+        SharedPreferences.Editor titleEditor = mock(SharedPreferences.Editor.class);
         when(mSharedPreferencesTitle.edit()).thenReturn(titleEditor);
         when(titleEditor.remove(anyString())).thenReturn(titleEditor);
 

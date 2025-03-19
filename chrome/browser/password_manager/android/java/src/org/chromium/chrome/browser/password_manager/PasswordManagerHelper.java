@@ -162,12 +162,8 @@ public class PasswordManagerHelper {
      *     attempt to launch the credential manager even without syncing enabled.
      * @param account the account for which to open the UI. An empty or null account signals that
      *     the UI should be opened for the local storage.
-     * @param customTabIntentHelper provides an intent to open a custom tab displaying a help center
-     *     article.
      * @param settingsCustomTabLauncher launcher that can be used to open a custom tab with a help
      *     center article.
-     *     <p>TODO(crbug.com/402412416): Replace the customTabIntentHelper with
-     *     settingsCustomTabLauncher.
      */
     public void showPasswordSettings(
             Context context,
@@ -175,7 +171,6 @@ public class PasswordManagerHelper {
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             boolean managePasskeys,
             @Nullable String account,
-            CustomTabIntentHelper customTabIntentHelper,
             SettingsCustomTabLauncher settingsCustomTabLauncher) {
         RecordHistogram.recordEnumeratedHistogram(
                 "PasswordManager.ManagePasswordsReferrer",
@@ -190,7 +185,7 @@ public class PasswordManagerHelper {
                     modalDialogManagerSupplier,
                     managePasskeys,
                     account,
-                    customTabIntentHelper);
+                    settingsCustomTabLauncher);
             return;
         }
 
@@ -275,13 +270,13 @@ public class PasswordManagerHelper {
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             boolean managePasskeys,
             @Nullable String account,
-            CustomTabIntentHelper customTabIntentHelper) {
+            SettingsCustomTabLauncher settingsCustomTabLauncher) {
         if (PasswordAccessLossDialogHelper.tryShowAccessLossWarning(
                 mProfile,
                 context,
                 referrer,
                 modalDialogManagerSupplier,
-                customTabIntentHelper,
+                settingsCustomTabLauncher,
                 BuildInfo.getInstance())) {
             return;
         }

@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
@@ -24,7 +23,6 @@
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
-#include "components/enterprise/data_controls/core/browser/features.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
@@ -179,9 +177,6 @@ class DataProtectionNavigationObserverTest
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
 
-    scoped_features_.InitAndEnableFeature(
-        data_controls::kEnableScreenshotProtection);
-
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     EXPECT_TRUE(profile_manager_->SetUp());
@@ -240,7 +235,6 @@ class DataProtectionNavigationObserverTest
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_features_;
   FakeRealTimeUrlLookupService lookup_service_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<policy::MockCloudPolicyClient> client_;

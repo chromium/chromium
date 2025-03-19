@@ -13,6 +13,7 @@
 #include "base/functional/bind_internal.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 
 namespace ash::kiosk::test {
@@ -80,6 +81,16 @@ void WaitNetworkScreen();
 // Presses the accelerator to cancel (bailout) Kiosk launch. Returns true if the
 // accelerator was processed.
 [[nodiscard]] bool PressBailoutAccelerator();
+
+// Opens accessibility settings, waits to make sure the `KioskSystemSession`
+// does not close it, and returns the corresponding `Browser`.
+//
+// Checks if `KioskSystemSession` closes the browser, or if it is null.
+Browser* OpenA11ySettings(Profile& profile);
+
+// Waits for the next new browser window to be created and returns true if
+// `KioskSystemSession` decides to close it.
+[[nodiscard]] bool DidKioskCloseNewWindow();
 
 // Closes the window of the given `app`.
 void CloseAppWindow(const KioskApp& app);

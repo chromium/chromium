@@ -9,12 +9,11 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "media/base/media_export.h"
+#include "media/formats/hls/rendition.h"
 #include "media/formats/hls/types.h"
 #include "url/gurl.h"
 
 namespace media::hls {
-
-class AudioRenditionGroup;
 
 class MEDIA_EXPORT VariantStream {
  public:
@@ -40,7 +39,7 @@ class MEDIA_EXPORT VariantStream {
                 std::optional<std::vector<std::string>> codecs,
                 std::optional<types::DecimalResolution> resolution,
                 std::optional<types::DecimalFloatingPoint> frame_rate,
-                scoped_refptr<AudioRenditionGroup> audio_renditions,
+                scoped_refptr<RenditionGroup> audio_renditions,
                 std::optional<std::string> video_rendition_group_name);
   VariantStream(const VariantStream&) = delete;
   VariantStream(VariantStream&&);
@@ -113,7 +112,7 @@ class MEDIA_EXPORT VariantStream {
 
   // Returns the audio rendition group that should be used when playing this
   // variant.
-  const scoped_refptr<AudioRenditionGroup>& GetAudioRenditionGroup() const {
+  const scoped_refptr<RenditionGroup>& GetAudioRenditionGroup() const {
     return audio_rendition_group_;
   }
 
@@ -133,7 +132,7 @@ class MEDIA_EXPORT VariantStream {
   std::optional<std::vector<std::string>> codecs_;
   std::optional<types::DecimalResolution> resolution_;
   std::optional<types::DecimalFloatingPoint> frame_rate_;
-  scoped_refptr<AudioRenditionGroup> audio_rendition_group_;
+  scoped_refptr<RenditionGroup> audio_rendition_group_;
   std::optional<std::string> video_rendition_group_name_;
 };
 

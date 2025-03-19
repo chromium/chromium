@@ -45,6 +45,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/request_mode.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
@@ -2278,6 +2279,16 @@ void ResourceFetcher::ReloadImagesIfNotDeferred() {
     if (resource->StillNeedsLoad() && !ShouldDeferImageLoad(resource->Url())) {
       StartLoad(resource);
     }
+  }
+}
+
+void ResourceFetcher::PopulateResourceRequestPermissionsPolicy(
+    network::ResourceRequest* request) {
+  // TODO(crbug.com/382291442): Remove feature guarding once launched.
+  if (base::FeatureList::IsEnabled(
+          network::features::kPopulatePermissionsPolicyOnRequest) &&
+      Context().GetPermissionsPolicy()) {
+    request->permissions_policy = *Context().GetPermissionsPolicy();
   }
 }
 

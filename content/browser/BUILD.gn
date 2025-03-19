@@ -1300,8 +1300,6 @@ source_set("browser") {
     "loader/file_url_loader_factory.h",
     "loader/keep_alive_attribution_request_helper.cc",
     "loader/keep_alive_attribution_request_helper.h",
-    "loader/keep_alive_tracker_throttle.cc",
-    "loader/keep_alive_tracker_throttle.h",
     "loader/keep_alive_url_loader.cc",
     "loader/keep_alive_url_loader.h",
     "loader/keep_alive_url_loader_service.cc",

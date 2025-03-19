@@ -234,9 +234,6 @@ std::vector<const BookmarkNode*> GetMostRecentlyModifiedUserFolders(
     nodes.push_back(iterator.Next());
   }
 
-  // TODO(crbug.com/354892429): Filter local permanent nodes if they shouldn't
-  // visible (user has permanent account nodes but no local bookmarks).
-
   std::ranges::stable_sort(nodes, &MoreRecentlyModified);
 
   // If the account nodes were added after the most recently modified node was
@@ -358,25 +355,20 @@ BookmarkNodesSplitByAccountAndLocal GetMostRecentlyUsedFoldersForDisplay(
 BookmarkNodesSplitByAccountAndLocal GetPermanentNodesForDisplay(
     const BookmarkModel* model) {
   BookmarkNodesSplitByAccountAndLocal permanent_nodes;
-  const bool account_nodes_exists = model->account_bookmark_bar_node();
-  if (account_nodes_exists) {
-    for (const BookmarkNode* node :
-         {model->account_bookmark_bar_node(), model->account_other_node(),
-          model->account_mobile_node()}) {
-      if (!bookmarks::PruneFoldersForDisplay(model, node)) {
-        permanent_nodes.account_nodes.push_back(node);
-      }
-    }
-    // Show only account nodes if we have no local/syncable bookmarks.
-    if (!HasLocalOrSyncableBookmarks(model)) {
-      return permanent_nodes;
-    }
-  }
 
-  for (const BookmarkNode* node : {model->bookmark_bar_node(),
-                                   model->other_node(), model->mobile_node()}) {
-    if (!bookmarks::PruneFoldersForDisplay(model, node)) {
+  for (const auto& permanent_node : model->root_node()->children()) {
+    BookmarkNode* node = permanent_node.get();
+
+    // Do not include permanent nodes if they should not be visible.
+    if (PruneFoldersForDisplay(model, node)) {
+      continue;
+    }
+
+    if (model->IsLocalOnlyNode(*node) ||
+        model->client()->IsSyncFeatureEnabledIncludingBookmarks()) {
       permanent_nodes.local_nodes.push_back(node);
+    } else {
+      permanent_nodes.account_nodes.push_back(node);
     }
   }
 
@@ -620,7 +612,7 @@ const BookmarkNode* GetParentForNewNodes(BookmarkModel* model,
 
 bool PruneFoldersForDisplay(const BookmarkModel* model,
                             const BookmarkNode* node) {
-  return !node->IsVisible() || !node->is_folder() ||
+  return !model->IsNodeVisible(*node) || !node->is_folder() ||
          model->client()->IsNodeManaged(node);
 }
 

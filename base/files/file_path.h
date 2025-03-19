@@ -466,7 +466,7 @@ class BASE_EXPORT FilePath {
   // (if FILE_PATH_USES_WIN_SEPARATORS is true), or do nothing on POSIX systems.
   [[nodiscard]] FilePath NormalizePathSeparators() const;
 
-  // Normalize all path separattors to given type on Windows
+  // Normalize all path separators to given type on Windows
   // (if FILE_PATH_USES_WIN_SEPARATORS is true), or do nothing on POSIX systems.
   [[nodiscard]] FilePath NormalizePathSeparatorsTo(CharType separator) const;
 

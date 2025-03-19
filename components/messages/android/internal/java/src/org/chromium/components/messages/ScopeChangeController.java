@@ -4,9 +4,12 @@
 
 package org.chromium.components.messages;
 
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.base.ActivityState;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.messages.MessageScopeChange.ChangeType;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.Visibility;
@@ -25,6 +28,7 @@ import java.util.Objects;
  * MessageScopeType#NAVIGATION} and {@link MessageScopeType#WEB_CONTENTS}. Observe the windowAndroid
  * to notify queue manager of proper scope changes of {@link MessageScopeType#WINDOW}.
  */
+@NullMarked
 class ScopeChangeController {
     /** A delegate which can handle the scope change. */
     public interface Delegate {
@@ -60,10 +64,12 @@ class ScopeChangeController {
 
     /**
      * Called when all Messages for the given {@code scopeKey} have been dismissed or removed.
+     *
      * @param scopeKey The scope key of the scope which the last message is dismissed.
      */
     void lastMessageDismissed(ScopeKey scopeKey) {
         ScopeObserver observer = mObservers.remove(scopeKey);
+        assumeNonNull(observer);
         observer.destroy();
     }
 
@@ -82,10 +88,12 @@ class ScopeChangeController {
         private final Delegate mDelegate;
         private final ScopeKey mScopeKey;
         // TODO(crbug.com/40230391): Replace GURL with Origin.
-        private GURL mLastVisitedUrl;
+        private @Nullable GURL mLastVisitedUrl;
         private boolean mIsActive;
         private boolean mIsDestroyed;
 
+        // super(scopeKey.webContents) might be creating an observer for a null WebContents.
+        @NullUnmarked
         public NavigationWebContentsScopeObserver(Delegate delegate, ScopeKey scopeKey) {
             super(scopeKey.webContents);
             mDelegate = delegate;
@@ -182,6 +190,7 @@ class ScopeChangeController {
             mScopeKey = scopeKey;
             assert scopeKey.scopeType == MessageScopeType.WINDOW
                     : "WindowScopeObserver should only monitor window scope events.";
+            assumeNonNull(scopeKey.windowAndroid);
             WindowAndroid windowAndroid = scopeKey.windowAndroid;
             windowAndroid.addActivityStateObserver(this);
             @ChangeType
@@ -217,6 +226,7 @@ class ScopeChangeController {
 
         @Override
         public void destroy() {
+            assumeNonNull(mScopeKey.windowAndroid);
             mScopeKey.windowAndroid.removeActivityStateObserver(this);
         }
 

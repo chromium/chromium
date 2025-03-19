@@ -622,6 +622,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1430915738399379752">Çap edin</translation>
 <translation id="1431188203598586230">Sonuncu proqram təminatı güncəlləməsi</translation>
 <translation id="1432581352905426595">Axtarış sistemlərini idarə edin</translation>
+<translation id="1432650420699700107">Saytlar lokal şəbəkənizdəki hər hansı cihaza qoşulmaq istəyə bilər</translation>
 <translation id="1433478348197382180">Oxu Rejimi</translation>
 <translation id="1433980411933182122">Başlanğıc</translation>
 <translation id="1434696352799406980">Bu, Sizin başlanğıc səhifəsi, yeni panel səhifəsi, axtarış sistemi və taxılmış panellərinizi sıfırlayacaq. Bu, həmçinin bütün artırmaları deaktiv edəcək və kuki kimi müvəqqəti dataları siləcək. Əlfəcin, tarixcə və yadda saxlanılmış parollarınız silinməyəcək.</translation>
@@ -1331,6 +1332,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1918127774159128277">WiFi Direct imkanlarını təzələyin</translation>
 <translation id="1918141783557917887">&amp;Kiçik</translation>
 <translation id="1918281588461452432">Siz saytları axtararkən onların səhifə kontenti şifrələnir və cihazda yadda saxlanır</translation>
+<translation id="1919096511823372013">Link, emoji və s. daxil edin. Google Sİ ilə yazmaq və təsvir yaratmaq üçün kömək ala bilərsiniz.</translation>
 <translation id="1919872106782726755">Barmaq izini ayarlamaq üçün uşağınızdan klaviaturanın yuxarı sağ küncündə Qidalanma düyməsinin yanında olan barmaq izi sensoruna toxunmasını istəyin. Övladınızın barmaq izi datası təhlükəsiz şəkildə saxlanılır və heç vaxt <ph name="DEVICE_TYPE" /> cihazından kənara ötürülmür.</translation>
 <translation id="192015196730532810">Tab qrupu yarada bilərsiniz.</translation>
 <translation id="1920314570001095522">Nizamlamaq üçün oxşar tablar yoxdur, lakin bu qrupları bəyənə bilərsiniz</translation>
@@ -4058,9 +4060,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
     <ph name="BEGIN_PARAGRAPH2" />İstənilən vaxt Chrome cihaz ayarlarınızda bu hesabatlara icazə verməyə başlaya və ya dayandıra bilərsiniz. Domen administratorusunuzsa, bu ayarı admin konsolunda dəyişə bilərsiniz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">Gecə kiçik kottec evinin üstündə Aurora Borealis.</translation>
 <translation id="3818102823568165369">Əməliyyat sisteminiz və ya administratorunuz tərəfindən əlavə edilmiş lokal sertifikatlar.</translation>
-<translation id="3818662907126913619"><ph name="DOMAIN" /> profilində cihazdan istifadə üçün təşkilata cihaz məlumatını verin.
-
-Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməliyyat sistemi haqqında məlumat daxil ola bilər.</translation>
 <translation id="3819164369574292143">Ekrandakı elementləri böyütmək üçün yaxınlaşdırın. Böyüdücünü aktiv və deaktiv etmək üçün Axtarış + Ctrl + M istifadə edin. Yaxınlaşdırdıqda hərəkət etmək üçün Ctrl + Alt + Ox düymələrindən istifadə edin.</translation>
 <translation id="3819257035322786455">Yedəkləyin</translation>
 <translation id="3819261658055281761">Sistem bu cihazda uzunmüddətli API giriş açarını saxlaya bilmədi.</translation>
@@ -4378,9 +4377,6 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4031527940632463547">Sensorlar blok edilib</translation>
 <translation id="4033471457476425443">Yeni qovluq əlavə edin</translation>
 <translation id="4033963223187371752">Güvənli saytlar güvənli olmayan şəkillər və ya veb çərçivələr kimi məzmun yerləşdirə bilər</translation>
-<translation id="4034706080855851454">Təşkilat profilində cihazdan istifadə üçün təşkilata cihaz məlumatını verin.
-
-Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməliyyat sistemi haqqında məlumat daxil ola bilər.</translation>
 <translation id="4034824040120875894">Printer</translation>
 <translation id="4035758313003622889">Tapşırıq meneceri</translation>
 <translation id="4035877632587724847">İcazə verməyin</translation>
@@ -4827,6 +4823,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4364830672918311045">Bildirişləri görüntüləyin</translation>
 <translation id="4367971618859387374">Displey adı</translation>
 <translation id="4368960422722232719">Yaddaş istifadəsini tab üzərində popap önizləmə kartında göstərin</translation>
+<translation id="4369151461324628035">Saytlara lokal şəbəkənizdəki hər hansı cihaza qoşulmaq icazəsi verməyin</translation>
 <translation id="4369215744064167350">Veb sayt sorğusu təsdiq edildi</translation>
 <translation id="4369233657762989723">Diktəni aktiv/deaktiv edin</translation>
 <translation id="436926121798828366"><ph name="SETTINGS_LINK" /> bölməsində dəyişə bilərsiniz</translation>
@@ -5380,6 +5377,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4772914216048388646">Səliqəli</translation>
 <translation id="4773112038801431077">Linux'u təkmilləşdirin</translation>
 <translation id="4773122030389014189">"<ph name="GROUP_NAME" />" tab qrupunu paylaşın</translation>
+<translation id="4773253008034797668">Lokal şəbəkənizdəki istənilən cihaza qoşulmaq icazəsi verilib</translation>
 <translation id="477548766361111120">Artırmaya bu saytı oxumaq və dəyişmək icazəsi verin</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> qoşulub</translation>
 <translation id="4776594120007763294">Daha sonra oxumaq məqsədilə bir səhifə əlavə etmək üçün düyməni basın</translation>
@@ -7842,6 +7840,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6563002009564846727">Windows-dan import edilmiş sertifikatlara baxın</translation>
 <translation id="6563055593659435495">Telefonunuzla bağlantını saxlamaq mümkün deyil. Telefonunuzun yaxınlıqda, kiliddən çıxarılmış olduğuna, Bluetooth və Wi-Fi-ın yandırılmış olduğuna əmin olun.</translation>
 <translation id="6564860838537532172">Brauzer tarixçəsində axtardığınız zaman tarixçə axtarışlarınız, ən yaxşı uyğunluqların səhifə kontenti və yaradılmış model nəticələri Google-a göndərilir. İnsan redaktorlar bu funksiyanı təkmilləşdirmək üçün onlara baxa bilər.</translation>
+<translation id="6565144332292237355">Saytlar bu funksiyadan lokal şəbəkənizdəki hər hansı cihazı axtarmaq və ona qoşulmaq üçün istifadə edə bilər</translation>
 <translation id="6569931898053264308">Orta səviyyədə qənaət</translation>
 <translation id="6570622975915850879">Başqa cihaz istifadə edin</translation>
 <translation id="65711204837946324">Endirmək üçün icazə tələb edir</translation>
@@ -8969,6 +8968,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7377451353532943397">Sensor girişini blok etməyə davam edin</translation>
 <translation id="7377481913241237033">Kod ilə qoşulun</translation>
 <translation id="73786666777299047">Chrome Veb Mağazanı Açın</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Eyni tapşırıq qrupunda başqa tapşırıq: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Eyni tapşırıq qrupunda başqa # tapşırıq: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380272457268061606">Lokal data bərpası deaktiv edilsin?</translation>
 <translation id="7380459290951585794">Telefonunuzun yaxınlıqda olduğuna, kiliddən çıxarılmış olduğuna, Bluetooth və Wi-Fi'ın aktiv olduğuna əmin olun</translation>
 <translation id="7380622428988553498">Cihaz adında yanlış simvollar var</translation>
@@ -11551,6 +11551,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
       <ph name="LIST_ITEM" />Chrome Bağlantı Diaqnostikasını icra edin
     <ph name="END_LIST" /></translation>
 <translation id="9161172953291434881">Datanızı bu sayta etibar edirsiniz?</translation>
+<translation id="9164418710391288146">Lokal şəbəkənizdəki hər hansı cihaza qoşulmaq icazəsi verilməyib</translation>
 <translation id="9165856803582999927">Bu QR kodunu <ph name="APP_NAME" /> üçün giriş açarı yaratmaq və yaddaşda saxlamaq istədiyiniz cihazdakı kamera ilə skan edin</translation>
 <translation id="916607977885256133">Şəkil içində Şəkil</translation>
 <translation id="9166253503936244008">Bu QR kodunu <ph name="APP_NAME" /> üçün istifadə etmək istədiyiniz giriş açarı olan cihazla skan edin</translation>

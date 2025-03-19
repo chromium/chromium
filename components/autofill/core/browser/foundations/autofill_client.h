@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/integrators/fast_checkout_client.h"
+#include "components/autofill/core/browser/integrators/identity_credential_delegate.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
@@ -299,6 +300,15 @@ class AutofillClient {
   // Returns the per-profile `AutofillAiModelExecutor`. Returns `nullptr` if the
   // `kAutofillAiServerModel` is not enabled or the profile is OTR.
   virtual AutofillAiModelExecutor* GetAutofillAiModelExecutor();
+
+  // Returns nullptr if no identity credential conditional request was made
+  // before.
+  const IdentityCredentialDelegate* GetIdentityCredentialDelegate() const {
+    return const_cast<const IdentityCredentialDelegate*>(
+        const_cast<AutofillClient*>(this)->GetIdentityCredentialDelegate());
+  }
+
+  virtual IdentityCredentialDelegate* GetIdentityCredentialDelegate();
 
   // Returns the `AutofillPlusAddressDelegate` associated with the profile of
   // the window of this tab.

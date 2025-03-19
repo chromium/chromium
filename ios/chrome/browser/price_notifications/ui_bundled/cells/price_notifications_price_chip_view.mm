@@ -28,13 +28,35 @@ const CGFloat kPriceChipHorizontalSpacing = 4.0;
 
 @implementation PriceNotificationsPriceChipView
 
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    _currentPriceFont =
+        CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightBold);
+    _previousPriceFont =
+        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  }
+  return self;
+}
+
 - (void)setPriceDrop:(NSString*)currentPrice
        previousPrice:(NSString*)previousPrice {
   [self prepareForReuse];
 
   self.currentPriceLabel.text = currentPrice;
-  self.previousPriceLabel.text = previousPrice;
 
+  if (_strikeoutPreviousPrice) {
+    NSDictionary* attributes = @{
+      NSStrikethroughStyleAttributeName :
+          [NSNumber numberWithInt:NSUnderlineStyleSingle]
+    };
+    NSAttributedString* attrText =
+        [[NSAttributedString alloc] initWithString:previousPrice
+                                        attributes:attributes];
+    self.previousPriceLabel.attributedText = attrText;
+  } else {
+    self.previousPriceLabel.text = previousPrice;
+  }
   [self addSubview:self.previousPriceLabel];
 
   // The leading anchor will be constrained later based on `previousPrice`
@@ -94,8 +116,7 @@ const CGFloat kPriceChipHorizontalSpacing = 4.0;
     UILabel* priceLabel = [[UILabel alloc] init];
     priceLabel.translatesAutoresizingMaskIntoConstraints = NO;
     priceLabel.adjustsFontForContentSizeCategory = YES;
-    priceLabel.font =
-        CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightBold);
+    priceLabel.font = _currentPriceFont;
     priceLabel.textColor = [UIColor colorNamed:kGreen800Color];
     _currentPriceLabel = priceLabel;
   }
@@ -107,8 +128,7 @@ const CGFloat kPriceChipHorizontalSpacing = 4.0;
     UILabel* priceLabel = [[UILabel alloc] init];
     priceLabel.translatesAutoresizingMaskIntoConstraints = NO;
     priceLabel.adjustsFontForContentSizeCategory = YES;
-    priceLabel.font =
-        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+    priceLabel.font = _previousPriceFont;
     priceLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _previousPriceLabel = priceLabel;
   }

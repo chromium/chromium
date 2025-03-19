@@ -39,6 +39,7 @@ import android.view.PointerIcon;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStructure;
+import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityNodeProvider;
 import android.view.animation.AnimationUtils;
@@ -3456,7 +3457,19 @@ public class AwContents implements SmartClipProvider {
         mAwViewMethods.onWindowVisibilityChanged(visibility);
     }
 
-    /** @see android.view.View#onResolvePointerIcon(MotionEvent, int) */
+    /**
+     * @see android.view.View#onApplyWindowInsets(WindowInsets)
+     */
+    public WindowInsets onApplyWindowInsets(WindowInsets insets) {
+        if (mDisplayCutoutController != null) {
+            return mDisplayCutoutController.onApplyWindowInsets(insets);
+        }
+        return null;
+    }
+
+    /**
+     * @see android.view.View#onResolvePointerIcon(MotionEvent, int)
+     */
     public PointerIcon onResolvePointerIcon(MotionEvent event, int pointerIndex) {
         return mStylusWritingController.resolvePointerIcon();
     }

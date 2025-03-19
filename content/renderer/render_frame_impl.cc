@@ -6840,6 +6840,7 @@ WebView* RenderFrameImpl::CreateNewWindow(
     const WebURLRequest& request,
     const blink::WebWindowFeatures& features,
     const WebString& frame_name,
+    const gfx::Rect& requested_screen_rect,
     WebNavigationPolicy policy,
     network::mojom::WebSandboxFlags sandbox_flags,
     const blink::SessionStorageNamespaceId& session_storage_namespace_id,
@@ -6894,6 +6895,8 @@ WebView* RenderFrameImpl::CreateNewWindow(
   params->features = ConvertWebWindowFeaturesToMojoWindowFeatures(features);
 
   params->is_form_submission = request.IsFormSubmission();
+  params->consumes_user_activation =
+      GetWebFrame()->HasTransientUserActivation();
   params->form_submission_post_data =
       blink::GetRequestBodyForWebURLRequest(request);
   params->form_submission_post_content_type = request.HttpContentType().Utf8();
@@ -7070,6 +7073,19 @@ WebView* RenderFrameImpl::CreateNewWindow(
   WebView* web_view = agent_scheduling_group_->CreateWebView(
       std::move(view_params),
       /*was_created_by_renderer=*/true, base_url);
+
+  if (reply->widget_screen_rect.has_value() &&
+      reply->window_screen_rect.has_value()) {
+    CHECK(base::FeatureList::IsEnabled(blink::features::kCombineNewWindowIPCs));
+    web_view->MainFrameWidget()->SetScreenRects(*reply->widget_screen_rect,
+                                                *reply->window_screen_rect);
+  } else {
+    // Window geometry is not immediately available, use the requested bounds
+    // until UpdateScreenRects() is sent from the browser.
+    web_view->MainFrameWidget()->SetScreenRects(requested_screen_rect,
+                                                requested_screen_rect);
+  }
+  web_view->MainFrameWidget()->ApplyVisualProperties(reply->visual_properties);
 
   if (reply->wait_for_debugger) {
     web_view->MainFrame()

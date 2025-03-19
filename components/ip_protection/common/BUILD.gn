@@ -687,8 +687,10 @@ source_set("ip_protection_probabilistic_reveal_token_manager") {
   ]
   deps = [
     ":ip_protection_probabilistic_reveal_token_crypter",
+    ":ip_protection_probabilistic_reveal_token_data_storage",
     ":ip_protection_telemetry",
     "//base",
+    "//net",
   ]
 }
 
@@ -705,6 +707,8 @@ source_set("ip_protection_probabilistic_reveal_token_manager_unittest") {
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
+    "//sql",
+    "//sql:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/private-join-and-compute/src:ec_commutative_cipher",

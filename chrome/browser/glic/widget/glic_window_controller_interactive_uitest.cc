@@ -15,7 +15,7 @@
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
-#include "chrome/browser/glic/interactive_glic_test.h"
+#include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"

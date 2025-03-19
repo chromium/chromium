@@ -155,10 +155,16 @@ void OnTaskPodControllerImpl::OnPageNavigationContextChanged() {
 }
 
 bool OnTaskPodControllerImpl::CanNavigateToPreviousPage() {
+  if (!browser_) {
+    return false;
+  }
   return chrome::CanGoBack(browser_.get());
 }
 
 bool OnTaskPodControllerImpl::CanNavigateToNextPage() {
+  if (!browser_) {
+    return false;
+  }
   return chrome::CanGoForward(browser_.get());
 }
 

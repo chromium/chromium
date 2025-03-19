@@ -1,0 +1,14 @@
+include_rules = [
+  "+ios/chrome/browser/promos_manager/ui_bundled",
+  "+ios/chrome/browser/promos_manager/model",
+  "+ios/chrome/browser/feature_engagement/model",
+  "+ios/chrome/browser/url_loading/model",
+  "+ios/chrome/browser/default_browser/model",
+  "+ios/chrome/browser/price_insights/model",
+]
+
+specific_include_rules = {
+  "whats_new_mediator\.mm": [
+    "+ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h",
+  ],
+}

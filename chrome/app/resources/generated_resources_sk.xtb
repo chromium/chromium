@@ -4061,9 +4061,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
     <ph name="BEGIN_PARAGRAPH2" />Môžete ich kedykoľvek začať alebo prestať povoľovať v nastaveniach svojho zariadenia Chrome. Ak ste správcom domény, toto nastavenie môžete zmeniť v správcovskej konzole.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">Polárna žiara v noci nad malou chatou.</translation>
 <translation id="3818102823568165369">Miestne certifikáty pridané operačným systémom alebo správcom.</translation>
-<translation id="3818662907126913619">Ak chcete používať svoje zariadenie s profilom <ph name="DOMAIN" />, vaša organizácia potrebuje informácie o danom zariadení.
-
-Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehliadači a operačnom systéme zariadenia.</translation>
 <translation id="3819164369574292143">Priblížením položky na obrazovke zväčšíte. Lupu zapnete alebo vypnete klávesovou skratkou Hľadať + Ctrl + M. Po priblíženej obrazovke môžete prechádzať stláčaním klávesov Ctrl + Alt + klávesy so šípkami.</translation>
 <translation id="3819257035322786455">Záloha</translation>
 <translation id="3819261658055281761">Systému sa nepodarilo uložiť dlhodobý prístupový token rozhrania API pre toto zariadenie.</translation>
@@ -4381,9 +4378,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="4031527940632463547">Senzory sú blokované</translation>
 <translation id="4033471457476425443">Pridať nový priečinok</translation>
 <translation id="4033963223187371752">Zabezpečené weby môžu vkladať obsah, napríklad obrázky alebo rámy webu, ktoré nie sú zabezpečené</translation>
-<translation id="4034706080855851454">Ak chcete používať svoj zariadenie s profilom organizácie, vaša organizácia potrebuje informácie o danom zariadení.
-
-Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehliadači a operačnom systéme zariadenia.</translation>
 <translation id="4034824040120875894">Tlačiareň</translation>
 <translation id="4035758313003622889">&amp;Správca úloh</translation>
 <translation id="4035877632587724847">Nepovoliť</translation>

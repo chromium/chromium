@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/autofill/payments/migratable_card_view.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -54,6 +53,7 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -92,7 +92,7 @@ END_METADATA
 // Create the view containing the `tip_message` shown to the user.
 std::unique_ptr<views::BoxLayoutView> CreateTipTextContainer(
     const std::u16string& tip_message) {
-  ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
+  views::LayoutProvider* provider = views::LayoutProvider::Get();
   const gfx::Insets kContainerInsets =
       provider->GetInsetsMetric(views::INSETS_DIALOG_SUBSECTION);
   const int kContainerChildSpace =
@@ -128,7 +128,7 @@ std::unique_ptr<views::BoxLayoutView> CreateTipTextContainer(
           .SetMultiLine(true)
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SizeToFit(provider->GetDistanceMetric(
-                         DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH) -
+                         views::DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH) -
                      kMigrationDialogInsets.width() - kContainerInsets.width() -
                      kTipImageSize - kContainerChildSpace)
           .Build());
@@ -220,7 +220,7 @@ std::unique_ptr<views::ScrollView> CreateCardList(
     const std::vector<MigratableCreditCard>& migratable_credit_cards,
     LocalCardMigrationDialogView* dialog_view,
     bool should_show_checkbox) {
-  ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
+  views::LayoutProvider* provider = views::LayoutProvider::Get();
   auto card_list_view = std::make_unique<views::View>();
   constexpr int kCardListSmallVerticalDistance = 8;
   auto* card_list_view_layout =
@@ -255,7 +255,7 @@ std::unique_ptr<views::View> CreateFeedbackContentView(
   DCHECK(controller->GetViewState() != LocalCardMigrationDialogState::kOffered);
 
   auto feedback_view = std::make_unique<views::View>();
-  ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
+  views::LayoutProvider* provider = views::LayoutProvider::Get();
   feedback_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
@@ -301,7 +301,7 @@ class LocalCardMigrationOfferView : public views::View {
   LocalCardMigrationOfferView(LocalCardMigrationDialogController* controller,
                               LocalCardMigrationDialogView* dialog_view) {
     DCHECK(controller);
-    ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
+    views::LayoutProvider* provider = views::LayoutProvider::Get();
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical, gfx::Insets(),
         kMigrationDialogMainContainerChildSpacing));
@@ -390,8 +390,8 @@ LocalCardMigrationDialogView::LocalCardMigrationDialogView(
   SetModalType(ui::mojom::ModalType::kWindow);
   set_close_on_deactivate(false);
   set_margins(gfx::Insets());
-  set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH));
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH));
   SetShowCloseButton(false);
 }
 

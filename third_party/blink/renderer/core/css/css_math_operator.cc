@@ -66,7 +66,9 @@ StringView ToString(CSSMathOperator op) {
       return "media-progress";
     case CSSMathOperator::kContainerProgress:
       return "container-progress";
-    default:
+    case CSSMathOperator::kPow:
+      return "pow";
+    case CSSMathOperator::kInvalid:
       NOTREACHED();
   }
 }

@@ -599,11 +599,12 @@ TEST_F(CanvasResourceProviderTest,
       test_web_shared_image_interface_provider =
           TestWebGraphicsSharedImageInterfaceProvider::Create();
 
-  EXPECT_FALSE(CanvasResourceProvider::CreateSoftwareSharedImageProvider(
-      gfx::Size(10, 10), GetN32FormatForCanvas(), kPremul_SkAlphaType,
-      gfx::ColorSpace::CreateSRGB(),
-      CanvasResourceProvider::ShouldInitialize::kCallClear,
-      test_web_shared_image_interface_provider.get()));
+  EXPECT_FALSE(
+      CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
+          gfx::Size(10, 10), GetN32FormatForCanvas(), kPremul_SkAlphaType,
+          gfx::ColorSpace::CreateSRGB(),
+          CanvasResourceProvider::ShouldInitialize::kCallClear,
+          test_web_shared_image_interface_provider.get()));
 }
 
 TEST_F(CanvasResourceProviderTest,
@@ -617,11 +618,12 @@ TEST_F(CanvasResourceProviderTest,
       test_web_shared_image_interface_provider =
           TestWebGraphicsSharedImageInterfaceProvider::Create();
 
-  auto provider = CanvasResourceProvider::CreateSoftwareSharedImageProvider(
-      kSize, GetN32FormatForCanvas(), kInfo.alphaType(),
-      gfx::ColorSpace::CreateSRGB(),
-      CanvasResourceProvider::ShouldInitialize::kCallClear,
-      test_web_shared_image_interface_provider.get());
+  auto provider =
+      CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
+          kSize, GetN32FormatForCanvas(), kInfo.alphaType(),
+          gfx::ColorSpace::CreateSRGB(),
+          CanvasResourceProvider::ShouldInitialize::kCallClear,
+          test_web_shared_image_interface_provider.get());
 
   EXPECT_EQ(provider->Size(), kSize);
   EXPECT_TRUE(provider->IsValid());

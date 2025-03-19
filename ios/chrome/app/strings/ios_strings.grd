@@ -560,6 +560,9 @@
       <message name="IDS_IOS_BEST_FEATURES_ENHANCED_SAFE_BROWSING_CAPTION" desc="Caption for the Enhanced Safe Browsing button on the Chrome iOS Best Features Promo">
         Protection against online threats
       </message>
+      <message name="IDS_IOS_BEST_FEATURES_ENHANCED_SAFE_BROWSING_SUBTITLE" desc="Subtitle for the Enhanced Safe Browsing Chrome iOS Best Features Promo">
+        Add an extra layer of protection against online threats
+      </message>
       <message name="IDS_IOS_BEST_FEATURES_ENHANCED_SAFE_BROWSING_TITLE" desc="Title for the Enhanced Safe Browsing Chrome iOS Best Features Promo">
         Enhanced Safe Browsing
       </message>
@@ -572,14 +575,23 @@
       <message name="IDS_IOS_BEST_FEATURES_LOCKED_INCOGNITO_CAPTION" desc="Caption for the Locked Incognito tabs button on the Chrome iOS Best Features Promo">
         Keep your browsing private
       </message>
+      <message name="IDS_IOS_BEST_FEATURES_LOCKED_INCOGNITO_SECOND_STEP" desc="The second step to setting up Locked Incognito tabs">
+        Tap "Privacy and Security"
+      </message>
       <message name="IDS_IOS_BEST_FEATURES_LOCKED_INCOGNITO_TITLE" desc="Title for the Locked Incognito tabs Chrome iOS Best Features Promo">
         Locked Incognito tabs
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_NEVER_FORGET_PASSWORDS_FIRST_STEP" desc="The first step to set up saving and autofill passwords">
+        Sign in to a website
       </message>
       <message name="IDS_IOS_BEST_FEATURES_NEVER_FORGET_PASSWORDS_SUBTITLE" desc="Subtitle for the Never Forget Passwords Chrome iOS Best Features Promo">
         Save and autofill your passwords to easily sign in to sites and apps
       </message>
+      <message name="IDS_IOS_BEST_FEATURES_NEVER_FORGET_PASSWORDS_THIRD_STEP" desc="The third step to set up saving and autofill passwords">
+        Tap "Save" to easily access this password the next time you sign in
+      </message>
       <message name="IDS_IOS_BEST_FEATURES_NEVER_FORGET_PASSWORDS_TITLE" desc="Title for the Never Forget Passwords Chrome iOS Best Features Promo">
-          Never forget your passwords
+        Never forget your passwords
       </message>
       <message name="IDS_IOS_BEST_FEATURES_PASSWORDS_IN_OTHER_APPS_CAPTION" desc="Caption for the Passwords in other apps button on the Chrome iOS Best Features Promo">
         Get saved passwords in other apps
@@ -616,6 +628,18 @@
       </message>
       <message name="IDS_IOS_BEST_FEATURES_TAB_GROUPS_CAPTION" desc="Caption for the Tab Groups button on the Chrome iOS Best Features Promo">
         Stay organized by creating tab groups
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_TAB_GROUPS_STEP_1" desc="The first step for using Tab Groups">
+        Go to your tab grid
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_TAB_GROUPS_STEP_2" desc="The second step for using Tab Groups">
+        Tap and hold any open tabs
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_TAB_GROUPS_STEP_3" desc="The third step for using Tab Groups">
+        Tap "Add Tab to New Group"
+      </message>
+      <message name="IDS_IOS_BEST_FEATURES_TAB_GROUPS_STEP_4" desc="The fourth step for using Tab Groups">
+        Create your new tab group by giving it a name and color
       </message>
       <message name="IDS_IOS_BEST_FEATURES_TAB_GROUPS_SUBTITLE" desc="Subtitle for the Tab Groups Chrome iOS Best Features Promo">
         Create tab groups to organize your open tabs

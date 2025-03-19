@@ -524,6 +524,55 @@ void ApplyRationalizationEngineRules(
                 },
             })
             .Build(),
+        RationalizationRuleBuilder()
+            .SetRuleName("Fix ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY for IN")
+            .SetEnvironmentCondition(
+                EnvironmentConditionBuilder()
+                    .SetCountryList({GeoIpCountryCode("IN")})
+                    .SetFeature(&features::kAutofillUseINAddressModel)
+                    .Build())
+            .SetTriggerField(
+                FieldCondition{.possible_overall_types =
+                                   FieldTypeSet{ADDRESS_HOME_LINE1,
+                                                ADDRESS_HOME_STREET_LOCATION,
+                                                ADDRESS_HOME_STREET_ADDRESS}})
+            .SetFieldsWithConditionsDoNotExist({FieldCondition{
+                .location = FieldLocation::kAnywhere,
+                .possible_overall_types =
+                    FieldTypeSet{ADDRESS_HOME_DEPENDENT_LOCALITY,
+                                 ADDRESS_HOME_LINE2}}})
+            .SetOtherFieldConditions({FieldCondition{
+                .location = FieldLocation::kAnywhere,
+                .possible_overall_types = FieldTypeSet{ADDRESS_HOME_LANDMARK}}})
+            .SetActions({
+                SetTypeAction{
+                    .target = FieldLocation::kTriggerField,
+                    .set_overall_type =
+                        ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY,
+                },
+            })
+            .Build(),
+        RationalizationRuleBuilder()
+            .SetRuleName("Fix ADDRESS_HOME_STREET_ADDRESS for IN")
+            .SetEnvironmentCondition(
+                EnvironmentConditionBuilder()
+                    .SetCountryList({GeoIpCountryCode("IN")})
+                    .SetFeature(&features::kAutofillUseINAddressModel)
+                    .Build())
+            .SetTriggerField(FieldCondition{
+                .possible_overall_types = FieldTypeSet{ADDRESS_HOME_LINE1}})
+            .SetFieldsWithConditionsDoNotExist({FieldCondition{
+                .location = FieldLocation::kAnywhere,
+                .possible_overall_types =
+                    FieldTypeSet{ADDRESS_HOME_DEPENDENT_LOCALITY,
+                                 ADDRESS_HOME_LINE2, ADDRESS_HOME_LANDMARK}}})
+            .SetActions({
+                SetTypeAction{
+                    .target = FieldLocation::kTriggerField,
+                    .set_overall_type = ADDRESS_HOME_STREET_ADDRESS,
+                },
+            })
+            .Build(),
     });
   };
   static const base::NoDestructor<decltype(create_rules())>

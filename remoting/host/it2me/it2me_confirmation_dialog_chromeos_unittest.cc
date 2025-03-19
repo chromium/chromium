@@ -174,6 +174,25 @@ class It2MeConfirmationDialogChromeOSTest
         l10n_util::GetStringUTF16(IDS_SHARE_CONFIRM_DIALOG_CONFIRM));
   }
 
+  std::u16string GetAutoAcceptMessage(const std::string& remote_user_email,
+                                      base::TimeDelta time_left) {
+    std::u16string auto_accept_message =
+        base::i18n::MessageFormatter::FormatWithNumberedArgs(
+            l10n_util::GetStringUTF16(
+                IDS_SHARE_CONFIRM_DIALOG_MESSAGE_ADMIN_INITIATED_CRD_UNATTENDED),
+            remote_user_email);
+    auto_accept_message.append(u"\n\n");
+    auto_accept_message.append(l10n_util::GetPluralStringFUTF16(
+        IDS_CRD_AUTO_ACCEPT_COUNTDOWN, time_left.InSeconds()));
+
+    return auto_accept_message;
+  }
+
+  std::u16string GetAutoAcceptConfirmButtonLabel() {
+    return l10n_util::GetStringUTF16(
+        IDS_SHARE_CONFIRM_DIALOG_CONFIRM_CRD_UNATTENDED);
+  }
+
   It2MeConfirmationDialog::ResultCallback DoNothingCallback() {
     return It2MeConfirmationDialog::ResultCallback();
   }
@@ -341,7 +360,6 @@ TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedDisabled,
   EXPECT_EQ(GetVisibleNotificationsCount(), 1);
 }
 
-// TODO(b:390164552) Add test for correct text in message box view.
 class It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled
     : public It2MeConfirmationDialogChromeOSTest {
  public:
@@ -381,6 +399,11 @@ class It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled
 
   void AcceptDialog() { GetDialogDelegate().AcceptDialog(); }
   void DeclineDialog() { GetDialogDelegate().CancelDialog(); }
+
+  const std::u16string GetAcceptButtonLabel() {
+    return GetDialogDelegate().GetDialogButtonLabel(
+        ui::mojom::DialogButton::kOk);
+  }
 };
 
 TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
@@ -483,6 +506,36 @@ TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
 
   ASSERT_EQ(GetDialogMessage(),
             FormatMessage(kTestingRemoteEmail, /*style=*/GetParam()));
+}
+
+TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
+       ModalDialogShouldCorrectTextForAutoAcceptSessions) {
+  CreateAndShowDialog(kTestingRemoteEmail, DoNothingCallback(),
+                      /*auto_accept_timeout=*/base::Seconds(30));
+
+  ASSERT_EQ(GetDialogMessage(),
+            GetAutoAcceptMessage(kTestingRemoteEmail,
+                                 /*time_left=*/base::Seconds(30)));
+}
+
+TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
+       ModalDialogShouldCountdownTextForAutoAcceptSessions) {
+  CreateAndShowDialog(kTestingRemoteEmail, DoNothingCallback(),
+                      /*auto_accept_timeout=*/base::Seconds(30));
+
+  task_environment()->FastForwardBy(base::Seconds(29));
+
+  ASSERT_EQ(GetDialogMessage(),
+            GetAutoAcceptMessage(kTestingRemoteEmail,
+                                 /*time_left=*/base::Seconds(1)));
+}
+
+TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,
+       ModalDialogAcceptButtonShouldHaveAutoAcceptButtonLabel) {
+  CreateAndShowDialog(kTestingRemoteEmail, DoNothingCallback(),
+                      /*auto_accept_timeout=*/base::Seconds(30));
+
+  ASSERT_EQ(GetAcceptButtonLabel(), GetAutoAcceptConfirmButtonLabel());
 }
 
 TEST_P(It2MeConfirmationDialogChromeOSTestWithCrdUnattendedEnabled,

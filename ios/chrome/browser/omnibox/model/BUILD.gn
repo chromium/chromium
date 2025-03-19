@@ -10,6 +10,7 @@ source_set("ui_bundled_interface") {
     "autocomplete_result_wrapper.h",
     "autocomplete_result_wrapper_delegate.h",
     "omnibox_autocomplete_controller.h",
+    "omnibox_autocomplete_controller_delegate.h",
     "omnibox_controller.h",
     "omnibox_popup_controller.h",
     "omnibox_popup_controller_delegate.h",

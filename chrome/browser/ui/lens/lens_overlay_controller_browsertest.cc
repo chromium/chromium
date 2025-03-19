@@ -5848,6 +5848,62 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   EXPECT_EQ(tab_count, browser()->tab_strip_model()->count());
 }
 
+class LensOverlayControllerBrowserPDFUpdatedContentFieldsTest
+    : public LensOverlayControllerBrowserPDFContextualizationTest {
+ public:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      const override {
+    auto enabled = PDFExtensionTestBase::GetEnabledFeatures();
+    enabled.push_back({lens::features::kLensOverlayContextualSearchbox,
+                       {{"send-page-url-for-contextualization", "true"},
+                        {"characters-per-page-heuristic", "1"},
+                        {"use-pdfs-as-context", "true"},
+                        {"use-inner-html-as-context", "true"},
+                        {"file-upload-limit-bytes",
+                         base::NumberToString(kFileSizeLimitBytes)},
+                        {"use-updated-content-fields", "true"}}});
+    return enabled;
+  }
+
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
+    return {};
+  }
+
+ protected:
+  static constexpr uint32_t kFileSizeLimitBytes = 10000;
+};
+
+IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFUpdatedContentFieldsTest,
+                       PartialPdfIncludedInRequest) {
+  // Open the PDF document and wait for it to finish loading.
+  const GURL url = embedded_test_server()->GetURL(kPdfDocument);
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(url);
+  ASSERT_TRUE(extension_host);
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_TRUE(controller);
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Open the overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return controller->state() == State::kOverlay; }));
+
+  // Verify pdf content was included in the query.
+  auto* fake_query_controller =
+      static_cast<lens::TestLensOverlayQueryController*>(
+          controller->get_lens_overlay_query_controller_for_testing());
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return fake_query_controller->last_sent_partial_content().pages_size() == 1;
+  }));
+  ASSERT_EQ(
+      "this is some text\r\nsome more text",
+      fake_query_controller->last_sent_partial_content().pages(0).text_segments(
+          0));
+}
+
 class LensOverlayControllerBrowserPDFIncreaseLimitTest
     : public LensOverlayControllerBrowserPDFContextualizationTest {
  public:
@@ -5913,6 +5969,8 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFIncreaseLimitTest,
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(LensOverlayControllerBrowserPDFTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     LensOverlayControllerBrowserPDFContextualizationTest);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    LensOverlayControllerBrowserPDFUpdatedContentFieldsTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     LensOverlayControllerBrowserPDFIncreaseLimitTest);
 

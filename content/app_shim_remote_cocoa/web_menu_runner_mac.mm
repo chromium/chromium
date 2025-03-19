@@ -157,7 +157,13 @@ static const char kMenuWasRunCallbackKey = 0;
   // improperly truncate their contents (see https://crbug.com/401443090).
   //
   // This has been filed as FB16843355. TODO(https://crbug.com/389067059): When
-  // this FB is resolved, switch to the new API.
+  // this FB is resolved, switch to the new API by relanding an adapted version
+  // of https://crrev.com/c/6173642.
+  //
+  // In addition, note that there are web pages that use popups with a font size
+  // of 0. When relanding, font size will likely play a part in the calculation
+  // of the menu position of the reland, so be sure to not regress menu
+  // positioning in that case (https://crbug.com/404294118).
 
   // Set up the button cell, converting to NSView coordinates. The menu is
   // positioned such that the currently selected menu item appears over the

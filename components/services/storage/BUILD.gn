@@ -217,6 +217,7 @@ source_set("tests") {
     "//components/services/storage/public/cpp/filesystem:tests",
     "//components/services/storage/public/mojom",
     "//components/services/storage/public/mojom:tests",
+    "//content/test:test_support",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//mojo/public/cpp/test_support:test_utils",

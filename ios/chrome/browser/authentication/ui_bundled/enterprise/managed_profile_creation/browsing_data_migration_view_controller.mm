@@ -62,6 +62,8 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 - (void)viewDidLoad {
   [super viewDidLoad];
 
+  self.view.accessibilityIdentifier =
+      kBrowsingDataManagementScreenAccessibilityIdentifier;
   self.view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
   self.title = l10n_util::GetNSString(
       IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_LABEL);

@@ -66,10 +66,9 @@ using base::UserMetricsAction;
     CHECK_NE(accessPoint, signin_metrics::AccessPoint::kStartPage);
     _promoAction = promoAction;
     signin::IdentityManager* identityManager =
-        IdentityManagerFactory::GetForProfile(self.browser->GetProfile());
+        IdentityManagerFactory::GetForProfile(self.profile);
     ChromeAccountManagerService* accountManagerService =
-        ChromeAccountManagerServiceFactory::GetForProfile(
-            self.browser->GetProfile());
+        ChromeAccountManagerServiceFactory::GetForProfile(self.profile);
     _upgradeSigninLogger =
         [[UpgradeSigninLogger alloc] initWithAccessPoint:accessPoint
                                              promoAction:promoAction
@@ -127,7 +126,7 @@ using base::UserMetricsAction;
 - (void)finishPresentingScreens {
   __weak __typeof(self) weakSelf = self;
   AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
+      AuthenticationServiceFactory::GetForProfile(self.profile);
   id<SystemIdentity> identity =
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   ProceduralBlock completion = ^{

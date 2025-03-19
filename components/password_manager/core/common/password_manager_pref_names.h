@@ -351,13 +351,6 @@ inline constexpr char kAutofillableCredentialsAccountStoreLoginDatabase[] =
     "password_manager.autofillable_credentials_account_store_login_database";
 #endif
 
-#if !BUILDFLAG(IS_IOS)
-// Boolean pref indicating whether the user has accepted the privacy notice
-// agreement for starting the password change flow.
-inline constexpr char kPasswordChangeFlowNoticeAgreement[] =
-    "password_manager.password_change_flow_notice_agreement";
-#endif
-
 // Boolean pref indicating whether password sharing is enabled. Enables both
 // sending and receiving passwords.
 inline constexpr char kPasswordSharingEnabled[] =

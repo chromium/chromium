@@ -243,7 +243,6 @@ enum class FontDataServiceTypefaceType {
 };
 extern const base::FeatureParam<FontDataServiceTypefaceType>
     kFontDataServiceTypefaceType;
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kUtilityWithUiPumpInitializesCom);
 #endif  // BUILDFLAG(IS_WIN)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDisableProcessReuse);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerAutoPreload);

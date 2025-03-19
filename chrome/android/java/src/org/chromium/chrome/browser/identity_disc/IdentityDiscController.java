@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.ntp.NewTabPage;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -30,7 +31,6 @@ import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherIm
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
-import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
@@ -57,6 +57,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.user_prefs.UserPrefs;
 
 /**
  * Handles displaying IdentityDisc on toolbar depending on several conditions (user sign-in state,
@@ -420,9 +421,8 @@ public class IdentityDiscController
         recordIdentityDiscUsed();
 
         Profile originalProfile = mProfileSupplier.get().getOriginalProfile();
-        SigninManager signinManager =
-                IdentityServicesProvider.get().getSigninManager(originalProfile);
-        if (getSignedInAccountInfo() == null && !signinManager.isSigninDisabledByPolicy()) {
+        if (getSignedInAccountInfo() == null
+                && UserPrefs.get(originalProfile).getBoolean(Pref.SIGNIN_ALLOWED)) {
             AccountPickerBottomSheetStrings bottomSheetStrings =
                     new AccountPickerBottomSheetStrings.Builder(
                                     R.string.signin_account_picker_bottom_sheet_title)

@@ -73,10 +73,9 @@ static void JNI_AutofillProfileBridge_GetSupportedCountries(
       env, ToJavaArrayOfStrings(env, known_country_names), j_country_name_list);
 }
 
-static void JNI_AutofillProfileBridge_GetRequiredFields(
+static std::vector<int> JNI_AutofillProfileBridge_GetRequiredFields(
     JNIEnv* env,
-    std::string& country_code,
-    const JavaParamRef<jobject>& j_required_fields_list) {
+    std::string& country_code) {
   std::vector<int> required;
 
   // Iterating over fields in AddressField to ensure that only fields from
@@ -89,8 +88,7 @@ static void JNI_AutofillProfileBridge_GetRequiredFields(
     }
   }
 
-  Java_AutofillProfileBridge_intArrayToList(env, ToJavaIntArray(env, required),
-                                            j_required_fields_list);
+  return required;
 }
 
 static AutofillAddressEditorUiInfoAndroid

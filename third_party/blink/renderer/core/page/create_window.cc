@@ -32,12 +32,14 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/widget/constants.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_view_client.h"
 #include "third_party/blink/public/web/web_window_features.h"
 #include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/exported/web_dev_tools_agent_impl.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/ad_tracker.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -45,6 +47,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
+#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -53,6 +56,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "third_party/blink/renderer/platform/wtf/text/number_parsing_options.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
@@ -309,7 +313,10 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
   request.SetInitiatorNavigationStateKeepAliveHandle(
       opener_frame.IssueKeepAliveHandle());
 
-  const WebWindowFeatures& features = request.GetWindowFeatures();
+  // Make a copy in order to adjust the requested size. We don't constrain the
+  // geometry to the screen (via ChromeClientImpl::AdjustWindowRectForDisplay)
+  // because the browser may honor cross-screen bounds.
+  WebWindowFeatures features(request.GetWindowFeatures());
   const auto& picture_in_picture_window_options =
       request.GetPictureInPictureWindowOptions();
   if (picture_in_picture_window_options.has_value()) {
@@ -318,6 +325,27 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
     request.SetNavigationPolicy(NavigationPolicyForCreateWindow(features));
     probe::WindowOpen(&opener_window, url, frame_name, features,
                       LocalFrame::HasTransientUserActivation(&opener_frame));
+  }
+
+  int min_size = kMinimumWindowSize;
+  // The minimum size from popups opened from borderless apps differs from
+  // normal apps. When window.open is called, display-mode for the new frame is
+  // still undefined as the app hasn't loaded yet, thus opener frame is used.
+  bool new_popup = request.GetNavigationPolicy() ==
+                   NavigationPolicy::kNavigationPolicyNewPopup;
+  bool borderless = false;
+  if (auto* widget = opener_frame.GetWidgetForLocalRoot()) {
+    borderless =
+        widget->DisplayMode() == mojom::blink::DisplayMode::kBorderless;
+  }
+  if (new_popup && borderless) {
+    min_size = kMinimumBorderlessWindowSize;
+  }
+  if (features.width) {
+    features.width = std::max(features.width, min_size);
+  }
+  if (features.height) {
+    features.height = std::max(features.height, min_size);
   }
 
   // Sandboxed frames cannot open new auxiliary browsing contexts.
@@ -372,9 +400,20 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
 
   frame.View()->SetCanHaveScrollbars(!features.is_popup);
 
-  page->GetChromeClient().Show(frame, opener_frame,
-                               request.GetNavigationPolicy(),
-                               consumed_user_gesture);
+  if (!base::FeatureList::IsEnabled(features::kCombineNewWindowIPCs)) {
+    page->GetChromeClient().Show(frame, opener_frame,
+                                 request.GetNavigationPolicy(),
+                                 consumed_user_gesture);
+  }
+
+  // GetWebView() may return nullptr in tests
+  if (auto* web_view = page->GetChromeClient().GetWebView()) {
+    if (auto* dev_tools_agent = web_view->MainFrameImpl()->DevToolsAgentImpl(
+            /*create_if_necessary=*/false)) {
+      dev_tools_agent->DidShowNewWindow();
+    }
+  }
+
   MaybeLogWindowOpen(opener_frame);
   return &frame;
 }

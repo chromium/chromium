@@ -131,14 +131,14 @@ bool BnplManager::ShouldShowBnplSettings() const {
         // BUILDFLAG(IS_CHROMEOS)
 }
 
-void BnplManager::FetchVcnDetails() {
+void BnplManager::FetchVcnDetails(GURL url) {
   GetBnplPaymentInstrumentForFetchingVcnRequestDetails request_details;
   request_details.billing_customer_number =
       ongoing_flow_state_->billing_customer_number;
   request_details.instrument_id = ongoing_flow_state_->instrument_id;
   request_details.risk_data = ongoing_flow_state_->risk_data;
   request_details.context_token = ongoing_flow_state_->context_token;
-  request_details.redirect_url = ongoing_flow_state_->redirect_url;
+  request_details.redirect_url = std::move(url);
   request_details.issuer_id = ongoing_flow_state_->issuer_id;
 
   payments_autofill_client().ShowAutofillProgressDialog(
@@ -325,13 +325,14 @@ void BnplManager::OnRedirectUrlFetched(
 }
 
 void BnplManager::OnPopupWindowCompleted(
-    PaymentsWindowManager::BnplFlowResult result) {
+    PaymentsWindowManager::BnplFlowResult result,
+    GURL url) {
   switch (result) {
     case PaymentsWindowManager::BnplFlowResult::kUserClosed:
       ongoing_flow_state_.reset();
       break;
     case PaymentsWindowManager::BnplFlowResult::kSuccess:
-      FetchVcnDetails();
+      FetchVcnDetails(std::move(url));
       break;
     case PaymentsWindowManager::BnplFlowResult::kFailure:
       // TODO(crbug.com/378518504): Display error dialog.

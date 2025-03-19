@@ -86,25 +86,9 @@ void RecordParsingStatusHistogram(ParsingStatus status) {
   base::UmaHistogramEnumeration(kAttestationsFileParsingStatusUMA, status);
 }
 
-// Trigger the opening and parsing of the attestations file. Returns the
-// parsed `attestations_map_` or the failure status. This function should only
-// be invoked with `kEnforcePrivacySandboxAttestations` enabled.
-// `installed_file_path` is the path to the attestations list file.
+// Parse the attestations map from the proto string.
 base::expected<PrivacySandboxAttestationsMap, ParsingStatus>
-LoadAttestationsInternal(base::FilePath installed_file_path) {
-  // This function should only be called when the feature is enabled.
-  CHECK(base::FeatureList::IsEnabled(
-      privacy_sandbox::kEnforcePrivacySandboxAttestations));
-
-  std::string proto_str;
-  // When reading the file, the `base::FilePath` directory should be used to
-  // make sure it works across platforms. If using the converted directory
-  // returned by `base::FilePath::AsUTF8Unsafe()`, it fails on Windows when the
-  // directory contains combining characters.
-  if (!base::ReadFileToString(installed_file_path, &proto_str)) {
-    return base::unexpected(ParsingStatus::kFileNotExist);
-  }
-
+ParseAttestationsMap(const std::string& proto_str) {
   base::ElapsedTimer parsing_timer;
   std::optional<PrivacySandboxAttestationsMap> attestations_map =
       ParseAttestationsFromString(proto_str);
@@ -125,6 +109,28 @@ LoadAttestationsInternal(base::FilePath installed_file_path) {
       base::trace_event::EstimateMemoryUsage(attestations_map.value()) / 1024);
 
   return base::ok(std::move(attestations_map.value()));
+}
+
+// Trigger the opening and parsing of the attestations file. Returns the
+// parsed `attestations_map_` or the failure status. This function should only
+// be invoked with `kEnforcePrivacySandboxAttestations` enabled.
+// `installed_file_path` is the path to the attestations list file.
+base::expected<PrivacySandboxAttestationsMap, ParsingStatus>
+LoadAttestationsInternal(base::FilePath installed_file_path) {
+  // This function should only be called when the feature is enabled.
+  CHECK(base::FeatureList::IsEnabled(
+      privacy_sandbox::kEnforcePrivacySandboxAttestations));
+
+  std::string proto_str;
+  // When reading the file, the `base::FilePath` directory should be used to
+  // make sure it works across platforms. If using the converted directory
+  // returned by `base::FilePath::AsUTF8Unsafe()`, it fails on Windows when the
+  // directory contains combining characters.
+  if (!base::ReadFileToString(installed_file_path, &proto_str)) {
+    return base::unexpected(ParsingStatus::kFileNotExist);
+  }
+
+  return ParseAttestationsMap(proto_str);
 }
 
 }  // namespace

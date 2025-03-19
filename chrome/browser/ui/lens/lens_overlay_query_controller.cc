@@ -1400,20 +1400,36 @@ void LensOverlayQueryController::PrepareAndFetchPartialPageContentRequest() {
   payload.set_request_type(lens::RequestType::REQUEST_TYPE_EARLY_PARTIAL_PDF);
 
   // Add the partial page content to the payload.
-  lens::LensOverlayDocument* partial_pdf_document =
-      payload.mutable_partial_pdf_document();
+  lens::LensOverlayDocument partial_pdf_document;
   for (size_t i = 0; i < partial_content_.size(); ++i) {
     const auto& page_text = partial_content_[i];
-    auto* page = partial_pdf_document->add_pages();
+    auto* page = partial_pdf_document.add_pages();
     page->set_page_number(i + 1);
     page->add_text_segments(base::UTF16ToUTF8(page_text));
   }
 
-  // Add the page url to the payload if it is available.
-  if (!page_url_.is_empty() &&
-      lens::features::SendPageUrlForContextualization()) {
-    payload.set_page_url(page_url_.spec());
+  if (lens::features::UseUpdatedContextFields()) {
+    auto* content = payload.mutable_content();
+    auto* content_data = content->add_content_data();
+    content_data->set_content_type(
+        lens::ContentData::CONTENT_TYPE_EARLY_PARTIAL_PDF);
+    partial_pdf_document.SerializeToString(content_data->mutable_data());
+
+    // Add the page url to the payload if it is available.
+    if (!page_url_.is_empty() &&
+        lens::features::SendPageUrlForContextualization()) {
+      content->set_webpage_url(page_url_.spec());
+    }
+  } else {
+    payload.mutable_partial_pdf_document()->CopyFrom(partial_pdf_document);
+
+    // Add the page url to the payload if it is available.
+    if (!page_url_.is_empty() &&
+        lens::features::SendPageUrlForContextualization()) {
+      payload.set_page_url(page_url_.spec());
+    }
   }
+
   request.mutable_objects_request()->mutable_payload()->CopyFrom(payload);
 
   partial_page_content_access_token_fetcher_ =
@@ -1778,8 +1794,7 @@ void LensOverlayQueryController::InteractionFetchResponseHandler(
         latest_interaction_request_data_.get()
             ->request_->interaction_request()
             .image_crop()
-            .zoomed_crop()
-            .crop(),
+            .zoomed_crop(),
         resized_bitmap_size_));
   }
 

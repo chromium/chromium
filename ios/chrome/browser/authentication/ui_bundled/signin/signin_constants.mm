@@ -27,6 +27,15 @@ NSString* const kConsistencyAccountChooserAddAccountIdentifier =
 NSString* const kManagedProfileCreationScreenAccessibilityIdentifier =
     @"ManagedProfileCreationScreenAccessibilityIdentifier";
 
+NSString* const kBrowsingDataManagementScreenAccessibilityIdentifier =
+    @"BrowsingDataManagementScreenAccessibilityIdentifier";
+
+NSString* const kManagedProfileCreationNavigationBarAccessibilityIdentifier =
+    @"ManagedProfileCreationNavigationBarAccessibilityIdentifier";
+
+NSString* const kBrowsingDataButtonAccessibilityIdentifier =
+    @"BrowsingDataButtonAccessibilityIdentifier";
+
 NSString* const kKeepBrowsingDataSeparateCellId =
     @"KeepBrowsingDataSeparateCellId";
 

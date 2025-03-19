@@ -148,7 +148,7 @@ class iCloudKeychainTest : public testing::Test, FidoDiscoveryBase::Observer {
       fake_ = base::MakeRefCounted<FakeSystemInterface>();
       SetSystemInterfaceForTesting(fake_);
 
-      discovery_ = NewDiscovery(kFakeNSWindowForTesting);
+      discovery_ = NewDiscovery(base::apple::WeakNSWindow());
       discovery_->set_observer(this);
       discovery_->Start();
       task_environment_.RunUntilIdle();

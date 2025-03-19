@@ -54,7 +54,6 @@
 <translation id="1090629319939036170">Menú de RV</translation>
 <translation id="1091463901118115503">Continua llegint</translation>
 <translation id="1091779689406092804">captures de pantalla</translation>
-<translation id="1094777233105318927">Informació sobre el navegador, el sistema operatiu, el dispositiu, el programari instal·lat i els fitxers</translation>
 <translation id="1096545575934602868">Aquest camp no pot tenir més de <ph name="MAX_ITEMS_LIMIT" /> entrades. Es descartaran totes les entrades restants.</translation>
 <translation id="1097803577928227769">Parcs i jardins regionals</translation>
 <translation id="1099928364755383720">mode d'imatge sobre imatge automàtic</translation>
@@ -4480,7 +4479,6 @@ Detalls addicionals:
 <translation id="8919895429178014996">Amaga tots els elements</translation>
 <translation id="8922013791253848639">Permet sempre els anuncis en aquest lloc web</translation>
 <translation id="8922734931659847428">Una llista limitada d'URL de les pàgines que visites en què es produeixen <ph name="BEGIN_LINK" />esdeveniments tecnològics heretats<ph name="END_LINK" /></translation>
-<translation id="8924109546403192898">Quan Chrome marca esdeveniments de seguretat, se n'envien les dades rellevants a l'administrador. Per exemple, URL de pàgines que visites a Chrome, URL de pàgines de les quals has copiat dades, noms o metadades de fitxers, bloquejos de navegadors o de pestanyes, i el nom d'usuari que fas servir per iniciar la sessió en aplicacions web, al dispositiu i a Chrome.</translation>
 <translation id="892588693504540538">Encunyació a la part superior dreta</translation>
 <translation id="8926389886865778422">No m'ho tornis a preguntar</translation>
 <translation id="8932102934695377596">El rellotge està endarrerit</translation>

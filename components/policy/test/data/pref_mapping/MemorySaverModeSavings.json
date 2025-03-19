@@ -4,7 +4,7 @@
       "win",
       "linux",
       "mac",
-      "chromeos_ash"
+      "chromeos"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "performance_tuning.high_efficiency_mode.aggressiveness",

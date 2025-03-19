@@ -39,6 +39,7 @@
 #include "ui/views/views_export.h"
 #include "ui/views/win/pen_event_processor.h"
 #include "ui/views/win/scoped_enable_unadjusted_mouse_events_win.h"
+#include "ui/views/win/user_resize_detector.h"
 
 namespace gfx {
 class ImageSkia;
@@ -725,6 +726,8 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   ui::SequentialIDGenerator id_generator_;
 
   PenEventProcessor pen_processor_;
+
+  UserResizeDetector user_resize_detector_;
 
   // Stores a pointer to the WindowEventTarget interface implemented by this
   // class. Allows callers to retrieve the interface pointer.

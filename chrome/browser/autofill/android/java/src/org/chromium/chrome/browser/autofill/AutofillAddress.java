@@ -19,7 +19,6 @@ import org.chromium.payments.mojom.PaymentAddress;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.List;
 import java.util.regex.Pattern;
 
 /** The locally stored autofill address. */
@@ -240,10 +239,9 @@ public class AutofillAddress extends EditableOption {
             completionStatus |= CompletionStatus.INVALID_PHONE_NUMBER;
         }
 
-        List<Integer> requiredFields =
+        for (int fieldId :
                 AutofillProfileBridge.getRequiredAddressFields(
-                        AutofillAddress.getCountryCode(profile, personalDataManager));
-        for (int fieldId : requiredFields) {
+                        AutofillAddress.getCountryCode(profile, personalDataManager))) {
             if (fieldId == FieldType.NAME_FULL || fieldId == FieldType.ADDRESS_HOME_COUNTRY) {
                 continue;
             }

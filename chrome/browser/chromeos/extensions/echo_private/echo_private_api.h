@@ -8,7 +8,12 @@
 #include <string>
 
 #include "base/types/expected.h"
+#include "chrome/browser/ash/notifications/echo_dialog_listener.h"
 #include "extensions/browser/extension_function.h"
+
+namespace aura {
+class Window;
+}
 
 class EchoPrivateGetRegistrationCodeFunction : public ExtensionFunction {
  public:
@@ -68,7 +73,8 @@ class EchoPrivateGetOfferInfoFunction : public ExtensionFunction {
 // either asks user's consent to verify the device's eligibility for the offer,
 // or informs the user that the offers redeeming is disabled.
 // It returns whether the user consent was given.
-class EchoPrivateGetUserConsentFunction : public ExtensionFunction {
+class EchoPrivateGetUserConsentFunction : public ExtensionFunction,
+                                          public ash::EchoDialogListener {
  public:
   EchoPrivateGetUserConsentFunction();
 
@@ -77,6 +83,15 @@ class EchoPrivateGetUserConsentFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
+  void DidPrepareTrustedValues(aura::Window* window,
+                               std::string_view service_name,
+                               std::string_view origin);
+
+  // chromeos::EchoDialogListener:
+  void OnAccept() override;
+  void OnCancel() override;
+  void OnMoreInfoLinkClicked() override;
+
   // Sets result and calls SendResponse.
   void Finalize(bool consent);
 

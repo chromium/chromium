@@ -33,15 +33,13 @@ BnplTosControllerImpl::BnplTosControllerImpl() = default;
 
 BnplTosControllerImpl::~BnplTosControllerImpl() = default;
 
-void BnplTosControllerImpl::OnViewClosing(bool user_accepted) {
-  // The view is being closed so set the pointer to nullptr.
-  view_.reset();
+void BnplTosControllerImpl::OnUserAccepted() {
+  std::move(accept_callback_).Run();
+}
 
-  if (user_accepted) {
-    std::move(accept_callback_).Run();
-  } else {
-    std::move(cancel_callback_).Run();
-  }
+void BnplTosControllerImpl::OnUserCancelled() {
+  Dismiss();
+  std::move(cancel_callback_).Run();
 }
 
 u16string BnplTosControllerImpl::GetOkButtonLabel() const {
@@ -115,6 +113,10 @@ void BnplTosControllerImpl::Show(
   cancel_callback_ = std::move(cancel_callback);
 
   view_ = std::move(create_and_show_view_callback).Run();
+}
+
+void BnplTosControllerImpl::Dismiss() {
+  view_.reset();
 }
 
 }  // namespace autofill

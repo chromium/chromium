@@ -153,13 +153,13 @@ public class StripLayoutHelperManagerTest {
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private ServiceStatus mServiceStatus;
     @Mock private Tracker mTracker;
+    @Mock private ModalDialogManager mModalDialogManager;
     @Captor private ArgumentCaptor<List<Rect>> mSystemExclusionRectCaptor;
 
     private StripLayoutHelperManager mStripLayoutHelperManager;
     private Activity mActivity;
     private ObservableSupplierImpl<TabModelStartupInfo> mTabModelStartupInfoSupplier;
     private ObservableSupplierImpl<Integer> mTabStripHeightSupplier;
-    private ModalDialogManager mModalDialogManager;
     private int mToolbarPrimaryColor;
     private static final float SCREEN_WIDTH = 800.f;
     private static final float SCREEN_HEIGHT = 1600.f;

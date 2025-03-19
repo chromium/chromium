@@ -857,6 +857,7 @@ IN_PROC_BROWSER_TEST_P(
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = url;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   std::unique_ptr<network::SimpleURLLoader> loader =
       variations::CreateSimpleURLLoaderWithVariationsHeaderUnknownSignedIn(

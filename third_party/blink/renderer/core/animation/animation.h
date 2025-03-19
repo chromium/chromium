@@ -63,6 +63,7 @@ class PaintArtifactCompositor;
 class StyleChangeReasonForTracing;
 class TreeScope;
 class TimelineRange;
+class AnimationTrigger;
 
 class CORE_EXPORT Animation : public EventTarget,
                               public ActiveScriptWrappable<Animation>,
@@ -106,7 +107,10 @@ class CORE_EXPORT Animation : public EventTarget,
                            AnimationTimeline*,
                            ExceptionState&);
 
-  Animation(ExecutionContext*, AnimationTimeline*, AnimationEffect*);
+  Animation(ExecutionContext*,
+            AnimationTimeline*,
+            AnimationEffect*,
+            AnimationTrigger*);
   ~Animation() override;
   void Dispose();
 
@@ -431,6 +435,15 @@ class CORE_EXPORT Animation : public EventTarget,
   using NativePaintWorkletReasons = uint32_t;
   NativePaintWorkletReasons GetNativePaintWorkletReasons() const;
 
+  static RangeBoundary* ToRangeBoundary(std::optional<TimelineOffset> offset);
+
+  AnimationTrigger* trigger() {
+    FlushPendingUpdates();
+    return GetTriggerInternal();
+  }
+  AnimationTrigger* GetTriggerInternal() { return trigger_; }
+  virtual void setTrigger(AnimationTrigger* trigger) { trigger_ = trigger; }
+
  protected:
   DispatchEventResult DispatchEventInternal(Event&) override;
   void AddedEventListener(const AtomicString& event_type,
@@ -542,7 +555,6 @@ class CORE_EXPORT Animation : public EventTarget,
       const RangeBoundary* boundary,
       double default_percent,
       ExceptionState& exception_state);
-  static RangeBoundary* ToRangeBoundary(std::optional<TimelineOffset> offset);
 
   String id_;
 
@@ -710,6 +722,8 @@ class CORE_EXPORT Animation : public EventTarget,
   // True if the only reason for not running the animation on the compositor is
   // that the animation would have no effect. Updated in |Animation::PreCommit|.
   bool animation_has_no_effect_;
+
+  Member<AnimationTrigger> trigger_;
 
   FRIEND_TEST_ALL_PREFIXES(AnimationAnimationTestCompositing,
                            NoCompositeWithoutCompositedElementId);

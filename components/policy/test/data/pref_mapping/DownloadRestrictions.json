@@ -5,8 +5,7 @@
       "win",
       "mac",
       "linux",
-      "chromeos_ash",
-      "chromeos_lacros",
+      "chromeos",
       "fuchsia",
       "android"
     ],

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.autofill.editors;
 
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
@@ -166,21 +165,14 @@ public class AddressEditorRenderTest {
 
         AutofillProfileBridgeJni.setInstanceForTesting(mAutofillProfileBridgeJni);
         PhoneNumberUtilJni.setInstanceForTesting(mPhoneNumberUtilJni);
-        doAnswer(
-                        invocation -> {
-                            List<Integer> requiredFields =
-                                    (List<Integer>) invocation.getArguments()[1];
-                            requiredFields.addAll(
-                                    List.of(
-                                            FieldType.NAME_FULL,
-                                            FieldType.ADDRESS_HOME_CITY,
-                                            FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY,
-                                            FieldType.ADDRESS_HOME_ZIP));
-                            return null;
-                        })
-                .when(mAutofillProfileBridgeJni)
-                .getRequiredFields(anyString(), anyList());
-
+        when(mAutofillProfileBridgeJni.getRequiredFields(anyString()))
+                .thenReturn(
+                        new int[] {
+                            FieldType.NAME_FULL,
+                            FieldType.ADDRESS_HOME_CITY,
+                            FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY,
+                            FieldType.ADDRESS_HOME_ZIP
+                        });
         runOnUiThreadBlocking(
                 () -> {
                     when(mSyncService.isSyncFeatureEnabled()).thenReturn(false);

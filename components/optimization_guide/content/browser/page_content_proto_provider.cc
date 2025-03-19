@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 
+#include "base/check.h"
 #include "base/functional/concurrent_closures.h"
 #include "base/i18n/char_iterator.h"
 #include "base/metrics/histogram_macros.h"
@@ -85,7 +86,13 @@ std::optional<optimization_guide::RenderFrameInfo> GetRenderFrameInfo(
     return std::nullopt;
   }
 
+  auto serialized_server_token =
+      DocumentIdentifierUserData::GetDocumentIdentifier(
+          render_frame_host->GetGlobalFrameToken());
+  CHECK(serialized_server_token.has_value());
+
   optimization_guide::RenderFrameInfo render_frame_info;
+  render_frame_info.serialized_server_token = serialized_server_token.value();
   render_frame_info.global_frame_token =
       render_frame_host->GetGlobalFrameToken();
   // We use the origin instead of last committed URL here to ensure the security
@@ -168,13 +175,27 @@ void OnGotAIPageContentForAllFrames(
     std::unique_ptr<optimization_guide::AIPageContentMap> page_content_map,
     OnAIPageContentDone done_callback) {
   optimization_guide::AIPageContentResult page_content;
+  optimization_guide::FrameTokenSet frame_token_set;
 
   if (!optimization_guide::ConvertAIPageContentToProto(
           std::move(main_frame_options), main_frame_token, *page_content_map,
-          base::BindRepeating(&GetRenderFrameInfo), page_content)) {
+          base::BindRepeating(&GetRenderFrameInfo), frame_token_set,
+          page_content)) {
     std::move(done_callback).Run(std::nullopt);
     return;
   }
+
+  // Get all the document identifiers for the frames that were seen.
+  for (const auto& frame_token : frame_token_set) {
+    content::RenderFrameHost* render_frame_host =
+        content::RenderFrameHost::FromFrameToken(frame_token);
+    CHECK(render_frame_host);
+    auto token = DocumentIdentifierUserData::GetDocumentIdentifier(frame_token);
+    CHECK(token.has_value());
+    page_content.document_identifiers[token.value()] =
+        render_frame_host->GetWeakDocumentPtr();
+  }
+
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
       base::BindOnce(RecordPageContentExtractionMetrics,
@@ -276,5 +297,20 @@ void GetAIPageContent(content::WebContents* web_contents,
           web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId(),
           std::move(page_content_map), std::move(done_callback)));
 }
+
+// Allows for a DocumentIdentifier to be reused across calls to convert
+std::optional<std::string> DocumentIdentifierUserData::GetDocumentIdentifier(
+    content::GlobalRenderFrameHostToken token) {
+  content::RenderFrameHost* render_frame_host =
+      content::RenderFrameHost::FromFrameToken(token);
+  if (!render_frame_host) {
+    return std::nullopt;
+  }
+  return DocumentIdentifierUserData::GetOrCreateForCurrentDocument(
+             render_frame_host)
+      ->serialized_token();
+}
+
+DOCUMENT_USER_DATA_KEY_IMPL(DocumentIdentifierUserData);
 
 }  // namespace optimization_guide

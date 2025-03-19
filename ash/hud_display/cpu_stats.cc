@@ -8,6 +8,7 @@
 #include <cstdio>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/notreached.h"
@@ -42,13 +43,13 @@ CpuStats GetProcStatCPU() {
   // https://github.com/torvalds/linux/blob/v5.11/fs/proc/stat.c#L153-L163
 
   CpuStats stats;
-  int assigned =
+  int assigned = UNSAFE_TODO(
       sscanf(stat.c_str(),
              "cpu %" SCNu64 " %" SCNu64 " %" SCNu64 " %" SCNu64 " %" SCNu64
              " %" SCNu64 " %" SCNu64 " %" SCNu64 " %" SCNu64 " %" SCNu64 "",
              &stats.user, &stats.nice, &stats.system, &stats.idle,
              &stats.iowait, &stats.irq, &stats.softirq, &stats.steal,
-             &stats.guest, &stats.guest_nice);
+             &stats.guest, &stats.guest_nice));
   DCHECK_EQ(assigned, 10);
   return stats;
 }

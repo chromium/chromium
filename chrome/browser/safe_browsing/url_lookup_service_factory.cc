@@ -25,6 +25,7 @@
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/safe_browsing/core/common/utils.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 

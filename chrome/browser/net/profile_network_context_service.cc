@@ -1569,6 +1569,10 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
         ipp_core_host->IsIpProtectionEnabled();
     network_context_params->ip_protection_incognito =
         profile_->IsIncognitoProfile();
+    if (net::features::kIpPrivacyStoreProbabilisticRevealTokens.Get()) {
+      network_context_params->ip_protection_data_directory =
+          profile_->GetPath();
+    }
   }
 
   network_context_params->device_bound_sessions_enabled =

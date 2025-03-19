@@ -314,10 +314,9 @@ void X11Window::Initialize(PlatformWindowInitProperties properties) {
   // The changes to |window_properties_| here will be sent to the X server just
   // before the window is mapped.
 
-  // Remove popup windows from taskbar unless overridden.
+  // Remove popup windows from taskbar.
   if ((properties.type == PlatformWindowType::kPopup ||
-       properties.type == PlatformWindowType::kBubble) &&
-      !properties.force_show_in_taskbar) {
+       properties.type == PlatformWindowType::kBubble)) {
     window_properties_.insert(x11::GetAtom("_NET_WM_STATE_SKIP_TASKBAR"));
   }
 

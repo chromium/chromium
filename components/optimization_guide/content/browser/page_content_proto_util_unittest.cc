@@ -6,6 +6,7 @@
 
 #include "base/test/bind.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
@@ -28,6 +29,9 @@ blink::mojom::AIPageContentPtr CreatePageContent() {
       blink::mojom::AIPageContent::New();
   page_content->root_node =
       CreateContentNode(blink::mojom::AIPageContentAttributeType::kRoot);
+  page_content->frame_data = blink::mojom::AIPageContentFrameData::New();
+  page_content->frame_data->frame_interaction_info =
+      blink::mojom::AIPageContentFrameInteractionInfo::New();
   return page_content;
 }
 
@@ -72,14 +76,16 @@ bool ConvertAIPageContentToProto(blink::mojom::AIPageContentPtr& root_content,
           render_frame_info.source_origin =
               url::Origin::Create(GURL("https://example.com"));
           render_frame_info.url = GURL("https://example.com");
+          render_frame_info.serialized_server_token =
+              main_frame_token.frame_token.ToString();
           return render_frame_info;
         }
         return std::nullopt;
       });
-
-  return ConvertAIPageContentToProto(blink::mojom::AIPageContentOptions::New(),
-                                     main_frame_token, page_content_map,
-                                     get_render_frame_info, page_content);
+  FrameTokenSet frame_token_set;
+  return ConvertAIPageContentToProto(
+      blink::mojom::AIPageContentOptions::New(), main_frame_token,
+      page_content_map, get_render_frame_info, frame_token_set, page_content);
 }
 
 void CheckTextNodeProto(const proto::ContentNode& node_proto,
@@ -114,15 +120,19 @@ TEST(PageContentProtoUtilTest, IframeNodeWithNoData) {
           render_frame_info.source_origin =
               url::Origin::Create(GURL("https://example.com"));
           render_frame_info.url = GURL("https://example.com");
+          render_frame_info.serialized_server_token =
+              main_frame_token.frame_token.ToString();
           return render_frame_info;
         }
         NOTREACHED();
       });
 
   AIPageContentResult page_content;
+  FrameTokenSet frame_token_set;
+
   EXPECT_FALSE(ConvertAIPageContentToProto(
       blink::mojom::AIPageContentOptions::New(), main_frame_token,
-      page_content_map, get_render_frame_info, page_content));
+      page_content_map, get_render_frame_info, frame_token_set, page_content));
 }
 
 TEST(PageContentProtoUtilTest, IframeDestroyed) {
@@ -144,12 +154,14 @@ TEST(PageContentProtoUtilTest, IframeDestroyed) {
   auto get_render_frame_info = base::BindLambdaForTesting(
       [&](int child_process_id,
           blink::FrameToken token) -> std::optional<RenderFrameInfo> {
-        if(token == main_frame_token.frame_token) {
+        if (token == main_frame_token.frame_token) {
           RenderFrameInfo render_frame_info;
           render_frame_info.global_frame_token = main_frame_token;
           render_frame_info.source_origin =
               url::Origin::Create(GURL("https://example.com"));
           render_frame_info.url = GURL("https://example.com");
+          render_frame_info.serialized_server_token =
+              main_frame_token.frame_token.ToString();
           return render_frame_info;
         }
         query_token = token;
@@ -157,9 +169,10 @@ TEST(PageContentProtoUtilTest, IframeDestroyed) {
       });
 
   AIPageContentResult page_content;
+  FrameTokenSet frame_token_set;
   EXPECT_FALSE(ConvertAIPageContentToProto(
       blink::mojom::AIPageContentOptions::New(), main_frame_token,
-      page_content_map, get_render_frame_info, page_content));
+      page_content_map, get_render_frame_info, frame_token_set, page_content));
   ASSERT_TRUE(query_token.has_value());
   EXPECT_EQ(iframe_token.frame_token, *query_token);
 }
@@ -490,21 +503,24 @@ TEST(PageContentProtoUtilTest, ConvertIframeData) {
           blink::FrameToken token) -> std::optional<RenderFrameInfo> {
         query_token = token;
         RenderFrameInfo render_frame_info;
-        if(token == main_frame_token.frame_token) {
-            render_frame_info.global_frame_token = main_frame_token;
+        if (token == main_frame_token.frame_token) {
+          render_frame_info.global_frame_token = main_frame_token;
         } else {
-            render_frame_info.global_frame_token = iframe_token;
+          render_frame_info.global_frame_token = iframe_token;
         }
         render_frame_info.source_origin =
             url::Origin::Create(GURL("https://example.com"));
         render_frame_info.url = GURL("https://example.com");
+        render_frame_info.serialized_server_token =
+            main_frame_token.frame_token.ToString();
         return render_frame_info;
       });
 
   AIPageContentResult page_content;
+  FrameTokenSet frame_token_set;
   EXPECT_TRUE(ConvertAIPageContentToProto(
       blink::mojom::AIPageContentOptions::New(), main_frame_token,
-      page_content_map, get_render_frame_info, page_content));
+      page_content_map, get_render_frame_info, frame_token_set, page_content));
   ASSERT_TRUE(query_token.has_value());
   EXPECT_EQ(iframe_token.frame_token, *query_token);
 

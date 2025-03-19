@@ -7,7 +7,6 @@
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
 #include "storage/browser/quota/quota_client_type.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
 namespace content {
 
@@ -26,7 +25,6 @@ void CacheStorageQuotaClient::GetBucketUsage(
     const storage::BucketLocator& bucket,
     GetBucketUsageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(bucket.type, blink::mojom::StorageType::kTemporary);
 
   if (!CacheStorageManager::IsValidQuotaStorageKey(bucket.storage_key)) {
     std::move(callback).Run(0);
@@ -36,11 +34,9 @@ void CacheStorageQuotaClient::GetBucketUsage(
   cache_manager_->GetBucketUsage(bucket, owner_, std::move(callback));
 }
 
-void CacheStorageQuotaClient::GetStorageKeysForType(
-    blink::mojom::StorageType type,
-    GetStorageKeysForTypeCallback callback) {
+void CacheStorageQuotaClient::GetDefaultStorageKeys(
+    GetDefaultStorageKeysCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
 
   cache_manager_->GetStorageKeys(owner_, std::move(callback));
 }
@@ -49,7 +45,6 @@ void CacheStorageQuotaClient::DeleteBucketData(
     const storage::BucketLocator& bucket,
     DeleteBucketDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(bucket.type, blink::mojom::StorageType::kTemporary);
 
   if (!CacheStorageManager::IsValidQuotaStorageKey(bucket.storage_key)) {
     std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
@@ -60,7 +55,6 @@ void CacheStorageQuotaClient::DeleteBucketData(
 }
 
 void CacheStorageQuotaClient::PerformStorageCleanup(
-    blink::mojom::StorageType type,
     PerformStorageCleanupCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(callback).Run();

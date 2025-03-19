@@ -13,7 +13,9 @@ namespace base {
 BASE_FEATURE(kNoCompileFeature, "NoCompileFeature", FEATURE_DISABLED_BY_DEFAULT);
 
 // Must supply an enum template argument.
-constexpr FeatureParam<> kParam1{&kNoCompileFeature, "Param"};  // expected-error {{too few template arguments}}
+// For some reason we get "too few template arguments" without C++ modules, but
+// "missing template argument" with C++ modules.
+constexpr FeatureParam<> kParam1{&kNoCompileFeature, "Param"};  // expected-error {{template argument}}
 constexpr FeatureParam<float> kParam3{&kNoCompileFeature, "Param"};  // expected-error@*:* {{Unsupported FeatureParam<> type}}
 
 // expected-error@*:* {{cannot form a reference to 'void'}}

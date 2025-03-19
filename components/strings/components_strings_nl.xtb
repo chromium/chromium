@@ -54,7 +54,6 @@
 <translation id="1090629319939036170">VR-menu</translation>
 <translation id="1091463901118115503">Verder lezen</translation>
 <translation id="1091779689406092804">screenshots</translation>
-<translation id="1094777233105318927">Informatie over je browser, OS, apparaat, geïnstalleerde software en bestanden</translation>
 <translation id="1096545575934602868">Dit veld mag niet meer dan <ph name="MAX_ITEMS_LIMIT" /> items bevatten. Verdere items worden verwijderd.</translation>
 <translation id="1097803577928227769">Natuurparken en tuinen</translation>
 <translation id="1099928364755383720">automatische scherm-in-scherm</translation>
@@ -1691,6 +1690,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Geen}=1{Van één site }other{Van # sites }}</translation>
 <translation id="3965672182149944205">Adres opslaan?</translation>
 <translation id="3966044442021752214">Productveiligheid</translation>
+<translation id="3969869202926863008">Toegang tot lokaal netwerk</translation>
 <translation id="397105322502079400">Berekenen...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> wordt geblokkeerd</translation>
 <translation id="3975852104434126461">Automobielindustrie</translation>
@@ -2046,6 +2046,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="460848736049414407">Geblokkeerd door beheerder</translation>
 <translation id="4610279718074907952">Deze site maakt deel uit van een groep die is gedefinieerd door <ph name="SET_OWNER" /> en die je activiteit kan bekijken</translation>
 <translation id="46128681529823442">Voetbaltoebehoren</translation>
+<translation id="4612904677925722054">Deze site kan niet-gezinsvriendelijke content bevatten. Een ouder of voogd moet aangeven dat je deze website mag bezoeken.</translation>
 <translation id="4619564267100705184">Bevestigen dat jij het bent</translation>
 <translation id="4622292761762557753">Toch overzetten</translation>
 <translation id="4622647778991854660">Zet meldingen aan in het Meldingencentrum. Open <ph name="LINK" />.</translation>
@@ -2643,6 +2644,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5660122698869360728">Een nieuwe slimme map waarmee je al je winkelpagina's op één plek kunt opslaan en automatisch prijzen kunt volgen, prijsinzichten kunt krijgen en meer.</translation>
 <translation id="5663955426505430495">De beheerder van dit apparaat heeft extensies voor aanvullende functies geïnstalleerd. Extensies hebben toegang tot sommige van je gegevens.</translation>
 <translation id="5667827081946850877">Audioboeken</translation>
+<translation id="5674082555327905359">Kan vragen of deze site verbinding mag maken met apparaten in je lokale netwerk</translation>
 <translation id="5675650730144413517">Deze pagina werkt niet</translation>
 <translation id="5675809467256309336">Dance en elektronische muziek</translation>
 <translation id="5675959228867414813">Tonen op datum</translation>
@@ -2915,6 +2917,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6159908896951210943">Formeel</translation>
 <translation id="6160391204859821737">Een functie voor advertentieprivacy aanzetten</translation>
 <translation id="6162403104168428984">Adres updaten?</translation>
+<translation id="6164605812717770913">Een ouder of voogd heeft aangegeven dat je deze site niet mag bezoeken. Je kunt hen vragen de blokkering op te heffen.</translation>
 <translation id="6165508094623778733">Meer informatie</translation>
 <translation id="6167577165590485365">Laatste ophaalpoging:</translation>
 <translation id="617256461084925519">Google Chrome probeert te verifiëren dat jij het bent zodat je betalingsgegevens kunnen worden ingevuld.</translation>
@@ -3006,6 +3009,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6321917430147971392">Controleer je DNS-instellingen</translation>
 <translation id="6322182122604171028">Kan Windows Hello niet gebruiken</translation>
 <translation id="6326947323444967009">Chrome instellen als de standaardbrowser van het systeem in de iOS-instellingen</translation>
+<translation id="6327065120806001832">toegang tot lokaal netwerk</translation>
 <translation id="6328639280570009161">Probeer netwerkvoorspelling uit te zetten</translation>
 <translation id="6335029926534404762">Sportschoenen</translation>
 <translation id="6337133576188860026">Hiermee wordt minder dan <ph name="SIZE" /> vrijgemaakt. Sommige sites kunnen langzamer worden geladen wanneer je ze weer bezoekt.</translation>
@@ -4473,7 +4477,6 @@ Aanvullende informatie:
 <translation id="8919895429178014996">Alle items verbergen</translation>
 <translation id="8922013791253848639">Altijd advertenties op deze site toestaan</translation>
 <translation id="8922734931659847428">Een beperkte lijst met URL's van pagina's die je bezoekt waarop <ph name="BEGIN_LINK" />verouderde technologiegebeurtenissen<ph name="END_LINK" /> plaatsvinden</translation>
-<translation id="8924109546403192898">Als Chrome beveiligingsgebeurtenissen markeert, worden relevante gegevens over de gebeurtenissen naar je beheerder gestuurd. Dit kunnen URL's zijn van pagina's die je bezoekt in Chrome, URL's van pagina's waarvan je gegevens hebt gekopieerd, bestandsnamen of metadata, browser- of tabbladcrashes en de gebruikersnaam die je gebruikt om in te loggen bij webgebaseerde apps, je apparaat en Chrome.</translation>
 <translation id="892588693504540538">Perforatie rechtsboven</translation>
 <translation id="8926389886865778422">Niet meer vragen</translation>
 <translation id="8932102934695377596">Je klok loopt achter</translation>

@@ -23,6 +23,8 @@ class PLATFORM_EXPORT MemoryPressureListener : public GarbageCollectedMixin {
   virtual void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel) {}
 
+  // This is called just after calling OnMemoryPressure(
+  // MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL).
   virtual void OnPurgeMemory() {}
 };
 
@@ -67,6 +69,7 @@ class PLATFORM_EXPORT MemoryPressureListenerRegistry final
   void RegisterThread(NonMainThread*) LOCKS_EXCLUDED(threads_lock_);
   void UnregisterThread(NonMainThread*) LOCKS_EXCLUDED(threads_lock_);
 
+  // RegisterClient() and UnregisterClient() work only in the main thread.
   void RegisterClient(MemoryPressureListener*);
   void UnregisterClient(MemoryPressureListener*);
 

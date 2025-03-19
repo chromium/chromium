@@ -443,14 +443,22 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // The passed |opener| is the RenderFrameHost initiating the window creation.
   // It will never be null, even if the opener is suppressed via |params|.
   //
+  // The return value is the new WebContents associated with the window, if any.
+  // In some cases there is no WebContents to be returned, either because the
+  // operation failed and the window was not shown, or because the new
+  // WebContents is not meant to be visible/connected to its opener (e.g. when
+  // opening a system app on chromeos). In those cases, ShowCreatedWindow() will
+  // return nullptr. If non-null, the returned WebContents will already be owned
+  // by its WebContentsDelegate.
+  //
   // Note: this is not called "ShowWindow" because that will clash with
   // the Windows function which is actually a #define.
-  virtual void ShowCreatedWindow(
+  virtual WebContents* ShowCreatedWindow(
       RenderFrameHostImpl* opener,
       int main_frame_widget_route_id,
       WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
-      bool user_gesture) {}
+      bool user_gesture);
 
   // The main frame document element is ready. This happens when the document
   // has finished parsing.

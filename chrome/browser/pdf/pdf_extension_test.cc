@@ -259,6 +259,32 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PdfExtensionLoaded) {
   }
 }
 
+// The pdf extension's frame should not allow cross-origin navigations. They
+// should be blocked, but not crash.
+// https://crbug.com/394513280
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest,
+                       NoCrossOriginNavigationFromPdfExtensionFrame) {
+  if (UseOopif()) {
+    // This test only applies to MimeHandlerViewGuest PDF.
+    GTEST_SKIP();
+  }
+
+  const GURL main_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(main_url);
+  ASSERT_TRUE(extension_host);
+
+  content::TestFrameNavigationObserver frame_nav_observer(extension_host);
+  ASSERT_TRUE(content::ExecJs(extension_host,
+                              "window.location = 'https://example.com';"));
+  frame_nav_observer.Wait();
+
+  EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT,
+            frame_nav_observer.last_net_error_code());
+  const GURL extension_url(
+      "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/index.html");
+  EXPECT_EQ(extension_url, extension_host->GetLastCommittedURL());
+}
+
 // Helper class to allow pausing the asynchronous attachment of an inner
 // WebContents between MimeHandlerViewAttachHelper's AttachToOuterWebContents()
 // and ResumeAttachOrDestroy().  This corresponds to the point where the inner

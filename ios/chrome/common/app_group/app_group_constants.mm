@@ -35,8 +35,13 @@ const char kChromeAppGroupCommandDataPreference[] = "Data";
 const char kChromeAppGroupCommandIndexPreference[] = "Index";
 
 const char kChromeAppGroupOpenURLCommand[] = "openurl";
+NSString* const kChromeAppGroupOpenURLInIcognitoCommand = @"openurlIncognito";
 const char kChromeAppGroupSearchTextCommand[] = "searchtext";
+NSString* const kChromeAppGroupIncognitoSearchTextCommand =
+    @"incognitosearchtext";
 const char kChromeAppGroupSearchImageCommand[] = "searchimage";
+NSString* const kChromeAppGroupIncognitoSearchImageCommand =
+    @"incognitosearchimage";
 const char kChromeAppGroupVoiceSearchCommand[] = "voicesearch";
 const char kChromeAppGroupNewTabCommand[] = "newtab";
 const char kChromeAppGroupFocusOmniboxCommand[] = "focusomnibox";

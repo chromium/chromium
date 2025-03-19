@@ -74,8 +74,9 @@ class MockPresentationConnectionProxy
 
 // Matcher for PresentationConnectionMessagePtr arguments.
 MATCHER_P(IsPresentationConnectionMessage, json, "") {
-  return arg->is_message() && base::test::IsJsonMatcher(json).MatchAndExplain(
-                                  arg->get_message(), result_listener);
+  return arg->is_message() &&
+         testing::ExplainMatchResult(base::test::IsJson(json),
+                                     arg->get_message(), result_listener);
 }
 
 }  // namespace media_router

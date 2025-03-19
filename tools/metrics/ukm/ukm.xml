@@ -14956,7 +14956,7 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="Navigation.FromGoogleSearch.Abandoned" singular="True">
+<event name="Navigation.FromGoogleSearch.Abandoned">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -15005,6 +15005,134 @@ be describing additional metrics about the same event.
     <summary>
       The time when the final renderer process for the navigation is
       initialized, relative to navigation start.
+    </summary>
+  </metric>
+</event>
+
+<event name="Navigation.FromGoogleSearch.TimingInformation">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the navigation milestone timing information. This is triggered
+    either when we are navigating away from the page (i.e. `OnComplete` of the
+    `PageLoadMetricsObserver`) or when the navigation is being abandoned. For
+    non-terminal abandonments such as tab hidden or app backgrounded, we record
+    this field every time the abandonment happens so that we have an entry
+    recorded even if app / tab is killed. Note that there may be more than one
+    entry per navigation if non-terminal abandonment is involved, as a terminal
+    abandonment may happen after recording and also non-terminal abandonment may
+    happen multiple times within a navigation, and we may pass succeeding
+    milestones after the last record.
+  </summary>
+  <metric name="CommitReceivedTime">
+    <summary>
+      The time when the CommitNavigation IPC for the navigation is received in
+      the renderer process, relative to navigation start.
+    </summary>
+  </metric>
+  <metric name="CommitSentTime">
+    <summary>
+      The time when the CommitNavigation IPC for the navigation is sent from the
+      browser process, relative to navigation start.
+    </summary>
+  </metric>
+  <metric name="DidCommitTime">
+    <summary>
+      The time when the DidCommit IPC for the navigation is received, relative
+      to navigation start.
+    </summary>
+  </metric>
+  <metric name="DOMContentLoadedTime">
+    <summary>
+      The timestamp of when the &quot;DOMContentLoaded&quot; event is fired for
+      the page load, relative to navigation start.
+    </summary>
+  </metric>
+  <metric name="FirstContentfulPaintTime">
+    <summary>
+      The timestamp of the first contentful paint for the page load, relative to
+      navigation start.
+    </summary>
+  </metric>
+  <metric name="FirstRedirectedRequestStartTime">
+    <summary>
+      The time when the first network request that got redirected for the
+      navigation started, relative to navigation start.
+    </summary>
+  </metric>
+  <metric name="FirstRedirectResponseReceived">
+    <summary>
+      Whether the first redirect response is received yet.
+    </summary>
+  </metric>
+  <metric name="HasImpression" enum="Boolean">
+    <summary>
+      Whether the current navigation has any impression associated. This is set
+      when the Attribution Reporting API is used, and the navigation is
+      initiated from an anchor link with the Attribution Src element.
+    </summary>
+  </metric>
+  <metric name="IsCommitted" enum="Boolean">
+    <summary>
+      Determines whether the navigation is committed or not.
+    </summary>
+  </metric>
+  <metric name="IsEmptyAttributionSrc" enum="Boolean">
+    <summary>
+      Determines whether the attributionsrc tag had empty values or not.
+    </summary>
+  </metric>
+  <metric name="LargestContentfulPaintTime">
+    <summary>
+      The timestamp of the largest contentful paint for the page load, relative
+      to navigation start.
+    </summary>
+  </metric>
+  <metric name="LoaderStartTime">
+    <summary>
+      The time when the URLLoader for the navigation started, relative to
+      navigation start.
+    </summary>
+  </metric>
+  <metric name="LoadEventStartedTime">
+    <summary>
+      The timestamp of when the &quot;load&quot; event is fired for the page
+      load, relative to navigation start.
+    </summary>
+  </metric>
+  <metric name="NonRedirectedRequestStartTime">
+    <summary>
+      The time when the final network request that didn't got redirected for the
+      navigation started, relative to navigation start.
+    </summary>
+  </metric>
+  <metric name="NonRedirectResponseReceived">
+    <summary>
+      Whether the non-redirect/final response is received yet.
+    </summary>
+  </metric>
+  <metric name="ParseStartTime">
+    <summary>
+      The time when the parsing of the HTTP response body started, relative to
+      navigation start.
+    </summary>
+  </metric>
+  <metric name="RedirectCount">
+    <summary>
+      The total number of redirects that happened within the navigation. If the
+      navigation is abandoned before commit, we record the number of redirects
+      up until that point.
+    </summary>
+  </metric>
+  <metric name="SecondRedirectedRequestStartTime">
+    <summary>
+      The time when the second network request that got redirected for the
+      navigation started, relative to navigation start.
+    </summary>
+  </metric>
+  <metric name="SecondRedirectResponseReceived">
+    <summary>
+      Whether the second redirect response is received yet.
     </summary>
   </metric>
 </event>

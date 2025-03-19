@@ -54,7 +54,6 @@
 <translation id="1090629319939036170">EBko menua</translation>
 <translation id="1091463901118115503">Jarraitu irakurtzen</translation>
 <translation id="1091779689406092804">Pantaila-argazkiak</translation>
-<translation id="1094777233105318927">Arakatzaileari, sistema eragileari, gailuari, instalatutako softwareari eta fitxategiei buruzko informazioa</translation>
 <translation id="1096545575934602868">Eremu honek ez lituzke <ph name="MAX_ITEMS_LIMIT" /> sarrera baino gehiago izan behar. Baztertu egingo dira gainerako sarrerak.</translation>
 <translation id="1097803577928227769">Lurraldeko parkeak eta lorategiak</translation>
 <translation id="1099928364755383720">pantaila txiki gainjarri automatikoa</translation>
@@ -4474,7 +4473,6 @@ Xehetasun gehiago:
 <translation id="8919895429178014996">Ezkutatu elementu guztiak</translation>
 <translation id="8922013791253848639">Eman beti iragarkiak webgune honetan erakusteko baimena</translation>
 <translation id="8922734931659847428">bisitatzen dituzun orrien URLen zerrenda mugatu bat, non <ph name="BEGIN_LINK" />aurreko bertsioko teknologia-gertaerak<ph name="END_LINK" /> jazotzen baitira</translation>
-<translation id="8924109546403192898">Chrome-k segurtasun-gertaeren berri ematen badu, gertaerei buruzko datu garrantzitsuak bidaliko zaizkio administratzaileari. Datu horien artean baliteke hauek agertzea: Chrome-n bisitatzen dituzun orrien URLak, datuak kopiatu dituzun orrien URLak, fitxategien izenak edo metadatuak, arakatzailearen edo fitxen hutsegiteak eta gailuan, sareko aplikazioetan nahiz Chrome-n saioa hasteko erabiltzen duzun erabiltzaile-izena.</translation>
 <translation id="892588693504540538">Zulo bat goian, eskuinetara</translation>
 <translation id="8926389886865778422">Ez galdetu berriro</translation>
 <translation id="8932102934695377596">Erlojua atzeratuta duzu</translation>

@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
@@ -150,20 +149,6 @@ public class FullscreenSigninPromoLauncherTest {
         verify(mFullscreenSigninLauncherMock, never())
                 .createFullscreenSigninIntent(
                         eq(mContext), eq(mProfile), any(), eq(SigninAccessPoint.SIGNIN_PROMO));
-    }
-
-    @Test
-    public void whenSignedInAndSyncingShouldReturnFalse() {
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
-        when(mIdentityManagerMock.getPrimaryAccountInfo(ConsentLevel.SYNC))
-                .thenReturn(TestAccounts.ACCOUNT1);
-        mPrefManager.setSigninPromoLastShownVersion(38);
-        Assert.assertFalse(
-                FullscreenSigninPromoLauncher.launchPromoIfNeeded(
-                        mContext, mProfile, mFullscreenSigninLauncherMock, CURRENT_MAJOR_VERSION));
-        verify(mFakeAccountManagerFacade, never()).getCoreAccountInfos();
-        verify(mFullscreenSigninLauncherMock, never())
-                .createFullscreenSigninIntent(any(), any(), any(), anyInt());
     }
 
     @Test
@@ -321,5 +306,30 @@ public class FullscreenSigninPromoLauncherTest {
                 .createFullscreenSigninIntent(any(), any(), any(), anyInt());
         Assert.assertEquals(40, mPrefManager.getSigninPromoLastShownVersion());
         Assert.assertEquals(2, mPrefManager.getSigninPromoLastAccountEmails().size());
+    }
+
+    /**
+     * Tests that the upgrade promo doesn't record "promo shown" preferences when the related
+     * sign-in flow fails to launch, as the user will not see any UI in this case. The failure can
+     * occur (a null intent is returned by SigninAndHistorySyncActivityLauncher) due to multiple
+     * reasons: e.g. sign-in is disabled, the user is signed-in but can't opt-in to history sync, or
+     * the user is signed-in but declined history sync too recently. See {@link
+     * SigninAndHistorySyncActivityLauncherImpl#canStartSigninAndHistorySyncOrShowError}
+     */
+    @Test
+    public void testSigninFlowFailsToLaunch() {
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mPrefManager.setSigninPromoLastShownVersion(10);
+        when(mFullscreenSigninLauncherMock.createFullscreenSigninIntent(
+                        eq(mContext), eq(mProfile), any(), eq(SigninAccessPoint.SIGNIN_PROMO)))
+                .thenReturn(null);
+
+        Assert.assertFalse(
+                FullscreenSigninPromoLauncher.launchPromoIfNeeded(
+                        mContext, mProfile, mFullscreenSigninLauncherMock, CURRENT_MAJOR_VERSION));
+
+        verify(mContext, never()).startActivity(any());
+        Assert.assertEquals(10, mPrefManager.getSigninPromoLastShownVersion());
+        Assert.assertEquals(null, mPrefManager.getSigninPromoLastAccountEmails());
     }
 }

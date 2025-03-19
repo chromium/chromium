@@ -4072,9 +4072,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
     <ph name="BEGIN_PARAGRAPH2" />Du kan när som helst ge eller dra tillbaka ditt tillstånd till att rapporterna skickas. Detta gör du i inställningarna på Chrome-enheten. Om du administrerar en domän kan du ändra inställningen i administratörskonsolen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">Norrsken över en liten stuga om natten.</translation>
 <translation id="3818102823568165369">Lokala certifikat som har lagts till av ditt operativsystem eller din administratör.</translation>
-<translation id="3818662907126913619">Om du vill använda enheten med din <ph name="DOMAIN" />-profil behöver organisationen information om enheten.
-
-Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och enhetens operativsystem.</translation>
 <translation id="3819164369574292143">Zooma in för att göra objekt på skärmen större. Aktivera och inaktivera skärmförstoring med Sök + Ctrl + M. När du har zoomat in kan du flytta vyn med Ctrl + Alt + piltangenterna.</translation>
 <translation id="3819257035322786455">Säkerhetskopiera</translation>
 <translation id="3819261658055281761">Det gick inte att lagra någon långsiktig API-åtkomsttoken för den här enheten.</translation>
@@ -4392,9 +4389,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4031527940632463547">Användning av sensorer har blockerats</translation>
 <translation id="4033471457476425443">Lägg till ny mapp</translation>
 <translation id="4033963223187371752">Säkra webbplatser kan ha inbäddat innehåll som bilder eller ramar som inte är säkra</translation>
-<translation id="4034706080855851454">Om du vill använda enheten med din organisationsprofil behöver organisationen information om enheten.
-
-Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och enhetens operativsystem.</translation>
 <translation id="4034824040120875894">Skrivare</translation>
 <translation id="4035758313003622889">&amp;Aktivitetshanteraren</translation>
 <translation id="4035877632587724847">Tillåt inte</translation>

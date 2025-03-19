@@ -4059,9 +4059,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
     <ph name="BEGIN_PARAGRAPH2" />Odesílání těchto zpráv můžete kdykoli povolit nebo zakázat v nastavení zařízení Chrome. Pokud jste administrátor domény, můžete toto nastavení změnit v administrátorské konzoli.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">Noční polární záře nad malou chaloupkou.</translation>
 <translation id="3818102823568165369">Místní certifikáty, které přidal váš operační systém nebo váš administrátor.</translation>
-<translation id="3818662907126913619">Pokud zařízení chcete používat s profilem organizace <ph name="DOMAIN" />, tato organizace potřebuje informace o zařízení.
-
-To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlížeči a operačním systému zařízení.</translation>
 <translation id="3819164369574292143">Přiblížením zvětšíte položky na obrazovce. Lupu můžete zapnout či vypnout stisknutím kláves Hledat + Ctrl + M. Po zvětšené obrazovce se můžete pohybovat stisknutím kláves Ctrl a Alt spolu se šipkami.</translation>
 <translation id="3819257035322786455">Záloha</translation>
 <translation id="3819261658055281761">Systému se pro toto zařízení nepodařilo uložit token dlouhodobého přístupu k rozhraní API.</translation>
@@ -4378,9 +4375,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4031527940632463547">Použití senzorů je blokováno</translation>
 <translation id="4033471457476425443">Přidat novou složku</translation>
 <translation id="4033963223187371752">Bezpečné weby mohou obsahovat vložený obsah, např. obrázky nebo rámce, které nejsou zabezpečené</translation>
-<translation id="4034706080855851454">Pokud zařízení chcete používat s profilem své organizace, vaše organizace potřebuje informace o zařízení.
-
-To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlížeči a operačním systému zařízení.</translation>
 <translation id="4034824040120875894">Tiskárna</translation>
 <translation id="4035758313003622889">Správce úloh</translation>
 <translation id="4035877632587724847">Nepovolovat</translation>

@@ -6,6 +6,7 @@ from collections import OrderedDict
 import json
 import logging
 import os
+import plistlib
 import subprocess
 import time
 import typing
@@ -534,40 +535,19 @@ def disable_hardware_keyboard(udid: str) -> None:
   Args:
     udid: (str) UDID of the simulator to disable hw keyboard for.
   """
-
   path = os.path.expanduser(
       '~/Library/Preferences/com.apple.iphonesimulator.plist')
-
   try:
-    if not os.path.exists(path):
-      subprocess.check_call(['plutil', '-create', 'binary1', path])
-
-    plist, error = mac_util.plist_as_dict(path)
-    if error:
-      raise error
-
-    if 'DevicePreferences' not in plist:
-      subprocess.check_call(
-          ['plutil', '-insert', 'DevicePreferences', '-dictionary', path])
-      plist['DevicePreferences'] = {}
-
-    if 'DevicePreferences' in plist and udid not in plist['DevicePreferences']:
-      subprocess.check_call([
-          'plutil', '-insert', 'DevicePreferences.{}'.format(udid),
-          '-dictionary', path
-      ])
-      plist['DevicePreferences'][udid] = {}
-
-    subprocess.check_call([
-        'plutil', '-replace',
-        'DevicePreferences.{}.ConnectHardwareKeyboard'.format(udid), '-bool',
-        'NO', path
-    ])
-
-  except subprocess.CalledProcessError as e:
-    message = 'Unable to disable hardware keyboard. Error: %s' % e.stderr
-    LOGGER.error(message)
-  except json.JSONDecodeError as e:
+    plist = {}
+    if os.path.exists(path):
+      with open(path, 'rb') as f:
+        plist = plistlib.load(f, fmt=plistlib.FMT_BINARY)
+    prefs_val = plist.setdefault('DevicePreferences', {})
+    udid_val = prefs_val.setdefault(udid, {})
+    udid_val['ConnectHardwareKeyboard'] = False
+    with open(path, 'wb') as f:
+      plistlib.dump(plist, f, fmt=plistlib.FMT_BINARY)
+  except Exception as e:
     message = 'Unable to disable hardware keyboard. Error: %s' % e.msg
     LOGGER.error(message)
 

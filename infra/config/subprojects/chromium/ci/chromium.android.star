@@ -1350,7 +1350,7 @@ ci.builder(
             "cronet_dbg_isolated_scripts",
         ],
     ),
-    gardener_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(gardener_rotations.CRONET),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|arm",
         short_name = "dbg",
@@ -1405,7 +1405,7 @@ ci.builder(
             "cronet_package",
         ],
     ),
-    gardener_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(gardener_rotations.CRONET),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|arm",
         short_name = "rel",
@@ -1453,7 +1453,7 @@ ci.builder(
             "cronet_package_ci",
         ],
     ),
-    gardener_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(gardener_rotations.CRONET),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|arm64",
         short_name = "dbg",
@@ -1504,7 +1504,7 @@ ci.builder(
             "cronet_package_ci",
         ],
     ),
-    gardener_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(gardener_rotations.CRONET),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|gn2bp",
         short_name = "gn2bp",
@@ -1554,7 +1554,7 @@ ci.builder(
             "cronet_package_ci",
         ],
     ),
-    gardener_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(gardener_rotations.CRONET),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|arm64",
         short_name = "rel",
@@ -1610,7 +1610,7 @@ ci.builder(
             "marshmallow",
         ],
     ),
-    gardener_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(gardener_rotations.CRONET),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|asan",
     ),
@@ -1654,7 +1654,7 @@ ci.builder(
             "cronet_common_compile_targets",
         ],
     ),
-    gardener_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(gardener_rotations.CRONET),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|mainline_clang|arm64",
         short_name = "dbg",
@@ -1703,7 +1703,7 @@ ci.builder(
             "cronet_common_compile_targets",
         ],
     ),
-    gardener_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(gardener_rotations.CRONET),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|mainline_clang_coverage|arm64",
         short_name = "rel",
@@ -1748,7 +1748,7 @@ ci.builder(
             "cronet_common_compile_targets",
         ],
     ),
-    gardener_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(gardener_rotations.CRONET),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|mainline_clang|riscv64",
         short_name = "dbg",
@@ -1796,7 +1796,7 @@ ci.builder(
             "cronet_common_compile_targets",
         ],
     ),
-    gardener_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(gardener_rotations.CRONET),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|mainline_clang|riscv64",
         short_name = "rel",
@@ -1846,7 +1846,7 @@ ci.builder(
             "cronet_common_compile_targets",
         ],
     ),
-    gardener_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(gardener_rotations.CRONET),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|mainline_clang|x86",
         short_name = "dbg",
@@ -1895,7 +1895,7 @@ ci.builder(
             "cronet_common_compile_targets",
         ],
     ),
-    gardener_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(gardener_rotations.CRONET),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|mainline_clang_coverage|x86",
         short_name = "rel",
@@ -1923,7 +1923,7 @@ ci.builder(
     cores = None,
     os = os.ANDROID,
     cpu = None,
-    gardener_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(gardener_rotations.CRONET),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test|perf",
         short_name = "m",
@@ -1969,7 +1969,7 @@ ci.builder(
             "cronet_dbg_isolated_scripts",
         ],
     ),
-    gardener_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(gardener_rotations.CRONET),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|riscv64",
         short_name = "dbg",
@@ -2017,7 +2017,7 @@ ci.builder(
             "cronet_rel_isolated_scripts",
         ],
     ),
-    gardener_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(gardener_rotations.CRONET),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|riscv64",
         short_name = "rel",
@@ -2077,7 +2077,7 @@ ci.builder(
             ),
         },
     ),
-    gardener_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(gardener_rotations.CRONET),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|x86",
         short_name = "dbg",
@@ -2137,7 +2137,7 @@ ci.builder(
             ),
         },
     ),
-    gardener_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(gardener_rotations.CRONET),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|x64",
         short_name = "dbg",
@@ -2184,7 +2184,7 @@ ci.thin_tester(
             "x86-64",
         ],
     ),
-    gardener_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(gardener_rotations.CRONET),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
         short_name = "12",
@@ -2231,7 +2231,7 @@ ci.thin_tester(
             "x86-64",
         ],
     ),
-    gardener_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(gardener_rotations.CRONET),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
         short_name = "13",
@@ -2280,7 +2280,7 @@ ci.thin_tester(
             "x86-64",
         ],
     ),
-    gardener_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(gardener_rotations.CRONET),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
         short_name = "14",
@@ -2329,7 +2329,7 @@ ci.thin_tester(
             "x86-64",
         ],
     ),
-    gardener_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(gardener_rotations.CRONET),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
         short_name = "15",
@@ -2376,7 +2376,7 @@ ci.thin_tester(
             "x86-64",
         ],
     ),
-    gardener_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(gardener_rotations.CRONET),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
         short_name = "m",
@@ -2423,7 +2423,7 @@ ci.thin_tester(
             "x86-64",
         ],
     ),
-    gardener_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(gardener_rotations.CRONET),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
         short_name = "n",
@@ -2477,7 +2477,7 @@ ci.thin_tester(
             ),
         },
     ),
-    gardener_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(gardener_rotations.CRONET),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
         short_name = "o",
@@ -2532,7 +2532,7 @@ ci.thin_tester(
             ),
         },
     ),
-    gardener_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(gardener_rotations.CRONET),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
         short_name = "p",
@@ -2587,7 +2587,7 @@ ci.thin_tester(
             ),
         },
     ),
-    gardener_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(gardener_rotations.CRONET),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
         short_name = "10",
@@ -2634,7 +2634,7 @@ ci.thin_tester(
             "x86-64",
         ],
     ),
-    gardener_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(gardener_rotations.CRONET),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
         short_name = "11",
@@ -2685,7 +2685,7 @@ ci.builder(
             "cronet_smoketests_apk",
         ],
     ),
-    gardener_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(gardener_rotations.CRONET),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|x86",
         short_name = "rel",
@@ -2735,7 +2735,7 @@ ci.builder(
             "cronet_smoketests_apk",
         ],
     ),
-    gardener_rotations = args.ignore_default(None),
+    gardener_rotations = args.ignore_default(gardener_rotations.CRONET),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|x64",
         short_name = "rel",

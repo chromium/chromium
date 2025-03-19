@@ -78,6 +78,8 @@ EnumTraits<gl::mojom::ANGLEImplementation, gl::ANGLEImplementation>::ToMojom(
       return gl::mojom::ANGLEImplementation::kSwiftShader;
     case gl::ANGLEImplementation::kMetal:
       return gl::mojom::ANGLEImplementation::kMetal;
+    case gl::ANGLEImplementation::kD3D11Warp:
+      return gl::mojom::ANGLEImplementation::kD3D11Warp;
     case gl::ANGLEImplementation::kDefault:
       return gl::mojom::ANGLEImplementation::kDefault;
   }
@@ -115,6 +117,9 @@ bool EnumTraits<gl::mojom::ANGLEImplementation, gl::ANGLEImplementation>::
       return true;
     case gl::mojom::ANGLEImplementation::kMetal:
       *out = gl::ANGLEImplementation::kMetal;
+      return true;
+    case gl::mojom::ANGLEImplementation::kD3D11Warp:
+      *out = gl::ANGLEImplementation::kD3D11Warp;
       return true;
     case gl::mojom::ANGLEImplementation::kDefault:
       *out = gl::ANGLEImplementation::kDefault;

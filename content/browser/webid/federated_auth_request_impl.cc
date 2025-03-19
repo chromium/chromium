@@ -3411,6 +3411,17 @@ bool FederatedAuthRequestImpl::OnResolve(
   return true;
 }
 
+void FederatedAuthRequestImpl::OnOriginMismatch(Method method,
+                                                const url::Origin& expected,
+                                                const url::Origin& actual) {
+  const char* method_string = method == Method::kClose ? "close" : "resolve";
+  std::string error_messsage = base::StringPrintf(
+      "IdentityProvider.%s called from incorrect origin '%s'; expected '%s'",
+      method_string, actual.Serialize().c_str(), expected.Serialize().c_str());
+  render_frame_host().AddMessageToConsole(
+      blink::mojom::ConsoleMessageLevel::kError, error_messsage);
+}
+
 bool FederatedAuthRequestImpl::SetupIdentityRegistryFromPopup() {
 #if BUILDFLAG(IS_ANDROID)
   if (identity_registry_) {

@@ -515,7 +515,7 @@ message IframeData {
 
 // The data for a frame in the web page. This is the common data structure for
 // both the root frame and embedded iframes.
-// Next ID: 4
+// Next ID: 6
 message FrameData {
   // The security origin of the frame.
   SecurityOrigin security_origin = 1;
@@ -523,8 +523,14 @@ message FrameData {
   // Interaction information for the frame.
   FrameInteractionInfo frame_interaction_info = 2;
 
-  // Identifies the frame.
-  FrameIdentifier frame_identifier = 3;
+  // Identifies the document in a frame.
+  DocumentIdentifier document_identifier = 3;
+
+  // The URL of the frame.
+  string url = 4;
+
+  // The title of the frame.
+  string title = 5;
 }
 
 // The interaction information for the frame. This is for interactions that
@@ -557,11 +563,12 @@ message Selection {
   string selected_text = 5;
 }
 
-// Directs the action to a specific Frame in Chrome.
-message FrameIdentifier {
-  // TODO: crbug.com/402086380 - Add frame information. We need to decide the right
-  // format for this.
-
+// Directs the action to a specific Document in a frame in Chrome.
+// Next ID: 3
+message DocumentIdentifier {
+  // A unique identifier for the frame that is not stable across APC
+  // calls/pages. Caller can map these to a client side frame id.
+  string serialized_token = 1;
 }
 
 message TableRowData {
@@ -591,6 +598,13 @@ message Point {
   int32 y = 2;
 }
 
+// Uniquely identifies a DOM elements across all frames.
+message AutofillGlobalId {
+  string frame_token = 1;
+
+  uint64 renderer_id = 2;
+}
+
 message FormData {
   // The name by which autofill knows this form. This is generally either the
   // name attribute or the id_attribute value, which-ever is non-empty with
@@ -599,6 +613,14 @@ message FormData {
 
   // The fields contained in this form.
   repeated FormFieldData fields = 2;
+
+  // Only set during data collection, not in prediction requests.
+  AutofillGlobalId global_id = 3;
+
+  // Autofill's internal identifier for the form. Can change when the form
+  // changes dynamically.
+  // Only set during data collection, not in prediction requests.
+  uint64 form_signature = 4;
 }
 
 message FormFieldData {
@@ -633,9 +655,13 @@ message FormFieldData {
   // take the value of the field into consideration.
   bool is_eligible = 10;
 
-  // Uniquely identifies the DOM element that this field represents among the
-  // field DOM elements in the same frame.
-  string global_id = 11;
+  // Only set during data collection, not in prediction requests.
+  AutofillGlobalId global_id = 11;
+
+  // Autofill's internal identifier for the field. Can change when the form
+  // changes dynamically.
+  // Only set during data collection, not in prediction requests.
+  uint32 field_signature = 12;
 }
 
 message TableRow {

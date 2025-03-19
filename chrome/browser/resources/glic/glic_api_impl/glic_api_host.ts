@@ -169,6 +169,11 @@ class WebClientImpl implements WebClientInterface {
     this.sender.requestNoResponse(
         'glicWebClientNotifyManualResizeChanged', {resizing});
   }
+
+  notifyOsHotkeyStateChanged(hotkey: string): void {
+    this.sender.requestNoResponse(
+        'glicWebClientNotifyOsHotkeyStateChanged', {hotkey});
+  }
 }
 
 // Handles all requests to the host.

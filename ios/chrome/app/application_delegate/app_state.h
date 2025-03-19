@@ -11,9 +11,9 @@
 #import "ios/chrome/app/application_delegate/app_state_agent.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/app/background_refresh/background_refresh_app_agent_audience.h"
+#import "ios/chrome/browser/device_orientation/ui_bundled/portait_orientation_manager.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/ui_blocker_manager.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
-#import "ios/chrome/browser/ui/device_orientation/portait_orientation_manager.h"
 
 @class CommandDispatcher;
 @class SceneState;

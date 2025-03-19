@@ -54,7 +54,6 @@
 <translation id="1090629319939036170">Menu RV</translation>
 <translation id="1091463901118115503">Continuer à lire</translation>
 <translation id="1091779689406092804">captures d'écran</translation>
-<translation id="1094777233105318927">Renseignements à propos de votre navigateur, de votre système d'exploitation, de votre appareil, des logiciels installés et des fichiers</translation>
 <translation id="1096545575934602868">Ce champ ne peut pas contenir plus de <ph name="MAX_ITEMS_LIMIT" /> entrées. Toutes les entrées supplémentaires seront supprimées.</translation>
 <translation id="1097803577928227769">Parcs et jardins régionaux</translation>
 <translation id="1099928364755383720">Incrustation d'image automatique</translation>
@@ -4479,7 +4478,6 @@ Détails supplémentaires :
 <translation id="8919895429178014996">Masquer tous les éléments</translation>
 <translation id="8922013791253848639">Toujours autoriser les annonces sur ce site</translation>
 <translation id="8922734931659847428">Une liste limitée d'URL de pages que vous visitez où se produisent des <ph name="BEGIN_LINK" />événements relatifs aux technologies patrimoniales<ph name="END_LINK" /></translation>
-<translation id="8924109546403192898">Lorsque Chrome signale des événements relatifs à la sécurité, les données pertinentes sur les événements sont envoyées à votre administrateur. Ces données pourraient comprendre les URL des pages que vous visitez dans Chrome, les URL des pages à partir desquelles vous avez copié des données, les noms de fichiers ou les métadonnées, les plantages du navigateur ou des onglets, et le nom d'utilisateur que vous utilisez pour vous connecter aux applications Web, à votre appareil et à Chrome.</translation>
 <translation id="892588693504540538">Perforation en haut à droite</translation>
 <translation id="8926389886865778422">Ne plus afficher ce message</translation>
 <translation id="8932102934695377596">Votre horloge retarde</translation>

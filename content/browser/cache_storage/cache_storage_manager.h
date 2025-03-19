@@ -88,7 +88,7 @@ class CONTENT_EXPORT CacheStorageManager
       storage::mojom::QuotaClient::GetBucketUsageCallback callback);
   void GetStorageKeys(
       storage::mojom::CacheStorageOwner owner,
-      storage::mojom::QuotaClient::GetStorageKeysForTypeCallback callback);
+      storage::mojom::QuotaClient::GetDefaultStorageKeysCallback callback);
   void DeleteOriginData(
       const std::set<url::Origin>& origins,
       storage::mojom::CacheStorageOwner owner,
@@ -173,7 +173,7 @@ class CONTENT_EXPORT CacheStorageManager
   }
 
   void ListStorageKeysOnTaskRunner(
-      storage::mojom::QuotaClient::GetStorageKeysForTypeCallback callback,
+      storage::mojom::QuotaClient::GetDefaultStorageKeysCallback callback,
       std::vector<storage::BucketLocator> buckets);
 
   bool IsMemoryBacked() const { return profile_path_.empty(); }

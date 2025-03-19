@@ -4,7 +4,7 @@
 
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/fre/glic_fre_dialog_view.h"
-#include "chrome/browser/glic/interactive_glic_test.h"
+#include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/common/chrome_features.h"

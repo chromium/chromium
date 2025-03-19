@@ -440,6 +440,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Пароль захаваны ў вашым Уліковым запісе Google {EMAIL}}one{Паролі захаваны ў вашым Уліковым запісе Google {EMAIL}}few{Паролі захаваны ў вашым Уліковым запісе Google {EMAIL}}many{Паролі захаваны ў вашым Уліковым запісе Google {EMAIL}}other{Паролі захаваны ў вашым Уліковым запісе Google {EMAIL}}}</translation>
 <translation id="2791174088547598693">Дадаць пароль…</translation>
 <translation id="2797302972324086597">Код краіны</translation>
+<translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} файл}one{{COUNT} файл}few{{COUNT} файлы}many{{COUNT} файлаў}other{{COUNT} файла}}</translation>
 <translation id="2816489851009559785">Меню → Налады → Стандартны браўзер</translation>
 <translation id="2818821771744632548">У выніку скіду налад iPhone адбыўся выхад з уліковага запісу <ph name="USER_NAME" />. Каб увайсці зноў, націсніце "Працягнуць" ніжэй.</translation>
 <translation id="2819667972867209401">Калі гэта функцыя ўключана, даныя захоўваюцца ва Уліковым запісе Google. Калі выключана – даныя захоўваюцца толькі на гэтай прыладзе і выдаляюцца пры выхадзе з уліковага запісу.</translation>

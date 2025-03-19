@@ -113,6 +113,8 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
     if host_information.IsLinux() or (host_information.IsWindows()
                                       and not host_information.IsArmCpu()):
       pages += namespace.SwiftShaderPages(cls.test_base_name)
+    if host_information.IsWindows():
+      pages += namespace.WARPPages(cls.test_base_name)
     for p in pages:
       yield (p.name, posixpath.join(gpu_path_util.GPU_DATA_RELATIVE_PATH,
                                     p.url), [p])

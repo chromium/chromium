@@ -92,7 +92,9 @@ public class DataSharingTabGroupUtils {
         @Nullable
         TabGroupSyncService tabGroupSyncService =
                 TabGroupSyncServiceFactory.getForProfile(tabModel.getProfile());
-        if (tabGroupSyncService == null) return destroyedGroups;
+        if (tabGroupSyncService == null || !tabGroupSyncService.isObservingLocalChanges()) {
+            return destroyedGroups;
+        }
 
         String[] syncIds = tabGroupSyncService.getAllGroupIds();
         // This may be null in tests.

@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
@@ -41,6 +42,10 @@ TranslatePageActionController::TranslatePageActionController(
 
   RegisterAsPageActionObserver(
       CHECK_DEREF(tab_interface_->GetTabFeatures()->page_action_controller()));
+
+  // Translation may be enabled already at the time of creating the tab (e.g.,
+  // while moving contents from a browser windows to a web app).
+  UpdatePageAction();
 }
 
 TranslatePageActionController::~TranslatePageActionController() = default;
@@ -96,8 +101,9 @@ void TranslatePageActionController::UpdatePageAction() {
   } else {
     page_action_controller->Hide(kActionShowTranslate);
     if (TranslateBubbleController* bubble_controller =
-            TranslateBubbleController::FromWebContents(
-                tab_interface_->GetContents())) {
+            tab_interface_->GetBrowserWindowInterface()
+                ->GetFeatures()
+                .translate_bubble_controller()) {
       bubble_controller->CloseBubble();
     }
   }

@@ -127,6 +127,21 @@ constexpr char kCheckApiAvailabilityUserScripts[] =
          chrome.test.sendScriptResult(message);
        })";
 
+bool ApiExists(content::WebContents* web_contents,
+               const std::string& api_name) {
+  return content::EvalJs(web_contents,
+                         base::StringPrintf("!!%s;", api_name.c_str()))
+      .ExtractBool();
+}
+
+bool ObjectIsDefined(content::WebContents* web_contents,
+                     const std::string& object_name) {
+  return content::EvalJs(web_contents,
+                         base::StringPrintf("self.hasOwnProperty('%s');",
+                                            object_name.c_str()))
+      .ExtractBool();
+}
+
 }  // namespace
 
 // And end-to-end test for extension APIs using native bindings.
@@ -368,19 +383,15 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, WebUIBindings) {
       ui_test_utils::NavigateToURL(browser(), GURL("chrome://extensions")));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  auto api_exists = [web_contents](const std::string& api_name) {
-    return content::EvalJs(web_contents,
-                           base::StringPrintf("!!%s;", api_name.c_str()))
-        .ExtractBool();
-  };
 
-  EXPECT_TRUE(api_exists("chrome.developerPrivate"));
-  EXPECT_TRUE(api_exists("chrome.developerPrivate.getProfileConfiguration"));
-  EXPECT_TRUE(api_exists("chrome.management"));
-  EXPECT_TRUE(api_exists("chrome.management.setEnabled"));
-  EXPECT_FALSE(api_exists("chrome.networkingPrivate"));
-  EXPECT_FALSE(api_exists("chrome.sockets"));
-  EXPECT_FALSE(api_exists("chrome.browserAction"));
+  EXPECT_TRUE(ApiExists(web_contents, "chrome.developerPrivate"));
+  EXPECT_TRUE(ApiExists(web_contents,
+                        "chrome.developerPrivate.getProfileConfiguration"));
+  EXPECT_TRUE(ApiExists(web_contents, "chrome.management"));
+  EXPECT_TRUE(ApiExists(web_contents, "chrome.management.setEnabled"));
+  EXPECT_FALSE(ApiExists(web_contents, "chrome.networkingPrivate"));
+  EXPECT_FALSE(ApiExists(web_contents, "chrome.sockets"));
+  EXPECT_FALSE(ApiExists(web_contents, "chrome.browserAction"));
 }
 
 // Tests creating an API from a context that hasn't been initialized yet
@@ -656,6 +667,119 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, MV2PromisesNotSupported) {
                    "Extensions.Functions.ExtensionMV3Calls",
                    functions::HistogramValue::TABS_CREATE));
 }
+
+class NativeBindingsBrowserNamespaceTest : public NativeBindingsApiTest {
+ public:
+  NativeBindingsBrowserNamespaceTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kExtensionBrowserNamespaceAlternative);
+  }
+
+  NativeBindingsBrowserNamespaceTest(
+      const NativeBindingsBrowserNamespaceTest&) = delete;
+  const NativeBindingsBrowserNamespaceTest& operator=(
+      const NativeBindingsBrowserNamespaceTest&) = delete;
+  ~NativeBindingsBrowserNamespaceTest() override = default;
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that extension background script contexts have access to
+// `chrome.<extension_api>` and `browser.<extension_api>` objects.
+IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest,
+                       ChromeAndBrowserObjects_ExtensionBackground) {
+  ASSERT_TRUE(RunExtensionTest("browser_object/background_context"))
+      << message_;
+}
+
+// Tests that extension foreground script contexts (e.g. content script,
+// extension page) have access to `chrome.<extension_api>` and
+// `browser.<extension_api>` objects.
+IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest,
+                       ChromeAndBrowserObjects_ExtensionForeground) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  const GURL& test_website =
+      embedded_test_server()->GetURL("a.com", "/title1.html");
+
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("browser_object/foreground_context"));
+  ASSERT_TRUE(extension);
+
+  // Content script.
+  ResultCatcher catcher;
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), test_website));
+  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+
+  // Extension page.
+  ResultCatcher extension_resource_catcher;
+  ASSERT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      GURL(extension->GetResourceURL("extension_resource_page.html"))));
+  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+}
+
+// Tests that an externally connectable webpage has access to
+// `chrome.<extension_api>` and `browser.<extension_api>` objects. Additionally
+// it tests that `chrome.app` is bound, but `browser.app` is not.
+IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest,
+                       ChromeAndBrowserObjects_ExternallyConnectableWebpage) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  const GURL& test_website =
+      embedded_test_server()->GetURL("a.com", "/title1.html");
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(
+      R"({
+          "name": "Externally connectable test extension",
+          "version": "0.1",
+          "manifest_version": 3,
+          "externally_connectable": {
+            "matches": ["*://a.com/*"]
+          }
+        })");
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), "");
+  ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
+
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), test_website));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  EXPECT_TRUE(ApiExists(web_contents, "chrome.runtime"));
+  EXPECT_TRUE(ApiExists(web_contents, "browser.runtime"));
+  EXPECT_TRUE(ApiExists(web_contents, "chrome.app"));
+  EXPECT_FALSE(ApiExists(web_contents, "browser.app"));
+}
+
+// Tests that the `browser` namespace is not available in WebUI.
+IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest, WebUIBindings) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://extensions")));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  EXPECT_TRUE(ObjectIsDefined(web_contents, "chrome"));
+  EXPECT_FALSE(ObjectIsDefined(web_contents, "browser"));
+}
+
+// Tests that an arbitrary web page with no extension API access has access to
+// the `chrome` namespace, but not the browser namespace.
+IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest,
+                       TestNonExtensionChromeAndBrowserObjects) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  const GURL& test_website =
+      embedded_test_server()->GetURL("a.com", "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_website));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  EXPECT_TRUE(ObjectIsDefined(web_contents, "chrome"));
+  EXPECT_FALSE(ObjectIsDefined(web_contents, "browser"));
+}
+
+// TODO(crbug.com/401226626): Test that the browser object also has dev mode
+// restricted APIs set on correctly as well.
 
 class DeveloperModeNativeBindingsApiTest
     : public NativeBindingsApiTest,

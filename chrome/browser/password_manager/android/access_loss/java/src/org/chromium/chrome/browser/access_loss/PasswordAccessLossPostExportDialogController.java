@@ -18,8 +18,8 @@ import android.view.View;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.chrome.browser.password_manager.CustomTabIntentHelper;
 import org.chromium.chrome.browser.password_manager.HelpUrlLauncher;
+import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -37,15 +37,15 @@ public class PasswordAccessLossPostExportDialogController
         implements ModalDialogProperties.Controller {
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
-    private final HelpUrlLauncher mHelpUrLauncher;
+    private final SettingsCustomTabLauncher mSettingsCustomTabLauncher;
 
     public PasswordAccessLossPostExportDialogController(
             Context context,
             @NonNull ModalDialogManager modalDialogManager,
-            CustomTabIntentHelper customTabIntentHelper) {
+            SettingsCustomTabLauncher settingsCustomTabLauncher) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
-        mHelpUrLauncher = new HelpUrlLauncher(customTabIntentHelper);
+        mSettingsCustomTabLauncher = settingsCustomTabLauncher;
     }
 
     public void showPostExportDialog() {
@@ -73,7 +73,7 @@ public class PasswordAccessLossPostExportDialogController
                                 () -> {
                                     Activity activity = ContextUtils.activityFromContext(mContext);
                                     if (activity == null) return;
-                                    mHelpUrLauncher.showHelpArticle(
+                                    mSettingsCustomTabLauncher.openUrlInCct(
                                             activity,
                                             HelpUrlLauncher
                                                     .GOOGLE_PLAY_SUPPORTED_DEVICES_SUPPORT_URL);

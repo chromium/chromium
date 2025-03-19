@@ -167,6 +167,11 @@ GL_EXPORT ANGLEImplementation GetANGLEImplementation();
 // Get the software GL implementation
 GL_EXPORT GLImplementationParts GetSoftwareGLImplementation();
 
+// Set the command line flags to request the provided GL implementation
+GL_EXPORT void SetGLImplementationCommandLineSwitches(
+    const GLImplementationParts& implementation,
+    base::CommandLine* command_line);
+
 // Set the software GL implementation on the provided command line
 GL_EXPORT void SetSoftwareGLCommandLineSwitches(
     base::CommandLine* command_line);
@@ -183,6 +188,9 @@ GetRequestedGLImplementationFromCommandLine(
 
 // Whether the implementation is one of the software GL implementations
 GL_EXPORT bool IsSoftwareGLImplementation(GLImplementationParts implementation);
+
+GL_EXPORT bool IsSwiftShaderGLImplementation(
+    GLImplementationParts implementation);
 
 // Get the GL implementation with a given name.
 GL_EXPORT GLImplementationParts

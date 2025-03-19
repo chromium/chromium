@@ -223,6 +223,16 @@ void DataSharingUI::ApiInitComplete() {
   }
 }
 
+void DataSharingUI::OnShareLinkRequested(
+    const std::string& group_id,
+    const std::string& access_token,
+    base::OnceCallback<void(const std::optional<GURL>&)> callback) {
+  if (delegate_) {
+    delegate_->OnShareLinkRequested(group_id, access_token,
+                                    std::move(callback));
+  }
+}
+
 void DataSharingUI::ShowErrorDialog(int status_code) {
   if (delegate_) {
     delegate_->ShowErrorDialog(status_code);

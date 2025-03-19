@@ -4061,9 +4061,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
     <ph name="BEGIN_PARAGRAPH2" />Puoi attivare o disattivare l'invio di questi report in qualsiasi momento nelle impostazioni del tuo dispositivo ChromeOS. Se sei un amministratore di dominio, puoi modificare questa impostazione nella Console di amministrazione.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">Aurora boreale di notte, sopra una piccola casa di campagna.</translation>
 <translation id="3818102823568165369">Certificati locali aggiunti dal sistema operativo o dall'amministratore.</translation>
-<translation id="3818662907126913619">Per utilizzare il dispositivo con il profilo <ph name="DOMAIN" />, la tua organizzazione ha bisogno di informazioni relative al dispositivo.
-
-Potrebbero essere incluse informazioni su software installati, file, browser e sistema operativo del dispositivo.</translation>
 <translation id="3819164369574292143">Aumenta lo zoom per ingrandire gli elementi sullo schermo. Premi il tasto per la ricerca + Ctrl + M per attivare e disattivare l'ingrandimento. Premi Ctrl + Alt + Tasti freccia per spostarti quando è attivo lo zoom.</translation>
 <translation id="3819257035322786455">Backup</translation>
 <translation id="3819261658055281761">Il sistema non è riuscito a memorizzare il token di accesso all'API a lungo termine per questo dispositivo.</translation>
@@ -4381,9 +4378,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4031527940632463547">Sensori bloccati</translation>
 <translation id="4033471457476425443">Aggiungi nuova cartella</translation>
 <translation id="4033963223187371752">I siti sicuri potrebbero incorporare contenuti come immagini o frame Web non sicuri</translation>
-<translation id="4034706080855851454">Per utilizzare il dispositivo con il profilo della tua organizzazione, quest'ultima ha bisogno di informazioni sul dispositivo.
-
-Potrebbero essere incluse informazioni su software installati, file, browser e sistema operativo del dispositivo.</translation>
 <translation id="4034824040120875894">Stampante</translation>
 <translation id="4035758313003622889">&amp;Task Manager</translation>
 <translation id="4035877632587724847">Non consentire</translation>

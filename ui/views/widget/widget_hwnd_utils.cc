@@ -110,24 +110,18 @@ WindowStyles CalculateWindowStylesFromInitParams(
     case Widget::InitParams::TYPE_BUBBLE:
       styles.style |= WS_POPUP;
       styles.style |= WS_CLIPCHILDREN;
-      if (!params.force_show_in_taskbar) {
-        styles.ex_style |= WS_EX_TOOLWINDOW;
-      }
+      styles.ex_style |= WS_EX_TOOLWINDOW;
       break;
     case Widget::InitParams::TYPE_POPUP:
       styles.style |= WS_POPUP;
-      if (!params.force_show_in_taskbar) {
-        styles.ex_style |= WS_EX_TOOLWINDOW;
-      }
+      styles.ex_style |= WS_EX_TOOLWINDOW;
       break;
     case Widget::InitParams::TYPE_MENU:
       styles.style |= WS_POPUP;
       if (params.remove_standard_frame) {
         styles.style |= WS_THICKFRAME;
       }
-      if (!params.force_show_in_taskbar) {
-        styles.ex_style |= WS_EX_TOOLWINDOW;
-      }
+      styles.ex_style |= WS_EX_TOOLWINDOW;
       break;
     case Widget::InitParams::TYPE_DRAG:
     case Widget::InitParams::TYPE_TOOLTIP:

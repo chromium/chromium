@@ -31,6 +31,9 @@ class ChromiumShareKitService final : public ShareKitService {
     return nil;
   }
   void ReadGroups(ShareKitReadConfiguration* config) override {}
+  void ReadGroups(ShareKitReadGroupsConfiguration* config) override {}
+  void ReadGroupWithToken(
+      ShareKitReadGroupWithTokenConfiguration* config) override {}
   void LeaveGroup(ShareKitLeaveConfiguration* config) override {}
   void DeleteGroup(ShareKitDeleteConfiguration* config) override {}
   void LookupGaiaIdByEmail(ShareKitLookupGaiaIDConfiguration* config) override {

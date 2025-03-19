@@ -624,6 +624,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1430915738399379752">Afdrukken</translation>
 <translation id="1431188203598586230">Laatste software-update</translation>
 <translation id="1432581352905426595">Zoekmachines beheren</translation>
+<translation id="1432650420699700107">Sites kunnen vragen of ze verbinding mogen maken met apparaten in je lokale netwerk</translation>
 <translation id="1433478348197382180">Leesmodus</translation>
 <translation id="1433980411933182122">Opstarten</translation>
 <translation id="1434696352799406980">Hiermee worden je homepage, nieuwe tabbladpagina, zoekmachine en vastgezette tabbladen opnieuw ingesteld. Ook worden alle extensies uitgezet en tijdelijke gegevens (zoals cookies) gewist. Je bookmarks, geschiedenis en opgeslagen wachtwoorden worden niet gewist.</translation>
@@ -4057,9 +4058,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
     <ph name="BEGIN_PARAGRAPH2" />Je kunt deze rapporten op elk moment toestaan of niet meer toestaan via de instellingen van je Chrome-apparaat. Als je domeinbeheerder bent, kun je deze instelling wijzigen in de Beheerdersconsole.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">Het noorderlicht 's nachts, boven een klein huisje.</translation>
 <translation id="3818102823568165369">Lokale certificaten die zijn toegevoegd door je besturingssysteem of je beheerder.</translation>
-<translation id="3818662907126913619">Als je je apparaat wilt gebruiken met je <ph name="DOMAIN" />-profiel, heeft je organisatie informatie over het apparaat nodig.
-
-Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser en het besturingssysteem van het apparaat.</translation>
 <translation id="3819164369574292143">Zoom in om items op het scherm groter te maken. Gebruik Zoeken + Ctrl + M om het vergrootglas aan en uit te zetten. Gebruik Ctrl + Alt + pijltoetsen om te bewegen op het ingezoomde scherm.</translation>
 <translation id="3819257035322786455">Back-up</translation>
 <translation id="3819261658055281761">Het opslaan van de langdurige API-toegangstoken voor dit apparaat is mislukt.</translation>
@@ -4377,9 +4375,6 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="4031527940632463547">Sensoren geblokkeerd</translation>
 <translation id="4033471457476425443">Nieuwe map toevoegen</translation>
 <translation id="4033963223187371752">Beveiligde sites kunnen niet-beveiligde content insluiten, zoals afbeeldingen of webframes</translation>
-<translation id="4034706080855851454">Als je je apparaat wilt gebruiken met je organisatieprofiel, heeft je organisatie informatie over het apparaat nodig.
-
-Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser en het besturingssysteem van het apparaat.</translation>
 <translation id="4034824040120875894">Printer</translation>
 <translation id="4035758313003622889">&amp;Taakbeheer</translation>
 <translation id="4035877632587724847">Niet toestaan</translation>
@@ -4827,6 +4822,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4364830672918311045">Meldingen weergeven</translation>
 <translation id="4367971618859387374">Weergavenaam</translation>
 <translation id="4368960422722232719">Geheugengebruik tonen op pop-upkaarten voor tabbladen</translation>
+<translation id="4369151461324628035">Niet toestaan dat sites verbinding maken met apparaten in je lokale netwerk</translation>
 <translation id="4369215744064167350">Websiteverzoek goedgekeurd</translation>
 <translation id="4369233657762989723">Dicteren aan/uit</translation>
 <translation id="436926121798828366">Je kunt dit altijd wijzigen via <ph name="SETTINGS_LINK" /></translation>
@@ -5380,6 +5376,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4772914216048388646">Ordelijk</translation>
 <translation id="4773112038801431077">Linux upgraden</translation>
 <translation id="4773122030389014189">Tabbladgroep <ph name="GROUP_NAME" /> delen</translation>
+<translation id="4773253008034797668">Toestemming om verbinding te maken met apparaten in je lokale netwerk</translation>
 <translation id="477548766361111120">Toestaan dat de extensie deze site leest en wijzigt</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> is verbonden</translation>
 <translation id="4776594120007763294">Klik op de knop om een pagina toe te voegen voor later lezen</translation>
@@ -7839,6 +7836,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6563002009564846727">Geïmporteerde certificaten van Windows bekijken</translation>
 <translation id="6563055593659435495">Kan de verbinding met je telefoon niet in stand houden. Zorg dat je telefoon in de buurt en ontgrendeld is en dat bluetooth en wifi aanstaan.</translation>
 <translation id="6564860838537532172">Als je zoekt in je browsegeschiedenis, worden de zoekopdrachten voor je geschiedenis, de paginacontent van de beste overeenkomsten en de gegenereerde modeluitvoer naar Google gestuurd. Deze kunnen door menselijke reviewers worden bekeken om deze functie te verbeteren.</translation>
+<translation id="6565144332292237355">Sites kunnen deze functie gebruiken om apparaten in je lokale netwerk te zoeken en verbinding ermee te maken</translation>
 <translation id="6569931898053264308">Gemiddelde besparingen</translation>
 <translation id="6570622975915850879">Een ander apparaat gebruiken</translation>
 <translation id="65711204837946324">Rechten vereist om te downloaden</translation>
@@ -11551,6 +11549,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
       <ph name="LIST_ITEM" />Voer een Chrome-verbindingsdiagnose uit
     <ph name="END_LIST" /></translation>
 <translation id="9161172953291434881">Vertrouw je deze site met je gegevens?</translation>
+<translation id="9164418710391288146">Geen toestemming om verbinding te maken met apparaten in je lokale netwerk</translation>
 <translation id="9165856803582999927">Scan deze QR-code met de camera op het apparaat waarop je een toegangssleutel voor <ph name="APP_NAME" /> wilt maken en opslaan</translation>
 <translation id="916607977885256133">Scherm-in-scherm</translation>
 <translation id="9166253503936244008">Scan deze QR-code met het apparaat met de toegangscode die je wilt gebruiken voor <ph name="APP_NAME" /></translation>

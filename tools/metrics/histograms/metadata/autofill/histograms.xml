@@ -988,6 +988,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram
+    name="Autofill.AddressSuggestionOnTypingAcceptance.NumberOfCharactersTyped"
+    units="units" expires_after="2025-08-24">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The number of characters a user typed before accepting an address autofill
+    on typing suggestion. Emited every time a user accepts an autofill on typing
+    suggestion.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.AddressSuggestionOnTypingAcceptance.PerFieldType"
     enum="FillingAcceptanceByFieldType" expires_after="2025-12-12">
   <owner>brunobraga@google.com</owner>
@@ -1689,15 +1701,15 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.CardUploadEnabled" enum="AutofillCardUploadEnabled"
+<histogram name="Autofill.CardUploadEnabled2" enum="AutofillCardUploadEnabled"
     expires_after="2025-08-31">
   <owner>jsaul@google.com</owner>
   <owner>aneeshali@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Detailed reasons why (or why not) card upload was enabled. When a user
-    submits a form, this check is triggered to decide whether to ask the user if
-    she wants to upload the card.
+    submits a form from which a card was extracted, this check is triggered to
+    decide whether to ask the user if they want to upload the card.
   </summary>
 </histogram>
 
@@ -1871,10 +1883,10 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
-    When a credit card form is submitted, Chrome runs a sequence of checks to
-    see if it should offer upload of the card to Google Payments. The result of
-    these checks are logged in the &quot;Autofill.CardUploadEnabled&quot;
-    histogram. If it results in the
+    When a credit card form is submitted and Chrome extracted a card from the
+    form, Chrome runs a sequence of checks to see if it should offer upload of
+    the card to Google Payments. The result of these checks are logged in the
+    &quot;Autofill.CardUploadEnabled2&quot; histogram. If it results in the
     &quot;SyncServiceMissingAutofillWalletDataActiveType&quot; bucket, denoting
     that Chrome Sync was missing an active kPayments sync type, this metric
     additionally records the reason the sync type was deemed inactive. Logged at

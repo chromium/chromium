@@ -87,6 +87,7 @@
 <translation id="2215727959747642672">Failide muutmine</translation>
 <translation id="2218389616572918761">Lubage saitidel küsida luba mikrofoni kasutamiseks</translation>
 <translation id="2228071138934252756">Selleks et anda rakendusele <ph name="APP_NAME" /> juurdepääs teie kaamerale, lülitage kaamera sisse ka <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
+<translation id="2231160360698766265">Saidid võivad esitada kaitstud sisu</translation>
 <translation id="2235344399760031203">Kolmanda osapoole küpsisefailid on blokeeritud</translation>
 <translation id="2238944249568001759">Soovitatud otsingud teie viimase vahelehe põhjal</translation>
 <translation id="2241587408274973373">Uued vahekaardi lehekaardid</translation>
@@ -630,6 +631,7 @@
 <translation id="9138217887606523162">Praegune suumitase on <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9156722768168878035">Laske Chrome'il kuvada teie hiljutisi vahelehti teie seadme rakenduste loendis ja otsingutulemustes. Saate selle Chrome’i seadetes igal ajal välja lülitada.</translation>
 <translation id="9162462602695099906">See leht on ohtlik</translation>
+<translation id="9182556968660520230">Ära luba saitidel kaitstud sisu esitada</translation>
 <translation id="947156494302904893">Külastatavad saidid saavad kinnitada, et olete päris inimene, mitte robot</translation>
 <translation id="959682366969460160">Lööge kord majja</translation>
 <translation id="967624055006145463">Salvestatud andmete maht</translation>

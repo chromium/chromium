@@ -33,15 +33,4 @@ Path ContouredRect::GetPath() const {
   return Path::MakeContouredRect(*this);
 }
 
-// TODO(crbug.com/399449172) proper rendering of corner-shape with constant
-// thickness
-void ContouredRect::Outset(const gfx::OutsetsF& outsets) {
-  rect_.Outset(outsets);
-}
-
-// TODO(crbug.com/397459628) support corner-shape for shadows/margins
-void ContouredRect::OutsetForMarginOrShadow(const gfx::OutsetsF& outsets) {
-  rect_.OutsetForMarginOrShadow(outsets);
-}
-
 }  // namespace blink

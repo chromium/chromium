@@ -57,7 +57,12 @@ class SignTask
   SignTask(scoped_refptr<RefCountedUnexportableSigningKey> signing_key,
            base::span<const uint8_t> data,
            BackgroundTaskPriority priority,
+           size_t max_retries,
            base::OnceCallback<void(SignTask::ReturnType)> callback);
+
+ protected:
+  bool ShouldRetryBasedOnResult(
+      const std::optional<std::vector<uint8_t>>& result) const override;
 };
 
 }  // namespace unexportable_keys

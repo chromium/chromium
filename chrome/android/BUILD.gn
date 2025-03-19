@@ -238,6 +238,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/ui/android/webid/internal:java_resources",
       "//chrome/browser/ui/android/whats_new:java_resources",
       "//chrome/browser/ui/messages/android:java_resources",
+      "//components/autofill/android:autofill_browser_resources",
       "//components/autofill/android:autofill_java_resources",
       "//components/autofill/android:autofill_payments_java_resources",
       "//components/blocked_content/android:java_resources",

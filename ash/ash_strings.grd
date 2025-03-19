@@ -6876,7 +6876,6 @@ Here are some things you can try to get started.
       </message>
 
       <!-- Scanner -->
-      <!-- TODO: crbug.com/375967525 - Finalize these strings and mark them as translateable -->
       <message name="IDS_ASH_SCANNER_DISCLAIMER_TITLE" desc="Text shown as the title of the suggested actions when searching your screen disclaimer view.">
         A few things to keep in mind
       </message>
@@ -6944,19 +6943,19 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCANNER_ACTION_NEW_GOOGLE_SHEET_SOURCE" desc="The Google Sheets product name, shown on a notification that indicates a new Google Sheet is in the process of being created.">
         Google Sheets
       </message>
-      <message name="IDS_ASH_SCANNER_ACTION_SUCCESS_TOAST_CREATE_EVENT" desc="The message shown on a toast to indicate that event details were created from the contents of a screenshot." translateable="false">
-        Created event
+      <message name="IDS_ASH_SCANNER_ACTION_SUCCESS_TOAST_CREATE_EVENT" desc="The message shown on a toast to indicate that event details were created from the contents of a screenshot and added to the user's calendar.">
+        Added to Calendar
       </message>
-      <message name="IDS_ASH_SCANNER_ACTION_SUCCESS_TOAST_CREATE_CONTACT" desc="The message shown on a toast to indicate a new contact was created from the contents of a screenshot." translateable="false">
+      <message name="IDS_ASH_SCANNER_ACTION_SUCCESS_TOAST_CREATE_CONTACT" desc="The message shown on a toast to indicate a new contact was created from the contents of a screenshot.">
         Created contact
       </message>
-      <message name="IDS_ASH_SCANNER_ACTION_SUCCESS_TOAST_CREATE_DOC" desc="The message shown on a toast to indicate a new Google Doc was created from the contents of a screenshot." translateable="false">
+      <message name="IDS_ASH_SCANNER_ACTION_SUCCESS_TOAST_CREATE_DOC" desc="The message shown on a toast to indicate a new Google Doc was created from the contents of a screenshot.">
         Created Google Doc
       </message>
-      <message name="IDS_ASH_SCANNER_ACTION_SUCCESS_TOAST_CREATE_SHEET" desc="The message shown on a toast to indicate a new Google Sheet was created from the contents of a screenshot." translateable="false">
+      <message name="IDS_ASH_SCANNER_ACTION_SUCCESS_TOAST_CREATE_SHEET" desc="The message shown on a toast to indicate a new Google Sheet was created from the contents of a screenshot.">
         Created Google Sheet
       </message>
-      <message name="IDS_ASH_SCANNER_ACTION_SUCCESS_TOAST_COPY_TEXT_AND_FORMAT" desc="The message shown on a toast to indicate text with formatting was copied to the user's clipboard from the contents of a screenshot." translateable="false">
+      <message name="IDS_ASH_SCANNER_ACTION_SUCCESS_TOAST_COPY_TEXT_AND_FORMAT" desc="The message shown on a toast to indicate text with formatting was copied to the user's clipboard from the contents of a screenshot.">
         Text copied to Clipboard
       </message>
       <message name="IDS_ASH_SCANNER_ACTION_FAILURE_TOAST_CREATE_EVENT" desc="The message shown on a toast to indicate an error occurred when trying to add an event to the user's calendar from the contents of a screenshot.">

@@ -28,35 +28,21 @@
 #include "base/win/shortcut.h"
 #include "base/win/win_util.h"
 #include "chrome/browser/win/conflicts/module_info_util.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/installer/util/registry_util.h"
 #include "chrome/installer/util/taskbar_util.h"
 #include "chrome/services/util_win/av_products.h"
 #include "chrome/services/util_win/tpm_metrics.h"
-#include "content/public/common/content_features.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 #include "ui/shell_dialogs/execute_select_file_win.h"
 
 namespace {
-
-bool COMAlreadyInitialized() {
-  if (base::FeatureList::IsEnabled(features::kUtilWinProcessUsesUiPump) &&
-      base::FeatureList::IsEnabled(
-          features::kUtilityWithUiPumpInitializesCom)) {
-    base::win::AssertComApartmentType(base::win::ComApartmentType::STA);
-    return true;
-  }
-  return false;
-}
 
 // This class checks if the current executable is pinned to the taskbar. It also
 // keeps track of the errors that occurs that prevents it from getting a result.
 class IsPinnedToTaskbarHelper {
  public:
   IsPinnedToTaskbarHelper() {
-    if (!COMAlreadyInitialized()) {
-      scoped_com_initializer_.emplace();
-    }
+    base::win::AssertComApartmentType(base::win::ComApartmentType::STA);
   }
 
   IsPinnedToTaskbarHelper(const IsPinnedToTaskbarHelper&) = delete;
@@ -88,7 +74,6 @@ class IsPinnedToTaskbarHelper {
       const installer::ProgramCompare& program_compare);
 
   bool error_occured_ = false;
-  std::optional<base::win::ScopedCOMInitializer> scoped_com_initializer_;
 };
 
 std::wstring IsPinnedToTaskbarHelper::LoadShellResourceString(
@@ -263,12 +248,7 @@ void UtilWinImpl::IsPinnedToTaskbar(IsPinnedToTaskbarCallback callback) {
 void UtilWinImpl::UnpinShortcuts(
     const std::vector<base::FilePath>& shortcut_paths,
     UnpinShortcutsCallback callback) {
-  // TODO(crbug.com/348014083): This exists to preserve an old behavior in
-  // an experiment control group. Remove after experiment is complete.
-  std::optional<base::win::ScopedCOMInitializer> scoped_com_initializer;
-  if (!COMAlreadyInitialized()) {
-    scoped_com_initializer.emplace();
-  }
+  base::win::AssertComApartmentType(base::win::ComApartmentType::STA);
 
   for (const auto& shortcut_path : shortcut_paths)
     UnpinShortcutFromTaskbar(shortcut_path);
@@ -281,16 +261,7 @@ void UtilWinImpl::CreateOrUpdateShortcuts(
     const std::vector<base::win::ShortcutProperties>& properties,
     base::win::ShortcutOperation operation,
     CreateOrUpdateShortcutsCallback callback) {
-  // TODO(crbug.com/348014083): This exists to preserve an old behavior in
-  // an experiment control group. Remove after experiment is complete.
-  std::optional<base::win::ScopedCOMInitializer> scoped_com_initializer;
-  if (!COMAlreadyInitialized()) {
-    scoped_com_initializer.emplace();
-    if (!scoped_com_initializer->Succeeded()) {
-      std::move(callback).Run(false);
-      return;
-    }
-  }
+  base::win::AssertComApartmentType(base::win::ComApartmentType::STA);
 
   bool ret = true;
   for (size_t i = 0; i < shortcut_paths.size(); ++i) {
@@ -309,12 +280,7 @@ void UtilWinImpl::CallExecuteSelectFile(
     int32_t file_type_index,
     const std::u16string& default_extension,
     CallExecuteSelectFileCallback callback) {
-  // TODO(crbug.com/348014083): This exists to preserve an old behavior in
-  // an experiment control group. Remove after experiment is complete.
-  std::optional<base::win::ScopedCOMInitializer> scoped_com_initializer;
-  if (!COMAlreadyInitialized()) {
-    scoped_com_initializer.emplace();
-  }
+  base::win::AssertComApartmentType(base::win::ComApartmentType::STA);
 
   base::win::EnableHighDPISupport();
 
@@ -337,12 +303,7 @@ void UtilWinImpl::InspectModule(const base::FilePath& module_path,
 
 void UtilWinImpl::GetAntiVirusProducts(bool report_full_names,
                                        GetAntiVirusProductsCallback callback) {
-  // TODO(crbug.com/348014083): This exists to preserve an old behavior in
-  // an experiment control group. Remove after experiment is complete.
-  std::optional<base::win::ScopedCOMInitializer> scoped_com_initializer;
-  if (!COMAlreadyInitialized()) {
-    scoped_com_initializer.emplace();
-  }
+  base::win::AssertComApartmentType(base::win::ComApartmentType::STA);
   std::move(callback).Run(::GetAntiVirusProducts(report_full_names));
 }
 
