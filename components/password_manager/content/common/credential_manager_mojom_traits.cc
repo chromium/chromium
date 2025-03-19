@@ -101,6 +101,8 @@ EnumTraits<blink::mojom::CredentialMediationRequirement,
       return blink::mojom::CredentialMediationRequirement::kOptional;
     case password_manager::CredentialMediationRequirement::kRequired:
       return blink::mojom::CredentialMediationRequirement::kRequired;
+    case password_manager::CredentialMediationRequirement::kConditional:
+      return blink::mojom::CredentialMediationRequirement::kConditional;
   }
 
   NOTREACHED();
@@ -120,6 +122,9 @@ bool EnumTraits<blink::mojom::CredentialMediationRequirement,
       return true;
     case blink::mojom::CredentialMediationRequirement::kRequired:
       *output = password_manager::CredentialMediationRequirement::kRequired;
+      return true;
+    case blink::mojom::CredentialMediationRequirement::kConditional:
+      *output = password_manager::CredentialMediationRequirement::kConditional;
       return true;
   }
 

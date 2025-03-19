@@ -205,7 +205,7 @@ void GlobalErrorBubbleTest::ShowUi(const std::string& name) {
     external_provider_manager->AddProviderForTesting(std::move(provider));
     provider_ptr->UpdateOrAddExtension(kExtensionWithUpdateUrl, "1.0.0.0",
                                        crx_path);
-    extension_service->CheckForExternalUpdates();
+    external_provider_manager->CheckForExternalUpdates();
 
     // ExternalInstallError::OnDialogReady() adds the error and shows the dialog
     // immediately.

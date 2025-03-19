@@ -518,6 +518,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(done)));
   }
 
+  void ManualResizeChanged(bool resizing) override {
+    web_client_->NotifyManualResizeChanged(resizing);
+  }
+
   // BrowserAttachmentObserver implementation.
   void CanAttachToBrowserChanged(bool can_attach) override {
     web_client_->NotifyPanelCanAttachChange(can_attach);

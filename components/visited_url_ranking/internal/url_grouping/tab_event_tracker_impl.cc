@@ -11,18 +11,23 @@ TabEventTrackerImpl::TabEventTrackerImpl(
     : on_new_event_callback_(on_new_event_callback) {}
 TabEventTrackerImpl::~TabEventTrackerImpl() = default;
 
-void TabEventTrackerImpl::DidAddTab(int tab_id) {
+void TabEventTrackerImpl::DidAddTab(int tab_id, int tab_launch_type) {
   on_new_event_callback_.Run();
 }
 
 void TabEventTrackerImpl::DidSelectTab(int tab_id,
-                                       TabSelectionType tab_selection_type) {
+                                       TabSelectionType tab_selection_type,
+                                       int last_tab_id) {
   on_new_event_callback_.Run();
 }
 
 void TabEventTrackerImpl::DidMoveTab(int tab_id,
                                      int new_index,
                                      int current_index) {
+  on_new_event_callback_.Run();
+}
+
+void TabEventTrackerImpl::DidEnterTabSwitcher() {
   on_new_event_callback_.Run();
 }
 

@@ -61,7 +61,7 @@ def get_base_human_readable_name_map(
         for interface in interfaces:
             name = interface.name
             name_no_prefix = name.split('_', 1)[-1]
-            name_no_suffix = re.sub('_v\d+$', '', name)
+            name_no_suffix = re.sub(r'_v\d+$', '', name)
             name_no_prefix_or_suffix = re.sub(r'_v\d+$', '', name_no_prefix)
 
             set_identifier_name_for_protocol(

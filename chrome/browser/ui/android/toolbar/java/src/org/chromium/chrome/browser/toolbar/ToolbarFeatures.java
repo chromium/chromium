@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
@@ -35,6 +36,9 @@ public final class ToolbarFeatures {
     public static boolean isTabStripWindowLayoutOptimizationEnabled(boolean isTablet) {
         if (sTabStripLayoutOptimizationEnabledForTesting != null) {
             return sTabStripLayoutOptimizationEnabledForTesting;
+        }
+        if (DeviceInfo.isAutomotive()) {
+            return false;
         }
         return ChromeFeatureList.sTabStripLayoutOptimization.isEnabled()
                 && isTablet

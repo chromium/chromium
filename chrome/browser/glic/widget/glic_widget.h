@@ -23,6 +23,8 @@ class GlicWidget : public views::Widget {
   GlicWidget& operator=(const Widget&) = delete;
   ~GlicWidget() override;
 
+  static gfx::Size GetInitialSize();
+
   // Create a widget with the given bounds.
   static std::unique_ptr<GlicWidget> Create(
       Profile* profile,

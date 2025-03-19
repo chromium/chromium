@@ -1543,7 +1543,7 @@ TEST_F(DeveloperPrivateApiUnitTest, RepairPolicyExtension) {
   // and install it.
   {
     TestExtensionRegistryObserver observer(registry());
-    service()->CheckForExternalUpdates();
+    external_provider_manager()->CheckForExternalUpdates();
     EXPECT_EQ(extension_id, observer.WaitForExtensionLoaded()->id());
   }
 
@@ -2738,7 +2738,7 @@ TEST_F(
   // and install it.
   {
     TestExtensionRegistryObserver observer(registry());
-    service()->CheckForExternalUpdates();
+    external_provider_manager()->CheckForExternalUpdates();
     EXPECT_EQ(extension_id, observer.WaitForExtensionLoaded()->id());
   }
 

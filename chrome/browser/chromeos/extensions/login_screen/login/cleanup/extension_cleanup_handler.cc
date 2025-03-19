@@ -8,6 +8,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/extensions/component_loader.h"
+#include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
@@ -122,7 +123,8 @@ void ExtensionCleanupHandler::OnUninstallDataDeleterFinished(
 
 void ExtensionCleanupHandler::ReinstallExtensions() {
   // Reinstall force-installed extensions and external component extensions.
-  extension_service_->ReinstallProviderExtensions();
+  extensions::ExternalProviderManager::Get(profile_)
+      ->ReinstallProviderExtensions();
 
   // Reinstall component extensions.
   extension_service_->component_loader()->AddDefaultComponentExtensions(

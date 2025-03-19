@@ -30,7 +30,7 @@ void PendingInvalidations::ScheduleInvalidationSetsForNode(
     // SetNeedsStyleRecalc(), so make sure we're set up to trace invalidations
     // if necessary.
     InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded(
-        node.GetDocument().GetStyleEngine());
+        node.GetTreeScope(), node.GetDocument().GetStyleEngine());
 
     for (auto& invalidation_set : invalidation_lists.descendants) {
       if (invalidation_set->InvalidatesNth()) {
@@ -141,6 +141,7 @@ void PendingInvalidations::ScheduleSiblingInvalidationsAsDescendants(
   // SetNeedsStyleRecalc(), so make sure we're set up to trace invalidations
   // if necessary.
   InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded(
+      scheduling_parent.GetTreeScope(),
       scheduling_parent.GetDocument().GetStyleEngine());
 
   for (auto& invalidation_set : invalidation_lists.siblings) {

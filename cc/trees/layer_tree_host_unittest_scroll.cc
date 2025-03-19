@@ -178,6 +178,15 @@ class LayerTreeHostScrollTestScrollSimple : public LayerTreeHostScrollTest {
     }
   }
 
+  DrawResult PrepareToDrawOnThread(LayerTreeHostImpl* host_impl,
+                                   LayerTreeHostImpl::FrameData* frame_data,
+                                   DrawResult draw_result) override {
+    EXPECT_TRUE(
+        frame_data->damage_reasons.Has(DamageReason::kCompositorScroll));
+    return LayerTreeHostScrollTest::PrepareToDrawOnThread(host_impl, frame_data,
+                                                          draw_result);
+  }
+
   void AfterTest() override { EXPECT_EQ(1, num_outer_viewport_scrolls_); }
 
  private:

@@ -13,20 +13,29 @@ namespace commerce {
 class ShoppingService;
 }
 
+class PrefService;
 @protocol ShopCardActionDelegate;
 @class ShopCardItem;
 @class ShopCardData;
 
 // Delegate to communicate events back to owner of ShopCardMediator.
 @protocol ShopCardMediatorDelegate
+
+// Add ShopCard to the magic stack.
 - (void)removeShopCard;
+
+// Remove ShopCard from the magic stack.
+- (void)insertShopCard;
+
 @end
 
 @interface ShopCardMediator : NSObject <ShopCardCommands>
 
 // Default initializer.
 - (instancetype)initWithShoppingService:
-    (commerce::ShoppingService*)shoppingService NS_DESIGNATED_INITIALIZER;
+                    (commerce::ShoppingService*)shoppingService
+                            prefService:(PrefService*)prefService
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

@@ -4762,7 +4762,7 @@ TEST_F(ScannerTest, DisclaimerAcceptContinuesScreenshotSession) {
         return Shell::Get()
                        ->session_controller()
                        ->GetActivePrefService()
-                       ->GetBoolean(prefs::kSunfishConsentDisclaimerAccepted)
+                       ->GetBoolean(prefs::kScannerConsentDisclaimerAccepted)
                    ? specialized_features::FeatureAccessFailureSet{}
                    : specialized_features::FeatureAccessFailureSet{
                          specialized_features::FeatureAccessFailure::
@@ -4853,7 +4853,7 @@ TEST_F(ScannerTest, DisclaimerAcceptInSunfishSessionStartsScannerSession) {
         return Shell::Get()
                        ->session_controller()
                        ->GetActivePrefService()
-                       ->GetBoolean(prefs::kSunfishConsentDisclaimerAccepted)
+                       ->GetBoolean(prefs::kScannerConsentDisclaimerAccepted)
                    ? specialized_features::FeatureAccessFailureSet{}
                    : specialized_features::FeatureAccessFailureSet{
                          specialized_features::FeatureAccessFailure::
@@ -4908,7 +4908,7 @@ TEST_F(ScannerTest, DisclaimerDeclineGoesBackToScreenshotMode) {
         }
         // Explicitly use the pref here as that is the source of truth for
         // feature access checking.
-        if (!prefs->GetBoolean(prefs::kSunfishConsentDisclaimerAccepted)) {
+        if (!prefs->GetBoolean(prefs::kScannerConsentDisclaimerAccepted)) {
           failures.Put(
               specialized_features::FeatureAccessFailure::kConsentNotAccepted);
         }

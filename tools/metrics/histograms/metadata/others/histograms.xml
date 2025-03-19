@@ -4089,17 +4089,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Drive.PushNotificationInitiallyEnabled" enum="BooleanEnabled"
-    expires_after="2025-06-08">
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Tracks whether the push notification is initially enabled for Drive.
-    Recorded when the first notification is processed. Notification is emulated
-    by polling if the push notication is disabled.
-  </summary>
-</histogram>
-
 <histogram name="Drive.PushNotificationRegistered" enum="BooleanRegistered"
     expires_after="M138">
   <owner>simmonsjosh@google.com</owner>

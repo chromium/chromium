@@ -92,16 +92,49 @@ void OnGotAIPageContentForModelPrototyping(
   std::move(continue_callback).Run(std::nullopt);
 }
 
+void OnGotAIPageContentWithActionableElementsForModelPrototyping(
+    AiDataKeyedService::AiDataCallback continue_callback,
+    std::optional<optimization_guide::AIPageContentResult> page_content) {
+  TRACE_EVENT("browser",
+              "OnGotAIPageContentWithActionableElementsForModelPrototyping");
+
+  AiDataKeyedService::BrowserData data;
+  if (page_content) {
+    *data.mutable_action_annotated_page_content() =
+        std::move(page_content->proto);
+    std::move(continue_callback).Run(std::move(data));
+    return;
+  }
+
+  std::move(continue_callback).Run(std::nullopt);
+}
+
 void GetAIPageContentForModelPrototyping(
     content::WebContents* web_contents,
     AiDataKeyedService::AiDataCallback continue_callback) {
   TRACE_EVENT("browser", "GetAIPageContentForModelPrototyping");
 
+  auto options = optimization_guide::DefaultAIPageContentOptions();
+  options->enable_experimental_actionable_data = false;
   optimization_guide::OnAIPageContentDone callback = base::BindOnce(
       &OnGotAIPageContentForModelPrototyping, std::move(continue_callback));
-  optimization_guide::GetAIPageContent(
-      web_contents, optimization_guide::DefaultAIPageContentOptions(),
-      std::move(callback));
+  optimization_guide::GetAIPageContent(web_contents, std::move(options),
+                                       std::move(callback));
+}
+
+void GetAIPageContentWithActionableElementsForModelPrototyping(
+    content::WebContents* web_contents,
+    AiDataKeyedService::AiDataCallback continue_callback) {
+  TRACE_EVENT("browser",
+              "GetAIPageContentWithActionableElementsForModelPrototyping");
+
+  auto options = optimization_guide::DefaultAIPageContentOptions();
+  options->enable_experimental_actionable_data = true;
+  optimization_guide::OnAIPageContentDone callback = base::BindOnce(
+      &OnGotAIPageContentWithActionableElementsForModelPrototyping,
+      std::move(continue_callback));
+  optimization_guide::GetAIPageContent(web_contents, std::move(options),
+                                       std::move(callback));
 }
 
 // Fills an AiData proto with information from GetInnerText. If no result,
@@ -573,6 +606,8 @@ void GetModelPrototypingAiData(AiDataKeyedService::AiDataSpecifier specifiers,
   // collect it.
   GetAIPageContentForModelPrototyping(web_contents,
                                       concurrent.CreateCallback());
+  GetAIPageContentWithActionableElementsForModelPrototyping(
+      web_contents, concurrent.CreateCallback());
   if (page_context_specifier.ax_tree()) {
     RequestAxTreeSnapshotForModelPrototyping(web_contents,
                                              concurrent.CreateCallback());

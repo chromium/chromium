@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -62,10 +61,16 @@ void BlobReader::ReadSideData(
 }
 
 void BlobReader::CaptureSnapshot(CaptureSnapshotCallback callback) {
-  // Should only used for `File`, but we may be hitting this function.
-  // See crbug.com/390586616
-  base::debug::DumpWithoutCrashing();
-  std::move(callback).Run(0, std::nullopt);
+  // This method is used for the File API. Technically IDB can store Files, but
+  // when it does so, the size and last modification date should always be known
+  // and propagated to the renderer through IndexedDBExternalObject's metadata.
+  // This path is likely only reached when the file modification date and/or
+  // size is somehow unknown, but reproducing this scenario has proven
+  // difficult. See crbug.com/390586616
+  // Note that we don't stat the underlying file because it's just a copy of
+  // whatever the original File was, and hence would have the wrong modification
+  // date.
+  std::move(callback).Run(blob_length_, std::nullopt);
 }
 
 void BlobReader::GetInternalUUID(GetInternalUUIDCallback callback) {

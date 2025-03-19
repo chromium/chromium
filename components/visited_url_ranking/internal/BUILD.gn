@@ -88,7 +88,10 @@ static_library("internal_url_grouping") {
       "url_grouping/android/group_suggestions_service_android.h",
     ]
 
-    deps += [ ":jni_headers" ]
+    deps += [
+      ":jni_headers",
+      "//components/visited_url_ranking/public:jni_headers",
+    ]
   }
 }
 

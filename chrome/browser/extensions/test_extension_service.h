@@ -50,8 +50,6 @@ class TestExtensionService : public extensions::ExtensionServiceInterface {
   bool UserCanDisableInstalledExtension(
       const std::string& extension_id) override;
 
-  void ReinstallProviderExtensions() override;
-
   base::WeakPtr<ExtensionServiceInterface> AsWeakPtr() override;
 
  private:

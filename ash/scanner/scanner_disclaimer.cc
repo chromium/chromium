@@ -48,7 +48,7 @@ ScannerDisclaimerType GetScannerDisclaimerType(const PrefService& prefs,
                                                ScannerEntryPoint entry_point) {
   // Always show the full disclaimer - even if there is a debug override - if
   // the user has not consented yet.
-  if (!prefs.GetBoolean(prefs::kSunfishConsentDisclaimerAccepted)) {
+  if (!prefs.GetBoolean(prefs::kScannerConsentDisclaimerAccepted)) {
     return ScannerDisclaimerType::kFull;
   }
 
@@ -66,12 +66,12 @@ ScannerDisclaimerType GetScannerDisclaimerType(const PrefService& prefs,
 
 void SetScannerDisclaimerAcked(PrefService& prefs,
                                ScannerEntryPoint entry_point) {
-  prefs.SetBoolean(prefs::kSunfishConsentDisclaimerAccepted, true);
+  prefs.SetBoolean(prefs::kScannerConsentDisclaimerAccepted, true);
   prefs.SetBoolean(AckPrefForEntryPoint(entry_point), true);
 }
 
 void SetAllScannerDisclaimersUnackedForTest(PrefService& prefs) {
-  prefs.SetBoolean(prefs::kSunfishConsentDisclaimerAccepted, false);
+  prefs.SetBoolean(prefs::kScannerConsentDisclaimerAccepted, false);
   prefs.SetBoolean(AckPrefForEntryPoint(ScannerEntryPoint::kSmartActionsButton),
                    false);
   prefs.SetBoolean(AckPrefForEntryPoint(ScannerEntryPoint::kSunfishSession),

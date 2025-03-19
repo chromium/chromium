@@ -16,6 +16,10 @@
 namespace glic {
 namespace {
 
+bool UserResizeEnabled() {
+  return base::FeatureList::IsEnabled(features::kGlicUserResize);
+}
+
 class GlicWidgetDelegate : public views::WidgetDelegate {
  public:
   GlicWidgetDelegate() {
@@ -38,14 +42,18 @@ class GlicWidgetDelegate : public views::WidgetDelegate {
 void* kGlicWidgetIdentifier = &kGlicWidgetIdentifier;
 
 GlicWidget::GlicWidget(InitParams params) : views::Widget(std::move(params)) {
-  // TODO(402791189): Instead use a flag on Widget::InitParams when it's
-  // available.
-  if (base::FeatureList::IsEnabled(features::kGlicUserResize)) {
-    widget_delegate()->SetCanResize(true);
+  if (UserResizeEnabled()) {
+    // Widget starts out non-resizable; client may enable resizing.
+    minimum_widget_size_ = GetInitialSize();
   }
 }
 
 GlicWidget::~GlicWidget() = default;
+
+gfx::Size GlicWidget::GetInitialSize() {
+  return {features::kGlicInitialWidth.Get(),
+          features::kGlicInitialHeight.Get()};
+}
 
 std::unique_ptr<GlicWidget> GlicWidget::Create(
     Profile* profile,
@@ -91,14 +99,11 @@ display::Display GlicWidget::GetDisplay() {
 
 void GlicWidget::SetMinimumSize(const gfx::Size& size) {
   minimum_widget_size_ = size;
-  // TODO(sanaakbani): Set this to a more reasonable minimum fallback size.
-  minimum_widget_size_.SetToMax(gfx::Size(1, 1));
+  minimum_widget_size_.SetToMax(GetInitialSize());
 }
 
 gfx::Size GlicWidget::GetMinimumSize() const {
-  return base::FeatureList::IsEnabled(features::kGlicUserResize)
-             ? minimum_widget_size_
-             : gfx::Size();
+  return UserResizeEnabled() ? minimum_widget_size_ : gfx::Size();
 }
 
 }  // namespace glic

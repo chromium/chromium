@@ -2236,12 +2236,15 @@ void AuthenticationCredentialsContainer::GetForIdentity(
 
   CredentialMediationRequirement mediation_requirement;
   if (options.mediation() == "conditional") {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotSupportedError,
-        "Conditional mediation is not supported for this credential type"));
-    return;
-  }
-  if (options.mediation() == "silent") {
+    if (RuntimeEnabledFeatures::FedCmDelegationEnabled()) {
+      mediation_requirement = CredentialMediationRequirement::kConditional;
+    } else {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError,
+          "Conditional mediation is not supported for this credential type"));
+      return;
+    }
+  } else if (options.mediation() == "silent") {
     mediation_requirement = CredentialMediationRequirement::kSilent;
   } else if (options.mediation() == "required") {
     mediation_requirement = CredentialMediationRequirement::kRequired;

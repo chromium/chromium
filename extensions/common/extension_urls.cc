@@ -42,6 +42,7 @@ const char kChromeWebstoreBaseURL[] = "https://chrome.google.com/webstore";
 const char kNewChromeWebstoreBaseURL[] = "https://chromewebstore.google.com/";
 const char kChromeWebstoreUpdateURL[] =
     "https://clients2.google.com/service/update2/crx";
+const char kChromeWebstoreApiURL[] = "https://chromewebstore.googleapis.com/";
 
 const char kAppMenuUtmSource[] = "ext_app_menu";
 const char kExtensionsMenuUtmSource[] = "ext_extensions_menu";
@@ -91,9 +92,9 @@ GURL GetWebstoreItemSnippetURL(const extensions::ExtensionId& extension_id) {
   }
 
   // Return `<base URL><extension_id><suffix>`.
-  return GURL(base::StringPrintf(
-      "https://chromewebstore.googleapis.com/v2/items/%s:fetchItemSnippet",
-      extension_id.c_str()));
+  return GURL(kChromeWebstoreApiURL)
+      .Resolve(base::StringPrintf("v2/items/%s:fetchItemSnippet",
+                                  extension_id.c_str()));
 }
 
 base::AutoReset<const GURL*> SetItemSnippetURLForTesting(const GURL* test_url) {
@@ -139,6 +140,11 @@ bool IsWebstoreUpdateUrl(const GURL& update_url) {
   GURL store_url = GetWebstoreUpdateUrl();
   return (update_url.host_piece() == store_url.host_piece() &&
           update_url.path_piece() == store_url.path_piece());
+}
+
+bool IsWebstoreApiUrl(const GURL& url) {
+  url::Origin origin = url::Origin::Create(url);
+  return origin.IsSameOriginWith(GURL(kChromeWebstoreApiURL));
 }
 
 bool IsBlocklistUpdateUrl(const GURL& url) {

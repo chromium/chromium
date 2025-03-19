@@ -184,6 +184,7 @@ source_set("browser_sources") {
     "favicon_status.cc",
     "favicon_status.h",
     "feature_observer_client.h",
+    "federated_auth_autofill_source.h",
     "federated_identity_api_permission_context_delegate.cc",
     "federated_identity_api_permission_context_delegate.h",
     "federated_identity_auto_reauthn_permission_context_delegate.h",

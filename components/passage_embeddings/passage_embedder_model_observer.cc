@@ -19,6 +19,7 @@ PassageEmbedderModelObserver::PassageEmbedderModelObserver(
                                  OPTIMIZATION_TARGET_EXPERIMENTAL_EMBEDDER
                            : optimization_guide::proto::
                                  OPTIMIZATION_TARGET_PASSAGE_EMBEDDER) {
+  VLOG(3) << "Target: " << target_;
   if (model_provider_) {
     model_provider_->AddObserverForOptimizationTargetModel(
         target_,
@@ -35,6 +36,7 @@ PassageEmbedderModelObserver::~PassageEmbedderModelObserver() {
 void PassageEmbedderModelObserver::OnModelUpdated(
     optimization_guide::proto::OptimizationTarget optimization_target,
     base::optional_ref<const optimization_guide::ModelInfo> model_info) {
+  VLOG(3) << "Model updated for target: " << optimization_target;
   if (optimization_target != target_) {
     return;
   }

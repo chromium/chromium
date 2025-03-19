@@ -424,7 +424,8 @@ using segmentation_platform::TipIdentifier;
     // Note at this point we don't know which of the 4 variants will show.
     _shopCardMediator = [[ShopCardMediator alloc]
         initWithShoppingService:commerce::ShoppingServiceFactory::GetForProfile(
-                                    profile)];
+                                    profile)
+                    prefService:prefs];
     _shopCardMediator.shopCardActionDelegate = self;
     [moduleMediators addObject:_shopCardMediator];
   }

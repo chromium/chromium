@@ -203,7 +203,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
     external_provider_manager()
         ->set_external_updates_finished_callback_for_test(
             run_loop.QuitWhenIdleClosure());
-    service_->CheckForExternalUpdates();
+    external_provider_manager()->CheckForExternalUpdates();
     run_loop.Run();
   }
 
