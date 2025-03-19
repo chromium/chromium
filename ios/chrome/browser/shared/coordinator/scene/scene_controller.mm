@@ -155,6 +155,7 @@
 #import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
+#import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -2888,9 +2889,25 @@ using UserFeedbackDataCallback =
         [weakSelf showDefaultBrowserSettingsWithSourceForUMA:
                       DefaultBrowserSettingsPageSource::kExternalAction];
       };
+    case START_LENS_FROM_SHARE_EXTENSION:
+      return ^{
+        [weakSelf searchShareExtensionImageWithLens];
+      };
     default:
       return nil;
   }
+}
+
+// Starts a lens search for share extension.
+- (void)searchShareExtensionImageWithLens {
+  id<LensCommands> lensHandler = HandlerForProtocol(
+      self.currentInterface.browser->GetCommandDispatcher(), LensCommands);
+  UIImage* image = [UIImage imageWithData:_startupParameters.imageSearchData];
+  SearchImageWithLensCommand* command = [[SearchImageWithLensCommand alloc]
+      initWithImage:image
+         // TODO(crbug.com/403235333): Add Lens entry point for Share extension.
+         entryPoint:LensEntrypoint::ContextMenu];
+  [lensHandler searchImageWithLens:command];
 }
 
 // Starts a voice search on the current BVC.

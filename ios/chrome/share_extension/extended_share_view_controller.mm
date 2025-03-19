@@ -135,7 +135,7 @@ const CGFloat kShareSheetCornerRadius = 20;
                     action:app_group::OPEN_IN_CHROME_ITEM
                     cancel:NO
                 completion:^{
-                  [weakSelf dismissAndReturnItem:weakSelf.shareItem error:nil];
+                  [weakSelf dissmissAndShowShareItem];
                 }];
 }
 
@@ -182,6 +182,21 @@ const CGFloat kShareSheetCornerRadius = 20;
                   completion:^{
                     [weakSelf dismissAndReturnItem:weakSelf.shareItem
                                              error:nil];
+                  }];
+    return;
+  }
+
+  if (self.shareImage) {
+    [command prepareToSearchImage:self.shareImage];
+    [command executeInApp];
+    [self queueActionItemURL:_shareURL
+                       title:_shareTitle
+                      // TODO(crbug.com/398803565): Add and handle search text
+                      // and image in ShareExtensionItemType.
+                      action:app_group::OPEN_IN_CHROME_ITEM
+                      cancel:NO
+                  completion:^{
+                    [weakSelf dissmissAndShowShareItem];
                   }];
     return;
   }
@@ -542,4 +557,7 @@ const CGFloat kShareSheetCornerRadius = 20;
   // TODO(crbug.com/402278503): Add the incognito URL opening.
 }
 
+- (void)dissmissAndShowShareItem {
+  [self dismissAndReturnItem:_shareItem error:nil];
+}
 @end
