@@ -39,7 +39,7 @@ desc: |-
   the provider.
 
   Support for this policy setting will end in <ph
-  name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 136.
+  name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 146.
 supported_on:
 - chrome.win:125-
 features:
