@@ -1661,7 +1661,6 @@ if (is_android) {
       "//chrome/browser/touch_to_fill/password_manager/password_generation/android:public",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/android/hats/test:test_support",
-      "//chrome/browser/ui/autofill/payments:android_browsertests",
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/webaudio:browser_tests",
