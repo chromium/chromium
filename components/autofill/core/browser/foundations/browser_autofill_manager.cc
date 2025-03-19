@@ -2033,12 +2033,9 @@ void BrowserAutofillManager::OnSelectFieldOptionsDidChangeImpl(
       base::span_from_ref<raw_ptr<FormStructure, VectorExperimental>>(
           form_structure));
 
-  if (form_filler_->ShouldTriggerRefill(
-          *form_structure, RefillTriggerReason::kSelectOptionsChanged)) {
-    form_filler_->TriggerRefill(form,
-                                AutofillTriggerSource::kSelectOptionsChanged,
-                                RefillTriggerReason::kSelectOptionsChanged);
-  }
+  form_filler_->MaybeTriggerRefill(
+      form, *form_structure, RefillTriggerReason::kSelectOptionsChanged,
+      AutofillTriggerSource::kSelectOptionsChanged);
 }
 
 void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
@@ -2090,9 +2087,10 @@ void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
   }
   AnalyzeJavaScriptChangedAutofilledValue(*form_structure, *autofill_field,
                                           field.value().empty());
-  form_filler_->MaybeTriggerRefillForExpirationDate(
-      form, field, *form_structure, old_value,
-      AutofillTriggerSource::kJavaScriptChangedAutofilledValue);
+  form_filler_->MaybeTriggerRefill(
+      form, *form_structure, RefillTriggerReason::kExpirationDateFormatted,
+      AutofillTriggerSource::kJavaScriptChangedAutofilledValue, field,
+      old_value);
 }
 
 void BrowserAutofillManager::OnLoadedServerPredictionsImpl(
@@ -2754,14 +2752,11 @@ void BrowserAutofillManager::OnFormProcessed(
   }
 
   // If a form with the same FormGlobalId was previously filled, the structure
-  // of the form changed, and there has not been a refill attempt on that form
-  // yet, start the process of triggering a refill.
-  if (form_filler_->ShouldTriggerRefill(form_structure,
-                                        RefillTriggerReason::kFormChanged)) {
-    form_filler_->ScheduleRefill(form, form_structure,
-                                 AutofillTriggerSource::kFormsSeen,
-                                 RefillTriggerReason::kFormChanged);
-  }
+  // of the form changed, and we might be able to refill the form with other
+  // information.
+  form_filler_->MaybeTriggerRefill(form, form_structure,
+                                   RefillTriggerReason::kFormChanged,
+                                   AutofillTriggerSource::kFormsSeen);
 }
 
 void BrowserAutofillManager::UpdateInitialInteractionTimestamp(
