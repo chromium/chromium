@@ -80,46 +80,66 @@ bool CSSColorMixValue::Equals(const CSSColorMixValue& other) const {
          hue_interpolation_method_ == other.hue_interpolation_method_;
 }
 
-// https://drafts.csswg.org/css-color-5/#serial-color-mix
+std::pair<const CSSPrimitiveValue*, const CSSPrimitiveValue*>
+CSSColorMixValue::PercentageValuesForSerialization(
+    const CSSPrimitiveValue* p1,
+    const CSSPrimitiveValue* p2) {
+  if (p1) {
+    if (auto* p1_literal = DynamicTo<CSSNumericLiteralValue>(*p1)) {
+      const double p1_literal_percent = p1_literal->ComputePercentage();
+      if (p2) {
+        if (auto* p2_literal = DynamicTo<CSSNumericLiteralValue>(*p2)) {
+          const double p2_literal_percent = p2_literal->ComputePercentage();
+          if (p1_literal_percent == 50.0 && p2_literal_percent == 50.0) {
+            return {nullptr, nullptr};
+          }
+          if (p1_literal_percent + p2_literal_percent == 100.0) {
+            return {p1, nullptr};
+          }
+        }
+      } else {
+        if (p1_literal_percent == 50.0) {
+          return {nullptr, nullptr};
+        }
+      }
+    }
+    return {p1, p2};
+  }
+  if (p2) {
+    if (auto* p2_literal = DynamicTo<CSSNumericLiteralValue>(*p2)) {
+      if (p2_literal->ComputePercentage() == 50.0) {
+        return {nullptr, nullptr};
+      }
+      return {p2->SubtractFrom(100.0, CSSPrimitiveValue::UnitType::kPercentage),
+              nullptr};
+    }
+    return {nullptr, p2};
+  }
+  return {nullptr, nullptr};
+}
+
 String CSSColorMixValue::CustomCSSText() const {
   StringBuilder result;
   result.Append("color-mix(in ");
   result.Append(Color::SerializeInterpolationSpace(color_interpolation_space_,
                                                    hue_interpolation_method_));
+
+  auto [percentage1_value, percentage2_value] =
+      PercentageValuesForSerialization(percentage1_, percentage2_);
+
   result.Append(", ");
   result.Append(color1_->CssText());
-  bool percentagesNormalized = true;
-  if (percentage1_ && percentage2_ && percentage1_->IsNumericLiteralValue() &&
-      percentage2_->IsNumericLiteralValue() &&
-      (To<CSSNumericLiteralValue>(*percentage1_).ComputePercentage() +
-           To<CSSNumericLiteralValue>(*percentage2_).ComputePercentage() !=
-       100.0)) {
-    percentagesNormalized = false;
-  }
-  if (percentage1_ &&
-      (!percentage1_->IsNumericLiteralValue() ||
-       To<CSSNumericLiteralValue>(*percentage1_).ComputePercentage() != 50.0 ||
-       !percentagesNormalized)) {
-    result.Append(" ");
-    result.Append(percentage1_->CssText());
-  }
-  if (!percentage1_ && percentage2_ &&
-      (!percentage2_->IsNumericLiteralValue() ||
-       To<CSSNumericLiteralValue>(*percentage2_).ComputePercentage() != 50.0)) {
-    result.Append(" ");
-    result.Append(
-        percentage2_
-            ->SubtractFrom(100.0, CSSPrimitiveValue::UnitType::kPercentage)
-            ->CustomCSSText());
+  if (percentage1_value) {
+    result.Append(' ');
+    result.Append(percentage1_value->CssText());
   }
   result.Append(", ");
   result.Append(color2_->CssText());
-  if (!percentagesNormalized) {
-    result.Append(" ");
-    result.Append(percentage2_->CssText());
+  if (percentage2_value) {
+    result.Append(' ');
+    result.Append(percentage2_value->CssText());
   }
-  result.Append(")");
-
+  result.Append(')');
   return result.ReleaseString();
 }
 
