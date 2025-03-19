@@ -16,9 +16,7 @@ import {normalizeBoxInElement} from './selection_utils.js';
  * Adds empty text to the `callbackRouterRemote` provided.
  */
 export async function addEmptyTextToPage(callbackRouterRemote: LensPageRemote) {
-  const text = createText([]);
-  callbackRouterRemote.textReceived(text);
-  await flushTasks();
+  await addTextToPage(callbackRouterRemote, createText([]));
 }
 
 /**
@@ -48,8 +46,7 @@ export async function addGenericWordsToPage(
       ]),
     ]),
   ]);
-  callbackRouterRemote.textReceived(text);
-  await flushTasks();
+  await addTextToPage(callbackRouterRemote, text);
 }
 
 /**
@@ -70,6 +67,15 @@ export async function addGenericWordsToPageNormalized(
           [createWord('test', {x: 0.3, y: 0.3, width: 0.1, height: 0.1})]),
     ]),
   ]);
+  await addTextToPage(callbackRouterRemote, text);
+}
+
+/**
+ * Adds `text` provided in function to the overlay via the
+ * `callbackRouterRemote`.
+ */
+export async function addTextToPage(
+    callbackRouterRemote: LensPageRemote, text: Text) {
   callbackRouterRemote.textReceived(text);
   await flushTasks();
 }
@@ -151,12 +157,13 @@ export function createLine(words: Word[]): Line {
 }
 
 export function createWord(
-    plainText: string, wordBoundingBox?: RectF, textSeparator: string = ' ',
-    writingDirection = WritingDirection.kLeftToRight): Word {
+    plainText: string, wordBoundingBox?: RectF, rotation: number = 0,
+    writingDirection = WritingDirection.kLeftToRight,
+    textSeparator: string = ' '): Word {
   const geometry = wordBoundingBox ? {
     boundingBox: {
       box: wordBoundingBox,
-      rotation: 0,
+      rotation,
       coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
     },
     segmentationPolygon: [],
