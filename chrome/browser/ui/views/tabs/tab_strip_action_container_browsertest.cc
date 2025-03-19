@@ -408,16 +408,8 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
                   ->IsClosing());
 }
 
-// TODO(crbug.com/404299369): Re-enable this test on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_LogsWhenGlicNudgeButtonClicked \
-  DISABLED_LogsWhenGlicNudgeButtonClicked
-#else
-#define MAYBE_LogsWhenGlicNudgeButtonClicked LogsWhenGlicNudgeButtonClicked
-#endif
-
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
-                       MAYBE_LogsWhenGlicNudgeButtonClicked) {
+                       LogsWhenGlicNudgeButtonClicked) {
   ShowTabStripNudgeButton(GlicNudgeButton());
 
   tab_strip_action_container()
