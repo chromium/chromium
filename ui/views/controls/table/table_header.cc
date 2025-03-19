@@ -85,7 +85,32 @@ class TableHeader::HighlightPathGenerator
     // Draw a focus indicator around the active cell.
     gfx::Rect bounds = header->GetActiveHeaderCellBounds();
     bounds.set_x(header->GetMirroredXForRect(bounds));
-    return SkPath().addRect(gfx::RectToSkRect(bounds));
+
+    // Fill the path with an explicitly calculated default radius.
+    const float default_radius = header->GetDefaultFocusRingRadius();
+    std::array<SkScalar, 8> focus_ring_radii;
+    focus_ring_radii.fill(default_radius);
+
+    // Use the preferred upper corner radius, based on the active column.
+    if (const auto& columns = header->table_->visible_columns();
+        columns.size() != 0) {
+      const auto& active_column = header->table_->GetActiveVisibleColumnIndex();
+      if (active_column.has_value()) {
+        const float radius = header->GetFocusRingUpperRadius();
+
+        const float upper_left =
+            active_column.value() == 0 ? radius : default_radius;
+        const float upper_right =
+            active_column == columns.size() - 1 ? radius : default_radius;
+        const float lower_right = default_radius;
+        const float lower_left = default_radius;
+
+        focus_ring_radii = {upper_left,  upper_left,  upper_right, upper_right,
+                            lower_right, lower_right, lower_left,  lower_left};
+      }
+    }
+    return SkPath().addRoundRect(gfx::RectToSkRect(bounds),
+                                 focus_ring_radii.data());
   }
 };
 
@@ -161,6 +186,11 @@ ui::ColorId TableHeader::GetBackgroundColorId() const {
 
 gfx::Font::Weight TableHeader::GetFontWeight() const {
   return table_->header_style().font_weight.value_or(gfx::Font::Weight::NORMAL);
+}
+
+float TableHeader::GetFocusRingUpperRadius() const {
+  return table_->header_style().focus_ring_upper_corner_radius.value_or(
+      GetDefaultFocusRingRadius());
 }
 
 // Amount of space reserved for the sort indicator and padding.
@@ -401,6 +431,14 @@ gfx::Rect TableHeader::GetActiveHeaderCellBounds() const {
 
 bool TableHeader::HasFocusIndicator() const {
   return table_->GetActiveVisibleColumnIndex().has_value();
+}
+
+float TableHeader::GetDefaultFocusRingRadius() const {
+  float thickness = FocusRing::kDefaultHaloThickness / 2.f;
+  if (const FocusRing* focus_ring = views::FocusRing::Get(this); focus_ring) {
+    thickness = focus_ring->GetHaloThickness() / 2.f;
+  }
+  return FocusRing::kDefaultCornerRadiusDp + thickness;
 }
 
 bool TableHeader::StartResize(const ui::LocatedEvent& event) {
