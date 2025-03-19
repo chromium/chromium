@@ -26,8 +26,6 @@
 #include "components/performance_manager/public/graph/worker_node.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
 #include "components/performance_manager/public/v8_memory/v8_detailed_memory.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/process_type.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -96,10 +94,9 @@ using MeasurementMode = V8DetailedMemoryRequest::MeasurementMode;
 
 // Forwards the pending receiver to the RenderProcessHost and binds it on the
 // UI thread.
-void BindReceiverOnUIThread(
-    mojo::PendingReceiver<blink::mojom::V8DetailedMemoryReporter>
-        pending_receiver,
-    RenderProcessHostProxy proxy) {
+void BindReceiver(mojo::PendingReceiver<blink::mojom::V8DetailedMemoryReporter>
+                      pending_receiver,
+                  RenderProcessHostProxy proxy) {
   auto* render_process_host = proxy.Get();
   if (render_process_host) {
     render_process_host->BindReceiver(std::move(pending_receiver));
@@ -613,10 +610,7 @@ void NodeAttachedProcessData::EnsureRemote() {
   if (g_test_bind_callback) {
     g_test_bind_callback->Run(std::move(pending_receiver), std::move(proxy));
   } else {
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&BindReceiverOnUIThread, std::move(pending_receiver),
-                       std::move(proxy)));
+    BindReceiver(std::move(pending_receiver), std::move(proxy));
   }
 }
 
