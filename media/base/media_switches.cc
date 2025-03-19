@@ -1520,7 +1520,7 @@ BASE_FEATURE(kAudioFocusDuckFlash,
 // written to shared memory instead of being sent through socket messages.
 BASE_FEATURE(kAudioInputConfirmReadsViaShmem,
              "AudioInputConfirmReadsViaShmem",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the internal Media Session logic without enabling the Media Session
 // service.
