@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -51,8 +52,14 @@ class BackgroundTaskImpl : public BackgroundTask {
     run_timer_ = base::ElapsedTimer();
     background_task_runner->PostTaskAndReplyWithResult(
         FROM_HERE, std::move(task_),
-        std::move(reply_).Then(
-            base::BindOnce(std::move(on_complete_callback), this)));
+        base::BindOnce(&BackgroundTaskImpl::OnTaskComplete,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(on_complete_callback)));
+  }
+
+  void ReplyWithResult() override {
+    CHECK(result_.has_value());
+    std::move(reply_).Run(std::move(result_).value());
   }
 
   BackgroundTask::Status GetStatus() const override {
@@ -81,13 +88,25 @@ class BackgroundTaskImpl : public BackgroundTask {
   }
 
  private:
+  void OnTaskComplete(
+      base::OnceCallback<void(BackgroundTask*)> on_complete_callback,
+      ReturnType result) {
+    result_ = std::move(result);
+    std::move(on_complete_callback).Run(this);
+    // `this` might be destroyed after running the callback.
+  }
+
   base::OnceCallback<ReturnType()> task_;
   base::OnceCallback<void(ReturnType)> reply_;
+
+  std::optional<ReturnType> result_;
 
   const BackgroundTaskPriority priority_;
   const BackgroundTaskType type_;
   const base::ElapsedTimer creation_timer_;
   std::optional<base::ElapsedTimer> run_timer_;
+
+  base::WeakPtrFactory<BackgroundTaskImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace unexportable_keys::internal

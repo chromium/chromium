@@ -39,6 +39,11 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) BackgroundTask {
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       base::OnceCallback<void(BackgroundTask* task)> on_complete_callback) = 0;
 
+  // Invokes the "reply" callback (if any) to return the result back to the
+  // client.
+  // Must be called after the task is completed, and no more than once.
+  virtual void ReplyWithResult() = 0;
+
   // Returns the current status of the task.
   virtual Status GetStatus() const = 0;
 

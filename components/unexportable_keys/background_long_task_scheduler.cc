@@ -77,6 +77,7 @@ void BackgroundLongTaskScheduler::OnTaskCompleted(BackgroundTask* task) {
       GetBackgroundTaskPrioritySuffixForHistograms(task->GetPriority()),
       task->GetElapsedTimeSinceCreation());
 
+  running_task_->ReplyWithResult();
   running_task_.reset();
   MaybeRunNextPendingTask();
 }

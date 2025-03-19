@@ -128,6 +128,30 @@ TEST_F(BackgroundLongTaskSchedulerTest, PostTwoTasks_Sequentially) {
   EXPECT_EQ(future2.Get(), 2U);
 }
 
+TEST_F(BackgroundLongTaskSchedulerTest, PostTaskFromCallback) {
+  base::test::TestFuture<size_t> future;
+  base::test::TestFuture<size_t> future_from_callback;
+  scheduler().PostTask(std::make_unique<FakeTask>(
+      background_data(), BackgroundTaskPriority::kBestEffort,
+      base::BindLambdaForTesting([&](size_t count) {
+        future.SetValue(count);
+        scheduler().PostTask(std::make_unique<FakeTask>(
+            background_data(), BackgroundTaskPriority::kBestEffort,
+            future_from_callback.GetCallback()));
+      })));
+
+  // Post an extra task to make sure that the scheduling order is respected.
+  base::test::TestFuture<size_t> future2;
+  scheduler().PostTask(std::make_unique<FakeTask>(
+      background_data(), BackgroundTaskPriority::kBestEffort,
+      future2.GetCallback()));
+
+  task_environment().RunUntilIdle();
+  EXPECT_EQ(future.Get(), 1U);
+  EXPECT_EQ(future2.Get(), 2U);
+  EXPECT_EQ(future_from_callback.Get(), 3U);
+}
+
 TEST_F(BackgroundLongTaskSchedulerTest, TaskPriority) {
   base::test::TestFuture<size_t> future;
   base::test::TestFuture<size_t> future2;
