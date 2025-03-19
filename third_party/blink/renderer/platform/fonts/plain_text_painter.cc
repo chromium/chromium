@@ -36,7 +36,6 @@ const PlainTextNode& PlainTextPainter::SegmentAndShape(const TextRun& run,
   // This function doesn't support DirectionOverride because there are no such
   // callers.
   DCHECK(!run.DirectionalOverride());
-  FontCachePurgePreventer purge_preventer;
   return CreateNode(run, font);
 }
 
@@ -145,7 +144,6 @@ bool PlainTextPainter::DrawWithBidiReorder(
 float PlainTextPainter::ComputeInlineSize(const TextRun& run,
                                           const Font& font,
                                           gfx::RectF* glyph_bounds) {
-  FontCachePurgePreventer purge_preventer;
   return CreateNode(run, font).AccumulateInlineSize(glyph_bounds);
 }
 
@@ -157,7 +155,6 @@ float PlainTextPainter::ComputeSubInlineSize(const TextRun& run,
   if (run.length() == 0) {
     return 0;
   }
-  FontCachePurgePreventer purge_preventer;
 
   const PlainTextNode& node = CreateNode(run, font);
   float x_pos = 0;
@@ -199,7 +196,6 @@ float PlainTextPainter::ComputeSubInlineSize(const TextRun& run,
 
 float PlainTextPainter::ComputeInlineSizeWithoutBidi(const TextRun& run,
                                                      const Font& font) {
-  FontCachePurgePreventer purge_preventer;
   constexpr bool kSupportsBidi = true;
   return CreateNode(run, font, !kSupportsBidi).AccumulateInlineSize(nullptr);
 }

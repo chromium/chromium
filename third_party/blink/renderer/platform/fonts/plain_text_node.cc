@@ -276,10 +276,7 @@ void PlainTextNode::Shape(const Font& font, FrameShapeCache* cache) {
 
     HarfBuzzShaper shaper(item.text_);
     ShapeResult* shape_result = shaper.Shape(&font, item.Direction());
-    if (!shape_result) {
-      item.shape_result_ = nullptr;
-      continue;
-    }
+    DCHECK(shape_result);
     gfx::RectF ink_bounds;
     if (!spacing.HasSpacing()) [[likely]] {
       ink_bounds = shape_result->ComputeInkBounds();
