@@ -73,7 +73,7 @@ class ExternalInstallErrorTest : public ExtensionBrowserTest {
       provider->UpdateOrAddExtension(provided_extension_id, version,
                                      test_data_dir_.AppendASCII(crx_path));
       external_provider_manager->AddProviderForTesting(std::move(provider));
-      extension_service()->CheckForExternalUpdates();
+      external_provider_manager->CheckForExternalUpdates();
 
       auto extension = observer.WaitForExtensionInstalled();
       EXPECT_EQ(extension->id(), provided_extension_id);
