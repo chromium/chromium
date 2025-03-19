@@ -52,14 +52,14 @@
   _viewController = [[NotificationsOptInViewController alloc] init];
   NotificationsOptInMediator* mediator = [[NotificationsOptInMediator alloc]
       initWithAuthenticationService:AuthenticationServiceFactory::GetForProfile(
-                                        self.browser->GetProfile())];
+                                        self.profile)];
   mediator.consumer = _viewController;
   mediator.presenter = self;
   _viewController.delegate = mediator;
   _viewController.notificationsDelegate = mediator;
   _viewController.presentationController.delegate = self;
   _viewController.isContentNotificationEnabled =
-      IsContentNotificationEnabled(self.browser->GetProfile());
+      IsContentNotificationEnabled(self.profile);
   [mediator configureConsumer];
   self.mediator = mediator;
   [self.baseViewController presentViewController:_viewController
@@ -156,13 +156,12 @@
 #pragma mark - Private
 
 - (bool)hasIdentitiesOnDevice {
-  ProfileIOS* profile = self.browser->GetProfile();
   if (IsUseAccountListFromIdentityManagerEnabled()) {
-    return !IdentityManagerFactory::GetForProfile(profile)
+    return !IdentityManagerFactory::GetForProfile(self.profile)
                 ->GetAccountsOnDevice()
                 .empty();
   } else {
-    return ChromeAccountManagerServiceFactory::GetForProfile(profile)
+    return ChromeAccountManagerServiceFactory::GetForProfile(self.profile)
         ->HasIdentities();
   }
 }

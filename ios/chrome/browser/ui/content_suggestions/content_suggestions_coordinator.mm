@@ -285,7 +285,7 @@ using segmentation_platform::TipIdentifier;
   }
   _started = YES;
 
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   PrefService* prefs = ProfileIOS::FromBrowserState(profile)->GetPrefs();
 
   _segmentationService =
@@ -515,9 +515,9 @@ using segmentation_platform::TipIdentifier;
                        localState:GetApplicationContext()->GetLocalState()
                   moduleMediators:moduleMediators
                       tipsManager:TipsManagerIOSFactory::GetForProfile(
-                                      self.browser->GetProfile())
+                                      self.profile)
                templateURLService:ios::TemplateURLServiceFactory::GetForProfile(
-                                      self.browser->GetProfile())];
+                                      self.profile)];
   _magicStackRankingModel.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;
   self.contentSuggestionsMediator.magicStackRankingModel =
@@ -630,7 +630,7 @@ using segmentation_platform::TipIdentifier;
 #pragma mark - ContentSuggestionsViewControllerAudience
 
 - (void)viewWillDisappear {
-  DiscoverFeedServiceFactory::GetForProfile(self.browser->GetProfile())
+  DiscoverFeedServiceFactory::GetForProfile(self.profile)
       ->SetIsShownOnStartSurface(false);
 }
 
@@ -736,7 +736,7 @@ using segmentation_platform::TipIdentifier;
   if (name.has_value()) {
     segmentation_platform::home_modules::HomeModulesCardRegistry* registry =
         segmentation_platform::SegmentationPlatformServiceFactory::
-            GetHomeCardRegistryForProfile(self.browser->GetProfile());
+            GetHomeCardRegistryForProfile(self.profile);
 
     CHECK(registry);
 
@@ -756,8 +756,7 @@ using segmentation_platform::TipIdentifier;
 
     _magicStackHalfSheetMediator = [[MagicStackHalfSheetMediator alloc]
         initWithLocalState:GetApplicationContext()->GetLocalState()
-        profilePrefService:ProfileIOS::FromBrowserState(
-                               self.browser->GetProfile())
+        profilePrefService:ProfileIOS::FromBrowserState(self.profile)
                                ->GetPrefs()];
     _magicStackHalfSheetMediator.consumer =
         _magicStackHalfSheetTableViewController;
@@ -788,7 +787,7 @@ using segmentation_platform::TipIdentifier;
   UMA_HISTOGRAM_ENUMERATION(kMagicStackTopModuleImpressionHistogram, card);
   segmentation_platform::home_modules::HomeModulesCardRegistry* registry =
       segmentation_platform::SegmentationPlatformServiceFactory::
-          GetHomeCardRegistryForProfile(self.browser->GetProfile());
+          GetHomeCardRegistryForProfile(self.profile);
 
   switch (card) {
     case ContentSuggestionsModuleType::kPriceTrackingPromo:
@@ -820,8 +819,7 @@ using segmentation_platform::TipIdentifier;
 }
 
 - (void)logTopModuleImpressionForType:(ContentSuggestionsModuleType)moduleType {
-  LogTopModuleImpressionForType(moduleType,
-                                self.browser->GetProfile()->GetPrefs());
+  LogTopModuleImpressionForType(moduleType, self.profile->GetPrefs());
 }
 
 #pragma mark - MagicStackModuleContainerDelegate
@@ -1464,13 +1462,12 @@ using segmentation_platform::TipIdentifier;
 #pragma mark - Helpers
 
 - (bool)hasIdentitiesOnDevice {
-  ProfileIOS* profile = self.browser->GetProfile();
   if (IsUseAccountListFromIdentityManagerEnabled()) {
-    return !IdentityManagerFactory::GetForProfile(profile)
+    return !IdentityManagerFactory::GetForProfile(self.profile)
                 ->GetAccountsOnDevice()
                 .empty();
   } else {
-    return ChromeAccountManagerServiceFactory::GetForProfile(profile)
+    return ChromeAccountManagerServiceFactory::GetForProfile(self.profile)
         ->HasIdentities();
   }
 }
