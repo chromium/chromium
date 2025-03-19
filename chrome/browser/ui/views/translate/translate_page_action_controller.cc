@@ -41,6 +41,10 @@ TranslatePageActionController::TranslatePageActionController(
 
   RegisterAsPageActionObserver(
       CHECK_DEREF(tab_interface_->GetTabFeatures()->page_action_controller()));
+
+  // Translation may be enabled already at the time of creating the tab (e.g.,
+  // while moving contents from a browser windows to a web app).
+  UpdatePageAction();
 }
 
 TranslatePageActionController::~TranslatePageActionController() = default;
