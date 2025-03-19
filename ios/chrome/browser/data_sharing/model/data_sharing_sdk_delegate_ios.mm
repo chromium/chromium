@@ -53,7 +53,8 @@ void DataSharingSDKDelegateIOS::ReadGroups(
     }
     [groupsParam addObject:param];
   }
-  ShareKitReadConfiguration* config = [[ShareKitReadConfiguration alloc] init];
+  ShareKitReadGroupsConfiguration* config =
+      [[ShareKitReadGroupsConfiguration alloc] init];
   config.groupsParam = groupsParam;
   config.callback = base::CallbackToBlock(std::move(callback));
   share_kit_service_->ReadGroups(config);
