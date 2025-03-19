@@ -77,6 +77,7 @@ constexpr char kDisconnectEndpoint[] = "disconnect_endpoint";
 constexpr char kModesKey[] = "modes";
 constexpr char kTypesKey[] = "types";
 constexpr char kFormatsKey[] = "formats";
+constexpr char kAccountLabelKey[] = "account_label";
 
 // Keys in the 'accounts' dictionary
 constexpr char kIncludeKey[] = "include";
@@ -116,6 +117,7 @@ constexpr char kAccountApprovedClientsKey[] = "approved_clients";
 constexpr char kHintsKey[] = "login_hints";
 constexpr char kDomainHintsKey[] = "domain_hints";
 constexpr char kLabelsKey[] = "labels";
+constexpr char kLabelHintsKey[] = "label_hints";
 
 // Keys in 'branding' 'icons' dictionary in config for the IDP icon and client
 // metadata endpoint for the RP icon.
@@ -255,7 +257,13 @@ IdentityRequestAccountPtr ParseAccount(const base::Value::Dict& account,
   }
 
   std::vector<std::string> labels;
-  auto* labels_list = account.FindList(kLabelsKey);
+  const base::ListValue* labels_list = nullptr;
+  if (IsFedCmUseOtherAccountAndLabelsNewSyntaxEnabled()) {
+    labels_list = account.FindList(kLabelHintsKey);
+  }
+  if (!labels_list) {
+    labels_list = account.FindList(kLabelsKey);
+  }
   if (labels_list) {
     for (const base::Value& entry : *labels_list) {
       if (entry.is_string()) {
@@ -652,31 +660,44 @@ void OnConfigParsed(const GURL& provider,
     }
   }
 
-  const base::Value::Dict* accounts_dict = response.FindDict(kAccountsKey);
-  if (accounts_dict) {
-    const std::string* requested_label = accounts_dict->FindString(kIncludeKey);
-    if (requested_label) {
-      idp_metadata.requested_label = *requested_label;
+  const std::string* requested_label = nullptr;
+  if (IsFedCmUseOtherAccountAndLabelsNewSyntaxEnabled()) {
+    requested_label = response.FindString(kAccountLabelKey);
+  }
+  if (!requested_label) {
+    const base::Value::Dict* accounts_dict = response.FindDict(kAccountsKey);
+    if (accounts_dict) {
+      requested_label = accounts_dict->FindString(kIncludeKey);
     }
+  }
+  if (requested_label) {
+    idp_metadata.requested_label = *requested_label;
   }
 
   if (IsFedCmUseOtherAccountEnabled()) {
-    const base::Value::Dict* modes_dict = response.FindDict(kModesKey);
-    const base::Value::Dict* selected_mode_dict = nullptr;
-    if (modes_dict) {
-      switch (rp_mode) {
-        case blink::mojom::RpMode::kPassive:
-          selected_mode_dict = modes_dict->FindDict(kPassiveModeKey);
-          break;
-        case blink::mojom::RpMode::kActive:
-          selected_mode_dict = modes_dict->FindDict(kActiveModeKey);
-          break;
-      };
+    std::optional<bool> supports_add_account;
+    if (IsFedCmUseOtherAccountAndLabelsNewSyntaxEnabled()) {
+      supports_add_account = response.FindBool(kSupportsUseOtherAccountKey);
     }
-    std::optional<bool> supports_add_account =
-        selected_mode_dict
-            ? selected_mode_dict->FindBool(kSupportsUseOtherAccountKey)
-            : std::nullopt;
+
+    if (!supports_add_account) {
+      const base::Value::Dict* modes_dict = response.FindDict(kModesKey);
+      const base::Value::Dict* selected_mode_dict = nullptr;
+      if (modes_dict) {
+        switch (rp_mode) {
+          case blink::mojom::RpMode::kPassive:
+            selected_mode_dict = modes_dict->FindDict(kPassiveModeKey);
+            break;
+          case blink::mojom::RpMode::kActive:
+            selected_mode_dict = modes_dict->FindDict(kActiveModeKey);
+            break;
+        };
+      }
+      if (selected_mode_dict) {
+        supports_add_account =
+            selected_mode_dict->FindBool(kSupportsUseOtherAccountKey);
+      }
+    }
     if (supports_add_account) {
       idp_metadata.supports_add_account = *supports_add_account;
     }
