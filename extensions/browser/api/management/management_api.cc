@@ -849,7 +849,7 @@ void ManagementUninstallFunctionBase::UninstallExtension() {
   Finish(success, error);
 }
 
-ManagementUninstallFunction::ManagementUninstallFunction() {}
+ManagementUninstallFunction::ManagementUninstallFunction() = default;
 
 ManagementUninstallFunction::~ManagementUninstallFunction() {}
 
@@ -863,7 +863,7 @@ ExtensionFunction::ResponseAction ManagementUninstallFunction::Run() {
   return Uninstall(params->id, show_confirm_dialog);
 }
 
-ManagementUninstallSelfFunction::ManagementUninstallSelfFunction() {}
+ManagementUninstallSelfFunction::ManagementUninstallSelfFunction() = default;
 
 ManagementUninstallSelfFunction::~ManagementUninstallSelfFunction() {}
 
@@ -878,7 +878,8 @@ ExtensionFunction::ResponseAction ManagementUninstallSelfFunction::Run() {
   return Uninstall(extension_->id(), show_confirm_dialog);
 }
 
-ManagementCreateAppShortcutFunction::ManagementCreateAppShortcutFunction() {}
+ManagementCreateAppShortcutFunction::ManagementCreateAppShortcutFunction() =
+    default;
 
 ManagementCreateAppShortcutFunction::~ManagementCreateAppShortcutFunction() {}
 
@@ -1061,7 +1062,7 @@ ExtensionFunction::ResponseAction ManagementGenerateAppForLinkFunction::Run() {
 }
 
 ManagementInstallReplacementWebAppFunction::
-    ManagementInstallReplacementWebAppFunction() {}
+    ManagementInstallReplacementWebAppFunction() = default;
 
 ManagementInstallReplacementWebAppFunction::
     ~ManagementInstallReplacementWebAppFunction() {}
