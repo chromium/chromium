@@ -4,7 +4,7 @@
       "win",
       "linux",
       "mac",
-      "chromeos_lacros"
+      "chromeos"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "optimization_guide.gen_ai_local_foundational_model_settings",

@@ -429,7 +429,7 @@ class PolicyTestCase {
 #elif BUILDFLAG(IS_ANDROID)
     const std::string os("android");
 #elif BUILDFLAG(IS_CHROMEOS)
-    const std::string os("chromeos_ash");
+    const std::string os("chromeos");
 #elif BUILDFLAG(IS_IOS)
     const std::string os("ios");
 #elif BUILDFLAG(IS_LINUX)
@@ -447,10 +447,7 @@ class PolicyTestCase {
   }
 
   bool IsOsCovered() const {
-#if BUILDFLAG(IS_CHROMEOS)
-    return base::Contains(supported_os_, "chromeos_ash") ||
-           base::Contains(supported_os_, "chromeos_lacros");
-#elif BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Android policies that apply to desktop Android are covered as part of the
     // desktop Android build because they may invoke desktop-only code.
     return base::Contains(supported_os_, "android") ||

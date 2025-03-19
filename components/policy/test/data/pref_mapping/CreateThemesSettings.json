@@ -4,8 +4,7 @@
       "win",
       "linux",
       "mac",
-      "chromeos_lacros",
-      "chromeos_ash"
+      "chromeos"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed",

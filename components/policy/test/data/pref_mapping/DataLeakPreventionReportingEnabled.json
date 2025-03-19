@@ -2,8 +2,7 @@
   {
     "can_be_recommended": false,
     "os": [
-      "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "policy.dlp_reporting_enabled",
