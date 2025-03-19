@@ -24,7 +24,13 @@ public interface GroupSuggestionsService {
     }
 
     /** Gets called when a tab is added. */
-    void didAddTab(int tabId, int type);
+    void didAddTab(int tabId, int tabLaunchType);
+
+    /** Gets called when a tab is selected. */
+    void didSelectTab(int tabId, int tabSelectionType, int lastTabId);
+
+    /** Gets called when user enters tab switcher. */
+    void didEnterTabSwitcher();
 
     /** Registers a delegate to receive backend suggestions. */
     void registerDelegate(Delegate delegate, int windowId);

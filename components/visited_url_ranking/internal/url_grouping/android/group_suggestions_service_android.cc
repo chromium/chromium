@@ -9,6 +9,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "components/visited_url_ranking/public/url_grouping/group_suggestions_delegate.h"
+#include "components/visited_url_ranking/public/url_grouping/tab_event_tracker.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/visited_url_ranking/internal/jni_headers/DelegateBridge_jni.h"
@@ -25,6 +26,27 @@ namespace {
 const char kGroupSuggestionsServiceBridgeKey[] =
     "group_suggestions_service_bridge";
 
+// TODO(crbug.com/397221723): Rethink the conversion plan. Maybe update the Java
+// API to do the conversion at call site.
+TabEventTracker::TabSelectionType ConvertIntToTabSelectionType(
+    int tab_selection_type) {
+  switch (tab_selection_type) {
+    case 0:
+      return TabEventTracker::TabSelectionType::kFromCloseActiveTab;
+    case 1:
+      return TabEventTracker::TabSelectionType::kFromAppExit;
+    case 2:
+      return TabEventTracker::TabSelectionType::kFromNewTab;
+    case 3:
+      return TabEventTracker::TabSelectionType::kFromUser;
+    case 4:
+      return TabEventTracker::TabSelectionType::kFromOmnibox;
+    case 5:
+      return TabEventTracker::TabSelectionType::kFromUndoClosure;
+    default:
+      return TabEventTracker::TabSelectionType::kUnknown;
+  }
+}
 }  // namespace
 
 // Native counterpart of Java DelegateBridge. Observes the native service and
@@ -120,8 +142,21 @@ GroupSuggestionsServiceAndroid::~GroupSuggestionsServiceAndroid() {
 
 void GroupSuggestionsServiceAndroid::DidAddTab(JNIEnv* env,
                                                int tab_id,
-                                               int type) {
-  group_suggestions_service_->GetTabEventTracker()->DidAddTab(tab_id);
+                                               int tab_launch_type) {
+  group_suggestions_service_->GetTabEventTracker()->DidAddTab(tab_id,
+                                                              tab_launch_type);
+}
+
+void GroupSuggestionsServiceAndroid::DidSelectTab(JNIEnv* env,
+                                                  int tab_id,
+                                                  int tab_selection_type,
+                                                  int last_id) {
+  group_suggestions_service_->GetTabEventTracker()->DidSelectTab(
+      tab_id, ConvertIntToTabSelectionType(tab_selection_type), last_id);
+}
+
+void GroupSuggestionsServiceAndroid::DidEnterTabSwitcher(JNIEnv* env) {
+  group_suggestions_service_->GetTabEventTracker()->DidEnterTabSwitcher();
 }
 
 ScopedJavaLocalRef<jobject> GroupSuggestionsServiceAndroid::GetJavaObject() {
