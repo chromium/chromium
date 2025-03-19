@@ -799,6 +799,9 @@ public final class ChromePreferenceKeys {
     public static final String SIGNIN_PROMO_HISTORY_PAGE_DECLINED =
             "Chrome.SigninPromoHistoryPage.Declined";
 
+    public static final String SIGNIN_PROMO_HISTORY_PAGE_LAST_SHOWN_TIME =
+            "Chrome.SigninPromoHistoryPage.LastShownTime";
+
     /** SyncPromo Show Count preference. */
     public static final KeyPrefix SYNC_PROMO_SHOW_COUNT =
             new KeyPrefix("Chrome.SyncPromo.ShowCount.*");
@@ -1089,6 +1092,7 @@ public final class ChromePreferenceKeys {
                 SHARING_TABS_WITH_OS,
                 SYNC_PROMO_SHOW_COUNT.pattern(),
                 SIGNIN_PROMO_HISTORY_PAGE_DECLINED,
+                SIGNIN_PROMO_HISTORY_PAGE_LAST_SHOWN_TIME,
                 SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME,
                 SIGNIN_PROMO_NTP_LAST_SHOWN_TIME,
                 SYNC_PROMO_TOTAL_SHOW_COUNT,
