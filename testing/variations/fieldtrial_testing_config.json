@@ -26104,6 +26104,60 @@
             ]
         }
     ],
+    "WebUIBundledCodeCache": [
+        {
+            "platforms": [
+                "linux",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledSyncFetch",
+                    "params": {
+                        "WebUIBundledCodeCacheGenerateResourceMap": "true"
+                    },
+                    "enable_features": [
+                        "WebUIBundledCodeCache"
+                    ],
+                    "disable_features": [
+                        "WebUIBundledCodeCacheAsyncFetch"
+                    ]
+                },
+                {
+                    "name": "EnabledAsyncFetch",
+                    "params": {
+                        "WebUIBundledCodeCacheGenerateResourceMap": "true"
+                    },
+                    "enable_features": [
+                        "WebUIBundledCodeCache",
+                        "WebUIBundledCodeCacheAsyncFetch"
+                    ]
+                },
+                {
+                    "name": "EnvironmentControl",
+                    "params": {
+                        "WebUIBundledCodeCacheGenerateResourceMap": "false"
+                    },
+                    "enable_features": [
+                        "WebUIBundledCodeCache"
+                    ],
+                    "disable_features": [
+                        "WebUIBundledCodeCacheAsyncFetch"
+                    ]
+                },
+                {
+                    "name": "FeatureControl",
+                    "params": {
+                        "WebUIBundledCodeCacheGenerateResourceMap": "false"
+                    },
+                    "disable_features": [
+                        "WebUIBundledCodeCache",
+                        "WebUIBundledCodeCacheAsyncFetch"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebUIInProcessResourceLoading": [
         {
             "platforms": [
