@@ -12,6 +12,7 @@
 struct AutocompleteMatch;
 class AutocompleteResult;
 class OmniboxController;
+@protocol OmniboxAutocompleteControllerDelegate;
 @class OmniboxTextController;
 @class OmniboxPopupController;
 class OmniboxViewIOS;
@@ -24,8 +25,14 @@ class OmniboxViewIOS;
 /// Controller of the omnibox popup.
 @property(nonatomic, weak) OmniboxPopupController* omniboxPopupController;
 
+/// Delegate of the omnibox autocomplete controller.
+@property(nonatomic, weak) id<OmniboxAutocompleteControllerDelegate> delegate;
+
 /// Controller of the omnibox text.
 @property(nonatomic, weak) OmniboxTextController* omniboxTextController;
+
+// Whether or not the popup has suggestions.
+@property(nonatomic, assign, readonly) BOOL hasSuggestions;
 
 /// Initializes with an OmniboxController.
 - (instancetype)initWithOmniboxController:(OmniboxController*)omniboxController

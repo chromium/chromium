@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_popup_controller.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/carousel/carousel_item.h"
@@ -69,6 +70,7 @@
 
 @implementation OmniboxPopupCoordinator {
   __weak OmniboxPopupController* _omniboxPopupController;
+  __weak OmniboxAutocompleteController* _omniboxAutocompleteController;
 }
 
 #pragma mark - Public
@@ -88,6 +90,8 @@
     _popupReturnDelegate = _popupViewController;
     _KeyboardDelegate = _popupViewController;
     _omniboxPopupController = popupController;
+    _omniboxAutocompleteController =
+        _omniboxPopupController.omniboxAutocompleteController;
   }
   return self;
 }
@@ -165,6 +169,8 @@
 
   _omniboxPopupController.autocompleteResultWrapper = autocompleteResultWrapper;
 
+  _omniboxAutocompleteController.delegate = self.mediator;
+
   self.mediator.applicationCommandsHandler =
       HandlerForProtocol(dispatcher, ApplicationCommands);
   self.mediator.incognito = isIncognito;
@@ -194,7 +200,7 @@
 }
 
 - (BOOL)isOpen {
-  return _omniboxPopupController.hasSuggestions;
+  return _omniboxAutocompleteController.hasSuggestions;
 }
 
 - (id<ToolbarOmniboxConsumer>)toolbarOmniboxConsumer {
@@ -209,7 +215,7 @@
 #pragma mark - Property accessor
 
 - (BOOL)hasResults {
-  return _omniboxPopupController.hasSuggestions;
+  return _omniboxAutocompleteController.hasSuggestions;
 }
 
 #pragma mark - OmniboxPopupMediatorProtocolProvider

@@ -173,12 +173,12 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   _open = open;
 }
 
-#pragma mark - OmniboxPopupControllerDelegate
+#pragma mark - OmniboxAutocompleteControllerDelegate
 
-- (void)popupControllerDidUpdateSuggestions:
-            (OmniboxPopupController*)popupController
-                             hasSuggestions:(BOOL)hasSuggestions
-                                 isFocusing:(BOOL)isFocusing {
+- (void)omniboxAutocompleteControllerDidUpdateSuggestions:
+            (OmniboxAutocompleteController*)autocompleteController
+                                           hasSuggestions:(BOOL)hasSuggestions
+                                               isFocusing:(BOOL)isFocusing {
   [self.consumer newResultsAvailable];
 
   if (self.debugInfoConsumer) {
@@ -193,6 +193,8 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   self.open = hasSuggestions;
   [self.presenter updatePopupOnFocus:isFocusing];
 }
+
+#pragma mark - OmniboxPopupControllerDelegate
 
 - (void)popupController:(OmniboxPopupController*)popupController
     didUpdateSuggestionsGroups:
