@@ -16,7 +16,7 @@ substitute_strings_identifier("convert_whats_new_items") {
 
   deps = [
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui/whats_new/strings",
+    "//ios/chrome/browser/whats_new/ui/strings",
   ]
 }
 
@@ -38,7 +38,7 @@ substitute_strings_identifier("convert_whats_new_price_insights_items") {
 
   deps = [
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui/whats_new/strings",
+    "//ios/chrome/browser/whats_new/ui/strings",
   ]
 }
 
@@ -60,7 +60,7 @@ substitute_strings_identifier("convert_unit_tests_resources") {
   ]
   deps = [
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui/whats_new/strings",
+    "//ios/chrome/browser/whats_new/ui/strings",
   ]
 }
 
