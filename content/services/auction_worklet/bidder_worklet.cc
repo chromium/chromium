@@ -339,6 +339,21 @@ bool SetDataVersion(
   }
 }
 
+// Sets `view_or_click_counts` on the `member` member of `top_level_dict`.
+bool MaybeSetViewOrClickCounts(
+    v8::Isolate* isolate,
+    gin::Dictionary& top_level_dict,
+    const std::string& member,
+    const blink::mojom::ViewOrClickCountsPtr& view_or_click_counts) {
+  gin::Dictionary result = gin::Dictionary::CreateEmpty(isolate);
+  return result.Set("pastHour", view_or_click_counts->past_hour) &&
+         result.Set("pastDay", view_or_click_counts->past_day) &&
+         result.Set("pastWeek", view_or_click_counts->past_week) &&
+         result.Set("past30Days", view_or_click_counts->past_30_days) &&
+         result.Set("past90Days", view_or_click_counts->past_90_days) &&
+         top_level_dict.Set(member, result);
+}
+
 }  // namespace
 
 BidderWorklet::BidderWorklet(
@@ -1936,6 +1951,13 @@ BidderWorklet::V8State::RunGenerateBidOnce(
        !browser_signals_dict.Set(
            "topLevelSeller",
            browser_signal_top_level_seller_origin->Serialize())) ||
+      (base::FeatureList::IsEnabled(blink::features::kFledgeClickiness) &&
+       (!MaybeSetViewOrClickCounts(
+            isolate, browser_signals_dict, "viewCounts",
+            bidding_browser_signals->view_and_click_counts->view_counts) ||
+        !MaybeSetViewOrClickCounts(
+            isolate, browser_signals_dict, "clickCounts",
+            bidding_browser_signals->view_and_click_counts->click_counts))) ||
       !browser_signals_dict.Set("joinCount",
                                 bidding_browser_signals->join_count) ||
       !browser_signals_dict.Set("bidCount",
