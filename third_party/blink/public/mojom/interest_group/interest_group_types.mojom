@@ -522,6 +522,11 @@ struct AuctionAdConfigNonSharedParams {
 
   AuctionAdConfigMaybePromisePerBuyerSignals per_buyer_signals;
 
+  // Per buyer signals of contextual data are sent with trusted KVv2 signals to
+  // TKV servers. The keys represent buyer HTTPS origins, while the values contain
+  // opaque JSON data.
+  map<url.mojom.Origin, string> per_buyer_tkv_signals;
+
   // Timeouts for individual interest group worklet Javascript execution.
   AuctionAdConfigMaybePromiseBuyerTimeouts buyer_timeouts;
 

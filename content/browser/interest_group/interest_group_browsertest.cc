@@ -6398,6 +6398,70 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_TRUE(console_observer.Wait());
 }
 
+class InterestGroupContextualDataBrowserTest : public InterestGroupBrowserTest {
+ public:
+  InterestGroupContextualDataBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {/*enabled_features=*/blink::features::
+             kFledgeTrustedSignalsKVv2ContextualData},
+        /*disabled_features=*/{});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(InterestGroupContextualDataBrowserTest,
+                       RunAdAuctionInvalidPerBuyerTKVSignalsOrigin) {
+  GURL test_url = embedded_https_test_server().GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL decision_url = embedded_https_test_server().GetURL(
+      "a.test", "/interest_group/decision_logic.js");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  AttachInterestGroupObserver();
+
+  EXPECT_EQ(
+      base::StringPrintf(
+          "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
+          "perBuyerTKVSignals buyer 'https://invalid^&' for AuctionAdConfig "
+          "with seller '%s' must be a valid https origin.",
+          test_origin.Serialize().c_str()),
+      RunAuctionAndWait(JsReplace(R"({
+      seller: $1,
+      decisionLogicURL: $2,
+      perBuyerTKVSignals: {'https://invalid^&': {a:1}},
+      interestGroupBuyers: []
+  })",
+                                  test_origin, decision_url)));
+  WaitForAccessObserved({});
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupContextualDataBrowserTest,
+                       RunAdAuctionInvalidPerBuyerTKVSignals) {
+  GURL test_url = embedded_https_test_server().GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL decision_url = embedded_https_test_server().GetURL(
+      "a.test", "/interest_group/decision_logic.js");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  AttachInterestGroupObserver();
+
+  EXPECT_EQ(base::StringPrintf(
+                "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
+                "perBuyerTKVSignals for AuctionAdConfig with seller '%s' must "
+                "be a JSON-serializable object.",
+                test_origin.Serialize().c_str()),
+            RunAuctionAndWait(JsReplace(R"({
+      seller: $1,
+      decisionLogicURL: $2,
+      perBuyerTKVSignals: {'https://test.com': function() {}},
+      interestGroupBuyers: []
+  })",
+                                        test_origin, decision_url)));
+  WaitForAccessObserved({});
+}
+
 // Test rejection path in the renderer for promise-delivered perBuyerTimeouts.
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionRejectPromisePerBuyerTimeouts) {

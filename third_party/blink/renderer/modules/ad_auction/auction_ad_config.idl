@@ -71,6 +71,8 @@ dictionary AuctionAdConfig {
   Promise<record<USVString, any>?> perBuyerSignals;
   Promise<record<USVString, unsigned long long>?> perBuyerTimeouts;
   Promise<record<USVString, unsigned long long>?> perBuyerCumulativeTimeouts;
+  [RuntimeEnabled=FledgeTrustedSignalsKVv2ContextualData]
+  record<USVString, any> perBuyerTKVSignals;
 
   unsigned long long reportingTimeout;
 

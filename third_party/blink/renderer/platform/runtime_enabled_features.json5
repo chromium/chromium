@@ -2133,6 +2133,11 @@
       status: "test",
     },
     {
+      name: "FledgeTrustedSignalsKVv2ContextualData",
+      depends_on: ["FledgeTrustedSignalsKVv2Support"],
+      status: "test",
+    },
+    {
       name: "FledgeTrustedSignalsKVv2Support",
       status: "stable",
     },
