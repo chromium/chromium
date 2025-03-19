@@ -137,15 +137,17 @@ GPUAdapterInfo* GPUAdapter::CreateAdapterInfoForAdapter() {
     // If WebGPU developer features have been enabled then provide all available
     // adapter info values.
     info = MakeGarbageCollected<GPUAdapterInfo>(
-        vendor_, architecture_, subgroup_min_size_, subgroup_max_size_, device_,
-        description_, driver_, FromDawnEnum(backend_type_),
-        FromDawnEnum(adapter_type_), d3d_shader_model_, vk_driver_version_);
+        vendor_, architecture_, subgroup_min_size_, subgroup_max_size_,
+        is_fallback_adapter_, device_, description_, driver_,
+        FromDawnEnum(backend_type_), FromDawnEnum(adapter_type_),
+        d3d_shader_model_, vk_driver_version_);
     for (GPUMemoryHeapInfo* memory_heap : memory_heaps_) {
       info->AppendMemoryHeapInfo(memory_heap);
     }
   } else {
     info = MakeGarbageCollected<GPUAdapterInfo>(
-        vendor_, architecture_, subgroup_min_size_, subgroup_max_size_);
+        vendor_, architecture_, subgroup_min_size_, subgroup_max_size_,
+        is_fallback_adapter_);
   }
   return info;
 }
