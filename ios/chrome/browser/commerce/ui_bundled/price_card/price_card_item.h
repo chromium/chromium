@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_COMMERCE_UI_BUNDLED_PRICE_CARD_PRICE_CARD_ITEM_H_
 #define IOS_CHROME_BROWSER_COMMERCE_UI_BUNDLED_PRICE_CARD_PRICE_CARD_ITEM_H_
 
-#import <Foundation/NSString.h>
+#import <Foundation/Foundation.h>
 
 // Model object representing price information for a shopping website.
 @interface PriceCardItem : NSObject
