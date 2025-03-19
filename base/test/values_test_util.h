@@ -104,24 +104,6 @@ class DictionaryHasValuesMatcher {
   base::Value::Dict template_value_;
 };
 
-}  // namespace internal
-
-// A custom GMock matcher which matches if a `base::Value` or
-// `base::Value::Dict` has a key `key` that is equal to `value`.
-inline testing::PolymorphicMatcher<internal::DictionaryHasValueMatcher>
-DictionaryHasValue(std::string key, const base::Value& expected_value) {
-  return testing::MakePolymorphicMatcher(
-      internal::DictionaryHasValueMatcher(key, expected_value));
-}
-
-// A custom GMock matcher which matches if a `base::Value` or
-// `base::Value::Dict` contains all key/value pairs from `template_value`.
-inline testing::PolymorphicMatcher<internal::DictionaryHasValuesMatcher>
-DictionaryHasValues(const base::Value::Dict& template_value) {
-  return testing::MakePolymorphicMatcher(
-      internal::DictionaryHasValuesMatcher(template_value));
-}
-
 // A custom GMock matcher.  For details, see
 // https://github.com/google/googletest/blob/644319b9f06f6ca9bf69fe791be399061044bc3d/googlemock/docs/CookBook.md#writing-new-polymorphic-matchers
 class IsJsonMatcher {
@@ -151,6 +133,24 @@ class IsJsonMatcher {
   base::Value expected_value_;
 };
 
+}  // namespace internal
+
+// A custom GMock matcher which matches if a `base::Value` or
+// `base::Value::Dict` has a key `key` that is equal to `value`.
+inline testing::PolymorphicMatcher<internal::DictionaryHasValueMatcher>
+DictionaryHasValue(std::string key, const base::Value& expected_value) {
+  return testing::MakePolymorphicMatcher(
+      internal::DictionaryHasValueMatcher(key, expected_value));
+}
+
+// A custom GMock matcher which matches if a `base::Value` or
+// `base::Value::Dict` contains all key/value pairs from `template_value`.
+inline testing::PolymorphicMatcher<internal::DictionaryHasValuesMatcher>
+DictionaryHasValues(const base::Value::Dict& template_value) {
+  return testing::MakePolymorphicMatcher(
+      internal::DictionaryHasValuesMatcher(template_value));
+}
+
 // Creates a GMock matcher for testing equivalence of JSON values represented as
 // either JSON strings or base::Value objects.  Parsing of the expected value
 // uses ParseJson(), which allows trailing commas for convenience.  Parsing of
@@ -160,8 +160,9 @@ class IsJsonMatcher {
 // are both base::Value objects, there is no advantage in that case to using
 // this matcher in place of GMock's normal equality semantics.
 template <typename T>
-inline testing::PolymorphicMatcher<IsJsonMatcher> IsJson(const T& value) {
-  return testing::MakePolymorphicMatcher(IsJsonMatcher(value));
+inline testing::PolymorphicMatcher<internal::IsJsonMatcher> IsJson(
+    const T& value) {
+  return testing::MakePolymorphicMatcher(internal::IsJsonMatcher(value));
 }
 
 // Parses `json` as JSON, using the provided `options`, and returns the

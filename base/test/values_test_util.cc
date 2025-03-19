@@ -205,8 +205,6 @@ void DictionaryHasValuesMatcher::DescribeNegationTo(std::ostream* os) const {
       << "'";
 }
 
-}  // namespace internal
-
 IsJsonMatcher::IsJsonMatcher(std::string_view json)
     : expected_value_(test::ParseJson(json)) {}
 
@@ -268,6 +266,8 @@ void IsJsonMatcher::DescribeTo(std::ostream* os) const {
 void IsJsonMatcher::DescribeNegationTo(std::ostream* os) const {
   *os << "is not the JSON value " << expected_value_;
 }
+
+}  // namespace internal
 
 Value ParseJson(std::string_view json, int options) {
   std::optional<Value> result =
