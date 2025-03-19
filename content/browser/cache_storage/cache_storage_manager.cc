@@ -528,7 +528,7 @@ void CacheStorageManager::GetBucketUsageDidGetExists(
 // default bucket.
 void CacheStorageManager::GetStorageKeys(
     storage::mojom::CacheStorageOwner owner,
-    storage::mojom::QuotaClient::GetStorageKeysForTypeCallback callback) {
+    storage::mojom::QuotaClient::GetDefaultStorageKeysCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (IsMemoryBacked()) {
@@ -842,7 +842,7 @@ base::FilePath CacheStorageManager::ConstructThirdPartyAndNonDefaultRootPath(
 // default bucket. Keep this function to return a vector of StorageKeys, instead
 // of buckets.
 void CacheStorageManager::ListStorageKeysOnTaskRunner(
-    storage::mojom::QuotaClient::GetStorageKeysForTypeCallback callback,
+    storage::mojom::QuotaClient::GetDefaultStorageKeysCallback callback,
     std::vector<storage::BucketLocator> buckets) {
   // Note that bucket IDs will not be populated in the `buckets` entries.
   std::vector<blink::StorageKey> out_storage_keys;

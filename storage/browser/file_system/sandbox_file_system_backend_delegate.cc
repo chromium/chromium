@@ -348,7 +348,7 @@ void SandboxFileSystemBackendDelegate::PerformStorageCleanupOnFileTaskRunner(
 }
 
 std::vector<blink::StorageKey>
-SandboxFileSystemBackendDelegate::GetStorageKeysForTypeOnFileTaskRunner(
+SandboxFileSystemBackendDelegate::GetDefaultStorageKeysOnFileTaskRunner(
     FileSystemType type) {
   DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
   std::unique_ptr<StorageKeyEnumerator> enumerator(
