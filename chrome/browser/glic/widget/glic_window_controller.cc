@@ -345,6 +345,18 @@ void GlicWindowController::OnWidgetBoundsChanged(views::Widget* widget,
   }
 }
 
+void GlicWindowController::OnWidgetUserResizeStarted() {
+  if (web_client_) {
+    web_client_->ManualResizeChanged(true);
+  }
+}
+
+void GlicWindowController::OnWidgetUserResizeEnded() {
+  if (web_client_) {
+    web_client_->ManualResizeChanged(false);
+  }
+}
+
 void GlicWindowController::Toggle(BrowserWindowInterface* bwi,
                                   bool prevent_close,
                                   mojom::InvocationSource source) {
@@ -641,8 +653,7 @@ void GlicWindowController::OpenAttached(Browser& browser) {
         std::max(glic_window_widget_initial_rect.height(), 1));
   }
 
-  glic_widget_ = GlicWidget::Create(profile_, glic_window_widget_initial_rect,
-                                    GetWeakPtr());
+  glic_widget_ = CreateGlicWidget(glic_window_widget_initial_rect);
   glic_widget_observation_.Observe(glic_widget_.get());
   AddAccelerators();
 
@@ -663,7 +674,7 @@ void GlicWindowController::OpenDetached() {
   gfx::Rect initial_bounds = GetInitialDetachedBounds();
 
   // Make the widget.
-  glic_widget_ = GlicWidget::Create(profile_, initial_bounds, GetWeakPtr());
+  glic_widget_ = CreateGlicWidget(initial_bounds);
   glic_widget_observation_.Observe(glic_widget_.get());
   AddAccelerators();
 
@@ -1410,6 +1421,12 @@ void GlicWindowController::MaybeAdjustSizeForDisplay(bool animate) {
           base::DoNothing());
     }
   }
+}
+
+std::unique_ptr<GlicWidget> GlicWindowController::CreateGlicWidget(
+    const gfx::Rect& bounds) {
+  return GlicWidget::Create(profile_, bounds,
+                            /*accelerator_delegate=*/GetWeakPtr());
 }
 
 }  // namespace glic

@@ -562,6 +562,9 @@ interface WebClient {
 
   // The focused tab has changed.
   NotifyFocusedTabChanged(FocusedTabData focused_tab_data);
+
+  // The user started or stopped manually resizing the window.
+  NotifyManualResizeChanged(bool resizing);
 };
 
 // Information extracted from a tab.

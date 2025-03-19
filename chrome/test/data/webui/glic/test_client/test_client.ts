@@ -173,6 +173,10 @@ class WebClient implements GlicWebClient {
     browser.panelActive?.().subscribe((active) => {
       $.panelActiveCheckbox.checked = active;
     });
+
+    browser.isManuallyResizing?.().subscribe((resizing) => {
+      logMessage('Manually resizing state changed: ' + resizing);
+    });
   }
 
   async notifyPanelWillOpen(panelOpeningData: PanelOpeningData&PanelState):

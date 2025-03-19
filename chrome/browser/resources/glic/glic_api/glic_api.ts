@@ -404,6 +404,12 @@ export declare interface GlicBrowserHost {
    * Get the status of the OS Microphone permission currently granted to Chrome.
    */
   getOsMicrophonePermissionStatus?(): Promise<boolean>;
+
+  /**
+   * Returns an observable that signals true when the user starts resizing the
+   * panel and false when the user stops.
+   */
+  isManuallyResizing?(): ObservableValue<boolean>;
 }
 
 /** Holds optional parameters for `GlicBrowserHost#resizeWindow`. */

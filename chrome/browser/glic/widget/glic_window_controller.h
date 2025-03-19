@@ -200,6 +200,8 @@ class GlicWindowController : public views::WidgetObserver,
   void OnWidgetDestroyed(views::Widget* widget) override;
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
+  void OnWidgetUserResizeStarted() override;
+  void OnWidgetUserResizeEnded() override;
 
   GlicView* GetGlicView();
 
@@ -361,6 +363,9 @@ class GlicWindowController : public views::WidgetObserver,
   // Possibly adjusts the size of the window appropriate for the current
   // display workspace, but only if it's different than the current target size.
   void MaybeAdjustSizeForDisplay(bool animate);
+
+  // Create a GlicWidget.
+  std::unique_ptr<GlicWidget> CreateGlicWidget(const gfx::Rect& bounds);
 
   // Observes the glic widget.
   base::ScopedObservation<views::Widget, views::WidgetObserver>
