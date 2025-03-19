@@ -24,6 +24,7 @@ import org.chromium.ui.base.LocalizationUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class StripLayoutUtils {
     // Position Constants.
@@ -58,7 +59,7 @@ public class StripLayoutUtils {
      */
     public static boolean notRelatedAndEitherTabInGroup(
             TabGroupModelFilter modelFilter, @NonNull Tab tab1, @NonNull Tab tab2) {
-        return tab1.getRootId() != tab2.getRootId()
+        return !Objects.equals(tab1.getTabGroupId(), tab2.getTabGroupId())
                 && (modelFilter.isTabInTabGroup(tab1) || modelFilter.isTabInTabGroup(tab2));
     }
 

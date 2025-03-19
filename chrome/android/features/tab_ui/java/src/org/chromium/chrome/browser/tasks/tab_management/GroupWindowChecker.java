@@ -66,17 +66,17 @@ public class GroupWindowChecker {
 
         Token groupId = savedTabGroup.localId.tabGroupId;
         boolean isFullyClosing = true;
-        int rootId = Tab.INVALID_TAB_ID;
+        boolean foundGroup = false;
 
         TabList tabList = mFilter.getTabModel().getComprehensiveModel();
         for (int i = 0; i < tabList.getCount(); i++) {
             Tab tab = tabList.getTabAt(i);
             if (groupId.equals(tab.getTabGroupId())) {
-                rootId = tab.getRootId();
+                foundGroup = true;
                 isFullyClosing &= tab.isClosing();
             }
         }
-        if (rootId == Tab.INVALID_TAB_ID) return GroupWindowState.IN_ANOTHER;
+        if (!foundGroup) return GroupWindowState.IN_ANOTHER;
 
         // If the group is only partially closing no special case is required since we still have to
         // do all the IN_CURRENT work and returning to the tab group via the dialog will work.
