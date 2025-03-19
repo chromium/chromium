@@ -16,8 +16,8 @@ public interface GroupSuggestionsService {
     /** Delegate class to show the suggestions in UI. */
     interface Delegate {
         /** Gets called when backend has a suggestion ready to show. */
-        // TODO(yuezhanggg): Add suggestion type in Java.
-        default void showSuggestion() {}
+        // TODO(yuezhanggg): Add response callback in Java.
+        default void showSuggestion(GroupSuggestions groupSuggestions) {}
 
         /** Gets called when backend has a dump state ready for feedback. */
         default void onDumpStateForFeedback(String dumpState) {}

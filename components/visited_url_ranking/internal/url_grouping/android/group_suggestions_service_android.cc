@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "components/visited_url_ranking/public/url_grouping/group_suggestions_delegate.h"
@@ -14,6 +15,8 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/visited_url_ranking/internal/jni_headers/DelegateBridge_jni.h"
 #include "components/visited_url_ranking/internal/jni_headers/GroupSuggestionsServiceImpl_jni.h"
+#include "components/visited_url_ranking/public/jni_headers/GroupSuggestion_jni.h"
+#include "components/visited_url_ranking/public/jni_headers/GroupSuggestions_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
@@ -93,7 +96,29 @@ void GroupSuggestionsServiceAndroid::SuggestionDelegateBridge::ShowSuggestion(
     const GroupSuggestions& group_suggestions,
     GroupSuggestionsDelegate::SuggestionResponseCallback response_callback) {
   JNIEnv* env = AttachCurrentThread();
-  Java_DelegateBridge_showSuggestion(env, java_obj_);
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> suggestions;
+  suggestions.reserve(group_suggestions.suggestions.size());
+  for (const auto& group_suggestion : group_suggestions.suggestions) {
+    ScopedJavaLocalRef<jintArray> tab_ids =
+        base::android::ToJavaIntArray(env, group_suggestion.tab_ids);
+    ScopedJavaLocalRef<jstring> suggested_name =
+        base::android::ConvertUTF16ToJavaString(
+            env, group_suggestion.suggested_name);
+    ScopedJavaLocalRef<jstring> promo_header =
+        base::android::ConvertUTF8ToJavaString(env,
+                                               group_suggestion.promo_header);
+    ScopedJavaLocalRef<jstring> promo_contents =
+        base::android::ConvertUTF8ToJavaString(env,
+                                               group_suggestion.promo_contents);
+    suggestions.emplace_back(Java_GroupSuggestion_createGroupSuggestion(
+        env, tab_ids, group_suggestion.suggestion_id.GetUnsafeValue(),
+        static_cast<int>(group_suggestion.suggestion_reason), suggested_name,
+        promo_header, promo_contents));
+  }
+  Java_DelegateBridge_showSuggestion(
+      env, java_obj_,
+      Java_GroupSuggestions_createGroupSuggestions(
+          env, base::android::ToJavaArrayOfObjects(env, suggestions)));
 }
 
 void GroupSuggestionsServiceAndroid::SuggestionDelegateBridge::
