@@ -20,6 +20,7 @@ type AutomationNode = chrome.automation.AutomationNode;
 export class CaptionsHandler implements ChromeVoxRangeObserver {
   static instance: CaptionsHandler;
 
+  private hasAttributeChanged_ = false;
   private inCaptions_ = false;
   private previousFocus_: CursorRange|null = null;
   private waitingForCaptions_ = false;
@@ -43,6 +44,14 @@ export class CaptionsHandler implements ChromeVoxRangeObserver {
 
   static inCaptions(): boolean {
     return CaptionsHandler.instance.inCaptions_;
+  }
+
+  static get hasAttributeChanged(): boolean {
+    return CaptionsHandler.instance.hasAttributeChanged_;
+  }
+
+  static handleAttributeChanged(): void {
+    CaptionsHandler.instance.hasAttributeChanged_ = true;
   }
 
   isPrefEnabled(): boolean {
@@ -99,6 +108,7 @@ export class CaptionsHandler implements ChromeVoxRangeObserver {
 
   private onExitCaptions_(): void {
     this.inCaptions_ = false;
+    this.hasAttributeChanged_ = false;
     ChromeVoxRange.removeObserver(this);
     this.restoreFocus_();
   }

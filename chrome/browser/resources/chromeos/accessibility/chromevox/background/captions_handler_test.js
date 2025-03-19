@@ -44,3 +44,26 @@ AX_TEST_F('ChromeVoxCaptionsHandlerTest', 'RangeObserver', async function() {
   ChromeVoxRange.navigateTo(CursorRange.fromNode(text));
   assertFalse(CaptionsHandler.instance.inCaptions_);
 });
+
+
+AX_TEST_F(
+    'ChromeVoxCaptionsHandlerTest', 'HandleOnlyFirstAttributeChangedEvent',
+    async function() {
+      const desktop =
+          await new Promise(resolve => this.runWithLoadedDesktop(resolve));
+
+      let goCount = 0;
+      Output.prototype.go = () => goCount++;
+
+      CaptionsHandler.instance.inCaptions_ = true;
+      ChromeVoxRange.instance.current_ = CursorRange.fromNode(desktop);
+
+      const onAttributeChanged = () =>
+          RangeAutomationHandler.instance.onAttributeChanged(
+              new CustomAutomationEvent('name', desktop));
+
+      onAttributeChanged();
+      assertEquals(goCount, 1);
+      onAttributeChanged();
+      assertEquals(goCount, 1);
+    });

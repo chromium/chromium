@@ -558,6 +558,37 @@ IN_PROC_BROWSER_TEST_F(CaptionSpokenFeedbackTest, CaptionsNotToggled) {
   sm_.Replay();
 }
 
+IN_PROC_BROWSER_TEST_F(CaptionSpokenFeedbackTest, CaptionsChanged) {
+  std::string initial_text =
+      "To be, or not to be, that is the question: Whether 'tis nobler in the "
+      "mind to suffer The slings and arrows of outrageous fortune, Or to take "
+      "arms against a sea of troubles And by opposing end them. ";
+  PrefChangeRegistrar change_observer;
+  EnableChromeVox();
+  sm_.Call([this, &change_observer, &initial_text]() {
+    // Use braille captions as an approximation of a braille display.
+    ExecuteCommandHandlerCommand("toggleBrailleCaptions");
+
+    // Set the caption text only once live captions is enabled.
+    change_observer.Init(AccessibilityManager::Get()->profile()->GetPrefs());
+    change_observer.Add(::prefs::kLiveCaptionEnabled,
+                        base::BindLambdaForTesting([this, &initial_text]() {
+                          SetCaptionText(initial_text);
+                        }));
+    ExecuteCommandHandlerCommand("toggleCaptions");
+  });
+  sm_.ExpectSpeechPattern("To be*");
+  sm_.Call([this]() { ExecuteCommandHandlerCommand("panRight"); });
+  sm_.ExpectSpeechPattern("*that is*");
+  sm_.Call([this, &initial_text]() {
+    SetCaptionText(initial_text + "To die—to sleep, No more;");
+    ExecuteCommandHandlerCommand("panRight");
+  });
+  sm_.ExpectNextSpeechIsNotPattern("*that is*");
+
+  sm_.Replay();
+}
+
 class NotificationCenterSpokenFeedbackTest : public LoggedInSpokenFeedbackTest {
  protected:
   NotificationCenterSpokenFeedbackTest() = default;
