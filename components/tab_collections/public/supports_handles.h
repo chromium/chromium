@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TABS_PUBLIC_SUPPORTS_HANDLES_H_
-#define CHROME_BROWSER_UI_TABS_PUBLIC_SUPPORTS_HANDLES_H_
+#ifndef COMPONENTS_TAB_COLLECTIONS_PUBLIC_SUPPORTS_HANDLES_H_
+#define COMPONENTS_TAB_COLLECTIONS_PUBLIC_SUPPORTS_HANDLES_H_
 
 // SupportsHandles is a way to add "handle" support to an object, such as a tab
 // or browser window which:
@@ -52,9 +52,6 @@
 // values of V (that is, have more than 4 billion constructed over the life of
 // a chrome instance) then it is probably a poor candidate for handles (or at
 // the very least, you need to pick a larger V).
-//
-// TODO(dfried, tbergquist): move this file down to c/b/ui if it's used outside
-// of the tabstrip.
 
 #include <concepts>
 #include <cstdint>
@@ -228,4 +225,4 @@ T* SupportsHandles<T, V>::Handle::Get() const {
   return internal::HandleHelper<T, V>::GetInstance().LookupObject(raw_value_);
 }
 
-#endif  // CHROME_BROWSER_UI_TABS_PUBLIC_SUPPORTS_HANDLES_H_
+#endif  // COMPONENTS_TAB_COLLECTIONS_PUBLIC_SUPPORTS_HANDLES_H_

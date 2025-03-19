@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/public/supports_handles.h"
+#include "components/tab_collections/public/supports_handles.h"
 
 #include <concepts>
 #include <cstdint>
@@ -26,7 +26,8 @@ class SupportsHandlesTest : public testing::Test {
                                typename T::Handle::RawValueType>::GetInstance();
     DCHECK_CALLED_ON_VALID_SEQUENCE(helper.sequence_);
     CHECK(helper.lookup_table_.empty());
-    helper.last_handle_value_ = 0;
+    helper.last_handle_value_ =
+        SupportsHandles<T, typename T::Handle::RawValueType>::Handle::NullValue;
   }
 
  private:
