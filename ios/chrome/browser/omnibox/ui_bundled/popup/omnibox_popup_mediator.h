@@ -27,6 +27,7 @@
 @class CarouselItem;
 @protocol CarouselItemConsumer;
 class FaviconLoader;
+@class OmniboxAutocompleteController;
 @class OmniboxPopupController;
 @class OmniboxPopupMediator;
 @class OmniboxPopupPresenter;
@@ -73,6 +74,10 @@ class Tracker;
                 CarouselItemMenuProvider,
                 ImageRetriever,
                 FaviconRetriever>
+
+/// Controller of the omnibox autocomplete.
+@property(nonatomic, weak)
+    OmniboxAutocompleteController* omniboxAutocompleteController;
 
 /// Controller of the omnibox popup.
 @property(nonatomic, weak) OmniboxPopupController* popupController;

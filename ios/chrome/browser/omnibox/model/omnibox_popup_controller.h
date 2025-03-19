@@ -38,32 +38,6 @@ class AutocompleteResult;
 /// Updates the omnibox popup with sorted`result`.
 - (void)updateWithSortedResults:(const AutocompleteResult&)results;
 
-#pragma mark - OmniboxPopup event
-
-/// Request suggestions with a number of visible suggestions.
-- (void)requestSuggestionsWithVisibleSuggestionCount:
-    (NSUInteger)visibleSuggestionCount;
-
-/// Whether `match` is a starred/bookmarked match.
-- (BOOL)isStarredMatch:(const AutocompleteMatch&)match;
-
-/// Selects `match` for opening.
-- (void)selectMatchForOpening:(const AutocompleteMatch&)match
-                        inRow:(NSUInteger)row
-                       openIn:(WindowOpenDisposition)disposition;
-
-/// Selects `match` for appending.
-- (void)selectMatchForAppending:(const AutocompleteMatch&)match;
-
-/// Deletes `match`.
-- (void)selectMatchForDeletion:(const AutocompleteMatch&)match;
-
-/// Notifies of scroll event.
-- (void)onScroll;
-
-/// Notifies of call action.
-- (void)onCallAction;
-
 // OmniboxText events should only contain events that don't impact autocomplete.
 #pragma mark - OmniboxText events
 

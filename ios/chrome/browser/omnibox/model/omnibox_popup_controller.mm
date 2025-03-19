@@ -29,38 +29,6 @@
       didUpdateSuggestionsGroups:suggestionGroups];
 }
 
-#pragma mark - OmniboxPopup event
-
-- (void)requestSuggestionsWithVisibleSuggestionCount:
-    (NSUInteger)visibleSuggestionCount {
-  [self.omniboxAutocompleteController
-      requestResultsWithVisibleSuggestionCount:visibleSuggestionCount];
-}
-
-- (void)selectMatchForOpening:(const AutocompleteMatch&)match
-                        inRow:(NSUInteger)row
-                       openIn:(WindowOpenDisposition)disposition {
-  [self.omniboxAutocompleteController selectMatchForOpening:match
-                                                      inRow:row
-                                                     openIn:disposition];
-}
-
-- (void)selectMatchForAppending:(const AutocompleteMatch&)match {
-  [self.omniboxAutocompleteController selectMatchForAppending:match];
-}
-
-- (void)selectMatchForDeletion:(const AutocompleteMatch&)match {
-  [self.omniboxAutocompleteController selectMatchForDeletion:match];
-}
-
-- (void)onScroll {
-  [self.omniboxAutocompleteController onScroll];
-}
-
-- (void)onCallAction {
-  [self.omniboxAutocompleteController onCallAction];
-}
-
 #pragma mark - OmniboxText events
 
 - (void)setTextAlignment:(NSTextAlignment)alignment {

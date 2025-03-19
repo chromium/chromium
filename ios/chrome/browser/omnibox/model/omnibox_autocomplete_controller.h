@@ -51,7 +51,7 @@ class OmniboxViewIOS;
 #pragma mark - OmniboxPopup event
 
 /// Request suggestions for a number of visible suggestions.
-- (void)requestResultsWithVisibleSuggestionCount:
+- (void)requestSuggestionsWithVisibleSuggestionCount:
     (NSUInteger)visibleSuggestionCount;
 
 /// Whether `match` is a starred/bookmarked match.

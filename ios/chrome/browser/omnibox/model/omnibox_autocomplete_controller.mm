@@ -116,7 +116,7 @@ using base::UserMetricsAction;
 
 #pragma mark - OmniboxPopup event
 
-- (void)requestResultsWithVisibleSuggestionCount:
+- (void)requestSuggestionsWithVisibleSuggestionCount:
     (NSUInteger)visibleSuggestionCount {
   if (!_autocompleteController) {
     return;

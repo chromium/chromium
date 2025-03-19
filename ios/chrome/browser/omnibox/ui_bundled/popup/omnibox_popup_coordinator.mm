@@ -128,6 +128,7 @@
       initWithBrowser:self.browser
              scenario:kMenuScenarioHistogramOmniboxMostVisitedEntry];
   self.mediator.mostVisitedActionFactory = actionFactory;
+  self.mediator.omniboxAutocompleteController = _omniboxAutocompleteController;
   self.popupViewController.imageRetriever = self.mediator;
   self.popupViewController.faviconRetriever = self.mediator;
   self.popupViewController.delegate = self.mediator;
