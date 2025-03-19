@@ -246,21 +246,21 @@ TEST_F(ReadAnythingAppModelTest, ModelUpdatesTreeState) {
   ASSERT_TRUE(model().ContainsTree(tree_id_));
 
   // Remove one tree.
-  model().EraseTreeForTesting(tree_id_2);
+  model().OnAXTreeDestroyed(tree_id_2);
   ASSERT_EQ(2u, model().GetTreesForTesting()->size());
   ASSERT_TRUE(model().ContainsTree(tree_id_3));
   ASSERT_FALSE(model().ContainsTree(tree_id_2));
   ASSERT_TRUE(model().ContainsTree(tree_id_));
 
   // Remove the second tree.
-  model().EraseTreeForTesting(tree_id_);
+  model().OnAXTreeDestroyed(tree_id_);
   ASSERT_EQ(1u, model().GetTreesForTesting()->size());
   ASSERT_TRUE(model().ContainsTree(tree_id_3));
   ASSERT_FALSE(model().ContainsTree(tree_id_2));
   ASSERT_FALSE(model().ContainsTree(tree_id_));
 
   // Remove the last tree.
-  model().EraseTreeForTesting(tree_id_3);
+  model().OnAXTreeDestroyed(tree_id_3);
   ASSERT_EQ(0u, model().GetTreesForTesting()->size());
   ASSERT_FALSE(model().ContainsTree(tree_id_3));
   ASSERT_FALSE(model().ContainsTree(tree_id_2));
@@ -298,14 +298,14 @@ TEST_F(ReadAnythingAppModelTest, AddAndRemoveTrees) {
   ASSERT_TRUE(model().ContainsTree(tree_ids[1]));
 
   // Remove all of the trees.
-  model().EraseTreeForTesting(tree_id_);
+  model().OnAXTreeDestroyed(tree_id_);
   ASSERT_EQ(2u, model().GetTreesForTesting()->size());
   ASSERT_TRUE(model().ContainsTree(tree_ids[0]));
   ASSERT_TRUE(model().ContainsTree(tree_ids[1]));
-  model().EraseTreeForTesting(tree_ids[0]);
+  model().OnAXTreeDestroyed(tree_ids[0]);
   ASSERT_EQ(1u, model().GetTreesForTesting()->size());
   ASSERT_TRUE(model().ContainsTree(tree_ids[1]));
-  model().EraseTreeForTesting(tree_ids[1]);
+  model().OnAXTreeDestroyed(tree_ids[1]);
   ASSERT_EQ(0u, model().GetTreesForTesting()->size());
 }
 
@@ -371,7 +371,7 @@ TEST_F(ReadAnythingAppModelTest, OnTreeErased_ClearsPendingUpdates) {
   EXPECT_EQ(1u, model().GetPendingUpdatesForTesting()[tree_id_].size());
 
   // Destroy the tree.
-  model().EraseTreeForTesting(tree_id_);
+  model().OnAXTreeDestroyed(tree_id_);
   EXPECT_EQ(0u, model().GetPendingUpdatesForTesting()[tree_id_].size());
 }
 

@@ -25,7 +25,7 @@ LayerTreeSettings::LayerTreeSettings(const LayerTreeSettings& other) = default;
 LayerTreeSettings::~LayerTreeSettings() = default;
 
 bool LayerTreeSettings::UseLayerContextForDisplay() const {
-  return use_layer_lists && !is_display_tree &&
+  return !is_layer_tree_for_ui && !is_display_tree &&
          base::FeatureList::IsEnabled(features::kTreesInViz);
 }
 

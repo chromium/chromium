@@ -240,7 +240,6 @@ class GPU_EXPORT ClientSharedImage
   // provided raster interface.
   std::unique_ptr<RasterScopedAccess> BeginRasterAccess(
       InterfaceBase* raster_interface,
-      ClientSharedImage* shared_image,
       const SyncToken& sync_token,
       bool readonly);
 
@@ -479,7 +478,7 @@ class GPU_EXPORT SharedImageTexture {
   bool has_active_access_ = false;
 };
 
-class RasterScopedAccess {
+class GPU_EXPORT RasterScopedAccess {
  public:
   RasterScopedAccess(const RasterScopedAccess&) = delete;
   RasterScopedAccess& operator=(const RasterScopedAccess&) = delete;

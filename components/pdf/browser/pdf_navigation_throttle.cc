@@ -79,10 +79,13 @@ PdfNavigationThrottle::WillStartRequest() {
   // Intercepts navigations to a PDF stream URL in a PDF content frame and
   // re-navigates to the original PDF URL.
 
-  // Skip main frame navigations, as the main frame should never be navigating
-  // to the stream URL.
+  // The main frame may contain the PDF extension for non-PdfOopif cases; it
+  // should never be navigated away from the extension.
   if (navigation_handle()->IsInMainFrame()) {
-    return PROCEED;
+    return stream_delegate_->ShouldAllowPdfExtensionFrameNavigation(
+               navigation_handle())
+               ? PROCEED
+               : BLOCK_REQUEST;
   }
 
   // Skip unless navigating to the stream URL.

@@ -4,13 +4,12 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {MAX_SPEECH_LENGTH_FOR_REMOTE_VOICES, MetricsBrowserProxyImpl, PauseActionSource, playFromSelectionTimeout, SpeechBrowserProxyImpl, ToolbarEvent, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {MAX_SPEECH_LENGTH_FOR_REMOTE_VOICES, PauseActionSource, playFromSelectionTimeout, SpeechBrowserProxyImpl, ToolbarEvent, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createAndSetVoices, createSpeechErrorEvent, createSpeechSynthesisVoice, emitEvent, setSimpleAxTreeWithText, setupBasicSpeech} from './common.js';
-import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import {createAndSetVoices, createSpeechErrorEvent, createSpeechSynthesisVoice, emitEvent, mockMetrics, setSimpleAxTreeWithText, setupBasicSpeech} from './common.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 suite('Speech', () => {
@@ -83,7 +82,7 @@ suite('Speech', () => {
     chrome.readingMode.restoreSettingsFromPrefs = () => {};
     chrome.readingMode.languageChanged = () => {};
     chrome.readingMode.onTtsEngineInstalled = () => {};
-    MetricsBrowserProxyImpl.setInstance(new TestMetricsBrowserProxy());
+    mockMetrics();
 
     app = document.createElement('read-anything-app');
     document.body.appendChild(app);

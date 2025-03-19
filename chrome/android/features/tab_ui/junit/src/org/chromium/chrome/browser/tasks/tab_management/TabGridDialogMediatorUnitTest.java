@@ -52,8 +52,6 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 
-import androidx.annotation.Nullable;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -1465,7 +1463,8 @@ public class TabGridDialogMediatorUnitTest {
         verify(mTabRemover)
                 .closeTabs(
                         eq(
-                                TabClosureParams.forCloseTabGroup(mTabGroupModelFilter, TAB1_ID)
+                                TabClosureParams.forCloseTabGroup(
+                                                mTabGroupModelFilter, TAB_GROUP_ID)
                                         .allowUndo(true)
                                         .hideTabGroups(true)
                                         .build()),
@@ -1486,7 +1485,8 @@ public class TabGridDialogMediatorUnitTest {
         verify(mTabRemover)
                 .closeTabs(
                         eq(
-                                TabClosureParams.forCloseTabGroup(mTabGroupModelFilter, TAB1_ID)
+                                TabClosureParams.forCloseTabGroup(
+                                                mTabGroupModelFilter, TAB_GROUP_ID)
                                         .allowUndo(true)
                                         .hideTabGroups(false)
                                         .build()),
@@ -1985,10 +1985,10 @@ public class TabGridDialogMediatorUnitTest {
         return tab;
     }
 
-    private void createTabGroup(List<Tab> tabs, int rootId, @Nullable Token tabGroupId) {
+    private void createTabGroup(List<Tab> tabs, int rootId, Token tabGroupId) {
         for (Tab tab : tabs) {
             when(mTabGroupModelFilter.getRelatedTabList(tab.getId())).thenReturn(tabs);
-            when(mTabGroupModelFilter.getRelatedTabListForRootId(rootId)).thenReturn(tabs);
+            when(mTabGroupModelFilter.getTabsInGroup(tabGroupId)).thenReturn(tabs);
             when(mTabGroupModelFilter.isTabInTabGroup(tab)).thenReturn(true);
             when(tab.getRootId()).thenReturn(rootId);
             when(tab.getTabGroupId()).thenReturn(tabGroupId);

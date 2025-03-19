@@ -20,6 +20,7 @@
 #include "components/segmentation_platform/public/trigger.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/visited_url_ranking/public/decoration.h"
+#include "components/visited_url_ranking/public/tab_metadata.h"
 #include "url/gurl.h"
 
 namespace visited_url_ranking {
@@ -114,6 +115,8 @@ struct URLVisitAggregate {
     std::optional<std::string> session_tag;
     // The tab's user visible session name, if applicable.
     std::optional<std::string> session_name;
+    // Metadata about the tab.
+    TabMetadata tab_metadata;
   };
 
   // Captures aggregate tab data associated with a URL visit for a given time
@@ -134,6 +137,10 @@ struct URLVisitAggregate {
     // The number of opened tabs for the given URL visit aggregate in a time
     // period.
     size_t tab_count = 1;
+    // The number of times this tab was switched to in the recent browsing
+    // session. Recency can be defined as current foreground session or last 10
+    // mins.
+    unsigned recent_fg_count = 0;
   };
 
   struct HistoryData {

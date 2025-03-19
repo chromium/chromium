@@ -10,7 +10,7 @@ import type {PageRemote} from 'chrome-untrusted://data-sharing/data_sharing.mojo
 import {PageCallbackRouter} from 'chrome-untrusted://data-sharing/data_sharing.mojom-webui.js';
 import {DataSharingApp} from 'chrome-untrusted://data-sharing/data_sharing_app.js';
 import {Code, LoggingIntent, Progress} from 'chrome-untrusted://data-sharing/data_sharing_sdk_types.js';
-import type {DataSharingSdkSitePreview} from 'chrome-untrusted://data-sharing/data_sharing_sdk_types.js';
+import type {DataSharingSdkSitePreview, RunInviteFlowParams} from 'chrome-untrusted://data-sharing/data_sharing_sdk_types.js';
 import {DataSharingSdkImpl} from 'chrome-untrusted://data-sharing/dummy_data_sharing_sdk.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
@@ -46,8 +46,10 @@ class TestDataSharingBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('closeUi', status);
   }
 
-  makeTabGroupShared(tabGroupId: string, groupId: string) {
-    this.methodCalled('makeTabGroupShared', [tabGroupId, groupId]);
+  makeTabGroupShared(tabGroupId: string, groupId: string, tokenSecret: string):
+      Promise<string> {
+    this.methodCalled('makeTabGroupShared', [tabGroupId, groupId, tokenSecret]);
+    return Promise.resolve('fake_url');
   }
 
   aboutToUnShareTabGroup(tabGroupId: string) {
@@ -60,7 +62,7 @@ class TestDataSharingBrowserProxy extends TestBrowserProxy implements
 
   getShareLink(groupId: string, tokenSecret: string): Promise<string> {
     this.methodCalled('getShareLink', [groupId, tokenSecret]);
-    return Promise.resolve('');
+    return Promise.resolve('fake_url');
   }
 
   getTabGroupPreview(groupId: string, tokenSecret: string):
@@ -103,6 +105,31 @@ suite('Start flows', () => {
     assertEquals(1, testDataSharingSdk.getCallCount('runInviteFlow'));
     assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
     assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
+  });
+
+  test('Invite flow copy link', async () => {
+    // Simulate 2 copy links calls for runInviteFlow.
+    testDataSharingSdk.setResultMapperFor(
+        'runInviteFlow', async (params: RunInviteFlowParams) => {
+          // First getShareLink call will go through makeTabGroupShared().
+          await params.getShareLink(
+              {groupId: 'fake_group_id', tokenSecret: 'fake_token_secret1'});
+          // Subsequent getShareLink call will go through getShareLink().
+          await params.getShareLink(
+              {groupId: 'fake_group_id', tokenSecret: 'fake_token_secret2'});
+          return Promise.resolve({status: Code.OK});
+        });
+
+    DataSharingApp.setUrlForTesting(
+        'chrome-untrusted://data-sharing?flow=share&tab_group_id=fake_id');
+    dataSharingApp = document.createElement('data-sharing-app');
+    testBrowserProxy.callbackRouterRemote.onAccessTokenFetched('fake_token');
+    document.body.appendChild(dataSharingApp);
+    await microtasksFinished();
+
+    assertEquals(1, testBrowserProxy.getCallCount('makeTabGroupShared'));
+    assertEquals(1, testBrowserProxy.getCallCount('getShareLink'));
+    assertEquals(1, testDataSharingSdk.getCallCount('runInviteFlow'));
   });
 
   test('Manage flow', async () => {

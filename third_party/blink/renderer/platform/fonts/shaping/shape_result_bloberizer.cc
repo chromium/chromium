@@ -468,8 +468,7 @@ ShapeResultBloberizer::FillGlyphs::FillGlyphs(
     : ShapeResultBloberizer(font_description, type) {
   DCHECK(!node.ContainsRtlItems());
   const unsigned to = node.TextContent().length();
-  if (CanUseFastPath(0, to, to,
-                     /* has_vertical_offsets */ false)) {
+  if (CanUseFastPath(0, to, to, node.HasVerticalOffsets())) {
     DVLOG(4) << "FillGlyphs fast path";
     DCHECK_NE(type_, ShapeResultBloberizer::Type::kTextIntercepts);
     DCHECK_NE(type_, ShapeResultBloberizer::Type::kEmitText);

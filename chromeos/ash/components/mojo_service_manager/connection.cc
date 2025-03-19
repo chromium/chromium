@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -63,8 +64,8 @@ base::ScopedFD ConnectToServiceManagerUnixSocket() {
   };
   static_assert(sizeof(kServiceManagerSocketPath) <=
                 sizeof(unix_addr.sun_path));
-  strncpy(unix_addr.sun_path, kServiceManagerSocketPath,
-          sizeof(kServiceManagerSocketPath));
+  UNSAFE_TODO(strncpy(unix_addr.sun_path, kServiceManagerSocketPath,
+                      sizeof(kServiceManagerSocketPath)));
 
   int rc = HANDLE_EINTR(connect(sock.get(),
                                 reinterpret_cast<const sockaddr*>(&unix_addr),

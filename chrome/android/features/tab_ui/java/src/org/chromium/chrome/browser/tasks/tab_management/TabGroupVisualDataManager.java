@@ -90,7 +90,8 @@ public class TabGroupVisualDataManager {
                     @Override
                     public void willMergeTabToGroup(Tab movedTab, int newRootId, Token tabGroupId) {
                         TabGroupModelFilter filter = filterFromTab(movedTab);
-                        String sourceGroupTitle = filter.getTabGroupTitle(movedTab.getRootId());
+                        int rootId = movedTab.getRootId();
+                        String sourceGroupTitle = filter.getTabGroupTitle(rootId);
                         String targetGroupTitle = filter.getTabGroupTitle(newRootId);
                         // If the target group has no title but the source group has a title,
                         // handover the stored title to the group after merge.
@@ -98,7 +99,7 @@ public class TabGroupVisualDataManager {
                             filter.setTabGroupTitle(newRootId, sourceGroupTitle);
                         }
 
-                        int sourceGroupColor = filter.getTabGroupColor(movedTab.getRootId());
+                        int sourceGroupColor = filter.getTabGroupColor(rootId);
                         int targetGroupColor = filter.getTabGroupColor(newRootId);
                         // If the target group has no color but the source group has a color,
                         // handover the stored color to the group after merge.

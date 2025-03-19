@@ -118,6 +118,7 @@ viewer-ink-host {
   left: 0;
   position: sticky;
   top: 0;
+  user-select: none;
   z-index: initial;
 }
 

@@ -689,6 +689,12 @@ class TabStripModel : public TabGroupController {
   int GetIndexOfNextWebContentsOpenedBy(const content::WebContents* opener,
                                         int start_index) const;
 
+  int GetIndexOfNextWebContentsOpenedBy(
+      const tab_groups::TabGroupId& group_id) const;
+
+  int GetIndexOfNextWebContentsOpenedByOpenerOf(
+      const tab_groups::TabGroupId& group_id) const;
+
   // Finds the next available tab to switch to as the active tab starting at
   // |index|. This method will check the indices to the right of |index| before
   // checking the indices to the left of |index|. |index| cannot be returned.
@@ -1031,6 +1037,10 @@ class TabStripModel : public TabGroupController {
   // closed. If |index| is after |removing_index|, |index| is adjusted to
   // reflect the fact that |removing_index| is going away.
   int GetTabIndexAfterClosing(int index, int removing_index) const;
+
+  int GetTabIndexAfterClosing(
+      int index,
+      const tab_groups::TabGroupId& removed_group_id) const;
 
   // Takes the |selection| change and decides whether to forget the openers.
   void OnActiveTabChanged(const TabStripSelectionChange& selection);

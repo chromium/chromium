@@ -537,8 +537,7 @@ void IconButton::OnFocus() {
   if (IsProminentFloatingType(type_) && !IsToggledOn()) {
     // If prominent floating button is still using default colors, updates its
     // icon color on focus.
-    if (icon_color_.GetColorId() ==
-        GetDefaultIconColorId(type_, /*focused=*/false)) {
+    if (icon_color_ == GetDefaultIconColorId(type_, /*focused=*/false)) {
       icon_color_ = GetDefaultIconColorId(type_, /*focused=*/true);
       UpdateVectorIcon(/*color_changes_only=*/true);
     }
@@ -550,8 +549,7 @@ void IconButton::OnBlur() {
   if (IsProminentFloatingType(type_) && !IsToggledOn()) {
     // If prominent floating button is still using default colors, updates its
     // icon color on focus.
-    if (icon_color_.GetColorId() ==
-        GetDefaultIconColorId(type_, /*focused=*/true)) {
+    if (icon_color_ == GetDefaultIconColorId(type_, /*focused=*/true)) {
       icon_color_ = GetDefaultIconColorId(type_, /*focused=*/false);
       UpdateVectorIcon(/*color_changes_only=*/true);
     }

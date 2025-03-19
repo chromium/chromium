@@ -19,6 +19,7 @@ PlainTextPainter::PlainTextPainter(PlainTextPainter::Mode mode) : mode_(mode) {}
 
 void PlainTextPainter::Trace(Visitor* visitor) const {
   visitor->Trace(cache_map_);
+  MemoryPressureListener::Trace(visitor);
 }
 
 PlainTextPainter& PlainTextPainter::Shared() {
@@ -36,7 +37,6 @@ const PlainTextNode& PlainTextPainter::SegmentAndShape(const TextRun& run,
   // This function doesn't support DirectionOverride because there are no such
   // callers.
   DCHECK(!run.DirectionalOverride());
-  FontCachePurgePreventer purge_preventer;
   return CreateNode(run, font);
 }
 
@@ -145,7 +145,6 @@ bool PlainTextPainter::DrawWithBidiReorder(
 float PlainTextPainter::ComputeInlineSize(const TextRun& run,
                                           const Font& font,
                                           gfx::RectF* glyph_bounds) {
-  FontCachePurgePreventer purge_preventer;
   return CreateNode(run, font).AccumulateInlineSize(glyph_bounds);
 }
 
@@ -157,7 +156,6 @@ float PlainTextPainter::ComputeSubInlineSize(const TextRun& run,
   if (run.length() == 0) {
     return 0;
   }
-  FontCachePurgePreventer purge_preventer;
 
   const PlainTextNode& node = CreateNode(run, font);
   float x_pos = 0;
@@ -199,7 +197,6 @@ float PlainTextPainter::ComputeSubInlineSize(const TextRun& run,
 
 float PlainTextPainter::ComputeInlineSizeWithoutBidi(const TextRun& run,
                                                      const Font& font) {
-  FontCachePurgePreventer purge_preventer;
   constexpr bool kSupportsBidi = true;
   return CreateNode(run, font, !kSupportsBidi).AccumulateInlineSize(nullptr);
 }
@@ -300,6 +297,10 @@ FrameShapeCache* PlainTextPainter::GetCacheFor(const Font& font) {
     cache = result.stored_value->value;
   }
   return cache;
+}
+
+void PlainTextPainter::OnPurgeMemory() {
+  cache_map_.clear();
 }
 
 }  // namespace blink

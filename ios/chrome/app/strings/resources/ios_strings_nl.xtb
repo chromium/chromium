@@ -440,6 +440,7 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="2789552044937754463">{COUNT,plural, =1{Wachtwoord opgeslagen in je Google-account, {EMAIL}}other{Wachtwoorden opgeslagen in je Google-account, {EMAIL}}}</translation>
 <translation id="2791174088547598693">Wachtwoord toevoegen…</translation>
 <translation id="2797302972324086597">Landcode</translation>
+<translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} bestand}other{{COUNT} bestanden}}</translation>
 <translation id="2816489851009559785">Menu → Instellingen → Standaardbrowser</translation>
 <translation id="2818821771744632548">Je bent uitgelogd van je account <ph name="USER_NAME" /> omdat je iPhone wordt gereset. Tik hieronder op Doorgaan om weer in te loggen.</translation>
 <translation id="2819667972867209401">Als dit aanstaat, worden gegevens opgeslagen in je Google-account. Staat dit uit? Dan worden gegevens alleen opgeslagen op dit apparaat en worden ze verwijderd als je uitlogt.</translation>

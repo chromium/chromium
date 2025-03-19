@@ -87,6 +87,7 @@
 <translation id="2215727959747642672">Tiedostojen muokkaus</translation>
 <translation id="2218389616572918761">Sivustot voivat pyytää mikrofonia</translation>
 <translation id="2228071138934252756">Laita kamera päälle myös <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />, jotta <ph name="APP_NAME" /> saa pääsyn kameraasi.</translation>
+<translation id="2231160360698766265">Sivustot voivat toistaa suojattua sisältöä</translation>
 <translation id="2235344399760031203">Kolmannen osapuolen evästeet on estetty</translation>
 <translation id="2238944249568001759">Viime välilehteen perustuvat hakuehdotukset</translation>
 <translation id="2241587408274973373">Uusi välilehti ‐sivun kortit</translation>
@@ -630,6 +631,7 @@
 <translation id="9138217887606523162">Zoomaus on <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9156722768168878035">Salli Chromen näyttää viimeaikaiset välilehdet laitteen sovelluslistalla ja hakutuloksissa. Voit laittaa tämän pois päältä milloin tahansa Chromen asetuksista.</translation>
 <translation id="9162462602695099906">Tämä sivu on vaarallinen</translation>
+<translation id="9182556968660520230">Älä salli sivustojen toistaa suojattua sisältöä</translation>
 <translation id="947156494302904893">Avaamasi sivustot voivat vahvistaa, että olet oikea ihminen etkä botti</translation>
 <translation id="959682366969460160">Järjestä</translation>
 <translation id="967624055006145463">Tallennettu data</translation>

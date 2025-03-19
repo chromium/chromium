@@ -87,6 +87,7 @@
 <translation id="2215727959747642672">Faila rediģēšana</translation>
 <translation id="2218389616572918761">Atļaut vietnēm piekļūt mikrofonam</translation>
 <translation id="2228071138934252756">Lai atļautu lietotnei <ph name="APP_NAME" /> piekļūt jūsu kamerai, ieslēdziet kameru arī <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
+<translation id="2231160360698766265">Atļaut vietnēm atskaņot aizsargātu saturu</translation>
 <translation id="2235344399760031203">Trešo pušu sīkfaili ir bloķēti</translation>
 <translation id="2238944249568001759">Pamatojoties uz jūsu pēdējo cilni, ieteiktie meklēšanas vaicājumi</translation>
 <translation id="2241587408274973373">Kartītes jaunas cilnes lapā</translation>
@@ -630,6 +631,7 @@
 <translation id="9138217887606523162">Pašreizējais tālummaiņas iestatījums: <ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="9156722768168878035">Ļaujiet pārlūkam Chrome rādīt jūsu nesen atvērtās cilnes ierīces lietotņu sarakstā un meklēšanas rezultātos. Chrome iestatījumos varat jebkurā laikā izslēgt šo funkciju.</translation>
 <translation id="9162462602695099906">Šī lapa ir bīstama.</translation>
+<translation id="9182556968660520230">Neļaut vietnēs atskaņot aizsargātu saturu</translation>
 <translation id="947156494302904893">Jūsu apmeklētās vietnes var apstiprināt, ka esat īsts cilvēks, nevis robots</translation>
 <translation id="959682366969460160">Informācijas kārtošana</translation>
 <translation id="967624055006145463">Saglabātie dati</translation>

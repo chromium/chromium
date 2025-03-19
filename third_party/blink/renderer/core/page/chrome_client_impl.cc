@@ -171,6 +171,21 @@ bool DisplayModeIsBorderless(LocalFrame& frame) {
   return widget->DisplayMode() == mojom::blink::DisplayMode::kBorderless;
 }
 
+gfx::Rect AdjustWindowRectForMinimum(const gfx::Rect& pending_rect,
+                                     int minimum_size) {
+  gfx::Rect window = pending_rect;
+
+  // Let size 0 pass through, since that indicates default size, not minimum
+  // size.
+  if (window.width()) {
+    window.set_width(std::max(minimum_size, window.width()));
+  }
+  if (window.height()) {
+    window.set_height(std::max(minimum_size, window.height()));
+  }
+  return window;
+}
+
 }  // namespace
 
 static bool g_can_browser_handle_focus = false;
@@ -227,7 +242,7 @@ void ChromeClientImpl::SetWindowRect(const gfx::Rect& requested_rect,
   // Permission state is not readily available, so adjusted bounds are clamped
   // to the same-screen, to retain legacy behavior of synchronous pending values
   // and to avoid exposing other screen details to frames without permission.
-  // TODO(crbug.com/897300): Use permission state for better sync estimates or
+  // TODO(crbug.com/40092782): Use permission state for better sync estimates or
   // store unadjusted pending window rects if that will not break many sites.
   web_view_->MainFrameViewWidget()->SetWindowRect(rect_adjusted_for_minimum,
                                                   adjusted_rect);
@@ -344,18 +359,33 @@ Page* ChromeClientImpl::CreateWindowDelegate(
   if (!web_frame)
     return nullptr;
 
+  // These are the bounds we expect for the new window if it's placed on the
+  // same screen as the opener. In the event that the actual geometry is not
+  // returned synchronously from the browser, we apply this to the widget so it
+  // will have sane geometry until the UpdateScreenRects() message arrives.
+  // Permission state is not readily available, so bounds are clamped to the
+  // same-screen, to retain legacy behavior of synchronous pending values and to
+  // avoid exposing other screen details to frames without permission.
+  // TODO(crbug.com/40092782): Use permission state for better sync estimates or
+  // store unadjusted pending window rects if that will not break many sites.
+  gfx::Rect bounds(features.x, features.y, features.width, features.height);
+  const gfx::Rect requested_screen_rect =
+      AdjustWindowRectForDisplay(bounds, *frame, /*minimum_size*/ 0);
+
   NotifyPopupOpeningObservers();
   const AtomicString& frame_name =
       !EqualIgnoringASCIICase(name, "_blank") ? name : g_empty_atom;
   WebViewImpl* new_view =
       static_cast<WebViewImpl*>(web_frame->Client()->CreateNewWindow(
           WrappedResourceRequest(r.GetResourceRequest()), features, frame_name,
+          requested_screen_rect,
           static_cast<WebNavigationPolicy>(r.GetNavigationPolicy()),
           sandbox_flags, session_storage_namespace_id, consumed_user_gesture,
           r.Impression(), r.GetPictureInPictureWindowOptions(),
           r.GetRequestorBaseURL()));
-  if (!new_view)
+  if (!new_view) {
     return nullptr;
+  }
   return new_view->GetPage();
 }
 
@@ -1462,22 +1492,6 @@ void ChromeClientImpl::PasswordFieldReset(HTMLInputElement& element) {
 float ChromeClientImpl::ZoomFactorForViewportLayout() {
   DCHECK(web_view_);
   return web_view_->ZoomFactorForViewportLayout();
-}
-
-gfx::Rect ChromeClientImpl::AdjustWindowRectForMinimum(
-    const gfx::Rect& pending_rect,
-    int minimum_size) {
-  gfx::Rect window = pending_rect;
-
-  // Let size 0 pass through, since that indicates default size, not minimum
-  // size.
-  if (window.width()) {
-    window.set_width(std::max(minimum_size, window.width()));
-  }
-  if (window.height()) {
-    window.set_height(std::max(minimum_size, window.height()));
-  }
-  return window;
 }
 
 gfx::Rect ChromeClientImpl::AdjustWindowRectForDisplay(

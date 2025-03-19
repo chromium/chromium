@@ -166,7 +166,12 @@ IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,
       callback;
   RunTestSequence(
       Do([&]() { delegate.ShowShareDialog(group_id, callback.Get()); }),
-      WaitForShow(kDataSharingBubbleElementId));
+      WaitForShow(kDataSharingBubbleElementId), Do([&]() {
+        // Close the dialog before the callback runs out of scope.
+        auto* controller =
+            DataSharingBubbleController::GetOrCreateForBrowser(browser());
+        controller->Close();
+      }));
 }
 
 IN_PROC_BROWSER_TEST_F(CollaborationControllerDelegateDesktopInteractiveUITest,

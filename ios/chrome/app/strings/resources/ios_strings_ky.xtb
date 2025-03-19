@@ -440,6 +440,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Сырсөз Google аккаунтуңузга ({EMAIL}) сакталды}other{Сырсөздөр Google аккаунтуңузга ({EMAIL}) сакталды}}</translation>
 <translation id="2791174088547598693">Сырсөз кошуу…</translation>
 <translation id="2797302972324086597">Өлкөнүн коду</translation>
+<translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} файл}other{{COUNT} файл}}</translation>
 <translation id="2816489851009559785">Меню → Жөндөөлөр → Демейки серепчи</translation>
 <translation id="2818821771744632548">iPhone'ду баштапкы абалга келтирүүдө <ph name="USER_NAME" /> аккаунтунан чыктыңыз. Кайрадан кирүү үчүн төмөндөгү "Улантуу" баскычын басыңыз.</translation>
 <translation id="2819667972867209401">Параметр күйүп турганда, маалымат Google аккаунтуңузга сакталат. Ал эми өчүп турганда ушул түзмөккө гана сакталып, аккаунтуңуздан чыкканда өчүрүлөт.</translation>

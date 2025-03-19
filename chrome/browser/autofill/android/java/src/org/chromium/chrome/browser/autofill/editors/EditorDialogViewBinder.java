@@ -31,7 +31,7 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Text
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.VALIDATE_ON_SHOW;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.VISIBLE;
 
-import org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownKeyValue;
+import org.chromium.components.autofill.DropdownKeyValue;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 

@@ -178,12 +178,6 @@ HashPrefixMapView HashPrefixMap::view() const {
   return view;
 }
 
-HashPrefixesView HashPrefixMap::at(PrefixSize size) const {
-  const FileInfo& info = map_.at(size);
-  CHECK(info.IsReadable());
-  return info.GetView();
-}
-
 void HashPrefixMap::Append(PrefixSize size, HashPrefixesView prefix) {
   if (prefix.empty())
     return;

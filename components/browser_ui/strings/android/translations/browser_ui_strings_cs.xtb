@@ -87,6 +87,7 @@
 <translation id="2215727959747642672">Úprava souborů</translation>
 <translation id="2218389616572918761">Weby můžou žádat o přístup k mikrofonu</translation>
 <translation id="2228071138934252756">Pokud aplikaci <ph name="APP_NAME" /> chcete umožnit přístup k fotoaparátu, zapněte fotoaparát také v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
+<translation id="2231160360698766265">Weby mohou přehrávat chráněný obsah</translation>
 <translation id="2235344399760031203">Soubory cookie třetích stran jsou blokovány</translation>
 <translation id="2238944249568001759">Navrhovaná vyhledávání na základě poslední karty</translation>
 <translation id="2241587408274973373">Karty na stránce Nová karta</translation>
@@ -630,6 +631,7 @@
 <translation id="9138217887606523162">Aktuální přiblížení je <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9156722768168878035">Umožněte Chromu zobrazovat nedávno použité karty v seznamu aplikací a ve výsledcích vyhledávání v zařízení. Tuto funkci můžete v nastavení Chromu kdykoli vypnout.</translation>
 <translation id="9162462602695099906">Tato stránka je nebezpečná</translation>
+<translation id="9182556968660520230">Nepovolovat webům přehrávání chráněného obsahu</translation>
 <translation id="947156494302904893">Weby, které navštěvujete, mohou ověřit, že jste člověk, a ne robot</translation>
 <translation id="959682366969460160">Uspořádejte si položky</translation>
 <translation id="967624055006145463">Uložená data</translation>

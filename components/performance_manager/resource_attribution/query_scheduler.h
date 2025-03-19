@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
@@ -44,13 +43,12 @@ class QueryScheduler
   QueryScheduler(const QueryScheduler&) = delete;
   QueryScheduler& operator=(const QueryScheduler&) = delete;
 
-  base::WeakPtr<QueryScheduler> GetWeakPtr();
+  // Returns the singleton QueryScheduler, or nullptr if none exists. This is
+  // equivalent to QueryScheduler::GetFromGraph(nullptr), but also works in
+  // unit tests using GraphTestHarness.
+  static QueryScheduler* Get();
 
-  // Invokes `callback` on the PM sequence with a pointer to the registered
-  // QueryScheduler.
-  static void CallWithScheduler(
-      base::OnceCallback<void(QueryScheduler*)> callback,
-      const base::Location& location = base::Location::Current());
+  base::WeakPtr<QueryScheduler> GetWeakPtr();
 
   // Adds a scoped query for `query_params`. Increases the query count for all
   // resource types and contexts referenced in `query_params`.

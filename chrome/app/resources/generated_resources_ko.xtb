@@ -624,6 +624,7 @@
 <translation id="1430915738399379752">인쇄</translation>
 <translation id="1431188203598586230">마지막 소프트웨어 업데이트</translation>
 <translation id="1432581352905426595">검색엔진 관리</translation>
+<translation id="1432650420699700107">사이트에서 로컬 네트워크의 모든 기기에 연결하도록 요청할 수 있음</translation>
 <translation id="1433478348197382180">읽기 모드</translation>
 <translation id="1433980411933182122">시작하기</translation>
 <translation id="1434696352799406980">시작 페이지, 새 탭 페이지, 검색엔진, 고정 탭이 초기화됩니다. 또한 모든 확장 프로그램이 사용 중지되고 쿠키와 같은 임시 데이터가 삭제됩니다. 북마크, 기록, 저장된 비밀번호는 삭제되지 않습니다.</translation>
@@ -1345,6 +1346,7 @@
 <translation id="1918127774159128277">Wi-Fi Direct 기능 새로고침</translation>
 <translation id="1918141783557917887">작게(&amp;S)</translation>
 <translation id="1918281588461452432">사이트를 탐색하면 페이지 콘텐츠가 암호화되어 기기에 저장됩니다.</translation>
+<translation id="1919096511823372013">링크, 이모티콘 등 다양한 콘텐츠를 삽입하세요. Google AI의 도움을 받아 글을 작성하고 이미지를 만들 수도 있습니다.</translation>
 <translation id="1919872106782726755">지문을 설정하려면 자녀가 키보드 오른쪽 상단의 전원 버튼 옆에 있는 지문 센서를 터치하게 하세요. 자녀의 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
 <translation id="192015196730532810">탭 그룹을 직접 만들 수 있습니다.</translation>
 <translation id="1920314570001095522">정리할 수 있는 비슷한 탭이 없지만, 좋아할 만한 그룹을 알려 드립니다</translation>
@@ -4074,9 +4076,6 @@
     <ph name="BEGIN_PARAGRAPH2" />언제든지 Chrome 기기 설정에서 이 보고서의 전송을 허용하거나 중지할 수 있습니다. 도메인 관리자는 관리 콘솔에서 이 설정을 변경할 수 있습니다.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">작은 오두막집 위로 밤하늘에 오로라가 펼쳐져 있습니다.</translation>
 <translation id="3818102823568165369">운영체제 또는 관리자가 추가한 로컬 인증서입니다.</translation>
-<translation id="3818662907126913619"><ph name="DOMAIN" /> 프로필을 통해 기기를 사용하려면 조직에 이 기기와 관련된 정보가 필요합니다.
-
-이러한 정보에는 설치된 소프트웨어, 파일, 브라우저, 기기 운영체제에 관한 정보 등이 포함될 수 있습니다.</translation>
 <translation id="3819164369574292143">확대하여 화면에 있는 항목을 더 크게 표시할 수 있습니다. 돋보기를 사용 설정하거나 중지하려면 검색 + Ctrl + M을 사용하세요. 확대 후 이동하려면 Ctrl + Alt + 화살표 키를 사용하세요.</translation>
 <translation id="3819257035322786455">백업</translation>
 <translation id="3819261658055281761">시스템에서 이 기기의 장기 API 액세스 토큰을 저장하지 못했습니다.</translation>
@@ -4394,9 +4393,6 @@
 <translation id="4031527940632463547">센서 차단됨</translation>
 <translation id="4033471457476425443">새 폴더 추가</translation>
 <translation id="4033963223187371752">안전한 사이트에서 안전하지 않은 이미지 또는 웹 프레임 등의 콘텐츠를 삽입할 수 있음</translation>
-<translation id="4034706080855851454">조직 프로필을 통해 기기를 사용하려면 조직에 이 기기와 관련된 정보가 필요합니다.
-
-이러한 정보에는 설치된 소프트웨어, 파일, 브라우저, 기기 운영체제에 관한 정보 등이 포함될 수 있습니다.</translation>
 <translation id="4034824040120875894">프린터</translation>
 <translation id="4035758313003622889">작업 관리자(&amp;T)</translation>
 <translation id="4035877632587724847">허용 안함</translation>
@@ -4843,6 +4839,7 @@
 <translation id="4364830672918311045">알림 표시</translation>
 <translation id="4367971618859387374">표시 이름</translation>
 <translation id="4368960422722232719">탭에 마우스를 가져가면 나타나는 미리보기 카드에 메모리 사용량 표시</translation>
+<translation id="4369151461324628035">사이트에서 로컬 네트워크의 모든 기기에 연결하도록 허용하지 않음</translation>
 <translation id="4369215744064167350">웹사이트 요청 승인됨</translation>
 <translation id="4369233657762989723">음성기록 켜기/끄기</translation>
 <translation id="436926121798828366">언제든지 <ph name="SETTINGS_LINK" />에서 변경할 수 있습니다.</translation>
@@ -5397,6 +5394,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4772914216048388646">질서 정연함</translation>
 <translation id="4773112038801431077">Linux 업그레이드</translation>
 <translation id="4773122030389014189">'<ph name="GROUP_NAME" />' 탭 그룹 공유</translation>
+<translation id="4773253008034797668">로컬 네트워크의 모든 기기에 연결하도록 허용됨</translation>
 <translation id="477548766361111120">확장 프로그램이 이 사이트를 읽고 변경하도록 허용</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> 기기가 연결되었습니다</translation>
 <translation id="4776594120007763294">나중에 읽을 페이지를 추가하려면 버튼을 클릭하세요</translation>
@@ -7861,6 +7859,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6563002009564846727">Windows에서 가져온 인증서 보기</translation>
 <translation id="6563055593659435495">휴대전화와 연결을 유지할 수 없습니다. 휴대전화가 근처에 있고 잠금 해제되어 있으며, 블루투스와 Wi-Fi가 켜져 있는지 확인하세요.</translation>
 <translation id="6564860838537532172">방문 기록을 검색하면 기존 검색어, 최적 일치 페이지 콘텐츠, 생성된 모델 출력이 Google로 전송되며 이 기능을 개선하기 위해 인적 검토자가 이를 확인할 수 있습니다.</translation>
+<translation id="6565144332292237355">사이트에서 이 기능을 사용하여 로컬 네트워크의 기기를 찾고 연결할 수 있습니다.</translation>
 <translation id="6569931898053264308">메모리 다소 절약</translation>
 <translation id="6570622975915850879">다른 기기 사용</translation>
 <translation id="65711204837946324">다운로드 권한 필요</translation>
@@ -8989,6 +8988,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7377451353532943397">계속해서 센서 액세스 차단</translation>
 <translation id="7377481913241237033">코드를 사용한 연결</translation>
 <translation id="73786666777299047">Chrome 웹 스토어 열기</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. 동일한 태스크 그룹의 다른 태스크: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. 동일한 태스크 그룹의 다른 #개 태스크: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380272457268061606">로컬 데이터 복구를 사용 중지하시겠어요?</translation>
 <translation id="7380459290951585794">휴대전화가 근처에 있고, 잠금이 해제되어 있으며, 블루투스와 Wi-Fi가 켜져 있어야 합니다.</translation>
 <translation id="7380622428988553498">기기 이름에 잘못된 문자가 포함되어 있습니다.</translation>
@@ -11574,6 +11574,7 @@ https://support.google.com/chromebook/?p=sm</translation>
       <ph name="LIST_ITEM" />Chrome 연결 진단 실행
     <ph name="END_LIST" /></translation>
 <translation id="9161172953291434881">이 사이트에 내 데이터를 맡길 수 있나요?</translation>
+<translation id="9164418710391288146">로컬 네트워크의 기기에 연결하도록 허용되지 않음</translation>
 <translation id="9165856803582999927"><ph name="APP_NAME" />의 패스키를 생성 및 저장하려는 기기의 카메라로 이 QR 코드를 스캔하세요</translation>
 <translation id="916607977885256133">PIP 모드</translation>
 <translation id="9166253503936244008"><ph name="APP_NAME" />에 사용할 패스키가 있는 기기로 이 QR 코드를 스캔하세요.</translation>

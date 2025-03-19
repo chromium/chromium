@@ -35,6 +35,14 @@ const char kSignalActivatedCountLast30Days[] = "activated_count_last_30_days";
 const char kSignalDismissedCountLast30Days[] = "dismissed_count_last_30_days";
 const char kSignalSameTimeGroupVisitCount[] = "same_time_group_visit_count";
 const char kSignalSameDayGroupVisitCount[] = "same_day_group_visit_count";
+const char kSignalTabRecentForegroundCount[] = "tab_recent_foreground_count";
+const char kSignalIsTabOpenedByUser[] = "is_tab_opened_by_user";
+const char kSignalAndroidTabLaunchType[] = "android_tab_launch_type";
+const char kSignalAndroidTabLaunchPackageName[] =
+    "android_tab_launch_package_name";
+const char kSignalTabParentId[] = "tab_parent_id";
+const char kSignalTimeSinceTabCreationSec[] = "time_since_tab_creation_sec";
+const char kSignalTabGroupSyncId[] = "tab_group_sync_id";
 
 constexpr std::array<FieldSchema, kTabResumptionNumInputs>
     kURLVisitAggregateSchema = {{
@@ -111,6 +119,25 @@ constexpr std::array<FieldSchema, kSuggestionsNumInputs>
         {.signal =
              URLVisitAggregateRankingModelInputSignals::kTimeSinceLastActiveSec,
          .name = kSignalTimeSinceLastActiveSec},
+        {.signal = URLVisitAggregateRankingModelInputSignals::
+             kTabRecentForegroundCount,
+         .name = kSignalTabRecentForegroundCount},
+        {.signal =
+             URLVisitAggregateRankingModelInputSignals::kIsTabOpenedByUser,
+         .name = kSignalIsTabOpenedByUser},
+        {.signal =
+             URLVisitAggregateRankingModelInputSignals::kAndroidTabLaunchType,
+         .name = kSignalAndroidTabLaunchType},
+        {.signal = URLVisitAggregateRankingModelInputSignals::
+             kAndroidTabLaunchPackageName,
+         .name = kSignalAndroidTabLaunchPackageName},
+        {.signal = URLVisitAggregateRankingModelInputSignals::kTabParentId,
+         .name = kSignalTabParentId},
+        {.signal = URLVisitAggregateRankingModelInputSignals::
+             kTimeSinceTabCreationSec,
+         .name = kSignalTimeSinceTabCreationSec},
+        {.signal = URLVisitAggregateRankingModelInputSignals::kTabGroupSyncId,
+         .name = kSignalTabGroupSyncId},
     }};
 
 }  // namespace visited_url_ranking

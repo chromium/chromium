@@ -4,9 +4,16 @@
 
 #include "mojo/public/cpp/bindings/direct_receiver.h"
 
+#include <optional>
+#include <utility>
+
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
+#include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/ipcz_api.h"
 #include "mojo/core/ipcz_driver/driver.h"
@@ -18,6 +25,66 @@ namespace mojo::internal {
 
 namespace {
 
+using Transport = core::ipcz_driver::Transport;
+
+// The output of Transport::CreatePair().
+using TransportPair =
+    std::pair<scoped_refptr<Transport>, scoped_refptr<Transport>>;
+
+TransportPair CreateTransportPair() {
+  const Transport::EndpointType global_node_type =
+      core::GetIpczNodeOptions().is_broker
+          ? Transport::EndpointType::kBroker
+          : Transport::EndpointType::kNonBroker;
+  const Transport::EndpointType local_node_type =
+      Transport::EndpointType::kNonBroker;
+
+  TransportPair transports =
+      Transport::CreatePair(global_node_type, local_node_type);
+  transports.first->set_remote_process(base::Process::Current());
+  transports.second->set_remote_process(base::Process::Current());
+  return transports;
+}
+
+#if BUILDFLAG(IS_WIN)
+
+bool g_use_precreated_transport = false;
+
+class TransportPairStorage {
+ public:
+  static TransportPairStorage& Get();
+
+  // Creates a TransportPair and stores it to be used inside the sandbox.
+  void CreateTransportPairBeforeSandbox();
+
+  // Returns a TransportPair that was created outside the sandbox. Asserts if
+  // there are none available.
+  TransportPair TakeTransportPair();
+
+ private:
+  base::Lock lock_;
+  std::optional<TransportPair> transport_pair_ GUARDED_BY(lock_);
+};
+
+// static
+TransportPairStorage& TransportPairStorage::Get() {
+  static base::NoDestructor<TransportPairStorage> instance;
+  return *instance;
+}
+
+void TransportPairStorage::CreateTransportPairBeforeSandbox() {
+  base::AutoLock lock(lock_);
+  CHECK(!transport_pair_.has_value());
+  transport_pair_ = CreateTransportPair();
+}
+
+TransportPair TransportPairStorage::TakeTransportPair() {
+  base::AutoLock lock(lock_);
+  return std::exchange(transport_pair_, std::nullopt).value();
+}
+
+#endif  // BUILDFLAG(IS_WIN)
+
 thread_local ThreadLocalNode* g_thread_local_node;
 
 }  // namespace
@@ -28,6 +95,21 @@ ThreadLocalNode::ThreadLocalNode(base::PassKey<ThreadLocalNode>)
   CHECK(!g_thread_local_node);
   g_thread_local_node = this;
 
+  scoped_refptr<Transport> global_transport;
+  scoped_refptr<Transport> local_transport;
+#if BUILDFLAG(IS_WIN)
+  if (g_use_precreated_transport) {
+    std::tie(global_transport, local_transport) =
+        TransportPairStorage::Get().TakeTransportPair();
+    // Leak the node in case it needs to outlive the last DirectReceiver,
+    // since in a sandboxed process it can't be recreated.
+    AddRef();
+  } else {
+    std::tie(global_transport, local_transport) = CreateTransportPair();
+  }
+#else
+  std::tie(global_transport, local_transport) = CreateTransportPair();
+#endif
   // Create a new (non-broker) node which we will connect below to the global
   // Mojo ipcz node in this process.
   const IpczAPI& ipcz = core::GetIpczAPI();
@@ -42,29 +124,19 @@ ThreadLocalNode::ThreadLocalNode(base::PassKey<ThreadLocalNode>)
   node_.reset(Handle(node));
 
   // Create a new transport pair to connect the two nodes.
-  using Transport = core::ipcz_driver::Transport;
   const core::IpczNodeOptions& global_node_options = core::GetIpczNodeOptions();
-  const Transport::EndpointType local_node_type =
-      Transport::EndpointType::kNonBroker;
   IpczConnectNodeFlags local_connect_flags;
-  Transport::EndpointType global_node_type;
   IpczConnectNodeFlags global_connect_flags;
   if (global_node_options.is_broker) {
-    global_node_type = Transport::EndpointType::kBroker;
     global_connect_flags = IPCZ_NO_FLAGS;
     local_connect_flags = IPCZ_CONNECT_NODE_TO_BROKER;
   } else {
-    global_node_type = Transport::EndpointType::kNonBroker;
     global_connect_flags = IPCZ_CONNECT_NODE_SHARE_BROKER;
     local_connect_flags = IPCZ_CONNECT_NODE_INHERIT_BROKER;
     if (!global_node_options.use_local_shared_memory_allocation) {
       local_connect_flags |= IPCZ_CONNECT_NODE_TO_ALLOCATION_DELEGATE;
     }
   }
-  auto [global_transport, local_transport] =
-      Transport::CreatePair(global_node_type, local_node_type);
-  global_transport->set_remote_process(base::Process::Current());
-  local_transport->set_remote_process(base::Process::Current());
 
   // We want the new local node to receive all I/O directly on the current
   // thread. Since this is the first transport connected on that node, all
@@ -217,5 +289,17 @@ namespace mojo {
 bool IsDirectReceiverSupported() {
   return core::IsMojoIpczEnabled();
 }
+
+#if BUILDFLAG(IS_WIN)
+
+void CreateDirectReceiverTransportBeforeSandbox() {
+  CHECK(!internal::g_use_precreated_transport);
+  internal::g_use_precreated_transport = true;
+  if (IsDirectReceiverSupported()) {
+    internal::TransportPairStorage::Get().CreateTransportPairBeforeSandbox();
+  }
+}
+
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace mojo

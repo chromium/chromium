@@ -41,7 +41,6 @@ class NonClientFrameViewBase : public views::NonClientFrameView,
   int NonClientHitTest(const gfx::Point& point) override;
   void GetWindowMask(const gfx::Size& size, SkPath* window_mask) override;
   void ResetWindowControls() override;
-  void UpdateWindowIcon() override;
   void UpdateWindowTitle() override;
   void SizeConstraintsChanged() override;
   views::View::Views GetChildrenInZOrder() override;

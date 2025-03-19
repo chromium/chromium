@@ -1661,7 +1661,6 @@ if (is_android) {
       "//chrome/browser/touch_to_fill/password_manager/password_generation/android:public",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/android/hats/test:test_support",
-      "//chrome/browser/ui/autofill/payments:android_browsertests",
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/webaudio:browser_tests",
@@ -3717,8 +3716,10 @@ if (!is_android) {
         "//chrome/browser/on_device_translation/on_device_translation_browsertest.cc",
       ]
       deps += [
+        "//chrome/browser/ai:test_support",
         "//chrome/browser/on_device_translation",
         "//chrome/browser/on_device_translation:test_support",
+        "//components/component_updater:test_support",
         "//components/services/on_device_translation:test_support",
         "//components/services/on_device_translation/public/cpp:cpp",
       ]
@@ -4789,7 +4790,6 @@ if (!is_android) {
           "../browser/ui/views/profiles/batch_upload_dialog_view_pixel_browsertest.cc",
           "../browser/ui/views/profiles/dice_web_signin_interception_bubble_view_browsertest.cc",
           "../browser/ui/views/profiles/dice_web_signin_interception_bubble_view_pixel_browsertest.cc",
-          "../browser/ui/views/profiles/profile_customization_bubble_view_browsertest.cc",
           "../browser/ui/views/relaunch_notification/relaunch_recommended_bubble_view_browsertest.cc",
           "../browser/ui/views/relaunch_notification/relaunch_required_dialog_view_browsertest.cc",
         ]
@@ -7716,6 +7716,7 @@ test("unit_tests") {
       "../browser/ui/passwords/well_known_change_password_navigation_throttle_unittest.cc",
       "../browser/ui/performance_controls/performance_controls_hats_service_unittest.cc",
       "../browser/ui/performance_controls/performance_controls_metrics_unittest.cc",
+      "../browser/ui/performance_controls/performance_intervention_button_controller_unittest.cc",
       "../browser/ui/performance_controls/tab_resource_usage_tab_helper_unittest.cc",
       "../browser/ui/profiles/profile_view_utils_unittest.cc",
       "../browser/ui/recently_audible_helper_unittest.cc",
@@ -12215,6 +12216,7 @@ if (!is_android) {
       "//chrome/browser/devtools",
       "//chrome/browser/sync",
       "//chrome/browser/ui/autofill",
+      "//chrome/browser/ui/browser_window:browser_window",
       "//chrome/renderer",
       "//components/javascript_dialogs",
       "//components/resources",

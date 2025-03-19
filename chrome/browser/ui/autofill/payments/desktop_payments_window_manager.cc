@@ -300,7 +300,8 @@ void DesktopPaymentsWindowManager::OnWebContentsDestroyedForBnpl() {
       result = BnplFlowResult::kUserClosed;
       break;
   }
-  std::move(bnpl_context_->completion_callback).Run(result);
+  std::move(bnpl_context_->completion_callback)
+      .Run(result, std::move(most_recent_url_navigation_));
   Reset();
 }
 

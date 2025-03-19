@@ -105,6 +105,7 @@ interface PageElementTypes {
   osGeolocationPermissionSwitch: HTMLInputElement;
   getOsMicrophonePermissionButton: HTMLButtonElement;
   osMicrophonePermissionResult: HTMLSpanElement;
+  osGlicHotkey: HTMLInputElement;
 }
 
 const $: PageElementTypes = new Proxy({}, {
@@ -174,10 +175,17 @@ class WebClient implements GlicWebClient {
     browser.panelActive?.().subscribe((active) => {
       $.panelActiveCheckbox.checked = active;
     });
-
     browser.isManuallyResizing?.().subscribe((resizing) => {
       logMessage('Manually resizing state changed: ' + resizing);
     });
+    if (browser.getOsHotkeyState) {
+      const hotkeyState = await browser.getOsHotkeyState();
+      hotkeyState.subscribe((data: {hotkey: string}) => {
+        $.osGlicHotkey.value = data.hotkey === '' ? 'Not Set' : data.hotkey;
+      });
+    } else {
+      logMessage('getOsHotkeyState not available');
+    }
   }
 
   async notifyPanelWillOpen(panelOpeningData: PanelOpeningData&PanelState):

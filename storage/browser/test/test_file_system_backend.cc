@@ -91,7 +91,7 @@ class TestFileSystemBackend::QuotaUtil : public FileSystemQuotaUtil,
     NOTREACHED();
   }
 
-  std::vector<blink::StorageKey> GetStorageKeysForTypeOnFileTaskRunner(
+  std::vector<blink::StorageKey> GetDefaultStorageKeysOnFileTaskRunner(
       FileSystemType type) override {
     NOTREACHED();
   }

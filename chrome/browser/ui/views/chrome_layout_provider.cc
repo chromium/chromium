@@ -145,8 +145,6 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 20;
     case DISTANCE_STANDALONE_BUBBLE_PREFERRED_WIDTH:
       return kMediumDialogWidth;
-    case DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH:
-      return kLargeDialogWidth;
     case DISTANCE_BETWEEN_PRIMARY_AND_SECONDARY_LABELS_HORIZONTAL:
       return 24;
     case DISTANCE_OMNIBOX_CELL_VERTICAL_PADDING:

@@ -142,6 +142,15 @@ TEST_F(PdfNavigationThrottleTest,
             navigation_throttle->WillStartRequest().action());
 }
 
+TEST_F(PdfNavigationThrottleTest,
+       WillStartRequestShouldAllowPdfExtensionFrameNavigationFalse) {
+  stream_delegate_->clear_stream_info();
+  stream_delegate_->set_should_allow_pdf_extension_frame_navigation(false);
+  auto navigation_throttle = CreateNavigationThrottle(stream_url(), main_rfh());
+  EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST,
+            navigation_throttle->WillStartRequest().action());
+}
+
 TEST_F(PdfNavigationThrottleTest, WillStartRequestOtherUrl) {
   auto navigation_throttle = CreateNavigationThrottle(
       GURL("https://example.test"), CreateChildFrame());

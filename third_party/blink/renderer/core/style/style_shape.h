@@ -135,9 +135,7 @@ class StyleShape final : public BasicShape {
              Vector<Segment> segments);
 
   ShapeType GetType() const override { return kStyleShapeType; }
-  void GetPath(Path&,
-               const gfx::RectF& bounding_box,
-               float zoom) const override;
+  Path GetPath(const gfx::RectF& bounding_box, float zoom) const override;
 
   WindRule GetWindRule() const { return wind_rule_; }
   const LengthPoint& GetOrigin() const { return origin_; }

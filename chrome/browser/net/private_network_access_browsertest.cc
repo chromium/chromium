@@ -246,6 +246,7 @@ class PrivateNetworkAccessWithFeatureDisabledBrowserTest
             {
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
+                network::features::kLocalNetworkAccessChecks,
             }) {}
 };
 
@@ -271,9 +272,12 @@ class PrivateNetworkAccessWithFeatureEnabledBrowserTest
                 features::kPrivateNetworkAccessForWorkers,
             },
             is_warning_only
-                ? std::vector<base::test::FeatureRef>()
+                ? std::vector<base::test::FeatureRef>({
+                      network::features::kLocalNetworkAccessChecks,
+                  })
                 : std::vector<base::test::FeatureRef>({
                       features::kPrivateNetworkAccessForWorkersWarningOnly,
+                      network::features::kLocalNetworkAccessChecks,
                   })) {}
 };
 
@@ -300,9 +304,12 @@ class PrivateNetworkAccessRespectPreflightResultsBrowserTest
                 features::kPrivateNetworkAccessForWorkers,
             },
             GetParam().is_warning_only
-                ? std::vector<base::test::FeatureRef>()
+                ? std::vector<base::test::FeatureRef>({
+                      network::features::kLocalNetworkAccessChecks,
+                  })
                 : std::vector<base::test::FeatureRef>({
                       features::kPrivateNetworkAccessForWorkersWarningOnly,
+                      network::features::kLocalNetworkAccessChecks,
                   })) {}
 };
 
@@ -1403,7 +1410,9 @@ class PrivateNetworkAccessAutoReloadBrowserTest
                 features::kBlockInsecurePrivateNetworkRequestsDeprecationTrial,
                 features::kPrivateNetworkAccessForNavigations,
             },
-            {}) {}
+            {
+                network::features::kLocalNetworkAccessChecks,
+            }) {}
 
   void SetUpOnMainThread() override {
     PrivateNetworkAccessBrowserTestBase::SetUpOnMainThread();
@@ -1474,7 +1483,9 @@ class PrivateNetworkAccessWithNullIPKillswitchTest
                 features::kPrivateNetworkAccessForWorkers,
                 network::features::kTreatNullIPAsPublicAddressSpace,
             },
-            {}) {}
+            {
+                network::features::kLocalNetworkAccessChecks,
+            }) {}
 };
 
 // This test verifies that 0.0.0.0 subresources are not blocked when the

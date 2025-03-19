@@ -19,6 +19,11 @@ CSSAnimationData::CSSAnimationData() : CSSTimingData(InitialDuration()) {
   range_end_list_.push_back(InitialRangeEnd());
   composition_list_.push_back(InitialComposition());
   trigger_type_list_.push_back(InitialTriggerType());
+  trigger_timeline_list_.push_back(InitialTriggerTimeline());
+  trigger_range_start_list_.push_back(InitialTriggerRangeStart());
+  trigger_range_end_list_.push_back(InitialTriggerRangeEnd());
+  trigger_exit_range_start_list_.push_back(InitialTriggerExitRangeStart());
+  trigger_exit_range_end_list_.push_back(InitialTriggerExitRangeEnd());
 }
 
 CSSAnimationData::CSSAnimationData(const CSSAnimationData& other) = default;
@@ -38,8 +43,9 @@ const StyleTimeline& CSSAnimationData::InitialTimeline() {
 }
 
 const StyleTimeline& CSSAnimationData::InitialTriggerTimeline() {
-  DEFINE_STATIC_LOCAL(const StyleTimeline, timeline, (CSSValueID::kAuto));
-  return timeline;
+  DEFINE_STATIC_LOCAL(const StyleTimeline, trigger_timeline,
+                      (CSSValueID::kAuto));
+  return trigger_timeline;
 }
 
 bool CSSAnimationData::AnimationsMatchForStyleRecalc(
@@ -68,6 +74,11 @@ Timing CSSAnimationData::ConvertToTiming(size_t index) const {
 const StyleTimeline& CSSAnimationData::GetTimeline(size_t index) const {
   DCHECK_LT(index, name_list_.size());
   return GetRepeated(timeline_list_, index);
+}
+
+const StyleTimeline& CSSAnimationData::GetTriggerTimeline(size_t index) const {
+  DCHECK_LT(index, name_list_.size());
+  return GetRepeated(trigger_timeline_list_, index);
 }
 
 }  // namespace blink

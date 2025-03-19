@@ -28,6 +28,8 @@
 #include "chrome/browser/ash/policy/skyvault/migration_coordinator.h"
 #include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
+#include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_handler.h"
+#include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/files_cleanup_handler.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
@@ -227,11 +229,7 @@ void LocalFilesMigrationManager::Initialize() {
     // Migration is now disabled, reset the state and failure count.
     if (state_ != State::kUninitialized) {
       LOG(WARNING) << "Migration disabled: resetting the state and retry count";
-      SetState(State::kUninitialized);
-      current_retry_count_ = 0;
-      pref_service->SetInteger(prefs::kSkyVaultMigrationRetryCount,
-                               current_retry_count_);
-      pref_service->SetTime(prefs::kSkyVaultMigrationStartTime, base::Time());
+      ResetMigrationPrefs();
       SkyVaultMigrationResetHistogram(true);
     }
     // If migration is not configured, check whether there are already no files
@@ -304,6 +302,12 @@ void LocalFilesMigrationManager::SetCoordinatorForTesting(
   coordinator_ = std::move(coordinator);
 }
 
+void LocalFilesMigrationManager::SetCleanupHandlerForTesting(
+    base::WeakPtr<chromeos::FilesCleanupHandler> cleanup_handler) {
+  CHECK_IS_TEST();
+  cleanup_handler_for_testing_ = cleanup_handler;
+}
+
 void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
   bool local_user_files_allowed_old = local_user_files_allowed_;
   local_user_files_allowed_ = LocalUserFilesAllowed();
@@ -364,6 +368,7 @@ void LocalFilesMigrationManager::OnMigrationStopped(bool log_file_deleted) {
 
   Profile* profile = Profile::FromBrowserContext(context_);
   if (IsMigrationMisconfigured(profile, migration_destination_)) {
+    DCHECK(IsCloudDestination(migration_destination_));
     LOG(WARNING) << "Local files migration policy is set to use "
                  << (migration_destination_ ==
                              MigrationDestination::kGoogleDrive
@@ -486,12 +491,13 @@ void LocalFilesMigrationManager::SkipMigrationDelay() {
         migration_destination_, StateErrorContext::kSkipTimeout, state_);
     return;
   }
+  scheduling_timer_->Stop();
   if (migration_destination_ == MigrationDestination::kDelete) {
-    // TODO(399394365): Implementation.
+    SetState(State::kCleanup);
+    CleanupLocalFiles();
     return;
   }
   SetState(State::kInProgress);
-  scheduling_timer_->Stop();
   GetPathsToUpload();
 }
 
@@ -502,12 +508,13 @@ void LocalFilesMigrationManager::OnTimeoutExpired() {
                                          StateErrorContext::kTimeout, state_);
     return;
   }
+  notification_manager_->CloseDialog();
   if (migration_destination_ == MigrationDestination::kDelete) {
-    // TODO(399394365): Implementation.
+    SetState(State::kCleanup);
+    CleanupLocalFiles();
     return;
   }
   SetState(State::kInProgress);
-  notification_manager_->CloseDialog();
   GetPathsToUpload();
 }
 
@@ -527,7 +534,16 @@ void LocalFilesMigrationManager::GetPathsToUpload() {
                   "progress, aborting";
     return;
   }
-  DCHECK(IsCloudDestination(migration_destination_));
+  if (migration_destination_ == MigrationDestination::kDelete) {
+    // Although unlikely, it could happen we reach this function for the delete
+    // case if the state was loaded from the device and the policy changed
+    // between two sessions. Rather than fail, skip ahead to cleanup.
+    LOG(ERROR) << "Reached GetPathsToUpload() but the migration destination is "
+                  "delete, skipping to cleanup";
+    SetState(State::kCleanup);
+    CleanupLocalFiles();
+    return;
+  }
 
   Profile* profile = Profile::FromBrowserContext(context_);
   CHECK(profile);
@@ -556,6 +572,13 @@ void LocalFilesMigrationManager::StartMigration(
       !IsMigrationEnabled(migration_destination_)) {
     LOG(ERROR) << "Local files allowed or migration disabled while in "
                   "progress, aborting";
+    return;
+  }
+  if (migration_destination_ == MigrationDestination::kDelete) {
+    LOG(ERROR) << "Reached StartMigration() but the migration destination is "
+                  "delete, skipping to cleanup";
+    SetState(State::kCleanup);
+    CleanupLocalFiles();
     return;
   }
   DCHECK(IsCloudDestination(migration_destination_));
@@ -642,6 +665,13 @@ void LocalFilesMigrationManager::CleanupLocalFiles() {
     return;
   }
   cleanup_in_progress_ = true;
+  if (cleanup_handler_for_testing_) {
+    CHECK_IS_TEST();
+    cleanup_handler_for_testing_->Cleanup(base::BindOnce(
+        &LocalFilesMigrationManager::OnCleanupDone, weak_factory_.GetWeakPtr(),
+        /*cleanup_handler=*/nullptr));
+    return;
+  }
   std::unique_ptr<chromeos::FilesCleanupHandler> cleanup_handler =
       std::make_unique<chromeos::FilesCleanupHandler>();
   chromeos::FilesCleanupHandler* cleanup_handler_ptr = cleanup_handler.get();
@@ -662,12 +692,18 @@ void LocalFilesMigrationManager::OnCleanupDone(
 
   cleanup_in_progress_ = false;
   if (error_message.has_value()) {
+    // TODO(402074191): UMA when failed.
     LOG(ERROR) << "Local files cleanup failed: " << error_message.value();
   } else {
     VLOG(1) << "Local files cleanup done";
   }
-  SetState(State::kCompleted);
   SetLocalUserFilesWriteEnabled(/*enabled=*/false);
+  if (migration_destination_ == MigrationDestination::kDelete) {
+    // Notify to remove folders after deletion.
+    NotifySuccess();
+    // TODO(402074193): Show deletion completed notification.
+  }
+  SetState(State::kCompleted);
 }
 
 void LocalFilesMigrationManager::SetLocalUserFilesWriteEnabled(bool enabled) {
@@ -709,12 +745,7 @@ void LocalFilesMigrationManager::MaybeStopMigration(
   if (state_ == State::kPending || state_ == State::kInProgress) {
     SkyVaultMigrationStoppedHistogram(previous_provider, true);
   }
-  SetState(State::kUninitialized);
-  current_retry_count_ = 0;
-  PrefService* pref_service = Profile::FromBrowserContext(context_)->GetPrefs();
-  pref_service->SetInteger(prefs::kSkyVaultMigrationRetryCount,
-                           current_retry_count_);
-  pref_service->SetTime(prefs::kSkyVaultMigrationStartTime, base::Time());
+  ResetMigrationPrefs();
   NotifyReset();
 }
 
@@ -725,6 +756,15 @@ void LocalFilesMigrationManager::SetState(State new_state) {
   state_ = new_state;
   Profile::FromBrowserContext(context_)->GetPrefs()->SetInteger(
       prefs::kSkyVaultMigrationState, static_cast<int>(new_state));
+}
+
+void LocalFilesMigrationManager::ResetMigrationPrefs() {
+  SetState(State::kUninitialized);
+  current_retry_count_ = 0;
+  PrefService* pref_service = Profile::FromBrowserContext(context_)->GetPrefs();
+  pref_service->SetInteger(prefs::kSkyVaultMigrationRetryCount,
+                           current_retry_count_);
+  pref_service->SetTime(prefs::kSkyVaultMigrationStartTime, base::Time());
 }
 
 void LocalFilesMigrationManager::NotifySuccess() {

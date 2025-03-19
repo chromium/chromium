@@ -944,7 +944,8 @@ void GetFdInfoFromPid(pid_t pid,
   for (; dir_reader.Next();) {
     const char* name = dir_reader.name();
 
-    if (strcmp(name, ".") == 0 || strcmp(name, "..") == 0) {
+    if (UNSAFE_TODO(strcmp(name, ".")) == 0 ||
+        UNSAFE_TODO(strcmp(name, "..")) == 0) {
       continue;
     }
 
@@ -1028,7 +1029,7 @@ bool GetGraphicsMemoryInfoFdInfo(GraphicsMemoryInfoKB* gpu_meminfo) {
   std::string line;
   while (std::getline(clients_stream, line)) {
     pid_t pid;
-    int num_res = sscanf(UNSAFE_TODO(&line.c_str()[21]), "%5d", &pid);
+    int num_res = UNSAFE_TODO(sscanf(&line.c_str()[21], "%5d", &pid));
     if (num_res == 1) {
       GetFdInfoFromPid(pid, fdinfo_table);
     }
@@ -1077,8 +1078,9 @@ bool GetGraphicsMemoryInfo(GraphicsMemoryInfoKB* gpu_meminfo) {
   if (ReadFileToStringNonBlocking(geminfo_path, &geminfo_data)) {
     int gpu_objects = -1;
     int64_t gpu_memory_size = -1;
-    int num_res = sscanf(geminfo_data.c_str(), "%d objects, %" SCNd64 " bytes",
-                         &gpu_objects, &gpu_memory_size);
+    int num_res = UNSAFE_TODO(sscanf(geminfo_data.c_str(),
+                                     "%d objects, %" SCNd64 " bytes",
+                                     &gpu_objects, &gpu_memory_size));
     if (num_res == 2) {
       gpu_meminfo->gpu_objects = gpu_objects;
       gpu_meminfo->gpu_memory_size = gpu_memory_size;

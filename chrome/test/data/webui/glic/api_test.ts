@@ -356,6 +356,16 @@ class ApiTests extends ApiTestFixtureBase {
     assertTrue(await tabContextState.next());
   }
 
+  async testGetOsHotkeyState() {
+    assertTrue(!!this.host.getOsHotkeyState);
+    const osHotkeyState = observeSequence(this.host.getOsHotkeyState());
+    const initialHotkeyState = await osHotkeyState.next();
+    assertEquals('<Ctrl>-<G>', initialHotkeyState.hotkey);
+    await this.advanceToNextStep();
+    const changedState = await osHotkeyState.next();
+    assertEquals('<Ctrl>-<Shift>-<1>', changedState.hotkey);
+  }
+
   async testGetUserProfileInfo() {
     assertTrue(!!this.host.getUserProfileInfo);
     const profileInfo = await this.host.getUserProfileInfo();

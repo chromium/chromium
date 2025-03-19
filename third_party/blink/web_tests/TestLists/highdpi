@@ -1178,6 +1178,7 @@ fast/css/object-position-with-fit-contain.html
 fast/css/object-position-with-fit-cover.html
 fast/css/object-position-with-fit-none.html
 fast/css/sticky/inline-sticky-abspos-child.html
+fast/css/sticky/sticky-normal-scroller.html
 fast/css/sticky/sticky-overflow-hidden.html
 fast/css/table-rules-attribute-none-with-cell-borders.html
 fast/css/vertical-align-baseline-rowspan-008.htm

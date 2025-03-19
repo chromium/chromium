@@ -608,6 +608,11 @@ const char kIOSKeyboardAccessoryUpgradeShortManualFillMenuDescription[] =
     "When enabled, the upgraded keyboard accessory UI will be presented with a "
     "shorter manual fill menu.";
 
+const char kIOSOneTapMiniMapRemoveSectionBreaksName[] =
+    "Remove section break for address detection.";
+const char kIOSOneTapMiniMapRemoveSectionBreaksDescription[] =
+    "Replace section break by spaces when detecting addresses.";
+
 const char kIOSOneTapMiniMapRestrictionsName[] =
     "Revalidate detected addresses for one tap Mini Map.";
 const char kIOSOneTapMiniMapRestrictionsDescription[] =

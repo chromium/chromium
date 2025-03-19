@@ -2638,8 +2638,8 @@ void StyleEngine::EnsureUAStyleForForcedColors() {
   }
 }
 
-RuleSet* StyleEngine::DefaultViewTransitionStyle() const {
-  auto* transition = ViewTransitionUtils::GetTransition(GetDocument());
+RuleSet* StyleEngine::DefaultViewTransitionStyle(const Element& element) const {
+  auto* transition = ViewTransitionUtils::GetTransition(element);
   if (!transition) {
     return nullptr;
   }

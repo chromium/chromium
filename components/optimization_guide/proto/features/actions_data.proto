@@ -29,8 +29,8 @@ message ActionTarget {
 
   Coordinate coordinate = 2;
 
-  // Which frame the action should be taken in.
-  FrameIdentifier frame_info = 3;
+  // Which document in a frame the action should be taken in.
+  DocumentIdentifier document_identifier = 3;
 }
 
 // Mouse click action.

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_INPUT_FLING_CONTROLLER_H_
 #define COMPONENTS_INPUT_FLING_CONTROLLER_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -91,7 +93,9 @@ class COMPONENT_EXPORT(INPUT) FlingController {
   ~FlingController();
 
   // Used to progress an active fling on every begin frame.
-  void ProgressFling(base::TimeTicks current_time);
+  void ProgressFling(base::TimeTicks current_time,
+                     std::optional<base::TimeTicks>
+                         first_coalesced_frame_begin_time = std::nullopt);
 
   // Used to halt an active fling progress whenever needed.
   void StopFling();

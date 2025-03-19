@@ -135,8 +135,6 @@ void NonClientFrameViewBase::ResetWindowControls() {
   header_view_->ResetWindowControls();
 }
 
-void NonClientFrameViewBase::UpdateWindowIcon() {}
-
 void NonClientFrameViewBase::UpdateWindowTitle() {
   header_view_->SchedulePaintForTitle();
 }

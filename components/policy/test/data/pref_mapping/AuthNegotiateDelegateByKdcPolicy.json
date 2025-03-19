@@ -3,8 +3,7 @@
     "os": [
       "linux",
       "mac",
-      "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "auth.negotiate_delegate_by_kdc_policy",

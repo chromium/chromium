@@ -87,6 +87,7 @@
 <translation id="2215727959747642672">Menjanje datoteka</translation>
 <translation id="2218389616572918761">Sajtovi mogu da traže da koriste mikrofon</translation>
 <translation id="2228071138934252756">Da biste dozvolili da <ph name="APP_NAME" /> pristupa kameri, uključite kameru i u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
+<translation id="2231160360698766265">Sajtovi mogu da puštaju zaštićen sadržaj</translation>
 <translation id="2235344399760031203">Kolačići treće strane su blokirani</translation>
 <translation id="2238944249568001759">Predložene pretrage na osnovu vaše poslednje kartice</translation>
 <translation id="2241587408274973373">Kartice na stranici nove kartice</translation>
@@ -630,6 +631,7 @@
 <translation id="9138217887606523162">Aktuelno zumiranje je <ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="9156722768168878035">Dozvolite Chrome-u da prikazuje nedavne kartice na listi aplikacija i u rezultatima pretrage uređaja. To možete da isključite u svakom trenutku u Chrome podešavanjima.</translation>
 <translation id="9162462602695099906">Ova stranica je opasna</translation>
+<translation id="9182556968660520230">Ne dozvoljavaj sajtovima da puštaju zaštićeni sadržaj</translation>
 <translation id="947156494302904893">Sajtovi koje posećujete mogu da potvrde da ste stvarna osoba, a ne bot</translation>
 <translation id="959682366969460160">Bolja organizacija</translation>
 <translation id="967624055006145463">Sačuvani podaci</translation>

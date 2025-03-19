@@ -170,8 +170,26 @@ void DataSharingBubbleController::SetShowErrorDialogCallback(
   on_error_callback_ = std::move(callback);
 }
 
+void DataSharingBubbleController::SetOnShareLinkRequestedCallback(
+    collaboration::CollaborationControllerDelegate::ResultWithGroupTokenCallback
+        callback) {
+  on_share_link_requested_callback_ = std::move(callback);
+}
+
+void DataSharingBubbleController::OnUrlReadyToShare(GURL url) {
+  if (share_link_callback_) {
+    std::move(share_link_callback_).Run(url);
+  }
+}
+
 void DataSharingBubbleController::OnWidgetClosing(views::Widget* widget) {
   bubble_widget_observation_.Reset();
+  if (on_share_link_requested_callback_) {
+    std::move(on_share_link_requested_callback_)
+        .Run(collaboration::CollaborationControllerDelegate::Outcome::kCancel,
+             std::nullopt);
+  }
+
   if (on_close_callback_) {
     std::move(on_close_callback_).Run();
   }
@@ -182,8 +200,27 @@ void DataSharingBubbleController::ApiInitComplete() {
 }
 
 void DataSharingBubbleController::ShowErrorDialog(int status_code) {
+  if (share_link_callback_) {
+    // On error case, if the share link callback is present, return an empty url
+    // which will close the share dialog.
+    std::move(share_link_callback_).Run(std::nullopt);
+  }
+
   if (on_error_callback_) {
     std::move(on_error_callback_).Run();
+  }
+}
+
+void DataSharingBubbleController::OnShareLinkRequested(
+    const std::string& group_id,
+    const std::string& access_token,
+    base::OnceCallback<void(const std::optional<GURL>&)> callback) {
+  if (on_share_link_requested_callback_) {
+    share_link_callback_ = std::move(callback);
+    std::move(on_share_link_requested_callback_)
+        .Run(collaboration::CollaborationControllerDelegate::Outcome::kSuccess,
+             data_sharing::GroupToken(data_sharing::GroupId(group_id),
+                                      access_token));
   }
 }
 

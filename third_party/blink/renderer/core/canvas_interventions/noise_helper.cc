@@ -67,9 +67,11 @@ void NoisePixel(base::span<uint8_t> pixel, NoiseHash& token_hash) {
   base::SpanWriter writer(base::as_writable_bytes(pixel));
   for (int i = 0; i < kChannelsPerPixel; ++i) {
     int channel_value = pixel[i];
-    // Clamp min- and maxNoisedVal to [0, 255].
+    // Clamp min- and maxNoisedVal to [0, 255] and [1, 255] for the alpha
+    // channel if it was non-zero before.
+    int lowerLimit = (i == kChannelsPerPixel - 1 && channel_value > 0) ? 1 : 0;
     int minNoisedVal = channel_value <= kMaxNoisePerChannel
-                           ? 0
+                           ? lowerLimit
                            : channel_value - kMaxNoisePerChannel;
     int maxNoisedVal = channel_value >= 255 - kMaxNoisePerChannel
                            ? 255

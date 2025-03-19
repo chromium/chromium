@@ -107,9 +107,17 @@ class AuthenticationServiceTestBase : public PlatformTest {
  protected:
   explicit AuthenticationServiceTestBase(
       bool separate_profiles_for_managed_accounts_enabled) {
-    scoped_feature_list_.InitWithFeatureState(
-        kSeparateProfilesForManagedAccounts,
-        separate_profiles_for_managed_accounts_enabled);
+    if (separate_profiles_for_managed_accounts_enabled) {
+      // Note: kUseAccountListFromIdentityManager is a prerequisite of
+      // kSeparateProfilesForManagedAccounts.
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{kUseAccountListFromIdentityManager,
+                                kSeparateProfilesForManagedAccounts},
+          /*disabled_features=*/{});
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          kSeparateProfilesForManagedAccounts);
+    }
 
     TestProfileIOS::Builder builder;
     builder.SetPrefService(CreatePrefService());
@@ -290,14 +298,6 @@ class AuthenticationServiceTest : public AuthenticationServiceTestBase,
   AuthenticationServiceTest()
       : AuthenticationServiceTestBase(
             /*separate_profiles_for_managed_accounts_enabled=*/GetParam()) {}
-};
-
-class AuthenticationServiceWithoutSeparateProfilesTest
-    : public AuthenticationServiceTestBase {
- public:
-  AuthenticationServiceWithoutSeparateProfilesTest()
-      : AuthenticationServiceTestBase(
-            /*separate_profiles_for_managed_accounts_enabled=*/false) {}
 };
 
 TEST_P(AuthenticationServiceTest, TestDefaultGetPrimaryIdentity) {
@@ -497,20 +497,28 @@ TEST_P(AuthenticationServiceTest, MDMErrorsClearedOnSignout) {
 
 // Tests that (a) MDM errors are cleared, and (b) local data *only from the
 // signed-in period* are cleared, when signing out of a managed account.
-// If `kSeparateProfilesForManagedAccounts` is enabled, managed accounts are
-// assigned into their own separate profiles and cannot sign out from there, so
-// this test doesn't apply.
-TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
-       ManagedAccountSignOut_ClearDataFromSignin) {
+TEST_P(AuthenticationServiceTest, ManagedAccountSignOut_ClearDataFromSignin) {
   FakeSystemIdentity* fake_system_identity =
       [FakeSystemIdentity fakeManagedIdentity];
   fake_system_identity_manager()->AddIdentity(fake_system_identity);
+
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    // The managed identity is assigned to a separate profile now.
+    ASSERT_EQ([account_manager_->GetAllIdentities() count], 2UL);
+    ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
+    // Move the managed identity into the personal profile, to mimic the
+    // situation where the managed identity was already there before
+    // kSeparateProfilesForManagedAccounts was enabled.
+    GetApplicationContext()
+        ->GetAccountProfileMapper()
+        ->MoveManagedAccountToPersonalProfileForTesting(
+            GaiaId(identity(2).gaiaID));
+  }
   ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
 
   authentication_service()->SignIn(identity(2),
                                    signin_metrics::AccessPoint::kUnknown);
-  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   ASSERT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
       signin::ConsentLevel::kSignin));
   VerifyLastSigninTimestamp();
@@ -526,10 +534,7 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
 
 // Tests that (a) MDM errors are cleared, and (b) local data is *not* cleared,
 // when signing out of a managed account while the browser is managed.
-// If `kSeparateProfilesForManagedAccounts` is enabled, managed accounts are
-// assigned into their own separate profiles and cannot sign out from there, so
-// this test doesn't apply.
-TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
+TEST_P(AuthenticationServiceTest,
        ManagedAccountSignOut_DontClearIfManagedBrowser) {
   // Add managed configuration so the browser is managed.
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
@@ -538,12 +543,24 @@ TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
   FakeSystemIdentity* fake_system_identity =
       [FakeSystemIdentity fakeManagedIdentity];
   fake_system_identity_manager()->AddIdentity(fake_system_identity);
+
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    // The managed identity is assigned to a separate profile now.
+    ASSERT_EQ([account_manager_->GetAllIdentities() count], 2UL);
+    ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
+    // Move the managed identity into the personal profile, to mimic the
+    // situation where the managed identity was already there before
+    // kSeparateProfilesForManagedAccounts was enabled.
+    GetApplicationContext()
+        ->GetAccountProfileMapper()
+        ->MoveManagedAccountToPersonalProfileForTesting(
+            GaiaId(identity(2).gaiaID));
+  }
   ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
 
   authentication_service()->SignIn(identity(2),
                                    signin_metrics::AccessPoint::kUnknown);
-  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
   ASSERT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
       signin::ConsentLevel::kSignin));
   VerifyLastSigninTimestamp();
@@ -598,27 +615,34 @@ TEST_P(AuthenticationServiceTest, MDMErrorsDontSeedEmptyAccountIds) {
 // Tests that (a) MDM errors are cleared and (b) all browsing data is cleared
 // (not just from the signed-in period), when signing out of a managed account
 // that was migrated from ConsentLevel::kSync.
-// If `kSeparateProfilesForManagedAccounts` is enabled, managed accounts are
-// assigned into their own separate profiles and cannot sign out from there, so
-// this test doesn't apply.
-TEST_F(AuthenticationServiceWithoutSeparateProfilesTest,
-       ManagedAccountSignOut_MigratedFromSyncing) {
+TEST_P(AuthenticationServiceTest, ManagedAccountSignOut_MigratedFromSyncing) {
   FakeSystemIdentity* fake_system_identity =
       [FakeSystemIdentity fakeManagedIdentity];
   fake_system_identity_manager()->AddIdentity(fake_system_identity);
+
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    // The managed identity is assigned to a separate profile now.
+    ASSERT_EQ([account_manager_->GetAllIdentities() count], 2UL);
+    ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 2UL);
+    // Move the managed identity into the personal profile, to mimic the
+    // situation where the managed identity was already there before
+    // kSeparateProfilesForManagedAccounts was enabled.
+    GetApplicationContext()
+        ->GetAccountProfileMapper()
+        ->MoveManagedAccountToPersonalProfileForTesting(
+            GaiaId(identity(2).gaiaID));
+  }
   ASSERT_EQ([account_manager_->GetAllIdentities() count], 3UL);
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
 
   authentication_service()->SignIn(identity(2),
                                    signin_metrics::AccessPoint::kUnknown);
-  VerifyLastSigninTimestamp();
-  // Mark the signed-in user as "migrated from previously syncing".
-  MarkSignedinUserMigratedFromSyncing();
-
-  EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
-  EXPECT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
+  ASSERT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
       signin::ConsentLevel::kSignin));
   VerifyLastSigninTimestamp();
+
+  // Mark the signed-in user as "migrated from previously syncing".
+  MarkSignedinUserMigratedFromSyncing();
 
   authentication_service()->SignOut(
       signin_metrics::ProfileSignout::kAbortSignin, nil);

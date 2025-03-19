@@ -75,8 +75,13 @@ enum class TipsNotificationUserType {
 // Returns true if the given `notification` is a Tips notification.
 bool IsTipsNotification(UNNotificationRequest* request);
 
+// Returns true if the given `notification` is a Proactive Tips
+// (AKA Reactivation) notification.
+bool IsProactiveTipsNotification(UNNotificationRequest* request);
+
 // Returns a userInfo dictionary pre-filled with the notification `type`.
-NSDictionary* UserInfoForTipsNotificationType(TipsNotificationType type);
+NSDictionary* UserInfoForTipsNotificationType(TipsNotificationType type,
+                                              bool for_reactivation);
 
 // Returns the notification type found in a notification's userInfo dictionary.
 std::optional<TipsNotificationType> ParseTipsNotificationType(
@@ -90,8 +95,8 @@ UNNotificationRequest* TipsNotificationRequest(
     TipsNotificationUserType user_type);
 
 // Returns the notification content for a given Tips notification type.
-UNNotificationContent* ContentForTipsNotificationType(
-    TipsNotificationType type);
+UNNotificationContent* ContentForTipsNotificationType(TipsNotificationType type,
+                                                      bool for_reactivation);
 
 // Returns the time delta used to trigger Tips notifications.
 base::TimeDelta TipsNotificationTriggerDelta(

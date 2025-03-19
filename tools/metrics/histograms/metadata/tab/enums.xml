@@ -77,6 +77,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/performance_manager/mechanisms/page_discarder.cc:DiscardPageOnUIThreadOutcome) -->
 
+<!-- LINT.IfChange(DiscardTabOutcome) -->
+
+<enum name="DiscardTabOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="NotInTabStripModel"/>
+  <int value="2" label="AlreadyDiscarded"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resource_coordinator/tab_lifecycle_unit.cc:DiscardTabOutcome) -->
+
 <enum name="ExternalLauncherOption">
   <int value="0" label="Cancel"/>
   <int value="1" label="Open"/>

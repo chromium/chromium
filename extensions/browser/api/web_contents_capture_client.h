@@ -23,7 +23,7 @@ namespace extensions {
 // This is used by both webview.captureVisibleRegion and tabs.captureVisibleTab.
 class WebContentsCaptureClient {
  public:
-  WebContentsCaptureClient() {}
+  WebContentsCaptureClient() = default;
 
   WebContentsCaptureClient(const WebContentsCaptureClient&) = delete;
   WebContentsCaptureClient& operator=(const WebContentsCaptureClient&) = delete;

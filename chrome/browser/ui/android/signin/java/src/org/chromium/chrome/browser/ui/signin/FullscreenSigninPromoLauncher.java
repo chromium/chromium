@@ -14,14 +14,11 @@ import org.chromium.base.BuildInfo;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
 
@@ -46,37 +43,41 @@ public final class FullscreenSigninPromoLauncher {
             Profile profile,
             SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher,
             final int currentMajorVersion) {
-        if (BuildInfo.getInstance().isAutomotive) {
+        final SigninPreferencesManager prefManager = SigninPreferencesManager.getInstance();
+        if (!shouldLaunchPromo(profile, prefManager, currentMajorVersion)) {
             return false;
         }
 
-        final SigninPreferencesManager prefManager = SigninPreferencesManager.getInstance();
-        if (shouldLaunchPromo(profile, prefManager, currentMajorVersion)) {
-            FullscreenSigninAndHistorySyncConfig config =
-                    new FullscreenSigninAndHistorySyncConfig.Builder().build();
-            @Nullable
-            Intent intent =
-                    signinAndHistorySyncActivityLauncher.createFullscreenSigninIntent(
-                            context, profile, config, SigninAccessPoint.SIGNIN_PROMO);
-            if (intent != null) {
-                context.startActivity(intent);
-            }
-            prefManager.setSigninPromoLastShownVersion(currentMajorVersion);
-            final List<CoreAccountInfo> coreAccountInfos =
-                    AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
-                            AccountManagerFacadeProvider.getInstance().getCoreAccountInfos());
-            prefManager.setSigninPromoLastAccountEmails(
-                    new HashSet<>(AccountUtils.toAccountEmails(coreAccountInfos)));
-            return true;
+        FullscreenSigninAndHistorySyncConfig config =
+                new FullscreenSigninAndHistorySyncConfig.Builder().build();
+        @Nullable
+        Intent intent =
+                signinAndHistorySyncActivityLauncher.createFullscreenSigninIntent(
+                        context, profile, config, SigninAccessPoint.SIGNIN_PROMO);
+        if (intent == null) {
+            return false;
         }
-        return false;
+
+        context.startActivity(intent);
+        prefManager.setSigninPromoLastShownVersion(currentMajorVersion);
+        final List<CoreAccountInfo> coreAccountInfos =
+                AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
+                        AccountManagerFacadeProvider.getInstance().getCoreAccountInfos());
+        prefManager.setSigninPromoLastAccountEmails(
+                new HashSet<>(AccountUtils.toAccountEmails(coreAccountInfos)));
+        return true;
     }
 
     private static boolean shouldLaunchPromo(
             Profile profile, SigninPreferencesManager prefManager, final int currentMajorVersion) {
+        if (BuildInfo.getInstance().isAutomotive) {
+            return false;
+        }
+
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_STARTUP_SIGNIN_PROMO)) {
             return true;
         }
+
         final int lastPromoMajorVersion = prefManager.getSigninPromoLastShownVersion();
         if (lastPromoMajorVersion == 0) {
             prefManager.setSigninPromoLastShownVersion(currentMajorVersion);
@@ -85,13 +86,6 @@ public final class FullscreenSigninPromoLauncher {
 
         if (currentMajorVersion < lastPromoMajorVersion + 2) {
             // Promo can be shown at most once every 2 Chrome major versions.
-            return false;
-        }
-
-        final IdentityManager identityManager =
-                IdentityServicesProvider.get().getIdentityManager(profile);
-        if (identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) != null) {
-            // Don't show if user is signed in and syncing.
             return false;
         }
 

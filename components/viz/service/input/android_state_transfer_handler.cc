@@ -109,8 +109,6 @@ bool AndroidStateTransferHandler::OnMotionEvent(
     return true;
   }
 
-  ValidateRootFrameSinkId(root_frame_sink_id);
-
   if (state_for_curr_sequence_.has_value() ||
       CanStartProcessingVizEvents(input_event)) {
     HandleTouchEvent(std::move(input_event));
@@ -248,17 +246,6 @@ void AndroidStateTransferHandler::HandleTouchEvent(
   if (event->GetAction() == ui::MotionEvent::Action::UP ||
       event->GetAction() == ui::MotionEvent::Action::CANCEL) {
     state_for_curr_sequence_.reset();
-  }
-}
-
-void AndroidStateTransferHandler::ValidateRootFrameSinkId(
-    const FrameSinkId& root_frame_sink_id) {
-  // TODO(crbug.com/388478270): Relax this CHECK to handle activity restart mid
-  // sequence.
-  CHECK(root_frame_sink_id.is_valid());
-  if (active_root_frame_sink_id_ != root_frame_sink_id) {
-    CHECK(!active_root_frame_sink_id_.is_valid());
-    active_root_frame_sink_id_ = root_frame_sink_id;
   }
 }
 

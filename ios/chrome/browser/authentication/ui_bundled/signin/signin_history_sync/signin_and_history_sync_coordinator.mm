@@ -82,9 +82,9 @@ enum class SignInHistorySyncStep {
 
 - (void)start {
   [super start];
-  ProfileIOS* profile = self.browser->GetProfile();
-  _authenticationService = AuthenticationServiceFactory::GetForProfile(profile);
-  _syncService = SyncServiceFactory::GetForProfile(profile);
+  _authenticationService =
+      AuthenticationServiceFactory::GetForProfile(self.profile);
+  _syncService = SyncServiceFactory::GetForProfile(self.profile);
   [self presentNextStepWithPreviousResult:SigninCoordinatorResultSuccess];
 }
 
@@ -149,7 +149,7 @@ enum class SignInHistorySyncStep {
   // If there are no steps remaining, call delegate to stop presenting
   // coordinators.
   AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
+      AuthenticationServiceFactory::GetForProfile(self.profile);
   id<SystemIdentity> identity =
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   SigninCoordinatorResult result;
@@ -201,7 +201,7 @@ enum class SignInHistorySyncStep {
     }
     case SignInHistorySyncStep::kHistorySync: {
       if (history_sync::GetSkipReason(_syncService, _authenticationService,
-                                      self.browser->GetProfile()->GetPrefs(),
+                                      self.profile->GetPrefs(),
                                       _optionalHistorySync) !=
           history_sync::HistorySyncSkipReason::kNone) {
         [self
@@ -243,12 +243,11 @@ enum class SignInHistorySyncStep {
       bool hasIdentitiesOnDevice = false;
       if (IsUseAccountListFromIdentityManagerEnabled()) {
         signin::IdentityManager* identityManager =
-            IdentityManagerFactory::GetForProfile(self.browser->GetProfile());
+            IdentityManagerFactory::GetForProfile(self.profile);
         hasIdentitiesOnDevice = !identityManager->GetAccountsOnDevice().empty();
       } else {
         ChromeAccountManagerService* accountManagerService =
-            ChromeAccountManagerServiceFactory::GetForProfile(
-                self.browser->GetProfile());
+            ChromeAccountManagerServiceFactory::GetForProfile(self.profile);
         hasIdentitiesOnDevice = accountManagerService->HasIdentities();
       }
       if (hasIdentitiesOnDevice) {

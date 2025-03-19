@@ -622,7 +622,13 @@ try_.builder(
     mirrors = ["ci/android-cronet-arm64-gn2bp-dbg"],
     gn_args = "ci/android-cronet-arm64-gn2bp-dbg",
     contact_team_email = "cronet-team@google.com",
+    main_list_view = "try",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+    tryjob = try_.job(
+        location_filters = [
+            "components/cronet/gn2bp/.+",
+        ],
+    ),
 )
 
 try_.builder(

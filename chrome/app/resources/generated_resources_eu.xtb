@@ -4057,9 +4057,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
     <ph name="BEGIN_PARAGRAPH2" />Txosten horiek bidaltzeko baimena emateko edo ukatzeko, joan ChromeOS-eko gailuaren ezarpenetara. Domeinuaren administratzailea bazara, administrazio-kontsolan alda dezakezu ezarpen hori.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">Aurora boreala gauez, basetxe txiki baten gainean.</translation>
 <translation id="3818102823568165369">Zure sistema eragileak edo administratzaileak gehitu dituen tokiko ziurtagiriak.</translation>
-<translation id="3818662907126913619">Gailua <ph name="DOMAIN" /> domeinuko profilarekin erabiltzeko, erakundeak gailuari buruzko informazioa behar du.
-
-Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistema eragileari buruzko informazioa behar du.</translation>
 <translation id="3819164369574292143">Handitu pantaila bertako elementuak hobeto ikusteko. Erabili Bilaketa + Ktrl + M lupa aktibatu eta desaktibatzeko. Erabili Ktrl + Alt + gezi-teklak pantailan zehar mugitzeko pantaila handituta dagoenean.</translation>
 <translation id="3819257035322786455">Egin babeskopiak</translation>
 <translation id="3819261658055281761">Sistemak ezin izan du biltegiratu gailu honi dagokion APIaren epe luzerako sarbide-tokena.</translation>
@@ -4377,9 +4374,6 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4031527940632463547">Blokeatuta daude sentsoreak</translation>
 <translation id="4033471457476425443">Gehitu karpeta bat</translation>
 <translation id="4033963223187371752">Baliteke webgune seguruek edukia kapsulatzea, hala nola seguruak ez diren irudiak edo sareko markoak</translation>
-<translation id="4034706080855851454">Gailua erakundeko profilarekin erabiltzeko, erakundeak gailuari buruzko informazioa behar du.
-
-Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistema eragileari buruzko informazioa behar du.</translation>
 <translation id="4034824040120875894">Inprimagailua</translation>
 <translation id="4035758313003622889">&amp;Zereginen kudeatzailea</translation>
 <translation id="4035877632587724847">Ez eman baimenik</translation>

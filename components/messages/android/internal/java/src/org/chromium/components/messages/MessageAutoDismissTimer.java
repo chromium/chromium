@@ -7,11 +7,14 @@ package org.chromium.components.messages;
 import android.os.Handler;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Auto dismiss timer for messages. */
+@NullMarked
 class MessageAutoDismissTimer {
     private long mDuration;
-    private Runnable mRunnableOnTimeUp;
+    private @Nullable Runnable mRunnableOnTimeUp;
     private Handler mAutoDismissTimer;
 
     /** @param duration Duration in mills. */
@@ -46,7 +49,7 @@ class MessageAutoDismissTimer {
         mAutoDismissTimer = handler;
     }
 
-    Runnable getRunnableOnTimeUpForTesting() {
+    @Nullable Runnable getRunnableOnTimeUpForTesting() {
         return mRunnableOnTimeUp;
     }
 }

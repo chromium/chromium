@@ -43,21 +43,7 @@ public class TabClosureParams {
      */
     public static @Nullable TabClosureParams.CloseTabsBuilder forCloseTabGroup(
             TabGroupModelFilter filter, Token tabGroupId) {
-        return TabClosureParams.forCloseTabGroup(
-                filter, filter.getRootIdFromTabGroupId(tabGroupId));
-    }
-
-    /**
-     * Creates a {@link TabClosureParams.CloseTabsBuilder} that represents a tab group.
-     *
-     * @param rootId The tab group ID of the tab group.
-     * @return A TabClosureParams for the tab group or null if the group is not found.
-     */
-    public static @Nullable TabClosureParams.CloseTabsBuilder forCloseTabGroup(
-            TabGroupModelFilter filter, int rootId) {
-        if (rootId == Tab.INVALID_TAB_ID) return null;
-
-        List<Tab> relatedTabs = filter.getRelatedTabListForRootId(rootId);
+        List<Tab> relatedTabs = filter.getTabsInGroup(tabGroupId);
         if (relatedTabs.isEmpty()) return null;
 
         TabClosureParams.CloseTabsBuilder builder =

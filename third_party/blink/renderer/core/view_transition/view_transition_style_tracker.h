@@ -86,6 +86,9 @@ class ViewTransitionStyleTracker
       Document& document,
       const blink::ViewTransitionToken& transition_token);
   ViewTransitionStyleTracker(Document& document, ViewTransitionState);
+  ViewTransitionStyleTracker(
+      Element& element,
+      const blink::ViewTransitionToken& transition_token);
   ~ViewTransitionStyleTracker();
 
   void AddTransitionElementsFromCSS();
@@ -332,7 +335,7 @@ class ViewTransitionStyleTracker
       PaintLayer*,
       const TreeScope*,
       Vector<AtomicString>& containing_group_stack,
-      const AtomicString& current_containing_group_name);
+      const AtomicString& nearest_group_with_contain);
 
   void InvalidateHitTestingCache();
 
@@ -362,6 +365,8 @@ class ViewTransitionStyleTracker
   AtomicString ComputeContainingGroupName(Element*) const;
 
   Member<Document> document_;
+
+  Member<Element> element_;
 
   // Indicates which step during the transition we're currently at.
   State state_ = State::kIdle;

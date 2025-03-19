@@ -24,6 +24,10 @@ IdentityRegistry::~IdentityRegistry() = default;
 void IdentityRegistry::NotifyClose(const url::Origin& notifier_origin) {
   url::Origin idp_origin(url::Origin::Create(idp_config_url_));
   if (!idp_origin.IsSameOriginWith(notifier_origin) || !delegate_) {
+    if (delegate_) {
+      delegate_->OnOriginMismatch(IdentityRegistryDelegate::Method::kClose,
+                                  idp_origin, notifier_origin);
+    }
     return;
   }
 
@@ -36,6 +40,10 @@ bool IdentityRegistry::NotifyResolve(
     const std::string& token) {
   url::Origin idp_origin(url::Origin::Create(idp_config_url_));
   if (!idp_origin.IsSameOriginWith(notifier_origin) || !delegate_) {
+    if (delegate_) {
+      delegate_->OnOriginMismatch(IdentityRegistryDelegate::Method::kClose,
+                                  idp_origin, notifier_origin);
+    }
     return false;
   }
 

@@ -5184,17 +5184,6 @@
             ],
             "experiments": [
                 {
-                    "name": "Launch",
-                    "enable_features": [
-                        "EnableLensOverlay",
-                        "LensClearcutLoggerFastQosEnabled"
-                    ],
-                    "disable_features": [
-                        "LensOverlayEnableLocationBarEntrypoint",
-                        "LensOverlayEnableLocationBarEntrypointOnSRP"
-                    ]
-                },
-                {
                     "name": "Enabled",
                     "enable_features": [
                         "EnableLensOverlay",
@@ -5205,6 +5194,17 @@
                         "LensOverlayEnableLocationBarEntrypoint"
                     ],
                     "disable_features": [
+                        "LensOverlayEnableLocationBarEntrypointOnSRP"
+                    ]
+                },
+                {
+                    "name": "LaunchM133",
+                    "enable_features": [
+                        "EnableLensOverlay",
+                        "LensClearcutLoggerFastQosEnabled"
+                    ],
+                    "disable_features": [
+                        "LensOverlayEnableLocationBarEntrypoint",
                         "LensOverlayEnableLocationBarEntrypointOnSRP"
                     ]
                 }
@@ -7361,24 +7361,6 @@
             ]
         }
     ],
-    "DataControlsScreenshotProtection": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableScreenshotProtection"
-                    ]
-                }
-            ]
-        }
-    ],
     "DataMaskingReportingAPI": [
         {
             "platforms": [
@@ -8170,12 +8152,13 @@
             ]
         }
     ],
-    "DirectCompositorThreadIpcMacLinuxChromeOS": [
+    "DirectCompositorThreadIpcDesktop": [
         {
             "platforms": [
                 "chromeos",
                 "linux",
-                "mac"
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
@@ -14486,11 +14469,27 @@
         {
             "platforms": [
                 "android",
-                "android_webview",
                 "chromeos",
                 "linux",
                 "mac",
                 "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "available_memory_threshold_mb": "740"
+                    },
+                    "enable_features": [
+                        "MemorySaverModeRenderTuning",
+                        "OomIntervention"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "android_webview"
             ],
             "experiments": [
                 {
@@ -17595,6 +17594,38 @@
             ]
         }
     ],
+    "PreconnectFromKeyedService": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithOTRtrue_20250319",
+                    "params": {
+                        "run_on_otr": "true"
+                    },
+                    "enable_features": [
+                        "PreconnectFromKeyedService"
+                    ]
+                },
+                {
+                    "name": "EnabledWithOTRfalse_20250319",
+                    "params": {
+                        "run_on_otr": "false"
+                    },
+                    "enable_features": [
+                        "PreconnectFromKeyedService"
+                    ]
+                }
+            ]
+        }
+    ],
     "PreconnectToSearchDesktop": [
         {
             "platforms": [
@@ -18272,6 +18303,26 @@
                     "name": "Enabled_Dogfood",
                     "enable_features": [
                         "PrivacySandboxInternalsDevUI"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PrivacySandboxMigratePrefsToSchemaV2": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PrivacySandboxMigratePrefsToSchemaV2"
                     ]
                 }
             ]
@@ -24465,6 +24516,21 @@
             ]
         }
     ],
+    "UseFirstCoalescedFrameAsFlingGenerationTimestamp": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseFirstCoalescedFrameAsFlingGenerationTimestamp"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseGMSCoreForBrandingInfo": [
         {
             "platforms": [
@@ -26282,6 +26348,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "WebViewRecordAppDataDirectorySize"
+                    ]
+                }
+            ]
+        }
+    ],
+    "WebViewSafeAreaIncludesSystemBars": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebViewSafeAreaIncludesSystemBars"
                     ]
                 }
             ]

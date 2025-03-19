@@ -405,6 +405,7 @@ public class AccessibilityNodeInfoBuilder {
             String display,
             String brailleLabel,
             String brailleRoleDescription) {
+        node.setUniqueId(String.valueOf(virtualViewId));
         node.setClassName(className);
 
         Bundle bundle = node.getExtras();

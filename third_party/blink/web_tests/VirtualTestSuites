@@ -94,9 +94,11 @@
     "owners": ["clamy@google.com"],
     "expires": "May 2, 2025"
   },
+
+  "This never expires because it tests a shipping configuration",
   {
     "prefix": "gpu",
-    "owners": ["fserb@chromium.org", "wangxianzhu@chromium.org"],
+    "owners": ["fserb@chromium.org", "jpgravel@chromium.org"],
     "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
     "bases": [ "fast/canvas",
                "wpt_internal/html/canvas/context-lost",

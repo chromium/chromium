@@ -65,6 +65,10 @@ bool IsFedCmAlternativeIdentifiersEnabled();
 
 // Whether cooldown on ignore is enabled.
 bool IsFedCmCooldownOnIgnoreEnabled();
+
+// Whether to support the newer syntax for the "Use Other Account"
+// and account labels features.
+bool IsFedCmUseOtherAccountAndLabelsNewSyntaxEnabled();
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_

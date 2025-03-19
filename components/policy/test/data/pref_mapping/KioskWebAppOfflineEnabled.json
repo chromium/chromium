@@ -1,7 +1,7 @@
 [
     {
         "os": [
-            "chromeos_ash"
+            "chromeos"
         ],
         "simple_policy_pref_mapping_test": {
             "pref_name": "policy.kiosk_web_app_offline_enabled",

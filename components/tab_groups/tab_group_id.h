@@ -8,54 +8,15 @@
 #include <ostream>
 
 #include "base/component_export.h"
-#include "base/token.h"
+#include "components/tab_groups/token_id.h"
 
 namespace tab_groups {
 
-class COMPONENT_EXPORT(TAB_GROUPS) TabGroupId {
- public:
-  static TabGroupId GenerateNew();
-
-  // This should only called with |token| returned from a previous |token()|
-  // call on a valid TabGroupId.
-  static TabGroupId FromRawToken(base::Token token);
-
-  // Should only be used if intending to populate the TabGroupId by reference,
-  // using a valid existing ID. Primarily needed for the Tab Groups extensions
-  // API.
-  static TabGroupId CreateEmpty();
-
-  TabGroupId(const TabGroupId& other);
-
-  TabGroupId& operator=(const TabGroupId& other);
-
-  bool operator==(const TabGroupId& other) const;
-  bool operator!=(const TabGroupId& other) const;
-  bool operator<(const TabGroupId& other) const;
-
-  const base::Token& token() const { return token_; }
-
-  bool is_empty() { return token_.is_zero(); }
-
-  std::string ToString() const;
-
- private:
-  explicit TabGroupId(base::Token token);
-
-  base::Token token_;
-};
+class COMPONENT_EXPORT(TAB_GROUPS) TabGroupId
+    : public tab_groups::TokenId<TabGroupId> {};
 
 // For use in std::unordered_map.
-struct TabGroupIdHash {
- public:
-  size_t operator()(const tab_groups::TabGroupId& group_id) const {
-    return base::TokenHash()(group_id.token());
-  }
-};
-
-// Stream operator so TabGroupId objects can be used in logging statements.
-COMPONENT_EXPORT(TAB_GROUPS)
-std::ostream& operator<<(std::ostream& out, const TabGroupId& tab_group_id);
+using TabGroupIdHash = tab_groups::TokenIdHash<TabGroupId>;
 
 }  // namespace tab_groups
 

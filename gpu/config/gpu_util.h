@@ -25,8 +25,8 @@ enum class IntelGpuGeneration;
 // Set GPU feature status if GPU is blocked.
 GPU_EXPORT GpuFeatureInfo ComputeGpuFeatureInfoWithNoGpu();
 
-// Set GPU feature status for SwiftShader.
-GPU_EXPORT GpuFeatureInfo ComputeGpuFeatureInfoForSwiftShader();
+// Set GPU feature status for software GL implementations.
+GPU_EXPORT GpuFeatureInfo ComputeGpuFeatureInfoForSoftwareGL();
 
 // This function should only be called from the GPU process, or the Browser
 // process while using in-process GPU. This function is safe to call at any

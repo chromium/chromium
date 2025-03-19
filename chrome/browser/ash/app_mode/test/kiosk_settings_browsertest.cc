@@ -12,9 +12,9 @@
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
+#include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
-#include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_settings_navigation_throttle.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -41,6 +41,7 @@ namespace {
 constexpr std::string_view kSettingsUrl = "https://settings.com";
 
 using kiosk::test::CurrentProfile;
+using kiosk::test::DidKioskCloseNewWindow;
 
 KioskSystemSession& GetKioskSystemSession() {
   return CHECK_DEREF(KioskController::Get().GetKioskSystemSession());
@@ -65,7 +66,7 @@ NavigateParams NavigateAndReturnParams(const GURL& url,
 // Opens a popup at `url` and returns true if the window wasn't force closed.
 bool OpenPopup(const GURL& url) {
   NavigateAndReturnParams(url, WindowOpenDisposition::NEW_POPUP);
-  return !DidSessionCloseNewWindow(&GetKioskSystemSession());
+  return !DidKioskCloseNewWindow();
 }
 
 // Navigates to `url` in the current tab, and returns the browser.
@@ -243,15 +244,13 @@ IN_PROC_BROWSER_TEST_P(KioskSettingsTest,
       {/*url=*/settings_url.spec().c_str(), /*allow_subpages=*/false},
   });
 
-  auto& session = GetKioskSystemSession();
-
   // Navigation in the current tab creates a new browser of app type, and closes
   // the non-app one.
   Browser& browser = NavigateInCurrentTab(settings_url);
-  EXPECT_FALSE(DidSessionCloseNewWindow(&session));
-  EXPECT_FALSE(DidSessionCloseNewWindow(&session));
+  EXPECT_FALSE(DidKioskCloseNewWindow());
+  EXPECT_FALSE(DidKioskCloseNewWindow());
 
-  Browser* settings = session.GetSettingsBrowserForTesting();
+  Browser* settings = GetKioskSystemSession().GetSettingsBrowserForTesting();
   ASSERT_NE(settings, nullptr);
   EXPECT_NE(&browser, settings);
 }

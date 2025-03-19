@@ -54,7 +54,6 @@
 <translation id="1090629319939036170">Menu de RV</translation>
 <translation id="1091463901118115503">Continuar lendo</translation>
 <translation id="1091779689406092804">capturas de tela</translation>
-<translation id="1094777233105318927">Informações sobre seu navegador, SO, dispositivo, softwares instalados e arquivos</translation>
 <translation id="1096545575934602868">Esse campo não pode ter mais que <ph name="MAX_ITEMS_LIMIT" /> entradas. Todas as outras entradas serão descartadas.</translation>
 <translation id="1097803577928227769">Parques e jardins regionais</translation>
 <translation id="1099928364755383720">picture-in-picture automático</translation>
@@ -4481,7 +4480,6 @@ Mais detalhes:
 <translation id="8919895429178014996">Ocultar todos os itens</translation>
 <translation id="8922013791253848639">Sempre permitir anúncios neste site</translation>
 <translation id="8922734931659847428">Uma lista limitada de URLs de páginas acessadas em que <ph name="BEGIN_LINK" />eventos de tecnologia legados<ph name="END_LINK" /> estão ocorrendo</translation>
-<translation id="8924109546403192898">Quando ocorrências de segurança são sinalizadas pelo Chrome, dados relevantes sobre elas são enviados ao administrador. Isso pode incluir URLs de páginas visitadas no Chrome, URLs de páginas de onde você copiou dados, nomes de arquivos ou metadados, falhas do navegador ou da guia e o nome de usuário usado para fazer login no dispositivo, no Chrome e em apps baseados na Web.</translation>
 <translation id="892588693504540538">Perfuração na parte superior direita</translation>
 <translation id="8926389886865778422">Não perguntar novamente</translation>
 <translation id="8932102934695377596">Seu relógio está atrasado</translation>

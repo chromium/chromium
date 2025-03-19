@@ -2405,7 +2405,9 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
   if (kIPHiOSSettingsInOverflowMenuBubbleFeature.name == feature->name) {
     // A config that allows the Settings-in-overflow-menu IPH to be shown to
-    // users. This will be triggered a maximum of 2 times (once per week).
+    // users. This will be triggered a maximum of 2 times (once per week), and
+    // it will stop triggering once the user opens Settings via the overflow
+    // menu.
     FeatureConfig config;
     config.valid = true;
     config.availability = Comparator(ANY, 0);
@@ -2422,6 +2424,11 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     // Show at most once per week.
     config.event_configs.emplace(kSettingsInOverflowTriggerEvent,
                                  Comparator(EQUAL, 0), 7, 7);
+    // Stop showing once the user opens settings via the overflow menu.
+    config.used =
+        EventConfig(events::kSettingsOnOverflowMenuUsed, Comparator(EQUAL, 0),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
 
     return config;
   }

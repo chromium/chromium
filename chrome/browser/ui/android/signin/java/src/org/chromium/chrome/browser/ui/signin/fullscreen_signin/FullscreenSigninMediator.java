@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -41,6 +42,7 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.ChromeClickableSpan;
@@ -216,29 +218,20 @@ public class FullscreenSigninMediator
     /**
      * Called when the initial load phase is completed.
      *
-     * After creation, {@link FullscreenSigninView} displays a loading spinner that is shown until
-     * policies and the child account status are being checked. If needed, that phase also waits for
-     * the native to be loaded (for example, if any app restrictions are detected). This method is
-     * invoked when this initial waiting phase is over and the "Continue" button can be displayed.
-     * It checks policies and child accounts to decide which version of the UI to display.
+     * <p>After creation, {@link FullscreenSigninView} displays a loading spinner that is shown
+     * until policies and the child account status are being checked. If needed, that phase also
+     * waits for the native to be loaded (for example, if any app restrictions are detected). This
+     * method is invoked when this initial waiting phase is over and the "Continue" button can be
+     * displayed. It checks policies and child accounts to decide which version of the UI to
+     * display.
      *
      * @param hasPolicies Whether any enterprise policies have been found on the device. 'true' here
-     *                    also means that native has been initialized.
+     *     also means that native has been initialized.
      */
     void onInitialLoadCompleted(boolean hasPolicies) {
-        boolean isSigninDisabledByPolicy = false;
         boolean isMetricsReportingDisabledByPolicy = false;
         Log.i(TAG, "#onInitialLoadCompleted() hasPolicies:" + hasPolicies);
-        Profile profile = mDelegate.getProfileSupplier().get().getOriginalProfile();
         if (hasPolicies) {
-            isSigninDisabledByPolicy =
-                    IdentityServicesProvider.get()
-                            .getSigninManager(profile)
-                            .isSigninDisabledByPolicy();
-            Log.i(
-                    TAG,
-                    "#onInitialLoadCompleted() isSigninDisabledByPolicy:"
-                            + isSigninDisabledByPolicy);
             isMetricsReportingDisabledByPolicy =
                     !mPrivacyPreferencesManager.isUsageAndCrashReportingPermittedByPolicy();
             mModel.set(
@@ -246,9 +239,10 @@ public class FullscreenSigninMediator
                     mDelegate.shouldDisplayManagementNoticeOnManagedDevices());
         }
 
+        Profile profile = mDelegate.getProfileSupplier().get().getOriginalProfile();
         boolean isSigninSupported =
                 ExternalAuthUtils.getInstance().canUseGooglePlayServices()
-                        && !isSigninDisabledByPolicy
+                        && UserPrefs.get(profile).getBoolean(Pref.SIGNIN_ALLOWED)
                         && !disableSignInForAutomotiveDevice();
         mModel.set(FullscreenSigninProperties.IS_SIGNIN_SUPPORTED, isSigninSupported);
         mModel.set(FullscreenSigninProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER, false);

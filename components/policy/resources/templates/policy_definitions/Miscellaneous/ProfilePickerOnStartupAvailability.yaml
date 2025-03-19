@@ -37,6 +37,6 @@ schema:
   type: integer
 supported_on:
 - chrome.*:89-
-- chrome_os:105-
+- chrome_os:105-135
 tags: []
 type: int-enum

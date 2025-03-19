@@ -15,8 +15,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
-#include "chrome/browser/glic/glic_test_util.h"
-#include "chrome/browser/glic/interactive_glic_test.h"
+#include "chrome/browser/glic/test_support/glic_test_util.h"
+#include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
@@ -48,8 +48,14 @@ class GlicApiTest : public test::InteractiveGlicTest {
         "test",
         ::testing::UnitTest::GetInstance()->current_test_info()->name());
 
-    features_.InitWithFeatures(
-        {features::kGlicScrollTo, features::kGlicUserResize}, {});
+    features_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{features::kGlic, {{"glic-default-hotkey", "Ctrl+G"}}},
+         {features::kGlicScrollTo, {}},
+         {features::kGlicUserResize, {}}},
+        /*disabled_features=*/
+        {});
+
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ::switches::kGlicHostLogging);
     SetGlicPagePath("/glic/test.html");
@@ -328,6 +334,13 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testSetSyntheticExperimentState) {
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
                        testNotifyPanelWillOpenIsCalledOnce) {
   ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetOsHotkeyState) {
+  ExecuteJsTest();
+  g_browser_process->local_state()->SetString(prefs::kGlicLauncherHotkey,
+                                              "Ctrl+Shift+1");
+  ContinueJsTest();
 }
 
 }  // namespace

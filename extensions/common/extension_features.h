@@ -247,6 +247,11 @@ BASE_DECLARE_FEATURE(kUserScriptUserExtensionToggle);
 // capability, even when no other API/feature might be restricted by it.
 BASE_DECLARE_FEATURE(kDebuggerAPIRestrictedToDevMode);
 
+// Creates a `browser` object that can be used in place of `chrome` where
+// extension APIs are available. It does not include non-extension APIs like
+// `loadTimes` , `csi`, etc. or deprecated APIs (e.g. `app`).
+BASE_DECLARE_FEATURE(kExtensionBrowserNamespaceAlternative);
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_

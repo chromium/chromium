@@ -54,7 +54,6 @@
 <translation id="1090629319939036170">VR izbornik</translation>
 <translation id="1091463901118115503">Nastavite čitati</translation>
 <translation id="1091779689406092804">snimki zaslona</translation>
-<translation id="1094777233105318927">Podaci o vašem pregledniku, OS-u, uređaju, instaliranom softveru i datotekama</translation>
 <translation id="1096545575934602868">Broj unosa u ovom polju ne smije biti veći od <ph name="MAX_ITEMS_LIMIT" />. Svi će se daljnji unosi odbaciti.</translation>
 <translation id="1097803577928227769">Regionalni parkovi i vrtovi</translation>
 <translation id="1099928364755383720">automatska slika u slici</translation>
@@ -4494,7 +4493,6 @@ Dodatne pojedinosti:
 <translation id="8919895429178014996">Sakrij sve stavke</translation>
 <translation id="8922013791253848639">Uvijek dopusti oglase na ovoj web-lokaciji</translation>
 <translation id="8922734931659847428">Ograničeni popis URL-ova stranica koje posjećujete na kojima se odvijaju <ph name="BEGIN_LINK" />događaji naslijeđene tehnologije<ph name="END_LINK" />.</translation>
-<translation id="8924109546403192898">Kad Chrome označi sigurnosne događaje, vašem administratoru šalju se relevantni podaci o tim događajima. To može uključivati URL-ove stranica koje posjetite u Chromeu, URL-ove stranica s kojih ste kopirali podatke, nazive ili metapodatke datoteka, rušenja preglednika ili kartica te korisničko ime koje upotrebljavate za prijavu u aplikacije temeljene na webu, uređaj i Chrome.</translation>
 <translation id="892588693504540538">Bušenje pri vrhu desno</translation>
 <translation id="8926389886865778422">Više me ne pitaj</translation>
 <translation id="8932102934695377596">Sat kasni</translation>

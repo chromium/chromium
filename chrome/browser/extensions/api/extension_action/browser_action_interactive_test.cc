@@ -227,7 +227,7 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
   bool HasPopupNativeView() {
     ToolbarActionViewController* popup_owner =
         extensions_container()->popup_owner_for_testing();
-    return popup_owner ? popup_owner->GetPopupNativeView() != nullptr : false;
+    return popup_owner ? !!popup_owner->GetPopupNativeView() : false;
   }
 
   // Trigger a focus loss to close the popup.

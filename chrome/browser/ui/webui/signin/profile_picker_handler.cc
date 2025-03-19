@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -349,21 +350,17 @@ void ProfilePickerHandler::HandleLaunchSelectedProfile(
     return;
   }
 
-  ProfileAttributesEntry* entry =
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(*profile_path);
-  if (!entry) {
-    NOTREACHED();
-  }
+  ProfileAttributesEntry& entry =
+      CHECK_DEREF(g_browser_process->profile_manager()
+                      ->GetProfileAttributesStorage()
+                      .GetProfileAttributesWithPath(*profile_path));
 
-  // If a browser window cannot be opened for profile, load the profile to
-  // display a dialog.
-  if (entry->IsSigninRequired()) {
-    g_browser_process->profile_manager()->LoadProfileByPath(
-        *profile_path, /*incognito=*/false,
-        base::BindOnce(&ProfilePickerHandler::OnProfileForDialogLoaded,
-                       weak_factory_.GetWeakPtr()));
+  // If a browser window cannot be opened for profile, show an error message or
+  // attempt to unlock the profile in the Profile Picker.
+  if (entry.IsSigninRequired()) {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    TryLaunchLockedProfile(entry);
+#endif
     return;
   }
 
@@ -375,42 +372,64 @@ void ProfilePickerHandler::HandleLaunchSelectedProfile(
           .should_record_startup_metrics = should_record_startup_metrics});
 }
 
-void ProfilePickerHandler::OnProfileForDialogLoaded(Profile* profile) {
+void ProfilePickerHandler::TryLaunchLockedProfile(
+    ProfileAttributesEntry& entry) {
+  CHECK(signin_util::IsForceSigninEnabled());
+  CHECK(entry.IsSigninRequired());
+
+  // Only pre-exisitng locked profiles can be reused by reauthing. We consider a
+  // profile as pre-existing if it has been active previously and signed into,
+  // and if there is a RestrictSigninToPattern policy, the account would also
+  // need to match the policy filter.
+
+  // Reauth attempt.
+  if (entry.CanBeManaged()) {
+    // Glic version cannot run the reauth steps, show a dialog instead that
+    // will redirect the user to the regular version of the picker.
+    if (is_glic_version_) {
+      DisplayForceSigninErrorDialog(
+          /*profile_path=*/base::FilePath(),
+          ForceSigninUIError::ReauthNotSupportedByGlicFlow());
+      return;
+    }
+
+    g_browser_process->profile_manager()->LoadProfileByPath(
+        entry.GetPath(), /*incognito=*/false,
+        base::BindOnce(&ProfilePickerHandler::OnProfileLoadedForSwitchToReauth,
+                       weak_factory_.GetWeakPtr()));
+    return;
+  }
+
+  // Default profile, not yet active, fresh sign in is allowed as the profile
+  // was not used yet. Default profile is the automatically created profile,
+  // initial profile or after deleting the last profile for example.
+  if (entry.GetActiveTime().is_null()) {
+    // Triggers a fresh sign in via profile picker without existing email
+    // address.
+    ProfilePicker::SwitchToDiceSignIn(
+        entry.GetPath(),
+        base::BindOnce(&ProfilePickerHandler::OnLoadSigninFinished,
+                       weak_factory_.GetWeakPtr()));
+    return;
+  }
+
+  // Remaining active profiles: those cannot be reauthed or signed in to.
+
+  // Do not allow users to sign in to a pre-existing locked profile, as this may
+  // force unexpected profile data merge.
+  DisplayForceSigninErrorDialog(
+      /*profile_path=*/base::FilePath(),
+      ForceSigninUIError::ReauthNotAllowed());
+}
+
+void ProfilePickerHandler::OnProfileLoadedForSwitchToReauth(Profile* profile) {
   if (!profile) {
     return;
   }
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  ProfileAttributesEntry* entry =
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile->GetPath());
-  DCHECK(entry);
-  if (entry->IsSigninRequired()) {
-    DCHECK(signin_util::IsForceSigninEnabled());
-    if (entry->CanBeManaged()) {
-      ProfilePicker::SwitchToReauth(
-          profile,
-          base::BindOnce(&ProfilePickerHandler::DisplayForceSigninErrorDialog,
-                         weak_factory_.GetWeakPtr(), profile->GetPath()));
-    } else if (entry->GetActiveTime() != base::Time()) {
-      // If force-sign-in is enabled, do not allow users to sign in to a
-      // pre-existing locked profile, as this may force unexpected profile data
-      // merge. We consider a profile as pre-existing if it has been active
-      // previously. A pre-existed profile can still be used if it has been
-      // signed in with an email address matched RestrictSigninToPattern policy
-      // already.
-      DisplayForceSigninErrorDialog(
-          /*profile_path=*/base::FilePath(),
-          ForceSigninUIError::ReauthNotAllowed());
-    } else {
-      // Fresh sign in via profile picker without existing email address.
-      ProfilePicker::SwitchToDiceSignIn(
-          profile->GetPath(),
-          base::BindOnce(&ProfilePickerHandler::OnLoadSigninFinished,
-                         weak_factory_.GetWeakPtr()));
-    }
-  }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+  ProfilePicker::SwitchToReauth(
+      profile,
+      base::BindOnce(&ProfilePickerHandler::DisplayForceSigninErrorDialog,
+                     weak_factory_.GetWeakPtr(), profile->GetPath()));
 }
 
 void ProfilePickerHandler::DisplayForceSigninErrorDialog(

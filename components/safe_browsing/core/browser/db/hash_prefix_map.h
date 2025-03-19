@@ -100,9 +100,6 @@ class HashPrefixMap {
   // Returns a read-only view of the data stored in this map.
   HashPrefixMapView view() const;
 
-  // Returns the prefix at `size`.
-  HashPrefixesView at(PrefixSize size) const;
-
   // Appends |prefix| to the prefix list of size |size|.
   void Append(PrefixSize size, HashPrefixesView prefix);
 

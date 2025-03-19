@@ -4,6 +4,7 @@
 
 package org.chromium.components.visited_url_ranking.url_grouping;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 
 /**
@@ -17,7 +18,8 @@ public interface GroupSuggestionsService {
     interface Delegate {
         /** Gets called when backend has a suggestion ready to show. */
         // TODO(yuezhanggg): Add response callback in Java.
-        default void showSuggestion(GroupSuggestions groupSuggestions) {}
+        default void showSuggestion(
+                GroupSuggestions groupSuggestions, Callback<UserResponseMetadata> callback) {}
 
         /** Gets called when backend has a dump state ready for feedback. */
         default void onDumpStateForFeedback(String dumpState) {}

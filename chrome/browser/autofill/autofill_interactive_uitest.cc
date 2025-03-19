@@ -1090,15 +1090,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ModifySelectFieldAndFill) {
   DoModifySelectFieldAndFill(this);
 }
 
-// TODO(crbug.com/404272946): Flaky in Linux build.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_PrefillFormAndFill DISABLED_PrefillFormAndFill
-#else
-#define MAYBE_PrefillFormAndFill PrefillFormAndFill
-#endif  // BUILDFLAG(IS_LINUX)
 // Test that autofill works when the website prefills the form.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest_PrefillFormAndFill,
-                       MAYBE_PrefillFormAndFill) {
+                       PrefillFormAndFill) {
   const char kPrefillScript[] =
       R"( <script>
             document.getElementById('firstname').value = 'Seb';

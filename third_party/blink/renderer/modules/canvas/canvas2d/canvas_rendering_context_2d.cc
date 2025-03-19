@@ -1174,4 +1174,13 @@ int CanvasRenderingContext2D::LayerCount() const {
   return BaseRenderingContext2D::LayerCount();
 }
 
+CanvasResourceProvider*
+CanvasRenderingContext2D::GetOrCreateCanvas2DResourceProvider() {
+  HTMLCanvasElement* const element = canvas();
+  if (!element) [[unlikely]] {
+    return nullptr;
+  }
+  return element->GetOrCreateResourceProviderWithCurrentRasterModeHint();
+}
+
 }  // namespace blink

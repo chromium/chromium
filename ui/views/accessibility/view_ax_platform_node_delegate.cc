@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
@@ -670,7 +671,9 @@ gfx::Rect ViewAXPlatformNodeDelegate::GetInnerTextRangeBoundsRect(
 gfx::RectF ViewAXPlatformNodeDelegate::GetInlineTextRect(
     const int start_offset,
     const int end_offset) const {
-  DCHECK(start_offset >= 0 && end_offset >= 0 && start_offset <= end_offset);
+  DCHECK_GE(start_offset, 0);
+  DCHECK_GE(end_offset, 0);
+  DCHECK_LE(start_offset, end_offset);
   const std::vector<int32_t>& character_offsets =
       data_.GetIntListAttribute(ax::mojom::IntListAttribute::kCharacterOffsets);
   if (character_offsets.empty()) {

@@ -5,6 +5,7 @@
 #include "base/json/json_reader.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
+#include "chrome/browser/ui/views/autofill/payments/bnpl_tos_dialog.h"
 #include "chrome/browser/ui/views/autofill/payments/bnpl_tos_view_desktop.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -96,7 +97,17 @@ IN_PROC_BROWSER_TEST_F(BnplTosViewDesktopInteractiveUiTest, DialogAccepted) {
   RunTestSequence(
       InvokeUiAndWaitForShow(),
       InAnyContext(PressButton(views::DialogClientView::kOkButtonElementId),
-                   WaitForHide(views::DialogClientView::kTopViewId)));
+                   WaitForShow(BnplTosDialog::kThrobberId)));
+}
+
+IN_PROC_BROWSER_TEST_F(BnplTosViewDesktopInteractiveUiTest,
+                       DialogAcceptedTwice) {
+  EXPECT_CALL(accept_callback_, Run);
+  RunTestSequence(
+      InvokeUiAndWaitForShow(),
+      InAnyContext(PressButton(views::DialogClientView::kOkButtonElementId),
+                   WaitForShow(BnplTosDialog::kThrobberId),
+                   PressButton(views::DialogClientView::kOkButtonElementId)));
 }
 
 IN_PROC_BROWSER_TEST_F(BnplTosViewDesktopInteractiveUiTest, DialogDeclined) {
@@ -105,6 +116,18 @@ IN_PROC_BROWSER_TEST_F(BnplTosViewDesktopInteractiveUiTest, DialogDeclined) {
       InvokeUiAndWaitForShow(),
       InAnyContext(PressButton(views::DialogClientView::kCancelButtonElementId),
                    WaitForHide(views::DialogClientView::kTopViewId)));
+}
+
+IN_PROC_BROWSER_TEST_F(BnplTosViewDesktopInteractiveUiTest,
+                       DialogAcceptedThenDeclined) {
+  EXPECT_CALL(accept_callback_, Run);
+  EXPECT_CALL(cancel_callback_, Run);
+  RunTestSequence(
+      InvokeUiAndWaitForShow(),
+      InAnyContext(PressButton(views::DialogClientView::kOkButtonElementId),
+                   WaitForShow(BnplTosDialog::kThrobberId)),
+      PressButton(views::DialogClientView::kCancelButtonElementId),
+      WaitForHide(views::DialogClientView::kTopViewId));
 }
 
 IN_PROC_BROWSER_TEST_F(BnplTosViewDesktopInteractiveUiTest, EscKeyPress) {

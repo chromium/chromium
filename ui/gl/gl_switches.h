@@ -26,6 +26,8 @@ GL_EXPORT extern const char kANGLEImplementationDefaultName[];
 GL_EXPORT extern const char kANGLEImplementationD3D9Name[];
 GL_EXPORT extern const char kANGLEImplementationD3D11Name[];
 GL_EXPORT extern const char kANGLEImplementationD3D11on12Name[];
+GL_EXPORT extern const char kANGLEImplementationD3D11WarpName[];
+GL_EXPORT extern const char kANGLEImplementationD3D11WarpForWebGLName[];
 GL_EXPORT extern const char kANGLEImplementationOpenGLName[];
 GL_EXPORT extern const char kANGLEImplementationOpenGLEGLName[];
 GL_EXPORT extern const char kANGLEImplementationOpenGLESName[];

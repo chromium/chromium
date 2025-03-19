@@ -23,7 +23,6 @@
 #include "base/strings/string_util.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
 #include "components/os_crypt/async/common/algorithm.mojom.h"
-#include "crypto/encryptor.h"
 #include "crypto/kdf.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"

@@ -87,6 +87,7 @@
 <translation id="2215727959747642672">Modifikimi i skedarëve</translation>
 <translation id="2218389616572918761">Sajtet mund të kërkojnë që të përdorin mikrofonin</translation>
 <translation id="2228071138934252756">Për të lejuar që <ph name="APP_NAME" /> të ketë qasje te kamera jote, aktivizo gjithashtu kamerën në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
+<translation id="2231160360698766265">Sajtet mund të luajnë përmbajtje të mbrojtura</translation>
 <translation id="2235344399760031203">Kukit e palëve të treta janë bllokuar</translation>
 <translation id="2238944249568001759">Kërkimet e sugjeruara bazuar në skedën tënde të fundit</translation>
 <translation id="2241587408274973373">Kartat në faqen e skedës së re</translation>
@@ -630,6 +631,7 @@
 <translation id="9138217887606523162">Zmadhimi aktual është në <ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="9156722768168878035">Lejo që Chrome të shfaqë skedat e tua të fundit në listën e aplikacioneve dhe rezultatet e kërkimit të pajisjes sate. Mund ta çaktivizosh këtë në çdo kohë te cilësimet e Chrome.</translation>
 <translation id="9162462602695099906">Kjo faqe është e rrezikshme</translation>
+<translation id="9182556968660520230">Mos lejo që sajtet të luajnë përmbajtje të mbrojtura</translation>
 <translation id="947156494302904893">Sajtet që ti viziton mund të verifikojnë që je një person real dhe jo një robot</translation>
 <translation id="959682366969460160">Organizohu</translation>
 <translation id="967624055006145463">Të dhënat e ruajtura</translation>

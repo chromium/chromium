@@ -8,8 +8,8 @@ desc: |-
 
   Setting this policy to <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_BROWSER_DISABLED">Disabled</ph> (value 0), or leaving unset will prevent <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> from requesting the client certificate. If a browser's managed client certificate had already been provisioned, due to this policy being enabled before, it will not be deleted, but it won't be available for mTLS connections and won't be renewed when it expires.
 
-future_on:
-- chrome.*
+supported_on:
+- chrome.*:136-
 features:
   dynamic_refresh: true
   per_profile: false

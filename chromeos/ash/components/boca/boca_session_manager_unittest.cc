@@ -1490,7 +1490,8 @@ class BocaSessionManagerManagedNetworkTest : public BocaSessionManagerTestBase {
   void SetUp() override {
     BocaSessionManagerTestBase::SetUp();
     scoped_feature_list().InitWithFeatures(
-        {ash::features::kBocaNetworkRestriction}, /*disabled_features=*/{});
+        {ash::features::kBocaNetworkRestriction},
+        /*disabled_features=*/{ash::features::kBocaCustomPolling});
     auto account_id =
         AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestGaiaId);
     EXPECT_CALL(*session_client_impl(), GetSession(_))

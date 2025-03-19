@@ -5,8 +5,8 @@
 #include "chrome/browser/extensions/corrupted_extension_reinstaller_factory.h"
 
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
+#include "chrome/browser/extensions/external_provider_manager_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 using content::BrowserContext;
@@ -40,9 +40,7 @@ CorruptedExtensionReinstallerFactory::CorruptedExtensionReinstallerFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
-  // TODO(crbug.com/403352172): Remove this dependency when the ExtensionService
-  // dependency is removed from CorruptedExtensionReinstaller.
-  DependsOn(ChromeExtensionSystemFactory::GetInstance());
+  DependsOn(ExternalProviderManagerFactory::GetInstance());
 }
 
 CorruptedExtensionReinstallerFactory::~CorruptedExtensionReinstallerFactory() =

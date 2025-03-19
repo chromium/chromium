@@ -4756,6 +4756,7 @@ enum WebFeature {
   kV8AIWriter_MeasureInputUsage_Method = 5370,
   kV8AIWriter_InputQuota_AttributeGetter = 5371,
   kSpeculationRulesTargetHintBlank = 5372,
+  kInterestTarget = 5373,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

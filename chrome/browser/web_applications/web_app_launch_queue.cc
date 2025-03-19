@@ -11,16 +11,13 @@
 #include "base/check_is_test.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
-#include "build/build_config.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_launch_queue_delegate.h"
 #include "content/public/browser/file_system_access_entry_factory.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/common/constants.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
-#include "storage/browser/file_system/external_mount_points.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom.h"
@@ -30,24 +27,6 @@
 namespace web_app {
 
 namespace {
-
-// On Chrome OS paths that exist on an external mount point need to be treated
-// differently to make sure the File System Access code accesses these paths via
-// the correct file system backend. This method checks if this is the case, and
-// updates `entry_path` to the path that should be used by the File System
-// Access implementation.
-content::PathInfo GetPathInfo(const base::FilePath& entry_path) {
-#if BUILDFLAG(IS_CHROMEOS)
-  base::FilePath virtual_path;
-  auto* external_mount_points =
-      storage::ExternalMountPoints::GetSystemInstance();
-  if (external_mount_points->GetVirtualPath(entry_path, &virtual_path)) {
-    return content::PathInfo(content::PathType::kExternal,
-                             std::move(virtual_path));
-  }
-#endif
-  return content::PathInfo(entry_path);
-}
 
 class EntriesBuilder {
  public:
@@ -69,15 +48,15 @@ class EntriesBuilder {
     entries_.reserve(expected_number_of_entries);
   }
 
-  void AddFileEntry(const base::FilePath& path) {
+  void AddFileEntry(const content::PathInfo& path_info) {
     entries_.push_back(entry_factory_->CreateFileEntryFromPath(
-        context_, GetPathInfo(path),
+        context_, path_info,
         content::FileSystemAccessEntryFactory::UserAction::kSave));
   }
 
-  void AddDirectoryEntry(const base::FilePath& path) {
+  void AddDirectoryEntry(const content::PathInfo& path_info) {
     entries_.push_back(entry_factory_->CreateDirectoryEntryFromPath(
-        context_, GetPathInfo(path),
+        context_, path_info,
         content::FileSystemAccessEntryFactory::UserAction::kOpen));
   }
 
@@ -91,33 +70,21 @@ class EntriesBuilder {
   content::FileSystemAccessEntryFactory::BindingContext context_;
 };
 
-// TODO(crbug.com/40169582): Consider adding an {extension, pwa} enum to
-// `launch_params` instead of checking the scheme specifically for extensions?
-bool IsExtensionURL(const GURL& gurl) {
-  return gurl.SchemeIs(extensions::kExtensionScheme);
-}
-
 }  // namespace
 
-WebAppLaunchQueue::WebAppLaunchQueue(content::WebContents* web_contents,
-                                     const WebAppRegistrar& registrar)
-    : content::WebContentsObserver(web_contents), registrar_(registrar) {}
+WebAppLaunchQueue::WebAppLaunchQueue(
+    content::WebContents* web_contents,
+    std::unique_ptr<LaunchQueueDelegate> delegate)
+    : content::WebContentsObserver(web_contents),
+      delegate_(std::move(delegate)) {}
 
 WebAppLaunchQueue::~WebAppLaunchQueue() = default;
 
 void WebAppLaunchQueue::Enqueue(WebAppLaunchParams launch_params) {
-  // App scope is a web app concept that is not applicable for extensions.
-  // Therefore this check will be skipped when launching an extension URL.
-  if (!IsExtensionURL(launch_params.target_url)) {
-    // TODO(dmurph): Figure out why this is failing.
-    // https://crbug.com/2546057
-    DCHECK(registrar_->IsUrlInAppExtendedScope(launch_params.target_url,
-                                               launch_params.app_id))
-        << launch_params.target_url.spec();
-  }
+  DCHECK(delegate_->IsInScope(launch_params, launch_params.target_url))
+      << launch_params.target_url.spec();
 
-  DCHECK(launch_params.dir.empty() ||
-         registrar_->IsSystemApp(launch_params.app_id));
+  DCHECK(delegate_->IsValidLaunchParams(launch_params));
 
   // Drop the existing queue state if a new launch navigation was started.
   if (launch_params.started_new_navigation) {
@@ -134,14 +101,6 @@ void WebAppLaunchQueue::Enqueue(WebAppLaunchParams launch_params) {
   if (!pending_navigation_) {
     SendQueuedLaunchParams(web_contents()->GetLastCommittedURL());
   }
-}
-
-bool WebAppLaunchQueue::IsInScope(const WebAppLaunchParams& launch_params,
-                                  const GURL& current_url) {
-  // WebAppLaunchQueue is used by extensions with file handlers, extensions
-  // don't have a concept of scope.
-  return IsExtensionURL(current_url) ||
-         registrar_->IsUrlInAppExtendedScope(current_url, launch_params.app_id);
 }
 
 void WebAppLaunchQueue::FlushForTesting() const {
@@ -173,7 +132,7 @@ void WebAppLaunchQueue::DidFinishNavigation(content::NavigationHandle* handle) {
   }
 
   if (pending_navigation_) {
-    if (!IsInScope(queue_.front(), handle->GetURL())) {
+    if (!delegate_->IsInScope(queue_.front(), handle->GetURL())) {
       Reset();
       return;
     }
@@ -186,7 +145,8 @@ void WebAppLaunchQueue::DidFinishNavigation(content::NavigationHandle* handle) {
   // file handles that should persist across reloads.
   if (last_sent_queued_launch_params_ &&
       handle->GetReloadType() != content::ReloadType::NONE) {
-    if (!IsInScope(*last_sent_queued_launch_params_, handle->GetURL())) {
+    if (!delegate_->IsInScope(*last_sent_queued_launch_params_,
+                              handle->GetURL())) {
       Reset();
       return;
     }
@@ -214,7 +174,8 @@ void WebAppLaunchQueue::SendLaunchParams(WebAppLaunchParams launch_params,
                                          const GURL& current_url) {
   // TODO(dmurph): Figure out why this is failing.
   // https://crbug.com/2546057
-  DCHECK(IsInScope(launch_params, current_url)) << current_url.spec();
+  DCHECK(delegate_->IsInScope(launch_params, current_url))
+      << current_url.spec();
   mojo::AssociatedRemote<blink::mojom::WebLaunchService> launch_service;
   web_contents()
       ->GetPrimaryMainFrame()
@@ -226,11 +187,12 @@ void WebAppLaunchQueue::SendLaunchParams(WebAppLaunchParams launch_params,
     EntriesBuilder entries_builder(web_contents(), launch_params.target_url,
                                    launch_params.paths.size() + 1);
     if (!launch_params.dir.empty()) {
-      entries_builder.AddDirectoryEntry(launch_params.dir);
+      entries_builder.AddDirectoryEntry(
+          delegate_->GetPathInfo(launch_params.dir));
     }
 
     for (const auto& path : launch_params.paths) {
-      entries_builder.AddFileEntry(path);
+      entries_builder.AddFileEntry(delegate_->GetPathInfo(path));
     }
 
     launch_service->SetLaunchFiles(entries_builder.Build());

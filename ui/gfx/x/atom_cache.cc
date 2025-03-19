@@ -78,6 +78,7 @@ constexpr auto kAtomsToCache = std::to_array<const char* const>({
     "Touch Timestamp",
     "UTF8_STRING",
     "Undesired",
+    "WM_CHANGE_STATE",
     "WM_DELETE_WINDOW",
     "WM_PROTOCOLS",
     "WM_WINDOW_ROLE",

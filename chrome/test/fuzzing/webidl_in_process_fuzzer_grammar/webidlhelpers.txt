@@ -24,7 +24,7 @@
 <Uint8ClampedArray> = new Uint8ClampedArray()
 <BigInt64Array> = new BigInt64Array()
 <BigUint64Array> = new BigUint64Array()
-#<Float16Array> =
+<Float16Array> = new Float16Array()
 <Float32Array> = new Float32Array()
 <Float64Array> = new Float64Array()
 <DataView> = new DataView(<ArrayBuffer>)

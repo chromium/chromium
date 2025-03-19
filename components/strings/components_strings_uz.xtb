@@ -54,7 +54,6 @@
 <translation id="1090629319939036170">VR menyu</translation>
 <translation id="1091463901118115503">Oʻqishda davom etish</translation>
 <translation id="1091779689406092804">skrinshotlar</translation>
-<translation id="1094777233105318927">Brauzer, OT, qurilma, oʻrnatilgan dasturlar va fayllar haqidagi axborot</translation>
 <translation id="1096545575934602868">Bu maydonchadagi elementlar soni <ph name="MAX_ITEMS_LIMIT" /> yozuvdan oshmasligi kerak. Barcha ortiqchasi rad etiladi.</translation>
 <translation id="1097803577928227769">Hududiy parklar va bogʻlar</translation>
 <translation id="1099928364755383720">avtomatik tasvir ustida tasvir</translation>
@@ -1691,6 +1690,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3964661563329879394">{COUNT,plural, =0{Yo‘q}=1{1 ta saytdan }other{# ta saytdan }}</translation>
 <translation id="3965672182149944205">Manzil saqlansinmi?</translation>
 <translation id="3966044442021752214">Mahsulot xavfsizligi</translation>
+<translation id="3969869202926863008">Mahalliy tarmoqqa ruxsat</translation>
 <translation id="397105322502079400">Hisoblanmoqda...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> saytiga kirish taqiqlangan</translation>
 <translation id="3975852104434126461">Avtomobil sanoati</translation>
@@ -2047,6 +2047,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="460848736049414407">Administrator bloklagan</translation>
 <translation id="4610279718074907952">Bu sayt <ph name="SET_OWNER" />ning guruhiga kiradi va u guruhdagi faoliyatni koʻra oladi</translation>
 <translation id="46128681529823442">Sokker jihozlari</translation>
+<translation id="4612904677925722054">Bu saytda kattalar uchun kontent boʻlishi mumkin. Bu saytga kirishingiz uchun ota-onangiz yoki vasiyingiz ruxsat berishi kerak.</translation>
 <translation id="4619564267100705184">Bu siz ekaningizni isbotlang</translation>
 <translation id="4622292761762557753">Uzatilsin</translation>
 <translation id="4622647778991854660">Bildirishnomalarni Bildirishnomalar markazi orqali yoqing. <ph name="LINK" /> ilovasini oching.</translation>
@@ -2644,6 +2645,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5660122698869360728">Barcha xarid sahifalaringizni bir joyda saqlashga va narxlarni avtomatik kuzatishga, narxlar haqidagi maʼlumotga ega boʻlishga yordam beruvchi yangi smart jild.</translation>
 <translation id="5663955426505430495">Bu qurilma administratori qoʻshimcha funksiyali kengaytmalar oʻrnatdi. Kengaytmalarda ayrim maʼlumotlaringizga ruxsat bor.</translation>
 <translation id="5667827081946850877">Audiokitoblar</translation>
+<translation id="5674082555327905359">Mahalliy tarmoqdagi istalgan qurilmaga ulanish uchun ruxsat soʻrashi mumkin</translation>
 <translation id="5675650730144413517">Bu sahifa ishlamayapti</translation>
 <translation id="5675809467256309336">Raqs va elektron musiqa</translation>
 <translation id="5675959228867414813">Sana asosida saralash</translation>
@@ -2916,6 +2918,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6159908896951210943">Rasmiy</translation>
 <translation id="6160391204859821737">Reklamalarda maxfiylik funksiyasini yoqing</translation>
 <translation id="6162403104168428984">Manzil yangilansinmi?</translation>
+<translation id="6164605812717770913">Ota-ona yoki vasiy bu saytga kirishingiz mumkin EMAS deb belgilagan. Ulardan saytni blokdan chiqarishni soʻrashingiz mumkin.</translation>
 <translation id="6165508094623778733">Batafsil</translation>
 <translation id="6167577165590485365">Oxirgi olishga urinish:</translation>
 <translation id="617256461084925519">Tolov maʼlumotlarini avtomatik toʻldirish uchun Google Chrome shaxsingizni tasdiqlamoqchi.</translation>
@@ -3007,6 +3010,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6321917430147971392">DNS sozlamalarini tekshiring</translation>
 <translation id="6322182122604171028">Windows Hello ishlatib boʻlmadi</translation>
 <translation id="6326947323444967009">iOS sozlamalari orqali Chrome brauzerini tizimning asosiy qilib sozlang</translation>
+<translation id="6327065120806001832">mahalliy tarmoqqa ruxsat</translation>
 <translation id="6328639280570009161">Tarmoqni oldindan aniqlash funksiyasidan foydalanib ko‘ring</translation>
 <translation id="6335029926534404762">Sport poyabzali</translation>
 <translation id="6337133576188860026">Xotirada <ph name="SIZE" /> tozalandi. Bundan keyin ba’zi veb-saytlar sekinroq yuklanishi mumkin.</translation>
@@ -4473,7 +4477,6 @@ Batafsil axborot:
 <translation id="8919895429178014996">Barchasini berkitish</translation>
 <translation id="8922013791253848639">Bu saytda har doim reklama ko‘rsatilsin</translation>
 <translation id="8922734931659847428"><ph name="BEGIN_LINK" />Eski texnologiya voqealari<ph name="END_LINK" /> yuz berayotgan sahifalar URL manzillarining cheklangan roʻyxati</translation>
-<translation id="8924109546403192898">Xavfsizlikka oid hodisalarni Chrome aniqlasa, bunga aloqador hodisalar haqidagi maʼlumotlar administratorga yuboriladi. Bu ochilgan sahifalar hamda axborot nusxalangan sahifalarning URL manzillari, fayl nomlari yoki meta-axborotlar, brauzer yoki varaqlarning ishdan chiqishi hamda qurilma va Chrome foydalanuvchilari nomlaridan iborat boʻlishi mumkin.</translation>
 <translation id="892588693504540538">Yuqori oʻngdan teshik ochish</translation>
 <translation id="8926389886865778422">Qayta so‘ralmasin</translation>
 <translation id="8932102934695377596">Soatingiz orqada</translation>

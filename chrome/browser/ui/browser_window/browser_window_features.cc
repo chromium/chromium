@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
+#include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "components/collaboration/public/collaboration_service.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -159,6 +160,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
   memory_saver_bubble_controller_ =
       std::make_unique<memory_saver::MemorySaverBubbleController>(browser);
+
+  translate_bubble_controller_ = std::make_unique<TranslateBubbleController>();
 }
 
 void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {

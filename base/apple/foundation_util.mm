@@ -18,6 +18,7 @@
 #include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -310,7 +311,8 @@ const char* BaseBundleID() {
 void SetBaseBundleID(const char* new_base_bundle_id) {
   if (new_base_bundle_id != base_bundle_id) {
     free((void*)base_bundle_id);
-    base_bundle_id = new_base_bundle_id ? strdup(new_base_bundle_id) : nullptr;
+    base_bundle_id =
+        new_base_bundle_id ? UNSAFE_TODO(strdup(new_base_bundle_id)) : nullptr;
   }
 }
 

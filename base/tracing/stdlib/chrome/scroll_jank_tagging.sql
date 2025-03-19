@@ -248,7 +248,14 @@ SELECT
   'generation_to_browser_main_spike' AS tag
 FROM _chrome_janky_scroll_frames
 WHERE
-  first_input_generation_to_browser_main_delta_dur > time_from_ms(3);
+  first_input_generation_to_browser_main_delta_dur > time_from_ms(3)
+UNION ALL
+-- Tag janks with slow input (|input_delta| <= 2.001 px).
+SELECT
+  id AS frame_id,
+  'slow_input' AS tag
+FROM _chrome_janky_scroll_frames
+WHERE ABS(total_input_delta_y) <= 2.001;
 
 -- Consolidated list of tags for each janky scroll frame.
 CREATE PERFETTO TABLE chrome_tagged_janky_scroll_frames (

@@ -884,6 +884,10 @@ public final class ProductionSupportedFlagList {
                 "Makes writes to leveldb_proto databases asynchronous. This should reduce disk"
                     + " contention at the cost of potential lost writes on OS or power failure."),
         Flag.baseFeature(
+                AwFeatures.WEBVIEW_SAFE_AREA_INCLUDES_SYSTEM_BARS,
+                "Include system bars in safe-area-inset CSS environment values for WebViews"
+                        + " that take up the entire screen."),
+        Flag.baseFeature(
                 AwFeatures.WEBVIEW_SEPARATE_RESOURCE_CONTEXT,
                 "Use WebView's own Context for Resources rather than the embedding app's"),
         Flag.baseFeature(
@@ -1058,7 +1062,10 @@ public final class ProductionSupportedFlagList {
                 "Enable Fenced Frames HTML Element extra APIs."),
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_SHORT_CIRCUIT_SHOULD_INTERCEPT_REQUEST,
-                "Short circuit shouldInterceptRequest calls when they're not overridden.")
+                "Short circuit shouldInterceptRequest calls when they're not overridden."),
+        Flag.baseFeature(
+                BlinkFeatures.MEMORY_SAVER_MODE_RENDER_TUNING,
+                "Enables v8 memory saver mode on low memory thresholds."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

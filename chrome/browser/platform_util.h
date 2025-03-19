@@ -112,7 +112,7 @@ bool IsVisible(gfx::NativeView view);
 bool IsSwipeTrackingFromScrollEventsEnabled();
 
 // Returns the active window which accepts keyboard inputs.
-NSWindow* GetActiveWindow();
+gfx::NativeWindow GetActiveWindow();
 
 // Returns the screen bounds of a window. Top left screen corner is (0, 0).
 // TODO(crbug.com/365733574): used for debugging the misplaced bubble issue on

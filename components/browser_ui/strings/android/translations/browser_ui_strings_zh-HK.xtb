@@ -87,6 +87,7 @@
 <translation id="2215727959747642672">檔案編輯</translation>
 <translation id="2218389616572918761">網站可以要求使用麥克風</translation>
 <translation id="2228071138934252756">如要讓 <ph name="APP_NAME" /> 存取您的相機，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟相機。</translation>
+<translation id="2231160360698766265">網站可播放受保護的內容</translation>
 <translation id="2235344399760031203">已封鎖第三方 Cookie</translation>
 <translation id="2238944249568001759">根據最近開啟的分頁提供搜尋建議</translation>
 <translation id="2241587408274973373">新分頁資訊卡</translation>
@@ -630,6 +631,7 @@
 <translation id="9138217887606523162">宜家嘅縮放率係 <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9156722768168878035">讓 Chrome 在裝置應用程式清單和搜尋結果中顯示你最近使用的分頁。你可隨時在 Chrome 設定中關閉此功能。</translation>
 <translation id="9162462602695099906">此頁面不安全</translation>
+<translation id="9182556968660520230">不允許網站播放受保護的內容</translation>
 <translation id="947156494302904893">您瀏覽的網站可驗證您是真人，而不是機器人</translation>
 <translation id="959682366969460160">讓所有內容變得井井有條</translation>
 <translation id="967624055006145463">已儲存的資料</translation>

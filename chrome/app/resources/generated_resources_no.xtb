@@ -1340,6 +1340,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1918127774159128277">Oppdater Wifi Direct-egenskaper</translation>
 <translation id="1918141783557917887">&amp;Mindre</translation>
 <translation id="1918281588461452432">Når du besøker nettsteder, krypteres sideinnholdet og lagres på enheten din</translation>
+<translation id="1919096511823372013">Sett inn linker, emojier med mer. Du kan også få hjelp til å skrive og lage bilder med AI-løsninger fra Google.</translation>
 <translation id="1919872106782726755">For å konfigurere fingeravtrykk, få barnet ditt til å berøre fingeravtrykkssensoren øverst til høyre på tastaturet, ved siden av av/på-knappen. Barnets fingeravtrykksdata lagres sikkert og sendes aldri fra <ph name="DEVICE_TYPE" />.</translation>
 <translation id="192015196730532810">Du kan opprette din egen fanegruppe.</translation>
 <translation id="1920314570001095522">Det finnes ingen lignende faner som kan organiseres, men du liker kanskje disse gruppene</translation>
@@ -1886,6 +1887,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300332192655962933">Filen var ikke tilgjengelig på nettstedet</translation>
 <translation id="2300383962156589922">Tilpass og kontroller <ph name="APP_NAME" /></translation>
+<translation id="2301064673700597535">Kvalifiserte sertifikaterklæringer</translation>
 <translation id="2301382460326681002">Utvidelsens rotkatalog er ugyldig.</translation>
 <translation id="2301402091755573488">Delt fane</translation>
 <translation id="2302342861452486996"><ph name="BEGIN_H3" />Feilsøkingsfunksjoner<ph name="END_H3" />
@@ -4067,9 +4069,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
     <ph name="BEGIN_PARAGRAPH2" />Du kan når som helst velge om du vil tillate slike rapporter eller ikke, i innstillingene for Chrome-enheten. Hvis du er en domeneadministrator, kan du endre denne innstillingen i administrasjonskonsollen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">Nordlys om natten over en liten hytte.</translation>
 <translation id="3818102823568165369">Lokale sertifikater som er lagt til av operativsystemet eller administratoren.</translation>
-<translation id="3818662907126913619">Før du kan bruke enheten med profilen din for <ph name="DOMAIN" />, må organisasjonen ha informasjon om enheten.
-
-Dette kan omfatte informasjon om installert programvare, filer, nettleseren og enhetens operativsystem.</translation>
 <translation id="3819164369574292143">Zoom inn for å gjøre elementer på skjermen større. Bruk søketasten + Ctrl + M for å slå på og av lupen. Bruk Ctrl + Alt + piltastene for å bevege deg rundt når du er zoomet inn.</translation>
 <translation id="3819257035322786455">Sikkerhetskopi</translation>
 <translation id="3819261658055281761">Systemet kunne ikke lagre noe langvarig API-tilgangstoken for denne enheten.</translation>
@@ -4385,9 +4384,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4031527940632463547">Sensorene er blokkerte</translation>
 <translation id="4033471457476425443">Legg til ny mappe</translation>
 <translation id="4033963223187371752">Sikre nettsteder kan bygge inn innhold som bilder eller nettrammer som ikke er sikre</translation>
-<translation id="4034706080855851454">Før du kan bruke enheten med organisasjonsprofilen din, må organisasjonen ha informasjon om enheten.
-
-Dette kan omfatte informasjon om installert programvare, filer, nettleseren og enhetens operativsystem.</translation>
 <translation id="4034824040120875894">Skriver</translation>
 <translation id="4035758313003622889">&amp;Oppgavebehandling</translation>
 <translation id="4035877632587724847">Ikke tillat</translation>
@@ -8981,6 +8977,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7377451353532943397">Fortsett blokkering av sensortilgang</translation>
 <translation id="7377481913241237033">Tilknytt med en kode</translation>
 <translation id="73786666777299047">Åpne Chrome Nettmarked</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Et annet gjøremål i den samme gjøremålsgruppen: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. # andre gjøremål i den samme gjøremålsgruppen: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380272457268061606">Vil du slå av gjenoppretting av lokale data?</translation>
 <translation id="7380459290951585794">Sørg for at telefonen er i nærheten, at den er opplåst, og at Bluetooth og wifi er slått på</translation>
 <translation id="7380622428988553498">Enhetsnavnet inneholder ugyldige tegn</translation>

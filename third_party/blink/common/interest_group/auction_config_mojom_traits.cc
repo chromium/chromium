@@ -215,6 +215,7 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
       !data.ReadSellerSignals(&out->seller_signals) ||
       !data.ReadSellerTimeout(&out->seller_timeout) ||
       !data.ReadPerBuyerSignals(&out->per_buyer_signals) ||
+      !data.ReadPerBuyerTkvSignals(&out->per_buyer_tkv_signals) ||
       !data.ReadBuyerTimeouts(&out->buyer_timeouts) ||
       !data.ReadReportingTimeout(&out->reporting_timeout) ||
       !data.ReadSellerCurrency(&out->seller_currency) ||
@@ -326,6 +327,13 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
     // If `all_slots_requested_sizes` is set, `requested_size` must be in it.
     if (out->requested_size &&
         !base::Contains(ad_sizes, *out->requested_size)) {
+      return false;
+    }
+  }
+
+  for (const auto& signal : out->per_buyer_tkv_signals) {
+    // Buyer must be HTTPS.
+    if (signal.first.scheme() != url::kHttpsScheme) {
       return false;
     }
   }

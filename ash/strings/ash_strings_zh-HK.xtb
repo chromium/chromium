@@ -241,6 +241,8 @@
 <translation id="1755556344721611131">診斷應用程式</translation>
 <translation id="1756833229520115364">無法儲存範本，可能是視窗或分頁過多。</translation>
 <translation id="1757857692711134412">關閉，直到日落</translation>
+<translation id="1763084151787818322">其他操作</translation>
+<translation id="1768138163688567246">閂「搜尋我的畫面」</translation>
 <translation id="1768366657309696705">「<ph name="LAUNCHER_KEY_NAME" />鍵 + 句號鍵」的鍵盤快速鍵已變更。如要使用 Insert 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + Shift + Backspace 鍵。</translation>
 <translation id="1770726142253415363">移咗去第 <ph name="ROW_NUMBER" /> 列，第 <ph name="COLUMN_NUMBER" /> 欄。</translation>
 <translation id="1771761307086386028">向右捲動</translation>
@@ -1940,6 +1942,7 @@
 <translation id="742594950370306541">相機正在使用中。</translation>
 <translation id="742608627846767349">早晨，</translation>
 <translation id="743058460480092004">相機和麥克風正在使用中。</translation>
+<translation id="7440404390546433462">Google 搜尋</translation>
 <translation id="7441711280402516925">播放中 · 切換至分頁</translation>
 <translation id="7453330308669753048">移除咗搜尋記錄結果</translation>
 <translation id="7459485586006128091">由於發生內部問題，因此熱點已關閉。請過幾分鐘再重試連線。</translation>

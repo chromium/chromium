@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -752,7 +753,8 @@ DesktopWindowTreeHostWin::GetBoundsInAcceleratedWidgetPixelCoordinates() {
     return gfx::Rect(window_bounds.size());
   }
   const gfx::Vector2d offset = client_bounds.origin() - window_bounds.origin();
-  DCHECK(offset.x() >= 0 && offset.y() >= 0);
+  DCHECK_GE(offset.x(), 0);
+  DCHECK_GE(offset.y(), 0);
   return gfx::Rect(gfx::Point() + offset, client_bounds.size());
 }
 
@@ -1114,6 +1116,18 @@ void DesktopWindowTreeHostWin::HandleBeginWMSizeMove() {
 void DesktopWindowTreeHostWin::HandleEndWMSizeMove() {
   if (native_widget_delegate_) {
     native_widget_delegate_->OnNativeWidgetEndUserBoundsChange();
+  }
+}
+
+void DesktopWindowTreeHostWin::HandleBeginUserResize() {
+  if (native_widget_delegate_) {
+    native_widget_delegate_->OnNativeWidgetUserResizeStarted();
+  }
+}
+
+void DesktopWindowTreeHostWin::HandleEndUserResize() {
+  if (native_widget_delegate_) {
+    native_widget_delegate_->OnNativeWidgetUserResizeEnded();
   }
 }
 

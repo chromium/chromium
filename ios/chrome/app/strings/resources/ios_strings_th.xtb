@@ -176,7 +176,7 @@
 <translation id="1709916727352927457">ลบพาสคีย์</translation>
 <translation id="1712341189152602203">ระบบจะลิงก์ข้อมูลการท่องเว็บที่มีอยู่กับ <ph name="USER_EMAIL" /> องค์กรของคุณอาจดูข้อมูลนี้ได้</translation>
 <translation id="1715515772563243997">หากคุณเชื่อถือ <ph name="SITE" /> ก็ใช้รหัสผ่านที่บันทึกไว้ในการลงชื่อเข้าใช้ได้</translation>
-<translation id="1718835860248848330">ชั่วโมงที่แล้ว</translation>
+<translation id="1718835860248848330">ชั่วโมงที่ผ่านมา</translation>
 <translation id="1728549374069268714">วางแล้วไป</translation>
 <translation id="1732468323901456775">เปิดการแจ้งเตือนสำหรับ<ph name="MODULE_NAME" /></translation>
 <translation id="1740468249224277719">แตะ 2 ครั้งเพื่อติดตั้ง</translation>
@@ -926,7 +926,7 @@
 <translation id="5005498671520578047">คัดลอกรหัสผ่าน</translation>
 <translation id="5012914568031465281">ติดตามราคาไม่ได้</translation>
 <translation id="5016420433031926653">ส่งไปยัง <ph name="USER_EMAIL" /></translation>
-<translation id="5017529052065664584">15 นาทีที่แล้ว</translation>
+<translation id="5017529052065664584">15 นาทีที่ผ่านมา</translation>
 <translation id="5020732097997376541">แตะ "ไอคอน Lens"</translation>
 <translation id="5021500396464456616">ติดต่อผู้ที่ส่งลิงก์นี้</translation>
 <translation id="5024511550058813796">อุปกรณ์ทั้งหมดที่ซิงค์ไว้จะมีประวัติการเข้าชมของคุณอยู่ ดังนั้นคุณสามารถทำสิ่งที่ดำเนินการอยู่ต่อได้</translation>

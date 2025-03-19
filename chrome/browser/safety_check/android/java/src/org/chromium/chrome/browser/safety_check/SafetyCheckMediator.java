@@ -28,7 +28,6 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
-import org.chromium.chrome.browser.password_manager.CustomTabIntentHelper;
 import org.chromium.chrome.browser.password_manager.GmsUpdateLauncher;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
@@ -116,11 +115,9 @@ class SafetyCheckMediator {
     private PasswordManagerHelper mPasswordManagerHelper;
 
     /**
-     * Provides an intent used to open a p-link help center article in a custom tab. Needed by the
-     * password manager settings.
+     * Used to open a p-link help center article in a custom tab. Needed by the password manager
+     * settings.
      */
-    private CustomTabIntentHelper mCustomTabIntentHelper;
-
     private SettingsCustomTabLauncher mSettingsCustomTabLauncher;
 
     private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
@@ -217,7 +214,6 @@ class SafetyCheckMediator {
             PasswordStoreBridge passwordStoreBridge,
             PasswordManagerHelper passwordManagerHelper,
             ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
-            CustomTabIntentHelper customTabIntentHelper,
             SettingsCustomTabLauncher settingsCustomTabLauncher) {
         this(
                 profile,
@@ -234,7 +230,6 @@ class SafetyCheckMediator {
                 new PasswordCheckControllerFactory(),
                 passwordManagerHelper,
                 modalDialogManagerSupplier);
-        mCustomTabIntentHelper = customTabIntentHelper;
         mSettingsCustomTabLauncher = settingsCustomTabLauncher;
     }
 
@@ -591,7 +586,6 @@ class SafetyCheckMediator {
                                 mModalDialogManagerSupplier,
                                 /* managePasskeys= */ false,
                                 account,
-                                mCustomTabIntentHelper,
                                 mSettingsCustomTabLauncher);
                         return true;
                     };

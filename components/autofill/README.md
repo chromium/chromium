@@ -43,10 +43,10 @@ with `AutofillAgent` extracting a form from the DOM.
 │   │ │1 per WebContents│    │            │                  │
 │   │ └─┬───────────────┘    └────────┐   │                  │
 │   │   │posts                        │   │                  │
-│   │ ┌─▼─────────────────────────┐   │   │                  │
-│   ├─►AutofillCrowsourcingManager│   │   │                  │    ┌──────────────┐
-│   │ │1 per WebContents          │   │   │                  │    │FormStructure │
-│   │ └─────────────────────▲─────┘   │   │                  │    │1 per FormData│
+│   │ ┌─▼──────────────────────────┐  │   │                  │
+│   ├─►AutofillCrowdsourcingManager│  │   │                  │    ┌──────────────┐
+│   │ │1 per WebContents           │  │   │                  │    │FormStructure │
+│   │ └─────────────────────▲──────┘  │   │                  │    │1 per FormData│
 │   │                       │         │   │                  └──┐ └─▲────────────┘
 │   │owns 1                 │         │   │events               │   │sets types
 │ ┌─┴──────────────────┐    │queries  │ ┌─┴───────────────────┐ │   │owns N

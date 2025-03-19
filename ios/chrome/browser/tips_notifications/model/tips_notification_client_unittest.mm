@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -116,16 +117,18 @@ class TipsNotificationClientTest : public PlatformTest {
   }
 
   // Returns a mock UNNotificationResponse for the given notification `type`.
-  id MockRequestResponse(TipsNotificationType type) {
+  id MockRequestResponse(TipsNotificationType type,
+                         bool for_reactivation = false) {
     id mock_response = OCMClassMock([UNNotificationResponse class]);
-    OCMStub([mock_response notification]).andReturn(MockNotification(type));
+    OCMStub([mock_response notification])
+        .andReturn(MockNotification(type, for_reactivation));
     return mock_response;
   }
 
   // Returns a mock UNNotification for the given notification `type`.
-  id MockNotification(TipsNotificationType type) {
+  id MockNotification(TipsNotificationType type, bool for_reactivation) {
     UNNotificationRequest* request = TipsNotificationRequest(
-        type, false, TipsNotificationUserType::kUnknown);
+        type, for_reactivation, TipsNotificationUserType::kUnknown);
     id mock_notification = OCMClassMock([UNNotification class]);
     OCMStub([mock_notification request]).andReturn(request);
     return mock_notification;
@@ -252,7 +255,7 @@ class TipsNotificationClientTest : public PlatformTest {
 TEST_F(TipsNotificationClientTest, HandleNotificationReception) {
   EXPECT_EQ(client_->HandleNotificationReception(nil), std::nullopt);
   NSDictionary* user_info =
-      UserInfoForTipsNotificationType(TipsNotificationType::kWhatsNew);
+      UserInfoForTipsNotificationType(TipsNotificationType::kWhatsNew, false);
   EXPECT_EQ(client_->HandleNotificationReception(user_info),
             UIBackgroundFetchResultNoData);
 }
@@ -262,7 +265,7 @@ TEST_F(TipsNotificationClientTest, RegisterActionableNotifications) {
   EXPECT_EQ(client_->RegisterActionableNotifications().count, 0u);
 }
 
-// Tests that the client can register a Default Browser notification.
+// Tests that the client can request a Default Browser notification.
 TEST_F(TipsNotificationClientTest, DefaultBrowserRequest) {
   WriteFirstRunSentinel();
   SetFalseChromeLikelyDefaultBrowser();
@@ -285,7 +288,8 @@ TEST_F(TipsNotificationClientTest, DefaultBrowserRequest) {
 
   // Run again, but this time simulating a delivered notification.
   NSMutableArray<UNNotification*>* delivered_notifications = [NSMutableArray
-      arrayWithObject:MockNotification(TipsNotificationType::kDefaultBrowser)];
+      arrayWithObject:MockNotification(TipsNotificationType::kDefaultBrowser,
+                                       false)];
   StubGetDeliveredNotifications(delivered_notifications);
   base::RunLoop run_loop_2;
   client_->OnSceneActiveForegroundBrowserReady(run_loop_2.QuitClosure());
@@ -341,6 +345,59 @@ TEST_F(TipsNotificationClientTest, WhatsNewRequest) {
   EXPECT_OCMOCK_VERIFY(mock_notification_center_);
   histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Sent",
                                        TipsNotificationType::kWhatsNew, 1);
+}
+
+// Tests that the client can request a Proactive Whats New notification.
+TEST_F(TipsNotificationClientTest, WhatsNewProactiveRequest) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kIOSReactivationNotifications);
+  SetSentNotifications({TipsNotificationType::kLens,
+                        TipsNotificationType::kEnhancedSafeBrowsing});
+
+  [PushNotificationUtil
+      updateAuthorizationStatusPref:UNAuthorizationStatusProvisional];
+  // Simulate that the user has not opted-in.
+  {
+    ScopedDictPrefUpdate update(GetApplicationContext()->GetLocalState(),
+                                prefs::kAppLevelPushNotificationPermissions);
+    update->Remove(kTipsNotificationKey);
+  }
+
+  WriteFirstRunSentinel();
+  SetTrueChromeLikelyDefaultBrowser();
+
+  StubGetPendingRequests(nil);
+  ExpectNotificationRequest(TipsNotificationType::kWhatsNew);
+
+  base::RunLoop run_loop;
+  client_->OnSceneActiveForegroundBrowserReady(run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+  histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Proactive.Sent",
+                                       TipsNotificationType::kWhatsNew, 1);
+
+  // Run again, but this time simulating a delivered notification.
+  NSMutableArray<UNNotification*>* delivered_notifications = [NSMutableArray
+      arrayWithObject:MockNotification(TipsNotificationType::kWhatsNew, true)];
+  StubGetDeliveredNotifications(delivered_notifications);
+  base::RunLoop run_loop_2;
+  client_->OnSceneActiveForegroundBrowserReady(run_loop_2.QuitClosure());
+  run_loop_2.Run();
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+  histogram_tester_.ExpectUniqueSample(
+      "IOS.Notifications.Tips.Proactive.Triggered",
+      TipsNotificationType::kWhatsNew, 1);
+
+  // Run again, but this time the delivered notification is gone.
+  [delivered_notifications removeAllObjects];
+  base::RunLoop run_loop_3;
+  client_->OnSceneActiveForegroundBrowserReady(run_loop_3.QuitClosure());
+  run_loop_3.Run();
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+  histogram_tester_.ExpectUniqueSample(
+      "IOS.Notifications.Tips.Proactive.Dismissed",
+      TipsNotificationType::kWhatsNew, 1);
 }
 
 // Tests that the client handles a Whats New notification response.
@@ -541,6 +598,21 @@ TEST_F(TipsNotificationClientTest, LensHandle) {
   EXPECT_OCMOCK_VERIFY(mock_handler);
   histogram_tester_.ExpectUniqueSample("IOS.Notifications.Tips.Interaction",
                                        TipsNotificationType::kLens, 1);
+}
+
+// Tests that the client handles a Lens promo proactive notification response.
+TEST_F(TipsNotificationClientTest, LensProactiveHandle) {
+  StubPrepareToPresentModal();
+  id mock_handler = MockHandler(@protocol(BrowserCoordinatorCommands));
+  OCMExpect([mock_handler showLensPromo]);
+
+  id mock_response = MockRequestResponse(TipsNotificationType::kLens, true);
+  client_->HandleNotificationInteraction(mock_response);
+
+  EXPECT_OCMOCK_VERIFY(mock_handler);
+  histogram_tester_.ExpectUniqueSample(
+      "IOS.Notifications.Tips.Proactive.Interaction",
+      TipsNotificationType::kLens, 1);
 }
 
 // Tests the the user can be classified as an "Active Seeker" of Tips.

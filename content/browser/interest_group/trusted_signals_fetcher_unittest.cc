@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
@@ -276,9 +277,9 @@ class TrustedSignalsFetcherTest : public testing::Test {
     TrustedSignalsFetcher::SignalsFetchResult out;
     TrustedSignalsFetcher trusted_signals_fetcher;
     trusted_signals_fetcher.FetchBiddingSignals(
-        url_loader_factory_.get(), FrameTreeNodeId(), kDefaultMainFrameOrigin,
-        network::mojom::IPAddressSpace::kPublic, network_partition_nonce_,
-        GetScriptOrigin(), url,
+        url_loader_factory_.get(), FrameTreeNodeId(), kAuctionDevtoolsIds,
+        kDefaultMainFrameOrigin, network::mojom::IPAddressSpace::kPublic,
+        network_partition_nonce_, GetScriptOrigin(), url,
         BiddingAndAuctionServerKey{
             std::string(reinterpret_cast<const char*>(kTestPublicKey),
                         sizeof(kTestPublicKey)),
@@ -307,9 +308,9 @@ class TrustedSignalsFetcherTest : public testing::Test {
     TrustedSignalsFetcher::SignalsFetchResult out;
     TrustedSignalsFetcher trusted_signals_fetcher;
     trusted_signals_fetcher.FetchScoringSignals(
-        url_loader_factory_.get(), FrameTreeNodeId(), kDefaultMainFrameOrigin,
-        network::mojom::IPAddressSpace::kPublic, network_partition_nonce_,
-        GetScriptOrigin(), url,
+        url_loader_factory_.get(), FrameTreeNodeId(), kAuctionDevtoolsIds,
+        kDefaultMainFrameOrigin, network::mojom::IPAddressSpace::kPublic,
+        network_partition_nonce_, GetScriptOrigin(), url,
         BiddingAndAuctionServerKey{
             std::string(reinterpret_cast<const char*>(kTestPublicKey),
                         sizeof(kTestPublicKey)),
@@ -555,6 +556,9 @@ class TrustedSignalsFetcherTest : public testing::Test {
   const std::string kTrustedBiddingSignalsPath = "/bidder-signals";
   const std::string kTrustedScoringSignalsPath = "/scoring-signals";
   const std::string kTrustedSignalsHost = "a.test";
+
+  // This value doesn't actually matter, as it's not tested by this file.
+  const base::flat_set<std::string> kAuctionDevtoolsIds{"auction_devtools_id"};
 
   // Default values used by both both CreateBasicBiddingSignalsRequest() and
   // CreateBasicScoringSignalsRequest(). They need to be fields of the test
@@ -2370,9 +2374,9 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsIsolationInfo) {
   network::TestURLLoaderFactory url_loader_factory;
   TrustedSignalsFetcher trusted_signals_fetcher;
   trusted_signals_fetcher.FetchBiddingSignals(
-      &url_loader_factory, FrameTreeNodeId(), kDefaultMainFrameOrigin,
-      network::mojom::IPAddressSpace::kPublic, network_partition_nonce_,
-      GetScriptOrigin(), TrustedBiddingSignalsUrl(),
+      &url_loader_factory, FrameTreeNodeId(), kAuctionDevtoolsIds,
+      kDefaultMainFrameOrigin, network::mojom::IPAddressSpace::kPublic,
+      network_partition_nonce_, GetScriptOrigin(), TrustedBiddingSignalsUrl(),
       BiddingAndAuctionServerKey{
           std::string(reinterpret_cast<const char*>(kTestPublicKey),
                       sizeof(kTestPublicKey)),
@@ -2407,9 +2411,9 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsIsolationInfo) {
   network::TestURLLoaderFactory url_loader_factory;
   TrustedSignalsFetcher trusted_signals_fetcher;
   trusted_signals_fetcher.FetchScoringSignals(
-      &url_loader_factory, FrameTreeNodeId(), kDefaultMainFrameOrigin,
-      network::mojom::IPAddressSpace::kPublic, network_partition_nonce_,
-      GetScriptOrigin(), TrustedScoringSignalsUrl(),
+      &url_loader_factory, FrameTreeNodeId(), kAuctionDevtoolsIds,
+      kDefaultMainFrameOrigin, network::mojom::IPAddressSpace::kPublic,
+      network_partition_nonce_, GetScriptOrigin(), TrustedScoringSignalsUrl(),
       BiddingAndAuctionServerKey{
           std::string(reinterpret_cast<const char*>(kTestPublicKey),
                       sizeof(kTestPublicKey)),
@@ -2465,9 +2469,9 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsClientSecurityState) {
       network::TestURLLoaderFactory url_loader_factory;
       TrustedSignalsFetcher trusted_signals_fetcher;
       trusted_signals_fetcher.FetchScoringSignals(
-          &url_loader_factory, FrameTreeNodeId(), kDefaultMainFrameOrigin,
-          ip_address_space, network_partition_nonce_, GetScriptOrigin(),
-          TrustedScoringSignalsUrl(),
+          &url_loader_factory, FrameTreeNodeId(), kAuctionDevtoolsIds,
+          kDefaultMainFrameOrigin, ip_address_space, network_partition_nonce_,
+          GetScriptOrigin(), TrustedScoringSignalsUrl(),
           BiddingAndAuctionServerKey{
               std::string(reinterpret_cast<const char*>(kTestPublicKey),
                           sizeof(kTestPublicKey)),
@@ -2555,7 +2559,7 @@ TEST(TrustedSignalsFetcherTimeoutTest, BiddingSignalsTimeout) {
   TrustedSignalsFetcher::SignalsFetchResult out;
   TrustedSignalsFetcher trusted_signals_fetcher;
   trusted_signals_fetcher.FetchBiddingSignals(
-      &url_loader_factory, FrameTreeNodeId(),
+      &url_loader_factory, FrameTreeNodeId(), {"auction_devtools_id"},
       /*main_frame_origin=*/kSignalsOrigin,
       network::mojom::IPAddressSpace::kPublic,
       /*network_partition_nonce=*/base::UnguessableToken::Create(),

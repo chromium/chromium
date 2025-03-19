@@ -54,7 +54,6 @@
 <translation id="1090629319939036170">Menu ng VR</translation>
 <translation id="1091463901118115503">Magpatuloy sa pagbabasa</translation>
 <translation id="1091779689406092804">mga screenshot</translation>
-<translation id="1094777233105318927">Impormasyon tungkol sa iyong browser, OS, device, naka-install na software, at mga file</translation>
 <translation id="1096545575934602868">Ang field na ito ay hindi dapat magkaroon ng higit sa <ph name="MAX_ITEMS_LIMIT" /> (na) entry. Madi-discard ang lahat ng karagdagang entry.</translation>
 <translation id="1097803577928227769">Mga Panrehiyong Parke at Hardin</translation>
 <translation id="1099928364755383720">awtomatikong picture-in-picture</translation>
@@ -159,6 +158,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1264309058268477500">Alternatibo</translation>
 <translation id="1264974993859112054">Pampalakasan</translation>
 <translation id="1268480293435976622">Envelope Chinese #7</translation>
+<translation id="1269045546668906972">I-on ang autofill gamit ang AI para awtomatikong mapunan ang mas maraming field</translation>
 <translation id="1269516672602708785">Gumawa ng bagong site sa Google Sites nang mabilis</translation>
 <translation id="1270328905573953738">Paglipat at Relokasyon</translation>
 <translation id="1270502636509132238">Paraan sa Pag-pick up</translation>
@@ -1139,6 +1139,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3005723025932146533">Ipakita ang naka-save na kopya</translation>
 <translation id="300580149047131921">Ginamit kamakailan</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab para i-browse ang mga available na pagkilos, pagkatapos ay ang Enter para i-execute ang napiling pagkilos.</translation>
+<translation id="3010991137650052245">Para magamit ang iyong <ph name="PERMISSION" /> sa site na ito, bigyan ng access ang <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3013711734159931232">Mga Supply ng Sambahayan</translation>
 <translation id="3014553260345122294">Balita sa Negosyo</translation>
 <translation id="3014726756341138577">Mga advanced na feature ng printer</translation>
@@ -1789,6 +1790,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">Hindi sinusuportahan ang saklaw ng patakaran.</translation>
+<translation id="411918202192379658">Mas pinahusay pa ang autofill</translation>
 <translation id="4121428309786185360">Mag-e-expire Sa</translation>
 <translation id="4123572138124678573">Triple punch bottom</translation>
 <translation id="412601465078863288">Nag-time out ang pag-upload</translation>
@@ -2177,6 +2179,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4819347708020428563">I-edit ang mga anotasyon sa default na view?</translation>
 <translation id="4822493756793346865">Nakabatay ang mga karaniwang presyo sa mga store sa buong web sa nakalipas na 90 araw.</translation>
 <translation id="4822922322149719535">Suriin ang log ng error</translation>
+<translation id="4823699521959851389">Kailangan ng <ph name="SHORT_PRODUCT_NAME" /> ng access sa <ph name="PERMISSION" /> ng iyong device</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para gumawa ng bagong Google Sheet nang mabilis</translation>
 <translation id="4826588772550366629">camera at mikropono</translation>
 <translation id="4827283332383516812">I-delete ang card</translation>
@@ -4494,7 +4497,6 @@ Mga karagdagang detalye:
 <translation id="8919895429178014996">I-hide ang lahat ng item</translation>
 <translation id="8922013791253848639">Palaging payagan ang mga ad sa site na ito</translation>
 <translation id="8922734931659847428">Limitadong listahan ng mga URL ng mga page na binisita mo kung saan may <ph name="BEGIN_LINK" />mga event ng legacy na teknolohiya<ph name="END_LINK" /></translation>
-<translation id="8924109546403192898">Kapag na-flag ng Chrome ang mga event tungkol sa seguridad, ipapadala sa iyong administrator ang nauugnay na data tungkol sa mga event. Puwedeng kabilang dito ang mga URL ng mga page na binibisita mo sa Chrome, URL ng mga page kung saan ka kumopya ng data, pangalan ng file o metadata, pag-crash ng browser o tab, at ang username na ginagamit mo para mag-sign in sa mga web-based na application, iyong device, at Chrome.</translation>
 <translation id="892588693504540538">Punch top right</translation>
 <translation id="8926389886865778422">Huwag nang itanong ulit</translation>
 <translation id="8932102934695377596">Nahuhuli ang iyong orasan</translation>

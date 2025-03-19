@@ -54,7 +54,6 @@
 <translation id="1090629319939036170">VR 菜单</translation>
 <translation id="1091463901118115503">继续阅读</translation>
 <translation id="1091779689406092804">屏幕截图</translation>
-<translation id="1094777233105318927">您的浏览器、操作系统、设备、已安装的软件以及文件的相关信息</translation>
 <translation id="1096545575934602868">此字段最多仅能包含 <ph name="MAX_ITEMS_LIMIT" /> 个条目，超出的条目会被舍弃。</translation>
 <translation id="1097803577928227769">地区公园与园林</translation>
 <translation id="1099928364755383720">自动进入画中画模式</translation>
@@ -4481,7 +4480,6 @@
 <translation id="8919895429178014996">隐藏所有项</translation>
 <translation id="8922013791253848639">在此网站上始终允许显示广告</translation>
 <translation id="8922734931659847428">被您访问过且发生了<ph name="BEGIN_LINK" />旧版技术事件<ph name="END_LINK" />的部分网页网址的列表</translation>
-<translation id="8924109546403192898">当 Chrome 标记了安全性事件时，系统会向您的管理员发送与该事件有关的数据。这些数据可能包括您在 Chrome 中访问的网页的网址、您从中复制数据的网页的网址、文件名或元数据、浏览器或标签页崩溃信息，以及您在登录基于网络的应用、您的设备和 Chrome 时使用的用户名。</translation>
 <translation id="892588693504540538">打孔（右上角）</translation>
 <translation id="8926389886865778422">不再询问</translation>
 <translation id="8932102934695377596">您的时钟慢了</translation>

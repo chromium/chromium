@@ -54,7 +54,6 @@
 <translation id="1090629319939036170">Menu VR</translation>
 <translation id="1091463901118115503">Continua a leggere</translation>
 <translation id="1091779689406092804">screenshot</translation>
-<translation id="1094777233105318927">Informazioni su browser, sistema operativo, dispositivo, software installato e file</translation>
 <translation id="1096545575934602868">Questo campo non deve avere più di <ph name="MAX_ITEMS_LIMIT" /> voci. Tutte le voci in esubero verranno eliminate.</translation>
 <translation id="1097803577928227769">Parchi e giardini regionali</translation>
 <translation id="1099928364755383720">modalità Picture in picture automatica</translation>
@@ -4485,7 +4484,6 @@ Ulteriori dettagli:
 <translation id="8919895429178014996">Nascondi tutti gli elementi</translation>
 <translation id="8922013791253848639">Consenti sempre gli annunci su questo sito</translation>
 <translation id="8922734931659847428">Un elenco limitato di URL di pagine visitate in cui si verificano <ph name="BEGIN_LINK" />eventi tecnologici legacy<ph name="END_LINK" /></translation>
-<translation id="8924109546403192898">Quando Chrome segnala eventi di sicurezza, i relativi dati pertinenti vengono inviati al tuo amministratore. Questi dati possono includere URL delle pagine visitate in Chrome o da cui hai copiato dei dati, metadati o nomi dei file, arresti anomali del browser o delle schede e il nome utente che usi per accedere alle applicazioni basate sul web, al tuo dispositivo e a Chrome.</translation>
 <translation id="892588693504540538">Perforatura in alto a destra</translation>
 <translation id="8926389886865778422">Non visualizzare più questo avviso</translation>
 <translation id="8932102934695377596">L'orologio è indietro</translation>

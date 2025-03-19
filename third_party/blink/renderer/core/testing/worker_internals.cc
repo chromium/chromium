@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "ui/gfx/image/canvas_image_source.h"
 
 namespace blink {
 
@@ -53,6 +54,11 @@ void WorkerInternals::collectGarbage(ScriptState* script_state) {
 
 void WorkerInternals::forceLoseCanvasContext(CanvasRenderingContext* ctx) {
   ctx->LoseContext(CanvasRenderingContext::kSyntheticLostContext);
+}
+
+bool WorkerInternals::isCanvasImageSourceAccelerated(
+    const CanvasImageSource* image_source) const {
+  return image_source->IsAccelerated();
 }
 
 }  // namespace blink

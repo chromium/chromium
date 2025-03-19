@@ -440,6 +440,7 @@ Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus 
 <translation id="2789552044937754463">{COUNT,plural, =1{Parole ir saglabāta jūsu Google kontā ({EMAIL})}zero{Paroles ir saglabātas jūsu Google kontā ({EMAIL})}one{Paroles ir saglabātas jūsu Google kontā ({EMAIL})}other{Paroles ir saglabātas jūsu Google kontā ({EMAIL})}}</translation>
 <translation id="2791174088547598693">Pievienot paroli…</translation>
 <translation id="2797302972324086597">Valsts kods</translation>
+<translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} fails}zero{{COUNT} failu}one{{COUNT} fails}other{{COUNT} faili}}</translation>
 <translation id="2816489851009559785">Izvēlne → Iestatījumi → Noklusējuma pārlūks</translation>
 <translation id="2818821771744632548">Jūs tikāt izrakstīts no konta <ph name="USER_NAME" />, veicot iPhone tālruņa atiestatīšanu. Lai atkal pierakstītos, pieskarieties pie Turpināt.</translation>
 <translation id="2819667972867209401">Ja šis iestatījums ir ieslēgts, dati tiek saglabāti jūsu Google kontā. Ja tas ir izslēgts, dati tiek saglabāti tikai šajā ierīcē un tiek dzēsti, kad izrakstāties.</translation>

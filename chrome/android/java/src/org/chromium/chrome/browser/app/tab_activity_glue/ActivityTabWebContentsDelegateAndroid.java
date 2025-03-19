@@ -247,10 +247,10 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                     assert newTab.getRootId() == sourceTab.getRootId();
                     assert Objects.equals(newTab.getTabGroupId(), sourceTab.getTabGroupId());
                     assert tabGroupModelFilter
-                            .getRelatedTabListForRootId(newTab.getRootId())
+                            .getTabsInGroup(newTab.getTabGroupId())
                             .contains(sourceTab);
                     assert tabGroupModelFilter
-                            .getRelatedTabListForRootId(sourceTab.getRootId())
+                            .getTabsInGroup(sourceTab.getTabGroupId())
                             .contains(newTab);
                 }
             }

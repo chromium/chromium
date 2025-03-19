@@ -6,6 +6,7 @@
 
 #include <cassert>
 
+#include "Config.h"
 #include "RecordInfo.h"
 #include "llvm/Support/ErrorHandling.h"
 
@@ -89,7 +90,8 @@ void CheckFieldsVisitor::AtValue(Value* edge) {
     return;
   }
 
-  if (!stack_allocated_host_ && record->IsStackAllocated()) {
+  if (!stack_allocated_host_ && record->IsStackAllocated() &&
+      !Config::IsStackAllocatedIgnoreAnnotated(current_->field())) {
     invalid_fields_.push_back(std::make_pair(current_, kPtrFromHeapToStack));
     return;
   }

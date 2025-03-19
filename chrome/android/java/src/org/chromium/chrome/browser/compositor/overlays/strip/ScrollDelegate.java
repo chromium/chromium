@@ -45,12 +45,7 @@ public class ScrollDelegate {
      */
     private float mReorderStartMargin;
 
-    /**
-     * Updates all internal resources and dimensions.
-     *
-     * @param context The current Android {@link Context}.
-     */
-    public void onContextChanged(Context context) {
+    ScrollDelegate(Context context) {
         mScroller = new StackScroller(context);
     }
 

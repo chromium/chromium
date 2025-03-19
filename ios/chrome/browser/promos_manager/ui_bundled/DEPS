@@ -9,7 +9,7 @@ include_rules = [
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sync/model/sync_service_factory.h",
   "+ios/chrome/browser/ui/app_store_rating",
-  "+ios/chrome/browser/ui/whats_new",
+  "+ios/chrome/browser/whats_new/coordinator",
   "+ios/chrome/browser/authentication/ui_bundled/signin/promo",
 ]
 

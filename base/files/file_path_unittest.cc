@@ -100,11 +100,9 @@ TEST_F(FilePathTest, DirName) {
       {FPL("//aa/bb"), FPL("//aa")},
       {FPL("//aa/"), FPL("//")},
       {FPL("//aa"), FPL("//")},
-#if BUILDFLAG(IS_POSIX)
       {FPL("///aa/"), FPL("/")},
       {FPL("///aa"), FPL("/")},
       {FPL("///"), FPL("/")},
-#endif  // BUILDFLAG(IS_POSIX)
       {FPL("0:"), FPL(".")},
       {FPL("@:"), FPL(".")},
       {FPL("[:"), FPL(".")},
@@ -157,6 +155,8 @@ TEST_F(FilePathTest, DirName) {
       {FPL("c:\\"), FPL("c:\\")},
       {FPL("c:\\\\"), FPL("c:\\\\")},
       {FPL("c:\\\\\\"), FPL("c:\\")},
+      {FPL("c:\\\\aa"), FPL("c:\\\\")},
+      {FPL("c:\\\\\\aa"), FPL("c:\\")},
       {FPL("c:\\aa"), FPL("c:\\")},
       {FPL("c:\\aa\\"), FPL("c:\\")},
       {FPL("c:\\aa\\bb"), FPL("c:\\aa")},
@@ -595,9 +595,7 @@ TEST_F(FilePathTest, PathComponentsTest) {
   const auto cases = std::to_array<UnaryTestData>({
       {FPL("//foo/bar/baz/"), FPL("|//|foo|bar|baz")},
       {FPL("///"), FPL("|/")},
-#if BUILDFLAG(IS_POSIX)
       {FPL("///foo//bar/baz"), FPL("|/|foo|bar|baz")},
-#endif  // BUILDFLAG(IS_POSIX)
       {FPL("/foo//bar//baz/"), FPL("|/|foo|bar|baz")},
       {FPL("/foo/bar/baz/"), FPL("|/|foo|bar|baz")},
       {FPL("/foo/bar/baz//"), FPL("|/|foo|bar|baz")},
@@ -611,7 +609,12 @@ TEST_F(FilePathTest, PathComponentsTest) {
 #if defined(FILE_PATH_USES_DRIVE_LETTERS)
       {FPL("e:/foo"), FPL("|e:|/|foo")},
       {FPL("e:/"), FPL("|e:|/")},
+      {FPL("e:foo"), FPL("|e:|foo")},
       {FPL("e:"), FPL("|e:")},
+      {FPL("e://foo"), FPL("|e:|//|foo")},
+      {FPL("e://"), FPL("|e:|//")},
+      {FPL("e:///foo"), FPL("|e:|/|foo")},
+      {FPL("e:///"), FPL("|e:|/")},
 #endif  // FILE_PATH_USES_DRIVE_LETTERS
 #if defined(FILE_PATH_USES_WIN_SEPARATORS)
       {FPL("../foo"), FPL("|..|foo")},

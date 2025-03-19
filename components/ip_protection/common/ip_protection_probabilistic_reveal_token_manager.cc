@@ -11,14 +11,18 @@
 #include <string>
 #include <utility>
 
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_crypter.h"
+#include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_data_storage.h"
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_fetcher.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
+#include "net/base/features.h"
 
 namespace {
 
@@ -52,10 +56,35 @@ base::TimeDelta GetNextTokenRequestDelta(base::Time next_epoch_start_time,
 
 namespace ip_protection {
 
+namespace {
+
+const base::FilePath::CharType kDatabaseName[] =
+    FILE_PATH_LITERAL("ProbabilisticRevealTokens");
+
+std::optional<base::FilePath> GetDBPath(
+    std::optional<base::FilePath> data_directory) {
+  if (!data_directory.has_value()) {
+    // The data directory will be nullopt if the
+    // `IpPrivacyStoreProbabilisticRevealTokens` feature is disabled. In this
+    // case, we pass nullopt to the storage class. This will prevent tokens from
+    // being written to disk even if StoreTokenOutcome() is called.
+    return std::nullopt;
+  }
+  return data_directory->Append(kDatabaseName);
+}
+
+}  // namespace
+
 IpProtectionProbabilisticRevealTokenManager::
     IpProtectionProbabilisticRevealTokenManager(
-        std::unique_ptr<IpProtectionProbabilisticRevealTokenFetcher> fetcher)
-    : fetcher_(std::move(fetcher)), expiration_(base::Time::UnixEpoch()) {
+        std::unique_ptr<IpProtectionProbabilisticRevealTokenFetcher> fetcher,
+        std::optional<base::FilePath> data_directory)
+    : fetcher_(std::move(fetcher)),
+      expiration_(base::Time::UnixEpoch()),
+      storage_(base::ThreadPool::CreateSequencedTaskRunner(
+                   {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+                    base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+               GetDBPath(data_directory)) {
   DCHECK(fetcher_);
 }
 
@@ -117,6 +146,8 @@ void IpProtectionProbabilisticRevealTokenManager::OnTryGetTokens(
   expiration_ = base::Time::FromMillisecondsSinceUnixEpoch(
       base::Seconds(outcome.value().expiration_time_seconds).InMilliseconds());
   num_tokens_with_signal_ = outcome.value().num_tokens_with_signal;
+
+  StoreTokenOutcomeIfEnabled(*outcome);
 
   base::Time next_epoch_start_time = base::Time::FromMillisecondsSinceUnixEpoch(
       base::Seconds(outcome.value().next_epoch_start_time_seconds)
@@ -199,6 +230,16 @@ IpProtectionProbabilisticRevealTokenManager::GetToken(
   token_map_[top_level] = {token_selected,
                            {{third_party, maybe_randomized_token.value()}}};
   return std::move(maybe_randomized_token.value());
+}
+
+void IpProtectionProbabilisticRevealTokenManager::StoreTokenOutcomeIfEnabled(
+    TryGetProbabilisticRevealTokensOutcome outcome) {
+  if (net::features::kIpPrivacyStoreProbabilisticRevealTokens.Get()) {
+    storage_
+        .AsyncCall(
+            &IpProtectionProbabilisticRevealTokenDataStorage::StoreTokenOutcome)
+        .WithArgs(outcome);
+  }
 }
 
 }  // namespace ip_protection

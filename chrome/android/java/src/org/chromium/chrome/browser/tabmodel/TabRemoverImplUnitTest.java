@@ -87,6 +87,7 @@ public class TabRemoverImplUnitTest {
         DataSharingServiceFactory.setForTesting(mDataSharingService);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
+        when(mTabGroupSyncService.isObservingLocalChanges()).thenReturn(true);
 
         when(mProfile.isOffTheRecord()).thenReturn(false);
         mTabModel = spy(new MockTabModel(mProfile, null));
@@ -203,9 +204,11 @@ public class TabRemoverImplUnitTest {
         Tab tab0 = mTabModel.addTab(id);
         tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
         tab0.setRootId(id);
-        when(mTabGroupModelFilter.getRelatedTabListForRootId(id)).thenReturn(List.of(tab0));
+        when(mTabGroupModelFilter.getTabsInGroup(TAB_GROUP_ID.tabGroupId))
+                .thenReturn(List.of(tab0));
         TabClosureParams params =
-                TabClosureParams.forCloseTabGroup(mTabGroupModelFilter, id).build();
+                TabClosureParams.forCloseTabGroup(mTabGroupModelFilter, TAB_GROUP_ID.tabGroupId)
+                        .build();
 
         mTabRemoverImpl.closeTabs(params, /* allowDialog= */ true, mListener);
         verify(mTabModelRemover).doTabRemovalFlow(mHandlerCaptor.capture(), eq(true));

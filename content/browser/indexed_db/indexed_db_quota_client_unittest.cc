@@ -37,10 +37,6 @@
 #include "url/origin.h"
 
 using ::blink::StorageKey;
-using ::blink::mojom::StorageType;
-
-// Declared to shorten the line lengths.
-static const StorageType kTemp = StorageType::kTemporary;
 
 namespace content::indexed_db {
 
@@ -114,18 +110,16 @@ class IndexedDBQuotaClientTest : public testing::Test,
     return result;
   }
 
-  std::vector<StorageKey> GetStorageKeysForType(
-      StorageType type,
+  std::vector<StorageKey> GetDefaultStorageKeys(
       IndexedDBContextImpl* context = nullptr) {
     std::vector<StorageKey> result;
     base::RunLoop loop;
     (context ? context : idb_context_.get())
-        ->GetStorageKeysForType(
-            type, base::BindLambdaForTesting(
-                      [&](const std::vector<StorageKey>& storage_keys) {
-                        result = storage_keys;
-                        loop.Quit();
-                      }));
+        ->GetDefaultStorageKeys(base::BindLambdaForTesting(
+            [&](const std::vector<StorageKey>& storage_keys) {
+              result = storage_keys;
+              loop.Quit();
+            }));
     loop.Run();
     return result;
   }
@@ -295,20 +289,20 @@ TEST_P(IndexedDBQuotaClientTest, GetBucketUsageCustom) {
   EXPECT_EQ(3, GetBucketUsage(bucket_b));
 }
 
-TEST_P(IndexedDBQuotaClientTest, GetStorageKeysForTypeFirstParty) {
-  EXPECT_TRUE(GetStorageKeysForType(kTemp).empty());
+TEST_P(IndexedDBQuotaClientTest, GetDefaultStorageKeysFirstParty) {
+  EXPECT_TRUE(GetDefaultStorageKeys().empty());
 
   AddFakeIndexedDB(kStorageKeyFirstPartyA, 1000);
-  std::vector<StorageKey> storage_keys = GetStorageKeysForType(kTemp);
+  std::vector<StorageKey> storage_keys = GetDefaultStorageKeys();
   EXPECT_EQ(storage_keys.size(), 1ul);
   EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyFirstPartyA));
 }
 
-TEST_P(IndexedDBQuotaClientTest, GetStorageKeysForTypeThirdParty) {
-  EXPECT_TRUE(GetStorageKeysForType(kTemp).empty());
+TEST_P(IndexedDBQuotaClientTest, GetDefaultStorageKeysThirdParty) {
+  EXPECT_TRUE(GetDefaultStorageKeys().empty());
 
   AddFakeIndexedDB(kStorageKeyThirdPartyA, 1000);
-  std::vector<StorageKey> storage_keys = GetStorageKeysForType(kTemp);
+  std::vector<StorageKey> storage_keys = GetDefaultStorageKeys();
   EXPECT_EQ(storage_keys.size(), 1ul);
   EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyThirdPartyA));
 }
@@ -413,7 +407,7 @@ TEST_P(IndexedDBQuotaClientTest, NonDefaultBucketThirdParty) {
 TEST_P(IndexedDBQuotaClientTest,
        GetStorageKeyUsageForNonexistentKeyFirstParty) {
   AddFakeIndexedDB(kStorageKeyFirstPartyA, 1000);
-  std::vector<StorageKey> storage_keys = GetStorageKeysForType(kTemp);
+  std::vector<StorageKey> storage_keys = GetDefaultStorageKeys();
   EXPECT_EQ(storage_keys.size(), 1ul);
   EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyFirstPartyA));
 
@@ -426,7 +420,7 @@ TEST_P(IndexedDBQuotaClientTest,
 TEST_P(IndexedDBQuotaClientTest,
        GetStorageKeyUsageForNonexistentKeyThirdParty) {
   AddFakeIndexedDB(kStorageKeyThirdPartyA, 1000);
-  std::vector<StorageKey> storage_keys = GetStorageKeysForType(kTemp);
+  std::vector<StorageKey> storage_keys = GetDefaultStorageKeys();
   EXPECT_EQ(storage_keys.size(), 1ul);
   EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyThirdPartyA));
 
@@ -439,7 +433,7 @@ TEST_P(IndexedDBQuotaClientTest,
 TEST_P(IndexedDBQuotaClientTest,
        GetStorageKeyUsageForNonexistentKeyMixedParty) {
   AddFakeIndexedDB(kStorageKeyFirstPartyA, 1000);
-  std::vector<StorageKey> storage_keys = GetStorageKeysForType(kTemp);
+  std::vector<StorageKey> storage_keys = GetDefaultStorageKeys();
   EXPECT_EQ(storage_keys.size(), 1ul);
   EXPECT_THAT(storage_keys, testing::Contains(kStorageKeyFirstPartyA));
 
@@ -473,8 +467,7 @@ TEST_P(IndexedDBQuotaClientTest, IncognitoQuotaFirstParty) {
   ASSERT_OK_AND_ASSIGN(auto bucket_a, bucket_future.Take());
 
   // No FakeIndexDB is added.
-  EXPECT_TRUE(
-      GetStorageKeysForType(kTemp, incognito_idb_context.get()).empty());
+  EXPECT_TRUE(GetDefaultStorageKeys(incognito_idb_context.get()).empty());
   EXPECT_EQ(0, GetBucketUsage(bucket_a.ToBucketLocator(),
                               incognito_idb_context.get()));
 }
@@ -499,8 +492,7 @@ TEST_P(IndexedDBQuotaClientTest, IncognitoQuotaThirdParty) {
   ASSERT_OK_AND_ASSIGN(auto bucket_a, bucket_future.Take());
 
   // No FakeIndexDB is added.
-  EXPECT_TRUE(
-      GetStorageKeysForType(kTemp, incognito_idb_context.get()).empty());
+  EXPECT_TRUE(GetDefaultStorageKeys(incognito_idb_context.get()).empty());
   EXPECT_EQ(0, GetBucketUsage(bucket_a.ToBucketLocator(),
                               incognito_idb_context.get()));
 }

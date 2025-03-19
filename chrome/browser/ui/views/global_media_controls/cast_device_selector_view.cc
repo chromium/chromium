@@ -296,9 +296,8 @@ std::unique_ptr<HoverButton> CastDeviceSelectorView::BuildCastDeviceEntryView(
         std::move(callback), std::move(throbber), device_name);
     device_entry_button->SetBorder(
         views::CreateEmptyBorder(kThrobberHoverButtonInsets));
-    device_entry_button->title()->SetDefaultTextStyle(
-        views::style::STYLE_BODY_2);
-    device_entry_button->title()->SetDefaultEnabledColorId(
+    device_entry_button->title()->SetTextStyle(views::style::STYLE_BODY_2);
+    device_entry_button->title()->SetEnabledColor(
         media_color_theme_.secondary_foreground_color_id);
   } else if (icon == global_media_controls::mojom::IconType::kInfo) {
     // Create the device entry button with a static info icon view, and

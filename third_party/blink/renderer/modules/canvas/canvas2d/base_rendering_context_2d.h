@@ -227,6 +227,13 @@ class MODULES_EXPORT BaseRenderingContext2D : public Canvas2DRecorderContext {
   virtual void DispatchContextRestoredEvent(TimerBase*);
   virtual void TryRestoreContextEvent(TimerBase*) {}
 
+  // `CanvasRenderingContext2D` and `OffscreenCanvasRenderingContext2D` do not
+  // create resource providers the same way. Thus, `BaseRenderingContext2D`
+  // needs a dedicated function to create the provider the right way.
+  // TODO(crbug.com/346766781): Remove once HTML and Offscreen provider creation
+  // are unified.
+  virtual CanvasResourceProvider* GetOrCreateCanvas2DResourceProvider() = 0;
+
   static const char kInheritString[];
 
   // Override to prematurely disable acceleration because of a readback.

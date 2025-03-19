@@ -159,18 +159,6 @@ class DeveloperPrivateUpdateExtensionConfigurationFunction
   ResponseAction Run() override;
 };
 
-class DeveloperPrivateIsProfileManagedFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.isProfileManaged",
-                             DEVELOPERPRIVATE_ISPROFILEMANAGED)
-
- protected:
-  ~DeveloperPrivateIsProfileManagedFunction() override;
-
-  // ExtensionFunction:
-  ResponseAction Run() override;
-};
-
 class DeveloperPrivateDeleteExtensionErrorsFunction
     : public DeveloperPrivateAPIFunction {
  public:

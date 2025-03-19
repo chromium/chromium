@@ -13,12 +13,6 @@
 /// Delegate for events in omnibox popup controller.
 @protocol OmniboxPopupControllerDelegate <NSObject>
 
-/// Notifies the delegate the new suggestions are available.
-- (void)popupControllerDidUpdateSuggestions:
-            (OmniboxPopupController*)popupController
-                             hasSuggestions:(BOOL)hasSuggestions
-                                 isFocusing:(BOOL)isFocusing;
-
 /// Notifies the delegate of the updated suggestions groups.
 - (void)popupController:(OmniboxPopupController*)popupController
     didUpdateSuggestionsGroups:

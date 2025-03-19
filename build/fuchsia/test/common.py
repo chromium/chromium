@@ -352,12 +352,13 @@ def ssh_run(cmd: List[str],
 def resolve_packages(packages: List[str], target_id: Optional[str]) -> None:
     """Ensure that all |packages| are installed on a device."""
 
-    ssh_run(['pkgctl', 'gc'], target_id, check=False)
-
     # A temporary solution to avoid cycle dependency. The DIR_SRC_ROOT should be
     # moved away from common.py.
     # pylint: disable=cyclic-import, import-outside-toplevel
     import monitors
+
+    with monitors.time_consumption('pkgctl', 'gc'):
+        ssh_run(['pkgctl', 'gc'], target_id, check=False)
 
     def _retry_command(cmd: List[str], package) -> subprocess.CompletedProcess:
         """Helper function for retrying a subprocess.run command."""

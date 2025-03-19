@@ -31,8 +31,6 @@ class RealTimeUrlLookupServiceBase;
 
 namespace enterprise_data_protection {
 
-bool IsDataProtectionEnabled(Profile* profile);
-
 // Monitors a navigation in a WebContents to determine if data protection
 // settings should be enabled or not.
 class DataProtectionNavigationObserver
@@ -87,6 +85,9 @@ class DataProtectionNavigationObserver
   // that `callback` is always invoked but may be called synchronously or
   // asynchronously depending on whether the state is cached in
   // RealTimeUrlLookupService or not.
+  // This function is public to be called by tests and should no be called by
+  // non-test code other that `DataProtectionNavigationObserver` and
+  // `DataProtectionNavigationController`.
   static void ApplyDataProtectionSettings(Profile* profile,
                                           content::WebContents* web_contents,
                                           Callback callback);

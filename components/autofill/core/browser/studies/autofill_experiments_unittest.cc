@@ -79,10 +79,10 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_FeatureEnabled) {
       "ZZ",
       AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester_.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled",
+      "Autofill.CardUploadEnabled2",
       autofill_metrics::CardUploadEnabled::kEnabledByFlag, 1);
   histogram_tester_.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
+      "Autofill.CardUploadEnabled2.SignedInAndSyncFeatureEnabled",
       autofill_metrics::CardUploadEnabled::kEnabledByFlag, 1);
 }
 
@@ -92,10 +92,10 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_UnsupportedCountry) {
       "ZZ",
       AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester_.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled",
+      "Autofill.CardUploadEnabled2",
       autofill_metrics::CardUploadEnabled::kUnsupportedCountry, 1);
   histogram_tester_.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
+      "Autofill.CardUploadEnabled2.SignedInAndSyncFeatureEnabled",
       autofill_metrics::CardUploadEnabled::kUnsupportedCountry, 1);
 }
 
@@ -108,10 +108,10 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_SupportedCountry) {
       "US",
       AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester_.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled",
+      "Autofill.CardUploadEnabled2",
       autofill_metrics::CardUploadEnabled::kEnabledForCountry, 1);
   histogram_tester_.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
+      "Autofill.CardUploadEnabled2.SignedInAndSyncFeatureEnabled",
       autofill_metrics::CardUploadEnabled::kEnabledForCountry, 1);
 }
 
@@ -120,10 +120,10 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_AuthError) {
   EXPECT_FALSE(IsCreditCardUploadEnabled(
       AutofillMetrics::PaymentsSigninState::kSyncPaused));
   histogram_tester_.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled",
+      "Autofill.CardUploadEnabled2",
       autofill_metrics::CardUploadEnabled::kSyncServicePaused, 1);
   histogram_tester_.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled.SyncPaused",
+      "Autofill.CardUploadEnabled2.SyncPaused",
       autofill_metrics::CardUploadEnabled::kSyncServicePaused, 1);
 }
 
@@ -135,12 +135,12 @@ TEST_F(AutofillExperimentsTest,
   EXPECT_FALSE(IsCreditCardUploadEnabled(
       AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester_.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled",
+      "Autofill.CardUploadEnabled2",
       autofill_metrics::CardUploadEnabled::
           kSyncServiceMissingAutofillWalletDataActiveType,
       1);
   histogram_tester_.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
+      "Autofill.CardUploadEnabled2.SignedInAndSyncFeatureEnabled",
       autofill_metrics::CardUploadEnabled::
           kSyncServiceMissingAutofillWalletDataActiveType,
       1);
@@ -224,7 +224,7 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_Syncing_AutofillDisabled) {
   EXPECT_FALSE(IsCreditCardUploadEnabled(
       AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester_.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled",
+      "Autofill.CardUploadEnabled2",
       autofill_metrics::CardUploadEnabled::
           kSyncServiceMissingAutofillSelectedType,
       1);
@@ -262,7 +262,7 @@ TEST_F(AutofillExperimentsTest,
       IsCreditCardUploadEnabled(AutofillMetrics::PaymentsSigninState::
                                     kSignedInAndWalletSyncTransportEnabled));
   histogram_tester_.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled",
+      "Autofill.CardUploadEnabled2",
       autofill_metrics::CardUploadEnabled::
           kSyncServiceMissingAutofillSelectedType,
       1);
@@ -290,10 +290,10 @@ TEST_F(AutofillExperimentsTest,
   EXPECT_FALSE(IsCreditCardUploadEnabled(
       AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester_.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled",
+      "Autofill.CardUploadEnabled2",
       autofill_metrics::CardUploadEnabled::kUsingExplicitSyncPassphrase, 1);
   histogram_tester_.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
+      "Autofill.CardUploadEnabled2.SignedInAndSyncFeatureEnabled",
       autofill_metrics::CardUploadEnabled::kUsingExplicitSyncPassphrase, 1);
 }
 
@@ -303,12 +303,12 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_PaymentsTypeNotSelected) {
   EXPECT_FALSE(IsCreditCardUploadEnabled(
       AutofillMetrics::PaymentsSigninState::kSignedInAndSyncFeatureEnabled));
   histogram_tester_.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled",
+      "Autofill.CardUploadEnabled2",
       autofill_metrics::CardUploadEnabled::
           kSyncServiceMissingAutofillWalletDataActiveType,
       1);
   histogram_tester_.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled.SignedInAndSyncFeatureEnabled",
+      "Autofill.CardUploadEnabled2.SignedInAndSyncFeatureEnabled",
       autofill_metrics::CardUploadEnabled::
           kSyncServiceMissingAutofillWalletDataActiveType,
       1);
@@ -323,10 +323,10 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_TransportModeOnly) {
       IsCreditCardUploadEnabled(AutofillMetrics::PaymentsSigninState::
                                     kSignedInAndWalletSyncTransportEnabled));
   histogram_tester_.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled",
+      "Autofill.CardUploadEnabled2",
       autofill_metrics::CardUploadEnabled::kEnabledForCountry, 1);
   histogram_tester_.ExpectUniqueSample(
-      "Autofill.CardUploadEnabled.SignedInAndWalletSyncTransportEnabled",
+      "Autofill.CardUploadEnabled2.SignedInAndWalletSyncTransportEnabled",
       autofill_metrics::CardUploadEnabled::kEnabledForCountry, 1);
 }
 

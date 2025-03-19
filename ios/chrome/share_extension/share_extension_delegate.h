@@ -20,6 +20,8 @@
     (ShareExtensionSheet*)shareExtensionSheet;
 - (void)didTapSearchInChromeShareExtensionSheet:
     (ShareExtensionSheet*)shareExtensionSheet;
+- (void)didTapSearchInIncognitoShareExtensionSheet:
+    (ShareExtensionSheet*)shareExtensionSheet;
 
 @end
 

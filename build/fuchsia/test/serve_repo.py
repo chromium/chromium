@@ -9,6 +9,8 @@ import json
 import logging
 from typing import Iterator, Optional
 
+import monitors
+
 from common import run_ffx_command, REPO_ALIAS
 
 _REPO_NAME = 'chromium-test-package-server'
@@ -18,16 +20,15 @@ def _stop_serving(repo_name: str, target: Optional[str]) -> None:
     """Stop serving a repository."""
 
     # Attempt to clean up.
-    run_ffx_command(
-        cmd=[
-            'target', 'repository', 'deregister', '-r', repo_name
-        ],
-        target_id=target, check=False)
+    with monitors.time_consumption('repository', 'deregister'):
+        run_ffx_command(
+            cmd=['target', 'repository', 'deregister', '-r', repo_name],
+            target_id=target,
+            check=False)
 
-    run_ffx_command(
-        cmd=[
-            'repository', 'server', 'stop', repo_name
-        ], check=False)
+    with monitors.time_consumption('repository', 'stop'):
+        run_ffx_command(cmd=['repository', 'server', 'stop', repo_name],
+                        check=False)
 
 
 def _start_serving(repo_dir: str, repo_name: str,
@@ -46,7 +47,8 @@ def _start_serving(repo_dir: str, repo_name: str,
         '--repository', repo_name, '--repo-path', repo_dir, '--no-device'
     ]
 
-    start_cmd = run_ffx_command(cmd=cmd, check=False)
+    with monitors.time_consumption('repository', 'start'):
+        start_cmd = run_ffx_command(cmd=cmd, check=False)
 
     logging.warning('ffx repository server start returns %d: %s %s',
                           start_cmd.returncode,
@@ -58,17 +60,20 @@ def _start_serving(repo_dir: str, repo_name: str,
         'target', 'repository', 'register', '-r', repo_name, '--alias',
         REPO_ALIAS
     ]
-    run_ffx_command(cmd=cmd,target_id=target)
+    with monitors.time_consumption('repository', 'register'):
+        run_ffx_command(cmd=cmd, target_id=target)
 
 
 def _assert_server_running(repo_name: str) -> None:
     """Raises RuntimeError if the repository server is not running."""
 
-    list_cmd = run_ffx_command(
-        cmd= ['--machine','json','repository', 'server',
-             'list', '--name', repo_name],
-        check=False,
-        capture_output=True)
+    with monitors.time_consumption('repository', 'list'):
+        list_cmd = run_ffx_command(cmd=[
+            '--machine', 'json', 'repository', 'server', 'list', '--name',
+            repo_name
+        ],
+                                   check=False,
+                                   capture_output=True)
     try:
         response = json.loads(list_cmd.stdout.strip())
         if 'ok' in response and response['ok']['data']:

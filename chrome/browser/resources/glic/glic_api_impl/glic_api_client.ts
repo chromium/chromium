@@ -146,6 +146,10 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
   glicWebClientNotifyManualResizeChanged(payload: {resizing: boolean}) {
     this.host.isManuallyResizing().assignAndSignal(payload.resizing);
   }
+
+  glicWebClientNotifyOsHotkeyStateChanged(payload: {hotkey: string}) {
+    this.host.getOsHotkeyState().assignAndSignal(payload);
+  }
 }
 
 class GlicBrowserHostImpl implements GlicBrowserHost {
@@ -167,6 +171,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
       ObservableValueImpl.withNoValue<boolean>();
   private permissionStateOsLocation =
       ObservableValueImpl.withNoValue<boolean>();
+  private osHotkeyState = ObservableValueImpl.withNoValue<{hotkey: string}>();
   panelActiveValue = ObservableValueImpl.withNoValue<boolean>();
   private fitWindow = false;
   private metrics: GlicBrowserHostMetricsImpl;
@@ -220,6 +225,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     this.canAttachPanelValue.assignAndSignal(state.canAttach);
     this.chromeVersion = state.chromeVersion;
     this.panelActiveValue.assignAndSignal(state.panelIsActive);
+    this.osHotkeyState.assignAndSignal({hotkey: state.hotkey});
     this.fitWindow = state.fitWindow;
 
     if (!state.scrollToEnabled) {
@@ -454,6 +460,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   isManuallyResizing(): ObservableValueImpl<boolean> {
     return this.manuallyResizing;
+  }
+
+  getOsHotkeyState(): ObservableValueImpl<{hotkey: string}> {
+    return this.osHotkeyState;
   }
 }
 

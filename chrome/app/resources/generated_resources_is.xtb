@@ -4073,9 +4073,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
     <ph name="BEGIN_PARAGRAPH2" />Þú getur leyft eða bannað þessar skýrslur hvenær sem er í stillingum Chrome-tækisins. Þú getur breytt þessari stillingu á stjórnborði stjórnanda ef þú ert stjórnandi léns.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">Norðurljósin að nóttu til yfir litlum bústað.</translation>
 <translation id="3818102823568165369">Staðbundin vottorð sem stýrikerfið þitt eða kerfisstjóri hefur bætt við.</translation>
-<translation id="3818662907126913619">Til að nota tækið með prófílnum sem tengist <ph name="DOMAIN" /> þarf fyrirtækið upplýsingar um tækið.
-
-Þetta geta verið upplýsingar um uppsettan hugbúnað, skrár, vafra og stýrikerfi tækisins.</translation>
 <translation id="3819164369574292143">Auktu síðan aðdráttinn til að stækka atriðin á skjánum. Notaðu Search + Ctrl + M til að kveikja og slökkva á stækkunargleri í föstum glugga. Notaðu Ctrl + Alt + örvalyklana til að færa þig til þegar aðdráttur er aukinn.</translation>
 <translation id="3819257035322786455">Afrita</translation>
 <translation id="3819261658055281761">Kerfinu tókst ekki að vista langtímaaðgangslykil forritaskila fyrir þetta tæki.</translation>
@@ -4393,9 +4390,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4031527940632463547">Skynjarar læstir</translation>
 <translation id="4033471457476425443">Bæta nýrri möppu við</translation>
 <translation id="4033963223187371752">Örugg vefsvæði gætu innfellt óöruggt efni, t.d. myndir eða veframma</translation>
-<translation id="4034706080855851454">Til að nota tækið með prófíl fyrirtækisins þarf fyrirtækið upplýsingar um tækið.
-
-Þetta geta verið upplýsingar um uppsettan hugbúnað, skrár, vafra og stýrikerfi tækisins.</translation>
 <translation id="4034824040120875894">Prentari</translation>
 <translation id="4035758313003622889">Verks&amp;tjórn</translation>
 <translation id="4035877632587724847">Ekki leyfa</translation>

@@ -237,6 +237,7 @@ import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.browser.tasks.tab_management.CloseAllTabsDialog;
 import org.chromium.chrome.browser.tasks.tab_management.CloseAllTabsHelper;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupMenuActionHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUi;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupVisualDataManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
@@ -313,7 +314,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
 
     protected static final String WINDOW_INDEX = "window_index";
 
-    private static final int INVALID_WINDOW_ID = TabWindowManager.INVALID_WINDOW_INDEX;
+    private static final int INVALID_WINDOW_ID = TabWindowManager.INVALID_WINDOW_ID;
 
     // How long to delay closing the current tab when our app is minimized.  Have to delay this
     // so that we don't show the contents of the next tab while minimizing.
@@ -2583,7 +2584,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
 
         if (ChromeFeatureList.sPriceChangeModule.isEnabled()) {
             PriceChangeModuleBuilder priceChangeModuleBuilder =
-                    new PriceChangeModuleBuilder(this, mTabModelProfileSupplier, mTabModelSelector);
+                    new PriceChangeModuleBuilder(
+                            this, getProfileProviderSupplier(), mTabModelSelector);
             moduleRegistry.registerModule(ModuleType.PRICE_CHANGE, priceChangeModuleBuilder);
         }
 
@@ -2751,7 +2753,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
         }
 
         if (mMultiInstanceManager != null) {
-            int assignedIndex = TabWindowManagerSingleton.getInstance().getIndexForWindow(this);
+            int assignedIndex = TabWindowManagerSingleton.getInstance().getIdForWindow(this);
             // The given index and the one computed by TabWindowManager should be one and the same.
             int taskId = ApplicationStatus.getTaskId(this);
             Map<String, Integer> taskMap =
@@ -3139,6 +3141,21 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                 Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
                 tracker.notifyEvent(EventConstants.APP_MENU_NEW_INCOGNITO_TAB_CLICKED);
             }
+        } else if (id == R.id.add_to_group_menu_id) {
+            if (!mTabModelSelector.isTabStateInitialized()) return false;
+
+            TabGroupModelFilter filter =
+                    mTabModelSelector
+                            .getTabGroupModelFilterProvider()
+                            .getCurrentTabGroupModelFilter();
+
+            new TabGroupMenuActionHandler(
+                            this,
+                            filter,
+                            mRootUiCoordinator.getBottomSheetController(),
+                            getModalDialogManager(),
+                            mTabModelProfileSupplier.get())
+                    .handleAddToGroupAction(currentTab);
         } else if (id == R.id.all_bookmarks_menu_id) {
             getCompositorViewHolderSupplier()
                     .get()
@@ -3592,7 +3609,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
             super.onSaveInstanceState(outState);
             CipherLazyHolder.sCipherInstance.saveToBundle(outState);
             outState.putInt(
-                    WINDOW_INDEX, TabWindowManagerSingleton.getInstance().getIndexForWindow(this));
+                    WINDOW_INDEX, TabWindowManagerSingleton.getInstance().getIdForWindow(this));
             Boolean is_incognito = getCurrentTabModel().isIncognito();
             outState.putBoolean(IS_INCOGNITO_SELECTED, is_incognito);
             // If it's Incognito and native is initialized and profile exists, serialize duration

@@ -727,7 +727,8 @@ template("single_apple_toolchain") {
         }
 
         if (swift_keep_intermediate_files) {
-          _extra_flags += " --derived-data-dir $_derived_data_dir"
+          _extra_flags += " --swift-keep-intermediate-files" +
+                          " --derived-data-dir $_derived_data_dir"
         }
 
         # The Swift compiler assumes that the generated header will be used by

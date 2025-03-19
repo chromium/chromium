@@ -10,15 +10,19 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
+#include "third_party/blink/renderer/modules/ai/ai_interface_proxy.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
+#include "third_party/blink/renderer/modules/ai/on_device_translation/create_translator_client.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 namespace {
+using mojom::blink::CanCreateTranslatorResult;
 
 const char kExceptionMessageTranslatorDestroyed[] =
     "The translator has been destroyed.";
@@ -46,6 +50,78 @@ String AITranslator::sourceLanguage() const {
 }
 String AITranslator::targetLanguage() const {
   return target_language_;
+}
+
+ScriptPromise<V8AIAvailability> AITranslator::availability(
+    ScriptState* script_state,
+    AITranslatorCreateCoreOptions* options,
+    ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    ThrowInvalidContextException(exception_state);
+    return ScriptPromise<V8AIAvailability>();
+  }
+
+  ScriptPromiseResolver<V8AIAvailability>* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<V8AIAvailability>>(
+          script_state);
+  ScriptPromise<V8AIAvailability> promise = resolver->Promise();
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+
+  AIInterfaceProxy::GetTranslationManagerRemote(execution_context)
+      ->TranslationAvailable(
+          mojom::blink::TranslatorLanguageCode::New(options->sourceLanguage()),
+          mojom::blink::TranslatorLanguageCode::New(options->targetLanguage()),
+          WTF::BindOnce(
+              [](ExecutionContext* execution_context,
+                 ScriptPromiseResolver<V8AIAvailability>* resolver,
+                 CanCreateTranslatorResult result) {
+                CHECK(resolver);
+
+                AIAvailability availability =
+                    HandleTranslatorAvailabilityCheckResult(execution_context,
+                                                            result);
+                resolver->Resolve(AIAvailabilityToV8(availability));
+              },
+              WrapPersistent(execution_context), WrapPersistent(resolver)));
+
+  return promise;
+}
+
+ScriptPromise<AITranslator> AITranslator::create(
+    ScriptState* script_state,
+    AITranslatorCreateOptions* options,
+    ExceptionState& exception_state) {
+  // If `sourceLanguage` and `targetLanguage` are not passed, A TypeError should
+  // be thrown before we get here.
+  CHECK(options && options->sourceLanguage() && options->targetLanguage());
+
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The execution context is not valid.");
+    return EmptyPromise();
+  }
+
+  AbortSignal* signal = options->getSignalOr(nullptr);
+  if (HandleAbortSignal(signal, script_state, exception_state)) {
+    return EmptyPromise();
+  }
+
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<AITranslator>>(script_state);
+
+  CreateTranslatorClient* create_translator_client =
+      MakeGarbageCollected<CreateTranslatorClient>(script_state, options,
+                                                   resolver);
+
+  AIInterfaceProxy::GetTranslationManagerRemote(
+      ExecutionContext::From(script_state))
+      ->CanCreateTranslator(
+          mojom::blink::TranslatorLanguageCode::New(options->sourceLanguage()),
+          mojom::blink::TranslatorLanguageCode::New(options->targetLanguage()),
+          WTF::BindOnce(&CreateTranslatorClient::OnGotAvailability,
+                        WrapPersistent(create_translator_client)));
+
+  return resolver->Promise();
 }
 
 ScriptPromise<IDLString> AITranslator::translate(

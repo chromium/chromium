@@ -586,7 +586,7 @@ void DonutsUI::CreatePageHandler(
 ```
 
 You also need to register the PageHandlerFactory to your controller in
-**chrome/browser/chrome_browser_interface_binders.cc**:
+**chrome/browser/chrome_browser_interface_binders_webui.cc**:
 ```c++
 RegisterWebUIControllerInterfaceBinder<donuts::mojom::PageHandlerFactory,
                                        DonutsUI>(map);

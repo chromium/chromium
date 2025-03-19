@@ -157,7 +157,10 @@ const char* GetProcessLifetimeUmaName(gpu::GpuMode gpu_mode) {
     case gpu::GpuMode::HARDWARE_GRAPHITE:
     case gpu::GpuMode::HARDWARE_VULKAN:
       return kProcessLifetimeEventsHardwareAccelerated;
-    case gpu::GpuMode::SWIFTSHADER:
+    case gpu::GpuMode::SOFTWARE_GL:
+      // All software modes currently share the SwiftShader metric because we
+      // cant differentiate different software backends at this level (and
+      // probably don't want to).
       return kProcessLifetimeEventsSwiftShader;
     case gpu::GpuMode::DISPLAY_COMPOSITOR:
       return nullptr;

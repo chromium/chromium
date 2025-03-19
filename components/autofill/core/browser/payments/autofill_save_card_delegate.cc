@@ -102,7 +102,7 @@ void AutofillSaveCardDelegate::RunSaveCardPromptCallback(
         user_provided_details) {
   if (is_for_upload()) {
     payments::PaymentsAutofillClient::UploadSaveCardPromptCallback
-        upload_save_card_callback = absl::get<
+        upload_save_card_callback = std::get<
             payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>(
             std::move(save_card_callback_));
     if (upload_save_card_callback.is_null()) {
@@ -112,7 +112,7 @@ void AutofillSaveCardDelegate::RunSaveCardPromptCallback(
         .Run(user_decision, user_provided_details);
   } else {
     payments::PaymentsAutofillClient::LocalSaveCardPromptCallback
-        local_save_card_callback = absl::get<
+        local_save_card_callback = std::get<
             payments::PaymentsAutofillClient::LocalSaveCardPromptCallback>(
             std::move(save_card_callback_));
     if (local_save_card_callback.is_null()) {

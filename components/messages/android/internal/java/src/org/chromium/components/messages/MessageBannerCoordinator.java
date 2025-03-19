@@ -13,6 +13,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.MockedInTests;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.messages.MessageStateHandler.Position;
 import org.chromium.ui.listmenu.ListMenuHost.PopupMenuShownListener;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -20,6 +22,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator responsible for creating a message banner. */
 @MockedInTests
+@NullMarked
 class MessageBannerCoordinator {
     private final MessageBannerMediator mMediator;
     private final MessageBannerView mView;
@@ -161,13 +164,14 @@ class MessageBannerCoordinator {
 
     /**
      * Hides the message banner.
+     *
      * @param fromIndex The initial position.
      * @param toIndex The target position the message is moving to.
      * @param animate Whether to hide with an animation.
      * @param messageHidden The {@link Runnable} that will run once the message banner is hidden.
      * @return The animator which hides the message view.
      */
-    Animator hide(
+    @Nullable Animator hide(
             @Position int fromIndex,
             @Position int toIndex,
             boolean animate,
@@ -202,7 +206,7 @@ class MessageBannerCoordinator {
         mTimer.startTimer(mAutodismissDurationMs.get(), mOnTimeUp);
     }
 
-    void setOnTouchRunnable(Runnable runnable) {
+    void setOnTouchRunnable(@Nullable Runnable runnable) {
         mMediator.setOnTouchRunnable(runnable);
     }
 
@@ -219,7 +223,7 @@ class MessageBannerCoordinator {
         mView.announceForAccessibility(msg);
     }
 
-    private void setOnTitleChanged(Runnable runnable) {
+    private void setOnTitleChanged(@Nullable Runnable runnable) {
         mView.setOnTitleChanged(runnable);
     }
 }

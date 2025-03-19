@@ -280,7 +280,7 @@ void MenuViewDragAndDropTest::OnDragEntered() {
       FROM_HERE,
       base::BindOnce(base::IgnoreResult(&ui_controls::SendMouseEvents),
                      ui_controls::LEFT, ui_controls::UP,
-                     ui_controls::kNoAccelerator, ui_controls::kNoWindowHint));
+                     ui_controls::kNoAccelerator, gfx::NativeWindow()));
 }
 
 bool MenuViewDragAndDropTest::GetDropFormats(
@@ -367,9 +367,8 @@ void MenuViewDragAndDropTestTestInMenuDrag::OnWidgetDragWillStart(
   const gfx::Point target =
       ui_test_utils::GetCenterInScreenCoordinates(drop_target_view);
   GetDragTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(base::IgnoreResult(&ui_controls::SendMouseMove),
-                     target.x(), target.y(), ui_controls::kNoWindowHint));
+      FROM_HERE, base::BindOnce(base::IgnoreResult(&ui_controls::SendMouseMove),
+                                target.x(), target.y(), gfx::NativeWindow()));
 }
 
 void MenuViewDragAndDropTestTestInMenuDrag::OnWidgetDragComplete(
@@ -459,7 +458,7 @@ void MenuViewDragAndDropTestTestInMenuDragNoDrop::OnWidgetDragWillStart(
       FROM_HERE,
       base::BindOnce(base::IgnoreResult(&ui_controls::SendMouseEvents),
                      ui_controls::LEFT, ui_controls::UP,
-                     ui_controls::kNoAccelerator, ui_controls::kNoWindowHint));
+                     ui_controls::kNoAccelerator, gfx::NativeWindow()));
 }
 
 void MenuViewDragAndDropTestTestInMenuDragNoDrop::OnWidgetDragComplete(
@@ -538,9 +537,8 @@ void MenuViewDragAndDropTestNestedDrag::OnWidgetDragWillStart(
   const gfx::Point target =
       ui_test_utils::GetCenterInScreenCoordinates(drop_target_view);
   GetDragTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(base::IgnoreResult(&ui_controls::SendMouseMove),
-                     target.x(), target.y(), ui_controls::kNoWindowHint));
+      FROM_HERE, base::BindOnce(base::IgnoreResult(&ui_controls::SendMouseMove),
+                                target.x(), target.y(), gfx::NativeWindow()));
 }
 
 void MenuViewDragAndDropTestNestedDrag::OnWidgetDragComplete(

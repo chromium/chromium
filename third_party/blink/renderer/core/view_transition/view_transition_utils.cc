@@ -179,6 +179,19 @@ ViewTransition* ViewTransitionUtils::GetTransition(const Document& document) {
 }
 
 // static
+ViewTransition* ViewTransitionUtils::GetTransition(const Element& element) {
+  auto* supplement =
+      ViewTransitionSupplement::FromIfExists(element.GetDocument());
+  if (!supplement) {
+    return nullptr;
+  }
+  ViewTransition* transition = supplement->GetTransition(element);
+  if (!transition || transition->IsDone()) {
+    return nullptr;
+  }
+  return transition;
+}
+
 ViewTransition* ViewTransitionUtils::TransitionForTaggedElement(
     const LayoutObject& layout_object) {
   ViewTransition* result = nullptr;

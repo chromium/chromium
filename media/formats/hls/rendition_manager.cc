@@ -6,8 +6,8 @@
 
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
-#include "media/formats/hls/audio_rendition.h"
 #include "media/formats/hls/multivariant_playlist.h"
+#include "media/formats/hls/rendition.h"
 #include "media/formats/hls/types.h"
 #include "media/formats/hls/variant_stream.h"
 
@@ -44,7 +44,7 @@ std::string GetVariantDisplayString(
   return variant->Format(components, id.value());
 }
 
-std::string GetAudioRenditionDisplayString(const AudioRendition* rendition) {
+std::string GetAudioRenditionDisplayString(const Rendition* rendition) {
   // TODO(crbug.com/40057824): Consider displaying characteristics / channels /
   // language and other things rather than just the name.
   return rendition->GetName();
@@ -60,16 +60,15 @@ RenditionManager::UpdatedSelections::UpdatedSelections(
 RenditionManager::VariantMetadata::~VariantMetadata() = default;
 RenditionManager::VariantMetadata::VariantMetadata(const VariantMetadata&) =
     default;
-RenditionManager::VariantMetadata::VariantMetadata(
-    const VariantStream* stream,
-    const AudioRenditionGroup* group)
+RenditionManager::VariantMetadata::VariantMetadata(const VariantStream* stream,
+                                                   const RenditionGroup* group)
     : track_id(""), stream(stream), audio_rendition_group(group) {}
 
 RenditionManager::RenditionMetadata::~RenditionMetadata() = default;
 RenditionManager::RenditionMetadata::RenditionMetadata(
     const RenditionMetadata&) = default;
 RenditionManager::RenditionMetadata::RenditionMetadata(
-    const AudioRendition* rendition)
+    const Rendition* rendition)
     : track_id(""), rendition(rendition) {}
 
 RenditionManager::~RenditionManager() = default;
@@ -130,7 +129,7 @@ void RenditionManager::Reselect(SelectedCallonce callback) {
   CHECK(selections.variant.has_value());
   const VariantStream* selected_variant =
       selectable_variants_.at(*selected_variant_).stream;
-  const AudioRendition* audio_override = nullptr;
+  const Rendition* audio_override = nullptr;
   if (selected_audio_rendition_.has_value()) {
     audio_override =
         selectable_renditions_.at(selected_audio_rendition_.value()).rendition;
@@ -465,7 +464,7 @@ RenditionManager::SelectBestRendition(
 }
 
 std::optional<RenditionManager::RenditionID> RenditionManager::LookupRendition(
-    const AudioRendition* rendition) {
+    const Rendition* rendition) {
   for (const auto& [id, metadata] : selectable_renditions_) {
     if (metadata.rendition == rendition) {
       return id;

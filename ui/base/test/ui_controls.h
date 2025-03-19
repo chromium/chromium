@@ -101,9 +101,9 @@ bool SendKeyEventsNotifyWhenDone(gfx::NativeWindow window,
                                  int accelerator_state = kNoAccelerator);
 #endif  // !BUILDFLAG(IS_WIN)
 
-// This value specifies that no window hint is given and an appropriate target
-// window should be deduced from the target or current mouse position.
-constexpr gfx::NativeWindow kNoWindowHint = gfx::NativeWindow();
+// A default value for a window hint specifies that no window hint is given and
+// an appropriate target window should be deduced from the target or current
+// mouse position.
 
 // Simulate a mouse move.
 //
@@ -115,11 +115,12 @@ constexpr gfx::NativeWindow kNoWindowHint = gfx::NativeWindow();
 // belonging to the current process.
 bool SendMouseMove(int screen_x,
                    int screen_y,
-                   gfx::NativeWindow window_hint = kNoWindowHint);
-bool SendMouseMoveNotifyWhenDone(int screen_x,
-                                 int screen_y,
-                                 base::OnceClosure task,
-                                 gfx::NativeWindow window_hint = kNoWindowHint);
+                   gfx::NativeWindow window_hint = gfx::NativeWindow());
+bool SendMouseMoveNotifyWhenDone(
+    int screen_x,
+    int screen_y,
+    base::OnceClosure task,
+    gfx::NativeWindow window_hint = gfx::NativeWindow());
 
 enum MouseButton {
   LEFT = 0,
@@ -151,17 +152,17 @@ enum TouchType {
 bool SendMouseEvents(MouseButton type,
                      int button_state,
                      int accelerator_state = kNoAccelerator,
-                     gfx::NativeWindow window_hint = kNoWindowHint);
+                     gfx::NativeWindow window_hint = gfx::NativeWindow());
 bool SendMouseEventsNotifyWhenDone(
     MouseButton type,
     int button_state,
     base::OnceClosure task,
     int accelerator_state = kNoAccelerator,
-    gfx::NativeWindow window_hint = kNoWindowHint);
+    gfx::NativeWindow window_hint = gfx::NativeWindow());
 
 // Same as SendMouseEvents with UP | DOWN.
 bool SendMouseClick(MouseButton type,
-                    gfx::NativeWindow window_hint = kNoWindowHint);
+                    gfx::NativeWindow window_hint = gfx::NativeWindow());
 
 #if BUILDFLAG(IS_WIN)
 // Send WM_POINTER messages to generate touch events. There is no way to detect

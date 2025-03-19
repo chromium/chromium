@@ -35,9 +35,7 @@
         <select id="country-select" class="md-select"
             aria-label="[[attributeInstanceItem.type.typeNameAsString]]"
             on-change="onCountrySelectChange_">
-          <!-- TODO(crbug.com/403312087): Add accessibility support for the
-               empty option. -->
-          <option value=""></option>
+          <option value="">$i18n{autofillDropdownNoOptionSelected}</option>
           <template is="dom-repeat" items="[[countryList_]]" as="countryItem">
             <option value="[[getCountryCode_(countryItem)]]"
                 disabled="[[isCountrySeparator_(countryItem)]]"

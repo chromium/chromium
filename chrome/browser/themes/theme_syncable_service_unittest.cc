@@ -63,6 +63,7 @@
 #include "extensions/common/manifest_url_handlers.h"
 #include "extensions/common/permissions/api_permission_set.h"
 #include "extensions/common/permissions/permission_set.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -105,9 +106,9 @@ const char kThemePrefMigrationIncomingSyncingPrefAppliedHistogram[] =
     "Theme.ThemePrefMigration.IncomingSyncingPrefApplied";
 
 MATCHER_P2(DictionaryValuePtrHas, key, value, "") {
-  return arg && arg->is_dict() &&
-         base::test::DictionaryHasValue(key, base::Value(value))
-             .Matches(arg->GetDict());
+  return testing::ExplainMatchResult(
+      testing::Pointee(base::test::DictionaryHasValue(key, base::Value(value))),
+      arg, result_listener);
 }
 
 const ThemeHelper& GetThemeHelper() {

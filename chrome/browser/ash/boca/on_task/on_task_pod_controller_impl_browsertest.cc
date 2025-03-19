@@ -192,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
       window_id, /*observers=*/{});
   ASSERT_THAT(on_task_pod_controller(), NotNull());
 
-  boca_app_browser->window()->Close();
+  boca_app_browser->tab_strip_model()->CloseAllTabs();
   content::RunAllTasksUntilIdle();
   EXPECT_THAT(on_task_pod_controller(), IsNull());
 }

@@ -79,6 +79,7 @@ TAG_SPECIALIZATIONS = {
             'amd-0x7340',
             'amd-0x7480',
         ],
+        'amd64': [],
         'apple': [
             'apple-apple-m1',
             'apple-apple-m2',
@@ -105,6 +106,9 @@ TAG_SPECIALIZATIONS = {
             'intel-0x4680',
             'intel-0x5912',
             'intel-0x9bc5',
+        ],
+        'microsoft': [
+            'microsoft-0xffff',
         ],
         'nvidia': [
             'nvidia-0xfe9',

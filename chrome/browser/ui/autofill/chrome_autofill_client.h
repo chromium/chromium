@@ -23,11 +23,13 @@
 #include "components/autofill/content/browser/autofill_log_router_factory.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/content/browser/content_identity_credential_delegate.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/crowdsourcing/votes_uploader.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/integrators/autofill_plus_address_delegate.h"
+#include "components/autofill/core/browser/integrators/identity_credential_delegate.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
@@ -122,6 +124,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   AutofillAiDelegate* GetAutofillAiDelegate() final;
   AutofillAiModelCache* GetAutofillAiModelCache() final;
   AutofillAiModelExecutor* GetAutofillAiModelExecutor() final;
+  IdentityCredentialDelegate* GetIdentityCredentialDelegate() final;
   void OfferPlusAddressCreation(const url::Origin& main_frame_origin,
                                 bool is_manual_fallback,
                                 PlusAddressCallback callback) final;
@@ -291,6 +294,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
   // Test addresses used to allow developers to test their forms.
   std::vector<AutofillProfile> test_addresses_;
   const AutofillAblationStudy ablation_study_;
+
+  ContentIdentityCredentialDelegate identity_credential_delegate_;
   base::WeakPtrFactory<ChromeAutofillClient> weak_ptr_factory_{this};
 };
 

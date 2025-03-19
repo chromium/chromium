@@ -157,9 +157,12 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   // the picker when it was first shown.
   void SetProfilesOrder(const std::vector<ProfileAttributesEntry*>& entries);
 
-  // Displays either a sign-in or an error dialog within the profile picker
-  // using `profile`.
-  void OnProfileForDialogLoaded(Profile* profile);
+  // Checks the state of `entry` to determine how to handle the locked state.
+  // Either shows an error dialog with the appropriate information, or attempts
+  // to run the signin/reauth flows.
+  void TryLaunchLockedProfile(ProfileAttributesEntry& entry);
+  // Callback with the loaded profile to start the reauth flow.
+  void OnProfileLoadedForSwitchToReauth(Profile* profile);
 
   // Updates if guest mode is available following a profile addition, removal,
   // or changed supervision status.

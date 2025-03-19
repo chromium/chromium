@@ -364,7 +364,8 @@ enum WebDXFeature {
   kFetchLater = 306,
   kDRAFT_WasmBranchHinting = 307,
   kDRAFT_ExplicitResourceManagement = 308,
-  kLaunchHandler = 309
+  kLaunchHandler = 309,
+  kDRAFT_CssFunction = 310,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

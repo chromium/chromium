@@ -1036,13 +1036,14 @@ TEST_P(GeometryMapperTest, Reflection) {
   CompositorFilterOperations filters;
   filters.AppendReferenceFilter(paint_filter_builder::BuildBoxReflectFilter(
       BoxReflection(BoxReflection::kHorizontalReflection, 0), nullptr));
+  input_rect = gfx::RectF(100, 100, 50, 50);
+  filters.SetReferenceBox(input_rect);
   auto* effect = CreateFilterEffect(e0(), filters);
   auto* clip_expander = CreatePixelMovingFilterClipExpander(c0(), *effect);
 
   local_effect = effect;
   local_clip = clip_expander;
 
-  input_rect = gfx::RectF(100, 100, 50, 50);
   expected_transformed_rect = input_rect;
   // Reflection is at (50, 100, 50, 50).
   expected_visual_rect = FloatClipRect(gfx::RectF(-150, 100, 300, 50));
@@ -1056,6 +1057,7 @@ TEST_P(GeometryMapperTest, IgnoreFilters) {
   CompositorFilterOperations filters;
   filters.AppendReferenceFilter(paint_filter_builder::BuildBoxReflectFilter(
       BoxReflection(BoxReflection::kHorizontalReflection, 0), nullptr));
+  filters.SetReferenceBox(gfx::RectF(100, 100, 50, 50));
   auto* effect = CreateFilterEffect(e0(), filters);
   auto* clip_expander = CreatePixelMovingFilterClipExpander(c0(), *effect);
 

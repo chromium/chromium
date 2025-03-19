@@ -63,11 +63,8 @@ struct RequestInfo {
 std::optional<GURL> GenerateWebUIUrl(RequestInfo request_info,
                                      Profile* profile);
 
-// Associate tab group with `group_id` returned by the Share flow WebUI, i.e.
-// make the tab group shared.
-void AssociateTabGroupWithGroupId(const std::string& tab_group_id,
-                                  const std::string& group_id,
-                                  Profile* profile);
+// Return whether the tab group is shared.
+bool IsTabGroupShared(const std::string& tab_group_id, Profile* profile);
 
 // Get share link from data sharing service.
 GURL GetShareLink(const std::string& group_id,

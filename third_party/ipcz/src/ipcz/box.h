@@ -5,11 +5,12 @@
 #ifndef IPCZ_SRC_IPCZ_BOX_
 #define IPCZ_SRC_IPCZ_BOX_
 
+#include <variant>
+
 #include "ipcz/api_object.h"
 #include "ipcz/application_object.h"
 #include "ipcz/driver_object.h"
 #include "ipcz/parcel_wrapper.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "util/overloaded.h"
 
 namespace ipcz {
@@ -39,7 +40,7 @@ class Box : public APIObjectImpl<Box, APIObject::kBox> {
   explicit Box(Ref<ParcelWrapper> parcel);
 
   Type type() const {
-    return absl::visit(
+    return std::visit(
         Overloaded{
             [](const Empty&) { return Type::kEmpty; },
             [](const DriverObject&) { return Type::kDriverObject; },
@@ -49,13 +50,13 @@ class Box : public APIObjectImpl<Box, APIObject::kBox> {
         contents_);
   }
 
-  bool is_empty() { return absl::holds_alternative<Empty>(contents_); }
-  DriverObject& driver_object() { return absl::get<DriverObject>(contents_); }
+  bool is_empty() { return std::holds_alternative<Empty>(contents_); }
+  DriverObject& driver_object() { return std::get<DriverObject>(contents_); }
   ApplicationObject& application_object() {
-    return absl::get<ApplicationObject>(contents_);
+    return std::get<ApplicationObject>(contents_);
   }
   Ref<ParcelWrapper>& subparcel() {
-    return absl::get<Ref<ParcelWrapper>>(contents_);
+    return std::get<Ref<ParcelWrapper>>(contents_);
   }
 
   IpczResult Peek(IpczBoxContents& contents);
@@ -71,9 +72,9 @@ class Box : public APIObjectImpl<Box, APIObject::kBox> {
   enum ExtractMode { kPeek, kUnbox };
   IpczResult ExtractContents(ExtractMode mode, IpczBoxContents& contents);
 
-  using Empty = absl::monostate;
+  using Empty = std::monostate;
   using Contents =
-      absl::variant<Empty, DriverObject, ApplicationObject, Ref<ParcelWrapper>>;
+      std::variant<Empty, DriverObject, ApplicationObject, Ref<ParcelWrapper>>;
 
   Contents contents_;
 };
