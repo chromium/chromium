@@ -1112,12 +1112,14 @@ TEST_F(NewTabPageHandlerTest, SetModuleDisabled) {
 }
 
 TEST_F(NewTabPageHandlerTest, SetModuleHiddenAndDisabled) {
+  bool all;
   std::vector<std::string> disabled_module_ids;
   EXPECT_CALL(mock_page_, SetDisabledModules)
       .Times(2)
       .WillRepeatedly(testing::Invoke(
-          [&disabled_module_ids](bool all_arg,
-                                 std::vector<std::string> module_ids_arg) {
+          [&all, &disabled_module_ids](
+              bool all_arg, std::vector<std::string> module_ids_arg) {
+            all = all_arg;
             disabled_module_ids = std::move(module_ids_arg);
           }));
   mock_page_.FlushForTesting();
@@ -1127,6 +1129,7 @@ TEST_F(NewTabPageHandlerTest, SetModuleHiddenAndDisabled) {
   profile_->GetPrefs()->SetList(prefs::kNtpHiddenModules,
                                 std::move(hidden_modules_list));
   mock_page_.FlushForTesting();
+  EXPECT_FALSE(all);
   EXPECT_EQ(1u, disabled_module_ids.size());
   EXPECT_EQ(disabled_module_ids[0], ntp_modules::kDriveModuleId);
 
@@ -1134,8 +1137,74 @@ TEST_F(NewTabPageHandlerTest, SetModuleHiddenAndDisabled) {
   mock_page_.FlushForTesting();
   // Ensure |disabled_module_ids| still only has one entry for
   // `ntp_modules::kDriveModuleId`.
+  EXPECT_FALSE(all);
   EXPECT_EQ(1u, disabled_module_ids.size());
   EXPECT_EQ(disabled_module_ids[0], ntp_modules::kDriveModuleId);
+}
+
+TEST_F(NewTabPageHandlerTest, SetModuleHiddenAndDisabledCardsManagedVisible) {
+  profile_->GetTestingPrefService()->SetManagedPref(prefs::kNtpModulesVisible,
+                                                    base::Value(true));
+  bool all;
+  std::vector<std::string> disabled_module_ids;
+  EXPECT_CALL(mock_page_, SetDisabledModules)
+      .Times(3)
+      .WillRepeatedly(testing::Invoke(
+          [&all, &disabled_module_ids](
+              bool all_arg, std::vector<std::string> module_ids_arg) {
+            all = all_arg;
+            disabled_module_ids = std::move(module_ids_arg);
+          }));
+  mock_page_.FlushForTesting();
+
+  // Managed card visibility should ignore disabling of cards.
+  handler_->SetModuleDisabled(ntp_modules::kDriveModuleId, true);
+  mock_page_.FlushForTesting();
+  EXPECT_FALSE(all);
+  EXPECT_TRUE(disabled_module_ids.empty());
+
+  // Managed card visibility that forces display of cards should respect
+  // hidden cards.
+  base::Value::List hidden_modules_list;
+  hidden_modules_list.Append(ntp_modules::kDriveModuleId);
+  profile_->GetPrefs()->SetList(prefs::kNtpHiddenModules,
+                                std::move(hidden_modules_list));
+  mock_page_.FlushForTesting();
+  EXPECT_FALSE(all);
+  EXPECT_EQ(1u, disabled_module_ids.size());
+  EXPECT_EQ(disabled_module_ids[0], ntp_modules::kDriveModuleId);
+}
+
+TEST_F(NewTabPageHandlerTest,
+       SetModuleHiddenAndDisabledCardsManagedNotVisible) {
+  profile_->GetTestingPrefService()->SetManagedPref(prefs::kNtpModulesVisible,
+                                                    base::Value(false));
+  bool all;
+  std::vector<std::string> disabled_module_ids;
+  EXPECT_CALL(mock_page_, SetDisabledModules)
+      .Times(3)
+      .WillRepeatedly(testing::Invoke(
+          [&all, &disabled_module_ids](
+              bool all_arg, std::vector<std::string> module_ids_arg) {
+            all = all_arg;
+            disabled_module_ids = std::move(module_ids_arg);
+          }));
+  mock_page_.FlushForTesting();
+
+  // Managed card visibility of cards should ignore hidden and disabled cards
+  // and send a value of true for all cards being disabled.
+  base::Value::List hidden_modules_list;
+  hidden_modules_list.Append(ntp_modules::kDriveModuleId);
+  profile_->GetPrefs()->SetList(prefs::kNtpHiddenModules,
+                                std::move(hidden_modules_list));
+  mock_page_.FlushForTesting();
+  EXPECT_TRUE(all);
+  EXPECT_TRUE(disabled_module_ids.empty());
+
+  handler_->SetModuleDisabled(ntp_modules::kDriveModuleId, true);
+  mock_page_.FlushForTesting();
+  EXPECT_TRUE(all);
+  EXPECT_TRUE(disabled_module_ids.empty());
 }
 
 TEST_F(NewTabPageHandlerTest, ModulesVisiblePrefChangeTriggersPageCall) {
