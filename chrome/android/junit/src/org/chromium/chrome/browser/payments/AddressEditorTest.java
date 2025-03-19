@@ -19,7 +19,6 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -179,20 +178,14 @@ public class AddressEditorTest {
         // PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
         when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
         AutofillProfileBridgeJni.setInstanceForTesting(mAutofillProfileBridgeJni);
-        doAnswer(
-                        invocation -> {
-                            List<Integer> requiredFields =
-                                    (List<Integer>) invocation.getArguments()[1];
-                            requiredFields.addAll(
-                                    List.of(
-                                            FieldType.NAME_FULL,
-                                            FieldType.ADDRESS_HOME_CITY,
-                                            FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY,
-                                            FieldType.ADDRESS_HOME_ZIP));
-                            return null;
-                        })
-                .when(mAutofillProfileBridgeJni)
-                .getRequiredFields(anyString(), anyList());
+        when(mAutofillProfileBridgeJni.getRequiredFields(anyString()))
+                .thenReturn(
+                        new int[] {
+                            FieldType.NAME_FULL,
+                            FieldType.ADDRESS_HOME_CITY,
+                            FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY,
+                            FieldType.ADDRESS_HOME_ZIP
+                        });
         PhoneNumberUtilJni.setInstanceForTesting(mPhoneNumberUtilJni);
         when(mPhoneNumberUtilJni.isPossibleNumber(anyString(), anyString())).thenReturn(true);
 
@@ -681,7 +674,7 @@ public class AddressEditorTest {
     @SmallTest
     public void edit_AlterAddressProfile_CommitChanges_InvisibleFieldsNotReset() {
         // Make all fields optional to avoid setting them manually.
-        doNothing().when(mAutofillProfileBridgeJni).getRequiredFields(anyString(), anyList());
+        when(mAutofillProfileBridgeJni.getRequiredFields(anyString())).thenReturn(new int[0]);
         // Whitelist only full name, admin area and locality.
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS.subList(0, 3), /* countryCode= */ "US");
         doAnswer(

@@ -203,20 +203,14 @@ public class AddressEditorTest {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
 
         AutofillProfileBridgeJni.setInstanceForTesting(mAutofillProfileBridgeJni);
-        doAnswer(
-                        invocation -> {
-                            List<Integer> requiredFields =
-                                    (List<Integer>) invocation.getArguments()[1];
-                            requiredFields.addAll(
-                                    List.of(
-                                            FieldType.NAME_FULL,
-                                            FieldType.ADDRESS_HOME_CITY,
-                                            FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY,
-                                            FieldType.ADDRESS_HOME_ZIP));
-                            return null;
-                        })
-                .when(mAutofillProfileBridgeJni)
-                .getRequiredFields(anyString(), anyList());
+        when(mAutofillProfileBridgeJni.getRequiredFields(anyString()))
+                .thenReturn(
+                        new int[] {
+                            FieldType.NAME_FULL,
+                            FieldType.ADDRESS_HOME_CITY,
+                            FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY,
+                            FieldType.ADDRESS_HOME_ZIP
+                        });
         PhoneNumberUtilJni.setInstanceForTesting(mPhoneNumberUtilJni);
         when(mPhoneNumberUtilJni.isPossibleNumber(anyString(), anyString())).thenReturn(true);
 

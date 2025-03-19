@@ -61,7 +61,9 @@ public final class AutofillProfileBridge {
         return countries;
     }
 
-    /** @return The list of admin areas sorted by their localized display names. */
+    /**
+     * @return The list of admin areas sorted by their localized display names.
+     */
     public static List<DropdownKeyValue> getAdminAreaDropdownList(
             String[] adminAreaCodes, String[] adminAreaNames) {
         List<DropdownKeyValue> adminAreas = new ArrayList<>();
@@ -85,11 +87,11 @@ public final class AutofillProfileBridge {
         return adminAreas;
     }
 
-    /** @return The list of required fields. COUNTRY is always included. RECIPIENT often omitted. */
-    public static List<Integer> getRequiredAddressFields(String countryCode) {
-        List<Integer> requiredFields = new ArrayList<>();
-        AutofillProfileBridgeJni.get().getRequiredFields(countryCode, requiredFields);
-        return requiredFields;
+    /**
+     * @return The list of required fields. COUNTRY is always included. RECIPIENT often omitted.
+     */
+    public static int[] getRequiredAddressFields(String countryCode) {
+        return AutofillProfileBridgeJni.get().getRequiredFields(countryCode);
     }
 
     /**
@@ -117,13 +119,6 @@ public final class AutofillProfileBridge {
         }
     }
 
-    @CalledByNative
-    private static void intArrayToList(int[] array, List<Integer> list) {
-        for (int s : array) {
-            list.add(s);
-        }
-    }
-
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
@@ -132,8 +127,8 @@ public final class AutofillProfileBridge {
 
         void getSupportedCountries(List<String> countryCodes, List<String> countryNames);
 
-        void getRequiredFields(
-                @JniType("std::string") String countryCode, List<Integer> requiredFields);
+        @JniType("std::vector<int>")
+        int[] getRequiredFields(@JniType("std::string") String countryCode);
 
         @JniType("AutofillAddressEditorUiInfoAndroid")
         AutofillAddressEditorUiInfo getAddressEditorUiInfo(

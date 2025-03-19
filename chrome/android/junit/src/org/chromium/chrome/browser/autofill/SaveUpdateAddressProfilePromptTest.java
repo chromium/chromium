@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -39,6 +40,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.autofill.AutofillProfile;
+import org.chromium.components.autofill.FieldType;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.base.TestActivity;
@@ -86,6 +88,14 @@ public class SaveUpdateAddressProfilePromptTest {
                         NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER);
         SaveUpdateAddressProfilePromptControllerJni.setInstanceForTesting(mPromptControllerJni);
         AutofillProfileBridgeJni.setInstanceForTesting(mAutofillProfileBridgeJni);
+        when(mAutofillProfileBridgeJni.getRequiredFields(anyString()))
+                .thenReturn(
+                        new int[] {
+                            FieldType.NAME_FULL,
+                            FieldType.ADDRESS_HOME_CITY,
+                            FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY,
+                            FieldType.ADDRESS_HOME_ZIP
+                        });
     }
 
     private void createAndShowPrompt(boolean isUpdate) {
