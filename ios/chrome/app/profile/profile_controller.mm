@@ -661,6 +661,14 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
     return;
   }
 
+  // Stop listening to the SceneStates, as there is no need anymore once
+  // the transition to the next stage is scheduled. This avoids a crash
+  // if a SceneState reaches foreground in reaction to the ProfileState
+  // reaching the PrepareUI stage.
+  for (SceneState* sceneState in _state.connectedScenes) {
+    [sceneState removeObserver:self];
+  }
+
   [_state queueTransitionToNextInitStage];
 }
 
