@@ -46,8 +46,8 @@ class It2MeConfirmationDialogChromeOS : public It2MeConfirmationDialog {
   void OnConfirmationDialogResult(Result result);
 
   const gfx::VectorIcon& GetIcon() const;
-
   const ui::ImageModel GetDialogIcon() const;
+  std::u16string GetShareButtonLabel() const;
 
   std::unique_ptr<Core> core_;
 
