@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "extensions/renderer/script_context.h"
@@ -70,8 +71,8 @@ v8::Local<v8::Object> WebCryptoAlgorithmToV8Value(
             rsa_hashed_key_gen->PublicExponent();
         v8::Local<v8::ArrayBuffer> buffer =
             v8::ArrayBuffer::New(isolate, public_exponent.size());
-        memcpy(buffer->GetBackingStore()->Data(), public_exponent.data(),
-               public_exponent.size());
+        UNSAFE_TODO(memcpy(buffer->GetBackingStore()->Data(),
+                           public_exponent.data(), public_exponent.size()));
         builder.Set("publicExponent", buffer);
 
         hash = &rsa_hashed_key_gen->GetHash();

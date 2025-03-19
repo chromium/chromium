@@ -81,7 +81,8 @@ bool ParseUuid(const std::string& str, bluetooth_v2_shlib::Uuid* uuid) {
   // Check for 16-bit UUID
   if (str.size() == kUuid16bitLen) {
     *uuid = kUuidBase;
-    return sscanf(str.c_str(), "%02hhx%02hhx", &(*uuid)[2], &(*uuid)[3]) == 2;
+    return UNSAFE_TODO(sscanf(str.c_str(), "%02hhx%02hhx", &(*uuid)[2],
+                              &(*uuid)[3])) == 2;
   }
 
   if (str.size() > kUuidHexNumChars &&

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "chrome/common/chrome_paths.h"
@@ -28,8 +29,8 @@ TEST(GlicScreenshotCapturerTest, MANUAL_ConvertFrameToJpeg) {
 
   webrtc::DesktopSize size(input_bitmap.width(), input_bitmap.height());
   auto frame = std::make_unique<webrtc::BasicDesktopFrame>(size);
-  memcpy(frame->data(), input_bitmap.getPixels(),
-         input_bitmap.computeByteSize());
+  UNSAFE_TODO(memcpy(frame->data(), input_bitmap.getPixels(),
+                     input_bitmap.computeByteSize()));
   frame->mutable_updated_region()->SetRect(webrtc::DesktopRect::MakeSize(size));
 
   std::vector<uint8_t> jpeg_data =

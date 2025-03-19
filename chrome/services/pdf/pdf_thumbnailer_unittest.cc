@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -87,7 +88,8 @@ class PdfThumbnailerTest : public testing::Test {
   base::ReadOnlySharedMemoryRegion CreatePdfRegion(const std::string& content) {
     auto pdf_region = base::ReadOnlySharedMemoryRegion::Create(content.size());
     EXPECT_TRUE(pdf_region.IsValid());
-    memcpy(pdf_region.mapping.memory(), content.data(), content.size());
+    UNSAFE_TODO(
+        memcpy(pdf_region.mapping.memory(), content.data(), content.size()));
     return std::move(pdf_region.region);
   }
 
