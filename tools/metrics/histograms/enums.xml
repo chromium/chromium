@@ -25853,6 +25853,8 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Slow input"/>
 </enum>
 
+<!-- LINT.IfChange(VideoCodec) -->
+
 <enum name="VideoCodec">
   <int value="0" label="kUnknownVideoCodec"/>
   <int value="1" label="kCodecH264"/>
@@ -25866,6 +25868,10 @@ Called by update_net_error_codes.py.-->
   <int value="9" label="kCodecDolbyVision"/>
   <int value="10" label="kCodecAV1"/>
 </enum>
+
+<!-- LINT.ThenChange(//media/base/video_codecs.h:VideoCodec) -->
+
+<!-- LINT.IfChange(VideoCodecProfile) -->
 
 <enum name="VideoCodecProfile">
   <int value="0" label="H.264 Baseline"/>
@@ -25921,6 +25927,8 @@ Called by update_net_error_codes.py.-->
   <int value="50" label="VVC Main12 444 Still-picture"/>
   <int value="51" label="VVC Main16 444 Still-picture"/>
 </enum>
+
+<!-- LINT.ThenChange(//gpu/config/gpu_info.h:VideoCodecProfile, //media/base/video_codecs.h:VideoCodecProfile) -->
 
 <enum name="VideoDecoderType">
   <int value="0" label="None"/>

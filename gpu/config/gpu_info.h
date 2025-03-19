@@ -41,8 +41,8 @@ namespace gpu {
 
 // These values are persistent to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// This should match enum IntelGpuSeriesType in
-//  \tools\metrics\histograms\metadata\gpu\enums.xml
+//
+// LINT.IfChange(IntelGpuSeriesType)
 enum class IntelGpuSeriesType {
   kUnknown = 0,
   // Intel 4th gen
@@ -88,11 +88,17 @@ enum class IntelGpuSeriesType {
   kBattlemage = 31,
   // Intel Xe3
   kPantherlake = 32,
-  // Please also update |gpu_series_map| in process_json.py.
+  // Please also update `gpu_series_map` in process_json.py.
   kMaxValue = kPantherlake,
 };
+// clang-format off
+// LINT.ThenChange(//tools/metrics/histograms/metadata/gpu/enums.xml:IntelGpuSeriesType, ./process_json.py)
+// clang-format on
 
-// Video profile.  This *must* match media::VideoCodecProfile.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(VideoCodecProfile)
 enum VideoCodecProfile {
   VIDEO_CODEC_PROFILE_UNKNOWN = -1,
   VIDEO_CODEC_PROFILE_MIN = VIDEO_CODEC_PROFILE_UNKNOWN,
@@ -150,6 +156,9 @@ enum VideoCodecProfile {
   VVCPROFILE_MAIN16_444_STILL_PICTURE = 51,
   VIDEO_CODEC_PROFILE_MAX = VVCPROFILE_MAIN16_444_STILL_PICTURE,
 };
+// clang-format off
+// LINT.ThenChange(//media/base/video_codecs.h:VideoCodecProfile, //tools/metrics/histograms/enums.xml:VideoCodecProfile)
+// clang-format on
 
 // Specification of a decoding profile supported by a hardware decoder.
 struct GPU_EXPORT VideoDecodeAcceleratorSupportedProfile {
@@ -217,7 +226,7 @@ struct GPU_EXPORT ImageDecodeAcceleratorSupportedProfile {
   gfx::Size min_encoded_dimensions;
   gfx::Size max_encoded_dimensions;
 
-  // Fields specific to |image_type| == kJpeg.
+  // Fields specific to `image_type` == kJpeg.
   // The supported chroma subsampling formats, e.g. 4:2:0.
   std::vector<ImageDecodeAcceleratorSubsampling> subsamplings;
 };
