@@ -11,6 +11,7 @@
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
 #include "base/traits_bag.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/iwa_test_server_configurator.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
@@ -18,6 +19,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/component_updater/component_updater_paths.h"
+#include "components/component_updater/mock_component_updater_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -26,18 +28,24 @@
 
 namespace web_app {
 
+class MockOnDemandUpdater : public component_updater::OnDemandUpdater {
+ public:
+  MockOnDemandUpdater();
+  ~MockOnDemandUpdater() override;
+
+  MOCK_METHOD(void,
+              OnDemandUpdate,
+              (const std::string&,
+               component_updater::OnDemandUpdater::Priority,
+               component_updater::Callback),
+              (override));
+};
+
 class IsolatedWebAppTest : public ::testing::Test {
  public:
-  enum KeyDistributionComponentType {
-    // IwaKeyDistributionInfoProvider will run with downloaded component data.
-    kDownloaded,
-
-    kNone,
-  };
   struct WithDevMode {};
   struct ValidTraits {
     ValidTraits(base::test::TaskEnvironment::ValidTraits);
-    ValidTraits(KeyDistributionComponentType);
     ValidTraits(WithDevMode);
   };
 
@@ -47,15 +55,10 @@ class IsolatedWebAppTest : public ::testing::Test {
   explicit IsolatedWebAppTest(IsolatedWebAppTestTraits&&... traits)
       : IsolatedWebAppTest(
             std::make_unique<content::BrowserTaskEnvironment>(
-                base::trait_helpers::Exclude<KeyDistributionComponentType,
-                                             WithDevMode>::Filter(traits)...),
+                base::trait_helpers::Exclude<WithDevMode>::Filter(traits)...),
             /*dev_mode=*/
             base::trait_helpers::HasTrait<WithDevMode,
-                                          IsolatedWebAppTestTraits...>(),
-            /*krc_data=*/
-            base::trait_helpers::GetEnum<
-                KeyDistributionComponentType,
-                KeyDistributionComponentType::kDownloaded>(traits...)) {}
+                                          IsolatedWebAppTestTraits...>()) {}
 
   ~IsolatedWebAppTest() override;
 
@@ -64,15 +67,27 @@ class IsolatedWebAppTest : public ::testing::Test {
   network::TestURLLoaderFactory& url_loader_factory();
   IwaTestServerConfigurator& test_update_server();
   content::BrowserTaskEnvironment& task_environment();
+  MockOnDemandUpdater& on_demand_updater();
+
+  void InstallComponentAsync(const base::Version& version,
+                             const IwaKeyDistribution& component_data);
 
  protected:
   void SetUp() override;
   void TearDown() override;
 
+  // Allows the inheriting test suite to specify the parameters of the IWA
+  // component that will be loaded during setup; defaults to an empty preloaded
+  // component with version 1.0.0.
+  virtual base::Version GetIwaComponentVersion() const;
+  virtual IwaKeyDistribution GetIwaComponentData() const;
+  virtual bool IsIwaComponentPreloaded() const;
+
  private:
+  class IwaComponentWrapper;
+
   IsolatedWebAppTest(std::unique_ptr<content::BrowserTaskEnvironment> env,
-                     bool dev_mode,
-                     KeyDistributionComponentType kdc_type);
+                     bool dev_mode);
 
   base::test::ScopedFeatureList features_;
   std::unique_ptr<content::BrowserTaskEnvironment> env_;
@@ -92,8 +107,8 @@ class IsolatedWebAppTest : public ::testing::Test {
   network::TestURLLoaderFactory url_loader_factory_;
   IwaTestServerConfigurator test_update_server_{url_loader_factory()};
 
-  // Default is kDownloaded.
-  KeyDistributionComponentType kdc_type_;
+  std::unique_ptr<IwaComponentWrapper> component_wrapper_;
+
   base::ScopedPathOverride preinstalled_dir_override_{
       component_updater::DIR_COMPONENT_PREINSTALLED};
   base::ScopedPathOverride preinstalled_alt_dir_override_{
