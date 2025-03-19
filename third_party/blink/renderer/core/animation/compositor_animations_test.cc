@@ -2992,7 +2992,9 @@ TEST_P(AnimationCompositorAnimationsTest, BackgroundShorthand) {
   EXPECT_TRUE(IsUseCounted(WebFeature::kStaticPropertyInAnimation));
 }
 
-TEST_P(AnimationCompositorAnimationsTest, ClipPathWithViewTimeline) {
+// TODO(crbug.com/403708813): Adding support for native paint worklets with non-
+// monotonic timelines, introduced a regression. Feature currently disabled.
+TEST_P(AnimationCompositorAnimationsTest, DISABLED_ClipPathWithViewTimeline) {
   std::unique_ptr<ScopedCompositeClipPathAnimationForTest>
       scoped_composite_clip_path_animation =
           std::make_unique<ScopedCompositeClipPathAnimationForTest>(true);
