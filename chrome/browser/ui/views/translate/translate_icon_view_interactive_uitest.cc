@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -59,14 +60,16 @@ class TranslateIconViewTest : public InProcessBrowserTest,
   }
 
   views::BubbleDialogDelegate* GetBubble() const {
-    return TranslateBubbleController::FromWebContents(
-               browser()->tab_strip_model()->GetActiveWebContents())
+    return browser()
+        ->GetFeatures()
+        .translate_bubble_controller()
         ->GetTranslateBubble();
   }
 
   PartialTranslateBubbleView* GetPartialTranslateBubble() {
-    return TranslateBubbleController::FromWebContents(
-               browser()->tab_strip_model()->GetActiveWebContents())
+    return browser()
+        ->GetFeatures()
+        .translate_bubble_controller()
         ->GetPartialTranslateBubble();
   }
 
@@ -116,13 +119,13 @@ IN_PROC_BROWSER_TEST_P(TranslateIconViewTest, ClosePartialTranslateBubble) {
   EXPECT_THAT(translate_icon, ::testing::NotNull());
 
   TranslateBubbleController* controller =
-      TranslateBubbleController::GetOrCreate(
-          browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetFeatures().translate_bubble_controller();
   auto anchor_widget =
       CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   views::View* anchor_view = anchor_widget->GetContentsView();
-  controller->StartPartialTranslate(anchor_view, nullptr, "fr", "en",
-                                    std::u16string());
+  controller->StartPartialTranslate(
+      browser()->tab_strip_model()->GetActiveWebContents(), anchor_view,
+      nullptr, "fr", "en", std::u16string());
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(GetPartialTranslateBubble(), ::testing::NotNull());
 

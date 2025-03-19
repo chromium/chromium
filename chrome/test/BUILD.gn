@@ -12215,6 +12215,7 @@ if (!is_android) {
       "//chrome/browser/devtools",
       "//chrome/browser/sync",
       "//chrome/browser/ui/autofill",
+      "//chrome/browser/ui/browser_window:browser_window",
       "//chrome/renderer",
       "//components/javascript_dialogs",
       "//components/resources",

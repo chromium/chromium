@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
@@ -59,30 +60,22 @@ TranslateIconView::TranslateIconView(
 TranslateIconView::~TranslateIconView() = default;
 
 views::BubbleDialogDelegate* TranslateIconView::GetBubble() const {
-  if (GetWebContents()) {
-    TranslateBubbleController* translate_bubble_controller =
-        TranslateBubbleController::FromWebContents(GetWebContents());
+  TranslateBubbleController* translate_bubble_controller =
+      browser_->GetFeatures().translate_bubble_controller();
 
-    if (translate_bubble_controller) {
-      return translate_bubble_controller->GetTranslateBubble();
-    }
-  }
-
-  return nullptr;
+  return translate_bubble_controller
+             ? translate_bubble_controller->GetTranslateBubble()
+             : nullptr;
 }
 
 views::BubbleDialogDelegate* TranslateIconView::GetPartialTranslateBubble()
     const {
-  if (GetWebContents()) {
-    TranslateBubbleController* translate_bubble_controller =
-        TranslateBubbleController::FromWebContents(GetWebContents());
+  TranslateBubbleController* translate_bubble_controller =
+      browser_->GetFeatures().translate_bubble_controller();
 
-    if (translate_bubble_controller) {
-      return translate_bubble_controller->GetPartialTranslateBubble();
-    }
-  }
-
-  return nullptr;
+  return translate_bubble_controller
+             ? translate_bubble_controller->GetPartialTranslateBubble()
+             : nullptr;
 }
 
 void TranslateIconView::ActiveTabChanged(
@@ -154,9 +147,8 @@ void TranslateIconView::UpdateImpl() {
       ->LogOmniboxIconChange(show_page_action && enabled);
   SetVisible(show_page_action && enabled);
 
-  if (!enabled &&
-      TranslateBubbleController::FromWebContents(GetWebContents())) {
-    TranslateBubbleController::FromWebContents(GetWebContents())->CloseBubble();
+  if (!enabled) {
+    browser_->GetFeatures().translate_bubble_controller()->CloseBubble();
   }
 }
 
