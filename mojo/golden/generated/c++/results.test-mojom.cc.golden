@@ -62,22 +62,22 @@ bool ResultTestError::Validate(
     mojo::internal::ValidationContext* validation_context) {
   return Data_::Validate(data, validation_context);
 }
-ResultInterface_Method_ResponseParams_Result::ResultInterface_Method_ResponseParams_Result() : tag_(Tag::kSuccess) {
+ResultInterface_Method_ResponseParam_Result::ResultInterface_Method_ResponseParam_Result() : tag_(Tag::kSuccess) {
   data_.success = bool();
 }
 
-ResultInterface_Method_ResponseParams_Result::~ResultInterface_Method_ResponseParams_Result() {
+ResultInterface_Method_ResponseParam_Result::~ResultInterface_Method_ResponseParam_Result() {
   DestroyActive();
 }
 
-void ResultInterface_Method_ResponseParams_Result::set_success(
+void ResultInterface_Method_ResponseParam_Result::set_success(
     bool success) {
   if (tag_ != Tag::kSuccess) {
     DestroyActive();
     tag_ = Tag::kSuccess;
   }
   data_.success = success;
-}void ResultInterface_Method_ResponseParams_Result::set_failure(
+}void ResultInterface_Method_ResponseParam_Result::set_failure(
     ResultTestErrorPtr failure) {
   if (tag_ == Tag::kFailure) {
     *(data_.failure) = std::move(failure);
@@ -89,7 +89,7 @@ void ResultInterface_Method_ResponseParams_Result::set_success(
   }
 }
 
-void ResultInterface_Method_ResponseParams_Result::DestroyActive() {
+void ResultInterface_Method_ResponseParam_Result::DestroyActive() {
   switch (tag_) {
 
     case Tag::kSuccess:
@@ -101,7 +101,7 @@ void ResultInterface_Method_ResponseParams_Result::DestroyActive() {
       break;
   }
 }
-size_t ResultInterface_Method_ResponseParams_Result::Hash(size_t seed) const {
+size_t ResultInterface_Method_ResponseParam_Result::Hash(size_t seed) const {
   seed = mojo::internal::HashCombine(seed, static_cast<uint32_t>(tag_));
   switch (tag_) {
 
@@ -114,7 +114,7 @@ size_t ResultInterface_Method_ResponseParams_Result::Hash(size_t seed) const {
   }
 }
 
-bool ResultInterface_Method_ResponseParams_Result::Validate(
+bool ResultInterface_Method_ResponseParam_Result::Validate(
     const void* data,
     mojo::internal::ValidationContext* validation_context) {
   return Data_::Validate(data, validation_context, false);
@@ -174,12 +174,28 @@ uint32_t ResultInterface::Method_Sym::IPCStableHash() {
 }
 # endif // !BUILDFLAG(IS_FUCHSIA)
 
+class ResultInterface_Method_ForwardToCallback
+    : public mojo::MessageReceiver {
+ public:
+  ResultInterface_Method_ForwardToCallback(
+      ResultInterface::MethodCallback callback
+      ) : callback_(std::move(callback)) {
+  }
+
+  ResultInterface_Method_ForwardToCallback(const ResultInterface_Method_ForwardToCallback&) = delete;
+  ResultInterface_Method_ForwardToCallback& operator=(const ResultInterface_Method_ForwardToCallback&) = delete;
+
+  bool Accept(mojo::Message* message) override;
+ private:
+  ResultInterface::MethodCallback callback_;
+};
+
 ResultInterfaceProxy::ResultInterfaceProxy(mojo::MessageReceiverWithResponder* receiver)
     : receiver_(receiver) {
 }
 
 void ResultInterfaceProxy::Method(
-    bool in_a) {
+    bool in_a, MethodCallback callback) {
 #if BUILDFLAG(MOJO_TRACE_ENABLED)
   TRACE_EVENT1(
     "mojom", "Send golden::ResultInterface::Method", "input_parameters",
@@ -191,7 +207,7 @@ void ResultInterfaceProxy::Method(
    });
 #endif
 
-  const bool kExpectsResponse = false;
+  const bool kExpectsResponse = true;
   const bool kIsSync = false;
   const bool kAllowInterrupt = true;
   const bool is_urgent = false;
@@ -216,9 +232,140 @@ void ResultInterfaceProxy::Method(
   message.set_interface_name(ResultInterface::Name_);
   message.set_method_name("Method");
 #endif
-  // This return value may be ignored as false implies the Connector has
-  // encountered an error, which will be visible through other means.
-  ::mojo::internal::SendMojoMessage(*receiver_, message);
+  std::unique_ptr<mojo::MessageReceiver> responder(
+      new ResultInterface_Method_ForwardToCallback(
+          std::move(callback)));
+  ::mojo::internal::SendMojoMessage(*receiver_, message, std::move(responder));
+}
+class ResultInterface_Method_ProxyToResponder : public ::mojo::internal::ProxyToResponder {
+ public:
+  static ResultInterface::MethodCallback CreateCallback(
+      ::mojo::Message& message,
+      std::unique_ptr<mojo::MessageReceiverWithStatus> responder) {
+    std::unique_ptr<ResultInterface_Method_ProxyToResponder> proxy(
+        new ResultInterface_Method_ProxyToResponder(
+            message, std::move(responder)));
+    return base::BindOnce(&ResultInterface_Method_ProxyToResponder::Run,
+                          std::move(proxy));
+  }
+
+  ~ResultInterface_Method_ProxyToResponder() {
+#if DCHECK_IS_ON()
+    if (responder_) {
+      // If we're being destroyed without being run, we want to ensure the
+      // binding endpoint has been closed. This checks for that asynchronously.
+      // We pass a bound generated callback to handle the response so that any
+      // resulting DCHECK stack will have useful interface type information.
+      // Instantiate a ScopedFizzleBlockShutdownTasks to allow this request to
+      // fizzle if this happens after shutdown and the endpoint is bound to a
+      // BLOCK_SHUTDOWN sequence.
+      base::ThreadPoolInstance::ScopedFizzleBlockShutdownTasks fizzler;
+      responder_->IsConnectedAsync(base::BindOnce(&OnIsConnectedComplete));
+    }
+#endif
+  }
+
+ private:
+  ResultInterface_Method_ProxyToResponder(
+      ::mojo::Message& message,
+      std::unique_ptr<mojo::MessageReceiverWithStatus> responder)
+      : ::mojo::internal::ProxyToResponder(message, std::move(responder)) {
+  }
+
+#if DCHECK_IS_ON()
+  static void OnIsConnectedComplete(bool connected) {
+    DCHECK(!connected)
+        << "ResultInterface::MethodCallback was destroyed without "
+        << "first either being run or its corresponding binding being closed. "
+        << "It is an error to drop response callbacks which still correspond "
+        << "to an open interface pipe.";
+  }
+#endif
+
+  void Run(
+      ResultInterface_Method_ResponseParam_ResultPtr in_result);
+};
+
+bool ResultInterface_Method_ForwardToCallback::Accept(
+    mojo::Message* message) {
+  DCHECK(message->is_serialized());
+  internal::ResultInterface_Method_ResponseParams_Data* params =
+      reinterpret_cast<
+          internal::ResultInterface_Method_ResponseParams_Data*>(
+              message->mutable_payload());
+  
+  
+  // Validation for ResultInterface.0
+  bool success = true;
+  ResultInterface_Method_ResponseParam_ResultPtr p_result{};
+  ResultInterface_Method_ResponseParamsDataView input_data_view(params, message);
+  
+  if (success && !input_data_view.ReadResult(&p_result))
+    success = false;
+  if (!success) {
+    ReportValidationErrorForMessage(
+        message,
+        mojo::internal::VALIDATION_ERROR_DESERIALIZATION_FAILED,
+        ResultInterface::Name_, 0, true);
+    return false;
+  }
+  if (!callback_.is_null())
+    std::move(callback_).Run(
+std::move(p_result));
+  return true;
+}
+
+void ResultInterface_Method_ProxyToResponder::Run(
+    ResultInterface_Method_ResponseParam_ResultPtr in_result) {
+#if BUILDFLAG(MOJO_TRACE_ENABLED)
+  TRACE_EVENT1(
+    "mojom", "Send reply golden::ResultInterface::Method", "async_response_parameters",
+    [&](perfetto::TracedValue context){
+      auto dict = std::move(context).WriteDictionary();
+      perfetto::WriteIntoTracedValueWithFallback(
+           dict.AddItem("result"), in_result,
+                        "<value of type ResultInterface_Method_ResponseParam_ResultPtr>");
+   });
+#endif
+
+  const uint32_t kFlags = mojo::Message::kFlagIsResponse |
+      ((is_sync_) ? mojo::Message::kFlagIsSync : 0) |
+      ((true) ? 0 : mojo::Message::kFlagNoInterrupt) |
+      ((false) ? mojo::Message::kFlagIsUrgent : 0);
+
+  const size_t estimated_payload_size =
+    0;
+  mojo::Message message(
+      base::to_underlying(messages::ResultInterface::kMethod), kFlags, estimated_payload_size);
+  mojo::internal::MessageFragment<
+      ::golden::internal::ResultInterface_Method_ResponseParams_Data> params(
+          message);
+  params.Allocate();
+  mojo::internal::MessageFragment<decltype(params->result)>
+      result_fragment(params.message());
+  result_fragment.Claim(&params->result);
+  mojo::internal::Serialize<::golden::ResultInterface_Method_ResponseParam_ResultDataView>(
+      in_result, result_fragment, true);
+  MOJO_INTERNAL_DLOG_SERIALIZATION_WARNING(
+      params->result.is_null(),
+      mojo::internal::VALIDATION_ERROR_UNEXPECTED_NULL_POINTER,
+      "null result in ");
+
+#if defined(ENABLE_IPC_FUZZER)
+  message.set_interface_name(ResultInterface::Name_);
+  message.set_method_name("Method");
+#endif
+
+  message.set_request_id(request_id_);
+  message.set_trace_nonce(trace_nonce_);
+  ::mojo::internal::SendMojoMessage(*responder_, message);
+  // SendMojoMessage() fails silently if the responder connection is closed,
+  // or if the message is malformed.
+  //
+  // TODO(darin): If Accept() returns false due to a malformed message, that
+  // may be good reason to close the connection. However, we don't have a
+  // way to do that from here. We should add a way.
+  responder_ = nullptr;
 }
 
 // static
@@ -227,10 +374,26 @@ bool ResultInterfaceStubDispatch::Accept(
     mojo::Message* message) {
   switch (static_cast<messages::ResultInterface>(message->header()->name)) {
     case messages::ResultInterface::kMethod: {
-      DCHECK(message->is_serialized());
+      break;
+    }
+  }
+  return false;
+}
+
+// static
+bool ResultInterfaceStubDispatch::AcceptWithResponder(
+    ResultInterface* impl,
+    mojo::Message* message,
+    std::unique_ptr<mojo::MessageReceiverWithStatus> responder) {
+  [[maybe_unused]] const bool message_is_sync =
+      message->has_flag(mojo::Message::kFlagIsSync);
+  [[maybe_unused]] const uint64_t request_id = message->request_id();
+  switch (static_cast<messages::ResultInterface>(message->header()->name)) {
+    case messages::ResultInterface::kMethod: {
       internal::ResultInterface_Method_Params_Data* params =
-          reinterpret_cast<internal::ResultInterface_Method_Params_Data*>(
-              message->mutable_payload());
+          reinterpret_cast<
+              internal::ResultInterface_Method_Params_Data*>(
+                  message->mutable_payload());
       
       
       // Validation for ResultInterface.0
@@ -247,27 +410,14 @@ bool ResultInterfaceStubDispatch::Accept(
             ResultInterface::Name_, 0, false);
         return false;
       }
+      ResultInterface::MethodCallback callback =
+          ResultInterface_Method_ProxyToResponder::CreateCallback(
+              *message, std::move(responder));
       // A null |impl| means no implementation was bound.
       DCHECK(impl);
       impl->Method(        
-        std::move(p_a));
+        std::move(p_a), std::move(callback));
       return true;
-    }
-  }
-  return false;
-}
-
-// static
-bool ResultInterfaceStubDispatch::AcceptWithResponder(
-    ResultInterface* impl,
-    mojo::Message* message,
-    std::unique_ptr<mojo::MessageReceiverWithStatus> responder) {
-  [[maybe_unused]] const bool message_is_sync =
-      message->has_flag(mojo::Message::kFlagIsSync);
-  [[maybe_unused]] const uint64_t request_id = message->request_id();
-  switch (static_cast<messages::ResultInterface>(message->header()->name)) {
-    case messages::ResultInterface::kMethod: {
-      break;
     }
   }
   return false;
@@ -276,7 +426,7 @@ namespace {
 }  // namespace
 static const mojo::internal::GenericValidationInfo kResultInterfaceValidationInfo[] = {
     { &internal::ResultInterface_Method_Params_Data::Validate,
-     nullptr /* no response */},
+     &internal::ResultInterface_Method_ResponseParams_Data::Validate},
 };
 
 bool ResultInterfaceRequestValidator::Accept(mojo::Message* message) {
@@ -284,6 +434,10 @@ bool ResultInterfaceRequestValidator::Accept(mojo::Message* message) {
   return mojo::internal::ValidateRequestGenericPacked(message, name, kResultInterfaceValidationInfo);
 }
 
+bool ResultInterfaceResponseValidator::Accept(mojo::Message* message) {
+  const char* name = ::golden::ResultInterface::Name_;
+  return mojo::internal::ValidateResponseGenericPacked(message, name, kResultInterfaceValidationInfo);
+}
 
 
 }  // golden
@@ -304,10 +458,10 @@ bool StructTraits<::golden::ResultTestError::DataView, ::golden::ResultTestError
 }
 
 // static
-bool UnionTraits<::golden::ResultInterface_Method_ResponseParams_Result::DataView, ::golden::ResultInterface_Method_ResponseParams_ResultPtr>::Read(
-    ::golden::ResultInterface_Method_ResponseParams_Result::DataView input,
-    ::golden::ResultInterface_Method_ResponseParams_ResultPtr* output) {
-  using UnionType = ::golden::ResultInterface_Method_ResponseParams_Result;
+bool UnionTraits<::golden::ResultInterface_Method_ResponseParam_Result::DataView, ::golden::ResultInterface_Method_ResponseParam_ResultPtr>::Read(
+    ::golden::ResultInterface_Method_ResponseParam_Result::DataView input,
+    ::golden::ResultInterface_Method_ResponseParam_ResultPtr* output) {
+  using UnionType = ::golden::ResultInterface_Method_ResponseParam_Result;
   using Tag = UnionType::Tag;
 
   switch (input.tag()) {
@@ -341,15 +495,39 @@ bool UnionTraits<::golden::ResultInterface_Method_ResponseParams_Result::DataVie
 namespace golden {
 
 
-void ResultInterfaceInterceptorForTesting::Method(bool a) {
+void ResultInterfaceInterceptorForTesting::Method(bool a, MethodCallback callback) {
   GetForwardingInterface()->Method(
     std::move(a)
-    );
+    , std::move(callback));
 }
 ResultInterfaceAsyncWaiter::ResultInterfaceAsyncWaiter(
     ResultInterface* proxy) : proxy_(proxy) {}
 
 ResultInterfaceAsyncWaiter::~ResultInterfaceAsyncWaiter() = default;
+
+void ResultInterfaceAsyncWaiter::Method(
+    bool a, ResultInterface_Method_ResponseParam_ResultPtr* out_result) {
+  base::RunLoop loop;
+  proxy_->Method(
+      std::move(a),
+      base::BindOnce(
+          [](base::RunLoop* loop,
+             ResultInterface_Method_ResponseParam_ResultPtr* out_result
+,
+             ResultInterface_Method_ResponseParam_ResultPtr result) {*out_result = std::move(result);
+            loop->Quit();
+          },
+          &loop,
+          out_result));
+  loop.Run();
+}
+
+ResultInterface_Method_ResponseParam_ResultPtr ResultInterfaceAsyncWaiter::Method(
+    bool a) {
+  ResultInterface_Method_ResponseParam_ResultPtr async_wait_result;
+  Method(std::move(a),&async_wait_result);
+  return async_wait_result;
+}
 
 
 
