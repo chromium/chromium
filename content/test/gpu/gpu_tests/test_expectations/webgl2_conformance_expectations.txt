@@ -544,7 +544,7 @@ crbug.com/1073613 [ angle-d3d11 win nvidia ] deqp/functional/gles3/shadertexture
 # (72, 72, 72) when reading back pixels, rather than the expected values.
 # Going to try to skip the individual failing tests, rather than adding a
 # wildcard flaky suppression for all of the tests.
-crbug.com/483282 [ angle-d3d11 win amd ] conformance2/rendering/blitframebuffer-stencil-only.html [ Failure ]
+crbug.com/483282 [ amd-0x7340 angle-d3d11 win10 ] conformance2/rendering/blitframebuffer-stencil-only.html [ Failure ]
 
 ## Win / Intel ##
 
