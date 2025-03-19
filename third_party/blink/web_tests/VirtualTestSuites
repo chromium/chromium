@@ -96,7 +96,7 @@
   },
   {
     "prefix": "gpu",
-    "owners": ["fserb@chromium.org", "wangxianzhu@chromium.org"],
+    "owners": ["fserb@chromium.org", "jpgravel@chromium.org"],
     "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
     "bases": [ "fast/canvas",
                "wpt_internal/html/canvas/context-lost",
