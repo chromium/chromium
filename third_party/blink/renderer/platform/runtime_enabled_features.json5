@@ -856,6 +856,9 @@
       base_feature: "none",
     },
     {
+      name: "CompositingDecisionAtAnimationPhaseBoundaries"
+    },
+    {
       name: "CompositionForegroundMarkers",
       status: {
         "Android": "stable",
