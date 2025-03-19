@@ -160,8 +160,7 @@ typedef void (^UIAlertActionHandler)(UIAlertAction* action);
   BOOL downloadedWhileInIncognito =
       self.browser->type() == Browser::Type::kIncognito;
   feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForProfile(
-          self.browser->GetProfile());
+      feature_engagement::TrackerFactory::GetForProfile(self.profile);
   BOOL triggerCriterionMet = tracker->WouldTriggerHelpUI(
       feature_engagement::kIPHiOSDownloadAutoDeletionFeature);
 

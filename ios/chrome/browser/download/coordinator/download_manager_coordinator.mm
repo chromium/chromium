@@ -122,7 +122,7 @@
                         name:UIApplicationDidEnterBackgroundNotification
                       object:nil];
 
-  BOOL isIncognito = self.browser->GetProfile()->IsOffTheRecord();
+  BOOL isIncognito = self.isOffTheRecord;
   _viewController = [[DownloadManagerViewController alloc] init];
   _viewController.delegate = self;
   _viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(self.browser);
@@ -135,7 +135,7 @@
   }
 
   _mediator.SetIsIncognito(isIncognito);
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   _mediator.SetIdentityManager(IdentityManagerFactory::GetForProfile(profile));
   _mediator.SetDriveService(drive::DriveServiceFactory::GetForProfile(profile));
   _mediator.SetPrefService(profile->GetPrefs());
@@ -446,13 +446,13 @@
   GURL virtualFilePathURL = GURL(
       base::StringPrintf("%s://%s/%s", kChromeUIScheme, kChromeUIDownloadsHost,
                          filePathURL.ExtractFileName().c_str()));
-  OpenNewTabCommand* command = [[OpenNewTabCommand alloc]
-       initWithURL:filePathURL
-        virtualURL:virtualFilePathURL
-          referrer:web::Referrer()
-       inIncognito:self.browser->GetProfile()->IsOffTheRecord()
-      inBackground:NO
-          appendTo:OpenPosition::kCurrentTab];
+  OpenNewTabCommand* command =
+      [[OpenNewTabCommand alloc] initWithURL:filePathURL
+                                  virtualURL:virtualFilePathURL
+                                    referrer:web::Referrer()
+                                 inIncognito:self.profile->IsOffTheRecord()
+                                inBackground:NO
+                                    appendTo:OpenPosition::kCurrentTab];
   id<ApplicationCommands> applicationHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   [applicationHandler openURLInNewTab:command];
