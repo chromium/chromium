@@ -26,8 +26,7 @@ namespace crypto {
 // TODO(https://issues.chromium.org/issues/370724578): get rid of this.
 class CRYPTO_EXPORT SymmetricKey {
  public:
-  // Defines the algorithm that a key will be used with. See also
-  // class Encryptor.
+  // Defines the algorithm that a key will be used with.
   enum Algorithm {
     AES,
   };

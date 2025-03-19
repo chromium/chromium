@@ -9,10 +9,8 @@
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
-#include "crypto/encryptor.h"
 #include "crypto/hkdf.h"
 #include "crypto/sha2.h"
-#include "crypto/symmetric_key.h"
 
 bool IsNearbyShareCertificateExpired(base::Time current_time,
                                      base::Time not_after,
