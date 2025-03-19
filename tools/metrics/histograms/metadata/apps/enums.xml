@@ -390,19 +390,6 @@ chromium-metrics-reviews@google.com.
       label="(Obsolete) Web apps opened in Standalone browser tabs"/>
 </enum>
 
-<enum name="ArcRestoreState">
-  <int value="0" label="Success"/>
-  <int value="1" label="Success With Memory Pressure"/>
-  <int value="2" label="Success With CPU Usage Rate Limiting"/>
-  <int value="3"
-      label="Success With Memory Pressure and CPU Usage Rate Limiting"/>
-  <int value="4" label="Failed With Memory Pressure"/>
-  <int value="5" label="Failed With CPU Usage Rate Limiting"/>
-  <int value="6"
-      label="Failed With Memory Pressure and CPU Usage Rate Limiting"/>
-  <int value="7" label="Failed With Unknown Reason"/>
-</enum>
-
 <enum name="ChromeOSUICommands">
 <!-- Please put in checks to ensure Command IDs are stable before adding them to this enum. -->
 
@@ -686,11 +673,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Cancel is clicked"/>
   <int value="2" label="Notification is closed by the user"/>
   <int value="3" label="Notification is closed not by the user"/>
-</enum>
-
-<enum name="RestoreResult">
-  <int value="0" label="Finish"/>
-  <int value="1" label="Not finish"/>
 </enum>
 
 <enum name="RestoreSetting">
