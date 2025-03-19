@@ -102,7 +102,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
           accountPasswordStore:accountPasswordStore
         sharedURLLoaderFactory:profile->GetSharedURLLoaderFactory()
              engagementTracker:feature_engagement::TrackerFactory::
-                                   GetForProfile(self.browser->GetProfile())
+                                   GetForProfile(self.profile)
                      presenter:self];
     self.viewController.delegate = self.mediator;
     self.mediator.consumer = self.viewController;
@@ -234,7 +234,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
   // which may trigger tips or guidance related to password management features.
   if (IsSegmentationTipsManagerEnabled()) {
     TipsManagerIOS* tipsManager =
-        TipsManagerIOSFactory::GetForProfile(self.browser->GetProfile());
+        TipsManagerIOSFactory::GetForProfile(self.profile);
 
     tipsManager->NotifySignal(
         segmentation_platform::tips_manager::signals::kUsedPasswordAutofill);

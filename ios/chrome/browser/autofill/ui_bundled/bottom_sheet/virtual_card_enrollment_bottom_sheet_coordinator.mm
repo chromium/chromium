@@ -99,7 +99,7 @@
   [_applicationHandler
       openURLInNewTab:[OpenNewTabCommand
                           commandWithURLFromChrome:URL.gurl
-                                       inIncognito:self.browser->GetProfile()
+                                       inIncognito:self.profile
                                                        ->IsOffTheRecord()]];
 }
 
