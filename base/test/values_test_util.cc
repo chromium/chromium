@@ -146,19 +146,7 @@ bool DictionaryHasValueMatcher::MatchAndExplain(
 bool DictionaryHasValueMatcher::MatchAndExplain(
     const base::Value::Dict& dict,
     testing::MatchResultListener* listener) const {
-  const base::Value* sub_value = dict.Find(key_);
-  if (!sub_value) {
-    *listener << "Dictionary '" << FormatAsJSON(dict) << "' does not have key '"
-              << key_ << "'";
-    return false;
-  }
-  if (*sub_value != expected_value_) {
-    *listener << "Dictionary value under key '" << key_ << "' is '"
-              << FormatAsJSON(*sub_value) << "', expected '"
-              << FormatAsJSON(expected_value_) << "'";
-    return false;
-  }
-  return true;
+  return CheckValue(dict, key_, expected_value_, listener);
 }
 
 void DictionaryHasValueMatcher::DescribeTo(std::ostream* os) const {
