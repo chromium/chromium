@@ -266,6 +266,7 @@ if (!is_android) {
       "pinned_tab_collection.h",
       "pinned_tab_service.h",
       "pinned_tab_service_factory.h",
+      "split_tab_collection.h",
       "tab_collection.cc",
       "tab_collection.h",
       "tab_collection_storage.h",
@@ -277,6 +278,7 @@ if (!is_android) {
     ]
 
     public_deps = [
+      ":split_tabs",
       ":tab_enums",
       ":tab_group",
       ":tab_strip_model_observer",
@@ -312,6 +314,7 @@ if (!is_android) {
       "pinned_tab_service.cc",
       "pinned_tab_service_factory.cc",
       "recent_tabs_sub_menu_model.cc",
+      "split_tab_collection.cc",
       "tab_collection_storage.cc",
       "tab_dialog_manager.cc",
       "tab_features.cc",
