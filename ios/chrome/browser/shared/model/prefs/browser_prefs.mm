@@ -1253,4 +1253,7 @@ void MigrateObsoleteUserDefault() {
 
   // Added 03/2025.
   [defaults removeObjectForKey:@"FeedLastBackgroundRefreshTimestamp"];
+
+  // Added 03/2025.
+  [defaults removeObjectForKey:@"PreviousSessionInfoConnectedSceneSessionIDs"];
 }

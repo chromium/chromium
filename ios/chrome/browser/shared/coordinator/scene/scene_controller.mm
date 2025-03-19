@@ -28,7 +28,6 @@
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #import "components/prefs/pref_service.h"
-#import "components/previous_session_info/previous_session_info.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -939,10 +938,6 @@ void OnListFamilyMembersResponse(
       level > SceneActivationLevelBackground && !self.sceneState.UIEnabled;
   if (initializingUIInColdStart) {
     [self initializeUI];
-    // Add the scene to the list of connected scene, to restore in case of
-    // crashes.
-    [[PreviousSessionInfo sharedInstance]
-        addSceneSessionID:self.sceneState.sceneSessionID];
   }
 
   // When the scene transitions to inactive (such as when it's being shown in
@@ -977,15 +972,6 @@ void OnListFamilyMembersResponse(
   }
   if (level == SceneActivationLevelBackground) {
     [self recordWindowCreationForSceneState:self.sceneState];
-  }
-
-  if (self.sceneState.UIEnabled && level <= SceneActivationLevelDisconnected) {
-    if (base::ios::IsMultipleScenesSupported()) {
-      // If Multiple scenes are not supported, the session shouldn't be
-      // removed as it can be used for normal restoration.
-      [[PreviousSessionInfo sharedInstance]
-          removeSceneSessionID:self.sceneState.sceneSessionID];
-    }
   }
 }
 

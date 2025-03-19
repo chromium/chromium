@@ -596,8 +596,6 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
 
   RegisterComponentsForUpdate();
 
-  [[PreviousSessionInfo sharedInstance] resetConnectedSceneSessionIDs];
-
   _windowConfigurationRecorder = [[WindowConfigurationRecorder alloc] init];
 }
 
