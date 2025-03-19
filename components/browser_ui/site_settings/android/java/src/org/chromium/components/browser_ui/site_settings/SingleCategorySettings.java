@@ -1584,6 +1584,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 WebsitePreferenceBridge.getDefaultContentSetting(browserContextHandle, contentType);
         int[] descriptionIds =
                 ContentSettingsResources.getBinaryStateSettingResourceIDs(contentType);
+        int[] iconIds = ContentSettingsResources.getBinaryStateSettingIconIDs(contentType);
         @ContentSettingValues
         @Nullable Integer defaultEnabledValue =
                 ContentSettingsResources.getDefaultEnabledValue(contentType);
@@ -1597,6 +1598,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         binaryRadioButton.initialize(
                 setting,
                 descriptionIds,
+                iconIds,
                 defaultEnabledValue != null ? defaultEnabledValue : ContentSettingValues.ASK,
                 defaultDisabledValue != null ? defaultDisabledValue : ContentSettingValues.BLOCK,
                 getResources().getDimensionPixelSize(R.dimen.radio_button_compact_icon_margin_end));
