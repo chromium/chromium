@@ -8878,10 +8878,6 @@ crbug.com/380327348 media/encrypted-media/encrypted-media-async-setcert-with-gc.
 crbug.com/381407888 [ Win11-arm64 ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Failure Pass ]
 crbug.com/381407888 [ Mac ] external/wpt/webrtc/protocol/h264-unidirectional-codec-offer.https.html [ Failure Pass ]
 
-# This test passes or fails depending if the bot that runs it has H265 hardware support.
-# TODO(crbug.com/388299759): Remove this line in favor of platform specific -expected.txt lines.
-crbug.com/388299759 external/wpt/webrtc/protocol/h265-level-id.https.html [ Failure Pass ]
-
 # Gardener 2024-11-27
 crbug.com/381142479 virtual/threaded/external/wpt/css/css-view-transitions/navigation/pagereveal-ctor.html [ Failure Pass ]
 crbug.com/378680890 [ Mac ] fast/peerconnection/RTCPeerConnection-many.html [ Pass Timeout ]
