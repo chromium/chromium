@@ -264,8 +264,6 @@ void PageLiveStateDecoratorHelper::OnPageNodeCreatedForWebContents(
   // Start observing the WebContents. See comment on
   // |first_web_contents_observer_| for lifetime management details.
   new WebContentsObserver(web_contents, this);
-  PageLiveStateDecorator::SetWasDiscarded(web_contents,
-                                          web_contents->WasDiscarded());
 }
 
 }  // namespace performance_manager

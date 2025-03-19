@@ -552,20 +552,6 @@ CanDiscardResult PageDiscardingHelper::CanDiscard(
       add_reason_and_update_result(CannotDiscardReason::kBackgroundActivity,
                                    CanDiscardResult::kProtected);
     }
-#if !BUILDFLAG(IS_CHROMEOS)
-    // TODO(crbug.com/391179510): This check validates the assumption that the
-    // WasDiscarded() property is not set correctly. If that assumption holds,
-    // remove all code that depends on it as discussed on the bug.
-    CHECK(!live_state_data->WasDiscarded(), base::NotFatalUntil::M136);
-
-    if (live_state_data->WasDiscarded()) {
-      add_reason_and_update_result(CannotDiscardReason::kWasDiscarded,
-                                   CanDiscardResult::kProtected);
-    }
-    // TODO(sebmarchand): Consider resetting the |WasDiscarded| value when the
-    // main frame document changes, also remove the DiscardAttemptMarker in
-    // this case.
-#endif
   }
 
   // `HadUserEdits()` is currently a superset of `HadFormInteraction()` but
