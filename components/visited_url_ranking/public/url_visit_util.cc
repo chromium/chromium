@@ -24,6 +24,7 @@
 #include "components/url_deduplication/url_strip_handler.h"
 #include "components/visited_url_ranking/public/features.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
+#include "components/visited_url_ranking/public/tab_metadata.h"
 #include "components/visited_url_ranking/public/url_visit_schema.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
@@ -300,6 +301,54 @@ scoped_refptr<InputContext> AsInputContextInternal(
         if (history_data) {
           value = ProcessedValue::FromFloat(
               history_data->same_day_group_visit_count);
+        }
+        break;
+      case kTabRecentForegroundCount:
+        if (tab_data) {
+          value = ProcessedValue::FromFloat(tab_data->recent_fg_count);
+        }
+        break;
+      case kIsTabOpenedByUser:
+        if (tab_data) {
+          value = ProcessedValue::FromFloat(
+              tab_data->last_active_tab.tab_metadata.tab_origin ==
+              TabMetadata::TabOrigin::kOpenedByUserAction);
+        }
+        break;
+      case kAndroidTabLaunchType:
+        if (tab_data) {
+          value = ProcessedValue::FromFloat(
+              tab_data->last_active_tab.tab_metadata.tab_android_launch_type);
+        }
+        break;
+      case kAndroidTabLaunchPackageName:
+        if (tab_data &&
+            tab_data->last_active_tab.tab_metadata.launch_package_name) {
+          value = ProcessedValue(
+              *tab_data->last_active_tab.tab_metadata.launch_package_name);
+        }
+        break;
+      case kTabParentId:
+        if (tab_data) {
+          value = ProcessedValue::FromFloat(
+              tab_data->last_active_tab.tab_metadata.parent_tab_id);
+        }
+        break;
+      case kTimeSinceTabCreationSec:
+        if (tab_data && !tab_data->last_active_tab.tab_metadata
+                             .tab_creation_time.is_null()) {
+          base::TimeDelta time_since_tab_creation =
+              base::Time::Now() -
+              tab_data->last_active_tab.tab_metadata.tab_creation_time;
+          value =
+              ProcessedValue::FromFloat(time_since_tab_creation.InSeconds());
+        }
+        break;
+      case kTabGroupSyncId:
+        if (tab_data &&
+            tab_data->last_active_tab.tab_metadata.tab_group_sync_id) {
+          value = ProcessedValue(tab_data->last_active_tab.tab_metadata
+                                     .tab_group_sync_id->AsLowercaseString());
         }
         break;
     }

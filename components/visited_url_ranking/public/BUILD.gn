@@ -20,6 +20,8 @@ source_set("public") {
     "fetch_result.h",
     "fetcher_config.cc",
     "fetcher_config.h",
+    "tab_metadata.cc",
+    "tab_metadata.h",
     "url_grouping/group_suggestions.cc",
     "url_grouping/group_suggestions.h",
     "url_grouping/group_suggestions_delegate.h",
