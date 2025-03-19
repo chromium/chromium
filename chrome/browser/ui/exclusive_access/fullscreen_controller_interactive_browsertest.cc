@@ -1083,13 +1083,13 @@ IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, PopupEventuallyAfterExit) {
   EXPECT_TRUE(OpenPopupAndRequestFullscreenOnLoad().first);
 }
 
-// TODO(crbug.com/399354373): Gardening
+IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, ImmediatelyAfterPopupExit) {
 #if BUILDFLAG(IS_MAC)
-#define MAYBE_ImmediatelyAfterPopupExit DISABLED_ImmediatelyAfterPopupExit
-#else
-#define MAYBE_ImmediatelyAfterPopupExit ImmediatelyAfterPopupExit
+  if (GetParam()) {
+    GTEST_SKIP() << "Flaky. See https://crbug.com/404887514";
+  }
 #endif
-IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, MAYBE_ImmediatelyAfterPopupExit) {
+
   auto [success, popup] = OpenPopupAndRequestFullscreenOnLoad();
   EXPECT_TRUE(success);
   ASSERT_TRUE(popup);
@@ -1104,14 +1104,13 @@ IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, MAYBE_ImmediatelyAfterPopupExit)
   EXPECT_TRUE(RequestFullscreen(/*gesture=*/true));
 }
 
-// TODO(crbug.com/399354373): Gardening
+IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, EventuallyAfterPopupExit) {
 #if BUILDFLAG(IS_MAC)
-#define MAYBE_EventuallyAfterPopupExit DISABLED_EventuallyAfterPopupExit
-#else
-#define MAYBE_EventuallyAfterPopupExit EventuallyAfterPopupExit
+  if (GetParam()) {
+    GTEST_SKIP() << "Flaky. See https://crbug.com/404887514";
+  }
 #endif
-IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest,
-                       MAYBE_EventuallyAfterPopupExit) {
+
   auto [success, popup] = OpenPopupAndRequestFullscreenOnLoad();
   EXPECT_TRUE(success);
   ASSERT_TRUE(popup);
