@@ -172,6 +172,10 @@ class TestRenderingContext2D final
     return true;
   }
 
+  CanvasResourceProvider* GetOrCreateCanvas2DResourceProvider() override {
+    return nullptr;
+  }
+
   Member<ExecutionContext> execution_context_;
   bool restore_matrix_enabled_ = true;
   bool context_lost_ = false;
