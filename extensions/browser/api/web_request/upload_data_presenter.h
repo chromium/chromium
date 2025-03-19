@@ -61,7 +61,7 @@ class UploadDataPresenter {
   virtual std::optional<base::Value> TakeResult() = 0;
 
  protected:
-  UploadDataPresenter() {}
+  UploadDataPresenter() = default;
 };
 
 // This class passes all the bytes from bytes elements as a BinaryValue for each
