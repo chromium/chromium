@@ -49,27 +49,6 @@ int NativeFrameView::NonClientHitTest(const gfx::Point& point) {
   return frame_->client_view()->NonClientHitTest(point);
 }
 
-void NativeFrameView::GetWindowMask(const gfx::Size& size,
-                                    SkPath* window_mask) {
-  // Nothing to do, we use the default window mask.
-}
-
-void NativeFrameView::ResetWindowControls() {
-  // Nothing to do.
-}
-
-void NativeFrameView::UpdateWindowIcon() {
-  // Nothing to do.
-}
-
-void NativeFrameView::UpdateWindowTitle() {
-  // Nothing to do.
-}
-
-void NativeFrameView::SizeConstraintsChanged() {
-  // Nothing to do.
-}
-
 gfx::Size NativeFrameView::CalculatePreferredSize(
     const SizeBounds& available_size) const {
   gfx::Size client_preferred_size =

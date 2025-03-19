@@ -95,7 +95,6 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   void ResetWindowControls() override;
   void UpdateWindowIcon() override;
   void UpdateWindowTitle() override;
-  void SizeConstraintsChanged() override;
   void InsertClientView(ClientView* client_view) override;
   void UpdateWindowRoundedCorners() override;
   bool HasWindowTitle() const override;
