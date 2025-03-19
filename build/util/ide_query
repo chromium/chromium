@@ -107,6 +107,10 @@ def main():
         'Set "use_reclient=false" in args.gn.\n')
     sys.exit(1)
   if options.perform_build:
+    # forget last targets of normal build as this build will update
+    # .siso_fs_state.
+    if os.path.exists(os.path.join(options.out_dir, '.siso_last_targets')):
+        os.remove(os.path.join(options.out_dir, '.siso_last_targets'))
     args = ['siso', 'ninja']
     # use `-k=0` to build generated files as much as possible.
     args.extend([
