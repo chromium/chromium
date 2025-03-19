@@ -1587,7 +1587,7 @@ deps = {
       'packages' : [
           {
               'package': 'infra/3pp/tools/copybara',
-              'version': 'wV62JLNHIWFT4mGDboJ1zv5JNsWl3DoFtlZM34r7QHYC',
+              'version': 'kuxjPNATLeB8scA-ssRqGcu_JBeseDKT-h6sdSRHaBkC',
           },
       ],
       'condition': 'host_os == "linux" and checkout_copybara',
