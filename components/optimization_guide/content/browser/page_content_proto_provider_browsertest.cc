@@ -136,6 +136,12 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
     }
   }
 
+  void SelectTextInBody(content::RenderFrameHost* rfh) {
+    const std::string kSelectText =
+        "window.getSelection().selectAllChildren(document.body);";
+    ASSERT_TRUE(content::ExecJs(rfh, kSelectText));
+  }
+
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
  private:
@@ -169,6 +175,18 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, AIPageContent) {
             window_bounds.width());
   EXPECT_EQ(root_geometry.visible_bounding_box().height(),
             window_bounds.height());
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, Selection) {
+  LoadPage(https_server()->GetURL("/simple.html"), false);
+  SelectTextInBody(web_contents()->GetPrimaryMainFrame());
+  LoadData();
+
+  const auto& selection =
+      page_content().main_frame_data().frame_interaction_info().selection();
+  EXPECT_NE(selection.start_node_id(), 0);
+  EXPECT_NE(selection.end_node_id(), 0);
+  EXPECT_EQ(selection.selected_text(), "Non empty simple page");
 }
 
 class PageContentProtoProviderBrowserTestActionableElements
@@ -465,6 +483,28 @@ IN_PROC_BROWSER_TEST_P(
                    gfx::Rect(-20, -10, 100, 200));
   AssertRectsEqual(geometry.visible_bounding_box(), gfx::Rect(0, 0, 80, 190));
 #endif
+}
+
+IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestSiteIsolation,
+                       Selection) {
+  LoadPage(https_server()->GetURL(
+               "a.com", base::StringPrintf(
+                            "/paragraph_iframe_partially_offscreen.html%s",
+                            QueryParam())),
+           false);
+
+  SelectTextInBody(ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0));
+  LoadData();
+
+  const auto& iframe = page_content().root_node().children_nodes()[0];
+  const auto& selection = iframe.content_attributes()
+                              .iframe_data()
+                              .frame_data()
+                              .frame_interaction_info()
+                              .selection();
+  EXPECT_NE(selection.start_node_id(), 0);
+  EXPECT_NE(selection.end_node_id(), 0);
+  EXPECT_EQ(selection.selected_text(), "text");
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

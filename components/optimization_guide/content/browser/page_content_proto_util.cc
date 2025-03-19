@@ -465,25 +465,39 @@ void ConvertFrameMetadata(
   metadata.frame_metadata.push_back(std::move(frame_metadata));
 }
 
+void ConvertFrameData(
+    const RenderFrameInfo& render_frame_info,
+    const blink::mojom::AIPageContentFrameData& mojom_frame_data,
+    optimization_guide::proto::FrameData* proto_frame_data,
+    AIPageContentMetadata& metadata) {
+  ConvertFrameMetadata(render_frame_info.url, mojom_frame_data, metadata);
+  ConvertFrameInteractionInfo(
+      *mojom_frame_data.frame_interaction_info,
+      proto_frame_data->mutable_frame_interaction_info());
+
+  // TODO(crbug.com/402086380): FrameIdentifiers still need to be populated.
+}
+
+// `mojom_iframe_data` holds information about the iframe provided by the
+// embedder. It comes from the iframe node in the ContentNode tree pulled from
+// the embedder's process.
+//
+// `mojom_local_frame_data` holds information about the embedded Document. This
+// is inlined into the ContentNode tree pulled from the embedder for local
+// frames as an optimization.
 void ConvertIframeData(
     const RenderFrameInfo& render_frame_info,
     const blink::mojom::AIPageContentIframeData& mojom_iframe_data,
+    const blink::mojom::AIPageContentFrameData& mojom_local_frame_data,
     AIPageContentMetadata& metadata,
     optimization_guide::proto::IframeData* proto_iframe_data) {
   if (!render_frame_info.source_origin.opaque()) {
     proto_iframe_data->set_url(render_frame_info.source_origin.Serialize());
   }
   proto_iframe_data->set_likely_ad_frame(mojom_iframe_data.likely_ad_frame);
-  auto* proto_frame_data = proto_iframe_data->mutable_frame_data();
-  if (mojom_iframe_data.local_frame_data) {
-    // TODO(crbug.com/403325367): Add Interaction and Meta Data for remote
-    // frames.
-    ConvertFrameInteractionInfo(
-        *mojom_iframe_data.local_frame_data->frame_interaction_info,
-        proto_frame_data->mutable_frame_interaction_info());
-    ConvertFrameMetadata(render_frame_info.url,
-                         *mojom_iframe_data.local_frame_data, metadata);
-  }
+
+  ConvertFrameData(render_frame_info, mojom_local_frame_data,
+                   proto_iframe_data->mutable_frame_data(), metadata);
 }
 
 bool ConvertNode(content::GlobalRenderFrameHostToken source_frame_token,
@@ -515,10 +529,16 @@ bool ConvertNode(content::GlobalRenderFrameHostToken source_frame_token,
       return false;
     }
 
+    const blink::mojom::AIPageContentFrameData* frame_data = nullptr;
     if (frame_token.Is<blink::RemoteFrameToken>()) {
       // RemoteFrame should have no child nodes since the content is out of
       // process.
       if (!mojom_node.children_nodes.empty()) {
+        return false;
+      }
+
+      // The embedder shouldn't be providing LocalFrameData for remote frames.
+      if (iframe_data.local_frame_data) {
         return false;
       }
 
@@ -528,6 +548,7 @@ bool ConvertNode(content::GlobalRenderFrameHostToken source_frame_token,
       }
 
       const auto& frame_page_content = *it->second;
+      frame_data = frame_page_content.frame_data.get();
       auto* proto_child_frame_node = proto_node->add_children_nodes();
       if (!ConvertNode(render_frame_info->global_frame_token,
                        *frame_page_content.root_node, page_content_map,
@@ -535,11 +556,17 @@ bool ConvertNode(content::GlobalRenderFrameHostToken source_frame_token,
                        proto_child_frame_node)) {
         return false;
       }
+    } else {
+      if (!iframe_data.local_frame_data) {
+        return false;
+      }
+
+      frame_data = iframe_data.local_frame_data.get();
     }
 
     auto* proto_iframe_data =
         proto_node->mutable_content_attributes()->mutable_iframe_data();
-    ConvertIframeData(*render_frame_info, iframe_data, metadata,
+    ConvertIframeData(*render_frame_info, iframe_data, *frame_data, metadata,
                       proto_iframe_data);
   }
 
@@ -579,12 +606,9 @@ bool ConvertAIPageContentToProto(
     return false;
   }
 
-  if(main_frame_page_content.frame_data) {
-    ConvertFrameMetadata(render_frame_info->url,
-                        *main_frame_page_content.frame_data,
-                        page_content_result.metadata);
-
-  }
+  ConvertFrameData(*render_frame_info, *main_frame_page_content.frame_data,
+                   page_content_result.proto.mutable_main_frame_data(),
+                   page_content_result.metadata);
 
   if (!ConvertNode(main_frame_token, *main_frame_page_content.root_node,
                    page_content_map, get_render_frame_info,
@@ -597,13 +621,6 @@ bool ConvertAIPageContentToProto(
     ConvertPageInteractionInfo(
         *main_frame_page_content.page_interaction_info,
         page_content_result.proto.mutable_page_interaction_info());
-  }
-  if (main_frame_page_content.frame_data) {
-    auto* proto_main_frame_data =
-        page_content_result.proto.mutable_main_frame_data();
-    ConvertFrameInteractionInfo(
-        *main_frame_page_content.frame_data->frame_interaction_info,
-        proto_main_frame_data->mutable_frame_interaction_info());
   }
 
   auto version = optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0;

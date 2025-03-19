@@ -218,7 +218,9 @@ struct AIPageContentIframeData {
   // both the root ad frame and its descendants.
   bool likely_ad_frame;
 
-  // Data common to all local frames (main and embedded).
+  // Data common to all local frames (main and embedded). If this is a remote
+  // frame, this metadata will be part of the AIPageContent pulled from the
+  // local frame's renderer process.
   AIPageContentFrameData? local_frame_data;
 };
 
@@ -338,10 +340,9 @@ struct AIPageContent {
   // and embedded iframes.
   AIPageContentPageInteractionInfo? page_interaction_info;
 
-  // frame_data is only populated for local frames.  If this is a remote frame,
-  // this metadata will be part of the AIPageContent pulled from the local
-  // frame's renderer.
-  AIPageContentFrameData? frame_data;
+  // The frame-level information which is common to both main and embedded
+  // frames.
+  AIPageContentFrameData frame_data;
 };
 
 struct AIPageContentOptions {
