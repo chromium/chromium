@@ -12,6 +12,8 @@ blink_modules_sources("ai") {
     "ai_availability.h",
     "ai_create_monitor.cc",
     "ai_create_monitor.h",
+    "ai_interface_proxy.cc",
+    "ai_interface_proxy.h",
     "ai_language_model.cc",
     "ai_language_model.h",
     "ai_language_model_factory.cc",

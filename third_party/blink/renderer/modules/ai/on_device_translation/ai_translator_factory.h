@@ -42,8 +42,6 @@ class AITranslatorFactory final : public ScriptWrappable,
 
  private:
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  HeapMojoRemote<mojom::blink::TranslationManager> translation_manager_remote_{
-      nullptr};
 };
 
 }  // namespace blink

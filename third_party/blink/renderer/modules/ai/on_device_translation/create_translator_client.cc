@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/ai/ai.h"
 #include "third_party/blink/renderer/modules/ai/ai_create_monitor.h"
+#include "third_party/blink/renderer/modules/ai/ai_interface_proxy.h"
 #include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
 #include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -161,11 +162,13 @@ void CreateTranslatorClient::OnGotAvailability(
 
   receiver_.Bind(client.InitWithNewPipeAndPassReceiver(), task_runner_);
 
-  translation_->GetTranslationManagerRemote()->CreateTranslator(
-      std::move(client),
-      mojom::blink::TranslatorCreateOptions::New(
-          mojom::blink::TranslatorLanguageCode::New(source_language_),
-          mojom::blink::TranslatorLanguageCode::New(target_language_)));
+  AIInterfaceProxy::GetTranslationManagerRemote(
+      translation_->GetExecutionContext())
+      ->CreateTranslator(
+          std::move(client),
+          mojom::blink::TranslatorCreateOptions::New(
+              mojom::blink::TranslatorLanguageCode::New(source_language_),
+              mojom::blink::TranslatorLanguageCode::New(target_language_)));
 }
 
 void CreateTranslatorClient::ResetReceiver() {

@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/ai/ai.h"
 #include "third_party/blink/renderer/modules/ai/ai_create_monitor.h"
+#include "third_party/blink/renderer/modules/ai/ai_interface_proxy.h"
 #include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
 #include "third_party/blink/renderer/modules/ai/on_device_translation/create_translator_client.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -98,19 +99,12 @@ ScriptPromise<AITranslator> AITranslatorFactory::create(
 
 HeapMojoRemote<mojom::blink::TranslationManager>&
 AITranslatorFactory::GetTranslationManagerRemote() {
-  if (!translation_manager_remote_.is_bound()) {
-    if (GetExecutionContext()) {
-      GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
-          translation_manager_remote_.BindNewPipeAndPassReceiver(task_runner_));
-    }
-  }
-  return translation_manager_remote_;
+  return AIInterfaceProxy::GetTranslationManagerRemote(GetExecutionContext());
 }
 
 void AITranslatorFactory::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
-  visitor->Trace(translation_manager_remote_);
 }
 
 }  // namespace blink
