@@ -708,6 +708,10 @@ AbandonedPageLoadMetricsObserver::OnCommit(
       navigation_handle->GetNavigationHandleTiming().navigation_did_commit_time,
       navigation_start_time_);
 
+  // Update the navigation handle timings explicitly here since it is not
+  // triggered when we update the commit timings.
+  OnNavigationHandleTimingUpdated(navigation_handle);
+
   // If there's any previous hiding/backgrounding that hasn't been logged (e.g.
   // if the navigation didn't allow logging when these abandonments happen),
   // log them now.

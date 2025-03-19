@@ -39,13 +39,134 @@ FromGWSAbandonedPageLoadMetricsObserver::OnStart(
   if (!page_load_metrics::IsGoogleSearchResultUrl(currently_committed_url)) {
     return ObservePolicy::STOP_OBSERVING;
   }
+  impression_ = navigation_handle->GetImpression();
   return AbandonedPageLoadMetricsObserver::OnStart(
       navigation_handle, currently_committed_url, started_in_foreground);
+}
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+FromGWSAbandonedPageLoadMetricsObserver::OnNavigationHandleTimingUpdated(
+    content::NavigationHandle* navigation_handle) {
+  auto navigation_handle_timing =
+      navigation_handle->GetNavigationHandleTiming();
+
+  // Set the request / response time of the second redirect by checking:
+  // 1) We have not yet recorded second redirect
+  // 2) The first request / response has already passed
+  // 3) The final non-redirect request / response has not yet passed
+  // 4) The most recent request is later than the first request.
+  if (second_redirect_request_start_time_.is_null() &&
+      second_redirect_response_start_time_.is_null() &&
+      !navigation_handle_timing.first_request_start_time.is_null() &&
+      !navigation_handle_timing.first_response_start_time.is_null() &&
+      navigation_handle_timing.non_redirected_request_start_time.is_null() &&
+      navigation_handle_timing.non_redirect_response_start_time.is_null() &&
+      navigation_handle_timing.first_request_start_time <
+          navigation_handle_timing.final_request_start_time &&
+      navigation_handle_timing.first_response_start_time <
+          navigation_handle_timing.final_response_start_time) {
+    second_redirect_request_start_time_ =
+        navigation_handle_timing.final_request_start_time;
+    second_redirect_response_start_time_ =
+        navigation_handle_timing.final_response_start_time;
+  }
+
+  return AbandonedPageLoadMetricsObserver::OnNavigationHandleTimingUpdated(
+      navigation_handle);
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+FromGWSAbandonedPageLoadMetricsObserver::OnRedirect(
+    content::NavigationHandle* navigation_handle) {
+  redirect_num_++;
+  return AbandonedPageLoadMetricsObserver::OnRedirect(navigation_handle);
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+FromGWSAbandonedPageLoadMetricsObserver::OnCommit(
+    content::NavigationHandle* navigation_handle) {
+  is_committed_ = true;
+  return AbandonedPageLoadMetricsObserver::OnCommit(navigation_handle);
+}
+
+void FromGWSAbandonedPageLoadMetricsObserver::OnComplete(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  CHECK(is_committed_);
+  AbandonedPageLoadMetricsObserver::OnComplete(timing);
+  // We record the metrics here so that we do not forget to record them for
+  // all cases. If we did record them for abandonment, and are trying to record
+  // the same exact fields, then `LogTimingInformationMetrics()` will avoid
+  // recording duplicate entries.
+  if (IsAllowedToLogUKM()) {
+    LogTimingInformationMetrics();
+  }
+}
+
+void FromGWSAbandonedPageLoadMetricsObserver::OnFailedProvisionalLoad(
+    const page_load_metrics::FailedProvisionalLoadInfo&
+        failed_provisional_load_info) {
+  CHECK(!is_committed_);
+  AbandonedPageLoadMetricsObserver::OnFailedProvisionalLoad(
+      failed_provisional_load_info);
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+FromGWSAbandonedPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  // We explicitly record the Timing Information here if we entered app
+  // background and have met all the loading milestones,
+  // in case we never run `OnComplete()` later.
+  if (IsAllowedToLogUKM() && DidLogAllLoadingMilestones()) {
+    LogTimingInformationMetrics();
+  }
+  return AbandonedPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
+      timing);
 }
 
 std::string FromGWSAbandonedPageLoadMetricsObserver::GetHistogramPrefix()
     const {
   return kFromGWSAbandonedPageLoadMetricsHistogramPrefix;
+}
+
+void FromGWSAbandonedPageLoadMetricsObserver::LogTimingInformationMetrics() {
+  CHECK(IsAllowedToLogUKM());
+  base::TimeTicks now = base::TimeTicks::Now();
+
+  ukm::SourceId source_id =
+      ukm::ConvertToSourceId(navigation_id(), ukm::SourceIdType::NAVIGATION_ID);
+
+  ukm::builders::Navigation_FromGoogleSearch_TimingInformation builder(
+      source_id);
+
+  auto logged_milestones = LogUKMHistogramsForMilestoneMetrics(builder, now);
+
+  if (!second_redirect_response_start_time_.is_null() &&
+      !second_redirect_request_start_time_.is_null()) {
+    builder.SetSecondRedirectResponseReceived(true)
+        .SetSecondRedirectedRequestStartTime(
+            (second_redirect_request_start_time_ - navigation_start_time())
+                .InMilliseconds());
+    logged_milestones.insert(NavigationMilestone::kSecondRedirectResponseStart);
+  } else {
+    builder.SetSecondRedirectResponseReceived(false);
+  }
+
+  // If we are logging the same exact milestones, then we will omit recording
+  // the UKM entry since it would simply be a duplicate.
+  if (last_logged_ukm_milestones_.has_value() &&
+      last_logged_ukm_milestones_ == logged_milestones) {
+    return;
+  }
+
+  builder.SetHasImpression(impression_.has_value())
+      .SetIsCommitted(is_committed_)
+      .SetRedirectCount(redirect_num_);
+
+  if (impression_.has_value()) {
+    builder.SetIsEmptyAttributionSrc(impression_->is_empty_attribution_src_tag);
+  }
+
+  builder.Record(ukm::UkmRecorder::Get());
+  last_logged_ukm_milestones_ = logged_milestones;
 }
 
 void FromGWSAbandonedPageLoadMetricsObserver::LogUKMHistograms(
@@ -61,6 +182,9 @@ void FromGWSAbandonedPageLoadMetricsObserver::LogUKMHistograms(
   LogUKMHistogramsForAbandonMetrics(builder, abandon_reason, milestone,
                                     event_time, relative_start_time);
   builder.Record(ukm::UkmRecorder::Get());
+
+  // `TimingInformation` ukm is also logged on abandonments.
+  LogTimingInformationMetrics();
 }
 
 bool FromGWSAbandonedPageLoadMetricsObserver::IsAllowedToLogUKM() const {
