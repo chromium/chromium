@@ -332,7 +332,7 @@ struct Suggestion {
              Icon icon,
              SuggestionType type);
   Suggestion(std::string_view main_text,
-             std::string_view minor_text,
+             base::span<std::string_view> minor_text_labels,
              std::string_view label,
              Icon icon,
              SuggestionType type);
@@ -407,11 +407,11 @@ struct Suggestion {
 
   // The texts that will be displayed on the first line in a suggestion. The
   // order of showing the two texts on the first line depends on whether it is
-  // in RTL languages. The |main_text| includes the text value to be filled in
-  // the form, while the |minor_text| includes other supplementary text value to
-  // be shown also on the first line.
+  // in RTL languages. The `main_text` includes the text value to be filled in
+  // the form, while `minor_texts` includes other supplementary text values
+  // to be shown also on the first line.
   Text main_text;
-  Text minor_text;
+  std::vector<Text> minor_texts;
 
   // The secondary texts displayed in a suggestion. The labels are presented as
   // a N*M matrix, and the position of the text in the matrix decides where the

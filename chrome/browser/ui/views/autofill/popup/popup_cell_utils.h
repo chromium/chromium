@@ -50,14 +50,14 @@ void AddSpacerWithSize(views::BoxLayoutView& view,
 
 // Creates the content structure shared by autocomplete, address, credit card,
 // and password suggestions.
-// - `main/minor_text_label`, `description_label`, `subtext_views` and
+// - `main/minor_text_labels`, `description_label`, `subtext_views` and
 // `icon` may all be null or empty.
 // - `content_view` is the (assumed to be empty) view to which the content
 // structure for the `suggestion` is added.
 void AddSuggestionContentToView(
     const Suggestion& suggestion,
     std::unique_ptr<views::Label> main_text_label,
-    std::unique_ptr<views::Label> minor_text_label,
+    std::vector<std::unique_ptr<views::Label>> minor_text_labels,
     std::unique_ptr<views::Label> description_label,
     std::vector<std::unique_ptr<views::View>> subtext_views,
     std::unique_ptr<views::View> icon,
