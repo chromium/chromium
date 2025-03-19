@@ -2501,7 +2501,7 @@ BASE_FEATURE(kReleaseNotesNotificationAlwaysEligible,
 // Enables rendering ARC notifications using ChromeOS notification framework
 BASE_FEATURE(kRenderArcNotificationsByChrome,
              "RenderArcNotificationsByChrome",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Allows the OS to unpin apps that were pinned by PinnedLauncherApps policy
 // but are no longer a part of it from shelf under specific conditions.
