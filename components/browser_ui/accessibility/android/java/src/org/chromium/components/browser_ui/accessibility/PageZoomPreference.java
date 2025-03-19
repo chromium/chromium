@@ -247,6 +247,9 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         // Update the zoom percentage text, preview widget and enabled state of increase/decrease
         // buttons as the slider is updated.
+        // Turn off the live region for current value to avoid TB read 2 values when adjusting
+        // the slider.
+        mCurrentValueText.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_NONE);
         updateViewsOnProgressChanged(progress, seekBar);
     }
 
@@ -273,6 +276,7 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
             int seekBarValue =
                     PageZoomUtils.convertZoomFactorToSeekBarValue(AVAILABLE_ZOOM_FACTORS[index]);
             mSeekBar.setProgress(seekBarValue);
+            mCurrentValueText.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
             callChangeListener(seekBarValue);
         }
     }
@@ -287,6 +291,7 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
             int seekBarValue =
                     PageZoomUtils.convertZoomFactorToSeekBarValue(AVAILABLE_ZOOM_FACTORS[index]);
             mSeekBar.setProgress(seekBarValue);
+            mCurrentValueText.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
             callChangeListener(seekBarValue);
         }
     }
