@@ -4,13 +4,14 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {MetricsBrowserProxyImpl, ReadAnythingLogger, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
+import {mockMetrics} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
-import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 
 suite('PlayPause', () => {
@@ -23,9 +24,7 @@ suite('PlayPause', () => {
   setup(async () => {
     // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    metrics = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(metrics);
-    ReadAnythingLogger.setInstance(new ReadAnythingLogger());
+    metrics = mockMetrics();
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     chrome.readingMode.isReadAloudEnabled = true;

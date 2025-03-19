@@ -4,12 +4,13 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {MetricsBrowserProxyImpl, ReadAnythingLogger, ReadAnythingSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ReadAnythingSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ColorMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
+import {mockMetrics} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
-import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 suite('ColorMenuElement', () => {
   let colorMenu: ColorMenuElement;
@@ -20,10 +21,7 @@ suite('ColorMenuElement', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
-
-    metrics = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(metrics);
-    ReadAnythingLogger.setInstance(new ReadAnythingLogger());
+    metrics = mockMetrics();
 
     colorMenu = document.createElement('color-menu');
     document.body.appendChild(colorMenu);
