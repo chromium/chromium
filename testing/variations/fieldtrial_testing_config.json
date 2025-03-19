@@ -7361,24 +7361,6 @@
             ]
         }
     ],
-    "DataControlsScreenshotProtection": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableScreenshotProtection"
-                    ]
-                }
-            ]
-        }
-    ],
     "DataMaskingReportingAPI": [
         {
             "platforms": [

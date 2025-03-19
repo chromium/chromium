@@ -15,7 +15,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service.h"
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
-#include "components/enterprise/data_controls/core/browser/features.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/browser/realtime/policy_engine.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -178,11 +177,6 @@ void DoLookup(safe_browsing::RealTimeUrlLookupServiceBase* lookup_service,
       /*referring_app_info=*/std::nullopt);
 }
 
-bool IsScreenshotProtectionEnabled() {
-  return base::FeatureList::IsEnabled(
-      data_controls::kEnableScreenshotProtection);
-}
-
 std::string GetIdentifier(content::BrowserContext* browser_context) {
   return enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
              browser_context)
@@ -205,10 +199,6 @@ bool IsScreenshotAllowedByDataControls(content::BrowserContext* context,
 
 }  // namespace
 
-bool IsDataProtectionEnabled(Profile* profile) {
-  return IsEnterpriseLookupEnabled(profile) || IsScreenshotProtectionEnabled();
-}
-
 // static
 void DataProtectionNavigationObserver::CreateForNavigationIfNeeded(
     Profile* profile,
@@ -225,8 +215,7 @@ void DataProtectionNavigationObserver::CreateForNavigationIfNeeded(
   // from a watermarked page to the NTP.
   // 2. Data protection is disabled. This is needed to prevent stale data
   // protection settings if the enabled state is changed mid session.
-  if (SkipUrl(navigation_handle->GetURL()) ||
-      !IsDataProtectionEnabled(profile)) {
+  if (SkipUrl(navigation_handle->GetURL())) {
     std::move(callback).Run(UrlSettings::None());
     return;
   }
@@ -256,11 +245,6 @@ void DataProtectionNavigationObserver::ApplyDataProtectionSettings(
     return;
   }
 
-  if (!IsDataProtectionEnabled(profile)) {
-    std::move(callback).Run(UrlSettings::None());
-    return;
-  }
-
   // If this is a skipped URL, force the view to clear any data protections if
   // present.  This is needed to handle for example navigating from a
   // protected page to the NTP.
@@ -271,12 +255,10 @@ void DataProtectionNavigationObserver::ApplyDataProtectionSettings(
 
   std::string identifier = GetIdentifier(profile);
 
-  if (IsScreenshotProtectionEnabled()) {
-    DataProtectionPageUserData::UpdateDataControlsScreenshotState(
-        GetPageFromWebContents(web_contents), identifier,
-        IsScreenshotAllowedByDataControls(profile,
-                                          web_contents->GetLastCommittedURL()));
-  }
+  DataProtectionPageUserData::UpdateDataControlsScreenshotState(
+      GetPageFromWebContents(web_contents), identifier,
+      IsScreenshotAllowedByDataControls(profile,
+                                        web_contents->GetLastCommittedURL()));
 
   auto* lookup_service =
       g_lookup_service
