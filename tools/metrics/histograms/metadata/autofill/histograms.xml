@@ -988,6 +988,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram
+    name="Autofill.AddressSuggestionOnTypingAcceptance.NumberOfCharactersTyped"
+    units="units" expires_after="2025-08-24">
+  <owner>brunobraga@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The number of characters a user typed before accepting an address autofill
+    on typing suggestion. Emited every time a user accepts an autofill on typing
+    suggestion.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.AddressSuggestionOnTypingAcceptance.PerFieldType"
     enum="FillingAcceptanceByFieldType" expires_after="2025-12-12">
   <owner>brunobraga@google.com</owner>

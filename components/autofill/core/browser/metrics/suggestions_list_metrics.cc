@@ -10,6 +10,8 @@
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 
@@ -116,6 +118,26 @@ void LogAutofillRankingSuggestionDifference(
   base::UmaHistogramEnumeration(
       "Autofill.SuggestionAccepted.SuggestionRankingDifference.CreditCard",
       ranking_difference);
+}
+
+void LogAddressAutofillOnTypingSuggestionAccepted(
+    FieldType field_type_used,
+    const AutofillField* autofill_trigger_field) {
+  // TODO(crbug.com/381994105): Consider deleting this metric in favor or
+  // Autofill.AddressSuggestionOnTypingAcceptance.PerFieldType.
+  base::UmaHistogramEnumeration(
+      "Autofill.AddressSuggestionOnTyping.AddressFieldTypeUsed",
+      field_type_used, FieldType::MAX_VALID_FIELD_TYPE);
+  base::UmaHistogramBoolean(
+      "Autofill.AddressSuggestionOnTypingAcceptance.FieldClassication",
+      autofill_trigger_field &&
+          autofill_trigger_field->Type().GetStorableType() >
+              FieldType::EMPTY_TYPE);
+  if (autofill_trigger_field) {
+    base::UmaHistogramCounts100(
+        "Autofill.AddressSuggestionOnTypingAcceptance.NumberOfCharactersTyped",
+        autofill_trigger_field->value(ValueSemantics::kCurrent).length());
+  }
 }
 
 }  // namespace autofill::autofill_metrics
