@@ -59,7 +59,7 @@ class AccountSelectionViewTestBase {
   ~AccountSelectionViewTestBase();
 
  protected:
-  std::u16string GetHoverButtonTitle(HoverButton* account);
+  std::u16string_view GetHoverButtonTitle(HoverButton* account);
   views::Label* GetHoverButtonSubtitle(HoverButton* account);
   views::View* GetHoverButtonIconView(HoverButton* account);
   views::Label* GetHoverButtonFooter(HoverButton* account);
