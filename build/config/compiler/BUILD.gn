@@ -2014,12 +2014,12 @@ config("default_warnings") {
       ]
     }
 
-    # Disable the GNU line marker warning when building a target with Icecc.
-    # This warning appears frequently when compiling files that use GNU-style
-    # line markers with Clang and Icecc. It can negatively impact build
-    # performance and make it more difficult to identify other errors or warning
-    # messages.
-    if (cc_wrapper == "icecc") {
+    # Disable the GNU line marker warning when building a target with Icecc,
+    # ccache, or both. This warning appears frequently when compiling
+    # files that use GNU-style line markers with Clang and Icecc. It can
+    # negatively impact build performance and make it more difficult to identify
+    # other errors or warning messages.
+    if (cc_wrapper == "ccache" || cc_wrapper == "icecc") {
       cflags += [ "-Wno-gnu-line-marker" ]
     }
   }
