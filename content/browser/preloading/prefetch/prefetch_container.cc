@@ -175,7 +175,8 @@ bool StatusUpdateIsPossibleAfterFailure(PrefetchStatus status) {
   switch (status) {
     case PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved:
     case PrefetchStatus::kPrefetchIsStale:
-    case PrefetchStatus::kPrefetchEvictedForNewerPrefetch: {
+    case PrefetchStatus::kPrefetchEvictedForNewerPrefetch:
+    case PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved: {
       CHECK(TriggeringOutcomeFromStatus(status) ==
             PreloadingTriggeringOutcome::kFailure);
       return true;
@@ -209,7 +210,6 @@ bool StatusUpdateIsPossibleAfterFailure(PrefetchStatus status) {
     case PrefetchStatus::kPrefetchHeldback:
     case PrefetchStatus::kPrefetchNotStarted:
     case PrefetchStatus::kPrefetchIneligiblePrefetchProxyNotAvailable:
-    case PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved:
       return false;
   }
 }
