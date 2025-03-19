@@ -505,6 +505,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="310900540163454140">Ištrinti „<ph name="WEBSITE" />“ slaptažodį?</translation>
 <translation id="3112556859945124369">Pažymėti…</translation>
 <translation id="3119874402040566234">Būsite atjungti, o naršymo duomenys bus ištrinti</translation>
+<translation id="3124568093781685165">Bendrinkite slaptažodžius su šeimos nariais</translation>
 <translation id="3130863904455712965">Istorija ir daugiau</translation>
 <translation id="313283613037595347">Kurti naują inkognito skirtuką</translation>
 <translation id="3138611310073113613">Atmesti pasirinkimą</translation>
@@ -1004,6 +1005,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="5352128922772839949">Išsaugoti failą</translation>
 <translation id="5355191726083956201">Sustiprinta apsauga įjungta</translation>
 <translation id="537853552771686272">Tvarkykite jus dominančias temas ir svetaines</translation>
+<translation id="5390458669633674385">{count,plural, =1{Uždaryta: {count}}one{Uždaryta: {count}}few{Uždaryta: {count}}many{Uždaryta: {count}}other{Uždaryta: {count}}}</translation>
 <translation id="5394975111793637642">Slėpti atsiliepimų apie produktus jums kortelę</translation>
 <translation id="5395707839134961196">Slėpti išsamią paieškos variklio informaciją</translation>
 <translation id="5414763847370083940">Jei kurioje nors svetainėje sumažės kaina, gausite įspėjimą.</translation>
@@ -1133,6 +1135,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="5897749768294722429">Jei norite greitai grįžti į svetaines, kuriose lankėtės, sinchronizuokite skirtukus ir istoriją.</translation>
 <translation id="5898848375214731122">Masė</translation>
 <translation id="5899314093904173337">Norėdami bendrinti su netoliese esančiais žmonėmis, leiskite jiems nuskaityti šį QR kodą savo fotoaparatu ar QR kodų skaitytuvo programa</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} naujas skirtukas}one{{count} naujas skirtukas}few{{count} nauji skirtukai}many{{count} naujo skirtuko}other{{count} naujų skirtukų}}</translation>
 <translation id="5911030830365207728">„Google“ vertėjas</translation>
 <translation id="5917913282764181683">Automatinis atsisiuntimų ištrynimas</translation>
 <translation id="5922999516621365983">Nuvilkite skirtuką čia, kad prisegtumėte.</translation>
@@ -1675,6 +1678,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8131740175452115882">Patvirtinti</translation>
 <translation id="8132598642024322408">Dabar <ph name="PRICE" />, buvo <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Kiekvienoje svetainėje ar programoje naudokite unikalų slaptažodį. Jei kas nors sužinos pakartotinai naudojamą slaptažodį, jį naudojant bus galima prisijungti prie kitų jūsų paskyrų. Spustelėkite, kad atidarytumėte svetainę, ir pakeiskite juos dabar.</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} uždarytas skirtukas}one{{count} uždarytas skirtukas}few{{count} uždaryti skirtukai}many{{count} uždaryto skirtuko}other{{count} uždarytų skirtukų}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{ir dar 1 iš kitų naršymo duomenų}one{ir dar # iš kitų naršymo duomenų}few{ir dar # iš kitų naršymo duomenų}many{ir dar # iš kitų naršymo duomenų}other{ir dar # iš kitų naršymo duomenų}}</translation>
 <translation id="8150167929304790980">Visas vardas</translation>
 <translation id="8152331954420209374">Eiti į „Lens“</translation>

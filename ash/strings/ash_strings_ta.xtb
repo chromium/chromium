@@ -166,6 +166,7 @@
 <translation id="1505542291183484463">கட்டக் காட்சிச் சாளரத்தைக் கீழ்ப்புறம் இழுக்க</translation>
 <translation id="1510238584712386396">துவக்கி</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{அறிவிப்பு அமைப்புகளைக் காண்பிக்கும். ஒரு ஆப்ஸுக்கு அறிவிப்புகள் முடக்கப்பட்டுள்ளன}other{அறிவிப்பு அமைப்புகளைக் காண்பிக்கும். # ஆப்ஸுக்கு அறிவிப்புகள் முடக்கப்பட்டுள்ளன}}</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">பேட்டரி <ph name="BATTERY_PERCENTAGE" />% | முழுமையாகச் சார்ஜ் ஆக <ph name="TIME" /> ஆகும்</translation>
 <translation id="1525508553941733066">நிராகரி</translation>
 <translation id="1526448108126799339">புதிய சாளரத்தில் புதிய பக்கத்தைத் திற</translation>
@@ -345,7 +346,6 @@
 <translation id="2201071101391734388">சமீபத்திய படம்: <ph name="TOTAL_COUNT" /> இல் <ph name="INDEX" />வது.</translation>
 <translation id="2201687081523799384">Google Tasksஸைச் சுருக்கும்</translation>
 <translation id="2208323208084708176">ஒன்றிணைந்த டெஸ்க்டாப் பயன்முறை</translation>
-<translation id="2220572644011485463">பின் அல்லது கடவுச்சொல்</translation>
 <translation id="2222841058024245321">டெஸ்க் 7</translation>
 <translation id="2223384056430485343">திரைப் பிரிப்பில்</translation>
 <translation id="2224075387478458881">பாதுகாக்கப்பட்ட உள்ளடக்கம் காட்டப்படும்போது ஸ்கிரீன் ரெக்கார்டிங் அனுமதிக்கப்படாது</translation>
@@ -1829,7 +1829,6 @@
 <translation id="7000027735917578303">சாளரங்கள் மற்றும் டெஸ்க்குகளுக்கான அமைப்புகள்</translation>
 <translation id="7004910047186208204">மொபைல் டேட்டாவுடன் இணைக்கவும்</translation>
 <translation id="7005239792648594238">தொடங்க ஆப்ஸைத் திறக்கவும்</translation>
-<translation id="7007983414944123363">உங்கள் பின்னையோ கடவுச்சொல்லையோ சரிபார்க்க முடியவில்லை. மீண்டும் முயலவும்.</translation>
 <translation id="7014684956566476813"><ph name="DEVICE_NAME" /> என்ற சாதனத்துடன் இணைக்கப்பட்டுள்ளது</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" />க்கு மீண்டும் சாதனத்தைப் பயன்படுத்தலாம்.</translation>
 <translation id="70168403932084660">டெஸ்க் 6</translation>
@@ -2466,6 +2465,7 @@
 <translation id="9168436347345867845">பின்னர் செய்யலாம்</translation>
 <translation id="9178475906033259337"><ph name="QUERY" />க்கான ஒரு முடிவைக் காட்டுகிறது</translation>
 <translation id="9179259655489829027">கடவுச்சொல்லைக் கேட்காமல், உள்நுழைந்த பயனர் எவரையும் உடனடியாக அணுக இந்த அம்சம் உங்களை அனுமதிக்கிறது. நீங்கள் நம்பும் கணக்குகளுடன் மட்டும் இந்த அம்சத்தைப் பயன்படுத்தவும்.</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183456764293710005">முழுத்திரைப் பெரிதாக்கி</translation>
 <translation id="9192133205265227850">"<ph name="DEVICE_NAME" />" ஐப் பயன்படுத்து</translation>
 <translation id="9193626018745640770">தெரியாத ரிசீவருக்கு அனுப்புகிறது</translation>

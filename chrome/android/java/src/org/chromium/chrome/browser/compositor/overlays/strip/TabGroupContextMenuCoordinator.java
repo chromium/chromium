@@ -182,7 +182,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
             if (tabId == Tab.INVALID_TAB_ID) return;
 
             if (menuId == org.chromium.chrome.R.id.ungroup_tab) {
-                TabUiUtils.ungroupTabGroup(tabGroupModelFilter, tabId);
+                TabUiUtils.ungroupTabGroup(tabGroupModelFilter, tabGroupId);
                 recordUserAction("Ungroup");
             } else if (menuId == org.chromium.chrome.R.id.close_tab_group) {
                 TabUiUtils.closeTabGroup(

@@ -428,6 +428,9 @@ enum class TipsNotificationType;
 + (void)addHistoryServiceTypedURL:(NSString*)URL
                    visitTimestamp:(base::Time)visitTimestamp;
 
+// Sets the page `title` for `URL` in the History Service.
++ (void)setHistoryServiceTitle:(NSString*)title forPage:(NSString*)URL;
+
 // Deletes typed URL from HistoryService.
 + (void)deleteHistoryServiceTypedURL:(NSString*)URL;
 

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <optional>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/command_line.h"
@@ -234,19 +235,19 @@ void AttestationFlowIntegrated::StartCertificateRequest(
     DCHECK(profile_specific_data.has_value())
         << "profile_specific_data must be provided for "
            "DEVICE_SETUP_CERTIFICATE";
-    DCHECK(absl::holds_alternative<
+    DCHECK(std::holds_alternative<
            ::attestation::DeviceSetupCertificateRequestMetadata>(
         profile_specific_data.value()))
         << "profile_specific_data must be of type "
            "::attestation::DeviceSetupCertificateRequestMetadata";
 
     request.mutable_device_setup_certificate_request_metadata()->set_id(
-        absl::get<::attestation::DeviceSetupCertificateRequestMetadata>(
+        std::get<::attestation::DeviceSetupCertificateRequestMetadata>(
             profile_specific_data.value())
             .id());
     request.mutable_device_setup_certificate_request_metadata()
         ->set_content_binding(
-            absl::get<::attestation::DeviceSetupCertificateRequestMetadata>(
+            std::get<::attestation::DeviceSetupCertificateRequestMetadata>(
                 profile_specific_data.value())
                 .content_binding());
   }

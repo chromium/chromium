@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">«Երկիր մոլորակ» պաստառ</translation>
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> ֆոն <ph name="LETTERS_LETTER" /> տառով</translation>
 <translation id="3383623117265110236">Բացառիկ</translation>
-<translation id="3395147534045164351">Միացնել/անջատել տեղադրությունը</translation>
 <translation id="3404249063913988450">Միացնել էկրանապահը</translation>
 <translation id="3413935475507503304">Թարմացումը շարունակելու համար սեղմեք «Առաջ»։</translation>
 <translation id="3428551088151258685">բացօթյա</translation>
@@ -1395,6 +1394,7 @@
 <translation id="7388345524791662148">Լրացուցիչ ընտրանքներ «<ph name="RECORDING_NAME" />» ձայնագրության համար</translation>
 <translation id="7388959671917308825">Ներկառուցված հպահարթակ</translation>
 <translation id="7397270852490618635">Անջատել բաց թեման</translation>
+<translation id="7400166052988585408">Ուսուցիչը <ph name="NUM_SECONDS" /> վայրկյանից կկողպի էկրանը</translation>
 <translation id="7401543881546089382">Ջնջել դյուրանցումը</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> սարքը պատրաստ է թարմացման</translation>
 <translation id="741244894080940828">փոխարկում</translation>

@@ -71,9 +71,8 @@ public class BottomUiThemeColorProvider extends ThemeColorProvider
         mBottomControlsStacker = bottomControlsStacker;
         mIncognitoStateProvider = incognitoStateProvider;
         mControlsPosition = browserControlsStateProvider.getControlsPosition();
-        mPrimaryBackgroundColorWithTopToolbar = SemanticColorUtils.getDialogBgColor(context);
-        mIncognitoBackgroundColorWithTopToolbar =
-                context.getColor(R.color.dialog_bg_color_dark_baseline);
+        mPrimaryBackgroundColorWithTopToolbar = SemanticColorUtils.getColorSurface(context);
+        mIncognitoBackgroundColorWithTopToolbar = context.getColor(R.color.tab_strip_bg_incognito);
 
         mPrimaryTintWithTopToolbar =
                 ContextCompat.getColorStateList(mContext, R.color.default_icon_color_tint_list);

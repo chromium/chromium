@@ -26,7 +26,7 @@
 #include "net/dns/dns_config_service.h"
 #include "net/log/net_log.h"
 
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #endif
 
@@ -241,7 +241,7 @@ NetworkChangeNotifierApple::CalculateConnectionType(
   if (!reachable)
     return CONNECTION_NONE;
 
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
   if (!(flags & kSCNetworkReachabilityFlagsIsWWAN)) {
     return CONNECTION_WIFI;
   }

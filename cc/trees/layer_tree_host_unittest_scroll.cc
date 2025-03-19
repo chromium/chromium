@@ -144,10 +144,10 @@ class LayerTreeHostScrollTestScrollSimple : public LayerTreeHostScrollTest {
         layer_tree_host()->OuterViewportScrollLayerForTesting();
     if (!layer_tree_host()->SourceFrameNumber()) {
       EXPECT_POINTF_EQ(initial_scroll_,
-                       GetTransformNode(scroll_layer)->scroll_offset);
+                       GetTransformNode(scroll_layer)->scroll_offset());
     } else {
       EXPECT_POINTF_EQ(initial_scroll_ + scroll_amount_,
-                       GetTransformNode(scroll_layer)->scroll_offset);
+                       GetTransformNode(scroll_layer)->scroll_offset());
 
       // Pretend like Javascript updated the scroll position itself.
       SetScrollOffset(scroll_layer, second_scroll_);
@@ -176,6 +176,15 @@ class LayerTreeHostScrollTestScrollSimple : public LayerTreeHostScrollTest {
         EndTest();
         break;
     }
+  }
+
+  DrawResult PrepareToDrawOnThread(LayerTreeHostImpl* host_impl,
+                                   LayerTreeHostImpl::FrameData* frame_data,
+                                   DrawResult draw_result) override {
+    EXPECT_TRUE(
+        frame_data->damage_reasons.Has(DamageReason::kCompositorScroll));
+    return LayerTreeHostScrollTest::PrepareToDrawOnThread(host_impl, frame_data,
+                                                          draw_result);
   }
 
   void AfterTest() override { EXPECT_EQ(1, num_outer_viewport_scrolls_); }
@@ -1073,7 +1082,7 @@ class LayerTreeHostScrollTestImplOnlyScroll : public LayerTreeHostScrollTest {
                                                    ->property_trees()
                                                    ->transform_tree()
                                                    .Node(transform_index)
-                                                   ->scroll_offset;
+                                                   ->scroll_offset();
     EXPECT_EQ(scroll_offset, transform_tree_scroll_offset);
   }
 
@@ -2499,13 +2508,13 @@ class LayerTreeHostScrollTestPropertyTreeUpdate
       case 0:
         EXPECT_POINTF_EQ(initial_scroll_, ScrollOffsetBase(scroll_layer));
         EXPECT_POINTF_EQ(initial_scroll_,
-                         GetTransformNode(scroll_layer)->scroll_offset);
+                         GetTransformNode(scroll_layer)->scroll_offset());
         PostSetNeedsCommitToMainThread();
         break;
       case 1:
         EXPECT_POINTF_EQ(second_scroll_, ScrollOffsetBase(scroll_layer));
         EXPECT_POINTF_EQ(second_scroll_,
-                         GetTransformNode(scroll_layer)->scroll_offset);
+                         GetTransformNode(scroll_layer)->scroll_offset());
         EndTest();
         break;
     }
@@ -2584,7 +2593,7 @@ class LayerTreeHostScrollTestImplSideInvalidation
                                                    ->property_trees()
                                                    ->transform_tree()
                                                    .Node(transform_index)
-                                                   ->scroll_offset;
+                                                   ->scroll_offset();
     EXPECT_EQ(scroll_offset, transform_tree_scroll_offset);
   }
 

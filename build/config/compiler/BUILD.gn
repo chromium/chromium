@@ -627,8 +627,7 @@ config("compiler") {
 
     # Enable ELF CREL (see crbug.com/357878242) for all platforms that use ELF
     # (excluding toolchains that use an older version of LLVM).
-    # TODO(crbug.com/376278218): This causes segfault on Linux ARM builds.
-    if (is_linux && !llvm_android_mainline && current_cpu != "arm" &&
+    if (is_linux && !llvm_android_mainline &&
         default_toolchain != "//build/toolchain/cros:target") {
       cflags += [ "-Wa,--crel,--allow-experimental-crel" ]
     }
@@ -897,7 +896,7 @@ config("compiler") {
 
   # TODO(crbug.com/40242425): Cleanup undefined symbol errors caught by
   # --no-undefined-version.
-  if (use_lld && !is_win && !is_mac && !is_ios) {
+  if (use_lld && !is_win && !is_mac && !is_ios && !is_wasm) {
     ldflags += [ "-Wl,--undefined-version" ]
   }
 
@@ -912,7 +911,8 @@ config("compiler") {
   if (use_lld && !enable_call_graph_profile_sort) {
     if (is_win) {
       ldflags += [ "/call-graph-profile-sort:no" ]
-    } else {
+    } else if (!is_wasm) {
+      # Emscripten compiler does not support this linker flag.
       ldflags += [ "-Wl,--no-call-graph-profile-sort" ]
     }
   }
@@ -1991,6 +1991,18 @@ config("default_warnings") {
       }
     }
 
+    if (is_wasm) {
+      # Abseil's `symbolize_emscripten.inc` file currently has macros that are
+      # not compatible with C++98, so turn off the warnings.
+      cflags_cc += [ "-Wno-c++98-compat-extra-semi" ]
+
+      # Emscripten's LLVM version may not match with the shipped LLVM version,
+      # so turn off the explicit version check knowing that this could cause
+      # other issues if the versions are incompatible.
+      cflags += [ "-Wno-version-check" ]
+      ldflags += [ "-Wno-version-check" ]
+    }
+
     # Some builders, such as Cronet, use a different version of Clang than
     # Chromium. This can cause minor errors when compiling Chromium changes. We
     # want to avoid these errors.
@@ -2002,12 +2014,12 @@ config("default_warnings") {
       ]
     }
 
-    # Disable the GNU line marker warning when building a target with Icecc.
-    # This warning appears frequently when compiling files that use GNU-style
-    # line markers with Clang and Icecc. It can negatively impact build
-    # performance and make it more difficult to identify other errors or warning
-    # messages.
-    if (cc_wrapper == "icecc") {
+    # Disable the GNU line marker warning when building a target with Icecc,
+    # ccache, or both. This warning appears frequently when compiling
+    # files that use GNU-style line markers with Clang and Icecc. It can
+    # negatively impact build performance and make it more difficult to identify
+    # other errors or warning messages.
+    if (cc_wrapper == "ccache" || cc_wrapper == "icecc") {
       cflags += [ "-Wno-gnu-line-marker" ]
     }
   }
@@ -2920,7 +2932,7 @@ config("symbols") {
     # sections" there.  Maybe just a bug in nacl_switch_32.S.
     _enable_gdb_index =
         symbol_level == 2 && !is_apple && !is_nacl && current_cpu != "x86" &&
-        current_os != "zos" && use_lld &&
+        current_os != "zos" && use_lld && !is_wasm &&
         # Disable on non-fission 32-bit Android because it pushes
         # libcomponents_unittests over the 4gb size limit.
         !(is_android && !use_debug_fission && current_cpu != "x64" &&

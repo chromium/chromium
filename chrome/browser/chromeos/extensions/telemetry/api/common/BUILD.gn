@@ -157,6 +157,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/extensions:test_support",
+    "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/common/chromeos/extensions",
     "//chrome/test:test_support",
     "//chromeos/ash/components/browser_context_helper",

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -337,7 +338,7 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     // url::Origin, so here we convert host name to origin with some assumptions
     // (which might not be true). We should either convert to work only with
     // host names or BDM should return origins.
-    url::Origin entry_origin = absl::visit(
+    url::Origin entry_origin = std::visit(
         base::Overloaded{[&](const std::string& host) {
                            GURL current_url = web_contents_->GetVisibleURL();
                            GURL site_url = net::cookie_util::CookieOriginToURL(

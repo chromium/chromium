@@ -469,7 +469,6 @@ class MEDIA_EXPORT Vp9Parser {
   // The frame size of each spatial layer.
   std::vector<uint32_t> spatial_layer_frame_size_;
 
-  FrameInfo curr_frame_info_;
   Vp9FrameHeader curr_frame_header_;
 };
 

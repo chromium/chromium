@@ -37,7 +37,7 @@ std::set<base::FilePath> RetrieveAllInstalledIsolatedWebAppsPaths(
     const WebApp& app = CHECK_DEREF(registrar.GetAppById(app_id));
     if (const auto& isolation_data = app.isolation_data()) {
       const auto* owned_bundle =
-          absl::get_if<IsolatedWebAppStorageLocation::OwnedBundle>(
+          std::get_if<IsolatedWebAppStorageLocation::OwnedBundle>(
               &isolation_data->location().variant());
       if (!owned_bundle) {
         continue;
@@ -49,7 +49,7 @@ std::set<base::FilePath> RetrieveAllInstalledIsolatedWebAppsPaths(
       if (const auto& pending_update_info =
               isolation_data->pending_update_info()) {
         const auto* pending_update_location =
-            absl::get_if<IsolatedWebAppStorageLocation::OwnedBundle>(
+            std::get_if<IsolatedWebAppStorageLocation::OwnedBundle>(
                 &pending_update_info->location.variant());
         if (pending_update_location) {
           isolated_web_apps_paths.insert(

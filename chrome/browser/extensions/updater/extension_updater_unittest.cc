@@ -41,6 +41,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_sync_data.h"
 #include "chrome/browser/extensions/fake_crx_installer.h"
@@ -241,7 +242,8 @@ class MockService : public TestExtensionService {
       TestExtensionPrefs* prefs,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
       : prefs_(prefs),
-        corrupted_extension_reinstaller_(prefs->profile()),
+        corrupted_extension_reinstaller_(
+            CorruptedExtensionReinstaller::Get(prefs->profile())),
         downloader_delegate_override_(nullptr),
         test_shared_url_loader_factory_(url_loader_factory) {}
 
@@ -261,7 +263,7 @@ class MockService : public TestExtensionService {
   }
 
   CorruptedExtensionReinstaller* corrupted_extension_reinstaller() override {
-    return &corrupted_extension_reinstaller_;
+    return corrupted_extension_reinstaller_;
   }
 
   const CoreAccountId& account_id() { return account_info_.account_id; }
@@ -307,8 +309,8 @@ class MockService : public TestExtensionService {
   }
 
  protected:
-  const raw_ptr<TestExtensionPrefs, DanglingUntriaged> prefs_;
-  CorruptedExtensionReinstaller corrupted_extension_reinstaller_;
+  const raw_ptr<TestExtensionPrefs> prefs_;
+  const raw_ptr<CorruptedExtensionReinstaller> corrupted_extension_reinstaller_;
 
  private:
   std::unique_ptr<ExtensionDownloader> CreateExtensionDownloader(
@@ -452,7 +454,7 @@ class ServiceForDownloadTests : public MockService {
   }
 
   CorruptedExtensionReinstaller* corrupted_extension_reinstaller() override {
-    return &corrupted_extension_reinstaller_;
+    return corrupted_extension_reinstaller_;
   }
 
   const ExtensionId& extension_id() const { return extension_id_; }
@@ -2986,6 +2988,13 @@ class CanUseUpdateServiceTest : public ExtensionUpdaterTest {
     ASSERT_TRUE(userscript_extension_.get());
     ASSERT_TRUE(ExtensionRegistry::Get(service_->profile())
                     ->AddEnabled(userscript_extension_));
+  }
+
+  void TearDown() override {
+    // Avoid dangling pointers.
+    updater_.reset();
+    service_.reset();
+    ExtensionUpdaterTest::TearDown();
   }
 
  protected:

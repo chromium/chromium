@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/command_line.h"
@@ -54,7 +55,6 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
@@ -175,7 +175,7 @@ struct FencedFrameContextMenuTestCase {
   std::string relative_url;
 
   // Either the target HTML element id or click coordinate.
-  absl::variant<std::string, gfx::PointF> click_target;
+  std::variant<std::string, gfx::PointF> click_target;
 
   // Invoked before network revocation.
   CheckCommandsCallback callback_before_revocation;
@@ -248,14 +248,14 @@ class ContextMenuFencedFrameTest : public ContextMenuUiTest {
 
     // Get the coordinate of the click target with respect to the target frame.
     gfx::PointF target =
-        absl::visit(base::Overloaded(
-                        [&target_frame = std::as_const(target_frame)](
-                            std::string target_id) {
-                          return GetCenterCoordinatesOfElementWithId(
-                              target_frame, target_id);
-                        },
-                        [](gfx::PointF target_point) { return target_point; }),
-                    test_case.click_target);
+        std::visit(base::Overloaded(
+                       [&target_frame = std::as_const(target_frame)](
+                           std::string target_id) {
+                         return GetCenterCoordinatesOfElementWithId(
+                             target_frame, target_id);
+                       },
+                       [](gfx::PointF target_point) { return target_point; }),
+                   test_case.click_target);
 
     if (test_case.is_in_nested_iframe) {
       // Because the mouse event is forwarded to the `RenderWidgetHost` of the
@@ -349,7 +349,7 @@ class ContextMenuFencedFrameTest : public ContextMenuUiTest {
 
       // Get the coordinate of the click target with respect to the target
       // frame.
-      gfx::PointF target = absl::visit(
+      gfx::PointF target = std::visit(
           base::Overloaded(
               [&target_frame =
                    std::as_const(target_frame)](std::string target_id) {

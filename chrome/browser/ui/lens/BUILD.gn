@@ -11,6 +11,7 @@ source_set("lens") {
   # The public interface is intentionally minimal. There should be a small
   # number of entry points and publicly used headers.
   public = [
+    "lens_search_controller.h",
     "lens_overlay_controller.h",
     "lens_overlay_entry_point_controller.h",
     "lens_overlay_gen204_controller.h",
@@ -76,6 +77,7 @@ source_set("impl") {
   public = []
   sources = [
     "lens_overlay_blur_layer_delegate.cc",
+    "lens_search_controller.cc",
     "lens_overlay_controller.cc",
     "lens_overlay_entry_point_controller.cc",
     "lens_overlay_event_handler.cc",

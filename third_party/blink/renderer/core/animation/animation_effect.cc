@@ -357,7 +357,9 @@ void AnimationEffect::UpdateInheritedTime(
       event_delegate_->OnEventCondition(*this, calculated.phase);
     }
 
-    if (owner_ && (calculated_.is_in_play != calculated.is_in_play)) {
+    if (RuntimeEnabledFeatures::
+            CompositingDecisionAtAnimationPhaseBoundariesEnabled() &&
+        owner_ && (calculated_.is_in_play != calculated.is_in_play)) {
       owner_->GetAnimation()->OnActivePhaseStateChange(calculated.is_in_play);
     }
 

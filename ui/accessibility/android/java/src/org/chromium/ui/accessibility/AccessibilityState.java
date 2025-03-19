@@ -830,7 +830,7 @@ public class AccessibilityState {
      *
      * @return True when a known screen reader is running (e.g. TalkBack).
      */
-    public static boolean isKnownScreenReaderRunning() {
+    public static boolean isScreenReaderRunning() {
         return getTalkBackEnabledState().first;
     }
 

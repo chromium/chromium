@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "components/policy/policy_constants.h"
 #include "remoting/base/port_range.h"
+#include "remoting/base/session_policies.h"
 
 namespace remoting {
 
@@ -54,33 +55,31 @@ std::optional<SessionPolicies> SessionPoliciesFromDict(
       *clipboard_size_bytes_value >= 0) {
     clipboard_size_bytes = *clipboard_size_bytes_value;
   }
-
-  return SessionPolicies{
-      .clipboard_size_bytes = clipboard_size_bytes,
-      .allow_stun_connections = allow_firewall_traversal,
-      // Relayed connection is not allowed if RemoteAccessHostFirewallTraversal
-      // is false. See:
-      // https://chromeenterprise.google/policies/#RemoteAccessHostAllowRelayedConnection
-      .allow_relayed_connections =
-          allow_firewall_traversal.value_or(true)
-              ? dict.FindBool(
-                    policy::key::kRemoteAccessHostAllowRelayedConnection)
-              : false,
-      .host_udp_port_range = host_udp_port_range,
+  SessionPolicies session_policies;
+  session_policies.clipboard_size_bytes = clipboard_size_bytes;
+  session_policies.allow_stun_connections = allow_firewall_traversal;
+  // Relayed connection is not allowed if RemoteAccessHostFirewallTraversal
+  // is false. See:
+  // https://chromeenterprise.google/policies/#RemoteAccessHostAllowRelayedConnection
+  session_policies.allow_relayed_connections =
+      allow_firewall_traversal.value_or(true)
+          ? dict.FindBool(policy::key::kRemoteAccessHostAllowRelayedConnection)
+          : false;
+  session_policies.host_udp_port_range = host_udp_port_range;
 #if !BUILDFLAG(IS_CHROMEOS)
-      .allow_file_transfer =
-          dict.FindBool(policy::key::kRemoteAccessHostAllowFileTransfer),
-      .allow_uri_forwarding =
-          dict.FindBool(policy::key::kRemoteAccessHostAllowUrlForwarding),
-      .maximum_session_duration = maximum_session_duration,
-      .curtain_required =
-          dict.FindBool(policy::key::kRemoteAccessHostRequireCurtain),
+  session_policies.allow_file_transfer =
+      dict.FindBool(policy::key::kRemoteAccessHostAllowFileTransfer);
+  session_policies.allow_uri_forwarding =
+      dict.FindBool(policy::key::kRemoteAccessHostAllowUrlForwarding);
+  session_policies.maximum_session_duration = maximum_session_duration;
+  session_policies.curtain_required =
+      dict.FindBool(policy::key::kRemoteAccessHostRequireCurtain);
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-      .host_username_match_required =
-          dict.FindBool(policy::key::kRemoteAccessHostMatchUsername),
+  session_policies.host_username_match_required =
+      dict.FindBool(policy::key::kRemoteAccessHostMatchUsername);
 #endif
-  };
+  return session_policies;
 }
 
 }  // namespace remoting

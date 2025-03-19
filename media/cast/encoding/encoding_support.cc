@@ -25,10 +25,6 @@ static VideoCodecBitset& GetHardwareCodecDenyList() {
   return *kInstance;
 }
 
-bool IsHardwareDenyListed(VideoCodec codec) {
-  return GetHardwareCodecDenyList().test(static_cast<size_t>(codec));
-}
-
 bool IsCastStreamingAv1Enabled() {
 #if BUILDFLAG(ENABLE_LIBAOM)
   return base::FeatureList::IsEnabled(kCastStreamingAv1);
@@ -161,6 +157,10 @@ bool IsHardwareEnabled(
     default:
       return false;
   }
+}
+
+bool IsHardwareDenyListed(VideoCodec codec) {
+  return GetHardwareCodecDenyList().test(static_cast<size_t>(codec));
 }
 
 void DenyListHardwareCodec(VideoCodec codec) {

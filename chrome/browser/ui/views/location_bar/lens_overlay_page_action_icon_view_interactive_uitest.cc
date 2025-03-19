@@ -109,8 +109,12 @@ class LensOverlayPageActionIconViewTest
  public:
   LensOverlayPageActionIconViewTest() {
     if (IsMigrationEnabled()) {
-      scoped_feature_list_.InitWithFeatures(
-          {lens::features::kLensOverlay, ::features::kPageActionsMigration},
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          {{lens::features::kLensOverlay, {}},
+           {::features::kPageActionsMigration,
+            {
+                {::features::kPageActionsMigrationLensOverlay.name, "true"},
+            }}},
           {});
     } else {
       scoped_feature_list_.InitWithFeatures(

@@ -11,34 +11,19 @@
 
 #include <fcntl.h>
 #include <gbm.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
+#include <xf86drm.h>
 
 #include <string>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/files/scoped_file.h"
-#include "base/strings/stringprintf.h"
+#include "base/logging.h"
 #include "ui/gfx/linux/scoped_gbm_device.h"  // nogncheck
 #include "ui/gl/startup_trace.h"
 #include "ui/ozone/public/ozone_switches.h"
 
 namespace ui {
-
-namespace {
-
-// Drm render node path template.
-constexpr char kDriRenderNodeTemplate[] = "/dev/dri/renderD%u";
-
-// Number of files to look for when discovering DRM devices.
-constexpr uint32_t kDrmMajor = 226;
-constexpr uint32_t kDrmMaxMinor = 15;
-constexpr uint32_t kRenderNodeStart = 128;
-constexpr uint32_t kRenderNodeEnd = kRenderNodeStart + kDrmMaxMinor + 1;
-
-}  // namespace
 
 DrmRenderNodePathFinder::DrmRenderNodePathFinder() {
   FindDrmRenderNodePath();
@@ -59,27 +44,40 @@ void DrmRenderNodePathFinder::FindDrmRenderNodePath() {
     return;
   }
 
-  for (uint32_t i = kRenderNodeStart; i < kRenderNodeEnd; i++) {
-    /* First,  look in sysfs and skip if this is the vgem render node. */
-    std::string node_link(
-        base::StringPrintf("/sys/dev/char/%d:%d/device", kDrmMajor, i));
-    char device_link[256];
-    ssize_t len = readlink(node_link.c_str(), device_link, sizeof(device_link));
-    if (len < 0 || len == sizeof(device_link)) {
+  int max_devices = drmGetDevices2(0, nullptr, 0);
+  if (max_devices <= 0) {
+    PLOG(ERROR) << "drmGetDevices2() has not found any devices";
+    return;
+  }
+
+  std::vector<drmDevicePtr> devices{static_cast<size_t>(max_devices), nullptr};
+  int ret = drmGetDevices2(0, devices.data(), max_devices);
+  if (ret < 0) {
+    PLOG(ERROR) << "drmGetDevices2() returned an error";
+    return;
+  }
+
+  std::vector<std::pair<std::string, std::string>> driver_to_nodes;
+  for (const auto& device : devices) {
+    if (!device || !(device->available_nodes & 1 << DRM_NODE_RENDER)) {
       continue;
     }
 
-    // Convert device_link to a string for safe substring comparison.
-    std::string device_link_str(device_link, len);
-
-    // readlink does not place a nul byte at the end of the string.
-    if (std::string(device_link, len).ends_with("vgem")) {
-      continue;
-    }
-
-    std::string dri_render_node(base::StringPrintf(kDriRenderNodeTemplate, i));
+    CHECK(device->nodes);
+    const std::string dri_render_node(device->nodes[DRM_NODE_RENDER]);
     base::ScopedFD drm_fd(open(dri_render_node.c_str(), O_RDWR));
     if (drm_fd.get() < 0) {
+      continue;
+    }
+
+    drmVersionPtr version = drmGetVersion(drm_fd.get());
+    if (!version) {
+      continue;
+    }
+    const std::string driver_name(version->name, version->name_len);
+    drmFreeVersion(version);
+    // Skip if this is the vgem render node.
+    if (driver_name == "vgem") {
       continue;
     }
 
@@ -87,15 +85,35 @@ void DrmRenderNodePathFinder::FindDrmRenderNodePath() {
     // create gbm device on certain driver (E.g. PowerVR). Skip such paths.
     {
       GPU_STARTUP_TRACE_EVENT("scoped attempt of gbm_create_device");
-      ScopedGbmDevice device(gbm_create_device(drm_fd.get()));
-      if (!device) {
+      ScopedGbmDevice gbm_device(gbm_create_device(drm_fd.get()));
+      if (!gbm_device) {
         continue;
       }
     }
 
-    drm_render_node_path_ = base::FilePath(dri_render_node);
-    break;
+    driver_to_nodes.emplace_back(driver_name, dri_render_node);
   }
+  drmFreeDevices(devices.data(), max_devices);
+  devices.clear();
+
+  if (driver_to_nodes.empty()) {
+    return;
+  }
+
+  static constexpr const char* preferred_drivers[3] = {"i915", "amdgpu",
+                                                       "virtio_gpu"};
+  for (const char* preferred_driver : preferred_drivers) {
+    for (const auto& [driver, node] : driver_to_nodes) {
+      if (driver == preferred_driver) {
+        drm_render_node_path_ = base::FilePath(node);
+        return;
+      }
+    }
+  }
+
+  LOG(WARNING) << "Preferred drm_render_node not found, picking "
+               << driver_to_nodes[0].first;
+  drm_render_node_path_ = base::FilePath(driver_to_nodes[0].second);
 }
 
 }  // namespace ui

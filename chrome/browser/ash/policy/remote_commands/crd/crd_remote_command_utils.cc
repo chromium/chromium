@@ -174,6 +174,13 @@ ExtendedStartCrdSessionResultCode ToExtendedStartCrdSessionResultCode(
       return ExtendedStartCrdSessionResultCode::kFailureNoCommonAuthMethod;
     case ErrorCode::SESSION_POLICIES_CHANGED:
       return ExtendedStartCrdSessionResultCode::kFailureSessionPoliciesChanged;
+    case ErrorCode::UNEXPECTED_AUTHENTICATOR_ERROR:
+      return ExtendedStartCrdSessionResultCode::
+          kFailureUnexpectedAuthenticatorError;
+    case ErrorCode::INVALID_STATE:
+      return ExtendedStartCrdSessionResultCode::kFailureInvalidState;
+    case ErrorCode::INVALID_ARGUMENT:
+      return ExtendedStartCrdSessionResultCode::kFailureInvalidArgument;
   }
   NOTREACHED();
 }
@@ -222,6 +229,10 @@ StartCrdSessionResultCode ToStartCrdSessionResultCode(
     case ExtendedStartCrdSessionResultCode::kFailureReauthzPolicyCheckFailed:
     case ExtendedStartCrdSessionResultCode::kFailureNoCommonAuthMethod:
     case ExtendedStartCrdSessionResultCode::kFailureSessionPoliciesChanged:
+    case ExtendedStartCrdSessionResultCode::
+        kFailureUnexpectedAuthenticatorError:
+    case ExtendedStartCrdSessionResultCode::kFailureInvalidState:
+    case ExtendedStartCrdSessionResultCode::kFailureInvalidArgument:
       // The server side is not interested in a lot of the different CRD host
       // failures, which is why most of them are simply mapped to
       // 'FAILURE_CRD_HOST_ERROR`.

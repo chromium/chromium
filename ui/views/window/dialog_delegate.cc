@@ -5,6 +5,7 @@
 #include "ui/views/window/dialog_delegate.h"
 
 #include <utility>
+#include <variant>
 
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
@@ -63,9 +64,9 @@ class DialogWidget : public Widget {
 };
 
 bool HasCallback(
-    const absl::variant<base::OnceClosure, base::RepeatingCallback<bool()>>&
+    const std::variant<base::OnceClosure, base::RepeatingCallback<bool()>>&
         callback) {
-  return absl::visit(
+  return std::visit(
       [](const auto& variant) { return static_cast<bool>(variant); }, callback);
 }
 
@@ -237,15 +238,15 @@ bool DialogDelegate::Accept() {
 }
 
 bool DialogDelegate::RunCloseCallback(
-    absl::variant<base::OnceClosure, base::RepeatingCallback<bool()>>&
+    std::variant<base::OnceClosure, base::RepeatingCallback<bool()>>&
         callback) {
   DCHECK(!already_started_close_);
-  if (absl::holds_alternative<base::OnceClosure>(callback)) {
+  if (std::holds_alternative<base::OnceClosure>(callback)) {
     already_started_close_ = true;
-    absl::get<base::OnceClosure>(std::move(callback)).Run();
+    std::get<base::OnceClosure>(std::move(callback)).Run();
   } else {
     already_started_close_ =
-        absl::get<base::RepeatingCallback<bool()>>(callback).Run();
+        std::get<base::RepeatingCallback<bool()>>(callback).Run();
   }
 
   return already_started_close_;
@@ -305,7 +306,7 @@ void DialogDelegate::WindowWillClose() {
     // `RunCloseCallback` takes a non-const reference to this variant to support
     // the accept and cancel callbacks. It doesn't make sense to be storing a
     // variant for close callbacks, so we construct the variant here instead.
-    absl::variant<base::OnceClosure, base::RepeatingCallback<bool()>>
+    std::variant<base::OnceClosure, base::RepeatingCallback<bool()>>
         close_callback_wrapped(std::move(close_callback_));
     RunCloseCallback(close_callback_wrapped);
   }

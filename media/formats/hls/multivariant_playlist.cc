@@ -7,6 +7,7 @@
 #include <optional>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -24,7 +25,6 @@
 #include "media/formats/hls/types.h"
 #include "media/formats/hls/variable_dictionary.h"
 #include "media/formats/hls/variant_stream.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 namespace media::hls {
@@ -108,7 +108,7 @@ MultivariantPlaylist::Parse(std::string_view source,
     auto item = std::move(item_result).value();
 
     // Handle tags
-    if (auto* tag = absl::get_if<TagItem>(&item)) {
+    if (auto* tag = std::get_if<TagItem>(&item)) {
       // The HLS spec requires that there may be no tags between the
       // X-STREAM-INF tag and its URI.
       if (inf_tag.has_value()) {
@@ -216,8 +216,8 @@ MultivariantPlaylist::Parse(std::string_view source,
     // Handle URIs
     // `GetNextLineItem` should return either a TagItem (handled above) or a
     // UriItem.
-    static_assert(absl::variant_size<GetNextLineItemResult>() == 2);
-    auto variant_uri_result = ParseUri(absl::get<UriItem>(std::move(item)), uri,
+    static_assert(std::variant_size<GetNextLineItemResult>() == 2);
+    auto variant_uri_result = ParseUri(std::get<UriItem>(std::move(item)), uri,
                                        common_state, sub_buffer);
     if (!variant_uri_result.has_value()) {
       return std::move(variant_uri_result).error();

@@ -1,7 +1,7 @@
 include_rules = [
   "+components/plus_addresses",
   "+ios/chrome/browser/bubble/ui_bundled",
-  "+ios/chrome/browser/device_reauth",
+  "+ios/chrome/browser/device_reauth/model",
   "+ios/chrome/browser/history/model/history_service_factory.h",
   "+ios/chrome/browser/infobars/model",
   "+ios/chrome/browser/net/model/crurl.h",

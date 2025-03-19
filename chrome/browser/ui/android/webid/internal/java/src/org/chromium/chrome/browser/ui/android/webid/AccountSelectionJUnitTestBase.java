@@ -258,7 +258,7 @@ public class AccountSelectionJUnitTestBase {
                         "ana@email.example",
                         "Ana Doe",
                         "Ana",
-                        /* secondaryDescription= */ null,
+                        /* secondaryDescription= */ "email.example",
                         /* pictureBitmap= */ null,
                         /* circledBadgedPictureBitmap= */ Bitmap.createBitmap(
                                 100, 100, Bitmap.Config.ARGB_4444),
@@ -283,10 +283,10 @@ public class AccountSelectionJUnitTestBase {
         mAnaAccountWithoutBrandIcons =
                 new Account(
                         "Ana",
-                        "ana@email.example",
+                        "ana@email2.example",
                         "Ana Doe",
                         "Ana",
-                        /* secondaryDescription= */ null,
+                        /* secondaryDescription= */ "email2.example",
                         /* pictureBitmap= */ null,
                         /* circledBadgedPictureBitmap= */ Bitmap.createBitmap(
                                 100, 100, Bitmap.Config.ARGB_4444),
@@ -429,12 +429,13 @@ public class AccountSelectionJUnitTestBase {
                         mMockModalDialogManager);
     }
 
-    MVCListAdapter.ListItem buildAccountItem(Account account) {
+    MVCListAdapter.ListItem buildAccountItem(Account account, boolean showIdp) {
         return new MVCListAdapter.ListItem(
                 AccountSelectionProperties.ITEM_TYPE_ACCOUNT,
                 new PropertyModel.Builder(AccountProperties.ALL_KEYS)
                         .with(AccountProperties.ACCOUNT, account)
                         .with(AccountProperties.ON_CLICK_LISTENER, mAccountCallback)
+                        .with(AccountProperties.SHOW_IDP, showIdp)
                         .build());
     }
 

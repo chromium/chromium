@@ -4,6 +4,8 @@
 
 #include "components/password_manager/core/browser/os_crypt_async_migrator.h"
 
+#include <variant>
+
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -53,14 +55,14 @@ void OSCryptAsyncMigrator::OnGetPasswordStoreResultsOrErrorFrom(
     PasswordStoreInterface* store,
     LoginsResultOrError results_or_error) {
   CHECK(store_ == store);
-  if (absl::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
+  if (std::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
     // Notify observer that cleaning is complete. Although don't mark it as such
     // to retry again in the future.
     observer_->CleaningCompleted();
     return;
   }
 
-  LoginsResult logins = std::move(absl::get<LoginsResult>(results_or_error));
+  LoginsResult logins = std::move(std::get<LoginsResult>(results_or_error));
 
   if (logins.empty()) {
     MarkMigrationComplete();

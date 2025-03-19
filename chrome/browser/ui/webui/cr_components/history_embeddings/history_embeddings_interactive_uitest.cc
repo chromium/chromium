@@ -90,9 +90,8 @@ class HistoryEmbeddingsInteractiveTest
   passage_embeddings::TestEnvironment passage_embeddings_test_env_;
 };
 
-// Opening the feedback dialog on CrOS & LaCrOS open a system level dialog,
-// which cannot be easily tested here. Instead, LaCrOS has a separate feedback
-// browser test which gives some coverage.
+// Opening the feedback dialog on CrOS open a system level dialog, which cannot
+// be easily tested here.
 #if !BUILDFLAG(IS_CHROMEOS)
 
 // TODO(crbug.com/374710231): Reenable - currently, this fails consistently on

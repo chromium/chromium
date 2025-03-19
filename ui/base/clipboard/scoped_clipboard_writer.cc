@@ -13,6 +13,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 
 #include "base/json/json_writer.h"
 #include "base/pickle.h"
@@ -59,7 +60,7 @@ ScopedClipboardWriter::~ScopedClipboardWriter() {
         base::VariantIndexOfType<Clipboard::Data, Clipboard::TextData>());
     if (text_iter != objects_.end()) {
       const auto& text_data =
-          absl::get<Clipboard::TextData>(text_iter->second.data);
+          std::get<Clipboard::TextData>(text_iter->second.data);
       Clipboard::GetForCurrentThread()->NotifyCopyWithUrl(
           text_data.data, frame_url_, main_frame_url_);
     }

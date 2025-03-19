@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -82,6 +83,19 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
   SharedStorageReportingMap GetSharedStorageReportingMap(const GURL& urn_uuid);
 
   void ExecuteScriptInWorklet(
+      const ToRenderFrameHost& execution_target,
+      std::string_view script,
+      GURL* out_module_script_url,
+      size_t expected_total_host_count = 1u,
+      bool keep_alive_after_operation = true,
+      std::optional<std::string> context_id = std::nullopt,
+      std::optional<std::string> filtering_id_max_bytes = std::nullopt,
+      std::optional<std::string> max_contributions = std::nullopt,
+      std::string* out_error = nullptr,
+      bool wait_for_operation_finish = true,
+      bool use_add_module = true);
+
+  void ExecuteScriptInWorkletUsingCreateWorklet(
       const ToRenderFrameHost& execution_target,
       const std::string& script,
       GURL* out_module_script_url,

@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
@@ -61,7 +62,7 @@ namespace {
 
 CreditCardBenefitBase::BenefitId get_benefit_id(
     const CreditCardBenefit& benefit) {
-  return absl::visit([](const auto& a) { return a.benefit_id(); }, benefit);
+  return std::visit([](const auto& a) { return a.benefit_id(); }, benefit);
 }
 
 class PaymentsAutofillTableTest : public testing::Test {
@@ -93,15 +94,15 @@ class PaymentsAutofillTableTest : public testing::Test {
   // `guid`.
   time_t GetDateModified(std::string_view table_name,
                          std::string_view column,
-                         absl::variant<std::string, int64_t> id) {
+                         std::variant<std::string, int64_t> id) {
     sql::Statement s(db_->GetSQLConnection()->GetUniqueStatement(base::StrCat(
         {"SELECT ", column, " FROM ", table_name, " WHERE ",
-         absl::holds_alternative<std::string>(id) ? "guid" : "instrument_id",
+         std::holds_alternative<std::string>(id) ? "guid" : "instrument_id",
          " = ?"})));
-    if (const std::string* guid = absl::get_if<std::string>(&id)) {
+    if (const std::string* guid = std::get_if<std::string>(&id)) {
       s.BindString(0, *guid);
     } else {
-      s.BindInt64(0, absl::get<int64_t>(id));
+      s.BindInt64(0, std::get<int64_t>(id));
     }
     EXPECT_TRUE(s.Step());
     return s.ColumnInt64(0);
@@ -1787,7 +1788,7 @@ TEST_F(PaymentsAutofillTableTest, GetCreditCardBenefitsForInstrumentId) {
   // id.
   std::vector<CreditCardBenefit> output_benefits;
   EXPECT_TRUE(table_->GetCreditCardBenefitsForInstrumentId(
-      *absl::visit(
+      *std::visit(
           [](const auto& benefit) {
             return benefit.linked_card_instrument_id();
           },

@@ -316,7 +316,6 @@
 <translation id="1532118530259321453">Оваа страница вели</translation>
 <translation id="1533966801397200693">Профилот во којшто сте најавени е управуван профил. Администраторот може да врши промени во поставките за вашиот профил далечински, да ги анализира информациите за прелистувачот преку извештаите и да извршува други неопходни задачи. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Преведи ја страницата</translation>
-<translation id="1538295100801850685">Подобрувања на предвидувањата</translation>
 <translation id="1539840569003678498">Извештајот е испратен на:</translation>
 <translation id="1542105669288201090">Бизнис образование</translation>
 <translation id="1545757265410828525">Историја на цените</translation>
@@ -1157,7 +1156,6 @@
 <translation id="3052868890529250114">Обично се поврзувате на сајтовите безбедно, но овој пат Chrome не можеше да користи безбедна врска. Напаѓач можеби се обидува да прислушува или да ја измени вашата мрежна врска. <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе за предупредувањево<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> попуст на <ph name="PRODUCT_NAME" /></translation>
 <translation id="3061707000357573562">Услуга за поправање грешки</translation>
-<translation id="306198082577913404">Вклучете подобрувања на предвидувањата</translation>
 <translation id="3062655045399308513">Избришете ги податоците од прелистување…</translation>
 <translation id="3063453392496098461">Инсталирањето на заднинските услуги на VPN не успеа.</translation>
 <translation id="306573536155379004">Играта започна.</translation>
@@ -2325,7 +2323,6 @@
 <translation id="5097099694988056070">Статистички податоци за уредот, како на пример, користење CPU/RAM</translation>
 <translation id="5097468150760963273">27 x 39 инчи</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome бара пристап до <ph name="PERMISSION" /> на вашиот уред</translation>
 <translation id="510644072453496781">Картон (завршеток)</translation>
 <translation id="5106648964679263509">Виртуелната картичка за <ph name="BNPL_ISSUER_NAME" /> е пополнета</translation>
 <translation id="5108881358339761672">Сајтот не е безбеден</translation>
@@ -4053,7 +4050,6 @@
 <translation id="8134058435519644366">Регрутирање и обезбедување персонал</translation>
 <translation id="8135546115396015134">лево копче</translation>
 <translation id="8137456439814903304">Електрична енергија и комунални претпријатија</translation>
-<translation id="81474145143203755">За да користите <ph name="PERMISSION" /> на сајтов, треба да му дадете пристап на Chrome</translation>
 <translation id="8148608574971654810">PDF-верзија:</translation>
 <translation id="8149426793427495338">Компјутерот е во режим на спиење.</translation>
 <translation id="8150722005171944719">Датотеката на <ph name="URL" /> не може да се прочита. Можно е да е отстранета, преместена или дозволите на датотеката да го спречуваат пристапот.</translation>

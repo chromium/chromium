@@ -98,12 +98,12 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
     tree.SetElementIdForNodeId(node.id, node.element_id);
   }
   if (node.local != wire.local || node.origin != wire.origin ||
-      node.scroll_offset != wire.scroll_offset) {
+      node.scroll_offset() != wire.scroll_offset) {
     node.needs_local_transform_update = true;
   }
   node.local = wire.local;
   node.origin = wire.origin;
-  node.scroll_offset = wire.scroll_offset;
+  node.SetScrollOffset(wire.scroll_offset, cc::DamageReason::kUntracked);
   node.snap_amount = wire.snap_amount;
 
   if (!wire.sticky_position_constraint_id) {
@@ -140,7 +140,11 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
   node.will_change_transform = wire.will_change_transform;
 
   node.visible_frame_element_id = wire.visible_frame_element_id;
-  node.transform_changed = true;
+  node.SetTransformChanged(cc::DamageReason::kUntracked);
+  if (!node.SetDamageReasonsForDeserialization(
+          cc::DamageReasonSet::FromEnumBitmask(wire.damage_reasons_bit_mask))) {
+    return base::unexpected("Invalid damage_reasons_bit_mask");
+  }
   return base::ok();
 }
 

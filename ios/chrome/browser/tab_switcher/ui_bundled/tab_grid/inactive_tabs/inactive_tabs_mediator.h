@@ -12,11 +12,20 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_view_controller_mutator.h"
 
 @protocol InactiveTabsInfoConsumer;
+@class InactiveTabsMediator;
 class PrefService;
 class TabsCloser;
 @class SnapshotStorageWrapper;
 @protocol TabCollectionConsumer;
 class WebStateList;
+
+// Delegate for the InactiveTabsMediator.
+@protocol InactiveTabsMediatorDelegate
+
+// Tells the delegate that there are no longer any inactive tabs.
+- (void)inactiveTabsMediatorEmpty:(InactiveTabsMediator*)inactiveTabsMediator;
+
+@end
 
 // This mediator provides data to the Inactive Tabs grid and handles
 // interactions.
@@ -27,6 +36,9 @@ class WebStateList;
 // `consumer` receives `webStateList` and Inactive Tabs info updates.
 @property(nonatomic, weak) id<TabCollectionConsumer, InactiveTabsInfoConsumer>
     consumer;
+
+// Delegate for the mediator.
+@property(nonatomic, weak) id<InactiveTabsMediatorDelegate> delegate;
 
 // Initializer with:
 // - `webStateList`: the list of tabs to observe.

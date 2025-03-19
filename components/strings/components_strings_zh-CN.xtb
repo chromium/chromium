@@ -316,7 +316,6 @@
 <translation id="1532118530259321453">此网页显示</translation>
 <translation id="1533966801397200693">您登录的个人资料是受管个人资料。您的管理员可以远程更改您的个人资料设置，通过报告分析浏览器的相关信息，以及执行其他必要任务。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">翻译网页</translation>
-<translation id="1538295100801850685">预测改进</translation>
 <translation id="1539840569003678498">报告发送时间：</translation>
 <translation id="1542105669288201090">商业教育</translation>
 <translation id="1545757265410828525">既往价格</translation>
@@ -1157,7 +1156,6 @@
 <translation id="3052868890529250114">您通常可以安全地连接到网站，但目前 Chrome 无法使用安全连接。攻击者可能会试图对您的网络连接进行窃听或修改。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />降价 <ph name="PRICE_DROP" /></translation>
 <translation id="3061707000357573562">修补服务</translation>
-<translation id="306198082577913404">开启预测改进功能</translation>
 <translation id="3062655045399308513">删除浏览数据…</translation>
 <translation id="3063453392496098461">VPN 后台服务安装失败。</translation>
 <translation id="306573536155379004">游戏已开始。</translation>
@@ -1694,6 +1692,7 @@
 <translation id="3964661563329879394">{COUNT,plural, =0{无}=1{来自 1 个网站}other{来自 # 个网站}}</translation>
 <translation id="3965672182149944205">保存地址？</translation>
 <translation id="3966044442021752214">产品安全</translation>
+<translation id="3969869202926863008">本地网络访问权限</translation>
 <translation id="397105322502079400">正在计算...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> 已被屏蔽</translation>
 <translation id="3975852104434126461">汽车业</translation>
@@ -2050,6 +2049,7 @@
 <translation id="460848736049414407">已被管理员屏蔽</translation>
 <translation id="4610279718074907952">此网站属于由 <ph name="SET_OWNER" /> 定义的群组，该群组可查看您的活动记录</translation>
 <translation id="46128681529823442">足球装备</translation>
+<translation id="4612904677925722054">此网站可能含有少儿不宜的内容。必须先征得家长或监护人的同意，然后才能访问此网站。</translation>
 <translation id="4619564267100705184">请验证是您本人在操作</translation>
 <translation id="4622292761762557753">仍然转移</translation>
 <translation id="4622647778991854660">在通知中心内启用通知。打开<ph name="LINK" />。</translation>
@@ -2321,7 +2321,6 @@
 <translation id="5097099694988056070">设备统计信息（例如 CPU/RAM 使用情况）</translation>
 <translation id="5097468150760963273">27 x 39 英寸</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome 需要访问设备的<ph name="PERMISSION" /></translation>
 <translation id="510644072453496781">纸板（封边）</translation>
 <translation id="5106648964679263509">已填写<ph name="BNPL_ISSUER_NAME" />的虚拟卡信息</translation>
 <translation id="5108881358339761672">网站不安全</translation>
@@ -2648,6 +2647,7 @@
 <translation id="5660122698869360728">一个新的智能文件夹，可帮助您在一个地方集中保存所有购物页面，并自动跟踪价格、获取价格分析洞见，等等。</translation>
 <translation id="5663955426505430495">此设备的管理员已安装了一些扩展程序来提供更多功能。这些扩展程序有权访问您的部分数据。</translation>
 <translation id="5667827081946850877">有声读物</translation>
+<translation id="5674082555327905359">可以请求连接到本地网络上的任何设备</translation>
 <translation id="5675650730144413517">该网页无法正常运作</translation>
 <translation id="5675809467256309336">舞曲与电子音乐</translation>
 <translation id="5675959228867414813">按日期显示</translation>
@@ -2920,6 +2920,7 @@
 <translation id="6159908896951210943">正式</translation>
 <translation id="6160391204859821737">开启一项广告隐私权功能</translation>
 <translation id="6162403104168428984">更新地址？</translation>
+<translation id="6164605812717770913">家长或监护人表示不允许你访问此网站。你可以要求他们取消屏蔽。</translation>
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6167577165590485365">上次尝试提取时的时间：</translation>
 <translation id="617256461084925519">Google Chrome 正在尝试验证您的身份，以便填写您的付款信息。</translation>
@@ -3011,6 +3012,7 @@
 <translation id="6321917430147971392">请检查您的DNS设置是否正确</translation>
 <translation id="6322182122604171028">无法使用 Windows Hello</translation>
 <translation id="6326947323444967009">在 iOS 设置中将 Chrome 设置为系统的默认浏览器</translation>
+<translation id="6327065120806001832">本地网络访问权限</translation>
 <translation id="6328639280570009161">请尝试停用网络联想查询功能</translation>
 <translation id="6335029926534404762">运动鞋</translation>
 <translation id="6337133576188860026">释放不到 <ph name="SIZE" /> 空间。当您下次访问时，某些网站的加载速度可能会更慢。</translation>
@@ -4049,7 +4051,6 @@
 <translation id="8134058435519644366">招聘与人事</translation>
 <translation id="8135546115396015134">向左键</translation>
 <translation id="8137456439814903304">能源与公共事业</translation>
-<translation id="81474145143203755">若要在此网站上使用您的<ph name="PERMISSION" />，请授予 Chrome 访问权限</translation>
 <translation id="8148608574971654810">PDF 版本：</translation>
 <translation id="8149426793427495338">您的计算机已进入休眠模式。</translation>
 <translation id="8150722005171944719">无法读取 <ph name="URL" /> 上的文件。该文件可能已遭到删除、移动，或者文件权限不允许进行访问。</translation>

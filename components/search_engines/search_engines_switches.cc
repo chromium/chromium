@@ -50,7 +50,7 @@ BASE_FEATURE(kSearchEngineChoiceTrigger,
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 BASE_FEATURE(kRemoveSearchEngineChoiceAttribution,
              "RemoveSearchEngineChoiceAttribution",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Use an explicit "NO_REPROMPT" value as default to avoid reprompting users

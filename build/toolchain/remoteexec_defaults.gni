@@ -1,5 +1,4 @@
 # rbe.gni and autoninja.py will read this file to get the default
 # value of use_reclient.
-# TODO(crbug.com/341167943): Use reclient only if use_siso=false.
-use_reclient_on_siso = true
+use_reclient_on_siso = false
 use_reclient_on_ninja = true

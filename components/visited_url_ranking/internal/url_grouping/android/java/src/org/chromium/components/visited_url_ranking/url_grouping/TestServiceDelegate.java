@@ -50,7 +50,7 @@ public class TestServiceDelegate implements GroupSuggestionsService.Delegate {
     }
 
     @Override
-    public void showSuggestion() {
+    public void showSuggestion(GroupSuggestions groupSuggestions) {
         mShowSuggestionCount++;
         TestServiceDelegateJni.get().onDelegateNotify(mNativePtr);
     }

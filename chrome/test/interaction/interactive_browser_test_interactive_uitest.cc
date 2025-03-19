@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -51,6 +52,7 @@
 namespace {
 constexpr char kDocumentWithNamedElement[] = "/select.html";
 constexpr char kDocumentWithTitle[] = "/title3.html";
+constexpr char kDocumentWithTextField[] = "/form_interaction.html";
 }
 
 class InteractiveBrowserTestUiTest : public InteractiveBrowserTest {
@@ -479,10 +481,42 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
       SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
       WaitForWebContentsNavigation(kWebContentsId,
                                    GURL(chrome::kChromeUIDownloadsURL)),
-      FocusWebContents(kWebContentsId),
+      FocusElement(kWebContentsId),
       ExecuteJsAt(kWebContentsId, kClearAllDownloadsButton, "el => el.focus()"),
       SendAccelerator(kWebContentsId, kClickWebButtonAccelerator),
       WaitForStateChange(kWebContentsId, clear_all_downloads_click));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, SendKeyToWebContents) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithTextField);
+  const DeepQuery kTextField = {"#value"};
+
+  RunTestSequence(
+      InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
+      FocusWebContents(kWebContentsId),
+      ExecuteJsAt(kWebContentsId, kTextField,
+                  "el => { el.focus(); el.value = ''; }"),
+      SendKeyPress(kWebContentsId, ui::VKEY_A),
+      SendKeyPress(kWebContentsId, ui::VKEY_B, ui::EF_SHIFT_DOWN),
+      CheckJsResultAt(kWebContentsId, kTextField, "el => el.value", u"aB"));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, FocusElement) {
+  RunTestSequence(
+      FocusElement(kToolbarAppMenuButtonElementId),
+      CheckViewProperty(kToolbarAppMenuButtonElementId, &views::View::HasFocus,
+                        true),
+      FocusElement(kOmniboxElementId),
+      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, true));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, SendKeyPress) {
+  RunTestSequence(
+      FocusElement(kOmniboxElementId),
+      SendKeyPress(kOmniboxElementId, ui::VKEY_A),
+      SendKeyPress(kOmniboxElementId, ui::VKEY_B, ui::EF_SHIFT_DOWN),
+      CheckViewProperty(kOmniboxElementId, &OmniboxViewViews::GetText, u"aB"));
 }
 
 // Simple bubble containing a WebView. Allows us to simulate swapping out one

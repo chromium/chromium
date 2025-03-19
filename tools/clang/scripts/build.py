@@ -802,10 +802,11 @@ def main():
   if not args.use_system_cmake:
     AddCMakeToPath()
 
-  if sys.platform == 'win32':
-    # CMake on Windows doesn't like depot_tools's ninja.bat wrapper.
-    ninja_dir = os.path.join(THIRD_PARTY_DIR, 'ninja')
-    os.environ['PATH'] = ninja_dir + os.pathsep + os.environ.get('PATH', '')
+  # CMake on Windows doesn't like depot_tools's ninja.bat wrapper.
+  # Using depot_tools's ninja wrapper also significantly slows down CMake
+  # compiler flag checks, so directly use the native ninja binary.
+  ninja_dir = os.path.join(THIRD_PARTY_DIR, 'ninja')
+  os.environ['PATH'] = ninja_dir + os.pathsep + os.environ.get('PATH', '')
 
   if sys.platform.startswith('linux'):
     with timer.time('get sysroots'):
@@ -984,10 +985,16 @@ def main():
           '^.*SanitizerCommon-lsan-arm64-Darwin.*$',
           '^.*SanitizerCommon-ubsan-arm64-Darwin.*Posix/dedup_token_length_test.cpp$',
       ]
+  elif sys.platform == 'win32':
+      lit_excludes += [
+          # TODO(https://crbug.com/404547503): fix and re-enable
+          '^.*Profile-x86_64.*ContinuousSyncMode/online-merging-windows.c$',
+      ]
 
-  test_env = None
+  test_env = os.environ.copy()
+  # Dump all FileCheck input on test failure.
+  test_env['FILECHECK_OPTS'] = '--dump-input-filter=all'
   if lit_excludes:
-    test_env = os.environ.copy()
     test_env['LIT_FILTER_OUT'] = '|'.join(lit_excludes)
 
   if args.bootstrap:

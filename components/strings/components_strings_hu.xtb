@@ -316,7 +316,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1532118530259321453">Az oldal közlendője</translation>
 <translation id="1533966801397200693">A bejelentkezéshez használt profil felügyelt profil. A rendszergazda távolról módosíthatja az Ön profilbeállításait, jelentésekkel elemezheti a böngészőadatait, és egyéb szükséges feladatokat is elvégezhet. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Oldal fordítása</translation>
-<translation id="1538295100801850685">Várható kifejezésre vonatkozó fejlesztések</translation>
 <translation id="1539840569003678498">Bejelentés elküldve:</translation>
 <translation id="1542105669288201090">Üzleti oktatás</translation>
 <translation id="1545757265410828525">Árelőzmények</translation>
@@ -1157,7 +1156,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3052868890529250114">Ön általában biztonságosan csatlakozik a webhelyekhez, de a Chrome ez alkalommal nem tudott biztonságos kapcsolatot használni. Előfordulhat, hogy egy támadó megpróbálja lehallgatni vagy módosítani az Ön hálózati kapcsolatát. <ph name="BEGIN_LEARN_MORE_LINK" />További információ erről a figyelmeztetésről<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> értékű árcsökkenés a következő terméknél: <ph name="PRODUCT_NAME" /></translation>
 <translation id="3061707000357573562">Javítókészlet szolgáltatás</translation>
-<translation id="306198082577913404">A várható kifejezések szolgáltatás fejlesztéseinek bekapcsolása</translation>
 <translation id="3062655045399308513">Böngészési adatok törlése…</translation>
 <translation id="3063453392496098461">Nem sikerült telepíteni a VPN-háttérszolgáltatásokat.</translation>
 <translation id="306573536155379004">A játék elindult.</translation>
@@ -2322,7 +2320,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5097099694988056070">Eszközstatisztikák, például processzor- és memóriahasználat</translation>
 <translation id="5097468150760963273">27 × 39 hüvelyk</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">A Chrome-nak hozzáférésre van szüksége az eszköz következő funkciójához: <ph name="PERMISSION" /></translation>
 <translation id="510644072453496781">Karton (vége)</translation>
 <translation id="5106648964679263509">A(z) <ph name="BNPL_ISSUER_NAME" /> virtuális kártyája kitöltve</translation>
 <translation id="5108881358339761672">A webhely nem biztonságos</translation>
@@ -4051,7 +4048,6 @@ További részletek:
 <translation id="8134058435519644366">Toborzás és munkaerő-szervezés</translation>
 <translation id="8135546115396015134">bal billentyű</translation>
 <translation id="8137456439814903304">Energia és közművek</translation>
-<translation id="81474145143203755">Adjon hozzáférést a Chrome-nak, ha használni szeretné a következőt ezen a webhelyen: <ph name="PERMISSION" /></translation>
 <translation id="8148608574971654810">PDF-verzió:</translation>
 <translation id="8149426793427495338">Számítógépe alvó üzemmódba váltott.</translation>
 <translation id="8150722005171944719">A fájl (<ph name="URL" />) nem olvasható. Lehet, hogy eltávolították, áthelyezték, vagy a fájlengedélyek megakadályozzák a hozzáférést.</translation>

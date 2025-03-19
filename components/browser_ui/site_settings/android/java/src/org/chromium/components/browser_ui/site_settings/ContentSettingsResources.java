@@ -904,15 +904,44 @@ public class ContentSettingsResources {
      * Returns the resources IDs for descriptions for Allowed, Ask and Blocked states, in that
      * order, on a tri-state setting.
      *
-     * @return An array of 3 resource IDs for descriptions for Allowed, Ask and
-     *         Blocked states, in that order.
+     * @return An array of 3 resource IDs for descriptions for Allowed, Ask and Blocked states, in
+     *     that order.
      */
-    public static int @Nullable [] getTriStateSettingDescriptionIDs(int contentType) {
+    public static int @Nullable [] getTriStateSettingDescriptionIDs(
+            int contentType, boolean isPermissionSiteSettingsRadioButtonFeatureEnabled) {
+        if (contentType == ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER) {
+            if (isPermissionSiteSettingsRadioButtonFeatureEnabled) {
+                int[] descriptionIDs = {
+                    R.string.website_settings_protected_content_allow,
+                    R.string.website_settings_protected_content_ask,
+                    R.string.website_settings_protected_content_block
+                };
+                return descriptionIDs;
+            } else {
+                int[] descriptionIDs = {
+                    R.string.website_settings_category_protected_content_allowed_recommended,
+                    R.string.website_settings_category_protected_content_ask,
+                    R.string.website_settings_category_protected_content_blocked
+                };
+                return descriptionIDs;
+            }
+        }
+
+        assert false;
+        return null;
+    }
+
+    /**
+     * Returns the resources IDs for icons for Allowed, Ask and Blocked states, in that
+     * order, on a tri-state setting.
+     *
+     * @return An array of 3 resource IDs for icons for Allowed, Ask and Blocked states, in
+     *     that order.
+     */
+    public static int @Nullable [] getTriStateSettingIconIDs(int contentType) {
         if (contentType == ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER) {
             int[] descriptionIDs = {
-                R.string.website_settings_category_protected_content_allowed_recommended,
-                R.string.website_settings_category_protected_content_ask,
-                R.string.website_settings_category_protected_content_blocked
+                R.drawable.live_tv_24px, R.drawable.tv_24px, R.drawable.tv_off_24px
             };
             return descriptionIDs;
         }

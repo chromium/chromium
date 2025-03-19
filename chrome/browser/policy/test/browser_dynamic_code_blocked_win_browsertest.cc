@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "base/win/windows_version.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/common/pref_names.h"
@@ -38,6 +40,13 @@ class BrowserDynamicCodeBlockedTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<TestCase> {
  public:
+  BrowserDynamicCodeBlockedTest() {
+    // This tests the policy, the feature is disabled to match shipping
+    // configuration.
+    disabled_feature_.InitAndDisableFeature(
+        features::kBrowserDynamicCodeDisabled);
+  }
+
   // InProcessBrowserTest implementation:
   void SetUp() override {
     policy_provider_.SetDefaultReturns(
@@ -57,6 +66,7 @@ class BrowserDynamicCodeBlockedTest
   }
 
  private:
+  base::test::ScopedFeatureList disabled_feature_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 

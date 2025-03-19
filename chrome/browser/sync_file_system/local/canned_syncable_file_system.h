@@ -26,7 +26,6 @@
 #include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom-forward.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -99,9 +98,6 @@ class CannedSyncableFileSystem
   storage::MockQuotaManager* quota_manager() { return quota_manager_.get(); }
   GURL origin() const { return origin_; }
   storage::FileSystemType type() const { return type_; }
-  blink::mojom::StorageType storage_type() const {
-    return FileSystemTypeToQuotaStorageType(type_);
-  }
 
   // Helper routines to perform file system operations.
   // OpenFileSystem() must have been called before calling any of them.

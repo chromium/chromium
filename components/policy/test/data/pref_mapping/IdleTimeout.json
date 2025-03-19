@@ -1,5 +1,6 @@
 [
   {
+    "note": "complex mapping, see //components/enterprise/idle/idle_timeout_policy_handler_unittest.cc for more tests",
     "os": [
       "android",
       "linux",
@@ -7,6 +8,16 @@
       "win"
     ],
     "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "IdleTimeoutActions": []
+        },
+        "prefs": {
+          "idle_timeout": {
+            "default_value": "0"
+          }
+        }
+      },
       {
         "policies": {
           "IdleTimeout": 10,

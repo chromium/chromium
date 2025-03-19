@@ -518,6 +518,7 @@ mojo.internal.interfaceSupport.ControlMessageHandler = class {
  *   responseStruct: !mojo.internal.MojomType,
  *   resolve: !Function,
  *   reject: !Function,
+ *   useResultResponse: boolean,
  * }}
  */
 mojo.internal.interfaceSupport.PendingResponse;
@@ -698,10 +699,12 @@ mojo.internal.interfaceSupport.InterfaceRemoteBase = class {
    * @param {!mojo.internal.MojomType} paramStruct
    * @param {?mojo.internal.MojomType} maybeResponseStruct
    * @param {!Array} args
+   * @param {boolean} useResultResponse
    * @return {!Promise}
    * @export
    */
-  sendMessage(ordinal, paramStruct, maybeResponseStruct, args) {
+  sendMessage(
+      ordinal, paramStruct, maybeResponseStruct, args, useResultResponse) {
     // The pipe has already been closed, so just drop the message.
     if (maybeResponseStruct && (!this.endpoint_ || !this.endpoint_.isStarted)) {
       return Promise.reject(new Error('The pipe has already been closed.'));
@@ -743,8 +746,14 @@ mojo.internal.interfaceSupport.InterfaceRemoteBase = class {
     const responseStruct =
         /** @type {!mojo.internal.MojomType} */ (maybeResponseStruct);
     return new Promise((resolve, reject) => {
-      this.pendingResponses_.set(
-          requestId, {requestId, ordinal, responseStruct, resolve, reject});
+      this.pendingResponses_.set(requestId, {
+        requestId,
+        ordinal,
+        responseStruct,
+        resolve,
+        reject,
+        useResultResponse
+      });
     });
   }
 
@@ -776,7 +785,17 @@ mojo.internal.interfaceSupport.InterfaceRemoteBase = class {
     if (header.ordinal !== pendingResponse.ordinal)
       return this.onError(endpoint, 'Received malformed response message');
 
-    pendingResponse.resolve(responseValue);
+    if (pendingResponse.useResultResponse) {
+      // Must use property access below to avoid closure name mangling.
+      const result = responseValue['result'];
+      if (result['success'] !== undefined) {
+        pendingResponse.resolve(result['success']);
+      } else {
+        pendingResponse.reject(result['failure']);
+      }
+    } else {
+      pendingResponse.resolve(responseValue);
+    }
   }
 
   /** @override */
@@ -967,6 +986,7 @@ mojo.internal.interfaceSupport.InterfaceCallbackReceiver = class {
  *   paramStruct: !mojo.internal.MojomType,
  *   responseStruct: ?mojo.internal.MojomType,
  *   handler: !Function,
+ *   useResultResponse: boolean,
  * }}
  */
 mojo.internal.interfaceSupport.MessageHandler;
@@ -1011,10 +1031,13 @@ mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal = class {
    * @param {!mojo.internal.MojomType} paramStruct
    * @param {?mojo.internal.MojomType} responseStruct
    * @param {!Function} handler
+   * @param {boolean} useResultResponse
    * @export
    */
-  registerHandler(ordinal, paramStruct, responseStruct, handler) {
-    this.messageHandlers_.set(ordinal, {paramStruct, responseStruct, handler});
+  registerHandler(
+      ordinal, paramStruct, responseStruct, handler, useResultResponse) {
+    this.messageHandlers_.set(
+        ordinal, {paramStruct, responseStruct, handler, useResultResponse});
   }
 
   /**
@@ -1106,6 +1129,74 @@ mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal = class {
       args.push(request[props.originalFieldName]);
     }
 
+    if (handler.useResultResponse) {
+      this.handleResultResponseMessage_(endpoint, header, handler, args);
+    } else {
+      this.handleResponseMessage_(endpoint, header, handler, args);
+    }
+  }
+
+  /**
+   * Handles result response messages. 'result' need more handling because there
+   * are more semantics around its type that are more consistent with js
+   * promise.
+   *
+   * Successful "handling" of the incoming message causes in a mojo message
+   * that signals a successful response with the associated value. A failure in
+   * the message handling would signal failure and propagate the error (if
+   * possible).
+   *
+   * Note that there is still a chance for irrecoverable error here if the type
+   * conversion cannot be successfully completed. The success path is mostly
+   * immune to this because of strong typing, but the error path is vulnerable
+   * to this type of runtime error. To avoid this, use the JsError mojo type for
+   * errors originating from javascript.
+   * @param {!mojo.internal.interfaceSupport.Endpoint} endpoint
+   * @param {!mojo.internal.MessageHeader} header
+   * @param {!mojo.internal.interfaceSupport.MessageHandler} handler
+   * @param {!Array<*>} args
+   * @private
+   */
+  handleResultResponseMessage_(endpoint, header, handler, args) {
+    try {
+      let result = handler.handler.apply(null, args);
+
+      if (typeof result != 'object' || result.constructor.name != 'Promise') {
+        result = Promise.resolve(result);
+      }
+
+      result
+          .then(value => {
+            endpoint.send(
+                header.ordinal, header.requestId,
+                mojo.internal.kMessageFlagIsResponse,
+                /** @type {!mojo.internal.MojomType} */
+                (handler.responseStruct), {'result': {'success': value}});
+          })
+          .catch(error => {
+            endpoint.send(
+                header.ordinal, header.requestId,
+                mojo.internal.kMessageFlagIsResponse,
+                /** @type {!mojo.internal.MojomType} */
+                (handler.responseStruct), {'result': {'failure': error}});
+          });
+    } catch (error) {
+      endpoint.send(
+          header.ordinal, header.requestId,
+          mojo.internal.kMessageFlagIsResponse,
+          /** @type {!mojo.internal.MojomType} */
+          (handler.responseStruct), {'result': {'failure': error}});
+    }
+  }
+
+  /**
+   * @param {!mojo.internal.interfaceSupport.Endpoint} endpoint
+   * @param {!mojo.internal.MessageHeader} header
+   * @param {!mojo.internal.interfaceSupport.MessageHandler} handler
+   * @param {!Array<*>} args
+   * @private
+   */
+  handleResponseMessage_(endpoint, header, handler, args) {
     let result = handler.handler.apply(null, args);
 
     // If the message expects a response, the handler must return either a

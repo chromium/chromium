@@ -15,7 +15,7 @@ namespace ash {
 namespace {
 
 void RegisterPrefs(PrefRegistrySimple& registry) {
-  registry.RegisterBooleanPref(prefs::kSunfishConsentDisclaimerAccepted, false);
+  registry.RegisterBooleanPref(prefs::kScannerConsentDisclaimerAccepted, false);
   registry.RegisterBooleanPref(
       prefs::kScannerEntryPointDisclaimerAckSmartActionsButton, false);
   registry.RegisterBooleanPref(

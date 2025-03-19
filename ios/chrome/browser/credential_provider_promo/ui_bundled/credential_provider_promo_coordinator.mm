@@ -59,7 +59,7 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
       startDispatchingToTarget:self
                    forProtocol:@protocol(CredentialProviderPromoCommands)];
   PromosManager* promosManager =
-      PromosManagerFactory::GetForProfile(self.browser->GetProfile());
+      PromosManagerFactory::GetForProfile(self.profile);
   self.mediator = [[CredentialProviderPromoMediator alloc]
       initWithPromosManager:promosManager];
 }
@@ -90,8 +90,8 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
   }
   self.viewController = [[CredentialProviderPromoViewController alloc] init];
   self.mediator.consumer = self.viewController;
-  self.mediator.tracker = feature_engagement::TrackerFactory::GetForProfile(
-      self.browser->GetProfile());
+  self.mediator.tracker =
+      feature_engagement::TrackerFactory::GetForProfile(self.profile);
   self.viewController.actionHandler = self;
   self.viewController.presentationController.delegate = self;
   if (trigger == CredentialProviderPromoTrigger::SetUpList) {

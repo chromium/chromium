@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -27,7 +28,6 @@
 #include "device/fido/fido_types.h"
 #include "device/fido/pin.h"
 #include "device/fido/public_key_credential_user_entity.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
 class RenderFrameHost;
@@ -333,26 +333,25 @@ struct AuthenticatorRequestDialogModel
       const std::vector<uint8_t> user_id;
     };
     using Credential = base::StrongAlias<class CredentialTag, CredentialInfo>;
-    using Password = base::StrongAlias<class PasswordTag, absl::monostate>;
+    using Password = base::StrongAlias<class PasswordTag, std::monostate>;
     using Transport =
         base::StrongAlias<class TransportTag, AuthenticatorTransport>;
-    using WindowsAPI = base::StrongAlias<class WindowsAPITag, absl::monostate>;
+    using WindowsAPI = base::StrongAlias<class WindowsAPITag, std::monostate>;
     using ICloudKeychain =
-        base::StrongAlias<class iCloudKeychainTag, absl::monostate>;
+        base::StrongAlias<class iCloudKeychainTag, std::monostate>;
     using Phone = base::StrongAlias<class PhoneTag, std::string>;
-    using AddPhone = base::StrongAlias<class AddPhoneTag, absl::monostate>;
-    using Enclave = base::StrongAlias<class EnclaveTag, absl::monostate>;
-    using SignInAgain =
-        base::StrongAlias<class SignInAgainTag, absl::monostate>;
-    using Type = absl::variant<Credential,
-                               Password,
-                               Transport,
-                               WindowsAPI,
-                               Phone,
-                               AddPhone,
-                               ICloudKeychain,
-                               Enclave,
-                               SignInAgain>;
+    using AddPhone = base::StrongAlias<class AddPhoneTag, std::monostate>;
+    using Enclave = base::StrongAlias<class EnclaveTag, std::monostate>;
+    using SignInAgain = base::StrongAlias<class SignInAgainTag, std::monostate>;
+    using Type = std::variant<Credential,
+                              Password,
+                              Transport,
+                              WindowsAPI,
+                              Phone,
+                              AddPhone,
+                              ICloudKeychain,
+                              Enclave,
+                              SignInAgain>;
 
     Mechanism(Type type,
               std::u16string name,

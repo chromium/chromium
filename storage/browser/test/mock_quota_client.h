@@ -34,7 +34,6 @@ class QuotaManagerProxy;
 // QuotaClient::GetStorageKeysForType.
 struct UnmigratedStorageKeyData {
   const char* origin;
-  blink::mojom::StorageType type;
   int64_t usage;
 };
 
@@ -86,8 +85,7 @@ class MockQuotaClient : public mojom::QuotaClient {
   const QuotaClientType client_type_;
 
   std::map<BucketLocator, int64_t, CompareBucketLocators> bucket_data_;
-  std::map<std::pair<blink::StorageKey, blink::mojom::StorageType>, int64_t>
-      unmigrated_storage_key_data_;
+  std::map<blink::StorageKey, int64_t> unmigrated_storage_key_data_;
   std::set<BucketLocator> error_buckets_;
 
   int mock_time_counter_ = 0;

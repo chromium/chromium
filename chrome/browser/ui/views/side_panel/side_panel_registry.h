@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_REGISTRY_H_
 
 #include <memory>
+#include <variant>
 #include <vector>
 
 #include "base/supports_user_data.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_scope.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class SidePanelCoordinator;
 
@@ -90,7 +90,7 @@ class SidePanelRegistry final : public SidePanelEntryObserver,
 
   std::vector<std::unique_ptr<SidePanelEntry>> entries_;
 
-  const absl::variant<tabs::TabInterface*, BrowserWindowInterface*> owner_;
+  const std::variant<tabs::TabInterface*, BrowserWindowInterface*> owner_;
 
   std::optional<SidePanelEntryKey> deregistering_entry_key_ = std::nullopt;
 };

@@ -4,6 +4,8 @@
 
 #include "components/browsing_data/content/browsing_data_model_test_util.h"
 
+#include <variant>
+
 #include "components/browsing_data/content/browsing_data_model.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -192,10 +194,10 @@ bool BrowsingDataEntry::operator==(const BrowsingDataEntry& other) const {
 std::string BrowsingDataEntry::ToDebugString() const {
   std::stringstream debug_string;
   debug_string << "Data Owner: ";
-  debug_string << absl::visit(DataOwnerDebugStringVisitor(), data_owner);
+  debug_string << std::visit(DataOwnerDebugStringVisitor(), data_owner);
 
   debug_string << " Data Key: ";
-  debug_string << absl::visit(DataKeyDebugStringVisitor(), data_key);
+  debug_string << std::visit(DataKeyDebugStringVisitor(), data_key);
 
   debug_string << " Storage Types: ";
   debug_string << data_details.storage_types.ToEnumBitmask();

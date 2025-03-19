@@ -1250,7 +1250,7 @@ AccessibilityFocusInfo PDFiumEngine::GetFocusInfo() {
   return focus_info;
 }
 
-bool PDFiumEngine::IsPDFDocTagged() {
+bool PDFiumEngine::IsPDFDocTagged() const {
   return FPDFCatalog_IsTagged(doc());
 }
 
@@ -2282,10 +2282,6 @@ void PDFiumEngine::SetReadOnly(bool read_only) {
   read_only_ = read_only;
   SetFormHighlight(!read_only_);
   ClearTextSelection();
-}
-
-bool PDFiumEngine::IsTagged() const {
-  return FPDFCatalog_IsTagged(doc());
 }
 
 void PDFiumEngine::SetDocumentLayout(DocumentLayout::PageSpread page_spread) {

@@ -5,9 +5,10 @@
 #ifndef ASH_STYLE_BLURRED_BACKGROUND_SHIELD_H_
 #define ASH_STYLE_BLURRED_BACKGROUND_SHIELD_H_
 
+#include <variant>
+
 #include "ash/ash_export.h"
 #include "base/scoped_observation.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
 #include "ui/compositor/layer.h"

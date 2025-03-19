@@ -137,7 +137,7 @@ void FrameLoadRequest::ResolveBlobURLIfNeeded() {
   if (resource_request_.Url().ProtocolIs("blob") && origin_window_) {
     blob_url_token_ = base::MakeRefCounted<
         base::RefCountedData<mojo::Remote<mojom::blink::BlobURLToken>>>();
-    origin_window_->GetPublicURLManager().ResolveForNavigation(
+    origin_window_->GetPublicURLManager().ResolveAsBlobURLToken(
         resource_request_.Url(),
         blob_url_token_->data.BindNewPipeAndPassReceiver(),
         GetFrameType() == mojom::blink::RequestContextFrameType::kTopLevel);

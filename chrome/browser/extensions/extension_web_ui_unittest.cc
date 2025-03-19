@@ -351,7 +351,7 @@ TEST_F(ExtensionWebUIOverrideURLTest,
       std::move(external_provider));
 
   TestExtensionRegistryObserver observer(registry(), kNtpOverrideExtensionId);
-  service()->CheckForExternalUpdates();
+  external_provider_manager->CheckForExternalUpdates();
   ASSERT_TRUE(observer.WaitForExtensionInstalled());
 
   // Extension should be disabled by default with right reason.

@@ -501,6 +501,18 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
     data.title_text = html_element->title().Utf8();
     data.alt_text = html_element->AltText().Utf8();
   }
+
+  if (source_type == kMenuSourceLongPress ||
+      source_type == kMenuSourceLongTap) {
+    for (Node* node = result.InnerNode(); node; node = node->parentNode()) {
+      if (HTMLElement* element = DynamicTo<HTMLElement>(node);
+          element && element->interestTargetElement()) {
+        data.opened_from_interest_target = true;
+        break;
+      }
+    }
+  }
+
   if (!result.AbsoluteMediaURL().IsEmpty() ||
       result.GetMediaStreamDescriptor() || result.GetMediaSourceHandle()) {
     if (!result.AbsoluteMediaURL().IsEmpty())

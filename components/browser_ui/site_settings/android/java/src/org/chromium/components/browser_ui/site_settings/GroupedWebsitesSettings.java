@@ -298,8 +298,7 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
         TextMessagePreference relatedSitesText = new TextMessagePreference(getContext(), null);
         var rwsInfo = mSiteGroup.getRwsInfo();
         boolean shouldRelatedSitesPrefBeVisible =
-                getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUiFeatureEnabled()
-                        && getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled()
+                getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled()
                         && rwsInfo != null;
         relatedSitesText.setVisible(shouldRelatedSitesPrefBeVisible);
         relatedSitesHeader.setVisible(shouldRelatedSitesPrefBeVisible);

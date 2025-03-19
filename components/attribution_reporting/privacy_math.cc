@@ -33,7 +33,6 @@
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/trigger_config.h"
 #include "components/attribution_reporting/trigger_data_matching.mojom.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace attribution_reporting {
 

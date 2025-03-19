@@ -96,11 +96,26 @@ void ServicePaintCache::PutPath(PaintCacheId id, SkPath path) {
   cached_paths_.emplace(id, std::move(path));
 }
 
+void ServicePaintCache::PutEffect(PaintCacheId id,
+                                  sk_sp<SkRuntimeEffect> effect) {
+  cached_effects_.emplace(id, std::move(effect));
+}
+
 bool ServicePaintCache::GetPath(PaintCacheId id, SkPath* path) const {
   auto it = cached_paths_.find(id);
   if (it == cached_paths_.end())
     return false;
   *path = it->second;
+  return true;
+}
+
+bool ServicePaintCache::GetEffect(PaintCacheId id,
+                                  sk_sp<SkRuntimeEffect>* effect) const {
+  auto it = cached_effects_.find(id);
+  if (it == cached_effects_.end()) {
+    return false;
+  }
+  *effect = it->second;
   return true;
 }
 
@@ -111,6 +126,9 @@ void ServicePaintCache::Purge(PaintCacheDataType type,
     case PaintCacheDataType::kPath:
       EraseFromMap(&cached_paths_, n, ids);
       return;
+    case PaintCacheDataType::kSkRuntimeEffect:
+      EraseFromMap(&cached_effects_, n, ids);
+      return;
   }
 
   NOTREACHED();
@@ -118,6 +136,11 @@ void ServicePaintCache::Purge(PaintCacheDataType type,
 
 void ServicePaintCache::PurgeAll() {
   cached_paths_.clear();
+  cached_effects_.clear();
+}
+
+bool ServicePaintCache::IsEmpty() const {
+  return cached_paths_.empty() && cached_effects_.empty();
 }
 
 }  // namespace cc

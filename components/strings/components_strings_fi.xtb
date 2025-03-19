@@ -316,7 +316,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1532118530259321453">Viesti tältä sivulta</translation>
 <translation id="1533966801397200693">Profiili, johon olet kirjautunut, on hallinnoitu profiili. Järjestelmänvalvoja voi tehdä muutoksia profiilin asetuksiin etänä, analysoida selaimen tietoja raporttien avulla ja tehdä muita tarvittavia tehtäviä. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Käännä sivu</translation>
-<translation id="1538295100801850685">Ennakoinnin parannukset</translation>
 <translation id="1539840569003678498">Ilmoitus lähetetty:</translation>
 <translation id="1542105669288201090">Kaupallinen koulutus</translation>
 <translation id="1545757265410828525">Hintahistoria</translation>
@@ -1157,7 +1156,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3052868890529250114">Muodostat yleensä yhteyden sivustoihin suojatusti, mutta Chrome ei voinut tällä kertaa käyttää turvallista yhteyttä. Hyökkääjä saattaa yrittää salakuunnella tai muokata verkkoyhteyttäsi. <ph name="BEGIN_LEARN_MORE_LINK" />Lisätietoja tästä varoituksesta<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" />:n hinnanalennus / <ph name="PRODUCT_NAME" /></translation>
 <translation id="3061707000357573562">Virheenkorjauspalvelu</translation>
-<translation id="306198082577913404">Laita ennakoinnin parannukset päälle</translation>
 <translation id="3062655045399308513">Poista selausdata…</translation>
 <translation id="3063453392496098461">VPN-taustapalveluiden asennus epäonnistui.</translation>
 <translation id="306573536155379004">Peli aloitettu</translation>
@@ -2326,7 +2324,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5097099694988056070">Laitetilastot esim. CPU:n/RAM-muistin käytöstä</translation>
 <translation id="5097468150760963273">27 x 39 tuumaa</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome tarvitsee pääsyn tähän laitteella: <ph name="PERMISSION" /></translation>
 <translation id="510644072453496781">Pahvi (loppu)</translation>
 <translation id="5106648964679263509">Virtuaalikortin (<ph name="BNPL_ISSUER_NAME" />) tiedot täytetty</translation>
 <translation id="5108881358339761672">Sivusto ei ole turvallinen</translation>
@@ -4055,7 +4052,6 @@ Lisätietoja:
 <translation id="8134058435519644366">Rekrytointi ja henkilöstön hankinta</translation>
 <translation id="8135546115396015134">vasenta näppäintä</translation>
 <translation id="8137456439814903304">Energia ja energianjakelu</translation>
-<translation id="81474145143203755">Anna Chromelle pääsyoikeus, jotta <ph name="PERMISSION" /> on käytettävissä tällä sivustolla</translation>
 <translation id="8148608574971654810">PDF-versio:</translation>
 <translation id="8149426793427495338">Tietokoneesi siirtyi virransäästötilaan.</translation>
 <translation id="8150722005171944719">Tiedosto osoitteessa <ph name="URL" /> ei ole luettavissa. Se on voitu poistaa tai siirtää, tai tiedoston käyttöluvat voivat estää sen käytön.</translation>

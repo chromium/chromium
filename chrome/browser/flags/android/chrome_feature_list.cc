@@ -218,7 +218,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTAuthTab,
     &kCCTAuthTabDisableAllExternalIntents,
     &kCCTAuthTabEnableHttpsRedirects,
-    &kCCTBeforeUnload,
     &kCCTBlockTouchesDuringEnterAnimation,
     &kCCTClientDataHeader,
     &kCCTEarlyNav,
@@ -242,6 +241,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTResizableForThirdParties,
     &kCCTRevampedBranding,
     &kCCTTabModalDialog,
+    &kCCTToolbarRefactor,
     &kChangeUnfocusedPriority,
     &kDefaultBrowserPromoAndroid2,
     &kDisableInstanceLimit,
@@ -391,7 +391,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements,
     &privacy_sandbox::kPrivacySandboxAdsNoticeCCT,
     &privacy_sandbox::kPrivacySandboxEqualizedPromptButtons,
-    &privacy_sandbox::kPrivacySandboxFirstPartySetsUI,
     &privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi,
     &privacy_sandbox::kPrivacySandboxSettings4,
     &privacy_sandbox::kPrivacySandboxAdTopicsContentParity,
@@ -645,10 +644,6 @@ BASE_FEATURE(kCCTAuthTabEnableHttpsRedirects,
              "CCTAuthTabEnableHttpsRedirects",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCCTBeforeUnload,
-             "CCTBeforeUnload",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kCCTBlockTouchesDuringEnterAnimation,
              "CCTBlockTouchesDuringEnterAnimation",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -738,6 +733,10 @@ BASE_FEATURE(kCCTRevampedBranding,
 BASE_FEATURE(kCCTTabModalDialog,
              "CCTTabModalDialog",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCCTToolbarRefactor,
+             "CCTToolbarRefactor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, render processes associated only with tabs in unfocused windows
 // will be downgraded to "vis" priority, rather than remaining at "fg". This

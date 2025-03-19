@@ -223,6 +223,7 @@ aggregate_vector_icons("components_vector_icons") {
     "sms.icon",
     "star.icon",
     "star_half.icon",
+    "sticky_note_2.icon",
     "stop_circle.icon",
     "storage_access.icon",
     "storage_access_off.icon",

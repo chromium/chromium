@@ -107,6 +107,25 @@ BASE_FEATURE(kDisableErrorHandlingForReadback,
 
 const uint32_t kMaxTransferCacheEntrySizeForTransferBuffer = 1024;
 const size_t kMaxImmediateDeletedPaintCachePaths = 1024;
+constexpr size_t kMaxImmediateDeletedPaintCacheEffects = 10u;
+
+#define DEFINE_PAINT_CACHE_DELETION(                                     \
+    IMMEDIATE_SIZE_CONSTANT, IMMEDIATE_FUNCTION, NON_IMMEDIATE_FUNCTION) \
+  if (ids.size() <= IMMEDIATE_SIZE_CONSTANT) {                           \
+    helper_->IMMEDIATE_FUNCTION(ids.size(), ids.data());                 \
+  } else {                                                               \
+    size_t data_size = ids.size() * sizeof(GLuint);                      \
+    ScopedSharedMemoryPtr dest(data_size, transfer_buffer_,              \
+                               mapped_memory_.get(), helper());          \
+    if (dest.valid()) {                                                  \
+      memcpy(dest.address(), ids.data(), data_size);                     \
+      helper_->NON_IMMEDIATE_FUNCTION(ids.size(), dest.shm_id(),         \
+                                      dest.offset());                    \
+    } else {                                                             \
+      SetGLError(GL_INVALID_OPERATION, "glDeletePaintCacheINTERNAL",     \
+                 "couldn't allocate shared memory");                     \
+    }                                                                    \
+  }
 
 class ScopedSharedMemoryPtr {
  public:
@@ -1957,23 +1976,14 @@ void RasterImplementation::FlushPaintCachePurgedEntries() {
 
     switch (static_cast<cc::PaintCacheDataType>(i)) {
       case cc::PaintCacheDataType::kPath:
-        if (ids.size() <= kMaxImmediateDeletedPaintCachePaths) {
-          helper_->DeletePaintCachePathsINTERNALImmediate(ids.size(),
-                                                          ids.data());
-        } else {
-          size_t data_size = ids.size() * sizeof(GLuint);
-          ScopedSharedMemoryPtr dest(data_size, transfer_buffer_,
-                                     mapped_memory_.get(), helper());
-          if (dest.valid()) {
-            memcpy(dest.address(), ids.data(), data_size);
-            helper_->DeletePaintCachePathsINTERNAL(ids.size(), dest.shm_id(),
-                                                   dest.offset());
-          } else {
-            SetGLError(GL_INVALID_OPERATION, "glDeletePaintCachePathsINTERNAL",
-                       "couldn't allocate shared memory");
-            // Continue with the loop in order to clean up the ids.
-          }
-        }
+        DEFINE_PAINT_CACHE_DELETION(kMaxImmediateDeletedPaintCachePaths,
+                                    DeletePaintCachePathsINTERNALImmediate,
+                                    DeletePaintCachePathsINTERNAL);
+        break;
+      case cc::PaintCacheDataType::kSkRuntimeEffect:
+        DEFINE_PAINT_CACHE_DELETION(kMaxImmediateDeletedPaintCacheEffects,
+                                    DeletePaintCacheEffectsINTERNALImmediate,
+                                    DeletePaintCacheEffectsINTERNAL);
         break;
     }
     ids.clear();

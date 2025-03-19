@@ -92,7 +92,7 @@ void BrowsingDataQuotaHelperImpl::GotStorageKeys(
       continue;  // Non-websafe state is not considered browsing data.
     }
     quota_manager_->GetStorageKeyUsageWithBreakdown(
-        storage_key, StorageType::kTemporary,
+        storage_key,
         base::BindOnce(&BrowsingDataQuotaHelperImpl::GotStorageKeyUsage,
                        weak_factory_.GetWeakPtr(), quota_info, storage_key)
             .Then(completion));

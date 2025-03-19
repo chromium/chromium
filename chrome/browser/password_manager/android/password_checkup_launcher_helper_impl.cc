@@ -54,3 +54,13 @@ void PasswordCheckupLauncherHelperImpl::LaunchSafetyCheck(
   Java_PasswordCheckupLauncher_launchSafetyCheck(
       env, windowAndroid->GetJavaObject());
 }
+
+void PasswordCheckupLauncherHelperImpl::LaunchSafetyHub(
+    JNIEnv* env,
+    ui::WindowAndroid* windowAndroid) {
+  if (windowAndroid == nullptr) {
+    return;
+  }
+  Java_PasswordCheckupLauncher_launchSafetyHub(env,
+                                               windowAndroid->GetJavaObject());
+}

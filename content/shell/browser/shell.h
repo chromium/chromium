@@ -142,6 +142,10 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
                                const std::string& protocol,
                                const GURL& url,
                                bool user_gesture) override;
+  void UnregisterProtocolHandler(RenderFrameHost* requesting_frame,
+                                 const std::string& protocol,
+                                 const GURL& url,
+                                 bool user_gesture) override;
 #endif
   void RequestPointerLock(WebContents* web_contents,
                           bool user_gesture,

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <variant>
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
@@ -26,7 +27,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
 class NavigationHandle;
@@ -93,8 +93,8 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // The implementation of the guest page depends on
   // `features::kGuestViewMPArch`.
   using GuestPageVariant =
-      absl::variant<std::unique_ptr<content::WebContents>,
-                    std::unique_ptr<content::GuestPageHolder>>;
+      std::variant<std::unique_ptr<content::WebContents>,
+                   std::unique_ptr<content::GuestPageHolder>>;
   using GuestPageCreatedCallback =
       base::OnceCallback<void(std::unique_ptr<GuestViewBase> guest,
                               GuestPageVariant guest_page)>;

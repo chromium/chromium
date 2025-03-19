@@ -1592,6 +1592,9 @@ class ComputedStyle final : public ComputedStyleBase {
   bool ContainsBlockSize() const {
     return EffectiveContainment() & kContainsBlockSize;
   }
+  bool ContainsAnySize() const {
+    return EffectiveContainment() & kContainsSize;
+  }
 
   CORE_EXPORT static bool ShouldApplyAnyContainment(
       const Element& element,

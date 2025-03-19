@@ -432,7 +432,6 @@
 <translation id="2981364137500752533">ניתן לפתוח עד 5 חלונות.</translation>
 <translation id="2983102365694924129">על סמך הפעילות שלך באתר מסוים. ההגדרה הזו מושבתת.</translation>
 <translation id="2984978667043170458">‏הכללת הטקסט שמסביב בחיפושים ב-Google</translation>
-<translation id="2988638966064514052">חיזוק הסיסמאות</translation>
 <translation id="2989523299700148168">מנועי חיפוש שהשתמשת בהם לאחרונה</translation>
 <translation id="2992473221983447149">תיאורי תמונות</translation>
 <translation id="2996291259634659425">יצירת ביטוי סיסמה</translation>
@@ -548,7 +547,6 @@
 <translation id="3557336313807607643">הוספה לאנשי הקשר</translation>
 <translation id="3563767357928833671">מוצג התוכן שבלוח</translation>
 <translation id="3566639033325271639">עדכון ההגדרות</translation>
-<translation id="3568945271227339929">אין סיסמאות שנחשפו</translation>
 <translation id="3575464060651642446">הסיסמאות במכשיר הזה נבדקות…</translation>
 <translation id="3577473026931028326">משהו השתבש. יש לנסות שוב.</translation>
 <translation id="3577558748185201054">אפשר לנהל את תחומי העניין וההעדפות</translation>
@@ -1055,7 +1053,6 @@
 <translation id="5958275228015807058">הקבצים והדפים שלך נמצאים ב'הורדות'</translation>
 <translation id="5958994127112619898">דף פשוט יותר</translation>
 <translation id="5962718611393537961">יש ללחוץ כדי לכווץ</translation>
-<translation id="5964180026566797835">לא ניתן לבדוק את הסיסמאות</translation>
 <translation id="5964869237734432770">הפסקה של תיאורי התמונות</translation>
 <translation id="5977976211062815271">במכשיר הזה</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{דף אחד ברשימת הקריאה}one{‫# דפים ברשימת הקריאה}two{‫# דפים ברשימת הקריאה}other{‫# דפים ברשימת הקריאה}}</translation>
@@ -1099,6 +1096,7 @@
 <translation id="6150320133806434356">הסימנייה נשמרה</translation>
 <translation id="6150706324143004339">‏כדי להשתמש בנתוני Chrome ולשמור אותם בחשבון Google, צריך לעדכן את Chrome</translation>
 <translation id="6154478581116148741">יש להפעיל נעילת מסך ב'הגדרות' כדי לייצא את הסיסמאות מהמכשיר הזה</translation>
+<translation id="6156323911414505561">הצגת סרגל הסימניות</translation>
 <translation id="6162892189396105610">‏מערכת Chrome טוענת מראש דפים שסביר שהמשתמש יעבור אליהם.</translation>
 <translation id="6170675927290506430">לדף הגדרת ההתראות</translation>
 <translation id="6186394685773237175">לא נמצאו סיסמאות שנחשפו</translation>

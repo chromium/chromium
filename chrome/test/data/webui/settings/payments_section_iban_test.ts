@@ -133,7 +133,37 @@ suite('PaymentsSectionIban', function() {
     assertEquals(2, getIbanListItems().length);
   });
 
+  test(
+      'verifyIbanSummarySublabelWithNickname_newFopDisplayFlagOff',
+      async function() {
+        loadTimeData.overrideValues({
+          enableNewFopDisplay: false,
+        });
+        const iban =
+            createIbanEntry('BA393385804800211234', 'My doctor\'s IBAN');
+
+        const section = await createPaymentsSection(
+            /*creditCards=*/[], [iban], /*payOverTimeIssuers=*/[],
+            /*prefValues=*/ {});
+
+        assertEquals(1, getIbanListItems().length);
+
+        const ibanItemLabel = getIbanRowShadowRoot(section.$.paymentsList)
+                                  .querySelector<HTMLElement>('#label');
+        const ibanItemSubLabel = getIbanRowShadowRoot(section.$.paymentsList)
+                                     .querySelector<HTMLElement>('#subLabel');
+
+        assertTrue(!!ibanItemLabel);
+        assertTrue(!!ibanItemSubLabel);
+        assertEquals(
+            'BA39 **** **** **** 1234', ibanItemLabel.textContent!.trim());
+        assertEquals('My doctor\'s IBAN', ibanItemSubLabel.textContent!.trim());
+      });
+
   test('verifyIbanSummarySublabelWithNickname', async function() {
+    loadTimeData.overrideValues({
+      enableNewFopDisplay: true,
+    });
     const iban = createIbanEntry('BA393385804800211234', 'My doctor\'s IBAN');
 
     const section = await createPaymentsSection(
@@ -142,15 +172,16 @@ suite('PaymentsSectionIban', function() {
 
     assertEquals(1, getIbanListItems().length);
 
-    const ibanItemValue = getIbanRowShadowRoot(section.$.paymentsList)
-                              .querySelector<HTMLElement>('#value');
-    const ibanItemNickname = getIbanRowShadowRoot(section.$.paymentsList)
-                                 .querySelector<HTMLElement>('#nickname');
+    const ibanItemLabel = getIbanRowShadowRoot(section.$.paymentsList)
+                              .querySelector<HTMLElement>('#label');
+    const ibanItemSubLabel = getIbanRowShadowRoot(section.$.paymentsList)
+                                 .querySelector<HTMLElement>('#subLabel');
 
-    assertTrue(!!ibanItemValue);
-    assertTrue(!!ibanItemNickname);
-    assertEquals('BA39 **** **** **** 1234', ibanItemValue.textContent!.trim());
-    assertEquals('My doctor\'s IBAN', ibanItemNickname.textContent!.trim());
+    assertTrue(!!ibanItemLabel);
+    assertTrue(!!ibanItemSubLabel);
+    assertEquals('My doctor\'s IBAN', ibanItemLabel.textContent!.trim());
+    assertEquals(
+        'BA39 **** **** **** 1234', ibanItemSubLabel.textContent!.trim());
   });
 
   test('verifySavingNewIBAN', async function() {

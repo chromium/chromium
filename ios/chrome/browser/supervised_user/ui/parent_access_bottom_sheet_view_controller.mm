@@ -121,10 +121,11 @@ UIImage* CloseButtonImage(BOOL highlighted) {
     (NSString*)identifier {
   auto resolver = ^CGFloat(
       id<UISheetPresentationControllerDetentResolutionContext> context) {
-    CGFloat largeDetentHeight = [UISheetPresentationControllerDetent.largeDetent
-        resolvedValueInContext:context];
+    CGFloat largeDetentHeight =
+        [[UISheetPresentationControllerDetent largeDetent]
+            resolvedValueInContext:context];
     CGFloat mediumDetentHeight =
-        [UISheetPresentationControllerDetent.mediumDetent
+        [[UISheetPresentationControllerDetent mediumDetent]
             resolvedValueInContext:context];
     // Make sure detent is at least 67.5% of the maximum detent.
     return MAX(mediumDetentHeight, largeDetentHeight * 0.675);

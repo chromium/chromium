@@ -35,7 +35,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -46,7 +45,6 @@ import org.robolectric.shadows.ShadowToast;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
@@ -61,7 +59,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ToastManager;
 
 /** Tests for {@link PriceTrackingBottomSheetContentMediator}. */
-@Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({NotificationFeatureMap.CACHE_NOTIIFICATIONS_ENABLED})
 @Config(
@@ -89,7 +86,6 @@ public class PriceTrackingBottomSheetContentMediatorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
@@ -108,7 +104,7 @@ public class PriceTrackingBottomSheetContentMediatorTest {
 
         mMediator =
                 new PriceTrackingBottomSheetContentMediator(
-                        mActivity, mMockTab, mPropertyModel, mMockPriceInsightsDelegate);
+                        mActivity, () -> mMockTab, mPropertyModel, mMockPriceInsightsDelegate);
     }
 
     @After

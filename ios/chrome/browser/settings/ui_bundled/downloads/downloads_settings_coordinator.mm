@@ -67,7 +67,7 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   PhotosService* photosService = PhotosServiceFactory::GetForProfile(profile);
   _saveToPhotosSettingsMediator = [[SaveToPhotosSettingsMediator alloc]
       initWithAccountManagerService:ChromeAccountManagerServiceFactory::

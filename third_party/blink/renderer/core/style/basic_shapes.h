@@ -35,9 +35,8 @@
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/geometry/length_size.h"
 #include "third_party/blink/renderer/platform/geometry/path_types.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
-#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace gfx {
@@ -50,11 +49,10 @@ namespace blink {
 
 class Path;
 
-class CORE_EXPORT BasicShape : public RefCounted<BasicShape> {
-  USING_FAST_MALLOC(BasicShape);
-
+class CORE_EXPORT BasicShape : public GarbageCollected<BasicShape> {
  public:
   virtual ~BasicShape() = default;
+  virtual void Trace(Visitor*) const {}
 
   enum ShapeType {
     kBasicShapeEllipseType,
@@ -185,9 +183,7 @@ struct DowncastTraits<BasicShapeWithCenterAndRadii> {
 
 class CORE_EXPORT BasicShapeCircle final : public BasicShapeWithCenterAndRadii {
  public:
-  static scoped_refptr<BasicShapeCircle> Create() {
-    return base::AdoptRef(new BasicShapeCircle);
-  }
+  BasicShapeCircle() = default;
 
   const BasicShapeRadius& Radius() const { return radius_; }
 
@@ -207,8 +203,6 @@ class CORE_EXPORT BasicShapeCircle final : public BasicShapeWithCenterAndRadii {
   bool IsEqualAssumingSameType(const BasicShape&) const override;
 
  private:
-  BasicShapeCircle() = default;
-
   BasicShapeRadius radius_;
 };
 
@@ -221,9 +215,7 @@ struct DowncastTraits<BasicShapeCircle> {
 
 class BasicShapeEllipse final : public BasicShapeWithCenterAndRadii {
  public:
-  static scoped_refptr<BasicShapeEllipse> Create() {
-    return base::AdoptRef(new BasicShapeEllipse);
-  }
+  BasicShapeEllipse() = default;
 
   const BasicShapeRadius& RadiusX() const { return radius_x_; }
   const BasicShapeRadius& RadiusY() const { return radius_y_; }
@@ -246,7 +238,6 @@ class BasicShapeEllipse final : public BasicShapeWithCenterAndRadii {
   bool IsEqualAssumingSameType(const BasicShape&) const override;
 
  private:
-  BasicShapeEllipse() = default;
 
   BasicShapeRadius radius_x_;
   BasicShapeRadius radius_y_;
@@ -261,9 +252,7 @@ struct DowncastTraits<BasicShapeEllipse> {
 
 class BasicShapePolygon final : public BasicShape {
  public:
-  static scoped_refptr<BasicShapePolygon> Create() {
-    return base::AdoptRef(new BasicShapePolygon);
-  }
+  BasicShapePolygon() : wind_rule_(RULE_NONZERO) {}
 
   const Vector<Length>& Values() const { return values_; }
 
@@ -283,8 +272,6 @@ class BasicShapePolygon final : public BasicShape {
   bool IsEqualAssumingSameType(const BasicShape&) const override;
 
  private:
-  BasicShapePolygon() : wind_rule_(RULE_NONZERO) {}
-
   WindRule wind_rule_;
   Vector<Length> values_;
 };
@@ -298,9 +285,7 @@ struct DowncastTraits<BasicShapePolygon> {
 
 class BasicShapeInset final : public BasicShape {
  public:
-  static scoped_refptr<BasicShapeInset> Create() {
-    return base::AdoptRef(new BasicShapeInset);
-  }
+  BasicShapeInset() = default;
 
   ShapeType GetType() const override { return kBasicShapeInsetType; }
   void GetPath(Path&, const gfx::RectF&, float) const override;
@@ -332,7 +317,6 @@ class BasicShapeInset final : public BasicShape {
   }
 
  private:
-  BasicShapeInset() = default;
 
   bool IsEqualAssumingSameType(const BasicShape&) const override;
 

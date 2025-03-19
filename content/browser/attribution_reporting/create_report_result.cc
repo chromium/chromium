@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -15,7 +16,6 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/stored_source.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
 
@@ -89,7 +89,7 @@ CreateReportResult& CreateReportResult::operator=(CreateReportResult&&) =
     default;
 
 EventLevelResult CreateReportResult::event_level_status() const {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [](const EventLevelSuccess& v) {
             return v.replaced_report.has_value()
@@ -146,7 +146,7 @@ EventLevelResult CreateReportResult::event_level_status() const {
 }
 
 AggregatableResult CreateReportResult::aggregatable_status() const {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [](const AggregatableSuccess&) {
             return AggregatableResult::kSuccess;
@@ -195,36 +195,35 @@ AggregatableResult CreateReportResult::aggregatable_status() const {
 
 const AttributionReport* CreateReportResult::replaced_event_level_report()
     const {
-  if (const auto* v = absl::get_if<EventLevelSuccess>(&event_level_result_)) {
+  if (const auto* v = std::get_if<EventLevelSuccess>(&event_level_result_)) {
     return base::OptionalToPtr(v->replaced_report);
   }
   return nullptr;
 }
 
 const AttributionReport* CreateReportResult::new_event_level_report() const {
-  if (const auto* v = absl::get_if<EventLevelSuccess>(&event_level_result_)) {
+  if (const auto* v = std::get_if<EventLevelSuccess>(&event_level_result_)) {
     return &v->new_report;
   }
   return nullptr;
 }
 
 AttributionReport* CreateReportResult::new_event_level_report() {
-  if (auto* v = absl::get_if<EventLevelSuccess>(&event_level_result_)) {
+  if (auto* v = std::get_if<EventLevelSuccess>(&event_level_result_)) {
     return &v->new_report;
   }
   return nullptr;
 }
 
 const AttributionReport* CreateReportResult::new_aggregatable_report() const {
-  if (const auto* v =
-          absl::get_if<AggregatableSuccess>(&aggregatable_result_)) {
+  if (const auto* v = std::get_if<AggregatableSuccess>(&aggregatable_result_)) {
     return &v->new_report;
   }
   return nullptr;
 }
 
 AttributionReport* CreateReportResult::new_aggregatable_report() {
-  if (auto* v = absl::get_if<AggregatableSuccess>(&aggregatable_result_)) {
+  if (auto* v = std::get_if<AggregatableSuccess>(&aggregatable_result_)) {
     return &v->new_report;
   }
   return nullptr;
@@ -232,7 +231,7 @@ AttributionReport* CreateReportResult::new_aggregatable_report() {
 
 const AttributionReport* CreateReportResult::dropped_event_level_report()
     const {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [](const PriorityTooLow& v) { return &v.dropped_report; },
           [](const ExcessiveEventLevelReports& v) { return &v.dropped_report; },

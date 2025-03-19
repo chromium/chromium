@@ -45,6 +45,7 @@
 <translation id="1652197001188145583">When on, sites can ask to use NFC devices. When off, sites can't use NFC devices.</translation>
 <translation id="1660204651932907780">Allow sites to play sound (recommended)</translation>
 <translation id="1677097821151855053">Cookies and other site data are used to remember you, for example, to sign you in or to personalise ads. To manage cookies for all sites, see <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
+<translation id="1679305402657584804">Sites can ask to use NFC devices</translation>
 <translation id="1686785653877010442">Sites usually send notifications to let you know about breaking news or chat messages.</translation>
 <translation id="169515064810179024">Block sites from accessing motion sensors</translation>
 <translation id="1703666494654169921">Don't allow sites to use virtual reality devices or data</translation>
@@ -84,6 +85,7 @@
 <translation id="2185965788978862351">This will clear <ph name="DATASIZE" /> of data and cookies stored by sites or by apps on your home screen.</translation>
 <translation id="2194856509914051091">Things to consider</translation>
 <translation id="2215727959747642672">File editing</translation>
+<translation id="2218389616572918761">Sites can ask for your microphone</translation>
 <translation id="2228071138934252756">To let <ph name="APP_NAME" /> access your camera, also turn on camera in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Third-party cookies are blocked</translation>
 <translation id="2238944249568001759">Suggested searches based on your last tab</translation>
@@ -132,8 +134,10 @@
 <translation id="2726059656860238749">Launch Chrome with the omnibox focused, reducing start-up time on low-end devices.</translation>
 <translation id="2750481671343847896">Sites can show sign-in prompts from identity services.</translation>
 <translation id="2787357173144933081">Jump-start omnibox</translation>
+<translation id="2789132527330338807">Sites can ask to create a 3D map of your surroundings or track camera position</translation>
 <translation id="2790501146643349491">When on, recently closed sites can finish sending and receiving data. When off, recently closed sites can't finish sending or receiving data.</translation>
 <translation id="2795716239552913152">Sites usually use your location for relevant features or info, like local news or nearby shops</translation>
+<translation id="2802908157808345702">Don't allow sites to send pop-ups and use redirects</translation>
 <translation id="2814830417943086299">Chrome now shows your recent tabs in your device's app list and search results. You can turn this off at any time in Chrome settings.</translation>
 <translation id="2822354292072154809">Are you sure that you want to reset all site permissions for <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Request mobile view</translation>
@@ -274,6 +278,7 @@
 <translation id="4598549027014564149">While in Incognito, sites can't use your cookies to see your browsing activity across sites, even related sites. Your browsing activity isn't used for things like personalising ads. Features on some sites may not work.</translation>
 <translation id="461356340001513807">Lets you sign in to websites using the account that you have with an identity service</translation>
 <translation id="4619615317237390068">Tabs from other devices</translation>
+<translation id="4635969503923889910">Don't allow sites to use NFC devices</translation>
 <translation id="4644713492825682049">Delete and reset</translation>
 <translation id="4645575059429386691">Managed by your parent</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
@@ -372,6 +377,7 @@
 <translation id="5877248419911025165">Collapse all requests</translation>
 <translation id="5884085660368669834">Site preference</translation>
 <translation id="5887687176710214216">Last visited yesterday</translation>
+<translation id="5908617755156109052">Don't allow sites to create a 3D map of your surroundings or track camera position</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5922853908706496913">Sharing your screen</translation>
 <translation id="5922967540311291836">Block third-party cookies:</translation>
@@ -582,6 +588,7 @@
 <translation id="8676374126336081632">Clear input</translation>
 <translation id="8681886425883659911">Ads are blocked on sites known to show intrusive or misleading ads</translation>
 <translation id="868929229000858085">Search your contacts</translation>
+<translation id="8707904142362025782">Site can ask for your camera</translation>
 <translation id="8712637175834984815">Got it</translation>
 <translation id="8715862698998036666">Drag from the top and swipe from the left or right edge to exit full screen.</translation>
 <translation id="8719283222052720129">Turn on permission for <ph name="APP_NAME" /> in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>

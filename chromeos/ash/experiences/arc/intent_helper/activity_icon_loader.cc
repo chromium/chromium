@@ -9,6 +9,7 @@
 #include <string_view>
 #include <tuple>
 #include <utility>
+#include <variant>
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
@@ -19,7 +20,6 @@
 #include "chromeos/ash/experiences/arc/intent_helper/adaptive_icon_delegate.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -37,7 +37,7 @@ constexpr char kPngDataUrlPrefix[] = "data:image/png;base64,";
 
 // Returns an instance for calling RequestActivityIcons().
 // Ash requests icons to ArcServiceManager.
-absl::variant<mojom::IntentHelperInstance*, ActivityIconLoader::GetResult>
+std::variant<mojom::IntentHelperInstance*, ActivityIconLoader::GetResult>
 GetInstanceForRequestActivityIcons() {
   auto* arc_service_manager = ArcServiceManager::Get();
   if (!arc_service_manager) {
@@ -231,15 +231,15 @@ ActivityIconLoader::GetResult ActivityIconLoader::GetActivityIcons(
   }
 
   auto instance = GetInstanceForRequestActivityIcons();
-  if (absl::holds_alternative<GetResult>(instance)) {
+  if (std::holds_alternative<GetResult>(instance)) {
     // The mojo channel is not yet ready (or not supported at all). Run the
     // callback with |result| that could be empty.
     std::move(cb).Run(std::move(result));
-    return absl::get<GetResult>(instance);
+    return std::get<GetResult>(instance);
   }
 
   // Fetch icons from ARC.
-  absl::get<0>(instance)->RequestActivityIcons(
+  std::get<0>(instance)->RequestActivityIcons(
       std::move(activities_to_fetch), ScaleFactor(scale_factor_),
       base::BindOnce(&ActivityIconLoader::OnIconsReady,
                      weak_ptr_factory_.GetWeakPtr(), std::move(result),

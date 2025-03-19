@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 
+#include <variant>
+
 #include "base/base64.h"
 #include "base/containers/to_value_list.h"
 #include "base/containers/to_vector.h"
@@ -130,7 +132,7 @@ IsolatedWebAppIntegrityBlockData::ToProto() const {
   proto::IsolationData::IntegrityBlockData proto;
   for (const auto& signature_info : signatures_) {
     proto::IsolationData::IntegrityBlockData::SignatureInfo si_proto;
-    absl::visit(
+    std::visit(
         base::Overloaded{
             [&](const web_package::SignedWebBundleSignatureInfoEd25519&
                     signature_info) {
@@ -157,7 +159,7 @@ IsolatedWebAppIntegrityBlockData::ToProto() const {
 base::Value IsolatedWebAppIntegrityBlockData::AsDebugValue() const {
   return base::Value(base::Value::Dict().Set(
       "signatures", base::ToValueList(signatures_, [](const auto& signature) {
-        return absl::visit(
+        return std::visit(
             base::Overloaded{
                 [](const web_package::SignedWebBundleSignatureInfoEd25519&
                        signature_info) {
@@ -196,7 +198,7 @@ base::Value IsolatedWebAppIntegrityBlockData::AsDebugValue() const {
 bool IsolatedWebAppIntegrityBlockData::HasPublicKey(
     base::span<const uint8_t> public_key) const {
   return std::ranges::any_of(signatures(), [&](const auto& signature_info) {
-    return absl::visit(
+    return std::visit(
         base::Overloaded{
             [&](const auto& signature_info) {
               return std::ranges::equal(signature_info.public_key().bytes(),

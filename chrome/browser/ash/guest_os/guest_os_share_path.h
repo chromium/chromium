@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -96,7 +97,7 @@ class GuestOsSharePath : public KeyedService,
   // Convert launch args and return paths to share with the VM, and string args
   // to pass to the app being launched. On failure, returns an error string
   // instead.
-  absl::variant<PathsToShare, std::string> ConvertArgsToPathsToShare(
+  std::variant<PathsToShare, std::string> ConvertArgsToPathsToShare(
       const guest_os::GuestOsRegistryService::Registration& registration,
       const std::vector<guest_os::LaunchArg>& args,
       const base::FilePath& vm_mount,

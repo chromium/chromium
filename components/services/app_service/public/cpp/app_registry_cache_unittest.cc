@@ -8,6 +8,7 @@
 #include <optional>
 #include <set>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -373,9 +374,8 @@ class AppRegistryCacheTest : public testing::Test,
     EXPECT_EQ(readiness, cache.states_[app_id]->readiness);
     auto& icon_key = cache.states_[app_id]->icon_key;
     ASSERT_TRUE(icon_key.has_value());
-    ASSERT_TRUE(absl::holds_alternative<int32_t>(icon_key->update_version));
-    EXPECT_EQ(icon_update_version,
-              absl::get<int32_t>(icon_key->update_version));
+    ASSERT_TRUE(std::holds_alternative<int32_t>(icon_key->update_version));
+    EXPECT_EQ(icon_update_version, std::get<int32_t>(icon_key->update_version));
   }
 
   int AppCount(const AppRegistryCache& cache) { return cache.states_.size(); }

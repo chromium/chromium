@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_NAVIGATION_CAPTURING_LOG_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_NAVIGATION_CAPTURING_LOG_H_
 
+#include <cstdint>
 #include <list>
 #include <optional>
 #include <string_view>

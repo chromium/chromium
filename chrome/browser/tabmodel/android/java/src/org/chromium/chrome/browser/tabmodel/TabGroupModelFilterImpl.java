@@ -713,14 +713,6 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     }
 
     @Override
-    public int getRelatedTabCountForRootId(int tabRootId) {
-        if (tabRootId == Tab.INVALID_TAB_ID) return 1;
-        TabGroup group = mRootIdToGroupMap.get(tabRootId);
-        if (group == null) return 1;
-        return group.size();
-    }
-
-    @Override
     public int getTabCountForGroup(@Nullable Token tabGroupId) {
         if (tabGroupId == null) return 0;
 
@@ -1397,12 +1389,6 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         @Nullable Integer rootId = mGroupIdToRootIdMap.get(tabGroupId);
         if (rootId == null || rootId == Tab.INVALID_TAB_ID) return Tab.INVALID_TAB_ID;
 
-        TabGroup group = mRootIdToGroupMap.get(rootId);
-        return group == null ? Tab.INVALID_TAB_ID : group.getLastShownTabId();
-    }
-
-    @Override
-    public int getGroupLastShownTabId(int rootId) {
         TabGroup group = mRootIdToGroupMap.get(rootId);
         return group == null ? Tab.INVALID_TAB_ID : group.getLastShownTabId();
     }

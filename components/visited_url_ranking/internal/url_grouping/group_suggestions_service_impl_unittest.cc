@@ -97,7 +97,7 @@ TEST_F(GroupSuggestionsServiceImplTest, EndToEnd) {
   VisitedURLRankingService::GetURLVisitAggregatesCallback fetch_callback;
   EXPECT_CALL(*mock_ranking_service_, FetchURLVisitAggregates(_, _))
       .WillOnce(MoveArg<1>(&fetch_callback));
-  suggestions_service_->GetTabEventTracker()->DidAddTab(1);
+  suggestions_service_->GetTabEventTracker()->DidAddTab(1, 0);
 
   EXPECT_CALL(*mock_delegate_, ShowSuggestion(_, _))
       .WillOnce(Invoke([](const GroupSuggestions& group_suggestions,

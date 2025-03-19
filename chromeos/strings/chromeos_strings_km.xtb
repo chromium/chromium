@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">ផ្ទាំង​រូបភាពចលនាផែនដី</translation>
 <translation id="33736539805963175">ផ្ទៃខាងក្រោយពណ៌<ph name="LETTERS_COLOR" />ដែលមានអក្សរ <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">ផ្តាច់មុខ</translation>
-<translation id="3395147534045164351">បិទ/បើក​ទីតាំង​ថ្ពក់</translation>
 <translation id="3404249063913988450">បើកធាតុរក្សាអេក្រង់</translation>
 <translation id="3413935475507503304">ដើម្បីបន្តការដំឡើងកំណែ សូមចុច "បន្ទាប់"។</translation>
 <translation id="3428551088151258685">ក្រៅអគារ</translation>
@@ -929,6 +928,7 @@
 <translation id="5286263799730375393">ពណ៌ពន្លឺចាំងពីក្រោយ</translation>
 <translation id="5292579816060236070">ផ្ទាំង​រូបភាពពេល​ថ្ងៃរះ</translation>
 <translation id="5294769550414936029">កំណែ <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">បិទ/បើក​សិទ្ធិ​ចូលប្រើ​កាមេរ៉ា</translation>
 <translation id="5300814202279832142">ផ្លាស់ទី​វិនដូទៅតុ</translation>
 <translation id="5302048478445481009">ភាសា</translation>
 <translation id="5303837385540978511">ផ្ទាំង​រូបភាពផ្ដាច់មុខរបស់ <ph name="PRODUCT_NAME" /></translation>
@@ -1044,6 +1044,7 @@
 <translation id="5896602941605730551">ចាក់</translation>
 <translation id="5901630391730855834">លឿង</translation>
 <translation id="5903200662178656908">ឧបករណ៍គឺជាការរួមបញ្ចូលគ្នារវាងក្ដារចុច និងកណ្ដុរ។</translation>
+<translation id="5903822368221507416">លាក់​ផ្ទាំង</translation>
 <translation id="5904994456462260490">បញ្ចូល APN ថ្មី</translation>
 <translation id="590746845088109442">ឆ្មា</translation>
 <translation id="5907649332524363701">ពណ៌គ្រាប់ចុច</translation>

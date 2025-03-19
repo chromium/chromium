@@ -507,7 +507,6 @@
 <translation id="3373141842870501561">Fona tapete Zemes plūsma</translation>
 <translation id="33736539805963175">Fons <ph name="LETTERS_COLOR" /> ar burtu <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Ekskluzīvi</translation>
-<translation id="3395147534045164351">Pārslēgt fiksēšanas vietu</translation>
 <translation id="3404249063913988450">Iespējot ekrānsaudzētāju</translation>
 <translation id="3413935475507503304">Lai veiktu atjaunināšanu, noklikšķiniet uz “Tālāk”.</translation>
 <translation id="3428551088151258685">ārpus telpām</translation>
@@ -1389,6 +1388,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="7388345524791662148">Citas opcijas ierakstam “<ph name="RECORDING_NAME" />”</translation>
 <translation id="7388959671917308825">Iebūvētais skārienpaliktnis</translation>
 <translation id="7397270852490618635">Izslēgt gaišo motīvu</translation>
+<translation id="7400166052988585408">Skolotājs varēs bloķēt jūsu ekrānu pēc <ph name="NUM_SECONDS" /> s</translation>
 <translation id="7401543881546089382">Dzēst saīsni</translation>
 <translation id="7405493795721832710">Ierīce <ph name="DEVICE_NAME" /> ir gatava atjaunināšanai</translation>
 <translation id="741244894080940828">izteikšana citās mērvienībās</translation>

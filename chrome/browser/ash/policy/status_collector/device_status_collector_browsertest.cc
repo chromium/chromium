@@ -23,6 +23,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/check_deref.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -1174,7 +1175,8 @@ class DeviceStatusCollectorTest : public testing::Test {
 
   void MockAutoLaunchKioskIwa(
       const DeviceLocalAccount& auto_launch_app_account) {
-    kiosk_iwa_manager_ = std::make_unique<ash::KioskIwaManager>();
+    kiosk_iwa_manager_ = std::make_unique<ash::KioskIwaManager>(
+        CHECK_DEREF(scoped_local_state_.Get()));
     kiosk_iwa_manager_->AddAppForTesting(auto_launch_app_account);
 
     std::vector<DeviceLocalAccount> accounts;

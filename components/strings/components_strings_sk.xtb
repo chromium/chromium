@@ -316,7 +316,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1532118530259321453">Táto stránka hovorí</translation>
 <translation id="1533966801397200693">Profil, do ktorého ste sa prihlásili, je spravovaný. Správca môže vzdialene vykonávať zmeny v nastaveniach profilu, analyzovať informácie o prehliadači na základe reportov a vykonávať ďalšie potrebné úlohy. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Preložiť stránku</translation>
-<translation id="1538295100801850685">Zlepšenia predpovedí</translation>
 <translation id="1539840569003678498">Hlásenie bolo odoslané:</translation>
 <translation id="1542105669288201090">Obchodné vzdelanie</translation>
 <translation id="1545757265410828525">História cien</translation>
@@ -1157,7 +1156,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3052868890529250114">K webom sa zvyčajne pripájate bezpečne, ale Chrome tentoraz nemohol použiť zabezpečené pripojenie. Útočník sa môže pokúsiť odpočúvať alebo upraviť vaše pripojenie k sieti. <ph name="BEGIN_LEARN_MORE_LINK" />Ďalšie informácie o tomto upozornení<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> pokles ceny produktu <ph name="PRODUCT_NAME" /></translation>
 <translation id="3061707000357573562">Služba opráv</translation>
-<translation id="306198082577913404">Zapnite zlepšenia predpovedí</translation>
 <translation id="3062655045399308513">Odstrániť dáta prehliadania…</translation>
 <translation id="3063453392496098461">Inštalácia služieb VPN na pozadí sa nepodarila.</translation>
 <translation id="306573536155379004">Hra bola spustená.</translation>
@@ -2321,7 +2319,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5097099694988056070">Štatistiky zariadenia, ako napríklad využitie procesora alebo pamäte RAM</translation>
 <translation id="5097468150760963273">27 × 39 palcov</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome potrebuje prístup k povoleniu <ph name="PERMISSION" /> vášho zariadenia</translation>
 <translation id="510644072453496781">Kartón (koniec)</translation>
 <translation id="5106648964679263509">Virtuálna karta pre <ph name="BNPL_ISSUER_NAME" /> je vyplnená</translation>
 <translation id="5108881358339761672">Web nie je zabezpečený</translation>
@@ -4049,7 +4046,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8134058435519644366">Nábor a personalistika</translation>
 <translation id="8135546115396015134">ľavý kláves</translation>
 <translation id="8137456439814903304">Energia a služby</translation>
-<translation id="81474145143203755">Ak chcete používať povolenie <ph name="PERMISSION" /> na tomto webe, udeľte Chromu prístup</translation>
 <translation id="8148608574971654810">Verzia PDF:</translation>
 <translation id="8149426793427495338">Váš počítač prešiel do režimu spánku.</translation>
 <translation id="8150722005171944719">Súbor na adrese <ph name="URL" /> nie je možné prečítať. Je možné, že bol odstránený, presunutý alebo môžu v prístupe brániť povolenia súboru.</translation>

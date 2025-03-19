@@ -6,13 +6,13 @@
 #define CHROMEOS_ASH_COMPONENTS_CRYPTOHOME_AUTH_FACTOR_INPUT_H_
 
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/component_export.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
 #include "google_apis/gaia/gaia_id.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace cryptohome {
 
@@ -64,14 +64,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) AuthFactorInput {
 
   struct Fingerprint {};
 
-  using InputVariant = absl::variant<Password,
-                                     Pin,
-                                     RecoveryCreation,
-                                     RecoveryAuthentication,
-                                     SmartCard,
-                                     Kiosk,
-                                     LegacyFingerprint,
-                                     Fingerprint>;
+  using InputVariant = std::variant<Password,
+                                    Pin,
+                                    RecoveryCreation,
+                                    RecoveryAuthentication,
+                                    SmartCard,
+                                    Kiosk,
+                                    LegacyFingerprint,
+                                    Fingerprint>;
 
   explicit AuthFactorInput(InputVariant input);
 

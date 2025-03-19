@@ -87,7 +87,7 @@
 - (void)finishPresentingScreens {
   __weak __typeof(self) weakSelf = self;
   AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
+      AuthenticationServiceFactory::GetForProfile(self.profile);
   id<SystemIdentity> identity =
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   void (^completion)(void) = ^{

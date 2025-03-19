@@ -52,7 +52,7 @@
 //  - float, double, long double
 //  - std::forward_list
 //  - std::array
-//  - absl::variant
+//  - std::variant
 //  - enums
 
 #ifndef NET_BASE_PICKLE_H_

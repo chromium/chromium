@@ -166,6 +166,7 @@
 <translation id="1505542291183484463">Սալիկապատված չափափոխման պատուհանը դեպի ներքև</translation>
 <translation id="1510238584712386396">Գործարկիչ</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Ցուցադրել ծանուցումների կարգավորումները: Ծանուցումներն անջատված են մեկ հավելվածի համար:}one{Ցուցադրել ծանուցումների կարգավորումները: Ծանուցումներն անջատված են # հավելվածի համար:}other{Ցուցադրել ծանուցումների կարգավորումները: Ծանուցումներն անջատված են # հավելվածի համար:}}</translation>
+<translation id="1521655867290435174">Google Աղյուսակներ</translation>
 <translation id="1523032696246003">Մարտկոցի լիցքը՝ <ph name="BATTERY_PERCENTAGE" />% | Լրիվ լիցքավորմանը մնացել է <ph name="TIME" /></translation>
 <translation id="1525508553941733066">ՓԱԿԵԼ</translation>
 <translation id="1526448108126799339">Բացել նոր ներդիր նոր պատուհանում</translation>
@@ -345,7 +346,6 @@
 <translation id="2201071101391734388">Վերջին լուսանկար <ph name="INDEX" />/<ph name="TOTAL_COUNT" />։</translation>
 <translation id="2201687081523799384">Ծալել Google Tasks-ը</translation>
 <translation id="2208323208084708176">Միասնական աշխատասեղանի ռեժիմ</translation>
-<translation id="2220572644011485463">PIN կոդը կամ գաղտնաբառը</translation>
 <translation id="2222841058024245321">Աշխատասեղան 7</translation>
 <translation id="2223384056430485343">Տրոհված էկրանին</translation>
 <translation id="2224075387478458881">Էկրանի տեսագրում չի թույլատրվում, երբ պաշտպանված բովանդակություն է տեսանելի</translation>
@@ -1829,7 +1829,6 @@
 <translation id="7000027735917578303">Windows-ի և աշխատասեղանի կարգավորումներ</translation>
 <translation id="7004910047186208204">Միացեք բջջային ինտերնետին</translation>
 <translation id="7005239792648594238">Սկսելու համար բացեք որևէ հավելված</translation>
-<translation id="7007983414944123363">Չհաջողվեց հաստատել ձեր PIN կոդը կամ գաղտնաբառը։ Նորից փորձեք։</translation>
 <translation id="7014684956566476813">Կապ է հաստատվել «<ph name="DEVICE_NAME" />» սարքի հետ</translation>
 <translation id="7015766095477679451">Վերադարձեք <ph name="COME_BACK_TIME" />։</translation>
 <translation id="70168403932084660">Աշխատասեղան 6</translation>
@@ -2466,6 +2465,7 @@
 <translation id="9168436347345867845">Ավելի ուշ</translation>
 <translation id="9178475906033259337">Ցուցադրվում է «<ph name="QUERY" />»-ի որոնման 1 արդյունք</translation>
 <translation id="9179259655489829027">Այս գործառույթի օգնությամբ դուք կարող եք առանց գաղտնաբառի արագ կապ հաստատել ցանկացած մուտք գործած օգտատիրոջ հետ: Օգտագործեք այս գործառույթը միայն վստահելի հաշիվների հետ:</translation>
+<translation id="9183302530794969518">Google Փաստաթղթեր</translation>
 <translation id="9183456764293710005">Լիաէկրան խոշորացույց</translation>
 <translation id="9192133205265227850">Օգտագործեք «<ph name="DEVICE_NAME" />» սարքը</translation>
 <translation id="9193626018745640770">Հեռարձակվում է անհայտ ստացողի</translation>

@@ -77,19 +77,6 @@ class GridLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     for (const auto& grid_item : grid_sizing_tree.GetGridItems()) {
       algorithm.MarkBlockedStatusForGapIntersections(grid_item, gap_geometry);
     }
-
-    HeapVector<LayoutUnit> inline_intersection_points;
-    algorithm.BuildGapGeometry(kForColumns, layout_data_,
-                               inline_intersection_points, gap_geometry);
-
-    HeapVector<LayoutUnit> block_intersection_points;
-    algorithm.BuildGapGeometry(kForRows, layout_data_,
-                               block_intersection_points, gap_geometry);
-
-    algorithm.PopulateGapIntersectionPoints(
-        block_intersection_points, gap_geometry->GetGapBoundaries(kForColumns));
-    algorithm.PopulateGapIntersectionPoints(
-        inline_intersection_points, gap_geometry->GetGapBoundaries(kForRows));
   }
 
   const GridSizingTrackCollection& TrackCollection(
@@ -278,41 +265,6 @@ TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmGapGeometry) {
   auto* gap_geometry = MakeGarbageCollected<GapFragmentData::GapGeometry>();
   BuildGridGeometry(algorithm, gap_geometry);
 
-  // Expect 2 gaps for 3 columns.
-  EXPECT_EQ(gap_geometry->columns.size(), 2U);
-  EXPECT_EQ(gap_geometry->columns[0].start_offset, LayoutUnit(100));
-  EXPECT_EQ(gap_geometry->columns[0].end_offset, LayoutUnit(110));
-  EXPECT_EQ(gap_geometry->columns[1].start_offset, LayoutUnit(210));
-  EXPECT_EQ(gap_geometry->columns[1].end_offset, LayoutUnit(220));
-
-  // Expect 1 gap for 2 rows.
-  EXPECT_EQ(gap_geometry->rows.size(), 1U);
-  EXPECT_EQ(gap_geometry->rows[0].start_offset, LayoutUnit(100));
-  EXPECT_EQ(gap_geometry->rows[0].end_offset, LayoutUnit(110));
-
-  // Expect `num_row_gaps` + 2 intersection points for each column gap.
-  for (const auto& column_gap : gap_geometry->columns) {
-    EXPECT_EQ(column_gap.intersection_points.size(),
-              gap_geometry->rows.size() + 2);
-    // Expect intersections to be block start, intersection with the row gap(s),
-    // and block end.
-    EXPECT_EQ(column_gap.intersection_points[0], LayoutUnit());
-    EXPECT_EQ(column_gap.intersection_points[1], LayoutUnit(105));
-    EXPECT_EQ(column_gap.intersection_points[2], LayoutUnit(210));
-  }
-
-  // Expect `num_column_gaps` + 2 intersection points for each row gap.
-  for (const auto& row_gap : gap_geometry->rows) {
-    EXPECT_EQ(row_gap.intersection_points.size(),
-              gap_geometry->columns.size() + 2);
-    // Expect intersections to be inline start, intersection with the column
-    // gap(s), and inline end.
-    EXPECT_EQ(row_gap.intersection_points[0], LayoutUnit());
-    EXPECT_EQ(row_gap.intersection_points[1], LayoutUnit(105));
-    EXPECT_EQ(row_gap.intersection_points[2], LayoutUnit(215));
-    EXPECT_EQ(row_gap.intersection_points[3], LayoutUnit(320));
-  }
-
   Vector<GapFragmentData::GapIntersectionList> expected_column_intersections = {
       {
           GapFragmentData::GapIntersection(LayoutUnit(105), LayoutUnit()),
@@ -389,30 +341,6 @@ TEST_F(GridLayoutAlgorithmTest, GapIntersectionsForGridWithSpanners) {
 
   auto* gap_geometry = MakeGarbageCollected<GapFragmentData::GapGeometry>();
   BuildGridGeometry(algorithm, gap_geometry);
-
-  // Expect `num_row_gaps` + 2 intersection points for each column gap.
-  for (const auto& column_gap : gap_geometry->columns) {
-    EXPECT_EQ(column_gap.intersection_points.size(),
-              gap_geometry->rows.size() + 2);
-    // Expect intersections to be block start, intersection with the row gap(s),
-    // and block end.
-    EXPECT_EQ(column_gap.intersection_points[0], LayoutUnit());
-    EXPECT_EQ(column_gap.intersection_points[1], LayoutUnit(105));
-    EXPECT_EQ(column_gap.intersection_points[2], LayoutUnit(215));
-    EXPECT_EQ(column_gap.intersection_points[3], LayoutUnit(320));
-  }
-
-  // Expect `num_column_gaps` + 2 intersection points for each row gap.
-  for (const auto& row_gap : gap_geometry->rows) {
-    EXPECT_EQ(row_gap.intersection_points.size(),
-              gap_geometry->columns.size() + 2);
-    // Expect intersections to be inline start, intersection with the column
-    // gap(s), and inline end.
-    EXPECT_EQ(row_gap.intersection_points[0], LayoutUnit());
-    EXPECT_EQ(row_gap.intersection_points[1], LayoutUnit(105));
-    EXPECT_EQ(row_gap.intersection_points[2], LayoutUnit(215));
-    EXPECT_EQ(row_gap.intersection_points[3], LayoutUnit(320));
-  }
 
   Vector<GapFragmentData::GapIntersectionList> expected_column_intersections = {
       {

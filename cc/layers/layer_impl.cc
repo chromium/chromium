@@ -486,6 +486,27 @@ bool LayerImpl::IsAffectedByPageScale() const {
       ->in_subtree_of_page_scale_layer;
 }
 
+DamageReasonSet LayerImpl::GetDamageReasonsFromLayerPropertyChange() const {
+  DamageReasonSet reasons;
+  if (layer_property_changed_not_from_property_trees_ ||
+      layer_property_changed_from_property_trees_ ||
+      GetPropertyTrees()->full_tree_damaged()) {
+    reasons.Put(DamageReason::kUntracked);
+  }
+  if (transform_tree_index() != kInvalidPropertyNodeId) {
+    TransformNode* transform_node =
+        GetTransformTree().Node(transform_tree_index());
+    reasons.PutAll(transform_node->damage_reasons());
+  }
+  if (effect_tree_index() != kInvalidPropertyNodeId) {
+    EffectNode* effect_node = GetEffectTree().Node(effect_tree_index());
+    if (effect_node && effect_node->effect_changed) {
+      reasons.Put(DamageReason::kUntracked);
+    }
+  }
+  return reasons;
+}
+
 bool LayerImpl::LayerPropertyChanged() const {
   return layer_property_changed_not_from_property_trees_ ||
          LayerPropertyChangedFromPropertyTrees();
@@ -499,8 +520,9 @@ bool LayerImpl::LayerPropertyChangedFromPropertyTrees() const {
     return false;
   TransformNode* transform_node =
       GetTransformTree().Node(transform_tree_index());
-  if (transform_node && transform_node->transform_changed)
+  if (transform_node && transform_node->transform_changed()) {
     return true;
+  }
   if (effect_tree_index() == kInvalidPropertyNodeId)
     return false;
   EffectNode* effect_node = GetEffectTree().Node(effect_tree_index());
@@ -707,9 +729,8 @@ gfx::Rect LayerImpl::GetDamageRect() const {
 }
 
 DamageReasonSet LayerImpl::GetDamageReasons() const {
-  DamageReasonSet reasons;
-  if (LayerPropertyChanged() || !update_rect_.IsEmpty() ||
-      !GetDamageRect().IsEmpty()) {
+  DamageReasonSet reasons = GetDamageReasonsFromLayerPropertyChange();
+  if (!update_rect_.IsEmpty() || !GetDamageRect().IsEmpty()) {
     reasons.Put(DamageReason::kUntracked);
   }
   return reasons;

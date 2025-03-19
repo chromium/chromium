@@ -48,7 +48,7 @@ class MediaControlsProgressViewTest : public views::ViewsTestBase {
         std::make_unique<MediaControlsProgressView>(base::BindRepeating(
             &MediaControlsProgressViewTest::SeekTo, base::Unretained(this)));
 
-    container->AddChildView(progress_view_.get());
+    container->AddChildViewRaw(progress_view_.get());
 
     widget_.Show();
   }

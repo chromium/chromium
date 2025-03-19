@@ -440,6 +440,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Таны {EMAIL} Google Бүртгэлд нууц үг хадгалсан}other{Таны {EMAIL} Google Бүртгэлд нууц үгнүүдийг хадгалсан}}</translation>
 <translation id="2791174088547598693">Нууц үг нэмэх…</translation>
 <translation id="2797302972324086597">Улсын код</translation>
+<translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} файл}other{{COUNT} файл}}</translation>
 <translation id="2816489851009559785">Цэс → Тохиргоо → Өгөгдмөл хөтөч</translation>
 <translation id="2818821771744632548">Таны iPhone-г шинэчлэх явцад таныг <ph name="USER_NAME" /> бүртгэлээс тань гаргасан. Буцаж нэвтрэхийн тулд доорх "Үргэлжлүүлэх"-ийг товшино уу.</translation>
 <translation id="2819667972867209401">Асаалттай байхад өгөгдлийг таны Google Бүртгэлд хадгалдаг. Унтраалттай байхад өгөгдлийг зөвхөн энэ төхөөрөмжид хадгалдаг бөгөөд таныг гарсан тохиолдолд устгадаг.</translation>

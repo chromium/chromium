@@ -16,6 +16,7 @@
 #include <string>
 #include <tuple>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/base64.h"
@@ -600,34 +601,33 @@ auto Equal(const AblationFieldLogEvent& expected) {
 auto ArrayEquals(
     const std::vector<AutofillField::FieldLogEventType>& expected) {
   static_assert(
-      absl::variant_size<AutofillField::FieldLogEventType>() == 10,
+      std::variant_size<AutofillField::FieldLogEventType>() == 10,
       "If you add a new field event type, you need to update this function");
   std::vector<Matcher<AutofillField::FieldLogEventType>> matchers;
   for (const auto& event : expected) {
-    if (absl::holds_alternative<AskForValuesToFillFieldLogEvent>(event)) {
+    if (std::holds_alternative<AskForValuesToFillFieldLogEvent>(event)) {
       matchers.push_back(
-          Equal(absl::get<AskForValuesToFillFieldLogEvent>(event)));
-    } else if (absl::holds_alternative<TriggerFillFieldLogEvent>(event)) {
-      matchers.push_back(Equal(absl::get<TriggerFillFieldLogEvent>(event)));
-    } else if (absl::holds_alternative<FillFieldLogEvent>(event)) {
-      matchers.push_back(Equal(absl::get<FillFieldLogEvent>(event)));
-    } else if (absl::holds_alternative<TypingFieldLogEvent>(event)) {
-      matchers.push_back(Equal(absl::get<TypingFieldLogEvent>(event)));
-    } else if (absl::holds_alternative<HeuristicPredictionFieldLogEvent>(
+          Equal(std::get<AskForValuesToFillFieldLogEvent>(event)));
+    } else if (std::holds_alternative<TriggerFillFieldLogEvent>(event)) {
+      matchers.push_back(Equal(std::get<TriggerFillFieldLogEvent>(event)));
+    } else if (std::holds_alternative<FillFieldLogEvent>(event)) {
+      matchers.push_back(Equal(std::get<FillFieldLogEvent>(event)));
+    } else if (std::holds_alternative<TypingFieldLogEvent>(event)) {
+      matchers.push_back(Equal(std::get<TypingFieldLogEvent>(event)));
+    } else if (std::holds_alternative<HeuristicPredictionFieldLogEvent>(
                    event)) {
       matchers.push_back(
-          Equal(absl::get<HeuristicPredictionFieldLogEvent>(event)));
-    } else if (absl::holds_alternative<AutocompleteAttributeFieldLogEvent>(
+          Equal(std::get<HeuristicPredictionFieldLogEvent>(event)));
+    } else if (std::holds_alternative<AutocompleteAttributeFieldLogEvent>(
                    event)) {
       matchers.push_back(
-          Equal(absl::get<AutocompleteAttributeFieldLogEvent>(event)));
-    } else if (absl::holds_alternative<ServerPredictionFieldLogEvent>(event)) {
-      matchers.push_back(
-          Equal(absl::get<ServerPredictionFieldLogEvent>(event)));
-    } else if (absl::holds_alternative<RationalizationFieldLogEvent>(event)) {
-      matchers.push_back(Equal(absl::get<RationalizationFieldLogEvent>(event)));
-    } else if (absl::holds_alternative<AblationFieldLogEvent>(event)) {
-      matchers.push_back(Equal(absl::get<AblationFieldLogEvent>(event)));
+          Equal(std::get<AutocompleteAttributeFieldLogEvent>(event)));
+    } else if (std::holds_alternative<ServerPredictionFieldLogEvent>(event)) {
+      matchers.push_back(Equal(std::get<ServerPredictionFieldLogEvent>(event)));
+    } else if (std::holds_alternative<RationalizationFieldLogEvent>(event)) {
+      matchers.push_back(Equal(std::get<RationalizationFieldLogEvent>(event)));
+    } else if (std::holds_alternative<AblationFieldLogEvent>(event)) {
+      matchers.push_back(Equal(std::get<AblationFieldLogEvent>(event)));
     } else {
       NOTREACHED();
     }
@@ -824,7 +824,7 @@ class MockTouchToFillDelegate : public TouchToFillDelegate {
               (override));
   MOCK_METHOD(void,
               IbanSuggestionSelected,
-              ((absl::variant<Iban::Guid, Iban::InstrumentId>)),
+              ((std::variant<Iban::Guid, Iban::InstrumentId>)),
               (override));
   MOCK_METHOD(void, OnDismissed, (bool dismissed_by_user), (override));
   MOCK_METHOD(void,
@@ -3670,7 +3670,7 @@ class BrowserAutofillManagerWithLogEventsTest
     // far.
     size_t count = 0;
     for (const auto& event : events) {
-      if (const T* log_event = absl::get_if<T>(&event)) {
+      if (const T* log_event = std::get_if<T>(&event)) {
         ++count;
         if (count == n) {
           return log_event;
@@ -3684,7 +3684,7 @@ class BrowserAutofillManagerWithLogEventsTest
   size_t CountEventOfType(
       const std::vector<AutofillField::FieldLogEventType>& events) {
     return std::ranges::count_if(events, [](const auto& event) {
-      return absl::holds_alternative<T>(event);
+      return std::holds_alternative<T>(event);
     });
   }
 

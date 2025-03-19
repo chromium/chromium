@@ -4,6 +4,8 @@
 
 #include "content/browser/v8_snapshot_files.h"
 
+#include <variant>
+
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
@@ -14,9 +16,9 @@
 
 namespace content {
 
-std::map<std::string, absl::variant<base::FilePath, base::ScopedFD>>
+std::map<std::string, std::variant<base::FilePath, base::ScopedFD>>
 GetV8SnapshotFilesToPreload(base::CommandLine& process_command_line) {
-  std::map<std::string, absl::variant<base::FilePath, base::ScopedFD>> files;
+  std::map<std::string, std::variant<base::FilePath, base::ScopedFD>> files;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT)
   files[kV8ContextSnapshotDataDescriptor] = base::FilePath(

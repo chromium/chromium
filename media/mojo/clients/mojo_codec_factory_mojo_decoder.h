@@ -6,6 +6,7 @@
 #define MEDIA_MOJO_CLIENTS_MOJO_CODEC_FACTORY_MOJO_DECODER_H_
 
 #include <memory>
+#include <variant>
 
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/decoder.h"

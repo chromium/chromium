@@ -32,7 +32,6 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabClosureParams.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabCreator.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabCreatorManager.java",
-    "android/java/src/org/chromium/chrome/browser/tabmodel/TabCreatorManagerSupplier.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroup.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupCollapsedUtils.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupColorUtils.java",

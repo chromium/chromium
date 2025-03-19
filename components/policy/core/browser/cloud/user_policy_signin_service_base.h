@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <variant>
 
 #include "base/callback_list.h"
 #include "base/cancelable_callback.h"
@@ -22,7 +23,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class AccountId;
 class PrefService;
@@ -70,7 +70,7 @@ class POLICY_EXPORT UserPolicySigninServiceBase
   UserPolicySigninServiceBase(
       PrefService* local_state,
       DeviceManagementService* device_management_service,
-      absl::variant<UserCloudPolicyManager*, ProfileCloudPolicyManager*>
+      std::variant<UserCloudPolicyManager*, ProfileCloudPolicyManager*>
           policy_manager,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory);

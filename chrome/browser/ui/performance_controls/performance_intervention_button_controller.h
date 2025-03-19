@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_PERFORMANCE_INTERVENTION_BUTTON_CONTROLLER_H_
 #define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_PERFORMANCE_INTERVENTION_BUTTON_CONTROLLER_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
@@ -60,8 +61,10 @@ class PerformanceInterventionButtonController
     return actionable_cpu_tabs_;
   }
 
+  int GetAcceptancePercentage();
+
  private:
-  void HideToolbarButton();
+  void HideToolbarButton(bool accept_intervention);
 
   // Records metrics if the intervention UI is able to shown or the reason it
   // was unable to do so and triggers the UI to show if is able to.
@@ -74,6 +77,8 @@ class PerformanceInterventionButtonController
   // Otherwise, returns false.
   bool ContainsNonLastActiveProfile(
       const PerformanceDetectionManager::ActionableTabsResult& result);
+
+  bool ShouldShowNotification();
 
   raw_ptr<PerformanceInterventionButtonControllerDelegate> delegate_ = nullptr;
   const raw_ptr<Browser> browser_;

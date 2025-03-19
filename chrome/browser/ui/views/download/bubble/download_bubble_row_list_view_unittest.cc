@@ -11,9 +11,7 @@
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_view.h"
-#include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -51,10 +49,7 @@ class DownloadBubbleRowListViewTest : public TestWithBrowserView {
   }
 
   DownloadBubbleNavigationHandler* navigation_handler() {
-    if (base::FeatureList::IsEnabled(features::kPinnableDownloadsButton)) {
       return browser()->GetFeatures().download_toolbar_ui_controller();
-    }
-    return browser_view()->toolbar()->download_button();
   }
 
   // Sets up `num_items` mock download items with GUID equal to their index in

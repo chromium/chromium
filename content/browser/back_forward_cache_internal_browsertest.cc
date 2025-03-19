@@ -20,8 +20,10 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
 #include "content/public/browser/browser_accessibility_state.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/accessibility_notification_waiter.h"
@@ -3974,6 +3976,7 @@ class BackgroundForegroundProcessLimitBackForwardCacheBrowserTest
   // The number of pages the BackForwardCache can hold per tab.
   const size_t kBackForwardCacheSize = 4;
   const size_t kForegroundBackForwardCacheSize = 2;
+  const size_t kPruneSize = 1u;
 };
 
 // Test that a series of same-site navigations (which use the same process)
@@ -4098,10 +4101,9 @@ IN_PROC_BROWSER_TEST_F(
               base::Process::Priority::kBestEffort);
   }
 
-  constexpr size_t kPruneSize = 1u;
   CHECK_LE(kPruneSize, kBackForwardCacheSize);
 
-  // Prune the BFCache entries to 1.
+  // Prune the BFCache entries.
   web_contents()->GetController().GetBackForwardCache().Prune(kPruneSize);
 
   for (int i = kBackForwardCacheSize - 1 - 1 - kPruneSize; i >= 0; --i) {
@@ -4122,6 +4124,234 @@ IN_PROC_BROWSER_TEST_F(
                         FROM_HERE);
     }
   }
+}
+
+namespace {
+
+const char kPrioritizedPageURL[] = "search.result";
+
+}  // namespace
+
+class BackForwardCacheLimitForPrioritizedPagesBrowserTest
+    : public BackgroundForegroundProcessLimitBackForwardCacheBrowserTest {
+ protected:
+  // Mock subclass of ContentBrowserClient that will determine if the url is
+  // prioritized by checking against `kPrioritizedPageURL`.
+  class MockContentBrowserClientWithPrioritizedBackForwardCacheEntry
+      : public ContentBrowserTestContentBrowserClient {
+   public:
+    // ContentBrowserClient overrides:
+    bool ShouldPrioritizeForBackForwardCache(BrowserContext* browser_context,
+                                             const GURL& url) override {
+      return url.DomainIs(kPrioritizedPageURL);
+    }
+  };
+
+  void SetUpOnMainThread() override {
+    BackgroundForegroundProcessLimitBackForwardCacheBrowserTest::
+        SetUpOnMainThread();
+    test_client_ = std::make_unique<
+        MockContentBrowserClientWithPrioritizedBackForwardCacheEntry>();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    BackgroundForegroundProcessLimitBackForwardCacheBrowserTest::
+        SetUpCommandLine(command_line);
+    feature_list_.InitAndEnableFeature(
+        content::kBackForwardCachePrioritizedEntry);
+  }
+
+ private:
+  std::unique_ptr<MockContentBrowserClientWithPrioritizedBackForwardCacheEntry>
+      test_client_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test that both prioritized entries and non-prioritized entries would be
+// evicted when pruning with size 0.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
+                       PruneToZero) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // We need at least 4 entries in the BFCache list for this test.
+  CHECK_GE(kBackForwardCacheSize, 2u);
+
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.test", "/title1.html")));
+  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
+                                         kPrioritizedPageURL, "/title1.html")));
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.test", "/title1.html")));
+
+  // Now the BFCache entry list is: [a, pp, b].
+  // Prune the BFCache entries to 0.
+  web_contents()->GetController().GetBackForwardCache().Prune(0);
+  // All the entries should be evicted
+  for (size_t i = 0; i < 2; ++i) {
+    ASSERT_TRUE(HistoryGoBack(web_contents()));
+    ExpectNotRestored({NotRestoredReason::kCacheLimitPruned}, {}, {}, {}, {},
+                      FROM_HERE);
+  }
+}
+
+// Test that when pruning with a positive number size, the last prioritized
+// entry outside the limit will not be evicted.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
+                       PruneToNonZero_PrioritizedEntryOutsideLimit) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // We need at least 4 entries in the BFCache list for this test.
+  CHECK_GE(kBackForwardCacheSize, 4u);
+
+  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
+                                         kPrioritizedPageURL, "/title1.html")));
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.test", "/title1.html")));
+  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
+                                         kPrioritizedPageURL, "/title2.html")));
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.test", "/title1.html")));
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("c.test", "/title1.html")));
+
+  // Now the BFCache entry list is: [pe1, a, pe2, b].
+  // Prune the BFCache entries to 1, the result should be:
+  // [pe1(evicted), a(evicted), pe2(prioritized entry special rule), b].
+  web_contents()->GetController().GetBackForwardCache().Prune(1);
+
+  // The last non-prioritized entry should be restored because it's within the
+  // cache limit.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectRestored(FROM_HERE);
+  // The last prioritized entry should be restored since it's the special
+  // prioritized entry.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectRestored(FROM_HERE);
+  // The other entries (including the prioritized one) should not be restored.
+  for (size_t i = 0; i < 2; ++i) {
+    ASSERT_TRUE(HistoryGoBack(web_contents()));
+    ExpectNotRestored({NotRestoredReason::kCacheLimitPruned}, {}, {}, {}, {},
+                      FROM_HERE);
+  }
+}
+
+// Test that when pruning with a positive number size, the last prioritized
+// entry inside the limit should be counted as the regular cache.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
+                       PruneToNonZero_PrioritizedEntryInsideLimit) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // We need at least 2 entries in the BFCache list for this test.
+  CHECK_GE(kBackForwardCacheSize, 2u);
+
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.test", "/title1.html")));
+  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
+                                         kPrioritizedPageURL, "/title2.html")));
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.test", "/title1.html")));
+
+  // Now the BFCache entry list is: [a, pe].
+  // Prune the BFCache entries to 1, the result should be:
+  // [a(evicted), pe].
+  web_contents()->GetController().GetBackForwardCache().Prune(1);
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectRestored(FROM_HERE);
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestored({NotRestoredReason::kCacheLimitPruned}, {}, {}, {}, {},
+                    FROM_HERE);
+}
+
+// Test that when pruning with a positive number size while there is already an
+// old prioritized entry kept in cache before, it will be replaced by the newer
+// prioritized entry.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
+                       PruneToNonZeroTwice) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // We need at least 4 entries in the BFCache list for this test.
+  CHECK_LE(kBackForwardCacheSize, 4u);
+
+  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
+                                         kPrioritizedPageURL, "/title1.html")));
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.test", "/title1.html")));
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.test", "/title1.html")));
+
+  // Now the BFCache entry list is: [pe1, a].
+  // Prune the BFCache entries to 1, the result should still be
+  // [pe1(prioritized entry special rule), a].
+  web_contents()->GetController().GetBackForwardCache().Prune(1);
+
+  // The last non-prioritized entry should be restored because it's within the
+  // cache limit.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectRestored(FROM_HERE);
+  // The last prioritized entry should be restored since it's the special
+  // prioritized entry.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectRestored(FROM_HERE);
+
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("c.test", "/title1.html")));
+  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
+                                         kPrioritizedPageURL, "/title2.html")));
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("d.test", "/title1.html")));
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("e.test", "/title1.html")));
+
+  // Now the BFCache entry list is: [pe1, c, pe2, d].
+  // Prune the BFCache entries to 1, the result should still be
+  // [pe1(evicted), a(evicted), pe2(prioritized entry special rule), d].
+  web_contents()->GetController().GetBackForwardCache().Prune(1);
+
+  // The last non-prioritized entry should be restored because it's within the
+  // cache limit.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectRestored(FROM_HERE);
+  // The last prioritized entry should be restored since it's the special
+  // prioritized entry.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectRestored(FROM_HERE);
+  // The other entries (including the prioritized one) should not be restored.
+  for (size_t i = 0; i < 2; ++i) {
+    ASSERT_TRUE(HistoryGoBack(web_contents()));
+    ExpectNotRestored({NotRestoredReason::kCacheLimitPruned}, {}, {}, {}, {},
+                      FROM_HERE);
+  }
+}
+
+// Test that the prioritized BFCache entry will not be evicted even when another
+// entry is stored and exceeds the limit.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheLimitForPrioritizedPagesBrowserTest,
+                       CacheLimitReached) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // We need at least 1 entry in the BFCache list for this test.
+  CHECK_GE(kBackForwardCacheSize, 1u);
+
+  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
+                                         kPrioritizedPageURL, "/title1.html")));
+
+  // Fill the BFCache with more entry and make it just exceeds the limit, the
+  // result should be:
+  // [pe(prioritized entry special rule), a0, a1, ...].
+  for (size_t i = 0; i <= kBackForwardCacheSize; ++i) {
+    ASSERT_TRUE(NavigateToURL(
+        shell(), embedded_test_server()->GetURL(
+                     base::StringPrintf("a%zu.test", i), "/title1.html")));
+  }
+  // For the entries within cache size limit, they should be restored.
+  for (size_t i = 0; i < kBackForwardCacheSize; ++i) {
+    ASSERT_TRUE(HistoryGoBack(web_contents()));
+    ExpectRestored(FROM_HERE);
+  }
+  // The prioritized entry should be restored as well even if it's outside the
+  // limit.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectRestored(FROM_HERE);
 }
 
 // Test that the cache responds to processes switching from background to

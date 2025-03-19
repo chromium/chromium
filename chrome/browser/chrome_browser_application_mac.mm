@@ -221,8 +221,7 @@ std::string DescriptionForNSEvent(NSEvent* event) {
       [self voiceOverStateChanged:[newValueNumber boolValue]];
       content::BrowserAccessibilityState* browser_ax_state =
           content::BrowserAccessibilityState::GetInstance();
-      browser_ax_state->SetKnownScreenReaderAppActive(
-          [newValueNumber boolValue]);
+      browser_ax_state->SetScreenReaderAppActive([newValueNumber boolValue]);
     }
 
     return;
@@ -461,9 +460,9 @@ std::string DescriptionForNSEvent(NSEvent* event) {
       content::BrowserAccessibilityState::GetInstance();
 
   if (enable) {
-    accessibility_state->OnScreenReaderDetected();
+    accessibility_state->EnableProcessAccessibility();
   } else {
-    accessibility_state->OnScreenReaderStopped();
+    accessibility_state->DisableProcessAccessibility();
   }
 }
 

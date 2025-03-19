@@ -23,7 +23,6 @@ import android.util.SparseArray;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
@@ -666,7 +665,7 @@ public class MediaNotificationController {
         mThrottler.clearPendingNotifications();
         if (mMediaNotificationInfo == null) return;
 
-        NotificationManagerCompat.from(getContext()).cancel(mMediaNotificationInfo.id);
+        BaseNotificationManagerProxyFactory.create().cancel(mMediaNotificationInfo.id);
 
         if (mMediaSession != null) {
             mMediaSession.setCallback(null);

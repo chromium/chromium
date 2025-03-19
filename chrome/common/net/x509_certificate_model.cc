@@ -5,6 +5,7 @@
 #include "chrome/common/net/x509_certificate_model.h"
 
 #include <string_view>
+#include <variant>
 
 #include "base/check.h"
 #include "base/containers/adapters.h"
@@ -341,8 +342,9 @@ OptionalStringOrError FindFirstNameOfType(bssl::der::Input oid,
                                           const bssl::RDNSequence& rdns) {
   for (const bssl::RelativeDistinguishedName& rdn : rdns) {
     OptionalStringOrError r = FindAttributeOfType(oid, rdn);
-    if (!absl::holds_alternative<NotPresent>(r))
+    if (!std::holds_alternative<NotPresent>(r)) {
       return r;
+    }
   }
   return NotPresent();
 }
@@ -353,8 +355,9 @@ OptionalStringOrError FindLastNameOfType(bssl::der::Input oid,
                                          const bssl::RDNSequence& rdns) {
   for (const bssl::RelativeDistinguishedName& rdn : base::Reversed(rdns)) {
     OptionalStringOrError r = FindAttributeOfType(oid, rdn);
-    if (!absl::holds_alternative<NotPresent>(r))
+    if (!std::holds_alternative<NotPresent>(r)) {
       return r;
+    }
   }
   return NotPresent();
 }
@@ -813,10 +816,11 @@ std::optional<std::string> ProcessGeneralNames(
   }
   for (const auto& directory_name : names.directory_names) {
     OptionalStringOrError name = ProcessNameValue(directory_name);
-    if (!absl::holds_alternative<std::string>(name))
+    if (!std::holds_alternative<std::string>(name)) {
       return std::nullopt;
+    }
     rv += FormatGeneralName(IDS_CERT_GENERAL_NAME_DIRECTORY_NAME,
-                            absl::get<std::string>(name));
+                            std::get<std::string>(name));
   }
   for (const auto& edi_party_name : names.edi_party_names) {
     rv += FormatGeneralName(IDS_CERT_GENERAL_NAME_EDI_PARTY_NAME,
@@ -1331,10 +1335,12 @@ std::string X509CertificateModel::GetTitle() const {
   if (!subject_rdns_.empty()) {
     OptionalStringOrError common_name = FindLastNameOfType(
         bssl::der::Input(bssl::kTypeCommonNameOid), subject_rdns_);
-    if (auto* str = absl::get_if<std::string>(&common_name); str)
+    if (auto* str = std::get_if<std::string>(&common_name); str) {
       return std::move(*str);
-    if (absl::holds_alternative<Error>(common_name))
+    }
+    if (std::holds_alternative<Error>(common_name)) {
       return HashCertSHA256();
+    }
 
     std::string rv;
     if (!bssl::ConvertToRFC2253(subject_rdns_, &rv)) {

@@ -258,6 +258,13 @@ void SessionWrapper::Generate(
     return;
   }
 
+  // TODO(crbug.com/403383823): Remove these deprecated fields.
+  if (options->top_k.has_value() || options->temperature.has_value()) {
+    receiver_.ReportBadMessage(
+        "Passing sampling params per generation is deprecated.");
+    return;
+  }
+
   auto generate_internal = base::BindOnce(
       &SessionWrapper::GenerateInternal, weak_ptr_factory_.GetWeakPtr(),
       std::move(options), std::move(response));

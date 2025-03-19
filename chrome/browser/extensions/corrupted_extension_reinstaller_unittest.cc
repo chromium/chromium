@@ -62,8 +62,8 @@ TEST_F(CorruptedExtensionReinstallerUnittest, Retry) {
   // Reinstaller depends on the extension service.
   InitializeEmptyExtensionService();
 
-  CorruptedExtensionReinstaller reinstaller(profile());
-  reinstaller.ExpectReinstallForCorruption(
+  auto* reinstaller = CorruptedExtensionReinstaller::Get(profile());
+  reinstaller->ExpectReinstallForCorruption(
       kDummyExtensionId,
       CorruptedExtensionReinstaller::PolicyReinstallReason::
           CORRUPTION_DETECTED_WEBSTORE,
@@ -71,7 +71,7 @@ TEST_F(CorruptedExtensionReinstallerUnittest, Retry) {
 
   TestReinstallerTracker tracker;
 
-  reinstaller.NotifyExtensionDisabledDueToCorruption();
+  reinstaller->NotifyExtensionDisabledDueToCorruption();
   EXPECT_EQ(1, tracker.call_count());
   tracker.Proceed();
   EXPECT_EQ(2, tracker.call_count());
@@ -86,8 +86,8 @@ TEST_F(CorruptedExtensionReinstallerUnittest,
   // Reinstaller depends on the extension service.
   InitializeEmptyExtensionService();
 
-  CorruptedExtensionReinstaller reinstaller(profile_.get());
-  reinstaller.ExpectReinstallForCorruption(
+  auto* reinstaller = CorruptedExtensionReinstaller::Get(profile());
+  reinstaller->ExpectReinstallForCorruption(
       kDummyExtensionId,
       CorruptedExtensionReinstaller::PolicyReinstallReason::
           CORRUPTION_DETECTED_WEBSTORE,
@@ -95,13 +95,13 @@ TEST_F(CorruptedExtensionReinstallerUnittest,
 
   TestReinstallerTracker tracker;
 
-  reinstaller.NotifyExtensionDisabledDueToCorruption();
+  reinstaller->NotifyExtensionDisabledDueToCorruption();
   EXPECT_EQ(1, tracker.call_count());
-  reinstaller.NotifyExtensionDisabledDueToCorruption();
+  reinstaller->NotifyExtensionDisabledDueToCorruption();
   // Resolve the reinstall attempt.
   tracker.Proceed();
   EXPECT_EQ(2, tracker.call_count());
-  reinstaller.NotifyExtensionDisabledDueToCorruption();
+  reinstaller->NotifyExtensionDisabledDueToCorruption();
   // Not resolving the pending attempt will not produce further calls.
   EXPECT_EQ(2, tracker.call_count());
 }

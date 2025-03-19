@@ -4,6 +4,8 @@
 
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
 
+#include <variant>
+
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -19,7 +21,6 @@
 #include "crypto/unexportable_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace unexportable_keys {
 
@@ -56,8 +57,8 @@ class UnexportableKeyTaskManagerTest : public testing::Test {
           QUEUED};  // QUEUED - tasks don't run until `RunUntilIdle()` is
                     // called.
   // Provides a mock key provider by default.
-  absl::variant<crypto::ScopedMockUnexportableKeyProvider,
-                crypto::ScopedNullUnexportableKeyProvider>
+  std::variant<crypto::ScopedMockUnexportableKeyProvider,
+               crypto::ScopedNullUnexportableKeyProvider>
       scoped_key_provider_;
   UnexportableKeyTaskManager task_manager_{
       crypto::UnexportableKeyProvider::Config()};

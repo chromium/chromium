@@ -48,22 +48,27 @@ def generate_bindings(input_dir, output_dir):
             'python3', _GENERATOR_SCRIPT, '-o', tmp_bytecode_dir, 'precompile'
         ],
                        check=True)
-        # Paths to module files relative to the bindings output directory.
-        mojom_modules = (os.path.join('../modules',
-                                      removesuffix(module_filename, '-module'))
-                         for module_filename in os.listdir(tmp_modules_dir))
-        subprocess.run([
-            'python3', _GENERATOR_SCRIPT, '-o', tmp_bindings_dir, 'generate',
-            '--bytecode_path', tmp_bytecode_dir, '--generators', 'typescript',
-            # typemap is hardcoded for now.
-            '--typemap', f'{input_dir}/typemap.json',
-            *mojom_modules
-        ],
-                       check=True)
-        # Append '.golden' file extension to avoid presubmit checks.
-        for entry in os.scandir(tmp_bindings_dir):
-            os.rename(entry.path, entry.path + '.golden')
-        shutil.copytree(tmp_bindings_dir, output_dir, dirs_exist_ok=True)
+
+        for lang in ['typescript', 'c++']:
+          lang_tmp_output = f'{tmp_bindings_dir}/{lang}'
+          lang_output = f'{output_dir}/{lang}'
+
+          # Paths to module files relative to the bindings output directory.
+          mojom_modules = (os.path.join('../../modules',
+                            removesuffix(module_filename, '-module'))
+                            for module_filename in os.listdir(tmp_modules_dir))
+          subprocess.run([
+              'python3', _GENERATOR_SCRIPT, '-o', lang_tmp_output, 'generate',
+              '--bytecode_path', tmp_bytecode_dir, '--generators', lang,
+              # typemap is hardcoded for now.
+              '--typemap', f'{input_dir}/typemap.json',
+              *mojom_modules
+          ],
+                         check=True)
+          # Append '.golden' file extension to avoid presubmit checks.
+          for entry in os.scandir(lang_tmp_output):
+              os.rename(entry.path, entry.path + '.golden')
+          shutil.copytree(lang_tmp_output, lang_output, dirs_exist_ok=True)
 
 
 def main():
@@ -75,7 +80,7 @@ def main():
                         help='directory containing input .mojom files')
     parser.add_argument(
         '--output-dir',
-        default=os.path.join(_SCRIPT_DIR, 'generated/typescript'),
+        default=os.path.join(_SCRIPT_DIR, 'generated/'),
         dest='output_dir',
         help='empty directory in which to write generated bindings')
     args = parser.parse_args(sys.argv[1:])

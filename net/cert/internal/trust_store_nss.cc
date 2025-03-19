@@ -19,6 +19,8 @@
 #include <secmod.h>
 #include <secmodt.h>
 
+#include <variant>
+
 #include "base/containers/to_vector.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
@@ -147,9 +149,9 @@ TrustStoreNSS::ListCertsResult& TrustStoreNSS::ListCertsResult::operator=(
 
 TrustStoreNSS::TrustStoreNSS(UserSlotTrustSetting user_slot_trust_setting)
     : user_slot_trust_setting_(std::move(user_slot_trust_setting)) {
-  if (absl::holds_alternative<crypto::ScopedPK11Slot>(
+  if (std::holds_alternative<crypto::ScopedPK11Slot>(
           user_slot_trust_setting_)) {
-    CHECK(absl::get<crypto::ScopedPK11Slot>(user_slot_trust_setting_) !=
+    CHECK(std::get<crypto::ScopedPK11Slot>(user_slot_trust_setting_) !=
           nullptr);
   }
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_DEVICE)
@@ -233,10 +235,10 @@ TrustStoreNSS::ListCertsIgnoringNSSRootsImpl(bool ignore_chaps_module) {
   crypto::EnsureNSSInit();
   std::vector<TrustStoreNSS::ListCertsResult> results;
   crypto::ScopedCERTCertList cert_list;
-  if (absl::holds_alternative<crypto::ScopedPK11Slot>(
+  if (std::holds_alternative<crypto::ScopedPK11Slot>(
           user_slot_trust_setting_)) {
     cert_list.reset(PK11_ListCertsInSlot(
-        absl::get<crypto::ScopedPK11Slot>(user_slot_trust_setting_).get()));
+        std::get<crypto::ScopedPK11Slot>(user_slot_trust_setting_).get()));
   } else {
     cert_list.reset(PK11_ListCerts(PK11CertListUnique, nullptr));
   }
@@ -244,7 +246,7 @@ TrustStoreNSS::ListCertsIgnoringNSSRootsImpl(bool ignore_chaps_module) {
   // that was backing the specified slot is not available anymore.
   // Treat it as no certificates being present on the slot.
   if (!cert_list) {
-    LOG(WARNING) << (absl::holds_alternative<crypto::ScopedPK11Slot>(
+    LOG(WARNING) << (std::holds_alternative<crypto::ScopedPK11Slot>(
                          user_slot_trust_setting_)
                          ? "PK11_ListCertsInSlot"
                          : "PK11_ListCerts")
@@ -352,10 +354,10 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
     DVLOG(1) << "found cert in slot:" << PK11_GetSlotName(slot)
              << " token:" << PK11_GetTokenName(slot)
              << " module trustOrder: " << PK11_GetModule(slot)->trustOrder;
-    if (absl::holds_alternative<crypto::ScopedPK11Slot>(
+    if (std::holds_alternative<crypto::ScopedPK11Slot>(
             user_slot_trust_setting_) &&
         slot !=
-            absl::get<crypto::ScopedPK11Slot>(user_slot_trust_setting_).get()) {
+            std::get<crypto::ScopedPK11Slot>(user_slot_trust_setting_).get()) {
       DVLOG(1) << "skipping slot " << PK11_GetSlotName(slot)
                << ", it's not user_slot_trust_setting_";
       continue;

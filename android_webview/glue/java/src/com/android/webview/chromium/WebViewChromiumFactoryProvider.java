@@ -274,11 +274,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         return false;
     }
 
-    // Overridden in B-specific subclass.
-    public boolean shouldEnableChips() {
-        return false;
-    }
-
     private void deleteContentsOnPackageDowngrade(PackageInfo packageInfo) {
         try (ScopedSysTraceEvent e2 =
                 ScopedSysTraceEvent.scoped(

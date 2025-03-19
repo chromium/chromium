@@ -432,7 +432,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2981364137500752533">Du kan ha upp till fem fönster.</translation>
 <translation id="2983102365694924129">Baserat på din aktivitet på en webbplats. Inställningen är inaktiverad.</translation>
 <translation id="2984978667043170458">Inkludera omgivande text i sökningar på Google</translation>
-<translation id="2988638966064514052">Gör dina lösenord starkare</translation>
 <translation id="2989523299700148168">Nyligen besökta</translation>
 <translation id="2992473221983447149">Bildbeskrivningar</translation>
 <translation id="2996291259634659425">Skapa lösenfras</translation>
@@ -548,7 +547,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3557336313807607643">Lägg till i kontakter</translation>
 <translation id="3563767357928833671">Innehållet i Urklipp visas</translation>
 <translation id="3566639033325271639">Uppdatera inställningarna</translation>
-<translation id="3568945271227339929">Inga utsatta lösenord</translation>
 <translation id="3575464060651642446">Kontrollerar lösenord på den här enheten …</translation>
 <translation id="3577473026931028326">Något gick fel. Försök igen.</translation>
 <translation id="3577558748185201054">Hantera dina intressen och inställningar</translation>
@@ -1056,7 +1054,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5958275228015807058">Du hittar filerna och sidorna i Nedladdningar</translation>
 <translation id="5958994127112619898">Förenklar sida</translation>
 <translation id="5962718611393537961">Tryck här om du vill komprimera</translation>
-<translation id="5964180026566797835">Det går inte att kontrollera lösenorden</translation>
 <translation id="5964869237734432770">Stoppa bildbeskrivning</translation>
 <translation id="5977976211062815271">På den här enheten</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 sida i läslistan}other{# sidor i läslistan}}</translation>
@@ -1100,6 +1097,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="6150320133806434356">Bokmärket har sparats</translation>
 <translation id="6150706324143004339">Uppdatera Chrome om du vill använda och spara Chrome-data i ditt Google-konto</translation>
 <translation id="6154478581116148741">Aktivera ett skärmlås i inställningarna om du vill exportera lösenord från den här enheten.</translation>
+<translation id="6156323911414505561">Visa bokmärkesfältet</translation>
 <translation id="6162892189396105610">Sidor som du kanske vill besöka läses in i förväg i Chrome.</translation>
 <translation id="6170675927290506430">Öppna aviseringsinställningarna</translation>
 <translation id="6186394685773237175">Inga utsatta lösenord hittades</translation>

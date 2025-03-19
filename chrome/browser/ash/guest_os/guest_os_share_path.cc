@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <variant>
 
 #include "base/barrier_callback.h"
 #include "base/containers/contains.h"
@@ -795,7 +796,7 @@ const base::flat_set<GuestId>& GuestOsSharePath::ListGuests() {
   return guests_;
 }
 
-absl::variant<GuestOsSharePath::PathsToShare, std::string>
+std::variant<GuestOsSharePath::PathsToShare, std::string>
 GuestOsSharePath::ConvertArgsToPathsToShare(
     const guest_os::GuestOsRegistryService::Registration& registration,
     const std::vector<guest_os::LaunchArg>& args,
@@ -807,11 +808,11 @@ GuestOsSharePath::ConvertArgsToPathsToShare(
   // Convert any paths not in the VM.
   out.launch_args.reserve(args.size());
   for (const auto& arg : args) {
-    if (absl::holds_alternative<std::string>(arg)) {
-      out.launch_args.push_back(absl::get<std::string>(arg));
+    if (std::holds_alternative<std::string>(arg)) {
+      out.launch_args.push_back(std::get<std::string>(arg));
       continue;
     }
-    const storage::FileSystemURL& url = absl::get<storage::FileSystemURL>(arg);
+    const storage::FileSystemURL& url = std::get<storage::FileSystemURL>(arg);
     base::FilePath path;
     if (!file_manager::util::ConvertFileSystemURLToPathInsideVM(
             profile_, url, vm_mount, map_crostini_home, &path)) {

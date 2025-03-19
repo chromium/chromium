@@ -25,7 +25,7 @@ public final class DiscountInfo {
     public final Optional<String> discountCode;
     public final long id;
     public final boolean isMerchantWide;
-    public final double expiryTimeSec;
+    public final Optional<Double> expiryTimeSec;
     public final long offerId;
 
     // Constructor
@@ -40,6 +40,7 @@ public final class DiscountInfo {
             @Nullable String discountCode,
             long id,
             boolean isMerchantWide,
+            boolean hasExpiryTime,
             double expiryTimeSec,
             long offerId) {
         this.clusterType = clusterType;
@@ -52,7 +53,7 @@ public final class DiscountInfo {
         this.discountCode = discountCode == null ? Optional.empty() : Optional.of(discountCode);
         this.id = id;
         this.isMerchantWide = isMerchantWide;
-        this.expiryTimeSec = expiryTimeSec;
+        this.expiryTimeSec = !hasExpiryTime ? Optional.empty() : Optional.of(expiryTimeSec);
         this.offerId = offerId;
     }
 }

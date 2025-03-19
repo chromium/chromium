@@ -558,7 +558,7 @@ void WorkerGlobalScope::RunWorkerScript() {
 
 void WorkerGlobalScope::ReceiveMessage(BlinkTransferableMessage message) {
   DCHECK(!IsContextPaused());
-  MessagePortArray* ports =
+  GCedMessagePortArray* ports =
       MessagePort::EntanglePorts(*this, std::move(message.ports));
   WorkerThreadDebugger* debugger =
       WorkerThreadDebugger::From(GetThread()->GetIsolate());

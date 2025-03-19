@@ -100,7 +100,7 @@ class PreinstalledWebAppMigrationBrowserTest
             PreinstalledWebAppManager::
                 BypassOfflineManifestRequirementForTesting()) {
     disable_external_extensions_scope_ =
-        extensions::ExtensionService::DisableExternalUpdatesForTesting();
+        extensions::ExternalProviderManager::DisableExternalUpdatesForTesting();
   }
   ~PreinstalledWebAppMigrationBrowserTest() override = default;
 
@@ -217,7 +217,7 @@ class PreinstalledWebAppMigrationBrowserTest
     external_provider_manager()
         ->set_external_updates_finished_callback_for_test(
             run_loop.QuitWhenIdleClosure());
-    extension_service().CheckForExternalUpdates();
+    external_provider_manager()->CheckForExternalUpdates();
     run_loop.Run();
   }
 

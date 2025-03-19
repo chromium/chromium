@@ -4701,27 +4701,19 @@ bool StyleEngine::UpdateLastSuccessfulPositionFallbacksAndAnchorScrollShift() {
   return invalidated;
 }
 
-void StyleEngine::RevisitActiveStyleSheetsForInspector() {
-  // TODO(crbug.com/337076014): Also revisit other stylesheets such as those in
-  // shadow trees, user sheets, and UA sheets.
-  const RuleFeatureSet& global_features = GetRuleFeatureSet();
-  const ActiveStyleSheetVector& active_style_sheets =
-      GetDocumentStyleSheetCollection().ActiveStyleSheets();
-  for (const ActiveStyleSheet& sheet : active_style_sheets) {
-    // We need to revisit each sheet twice, once with the global rule set and
-    // once with the sheet's associated rule set.
-    // The global rule set contains the rule invalidation data we're currently
-    // using for style invalidations. However, if a stylesheet change occurs,
-    // we may throw out the global rule set data and rebuild it from the
-    // individual sheets' data, so the inspector needs to know about both.
-    StyleSheetContents* contents = sheet.first->Contents();
-    InvalidationSetToSelectorMap::StyleSheetContentsScope contents_scope(
-        contents);
-    RevisitStyleRulesForInspector(global_features, contents->ChildRules());
-    if (contents->HasRuleSet()) {
-      RevisitStyleRulesForInspector(contents->GetRuleSet().Features(),
-                                    contents->ChildRules());
-    }
+void StyleEngine::RevisitStyleSheetForInspector(StyleSheetContents* contents) {
+  // We need to revisit the sheet twice, once with the global rule set and
+  // once with the sheet's associated rule set.
+  // The global rule set contains the rule invalidation data we're currently
+  // using for style invalidations. However, if a stylesheet change occurs,
+  // we may throw out the global rule set data and rebuild it from the
+  // individual sheets' data, so the inspector needs to know about both.
+  InvalidationSetToSelectorMap::StyleSheetContentsScope contents_scope(
+      contents);
+  RevisitStyleRulesForInspector(GetRuleFeatureSet(), contents->ChildRules());
+  if (contents->HasRuleSet()) {
+    RevisitStyleRulesForInspector(contents->GetRuleSet().Features(),
+                                  contents->ChildRules());
   }
 }
 

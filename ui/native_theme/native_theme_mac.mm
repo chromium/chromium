@@ -9,6 +9,7 @@
 #include <MediaAccessibility/MediaAccessibility.h>
 #include <stddef.h>
 
+#include <variant>
 #include <vector>
 
 #include "base/command_line.h"
@@ -156,18 +157,18 @@ void NativeThemeMac::Paint(cc::PaintCanvas* canvas,
     case kScrollbarHorizontalThumb:
     case kScrollbarVerticalThumb:
       PaintMacScrollbarThumb(canvas, part, state, rect,
-                             absl::get<ScrollbarExtraParams>(extra),
+                             std::get<ScrollbarExtraParams>(extra),
                              color_scheme_updated);
       break;
     case kScrollbarHorizontalTrack:
     case kScrollbarVerticalTrack:
       PaintMacScrollBarTrackOrCorner(canvas, part, state,
-                                     absl::get<ScrollbarExtraParams>(extra),
+                                     std::get<ScrollbarExtraParams>(extra),
                                      rect, color_scheme_updated, false);
       break;
     case kScrollbarCorner:
       PaintMacScrollBarTrackOrCorner(canvas, part, state,
-                                     absl::get<ScrollbarExtraParams>(extra),
+                                     std::get<ScrollbarExtraParams>(extra),
                                      rect, color_scheme_updated, true);
       break;
     default:

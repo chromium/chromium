@@ -77,7 +77,8 @@ bool ConvertAIPageContentToProto(blink::mojom::AIPageContentPtr& root_content,
         return std::nullopt;
       });
 
-  return ConvertAIPageContentToProto(main_frame_token, page_content_map,
+  return ConvertAIPageContentToProto(blink::mojom::AIPageContentOptions::New(),
+                                     main_frame_token, page_content_map,
                                      get_render_frame_info, page_content);
 }
 
@@ -120,7 +121,8 @@ TEST(PageContentProtoUtilTest, IframeNodeWithNoData) {
 
   AIPageContentResult page_content;
   EXPECT_FALSE(ConvertAIPageContentToProto(
-      main_frame_token, page_content_map, get_render_frame_info, page_content));
+      blink::mojom::AIPageContentOptions::New(), main_frame_token,
+      page_content_map, get_render_frame_info, page_content));
 }
 
 TEST(PageContentProtoUtilTest, IframeDestroyed) {
@@ -156,7 +158,8 @@ TEST(PageContentProtoUtilTest, IframeDestroyed) {
 
   AIPageContentResult page_content;
   EXPECT_FALSE(ConvertAIPageContentToProto(
-      main_frame_token, page_content_map, get_render_frame_info, page_content));
+      blink::mojom::AIPageContentOptions::New(), main_frame_token,
+      page_content_map, get_render_frame_info, page_content));
   ASSERT_TRUE(query_token.has_value());
   EXPECT_EQ(iframe_token.frame_token, *query_token);
 }
@@ -468,9 +471,9 @@ TEST(PageContentProtoUtilTest, ConvertIframeData) {
   iframe_data->local_frame_data->frame_interaction_info->selection
       ->selected_text = "selected text";
   iframe_data->local_frame_data->frame_interaction_info->selection
-      ->start_node_id = 1;
+      ->start_dom_node_id = 1;
   iframe_data->local_frame_data->frame_interaction_info->selection
-      ->end_node_id = 2;
+      ->end_dom_node_id = 2;
   iframe_data->local_frame_data->frame_interaction_info->selection
       ->start_offset = 3;
   iframe_data->local_frame_data->frame_interaction_info->selection->end_offset =
@@ -499,8 +502,9 @@ TEST(PageContentProtoUtilTest, ConvertIframeData) {
       });
 
   AIPageContentResult page_content;
-  EXPECT_TRUE(ConvertAIPageContentToProto(main_frame_token, page_content_map,
-                                          get_render_frame_info, page_content));
+  EXPECT_TRUE(ConvertAIPageContentToProto(
+      blink::mojom::AIPageContentOptions::New(), main_frame_token,
+      page_content_map, get_render_frame_info, page_content));
   ASSERT_TRUE(query_token.has_value());
   EXPECT_EQ(iframe_token.frame_token, *query_token);
 
@@ -629,8 +633,8 @@ TEST(PageContentProtoUtilTest, ConvertPageInteractionInfo) {
   auto root_content = CreatePageContent();
   root_content->page_interaction_info =
       blink::mojom::AIPageContentPageInteractionInfo::New();
-  root_content->page_interaction_info->focused_node_id = 1;
-  root_content->page_interaction_info->accessibility_focused_node_id = 2;
+  root_content->page_interaction_info->focused_dom_node_id = 1;
+  root_content->page_interaction_info->accessibility_focused_dom_node_id = 2;
   root_content->page_interaction_info->mouse_position = gfx::Point(10, 20);
 
   AIPageContentResult page_content;
@@ -658,8 +662,8 @@ TEST(PageContentProtoUtilTest, ConvertMainFrameInteractionInfo) {
       blink::mojom::AIPageContentSelection::New();
   frame_data->frame_interaction_info->selection->selected_text =
       "selected text";
-  frame_data->frame_interaction_info->selection->start_node_id = 1u;
-  frame_data->frame_interaction_info->selection->end_node_id = 2u;
+  frame_data->frame_interaction_info->selection->start_dom_node_id = 1u;
+  frame_data->frame_interaction_info->selection->end_dom_node_id = 2u;
   frame_data->frame_interaction_info->selection->start_offset = 3u;
   frame_data->frame_interaction_info->selection->end_offset = 4u;
 
@@ -802,29 +806,6 @@ TEST(PageContentProtoUtilTest, ConvertFormControlData) {
   EXPECT_EQ(form_control_data_proto.select_options(0).value(), "option value");
   EXPECT_EQ(form_control_data_proto.select_options(0).text(), "option text");
   EXPECT_TRUE(form_control_data_proto.select_options(0).is_selected());
-}
-
-TEST(PageContentProtoUtilTest, ConvertNodeId) {
-  auto root_content = CreatePageContent();
-  root_content->root_node->content_attributes->content_node_id = 1;
-  root_content->root_node->children_nodes.emplace_back(
-      CreateContentNode(blink::mojom::AIPageContentAttributeType::kContainer));
-  root_content->root_node->children_nodes[0]
-      ->content_attributes->content_node_id = 2;
-
-  AIPageContentResult page_content;
-  EXPECT_TRUE(ConvertAIPageContentToProto(root_content, page_content));
-
-  EXPECT_EQ(page_content.proto.version(),
-            optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
-  ASSERT_EQ(page_content.proto.root_node().children_nodes_size(), 1);
-  EXPECT_EQ(
-      page_content.proto.root_node().content_attributes().content_node_id(), 1);
-  EXPECT_EQ(page_content.proto.root_node()
-                .children_nodes(0)
-                .content_attributes()
-                .content_node_id(),
-            2);
 }
 
 }  // namespace

@@ -1350,14 +1350,6 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Ping Timeout"/>
 </enum>
 
-<enum name="MediaRouterCastFeedbackEvent">
-  <int value="0" label="Dialog opened"/>
-  <int value="1" label="Sending"/>
-  <int value="2" label="Resending"/>
-  <int value="3" label="Feedback sent"/>
-  <int value="4" label="Too many retries"/>
-</enum>
-
 <enum name="MediaRouterCastSinkSource">
   <int value="0" label="NetworkCache"/>
   <int value="1" label="mDNS"/>

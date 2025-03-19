@@ -13,7 +13,6 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace web_package {
 

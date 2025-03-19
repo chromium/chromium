@@ -35,8 +35,8 @@
   [super viewDidLoad];
 
   self.sheetPresentationController.detents = @[
-    UISheetPresentationControllerDetent.mediumDetent,
-    UISheetPresentationControllerDetent.largeDetent,
+    [UISheetPresentationControllerDetent mediumDetent],
+    [UISheetPresentationControllerDetent largeDetent],
   ];
 
   UIColor* primaryColor = [UIColor colorNamed:kTextPrimaryColor];

@@ -126,8 +126,7 @@ class OnDeviceExecution final
   ~OnDeviceExecution() final;
 
   // Begin processing the request.
-  void BeginExecution(OnDeviceContext& context,
-                      const SamplingParams& sampling_params);
+  void BeginExecution(OnDeviceContext& context);
 
   // Cancels the execution.
   void Cancel();

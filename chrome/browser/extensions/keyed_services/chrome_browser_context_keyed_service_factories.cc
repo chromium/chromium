@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/keyed_services/chrome_browser_context_keyed_service_factories.h"
 
 #include "build/build_config.h"
+#include "chrome/browser/extensions/delayed_install_manager_factory.h"
 #include "chrome/browser/extensions/error_console/error_console_factory.h"
 #include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
 #include "chrome/browser/extensions/pending_extension_manager_factory.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/extensions/chrome_app_icon_service_factory.h"
 #include "chrome/browser/extensions/chrome_extension_cookies_factory.h"
 #include "chrome/browser/extensions/chrome_extension_system_factory.h"
+#include "chrome/browser/extensions/corrupted_extension_reinstaller_factory.h"
 #include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/extensions/extension_action_dispatcher.h"
 #include "chrome/browser/extensions/extension_error_controller_factory.h"
@@ -42,6 +44,7 @@
 namespace chrome_extensions {
 
 void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
+  extensions::DelayedInstallManagerFactory::GetInstance();
   extensions::ErrorConsoleFactory::GetInstance();
   extensions::ExtensionWebUIOverrideRegistrar::GetFactoryInstance();
   extensions::PendingExtensionManagerFactory::GetInstance();
@@ -53,6 +56,7 @@ void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::ActivityLog::GetFactoryInstance();
   extensions::ChromeAppIconServiceFactory::GetInstance();
   extensions::ChromeExtensionCookiesFactory::GetInstance();
+  extensions::CorruptedExtensionReinstallerFactory::GetInstance();
   extensions::CWSInfoServiceFactory::GetInstance();
   extensions::ExtensionActionDispatcher::GetFactoryInstance();
   extensions::ExtensionErrorControllerFactory::GetInstance();

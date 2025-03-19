@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <variant>
 
 #include "base/functional/callback.h"
 #include "base/test/mock_callback.h"
@@ -15,7 +16,6 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace autofill::payments {
 
@@ -49,7 +49,7 @@ class PaymentsAccessTokenFetcherTest
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<PaymentsAccessTokenFetcher> token_fetcher_;
   base::MockCallback<base::OnceCallback<void(
-      const absl::variant<GoogleServiceAuthError, std::string>&)>>
+      const std::variant<GoogleServiceAuthError, std::string>&)>>
       callback_;
   bool token_removed_from_cache_ = false;
 };
@@ -63,7 +63,7 @@ TEST_F(PaymentsAccessTokenFetcherTest, AbortIfRequestPending) {
 
   EXPECT_CALL(
       callback_,
-      Run(absl::variant<GoogleServiceAuthError, std::string>(kTestAccessToken)))
+      Run(std::variant<GoogleServiceAuthError, std::string>(kTestAccessToken)))
       .Times(1);
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
@@ -75,7 +75,7 @@ TEST_F(PaymentsAccessTokenFetcherTest, ReusedToken) {
   token_fetcher_->set_access_token_for_testing(kTestAccessToken);
   EXPECT_CALL(
       callback_,
-      Run(absl::variant<GoogleServiceAuthError, std::string>(kTestAccessToken)))
+      Run(std::variant<GoogleServiceAuthError, std::string>(kTestAccessToken)))
       .Times(1);
 
   token_fetcher_->GetAccessToken(/*invalidate_old=*/false, callback_.Get());
@@ -85,7 +85,7 @@ TEST_F(PaymentsAccessTokenFetcherTest, ReusedToken) {
 TEST_F(PaymentsAccessTokenFetcherTest, FetchTokenSucceeded) {
   EXPECT_CALL(
       callback_,
-      Run(absl::variant<GoogleServiceAuthError, std::string>(kTestAccessToken)))
+      Run(std::variant<GoogleServiceAuthError, std::string>(kTestAccessToken)))
       .Times(1);
 
   token_fetcher_->GetAccessToken(/*invalidate_old=*/false, callback_.Get());
@@ -99,7 +99,7 @@ TEST_F(PaymentsAccessTokenFetcherTest, FetchTokenSucceededInvalidateOld) {
   token_fetcher_->set_access_token_for_testing("Some other token");
   EXPECT_CALL(
       callback_,
-      Run(absl::variant<GoogleServiceAuthError, std::string>(kTestAccessToken)))
+      Run(std::variant<GoogleServiceAuthError, std::string>(kTestAccessToken)))
       .Times(1);
 
   token_fetcher_->GetAccessToken(/*invalidate_old=*/true, callback_.Get());
@@ -114,7 +114,7 @@ TEST_F(PaymentsAccessTokenFetcherTest, FetchTokenFailed) {
   GoogleServiceAuthError error =
       GoogleServiceAuthError::FromConnectionError(net::ERR_TIMED_OUT);
   EXPECT_CALL(callback_,
-              Run(absl::variant<GoogleServiceAuthError, std::string>(error)))
+              Run(std::variant<GoogleServiceAuthError, std::string>(error)))
       .Times(1);
 
   token_fetcher_->GetAccessToken(/*invalidate_old=*/false, callback_.Get());

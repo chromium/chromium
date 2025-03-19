@@ -7,6 +7,7 @@
 #include <inttypes.h>
 
 #include <utility>
+#include <variant>
 
 #include "base/functional/overloaded.h"
 #include "base/memory/ptr_util.h"
@@ -46,16 +47,16 @@ FrameIntervalDecider::~FrameIntervalDecider() = default;
 void FrameIntervalDecider::UpdateSettings(
     Settings settings,
     std::vector<std::unique_ptr<FrameIntervalMatcher>> matchers) {
-  absl::visit(base::Overloaded(
-                  [](const absl::monostate& monostate) {},
-                  [](const FixedIntervalSettings& fixed_interval_settings) {
-                    CHECK(!fixed_interval_settings.supported_intervals.empty());
-                  },
-                  [](const ContinuousRangeSettings& continuous_range_settings) {
-                    CHECK_LE(continuous_range_settings.min_interval,
-                             continuous_range_settings.max_interval);
-                  }),
-              settings.interval_settings);
+  std::visit(base::Overloaded(
+                 [](const std::monostate& monostate) {},
+                 [](const FixedIntervalSettings& fixed_interval_settings) {
+                   CHECK(!fixed_interval_settings.supported_intervals.empty());
+                 },
+                 [](const ContinuousRangeSettings& continuous_range_settings) {
+                   CHECK_LE(continuous_range_settings.min_interval,
+                            continuous_range_settings.max_interval);
+                 }),
+             settings.interval_settings);
 
   settings_ = std::move(settings);
   matchers_ = std::move(matchers);
@@ -93,19 +94,19 @@ void FrameIntervalDecider::Decide(
     base::UmaHistogramEnumeration("Viz.FrameIntervalDecider.ResultMatcherType",
                                   matcher_type);
     if (match_result &&
-        absl::holds_alternative<base::TimeDelta>(match_result.value())) {
+        std::holds_alternative<base::TimeDelta>(match_result.value())) {
       base::UmaHistogramCustomTimes(
           "Viz.FrameIntervalDecider.ResultTimeDelta",
-          absl::get<base::TimeDelta>(match_result.value()),
+          std::get<base::TimeDelta>(match_result.value()),
           base::Milliseconds(0), base::Milliseconds(500), 50);
     }
   }
 
   // If nothing matched, use the default.
   if (!match_result) {
-    match_result = absl::visit(
+    match_result = std::visit(
         base::Overloaded(
-            [](const absl::monostate& monostate) -> Result {
+            [](const std::monostate& monostate) -> Result {
               return FrameIntervalClass::kDefault;
             },
             [](const FixedIntervalSettings& fixed_interval_settings) -> Result {
@@ -126,12 +127,11 @@ void FrameIntervalDecider::Decide(
 
   // Same as above but using epsilon comparison for frame interval.
   if (current_result_ && match_result &&
-      absl::holds_alternative<base::TimeDelta>(current_result_.value()) &&
-      absl::holds_alternative<base::TimeDelta>(match_result.value()) &&
+      std::holds_alternative<base::TimeDelta>(current_result_.value()) &&
+      std::holds_alternative<base::TimeDelta>(match_result.value()) &&
       FrameIntervalMatcher::AreAlmostEqual(
-          absl::get<base::TimeDelta>(current_result_.value()),
-          absl::get<base::TimeDelta>(match_result.value()),
-          settings_.epsilon)) {
+          std::get<base::TimeDelta>(current_result_.value()),
+          std::get<base::TimeDelta>(match_result.value()), settings_.epsilon)) {
     current_result_frame_time_ = frame_time;
     return;
   }
@@ -162,23 +162,22 @@ bool FrameIntervalDecider::MayDecreaseFrameInterval(
   if (!from || !to) {
     return true;
   }
-  return absl::visit(
+  return std::visit(
       base::Overloaded(
           [&](FrameIntervalClass from_frame_interval_class) {
-            if (!absl::holds_alternative<FrameIntervalClass>(to.value())) {
+            if (!std::holds_alternative<FrameIntervalClass>(to.value())) {
               return true;
             }
             FrameIntervalClass to_frame_interval_class =
-                absl::get<FrameIntervalClass>(to.value());
+                std::get<FrameIntervalClass>(to.value());
             return static_cast<int>(from_frame_interval_class) >
                    static_cast<int>(to_frame_interval_class);
           },
           [&](base::TimeDelta from_interval) {
-            if (!absl::holds_alternative<base::TimeDelta>(to.value())) {
+            if (!std::holds_alternative<base::TimeDelta>(to.value())) {
               return true;
             }
-            base::TimeDelta to_interval =
-                absl::get<base::TimeDelta>(to.value());
+            base::TimeDelta to_interval = std::get<base::TimeDelta>(to.value());
             return from_interval > to_interval;
           }),
       from.value());

@@ -78,7 +78,7 @@
   // one so the user can edit the profile.
   autofill::PersonalDataManager* personalDataManager =
       autofill::PersonalDataManagerFactory::GetForProfile(
-          self.browser->GetProfile()->GetOriginalProfile());
+          self.profile->GetOriginalProfile());
 
   _mediator = [[AutofillProfileEditMediator alloc]
          initWithDelegate:self
@@ -165,7 +165,7 @@
 
 - (NSString*)userEmail {
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
+      AuthenticationServiceFactory::GetForProfile(self.profile);
   CHECK(authenticationService);
   id<SystemIdentity> identity =
       authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);

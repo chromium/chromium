@@ -315,7 +315,6 @@
 <translation id="1532118530259321453">這個網頁顯示</translation>
 <translation id="1533966801397200693">你登入的是受管理的設定檔。系統管理員可以從遠端變更你的設定檔設定、透過報表分析瀏覽器相關資訊，以及執行其他必要工作。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">翻譯網頁</translation>
-<translation id="1538295100801850685">改善預測內容</translation>
 <translation id="1539840569003678498">回報時間：</translation>
 <translation id="1542105669288201090">商業教育</translation>
 <translation id="1545757265410828525">價格記錄</translation>
@@ -1156,7 +1155,6 @@
 <translation id="3052868890529250114">你通常可以經由安全連線前往網站，但 Chrome 目前無法使用安全連線。攻擊者可能會試圖竊聽或修改你的網路連線。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解這項警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">「<ph name="PRODUCT_NAME" />」降價 <ph name="PRICE_DROP" /></translation>
 <translation id="3061707000357573562">修補服務</translation>
-<translation id="306198082577913404">啟用「改善預測內容」功能</translation>
 <translation id="3062655045399308513">刪除瀏覽資料…</translation>
 <translation id="3063453392496098461">無法安裝 VPN 背景服務。</translation>
 <translation id="306573536155379004">已啟動遊戲。</translation>
@@ -2323,7 +2321,6 @@
 <translation id="5097099694988056070">CPU/RAM 使用量等裝置統計資料</translation>
 <translation id="5097468150760963273">27 x 39 吋</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome 需要使用裝置的<ph name="PERMISSION" /></translation>
 <translation id="510644072453496781">紙板 (封邊)</translation>
 <translation id="5106648964679263509">已填入「<ph name="BNPL_ISSUER_NAME" />」的虛擬卡片資訊</translation>
 <translation id="5108881358339761672">這是不安全的網站</translation>
@@ -4052,7 +4049,6 @@
 <translation id="8134058435519644366">人才招募與人力派遣</translation>
 <translation id="8135546115396015134">左鍵</translation>
 <translation id="8137456439814903304">能源與公用事業</translation>
-<translation id="81474145143203755">如要允許這個網站使用<ph name="PERMISSION" />，請將存取權授予 Chrome</translation>
 <translation id="8148608574971654810">PDF 版本：</translation>
 <translation id="8149426793427495338">您的電腦已進入睡眠模式。</translation>
 <translation id="8150722005171944719">無法讀取位於 <ph name="URL" /> 的檔案。這個檔案可能已遭移除或移動位置，或者檔案權限為禁止存取。</translation>

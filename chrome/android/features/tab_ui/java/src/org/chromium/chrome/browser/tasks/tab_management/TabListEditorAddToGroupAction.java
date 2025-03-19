@@ -172,8 +172,7 @@ public class TabListEditorAddToGroupAction extends TabListEditorAction {
             BottomSheetController controller) {
         TabGroupCreationCallback groupCreationCallback =
                 tabGroupId -> {
-                    int rootId = filter.getRootIdFromTabGroupId(tabGroupId);
-                    mTabGroupCreationDialogManager.showDialog(rootId, filter);
+                    mTabGroupCreationDialogManager.showDialog(tabGroupId, filter);
                 };
 
         mTabGroupListBottomSheetCoordinator =
@@ -188,7 +187,7 @@ public class TabListEditorAddToGroupAction extends TabListEditorAction {
         } else {
             filter.mergeListOfTabsToGroup(tabs, destinationTab, /* notify= */ true);
         }
-        mTabGroupCreationDialogManager.showDialog(destinationTab.getRootId(), filter);
+        mTabGroupCreationDialogManager.showDialog(destinationTab.getTabGroupId(), filter);
     }
 
     private void destroy() {

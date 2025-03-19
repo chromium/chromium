@@ -247,6 +247,12 @@ class AIPageContentAgentTest : public testing::Test {
         << ", expected: " << expected.ToString();
   }
 
+  mojom::blink::AIPageContentPtr GetAIPageContentWithActionableElements() {
+    mojom::blink::AIPageContentOptions options;
+    options.enable_experimental_actionable_data = true;
+    return GetAIPageContent(options);
+  }
+
   mojom::blink::AIPageContentPtr GetAIPageContent(
       std::optional<mojom::blink::AIPageContentOptions> options =
           std::nullopt) {
@@ -304,8 +310,7 @@ TEST_F(AIPageContentAgentTest, Basic) {
   EXPECT_EQ(root.children_nodes.size(), 1u);
 
   const auto& attributes = *root.content_attributes;
-  EXPECT_EQ(attributes.dom_node_ids.size(), 1u);
-  EXPECT_TRUE(attributes.common_ancestor_dom_node_id.has_value());
+  EXPECT_TRUE(attributes.dom_node_id.has_value());
 
   EXPECT_EQ(attributes.attribute_type,
             mojom::blink::AIPageContentAttributeType::kRoot);
@@ -348,9 +353,6 @@ TEST_F(AIPageContentAgentTest, Image) {
 
   const auto& root = *content->root_node;
   EXPECT_EQ(root.children_nodes.size(), 1u);
-
-  const auto& attributes = *root.content_attributes;
-  EXPECT_EQ(attributes.dom_node_ids.size(), 1u);
 
   auto& image_node = *root.children_nodes[0];
   CheckImageNode(image_node, "missing");
@@ -1106,10 +1108,7 @@ TEST_F(AIPageContentAgentTest, FixedPosition) {
   CheckContainerNode(fixed_element);
   EXPECT_TRUE(
       fixed_element.content_attributes->geometry->is_fixed_or_sticky_position);
-  EXPECT_FALSE(fixed_element.content_attributes->node_interaction_info
-                   ->scrolls_overflow_x);
-  EXPECT_FALSE(fixed_element.content_attributes->node_interaction_info
-                   ->scrolls_overflow_y);
+  EXPECT_FALSE(fixed_element.content_attributes->node_interaction_info);
   CheckTextNode(*fixed_element.children_nodes[0],
                 "This element stays in place when the page is scrolled.");
 
@@ -1117,20 +1116,14 @@ TEST_F(AIPageContentAgentTest, FixedPosition) {
   CheckContainerNode(sticky_element);
   EXPECT_TRUE(
       sticky_element.content_attributes->geometry->is_fixed_or_sticky_position);
-  EXPECT_FALSE(sticky_element.content_attributes->node_interaction_info
-                   ->scrolls_overflow_x);
-  EXPECT_FALSE(sticky_element.content_attributes->node_interaction_info
-                   ->scrolls_overflow_y);
+  EXPECT_FALSE(sticky_element.content_attributes->node_interaction_info);
   CheckTextNode(*sticky_element.children_nodes[0],
                 "This element stays in place when the page is scrolled.");
 
   const auto& normal_element = *root.children_nodes[2];
   EXPECT_FALSE(
       normal_element.content_attributes->geometry->is_fixed_or_sticky_position);
-  EXPECT_FALSE(normal_element.content_attributes->node_interaction_info
-                   ->scrolls_overflow_x);
-  EXPECT_FALSE(normal_element.content_attributes->node_interaction_info
-                   ->scrolls_overflow_y);
+  EXPECT_FALSE(normal_element.content_attributes->node_interaction_info);
   CheckTextNode(normal_element,
                 "This element flows naturally with the document.");
 }
@@ -1189,7 +1182,7 @@ TEST_F(AIPageContentAgentTest, ScrollContainer) {
       "     </body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto content = GetAIPageContent();
+  auto content = GetAIPageContentWithActionableElements();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
@@ -1409,8 +1402,7 @@ TEST_F(AIPageContentAgentTest, ContentVisibilityAuto) {
   CheckTextNode(text_node, "far text");
 
   const auto& attributes = *text_node.content_attributes;
-  EXPECT_EQ(attributes.dom_node_ids.size(), 1u);
-  EXPECT_TRUE(attributes.common_ancestor_dom_node_id.has_value());
+  EXPECT_TRUE(attributes.dom_node_id.has_value());
 
   EXPECT_TRUE(attributes.geometry);
   EXPECT_FALSE(attributes.geometry->outer_bounding_box.IsEmpty());
@@ -1955,7 +1947,7 @@ TEST_F(AIPageContentAgentTest, InteractiveElements) {
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto content = GetAIPageContent();
+  auto content = GetAIPageContentWithActionableElements();
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
@@ -2058,57 +2050,6 @@ TEST_F(AIPageContentAgentTest, InteractiveElements) {
                    ->can_resize_horizontal);
 }
 
-TEST_F(AIPageContentAgentTest, ContentNodeIds) {
-  frame_test_helpers::LoadHTMLString(
-      helper_.LocalMainFrame(),
-      "<body>"
-      "  <main>"
-      "    <h1>Heading</h1>"
-      "    text"
-      "  </main>"
-      "  <iframe srcdoc='iframe text'></iframe>"
-      "</body>",
-      url_test_helpers::ToKURL("http://foobar.com"));
-
-  auto content = GetAIPageContent();
-  ASSERT_TRUE(content);
-  ASSERT_TRUE(content->root_node);
-
-  const auto& root = *content->root_node;
-  EXPECT_EQ(root.content_attributes->content_node_id, 0);
-  EXPECT_EQ(root.children_nodes.size(), 2u);
-
-  const auto& main = *root.children_nodes[0];
-  CheckContainerNode(main);
-  EXPECT_EQ(main.content_attributes->content_node_id, 1);
-  EXPECT_EQ(main.children_nodes.size(), 2u);
-
-  auto& heading = *main.children_nodes[0];
-  CheckHeadingNode(heading);
-  EXPECT_EQ(heading.content_attributes->content_node_id, 2);
-  EXPECT_EQ(heading.children_nodes.size(), 1u);
-
-  CheckTextNode(*heading.children_nodes[0], "Heading");
-  EXPECT_EQ(heading.children_nodes[0]->content_attributes->content_node_id, 3);
-
-  CheckTextNode(*main.children_nodes[1], "    text  ");
-  EXPECT_EQ(main.children_nodes[1]->content_attributes->content_node_id, 4);
-
-  const auto& iframe = *root.children_nodes[1];
-  CheckIframeNode(iframe);
-  EXPECT_EQ(iframe.content_attributes->content_node_id, 7);
-  EXPECT_EQ(iframe.children_nodes.size(), 1u);
-
-  const auto& iframe_root = *iframe.children_nodes[0];
-  CheckRootNode(iframe_root);
-  EXPECT_EQ(iframe_root.content_attributes->content_node_id, 5);
-  EXPECT_EQ(iframe_root.children_nodes.size(), 1u);
-
-  CheckTextNode(*iframe_root.children_nodes[0], "iframe text");
-  EXPECT_EQ(iframe_root.children_nodes[0]->content_attributes->content_node_id,
-            6);
-}
-
 TEST_F(AIPageContentAgentTest, Selection) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
@@ -2134,34 +2075,26 @@ TEST_F(AIPageContentAgentTest, Selection) {
   ASSERT_TRUE(content->root_node);
 
   const auto& root = *content->root_node;
-  EXPECT_EQ(root.content_attributes->content_node_id, 0);
   EXPECT_EQ(root.children_nodes.size(), 3u);
 
   const auto& paragraph1 = *root.children_nodes[0];
-  EXPECT_EQ(paragraph1.content_attributes->content_node_id, 1);
   CheckTextNode(*paragraph1.children_nodes[0], "Paragraph 1");
-  EXPECT_EQ(paragraph1.children_nodes[0]->content_attributes->content_node_id,
-            2);
 
   const auto& paragraph2 = *root.children_nodes[1];
-  EXPECT_EQ(paragraph2.content_attributes->content_node_id, 3);
   CheckTextNode(*paragraph2.children_nodes[0], "Paragraph 2");
-  EXPECT_EQ(paragraph2.children_nodes[0]->content_attributes->content_node_id,
-            4);
 
   const auto& paragraph3 = *root.children_nodes[2];
-  EXPECT_EQ(paragraph3.content_attributes->content_node_id, 5);
   CheckTextNode(*paragraph3.children_nodes[0], "Paragraph 3");
-  EXPECT_EQ(paragraph3.children_nodes[0]->content_attributes->content_node_id,
-            6);
 
   const auto& frame_interaction_info =
       content->frame_data->frame_interaction_info;
   ASSERT_TRUE(frame_interaction_info->selection);
   const auto& selection = *frame_interaction_info->selection;
   EXPECT_EQ(selection.selected_text, "1\n\nParagraph");
-  EXPECT_EQ(selection.start_node_id, 2);
-  EXPECT_EQ(selection.end_node_id, 4);
+  EXPECT_EQ(selection.start_dom_node_id,
+            paragraph1.children_nodes[0]->content_attributes->dom_node_id);
+  EXPECT_EQ(selection.end_dom_node_id,
+            paragraph2.children_nodes[0]->content_attributes->dom_node_id);
   EXPECT_EQ(selection.start_offset, 10);
   EXPECT_EQ(selection.end_offset, 9);
 }
@@ -2193,36 +2126,24 @@ TEST_F(AIPageContentAgentTest, SelectionInIframe) {
   ASSERT_TRUE(content->root_node);
 
   const auto& root = *content->root_node;
-  EXPECT_EQ(root.content_attributes->content_node_id, 0);
   EXPECT_EQ(root.children_nodes.size(), 1u);
 
   const auto& iframe = *root.children_nodes[0];
   CheckIframeNode(iframe);
-  EXPECT_EQ(iframe.content_attributes->content_node_id, 8);
   EXPECT_EQ(iframe.children_nodes.size(), 1u);
 
   const auto& iframe_root = *iframe.children_nodes[0];
   CheckRootNode(iframe_root);
-  EXPECT_EQ(iframe_root.content_attributes->content_node_id, 1);
   EXPECT_EQ(iframe_root.children_nodes.size(), 3u);
 
   const auto& paragraph1 = *iframe_root.children_nodes[0];
-  EXPECT_EQ(paragraph1.content_attributes->content_node_id, 2);
   CheckTextNode(*paragraph1.children_nodes[0], "Paragraph 1");
-  EXPECT_EQ(paragraph1.children_nodes[0]->content_attributes->content_node_id,
-            3);
 
   const auto& paragraph2 = *iframe_root.children_nodes[1];
-  EXPECT_EQ(paragraph2.content_attributes->content_node_id, 4);
   CheckTextNode(*paragraph2.children_nodes[0], "Paragraph 2");
-  EXPECT_EQ(paragraph2.children_nodes[0]->content_attributes->content_node_id,
-            5);
 
   const auto& paragraph3 = *iframe_root.children_nodes[2];
-  EXPECT_EQ(paragraph3.content_attributes->content_node_id, 6);
   CheckTextNode(*paragraph3.children_nodes[0], "Paragraph 3");
-  EXPECT_EQ(paragraph3.children_nodes[0]->content_attributes->content_node_id,
-            7);
 
   const auto& frame_interaction_info =
       content->frame_data->frame_interaction_info;
@@ -2234,8 +2155,10 @@ TEST_F(AIPageContentAgentTest, SelectionInIframe) {
   ASSERT_TRUE(iframe_interaction_info->selection);
   const auto& selection = *iframe_interaction_info->selection;
   EXPECT_EQ(selection.selected_text, "1\n\nParagraph");
-  EXPECT_EQ(selection.start_node_id, 3);
-  EXPECT_EQ(selection.end_node_id, 5);
+  EXPECT_EQ(selection.start_dom_node_id,
+            paragraph1.children_nodes[0]->content_attributes->dom_node_id);
+  EXPECT_EQ(selection.end_dom_node_id,
+            paragraph2.children_nodes[0]->content_attributes->dom_node_id);
   EXPECT_EQ(selection.start_offset, 10);
   EXPECT_EQ(selection.end_offset, 9);
 }
@@ -2257,14 +2180,12 @@ TEST_F(AIPageContentAgentTest, Focus) {
   ASSERT_TRUE(content->root_node);
 
   const auto& root = *content->root_node;
-  EXPECT_EQ(root.content_attributes->content_node_id, 0);
   EXPECT_EQ(root.children_nodes.size(), 1u);
 
   const auto& button = *root.children_nodes[0];
-  EXPECT_EQ(button.content_attributes->content_node_id, 1);
-
   const auto& page_interaction_info = content->page_interaction_info;
-  EXPECT_EQ(page_interaction_info->focused_node_id, 1);
+  EXPECT_EQ(page_interaction_info->focused_dom_node_id,
+            button.content_attributes->dom_node_id);
 }
 
 TEST_F(AIPageContentAgentTest, MousePosition) {
@@ -2290,12 +2211,10 @@ TEST_F(AIPageContentAgentTest, MousePosition) {
   ASSERT_TRUE(content->root_node);
 
   const auto& root = *content->root_node;
-  EXPECT_EQ(root.content_attributes->content_node_id, 0);
   EXPECT_EQ(root.children_nodes.size(), 1u);
 
   const auto& text = *root.children_nodes[0];
   CheckTextNode(text, "text");
-  EXPECT_EQ(text.content_attributes->content_node_id, 1);
 
   EXPECT_EQ(content->page_interaction_info->mouse_position->x(), 150);
   EXPECT_EQ(content->page_interaction_info->mouse_position->y(), 50);

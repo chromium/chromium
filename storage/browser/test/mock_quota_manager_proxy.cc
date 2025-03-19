@@ -46,9 +46,8 @@ void MockQuotaManagerProxy::CreateBucketForTesting(
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
   if (mock_quota_manager_) {
-    mock_quota_manager_->CreateBucketForTesting(
-        storage_key, bucket_name, blink::mojom::StorageType::kTemporary,
-        std::move(callback));
+    mock_quota_manager_->CreateBucketForTesting(storage_key, bucket_name,
+                                                std::move(callback));
   }
 }
 
@@ -58,9 +57,8 @@ void MockQuotaManagerProxy::GetBucketByNameUnsafe(
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
   if (mock_quota_manager_) {
-    mock_quota_manager_->GetBucketByNameUnsafe(
-        storage_key, bucket_name, blink::mojom::StorageType::kTemporary,
-        std::move(callback));
+    mock_quota_manager_->GetBucketByNameUnsafe(storage_key, bucket_name,
+                                               std::move(callback));
   }
 }
 
@@ -80,8 +78,7 @@ void MockQuotaManagerProxy::GetBucketsForStorageKey(
     base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback) {
   if (mock_quota_manager_) {
     mock_quota_manager_->GetBucketsForStorageKey(
-        storage_key, blink::mojom::StorageType::kTemporary, std::move(callback),
-        delete_expired);
+        storage_key, std::move(callback), delete_expired);
   } else {
     std::move(callback).Run(std::set<BucketInfo>());
   }
@@ -93,7 +90,6 @@ void MockQuotaManagerProxy::GetUsageAndQuota(
     QuotaManager::UsageAndQuotaCallback callback) {
   if (mock_quota_manager_) {
     mock_quota_manager_->GetUsageAndQuota(storage_key,
-                                          blink::mojom::StorageType::kTemporary,
                                           std::move(callback));
   }
 }
@@ -104,7 +100,6 @@ void MockQuotaManagerProxy::NotifyBucketAccessed(const BucketLocator& bucket,
   ++bucket_accessed_count_;
   last_notified_bucket_id_ = bucket.id;
   last_notified_storage_key_ = bucket.storage_key;
-  last_notified_type_ = bucket.type;
 }
 
 void MockQuotaManagerProxy::NotifyBucketModified(

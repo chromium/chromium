@@ -279,7 +279,7 @@ LockScreenStartReauthDialog::LockScreenStartReauthDialog()
 
   HttpAuthDialog::AddObserver(this);
 
-  enable_ash_httpauth_ = HttpAuthDialog::Enable();
+  enable_system_httpauth_ = HttpAuthDialog::Enable();
 
   g_browser_process->profile_manager()->CreateProfileAsync(
       ProfileHelper::GetLockScreenProfileDir(),

@@ -48,20 +48,6 @@ class SyncFileSystemApiTest : public extensions::ExtensionApiTest {
  public:
   SyncFileSystemApiTest() = default;
 
-  void SetUpInProcessBrowserTestFixture() override {
-    extensions::ExtensionApiTest::SetUpInProcessBrowserTestFixture();
-
-    real_default_quota_ =
-        storage::QuotaManager::kSyncableStorageDefaultStorageKeyQuota;
-    storage::QuotaManager::kSyncableStorageDefaultStorageKeyQuota = 123456;
-  }
-
-  void TearDownInProcessBrowserTestFixture() override {
-    storage::QuotaManager::kSyncableStorageDefaultStorageKeyQuota =
-        real_default_quota_;
-    extensions::ExtensionApiTest::TearDownInProcessBrowserTestFixture();
-  }
-
   void SetUpOnMainThread() override {
     extensions::ExtensionApiTest::SetUpOnMainThread();
 
@@ -89,7 +75,6 @@ class SyncFileSystemApiTest : public extensions::ExtensionApiTest {
  private:
   raw_ptr<::testing::NiceMock<MockRemoteFileSyncService>, DanglingUntriaged>
       mock_remote_service_ = nullptr;
-  int64_t real_default_quota_ = 0;
 };
 
 ACTION_P2(UpdateRemoteChangeQueue, origin, mock_remote_service) {

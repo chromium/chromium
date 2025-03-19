@@ -10,6 +10,7 @@
 #include "media/gpu/svc_layers.h"
 
 #include <array>
+#include <variant>
 
 #include "base/logging.h"
 
@@ -319,13 +320,13 @@ bool SVCLayers::IsKeyFrame() const {
 
 void SVCLayers::GetPictureParamAndMetadata(
     PictureParam& picture_param,
-    absl::variant<Vp9Metadata*, SVCGenericMetadata*> metadata) const {
+    std::variant<Vp9Metadata*, SVCGenericMetadata*> metadata) const {
   picture_param.frame_size =
       config_.active_spatial_layer_resolutions[spatial_idx_];
 
   // |SVCLayers| follows the WebRTC SVC spec. so we don't use
   // |svc_metadata.reference_flags| and |svc_metadata.refresh_flags|.
-  if (auto* svc_metadata = absl::get_if<SVCGenericMetadata*>(&metadata)) {
+  if (auto* svc_metadata = std::get_if<SVCGenericMetadata*>(&metadata)) {
     (*svc_metadata)->follow_svc_spec = true;
   }
 
@@ -342,7 +343,7 @@ void SVCLayers::GetPictureParamAndMetadata(
 }
 
 void SVCLayers::FillMetadataForFirstFrame(
-    absl::variant<Vp9Metadata*, SVCGenericMetadata*> metadata,
+    std::variant<Vp9Metadata*, SVCGenericMetadata*> metadata,
     bool& key_frame,
     uint8_t& refresh_frame_flags,
     std::vector<uint8_t>& reference_frame_indices) const {
@@ -374,12 +375,12 @@ void SVCLayers::FillMetadataForFirstFrame(
     }
   }
 
-  if (auto* svc_metadata = absl::get_if<SVCGenericMetadata*>(&metadata)) {
+  if (auto* svc_metadata = std::get_if<SVCGenericMetadata*>(&metadata)) {
     (*svc_metadata)->temporal_idx = 0;
     (*svc_metadata)->spatial_idx = spatial_idx_;
   } else {
-    CHECK(absl::holds_alternative<Vp9Metadata*>(metadata));
-    auto& vp9_metadata = absl::get<Vp9Metadata*>(metadata);
+    CHECK(std::holds_alternative<Vp9Metadata*>(metadata));
+    auto& vp9_metadata = std::get<Vp9Metadata*>(metadata);
     // Since this is the first frame, there is no reference frame in the same
     // spatial layer.
     vp9_metadata->inter_pic_predicted = false;
@@ -413,7 +414,7 @@ void SVCLayers::FillMetadataForFirstFrame(
 }
 
 void SVCLayers::FillMetadataForNonFirstFrame(
-    absl::variant<Vp9Metadata*, SVCGenericMetadata*> metadata,
+    std::variant<Vp9Metadata*, SVCGenericMetadata*> metadata,
     uint8_t& refresh_frame_flags,
     std::vector<uint8_t>& reference_frame_indices) const {
   CHECK_NE(frame_num_, 0u);
@@ -427,12 +428,12 @@ void SVCLayers::FillMetadataForNonFirstFrame(
 
   reference_frame_indices = frame_config.GetRefFrameIndices(spatial_idx_);
 
-  if (auto* svc_metadata = absl::get_if<SVCGenericMetadata*>(&metadata)) {
+  if (auto* svc_metadata = std::get_if<SVCGenericMetadata*>(&metadata)) {
     (*svc_metadata)->temporal_idx = frame_config.layer_index();
     (*svc_metadata)->spatial_idx = spatial_idx_;
   } else {
-    CHECK(absl::holds_alternative<Vp9Metadata*>(metadata));
-    auto& vp9_metadata = absl::get<Vp9Metadata*>(metadata);
+    CHECK(std::holds_alternative<Vp9Metadata*>(metadata));
+    auto& vp9_metadata = std::get<Vp9Metadata*>(metadata);
     vp9_metadata->inter_pic_predicted = !reference_frame_indices.empty();
     vp9_metadata->temporal_up_switch = frame_config.temporal_up_switch();
 

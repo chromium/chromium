@@ -227,7 +227,8 @@ public class TopToolbarCoordinator implements Toolbar {
                 offlineDownloader,
                 userEducationHelper,
                 mTrackerSupplier,
-                progressBar);
+                progressBar,
+                mReloadButtonCoordinator);
         mToolbarLayout.setThemeColorProvider(normalThemeColorProvider);
         mAppMenuButtonHelperSupplier = appMenuButtonHelperSupplier;
         new OneShotCallback<>(mAppMenuButtonHelperSupplier, this::setAppMenuButtonHelper);

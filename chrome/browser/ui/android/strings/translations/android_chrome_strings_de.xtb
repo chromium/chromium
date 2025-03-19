@@ -432,7 +432,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2981364137500752533">Du kannst bis zu 5 Fenster nutzen.</translation>
 <translation id="2983102365694924129">Basierend auf deinen Aktivitäten auf einer Website. Diese Einstellung ist deaktiviert.</translation>
 <translation id="2984978667043170458">Umgebenden Text in Google-Suchanfragen einschließen</translation>
-<translation id="2988638966064514052">Passwörter sicherer machen</translation>
 <translation id="2989523299700148168">Kürzlich besucht</translation>
 <translation id="2992473221983447149">Bildbeschreibungen</translation>
 <translation id="2996291259634659425">Passphrase erstellen</translation>
@@ -548,7 +547,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3557336313807607643">Zu Kontakten hinzufügen</translation>
 <translation id="3563767357928833671">Inhalte der Zwischenablage werden angezeigt</translation>
 <translation id="3566639033325271639">Einstellungen aktualisieren</translation>
-<translation id="3568945271227339929">Keine kompromittierten Passwörter</translation>
 <translation id="3575464060651642446">Passwörter auf diesem Gerät werden geprüft…</translation>
 <translation id="3577473026931028326">Ein Fehler ist aufgetreten. Versuche es noch einmal.</translation>
 <translation id="3577558748185201054">Verwalte deine Interessen und Einstellungen</translation>
@@ -1055,7 +1053,6 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5958275228015807058">Deine Dateien und Seiten findest du unter "Downloads"</translation>
 <translation id="5958994127112619898">Seite vereinfachen</translation>
 <translation id="5962718611393537961">Zum Minimieren tippen</translation>
-<translation id="5964180026566797835">Passwörter können nicht geprüft werden</translation>
 <translation id="5964869237734432770">Bildbeschreibungen beenden</translation>
 <translation id="5977976211062815271">Auf diesem Gerät</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{1 Seite in deiner Leseliste}other{# Seiten in deiner Leseliste}}</translation>
@@ -1099,6 +1096,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="6150320133806434356">Lesezeichen ist gespeichert</translation>
 <translation id="6150706324143004339">Aktualisiere Chrome, um Chrome-Daten in deinem Google-Konto zu verwenden und zu speichern</translation>
 <translation id="6154478581116148741">Aktiviere die Displaysperre unter „Einstellungen“, um deine Passwörter aus dem Gerät zu exportieren</translation>
+<translation id="6156323911414505561">Lesezeichenleiste anzeigen</translation>
 <translation id="6162892189396105610">In Chrome werden Seiten vorab geladen, die du wahrscheinlich aufrufen wirst.</translation>
 <translation id="6170675927290506430">Zu den Benachrichtigungseinstellungen</translation>
 <translation id="6186394685773237175">Keine kompromittierten Passwörter gefunden</translation>

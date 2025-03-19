@@ -316,7 +316,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1532118530259321453">Esta página dice</translation>
 <translation id="1533966801397200693">El perfil con el que has iniciado sesión es un perfil gestionado. El administrador puede hacer cambios en la configuración de tu perfil de forma remota, analizar información del navegador mediante informes y realizar otras tareas necesarias. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Traducir página</translation>
-<translation id="1538295100801850685">Mejoras de predicción</translation>
 <translation id="1539840569003678498">Informe enviado:</translation>
 <translation id="1542105669288201090">Educación empresarial</translation>
 <translation id="1545757265410828525">Historial de precios</translation>
@@ -1157,7 +1156,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3052868890529250114">Sueles conectarte a sitios de forma segura, pero Chrome no ha podido usar una conexión segura esta vez. Puede que un atacante esté intentando espiar o modificar tu conexión de red. <ph name="BEGIN_LEARN_MORE_LINK" />Más información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Bajada de precio de <ph name="PRICE_DROP" /> en <ph name="PRODUCT_NAME" /></translation>
 <translation id="3061707000357573562">Aplicar parche a servicio</translation>
-<translation id="306198082577913404">Activar predicciones mejoradas</translation>
 <translation id="3062655045399308513">Eliminar datos de navegación...</translation>
 <translation id="3063453392496098461">No se han podido instalar los servicios en segundo plano de VPN.</translation>
 <translation id="306573536155379004">Juego iniciado.</translation>
@@ -2325,7 +2323,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5097099694988056070">Estadísticas del dispositivo, como uso de CPU y RAM</translation>
 <translation id="5097468150760963273">27x39 pulgadas</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome necesita acceder a tu <ph name="PERMISSION" /> de tu dispositivo</translation>
 <translation id="510644072453496781">Cartón (bordes cerrados)</translation>
 <translation id="5106648964679263509">Tarjeta virtual de <ph name="BNPL_ISSUER_NAME" /> rellenada</translation>
 <translation id="5108881358339761672">El sitio no es seguro</translation>
@@ -4054,7 +4051,6 @@ Más información:
 <translation id="8134058435519644366">Contratación y selección de personal</translation>
 <translation id="8135546115396015134">tecla izquierda</translation>
 <translation id="8137456439814903304">Energía y servicios públicos</translation>
-<translation id="81474145143203755">Para usar tu <ph name="PERMISSION" /> en este sitio, da acceso a Chrome</translation>
 <translation id="8148608574971654810">Versión de PDF:</translation>
 <translation id="8149426793427495338">El ordenador se ha suspendido.</translation>
 <translation id="8150722005171944719">El archivo que se encuentra en <ph name="URL" /> no se puede leer. Puede que se haya eliminado o movido o que los permisos del archivo impidan acceder a él.</translation>

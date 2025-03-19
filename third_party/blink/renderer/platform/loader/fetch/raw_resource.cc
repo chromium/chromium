@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
 
 #include <memory>
+#include <variant>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -100,7 +101,7 @@ RawResource::RawResource(const ResourceRequest& resource_request,
     : Resource(resource_request, type, options) {}
 
 void RawResource::AppendData(
-    absl::variant<SegmentedBuffer, base::span<const char>> data) {
+    std::variant<SegmentedBuffer, base::span<const char>> data) {
   if (GetResourceRequest().UseStreamOnResponse())
     return;
 

@@ -51,19 +51,25 @@ void PageActionController::Register(actions::ActionId action_id,
 }
 
 void PageActionController::Show(actions::ActionId action_id) {
-  FindPageActionModel(action_id).SetShowRequested(PassKey(), true);
+  FindPageActionModel(action_id).SetShowRequested(PassKey(),
+                                                  /*requested=*/true);
 }
 
 void PageActionController::Hide(actions::ActionId action_id) {
-  FindPageActionModel(action_id).SetShowRequested(PassKey(), false);
+  FindPageActionModel(action_id).SetShowRequested(PassKey(),
+                                                  /*requested=*/false);
 }
 
-void PageActionController::ShowSuggestionChip(actions::ActionId action_id) {
-  FindPageActionModel(action_id).SetShowSuggestionChip(PassKey(), true);
+void PageActionController::ShowSuggestionChip(actions::ActionId action_id,
+                                              SuggestionChipConfig config) {
+  PageActionModelInterface& model = FindPageActionModel(action_id);
+  model.SetShouldAnimateChip(PassKey(), config.should_animate);
+  model.SetShowSuggestionChip(PassKey(), /*show_suggestion_chip=*/true);
 }
 
 void PageActionController::HideSuggestionChip(actions::ActionId action_id) {
-  FindPageActionModel(action_id).SetShowSuggestionChip(PassKey(), false);
+  FindPageActionModel(action_id).SetShowSuggestionChip(
+      PassKey(), /*show_suggestion_chip=*/false);
 }
 
 void PageActionController::ActionItemChanged(
@@ -73,11 +79,11 @@ void PageActionController::ActionItemChanged(
 }
 
 void PageActionController::OnTabActivated(tabs::TabInterface* tab) {
-  SetModelsTabActive(true);
+  SetModelsTabActive(/*is_active=*/true);
 }
 
 void PageActionController::OnTabWillDeactivate(tabs::TabInterface* tab) {
-  SetModelsTabActive(false);
+  SetModelsTabActive(/*is_active=*/false);
 }
 
 void PageActionController::SetModelsTabActive(bool is_active) {

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_SIGNIN_MOCK_USER_POLICY_OIDC_SIGNIN_SERVICE_H_
 #define CHROME_BROWSER_ENTERPRISE_SIGNIN_MOCK_USER_POLICY_OIDC_SIGNIN_SERVICE_H_
 
+#include <variant>
+
 #include "chrome/browser/enterprise/signin/user_policy_oidc_signin_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -21,7 +23,7 @@ class MockUserPolicyOidcSigninService : public UserPolicyOidcSigninService {
       Profile* profile,
       PrefService* local_state,
       DeviceManagementService* device_management_service,
-      absl::variant<UserCloudPolicyManager*, ProfileCloudPolicyManager*>
+      std::variant<UserCloudPolicyManager*, ProfileCloudPolicyManager*>
           policy_manager,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory);

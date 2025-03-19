@@ -81,6 +81,8 @@ apk_path=assets/locales/zh-CN.pak, compress=False, alignment=4
 apk_path=assets/locales/zh-HK.pak, compress=False, alignment=4
 apk_path=assets/locales/zh-TW.pak, compress=False, alignment=4
 apk_path=assets/locales/zu.pak, compress=False, alignment=4
+apk_path=assets/privacy_sandbox_attestations/manifest.json, compress=False, alignment=4
+apk_path=assets/privacy_sandbox_attestations/privacy-sandbox-attestations.dat, compress=False, alignment=4
 apk_path=assets/resources.pak+com.android.webview+, compress=False, alignment=4
 apk_path=assets/webapk8.dex, compress=True, alignment=0
 apk_path=assets/webapk_dex_version.txt, compress=True, alignment=0

@@ -13,7 +13,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
-import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerCoordinator;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -68,11 +67,7 @@ public class BookmarkActivity extends SnackbarActivity {
         if (TextUtils.isEmpty(url)) url = UrlConstants.BOOKMARKS_URL;
         mBookmarkManagerCoordinator.updateForUrl(url);
         setContentView(mBookmarkManagerCoordinator.getView());
-        BackPressHelper.create(
-                this,
-                getOnBackPressedDispatcher(),
-                mBookmarkManagerCoordinator,
-                SecondaryActivity.BOOKMARK);
+        BackPressHelper.create(this, getOnBackPressedDispatcher(), mBookmarkManagerCoordinator);
     }
 
     @Override

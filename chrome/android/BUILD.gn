@@ -1093,6 +1093,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/supervised_user:junit",
       "//chrome/browser/sync/android:junit",
       "//chrome/browser/tab:junit",
+      "//chrome/browser/tab_group_suggestion:junit",
       "//chrome/browser/tab_group_sync:junit",
       "//chrome/browser/tab_resumption:junit",
       "//chrome/browser/tab_ui/android:junit",
@@ -1631,6 +1632,7 @@ if (current_toolchain == default_toolchain) {
   java_group("chrome_public_non_pak_assets") {
     deps = [
       "//chrome/android/webapk/libs/runtime_library:runtime_library_assets",
+      "//components/privacy_sandbox/privacy_sandbox_attestations/preload:privacy_sandbox_attestations_assets",
     ]
   }
 

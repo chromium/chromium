@@ -23,7 +23,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
@@ -140,12 +140,10 @@ class TabStripViewBinder {
         if (model.get(TabProperties.IS_INCOGNITO)) {
             backgroundTint =
                     AppCompatResources.getColorStateList(
-                            view.getContext(), R.color.default_bg_color_dark_elev_6_baseline);
+                            view.getContext(), R.color.tab_strip_favicon_bg_incognito);
         } else {
             @ColorInt
-            int faviconBgColor =
-                    ChromeColors.getSurfaceColor(
-                            button.getContext(), R.dimen.tab_strip_favicon_background_elevation);
+            int faviconBgColor = SemanticColorUtils.getColorSurfaceContainer(button.getContext());
             backgroundTint = ColorStateList.valueOf(faviconBgColor);
         }
         ViewCompat.setBackgroundTintList(button, backgroundTint);

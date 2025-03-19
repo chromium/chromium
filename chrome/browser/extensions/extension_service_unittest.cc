@@ -690,14 +690,14 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
   // successfully complete installing.
   void WaitForExternalExtensionInstalled(const std::string& id) {
     ExtensionLoadedObserver observer(registry(), id);
-    service()->CheckForExternalUpdates();
+    external_provider_manager()->CheckForExternalUpdates();
     observer.Wait();
   }
 
   // Waits for an installation attempt of the extension with the given id
   // to complete (successfully or not).
   void WaitForInstallationAttemptToComplete(const std::string& id) {
-    service()->CheckForExternalUpdates();
+    external_provider_manager()->CheckForExternalUpdates();
     PendingRemovalObserver observer(PendingExtensionManager::Get(profile()),
                                     id);
     observer.WaitForRemoval();
@@ -775,9 +775,9 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
                                 nonuser_expected_total_count);
     histograms.ExpectTotalCount("Extensions.InstallType.User",
                                 user_expected_total_count);
-    histograms.ExpectTotalCount("Extensions.InstallSource.NonUser",
+    histograms.ExpectTotalCount("Extensions.InstallSource.NonUser2",
                                 nonuser_expected_total_count);
-    histograms.ExpectTotalCount("Extensions.InstallSource.User",
+    histograms.ExpectTotalCount("Extensions.InstallSource.User2",
                                 user_expected_total_count);
   }
 
@@ -4205,7 +4205,7 @@ TEST_F(ExtensionServiceTest, ComponentExtensionAllowlisted) {
   EXPECT_TRUE(registry()->enabled_extensions().GetByID(good0));
 
   // Poke external providers and make sure the extension is still present.
-  service()->CheckForExternalUpdates();
+  external_provider_manager()->CheckForExternalUpdates();
   ASSERT_EQ(1u, registry()->enabled_extensions().size());
   EXPECT_TRUE(registry()->enabled_extensions().GetByID(good0));
 
@@ -4771,7 +4771,7 @@ TEST_F(ExtensionServiceTest, MAYBE_ExternalExtensionAutoAcknowledgement) {
   {
     ExtensionLoadedObserver good_crx_loaded(registry(), good_crx);
     ExtensionLoadedObserver page_action_loaded(registry(), page_action);
-    service()->CheckForExternalUpdates();
+    external_provider_manager()->CheckForExternalUpdates();
     good_crx_loaded.Wait();
     page_action_loaded.Wait();
   }
@@ -6106,7 +6106,7 @@ void ExtensionServiceTest::TestExternalProvider(MockExternalProvider* provider,
   } else {
     // The extension should also be gone from the install directory.
     ASSERT_FALSE(base::PathExists(install_path));
-    service()->CheckForExternalUpdates();
+    external_provider_manager()->CheckForExternalUpdates();
     task_environment()->RunUntilIdle();
     ASSERT_EQ(0u, loaded_extensions().size());
     EXPECT_TRUE(prefs()->IsExternalExtensionUninstalled(good_crx));
@@ -6286,8 +6286,8 @@ TEST_F(ExtensionServiceTest, MultipleExternalUpdateCheck) {
 
   // Start two checks for updates.
   provider->set_visit_count(0);
-  service()->CheckForExternalUpdates();
-  service()->CheckForExternalUpdates();
+  external_provider_manager()->CheckForExternalUpdates();
+  external_provider_manager()->CheckForExternalUpdates();
   task_environment()->RunUntilIdle();
 
   // Two calls should cause two checks for external extensions.
@@ -6304,8 +6304,8 @@ TEST_F(ExtensionServiceTest, MultipleExternalUpdateCheck) {
   provider->set_visit_count(0);
   {
     ExtensionLoadedObserver good_crx_loaded(registry(), good_crx);
-    service()->CheckForExternalUpdates();
-    service()->CheckForExternalUpdates();
+    external_provider_manager()->CheckForExternalUpdates();
+    external_provider_manager()->CheckForExternalUpdates();
     good_crx_loaded.Wait();
   }
   EXPECT_EQ(2, provider->visit_count());
@@ -6321,8 +6321,8 @@ TEST_F(ExtensionServiceTest, MultipleExternalUpdateCheck) {
 
   provider->RemoveExtension(good_crx);
   provider->set_visit_count(0);
-  service()->CheckForExternalUpdates();
-  service()->CheckForExternalUpdates();
+  external_provider_manager()->CheckForExternalUpdates();
+  external_provider_manager()->CheckForExternalUpdates();
   task_environment()->RunUntilIdle();
 
   // Two calls should cause two checks for external extensions.
@@ -7451,7 +7451,7 @@ TEST_F(ExtensionServiceTest, ExternalInstallGlobalError) {
   base::FilePath path = data_dir().AppendASCII("good.crx");
   InstallCRX(path, INSTALL_NEW);
 
-  service()->CheckForExternalUpdates();
+  external_provider_manager()->CheckForExternalUpdates();
   task_environment()->RunUntilIdle();
   EXPECT_FALSE(HasExternalInstallErrors(service()));
 
@@ -7559,7 +7559,7 @@ TEST_F(ExtensionServiceTest, MAYBE_ExternalInstallMultiple) {
     PendingRemovalObserver good_crx_observer(pending, good_crx);
     PendingRemovalObserver theme_crx_observer(pending, theme_crx);
 
-    service()->CheckForExternalUpdates();
+    external_provider_manager()->CheckForExternalUpdates();
 
     page_action_observer.WaitForRemoval();
     good_crx_observer.WaitForRemoval();
@@ -8333,7 +8333,7 @@ TEST_F(ExtensionServiceTest, UserInstalledExtensionThenRequiredByPolicy) {
   // versions?
   provider->UpdateOrAddExtension(good_crx, kVersionStr,
                                  data_dir().AppendASCII("good.crx"));
-  service()->CheckForExternalUpdates();
+  external_provider_manager()->CheckForExternalUpdates();
 
   ExtensionManagement* management =
       ExtensionManagementFactory::GetForBrowserContext(profile());

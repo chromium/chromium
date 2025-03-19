@@ -239,7 +239,7 @@ TEST_F(ResizeShadowAndCursorTest, DefaultCursorOnBubbleWidgetCorners) {
   child_view->SetBounds(200, 200, 10, 10);
   views::Widget::GetWidgetForNativeWindow(window())
       ->GetRootView()
-      ->AddChildView(child_view);
+      ->AddChildViewRaw(child_view);
 
   // Create the bubble widget.
   views::Widget* bubble(views::BubbleDialogDelegateView::CreateBubble(

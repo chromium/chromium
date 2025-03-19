@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">Baggrunden Flow med Jorden</translation>
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" />-baggrund med bogstavet <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Eksklusivt</translation>
-<translation id="3395147534045164351">Toggle snap location</translation>
 <translation id="3404249063913988450">Aktivér Pauseskærm</translation>
 <translation id="3413935475507503304">Klik på Næste for at fortsætte med opdateringen.</translation>
 <translation id="3428551088151258685">udendørs</translation>
@@ -1395,6 +1394,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="7388345524791662148">Flere valgmuligheder for <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Indbygget touchplade</translation>
 <translation id="7397270852490618635">Deaktiver Lyst tema</translation>
+<translation id="7400166052988585408">Din underviser låser din skærm om <ph name="NUM_SECONDS" /> sekunder</translation>
 <translation id="7401543881546089382">Slet genvej</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> er klar til at blive opdateret</translation>
 <translation id="741244894080940828">konvertering</translation>

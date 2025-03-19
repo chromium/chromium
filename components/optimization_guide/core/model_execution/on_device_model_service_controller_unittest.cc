@@ -2349,33 +2349,6 @@ TEST_F(OnDeviceModelServiceControllerTest,
   test_controller_->Init();
 }
 
-TEST_F(OnDeviceModelServiceControllerTest, UsesAdapterTopKAndTemperature) {
-  auto config = SimpleComposeConfig();
-  config.mutable_sampling_params()->set_top_k(4);
-  config.mutable_sampling_params()->set_temperature(1.5);
-  FakeAdaptationAsset compose_asset({.config = config});
-  Initialize({
-      .base_model = &standard_assets_.base_model,
-      .safety = &standard_assets_.safety,
-      .language = &standard_assets_.language,
-      .adaptations = {&compose_asset},
-  });
-
-  auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), SessionConfigParams{});
-  EXPECT_TRUE(session);
-  session->ExecuteModel(PageUrlRequest("foo"),
-                        response_.GetStreamingCallback());
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(response_.value());
-  const std::vector<std::string> partial_responses = ConcatResponses({
-      "Context: execute:foo off:0 max:1024\n",
-      "TopK: 4, Temp: 1.5\n",
-  });
-  EXPECT_EQ(*response_.value(), partial_responses.back());
-  EXPECT_THAT(response_.partials(), ElementsAreArray(partial_responses));
-}
-
 TEST_F(OnDeviceModelServiceControllerTest, UsesSessionTopKAndTemperature) {
   // Session sampling params should have precedence over feature ones.
   auto config = SimpleComposeConfig();
@@ -2389,20 +2362,27 @@ TEST_F(OnDeviceModelServiceControllerTest, UsesSessionTopKAndTemperature) {
       .adaptations = {&compose_asset},
   });
 
+  const SamplingParams expected_sampling_params{
+      .top_k = 3,
+      .temperature = 2,
+  };
+
   auto session = test_controller_->CreateSession(
       kFeature, base::DoNothing(), logger_.GetWeakPtr(),
-      SessionConfigParams{.sampling_params = SamplingParams{
-                              .top_k = 3,
-                              .temperature = 2,
-                          }});
+      SessionConfigParams{.sampling_params = expected_sampling_params});
   EXPECT_TRUE(session);
+
+  const auto session_sampling_params = session->GetSamplingParams();
+  EXPECT_EQ(session_sampling_params.top_k, expected_sampling_params.top_k);
+  EXPECT_EQ(session_sampling_params.temperature,
+            expected_sampling_params.temperature);
+
   session->ExecuteModel(PageUrlRequest("foo"),
                         response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(response_.value());
   const std::vector<std::string> partial_responses = ConcatResponses({
       "Context: execute:foo off:0 max:1024\n",
-      "TopK: 3, Temp: 2\n",
   });
   EXPECT_EQ(*response_.value(), partial_responses.back());
   EXPECT_THAT(response_.partials(), ElementsAreArray(partial_responses));
@@ -3393,7 +3373,7 @@ TEST_F(OnDeviceModelServiceControllerTest, OmitEmptyInputs) {
   EXPECT_EQ(*response_.value(), "");
 }
 
-TEST_F(OnDeviceModelServiceControllerTest, CloneUsesAdapterTopKAndTemperature) {
+TEST_F(OnDeviceModelServiceControllerTest, CloneUsesSessionTopKAndTemperature) {
   auto config = SimpleComposeConfig();
   config.mutable_sampling_params()->set_top_k(4);
   config.mutable_sampling_params()->set_temperature(1.5);
@@ -3405,18 +3385,28 @@ TEST_F(OnDeviceModelServiceControllerTest, CloneUsesAdapterTopKAndTemperature) {
       .adaptations = {&compose_asset},
   });
 
+  const SamplingParams expected_sampling_params{
+      .top_k = 3,
+      .temperature = 2,
+  };
+
   auto session = test_controller_->CreateSession(
-      kFeature, base::DoNothing(), logger_.GetWeakPtr(), SessionConfigParams{});
+      kFeature, base::DoNothing(), logger_.GetWeakPtr(),
+      SessionConfigParams{.sampling_params = expected_sampling_params});
   EXPECT_TRUE(session);
   auto clone = session->Clone();
   EXPECT_TRUE(clone);
+
+  const auto clone_sampling_params = clone->GetSamplingParams();
+  EXPECT_EQ(clone_sampling_params.top_k, expected_sampling_params.top_k);
+  EXPECT_EQ(clone_sampling_params.temperature,
+            expected_sampling_params.temperature);
 
   clone->ExecuteModel(PageUrlRequest("foo"), response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(response_.value());
   const std::vector<std::string> partial_responses = ConcatResponses({
       "Context: execute:foo off:0 max:1024\n",
-      "TopK: 4, Temp: 1.5\n",
   });
   EXPECT_EQ(*response_.value(), partial_responses.back());
   EXPECT_THAT(response_.partials(), ElementsAreArray(partial_responses));

@@ -86,6 +86,8 @@ apk_path=assets/locales/zh-CN.pak, compress=False, alignment=4
 apk_path=assets/locales/zh-HK.pak, compress=False, alignment=4
 apk_path=assets/locales/zh-TW.pak, compress=False, alignment=4
 apk_path=assets/locales/zu.pak, compress=False, alignment=4
+apk_path=assets/privacy_sandbox_attestations/manifest.json, compress=False, alignment=4
+apk_path=assets/privacy_sandbox_attestations/privacy-sandbox-attestations.dat, compress=False, alignment=4
 apk_path=assets/resources.pak, compress=False, alignment=4
 apk_path=assets/snapshot_blob_32.bin, compress=False, alignment=4
 apk_path=assets/snapshot_blob_64.bin, compress=False, alignment=4

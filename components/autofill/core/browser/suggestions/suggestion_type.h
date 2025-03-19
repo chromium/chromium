@@ -144,7 +144,11 @@ enum class SuggestionType {
   // kAutofillAiError = 59, // DEPRECATED
   // kEditAutofillAiData = 60, // DEPRECATED
 
-  kMaxValue = kManageAutofillAi
+  // kPendingStateSignin suggestion is displayed when the user is in the pending
+  // state. On click the user will be directed to sign in.
+  kPendingStateSignin = 65,
+
+  kMaxValue = kPendingStateSignin
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SuggestionType)
 

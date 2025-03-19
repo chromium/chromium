@@ -201,4 +201,29 @@ TEST_F(WebNodeTest, AddEventListener) {
   set_caret(3);
 }
 
+// content-visibility:hidden elements should not be focusable and should not
+// have style/layout run on them when checking focusability.
+// content-visibility:auto elements should be focusable and should have
+// style/layout run on them when checking focusability.
+TEST_F(WebNodeTest, IsFocusableInDisplayLock) {
+  SetInnerHTML(R"HTML(
+    <div style="content-visibility: hidden">
+      <input id=input1>
+    </div>
+    <div style="height: 8000px"></div>
+    <div style="content-visibility: auto">
+      <input id=input2>
+    </div>
+  )HTML");
+  auto* input1 = GetDocument().getElementById(AtomicString("input1"));
+  auto* input2 = GetDocument().getElementById(AtomicString("input2"));
+  WebNode web_input1(input1);
+  WebNode web_input2(input2);
+
+  EXPECT_FALSE(web_input1.IsFocusable());
+  EXPECT_TRUE(web_input2.IsFocusable());
+  EXPECT_FALSE(input1->GetLayoutObject());
+  EXPECT_TRUE(input2->GetLayoutObject());
+}
+
 }  // namespace blink

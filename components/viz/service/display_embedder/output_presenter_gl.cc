@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -170,7 +171,7 @@ void OutputPresenterGL::ScheduleOverlayPlane(
       overlay_plane_candidate.clip_rect.value_or(gfx::Rect()),
       overlay_plane_candidate.rounded_corners,
       overlay_plane_candidate.sorting_context_id,
-      absl::get<gfx::Transform>(overlay_plane_candidate.transform),
+      std::get<gfx::Transform>(overlay_plane_candidate.transform),
       access ? access->GetIOSurface() : gfx::ScopedIOSurface(),
       access ? access->representation()->color_space() : gfx::ColorSpace(),
       overlay_plane_candidate.uv_rect,

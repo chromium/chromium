@@ -432,7 +432,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2981364137500752533">5 tagacha oyna ochish mumkin.</translation>
 <translation id="2983102365694924129">Saytdagi harakatlaringiz asosida. Bu sozlama oʻchiq.</translation>
 <translation id="2984978667043170458">Google qidiruvlariga qamrovli matn kiritish</translation>
-<translation id="2988638966064514052">Parollar mustahkamligini oshiring</translation>
 <translation id="2989523299700148168">Oxirgi ishlatilganlar</translation>
 <translation id="2992473221983447149">Rasm tavsiflari</translation>
 <translation id="2996291259634659425">Kodli ibora yaratish</translation>
@@ -548,7 +547,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="3557336313807607643">Kontaktlarga saqlash</translation>
 <translation id="3563767357928833671">Vaqtincha xotira kontenti chiqarildi</translation>
 <translation id="3566639033325271639">Sozlamalarni yangilash</translation>
-<translation id="3568945271227339929">Hech qaysi parolingiz oshkor etilmagan</translation>
 <translation id="3575464060651642446">Bu qurilmadagi parollar tekshirilmoqda…</translation>
 <translation id="3577473026931028326">Xatolik yuz berdi. Qayta urining.</translation>
 <translation id="3577558748185201054">Qiziqish va sozlamalaringizni boshqaring</translation>
@@ -1055,7 +1053,6 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="5958275228015807058">Fayl va sahiflarni “Yuklanmalar” jildidan topish mumkin</translation>
 <translation id="5958994127112619898">Sahifani soddalashtirish</translation>
 <translation id="5962718611393537961">Bosib yig‘ish</translation>
-<translation id="5964180026566797835">Parollar tekshirilmadi</translation>
 <translation id="5964869237734432770">Rasm tavsiflari yuklanmasin</translation>
 <translation id="5977976211062815271">Shu qurilmada</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{Saqlangan sahifalardagi 1 ta sahifa}other{Saqlangan sahifalardagi # ta sahifa}}</translation>
@@ -1099,6 +1096,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="6150320133806434356">Bukmark saqlandi</translation>
 <translation id="6150706324143004339">Chrome maʼlumotlarini Google hisobida saqlash va ulardan foydalanish uchun Chromeni yangilang</translation>
 <translation id="6154478581116148741">Bu qurilmadan parollaringizni eksport qilish uchun Sozlamalarda ekran qulfi yoniq bo‘lishi kerak.</translation>
+<translation id="6156323911414505561">Xatcho‘plar panelini ko‘rsatish</translation>
 <translation id="6162892189396105610">Chrome sizni kirishni istaydi deb hisoblagan sahifalarni oldindan yuklaydi.</translation>
 <translation id="6170675927290506430">Bildirishnoma sozlamalariga kirish</translation>
 <translation id="6186394685773237175">Oshkor qilingan parollar topilmadi</translation>

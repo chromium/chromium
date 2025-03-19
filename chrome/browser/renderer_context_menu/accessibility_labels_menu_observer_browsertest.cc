@@ -13,14 +13,10 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#else
-#include "content/public/test/scoped_accessibility_mode_override.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -87,14 +83,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLabelsMenuObserverTest,
 
 IN_PROC_BROWSER_TEST_F(AccessibilityLabelsMenuObserverTest,
                        AccessibilityLabelsShowWithScreenReaderEnabled) {
-#if BUILDFLAG(IS_CHROMEOS)
-  // Enable Chromevox.
-  ash::AccessibilityManager::Get()->EnableSpokenFeedback(true);
-#else
   // Spoof a screen reader.
-  content::ScopedAccessibilityModeOverride scoped_accessibility_mode(
-      ui::AXMode::kExtendedProperties);
-#endif  // BUILDFLAG(IS_CHROMEOS)
+  content::BrowserAccessibilityState::GetInstance()->SetScreenReaderAppActive(
+      true);
   menu()->GetPrefs()->SetBoolean(prefs::kAccessibilityImageLabelsEnabled,
                                  false);
   InitMenu();

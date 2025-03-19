@@ -11,6 +11,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -37,7 +38,6 @@
 #include "chromeos/ash/components/dbus/cryptohome/auth_factor.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/recoverable_key_store.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace ash {
 
@@ -49,7 +49,7 @@ namespace {
 // Secrets are stored the same way they are sent to cryptohome (i.e. salted and
 // hashed), but only if secret checking has been enabled via
 // `TestApi::set_enabled_auth_check`.
-// `FakeAuthFactor` is the union/absl::variant of the factor-specific auth
+// `FakeAuthFactor` is the union/std::variant of the factor-specific auth
 // factor structs.
 
 struct PasswordFactor {
@@ -71,11 +71,11 @@ struct SmartCardFactor {
 
 struct KioskFactor {};
 
-using FakeAuthFactor = absl::variant<PasswordFactor,
-                                     PinFactor,
-                                     RecoveryFactor,
-                                     KioskFactor,
-                                     SmartCardFactor>;
+using FakeAuthFactor = std::variant<PasswordFactor,
+                                    PinFactor,
+                                    RecoveryFactor,
+                                    KioskFactor,
+                                    SmartCardFactor>;
 
 // Strings concatenated with the account id to obtain a user's profile
 // directory name. The prefix "u-" below corresponds to
@@ -150,7 +150,7 @@ FakeUserDataAuthClient* g_instance = nullptr;
 
 // `OverloadedFunctor` and `FunctorWithReturnType` are used to implement
 // `Overload`, which constructs a visitor appropriate for use with
-// `absl::visit` from lambdas for each case.
+// `std::visit` from lambdas for each case.
 
 // A functor combining the `operator()` definitions of a list of functors into
 // a single functor with overloaded `operator()`.
@@ -173,7 +173,7 @@ struct FunctorWithReturnType {
   Functor functor;
 };
 
-// `Overload` constructs a visitor appropriate for use with `absl::visit` from
+// `Overload` constructs a visitor appropriate for use with `std::visit` from
 // a number of lambdas for each case. The return type of each provided lambda
 // must be convertible to `ReturnType`, and the `operator()` of the combined
 // visitor will always return `ReturnType`.
@@ -202,7 +202,7 @@ user_data_auth::AuthFactorWithStatus BuildDefaultAuthFactorWithStatus() {
 std::optional<user_data_auth::AuthFactorWithStatus>
 FakeAuthFactorToAuthFactorWithStatus(std::string label,
                                      const FakeAuthFactor& factor) {
-  return absl::visit(
+  return std::visit(
       Overload<std::optional<user_data_auth::AuthFactorWithStatus>>(
           [&](const PasswordFactor& password) {
             user_data_auth::AuthFactorWithStatus result =
@@ -263,7 +263,7 @@ FakeAuthFactorToAuthFactorWithStatus(std::string label,
 
 std::optional<cryptohome::RecoverableKeyStore>
 FakeAuthFactorToRecoverableKeyStore(const FakeAuthFactor& factor) {
-  return absl::visit(
+  return std::visit(
       Overload<std::optional<cryptohome::RecoverableKeyStore>>(
           [&](const PasswordFactor& password) {
             cryptohome::RecoverableKeyStore store;
@@ -325,7 +325,7 @@ std::pair<std::string, FakeAuthFactor> AuthFactorWithInputToFakeAuthFactor(
 
 bool CheckCredentialsViaAuthFactor(const FakeAuthFactor& factor,
                                    const std::string& secret) {
-  return absl::visit(
+  return std::visit(
       Overload<bool>(
           [&](const PasswordFactor& password) {
             return password.password == secret;
@@ -351,7 +351,7 @@ bool ContainsFakeFactor(
   const auto it =
       std::ranges::find_if(factors, [](const auto label_factor_pair) {
         const FakeAuthFactor& fake_factor = label_factor_pair.second;
-        return absl::get_if<FakeFactorType>(&fake_factor) != nullptr;
+        return std::get_if<FakeFactorType>(&fake_factor) != nullptr;
       });
   return it != std::end(factors);
 }
@@ -359,7 +359,7 @@ bool ContainsFakeFactor(
 bool AuthInputMatchesFakeFactorType(
     const ::user_data_auth::AuthInput& auth_input,
     const FakeAuthFactor& fake_factor) {
-  return absl::visit(
+  return std::visit(
       Overload<bool>(
           [&](const PasswordFactor& password) {
             return auth_input.has_password_input();
@@ -499,7 +499,7 @@ void FakeUserDataAuthClient::TestApi::SetPinLocked(
       << "Factor does not exist: " << label;
   FakeAuthFactor& factor = factor_it->second;
 
-  PinFactor* pin_factor = absl::get_if<PinFactor>(&factor);
+  PinFactor* pin_factor = std::get_if<PinFactor>(&factor);
   CHECK(pin_factor) << "Factor is not PIN: " << label;
 
   pin_factor->locked = locked;
@@ -519,7 +519,7 @@ void FakeUserDataAuthClient::TestApi::SetPinType(
       << "Factor does not exist: " << label;
   FakeAuthFactor& factor = factor_it->second;
 
-  PinFactor* pin_factor = absl::get_if<PinFactor>(&factor);
+  PinFactor* pin_factor = std::get_if<PinFactor>(&factor);
   CHECK(pin_factor) << "Factor is not PIN: " << label;
 
   pin_factor->legacy = legacy_pin;
@@ -1388,7 +1388,7 @@ void FakeUserDataAuthClient::AuthenticateAuthFactor(
     // Factor-specific verification logic. Will set the result_error variable
     // variable if a check didn't pass.
     cryptohome::ErrorWrapper result_error = cryptohome::ErrorWrapper::success();
-    absl::visit(
+    std::visit(
         Overload<void>(
             [&](const PasswordFactor& password_factor) {
               const auto& password_input = auth_input.password_input();

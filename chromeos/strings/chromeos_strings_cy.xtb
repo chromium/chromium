@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">Papur wal llif y ddaear</translation>
 <translation id="33736539805963175">Cefndir <ph name="LETTERS_COLOR" /> gyda'r llythyren <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Unigryw</translation>
-<translation id="3395147534045164351">Toglo'r lleoliad snapio</translation>
 <translation id="3404249063913988450">Galluogi'r arbedydd sgrîn</translation>
 <translation id="3413935475507503304">I barhau gyda'r diweddariad, cliciwch Nesaf.</translation>
 <translation id="3428551088151258685">awyr agored</translation>
@@ -1395,6 +1394,7 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="7388345524791662148">Rhagor o ddewisiadau ar gyfer <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Pad cyffwrdd integredig</translation>
 <translation id="7397270852490618635">Diffodd y thema olau</translation>
+<translation id="7400166052988585408">Bydd eich athro yn cloi eich sgrîn mewn <ph name="NUM_SECONDS" /> eiliad</translation>
 <translation id="7401543881546089382">Dileu llwybr byr</translation>
 <translation id="7405493795721832710">Mae <ph name="DEVICE_NAME" /> yn barod i gael ei ddiweddaru</translation>
 <translation id="741244894080940828">trosi</translation>

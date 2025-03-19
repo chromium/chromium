@@ -23,6 +23,7 @@
 #include "content/browser/webid/sd_jwt.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
+#include "content/public/browser/federated_auth_autofill_source.h"
 #include "content/public/browser/federated_identity_api_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_permission_context_delegate.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
@@ -68,7 +69,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     : public DocumentService<blink::mojom::FederatedAuthRequest>,
       public FederatedIdentityPermissionContextDelegate::
           IdpSigninStatusObserver,
-      public IdentityRegistryDelegate {
+      public IdentityRegistryDelegate,
+      public FederatedAuthAutofillSource {
  public:
   static constexpr char kWildcardDomainHint[] = "any";
 
@@ -125,6 +127,12 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   bool OnResolve(GURL idp_config_url,
                  const std::optional<std::string>& account_id,
                  const std::string& token) override;
+
+  // content::FederatedAuthAutofillSource
+  const std::optional<std::vector<IdentityRequestAccountPtr>>
+  GetAutofillSuggestions() const override;
+  void NotifyAutofillSelection(const GURL& idp,
+                               const std::string& account_id) override;
 
   // To be called on the FederatedAuthRequest object corresponding to a
   // popup opened by ShowModalDialog, specifically for the case when
@@ -190,6 +198,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   const std::vector<IdentityRequestAccountPtr>& GetAccounts() const {
     return accounts_;
+  }
+
+  MediationRequirement GetMediationRequirement() const {
+    return mediation_requirement_;
   }
 
   // These values are persisted to logs. Entries should not be renumbered and

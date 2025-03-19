@@ -734,7 +734,6 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest, PolicyCorrupted) {
 IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
                        ManualInstalledExtensionGotCorruptedThenForceInstalled) {
   ExtensionSystem* system = ExtensionSystem::Get(profile());
-  ExtensionService* service = system->extension_service();
 
   ExtensionId kTestExtensionId("dkjgfphccejbobpbljnpjcmhmagkdoia");
   base::FilePath crx_path =
@@ -773,7 +772,7 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
   external_provider_manager()->AddProviderForTesting(
       std::move(external_provider));
 
-  service->CheckForExternalUpdates();
+  external_provider_manager()->CheckForExternalUpdates();
   // Set our mock update client to check that the corrupt bit is set on the
   // data structure it receives.
   ON_CALL(update_service_, StartUpdateCheck)
@@ -1339,7 +1338,7 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierPolicyTest, FailedUpdateRetries) {
   TestExtensionRegistryObserver registry_observer(registry, id_);
   {
     base::AutoReset<bool> disable_scope =
-        ExtensionService::DisableExternalUpdatesForTesting();
+        ExternalProviderManager::DisableExternalUpdatesForTesting();
     verifier->VerifyFailedForTest(id_, ContentVerifyJob::HASH_MISMATCH);
     EXPECT_TRUE(registry_observer.WaitForExtensionUnloaded());
 

@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -147,8 +148,12 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, AIPageContent) {
   const gfx::Size window_bounds(web_contents()->GetSize());
   LoadPage(https_server()->GetURL("/simple.html"));
 
+  EXPECT_EQ(page_content().version(),
+            optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
   EXPECT_EQ(page_content().root_node().children_nodes().size(), 1);
   AssertHasText(page_content().root_node(), "Non empty simple page\n\n");
+  EXPECT_FALSE(
+      page_content().root_node().content_attributes().has_interaction_info());
 
   const auto& root_geometry =
       page_content().root_node().content_attributes().geometry();
@@ -164,6 +169,28 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, AIPageContent) {
             window_bounds.width());
   EXPECT_EQ(root_geometry.visible_bounding_box().height(),
             window_bounds.height());
+}
+
+class PageContentProtoProviderBrowserTestActionableElements
+    : public PageContentProtoProviderBrowserTest {
+ public:
+  PageContentProtoProviderBrowserTestActionableElements()
+      : features_(features::kAnnotatedPageContentWithActionableElements) {}
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestActionableElements,
+                       AIPageContent) {
+  LoadPage(https_server()->GetURL("/simple.html"));
+  EXPECT_EQ(page_content().version(),
+            optimization_guide::proto::
+                ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
+  EXPECT_EQ(page_content().root_node().children_nodes().size(), 1);
+  AssertHasText(page_content().root_node(), "Non empty simple page\n\n");
+  EXPECT_TRUE(
+      page_content().root_node().content_attributes().has_interaction_info());
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,

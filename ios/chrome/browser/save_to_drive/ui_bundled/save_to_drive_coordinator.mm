@@ -71,7 +71,7 @@
                            forProtocol:@protocol(AccountPickerCommands)];
   [dispatcher startDispatchingToTarget:self
                            forProtocol:@protocol(ManageStorageAlertCommands)];
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   drive::DriveService* driveService =
       drive::DriveServiceFactory::GetForProfile(profile);
   ChromeAccountManagerService* accountManagerService =

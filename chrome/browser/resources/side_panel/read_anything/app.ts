@@ -723,9 +723,9 @@ export class AppElement extends AppElementBase {
     // Construct a dom subtree starting with the display root and append it to
     // the container. The display root may be invalid if there are no content
     // nodes and no selection.
-    // This does not use polymer's templating abstraction, which
-    // would create a shadow node element representing each AXNode, because
-    // experimentation found the shadow node creation to be ~8-10x slower than
+    // This does not use Lit's templating abstraction, which would create a
+    // shadow node element representing each AXNode, because experimentation
+    // (with Polymer) found the shadow node creation to be ~8-10x slower than
     // constructing and appending nodes directly to the container element.
     const rootId = chrome.readingMode.rootId;
     if (!rootId) {

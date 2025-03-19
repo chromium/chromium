@@ -166,6 +166,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1505542291183484463">Razpostavljeno okno za spreminjanje velikosti okna navzdol</translation>
 <translation id="1510238584712386396">Zaganjalnik</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Prikaz nastavitev obvestil. Obvestila so izklopljena za eno aplikacijo.}one{Prikaz nastavitev obvestil. Obvestila so izklopljena za # aplikacijo.}two{Prikaz nastavitev obvestil. Obvestila so izklopljena za # aplikaciji.}few{Prikaz nastavitev obvestil. Obvestila so izklopljena za # aplikacije.}other{Prikaz nastavitev obvestil. Obvestila so izklopljena za # aplikacij.}}</translation>
+<translation id="1521655867290435174">Google Preglednice</translation>
 <translation id="1523032696246003"><ph name="BATTERY_PERCENTAGE" /> % baterije | <ph name="TIME" /> do napolnjenosti</translation>
 <translation id="1525508553941733066">OPUSTI</translation>
 <translation id="1526448108126799339">Odpiranje novega zavihka v novem oknu</translation>
@@ -345,7 +346,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2201071101391734388">Nedavna fotografija <ph name="INDEX" /> od <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Strnitev Google Opravil</translation>
 <translation id="2208323208084708176">Način enotnega namizja</translation>
-<translation id="2220572644011485463">Koda PIN ali geslo</translation>
 <translation id="2222841058024245321">Namizje 7</translation>
 <translation id="2223384056430485343">Na razdeljenem zaslonu</translation>
 <translation id="2224075387478458881">Snemanje zaslona ni dovoljeno, ko je vidna zaščitena vsebina.</translation>
@@ -1829,7 +1829,6 @@ Nova namestitev</translation>
 <translation id="7000027735917578303">Nastavitve za okna in namizja</translation>
 <translation id="7004910047186208204">Povezava z mobilnim podatkovnim omrežjem</translation>
 <translation id="7005239792648594238">Če želite začeti, odprite aplikacijo</translation>
-<translation id="7007983414944123363">Vaše kode PIN ali gesla ni bilo mogoče preveriti. Poskusite znova.</translation>
 <translation id="7014684956566476813">Vzpostavljena je povezava z napravo <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Vrnite se ob <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Namizje 6</translation>
@@ -1943,6 +1942,7 @@ Nova namestitev</translation>
 <translation id="742594950370306541">Kamera je v uporabi.</translation>
 <translation id="742608627846767349">Dobro jutro,</translation>
 <translation id="743058460480092004">Kamera in mikrofon sta v uporabi.</translation>
+<translation id="7440404390546433462">Iskanje Google</translation>
 <translation id="7441711280402516925">Predvajanje · Preklop na zavihek</translation>
 <translation id="7453330308669753048">Rezultat iz zgodovine iskanja je odstranjen.</translation>
 <translation id="7459485586006128091">Zaradi notranje napake je bila dostopna točka izklopljena. Poskusite se znova povezati čez nekaj minut.</translation>
@@ -2466,6 +2466,7 @@ Nova namestitev</translation>
 <translation id="9168436347345867845">Pozneje</translation>
 <translation id="9178475906033259337">Prikaz 1 rezultata za poizvedbo <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">S to funkcijo lahko hitro dostopate do poljubnega prijavljenega uporabnika, ne da bi vam bilo treba vnesti geslo. Uporabljajte to funkcijo samo z računi, ki jim zaupate.</translation>
+<translation id="9183302530794969518">Google Dokumenti</translation>
 <translation id="9183456764293710005">Celozaslonska lupa</translation>
 <translation id="9192133205265227850">Uporabi »<ph name="DEVICE_NAME" />«</translation>
 <translation id="9193626018745640770">Predvajanje v neznanem sprejemniku</translation>

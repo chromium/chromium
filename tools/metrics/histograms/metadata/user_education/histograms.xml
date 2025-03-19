@@ -80,6 +80,8 @@ chromium-metrics-reviews@google.com.
   <variant name="HelpMeWrite" summary="the module for Help Me Write"/>
   <variant name="HistoryEmbeddings"
       summary="the module for History Embeddings Search"/>
+  <variant name="iOSLensSWYS"
+      summary="the module for iOS Lens Search What You See"/>
   <variant name="LensOverlayTranslateButton"
       summary="the module for Lens Overlay Full Page Translate"/>
   <variant name="Mobilepasswords"

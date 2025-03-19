@@ -22,9 +22,6 @@ inline constexpr char kChromeAppId[] = "mgndgikekgjfcpckkfioiadnlibdjbkf";
 // in desks_templates_app_launch_handler.cc.
 inline constexpr char kLacrosAppId[] = "jaimifaeiicidiikhmjedcgdimealfbh";
 
-// The PackageId identifier `lacros-chrome`.
-inline constexpr char kLacrosChrome[] = "lacros-chrome";
-
 }  // namespace app_constants
 
 #endif  // COMPONENTS_APP_CONSTANTS_CONSTANTS_H_

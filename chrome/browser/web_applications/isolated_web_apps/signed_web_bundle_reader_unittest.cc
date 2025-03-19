@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/auto_reset.h"
@@ -43,7 +44,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace web_app {
 
@@ -113,7 +113,7 @@ class SignedWebBundleReaderWithRealBundlesTest : public testing::Test {
       EXPECT_THAT(integrity_block.signature_stack().size(), Eq(1ul));
 
       auto* ed25519_signature_info =
-          absl::get_if<web_package::SignedWebBundleSignatureInfoEd25519>(
+          std::get_if<web_package::SignedWebBundleSignatureInfoEd25519>(
               &integrity_block.signature_stack().entries()[0].signature_info());
       EXPECT_TRUE(ed25519_signature_info);
       EXPECT_EQ(ed25519_signature_info->public_key(),

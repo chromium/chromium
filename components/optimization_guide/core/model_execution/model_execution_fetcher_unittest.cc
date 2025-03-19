@@ -9,6 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test.pb.h"
@@ -48,7 +49,8 @@ TestMessage BuildTestMessage(const std::string& test_message_str) {
 proto::ExecuteResponse BuildTestExecuteResponse(const TestMessage& message) {
   proto::ExecuteResponse execute_response;
   proto::Any* any_metadata = execute_response.mutable_response_metadata();
-  any_metadata->set_type_url("type.googleapis.com/" + message.GetTypeName());
+  any_metadata->set_type_url(
+      base::StrCat({"type.googleapis.com/", message.GetTypeName()}));
   message.SerializeToString(any_metadata->mutable_value());
   return execute_response;
 }

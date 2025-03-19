@@ -29,6 +29,7 @@
 
 #include "third_party/blink/renderer/core/layout/shapes/box_shape.h"
 
+#include "base/check.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -102,9 +103,13 @@ LineSegment BoxShape::GetExcludedInterval(LayoutUnit logical_top,
 }
 
 void BoxShape::BuildDisplayPaths(DisplayPaths& paths) const {
-  paths.shape.AddRoundedRect(bounds_);
-  if (ShapeMargin())
-    paths.margin_shape.AddRoundedRect(ShapeMarginBounds());
+  DCHECK(paths.shape.IsEmpty());
+  DCHECK(paths.margin_shape.IsEmpty());
+
+  paths.shape = Path::MakeRoundedRect(bounds_);
+  if (ShapeMargin()) {
+    paths.margin_shape = Path::MakeRoundedRect(ShapeMarginBounds());
+  }
 }
 
 FloatRoundedRect BoxShape::ToLogical(const FloatRoundedRect& rect,

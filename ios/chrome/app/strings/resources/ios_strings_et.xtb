@@ -440,6 +440,7 @@ Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajal
 <translation id="2789552044937754463">{COUNT,plural, =1{Parool salvestati teie Google’i kontole {EMAIL}}other{Paroolid salvestati teie Google’i kontole {EMAIL}}}</translation>
 <translation id="2791174088547598693">Parooli lisamine …</translation>
 <translation id="2797302972324086597">Riigikood</translation>
+<translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} file}other{{COUNT} faili}}</translation>
 <translation id="2816489851009559785">Menüü → Seaded → Vaikebrauser</translation>
 <translation id="2818821771744632548">Teid logiti iPhone'i lähtestamise raames teie kontolt <ph name="USER_NAME" /> välja. Uuesti sisselogimiseks puudutage allpool nuppu „Jätka”.</translation>
 <translation id="2819667972867209401">Kui see on sees, salvestatakse andmed teie Google'i kontole. Kui see on väljas, salvestatakse andmed ainult sellesse seadmesse ja kustutatakse väljalogimisel.</translation>
@@ -504,6 +505,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="310900540163454140">Kas kustutada saidi <ph name="WEBSITE" /> parool?</translation>
 <translation id="3112556859945124369">Märgi …</translation>
 <translation id="3119874402040566234">Teid logitakse välja ja sirvimisandmed kustutatakse</translation>
+<translation id="3124568093781685165">Paroolide jagamine perega</translation>
 <translation id="3130863904455712965">Ajalugu ja muu</translation>
 <translation id="313283613037595347">Looge uus inkognito vaheleht.</translation>
 <translation id="3138611310073113613">Loobu valikust</translation>
@@ -1003,6 +1005,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="5352128922772839949">Faili salvestamine</translation>
 <translation id="5355191726083956201">Täiustatud kaitse on sisse lülitatud</translation>
 <translation id="537853552771686272">Hallake teemasid ja saite, mis teile huvi pakuvad</translation>
+<translation id="5390458669633674385">{count,plural, =1{{count} on suletud}other{{count} on suletud}}</translation>
 <translation id="5394975111793637642">Teile mõeldud tootearvustuste kaardi peitmine</translation>
 <translation id="5395707839134961196">Peida otsingumootori üksikasjad</translation>
 <translation id="5414763847370083940">Saate teavituse, kui hind mis tahes saidil langeb.</translation>
@@ -1132,6 +1135,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5897749768294722429">Külastatud saitidele kiiresti naasmiseks sünkroonige vahelehed ja ajalugu.</translation>
 <translation id="5898848375214731122">Kaal</translation>
 <translation id="5899314093904173337">Läheduses asuvate inimestega jagamiseks paluge neil kaamera või QR-skannerirakendusega skannida see QR-kood</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} uus vaheleht}other{{count} uut vahelehte}}</translation>
 <translation id="5911030830365207728">Google'i tõlge</translation>
 <translation id="5917913282764181683">Allalaaditud failide automaatne kustutamine</translation>
 <translation id="5922999516621365983">Vahelehe kinnitamiseks lohistage see siia.</translation>
@@ -1674,6 +1678,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8131740175452115882">Kinnita</translation>
 <translation id="8132598642024322408">Nüüd on <ph name="PRICE" />, enne oli <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Kasutage igal saidil ja rakenduses kordumatut parooli. Kui keegi saab teada teie korduvalt kasutatud parooli, saab ta seda kasutada ka teie muudele kontodele juurdepääsemiseks. Klõpsake veebisaidi avamiseks ja muutke neid kohe.</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} suletud vaheleht}other{{count} suletud vahelehte}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 veel}other{# veel}}</translation>
 <translation id="8150167929304790980">Täisnimi</translation>
 <translation id="8152331954420209374">Ava Lens</translation>

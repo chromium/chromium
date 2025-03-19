@@ -5,6 +5,7 @@
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 
 #include <memory>
+#include <variant>
 
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -174,7 +175,8 @@ bool StatusUpdateIsPossibleAfterFailure(PrefetchStatus status) {
   switch (status) {
     case PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved:
     case PrefetchStatus::kPrefetchIsStale:
-    case PrefetchStatus::kPrefetchEvictedForNewerPrefetch: {
+    case PrefetchStatus::kPrefetchEvictedForNewerPrefetch:
+    case PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved: {
       CHECK(TriggeringOutcomeFromStatus(status) ==
             PreloadingTriggeringOutcome::kFailure);
       return true;
@@ -208,7 +210,6 @@ bool StatusUpdateIsPossibleAfterFailure(PrefetchStatus status) {
     case PrefetchStatus::kPrefetchHeldback:
     case PrefetchStatus::kPrefetchNotStarted:
     case PrefetchStatus::kPrefetchIneligiblePrefetchProxyNotAvailable:
-    case PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved:
       return false;
   }
 }
@@ -1843,12 +1844,12 @@ std::ostream& operator<<(std::ostream& ostream,
 std::ostream& operator<<(std::ostream& ostream,
                          const PrefetchContainer::Key& prefetch_key) {
   ostream << "(";
-  if (const auto* token = absl::get_if<std::optional<blink::DocumentToken>>(
+  if (const auto* token = std::get_if<std::optional<blink::DocumentToken>>(
           &prefetch_key.referring_document_token_or_nik_)) {
     token->has_value() ? ostream << token->value()
                        : ostream << "(empty document token)";
   } else {
-    ostream << absl::get<net::NetworkIsolationKey>(
+    ostream << std::get<net::NetworkIsolationKey>(
                    prefetch_key.referring_document_token_or_nik_)
                    .ToDebugString();
   }

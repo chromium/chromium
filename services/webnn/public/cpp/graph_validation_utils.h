@@ -6,6 +6,7 @@
 #define SERVICES_WEBNN_PUBLIC_CPP_GRAPH_VALIDATION_UTILS_H_
 
 #include <optional>
+#include <variant>
 #include <vector>
 
 #include "base/component_export.h"
@@ -14,7 +15,6 @@
 #include "base/types/expected.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace webnn {
 
@@ -407,7 +407,7 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) SplitAttribute {
   //   with equal sizes.
   //  base::span<const uint32_t>: The input tensor will be split into
   //   splits.size() number of outputs with sizes specified in splits.
-  absl::variant<uint32_t, base::span<const uint32_t>> splits;
+  std::variant<uint32_t, base::span<const uint32_t>> splits;
   // Axis specifies which input tensor dimension will be split.
   uint32_t axis = 0;
   // The operator label defined by the user.
@@ -508,8 +508,8 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
     ValidateResample2dAndInferOutput(
         const ContextProperties& context_properties,
         const OperandDescriptor& input,
-        const absl::variant<base::span<const float>,
-                            base::span<const uint32_t>>& scales_or_sizes,
+        const std::variant<base::span<const float>, base::span<const uint32_t>>&
+            scales_or_sizes,
         base::span<const uint32_t> axes,
         std::string_view label);
 

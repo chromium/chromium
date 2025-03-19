@@ -72,6 +72,8 @@ public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterf
 
     private LinearLayout mViewContainer;
     private ButtonCompat mMoreButton;
+    // Determines if we've shown the action button before, and if so we should always show it.
+    private boolean mShouldShowActionButtons;
     private LinearLayout mActionButtons;
     private ScrollView mScrollView;
     private View mBottomFade;
@@ -121,9 +123,10 @@ public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterf
                 .addOnScrollChangedListener(
                         () -> {
                             if (!canScrollVerticallyDown()) {
-                                mMoreButton.setVisibility(View.GONE);
-                                mBottomFade.setVisibility(View.GONE);
+                                setMoreButtonVisibility(View.GONE);
                                 mActionButtons.setVisibility(View.VISIBLE);
+                                // Set the flag to always show the action buttons if we re-render.
+                                mShouldShowActionButtons = true;
                                 mScrollView.post(
                                         () -> {
                                             mScrollView.pageScroll(ScrollView.FOCUS_DOWN);
@@ -133,6 +136,26 @@ public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterf
 
         setOnShowListener(this);
         setCancelable(false);
+    }
+
+    private void updateButtonVisibility() {
+        // Display the action buttons if we've displayed it before or if we cannot scroll vertically
+        // down (we've hit the end of the dialog).
+        if (mShouldShowActionButtons || !canScrollVerticallyDown()) {
+            mShouldShowActionButtons = true;
+            setMoreButtonVisibility(View.GONE);
+            mActionButtons.setVisibility(View.VISIBLE);
+        } else {
+            // Handle the case where we can still scroll down - display the `More` button.
+            setMoreButtonVisibility(View.VISIBLE);
+            mActionButtons.setVisibility(View.GONE);
+        }
+    }
+
+    private void setMoreButtonVisibility(int visibility) {
+        mMoreButton.setVisibility(visibility);
+        // The bottom fade should always match the visibility value for the more button.
+        mBottomFade.setVisibility(visibility);
     }
 
     private void fetchDialogContent(Context context) {
@@ -265,6 +288,7 @@ public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterf
         mPrivacyPolicyView.setVisibility(View.GONE);
         mPrivacyPolicyContent.removeAllViews();
         mViewContainer.setVisibility(View.VISIBLE);
+        updateButtonVisibility();
     }
 
     /**
@@ -274,13 +298,12 @@ public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterf
      * @param unused_view The View that was clicked (typically the TextView containing the link).
      */
     private void onPrivacyPolicyClicked(View unused_view) {
-        // TODO(crbug.com/392943234): Hide the `More` button.
-        // There is a case where the more button will be shown if we have not yet reached the bottom
-        // of the screen. We will also need to re-enable the more button when the back button was
-        // clicked.
         mPrivacyPolicyContent.removeAllViews();
         if (mThinWebView != null && mThinWebView.getView() != null) {
             mViewContainer.setVisibility(View.GONE);
+            // Hide the `more` button which may be shown at the top of the screen if the user has
+            // not reached the button of the previous dialog.
+            setMoreButtonVisibility(View.GONE);
             mPrivacyPolicyContent.addView(mThinWebView.getView());
             mPrivacyPolicyView.setVisibility(View.VISIBLE);
         }
@@ -396,15 +419,7 @@ public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterf
 
     @Override
     public void onShow(DialogInterface dialogInterface) {
-        if (canScrollVerticallyDown()) {
-            mMoreButton.setVisibility(View.VISIBLE);
-            mBottomFade.setVisibility(View.VISIBLE);
-            mActionButtons.setVisibility(View.GONE);
-        } else {
-            mMoreButton.setVisibility(View.GONE);
-            mBottomFade.setVisibility(View.GONE);
-            mActionButtons.setVisibility(View.VISIBLE);
-        }
+        updateButtonVisibility();
     }
 
     @Override

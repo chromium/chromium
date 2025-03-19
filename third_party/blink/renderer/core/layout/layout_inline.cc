@@ -600,7 +600,7 @@ LayoutUnit LayoutInline::OffsetHeight() const {
 static LayoutUnit ComputeMargin(const LayoutInline* layout_object,
                                 const Length& margin) {
   if (margin.IsFixed())
-    return LayoutUnit(margin.Value());
+    return LayoutUnit(margin.Pixels());
   if (margin.IsPercent() || margin.IsCalculated()) {
     return MinimumValueForLength(
         margin,

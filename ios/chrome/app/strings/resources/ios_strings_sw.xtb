@@ -440,6 +440,7 @@ Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo
 <translation id="2789552044937754463">{COUNT,plural, =1{Nenosiri limehifadhiwa kwenye Akaunti yako ya Google, {EMAIL}}other{Manenosiri yamehifadhiwa kwenye Akaunti yako ya Google, {EMAIL}}}</translation>
 <translation id="2791174088547598693">Weka Nenosiri…</translation>
 <translation id="2797302972324086597">Msimbo wa nchi</translation>
+<translation id="2810376924814601526">{COUNT,plural, =1{Faili {COUNT}}other{Faili {COUNT}}}</translation>
 <translation id="2816489851009559785">Menyu → Mipangilio → Kivinjari chaguomsingi</translation>
 <translation id="2818821771744632548">Uliondolewa kwenye akaunti yako, <ph name="USER_NAME" />, ikiwa ni sehemu ya kuweka upya mipangilio ya iPhone yako. Ili uingie tena katika akaunti, bofya "Endelea" hapa chini.</translation>
 <translation id="2819667972867209401">Ukiwasha, data inahifadhiwa kwenye Akaunti yako ya Google. Ukizima, inahifadhi data kwenye kifaa hiki pekee na inafutwa iwapo utaondoka kwenye akaunti.</translation>

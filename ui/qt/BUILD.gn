@@ -99,6 +99,12 @@ template("qt_shim") {
       sources += get_target_outputs(":generate_moc" + invoker.qt_version)
       deps += [ ":generate_moc" + invoker.qt_version ]
     }
+
+    # Don't depend on libcxx modules. This binary doesn't depend on the standard
+    # library in libcxx. Instead it depends on the libcxx in the sysroot, so
+    # using libcxx will just confuse it with duplicate definitions.
+    configs -= [ "//build/config/compiler:libcxx_module", ]
+    use_libcxx_modules = false
   }
 }
 if (use_qt5) {

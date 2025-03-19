@@ -304,7 +304,8 @@ TEST_F(AISummarizerTest,
               const std::optional<optimization_guide::SessionConfigParams>&
                   config_params) {
             // Returns a MockSession for the second call.
-            return std::make_unique<optimization_guide::MockSession>();
+            return std::make_unique<
+                testing::NiceMock<optimization_guide::MockSession>>(&session_);
           }));
 
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,

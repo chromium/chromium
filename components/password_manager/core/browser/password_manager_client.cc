@@ -201,5 +201,7 @@ void PasswordManagerClient::ShowCredentialsInAmbientBubble(
     CredentialsCallback callback) {
   std::move(callback).Run(nullptr);
 }
+void PasswordManagerClient::TriggerSignIn(
+    signin_metrics::AccessPoint access_point) const {}
 
 }  // namespace password_manager

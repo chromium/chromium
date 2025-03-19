@@ -611,6 +611,18 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
                          withCompletion:nil];
 }
 
+- (void)insertShopCard {
+  if (!_shopCardMediator.shopCardItemToShow || ![self isMagicStackOrderReady]) {
+    return;
+  }
+
+  NSArray<MagicStackModule*>* rank = [self latestMagicStackConfigRank];
+  NSUInteger index = [rank indexOfObject:_shopCardMediator.shopCardItemToShow];
+  [self.delegate magicStackRankingModel:self
+                          didInsertItem:_shopCardMediator.shopCardItemToShow
+                                atIndex:index];
+}
+
 // Starts a fetch of the Segmentation module ranking.
 - (void)fetchMagicStackModuleRankingFromSegmentationPlatform {
   if (!base::FeatureList::IsEnabled(segmentation_platform::features::

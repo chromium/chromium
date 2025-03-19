@@ -8,6 +8,7 @@ import static org.chromium.android_webview.test.AwActivityTestRule.SCALED_WAIT_T
 
 import android.util.Pair;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebViewClient;
 
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
@@ -26,6 +27,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AsyncShouldInterceptRequestCallback;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsClient;
+import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
 import org.chromium.android_webview.AwCookieManager;
 import org.chromium.android_webview.WebResponseCallback;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedErrorHelper;
@@ -53,6 +55,7 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Tests for the WebViewClient.shouldInterceptRequest() method. */
 @RunWith(Parameterized.class)
@@ -2026,5 +2029,58 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
         Assert.assertEquals(
                 Arrays.asList(mainPageUrl, workerJs, importScriptJs),
                 mShouldInterceptRequestHelper.getUrls());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewShortCircuitShouldInterceptRequest"})
+    public void testShortCircuitShouldInterceptRequest() throws Throwable {
+        final String aboutPageUrl = addAboutPageToTestServer(mWebServer);
+
+        // This test currently relies on the fact that the WebViewClient handed to
+        // AwContents#onWebViewClientUpdated can be different from the one that's actually
+        // used (even though it shouldn't be in practice). All onWebViewClientUpdated does it checks
+        // whether the we can short circuit.
+
+        // Doing this more "properly" would be a pain because we need to overload
+        // WebViewClient#shouldInterceptRequest in the test to make sure that it isn't actually
+        // called, so we'd need to add some other back door to get things working.
+
+        // This seems good enough for a test.
+        mAwContents.onWebViewClientUpdated(new WebViewClient());
+
+        int onPageFinishedCallCount = mContentsClient.getOnPageFinishedHelper().getCallCount();
+        int shouldInterceptRequestCallCount = mShouldInterceptRequestHelper.getCallCount();
+        mActivityTestRule.loadUrlAsync(mAwContents, aboutPageUrl);
+        mContentsClient.getOnPageFinishedHelper().waitForCallback(onPageFinishedCallCount);
+
+        Assert.assertEquals(
+                shouldInterceptRequestCallCount, mShouldInterceptRequestHelper.getCallCount());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewShortCircuitShouldInterceptRequest"})
+    public void testShortCircuitShouldInterceptRequest_withAsyncCallback() throws Throwable {
+        final String aboutPageUrl = addAboutPageToTestServer(mWebServer);
+
+        mAwContents.onWebViewClientUpdated(new WebViewClient());
+        AtomicBoolean wasAsyncCallbackCalled = new AtomicBoolean();
+        mAwContents.setAsyncShouldInterceptRequestCallback(
+                (request, callback) -> {
+                    wasAsyncCallbackCalled.set(true);
+                    callback.intercept(null);
+                });
+
+        int onPageFinishedCallCount = mContentsClient.getOnPageFinishedHelper().getCallCount();
+        int shouldInterceptRequestCallCount = mShouldInterceptRequestHelper.getCallCount();
+        mActivityTestRule.loadUrlAsync(mAwContents, aboutPageUrl);
+        mContentsClient.getOnPageFinishedHelper().waitForCallback(onPageFinishedCallCount);
+
+        Assert.assertEquals(
+                shouldInterceptRequestCallCount, mShouldInterceptRequestHelper.getCallCount());
+        Assert.assertTrue(wasAsyncCallbackCalled.get());
     }
 }

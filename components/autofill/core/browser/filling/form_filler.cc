@@ -7,6 +7,7 @@
 #include <array>
 #include <optional>
 #include <utility>
+#include <variant>
 
 #include "base/check_deref.h"
 #include "base/check_op.h"
@@ -76,7 +77,7 @@ bool FillingProductSupportsRefills(FillingProduct filling_product) {
 
 FillingProduct GetFillingProductFromFillingPayload(
     const FillingPayload& filling_payload) {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [](const AutofillProfile*) { return FillingProduct::kAddress; },
           [](const CreditCard*) { return FillingProduct::kCreditCard; },
@@ -348,13 +349,13 @@ FormFiller::RefillContext::RefillContext(const AutofillField& field,
       filled_field_signature(field.GetFieldSignature()),
       filled_origin(field.origin()),
       original_fill_time(base::TimeTicks::Now()) {
-  profile_or_credit_card = absl::visit(
+  profile_or_credit_card = std::visit(
       base::Overloaded{
           // Autofill with AI doesn't support refills.
           [](const EntityInstance*)
-              -> absl::variant<CreditCard, AutofillProfile> { NOTREACHED(); },
+              -> std::variant<CreditCard, AutofillProfile> { NOTREACHED(); },
           [](const auto* x) {
-            return absl::variant<CreditCard, AutofillProfile>(*x);
+            return std::variant<CreditCard, AutofillProfile>(*x);
           }},
       filling_payload);
 }
@@ -862,7 +863,7 @@ void FormFiller::TriggerRefill(const FormData& form,
   }
 
   autofill_metrics::LogRefillTriggerReason(refill_trigger_reason);
-  absl::visit(
+  std::visit(
       [&](const auto& profile_or_credit_card) {
         FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
                           &profile_or_credit_card, *form_structure,
@@ -951,7 +952,7 @@ FormFiller::FieldFillingData FormFiller::GetFieldFillingData(
     return {it->second, autofill_field.Type().GetStorableType(),
             /*value_is_an_override=*/true};
   }
-  const auto& [value_to_fill, filling_type] = absl::visit(
+  const auto& [value_to_fill, filling_type] = std::visit(
       base::Overloaded{
           [&](const AutofillProfile* profile)
               -> std::pair<std::u16string, std::optional<FieldType>> {
@@ -1022,7 +1023,7 @@ bool FormFiller::FillField(
     autofill_field.set_filling_product(filling_product);
     if (filling_product == FillingProduct::kAddress) {
       autofill_field.set_autofill_source_profile_guid(
-          absl::get<const AutofillProfile*>(filling_payload)->guid());
+          std::get<const AutofillProfile*>(filling_payload)->guid());
     }
     autofill_field.set_autofilled_type(filling_content.field_type);
   }

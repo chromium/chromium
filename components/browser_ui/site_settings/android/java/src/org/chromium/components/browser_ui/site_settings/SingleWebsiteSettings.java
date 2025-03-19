@@ -1046,8 +1046,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         TextMessagePreference relatedSitesText = new TextMessagePreference(getContext(), null);
         var rwsInfo = assumeNonNull(mSite).getRwsCookieInfo();
         boolean shouldRelatedSitesPrefBeVisible =
-                getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUiFeatureEnabled()
-                        && getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled()
+                getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled()
                         && rwsInfo != null;
         relatedSitesHeader.setVisible(shouldRelatedSitesPrefBeVisible);
         relatedSitesText.setVisible(shouldRelatedSitesPrefBeVisible);

@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">„Earth“ srauto ekrano fonas</translation>
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> fonas su raide <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Išskirtiniai</translation>
-<translation id="3395147534045164351">Perjungti pritraukimo vietą</translation>
 <translation id="3404249063913988450">Įgalinti ekrano užsklandą</translation>
 <translation id="3413935475507503304">Jei norite tęsti atnaujinimo procesą, spustelėkite „Kitas“.</translation>
 <translation id="3428551088151258685">lauke</translation>
@@ -929,6 +928,7 @@
 <translation id="5286263799730375393">apšvietimo spalva</translation>
 <translation id="5292579816060236070">Saulėtekio ekrano fonas</translation>
 <translation id="5294769550414936029"><ph name="MILESTONE_VERSION" /> versija</translation>
+<translation id="5300172019534884676">perjungti prieigą prie fotoaparato</translation>
 <translation id="5300814202279832142">Perkelti langą į darbalaukį</translation>
 <translation id="5302048478445481009">Kalba</translation>
 <translation id="5303837385540978511">„<ph name="PRODUCT_NAME" />“ išskirtinis ekrano fonas</translation>
@@ -1395,6 +1395,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="7388345524791662148">Daugiau „<ph name="RECORDING_NAME" />“ parinkčių</translation>
 <translation id="7388959671917308825">Įtaisyta jutiklinė dalis</translation>
 <translation id="7397270852490618635">Išjungti šviesiąją temą</translation>
+<translation id="7400166052988585408">Mokytojas užrakins jūsų ekraną po <ph name="NUM_SECONDS" /> sek.</translation>
 <translation id="7401543881546089382">Ištrinti spartųjį klavišą</translation>
 <translation id="7405493795721832710">„<ph name="DEVICE_NAME" />“ paruoštas atnaujinti</translation>
 <translation id="741244894080940828">konversija</translation>

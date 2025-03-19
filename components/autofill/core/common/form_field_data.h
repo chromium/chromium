@@ -12,6 +12,7 @@
 #include <string>
 #include <string_view>
 #include <type_traits>
+#include <variant>
 #include <vector>
 
 #include "base/i18n/rtl.h"
@@ -100,7 +101,7 @@ class Section {
     HtmlFieldMode mode = HtmlFieldMode::kNone;
   };
 
-  using Default = absl::monostate;
+  using Default = std::monostate;
 
   struct FieldIdentifier {
     FieldIdentifier() = default;
@@ -130,8 +131,8 @@ class Section {
   Section(const Section& section);
   ~Section();
 
-  // `absl::variant` does not implement `operator<=>` - therefore the ordering
-  // needs to be specified manually. Once `absl::variant` is `std::variant`,
+  // `std::variant` does not implement `operator<=>` - therefore the ordering
+  // needs to be specified manually. Once `std::variant` is `std::variant`,
   // this return type can become `auto`.
   friend std::strong_ordering operator<=>(const Section& lhs,
                                           const Section& rhs) = default;
@@ -155,7 +156,7 @@ class Section {
   //     attribute,
   //  - `FieldIdentifier` represents a section generated based on the first
   //     field in the section.
-  using SectionValue = absl::variant<Default, Autocomplete, FieldIdentifier>;
+  using SectionValue = std::variant<Default, Autocomplete, FieldIdentifier>;
 
   friend struct mojo::StructTraits<autofill::mojom::SectionDataView,
                                    autofill::Section>;

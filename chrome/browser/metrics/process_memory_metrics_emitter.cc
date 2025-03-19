@@ -267,6 +267,8 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
      ImageSizeMetricRange},
     {"gpu/gl", "CommandBuffer", MetricSize::kLarge, kEffectiveSize,
      EmitTo::kSizeInUkmAndUma, &Memory_Experimental::SetCommandBuffer},
+    {"gpu/shader_cache/graphite_cache", "Gpu.GraphiteShaderCache",
+     MetricSize::kSmall, kEffectiveSize, EmitTo::kSizeInUmaOnly, nullptr},
     {"gpu/gr_shader_cache", "Gpu.GrShaderCache", MetricSize::kSmall,
      kEffectiveSize, EmitTo::kSizeInUmaOnly, nullptr},
     {"gpu/mapped_memory", "GpuMappedMemory", MetricSize::kSmall, kEffectiveSize,
@@ -1061,6 +1063,12 @@ void EmitProcessUmaAndUkm(const GlobalMemoryDump::ProcessDump& pmd,
       base::StrCat({std::string(kMemoryHistogramPrefix), process_name,
                     ".MappingsCount"}),
       pmd.os_dump().mappings_count);
+  base::UmaHistogramMemoryMB(
+      base::StrCat({kMemoryHistogramPrefix, process_name, ".Pss"}),
+      pmd.os_dump().pss_kb / kKiB);
+  base::UmaHistogramMemoryMB(
+      base::StrCat({kMemoryHistogramPrefix, process_name, ".SwapPss"}),
+      pmd.os_dump().swap_pss_kb / kKiB);
 #endif
 
   if (record_uma) {

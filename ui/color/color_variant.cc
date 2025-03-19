@@ -6,9 +6,9 @@
 
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/check.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -25,14 +25,14 @@ ColorVariant::ColorVariant(ColorId color_id) : color_variant_(color_id) {}
 ColorVariant::~ColorVariant() = default;
 
 std::optional<ColorId> ColorVariant::GetColorId() const {
-  return absl::holds_alternative<ColorId>(color_variant_)
-             ? std::make_optional(absl::get<ColorId>(color_variant_))
+  return std::holds_alternative<ColorId>(color_variant_)
+             ? std::make_optional(std::get<ColorId>(color_variant_))
              : std::nullopt;
 }
 
 std::optional<SkColor> ColorVariant::GetSkColor() const {
-  return absl::holds_alternative<SkColor>(color_variant_)
-             ? std::make_optional(absl::get<SkColor>(color_variant_))
+  return std::holds_alternative<SkColor>(color_variant_)
+             ? std::make_optional(std::get<SkColor>(color_variant_))
              : std::nullopt;
 }
 

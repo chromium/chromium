@@ -117,12 +117,16 @@ void PageInfoSecurityContentView::SetIdentityInfo(
 
     // Add the Certificate Section.
     const ui::ImageModel icon =
-        valid_identity
-            ? PageInfoViewFactory::GetImageModel(vector_icons::kCertificateIcon)
-            : PageInfoViewFactory::GetImageModel(
-                  vector_icons::kCertificateOffIcon);
-    const int title_id = valid_identity ? IDS_PAGE_INFO_CERTIFICATE_IS_VALID
-                                        : IDS_PAGE_INFO_CERTIFICATE_DETAILS;
+        base::FeatureList::IsEnabled(net::features::kVerifyQWACs)
+            ? PageInfoViewFactory::GetImageModel(vector_icons::kStickyNote2Icon)
+            : (valid_identity ? PageInfoViewFactory::GetImageModel(
+                                    vector_icons::kCertificateIcon)
+                              : PageInfoViewFactory::GetImageModel(
+                                    vector_icons::kCertificateOffIcon));
+    const int title_id = (valid_identity && !base::FeatureList::IsEnabled(
+                                                net::features::kVerifyQWACs))
+                             ? IDS_PAGE_INFO_CERTIFICATE_IS_VALID
+                             : IDS_PAGE_INFO_CERTIFICATE_DETAILS;
 
     std::u16string subtitle_text;
     // Only show the EV certificate details if there are no errors or mixed

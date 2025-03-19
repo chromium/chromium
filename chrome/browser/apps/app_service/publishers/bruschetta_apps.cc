@@ -6,6 +6,7 @@
 
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "ash/public/cpp/app_menu_constants.h"
@@ -118,13 +119,13 @@ void LaunchApplication(
   auto paths_or_error = share_path->ConvertArgsToPathsToShare(
       registration, args, bruschetta::BruschettaChromeOSBaseDirectory(),
       /*map_crostini_home=*/false);
-  if (absl::holds_alternative<std::string>(paths_or_error)) {
+  if (std::holds_alternative<std::string>(paths_or_error)) {
     OnLaunchFailed(app_id, std::move(callback),
-                   absl::get<std::string>(paths_or_error));
+                   std::get<std::string>(paths_or_error));
     return;
   }
   const auto& paths =
-      absl::get<guest_os::GuestOsSharePath::PathsToShare>(paths_or_error);
+      std::get<guest_os::GuestOsSharePath::PathsToShare>(paths_or_error);
   share_path->SharePaths(
       vm_name, vm_info->seneschal_server_handle(),
       std::move(paths.paths_to_share),

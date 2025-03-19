@@ -1605,6 +1605,7 @@ bool IsCreditCardFooterSuggestion(
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kFillAutofillAi:
     case SuggestionType::kBnplEntry:
+    case SuggestionType::kPendingStateSignin:
       return false;
   }
 }

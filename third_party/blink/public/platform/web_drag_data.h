@@ -31,11 +31,11 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_DRAG_DATA_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_DRAG_DATA_H_
 
+#include <variant>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
@@ -93,7 +93,7 @@ class BLINK_PLATFORM_EXPORT WebDragData {
     WebBlobInfo blob_info;
   };
 
-  using Item = absl::
+  using Item = std::
       variant<StringItem, FilenameItem, BinaryDataItem, FileSystemFileItem>;
 
   WebDragData() = default;

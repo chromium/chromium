@@ -183,7 +183,7 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
 
   _reauthModule = password_manager::BuildReauthenticationModule();
 
@@ -869,7 +869,7 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
 // Starts the update GPM Pin flow. This should happen after succesful reauth.
 - (void)updateGPMPinForAccount {
   __weak __typeof(self) weakSelf = self;
-  TrustedVaultClientBackendFactory::GetForProfile(self.browser->GetProfile())
+  TrustedVaultClientBackendFactory::GetForProfile(self.profile)
       ->UpdateGPMPinForAccount(
           _identity, trusted_vault::SecurityDomainId::kPasskeys,
           _settingsNavigationController,

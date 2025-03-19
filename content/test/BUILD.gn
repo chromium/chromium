@@ -112,6 +112,8 @@ static_library("test_support") {
     "../browser/interest_group/additional_bids_test_util.h",
     "../browser/interest_group/ba_test_util.cc",
     "../browser/interest_group/ba_test_util.h",
+    "../browser/interest_group/privacy_sandbox_coordinator_test_util.cc",
+    "../browser/interest_group/privacy_sandbox_coordinator_test_util.h",
     "../browser/interest_group/test_interest_group_observer.cc",
     "../browser/interest_group/test_interest_group_observer.h",
     "../browser/interest_group/test_same_process_auction_process_manager.cc",

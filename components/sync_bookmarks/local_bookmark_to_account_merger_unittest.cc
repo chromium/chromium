@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/test/scoped_feature_list.h"
@@ -22,7 +23,6 @@
 #include "components/sync_bookmarks/switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 namespace sync_bookmarks {
@@ -64,16 +64,16 @@ class UrlBuilder {
 // Test class to build bookmark folders conveniently and compactly in tests.
 class FolderBuilder {
  public:
-  using FolderOrUrl = absl::variant<FolderBuilder, UrlBuilder>;
+  using FolderOrUrl = std::variant<FolderBuilder, UrlBuilder>;
 
   static void AddChildTo(bookmarks::BookmarkModel* model,
                          const bookmarks::BookmarkNode* parent,
                          const FolderOrUrl& folder_or_url) {
-    if (absl::holds_alternative<UrlBuilder>(folder_or_url)) {
-      absl::get<UrlBuilder>(folder_or_url).Build(model, parent);
+    if (std::holds_alternative<UrlBuilder>(folder_or_url)) {
+      std::get<UrlBuilder>(folder_or_url).Build(model, parent);
     } else {
-      CHECK(absl::holds_alternative<FolderBuilder>(folder_or_url));
-      absl::get<FolderBuilder>(folder_or_url).Build(model, parent);
+      CHECK(std::holds_alternative<FolderBuilder>(folder_or_url));
+      std::get<FolderBuilder>(folder_or_url).Build(model, parent);
     }
   }
 

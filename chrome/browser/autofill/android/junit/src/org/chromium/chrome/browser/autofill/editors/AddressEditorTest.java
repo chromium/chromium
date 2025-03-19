@@ -77,6 +77,7 @@ import org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldItem;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.components.autofill.AutofillAddressEditorUiInfo;
 import org.chromium.components.autofill.AutofillAddressUiComponent;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.FieldType;
@@ -260,34 +261,9 @@ public class AddressEditorTest {
 
     private void setUpAddressUiComponents(
             List<AutofillAddressUiComponent> addressUiComponents, String countryCode) {
-        doAnswer(
-                        invocation -> {
-                            List<Integer> componentIds =
-                                    (List<Integer>) invocation.getArguments()[3];
-                            List<String> componentNames =
-                                    (List<String>) invocation.getArguments()[4];
-                            List<Integer> componentRequired =
-                                    (List<Integer>) invocation.getArguments()[5];
-                            List<Integer> componentLength =
-                                    (List<Integer>) invocation.getArguments()[6];
-
-                            for (AutofillAddressUiComponent component : addressUiComponents) {
-                                componentIds.add(component.id);
-                                componentNames.add(component.label);
-                                componentRequired.add(component.isRequired ? 1 : 0);
-                                componentLength.add(component.isFullLine ? 1 : 0);
-                            }
-                            return "EN";
-                        })
-                .when(mAutofillProfileBridgeJni)
-                .getAddressUiComponents(
-                        eq(countryCode),
-                        anyString(),
-                        anyInt(),
-                        anyList(),
-                        anyList(),
-                        anyList(),
-                        anyList());
+        when(mAutofillProfileBridgeJni.getAddressEditorUiInfo(
+                        eq(countryCode), anyString(), anyInt()))
+                .thenReturn(new AutofillAddressEditorUiInfo("EN", addressUiComponents));
     }
 
     private void setUpAddressUiComponents(List<AutofillAddressUiComponent> addressUiComponents) {

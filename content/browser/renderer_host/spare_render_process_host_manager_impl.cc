@@ -37,6 +37,10 @@ BASE_FEATURE(kKillSpareRenderOnMemoryPressure,
              "KillSpareRenderOnMemoryPressure",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+constexpr char kSpareRendererTakenTimeSinceCreation[] =
+    "BrowserRenderProcessHost.SpareRendererTaken.TimeSinceCreation";
+constexpr char kSpareRendererTakenIsReady[] =
+    "BrowserRenderProcessHost.SpareRendererTaken.IsReady";
 constexpr char kSpareRendererDispatchResultUmaName[] =
     "BrowserRenderProcessHost.SpareRendererDispatchResult";
 constexpr char kPreviouslyTakenSourceUmaName[] =
@@ -239,6 +243,7 @@ void LogNoSparePresentUmas(
 }
 
 void LogSpareProcessTakeActionUMAs(
+    RenderProcessHost* host,
     SpareProcessMaybeTakeAction action,
     NoSpareRendererReason no_spare_renderer_reason,
     const ProcessAllocationContext& allocation_context,
@@ -248,6 +253,12 @@ void LogSpareProcessTakeActionUMAs(
   if (action == SpareProcessMaybeTakeAction::kNoSparePresent) {
     LogNoSparePresentUmas(no_spare_renderer_reason, allocation_context,
                           previous_taken_context);
+  } else if (action == SpareProcessMaybeTakeAction::kSpareTaken) {
+    CHECK(host);
+    base::UmaHistogramBoolean(kSpareRendererTakenIsReady, host->IsReady());
+    base::UmaHistogramLongTimes(
+        kSpareRendererTakenTimeSinceCreation,
+        base::TimeTicks::Now() - host->GetLastInitTime());
   }
 }
 
@@ -271,6 +282,8 @@ SpareRenderProcessHostManagerImpl::SpareRenderProcessHostManagerImpl()
           base::BindRepeating(
               &SpareRenderProcessHostManagerImpl::OnMetricsHeartbeatTimerFired,
               base::Unretained(this))) {
+  metrics_heartbeat_timer_.Reset();
+
   // Immediately start the timer if the system is already under memory pressure.
   if (IsCurrentlyUnderMemoryPressure()) {
     check_memory_pressure_timer_.Reset();
@@ -579,8 +592,9 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
   } else {
     action = SpareProcessMaybeTakeAction::kSpareTaken;
   }
-  LogSpareProcessTakeActionUMAs(action, no_spare_renderer_reason_,
-                                allocation_context, previous_taken_context_);
+  LogSpareProcessTakeActionUMAs(next_spare_rph, action,
+                                no_spare_renderer_reason_, allocation_context,
+                                previous_taken_context_);
   if (spare_renderer_maybe_take_timer_) {
     auto maybe_take_time = spare_renderer_maybe_take_timer_->Elapsed();
     base::UmaHistogramLongTimes(

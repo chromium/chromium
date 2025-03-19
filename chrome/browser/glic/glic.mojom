@@ -327,6 +327,9 @@ interface WebClientHandler {
   // when it's created later.
   ResizeWidget(gfx.mojom.Size size, mojo_base.mojom.TimeDelta duration) => ();
 
+  // Allows the panel hosting the WebUI be manually resizable by user-dragging.
+  EnableDragResize(bool enabled);
+
   // Returns the screenshot result or error reason. 'screenshot' is null when an
   // error occurs during capture. This can also fail if the user cancels the
   // screen picker dialog.
@@ -559,6 +562,9 @@ interface WebClient {
 
   // The focused tab has changed.
   NotifyFocusedTabChanged(FocusedTabData focused_tab_data);
+
+  // The user started or stopped manually resizing the window.
+  NotifyManualResizeChanged(bool resizing);
 };
 
 // Information extracted from a tab.

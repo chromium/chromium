@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 #include "base/component_export.h"
@@ -107,7 +108,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
   // `Complete*` methods invoke callbacks that can result in `this` being
   // destroyed, and so should only be called immediately before a return.
   void CompleteRequestWithError(
-      absl::variant<GetAssertionStatus, MakeCredentialStatus> error);
+      std::variant<GetAssertionStatus, MakeCredentialStatus> error);
   void CompleteMakeCredentialRequest(
       MakeCredentialStatus status,
       std::optional<AuthenticatorMakeCredentialResponse> response);

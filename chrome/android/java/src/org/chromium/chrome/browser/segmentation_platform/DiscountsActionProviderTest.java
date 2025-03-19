@@ -80,7 +80,7 @@ public class DiscountsActionProviderTest {
                             discountInfoList.add(
                                     new DiscountInfo(
                                             0, 0, "en-US", "detail", "terms", "value", "code", 123,
-                                            false, 10, 123));
+                                            false, true, 10, 123));
                             DiscountInfoCallback callback = invocation.getArgument(1);
                             callback.onResult(invocation.getArgument(0), discountInfoList);
                             return null;

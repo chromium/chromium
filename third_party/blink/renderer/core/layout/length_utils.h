@@ -227,12 +227,11 @@ inline LayoutUnit ResolveMainBlockLength(
     const Length& length,
     const Length* auto_length,
     LayoutUnit intrinsic_size,
-    LayoutUnit override_available_size = kIndefiniteSize,
-    const LayoutUnit* override_percentage_resolution_size = nullptr) {
+    LayoutUnit override_available_size = kIndefiniteSize) {
   return ResolveBlockLengthInternal(
       constraint_space, style, border_padding, length, auto_length,
       LengthTypeInternal::kMain, override_available_size,
-      override_percentage_resolution_size,
+      /* override_percentage_resolution_size */ nullptr,
       [intrinsic_size](SizeType) { return intrinsic_size; });
 }
 

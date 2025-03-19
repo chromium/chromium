@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_KEYBOARD_ACCESSORY_ANDROID_PAYMENT_METHOD_ACCESSORY_CONTROLLER_IMPL_H_
 
 #include <optional>
+#include <variant>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -58,7 +59,7 @@ class PaymentMethodAccessoryControllerImpl
   friend class content::WebContentsUserData<PaymentMethodAccessoryControllerImpl>;
 
   using CardOrVirtualCard =
-      absl::variant<const CreditCard*, std::unique_ptr<CreditCard>>;
+      std::variant<const CreditCard*, std::unique_ptr<CreditCard>>;
 
   // Required for construction via |CreateForWebContents|:
   explicit PaymentMethodAccessoryControllerImpl(content::WebContents* contents);

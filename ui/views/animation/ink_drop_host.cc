@@ -5,9 +5,9 @@
 #include "ui/views/animation/ink_drop_host.h"
 
 #include <utility>
+#include <variant>
 
 #include "base/check_is_test.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
 #include "ui/events/event.h"
@@ -184,21 +184,21 @@ SkColor InkDropHost::GetBaseColor() const {
     return color_provider->GetColor(ui::kColorButtonFeatureAttentionHighlight);
   }
 
-  if (absl::holds_alternative<ui::ColorId>(ink_drop_base_color_)) {
+  if (std::holds_alternative<ui::ColorId>(ink_drop_base_color_)) {
     ui::ColorProvider* color_provider = host_view_->GetColorProvider();
     CHECK(color_provider);
     return color_provider->GetColor(
-        absl::get<ui::ColorId>(ink_drop_base_color_));
+        std::get<ui::ColorId>(ink_drop_base_color_));
   }
 
-  if (absl::holds_alternative<SkColor>(ink_drop_base_color_)) {
-    return absl::get<SkColor>(ink_drop_base_color_);
+  if (std::holds_alternative<SkColor>(ink_drop_base_color_)) {
+    return std::get<SkColor>(ink_drop_base_color_);
   }
 
   // The callback may need access to the color provider, which is only available
   // after the view is added to a widget.
   if (host_view_->GetWidget()) {
-    return absl::get<base::RepeatingCallback<SkColor()>>(ink_drop_base_color_)
+    return std::get<base::RepeatingCallback<SkColor()>>(ink_drop_base_color_)
         .Run();
   }
 

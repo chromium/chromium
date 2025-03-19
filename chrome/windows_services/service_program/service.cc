@@ -226,8 +226,12 @@ int Service::RunAsService() {
     return error;
   }
 
-  // Take the lock both for the sake of accessing service_status_ and to wait
-  // for the thread in `OnModuleReleased()` to complete the call.
+  // In the case where the delegate does not implement `Run()`:
+  // * Take the lock both for the sake of accessing service_status_ and to wait
+  //   for the thread in `OnModuleReleased()` to complete the call.
+  // In the case where the delegate implements `Run()`:
+  // * Take the lock both for the sake of accessing service_status_ and to wait
+  //   for the `ServiceMainImpl` thread to complete.
   base::AutoLock lock(lock_);
   return service_status_.dwWin32ExitCode;
 }
@@ -270,7 +274,7 @@ void Service::ServiceMainImpl(const base::CommandLine& command_line) {
     service_status_.dwServiceSpecificExitCode = hr;
     SetServiceStatus(SERVICE_STOPPED);
   } else if (delegate_implements_run_) {
-    // Shut down immediately if the service provided its own `Run()`.
+    // Shut down immediately if the delegate provided its own `Run()`.
     SetServiceStatus(SERVICE_STOPPED);
   }
 }
@@ -338,7 +342,13 @@ HRESULT Service::Run(const base::CommandLine& command_line) {
   // all the logic of registering/unregistering classes and running the COM
   // server.
   if (delegate_implements_run_) {
-    base::AutoUnlock unlock(lock_);
+    // The `lock_` (acquired at the beginning of `ServiceMainImpl`) is held
+    // throughout the delegate's execution.
+    // * `OnStopRequested()` will be called on the service control dispatcher
+    //   thread if the service receives a stop request.
+    // * the delegate should implement `OnServiceControlStop()` and stop itself
+    //   (i.e., return from `delegate_->Run()`) when `OnStopRequested()` is
+    //   called.
     return delegate_->Run(command_line);
   }
 
@@ -395,6 +405,8 @@ HRESULT Service::InitializeComSecurity() {
 }
 
 void Service::OnModuleReleased() {
+  CHECK(!delegate_implements_run_);
+
   base::AutoLock lock(lock_);
 
   // It is tempting to send a STOP_PENDING message to the service control
@@ -413,6 +425,11 @@ void Service::OnStopRequested() {
   // the exit routine, as that will cause the service control dispatcher to
   // return on the main thread.
   delegate_->OnServiceControlStop();
+  if (delegate_implements_run_) {
+    // `ServiceMainImpl()` notifies the SCM that the service has stopped when
+    // the delegate's `Run()` returns.
+    return;
+  }
 
   base::AutoLock lock(lock_);
 

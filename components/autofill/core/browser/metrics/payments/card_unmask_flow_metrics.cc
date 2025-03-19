@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/metrics/payments/card_unmask_flow_metrics.h"
 
 #include <string>
+#include <variant>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -32,8 +33,8 @@ void LogCvcFilling(CvcFillingFlowType flow_type,
 
 void LogServerCardUnmaskResult(
     ServerCardUnmaskResult unmask_result,
-    absl::variant<payments::PaymentsAutofillClient::PaymentsRpcCardType,
-                  CreditCard::RecordType> card_type,
+    std::variant<payments::PaymentsAutofillClient::PaymentsRpcCardType,
+                 CreditCard::RecordType> card_type,
     ServerCardUnmaskFlowType flow_type) {
   std::string flow_type_suffix;
   switch (flow_type) {

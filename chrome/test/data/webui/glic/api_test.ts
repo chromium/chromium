@@ -70,7 +70,7 @@ class WebClient implements GlicWebClient {
 }
 
 interface TestStepper {
-  nextStep(): Promise<void>;
+  nextStep(data: any): Promise<void>;
 }
 
 class ApiTestFixtureBase {
@@ -115,12 +115,24 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   // Return to the C++ side, and wait for it to call ContinueJsTest() to
-  // continue execution in the JS test.
-  private advanceToNextStep(): Promise<void> {
-    return this.testStepper.nextStep();
+  // continue execution in the JS test. Optionally, pass data to the C++ side.
+  private advanceToNextStep(data?: any): Promise<void> {
+    return this.testStepper.nextStep(data);
   }
 
+  // WARNING: Remember to update chrome/browser/glic/host/glic_api_uitest.cc
+  // if you add a new test!
+
   async testDoNothing() {}
+
+  async testAllTestsAreRegistered() {
+    const allNames = [];
+    for (const fixture of TEST_FIXTURES) {
+      allNames.push(...Object.getOwnPropertyNames(fixture.prototype)
+                        .filter(name => name.startsWith('test')));
+    }
+    await this.advanceToNextStep(allNames);
+  }
 
   async testCreateTab() {
     assertTrue(!!this.host.createTab);
@@ -202,6 +214,18 @@ class ApiTests extends ApiTestFixtureBase {
     // When subscribing to this value, an initial update is guaranteed to be
     // emited.
     assertTrue(await canAttach.next());
+  }
+
+  async testEnableDragResize() {
+    assertTrue(!!this.host.enableDragResize);
+
+    await this.host.enableDragResize(true);
+  }
+
+  async testDisableDragResize() {
+    assertTrue(!!this.host.enableDragResize);
+
+    await this.host.enableDragResize(false);
   }
 
   async testGetFocusedTabStateV2() {
@@ -457,14 +481,14 @@ type TestResult =
     // The test completed successfully.
     'pass'|
     // A test step is complete. `continueApiTest()` needs to be called to
-    // finish.
-    'next-step'|
+    // finish. The second value is the data passed to `nextStep()`.
+    {id: 'next-step', payload: any}|
     // Any other string is an error.
     string;
 
 // Runs a test.
 class TestRunner implements TestStepper {
-  nextStepPromise = Promise.withResolvers<'next-step'>();
+  nextStepPromise = Promise.withResolvers<{id: 'next-step', payload: any}>();
   continuePromise = Promise.withResolvers<void>();
   fixture: ApiTestFixtureBase|undefined;
   testDone: Promise<void>|undefined;
@@ -508,8 +532,9 @@ class TestRunner implements TestStepper {
     try {
       const result =
           await Promise.race([this.testDone, this.nextStepPromise.promise]);
-      if (result === 'next-step') {
-        return 'next-step';
+      if (result && typeof result === 'object' &&
+          result['id'] === 'next-step') {
+        return result;
       }
     } catch (e) {
       if (e instanceof Error) {
@@ -521,8 +546,9 @@ class TestRunner implements TestStepper {
   }
 
   // TestStepper implementation.
-  nextStep(): Promise<void> {
-    this.nextStepPromise.resolve('next-step');
+  nextStep(payload: any): Promise<void> {
+    payload = payload ?? {};  // undefined is not serializable to base::Value.
+    this.nextStepPromise.resolve({id: 'next-step', payload});
     return this.continuePromise.promise;
   }
 }

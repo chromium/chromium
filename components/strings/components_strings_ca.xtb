@@ -316,7 +316,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1532118530259321453">Aquesta pàgina diu</translation>
 <translation id="1533966801397200693">El perfil en què tens la sessió iniciada és un perfil gestionat. L'administrador pot fer canvis a la configuració del perfil de manera remota, analitzar informació sobre el navegador mitjançant informes i dur a terme altres tasques necessàries. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Tradueix la pàgina</translation>
-<translation id="1538295100801850685">Millores de predicció</translation>
 <translation id="1539840569003678498">S'ha enviat l'informe:</translation>
 <translation id="1542105669288201090">Formació empresarial</translation>
 <translation id="1545757265410828525">Historial de preus</translation>
@@ -1157,7 +1156,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3052868890529250114">Normalment et connectes a llocs web de manera segura, però aquesta vegada Chrome no ha pogut utilitzar una connexió segura. És possible que un atacant estigui provant d'escoltar clandestinament o de modificar la connexió de xarxa. <ph name="BEGIN_LEARN_MORE_LINK" />Més informació sobre aquest advertiment<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Baixada de preu de <ph name="PRICE_DROP" /> per a <ph name="PRODUCT_NAME" /></translation>
 <translation id="3061707000357573562">Servei de pedaç</translation>
-<translation id="306198082577913404">Activa les millores de predicció</translation>
 <translation id="3062655045399308513">Suprimeix les dades de navegació...</translation>
 <translation id="3063453392496098461">No s'han pogut instal·lar els serveis en segon pla de la VPN.</translation>
 <translation id="306573536155379004">S'ha iniciat el joc.</translation>
@@ -2325,7 +2323,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5097099694988056070">Estadístiques del dispositiu, com ara l'ús de CPU o RAM</translation>
 <translation id="5097468150760963273">27 x 39 polzades</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome necessita accés a la <ph name="PERMISSION" /> del teu dispositiu</translation>
 <translation id="510644072453496781">Cartró (final)</translation>
 <translation id="5106648964679263509">S'ha emplenat amb la targeta virtual de <ph name="BNPL_ISSUER_NAME" /></translation>
 <translation id="5108881358339761672">El lloc web no és segur</translation>
@@ -4054,7 +4051,6 @@ Detalls addicionals:
 <translation id="8134058435519644366">Contractació de personal</translation>
 <translation id="8135546115396015134">tecla esquerra</translation>
 <translation id="8137456439814903304">Energia i companyies elèctriques</translation>
-<translation id="81474145143203755">Per utilitzar la <ph name="PERMISSION" /> en aquest lloc web, concedeix accés a Chrome</translation>
 <translation id="8148608574971654810">Versió de PDF:</translation>
 <translation id="8149426793427495338">L'ordinador ha entrat en mode de repòs.</translation>
 <translation id="8150722005171944719">El fitxer de <ph name="URL" /> no es pot llegir. Pot ser que s'hagi eliminat, que s'hagi traslladat o que els permisos del fitxer n'impedeixin l'accés.</translation>

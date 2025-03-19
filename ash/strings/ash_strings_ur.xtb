@@ -166,6 +166,7 @@
 <translation id="1505542291183484463">ٹائل شدہ ونڈو کا سائز نیچے کی طرف بدلیں</translation>
 <translation id="1510238584712386396">لانچر</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{اطلاع کی ترتیبات دکھائیں۔ اطلاعات ایک ایپ کے لیے آف ہیں}other{اطلاع کی ترتیبات دکھائیں۔ اطلاعات # ایپس کے لیے آف ہیں}}</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">بیٹری %<ph name="BATTERY_PERCENTAGE" /> | مکمل ہونے میں <ph name="TIME" /> باقی</translation>
 <translation id="1525508553941733066">برخاست کریں</translation>
 <translation id="1526448108126799339">نئی ونڈو میں نیا ٹیب کھولیں</translation>
@@ -345,7 +346,6 @@
 <translation id="2201071101391734388"><ph name="TOTAL_COUNT" /> میں سے حالیہ تصویر <ph name="INDEX" />۔</translation>
 <translation id="2201687081523799384">‏‫Google Tasks کو سکیڑیں</translation>
 <translation id="2208323208084708176">متحد ڈیسک ٹاپ وضع</translation>
-<translation id="2220572644011485463">‏PIN یا پاس ورڈ</translation>
 <translation id="2222841058024245321">ڈیسک 7</translation>
 <translation id="2223384056430485343">اسپلٹ اسکرین میں</translation>
 <translation id="2224075387478458881">تحفظ یافتہ مواد کے مرئی ہونے پر اسکرین ریکارڈنگ کی اجازت نہیں ہے</translation>
@@ -1828,7 +1828,6 @@
 <translation id="7000027735917578303">ونڈوز اور ڈیسک کی ترتیبات</translation>
 <translation id="7004910047186208204">موبائل ڈیٹا سے منسلک ہوں</translation>
 <translation id="7005239792648594238">شروع کرنے کیلئے کوئی ایپ کھولیں</translation>
-<translation id="7007983414944123363">‏آپ کے PIN یا پاس ورڈ کی توثیق نہیں کی جا سکی۔ دوبارہ کوشش کریں۔</translation>
 <translation id="7014684956566476813"><ph name="DEVICE_NAME" /> نام والے آلے سے منسلک ہے</translation>
 <translation id="7015766095477679451">بوقت <ph name="COME_BACK_TIME" /> پھر استعمال کریں۔</translation>
 <translation id="70168403932084660">ڈیسک 6</translation>
@@ -2465,6 +2464,7 @@
 <translation id="9168436347345867845">اسے بعد میں کریں</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> کا 1 نتیجہ دکھایا جا رہا ہے</translation>
 <translation id="9179259655489829027">یہ خصوصیت آپ کو کسی بھی سائن ان کردہ صارف تک پاس ورڈ کا تقاضہ کیے بغیر تیزی سے رسائی حاصل کرنے کی اجازت دیتی ہے۔ یہ خصوصیت صرف اپنے معتبر اکاؤنٹس کے ساتھ استعمال کریں۔</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183456764293710005">فُل اسکرین میگنیفائر</translation>
 <translation id="9192133205265227850">"<ph name="DEVICE_NAME" />" کا استعمال کریں</translation>
 <translation id="9193626018745640770">کسی نامعلوم موصول کنندہ پر کاسٹ کیا جا رہا ہے</translation>

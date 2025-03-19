@@ -12,6 +12,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -41,7 +42,6 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "net/base/schemeful_site.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 
 namespace content {
@@ -164,7 +164,7 @@ CreateAggregatableHistogram(
 std::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
     const AttributionReport& report) {
   const auto* aggregatable_data =
-      absl::get_if<AttributionReport::AggregatableData>(&report.data());
+      std::get_if<AttributionReport::AggregatableData>(&report.data());
   DCHECK(aggregatable_data);
 
   std::vector<blink::mojom::AggregatableReportHistogramContribution>

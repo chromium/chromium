@@ -6,6 +6,7 @@
 
 #include <ranges>
 #include <string>
+#include <variant>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -142,7 +143,7 @@ TEST_F(AutofillAiSuggestionsTest, GetFillingSuggestion_PassportEntity) {
   EXPECT_EQ(suggestions[2].type, SuggestionType::kManageAutofillAi);
 
   const Suggestion::AutofillAiPayload* payload =
-      absl::get_if<Suggestion::AutofillAiPayload>(&suggestions[0].payload);
+      std::get_if<Suggestion::AutofillAiPayload>(&suggestions[0].payload);
   ASSERT_TRUE(payload);
   EXPECT_EQ(suggestions[0].icon, autofill::Suggestion::Icon::kIdCard);
 
@@ -230,7 +231,7 @@ TEST_F(AutofillAiSuggestionsTest,
                                                triggering_field_type));
 
   const Suggestion::AutofillAiPayload* payload =
-      absl::get_if<Suggestion::AutofillAiPayload>(&suggestions[0].payload);
+      std::get_if<Suggestion::AutofillAiPayload>(&suggestions[0].payload);
   ASSERT_TRUE(payload);
   // The triggering/first field is of AutofillAi Type.
   EXPECT_EQ(GetFillValueForField(entities, *payload, *form->fields()[0]),

@@ -6,6 +6,7 @@
 #define COMPONENTS_JS_INJECTION_COMMON_WEB_MESSAGE_MOJOM_TRAITS_H_
 
 #include <string>
+#include <variant>
 
 #include "components/js_injection/common/interfaces.mojom-shared.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -47,12 +48,12 @@ struct UnionTraits<js_injection::mojom::JsWebMessageDataView,
                    blink::WebMessagePayload> {
   static const std::u16string& string_value(
       const blink::WebMessagePayload& payload) {
-    return absl::get<std::u16string>(payload);
+    return std::get<std::u16string>(payload);
   }
 
   static const std::unique_ptr<blink::WebMessageArrayBufferPayload>&
   array_buffer_value(const blink::WebMessagePayload& payload) {
-    return absl::get<std::unique_ptr<blink::WebMessageArrayBufferPayload>>(
+    return std::get<std::unique_ptr<blink::WebMessageArrayBufferPayload>>(
         payload);
   }
 

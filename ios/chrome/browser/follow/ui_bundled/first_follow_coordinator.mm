@@ -56,7 +56,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 
 - (void)start {
   self.feedMetricsRecorder =
-      DiscoverFeedServiceFactory::GetForProfile(self.browser->GetProfile())
+      DiscoverFeedServiceFactory::GetForProfile(self.profile)
           ->GetFeedMetricsRecorder();
 
   __weak __typeof(self) weakSelf = self;
@@ -83,7 +83,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
   firstFollowViewController.actionHandler = self;
 
   self.faviconLoader =
-      IOSChromeFaviconLoaderFactory::GetForProfile(self.browser->GetProfile());
+      IOSChromeFaviconLoaderFactory::GetForProfile(self.profile);
 
   firstFollowViewController.modalPresentationStyle =
       UIModalPresentationPageSheet;
@@ -92,8 +92,8 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
   presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
   presentationController.detents = @[
-    UISheetPresentationControllerDetent.mediumDetent,
-    UISheetPresentationControllerDetent.largeDetent
+    [UISheetPresentationControllerDetent mediumDetent],
+    [UISheetPresentationControllerDetent largeDetent]
   ];
   presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
 

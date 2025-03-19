@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 
 namespace blink {
@@ -100,8 +101,9 @@ PhysicalRect HTMLAreaElement::ComputeAbsoluteRect(
   PhysicalOffset abs_pos = container_object->LocalToAbsolutePoint(
       PhysicalOffset(), kIgnoreTransforms);
 
-  Path path = GetPath(container_object);
-  path.Translate(gfx::Vector2dF(abs_pos));
+  const Path path = PathBuilder(GetPath(container_object))
+                        .Translate(gfx::Vector2dF(abs_pos))
+                        .Finalize();
   return PhysicalRect::EnclosingRect(path.BoundingRect());
 }
 
@@ -116,7 +118,7 @@ Path HTMLAreaElement::GetPath(const LayoutObject* container_object) const {
     // No need to zoom because it is already applied in
     // container_object->PhysicalBorderBoxRect().
     if (const auto* box = DynamicTo<LayoutBox>(container_object))
-      path.AddRect(gfx::RectF(box->PhysicalBorderBoxRect()));
+      path = Path::MakeRect(gfx::RectF(box->PhysicalBorderBoxRect()));
     path_ = nullptr;
     return path;
   }
@@ -131,23 +133,27 @@ Path HTMLAreaElement::GetPath(const LayoutObject* container_object) const {
     switch (shape_) {
       case kPoly:
         if (coords_.size() >= 6) {
+          PathBuilder builder;
+
           int num_points = coords_.size() / 2;
-          path.MoveTo(gfx::PointF(ClampCoordinate(coords_[0]),
-                                  ClampCoordinate(coords_[1])));
+          builder.MoveTo(gfx::PointF(ClampCoordinate(coords_[0]),
+                                     ClampCoordinate(coords_[1])));
           for (int i = 1; i < num_points; ++i) {
-            path.AddLineTo(gfx::PointF(ClampCoordinate(coords_[i * 2]),
+            builder.LineTo(gfx::PointF(ClampCoordinate(coords_[i * 2]),
                                        ClampCoordinate(coords_[i * 2 + 1])));
           }
-          path.CloseSubpath();
-          path.SetWindRule(RULE_EVENODD);
+          builder.Close();
+          builder.SetWindRule(RULE_EVENODD);
+
+          path = builder.Finalize();
         }
         break;
       case kCircle:
         if (coords_.size() >= 3 && coords_[2] > 0) {
           float r = ClampCoordinate(coords_[2]);
-          path.AddEllipse(gfx::PointF(ClampCoordinate(coords_[0]),
-                                      ClampCoordinate(coords_[1])),
-                          r, r);
+          path = Path::MakeEllipse(gfx::PointF(ClampCoordinate(coords_[0]),
+                                               ClampCoordinate(coords_[1])),
+                                   r, r);
         }
         break;
       case kRect:
@@ -156,7 +162,7 @@ Path HTMLAreaElement::GetPath(const LayoutObject* container_object) const {
           float y0 = ClampCoordinate(coords_[1]);
           float x1 = ClampCoordinate(coords_[2]);
           float y1 = ClampCoordinate(coords_[3]);
-          path.AddRect(gfx::PointF(x0, y0), gfx::PointF(x1, y1));
+          path = Path::MakeRect(gfx::PointF(x0, y0), gfx::PointF(x1, y1));
         }
         break;
       default:

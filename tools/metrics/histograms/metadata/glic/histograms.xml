@@ -60,6 +60,7 @@ chromium-metrics-reviews@google.com.
     <variant name="ClosePanel"/>
     <variant name="CreateTab"/>
     <variant name="DetachPanel"/>
+    <variant name="EnableDragResize"/>
     <variant name="GetContextFromFocusedTab"/>
     <variant name="GetOsMicrophonePermissionStatus"/>
     <variant name="GetUserProfileInfo"/>

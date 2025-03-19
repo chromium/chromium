@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 #include "base/files/file_enumerator.h"
@@ -48,7 +49,7 @@ web_package::SignedWebBundleId GetWebBundleIdWithFallback(
   if (web_bundle_id) {
     return *web_bundle_id;
   }
-  return absl::visit(
+  return std::visit(
       [](const auto& key_pair) {
         return web_package::SignedWebBundleId::CreateForPublicKey(
             key_pair.public_key);

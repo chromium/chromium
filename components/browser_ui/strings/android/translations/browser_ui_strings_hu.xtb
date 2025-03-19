@@ -45,6 +45,7 @@
 <translation id="1652197001188145583">Ha be van kapcsolva, a webhelyek kérhetik NFC-eszközök használatát. Ha ki van kapcsolva, a webhelyek nem használhatnak NFC-eszközöket.</translation>
 <translation id="1660204651932907780">A webhelyek lejátszhatnak hangokat (ajánlott)</translation>
 <translation id="1677097821151855053">A cookie-k és az egyéb webhelyadatok arra szolgálnak, hogy a webhelyek emlékezzenek Önre, és így például bejelentkeztetik, vagy személyre szabják a hirdetéseket. A <ph name="BEGIN_LINK" />Beállításokban<ph name="END_LINK" /> kezelheti a webhelyek cookie-jait.</translation>
+<translation id="1679305402657584804">A webhelyek kérhetik NFC-eszközök használatát</translation>
 <translation id="1686785653877010442">A webhelyek általában akkor küldenek értesítéseket, ha rendkívüli hírekről vagy csevegőüzenetekről szeretnék tájékoztatni Önt.</translation>
 <translation id="169515064810179024">A mozgásérzékelőkhöz való hozzáférés letiltása a webhelyek számára</translation>
 <translation id="1703666494654169921">A webhelyek nem használhatnak virtuálisvalóság-eszközöket és -adatokat</translation>
@@ -84,6 +85,7 @@
 <translation id="2185965788978862351">Ezzel törli a webhelyek és a kezdőképernyőn lévő alkalmazások által az eszközön tárolt <ph name="DATASIZE" /> mennyiségű adatot és cookie-t.</translation>
 <translation id="2194856509914051091">Megfontolandó szempontok</translation>
 <translation id="2215727959747642672">Fájlszerkesztés</translation>
+<translation id="2218389616572918761">A webhelyek kérhetik az Ön mikrofonjához való hozzáférést</translation>
 <translation id="2228071138934252756">Ahhoz, hogy a(z) <ph name="APP_NAME" /> hozzáférhessen a kamerához, a kamerát az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között is be kell kapcsolni.</translation>
 <translation id="2235344399760031203">A harmadik felektől származó cookie-k le vannak tiltva</translation>
 <translation id="2238944249568001759">Javasolt keresések a legutóbbi lap alapján</translation>
@@ -132,8 +134,10 @@
 <translation id="2726059656860238749">A Chrome elindítása a cím- és keresősávra fókuszálva, ami csökkenti az indulási időt alsóbb kategóriás eszközökön.</translation>
 <translation id="2750481671343847896">A webhelyek megjeleníthetnek identitásszolgáltatásoktól származó bejelentkezési értesítéseket.</translation>
 <translation id="2787357173144933081">Gyorsindítás a cím- és keresősávval</translation>
+<translation id="2789132527330338807">A webhelyek kérhetik az Ön környezetéről készített 3D-s térkép létrehozását, valamint a kamera pozíciójának nyomon követését</translation>
 <translation id="2790501146643349491">Ha be van kapcsolva, a nemrégiben bezárt webhelyek befejezhetik az adatok küldését és fogadását. Ha ki van kapcsolva, a nemrégiben bezárt webhelyek nem tudják befejezni az adatok küldését és fogadását.</translation>
 <translation id="2795716239552913152">A webhelyek általában arra használják az Ön helyadatait, hogy releváns szolgáltatásokat vagy információkat biztosítsanak (például helyi hírekről vagy közeli üzletekről)</translation>
+<translation id="2802908157808345702">A webhelyek nem jeleníthetnek meg előugró ablakokat és nem használhatnak átirányításokat</translation>
 <translation id="2814830417943086299">A Chrome mostantól megjeleníti a legutóbbi lapokat az eszköz alkalmazáslistáján és a keresési találatok között is. Ezt bármikor kikapcsolhatja a Chrome beállításai között.</translation>
 <translation id="2822354292072154809">Biztosan visszaállítja a(z) <ph name="CHOSEN_OBJECT_NAME" /> minden webhelyengedélyét?</translation>
 <translation id="2850913818900871965">Mobilnézet kérelmezése</translation>
@@ -274,6 +278,7 @@
 <translation id="4598549027014564149">Inkognitó módban a webhelyek nem használhatják fel az Ön cookie-jait arra, hogy megfigyeljék az Ön böngészési tevékenységeit a különböző webhelyek között, még kapcsolódó webhelyek esetén sem. Böngészési tevékenységeit nem használjuk fel például a hirdetések személyre szabásához. Előfordulhat, hogy bizonyos webhelyek funkciói nem működnek majd megfelelően.</translation>
 <translation id="461356340001513807">Lehetővé teszi, hogy identitásszolgáltató által biztosított fiókkal jelentkezzen be a webhelyekre.</translation>
 <translation id="4619615317237390068">Más eszközök lapjai</translation>
+<translation id="4635969503923889910">A webhelyek nem használhatnak NFC-eszközöket</translation>
 <translation id="4644713492825682049">Törlés és alaphelyzetbe állítás</translation>
 <translation id="4645575059429386691">A szülő kezeli</translation>
 <translation id="4670064810192446073">Virtuális valóság</translation>
@@ -372,6 +377,7 @@
 <translation id="5877248419911025165">Az összes kérelem összecsukása</translation>
 <translation id="5884085660368669834">Webhelybeállítás</translation>
 <translation id="5887687176710214216">Utolsó látogatás: tegnap</translation>
+<translation id="5908617755156109052">A webhelyek nem készíthetnek 3D-s térképet az Ön környezetéről, valamint nem követhetik a kamera pozícióját</translation>
 <translation id="5916664084637901428">Be</translation>
 <translation id="5922853908706496913">Képernyő megosztása</translation>
 <translation id="5922967540311291836">Harmadik féltől származó cookie-k letiltása</translation>
@@ -582,6 +588,7 @@
 <translation id="8676374126336081632">Beírt szöveg törlése</translation>
 <translation id="8681886425883659911">A hirdetések le vannak tiltva a köztudottan tolakodó vagy félrevezető hirdetéseket megjelenítő webhelyeken</translation>
 <translation id="868929229000858085">Keresés a névjegyek között</translation>
+<translation id="8707904142362025782">A webhely kérheti a kamerájához való hozzáférést</translation>
 <translation id="8712637175834984815">Értem</translation>
 <translation id="8715862698998036666">A teljes képernyős nézetből való kilépéshez csúsztassa gyorsan le az ujját a képernyő tetejétől, majd csúsztasson a képernyő bal vagy jobb széléről.</translation>
 <translation id="8719283222052720129">A(z) <ph name="APP_NAME" /> alkalmazásra vonatkozó engedélyt az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között lehet aktiválni.</translation>

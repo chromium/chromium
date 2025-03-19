@@ -34,6 +34,8 @@ class Point;
 
 namespace glic {
 
+// Distance the detached window should be from the top and the right of the
+// display when opened unassociated to a browser.
 inline constexpr static int kDefaultDetachedTopRightDistance = 48;
 
 DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kGlicWidgetAttached);
@@ -92,6 +94,11 @@ class GlicWindowController : public views::WidgetObserver,
               bool prevent_close,
               mojom::InvocationSource source);
 
+  // Handle Toggle when AlwaysDetached is true.
+  void ToggleWhenNotAlwaysDetached(Browser* new_attached_browser,
+                                   bool prevent_close,
+                                   mojom::InvocationSource source);
+
   // Attaches glic to the last focused Chrome window.
   void Attach();
 
@@ -109,6 +116,9 @@ class GlicWindowController : public views::WidgetObserver,
   void Resize(const gfx::Size& size,
               base::TimeDelta duration,
               base::OnceClosure callback);
+
+  // Allows the user to manually resize the widget by dragging.
+  void ShouldEnableDragResize(bool enabled);
 
   // Returns the current size of the glic window.
   gfx::Size GetSize();
@@ -197,6 +207,8 @@ class GlicWindowController : public views::WidgetObserver,
   void OnWidgetDestroyed(views::Widget* widget) override;
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
+  void OnWidgetUserResizeStarted() override;
+  void OnWidgetUserResizeEnded() override;
 
   GlicView* GetGlicView();
 
@@ -249,12 +261,18 @@ class GlicWindowController : public views::WidgetObserver,
 
   gfx::Rect GetInitialDetachedBounds();
 
+  // Get the default detached bounds relative to browser.
+  gfx::Rect GetInitialDetachedBoundsFromBrowser(Browser* browser);
+
   // Performs initialization for the attached/detached opening flows. Important
   // difference: currently attached has an animation, so we immediately show the
   // widget. Detached does not have an animation, and we wait until glic is
   // ready to show anything.
   void OpenAttached(Browser& browser);
-  void OpenDetached();
+
+  // Open detached relative to the browser or in the default detached position
+  // if browser is a nullptr.
+  void OpenDetached(Browser* browser);
 
   // Creates the glic view, waits for the web client to initialize, and then
   // shows the glic window. If `browser` is non-nullptr then glic will be
@@ -358,6 +376,9 @@ class GlicWindowController : public views::WidgetObserver,
   // Possibly adjusts the size of the window appropriate for the current
   // display workspace, but only if it's different than the current target size.
   void MaybeAdjustSizeForDisplay(bool animate);
+
+  // Create a GlicWidget.
+  std::unique_ptr<GlicWidget> CreateGlicWidget(const gfx::Rect& bounds);
 
   // Observes the glic widget.
   base::ScopedObservation<views::Widget, views::WidgetObserver>

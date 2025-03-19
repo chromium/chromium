@@ -44,7 +44,7 @@ if (is_android) {
     deps = [
       "//third_party/rust/font_types/v0_8:lib",
       "//third_party/rust/read_fonts/v0_27:lib",
-      "//third_party/rust/skrifa/v0_28:lib",
+      "//third_party/rust/skrifa/v0_29:lib",
     ]
   }
 }
@@ -2392,6 +2392,7 @@ source_set("browser") {
     "webid/fake_identity_request_dialog_controller.h",
     "webid/fedcm_metrics.cc",
     "webid/fedcm_metrics.h",
+    "webid/federated_auth_autofill_source.cc",
     "webid/federated_auth_disconnect_request.cc",
     "webid/federated_auth_disconnect_request.h",
     "webid/federated_auth_request_impl.cc",

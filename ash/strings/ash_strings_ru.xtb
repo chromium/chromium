@@ -166,6 +166,7 @@
 <translation id="1505542291183484463">Растянуть окно в многооконном режиме вниз</translation>
 <translation id="1510238584712386396">Панель запуска</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Показать настройки уведомлений. Уведомления отключены для одного приложения.}one{Показать настройки уведомлений. Уведомления отключены для # приложения.}few{Показать настройки уведомлений. Уведомления отключены для # приложений.}many{Показать настройки уведомлений. Уведомления отключены для # приложений.}other{Показать настройки уведомлений. Уведомления отключены для # приложения.}}</translation>
+<translation id="1521655867290435174">Google Таблицы</translation>
 <translation id="1523032696246003">Батарея: <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> до полного заряда</translation>
 <translation id="1525508553941733066">ЗАКРЫТЬ</translation>
 <translation id="1526448108126799339">Открыть вкладку в новом окне</translation>
@@ -345,7 +346,6 @@
 <translation id="2201071101391734388">Недавнее фото <ph name="INDEX" /> из <ph name="TOTAL_COUNT" /></translation>
 <translation id="2201687081523799384">Скрыть информацию из Google Задач</translation>
 <translation id="2208323208084708176">Единый рабочий стол</translation>
-<translation id="2220572644011485463">PIN-код или пароль</translation>
 <translation id="2222841058024245321">Рабочий стол 7</translation>
 <translation id="2223384056430485343">В режиме разделения экрана</translation>
 <translation id="2224075387478458881">Запись экрана запрещена, так как на нем есть защищенный контент.</translation>
@@ -1829,7 +1829,6 @@
 <translation id="7000027735917578303">Настройки окон и рабочих столов</translation>
 <translation id="7004910047186208204">Подключиться к мобильному интернету</translation>
 <translation id="7005239792648594238">Чтобы начать, откройте приложение</translation>
-<translation id="7007983414944123363">Введенный PIN-код или пароль недействителен. Повторите попытку.</translation>
 <translation id="7014684956566476813">Установлено подключение к устройству "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7015766095477679451">Увидимся снова в <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Рабочий стол 6</translation>
@@ -1943,6 +1942,7 @@
 <translation id="742594950370306541">Камера используется.</translation>
 <translation id="742608627846767349">Доброе утро!</translation>
 <translation id="743058460480092004">Камера и микрофон используются.</translation>
+<translation id="7440404390546433462">Google Поиск</translation>
 <translation id="7441711280402516925">Воспроизводится контент · Перейти</translation>
 <translation id="7453330308669753048">Результат удален из истории поиска</translation>
 <translation id="7459485586006128091">Точка доступа отключена из-за внутренней ошибки. Попробуйте подключиться через несколько минут.</translation>
@@ -2466,6 +2466,7 @@
 <translation id="9168436347345867845">Позже</translation>
 <translation id="9178475906033259337">Показан 1 результат поиска по запросу "<ph name="QUERY" />"</translation>
 <translation id="9179259655489829027">Эта функция позволяет быстро и без пароля получить доступ к любому аккаунту, в который выполнен вход. Используйте ее только для надежных аккаунтов.</translation>
+<translation id="9183302530794969518">Google Документы</translation>
 <translation id="9183456764293710005">Полноэкранная лупа</translation>
 <translation id="9192133205265227850">Используйте устройство "<ph name="DEVICE_NAME" />".</translation>
 <translation id="9193626018745640770">Трансляция на неизвестное устройство</translation>

@@ -505,6 +505,7 @@
 <translation id="310900540163454140">למחוק את הסיסמה של <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">סימון…</translation>
 <translation id="3119874402040566234">המערכת תוציא אותך מהחשבון ונתוני הגלישה יימחקו</translation>
+<translation id="3124568093781685165">שיתוף הסיסמאות שלך עם הקבוצה המשפחתית</translation>
 <translation id="3130863904455712965">היסטוריה ועוד</translation>
 <translation id="313283613037595347">יצירת כרטיסיית מצב אנונימי חדשה.</translation>
 <translation id="3138611310073113613">ביטול הבחירה</translation>
@@ -1004,6 +1005,7 @@
 <translation id="5352128922772839949">שמירת קובץ</translation>
 <translation id="5355191726083956201">מופעלת הגנה משופרת</translation>
 <translation id="537853552771686272">ניהול הנושאים והאתרים שמעניינים אותך</translation>
+<translation id="5390458669633674385">{count,plural, =1{מספר הכרטיסיות שנסגרו: {count}}one{{count} closed}two{מספר הכרטיסיות שנסגרו: {count}}other{מספר הכרטיסיות שנסגרו: {count}}}</translation>
 <translation id="5394975111793637642">הסתרת הכרטיס "ביקורות על מוצרים"</translation>
 <translation id="5395707839134961196">הסתרת הפרטים של מנוע החיפוש</translation>
 <translation id="5414763847370083940">תתקבל התראה על הנחות באתר כלשהו.</translation>
@@ -1133,6 +1135,7 @@
 <translation id="5897749768294722429">אחרי סנכרון הכרטיסיות וההיסטוריה אפשר יהיה לחזור במהירות לאתרים שביקרת בהם.</translation>
 <translation id="5898848375214731122">מסה</translation>
 <translation id="5899314093904173337">‏כדי לשתף עם אנשים שנמצאים בסביבה הקרובה, הם יכולים לסרוק את קוד ה-QR הזה באמצעות המצלמה שלהם או באמצעות אפליקציית סורק QR.</translation>
+<translation id="5902752768726620872">{count,plural, =1{מספר הכרטיסיות החדשות: {count}}one{מספר הכרטיסיות החדשות: {count}}two{מספר הכרטיסיות החדשות: {count}}other{מספר הכרטיסיות החדשות: {count}}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5917913282764181683">מחיקה אוטומטית של ההורדות</translation>
 <translation id="5922999516621365983">כדי להצמיד את הכרטיסייה, גוררים אותה לכאן.</translation>
@@ -1675,6 +1678,7 @@
 <translation id="8131740175452115882">אישור</translation>
 <translation id="8132598642024322408">עכשיו במחיר <ph name="PRICE" />, היה <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">יש להשתמש בסיסמה ייחודית לכל אתר או אפליקציה. אם מישהו יגלה סיסמה שהשתמשת בה במקומות שונים, הוא יוכל להשתמש בה כדי להיכנס גם לשאר החשבונות שלך. יש ללחוץ כדי לפתוח את האתר ולשנות את הסיסמאות עכשיו.</translation>
+<translation id="8135556271852808840">{count,plural, =1{מספר הכרטיסיות שנסגרו: {count}}one{מספר הכרטיסיות שנסגרו: {count}}two{מספר הכרטיסיות שנסגרו: {count}}other{מספר הכרטיסיות שנסגרו: {count}}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{אחד נוסף}one{‫# אחרים}two{‫# אחרים}other{‫# אחרים}}</translation>
 <translation id="8150167929304790980">שם מלא</translation>
 <translation id="8152331954420209374">‏מעבר אל Lens</translation>

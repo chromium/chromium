@@ -15,6 +15,7 @@
 #include <array>
 #include <bit>
 #include <type_traits>
+#include <variant>
 
 #include "base/base64url.h"
 #include "base/feature_list.h"
@@ -581,7 +582,7 @@ void Derive(uint8_t* out,
 }  // namespace internal
 
 const char* RequestTypeToString(RequestType request_type) {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{[](const FidoRequestType& request_type) {
                          switch (request_type) {
                            case FidoRequestType::kMakeCredential:
@@ -680,7 +681,7 @@ std::optional<std::vector<uint8_t>> EncodePaddedCBORMap(
 }
 
 bool ShouldOfferLinking(RequestType request_type) {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{[](const FidoRequestType&) {
                          return base::FeatureList::IsEnabled(
                              device::kWebAuthnHybridLinking);

@@ -397,7 +397,7 @@ GridSet::GridSet(wtf_size_t track_count,
 
 float GridSet::FlexFactor() const {
   DCHECK(track_size.HasFlexMaxTrackBreadth());
-  return track_size.MaxTrackBreadth().GetFloatValue() * track_count;
+  return track_size.MaxTrackBreadth().Flex() * track_count;
 }
 
 LayoutUnit GridSet::BaseSize() const {

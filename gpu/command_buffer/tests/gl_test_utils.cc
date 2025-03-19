@@ -41,7 +41,7 @@ const uint8_t GLTestHelper::kCheckClearValue;
 
 gl::GLDisplay* GLTestHelper::InitializeGL(gl::GLImplementation gl_impl) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  gpu::EnsureNonSoftwareDeviceForTesting(gl::GpuPreference::kDefault);
+  gpu::TrySetNonSoftwareDevicePreferenceForTesting(gl::GpuPreference::kDefault);
 #endif
 
   gl::GLDisplay* display = nullptr;

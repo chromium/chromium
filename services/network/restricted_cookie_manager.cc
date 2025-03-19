@@ -16,6 +16,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/structured_shared_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
@@ -25,9 +27,9 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/optional_util.h"
+#include "mojo/public/cpp/base/shared_memory_version.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/canonical_cookie.h"
@@ -49,6 +51,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -152,6 +155,15 @@ void HistogramScriptCookieExpiration(const net::CanonicalCookie& cookie) {
         "Cookie.ScriptExpirationInHoursLTEOneWeek.Subsampled",
         script_cookie_expiration_in_hours, 1, kHoursInOneWeek + 1, 100);
   }
+}
+
+void RunCallbackWithResponse(
+    RestrictedCookieManager::SetCookieFromStringCallback callback,
+    uint64_t version,
+    base::ReadOnlySharedMemoryRegion shared_memory_region,
+    const std::string& cookies) {
+  std::move(callback).Run(mojom::CookiesResponse::New(
+      version, std::move(shared_memory_region), cookies));
 }
 
 }  // namespace
@@ -449,6 +461,27 @@ void RestrictedCookieManager::OnCookieSettingsChanged() {
   // Increment the shared version to make sure it issues a full cookie string
   // request next time around.
   IncrementSharedVersion();
+}
+
+base::ReadOnlySharedMemoryRegion
+RestrictedCookieManager::GetAndPrepareSharedMemoryRegion(const GURL& url) {
+  auto shared_memory_region =
+      shared_memory_version_controller_.GetSharedMemoryRegion();
+
+  // Clients can change their URL. If that happens the subscription needs to
+  // mirror that to get the correct updates.
+  bool new_url = cookie_store_subscription_ && change_subscribed_url_ != url;
+
+  if (!cookie_store_subscription_ || new_url) {
+    change_subscribed_url_ = url;
+    cookie_store_subscription_ =
+        cookie_store_->GetChangeDispatcher().AddCallbackForUrl(
+            url, cookie_partition_key_,
+            base::IgnoreArgs<const net::CookieChangeInfo&>(base::BindRepeating(
+                &RestrictedCookieManager::IncrementSharedVersion,
+                base::Unretained(this))));
+  }
+  return shared_memory_region;
 }
 
 void RestrictedCookieManager::IncrementSharedVersion() {
@@ -906,6 +939,7 @@ void RestrictedCookieManager::SetCookieFromString(
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
     net::StorageAccessApiStatus storage_access_api_status,
+    bool get_version_shared_memory,
     bool apply_devtools_overrides,
     const std::string& cookie,
     SetCookieFromStringCallback callback) {
@@ -914,12 +948,19 @@ void RestrictedCookieManager::SetCookieFromString(
   base::ElapsedTimer timer;
 
   // The cookie is about to be set. Proactively increment the version so it's
-  // instantly reflected. This ensures that changes a reflected before the
-  // optimistic callback invocation further down that unblocks the caller before
-  // the cookie is actually set.
+  // instantly reflected.
   IncrementSharedVersion();
 
-  std::move(callback).Run();
+  const bool get_cookies_on_set =
+      base::FeatureList::IsEnabled(features::kGetCookiesOnSet);
+
+  base::ReadOnlySharedMemoryRegion shared_memory_region;
+  if (!get_cookies_on_set) {
+    // Unblock the caller before the cookie is actually set.
+    std::move(callback).Run(/*response=*/nullptr);
+  } else if (get_version_shared_memory) {
+    shared_memory_region = GetAndPrepareSharedMemoryRegion(url);
+  }
 
   net::CookieInclusionStatus status;
   std::unique_ptr<net::CanonicalCookie> parsed_cookie =
@@ -945,17 +986,31 @@ void RestrictedCookieManager::SetCookieFromString(
               /*apply_devtools_overrides=*/apply_devtools_overrides,
               /*force_disable_third_party_cookies=*/false)));
     }
+    if (get_cookies_on_set) {
+      // Unblock the caller on failure.
+      std::move(callback).Run(/*response=*/nullptr);
+    }
     return;
   }
   if (metrics_subsampler_.ShouldSample(net::kHistogramSampleProbability)) {
     HistogramScriptCookieExpiration(*parsed_cookie);
   }
 
+  auto on_set =
+      get_cookies_on_set
+          ? base::BindOnce(&RestrictedCookieManager::GetCookiesAfterSet,
+                           weak_ptr_factory_.GetWeakPtr(), url,
+                           site_for_cookies, top_frame_origin,
+                           storage_access_api_status, apply_devtools_overrides,
+                           std::move(callback), std::move(shared_memory_region))
+          : base::DoNothing();
+
   // Further checks (origin_, settings), as well as logging done by
   // SetCanonicalCookie()
   SetCanonicalCookie(*parsed_cookie, url, site_for_cookies, top_frame_origin,
                      storage_access_api_status, status,
-                     apply_devtools_overrides, base::DoNothing());
+                     apply_devtools_overrides, std::move(on_set));
+
   if (metrics_subsampler_.ShouldSample(net::kHistogramSampleProbability)) {
     base::UmaHistogramCustomMicrosecondsTimes(
         "Net.RestrictedCookieManager.SetCookieFromString.Duration.Subsampled",
@@ -984,23 +1039,7 @@ void RestrictedCookieManager::GetCookiesString(
 
   base::ReadOnlySharedMemoryRegion shared_memory_region;
   if (get_version_shared_memory) {
-    shared_memory_region =
-        shared_memory_version_controller_.GetSharedMemoryRegion();
-
-    // Clients can change their URL. If that happens the subscription needs to
-    // mirror that to get the correct updates.
-    bool new_url = cookie_store_subscription_ && change_subscribed_url_ != url;
-
-    if (!cookie_store_subscription_ || new_url) {
-      change_subscribed_url_ = url;
-      cookie_store_subscription_ =
-          cookie_store_->GetChangeDispatcher().AddCallbackForUrl(
-              url, cookie_partition_key_,
-              base::IgnoreArgs<const net::CookieChangeInfo&>(
-                  base::BindRepeating(
-                      &RestrictedCookieManager::IncrementSharedVersion,
-                      base::Unretained(this))));
-    }
+    shared_memory_region = GetAndPrepareSharedMemoryRegion(url);
   }
 
   // Bind the current shared cookie version to |callback| to be returned once
@@ -1136,6 +1175,40 @@ net::CookieSettingOverrides RestrictedCookieManager::GetCookieSettingOverrides(
     overrides = base::Union(overrides, devtools_cookie_setting_overrides_);
   }
   return overrides;
+}
+
+void RestrictedCookieManager::GetCookiesAfterSet(
+    const GURL& url,
+    const net::SiteForCookies& site_for_cookies,
+    const url::Origin& top_frame_origin,
+    net::StorageAccessApiStatus storage_access_api_status,
+    bool apply_devtools_overrides,
+    SetCookieFromStringCallback callback,
+    base::ReadOnlySharedMemoryRegion shared_memory_region,
+    bool succeeded) {
+  if (!succeeded) {
+    std::move(callback).Run(/*response=*/nullptr);
+    return;
+  }
+
+  auto bound_callback =
+      base::BindOnce(&RunCallbackWithResponse, std::move(callback),
+                     shared_memory_version_controller_.GetSharedVersion(),
+                     std::move(shared_memory_region));
+
+  // Match everything.
+  auto match_options = mojom::CookieManagerGetOptions::New();
+  match_options->name = "";
+  match_options->match_type = mojom::CookieMatchType::STARTS_WITH;
+  // The caller will be unblocked by GetAllForUrl.
+  GetAllForUrl(url, site_for_cookies, top_frame_origin,
+               storage_access_api_status, std::move(match_options),
+               /*is_ad_tagged=*/false, apply_devtools_overrides,
+               /*force_disable_third_party_cookies=*/false,
+               base::BindOnce([](const std::vector<net::CookieWithAccessResult>&
+                                     cookies) {
+                 return net::CanonicalCookie::BuildCookieLine(cookies);
+               }).Then(std::move(bound_callback)));
 }
 
 void RestrictedCookieManager::OnCookiesAccessed(

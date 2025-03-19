@@ -104,6 +104,10 @@ bool IsWebstoreOrigin(const url::Origin& origin);
 // and path, not scheme, query, etc.)
 bool IsWebstoreUpdateUrl(const GURL& update_url);
 
+// Returns whether the URL is the same origin with the Webstore API URL
+// (https://chromewebstore.googleapis.com/).
+bool IsWebstoreApiUrl(const GURL& url);
+
 // Returns true if the URL points to an extension blocklist.
 bool IsBlocklistUpdateUrl(const GURL& url);
 

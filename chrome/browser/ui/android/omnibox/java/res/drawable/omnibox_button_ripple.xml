@@ -9,8 +9,8 @@ found in the LICENSE file.
     android:color="?android:attr/colorControlHighlight">
   <item
       android:id="@android:id/content"
-      android:width="@dimen/omnibox_button_highlight_width"
-      android:height="@dimen/omnibox_button_highlight_height"
+      android:width="@dimen/search_box_button_highlight_width"
+      android:height="@dimen/search_box_button_highlight_height"
       android:gravity="center">
 
     <shape android:shape="rectangle">

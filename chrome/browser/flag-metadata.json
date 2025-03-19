@@ -1294,11 +1294,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "cct-before-unload",
-    "owners": [ "katzz@google.com", "twellington@google.com"],
-    "expiry_milestone": 142
-  },
-  {
     "name": "cct-ephemeral-media-viewer-experiment",
     "owners": [ "chrome-incognito@chromium.org", "//chrome/android/java/src/org/chromium/chrome/browser/customtabs/OWNERS" ],
     "expiry_milestone": 137
@@ -1367,6 +1362,11 @@
     "name": "cct-sign-in-prompt",
     "owners": ["samarchehade@google.com", "chrome-signin-team@google.com"],
     "expiry_milestone": 140
+  },
+  {
+    "name": "cct-toolbar-refactor",
+    "owners": ["sinansahin@google.com", "chrome-connective-tissue@google.com"],
+    "expiry_milestone": 150
   },
   {
     "name": "cellular-bypass-esim-installation-connectivity-check",
@@ -3520,6 +3520,14 @@
     "expiry_milestone": 125
   },
   {
+    "name": "enable-media-foundation-camera-usage-monitoring",
+    "owners": [
+      "guidou@chromium.org",
+      "agpalak@chromium.org"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "enable-media-foundation-clear",
     "owners": [
       "wicarr@microsoft.com"
@@ -3639,6 +3647,14 @@
     // This flag is used by dev teams on Android to disable this feature, since
     // it can badly break pages under test.
     "expiry_milestone": -1
+  },
+  {
+    "name": "enable-pending-mode-passwords-promo",
+    "owners": [
+      "uno-desktop@google.com",
+      "//components/signin/OWNERS"
+    ],
+    "expiry_milestone": 138
   },
   {
     "name": "enable-perfetto-system-tracing",
@@ -4929,6 +4945,14 @@
     "expiry_milestone": 137
   },
   {
+    "name": "glic-user-resize",
+    "owners": [
+      "iwells@chromium.org",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 137
+  },
+  {
     "name": "global-media-controls-updated-ui",
     "owners": [ "yrw@chromium.org", "media-dev@chromium.org" ],
     "expiry_milestone": 140
@@ -6191,6 +6215,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "notification-collision-management",
+    "owners": [ "thegreenfrog@chromium.org", "bling-gsu-pod@google.com" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "notification-one-tap-unsubscribe",
     "owners": [ "engedy@chromium.org" ],
     "expiry_milestone": 132
@@ -6842,15 +6871,6 @@
     // and should not be allowed to expire until https://crbug.com/801671 is
     // resolved.
     "expiry_milestone": -1
-  },
-  {
-    "name": "overlay-scrollbars-os-settings",
-    "owners": [
-      "zhzhliu@chromium.org",
-      "cros-ui-foundations@google.com"
-    ],
-    // This flag is used for os settings for overlay scrollbars.
-    "expiry_milestone": 150
   },
   {
     "name": "overlay-strategies",

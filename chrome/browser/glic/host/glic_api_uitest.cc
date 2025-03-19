@@ -34,6 +34,12 @@
 namespace glic {
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+std::vector<std::string> GetTestSuiteNames() {
+  return {
+      "GlicApiTest",
+      "GlicApiTestWithOneTab",
+  };
+}
 
 class GlicApiTest : public test::InteractiveGlicTest {
  public:
@@ -42,7 +48,8 @@ class GlicApiTest : public test::InteractiveGlicTest {
         "test",
         ::testing::UnitTest::GetInstance()->current_test_info()->name());
 
-    features_.InitWithFeatures({features::kGlicScrollTo}, {});
+    features_.InitWithFeatures(
+        {features::kGlicScrollTo, features::kGlicUserResize}, {});
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ::switches::kGlicHostLogging);
     SetGlicPagePath("/glic/test.html");
@@ -65,11 +72,7 @@ class GlicApiTest : public test::InteractiveGlicTest {
     ASSERT_TRUE(web_contents);
     auto result = content::EvalJs(web_contents, base::StrCat({"runApiTest()"}));
     ASSERT_THAT(result, content::EvalJsResult::IsOk());
-    ASSERT_THAT(result.ExtractString(),
-                testing::AnyOf(testing::Eq("pass"), testing::Eq("next-step")));
-    if (result.ExtractString() == "next-step") {
-      next_step_required_ = true;
-    }
+    ProcessTestResult(result);
   }
 
   // Continues test execution if `advanceToNextStep()` was used to return
@@ -81,12 +84,7 @@ class GlicApiTest : public test::InteractiveGlicTest {
     ASSERT_TRUE(web_contents);
     auto result =
         content::EvalJs(web_contents, base::StrCat({"continueApiTest()"}));
-    ASSERT_THAT(result, content::EvalJsResult::IsOk());
-    ASSERT_THAT(result.ExtractString(),
-                testing::AnyOf(testing::Eq("pass"), testing::Eq("next-step")));
-    if (result.ExtractString() == "next-step") {
-      next_step_required_ = true;
-    }
+    ProcessTestResult(result);
   }
 
   content::WebContents* FindGlicGuestWebContents() {
@@ -100,7 +98,24 @@ class GlicApiTest : public test::InteractiveGlicTest {
     return nullptr;
   }
 
+  const std::optional<base::Value>& step_data() const { return step_data_; }
+
+ private:
+  void ProcessTestResult(const content::EvalJsResult& result) {
+    ASSERT_THAT(result, content::EvalJsResult::IsOk());
+    if (result.value.is_dict()) {
+      auto* id = result.value.GetDict().Find("id");
+      if (id && id->is_string() && id->GetString() == "next-step") {
+        step_data_ = result.value.GetDict().Find("payload")->Clone();
+      }
+      next_step_required_ = true;
+      return;
+    }
+    ASSERT_THAT(result.ExtractString(), testing::Eq("pass"));
+  }
+
   bool next_step_required_ = false;
+  std::optional<base::Value> step_data_;
   base::test::ScopedFeatureList features_;
 };
 
@@ -127,6 +142,37 @@ class GlicApiTestWithOneTab : public GlicApiTest {
 // Just verify the test harness works.
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testDoNothing) {
   ExecuteJsTest();
+}
+
+// Checks that all tests in api_test.ts have a corresponding test case in this
+// file.
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testAllTestsAreRegistered) {
+  ExecuteJsTest();
+  ASSERT_TRUE(step_data()->is_list());
+  ::testing::UnitTest* unit_test = ::testing::UnitTest::GetInstance();
+  std::set<std::string> test_suites;
+  const std::vector<std::string> suite_names = GetTestSuiteNames();
+  std::set<std::string> js_test_names, cc_test_names;
+  for (const auto& test_name : step_data()->GetList()) {
+    js_test_names.insert(test_name.GetString());
+  }
+  for (int i = 0; i < unit_test->total_test_suite_count(); ++i) {
+    const auto* test_suite = unit_test->GetTestSuite(i);
+    if (!base::Contains(suite_names, std::string(test_suite->name()))) {
+      continue;
+    }
+    for (int j = 0; j < test_suite->total_test_count(); ++j) {
+      std::string name = test_suite->GetTestInfo(j)->name();
+      if (name.starts_with("DISABLED_")) {
+        cc_test_names.insert(name.substr(9));
+      } else {
+        cc_test_names.insert(name);
+      }
+    }
+  }
+  ASSERT_THAT(js_test_names, testing::IsSubsetOf(cc_test_names))
+      << "Test cases in js, but not cc";
+  ContinueJsTest();
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTest, testCreateTab) {
@@ -192,6 +238,20 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testCanAttachPanel) {
                                  GlicInstrumentMode::kHostAndContents));
   ExecuteJsTest();
   // TODO(harringtond): Test case where the canAttachPanel returns false.
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testEnableDragResize) {
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+  ExecuteJsTest();
+  RunTestSequence(InAnyContext(ExpectUserCanResize(true)));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testDisableDragResize) {
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+  ExecuteJsTest();
+  RunTestSequence(InAnyContext(ExpectUserCanResize(false)));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetFocusedTabStateV2) {

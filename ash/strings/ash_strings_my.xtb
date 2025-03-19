@@ -166,6 +166,7 @@
 <translation id="1505542291183484463">လေးထောင့်ကွက်ဝင်းဒိုး၏ အောက်ဘက်တွင် အရွယ်ပြင်ရန်</translation>
 <translation id="1510238584712386396">Launcher</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{အကြောင်းကြားချက်ဆက်တင်များကို ပြရန်။ အက်ပ်တစ်ခုအတွက် အကြောင်းကြားချက်များကို ပိတ်ထားသည်}other{အကြောင်းကြားချက်ဆက်တင်များကို ပြရန်။ အက်ပ် # ခုအတွက် အကြောင်းကြားချက်များကို ပိတ်ထားသည်}}</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">ဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> အကြာတွင် အားပြည့်မည်</translation>
 <translation id="1525508553941733066">ပယ်ရန်</translation>
 <translation id="1526448108126799339">ဝင်းဒိုးအသစ်တွင် တဘ်အသစ် ဖွင့်ရန်</translation>
@@ -345,7 +346,6 @@
 <translation id="2201071101391734388">လတ်တလောဓာတ်ပုံ <ph name="TOTAL_COUNT" /> ပုံအနက် <ph name="INDEX" /> ပုံမြောက်။</translation>
 <translation id="2201687081523799384">Google Tasks ကို လျှော့ပြပါ</translation>
 <translation id="2208323208084708176">တစ်စုတစ်စည်းတည်းပြ ဒက်စတော့ မုဒ်</translation>
-<translation id="2220572644011485463">ပင်နံပါတ် သို့မဟုတ် စကားဝှက်</translation>
 <translation id="2222841058024245321">မျက်နှာပြင်နေရာ ၇</translation>
 <translation id="2223384056430485343">မျက်နှာပြင် ခွဲ၍ပြသခြင်းတွင်</translation>
 <translation id="2224075387478458881">ကာကွယ်ထားသော အကြောင်းအရာများကို မြင်နိုင်ချိန်တွင် ဖန်သားပြင်ရိုက်ကူးခြင်းကို ခွင့်မပြုပါ</translation>
@@ -1829,7 +1829,6 @@
 <translation id="7000027735917578303">ဝင်းဒိုးနှင့်မျက်နှာပြင် ဆက်တင်များ</translation>
 <translation id="7004910047186208204">မိုဘိုင်းဒေတာသို့ ချိတ်ဆက်ပါ</translation>
 <translation id="7005239792648594238">စတင်ရန် အက်ပ်ကိုဖွင့်ပါ</translation>
-<translation id="7007983414944123363">သင့်ပင်နံပါတ် သို့မဟုတ် စကားဝှက်ကို စစ်ဆေး၍မရနိုင်သေးပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="7014684956566476813"><ph name="DEVICE_NAME" /> စက်သို့ ချိတ်ဆက်ထားသည်</translation>
 <translation id="7015766095477679451"><ph name="COME_BACK_TIME" /> ၌ ပြန်လာပါ။</translation>
 <translation id="70168403932084660">မျက်နှာပြင်နေရာ ၆</translation>
@@ -2467,6 +2466,7 @@
 <translation id="9168436347345867845">နောက်မှလုပ်ရန်</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> အတွက် ရလဒ် ၁ ခုကို ပြနေသည်</translation>
 <translation id="9179259655489829027">ဤဝန်ဆောင်မှုက လက်မှတ်ထိုးဝင်ထားသူ မည်သူမဆိုအား စကားဝှက်မလိုအပ်ဘဲ အသုံးပြုခွင့်ပေးပါသည်။ သင်ယုံကြည်စိတ်ချရသည့် အကောင့်များဖြင့်သာ ဤဝန်ဆောင်မှုကို အသုံးပြုပါ။</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183456764293710005">မျက်နှာပြင်အပြည့် မှန်ဘီလူး</translation>
 <translation id="9192133205265227850">“<ph name="DEVICE_NAME" />” ကိုသုံးရန်</translation>
 <translation id="9193626018745640770">အမည်မသိလက်ခံစက်တွင် ကာ့စ်လုပ်နေသည်</translation>

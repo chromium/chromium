@@ -10,6 +10,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
@@ -27,7 +28,6 @@
 #include "components/prefs/pref_store.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/origin.h"
 
 class BrowsingDataModel;
@@ -72,12 +72,12 @@ class SiteSettingsHandler
     bool operator<(const GroupingKey& other) const;
 
    private:
-    explicit GroupingKey(const absl::variant<std::string, url::Origin>& value);
+    explicit GroupingKey(const std::variant<std::string, url::Origin>& value);
 
     url::Origin ToOrigin() const;
 
     // eTLD+1 or Origin
-    absl::variant<std::string, url::Origin> value_;
+    std::variant<std::string, url::Origin> value_;
   };
 
   using AllSitesMap =

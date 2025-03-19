@@ -9,6 +9,7 @@
 #include <cmath>
 #include <limits>
 #include <string_view>
+#include <variant>
 
 #include "base/json/string_escape.h"
 #include "base/logging.h"
@@ -66,7 +67,7 @@ JSONWriter::JSONWriter(int options, std::string* json, size_t max_depth)
   CHECK_LE(max_depth, internal::kAbsoluteMaxDepth);
 }
 
-bool JSONWriter::BuildJSONString(absl::monostate node, size_t depth) {
+bool JSONWriter::BuildJSONString(std::monostate node, size_t depth) {
   json_string_->append("null");
   return true;
 }

@@ -763,7 +763,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI)
     public void testCookiesFpsSubpageIsLaunched() throws Exception {
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(
@@ -1767,7 +1766,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI)
     public void testExpectedCookieButtonsCheckedWhenFpsUiEnabled() {
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(
@@ -1793,7 +1791,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI})
     public void testExpectedCookieButtonsCheckedWhenFpsUiAndPrivacySandboxSettings4Enabled() {
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(
@@ -3306,18 +3303,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI)
-    public void testRenderThirdPartyCookiesPage() throws Exception {
-        createCookieExceptions();
-        renderCategoryPage(
-                SiteSettingsCategory.Type.THIRD_PARTY_COOKIES,
-                "site_settings_third_party_cookies_page");
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI})
     public void testRenderThirdPartyCookiesPageWithFps() throws Exception {
         createCookieExceptions();
         renderCategoryPage(
@@ -3328,18 +3313,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI})
-    public void testRenderCookiesPageThirdPartyCookiesPageWithoutFps() throws Exception {
-        createCookieExceptions();
-        renderCategoryPage(
-                SiteSettingsCategory.Type.THIRD_PARTY_COOKIES,
-                "site_settings_third_party_cookies_page_without_fps");
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"RenderTest"})
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI)
     public void testRenderCookiesPageWithFps() throws Exception {
         createCookieExceptions();
         renderCategoryPage(

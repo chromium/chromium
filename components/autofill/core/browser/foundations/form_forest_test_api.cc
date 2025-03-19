@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/foundations/form_forest_test_api.h"
 
 #include <iomanip>
+#include <variant>
 
 namespace autofill::internal {
 
@@ -40,7 +41,7 @@ std::ostream& FormForestTestApi::PrintFrames(std::ostream& os) {
       os << "  #Frames " << form.child_frames().size() << ":" << std::endl;
       for (const FrameTokenWithPredecessor& child : form.child_frames()) {
         os << "  ChildFrame = "
-           << absl::visit([](auto x) { return x.ToString(); }, child.token)
+           << std::visit([](auto x) { return x.ToString(); }, child.token)
            << " / " << child.predecessor << std::endl;
       }
     }
@@ -93,7 +94,7 @@ std::ostream& FormForestTestApi::PrintForm(std::ostream& os,
     for (const FrameTokenWithPredecessor& child : form.child_frames()) {
       auto local_child = frame->driver->Resolve(child.token);
       os << prefix << std::setfill(' ') << std::setw(2) << ++i << ". Frame "
-         << absl::visit([](auto x) { return x.ToString(); }, child.token)
+         << std::visit([](auto x) { return x.ToString(); }, child.token)
          << " -> " << (local_child ? local_child->ToString() : "") << std::endl;
     }
   }

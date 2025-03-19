@@ -316,7 +316,6 @@
 <translation id="1532118530259321453">Подтвердите действие</translation>
 <translation id="1533966801397200693">Вы используете управляемый профиль. Администратор может удаленно изменять настройки профиля, анализировать отчеты с информацией о браузере и выполнять другие задачи. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Перевести страницу</translation>
-<translation id="1538295100801850685">Улучшенные подсказки</translation>
 <translation id="1539840569003678498">Отчет отправлен:</translation>
 <translation id="1542105669288201090">Бизнес-образование</translation>
 <translation id="1545757265410828525">История изменения цен</translation>
@@ -1157,7 +1156,6 @@
 <translation id="3052868890529250114">Обычно подключение к сайтам защищено, но в этот раз Chrome не удалось установить безопасное соединение. Возможно, злоумышленник пытается перехватить или изменить ваше сетевое подключение. Подробнее <ph name="BEGIN_LEARN_MORE_LINK" />об этом предупреждении<ph name="END_LEARN_MORE_LINK" />…</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />: скидка <ph name="PRICE_DROP" /></translation>
 <translation id="3061707000357573562">Исправление сервиса</translation>
-<translation id="306198082577913404">Включить улучшенные подсказки.</translation>
 <translation id="3062655045399308513">Удалить данные браузера…</translation>
 <translation id="3063453392496098461">Не удалось установить фоновые службы VPN.</translation>
 <translation id="306573536155379004">Игра началась.</translation>
@@ -2324,7 +2322,6 @@
 <translation id="5097099694988056070">статистические данные устройства, например об использовании процессора или оперативной памяти;</translation>
 <translation id="5097468150760963273">27 x 39 дюймов</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Браузеру Chrome требуется доступ к функции "<ph name="PERMISSION" />" вашего устройства.</translation>
 <translation id="510644072453496781">Картон (торцевой)</translation>
 <translation id="5106648964679263509">Введены данные виртуальной карты сервиса "<ph name="BNPL_ISSUER_NAME" />"</translation>
 <translation id="5108881358339761672">Сайт не защищен</translation>
@@ -4053,7 +4050,6 @@
 <translation id="8134058435519644366">Набор персонала и трудоустройство</translation>
 <translation id="8135546115396015134">стрелку влево</translation>
 <translation id="8137456439814903304">Энергетика и коммунальные службы</translation>
-<translation id="81474145143203755">Чтобы использовать функцию "<ph name="PERMISSION" />" на этом сайте, предоставьте доступ браузеру Chrome.</translation>
 <translation id="8148608574971654810">Версия PDF:</translation>
 <translation id="8149426793427495338">Ваш компьютер перешел в спящий режим.</translation>
 <translation id="8150722005171944719">Файл по адресу <ph name="URL" /> недоступен. Возможно, он был удален или перемещен либо права доступа к нему ограничены.</translation>

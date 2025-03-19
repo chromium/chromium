@@ -14,6 +14,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -736,9 +737,9 @@ void Display::MaybeLogQuadsProperties(
     if (!candidate.is_opaque) {
       num_nonopaque_quads++;
     }
-    if (!absl::holds_alternative<gfx::OverlayTransform>(candidate.transform) ||
-        absl::get<gfx::OverlayTransform>(candidate.transform) !=
-             gfx::OVERLAY_TRANSFORM_NONE) {
+    if (!std::holds_alternative<gfx::OverlayTransform>(candidate.transform) ||
+        std::get<gfx::OverlayTransform>(candidate.transform) !=
+            gfx::OVERLAY_TRANSFORM_NONE) {
       num_transformation_quads++;
     }
     if (candidate.is_solid_color) {

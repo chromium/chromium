@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 #include <utility>
+#include <variant>
 
 #include "base/base64url.h"
 #include "base/containers/span.h"
@@ -137,7 +138,7 @@ trusted_vault_pb::SecurityDomainMember CreateSecurityDomainMember(
   // only to compute member name.
   member.set_public_key(public_key_string);
 
-  absl::visit(
+  std::visit(
       base::Overloaded{
           [&member](const LocalPhysicalDevice&) {
             member.set_member_type(trusted_vault_pb::SecurityDomainMember::
@@ -179,7 +180,7 @@ void AddSharedMemberKeysFromSource(
     trusted_vault_pb::JoinSecurityDomainsRequest* request,
     const SecureBoxPublicKey& public_key,
     const MemberKeysSource& member_keys_source) {
-  absl::visit(
+  std::visit(
       base::Overloaded{
           [request, &public_key](
               const std::vector<TrustedVaultKeyAndVersion>& key_and_versions) {
@@ -207,12 +208,11 @@ trusted_vault_pb::JoinSecurityDomainsRequest CreateJoinSecurityDomainsRequest(
   *request.mutable_security_domain_member() =
       CreateSecurityDomainMember(public_key, authentication_factor_type);
   AddSharedMemberKeysFromSource(&request, public_key, member_keys_source);
-  if (auto* unspecified_type =
-          absl::get_if<UnspecifiedAuthenticationFactorType>(
-              &authentication_factor_type)) {
+  if (auto* unspecified_type = std::get_if<UnspecifiedAuthenticationFactorType>(
+          &authentication_factor_type)) {
     request.set_member_type_hint(unspecified_type->value());
   } else if (auto* gpm_pin_metadata =
-                 absl::get_if<GpmPinMetadata>(&authentication_factor_type)) {
+                 std::get_if<GpmPinMetadata>(&authentication_factor_type)) {
     if (gpm_pin_metadata->public_key) {
       request.set_current_public_key_to_replace(*gpm_pin_metadata->public_key);
     }
@@ -531,7 +531,7 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
 TrustedVaultURLFetchReasonForUMA
 GetURLFetchReasonForUMAForJoinSecurityDomainsRequest(
     AuthenticationFactorType authentication_factor_type) {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{
           [](const LocalPhysicalDevice&) {
             return TrustedVaultURLFetchReasonForUMA::kRegisterDevice;

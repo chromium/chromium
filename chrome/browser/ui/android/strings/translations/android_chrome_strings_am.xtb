@@ -432,7 +432,6 @@
 <translation id="2981364137500752533">እስከ 5 መስኮቶች ሊኖሩዎት ይችላሉ።</translation>
 <translation id="2983102365694924129">በአንድ ጣቢያ ላይ ባለዎት እንቅስቃሴ ላይ የተመሠረተ። ይህ ቅንብር ጠፍቷል።</translation>
 <translation id="2984978667043170458">በGoogle ፍለጋዎች ውስጥ በዙሪያው ያለውን ጽሁፍ ያካትቱ</translation>
-<translation id="2988638966064514052">የይለፍ ቃላትዎን ያጠናክሩ</translation>
 <translation id="2989523299700148168">በቅርብ ጊዜ የተጎበኙ</translation>
 <translation id="2992473221983447149">የምስል መግለጫዎች</translation>
 <translation id="2996291259634659425">የይለፍ ሐረግ ይፍጠሩ</translation>
@@ -548,7 +547,6 @@
 <translation id="3557336313807607643">ወደ እውቂያዎች አክል</translation>
 <translation id="3563767357928833671">የቅንጥብ ሰሌዳ ይዘቶች ታይተዋል</translation>
 <translation id="3566639033325271639">ቅንብሮችን አዘምን</translation>
-<translation id="3568945271227339929">ምንም የተጠለፈ የይለፍ ቃል የለም</translation>
 <translation id="3575464060651642446">በዚህ መሣሪያ ላይ ያሉ የይለፍ ቃላትን በመፈተሽ ላይ…</translation>
 <translation id="3577473026931028326">የሆነ ችግር ተፈጥሯል። እንደገና ይሞክሩ።</translation>
 <translation id="3577558748185201054">የእርስዎን ዝንባሌዎች እና ምርጫዎች ያስተዳድሩ</translation>
@@ -1055,7 +1053,6 @@
 <translation id="5958275228015807058">የእርስዎን ፋይሎች እና ገጾች በውርዶች ውስጥ ያግኙ</translation>
 <translation id="5958994127112619898">ገጹን አቅልል</translation>
 <translation id="5962718611393537961">ለመሰብሰብ መታ ያድርጉ</translation>
-<translation id="5964180026566797835">የይለፍ ቃላትን መፈተሽ አልተቻለም</translation>
 <translation id="5964869237734432770">የምስል መግለጫዎችን አቁም</translation>
 <translation id="5977976211062815271">በዚህ መሣሪያ ላይ</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{በንባብ ዝርዝርዎ ላይ 1 ገፅ}one{በንባብ ዝርዝርዎ ላይ # ገፅ}other{በንባብ ዝርዝርዎ ላይ # ገፆች}}</translation>
@@ -1099,6 +1096,7 @@
 <translation id="6150320133806434356">ዕልባት ተቀምጧል</translation>
 <translation id="6150706324143004339">በGoogle መለያዎ ውስጥ የChrome ውሂብን ለመጠቀም እና ለማስቀመጥ Chromeን ያዘምኑ</translation>
 <translation id="6154478581116148741">የይለፍ ቃላትዎን ከዚህ መሣሪያ ወደ ውጭ ለመላክ በቅንብሮች ውስጥ የማያ ገፅ ቁልፍን ያብሩ</translation>
+<translation id="6156323911414505561">የዕልባቶች አሞሌን አሳይ</translation>
 <translation id="6162892189396105610">Chrome እርስዎ ሊጎበኟቸው ይችላሉ ብሎ የሚያስባቸውን ገጾችን አስቀድሞ ይጭናል።</translation>
 <translation id="6170675927290506430">ወደ ማሳወቂያ ቅንብሮች ሂድ</translation>
 <translation id="6186394685773237175">ምንም የተጠለፈ የይለፍ ቃል አልተገኘም</translation>

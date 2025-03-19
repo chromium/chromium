@@ -12,7 +12,6 @@
 
 #include "test_trace_processor_export.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace perfetto::trace_processor {
 struct Config;

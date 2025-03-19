@@ -162,11 +162,11 @@ void BlobURLStoreImpl::ResolveAsURLLoaderFactory(
                           registry_->GetUnsafeTopLevelSite(url));
 }
 
-void BlobURLStoreImpl::ResolveForNavigation(
+void BlobURLStoreImpl::ResolveAsBlobURLToken(
     const GURL& url,
     mojo::PendingReceiver<blink::mojom::BlobURLToken> token,
     bool is_top_level_navigation,
-    ResolveForNavigationCallback callback) {
+    ResolveAsBlobURLTokenCallback callback) {
   if (!registry_) {
     std::move(callback).Run(std::nullopt);
     return;
@@ -198,18 +198,6 @@ void BlobURLStoreImpl::ResolveForNavigation(
 
   new BlobURLTokenImpl(registry_, url, std::move(blob), std::move(token));
   std::move(callback).Run(registry_->GetUnsafeAgentClusterID(url));
-}
-
-void BlobURLStoreImpl::ResolveForWorkerScriptFetch(
-    const GURL& url,
-    mojo::PendingReceiver<blink::mojom::BlobURLToken> token,
-    ResolveForNavigationCallback callback) {
-  if (!registry_) {
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-  ResolveForNavigation(url, std::move(token), /*is_top_level_navigation=*/false,
-                       std::move(callback));
 }
 
 bool BlobURLStoreImpl::BlobUrlIsValid(const GURL& url,

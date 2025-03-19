@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <optional>
+#include <variant>
 #include <vector>
 
 #include "base/numerics/checked_math.h"
@@ -22,7 +23,6 @@
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom-forward.h"
 
 class GURL;
@@ -154,7 +154,7 @@ class CONTENT_EXPORT AttributionReport {
     // `attribution_test_utils.h` should also be updated.
   };
 
-  using Data = absl::variant<EventLevelData, AggregatableData>;
+  using Data = std::variant<EventLevelData, AggregatableData>;
 
   // Returns the minimum non-null time of `a` and `b`, or `std::nullopt` if
   // both are null.

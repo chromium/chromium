@@ -1434,17 +1434,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="No prefetch"/>
 </enum>
 
-<enum name="SecondaryActivity">
-  <int value="0" label="Download"/>
-  <int value="1" label="Bookmark"/>
-  <int value="2" label="FirstRun"/>
-  <int value="3" label="LightWeightFirstRun"/>
-  <int value="4" label="History"/>
-  <int value="5" label="Settings"/>
-  <int value="6" label="BookmarkFolderPicker"/>
-  <int value="7" label="SigninAndHistorySync"/>
-</enum>
-
 <enum name="SecureCookieAction">
   <int value="0"
       label="The provided URL was invalid, so no URL-modification was
@@ -2326,6 +2315,12 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Text dark, night mode undefined"/>
   <int value="7" label="Text dark, night mode on"/>
   <int value="8" label="Text dark, night mode off"/>
+</enum>
+
+<enum name="WebViewShouldInterceptRequestOverridden">
+  <int value="0" label="shouldInterceptRequest is not overridden."/>
+  <int value="1" label="shouldInterceptRequest is overridden."/>
+  <int value="2" label="Error while determining if it was overridden."/>
 </enum>
 
 <enum name="WebViewStartupCallSite">

@@ -22,7 +22,6 @@
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/blocklist.h"
-#include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/extensions/delayed_install_manager.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
@@ -67,6 +66,7 @@ FORWARD_DECLARE_TEST(BlocklistedExtensionSyncServiceTest,
 namespace extensions {
 class ChromeExtensionRegistrarDelegate;
 class ComponentLoader;
+class CorruptedExtensionReinstaller;
 class CrxInstaller;
 class DelayedInstallManager;
 class ExtensionActionStorageManager;
@@ -88,6 +88,8 @@ class ExtensionServiceInterface {
   virtual ~ExtensionServiceInterface() = default;
 
   // Gets the object managing reinstalls of the corrupted extensions.
+  // TODO(crbug.com/404564705): Delete this and switch callers to
+  // CorruptedExtensionReinstaller::Get().
   virtual CorruptedExtensionReinstaller* corrupted_extension_reinstaller() = 0;
 
   // Creates an CrxInstaller to update an extension.
@@ -142,12 +144,6 @@ class ExtensionServiceInterface {
   virtual bool UserCanDisableInstalledExtension(
       const std::string& extension_id) = 0;
 
-  // Ask each external extension provider to call
-  // OnExternalExtension(File|UpdateUrl)Found() with their known extensions.
-  // This will trigger an update/reinstall of the extensions saved in the
-  // provider's prefs.
-  virtual void ReinstallProviderExtensions() = 0;
-
   virtual base::WeakPtr<ExtensionServiceInterface> AsWeakPtr() = 0;
 };
 
@@ -198,7 +194,6 @@ class ExtensionService : public ExtensionServiceInterface,
                                         bool install_immediately) override;
   void CheckManagementPolicy() override;
   void CheckForUpdatesSoon() override;
-  void ReinstallProviderExtensions() override;
   base::WeakPtr<ExtensionServiceInterface> AsWeakPtr() override;
 
   // ExtensionManagement::Observer implementation:
@@ -328,9 +323,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // reloaded. Newly added extensions are no longer automatically blocked.
   void UnblockAllExtensions();
 
-  // Check for updates (or potentially new extensions from external providers)
-  void CheckForExternalUpdates();
-
   // Informs the service that an extension's files are in place for loading.
   //
   // |extension|                the extension
@@ -389,8 +381,10 @@ class ExtensionService : public ExtensionServiceInterface,
 
   bool block_extensions() const { return block_extensions_; }
 
+  // TODO(crbug.com/404561030): Delete this accessor and use
+  // DelayedInstallManager::Get() instead.
   DelayedInstallManager* delayed_install_manager() {
-    return &delayed_install_manager_;
+    return delayed_install_manager_;
   }
 
   Profile* profile() { return profile_; }
@@ -451,9 +445,6 @@ class ExtensionService : public ExtensionServiceInterface,
   void set_browser_terminating_for_test(bool value) {
     browser_terminating_ = value;
   }
-
-  // While disabled all calls to CheckForExternalUpdates() will bail out.
-  static base::AutoReset<bool> DisableExternalUpdatesForTesting();
 
  private:
   // Loads extensions specified via a command line flag/switch.
@@ -624,7 +615,7 @@ class ExtensionService : public ExtensionServiceInterface,
   ForceInstalledMetrics force_installed_metrics_;
 
   // Schedules downloads/reinstalls of the corrupted extensions.
-  CorruptedExtensionReinstaller corrupted_extension_reinstaller_;
+  raw_ptr<CorruptedExtensionReinstaller> corrupted_extension_reinstaller_;
 
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observation_{this};
@@ -636,8 +627,7 @@ class ExtensionService : public ExtensionServiceInterface,
   base::ScopedObservation<CWSInfoService, CWSInfoService::Observer>
       cws_info_service_observation_{this};
 
-  // Depends on `extension_registrar` so must come after it.
-  DelayedInstallManager delayed_install_manager_;
+  raw_ptr<DelayedInstallManager> delayed_install_manager_;
 
   PrefChangeRegistrar pref_change_registrar_;
 

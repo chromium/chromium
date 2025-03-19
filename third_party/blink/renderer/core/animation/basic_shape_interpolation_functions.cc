@@ -310,10 +310,9 @@ InterpolableValue* CreateNeutralValue() {
   return list;
 }
 
-scoped_refptr<BasicShape> CreateBasicShape(
-    const InterpolableValue& interpolable_value,
-    const CSSToLengthConversionData& conversion_data) {
-  scoped_refptr<BasicShapeCircle> circle = BasicShapeCircle::Create();
+BasicShape* CreateBasicShape(const InterpolableValue& interpolable_value,
+                             const CSSToLengthConversionData& conversion_data) {
+  BasicShapeCircle* circle = MakeGarbageCollected<BasicShapeCircle>();
   const auto& list = To<InterpolableList>(interpolable_value);
   circle->SetCenterX(
       CreateCoordinate(*list.Get(kCircleCenterXIndex), conversion_data));
@@ -406,10 +405,9 @@ InterpolableValue* CreateNeutralValue() {
   return list;
 }
 
-scoped_refptr<BasicShape> CreateBasicShape(
-    const InterpolableValue& interpolable_value,
-    const CSSToLengthConversionData& conversion_data) {
-  scoped_refptr<BasicShapeEllipse> ellipse = BasicShapeEllipse::Create();
+BasicShape* CreateBasicShape(const InterpolableValue& interpolable_value,
+                             const CSSToLengthConversionData& conversion_data) {
+  BasicShapeEllipse* ellipse = MakeGarbageCollected<BasicShapeEllipse>();
   const auto& list = To<InterpolableList>(interpolable_value);
   ellipse->SetCenterX(
       CreateCoordinate(*list.Get(kEllipseCenterXIndex), conversion_data));
@@ -592,12 +590,11 @@ InterpolableValue* CreateNeutralValue() {
   return list;
 }
 
-scoped_refptr<BasicShape> CreateBasicShape(
-    const InterpolableValue& interpolable_value,
-    const CSSToLengthConversionData& conversion_data) {
+BasicShape* CreateBasicShape(const InterpolableValue& interpolable_value,
+                             const CSSToLengthConversionData& conversion_data) {
   const auto& list = To<InterpolableList>(interpolable_value);
 
-  scoped_refptr<BasicShapeInset> inset = BasicShapeInset::Create();
+  BasicShapeInset* inset = MakeGarbageCollected<BasicShapeInset>();
   inset->SetTop(To<InterpolableLength>(*list.Get(kInsetTopIndex))
                     .CreateLength(conversion_data, Length::ValueRange::kAll));
   inset->SetRight(To<InterpolableLength>(*list.Get(kInsetRightIndex))
@@ -662,11 +659,11 @@ InterpolableValue* CreateNeutralValue(
   return list;
 }
 
-scoped_refptr<BasicShape> CreateBasicShape(
+BasicShape* CreateBasicShape(
     const InterpolableValue& interpolable_value,
     const BasicShapeNonInterpolableValue& non_interpolable_value,
     const CSSToLengthConversionData& conversion_data) {
-  scoped_refptr<BasicShapePolygon> polygon = BasicShapePolygon::Create();
+  BasicShapePolygon* polygon = MakeGarbageCollected<BasicShapePolygon>();
   polygon->SetWindRule(non_interpolable_value.GetWindRule());
   const auto& list = To<InterpolableList>(interpolable_value);
   wtf_size_t size = non_interpolable_value.size();
@@ -768,7 +765,7 @@ bool basic_shape_interpolation_functions::ShapesAreCompatible(
       To<BasicShapeNonInterpolableValue>(b));
 }
 
-scoped_refptr<BasicShape> basic_shape_interpolation_functions::CreateBasicShape(
+BasicShape* basic_shape_interpolation_functions::CreateBasicShape(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue& untyped_non_interpolable_value,
     const CSSToLengthConversionData& conversion_data) {

@@ -287,6 +287,7 @@ class ChromePasswordManagerClient
   GetPasswordRequirementsService() override;
   favicon::FaviconService* GetFaviconService() override;
   signin::IdentityManager* GetIdentityManager() override;
+  const signin::IdentityManager* GetIdentityManager() const override;
   password_manager::FieldInfoManager* GetFieldInfoManager() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   network::mojom::NetworkContext* GetNetworkContext() const override;
@@ -328,6 +329,7 @@ class ChromePasswordManagerClient
       std::vector<std::unique_ptr<password_manager::PasswordForm>> forms,
       int credential_type_flags,
       CredentialsCallback callback) override;
+  void TriggerSignIn(signin_metrics::AccessPoint access_point) const override;
 
   // autofill::mojom::PasswordGenerationDriver overrides.
   void AutomaticGenerationAvailable(

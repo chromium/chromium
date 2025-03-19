@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/android/autofill/autofill_save_card_delegate_android.h"
 
+#include <variant>
+
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/browser_ui/device_lock/android/device_lock_bridge.h"
 #include "content/public/browser/web_contents.h"
@@ -12,9 +14,8 @@
 namespace autofill {
 
 AutofillSaveCardDelegateAndroid::AutofillSaveCardDelegateAndroid(
-    absl::variant<
-        payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
-        payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>
+    std::variant<payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
+                 payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>
         callback,
     payments::PaymentsAutofillClient::SaveCreditCardOptions options,
     content::WebContents* web_contents)

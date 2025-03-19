@@ -513,7 +513,6 @@
 <translation id="3373141842870501561">Тапет със Земята</translation>
 <translation id="33736539805963175"><ph name="LETTERS_COLOR" /> фон с буквата „<ph name="LETTERS_LETTER" />“</translation>
 <translation id="3383623117265110236">Специално съдържание</translation>
-<translation id="3395147534045164351">Превключване на прилепването към местоположението</translation>
 <translation id="3404249063913988450">Активиране на скрийнсейвъра</translation>
 <translation id="3413935475507503304">За да продължите с актуализацията, кликнете върху „Напред“.</translation>
 <translation id="3428551088151258685">място на открито</translation>
@@ -929,6 +928,7 @@
 <translation id="5286263799730375393">цвят на фоновото осветление</translation>
 <translation id="5292579816060236070">Тапет с изгрев</translation>
 <translation id="5294769550414936029">версия <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">превключване на достъпа до камерата</translation>
 <translation id="5300814202279832142">Преместване на прозореца в работен кът</translation>
 <translation id="5302048478445481009">Език</translation>
 <translation id="5303837385540978511">Тапет специално за <ph name="PRODUCT_NAME" /></translation>
@@ -1395,6 +1395,7 @@
 <translation id="7388345524791662148">Още опции за <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Вграден сензорен панел</translation>
 <translation id="7397270852490618635">Изключване на светлата тема</translation>
+<translation id="7400166052988585408">Преподавателят ви ще заключи екрана ви след <ph name="NUM_SECONDS" /> секунди</translation>
 <translation id="7401543881546089382">Изтриване на прекия път</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> е в готовност за актуализиране</translation>
 <translation id="741244894080940828">преобразуване</translation>

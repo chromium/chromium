@@ -149,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(MenuControllerUITest, DISABLED_TestMouseOverShownMenu) {
   // Create a focused test button, used to assert that it has accessibility
   // focus before and after menu item is active, but not during.
   TestButton button;
-  widget->GetContentsView()->AddChildView(&button);
+  widget->GetContentsView()->AddChildViewRaw(&button);
   FocusManager* focus_manager = widget->GetFocusManager();
   focus_manager->SetFocusedView(&button);
   EXPECT_TRUE(button.HasFocus());

@@ -574,7 +574,7 @@ IN_PROC_BROWSER_TEST_F(PolicyUpdateServiceTest, FailedUpdateRetries) {
   TestExtensionRegistryObserver registry_observer(registry, id_);
   {
     base::AutoReset<bool> disable_scope =
-        ExtensionService::DisableExternalUpdatesForTesting();
+        ExternalProviderManager::DisableExternalUpdatesForTesting();
 
     verifier->VerifyFailedForTest(id_, ContentVerifyJob::HASH_MISMATCH);
     EXPECT_TRUE(registry_observer.WaitForExtensionUnloaded());

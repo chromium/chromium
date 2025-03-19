@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -50,6 +51,7 @@ class NavigationPredictorPreconnectClient
       content::WebContents* web_contents);
 
   NavigationPredictorKeyedService* GetNavigationPredictorKeyedService() const;
+  SearchEnginePreconnector* GetSearchEnginePreconnector();
 
   // content::WebContentsObserver:
   void OnVisibilityChanged(content::Visibility visibility) override;

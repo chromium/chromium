@@ -41,6 +41,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/chrome_extension_registrar_delegate.h"
 #include "chrome/browser/extensions/component_loader.h"
+#include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/delayed_install_manager.h"
 #include "chrome/browser/extensions/extension_action_storage_manager.h"
@@ -134,8 +135,6 @@ using LoadErrorBehavior = ExtensionRegistrar::LoadErrorBehavior;
 
 namespace {
 
-bool g_external_updates_disabled_for_test_ = false;
-
 // Wait this long after an extensions becomes idle before updating it.
 constexpr base::TimeDelta kUpdateIdleDelay = base::Seconds(5);
 
@@ -224,12 +223,12 @@ ExtensionService::ExtensionService(
                                 extension_registrar_),
       force_installed_tracker_(registry_, profile_),
       force_installed_metrics_(registry_, profile_, &force_installed_tracker_),
-      corrupted_extension_reinstaller_(profile_),
-      delayed_install_manager_(extension_prefs_, extension_registrar_) {
+      corrupted_extension_reinstaller_(
+          CorruptedExtensionReinstaller::Get(profile_)),
+      delayed_install_manager_(DelayedInstallManager::Get(profile_)) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   TRACE_EVENT0("browser,startup", "ExtensionService::ExtensionService::ctor");
-  extension_registrar_delegate_->Init(extension_registrar_,
-                                      &delayed_install_manager_);
+  extension_registrar_delegate_->Init(extension_registrar_);
   // Figure out if extension installation should be enabled.
   if (ExtensionsBrowserClient::Get()->AreExtensionsDisabled(*command_line,
                                                             profile)) {
@@ -294,7 +293,7 @@ ExtensionService::ExtensionService(
 
 CorruptedExtensionReinstaller*
 ExtensionService::corrupted_extension_reinstaller() {
-  return &corrupted_extension_reinstaller_;
+  return corrupted_extension_reinstaller_;
 }
 
 base::WeakPtr<ExtensionServiceInterface> ExtensionService::AsWeakPtr() {
@@ -306,12 +305,12 @@ ExtensionService::~ExtensionService() {
 }
 
 void ExtensionService::Shutdown() {
-  delayed_install_manager_.Shutdown();
+  delayed_install_manager_ = nullptr;
   cws_info_service_observation_.Reset();
   ExtensionManagementFactory::GetForBrowserContext(profile())->RemoveObserver(
       this);
   external_install_manager_->Shutdown();
-  corrupted_extension_reinstaller_.Shutdown();
+  corrupted_extension_reinstaller_ = nullptr;
   extension_registrar_->Shutdown();
   extension_registrar_delegate_->Shutdown();
   external_provider_manager_->Shutdown();
@@ -375,14 +374,14 @@ void ExtensionService::Init() {
     }
   }
   EnabledReloadableExtensions();
-  delayed_install_manager_.FinishInstallationsDelayedByShutdown();
+  delayed_install_manager_->FinishInstallationsDelayedByShutdown();
   SetReadyAndNotifyListeners();
 
   UninstallMigratedExtensions();
 
   // TODO(erikkay): this should probably be deferred to a future point
   // rather than running immediately at startup.
-  CheckForExternalUpdates();
+  external_provider_manager_->CheckForExternalUpdates();
 
   safe_browsing_verdict_handler_.Init();
 
@@ -492,10 +491,6 @@ scoped_refptr<CrxInstaller> ExtensionService::CreateUpdateInstaller(
   installer->set_install_cause(extension_misc::INSTALL_CAUSE_UPDATE);
 
   return installer;
-}
-
-base::AutoReset<bool> ExtensionService::DisableExternalUpdatesForTesting() {
-  return base::AutoReset<bool>(&g_external_updates_disabled_for_test_, true);
 }
 
 void ExtensionService::LoadExtensionsFromCommandLineFlag(
@@ -914,25 +909,6 @@ void ExtensionService::CheckForUpdatesSoon() {
   updater_->CheckSoon();
 }
 
-// Some extensions will autoupdate themselves externally from Chrome.  These
-// are typically part of some larger client application package. To support
-// these, the extension will register its location in the preferences file
-// (and also, on Windows, in the registry) and this code will periodically
-// check that location for a .crx file, which it will then install locally if
-// a new version is available.
-// Errors are reported through LoadErrorReporter. Success is not reported.
-void ExtensionService::CheckForExternalUpdates() {
-  if (g_external_updates_disabled_for_test_) {
-    return;
-  }
-
-  external_provider_manager_->CheckForExternalUpdates();
-}
-
-void ExtensionService::ReinstallProviderExtensions() {
-  external_provider_manager_->ReinstallProviderExtensions();
-}
-
 void ExtensionService::UnloadExtension(const std::string& extension_id,
                                        UnloadedExtensionReason reason) {
   extension_registrar_->RemoveExtension(extension_id, reason);
@@ -1099,11 +1075,11 @@ void ExtensionService::OnExtensionInstalled(
     UMA_HISTOGRAM_ENUMERATION("Extensions.InstallSource",
                               extension->location());
     if (is_user_profile) {
-      UMA_HISTOGRAM_ENUMERATION("Extensions.InstallSource.User",
-                                extension->GetType(), 100);
+      UMA_HISTOGRAM_ENUMERATION("Extensions.InstallSource.User2",
+                                extension->location(), 100);
     } else {
-      UMA_HISTOGRAM_ENUMERATION("Extensions.InstallSource.NonUser",
-                                extension->GetType(), 100);
+      UMA_HISTOGRAM_ENUMERATION("Extensions.InstallSource.NonUser2",
+                                extension->location(), 100);
     }
     // TODO(crbug.com/40878021): Address Install metrics below in a follow-up
     // CL.
@@ -1114,7 +1090,7 @@ void ExtensionService::OnExtensionInstalled(
 
   ExtensionPrefs::DelayReason delay_reason;
   InstallGate::Action action =
-      delayed_install_manager_.ShouldDelayExtensionInstall(
+      delayed_install_manager_->ShouldDelayExtensionInstall(
           extension, !!(install_flags & kInstallFlagInstallImmediately),
           &delay_reason);
   switch (action) {
@@ -1129,7 +1105,7 @@ void ExtensionService::OnExtensionInstalled(
           install_parameter, std::move(ruleset_install_prefs));
 
       // Transfer ownership of |extension|.
-      delayed_install_manager_.Insert(extension);
+      delayed_install_manager_->Insert(extension);
 
       if (delay_reason == ExtensionPrefs::DelayReason::kWaitForIdle) {
         // Notify observers that app update is available.
@@ -1192,7 +1168,7 @@ void ExtensionService::AddNewOrUpdatedExtension(
   extension_prefs_->OnExtensionInstalled(
       extension, disable_reasons, page_ordinal, install_flags,
       install_parameter, std::move(ruleset_install_prefs));
-  delayed_install_manager_.Remove(extension->id());
+  delayed_install_manager_->Remove(extension->id());
   if (InstallVerifier::NeedsVerification(*extension, GetBrowserContext())) {
     InstallVerifier::Get(GetBrowserContext())->VerifyExtension(extension->id());
   }
@@ -1203,13 +1179,13 @@ void ExtensionService::AddNewOrUpdatedExtension(
 bool ExtensionService::FinishDelayedInstallationIfReady(
     const std::string& extension_id,
     bool install_immediately) {
-  return delayed_install_manager_.FinishDelayedInstallationIfReady(
+  return delayed_install_manager_->FinishDelayedInstallationIfReady(
       extension_id, install_immediately);
 }
 
 const Extension* ExtensionService::GetPendingExtensionUpdate(
     const std::string& id) const {
-  return delayed_install_manager_.GetPendingExtensionUpdate(id);
+  return delayed_install_manager_->GetPendingExtensionUpdate(id);
 }
 
 void ExtensionService::TerminateExtension(const std::string& extension_id) {
@@ -1288,7 +1264,7 @@ void ExtensionService::RenderProcessHostDestroyed(
     }
 
     for (const auto& id : affected_ids) {
-      if (delayed_install_manager_.Contains(id)) {
+      if (delayed_install_manager_->Contains(id)) {
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(

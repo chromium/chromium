@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <variant>
 
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
@@ -1087,10 +1088,10 @@ void GuestViewBase::CompleteInit(base::Value::Dict create_params,
                                  std::unique_ptr<GuestViewBase> owned_this,
                                  GuestPageVariant guest_page) {
   if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
-    CHECK(absl::holds_alternative<std::unique_ptr<content::GuestPageHolder>>(
+    CHECK(std::holds_alternative<std::unique_ptr<content::GuestPageHolder>>(
         guest_page));
     std::unique_ptr<content::GuestPageHolder> guest_page_holder =
-        absl::get<std::unique_ptr<content::GuestPageHolder>>(
+        std::get<std::unique_ptr<content::GuestPageHolder>>(
             std::move(guest_page));
     if (!guest_page_holder) {
       // The derived class did not create a guest page so this class
@@ -1103,10 +1104,10 @@ void GuestViewBase::CompleteInit(base::Value::Dict create_params,
     TakeGuestPageOwnership(std::move(guest_page_holder));
     std::move(callback).Run(std::move(owned_this));
   } else {
-    CHECK(absl::holds_alternative<std::unique_ptr<content::WebContents>>(
+    CHECK(std::holds_alternative<std::unique_ptr<content::WebContents>>(
         guest_page));
     std::unique_ptr<content::WebContents> guest_web_contents =
-        absl::get<std::unique_ptr<content::WebContents>>(std::move(guest_page));
+        std::get<std::unique_ptr<content::WebContents>>(std::move(guest_page));
     if (!guest_web_contents) {
       // The derived class did not create a guest WebContents so this class
       // serves no purpose. Let's self-destruct.

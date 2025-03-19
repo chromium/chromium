@@ -92,6 +92,11 @@ export declare interface HostRequestTypes {
       },
     },
   };
+  glicBrowserEnableDragResize: {
+    request: {
+      enabled: boolean,
+    },
+  };
   glicBrowserSetWindowDraggableAreas: {
     request: {
       areas: DraggableArea[],
@@ -232,6 +237,11 @@ export declare interface WebClientRequestTypes {
     },
   };
   glicWebClientCheckResponsive: {};
+  glicWebClientNotifyManualResizeChanged: {
+    request: {
+      resizing: boolean,
+    },
+  };
 }
 
 
@@ -256,6 +266,7 @@ type HostRequestEnumNamesType = {
     ActInFocusedTab: 0,
     CaptureScreenshot: 0,
     ResizeWindow: 0,
+    EnableDragResize: 0,
     SetWindowDraggableAreas: 0,
     SetMinimumWidgetSize: 0,
     SetMicrophonePermissionState: 0,
@@ -360,6 +371,7 @@ export type WebClientInitialStatePrivate =
       // Whether or not the web client should resize the content to fit the
       // window size.
       fitWindow: boolean,
+      dragResizeEnabled: boolean,
     }>;
 
 // TabData format for postMessage transport.

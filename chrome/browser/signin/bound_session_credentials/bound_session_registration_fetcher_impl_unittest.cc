@@ -5,6 +5,7 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_impl.h"
 
 #include <string_view>
+#include <variant>
 
 #include "base/containers/span.h"
 #include "base/strings/strcat.h"
@@ -34,7 +35,6 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace {
 
@@ -232,8 +232,8 @@ class BoundSessionRegistrationFetcherImplTest : public testing::Test {
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   // Provides a mock key provider by default.
-  absl::variant<crypto::ScopedMockUnexportableKeyProvider,
-                crypto::ScopedNullUnexportableKeyProvider>
+  std::variant<crypto::ScopedMockUnexportableKeyProvider,
+               crypto::ScopedNullUnexportableKeyProvider>
       scoped_key_provider_;
   unexportable_keys::UnexportableKeyTaskManager task_manager_{
       crypto::UnexportableKeyProvider::Config()};

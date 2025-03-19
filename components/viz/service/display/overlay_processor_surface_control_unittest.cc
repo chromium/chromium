@@ -4,6 +4,8 @@
 
 #include "components/viz/service/display/overlay_processor_surface_control.h"
 
+#include <variant>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 
@@ -95,7 +97,7 @@ TEST(OverlayProcessorSurfaceControlTest, DisplayTransformOverlayVFlip) {
   processor.CheckOverlaySupport(nullptr, &candidates);
   EXPECT_TRUE(candidates.back().overlay_handled);
 
-  EXPECT_EQ(absl::get<gfx::OverlayTransform>(candidates.back().transform),
+  EXPECT_EQ(std::get<gfx::OverlayTransform>(candidates.back().transform),
             gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL);
   EXPECT_RECTF_EQ(candidates.back().display_rect, gfx::RectF(10, 40, 100, 50));
 }
@@ -121,7 +123,7 @@ TEST(OverlayProcessorSurfaceControlTest, DisplayTransformOverlay) {
   candidates.back().transform = gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90;
   processor.CheckOverlaySupport(nullptr, &candidates);
   EXPECT_TRUE(candidates.back().overlay_handled);
-  EXPECT_EQ(absl::get<gfx::OverlayTransform>(candidates.back().transform),
+  EXPECT_EQ(std::get<gfx::OverlayTransform>(candidates.back().transform),
             gfx::OVERLAY_TRANSFORM_NONE);
   EXPECT_RECTF_EQ(candidates.back().display_rect, gfx::RectF(10, 40, 100, 50));
 }

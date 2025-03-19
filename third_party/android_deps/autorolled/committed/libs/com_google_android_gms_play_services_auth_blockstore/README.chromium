@@ -1,0 +1,15 @@
+Name: play-services-auth-blockstore
+Short Name: play-services-auth-blockstore
+URL: https://developers.google.com/android/guides/setup
+Version: 16.4.0
+License: Android Software Development Kit License
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+Auth blockstore library for gmscore / Google Play Services.
+
+Local Modifications:
+No modifications.

@@ -20,8 +20,8 @@ class CORE_EXPORT PathInterpolationFunctions {
  public:
   enum CoordinateConversion { kPreserveCoordinates, kForceAbsolute };
 
-  static scoped_refptr<StylePath> AppliedValue(const InterpolableValue&,
-                                               const NonInterpolableValue*);
+  static StylePath* AppliedValue(const InterpolableValue&,
+                                 const NonInterpolableValue*);
 
   static void Composite(UnderlyingValueOwner&,
                         double underlying_fraction,

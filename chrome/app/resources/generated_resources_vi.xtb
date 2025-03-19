@@ -624,6 +624,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1430915738399379752">In</translation>
 <translation id="1431188203598586230">Bản cập nhật phần mềm cuối cùng</translation>
 <translation id="1432581352905426595">Quản lý công cụ tìm kiếm</translation>
+<translation id="1432650420699700107">Các trang web có thể yêu cầu kết nối với thiết bị bất kỳ trên mạng cục bộ của bạn</translation>
 <translation id="1433478348197382180">Chế độ đọc</translation>
 <translation id="1433980411933182122">Khởi động</translation>
 <translation id="1434696352799406980">Thao tác này sẽ đặt lại trang khởi động, trang thẻ mới, công cụ tìm kiếm và thẻ được ghim. Thao tác này cũng sẽ vô hiệu hóa tất cả các tiện ích và xóa dữ liệu tạm thời như cookie. Dấu trang, lịch sử và mật khẩu đã lưu của bạn sẽ không bị xóa.</translation>
@@ -1345,6 +1346,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1918127774159128277">Làm mới chức năng Wi-Fi Direct</translation>
 <translation id="1918141783557917887">&amp;Nhỏ hơn</translation>
 <translation id="1918281588461452432">Khi bạn duyệt xem trang web, nội dung các trang đó sẽ được mã hoá và lưu vào thiết bị của bạn</translation>
+<translation id="1919096511823372013">Chèn đường liên kết, biểu tượng cảm xúc và nội dung khác. Bạn cũng có thể yêu cầu AI của Google trợ giúp viết nội dung và tạo hình ảnh.</translation>
 <translation id="1919872106782726755">Để thiết lập vân tay, con bạn cần chạm vào cảm biến vân tay ở góc trên cùng bên phải của bàn phím, bên cạnh nút Nguồn. Dữ liệu vân tay của con bạn được lưu trữ an toàn và chỉ có trên <ph name="DEVICE_TYPE" /> này.</translation>
 <translation id="192015196730532810">Bạn có thể tạo nhóm thẻ của riêng mình.</translation>
 <translation id="1920314570001095522">Không có các thẻ tương tự để sắp xếp, nhưng bạn có thể thích các nhóm sau</translation>
@@ -1891,6 +1893,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300332192655962933">Không thấy tệp trên trang</translation>
 <translation id="2300383962156589922">Tùy chỉnh và kiểm soát <ph name="APP_NAME" /></translation>
+<translation id="2301064673700597535">Tuyên bố chứng chỉ đủ điều kiện</translation>
 <translation id="2301382460326681002">Thư mục gốc của tiện ích không hợp lệ.</translation>
 <translation id="2301402091755573488">Thẻ được chia sẻ</translation>
 <translation id="2302342861452486996"><ph name="BEGIN_H3" />Tính năng gỡ lỗi<ph name="END_H3" />
@@ -4843,6 +4846,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4364830672918311045">Hiện thông báo</translation>
 <translation id="4367971618859387374">Tên hiển thị</translation>
 <translation id="4368960422722232719">Hiển thị mức sử dụng bộ nhớ trên thẻ xem trước khi di chuột qua thẻ</translation>
+<translation id="4369151461324628035">Không cho phép trang web kết nối với bất kỳ thiết bị nào trên mạng cục bộ của bạn</translation>
 <translation id="4369215744064167350">Đã phê duyệt yêu cầu truy cập trang web</translation>
 <translation id="4369233657762989723">Bật/tắt tính năng nhập bằng giọng nói</translation>
 <translation id="436926121798828366">Bạn có thể thay đổi chế độ này bất cứ lúc nào trong phần <ph name="SETTINGS_LINK" /></translation>
@@ -5396,6 +5400,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4772914216048388646">Theo thứ tự</translation>
 <translation id="4773112038801431077">Nâng cấp Linux</translation>
 <translation id="4773122030389014189">Chia sẻ nhóm thẻ "<ph name="GROUP_NAME" />"</translation>
+<translation id="4773253008034797668">Được phép kết nối với thiết bị bất kỳ trên mạng cục bộ của bạn</translation>
 <translation id="477548766361111120">Cho phép tiện ích đọc và thay đổi trang web này</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> đã được kết nối</translation>
 <translation id="4776594120007763294">Để thêm một trang để đọc vào lúc khác, hãy nhấp vào nút</translation>
@@ -7860,6 +7865,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6563002009564846727">Xem các chứng chỉ được nhập từ Windows</translation>
 <translation id="6563055593659435495">Không duy trì được kết nối với điện thoại của bạn. Hãy đảm bảo điện thoại của bạn ở gần, đã mở khoá, đang bật Bluetooth và Wi-Fi.</translation>
 <translation id="6564860838537532172">Khi bạn tìm nhật ký duyệt web, các nội dung tìm kiếm trong nhật ký, nội dung các trang phù hợp nhất và kết quả đầu ra đã tạo của mô hình sẽ được gửi đến Google. Nhân viên cũng có thể đánh giá các thông tin đó cho mục đích cải thiện tính năng này.</translation>
+<translation id="6565144332292237355">Các trang web có thể sử dụng tính năng này để tìm và kết nối với thiết bị bất kỳ trên mạng cục bộ của bạn</translation>
 <translation id="6569931898053264308">Mức tiết kiệm trung bình</translation>
 <translation id="6570622975915850879">Sử dụng thiết bị khác</translation>
 <translation id="65711204837946324">Cần có quyền để tải xuống</translation>
@@ -8990,6 +8996,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7377451353532943397">Tiếp tục chặn quyền sử dụng cảm biến</translation>
 <translation id="7377481913241237033">Kết nối bằng mã</translation>
 <translation id="73786666777299047">Mở cửa hàng Chrome trực tuyến</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Có một việc cần làm khác trong cùng nhóm việc cần làm này: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Có # việc cần làm khác trong cùng nhóm việc cần làm này: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380272457268061606">Tắt tính năng khôi phục dữ liệu cục bộ?</translation>
 <translation id="7380459290951585794">Hãy đảm bảo điện thoại của bạn đang ở gần, đã mở khoá, đồng thời đã bật Bluetooth và Wi-Fi</translation>
 <translation id="7380622428988553498">Tên thiết bị chứa các ký tự không hợp lệ</translation>
@@ -11575,6 +11582,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
       <ph name="LIST_ITEM" />Chạy công cụ Chẩn đoán kết nối dành cho Chrome
     <ph name="END_LIST" /></translation>
 <translation id="9161172953291434881">Bạn có tin tưởng trang web này không?</translation>
+<translation id="9164418710391288146">Không được phép kết nối với bất kỳ thiết bị nào trên mạng cục bộ của bạn</translation>
 <translation id="9165856803582999927">Quét mã QR này bằng camera trên thiết bị mà bạn muốn tạo và lưu khoá truy cập cho <ph name="APP_NAME" /></translation>
 <translation id="916607977885256133">Ảnh trong ảnh</translation>
 <translation id="9166253503936244008">Quét mã QR này bằng thiết bị có khoá truy cập bạn muốn sử dụng cho <ph name="APP_NAME" /></translation>

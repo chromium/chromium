@@ -104,6 +104,8 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kDevtoolsTestAddressEntry";
     case SuggestionType::kFillAutofillAi:
       return "kFillAutofillAi";
+    case SuggestionType::kPendingStateSignin:
+      return "kPendingStateSignin";
   }
   NOTREACHED();
 }

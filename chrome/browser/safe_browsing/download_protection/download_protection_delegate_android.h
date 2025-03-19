@@ -40,8 +40,17 @@ class DownloadProtectionDelegateAndroid : public DownloadProtectionDelegate {
   float GetUnsupportedFileSampleRate(
       const base::FilePath& filename) const override;
 
+  // Used only for tests. Set the outcome of the next call to ShouldSample()
+  // within IsSupportedDownload(), for convenience in tests to bypass the random
+  // number generator.
+  void SetNextShouldSampleForTesting(bool should_sample);
+
  private:
   const GURL download_request_url_;
+
+  // Overrides the next call to ShouldSample() within IsSupportedDownload(), for
+  // convenience in tests to bypass the random number generator.
+  mutable std::optional<bool> should_sample_override_;
 };
 
 }  // namespace safe_browsing

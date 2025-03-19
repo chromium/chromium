@@ -432,7 +432,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2981364137500752533">Poți deschide maximum cinci ferestre.</translation>
 <translation id="2983102365694924129">Pe baza activității tale pe un site. Setarea este dezactivată.</translation>
 <translation id="2984978667043170458">Include text din jur în căutările de pe Google</translation>
-<translation id="2988638966064514052">Creează parole mai puternice</translation>
 <translation id="2989523299700148168">Accesate recent</translation>
 <translation id="2992473221983447149">Descrierile imaginilor</translation>
 <translation id="2996291259634659425">Creează o expresie de acces</translation>
@@ -548,7 +547,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3557336313807607643">Adaugă în Agendă</translation>
 <translation id="3563767357928833671">Conținutul clipboardului este afișat</translation>
 <translation id="3566639033325271639">Actualizează setările</translation>
-<translation id="3568945271227339929">Nicio parolă compromisă</translation>
 <translation id="3575464060651642446">Se verifică parolele de pe acest dispozitiv…</translation>
 <translation id="3577473026931028326">A apărut o eroare. Încearcă din nou.</translation>
 <translation id="3577558748185201054">Gestionează-ți interesele și preferințele</translation>
@@ -1055,7 +1053,6 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="5958275228015807058">Găsește fișierele și paginile în Descărcări</translation>
 <translation id="5958994127112619898">Simplifică pagina</translation>
 <translation id="5962718611393537961">Atinge pentru a restrânge</translation>
-<translation id="5964180026566797835">Nu se pot verifica parolele</translation>
 <translation id="5964869237734432770">Nu genera descrieri imagine</translation>
 <translation id="5977976211062815271">Pe acest dispozitiv</translation>
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{O pagină din Lista de lecturi}few{# pagini din Lista de lecturi}other{# de pagini din Lista de lecturi}}</translation>
@@ -1099,6 +1096,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="6150320133806434356">Marcaj salvat</translation>
 <translation id="6150706324143004339">Pentru a folosi și a salva datele Chrome în Contul Google, actualizează Chrome</translation>
 <translation id="6154478581116148741">Pentru a-ți exporta parolele de pe acest dispozitiv, activează blocarea ecranului în Setări.</translation>
+<translation id="6156323911414505561">Afișează bara de marcaje</translation>
 <translation id="6162892189396105610">Preîncarcă paginile pe care Chrome consideră că este posibil să le accesezi.</translation>
 <translation id="6170675927290506430">Accesează setările pentru notificări</translation>
 <translation id="6186394685773237175">Nu s-au găsit parole compromise</translation>

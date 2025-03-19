@@ -49,8 +49,11 @@ class DownloadProtectionMetricsData : public base::SupportsUserData::Data {
     // not enabled, then kDownloadProtectionDisabled will be logged
     // preferentially.
     kMisconfigured = 10,
+    // Did not send ClientDownloadRequest. The download passed all the checks
+    // but was excluded due to sampling.
+    kNotSampled = 11,
 
-    kMaxValue = kMisconfigured,
+    kMaxValue = kNotSampled,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/sb_client/enums.xml:SBClientDownloadAndroidDownloadProtectionOutcome)
 

@@ -166,6 +166,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1505542291183484463">Janela de redimensionamento em mosaico para baixo</translation>
 <translation id="1510238584712386396">Iniciador</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostrar definições de notificação. As notificações estão desativadas para uma aplicação}other{Mostrar definições de notificação. As notificações estão desativadas para # aplicações}}</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">Bateria: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> até ficar completa</translation>
 <translation id="1525508553941733066">IGNORAR</translation>
 <translation id="1526448108126799339">Abrir um novo separador numa nova janela</translation>
@@ -345,7 +346,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2201071101391734388">Foto recente <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Reduzir Google Tasks</translation>
 <translation id="2208323208084708176">Modo de ambiente de trabalho unificado</translation>
-<translation id="2220572644011485463">PIN ou palavra-passe</translation>
 <translation id="2222841058024245321">Espaço de trabalho 7</translation>
 <translation id="2223384056430485343">Num ecrã dividido</translation>
 <translation id="2224075387478458881">A gravação de ecrã não é permitida quando existe conteúdo protegido visível.</translation>
@@ -1829,7 +1829,6 @@ Nova instalação</translation>
 <translation id="7000027735917578303">Definições de janelas e espaços de trabalho</translation>
 <translation id="7004910047186208204">Ligue-se aos dados móveis</translation>
 <translation id="7005239792648594238">Abra uma app para começar</translation>
-<translation id="7007983414944123363">Não foi possível validar o seu PIN ou palavra-passe. Tente novamente.</translation>
 <translation id="7014684956566476813">Ligado a um dispositivo denominado <ph name="DEVICE_NAME" /></translation>
 <translation id="7015766095477679451">Volte à(s) <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">Espaço de trabalho 6</translation>
@@ -1943,6 +1942,7 @@ Nova instalação</translation>
 <translation id="742594950370306541">A câmara está a ser utilizada.</translation>
 <translation id="742608627846767349">Bom dia,</translation>
 <translation id="743058460480092004">A câmara e o microfone estão a ser utilizados.</translation>
+<translation id="7440404390546433462">Pesquisa Google</translation>
 <translation id="7441711280402516925">Em reprodução · Mudar para separador</translation>
 <translation id="7453330308669753048">Resultado do histórico de pesquisas removido</translation>
 <translation id="7459485586006128091">Devido a um erro interno, a zona Wi-Fi foi desativada. Tente ligar novamente dentro de alguns minutos.</translation>
@@ -2466,6 +2466,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="9168436347345867845">Fazer isto mais tarde</translation>
 <translation id="9178475906033259337">A apresentar 1 resultado para <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Esta funcionalidade permite-lhe aceder rapidamente a qualquer utilizador com a sessão iniciada sem ser necessária uma palavra-passe. Utilize esta funcionalidade apenas com contas fidedignas.</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183456764293710005">Lupa de ecrã inteiro</translation>
 <translation id="9192133205265227850">Use "<ph name="DEVICE_NAME" />"</translation>
 <translation id="9193626018745640770">A transmitir para um recetor desconhecido…</translation>

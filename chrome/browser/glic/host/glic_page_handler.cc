@@ -314,6 +314,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     glic_service_->ResizePanel(size, duration, std::move(callback));
   }
 
+  void EnableDragResize(bool enabled) override {
+    glic_service_->window_controller().ShouldEnableDragResize(enabled);
+  }
+
   void GetContextFromFocusedTab(
       glic::mojom::GetTabContextOptionsPtr options,
       GetContextFromFocusedTabCallback callback) override {
@@ -512,6 +516,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   void PanelWasClosed(base::OnceClosure done) override {
     web_client_->NotifyPanelWasClosed(
         mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(done)));
+  }
+
+  void ManualResizeChanged(bool resizing) override {
+    web_client_->NotifyManualResizeChanged(resizing);
   }
 
   // BrowserAttachmentObserver implementation.

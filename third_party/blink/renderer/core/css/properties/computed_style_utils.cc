@@ -168,22 +168,12 @@ CSSValue* ConvertFontPaletteToCSSValue(const blink::FontPalette* palette) {
 
 }  // namespace
 
-static Length Negate(const Length& length) {
-  if (length.IsCalculated()) {
-    NOTREACHED();
-  }
-
-  Length ret = Length(-length.GetFloatValue(), length.GetType());
-  ret.SetQuirk(length.Quirk());
-  return ret;
-}
-
 // TODO(rjwright): make this const
 CSSValue* ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
     const Length& length,
     const ComputedStyle& style) {
   if (length.IsFixed()) {
-    return ZoomAdjustedPixelValue(length.Value(), style);
+    return ZoomAdjustedPixelValue(length.Pixels(), style);
   }
   return CSSValue::Create(length, style.EffectiveZoom());
 }
@@ -572,10 +562,12 @@ const CSSValue* ComputedStyleUtils::BackgroundPositionYOrWebkitMaskPositionY(
 
 static CSSNumericLiteralValue* ValueForImageSlice(const Length& slice) {
   CHECK(slice.IsPercent() || slice.IsFixed());
-  return CSSNumericLiteralValue::Create(
-      slice.Value(), slice.IsPercent()
-                         ? CSSPrimitiveValue::UnitType::kPercentage
-                         : CSSPrimitiveValue::UnitType::kNumber);
+  if (slice.IsPercent()) {
+    return CSSNumericLiteralValue::Create(
+        slice.Percent(), CSSPrimitiveValue::UnitType::kPercentage);
+  }
+  return CSSNumericLiteralValue::Create(slice.Pixels(),
+                                        CSSPrimitiveValue::UnitType::kNumber);
 }
 
 cssvalue::CSSBorderImageSliceValue*
@@ -872,7 +864,8 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
       return CSSIdentifierValue::Create(CSSValueID::kAuto);
     }
 
-    Length negated_opposite = Negate(opposite);
+    DCHECK_EQ(opposite.GetType(), Length::Type::kFixed);
+    Length negated_opposite = Length(-opposite.Pixels(), opposite.GetType());
     return ZoomAdjustedPixelValueForLength(negated_opposite, style);
   }
 
@@ -979,7 +972,7 @@ CSSValue* ComputedStyleUtils::ComputedValueForLineHeight(
   }
 
   if (length.IsPercent()) {
-    return CSSNumericLiteralValue::Create(length.GetFloatValue() / 100.0,
+    return CSSNumericLiteralValue::Create(length.Percent() / 100.0,
                                           CSSPrimitiveValue::UnitType::kNumber);
   } else {
     return ZoomAdjustedPixelValue(
@@ -2997,7 +2990,7 @@ CSSFunctionValue* ComputedStyleUtils::ValueForTransformOperation(
             *CSSPrimitiveValue::CreateFromLength(translate.X(), zoom));
       }
       if (id == CSSValueID::kTranslateY ||
-          (id == CSSValueID::kTranslate && (translate.Y().Value() != 0.f)) ||
+          (id == CSSValueID::kTranslate && !translate.Y().IsZero()) ||
           id == CSSValueID::kTranslate3d) {
         result->Append(
             *CSSPrimitiveValue::CreateFromLength(translate.Y(), zoom));
@@ -3734,7 +3727,7 @@ CSSValue* ComputedStyleUtils::ValueForFilter(
         filter_value =
             MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kBlur);
         filter_value->Append(*ZoomAdjustedPixelValue(
-            To<BlurFilterOperation>(filter_operation)->StdDeviation().Value(),
+            To<BlurFilterOperation>(filter_operation)->StdDeviation().Pixels(),
             style));
         break;
       case FilterOperation::OperationType::kDropShadow: {

@@ -33,11 +33,11 @@
 
 #include <map>
 #include <optional>
+#include <variant>
 
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/css/forced_colors.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-shared.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -228,18 +228,18 @@ class WebThemeEngine {
   };
 #endif
 
-  using ExtraParams = absl::variant<ScrollbarTrackExtraParams,
-                                    ButtonExtraParams,
-                                    TextFieldExtraParams,
-                                    MenuListExtraParams,
-                                    SliderExtraParams,
-                                    InnerSpinButtonExtraParams,
-                                    ProgressBarExtraParams,
-                                    ScrollbarThumbExtraParams,
+  using ExtraParams = std::variant<ScrollbarTrackExtraParams,
+                                   ButtonExtraParams,
+                                   TextFieldExtraParams,
+                                   MenuListExtraParams,
+                                   SliderExtraParams,
+                                   InnerSpinButtonExtraParams,
+                                   ProgressBarExtraParams,
+                                   ScrollbarThumbExtraParams,
 #if BUILDFLAG(IS_MAC)
-                                    ScrollbarExtraParams,
+                                   ScrollbarExtraParams,
 #endif
-                                    ScrollbarButtonExtraParams>;
+                                   ScrollbarButtonExtraParams>;
 
   virtual ~WebThemeEngine() {}
 

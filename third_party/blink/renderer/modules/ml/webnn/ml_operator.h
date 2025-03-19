@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_OPERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_OPERATOR_H_
 
+#include <variant>
+
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/dictionary_base.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -32,17 +33,17 @@ class MLSplitOptions;
 class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
  public:
   using OperationSubKind =
-      absl::variant<webnn::mojom::blink::ArgMinMax::Kind,
-                    webnn::mojom::blink::Conv2d::Kind,
-                    webnn::mojom::blink::ElementWiseBinary::Kind,
-                    webnn::mojom::blink::ElementWiseUnary::Kind,
-                    webnn::mojom::blink::Pool2d::Kind,
-                    webnn::mojom::blink::Reduce::Kind,
-                    absl::monostate>;
+      std::variant<webnn::mojom::blink::ArgMinMax::Kind,
+                   webnn::mojom::blink::Conv2d::Kind,
+                   webnn::mojom::blink::ElementWiseBinary::Kind,
+                   webnn::mojom::blink::ElementWiseUnary::Kind,
+                   webnn::mojom::blink::Pool2d::Kind,
+                   webnn::mojom::blink::Reduce::Kind,
+                   std::monostate>;
 
   static String OperatorKindToString(
       webnn::mojom::blink::Operation::Tag kind,
-      OperationSubKind sub_kind = absl::monostate{});
+      OperationSubKind sub_kind = std::monostate{});
 
   // It is safe for a caller, usually a MLGraphBuidler operation build method,
   // that passes the reference of the options dictionary argument received from
@@ -59,7 +60,7 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
   MLOperator(MLGraphBuilder* builder,
              webnn::mojom::blink::Operation::Tag kind,
              const MLOperatorOptions* options,
-             OperationSubKind sub_kind = absl::monostate{});
+             OperationSubKind sub_kind = std::monostate{});
 
   MLOperator(const MLOperator&) = delete;
   MLOperator& operator=(const MLOperator&) = delete;
@@ -72,7 +73,7 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
   OperationSubKind SubKind() const;
   template <typename MojomKind>
   MojomKind SubKind() const {
-    return absl::get<MojomKind>(SubKind());
+    return std::get<MojomKind>(SubKind());
   }
 
   const MLOperatorOptions* Options() const;

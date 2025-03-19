@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 
 #include <optional>
+#include <variant>
 
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
@@ -549,7 +550,7 @@ TEST(AutofillFieldLogEventTypeTest, AppendLogEventIfNotRepeated) {
                                .associated_country_code = "DE",
                                .timestamp = AutofillClock::Now()};
   AutofillField::FieldLogEventType c = FillFieldLogEvent{
-      .fill_event_id = absl::get<TriggerFillFieldLogEvent>(b).fill_event_id,
+      .fill_event_id = std::get<TriggerFillFieldLogEvent>(b).fill_event_id,
       .had_value_before_filling = OptionalBoolean::kTrue,
       .autofill_skipped_status = FieldFillingSkipReason::kAlreadyAutofilled,
       .was_autofilled_before_security_policy = OptionalBoolean::kTrue,

@@ -7,6 +7,7 @@
 #include <gtest/gtest.h>
 
 #include <memory>
+#include <variant>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
@@ -285,7 +286,7 @@ class TestToolbarController : public ToolbarController {
                                  {kDummyButton4, u"DummyButton4"}};
 
     return kToolbarToMenuTextMap.at(
-        absl::get<ToolbarController::ElementIdInfo>(element_info.overflow_id)
+        std::get<ToolbarController::ElementIdInfo>(element_info.overflow_id)
             .overflow_identifier);
   }
 };
@@ -864,7 +865,7 @@ TEST_F(ToolbarControllerUnitTest, MenuItemUsability) {
     if (IsOverflowed(responsive_elements[i])) {
       EXPECT_EQ(ToolbarController::FindToolbarElementWithId(
                     toolbar_container_view(),
-                    absl::get<ToolbarController::ElementIdInfo>(
+                    std::get<ToolbarController::ElementIdInfo>(
                         responsive_elements[i].overflow_id)
                         .overflow_identifier)
                     ->GetEnabled(),
@@ -901,19 +902,19 @@ TEST_F(ToolbarControllerUnitTest, ResponsiveActionsAreOrdered) {
   EXPECT_EQ(int(elements.size()), 6);
 
   // Both sections of actions are reordered
-  EXPECT_EQ(absl::get<ActionId>(elements[0].overflow_id),
-            absl::get<ActionId>(action0.overflow_id));
-  EXPECT_EQ(absl::get<ActionId>(elements[1].overflow_id),
-            absl::get<ActionId>(action1.overflow_id));
-  EXPECT_EQ(absl::get<ActionId>(elements[2].overflow_id),
-            absl::get<ActionId>(action2.overflow_id));
+  EXPECT_EQ(std::get<ActionId>(elements[0].overflow_id),
+            std::get<ActionId>(action0.overflow_id));
+  EXPECT_EQ(std::get<ActionId>(elements[1].overflow_id),
+            std::get<ActionId>(action1.overflow_id));
+  EXPECT_EQ(std::get<ActionId>(elements[2].overflow_id),
+            std::get<ActionId>(action2.overflow_id));
   EXPECT_EQ(
-      absl::get<ElementIdInfo>(elements[3].overflow_id).overflow_identifier,
-      absl::get<ElementIdInfo>(element0.overflow_id).overflow_identifier);
-  EXPECT_EQ(absl::get<ActionId>(elements[4].overflow_id),
-            absl::get<ActionId>(action0.overflow_id));
-  EXPECT_EQ(absl::get<ActionId>(elements[5].overflow_id),
-            absl::get<ActionId>(action2.overflow_id));
+      std::get<ElementIdInfo>(elements[3].overflow_id).overflow_identifier,
+      std::get<ElementIdInfo>(element0.overflow_id).overflow_identifier);
+  EXPECT_EQ(std::get<ActionId>(elements[4].overflow_id),
+            std::get<ActionId>(action0.overflow_id));
+  EXPECT_EQ(std::get<ActionId>(elements[5].overflow_id),
+            std::get<ActionId>(action2.overflow_id));
 }
 
 TEST_F(ToolbarControllerUnitTest, ResponsiveActionsRemainOrdered) {
@@ -923,8 +924,8 @@ TEST_F(ToolbarControllerUnitTest, ResponsiveActionsRemainOrdered) {
   ResponsiveElementInfo action0(0);
   ResponsiveElementInfo action1(1);
   PinnedToolbarActionsModel* model = GetPinnedToolbarActionsModel();
-  model->UpdatePinnedState(absl::get<ActionId>(action0.overflow_id), true);
-  model->UpdatePinnedState(absl::get<ActionId>(action1.overflow_id), true);
+  model->UpdatePinnedState(std::get<ActionId>(action0.overflow_id), true);
+  model->UpdatePinnedState(std::get<ActionId>(action1.overflow_id), true);
   auto delegate = std::make_unique<TestDelegateFromModel>(model);
 
   // Create the controller with the ActionIds in the reversed order
@@ -939,19 +940,19 @@ TEST_F(ToolbarControllerUnitTest, ResponsiveActionsRemainOrdered) {
   std::vector<ResponsiveElementInfo> elements =
       GetResponsiveElements(&controller);
   EXPECT_EQ(int(elements.size()), 2);
-  EXPECT_EQ(absl::get<ActionId>(elements[0].overflow_id),
-            absl::get<ActionId>(action0.overflow_id));
-  EXPECT_EQ(absl::get<ActionId>(elements[1].overflow_id),
-            absl::get<ActionId>(action1.overflow_id));
+  EXPECT_EQ(std::get<ActionId>(elements[0].overflow_id),
+            std::get<ActionId>(action0.overflow_id));
+  EXPECT_EQ(std::get<ActionId>(elements[1].overflow_id),
+            std::get<ActionId>(action1.overflow_id));
 
   // Move action1 to the first index. responsive_elements should be reordered.
-  model->MovePinnedAction(absl::get<ActionId>(action1.overflow_id), 0);
+  model->MovePinnedAction(std::get<ActionId>(action1.overflow_id), 0);
   elements = GetResponsiveElements(&controller);
   EXPECT_EQ(int(elements.size()), 2);
-  EXPECT_EQ(absl::get<ActionId>(elements[0].overflow_id),
-            absl::get<ActionId>(action1.overflow_id));
-  EXPECT_EQ(absl::get<ActionId>(elements[1].overflow_id),
-            absl::get<ActionId>(action0.overflow_id));
+  EXPECT_EQ(std::get<ActionId>(elements[0].overflow_id),
+            std::get<ActionId>(action1.overflow_id));
+  EXPECT_EQ(std::get<ActionId>(elements[1].overflow_id),
+            std::get<ActionId>(action0.overflow_id));
 }
 
 TEST_F(ToolbarControllerUnitTest, ResponsiveActionsAreNotOrdered) {
@@ -988,23 +989,23 @@ TEST_F(ToolbarControllerUnitTest, ResponsiveActionsAreNotOrdered) {
   // Only sections of actions are reordered, so we
   // expect the order not to change
   EXPECT_EQ(
-      absl::get<ElementIdInfo>(elements[0].overflow_id).overflow_identifier,
-      absl::get<ElementIdInfo>(element1.overflow_id).overflow_identifier);
+      std::get<ElementIdInfo>(elements[0].overflow_id).overflow_identifier,
+      std::get<ElementIdInfo>(element1.overflow_id).overflow_identifier);
   EXPECT_EQ(
-      absl::get<ElementIdInfo>(elements[1].overflow_id).overflow_identifier,
-      absl::get<ElementIdInfo>(element0.overflow_id).overflow_identifier);
-  EXPECT_EQ(absl::get<ActionId>(elements[2].overflow_id),
-            absl::get<ActionId>(action2.overflow_id));
+      std::get<ElementIdInfo>(elements[1].overflow_id).overflow_identifier,
+      std::get<ElementIdInfo>(element0.overflow_id).overflow_identifier);
+  EXPECT_EQ(std::get<ActionId>(elements[2].overflow_id),
+            std::get<ActionId>(action2.overflow_id));
   EXPECT_EQ(
-      absl::get<ElementIdInfo>(elements[3].overflow_id).overflow_identifier,
-      absl::get<ElementIdInfo>(element0.overflow_id).overflow_identifier);
-  EXPECT_EQ(absl::get<ActionId>(elements[4].overflow_id),
-            absl::get<ActionId>(action0.overflow_id));
+      std::get<ElementIdInfo>(elements[3].overflow_id).overflow_identifier,
+      std::get<ElementIdInfo>(element0.overflow_id).overflow_identifier);
+  EXPECT_EQ(std::get<ActionId>(elements[4].overflow_id),
+            std::get<ActionId>(action0.overflow_id));
   EXPECT_EQ(
-      absl::get<ElementIdInfo>(elements[5].overflow_id).overflow_identifier,
-      absl::get<ElementIdInfo>(element0.overflow_id).overflow_identifier);
-  EXPECT_EQ(absl::get<ActionId>(elements[6].overflow_id),
-            absl::get<ActionId>(action1.overflow_id));
+      std::get<ElementIdInfo>(elements[5].overflow_id).overflow_identifier,
+      std::get<ElementIdInfo>(element0.overflow_id).overflow_identifier);
+  EXPECT_EQ(std::get<ActionId>(elements[6].overflow_id),
+            std::get<ActionId>(action1.overflow_id));
 }
 
 TEST_F(ToolbarControllerUnitTest, SupportActionIds) {
@@ -1091,7 +1092,7 @@ TEST_F(ToolbarControllerUnitTest, StatusIndicatorVisibilityUpdates) {
   for (size_t i = 0; i < responsive_elements.size(); ++i) {
     if (IsOverflowed(responsive_elements[i])) {
       actions::ActionId element_action_id =
-          absl::get<actions::ActionId>(responsive_elements[i].overflow_id);
+          std::get<actions::ActionId>(responsive_elements[i].overflow_id);
       test_delegate->GetActionItemFor(element_action_id)
           ->SetProperty(kActionItemUnderlineIndicatorKey, false);
 
@@ -1108,7 +1109,7 @@ TEST_F(ToolbarControllerUnitTest, StatusIndicatorVisibilityUpdates) {
   for (size_t i = 0; i < responsive_elements.size(); ++i) {
     if (IsOverflowed(responsive_elements[i])) {
       actions::ActionId element_action_id =
-          absl::get<actions::ActionId>(responsive_elements[i].overflow_id);
+          std::get<actions::ActionId>(responsive_elements[i].overflow_id);
       test_delegate->GetActionItemFor(element_action_id)
           ->SetProperty(kActionItemUnderlineIndicatorKey, true);
 

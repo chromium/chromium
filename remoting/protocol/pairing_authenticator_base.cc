@@ -50,7 +50,7 @@ bool PairingAuthenticatorBase::started() const {
 Authenticator::RejectionReason PairingAuthenticatorBase::rejection_reason()
     const {
   if (!spake2_authenticator_) {
-    return RejectionReason::PROTOCOL_ERROR;
+    return RejectionReason::INVALID_STATE;
   }
   return spake2_authenticator_->rejection_reason();
 }

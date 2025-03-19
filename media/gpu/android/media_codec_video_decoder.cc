@@ -5,6 +5,7 @@
 #include "media/gpu/android/media_codec_video_decoder.h"
 
 #include <memory>
+#include <variant>
 
 #include "base/android/build_info.h"
 #include "base/command_line.h"
@@ -983,7 +984,7 @@ bool MediaCodecVideoDecoder::QueueInput() {
   if (base::FeatureList::IsEnabled(kMediaCodecElideEOS) &&
       pending_buffer->end_of_stream() && pending_buffer->next_config()) {
     const auto new_config =
-        absl::get<VideoDecoderConfig>(*pending_buffer->next_config());
+        std::get<VideoDecoderConfig>(*pending_buffer->next_config());
 
     // The underlying MediaCodec must remain the same in order for us to elide
     // the end of stream flush.

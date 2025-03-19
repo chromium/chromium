@@ -5,6 +5,7 @@
 #include "components/printing/browser/print_to_pdf/pdf_print_utils.h"
 
 #include <string_view>
+#include <variant>
 
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -36,7 +37,7 @@ static constexpr double kDefaultMarginInInches =
 
 }  // namespace
 
-absl::variant<printing::PageRanges, PdfPrintResult> TextPageRangesToPageRanges(
+std::variant<printing::PageRanges, PdfPrintResult> TextPageRangesToPageRanges(
     std::string_view page_range_text) {
   printing::PageRanges page_ranges;
   for (const auto& range_string :
@@ -84,7 +85,7 @@ absl::variant<printing::PageRanges, PdfPrintResult> TextPageRangesToPageRanges(
   return page_ranges;
 }
 
-absl::variant<printing::mojom::PrintPagesParamsPtr, std::string>
+std::variant<printing::mojom::PrintPagesParamsPtr, std::string>
 GetPrintPagesParams(const GURL& page_url,
                     std::optional<bool> landscape,
                     std::optional<bool> display_header_footer,

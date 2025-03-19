@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "base/check_deref.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -119,7 +120,8 @@ class KioskIwaManagerBaseTest : public testing::Test {
  public:
   KioskIwaManagerBaseTest()
       : local_state_(TestingBrowserProcess::GetGlobal()),
-        fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {
+        fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
+        iwa_manager_(CHECK_DEREF(local_state_.Get())) {
     UserDataAuthClient::InitializeFake();
     iwa_manager().AddObserver(&observer());
   }

@@ -8,11 +8,11 @@
 #include <initializer_list>
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/no_destructor.h"
 #include "base/profiler/stack_sampling_profiler.h"
 #include "components/sampling_profiler/process_type.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
 class CommandLine;
@@ -121,7 +121,7 @@ class ThreadProfilerConfiguration {
 
   // The configuration state for the current process, browser or child.
   using Configuration =
-      absl::variant<BrowserProcessConfiguration, ChildProcessConfiguration>;
+      std::variant<BrowserProcessConfiguration, ChildProcessConfiguration>;
 
   ThreadProfilerConfiguration();
 

@@ -160,7 +160,8 @@ class CORE_EXPORT NinePieceImage {
     if (outset_side.IsNumber()) {
       return LayoutUnit(outset_side.Number() * border_side);
     }
-    return LayoutUnit(outset_side.length().Value());
+    DCHECK(outset_side.length().IsFixed());
+    return LayoutUnit(outset_side.length().Pixels());
   }
 
   void Trace(Visitor* visitor) const { visitor->Trace(data_); }

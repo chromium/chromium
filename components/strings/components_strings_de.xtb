@@ -316,7 +316,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1532118530259321453">Auf dieser Seite wird Folgendes angezeigt</translation>
 <translation id="1533966801397200693">Das Profil, in dem du angemeldet bist, ist ein verwaltetes Profil. Dein Administrator kann deine Profileinstellungen per Fernzugriff ändern, Informationen über den Browser durch Berichte analysieren und andere notwendige Aufgaben ausführen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Seite übersetzen</translation>
-<translation id="1538295100801850685">Verbesserungen bei Vorhersagen</translation>
 <translation id="1539840569003678498">Bericht gesendet:</translation>
 <translation id="1542105669288201090">Wirtschaftspädagogik</translation>
 <translation id="1545757265410828525">Preisentwicklung</translation>
@@ -1157,7 +1156,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3052868890529250114">Normalerweise verbindest du dich auf sichere Weise mit Websites, aber Chrome konnte dieses Mal keine verschlüsselte Verbindung herstellen. Möglicherweise versucht ein Angreifer, deine Onlineaktivitäten zu beobachten oder deine Netzwerkverbindung zu modifizieren. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen zu dieser Warnung<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> Preisnachlass auf das Produkt „<ph name="PRODUCT_NAME" />“</translation>
 <translation id="3061707000357573562">Patchdienst</translation>
-<translation id="306198082577913404">Verbesserungen bei Vorhersagen aktivieren</translation>
 <translation id="3062655045399308513">Browserdaten löschen...</translation>
 <translation id="3063453392496098461">Die Installation der VPN-Hintergrunddienste ist fehlgeschlagen.</translation>
 <translation id="306573536155379004">Spiel gestartet.</translation>
@@ -2323,7 +2321,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5097099694988056070">Gerätestatistiken, z. B. CPU/RAM-Nutzung</translation>
 <translation id="5097468150760963273">27 x 39 Zoll</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5106405387002409393">Chrome benötigt Zugriff auf die „<ph name="PERMISSION" />“-Berechtigung deines Geräts</translation>
 <translation id="510644072453496781">Karton (Ende)</translation>
 <translation id="5106648964679263509">Virtuelle Karte für <ph name="BNPL_ISSUER_NAME" /> ausgefüllt</translation>
 <translation id="5108881358339761672">Website ist nicht sicher</translation>
@@ -4052,7 +4049,6 @@ Weitere Details:
 <translation id="8134058435519644366">Personalbeschaffung</translation>
 <translation id="8135546115396015134">die linke Taste</translation>
 <translation id="8137456439814903304">Energie und Energieversorger</translation>
-<translation id="81474145143203755">Wenn du deine „<ph name="PERMISSION" />“-Berechtigung auf dieser Website verwenden möchtest, musst du Chrome Zugriff erlauben</translation>
 <translation id="8148608574971654810">PDF-Version:</translation>
 <translation id="8149426793427495338">Dein Computer ist im Ruhemodus.</translation>
 <translation id="8150722005171944719">Die Datei unter <ph name="URL" /> kann nicht gelesen werden. Sie wurde möglicherweise entfernt oder verschoben oder die Dateiberechtigungen verhindern den Zugriff.</translation>

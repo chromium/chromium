@@ -166,6 +166,7 @@
 <translation id="1505542291183484463">Tiled resize window downward</translation>
 <translation id="1510238584712386396">מרכז האפליקציות</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{צפייה בהגדרות של הודעות. ההודעות מושבתות באפליקציה אחת}one{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}two{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}other{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}}</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">סוללה: %<ph name="BATTERY_PERCENTAGE" /> | הזמן שנותר לטעינה מלאה: <ph name="TIME" /></translation>
 <translation id="1525508553941733066">סגירה</translation>
 <translation id="1526448108126799339">פתיחת כרטיסייה חדשה בחלון חדש</translation>
@@ -345,7 +346,6 @@
 <translation id="2201071101391734388">תמונה אחרונה: <ph name="INDEX" /> מתוך <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">‏כיווץ של Google Tasks</translation>
 <translation id="2208323208084708176">מצב שולחן עבודה מאוחד</translation>
-<translation id="2220572644011485463">קוד אימות או סיסמה</translation>
 <translation id="2222841058024245321">שולחן עבודה וירטואלי 7</translation>
 <translation id="2223384056430485343">במסך מפוצל</translation>
 <translation id="2224075387478458881">הקלטת המסך אסורה כשמוצג תוכן מוגן</translation>
@@ -1829,7 +1829,6 @@
 <translation id="7000027735917578303">הגדרות של חלונות ושולחנות עבודה וירטואליים</translation>
 <translation id="7004910047186208204">התחברות לחבילת גלישה</translation>
 <translation id="7005239792648594238">כדי להתחיל, צריך לפתוח אפליקציה</translation>
-<translation id="7007983414944123363">לא הצלחנו לאמת את קוד האימות או את הסיסמה שלך. אפשר לנסות שוב.</translation>
 <translation id="7014684956566476813">המכשיר <ph name="DEVICE_NAME" /> מחובר</translation>
 <translation id="7015766095477679451">אפשר לחזור בשעה <ph name="COME_BACK_TIME" />.</translation>
 <translation id="70168403932084660">שולחן עבודה וירטואלי 6</translation>
@@ -1943,6 +1942,7 @@
 <translation id="742594950370306541">המצלמה נמצאת בשימוש.</translation>
 <translation id="742608627846767349">בוקר טוב,</translation>
 <translation id="743058460480092004">המצלמה והמיקרופון נמצאים בשימוש.</translation>
+<translation id="7440404390546433462">‏חיפוש Google</translation>
 <translation id="7441711280402516925">פועלת · מעבר לכרטיסייה</translation>
 <translation id="7453330308669753048">התוצאה מהיסטוריית החיפושים הוסרה</translation>
 <translation id="7459485586006128091">הנקודה לשיתוף האינטרנט הושבתה עקב שגיאה פנימית. אפשר לנסות להתחבר מחדש בעוד כמה דקות.</translation>
@@ -2470,6 +2470,7 @@
 <translation id="9179259655489829027">תכונה זו מאפשרת לך לגשת במהירות לכל משתמש המחובר לחשבון, בלי להזין סיסמה.
 
 יש להשתמש בתכונה הזו רק עם חשבונות מהימנים.</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183456764293710005">הגדלת כל המסך</translation>
 <translation id="9192133205265227850">שימוש במכשיר '<ph name="DEVICE_NAME" />'</translation>
 <translation id="9193626018745640770">מתבצעת העברה במכשיר לא ידוע</translation>

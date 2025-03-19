@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -235,16 +236,20 @@ class PDFExtensionAccessibilityTest : public PDFExtensionTestBase {
     return content::GetAccessibilityTreeSnapshotFromId(pdf_tree_id);
   }
 
-  void EnableScreenReader(bool enabled) {
+  void EnableScreenReader() {
     // Spoof a screen reader.
-    if (enabled) {
-      content::BrowserAccessibilityState::GetInstance()
-          ->AddAccessibilityModeFlags(ui::AXMode::kExtendedProperties);
-    } else {
-      content::BrowserAccessibilityState::GetInstance()
-          ->RemoveAccessibilityModeFlags(ui::AXMode::kExtendedProperties);
-    }
+    mode_override_.emplace(ui::kAXModeComplete);
+    content::BrowserAccessibilityState::GetInstance()->SetScreenReaderAppActive(
+        true);
   }
+
+  void TearDownOnMainThread() override {
+    mode_override_.reset();
+    PDFExtensionTestBase::TearDownOnMainThread();
+  }
+
+ private:
+  std::optional<content::ScopedAccessibilityModeOverride> mode_override_;
 };
 
 class PDFExtensionAccessibilityTestWithOopifOverride
@@ -1195,11 +1200,7 @@ IN_PROC_BROWSER_TEST_P(PdfOcrUmaTest, CheckOpenedWithScreenReader) {
     GTEST_SKIP();
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
-  ::ash::AccessibilityManager::Get()->EnableSpokenFeedback(true);
-#else
-  EnableScreenReader(true);
-#endif  // BUILDFLAG(IS_CHROMEOS)
+  EnableScreenReader();
 
   base::HistogramTester histograms;
   histograms.ExpectUniqueSample(
@@ -1328,14 +1329,11 @@ class PdfOcrIntegrationTest
           screen_ai::ScreenAIInstallState::GetInstance());
     }
 
-    mode_override_.emplace(ui::kAXModeComplete);
-    EnableScreenReader(true);
+    EnableScreenReader();
   }
 
   void TearDownOnMainThread() override {
     component_download_observer_.Reset();
-    EnableScreenReader(false);
-    mode_override_.reset();
     PDFExtensionAccessibilityTest::TearDownOnMainThread();
   }
 
@@ -1481,7 +1479,6 @@ class PdfOcrIntegrationTest
     return expected_contents;
   }
 
-  std::optional<content::ScopedAccessibilityModeOverride> mode_override_;
   base::ScopedObservation<screen_ai::ScreenAIInstallState,
                           screen_ai::ScreenAIInstallState::Observer>
       component_download_observer_{this};

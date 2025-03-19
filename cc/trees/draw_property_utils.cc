@@ -1464,10 +1464,13 @@ void UpdateElasticOverscroll(
   // overscroll amount.
   gfx::PointF overscroll_offset =
       gfx::PointAtOffsetFromOrigin(elastic_overscroll);
-  if (overscroll_elasticity_transform_node->scroll_offset == overscroll_offset)
+  if (overscroll_elasticity_transform_node->scroll_offset() ==
+      overscroll_offset) {
     return;
+  }
 
-  overscroll_elasticity_transform_node->scroll_offset = overscroll_offset;
+  overscroll_elasticity_transform_node->SetScrollOffset(
+      overscroll_offset, DamageReason::kUntracked);
 
   overscroll_elasticity_transform_node->needs_local_transform_update = true;
   property_trees->transform_tree_mutable().set_needs_update(true);

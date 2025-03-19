@@ -261,7 +261,7 @@ void SessionAuthzAuthenticator::HandleSessionAuthzError(
       session_authz_rejection_reason_ = RejectionReason::TOO_MANY_CONNECTIONS;
       break;
     default:
-      session_authz_rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
+      session_authz_rejection_reason_ = RejectionReason::UNEXPECTED_ERROR;
   }
 }
 

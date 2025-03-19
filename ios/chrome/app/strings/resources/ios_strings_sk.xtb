@@ -504,6 +504,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="310900540163454140">Chcete odstrániť heslo pre <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Označiť…</translation>
 <translation id="3119874402040566234">Systém vás odhlási a dáta prehliadania budú odstránené</translation>
+<translation id="3124568093781685165">Zdieľajte svoje heslá s rodinou</translation>
 <translation id="3130863904455712965">História a ďalšie nastavenia</translation>
 <translation id="313283613037595347">Vytvoriť novú kartu inkognito.</translation>
 <translation id="3138611310073113613">Zahodiť výber</translation>
@@ -1003,6 +1004,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5352128922772839949">Uložiť súbor</translation>
 <translation id="5355191726083956201">Je zapnutá rozšírená ochrana</translation>
 <translation id="537853552771686272">Spravujte témy a weby, ktoré vás zaujímajú</translation>
+<translation id="5390458669633674385">{count,plural, =1{{count} zatvorená}few{{count} zatvorené}many{{count} closed}other{{count} zatvorených}}</translation>
 <translation id="5394975111793637642">Skryť kartu Recenzie výrobkov pre vás</translation>
 <translation id="5395707839134961196">Skryť podrobnosti vyhľadávača</translation>
 <translation id="5414763847370083940">Ak cena na niektorom webe klesne, dostanete upozornenie.</translation>
@@ -1132,6 +1134,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5897749768294722429">Ak sa chcete rýchlo vrátiť na navštívené weby, synchronizujte si karty aj históriu.</translation>
 <translation id="5898848375214731122">Hmotnosť</translation>
 <translation id="5899314093904173337">Ak chcete zdieľať s ľuďmi nablízku, nechajte ich naskenovať tento QR kód fotoaparátom alebo aplikáciou skenera QR kódov</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} nová karta}few{{count} nové karty}many{{count} new tabs}other{{count} nových kariet}}</translation>
 <translation id="5911030830365207728">Prekladač Google</translation>
 <translation id="5917913282764181683">Automatické odstraňovanie stiahnutých súborov</translation>
 <translation id="5922999516621365983">Ak kartu chcete pripnúť, presuňte ju sem.</translation>
@@ -1674,6 +1677,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8131740175452115882">Potvrdiť</translation>
 <translation id="8132598642024322408">Teraz za <ph name="PRICE" />, predtým <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Používajte pre jednotlivé weby a aplikácie jedinečné heslá. Ak niekto odhalí recyklované heslo, bude ním môcť získať prístup do vašich ďalších účtov. Kliknutím otvorte web a zmeňte jeho heslo.</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} zavretá karta}few{{count} zavreté karty}many{{count} closed tabs}other{{count} zavretých kariet}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 ďalší}few{# ďalšie}many{# others}other{# ďalších}}</translation>
 <translation id="8150167929304790980">Celé meno</translation>
 <translation id="8152331954420209374">Prejsť na Lens</translation>

@@ -440,6 +440,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Пароль сохранен в вашем аккаунте Google ({EMAIL}).}one{Пароли сохранены в вашем аккаунте Google ({EMAIL}).}few{Пароли сохранены в вашем аккаунте Google ({EMAIL}).}many{Пароли сохранены в вашем аккаунте Google ({EMAIL}).}other{Пароли сохранены в вашем аккаунте Google ({EMAIL}).}}</translation>
 <translation id="2791174088547598693">Добавить пароль</translation>
 <translation id="2797302972324086597">Код страны</translation>
+<translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} файл}one{{COUNT} файл}few{{COUNT} файла}many{{COUNT} файлов}other{{COUNT} файла}}</translation>
 <translation id="2816489851009559785">Меню → Настройки → Браузер по умолчанию</translation>
 <translation id="2818821771744632548">В результате сброса настроек iPhone произошел выход из аккаунта <ph name="USER_NAME" />. Чтобы войти, нажмите "Продолжить" ниже.</translation>
 <translation id="2819667972867209401">Если параметр включен, данные сохраняются в аккаунте Google. Если нет, данные остаются только на этом устройстве и удаляются при выходе из аккаунта.</translation>
@@ -1747,7 +1748,7 @@
 <translation id="8428045167754449968">Город</translation>
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8428634594422941299">ОК</translation>
-<translation id="8430694217306051839">Выберите, где сохранить файл "<ph name="FILENAME" />" (<ph name="FILE_SIZE" />).</translation>
+<translation id="8430694217306051839">Выберите, где сохранить файл <ph name="FILENAME" /> (<ph name="FILE_SIZE" />).</translation>
 <translation id="8434837876193928924">Сведения о группе вкладок</translation>
 <translation id="8438566539970814960">Помогать улучшать просмотр страниц и поиск</translation>
 <translation id="8439758443371991593">Скрыть действие "Добавить в список для чтения"</translation>

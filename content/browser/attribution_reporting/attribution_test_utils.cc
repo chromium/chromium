@@ -10,6 +10,7 @@
 #include <optional>
 #include <tuple>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -54,7 +55,6 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -824,7 +824,7 @@ std::ostream& operator<<(std::ostream& out,
 namespace {
 std::ostream& operator<<(std::ostream& out,
                          const AttributionReport::Data& data) {
-  absl::visit([&out](const auto& v) { out << v; }, data);
+  std::visit([&out](const auto& v) { out << v; }, data);
   return out;
 }
 }  // namespace
@@ -866,29 +866,29 @@ std::ostream& operator<<(std::ostream& out, SendResult::Status status) {
 }
 
 std::ostream& operator<<(std::ostream& out, const SendResult& info) {
-  absl::visit(base::Overloaded{
-                  [&](SendResult::Sent sent) {
-                    out << "{Sent={result=";
-                    switch (sent.result) {
-                      case SendResult::Sent::Result::kSent:
-                        out << "kSent";
-                        break;
-                      case SendResult::Sent::Result::kTransientFailure:
-                        out << "kTransientFailure";
-                        break;
-                      case SendResult::Sent::Result::kFailure:
-                        out << "kFailure";
-                        break;
-                    }
-                    out << ",status=" << sent.status << "}}";
-                  },
-                  [&](SendResult::Dropped) { out << "{Dropped={}}"; },
-                  [&](SendResult::AssemblyFailure failure) {
-                    out << "{AssemblyFailure={transient=" << failure.transient
-                        << "}}";
-                  },
-              },
-              info.result);
+  std::visit(base::Overloaded{
+                 [&](SendResult::Sent sent) {
+                   out << "{Sent={result=";
+                   switch (sent.result) {
+                     case SendResult::Sent::Result::kSent:
+                       out << "kSent";
+                       break;
+                     case SendResult::Sent::Result::kTransientFailure:
+                       out << "kTransientFailure";
+                       break;
+                     case SendResult::Sent::Result::kFailure:
+                       out << "kFailure";
+                       break;
+                   }
+                   out << ",status=" << sent.status << "}}";
+                 },
+                 [&](SendResult::Dropped) { out << "{Dropped={}}"; },
+                 [&](SendResult::AssemblyFailure failure) {
+                   out << "{AssemblyFailure={transient=" << failure.transient
+                       << "}}";
+                 },
+             },
+             info.result);
   return out;
 }
 

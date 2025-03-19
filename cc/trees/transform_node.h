@@ -7,6 +7,7 @@
 
 #include "cc/cc_export.h"
 #include "cc/paint/element_id.h"
+#include "cc/trees/damage_reason.h"
 #include "cc/trees/mutator_host.h"
 #include "cc/trees/property_ids.h"
 #include "ui/gfx/geometry/point3_f.h"
@@ -27,14 +28,6 @@ struct CC_EXPORT TransformNode {
   TransformNode(const TransformNode&);
   TransformNode& operator=(const TransformNode&);
 
-  // The node index of this node in the transform tree node vector.
-  int id = kInvalidPropertyNodeId;
-  // The node index of the parent node in the transform tree node vector.
-  int parent_id = kInvalidPropertyNodeId;
-  // The node index of the nearest parent frame node in the transform tree node
-  // vector.
-  int parent_frame_id = kInvalidPropertyNodeId;
-
   ElementId element_id;
 
   // The local transform information is combined to form to_parent (ignoring
@@ -48,6 +41,14 @@ struct CC_EXPORT TransformNode {
   gfx::Vector2dF post_translation;
 
   gfx::Transform to_parent;
+
+  // The node index of this node in the transform tree node vector.
+  int id = kInvalidPropertyNodeId;
+  // The node index of the parent node in the transform tree node vector.
+  int parent_id = kInvalidPropertyNodeId;
+  // The node index of the nearest parent frame node in the transform tree node
+  // vector.
+  int parent_frame_id = kInvalidPropertyNodeId;
 
   // This is the node which defines the sticky position constraints for this
   // transform node.
@@ -116,9 +117,6 @@ struct CC_EXPORT TransformNode {
   // layer scale factor should include the page scale factor.
   bool in_subtree_of_page_scale_layer : 1 = false;
 
-  // We need to track changes to to_screen transform to compute the damage rect.
-  bool transform_changed : 1 = false;
-
   // Whether the parent transform node should be used for checking backface
   // visibility, not this transform one.
   bool delegates_to_parent_for_backface : 1 = false;
@@ -130,7 +128,25 @@ struct CC_EXPORT TransformNode {
   // Set to true, if the node or it's parent |will_change_transform| is true.
   bool node_or_ancestors_will_change_transform : 1 = false;
 
-  gfx::PointF scroll_offset;
+ private:
+  bool transform_changed_ : 1 = false;
+
+  gfx::PointF scroll_offset_;
+
+ public:
+  // We need to track changes to to_screen transform to compute the damage rect.
+  void SetScrollOffset(const gfx::PointF& offset, DamageReason damage_reason);
+  const gfx::PointF& scroll_offset() const { return scroll_offset_; }
+
+  // Sets `transform_changed_` to true and false, as well as add to and clear
+  // damage reasons.
+  void SetTransformChanged(DamageReason damage_reason);
+  void ClearTransformChanged();
+
+  // Copy `transform_changed_` and add damage reasons from `other`.
+  void CopyTransformChangedFrom(const TransformNode& other);
+
+  bool transform_changed() const { return transform_changed_; }
 
   // This value stores the snapped amount whenever we snap. If the snap is due
   // to a scroll, we need it to calculate fixed-pos elements adjustment, even
@@ -145,6 +161,14 @@ struct CC_EXPORT TransformNode {
   // Set to the element ID of containing document if this transform node is the
   // root of a visible frame subtree.
   ElementId visible_frame_element_id;
+
+ private:
+  DamageReasonSet damage_reasons_;
+
+ public:
+  // Only meant to be used for mojo deserialization.
+  bool SetDamageReasonsForDeserialization(DamageReasonSet reasons);
+  DamageReasonSet damage_reasons() const { return damage_reasons_; }
 
 #if DCHECK_IS_ON()
   bool operator==(const TransformNode& other) const;

@@ -62,7 +62,7 @@
     _passwordViewController =
         [[PasswordViewController alloc] initWithSearchController:nil];
 
-    ProfileIOS* profile = self.browser->GetProfile();
+    ProfileIOS* profile = self.profile;
     FaviconLoader* faviconLoader =
         IOSChromeFaviconLoaderFactory::GetForProfile(profile);
     syncer::SyncService* syncService =

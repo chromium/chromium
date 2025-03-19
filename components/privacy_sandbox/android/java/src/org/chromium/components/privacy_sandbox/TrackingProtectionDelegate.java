@@ -6,10 +6,12 @@ package org.chromium.components.privacy_sandbox;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 /** Interface implemented by the embedder to access embedder-specific logic. */
+@NullMarked
 public interface TrackingProtectionDelegate {
     /**
      * @return whether block all 3PC pref is enabled.

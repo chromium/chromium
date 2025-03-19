@@ -1348,6 +1348,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1918127774159128277">Atnaujinti „Wi-Fi Direct“ galimybes</translation>
 <translation id="1918141783557917887">&amp;Mažesnis</translation>
 <translation id="1918281588461452432">Kai naršote svetaines, jų puslapių turinys užkoduojamas ir išsaugomas jūsų įrenginyje</translation>
+<translation id="1919096511823372013">Įterpkite nuorodų, jaustukų ir kt. Be to, galite gauti pagalbos rašydami ir kurdami vaizdus naudodami „Google“ DI.</translation>
 <translation id="1919872106782726755">Jei norite nustatyti kontrolinį kodą, paprašykite vaiko, kad paliestų kontrolinio kodo jutiklį viršutiniame dešiniajame klaviatūros kampe šalia maitinimo mygtuko. Vaiko kontrolinio kodo duomenys saugomi saugiai ir niekada nepatenka už įrenginio „<ph name="DEVICE_TYPE" />“ ribų.</translation>
 <translation id="192015196730532810">Galite sukurti savo skirtukų grupę.</translation>
 <translation id="1920314570001095522">Nėra panašių skirtukų, kuriuos būtų galima tvarkyti, bet jums gali patikti šios grupės</translation>
@@ -8998,6 +8999,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7377451353532943397">Toliau blokuoti prieigą prie jutiklio</translation>
 <translation id="7377481913241237033">Susieti naudojant kodą</translation>
 <translation id="73786666777299047">Atidarykite „Chrome“ internetinę parduotuvę</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Kita užduotis toje pačioje užduočių grupėje: <ph name="OTHER_TASKS" />}one{<ph name="TASK_ROW" />. Kitos užduotys (#) toje pačioje užduočių grupėje: <ph name="OTHER_TASKS" />}few{<ph name="TASK_ROW" />. Kitos užduotys (#) toje pačioje užduočių grupėje: <ph name="OTHER_TASKS" />}many{<ph name="TASK_ROW" />. Kitos užduotys (#) toje pačioje užduočių grupėje: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Kitos užduotys (#) toje pačioje užduočių grupėje: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380272457268061606">Išjungti vietinių duomenų atkūrimą?</translation>
 <translation id="7380459290951585794">Įsitikinkite, kad telefonas netoliese, atrakintas ir jame įjungtas „Bluetooth“ bei „Wi-Fi“ ryšys</translation>
 <translation id="7380622428988553498">Įrenginio pavadinime yra netinkamų simbolių</translation>

@@ -5,10 +5,10 @@
 #include "components/mirroring/service/rpc_dispatcher_impl.h"
 
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/logging.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/openscreen/src/platform/base/span.h"
 
 namespace mirroring {
@@ -59,7 +59,7 @@ void RpcDispatcherImpl::OnMessage(
 
   // We may get messages before subscription is completed.
   if (callback_) {
-    callback_.Run(absl::get<std::vector<uint8_t>>(message.value().body));
+    callback_.Run(std::get<std::vector<uint8_t>>(message.value().body));
   } else {
     DVLOG(1) << __func__ << ": received a message but no callback registered.";
   }
