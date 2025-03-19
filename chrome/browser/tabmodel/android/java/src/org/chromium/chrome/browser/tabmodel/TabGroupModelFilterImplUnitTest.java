@@ -2045,20 +2045,6 @@ public class TabGroupModelFilterImplUnitTest {
     }
 
     @Test
-    public void testGetRelatedTabListForRootId() {
-        Tab[] group1 = new Tab[] {mTab2, mTab3};
-        Tab[] group2 = new Tab[] {mTab5, mTab6};
-        assertArrayEquals(
-                mTabGroupModelFilter.getRelatedTabListForRootId(TAB2_ROOT_ID).toArray(), group1);
-        assertArrayEquals(
-                mTabGroupModelFilter.getRelatedTabListForRootId(TAB3_ROOT_ID).toArray(), group1);
-        assertArrayEquals(
-                mTabGroupModelFilter.getRelatedTabListForRootId(TAB5_ROOT_ID).toArray(), group2);
-        assertArrayEquals(
-                mTabGroupModelFilter.getRelatedTabListForRootId(TAB6_ROOT_ID).toArray(), group2);
-    }
-
-    @Test
     public void testGetTabsInGroup() {
         Tab[] group1 = new Tab[] {mTab2, mTab3};
         Tab[] group2 = new Tab[] {mTab5, mTab6};

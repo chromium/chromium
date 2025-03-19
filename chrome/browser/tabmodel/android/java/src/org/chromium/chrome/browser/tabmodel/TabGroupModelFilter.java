@@ -100,16 +100,6 @@ public interface TabGroupModelFilter extends TabList {
      */
     List<@TabId Integer> getRelatedTabIds(@TabId int tabId);
 
-    /**
-     * This method returns all tabs in a tab group with reference to {@code rootId}.
-     *
-     * @param rootId The tab root id that is used to find the related group.
-     * @return An unmodifiable list of {@link Tab} that relate with the given tab root id.
-     * @deprecated Use {@link #getRelatedTabList(int)} or {@link getTabsInGroup(Token)} instead.
-     */
-    @Deprecated
-    List<Tab> getRelatedTabListForRootId(@TabId int rootId);
-
     /** Returns the list of tabs in a tab group or an empty list if the group does not exist. */
     List<Tab> getTabsInGroup(@Nullable Token tabGroupId);
 
