@@ -168,9 +168,24 @@ class FromGwsAbandonedPageLoadMetricsObserverBrowserTest
     EXPECT_TRUE(content::NavigateToURL(
         browser()->tab_strip_model()->GetActiveWebContents(), url_non_srp()));
 
-    // There should be UKM entries corresponding to the navigation.
     auto ukm_entries =
         ukm_recorder.GetEntriesByName("Navigation.FromGoogleSearch.Abandoned");
+    // Remove any irrelevant entries from the list of UKM entries by filtering
+    // with the URL. This is required to avoid the flakiness when abandoning
+    // the navigation with reload on early milestone such as NavigationStart.
+    // It seems to be triggering a timing bug which when navigating from
+    // a.com to b.com, the early stage reload winds back to a.com even though
+    // the navigation to b.com has started.
+    ukm_entries.erase(
+        std::remove_if(ukm_entries.begin(), ukm_entries.end(),
+                       [&ukm_recorder, this](auto entry) {
+                         auto* src = ukm_recorder.GetSourceForSourceId(
+                             entry->source_id);
+                         return !src || src->url() != url_non_srp_2();
+                       }),
+        ukm_entries.end());
+
+    // There should be UKM entries corresponding to the navigation.
     const ukm::mojom::UkmEntry* ukm_entry = ukm_entries[0].get();
     ukm_recorder.ExpectEntrySourceHasUrl(ukm_entry, url_non_srp_2());
     ukm_recorder.ExpectEntryMetric(ukm_entry, "AbandonReason",
@@ -262,15 +277,8 @@ IN_PROC_BROWSER_TEST_F(FromGwsAbandonedPageLoadMetricsObserverBrowserTest,
 // milestones for this test since the new navigation might take a while to
 // arrive on the browser side, and the oldnavigation might have advanced if
 // it's not actually paused.
-// TODO(crbug.com/400273873): flaky on Linux with bfcache disabled builds. This
-// will be fixed in https://crrev.com/c/6268599.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_CancelledByNewNavigation DISABLED_CancelledByNewNavigation
-#else
-#define MAYBE_CancelledByNewNavigation CancelledByNewNavigation
-#endif
 IN_PROC_BROWSER_TEST_F(FromGwsAbandonedPageLoadMetricsObserverBrowserTest,
-                       MAYBE_CancelledByNewNavigation) {
+                       CancelledByNewNavigation) {
   for (NavigationMilestone milestone : all_throttleable_milestones()) {
     for (AbandonReason reason :
          {AbandonReason::kNewReloadNavigation,
