@@ -15,10 +15,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/aura/window_observer.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace views {
+class AXVirtualView;
 class FocusRing;
 class HighlightPathGenerator;
 class View;
@@ -33,10 +35,6 @@ class ScopedA11yOverrideWindowSetter;
 // CaptureModeSessionFocusCycler handles the special focus transitions which
 // happen between the capture session UI items. These include the capture bar
 // buttons, the selection region UI and the capture button.
-// TODO(crbug.com/40170806): The selection region UI are drawn directly on a
-// layer. We simulate focus by drawing focus rings on the same layer, but this
-// is not compatible with accessibility. Investigate using AxVirtualView or
-// making the dots actual Views.
 class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
  public:
   // The different groups which can receive focus during a capture mode session.
@@ -353,6 +351,14 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
   // after the session starts will not be included.
   std::map<aura::Window*, std::unique_ptr<HighlightableWindow>>
       highlightable_windows_;
+
+  // Virtual a11y views for the affordance circles, since this UI is drawn
+  // directly on the layer and has no associated view. These are raw pointers
+  // that are owned by the views hierarchy, and are lazily created. The virtual
+  // views are attached to a fullscreen widget backed by a not drawn layer which
+  // is also lazily created.
+  views::UniqueWidgetPtr ax_widget_;
+  std::map<FineTunePosition, raw_ptr<views::AXVirtualView>> ax_virtual_views_;
 
   // The session that owns |this|. Guaranteed to be non null for the lifetime of
   // |this|.
