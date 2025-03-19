@@ -1,7 +1,14 @@
-alexilin@chromium.org
-bsazonov@chromium.org
-droger@chromium.org
-msalama@chromium.org
-msarda@chromium.org
-rsult@google.com
-sdefresne@chromium.org
+# Note: Unless you want a specific reviewer's expertise, please send CLs to
+# chrome-signin-reviews@google.com rather than to specific individuals.
+#
+# These CLs will be automatically reassigned to a reviewer within
+# about 5 minutes. This approach helps our team to load-balance incoming
+# reviews.
+chrome-signin-reviews@google.com
+
+alexilin@chromium.org #{LAST_RESORT_SUGGESTION}
+bsazonov@chromium.org #{LAST_RESORT_SUGGESTION}
+droger@chromium.org   #{LAST_RESORT_SUGGESTION}
+msalama@chromium.org  #{LAST_RESORT_SUGGESTION}
+msarda@chromium.org   #{LAST_RESORT_SUGGESTION}
+rsult@google.com      #{LAST_RESORT_SUGGESTION}
