@@ -467,8 +467,8 @@ void NotificationViewBase::CreateOrUpdateProgressBarView(
     auto progress_bar_view = std::make_unique<views::ProgressBar>();
     progress_bar_view->SetPreferredHeight(kProgressBarHeight);
     progress_bar_view->SetPreferredCornerRadii(std::nullopt);
-    progress_bar_view->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets::TLBR(kProgressBarTopPadding, 0, 0, 0)));
+    progress_bar_view->SetProperty(
+        views::kMarginsKey, gfx::Insets::TLBR(kProgressBarTopPadding, 0, 0, 0));
     progress_bar_view_ = AddViewToLeftContent(std::move(progress_bar_view));
   } else {
     ReorderViewInLeftContent(progress_bar_view_);
