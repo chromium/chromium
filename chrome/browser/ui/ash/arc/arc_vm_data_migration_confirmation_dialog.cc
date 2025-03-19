@@ -10,7 +10,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
@@ -28,6 +27,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/view.h"
@@ -104,10 +104,10 @@ ArcVmDataMigrationConfirmationDialog::ArcVmDataMigrationConfirmationDialog(
   SetOwnedByWidget(true);
   SetShowCloseButton(false);
 
-  const auto* layout_provider = ChromeLayoutProvider::Get();
+  const auto* layout_provider = views::LayoutProvider::Get();
   DCHECK(layout_provider);
   set_fixed_width(layout_provider->GetDistanceMetric(
-      ChromeDistanceMetric::DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH));
+      views::DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH));
   set_use_round_corners(true);
   set_corner_radius(kDialogCornerRadius);
   set_margins(layout_provider->GetDialogInsetsForContentType(
@@ -121,7 +121,7 @@ void ArcVmDataMigrationConfirmationDialog::InitializeView(
     int days_until_deadline) {
   auto view = std::make_unique<views::View>();
 
-  const auto* layout_provider = ChromeLayoutProvider::Get();
+  const auto* layout_provider = views::LayoutProvider::Get();
   DCHECK(layout_provider);
   auto layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
