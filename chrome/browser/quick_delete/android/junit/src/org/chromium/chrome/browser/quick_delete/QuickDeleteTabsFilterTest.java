@@ -326,5 +326,6 @@ public class QuickDeleteTabsFilterTest {
         }
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {savedGroup.syncId});
         when(mTabGroupSyncService.getGroup(savedGroup.syncId)).thenReturn(savedGroup);
+        when(mTabGroupSyncService.isObservingLocalChanges()).thenReturn(true);
     }
 }

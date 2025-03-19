@@ -87,6 +87,7 @@ public class TabRemoverImplUnitTest {
         DataSharingServiceFactory.setForTesting(mDataSharingService);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
+        when(mTabGroupSyncService.isObservingLocalChanges()).thenReturn(true);
 
         when(mProfile.isOffTheRecord()).thenReturn(false);
         mTabModel = spy(new MockTabModel(mProfile, null));
