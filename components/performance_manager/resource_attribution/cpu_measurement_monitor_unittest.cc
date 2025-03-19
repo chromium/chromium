@@ -46,7 +46,6 @@
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
 #include "components/performance_manager/test_support/resource_attribution/gtest_util.h"
 #include "components/performance_manager/test_support/resource_attribution/measurement_delegates.h"
-#include "components/performance_manager/test_support/run_in_graph.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/process_type.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -2446,14 +2445,13 @@ class ResourceAttrCPUMonitorTimingTest
   void SetUp() override {
     GetGraphFeatures().EnableResourceAttributionScheduler();
     Super::SetUp();
-    performance_manager::RunInGraph([&](performance_manager::Graph* graph) {
-      cpu_monitor_ = std::make_unique<CPUMeasurementMonitor>();
-      cpu_monitor_->StartMonitoring(graph);
-    });
+    cpu_monitor_ = std::make_unique<CPUMeasurementMonitor>();
+    cpu_monitor_->StartMonitoring(
+        performance_manager::PerformanceManager::GetGraph());
   }
 
   void TearDown() override {
-    performance_manager::RunInGraph([&] { cpu_monitor_.reset(); });
+    cpu_monitor_.reset();
     Super::TearDown();
   }
 
@@ -2485,16 +2483,17 @@ TEST_F(ResourceAttrCPUMonitorTimingTest, ProcessLifetime) {
   // but has no pid. (Equivalent to the time between OnProcessNodeAdded and
   // OnProcessLifetimeChange.)
   LetTimePass();
-  performance_manager::RunInGraph([&] {
-    cpu_monitor_->RepeatingQueryStarted(kDummyQuery);
 
-    ASSERT_TRUE(process_node);
-    EXPECT_EQ(process_node->GetProcessId(), base::kNullProcessId);
+  cpu_monitor_->RepeatingQueryStarted(kDummyQuery);
 
-    // "Browser" process is the test harness, which already has a pid.
-    ASSERT_TRUE(browser_process_node);
-    EXPECT_NE(browser_process_node->GetProcessId(), base::kNullProcessId);
+  ASSERT_TRUE(process_node);
+  EXPECT_EQ(process_node->GetProcessId(), base::kNullProcessId);
 
+  // "Browser" process is the test harness, which already has a pid.
+  ASSERT_TRUE(browser_process_node);
+  EXPECT_NE(browser_process_node->GetProcessId(), base::kNullProcessId);
+
+  {
     // Renderer process can't be measured yet, browser can.
     const auto measurements =
         cpu_monitor_->UpdateAndGetCPUMeasurements(kDummyQuery);
@@ -2503,17 +2502,17 @@ TEST_F(ResourceAttrCPUMonitorTimingTest, ProcessLifetime) {
     EXPECT_FALSE(base::Contains(measurements, frame_context));
     EXPECT_TRUE(base::Contains(measurements,
                                browser_process_node->GetResourceContext()));
-  });
+  }
 
   // Assign a real process to the ProcessNode. (Will call
   // OnProcessLifetimeChange and start monitoring.)
-  auto set_process_on_pm_sequence = [&process_node] {
+  auto set_process = [&process_node] {
     ASSERT_TRUE(process_node);
     ProcessNodeImpl::FromNode(process_node.get())
         ->SetProcess(base::Process::Current(), base::TimeTicks::Now());
     EXPECT_NE(process_node->GetProcessId(), base::kNullProcessId);
   };
-  performance_manager::RunInGraph(set_process_on_pm_sequence);
+  set_process();
 
   // Let some time pass so there's CPU to measure after monitoring starts.
   LetTimePass();
@@ -2527,12 +2526,13 @@ TEST_F(ResourceAttrCPUMonitorTimingTest, ProcessLifetime) {
   base::TimeDelta cumulative_process_cpu;
   base::TimeDelta cumulative_browser_process_cpu;
   base::TimeDelta cumulative_frame_cpu;
-  performance_manager::RunInGraph([&] {
-    ASSERT_TRUE(process_node);
-    ASSERT_TRUE(browser_process_node);
-    EXPECT_TRUE(process_node->GetProcess().IsValid());
-    EXPECT_TRUE(browser_process_node->GetProcess().IsValid());
 
+  ASSERT_TRUE(process_node);
+  ASSERT_TRUE(browser_process_node);
+  EXPECT_TRUE(process_node->GetProcess().IsValid());
+  EXPECT_TRUE(browser_process_node->GetProcess().IsValid());
+
+  {
     // Both processes can be measured now.
     const auto measurements =
         cpu_monitor_->UpdateAndGetCPUMeasurements(kDummyQuery);
@@ -2552,17 +2552,18 @@ TEST_F(ResourceAttrCPUMonitorTimingTest, ProcessLifetime) {
     ASSERT_TRUE(base::Contains(measurements, frame_context));
     cumulative_frame_cpu = get_cumulative_cpu(measurements, frame_context);
     EXPECT_FALSE(cumulative_frame_cpu.is_negative());
-  });
+  }
 
   // Simulate that the renderer process died.
   process()->SimulateRenderProcessExit(
       base::TERMINATION_STATUS_NORMAL_TERMINATION, 0);
   LetTimePass();
-  performance_manager::RunInGraph([&] {
-    // Process is no longer running, so can't be measured.
-    ASSERT_TRUE(process_node);
-    EXPECT_FALSE(process_node->GetProcess().IsValid());
 
+  // Process is no longer running, so can't be measured.
+  ASSERT_TRUE(process_node);
+  EXPECT_FALSE(process_node->GetProcess().IsValid());
+
+  {
     // CPUMeasurementMonitor will return the last measured usage of the process
     // and its main frame for one query with ID kDummyQuery after the FrameNode
     // is deleted.
@@ -2581,7 +2582,7 @@ TEST_F(ResourceAttrCPUMonitorTimingTest, ProcessLifetime) {
         get_cumulative_cpu(measurements, frame_context);
     EXPECT_GE(new_frame_cpu, cumulative_frame_cpu);
     cumulative_frame_cpu = new_frame_cpu;
-  });
+  }
 
   // Assign a new process to the same ProcessNode. This should add the CPU usage
   // of the new process to the existing CPU usage of the process. The frame
@@ -2589,27 +2590,28 @@ TEST_F(ResourceAttrCPUMonitorTimingTest, ProcessLifetime) {
   // (Navigating the renderer will create a new frame tree in that process.)
   EXPECT_FALSE(main_rfh()->IsRenderFrameLive());
   EXPECT_TRUE(process()->MayReuseHost());
-  performance_manager::RunInGraph(set_process_on_pm_sequence);
+  set_process();
 
   LetTimePass();
-  performance_manager::RunInGraph([&] {
+
     ASSERT_TRUE(process_node);
     EXPECT_TRUE(process_node->GetProcess().IsValid());
 
-    const auto measurements =
-        cpu_monitor_->UpdateAndGetCPUMeasurements(kDummyQuery);
+    {
+      const auto measurements =
+          cpu_monitor_->UpdateAndGetCPUMeasurements(kDummyQuery);
 
-    ASSERT_TRUE(
-        base::Contains(measurements, process_node->GetResourceContext()));
-    const base::TimeDelta new_process_cpu =
-        get_cumulative_cpu(measurements, process_node->GetResourceContext());
-    EXPECT_GE(new_process_cpu, cumulative_process_cpu);
-    cumulative_process_cpu = new_process_cpu;
+      ASSERT_TRUE(
+          base::Contains(measurements, process_node->GetResourceContext()));
+      const base::TimeDelta new_process_cpu =
+          get_cumulative_cpu(measurements, process_node->GetResourceContext());
+      EXPECT_GE(new_process_cpu, cumulative_process_cpu);
+      cumulative_process_cpu = new_process_cpu;
 
-    EXPECT_FALSE(base::Contains(measurements, frame_context));
+      EXPECT_FALSE(base::Contains(measurements, frame_context));
 
-    cpu_monitor_->RepeatingQueryStopped(kDummyQuery);
-  });
+      cpu_monitor_->RepeatingQueryStopped(kDummyQuery);
+    }
 }
 
 }  // namespace resource_attribution
