@@ -830,7 +830,8 @@ std::vector<ui::Layer*> View::GetLayersInOrder(ViewLayer view_layer) {
   // view.
   if (!layer()) {
     // If there is no View layer, there should be no layers above or below.
-    DCHECK(layers_above_.empty() && layers_below_.empty());
+    DCHECK(layers_above_.empty());
+    DCHECK(layers_below_.empty());
     return {};
   }
 
@@ -2397,7 +2398,8 @@ void View::DestroyLayerImpl(LayerChangeNotifyBehavior notify_parents) {
   // It would leave this view in an inconsistent state if its layer were
   // destroyed while layers beneath were still present. So, assume this doesn't
   // happen.
-  DCHECK(layers_below_.empty() && layers_above_.empty());
+  DCHECK(layers_below_.empty());
+  DCHECK(layers_above_.empty());
 
   if (!layer()) {
     return;
@@ -3280,7 +3282,8 @@ void View::AddDescendantToNotify(View* view) {
 }
 
 void View::RemoveDescendantToNotify(View* view) {
-  DCHECK(view && descendants_to_notify_);
+  DCHECK(view);
+  DCHECK(descendants_to_notify_);
   auto i = std::ranges::find(*descendants_to_notify_, view);
   CHECK(i != descendants_to_notify_->end(), base::NotFatalUntil::M130);
   descendants_to_notify_->erase(i);

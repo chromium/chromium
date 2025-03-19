@@ -12,6 +12,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -1446,8 +1447,8 @@ void Textfield::MoveRangeSelectionExtent(const gfx::Point& extent) {
     // Move the selection end to the nearest word boundary.
     const gfx::Range nearest_word_boundaries =
         render_text->ExpandRangeToWordBoundary(gfx::Range(end));
-    DCHECK(end >= nearest_word_boundaries.start() &&
-           end <= nearest_word_boundaries.end());
+    DCHECK_GE(end, nearest_word_boundaries.start());
+    DCHECK_LE(end, nearest_word_boundaries.end());
     end = end - nearest_word_boundaries.start() <
                   nearest_word_boundaries.end() - end
               ? nearest_word_boundaries.start()

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/check_op.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
@@ -339,7 +340,8 @@ void NativeWidgetMac::ReparentNativeViewImpl(gfx::NativeView new_parent) {
       child_window_host->native_widget_mac()->GetNativeWindow();
   DCHECK(
       [child.GetNativeNSView() isDescendantOf:widget_view.GetNativeNSView()]);
-  DCHECK(widget_window && ![widget_window.GetNativeNSWindow() isSheet]);
+  DCHECK(widget_window);
+  DCHECK(![widget_window.GetNativeNSWindow() isSheet]);
 
   NativeWidgetMacNSWindowHost* new_parent_window_host =
       new_parent ? NativeWidgetMacNSWindowHost::GetFromNativeView(new_parent)

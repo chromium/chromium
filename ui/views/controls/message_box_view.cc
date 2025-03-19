@@ -11,6 +11,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
@@ -275,7 +276,8 @@ void MessageBoxView::ViewHierarchyChanged(
 
 bool MessageBoxView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   // We only accept Ctrl-C.
-  DCHECK(accelerator.key_code() == 'C' && accelerator.IsCtrlDown());
+  DCHECK_EQ(accelerator.key_code(), 'C');
+  DCHECK(accelerator.IsCtrlDown());
 
   // We must not intercept Ctrl-C when we have a text box and it's focused.
   if (prompt_field_ && prompt_field_->HasFocus()) {
