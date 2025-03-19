@@ -17611,6 +17611,38 @@
             ]
         }
     ],
+    "PreconnectFromKeyedService": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithOTRtrue_20250319",
+                    "params": {
+                        "run_on_otr": "true"
+                    },
+                    "enable_features": [
+                        "PreconnectFromKeyedService"
+                    ]
+                },
+                {
+                    "name": "EnabledWithOTRfalse_20250319",
+                    "params": {
+                        "run_on_otr": "false"
+                    },
+                    "enable_features": [
+                        "PreconnectFromKeyedService"
+                    ]
+                }
+            ]
+        }
+    ],
     "PreconnectToSearchDesktop": [
         {
             "platforms": [
