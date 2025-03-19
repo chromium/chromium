@@ -500,6 +500,7 @@ Als je dit beleid instelt op PromptInTab, wordt na het verlopen van de verificat
       Dit is van toepassing op geheugenbelasting en weggooien in de modus voor hoge efficiëntie.
       Het laden van een weggegooide pagina wordt ongedaan gemaakt en de bijbehorende resources worden volledig teruggeclaimd. Het tabblad waaraan de pagina is gekoppeld, blijft in de tabbladstrook staan, maar als je het tabblad zichtbaar maakt, wordt de pagina helemaal opnieuw geladen.
       </translation>
+<translation id="1386369130542976774">Geeft wekelijkse intervallen aan waarin ChromeOS-apparaten niet kunnen worden gebruikt</translation>
 <translation id="138847842893090358">OS-updatestatus rapporten</translation>
 <translation id="1389138080311956934">Maximale geheugenbesparingen.</translation>
 <translation id="1390529781843037070">Als je het beleid toepast of niet instelt, kunnen gebruikers naar <ph name="CLOUD_PRINT_NAME" /> afdrukken vanaf het <ph name="PRODUCT_NAME" />-afdrukdialoogvenster. <ph name="PRODUCT_NAME" /> kan documenten naar <ph name="CLOUD_PRINT_NAME" /> sturen om ze af te drukken. Dit voorkomt niet dat gebruikers afdruktaken op websites indienen.
@@ -3839,6 +3840,7 @@ In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 
 In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="3845318141474759319">Generatieve AI-achtergronden toestaan zonder AI-modellen te verbeteren</translation>
+<translation id="3849923496599301707">Chrome-apps in de kioskmodus geforceerd toestaan</translation>
 <translation id="3851443303439635700">De nestdrempel bepalen waarvoor de JavaScript-functie setTimeout() wordt vastgezet</translation>
 <translation id="3854609566862485607">Dit beleid beheert een aangepast label waarmee beheerde profielen worden geïdentificeerd. Voor beheerde profielen wordt dit label naast de avatar in de werkbalk getoond. Het aangepaste label wordt niet vertaald.
 
@@ -4071,6 +4073,16 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 
       Als je het beleid instelt op True, worden 3DES cipher suites in TLS aangezet. Als je het beleid instelt op False, worden ze uitgezet. Als je het beleid niet instelt, staan 3DES cipher suites standaard uit. Je kunt dit beleid gebruiken om de compatibiliteit met een verouderde server tijdelijk te behouden. Dit is een tijdelijke oplossing. De server moet opnieuw worden ingesteld.
       </translation>
+<translation id="4016078577612157250">Geeft wekelijkse intervallen aan waarin ChromeOS-apparaten niet kunnen worden gebruikt.
+
+Tijdens beperkte intervallen worden actieve sessies gesloten en kunnen gebruikers niet inloggen.
+
+Overwegingen:
+
+* Overlappende intervallen worden niet ondersteund.
+* Het schema voor apparaatbeperkingen gebruikt de tijdzone van het apparaat.
+* Gebruik SystemTimezone om te voorkomen dat gebruikers de tijdzone van hun apparaat kunnen bewerken.
+* Als je wilt voorkomen dat gebruikers de apparaattijd kunnen bewerken, zet je Crosh uit met SystemFeaturesDisableList en blokkeer je chrome://set-time met URLBlocklist.</translation>
 <translation id="4016367078069682737">Dit beleid is verwijderd in M61.
 
       Geeft aan hoe een apparaat zich moet gedragen dat is geleverd met ecryptfs en moet worden overgezet naar ext4-versleuteling.
@@ -5438,6 +5450,11 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 <translation id="5041315457555330432">Toestaan dat <ph name="PRODUCT_NAME" /> alleen verbinding maakt met apparaten op privé-IP-adressen, tenzij de functie CastAllowAllIPs aanstaat.</translation>
 <translation id="504689994545234073">Gebruikersbestanden lokaal opslaan aanzetten</translation>
 <translation id="5048890362473520096">LPAC-sandbox voor afdrukservices aanzetten</translation>
+<translation id="5049989450078943331">Als je dit beleid instelt op Waar, kunnen Chrome-apps blijven worden uitgevoerd in een kiosksessie, ongeacht of Chrome-apps standaard zijn aangezet.
+
+Als je dit beleid niet instelt of instelt op Onwaar, wordt het standaardgedrag gebruikt dat is gedefinieerd op het apparaat.
+
+Als een gebruiker probeert een uitgezette Chrome-app te starten, krijgt deze een bericht waarin wordt uitgelegd waarom de app niet is gestart en wordt voorgesteld contact op te nemen met de IT-afdeling.</translation>
 <translation id="5055474681190962362">Dag van de maand [1-31] waarop opnieuw moet worden opgestart, geïnterpreteerd in de lokale tijdzone van het apparaat. Alleen gebruikt als 'frequency' is ingesteld op MONTHLY. Is dit meer dan het maximumaantal dagen in een bepaalde maand, dan wordt de laatste dag van de maand gekozen.</translation>
 <translation id="5055513974503523022">Met VC-achtergrond met generatieve AI kunnen gebruikers zichzelf uiten door met generatieve AI-functies gepersonaliseerde achtergronden voor videovergaderingen te maken in <ph name="PRODUCT_OS_NAME" />.
 
@@ -6316,6 +6333,7 @@ Als het beleid is ingesteld op een niet-lege lijst en er een extensie in de lijs
 Als je het beleid niet instelt of instelt op een lege lijst, worden bevestigingsdialoogvensters voor scannen aan de gebruiker getoond als <ph name="GET_SCANNER_LIST_FUNCTION" /> of <ph name="START_SCAN_FUNCTION" /> wordt aangeroepen.</translation>
 <translation id="5599461642204007579">Beheerinstellingen voor <ph name="MS_AD_NAME" /></translation>
 <translation id="5601503069213153581">Pincode</translation>
+<translation id="5605676983184673391">Chrome-apps uitvoeren toestaan in kiosksessies.</translation>
 <translation id="5607021831414604820">Rapportage van opslagstatus van apparaat aanzetten</translation>
 <translation id="5608114828230655271">Standaard apparaatgedrag</translation>
 <translation id="561001683838346956">Dit beleid is verwijderd in <ph name="PRODUCT_NAME" /> 124. Vanaf deze versie zijn onveilige hashes nooit toegestaan. In eerdere versies bepaalde dit beleid of de browser verouderde onveilige hashes toestond tijdens het TLS-handshakeproces.
@@ -6437,6 +6455,7 @@ Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns vo
 
 Dit beleid is alleen van toepassing als de oorsprong de Direct Sockets API mag gebruiken.
 Ga naar <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> en <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" /> voor meer informatie.</translation>
+<translation id="566569751231933416">Standaardgedrag gebruiken.</translation>
 <translation id="5666457529647159548">Gebruikers toestaan geïnstalleerde clientcertificaten te beheren.</translation>
 <translation id="5670249935663090320">Als je het beleid toepast of niet instelt, wordt <ph name="PRODUCT_NAME" /> aangezet en kunnen gebruikers dit starten via het app-menu, de paginacontextmenu's, mediabediening op websites die werken met Cast en (als dit wordt getoond) het Cast-icoon op de werkbalk.
 

@@ -4075,9 +4075,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
     <ph name="BEGIN_PARAGRAPH2" />Bạn có thể bắt đầu hoặc dừng cho phép các báo cáo này bất cứ lúc nào trong phần cài đặt thiết bị Chrome. Nếu là quản trị viên miền, bạn có thể thay đổi chế độ cài đặt này trong bảng điều khiển dành cho quản trị viên.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">Bắc cực quang về đêm, phía trên một ngôi nhà gỗ nhỏ.</translation>
 <translation id="3818102823568165369">Chứng chỉ trên thiết bị do hệ điều hành hoặc quản trị viên của bạn thêm.</translation>
-<translation id="3818662907126913619">Để sử dụng thiết bị bằng hồ sơ <ph name="DOMAIN" /> của mình, bạn cần cung cấp cho tổ chức thông tin về thiết bị.
-
-Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặt, tệp, trình duyệt và hệ điều hành của thiết bị.</translation>
 <translation id="3819164369574292143">Phóng to để tăng kích thước các mục trên màn hình. Nhấn tổ hợp phím Tìm kiếm + Ctrl + M để bật và tắt tính năng phóng to. Nhấn tổ hợp phím Ctrl + Alt + Phím mũi tên để di chuyển xung quanh khi đã phóng to.</translation>
 <translation id="3819257035322786455">Sao lưu</translation>
 <translation id="3819261658055281761">Hệ thống không lưu trữ được mã thông báo truy cập API dài hạn cho thiết bị này.</translation>
@@ -4395,9 +4392,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4031527940632463547">Đã chặn sử dụng cảm biến</translation>
 <translation id="4033471457476425443">Thêm thư mục mới</translation>
 <translation id="4033963223187371752">Các trang web an toàn có thể nhúng nội dung như hình ảnh hoặc khung web không an toàn</translation>
-<translation id="4034706080855851454">Để sử dụng thiết bị bằng hồ sơ tổ chức của mình, bạn cần cung cấp cho tổ chức thông tin về thiết bị.
-
-Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặt, tệp, trình duyệt và hệ điều hành của thiết bị.</translation>
 <translation id="4034824040120875894">Máy in</translation>
 <translation id="4035758313003622889">&amp;Trình quản lý tác vụ</translation>
 <translation id="4035877632587724847">Không cho phép</translation>

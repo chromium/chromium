@@ -1345,6 +1345,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1918127774159128277">Refresh Wi-Fi direct capabilities</translation>
 <translation id="1918141783557917887">&amp;Smaller</translation>
 <translation id="1918281588461452432">As you browse sites, their page contents are encrypted and saved to your device</translation>
+<translation id="1919096511823372013">Insert links, emojis and more. You can also get help writing and creating images with Google AI.</translation>
 <translation id="1919872106782726755">To set up fingerprint, get your child to touch the fingerprint sensor at the top-right corner of the keyboard, next to the power button. Your child’s fingerprint data is stored securely and never leaves this <ph name="DEVICE_TYPE" />.</translation>
 <translation id="192015196730532810">You can create your own tab group.</translation>
 <translation id="1920314570001095522">There are no similar tabs to organise, but you may like these groups</translation>
@@ -4072,9 +4073,6 @@ You can manage this account’s settings by installing the Family Link app on yo
     <ph name="BEGIN_PARAGRAPH2" />You can start or stop allowing these reports at any time in your Chrome device settings. If you’re a domain administrator, you can change this setting in the Admin console.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">Aurora borealis at night, over a small cottage house.</translation>
 <translation id="3818102823568165369">Local certificates that have been added by your operating system or your administrator.</translation>
-<translation id="3818662907126913619">To use your device with your <ph name="DOMAIN" /> profile, your organisation needs information about the device.
-
-This can include information about installed software, files, your browser and the device’s operating system.</translation>
 <translation id="3819164369574292143">Zoom in to make items on the screen bigger. Use Search + Ctrl + M to turn the magnifier on and off. Use Ctrl + Alt + Arrow keys to move around when zoomed in.</translation>
 <translation id="3819257035322786455">Back Up</translation>
 <translation id="3819261658055281761">The system failed to store the long-term API access token for this device.</translation>
@@ -4392,9 +4390,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4031527940632463547">Sensors blocked</translation>
 <translation id="4033471457476425443">Add new folder</translation>
 <translation id="4033963223187371752">Secure sites might embed content like images or web frames that aren't secure</translation>
-<translation id="4034706080855851454">To use your device with your organisation profile, your organisation needs information about the device.
-
-This can include information about installed software, files, your browser and the device’s operating system.</translation>
 <translation id="4034824040120875894">Printer</translation>
 <translation id="4035758313003622889">&amp;Task manager</translation>
 <translation id="4035877632587724847">Don't allow</translation>
@@ -8988,6 +8983,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7377451353532943397">Continue blocking sensor access</translation>
 <translation id="7377481913241237033">Connect with a code</translation>
 <translation id="73786666777299047">Open Chrome Web Store</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Another task in the same task group: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Other # tasks in the same task group: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380272457268061606">Disable local data recovery?</translation>
 <translation id="7380459290951585794">Make sure that your phone is nearby, unlocked, and has Bluetooth and Wi-Fi turned on</translation>
 <translation id="7380622428988553498">Device name contains invalid characters</translation>

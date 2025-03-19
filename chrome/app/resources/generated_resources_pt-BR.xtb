@@ -1346,6 +1346,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1918127774159128277">Atualizar capabilities do Wi-Fi Direct</translation>
 <translation id="1918141783557917887">&amp;Menor</translation>
 <translation id="1918281588461452432">Quando você navega em sites, o conteúdo das páginas é criptografado e salvo no seu dispositivo</translation>
+<translation id="1919096511823372013">Inclua links, emojis e muito mais. Você também pode receber ajuda para escrever e criar imagens com a IA do Google.</translation>
 <translation id="1919872106782726755">Para configurar a impressão digital, peça para a criança tocar no sensor no canto superior direito do teclado, ao lado do botão liga/desliga. Os dados de impressão digital da criança são armazenados de forma segura e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="192015196730532810">Crie seu próprio grupo de guias.</translation>
 <translation id="1920314570001095522">Não há guias semelhantes para organizar, mas talvez você goste destes grupos</translation>
@@ -4073,9 +4074,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
     <ph name="BEGIN_PARAGRAPH2" />Você pode ativar ou desativar esses relatórios a qualquer momento nas configurações do dispositivo Chrome. Se você é um administrador do domínio, pode mudar essa configuração no Admin Console.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">Aurora Boreal à noite, sobre uma pequena casa de campo.</translation>
 <translation id="3818102823568165369">Certificados locais adicionados pelo sistema operacional ou pelo administrador.</translation>
-<translation id="3818662907126913619">Sua organização precisa de informações sobre o dispositivo para que ele possa ser usado com o perfil do <ph name="DOMAIN" />.
-
-Isso pode incluir informações sobre softwares instalados, arquivos, seu navegador e o sistema operacional do dispositivo.</translation>
 <translation id="3819164369574292143">Aumente o zoom para ampliar os itens na tela. Use Pesquisa + Ctrl + M para ativar e desativar a lupa. Use Ctrl + Alt + teclas de seta para se mover pela tela ampliada.</translation>
 <translation id="3819257035322786455">Backup</translation>
 <translation id="3819261658055281761">Falha do sistema ao armazenar um token de acesso de longo prazo à API para este dispositivo.</translation>
@@ -4393,9 +4391,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4031527940632463547">Sensores bloqueados</translation>
 <translation id="4033471457476425443">Adicionar nova pasta</translation>
 <translation id="4033963223187371752">Sites seguros podem incorporar conteúdo não seguro, como imagens ou frames da Web</translation>
-<translation id="4034706080855851454">Sua organização precisa de informações sobre o dispositivo para que ele possa ser usado com o perfil dela.
-
-Isso pode incluir informações sobre softwares instalados, arquivos, seu navegador e o sistema operacional do dispositivo.</translation>
 <translation id="4034824040120875894">Impressora</translation>
 <translation id="4035758313003622889">&amp;Gerenciador de tarefas</translation>
 <translation id="4035877632587724847">Não permitir</translation>
@@ -8992,6 +8987,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7377451353532943397">Continuar bloqueando o acesso ao sensor</translation>
 <translation id="7377481913241237033">Conectar com um código</translation>
 <translation id="73786666777299047">Abrir a Chrome Web Store</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Outra tarefa no mesmo grupo: <ph name="OTHER_TASKS" />}one{<ph name="TASK_ROW" />. Mais # tarefa no mesmo grupo: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Mais # tarefas no mesmo grupo: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380272457268061606">Desativar a recuperação de dados locais?</translation>
 <translation id="7380459290951585794">Confira se o smartphone está por perto, desbloqueado e com o Wi-Fi e o Bluetooth ativados</translation>
 <translation id="7380622428988553498">O nome do dispositivo contém caracteres inválidos</translation>
