@@ -227,6 +227,26 @@ TEST_P(DataSharingServiceImplTest, ShouldReadNewGroup) {
   EXPECT_THAT(outcome->group_token.group_id, Eq(group_id));
 }
 
+TEST_P(DataSharingServiceImplTest, ReadNewGroupFailure) {
+  const std::string display_name = "display_name";
+  const GroupToken group_token =
+      GroupToken(GroupId("missing_id"), "access_token");
+  DataSharingService::GroupDataOrFailureOutcome outcome;
+  base::RunLoop run_loop;
+  data_sharing_service_->ReadNewGroup(
+      group_token,
+      base::BindLambdaForTesting(
+          [&run_loop, &outcome](
+              const DataSharingService::GroupDataOrFailureOutcome& result) {
+            outcome = result;
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  EXPECT_EQ(outcome.error(),
+            DataSharingService::PeopleGroupActionFailure::kPersistentFailure);
+}
+
 TEST_P(DataSharingServiceImplTest, ShouldInviteMember) {
   // TODO(crbug.com/301390275): add a version of this test for unhappy paths.
   const GroupId group_id =
