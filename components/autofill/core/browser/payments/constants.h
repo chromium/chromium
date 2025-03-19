@@ -49,6 +49,9 @@ inline constexpr FieldTypeSet kCvcFieldTypes = {
     FieldType::CREDIT_CARD_VERIFICATION_CODE,
     FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE};
 
+// The diameter of the loading throbber used in dialogs.
+inline constexpr int kDialogThrobberDiameter = 24;
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_CONSTANTS_H_
