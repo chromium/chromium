@@ -11,8 +11,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownKeyValue;
 import org.chromium.components.autofill.AutofillAddressEditorUiInfo;
+import org.chromium.components.autofill.DropdownKeyValue;
 
 import java.text.Collator;
 import java.util.ArrayList;
