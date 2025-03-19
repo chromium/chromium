@@ -536,11 +536,22 @@ IN_PROC_BROWSER_TEST_F(CaptionSpokenFeedbackTest, ToggleCaptions) {
   sm_.Call([this, &change_observer]() {
     change_observer.Init(AccessibilityManager::Get()->profile()->GetPrefs());
     change_observer.Add(::prefs::kLiveCaptionEnabled,
-                        base::BindLambdaForTesting(
-                            [this]() { SetCaptionText("Hello World"); }));
+                        base::BindLambdaForTesting([this, &change_observer]() {
+                          SetCaptionText("Hello World");
+                          change_observer.Remove(::prefs::kLiveCaptionEnabled);
+                        }));
     ExecuteCommandHandlerCommand("toggleCaptions");
   });
   sm_.ExpectSpeech("Hello World");
+  sm_.Call([this, &change_observer]() {
+    ExecuteCommandHandlerCommand("toggleCaptions");
+    change_observer.Add(::prefs::kLiveCaptionEnabled,
+                        base::BindLambdaForTesting([this]() {
+                          SetCaptionText("Goodbye World");
+                          ExecuteCommandHandlerCommand("nextLine");
+                        }));
+  });
+  sm_.ExpectNextSpeechIsNotPattern("Goodbye World");
   sm_.Replay();
 }
 

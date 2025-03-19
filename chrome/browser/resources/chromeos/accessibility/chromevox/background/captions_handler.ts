@@ -23,6 +23,7 @@ export class CaptionsHandler implements ChromeVoxRangeObserver {
   private hasAttributeChanged_ = false;
   private inCaptions_ = false;
   private previousFocus_: CursorRange|null = null;
+  private previousPrefState_?: boolean;
   private waitingForCaptions_ = false;
 
   static init(): void {
@@ -30,7 +31,8 @@ export class CaptionsHandler implements ChromeVoxRangeObserver {
   }
 
   static open(): void {
-    if (CaptionsHandler.instance.isPrefEnabled()) {
+    CaptionsHandler.instance.saveLiveCaptionValue_();
+    if (CaptionsHandler.instance.isLiveCaptionEnabled_()) {
       CaptionsHandler.instance.tryJumpToCaptionBubble_();
     } else {
       CaptionsHandler.instance.enableLiveCaption_();
@@ -38,7 +40,7 @@ export class CaptionsHandler implements ChromeVoxRangeObserver {
   }
 
   static close(): void {
-    CaptionsHandler.instance.disableLiveCaption_();
+    CaptionsHandler.instance.resetLiveCaption_();
     CaptionsHandler.instance.onExitCaptions_();
   }
 
@@ -52,11 +54,6 @@ export class CaptionsHandler implements ChromeVoxRangeObserver {
 
   static handleAttributeChanged(): void {
     CaptionsHandler.instance.hasAttributeChanged_ = true;
-  }
-
-  isPrefEnabled(): boolean {
-    return SettingsManager.getBoolean(
-        'accessibility.captions.live_caption_enabled', /*isChromeVox=*/ false);
   }
 
   maybeHandleAlert(event: ChromeVoxEvent): boolean {
@@ -85,14 +82,15 @@ export class CaptionsHandler implements ChromeVoxRangeObserver {
     }
   }
 
-  private disableLiveCaption_(): void {
-    // TODO(crbug.com/395945468): Disable live caption when appropriate.
-  }
-
   /** This function assumes the preference for live captions is false. */
   private enableLiveCaption_(): void {
     this.waitingForCaptions_ = true;
     chrome.accessibilityPrivate.enableLiveCaption(true);
+  }
+
+  private isLiveCaptionEnabled_(): boolean {
+    return SettingsManager.getBoolean(
+        'accessibility.captions.live_caption_enabled', /*isChromeVox=*/ false);
   }
 
   private jumpToCaptionBubble_(captionsLabel: AutomationNode): void {
@@ -113,13 +111,24 @@ export class CaptionsHandler implements ChromeVoxRangeObserver {
     this.restoreFocus_();
   }
 
+  private resetLiveCaption_(): void {
+    // Don't disable live captions if they were enabled before we began.
+    if (this.previousPrefState_) {
+      return;
+    }
+    chrome.accessibilityPrivate.enableLiveCaption(false);
+  }
+
   private restoreFocus_(): void {
     if (!this.previousFocus_) {
       return;
     }
 
-    // TODO(crbug.com/395945468): Restore focus to where it was before jumping
-    // to captions.
+    ChromeVoxRange.navigateTo(this.previousFocus_);
+  }
+
+  private saveLiveCaptionValue_(): void {
+    this.previousPrefState_ = this.isLiveCaptionEnabled_();
   }
 
   private tryFindCaptions_(node: AutomationNode): AutomationNode|undefined {
