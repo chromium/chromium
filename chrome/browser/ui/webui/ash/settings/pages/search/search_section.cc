@@ -412,6 +412,8 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddString("lobsterLearnMoreUrl", chrome::kLobsterLearnMoreURL);
 
+  html_source->AddString("scannerLearnMoreUrl", chrome::kScannerLearnMoreUrl);
+
   html_source->AddBoolean("isQuickAnswersSupported", IsQuickAnswersSupported());
 
   bool is_magic_boost_feature_enabled =

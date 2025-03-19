@@ -1044,12 +1044,12 @@
   <message name="IDS_OS_SETTINGS_ENABLE_HELP_ME_WRITE_DESCRIPTION" desc="The description of the toggle to enable/disable Help Me Write in ChromeOS settings.">
     Create a draft or refine existing work.
   </message>
-  <!-- TODO: crbug.com/375967525 - Mark these strings as translateable after adding a learn more link. -->
+  <!-- TODO: crbug.com/375967525 - Mark these strings as translateable. -->
   <message name="IDS_OS_SETTINGS_ENABLE_SCANNER" desc="The label of the toggle to enable/disable suggested actions when searching your screen in ChromeOS settings." translateable="false">
     Suggested actions when searching your screen
   </message>
   <message name="IDS_OS_SETTINGS_ENABLE_SCANNER_DESCRIPTION" desc="The description of the toggle to enable/disable suggested actions when searching your screen in ChromeOS settings." translateable="false">
-    After taking a screenshot or searching your screen, show more actions such as add to Calendar, create Google Docs, and more
+    After taking a screenshot or searching your screen, show more actions such as add to Calendar, create Google Docs, and more.
   </message>
 
   <!-- Search subpage (OS settings) -->
