@@ -28,11 +28,6 @@ class CSSPathValue : public CSSValue {
                         WindRule wind_rule = RULE_NONZERO,
                         PathSerializationFormat = kNoTransformation);
 
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(style_path_);
-    CSSValue::Trace(visitor);
-  }
-
   StylePath* GetStylePath() const { return style_path_.Get(); }
   String CustomCSSText() const;
 
