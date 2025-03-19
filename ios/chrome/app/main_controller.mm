@@ -1656,10 +1656,8 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
     [self appState:self.appState sceneConnected:sceneState];
     DCHECK(sceneState.profileState);
 
-    while (sceneState.activationLevel < savedLevel) {
-      sceneState.activationLevel = static_cast<SceneActivationLevel>(
-          base::to_underlying(sceneState.activationLevel) + 1);
-    }
+    // Restore the saved activation level.
+    sceneState.activationLevel = savedLevel;
   }
 
   // Wait for the profile to complete its initialisation.
