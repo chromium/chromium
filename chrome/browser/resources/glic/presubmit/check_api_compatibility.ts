@@ -21,64 +21,44 @@ type DeepRequired<T> = {
   [K in keyof T]: DeepRequired<T[K]>
 }&Required<T>;
 
-// Get the set of TypesConsumedByClient in both old and current. This
-// allows us to ignore types removed from TypesConsumedByClient.
-type OldTypesConsumedByClient = {
-  [K in keyof old.TypesConsumedByClient &
-   keyof current.TypesConsumedByClient]: old.TypesConsumedByClient[K]
+// Get the set of BackwardsCompatibleTypes in both old and current. This
+// allows us to ignore types removed from BackwardsCompatibleTypes.
+type OldTypes = {
+  [K in keyof old.BackwardsCompatibleTypes &
+   keyof current.BackwardsCompatibleTypes]: old.BackwardsCompatibleTypes[K]
 };
-type OldTypesConsumedByHost = {
-  [K in keyof old.TypesConsumedByHost &
-   keyof current.TypesConsumedByHost]: old.TypesConsumedByHost[K]
-};
-
-type CurrentTypesConsumedByClient = {
-  [K in keyof old.TypesConsumedByClient &
-   keyof current.TypesConsumedByClient]: current.TypesConsumedByClient[K]
-};
-
-type CurrentTypesConsumedByHost = {
-  [K in keyof old.TypesConsumedByHost &
-   keyof current.TypesConsumedByHost]: current.TypesConsumedByHost[K]
+type CurrentTypes = {
+  [K in keyof old.BackwardsCompatibleTypes &
+   keyof current.BackwardsCompatibleTypes]: current.BackwardsCompatibleTypes[K]
 };
 
 /*
 These are the kinds of changes we might see, and how they're categorized.
 
-* OK in host and client types:
+* OK:
   * Adding an optional field. {x:number} --> {x:number; y?: string}
   * Adding an optional parameter. foo():void -> foo(x?:number)
 
-* ERROR in host and client types.
+* ERROR:
   * Removing any field.       {x?:number} --> {}
   * Adding a required field.  {} --> {x:number}
   * Adding a required parameter. foo():void -> foo(x:number)
   * Widening a field type.    {x:number} --> {x:number|string}
      (Changing a host type in this way is likely not compatible for old versions
       of Chrome.)
-
-In summary, host and client types have the same compatibility requirements.
-TODO(harringtond): We should just merge these two concepts.
 */
 
 // Note: We're just using assignment to verify these types are compatible.
 
-export const oldTypesAreCompatibleWithCurrent: CurrentTypesConsumedByHost&
-    CurrentTypesConsumedByClient =
-        null as any as old.TypesConsumedByHost & old.TypesConsumedByClient;
-export const currentTypesAreCompatibleWithOld: OldTypesConsumedByClient&
-    CurrentTypesConsumedByHost = null as any as current.TypesConsumedByHost &
-    current.TypesConsumedByClient;
+export const oldTypesAreCompatibleWithCurrent: CurrentTypes =
+    null as any as old.BackwardsCompatibleTypes;
+export const currentTypesAreCompatibleWithOld: OldTypes =
+    null as any as current.BackwardsCompatibleTypes;
 
 // Make all fields required, then check that all fields are compatible. This
 // ensures we don't remove optional fields.
-export const canNotRemoveAnythingFromClientTypes:
-    DeepRequired<OldTypesConsumedByClient> =
-        null as any as DeepRequired<current.TypesConsumedByClient>;
-
-export const canNotRemoveAnythingFromHostTypes:
-    DeepRequired<OldTypesConsumedByHost> =
-        null as any as DeepRequired<old.TypesConsumedByHost>;
+export const canNotRemoveAnything: DeepRequired<OldTypes> =
+    null as any as DeepRequired<current.BackwardsCompatibleTypes>;
 
 // Ensure ClosedEnums are not modified, and ExtensibleEnums are only extended.
 // TODO: This only checks enum keys. Not sure how to check values.
