@@ -81,7 +81,7 @@ source_set("lib_with_resources") {
 }
 
 updater_process_version_rc_template("version") {
-  original_filename = "UpdaterSetup.exe"
+  original_filename = "${updater_product_full_name}MsiInstallerCustomAction.dll"
   rc = "installer_version.rc"
   product_fullname = "$updater_metainstaller_name"
 }
