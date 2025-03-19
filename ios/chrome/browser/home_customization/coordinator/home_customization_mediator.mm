@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_mediator.h"
 
 #import "base/memory/raw_ptr.h"
+#import "components/commerce/core/commerce_feature_list.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_navigation_delegate.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_discover_consumer.h"
@@ -90,6 +91,12 @@
                       [self isMagicStackCardEnabledForType:
                                 CustomizationToggleType::kMostVisited]});
   }
+  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
+    toggleMap.insert({CustomizationToggleType::kShopCard,
+                      [self isMagicStackCardEnabledForType:
+                                CustomizationToggleType::kShopCard]});
+  }
+  // TODO(crbug.com/404335872) Implement for reviews (arm 2).
   [self.magicStackPageConsumer populateToggles:toggleMap];
 }
 
@@ -139,6 +146,14 @@
           FeedActivityBucketForPrefs(_prefService)));
       return _prefService->GetBoolean(
           prefs::kHomeCustomizationMostVisitedEnabled);
+    case CustomizationToggleType::kShopCard:
+      if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
+        return _prefService->GetBoolean(
+            prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled);
+      } else {
+        // TODO(crbug.com/404335872) Implement for reviews (arm 2).
+        return false;
+      }
     default:
       NOTREACHED();
   }
@@ -186,6 +201,14 @@
                                enabled);
       break;
     }
+    case CustomizationToggleType::kShopCard:
+      if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
+        _prefService->SetBoolean(
+            prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled,
+            enabled);
+      }
+      // TODO(crbug.com/404335872) Implement for reviews (arm 2).
+      break;
   }
 }
 

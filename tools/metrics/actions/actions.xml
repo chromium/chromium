@@ -14806,6 +14806,18 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action
+    name="IOS.HomeCustomization.MagicStackPage.ShopCardPriceTracking.Toggled">
+  <owner>davidjm@chromium.org</owner>
+  <owner>gloriafang@google.com</owner>
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Reported when the ShopCard Price Tracking cell is toggled from the Magic
+    Stack page in the Home Customization menu.
+  </description>
+</action>
+
 <action name="IOS.HomeCustomization.MagicStackPage.TabResumption.Toggled">
   <owner>adamta@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
