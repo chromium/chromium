@@ -8,7 +8,6 @@
 #import "components/omnibox/browser/omnibox_controller.h"
 #import "components/omnibox/browser/omnibox_view.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_popup_controller.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_view_ios.h"
 #import "ios/chrome/common/NSString+Chromium.h"
@@ -61,8 +60,7 @@
 }
 
 - (void)onThumbnailSet:(BOOL)hasThumbnail {
-  [self.omniboxAutocompleteController.omniboxPopupController
-      setHasThumbnail:hasThumbnail];
+  [self.omniboxAutocompleteController setHasThumbnail:hasThumbnail];
 }
 
 - (void)onUserRemoveThumbnail {
@@ -72,8 +70,7 @@
   }
 
   // Update the popup for suggestion wrapping.
-  [self.omniboxAutocompleteController.omniboxPopupController
-      setHasThumbnail:NO];
+  [self.omniboxAutocompleteController setHasThumbnail:NO];
 
   if (self.textField.userText.length) {
     // If the omnibox is not empty, start autocomplete.

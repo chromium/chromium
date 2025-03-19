@@ -35,7 +35,6 @@
 #import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper_delegate.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_popup_controller.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_controller_observer_bridge.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion_group_impl.h"
@@ -134,7 +133,6 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 }
 
 - (void)disconnect {
-  [self.popupController disconnect];
   if (_remoteSuggestionsServiceObserverBridge) {
     self.remoteSuggestionsService->RemoveObserver(
         _remoteSuggestionsServiceObserverBridge.get());
@@ -195,11 +193,29 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   [self.presenter updatePopupOnFocus:isFocusing];
 }
 
-#pragma mark - OmniboxPopupControllerDelegate
+- (void)omniboxAutocompleteController:
+            (OmniboxAutocompleteController*)omniboxAutocompleteController
+               didUpdateTextAlignment:(NSTextAlignment)alignment {
+  [self.consumer setTextAlignment:alignment];
+}
 
-- (void)popupController:(OmniboxPopupController*)popupController
-    didUpdateSuggestionsGroups:
-        (NSArray<id<AutocompleteSuggestionGroup>>*)suggestionGroups {
+- (void)omniboxAutocompleteController:
+            (OmniboxAutocompleteController*)omniboxAutocompleteController
+    didUpdateSemanticContentAttribute:
+        (UISemanticContentAttribute)semanticContentAttribute {
+  [self.consumer setSemanticContentAttribute:semanticContentAttribute];
+}
+
+- (void)omniboxAutocompleteController:
+            (OmniboxAutocompleteController*)omniboxAutocompleteController
+                didUpdateHasThumbnail:(BOOL)hasThumbnail {
+  self.hasThumbnail = hasThumbnail;
+}
+
+- (void)omniboxAutocompleteController:
+            (OmniboxAutocompleteController*)omniboxAutocompleteController
+           didUpdateSuggestionsGroups:
+               (NSArray<id<AutocompleteSuggestionGroup>>*)suggestionGroups {
   _suggestionGroups = suggestionGroups;
 
   // Preselect the verbatim match. It's the top match, unless we inserted pedals
@@ -214,25 +230,11 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
       preselectedMatchGroupIndex:self.preselectedGroupIndex];
 }
 
-- (void)popupController:(OmniboxPopupController*)popupController
-    didUpdateTextAlignment:(NSTextAlignment)alignment {
-  [self.consumer setTextAlignment:alignment];
-}
-
-- (void)popupController:(OmniboxPopupController*)popupController
-    didUpdateSemanticContentAttribute:
-        (UISemanticContentAttribute)semanticContentAttribute {
-  [self.consumer setSemanticContentAttribute:semanticContentAttribute];
-}
-
-- (void)popupController:(OmniboxPopupController*)popupController
-    didUpdateHasThumbnail:(BOOL)hasThumbnail {
-  self.hasThumbnail = hasThumbnail;
-}
-
-- (void)popupController:(OmniboxPopupController*)popupController
-    didInvalidatePedals:
-        (NSArray<id<AutocompleteSuggestionGroup>>*)nonPedalSuggestionsGroups {
+- (void)omniboxAutocompleteController:
+            (OmniboxAutocompleteController*)omniboxAutocompleteController
+                  didInvalidatePedals:
+                      (NSArray<id<AutocompleteSuggestionGroup>>*)
+                          nonPedalSuggestionsGroups {
   [self.consumer updateMatches:nonPedalSuggestionsGroups
       preselectedMatchGroupIndex:0];
 }

@@ -26,7 +26,6 @@
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/template_url_service_client.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_popup_controller.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_result_consumer.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion.h"
@@ -176,7 +175,8 @@ TEST_F(OmniboxPopupMediatorTest, ActionInSuggestMetricLogged) {
   NSArray<id<AutocompleteSuggestionGroup>>* groups =
       [[NSArray alloc] initWithObjects:group, nil];
 
-  [mediator_ popupController:nil didUpdateSuggestionsGroups:groups];
+  [mediator_ omniboxAutocompleteController:nil
+                didUpdateSuggestionsGroups:groups];
 
   id<AutocompleteSuggestion> actionSuggestion =
       mediator_.suggestionGroups[0].suggestions[0];
