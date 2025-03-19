@@ -57,7 +57,7 @@ def GetOptions():
   flags_index = defs.index('--flags')
 
   # Everything after --flags are flags. true/false are remapped to 1/0,
-  # everything else is passed through.
+  # strings are passed through verbatim, nothing else is allowed.
   flags = []
   for flag in defs[flags_index + 1 :]:
     equals_index = flag.index('=')
@@ -69,6 +69,9 @@ def GetOptions():
       value = '1'
     elif value == 'false':
       value = '0'
+    elif not value.startswith('"') and not value.startswith('@"'):
+      raise ValueError('`true`, `false`, and `"string"` are only valid values, '
+                       f'but got `{value}` for key `{key}`')
     flags.append((key, str(value)))
 
   return Options(output=output,
