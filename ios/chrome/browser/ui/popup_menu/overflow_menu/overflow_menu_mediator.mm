@@ -2419,6 +2419,11 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
         feature_engagement::events::kBlueDotPromoOverflowMenuDismissed);
     [self.popupMenuHandler updateToolsMenuBlueDotVisibility];
   }
+  if (self.engagementTracker) {
+    self.engagementTracker->NotifyEvent(
+        feature_engagement::events::kSettingsOnOverflowMenuUsed);
+  }
+
   [self dismissMenu];
   profile_metrics::BrowserProfileType type =
       self.isIncognito ? profile_metrics::BrowserProfileType::kIncognito
