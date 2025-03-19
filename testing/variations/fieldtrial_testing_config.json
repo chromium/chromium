@@ -18293,6 +18293,26 @@
             ]
         }
     ],
+    "PrivacySandboxMigratePrefsToSchemaV2": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PrivacySandboxMigratePrefsToSchemaV2"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrivacySandboxNoticeActionDebouncingAndroid": [
         {
             "platforms": [
