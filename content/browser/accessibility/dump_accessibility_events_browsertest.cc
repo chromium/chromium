@@ -521,12 +521,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 
 // http:/crbug.com/889013
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       DISABLED_AccessibilityEventsCaretHide) {
-  RunEventTest(FILE_PATH_LITERAL("caret-hide.html"));
-}
-
-// http:/crbug.com/889013
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        DISABLED_AccessibilityEventsCaretMove) {
   RunEventTest(FILE_PATH_LITERAL("caret-move.html"));
 }

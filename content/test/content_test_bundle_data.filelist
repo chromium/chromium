@@ -2468,7 +2468,6 @@ data/accessibility/event/caret-browsing-enabled-expected-uia-win.txt
 data/accessibility/event/caret-browsing-enabled-expected-win.txt
 data/accessibility/event/caret-browsing-enabled.html
 data/accessibility/event/caret-hide-expected-android.txt
-data/accessibility/event/caret-hide-expected-win.txt
 data/accessibility/event/caret-hide.html
 data/accessibility/event/caret-move-expected-android.txt
 data/accessibility/event/caret-move-expected-win.txt
