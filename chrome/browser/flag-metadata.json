@@ -5879,6 +5879,15 @@
     "expiry_milestone": -1
   },
   {
+    "name": "local-network-access-check",
+    "owners": [
+      "cthomp@chromium.org",
+      "hchao@chromium.org",
+      "chrome-secure-web-and-net@chromium.org"
+    ],
+    "expiry_milestone": 142
+  },
+  {
     "name": "local-pdp-detection",
     "owners": [ "mdjones@chromium.org", "chrome-shopping-eng@google.com" ],
     "expiry_milestone": 124
