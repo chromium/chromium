@@ -7373,8 +7373,6 @@ static_library("browser") {
       "browsing_data/counters/hosted_apps_counter.h",
       "controlled_frame/controlled_frame_media_access_handler.cc",
       "controlled_frame/controlled_frame_media_access_handler.h",
-      "drive/drive_notification_manager_factory.cc",
-      "drive/drive_notification_manager_factory.h",
       "guest_view/app_view/chrome_app_view_guest_delegate.cc",
       "guest_view/app_view/chrome_app_view_guest_delegate.h",
       "guest_view/chrome_guest_view_manager_delegate.cc",

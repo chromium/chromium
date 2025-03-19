@@ -781,7 +781,14 @@ public class KeyboardShortcuts {
             switch (semanticMeaning) {
                 case KeyboardShortcutsSemanticMeaning.MOVE_TO_SPECIFIC_TAB:
                     if (tabSwitchingEnabled) {
-                        int numCode = keyCode - KeyEvent.KEYCODE_0;
+                        int numCode =
+                                (KeyEvent.KEYCODE_1 <= keyCode && keyCode <= KeyEvent.KEYCODE_8)
+                                        ? keyCode - KeyEvent.KEYCODE_0
+                                        : keyCode - KeyEvent.KEYCODE_NUMPAD_0;
+                        // Keep this condition to make sure that:
+                        // 1) If we're not using keyboard number keys, we're still in the right
+                        // bounds for numpad keys
+                        // 2) We don't try to set the tab model index out of bounds.
                         if (numCode > 0 && numCode <= Math.min(tabCount, 8)) {
                             TabModelUtils.setIndex(currentTabModel, numCode - 1);
                         }

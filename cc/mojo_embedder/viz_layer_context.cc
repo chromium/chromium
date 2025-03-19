@@ -109,6 +109,7 @@ void ComputePropertyTreeNodeUpdate(
       new_node.delegates_to_parent_for_backface;
   wire->will_change_transform = new_node.will_change_transform;
   wire->visible_frame_element_id = new_node.visible_frame_element_id;
+  wire->damage_reasons_bit_mask = new_node.damage_reasons().ToEnumBitmask();
   container.push_back(std::move(wire));
 }
 

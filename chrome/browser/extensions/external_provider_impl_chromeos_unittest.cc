@@ -121,7 +121,7 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
 
   // Waits until all possible standalone extensions are installed.
   void WaitForPendingStandaloneExtensionsInstalled() {
-    service_->CheckForExternalUpdates();
+    external_provider_manager()->CheckForExternalUpdates();
     base::RunLoop().RunUntilIdle();
     PendingExtensionManager* const pending_extension_manager =
         PendingExtensionManager::Get(profile());
@@ -164,7 +164,7 @@ TEST_F(ExternalProviderImplChromeOSTest, Normal) {
 
   TestExtensionRegistryObserver observer(registry(), kExternalAppId);
 
-  service_->CheckForExternalUpdates();
+  external_provider_manager()->CheckForExternalUpdates();
 
   scoped_refptr<const Extension> loaded_extension =
       observer.WaitForExtensionLoaded();
@@ -180,7 +180,7 @@ TEST_F(ExternalProviderImplChromeOSTest, AppMode) {
 
   InitServiceWithExternalProviders(false);
 
-  service_->CheckForExternalUpdates();
+  external_provider_manager()->CheckForExternalUpdates();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(registry()->GetInstalledExtension(kExternalAppId));
@@ -220,7 +220,7 @@ TEST_F(ExternalProviderImplChromeOSTest, SyncDisabled) {
 
   TestExtensionRegistryObserver observer(registry(), kStandaloneAppId);
 
-  service_->CheckForExternalUpdates();
+  external_provider_manager()->CheckForExternalUpdates();
 
   scoped_refptr<const Extension> loaded_extension =
       observer.WaitForExtensionLoaded();
@@ -249,7 +249,7 @@ TEST_F(ExternalProviderImplChromeOSTest, PolicyDisabled) {
   TestExtensionRegistryObserver observer(registry(), kStandaloneAppId);
 
   // App sync will wait for priority sync to complete.
-  service_->CheckForExternalUpdates();
+  external_provider_manager()->CheckForExternalUpdates();
 
   scoped_refptr<const Extension> loaded_extension =
       observer.WaitForExtensionLoaded();
@@ -284,7 +284,7 @@ TEST_F(ExternalProviderImplChromeOSTest, PriorityCompleted) {
           std::make_unique<syncer::FakeSyncChangeProcessor>());
 
   // App sync will wait for priority sync to complete.
-  service_->CheckForExternalUpdates();
+  external_provider_manager()->CheckForExternalUpdates();
 
   scoped_refptr<const Extension> loaded_extension =
       observer.WaitForExtensionLoaded();

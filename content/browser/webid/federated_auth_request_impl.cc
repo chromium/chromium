@@ -651,6 +651,22 @@ void FederatedAuthRequestImpl::RequestToken(
     }
   }
 
+  if (requirement == MediationRequirement::kConditional &&
+      !IsFedCmDelegationEnabled()) {
+    // The conditional mediation parameter can only be used when delegation
+    // is enabled while it is under development.
+    //
+    // TODO(crbug.com/380367784): create an independent flag for conditional
+    // mediation, so that it can be used without delegation.
+    //
+    // TODO(crbug.com/380367784): handle all of the many cases in which a
+    // conditional mediation may interact with other features.
+    ReportBadMessageAndDeleteThis(
+        "Conditional mediation is not supported when delegation is "
+        "disabled.");
+    return;
+  }
+
   if (render_frame_host().IsNestedWithinFencedFrame()) {
     ReportBadMessageAndDeleteThis(
         "FedCM should not be allowed in fenced frame trees.");
@@ -1488,6 +1504,12 @@ FederatedAuthRequestImpl::GetDisclosureFields(
 }
 
 bool FederatedAuthRequestImpl::CanShowContinueOnPopup() const {
+  if (mediation_requirement_ == MediationRequirement::kConditional) {
+    // Because conditional mediation always requires a user gesture to sign in,
+    // we can always allow the continuation popup.
+    return true;
+  }
+
   if (mediation_requirement_ == MediationRequirement::kSilent) {
     return false;
   }
@@ -1590,6 +1612,26 @@ void FederatedAuthRequestImpl::OnFetchDataForIdpFailed(
   MaybeShowAccountsDialog();
 }
 
+const std::optional<std::vector<IdentityRequestAccountPtr>>
+FederatedAuthRequestImpl::GetAutofillSuggestions() const {
+  // Requires delegation to be enabled.
+  if (!IsFedCmDelegationEnabled()) {
+    return std::nullopt;
+  }
+
+  // There isn't a request hanging.
+  if (!HasPendingRequest()) {
+    return std::nullopt;
+  }
+
+  // We only augment autofill when it is a conditional mediation request.
+  if (mediation_requirement_ != MediationRequirement::kConditional) {
+    return std::nullopt;
+  }
+
+  return GetAccounts();
+}
+
 void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   if (!fetch_data_.pending_idps.empty()) {
     return;
@@ -1663,7 +1705,16 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
     }
   }
 
+  // Conditional mediation doesn't display the account chooser when called,
+  // it instead waits for another UI surface (say, autofill) to trigger the
+  // account chooser.
+  if (mediation_requirement_ == MediationRequirement::kConditional) {
+    request_dialog_controller_->NotifyAutofillSourceReadyForTesting();
+    return;
+  }
+
   // TODO(crbug.com/40246099): Handle auto_reauthn_ for multi IDP.
+  // TODO(crbug.com/380367784): Handle auto_reauthn_ for delegated IdP.
   bool auto_reauthn_enabled =
       mediation_requirement_ != MediationRequirement::kRequired;
 
@@ -1855,6 +1906,18 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   fedcm_metrics_->RecordAccountsDialogShown(idp_data_for_display_);
   fedcm_metrics_->RecordRpUrlHasPath(
       render_frame_host().GetMainFrame()->GetLastCommittedURL().path() != "/");
+}
+
+void FederatedAuthRequestImpl::NotifyAutofillSelection(
+    const GURL& idp,
+    const std::string& account_id) {
+  // TODO(crbug.com/380367784): The third argument of OnAccountSelected checks
+  // if this is a sign-in or a sign-up moment. In delegation, however, by
+  // design, the IdP doesn't get to learn about the presentations, so wouldn't
+  // know whether this is a sign-in or sign-up moment (e.g. wouldn't have a
+  // approved_clients array). We should figure out how to reconcile these two
+  // modes.
+  OnAccountSelected(idp, account_id, true);
 }
 
 void FederatedAuthRequestImpl::OnAccountsDisplayed() {

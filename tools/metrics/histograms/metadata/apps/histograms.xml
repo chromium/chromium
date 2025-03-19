@@ -635,7 +635,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.ContinueSectionHiddenByUser{TabletOrClamshell}"
-    enum="Boolean" expires_after="2025-05-01">
+    enum="Boolean" expires_after="2025-11-01">
   <owner>jamescook@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
@@ -2789,26 +2789,6 @@ chromium-metrics-reviews@google.com.
     app is an app icon button that, when set, appears directly next to the home
     button). This is logged any time an icon is null and gets loaded for a newly
     set quick app.
-  </summary>
-</histogram>
-
-<histogram name="Apps.RestoreArcAppsResult" enum="RestoreResult"
-    expires_after="2024-10-24">
-  <owner>nancylingwang@chromium.org</owner>
-  <owner>sstan@chromium.org</owner>
-  <summary>
-    Records whether all Arc app windows have been restored. This is logged when
-    the restoration process finishes during the system startup phase.
-  </summary>
-</histogram>
-
-<histogram name="Apps.RestoreArcAppStates" enum="ArcRestoreState"
-    expires_after="2024-10-24">
-  <owner>nancylingwang@chromium.org</owner>
-  <owner>sstan@chromium.org</owner>
-  <summary>
-    Records restoration result states of Arc apps. This is logged when the
-    restoration process finishes during the system startup phase.
   </summary>
 </histogram>
 

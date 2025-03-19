@@ -129,6 +129,7 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/ui/content_suggestions",
     "//ios/chrome/browser/ui/content_suggestions/price_tracking_promo:price_tracking_promo",
     "//ios/chrome/browser/ui/content_suggestions/safety_check:prefs",
+    "//ios/chrome/browser/ui/content_suggestions/shop_card:shop_card",
     "//ios/chrome/browser/ui/content_suggestions/tips",
     "//ios/chrome/browser/upgrade/model:public",
     "//ios/chrome/browser/voice/model:prefs",

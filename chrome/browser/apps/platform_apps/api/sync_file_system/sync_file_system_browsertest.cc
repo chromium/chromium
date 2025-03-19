@@ -97,7 +97,6 @@ class SyncFileSystemTest : public extensions::PlatformAppBrowserTest,
               MakeSequencedTaskRunner(), MakeSequencedTaskRunner(),
               base_dir_.GetPath(),
               /*task_logger=*/nullptr,
-              /*notification_manager=*/nullptr,
               extensions::ExtensionRegistrar::Get(context),
               extensions::ExtensionRegistry::Get(context),
               identity_test_env_->identity_manager(),
@@ -113,9 +112,7 @@ class SyncFileSystemTest : public extensions::PlatformAppBrowserTest,
   }
 
   // drive::FakeDriveService::ChangeObserver override.
-  void OnNewChangeAvailable() override {
-    sync_engine()->OnNotificationTimerFired();
-  }
+  void OnNewChangeAvailable() override {}
 
   SyncFileSystemService* sync_file_system_service() {
     return SyncFileSystemServiceFactory::GetForProfile(browser()->profile());

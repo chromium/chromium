@@ -213,6 +213,7 @@ source_set("content_suggestions_ui") {
     ":metrics",
     ":public",
     "//base",
+    "//components/commerce/core:feature_list",
     "//components/segmentation_platform/public",
     "//components/strings",
     "//ios/chrome/app/strings",

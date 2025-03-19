@@ -31,18 +31,24 @@ class TabEventTracker {
     kFromOmnibox,
     // Selection of a previously closed tab when closure is undone.
     kFromUndoClosure,
+    // Unknown reason.
+    kUnknown,
   };
 
   // Called when a new tab is added.
-  virtual void DidAddTab(int tab_id) = 0;
+  virtual void DidAddTab(int tab_id, int tab_launch_type) = 0;
 
   // Called when a tab is selected. Should be called at initialization time with
   // the active tab at startup.
   virtual void DidSelectTab(int tab_id,
-                            TabSelectionType tab_selection_type) = 0;
+                            TabSelectionType tab_selection_type,
+                            int last_tab_id) = 0;
 
   // Called when a tab is moved in the window.
   virtual void DidMoveTab(int tab_id, int new_index, int current_index) = 0;
+
+  // Called when users enter tab switcher.
+  virtual void DidEnterTabSwitcher() = 0;
 };
 
 }  // namespace visited_url_ranking

@@ -103,7 +103,7 @@ TEST_F(GroupSuggestionsServiceAndroidTest, ShowSuggestionNotifyDelegate) {
 
   EXPECT_EQ(delegate.GetShowSuggestionCount(), 0);
 
-  group_suggestions_service_->GetTabEventTracker()->DidAddTab(1);
+  group_suggestions_service_->GetTabEventTracker()->DidAddTab(1, 0);
 
   // TODO(yuezhanggg): Updateh the test case when the ShowSuggestion event is
   // populated.

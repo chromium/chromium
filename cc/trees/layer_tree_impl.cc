@@ -255,11 +255,11 @@ void LayerTreeImpl::DidUpdateScrollOffset(
     if (transform_node->scroll_offset() !=
         scroll_tree.current_scroll_offset(id)) {
       transform_node->SetScrollOffset(scroll_tree.current_scroll_offset(id),
-                                      DamageReason::kUntracked);
+                                      DamageReason::kCompositorScroll);
       transform_node->needs_local_transform_update = true;
       transform_tree.set_needs_update(true);
     }
-    transform_node->SetTransformChanged(DamageReason::kUntracked);
+    transform_node->SetTransformChanged(DamageReason::kCompositorScroll);
     property_trees()->set_changed(true);
     set_needs_update_draw_properties();
   } else if (can_realize_on_pending_tree) {

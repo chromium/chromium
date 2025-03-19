@@ -511,4 +511,5 @@ Refer to README.md for content description and update process.
  <item id="client_download_request_android" added_in_milestone="136" type="branchedcompleting" second_id="client_download_request_for_platform" content_hash_code="0829498b" os_list="android" semantics_fields="2,3,4,8,9" file_path="chrome/browser/safe_browsing/download_protection/download_protection_delegate_android.cc" />
  <item id="chromeos_lens_web_image_search" added_in_milestone="136" content_hash_code="0448d253" os_list="chromeos" file_path="ash/capture_mode/capture_mode_controller.cc" />
  <item id="chromeos_inline_image_request" added_in_milestone="136" content_hash_code="014aba50" os_list="chromeos" file_path="chrome/browser/ash/lobster/lobster_image_provider_from_snapper.cc" />
+ <item id="baguette_image_download" added_in_milestone="136" content_hash_code="0416bbbe" os_list="chromeos" file_path="chrome/browser/ash/crostini/baguette_download.cc" />
 </annotations>

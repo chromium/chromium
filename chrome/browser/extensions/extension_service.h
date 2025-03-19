@@ -144,12 +144,6 @@ class ExtensionServiceInterface {
   virtual bool UserCanDisableInstalledExtension(
       const std::string& extension_id) = 0;
 
-  // Ask each external extension provider to call
-  // OnExternalExtension(File|UpdateUrl)Found() with their known extensions.
-  // This will trigger an update/reinstall of the extensions saved in the
-  // provider's prefs.
-  virtual void ReinstallProviderExtensions() = 0;
-
   virtual base::WeakPtr<ExtensionServiceInterface> AsWeakPtr() = 0;
 };
 
@@ -200,7 +194,6 @@ class ExtensionService : public ExtensionServiceInterface,
                                         bool install_immediately) override;
   void CheckManagementPolicy() override;
   void CheckForUpdatesSoon() override;
-  void ReinstallProviderExtensions() override;
   base::WeakPtr<ExtensionServiceInterface> AsWeakPtr() override;
 
   // ExtensionManagement::Observer implementation:
@@ -330,9 +323,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // reloaded. Newly added extensions are no longer automatically blocked.
   void UnblockAllExtensions();
 
-  // Check for updates (or potentially new extensions from external providers)
-  void CheckForExternalUpdates();
-
   // Informs the service that an extension's files are in place for loading.
   //
   // |extension|                the extension
@@ -455,9 +445,6 @@ class ExtensionService : public ExtensionServiceInterface,
   void set_browser_terminating_for_test(bool value) {
     browser_terminating_ = value;
   }
-
-  // While disabled all calls to CheckForExternalUpdates() will bail out.
-  static base::AutoReset<bool> DisableExternalUpdatesForTesting();
 
  private:
   // Loads extensions specified via a command line flag/switch.

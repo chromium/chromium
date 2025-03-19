@@ -2228,17 +2228,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Storage.SyncFileSystem.NotificationSource"
-    enum="SyncFileSystemNotificationSource" expires_after="2025-07-27">
-  <owner>ayui@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Records when observers are notified to sync files either due to incoming
-    notification from the invalidations from the Invalidation Service, or
-    polling triggered by a timer.
-  </summary>
-</histogram>
-
 <histogram name="websql.OpenDatabase" enum="BooleanSecure"
     expires_after="never">
 <!-- expires-never: core storage metric; consumed in separate dashboard (go/chrome-storage-dashboard) -->

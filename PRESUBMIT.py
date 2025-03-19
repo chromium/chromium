@@ -1066,6 +1066,27 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         ],
     ),
     BanRule(
+        r'/absl::(bad_variant_access|get|holds_alternative|monostate|variant|'
+        r'visit)',
+        ('Abseil\'s variant library is banned, use std.', ),
+        # TODO(crbug.com/40242126): Make it an error once we're sure it works.
+        False,
+        [
+            _THIRD_PARTY_EXCEPT_BLINK
+        ],
+    ),
+    BanRule(
+        r'/absl::(apply|exchange|forward|in_place|index_sequence|'
+        r'integer_sequence|make_from_tuple|make_index_sequence|'
+        r'make_integer_sequence|move)',
+        ('Abseil\'s util library is banned, use std.', ),
+        # TODO(crbug.com/40242126): Make it an error once we're sure it works.
+        False,
+        [
+            _THIRD_PARTY_EXCEPT_BLINK
+        ],
+    ),
+    BanRule(
         r'/#include <chrono>',
         ('<chrono> is banned. Use base/time instead.', ),
         True,

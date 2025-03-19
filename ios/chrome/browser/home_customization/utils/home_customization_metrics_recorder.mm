@@ -28,6 +28,8 @@ const char kParcelTrackingToggledAction[] =
     "IOS.HomeCustomization.MagicStackPage.ParcelTracking.Toggled";
 const char kTipsToggledAction[] =
     "IOS.HomeCustomization.MagicStackPage.Tips.Toggled";
+const char kShopCardPriceTrackingAction[] =
+    "IOS.HomeCustomization.MagicStackPage.ShopCardPriceTracking.Toggled";
 
 }  // namespace
 
@@ -61,6 +63,9 @@ const char kTipsToggledAction[] =
       return;
     case CustomizationToggleType::kTips:
       base::RecordAction(base::UserMetricsAction(kTipsToggledAction));
+      return;
+    case CustomizationToggleType::kShopCard:
+      base::RecordAction(base::UserMetricsAction(kShopCardPriceTrackingAction));
       return;
   }
 }

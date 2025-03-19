@@ -34,10 +34,10 @@ public class DelegateBridge implements GroupSuggestionsService.Delegate {
 
     @CalledByNative
     @Override
-    public void showSuggestion() {
+    public void showSuggestion(GroupSuggestions groupSuggestions) {
         // TODO(crbug.com/397221723): Only show suggestions to corresponding window.
         for (GroupSuggestionsService.Delegate javaDelegate : mJavaDelegates) {
-            javaDelegate.showSuggestion();
+            javaDelegate.showSuggestion(groupSuggestions);
         }
     }
 

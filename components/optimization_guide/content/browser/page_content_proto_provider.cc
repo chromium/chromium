@@ -11,6 +11,7 @@
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -42,6 +43,11 @@ void ApplyOptionsOverridesForWebContents(
   // WebContents.
   if (web_contents->GetVisibility() != content::Visibility::VISIBLE) {
     options.on_critical_path = true;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kAnnotatedPageContentWithActionableElements)) {
+    options.enable_experimental_actionable_data = true;
   }
 }
 
@@ -155,6 +161,7 @@ void RecordPageContentExtractionMetrics(
 }
 
 void OnGotAIPageContentForAllFrames(
+    blink::mojom::AIPageContentOptionsPtr main_frame_options,
     base::ElapsedTimer elapsed_timer,
     content::GlobalRenderFrameHostToken main_frame_token,
     ukm::SourceId source_id,
@@ -163,7 +170,7 @@ void OnGotAIPageContentForAllFrames(
   optimization_guide::AIPageContentResult page_content;
 
   if (!optimization_guide::ConvertAIPageContentToProto(
-          main_frame_token, *page_content_map,
+          std::move(main_frame_options), main_frame_token, *page_content_map,
           base::BindRepeating(&GetRenderFrameInfo), page_content)) {
     std::move(done_callback).Run(std::nullopt);
     return;
@@ -263,7 +270,8 @@ void GetAIPageContent(content::WebContents* web_contents,
 
   std::move(concurrent)
       .Done(base::BindOnce(
-          &OnGotAIPageContentForAllFrames, base::ElapsedTimer(),
+          &OnGotAIPageContentForAllFrames, std::move(options),
+          base::ElapsedTimer(),
           web_contents->GetPrimaryMainFrame()->GetGlobalFrameToken(),
           web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId(),
           std::move(page_content_map), std::move(done_callback)));

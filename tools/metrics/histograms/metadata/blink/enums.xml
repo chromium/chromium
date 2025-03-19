@@ -228,6 +228,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Optional"/>
   <int value="1" label="Silent"/>
   <int value="2" label="Required"/>
+  <int value="3" label="Conditional"/>
 </enum>
 
 <enum name="DecodedImageType">

@@ -228,6 +228,10 @@ void LogCredentialManagerGetResult(CredentialManagerGetResult result,
       base::UmaHistogramEnumeration("PasswordManager.MediationRequired",
                                     result);
       break;
+    case CredentialMediationRequirement::kConditional:
+      base::UmaHistogramEnumeration("PasswordManager.MediationConditional",
+                                    result);
+      break;
   }
 }
 
