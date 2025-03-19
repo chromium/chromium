@@ -27,7 +27,7 @@ class ProfileAttributesIOS {
   using GaiaIdSet = std::set<GaiaId, std::less<>>;
 
   // Represents a set of session ids.
-  using SessionIds = std::set<std::string>;
+  using SessionIds = std::set<std::string, std::less<>>;
 
   // Creates a ProfileAttributesIOS for a new profile named `profile_name`.
   static ProfileAttributesIOS CreateNew(std::string_view profile_name);
