@@ -6304,6 +6304,13 @@ class NewWindowCreatedObserver : public WebContentsObserver {
 // used to be keyed only by routing_id.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        TwoSubframesCreatePopupsSimultaneously) {
+  // This test covers a scenario which can only happen when creating and showing
+  // a new window is split between to IPC's and some conflicting update happens
+  // between them. kCombineNewWindowIPCs eliminates this possibility by
+  // combining the function of the two IPC's into one.
+  if (base::FeatureList::IsEnabled(blink::features::kCombineNewWindowIPCs)) {
+    return;
+  }
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b,c)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));

@@ -124,6 +124,15 @@ FrameTree* RenderFrameHostDelegate::CreateNewWindow(
   return nullptr;
 }
 
+WebContents* RenderFrameHostDelegate::ShowCreatedWindow(
+    RenderFrameHostImpl* opener,
+    int main_frame_widget_route_id,
+    WindowOpenDisposition disposition,
+    const blink::mojom::WindowFeatures& window_features,
+    bool user_gesture) {
+  return nullptr;
+}
+
 bool RenderFrameHostDelegate::ShouldAllowRunningInsecureContent(
     bool allowed_per_prefs,
     const url::Origin& origin,

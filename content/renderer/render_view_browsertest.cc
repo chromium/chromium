@@ -959,7 +959,7 @@ TEST_F(RenderViewImplTest, BeginNavigationForWebUI) {
   popup_request.SetRequestContext(blink::mojom::RequestContextType::INTERNAL);
   blink::WebView* new_web_view = frame()->CreateNewWindow(
       popup_request, blink::WebWindowFeatures(), "foo",
-      blink::kWebNavigationPolicyNewForegroundTab,
+      gfx::Rect(0, 0, 100, 100), blink::kWebNavigationPolicyNewForegroundTab,
       network::mojom::WebSandboxFlags::kNone,
       blink::AllocateSessionStorageNamespaceId(), consumed_user_gesture,
       std::nullopt, std::nullopt, /*base_url=*/blink::WebURL());

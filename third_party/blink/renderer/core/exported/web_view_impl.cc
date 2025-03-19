@@ -3087,11 +3087,6 @@ void WebViewImpl::Show(const LocalFrameToken& opener_frame_token,
       opener_frame_token, NavigationPolicyToDisposition(policy),
       std::move(window_features), opened_by_user_gesture,
       WTF::BindOnce(&WebViewImpl::DidShowCreatedWindow, WTF::Unretained(this)));
-
-  if (auto* dev_tools_agent =
-          MainFrameImpl()->DevToolsAgentImpl(/*create_if_necessary=*/false)) {
-    dev_tools_agent->DidShowNewWindow();
-  }
 }
 
 void WebViewImpl::DidShowCreatedWindow() {
