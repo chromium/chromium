@@ -1,7 +1,7 @@
 [
   {
     "os": [
-      "chromeos_ash"
+      "chromeos"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "ash.class_management_tools.network_restriction_setting",

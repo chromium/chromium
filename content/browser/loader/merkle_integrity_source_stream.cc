@@ -221,7 +221,7 @@ bool MerkleIntegritySourceStream::ProcessRecord(base::span<const char> record,
 #ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
   // The fuzzer will have a hard time fixing up chains of hashes, so, if
   // building in fuzzer mode, everything hashes to the same garbage value.
-  memset(sha256, 0x42, SHA256_DIGEST_LENGTH);
+  UNSAFE_TODO(memset(sha256, 0x42, SHA256_DIGEST_LENGTH));
 #endif
   if (UNSAFE_TODO(memcmp(sha256, next_proof_, SHA256_DIGEST_LENGTH)) != 0) {
     return false;

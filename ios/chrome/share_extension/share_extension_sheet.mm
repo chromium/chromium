@@ -143,8 +143,7 @@ NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
       return;
     case kImage:
     case kText:
-      // TODO(crbug.com/398803565): Add the incognito search actions for image
-      // and text.
+      [self.delegate didTapSearchInIncognitoShareExtensionSheet:self];
       return;
   }
 }

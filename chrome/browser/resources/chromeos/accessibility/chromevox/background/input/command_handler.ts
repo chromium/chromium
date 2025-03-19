@@ -226,7 +226,11 @@ export class CommandHandler implements CommandHandlerInterface {
       case Command.TOGGLE_CAPTIONS:
         if (Features.isEnabled(
                 AccessibilityFeature.CAPTIONS_ON_BRAILLE_DISPLAY)) {
-          CaptionsHandler.open();
+          if (CaptionsHandler.inCaptions()) {
+            CaptionsHandler.close();
+          } else {
+            CaptionsHandler.open();
+          }
           return false;
         }
         return true;  // Don't consume the key events.

@@ -25,7 +25,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
-#import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
+#import "ios/chrome/browser/whats_new/coordinator/whats_new_util.h"
 
 @interface ShortcutsConsumerList : CRBProtocolObservers <ShortcutsConsumer>
 @end

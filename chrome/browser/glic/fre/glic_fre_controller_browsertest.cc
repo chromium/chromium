@@ -7,7 +7,7 @@
 #include "base/test/run_until.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
-#include "chrome/browser/glic/interactive_glic_test.h"
+#include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"

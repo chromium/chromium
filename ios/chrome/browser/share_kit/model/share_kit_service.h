@@ -19,6 +19,8 @@
 @class ShareKitLookupGaiaIDConfiguration;
 @class ShareKitManageConfiguration;
 @class ShareKitReadConfiguration;
+@class ShareKitReadGroupWithTokenConfiguration;
+@class ShareKitReadGroupsConfiguration;
 @class ShareKitShareGroupConfiguration;
 
 // Service for ShareKit, allowing to manage tab groups sharing.
@@ -56,7 +58,13 @@ class ShareKitService : public KeyedService {
 
   // Reads the info for the groups passed in `config` and returns the result
   // through the config callback.
-  virtual void ReadGroups(ShareKitReadConfiguration* config) = 0;
+  virtual void ReadGroups(ShareKitReadConfiguration* config);
+  virtual void ReadGroups(ShareKitReadGroupsConfiguration* config);
+
+  // Reads the info for the group passed in `config` and returns the result
+  // through the config callback.
+  virtual void ReadGroupWithToken(
+      ShareKitReadGroupWithTokenConfiguration* config) {}
 
   // Leaves the group passed in `config` and returns the result through the
   // config callback.

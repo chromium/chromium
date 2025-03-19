@@ -763,7 +763,9 @@ class TabListMediator implements TabListNotificationHandler {
                         // If the added tab is part of the group add it and update the dialog.
                         int firstTabId = model.get(TabProperties.TAB_ID);
                         Tab firstTab = tabModel.getTabById(firstTabId);
-                        if (firstTab == null || firstTab.getRootId() != movedTab.getRootId()) {
+                        if (firstTab == null
+                                || !Objects.equals(
+                                        firstTab.getTabGroupId(), movedTab.getTabGroupId())) {
                             return;
                         }
 
@@ -2518,6 +2520,8 @@ class TabListMediator implements TabListNotificationHandler {
         Set<Tab> filteredTabs = new HashSet<>();
         Set<Integer> checkedRootIds = new HashSet<>();
 
+        // Migrating this to tab group id requires a rewrite as the root id based logic assumes that
+        // TabGroupModelFilter treats individual tabs similar to tab groups.
         for (Tab tab : unfilteredTabs) {
             if (!filter.isTabInTabGroup(tab)) {
                 filteredTabs.add(tab);

@@ -17,16 +17,22 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/echo_private_ash.h"
+#include "chrome/browser/ash/notifications/echo_dialog_view.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/echo_private/echo_private_api_util.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/extensions/api/echo_private.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chromeos/ash/components/report/utils/time_utils.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/web_contents.h"
@@ -35,6 +41,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
+#include "ui/aura/window.h"
 
 namespace echo_api = extensions::api::echo_private;
 
@@ -186,17 +193,77 @@ ExtensionFunction::ResponseAction EchoPrivateGetUserConsentFunction::Run() {
   }
 
   DCHECK(web_contents);
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->echo_private_ash()
-      ->CheckRedeemOffersAllowed(
+
+  ash::CrosSettingsProvider::TrustedStatus status =
+      ash::CrosSettings::Get()->PrepareTrustedValues(base::BindOnce(
+          &EchoPrivateGetUserConsentFunction::DidPrepareTrustedValues, this,
           web_contents->GetTopLevelNativeWindow(),
           params->consent_requester.service_name,
-          params->consent_requester.origin,
-          base::BindOnce(&EchoPrivateGetUserConsentFunction::Finalize, this));
-  return RespondLater();
+          params->consent_requester.origin));
+
+  if (status == ash::CrosSettingsProvider::TRUSTED) {
+    // Callback was dropped in this case (because it gets called only when
+    // status isn't TRUSTED). Manually invoke.
+    DidPrepareTrustedValues(web_contents->GetTopLevelNativeWindow(),
+                            params->consent_requester.service_name,
+                            params->consent_requester.origin);
+  }
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void EchoPrivateGetUserConsentFunction::DidPrepareTrustedValues(
+    aura::Window* window,
+    std::string_view service_name,
+    std::string_view origin) {
+  ash::CrosSettingsProvider::TrustedStatus status =
+      ash::CrosSettings::Get()->PrepareTrustedValues(base::NullCallback());
+  if (status != ash::CrosSettingsProvider::TRUSTED) {
+    Respond(WithArguments(false));
+    return;
+  }
+
+  bool allow = true;
+  ash::CrosSettings::Get()->GetBoolean(
+      ash::kAllowRedeemChromeOsRegistrationOffers, &allow);
+
+  // Create and show the dialog.
+  ash::EchoDialogView::Params dialog_params;
+  dialog_params.echo_enabled = allow;
+  if (allow) {
+    dialog_params.service_name = base::UTF8ToUTF16(service_name);
+    dialog_params.origin = base::UTF8ToUTF16(origin);
+  }
+
+  // Add ref to ensure the function stays around until the dialog listener is
+  // called. The reference is released in |Finalize|.
+  AddRef();
+  ash::EchoDialogView* dialog = new ash::EchoDialogView(this, dialog_params);
+  dialog->Show(window);
+}
+
+void EchoPrivateGetUserConsentFunction::OnAccept() {
+  Finalize(true);
+}
+
+void EchoPrivateGetUserConsentFunction::OnCancel() {
+  Finalize(false);
+}
+
+void EchoPrivateGetUserConsentFunction::OnMoreInfoLinkClicked() {
+  NavigateParams params(Profile::FromBrowserContext(browser_context()),
+                        GURL(chrome::kEchoLearnMoreURL),
+                        ui::PAGE_TRANSITION_LINK);
+  // Open the link in a new window. The echo dialog is modal, so the current
+  // window is useless until the dialog is closed.
+  params.disposition = WindowOpenDisposition::NEW_WINDOW;
+  Navigate(&params);
 }
 
 void EchoPrivateGetUserConsentFunction::Finalize(bool consent) {
   Respond(WithArguments(consent));
+
+  // Release the reference added in |DidPrepareTrustedValues|, before showing
+  // the dialog.
+  Release();
 }

@@ -210,14 +210,14 @@ NSString* GetGaiaIdForProfile(ProfileIOS* profile) {
 
 // Enables notifications in prefs for the client with `clientID`.
 - (void)enableNotifications {
-  NSString* gaiaID = GetGaiaIdForProfile(self.browser->GetProfile());
+  NSString* gaiaID = GetGaiaIdForProfile(self.profile);
   std::vector<PushNotificationClientId> clientIDs = self.clientIds.value();
   for (PushNotificationClientId clientID : clientIDs) {
     GetApplicationContext()->GetPushNotificationService()->SetPreference(
         gaiaID, clientID, true);
     if (clientID == PushNotificationClientId::kSendTab) {
       // Refresh enabled status in DeviceInfo.
-      DeviceInfoSyncServiceFactory::GetForProfile(self.browser->GetProfile())
+      DeviceInfoSyncServiceFactory::GetForProfile(self.profile)
           ->RefreshLocalDeviceInfo();
     }
   }

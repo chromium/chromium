@@ -32,7 +32,6 @@ class PrefService;
 
 #if BUILDFLAG(IS_CHROMEOS)
 namespace ash {
-class KioskBaseTest;
 class LocaleChangeGuard;
 class Preferences;
 }  // namespace ash
@@ -162,9 +161,6 @@ class ProfileImpl : public Profile {
   bool IsSignedIn() override;
 
  private:
-#if BUILDFLAG(IS_CHROMEOS)
-  friend class ash::KioskBaseTest;
-#endif
   friend class Profile;
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest,
                            ProfilesLaunchedAfterCrash);

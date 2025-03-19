@@ -73,10 +73,11 @@ SafeDMG::~SafeDMG() = default;
 
 int SafeDMG::Main(base::span<const char*> args) {
   if (args.size() != 2 && args.size() != 3) {
-    fprintf(stderr, "Usage: %s file.dmg [unpack-directory]\n", args[0]);
-    fprintf(stderr,
-            "If no unpack-directory is specified, the tool will\n"
-            "list the contents of the DMG.\n");
+    UNSAFE_TODO(
+        fprintf(stderr, "Usage: %s file.dmg [unpack-directory]\n", args[0]));
+    UNSAFE_TODO(fprintf(stderr,
+                        "If no unpack-directory is specified, the tool will\n"
+                        "list the contents of the DMG.\n"));
     return EXIT_FAILURE;
   }
 
@@ -143,7 +144,8 @@ bool SafeDMG::EnableSandbox() {
       return false;
     }
 
-    if (strchr(unpack_path, '"') != 0 || strchr(unpack_path, '\\') != 0) {
+    if (UNSAFE_TODO(strchr(unpack_path, '"')) != 0 ||
+        UNSAFE_TODO(strchr(unpack_path, '\\')) != 0) {
       LOG(ERROR) << "Unpack directory path can't contain quotes or backslashes";
       return false;
     }

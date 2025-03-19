@@ -9,7 +9,6 @@ import android.view.DragEvent;
 import android.view.View;
 import android.view.View.OnDragListener;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordUserAction;
@@ -18,8 +17,8 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.base.MimeTypeUtils;
@@ -93,7 +92,7 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
                     return handleTabDrop(dragEvent, isInDesktopWindow);
                 }
                 if (clipDescription.hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_TAB_GROUP)) {
-                    return handleGroupDrop();
+                    return handleGroupDrop(dragEvent);
                 }
                 return false;
         }
@@ -102,7 +101,7 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
 
     private boolean handleTabDrop(DragEvent dragEvent, boolean isInDesktopWindow) {
         DragDropGlobalState globalState = DragDropGlobalState.getState(dragEvent);
-        Tab draggedTab = getTabFromGlobalState(globalState);
+        Tab draggedTab = ChromeDragDropUtils.getTabFromGlobalState(globalState);
         if (globalState == null || draggedTab == null) {
             DragDropMetricUtils.recordTabDragDropResult(
                     DragDropTabResult.ERROR_TAB_NOT_FOUND, isInDesktopWindow);
@@ -115,47 +114,49 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
         }
 
         // Record user action if a grouped tab is going to be re-parented.
-        if (isTabInGroupFromGlobalState(globalState)) {
+        if (ChromeDragDropUtils.isTabInGroupFromGlobalState(globalState)) {
             RecordUserAction.record("MobileToolbarReorderTab.TabRemovedFromGroup");
         }
 
-        // Reparent the dragged tab to the position immediately following the selected
-        // tab in the destination window.
-        Tab currentTab = mTabModelSelector.getCurrentTab();
+        // Determine the destination index for dropping the tab based on whether the source and
+        // destination tab models match.
+        final int destIndex =
+                ChromeDragDropUtils.handleDropInDifferentModel(
+                        mWindowAndroid.getActivity().get(),
+                        draggedTab.isIncognitoBranded(),
+                        mTabModelSelector);
+
+        // Reparent the dragged tab to the destination window.
         mMultiInstanceManager.moveTabToWindow(
-                mWindowAndroid.getActivity().get(),
-                draggedTab,
-                TabModelUtils.getTabIndexById(
-                                mTabModelSelector.getModel(currentTab.isIncognito()),
-                                currentTab.getId())
-                        + 1);
+                mWindowAndroid.getActivity().get(), draggedTab, destIndex);
         DragDropMetricUtils.recordTabDragDropType(
                 DragDropType.TAB_STRIP_TO_CONTENT, isInDesktopWindow);
         return true;
     }
 
-    private boolean handleGroupDrop() {
-        // TODO(crbug.com/401029454): Implement.
-        return false;
-    }
-
-    private Tab getTabFromGlobalState(@NonNull DragDropGlobalState globalState) {
-        // We should only attempt to access this while we know there's an active drag.
-        assert globalState != null : "Attempting to access dragged tab with invalid drag state.";
-        if (globalState.getData() instanceof ChromeTabDropDataAndroid) {
-            return ((ChromeTabDropDataAndroid) globalState.getData()).tab;
-        } else {
-            return null;
-        }
-    }
-
-    private boolean isTabInGroupFromGlobalState(@NonNull DragDropGlobalState globalState) {
-        // We should only attempt to access this while we know there's an active drag.
-        assert globalState != null : "Attempting to access dragged tab with invalid drag state.";
-        if (globalState.getData() instanceof ChromeTabDropDataAndroid) {
-            return ((ChromeTabDropDataAndroid) globalState.getData()).isTabInGroup;
-        } else {
+    // TODO(crbug.com/384979079): record metrics for tab group drop.
+    private boolean handleGroupDrop(DragEvent dragEvent) {
+        DragDropGlobalState globalState = DragDropGlobalState.getState(dragEvent);
+        TabGroupMetadata tabGroupMetadata =
+                ChromeDragDropUtils.getTabGroupMetadataFromGlobalState(globalState);
+        if (globalState == null || tabGroupMetadata == null) {
             return false;
         }
+        if (globalState.isDragSourceInstance(mMultiInstanceManager.getCurrentInstanceId())) {
+            return false;
+        }
+
+        // Determine the destination index for dropping the tab group based on whether the source
+        // and destination tab models match.
+        final int destIndex =
+                ChromeDragDropUtils.handleDropInDifferentModel(
+                        mWindowAndroid.getActivity().get(),
+                        tabGroupMetadata.isIncognito,
+                        mTabModelSelector);
+
+        // Reparent the dragged tab group to destination window.
+        mMultiInstanceManager.moveTabGroupToWindow(
+                mWindowAndroid.getActivity().get(), tabGroupMetadata, destIndex);
+        return true;
     }
 }

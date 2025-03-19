@@ -118,6 +118,8 @@ int LayoutProvider::GetDistanceMetric(int metric) const {
       return 16;
     case DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH:
       return kMediumDialogWidth;
+    case DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH:
+      return kLargeDialogWidth;
     case DISTANCE_RELATED_BUTTON_HORIZONTAL:
       return 8;
     case DISTANCE_RELATED_CONTROL_HORIZONTAL:

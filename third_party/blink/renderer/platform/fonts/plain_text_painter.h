@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_PLAIN_TEXT_PAINTER_H_
 
 #include "third_party/blink/renderer/platform/fonts/font.h"
+#include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 
 namespace gfx {
 class PointF;
@@ -37,11 +38,12 @@ class TextRun;
 // Instances in kShared mode are created only once and accessed via
 // PlainTextPainter::Shared().
 class PLATFORM_EXPORT PlainTextPainter
-    : public GarbageCollected<PlainTextPainter> {
+    : public GarbageCollected<PlainTextPainter>,
+      public MemoryPressureListener {
  public:
   enum Mode { kCanvas, kShared };
   explicit PlainTextPainter(Mode mode);
-  void Trace(Visitor* visitor) const;
+  void Trace(Visitor* visitor) const override;
 
   PlainTextPainter(const PlainTextPainter&) = delete;
   PlainTextPainter& operator=(const PlainTextPainter&) = delete;
@@ -118,6 +120,9 @@ class PLATFORM_EXPORT PlainTextPainter
                                   const Font& font,
                                   bool supports_bidi = true);
   FrameShapeCache* GetCacheFor(const Font& font);
+
+  // MemoryPressureListener override:
+  void OnPurgeMemory() override;
 
   // A map from a FontFallbackList to a FrameShapeCache.
   // We don't need to worry about Web Fonts. When a Web Font loading state is

@@ -10,6 +10,7 @@
 #include "base/observer_list.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -198,6 +199,11 @@ class TranslateBubbleControllerTest : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
 
+    actions::ActionManager::GetForTesting().AddActions(
+        actions::ActionItem::Builder()
+            .SetActionId(kActionShowTranslate)
+            .Build());
+
     // Create an anchor for the bubble.
     anchor_widget_ =
         CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
@@ -205,10 +211,8 @@ class TranslateBubbleControllerTest : public ChromeViewsTestBase {
     anchor_widget_->Show();
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
-    // Owned by WebContents.
-    controller_ = new TranslateBubbleController(web_contents_.get());
-    web_contents_->SetUserData(TranslateBubbleController::UserDataKey(),
-                               base::WrapUnique(controller_.get()));
+    controller_ = std::make_unique<TranslateBubbleController>(
+        /*root_action_item=*/nullptr);
 
     // Use fake Translate bubble models instead of real implementations for
     // Translate bubble view construction in tests.
@@ -240,6 +244,8 @@ class TranslateBubbleControllerTest : public ChromeViewsTestBase {
     return model;
   }
 
+  content::WebContents* web_contents() { return web_contents_.get(); }
+
   base::test::ScopedFeatureList scoped_feature_list_;
 
   TestingProfile profile_;
@@ -254,8 +260,7 @@ class TranslateBubbleControllerTest : public ChromeViewsTestBase {
   raw_ptr<FakePartialTranslateBubbleModel, DanglingUntriaged>
       fake_partial_translate_bubble_model_ = nullptr;
 
-  // Owned by WebContents.
-  raw_ptr<TranslateBubbleController> controller_;
+  std::unique_ptr<TranslateBubbleController> controller_;
 };
 
 TEST_F(TranslateBubbleControllerTest, ShowFullPageThenPartialTranslateBubble) {
@@ -264,7 +269,7 @@ TEST_F(TranslateBubbleControllerTest, ShowFullPageThenPartialTranslateBubble) {
 
   // Show the Full Page Translate bubble first.
   controller_->ShowTranslateBubble(
-      anchor_widget_->GetContentsView(), nullptr,
+      web_contents(), anchor_widget_->GetContentsView(), nullptr,
       translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE, "fr", "en",
       translate::TranslateErrors::NONE,
       LocationBarBubbleDelegateView::DisplayReason::AUTOMATIC);
@@ -273,7 +278,8 @@ TEST_F(TranslateBubbleControllerTest, ShowFullPageThenPartialTranslateBubble) {
 
   // Starting a Partial Translate while the Full Page Translate bubble is open
   // should close the Full Page Translate bubble.
-  controller_->StartPartialTranslate(anchor_widget_->GetContentsView(), nullptr,
+  controller_->StartPartialTranslate(web_contents(),
+                                     anchor_widget_->GetContentsView(), nullptr,
                                      "fr", "en", std::u16string());
   fake_partial_translate_bubble_model_->NotifyTranslated();
   base::RunLoop().RunUntilIdle();
@@ -291,7 +297,8 @@ TEST_F(TranslateBubbleControllerTest, ShowPartialThenFullPageTranslateBubble) {
   EXPECT_THAT(controller_->GetTranslateBubble(), testing::IsNull());
 
   // Show the Partial Translate bubble first.
-  controller_->StartPartialTranslate(anchor_widget_->GetContentsView(), nullptr,
+  controller_->StartPartialTranslate(web_contents(),
+                                     anchor_widget_->GetContentsView(), nullptr,
                                      "fr", "en", std::u16string());
   fake_partial_translate_bubble_model_->NotifyTranslated();
   base::RunLoop().RunUntilIdle();
@@ -300,7 +307,7 @@ TEST_F(TranslateBubbleControllerTest, ShowPartialThenFullPageTranslateBubble) {
   // Showing the Full Page Translate bubble while the Partial Translate bubble
   // is open should close the Partial Translate bubble.
   controller_->ShowTranslateBubble(
-      anchor_widget_->GetContentsView(), nullptr,
+      web_contents(), anchor_widget_->GetContentsView(), nullptr,
       translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE, "fr", "en",
       translate::TranslateErrors::NONE,
       LocationBarBubbleDelegateView::DisplayReason::AUTOMATIC);
@@ -315,7 +322,8 @@ TEST_F(TranslateBubbleControllerTest, ShowPartialThenFullPageTranslateBubble) {
 }
 
 TEST_F(TranslateBubbleControllerTest, PartialTranslateTimerExpired) {
-  controller_->StartPartialTranslate(anchor_widget_->GetContentsView(), nullptr,
+  controller_->StartPartialTranslate(web_contents(),
+                                     anchor_widget_->GetContentsView(), nullptr,
                                      "fr", "en", std::u16string());
   task_environment()->FastForwardBy(base::Milliseconds(10));
   ASSERT_TRUE(controller_->GetPartialTranslateBubble());
@@ -335,7 +343,8 @@ TEST_F(TranslateBubbleControllerTest, PartialTranslateTimerExpired) {
 }
 
 TEST_F(TranslateBubbleControllerTest, PartialTranslateResponseBeforeTimer) {
-  controller_->StartPartialTranslate(anchor_widget_->GetContentsView(), nullptr,
+  controller_->StartPartialTranslate(web_contents(),
+                                     anchor_widget_->GetContentsView(), nullptr,
                                      "fr", "en", std::u16string());
   task_environment()->FastForwardBy(base::Milliseconds(10));
   ASSERT_TRUE(controller_->GetPartialTranslateBubble());
@@ -350,7 +359,8 @@ TEST_F(TranslateBubbleControllerTest, PartialTranslateResponseBeforeTimer) {
 }
 
 TEST_F(TranslateBubbleControllerTest, PartialTranslateError) {
-  controller_->StartPartialTranslate(anchor_widget_->GetContentsView(), nullptr,
+  controller_->StartPartialTranslate(web_contents(),
+                                     anchor_widget_->GetContentsView(), nullptr,
                                      "fr", "en", std::u16string());
   fake_partial_translate_bubble_model_->SetError(
       translate::TranslateErrors::TRANSLATION_ERROR);
@@ -366,7 +376,8 @@ TEST_F(TranslateBubbleControllerTest, PartialTranslateSourceTextTruncatedTrue) {
   std::u16string string_to_truncate(
       translate::kDesktopPartialTranslateTextSelectionMaxCharacters + 1, '*');
   // Check that source_text_truncated_ is properly set for a new bubble.
-  controller_->StartPartialTranslate(anchor_widget_->GetContentsView(), nullptr,
+  controller_->StartPartialTranslate(web_contents(),
+                                     anchor_widget_->GetContentsView(), nullptr,
                                      "fr", "en", string_to_truncate);
   // Wait for bubble creation to complete.
   base::RunLoop().RunUntilIdle();
@@ -374,7 +385,8 @@ TEST_F(TranslateBubbleControllerTest, PartialTranslateSourceTextTruncatedTrue) {
       fake_partial_translate_bubble_model_->GetSourceTextTruncatedForTest());
 
   // Check that source_text_truncated_ is properly set for an existing bubble.
-  controller_->StartPartialTranslate(anchor_widget_->GetContentsView(), nullptr,
+  controller_->StartPartialTranslate(web_contents(),
+                                     anchor_widget_->GetContentsView(), nullptr,
                                      "fr", "en", string_to_truncate);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(
@@ -385,7 +397,8 @@ TEST_F(TranslateBubbleControllerTest,
        PartialTranslateSourceTextTruncatedFalse) {
   // Check that source_text_truncated_ is properly set for a new bubble for a
   // string under the text selection character limit.
-  controller_->StartPartialTranslate(anchor_widget_->GetContentsView(), nullptr,
+  controller_->StartPartialTranslate(web_contents(),
+                                     anchor_widget_->GetContentsView(), nullptr,
                                      "fr", "en", std::u16string());
   // Wait for bubble creation to complete.
   base::RunLoop().RunUntilIdle();
@@ -393,7 +406,8 @@ TEST_F(TranslateBubbleControllerTest,
       fake_partial_translate_bubble_model_->GetSourceTextTruncatedForTest());
 
   // Check that source_text_truncated_ is properly set for an existing bubble.
-  controller_->StartPartialTranslate(anchor_widget_->GetContentsView(), nullptr,
+  controller_->StartPartialTranslate(web_contents(),
+                                     anchor_widget_->GetContentsView(), nullptr,
                                      "fr", "en", std::u16string());
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(

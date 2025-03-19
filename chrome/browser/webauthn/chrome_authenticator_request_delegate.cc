@@ -1231,8 +1231,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureNSWindow(
   if (widget) {
     const gfx::NativeWindow window = widget->GetNativeWindow();
     if (window) {
-      discovery_factory->set_nswindow(
-          reinterpret_cast<uintptr_t>(window.GetNativeNSWindow()));
+      discovery_factory->set_nswindow(window);
     }
   }
 }

@@ -84,8 +84,7 @@ found in the LICENSE file.
     </FrameLayout>
 
     <!-- Hub search is selectively hidden based on the feature flag. -->
-    <view
-      class="org.chromium.chrome.browser.ntp.search.SearchBoxContainerView"
+    <LinearLayout
       android:id="@+id/search_box"
       android:visibility="gone"
       android:layout_width="match_parent"
@@ -109,6 +108,6 @@ found in the LICENSE file.
         android:focusable="false"
         android:inputType="text"
         android:singleLine="true" />
-    </view>
+    </LinearLayout>
   </org.chromium.chrome.browser.hub.HubToolbarView>
 </FrameLayout>

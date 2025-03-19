@@ -488,4 +488,9 @@ int OffscreenCanvasRenderingContext2D::LayerCount() const {
   return BaseRenderingContext2D::LayerCount();
 }
 
+CanvasResourceProvider*
+OffscreenCanvasRenderingContext2D::GetOrCreateCanvas2DResourceProvider() {
+  return GetOrCreateCanvasResourceProvider();
+}
+
 }  // namespace blink

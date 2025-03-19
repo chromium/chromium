@@ -20,9 +20,12 @@ namespace net {
 
 TEST(SetsMutationTest, Valid) {
   const SchemefulSite primary1(GURL("https://primary1.test"));
+  const SchemefulSite primary1_cctld(GURL("https://primary1.cctld"));
   const SchemefulSite associated1(GURL("https://associated1.test"));
+  const SchemefulSite associated1_cctld(GURL("https://associated1.ccltd"));
   const SchemefulSite primary2(GURL("https://primary2.test"));
   const SchemefulSite associated2(GURL("https://associated2.test"));
+  const SchemefulSite associated2_cctld(GURL("https://associated2.ccltd"));
 
   std::ignore = SetsMutation(
       /*replacement_sets=*/
@@ -32,23 +35,9 @@ TEST(SetsMutationTest, Valid) {
                FirstPartySetEntry(primary1, SiteType::kPrimary, std::nullopt)},
               {associated1,
                FirstPartySetEntry(primary1, SiteType::kAssociated, 0)},
-          },
-          {
-              {primary2,
-               FirstPartySetEntry(primary2, SiteType::kPrimary, std::nullopt)},
-              {associated2,
-               FirstPartySetEntry(primary2, SiteType::kAssociated, 0)},
-          },
-      },
-      /*addition_sets=*/{});
-
-  std::ignore = SetsMutation(
-      /*replacement_sets=*/{},
-      /*addition_sets=*/{
-          {
-              {primary1,
+              {primary1_cctld,
                FirstPartySetEntry(primary1, SiteType::kPrimary, std::nullopt)},
-              {associated1,
+              {associated1_cctld,
                FirstPartySetEntry(primary1, SiteType::kAssociated, 0)},
           },
           {
@@ -56,7 +45,45 @@ TEST(SetsMutationTest, Valid) {
                FirstPartySetEntry(primary2, SiteType::kPrimary, std::nullopt)},
               {associated2,
                FirstPartySetEntry(primary2, SiteType::kAssociated, 0)},
+              {associated2_cctld,
+               FirstPartySetEntry(primary2, SiteType::kAssociated, 0)},
           },
+      },
+      /*addition_sets=*/{}, /*aliases=*/
+      {
+          {primary1_cctld, primary1},
+          {associated1_cctld, associated1},
+          {associated2_cctld, associated2},
+      });
+
+  std::ignore = SetsMutation(
+      /*replacement_sets=*/{},
+      /*addition_sets=*/
+      {
+          {
+              {primary1,
+               FirstPartySetEntry(primary1, SiteType::kPrimary, std::nullopt)},
+              {associated1,
+               FirstPartySetEntry(primary1, SiteType::kAssociated, 0)},
+              {primary1_cctld,
+               FirstPartySetEntry(primary1, SiteType::kPrimary, std::nullopt)},
+              {associated1_cctld,
+               FirstPartySetEntry(primary1, SiteType::kAssociated, 0)},
+          },
+          {
+              {primary2,
+               FirstPartySetEntry(primary2, SiteType::kPrimary, std::nullopt)},
+              {associated2,
+               FirstPartySetEntry(primary2, SiteType::kAssociated, 0)},
+              {associated2_cctld,
+               FirstPartySetEntry(primary2, SiteType::kAssociated, 0)},
+          },
+      },
+      /*aliases=*/
+      {
+          {primary1_cctld, primary1},
+          {associated1_cctld, associated1},
+          {associated2_cctld, associated2},
       });
 
   std::ignore = SetsMutation(
@@ -67,15 +94,28 @@ TEST(SetsMutationTest, Valid) {
                FirstPartySetEntry(primary1, SiteType::kPrimary, std::nullopt)},
               {associated1,
                FirstPartySetEntry(primary1, SiteType::kAssociated, 0)},
+              {primary1_cctld,
+               FirstPartySetEntry(primary1, SiteType::kPrimary, std::nullopt)},
+              {associated1_cctld,
+               FirstPartySetEntry(primary1, SiteType::kAssociated, 0)},
           },
       },
-      /*addition_sets=*/{
+      /*addition_sets=*/
+      {
           {
               {primary2,
                FirstPartySetEntry(primary2, SiteType::kPrimary, std::nullopt)},
               {associated2,
                FirstPartySetEntry(primary2, SiteType::kAssociated, 0)},
+              {associated2_cctld,
+               FirstPartySetEntry(primary2, SiteType::kAssociated, 0)},
           },
+      },
+      /*aliases=*/
+      {
+          {primary1_cctld, primary1},
+          {associated1_cctld, associated1},
+          {associated2_cctld, associated2},
       });
 }
 
@@ -106,7 +146,7 @@ TEST(SetsMutationTest, Nondisjoint_death) {
                      FirstPartySetEntry(primary2, SiteType::kAssociated, 0)},
                 },
             },
-            /*addition_sets=*/{});
+            /*addition_sets=*/{}, /*aliases=*/{});
       },
       "");
 }

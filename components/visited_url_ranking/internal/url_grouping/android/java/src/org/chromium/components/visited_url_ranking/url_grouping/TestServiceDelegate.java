@@ -8,6 +8,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Callback;
+
 /**
  * Test delegate that registers itself to the Java service, and sends notification to the native
  * test.
@@ -50,7 +52,8 @@ public class TestServiceDelegate implements GroupSuggestionsService.Delegate {
     }
 
     @Override
-    public void showSuggestion(GroupSuggestions groupSuggestions) {
+    public void showSuggestion(
+            GroupSuggestions groupSuggestions, Callback<UserResponseMetadata> callback) {
         mShowSuggestionCount++;
         TestServiceDelegateJni.get().onDelegateNotify(mNativePtr);
     }

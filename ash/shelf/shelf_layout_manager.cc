@@ -1321,6 +1321,17 @@ void ShelfLayoutManager::OnPinnedStateChanged(aura::Window* pinned_window) {
   UpdateVisibilityState(/*force_layout=*/false);
 }
 
+void ShelfLayoutManager::OnRootWindowWillShutdown(aura::Window* root_window) {
+  // It is possible that there are shelf update calls between Root Window
+  // shutting down and ShelfWidget::Shutdown (which subsequently called
+  // |PrepareForShutdown()|). Therefore, we need to flip the |in_shutdown_| bit
+  // early to avoid making changes to a partially destroyed host.
+  aura::Window* root = shelf_widget_->GetNativeWindow()->GetRootWindow();
+  if (root == root_window) {
+    PrepareForShutdown();
+  }
+}
+
 void ShelfLayoutManager::OnShellDestroying() {
   // Prepare for shutdown early, to prevent window stacking changes that may
   // happen during shutdown (e.g. during overview controller, or tablet mode

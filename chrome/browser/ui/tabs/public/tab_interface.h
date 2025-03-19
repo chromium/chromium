@@ -9,7 +9,8 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
-#include "chrome/browser/ui/tabs/public/supports_handles.h"
+#include "chrome/browser/ui/tabs/split_tab_id.h"
+#include "components/tab_collections/public/supports_handles.h"
 #include "components/tab_groups/tab_group_id.h"
 
 namespace content {
@@ -198,6 +199,10 @@ class TabInterface : public SupportsHandles<TabInterface> {
   // Returns the id of the tab group this tab belongs to, or nullopt if the tab
   // is not grouped.
   virtual std::optional<tab_groups::TabGroupId> GetGroup() const = 0;
+
+  // Returns the id of the split tab this tab belongs to, or nullopt if the tab
+  // is not part of a split tab.
+  virtual std::optional<split_tabs::SplitTabId> GetSplit() const = 0;
 
   // On macOS, tabs do not accept mouse events if the window is not active, even
   // if it's a child window that is active. Calling this method overrides that

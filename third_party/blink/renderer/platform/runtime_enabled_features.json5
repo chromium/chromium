@@ -570,11 +570,6 @@
       },
     },
     {
-      // https://docs.google.com/document/d/1FY3AINZW_h2GU81U-XPQz8bKT6wgt0u7Z9GF4o7_Llk/edit?resourcekey=0-lQnRY9BK0iclRRV62LgVDQ
-      name: "BeaconLeakageLogging",
-      public: true,
-    },
-    {
       name: "BidiCaretAffinity",
     },
     {
@@ -1087,7 +1082,7 @@
     },
     {
       name: "CSSDynamicRangeLimit",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Include custom properties in CSSComputedStyleDeclaration::item/length.
@@ -2138,6 +2133,11 @@
       status: "test",
     },
     {
+      name: "FledgeTrustedSignalsKVv2ContextualData",
+      depends_on: ["FledgeTrustedSignalsKVv2Support"],
+      status: "test",
+    },
+    {
       name: "FledgeTrustedSignalsKVv2Support",
       status: "stable",
     },
@@ -2379,6 +2379,7 @@
       name: "HTMLInterestTargetAttribute",
       status: "experimental",
       origin_trial_feature_name: "HTMLInterestTargetAttribute",
+      origin_trial_allows_third_party: true,
     },
     {
       // A flag, just for local testing to make the
@@ -3572,6 +3573,11 @@
       status: {"Android": "", "default": "stable"},
     },
     {
+      // Killswitch M136.
+      name: "ReferenceFilterMapsReferenceBox",
+      status: "stable",
+    },
+    {
       name: "RegionCapture",
       status: {"Android": "", "default": "stable"},
     },
@@ -3964,6 +3970,11 @@
       // See https://crbug.com/40622041
       // This feature was shipped in M133, so this flag can be removed in M135.
       name: "SelectionOnShadowDOMWithDelegatesFocus",
+      status: "stable",
+    },
+    {
+      // See https://crbug.com/395544401
+      name: "SelectionUpdateToInitialSelectionInListify",
       status: "stable",
     },
     {

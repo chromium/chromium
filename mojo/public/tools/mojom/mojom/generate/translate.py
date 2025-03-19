@@ -814,7 +814,14 @@ def _Method(module, parsed_method, interface):
     failure_kind = _Kind(module, module.kinds,
                          _MapKind(result_type.failure_type),
                          (module.mojom_namespace, interface.mojom_name))
-    method.result_response = mojom.Result(success_kind, failure_kind)
+    result_response = mojom.Result(method, success_kind, failure_kind)
+    method.result_response = result_response
+    param = result_response.ToResponseParam(module)
+    method.response_parameters = [param]
+    # We need to add the generated types to the module.
+    module.kinds[param.kind.spec] = param.kind
+    module.unions.append(param.kind)
+
   method.attributes = _AttributeListToDict(module, method,
                                            parsed_method.attribute_list)
 
@@ -1227,6 +1234,13 @@ def _Module(tree, path, imports):
     all_defined_kinds[interface.spec] = interface
     for enum in interface.enums:
       all_defined_kinds[enum.spec] = enum
+
+  # Methods with result response will generate its own return union, so we do a
+  # second pass.
+  for defined_union in module.unions:
+    if not defined_union.spec in all_defined_kinds:
+      all_defined_kinds[defined_union.spec] = defined_union
+
   for enum in module.enums:
     all_defined_kinds[enum.spec] = enum
 

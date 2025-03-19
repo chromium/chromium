@@ -270,16 +270,14 @@ void PlainTextNode::Shape(const Font& font, FrameShapeCache* cache) {
       if (entry && entry->shape_result) {
         item.shape_result_ = entry->shape_result;
         item.ink_bounds_ = entry->ink_bounds;
+        has_vertical_offsets_ |= item.shape_result_->HasVerticalOffsets();
         continue;
       }
     }
 
     HarfBuzzShaper shaper(item.text_);
     ShapeResult* shape_result = shaper.Shape(&font, item.Direction());
-    if (!shape_result) {
-      item.shape_result_ = nullptr;
-      continue;
-    }
+    DCHECK(shape_result);
     gfx::RectF ink_bounds;
     if (!spacing.HasSpacing()) [[likely]] {
       ink_bounds = shape_result->ComputeInkBounds();
@@ -308,6 +306,7 @@ void PlainTextNode::Shape(const Font& font, FrameShapeCache* cache) {
     }
     item.shape_result_ = shape_result;
     item.ink_bounds_ = ink_bounds;
+    has_vertical_offsets_ |= item.shape_result_->HasVerticalOffsets();
     if (cache) {
       cache->RegisterShapeEntry(item, entry);
     }

@@ -205,6 +205,31 @@ void TestShareKitService::ReadGroups(ShareKitReadConfiguration* config) {
   callback(read_result);
 }
 
+void TestShareKitService::ReadGroups(ShareKitReadGroupsConfiguration* config) {
+  MemberRole member_role = is_owner_ ? data_sharing_pb::MEMBER_ROLE_OWNER
+                                     : data_sharing_pb::MEMBER_ROLE_MEMBER;
+  auto callback = config.callback;
+
+  data_sharing_pb::ReadGroupsResult read_result;
+  for (ShareKitReadGroupParamConfiguration* inner_config in config
+           .groupsParam) {
+    *read_result.add_group_data() =
+        CreateGroupData(member_role, inner_config.collabID);
+  }
+  callback(read_result);
+}
+
+void TestShareKitService::ReadGroupWithToken(
+    ShareKitReadGroupWithTokenConfiguration* config) {
+  MemberRole member_role = is_owner_ ? data_sharing_pb::MEMBER_ROLE_OWNER
+                                     : data_sharing_pb::MEMBER_ROLE_MEMBER;
+  auto callback = config.callback;
+
+  data_sharing_pb::ReadGroupsResult read_result;
+  *read_result.add_group_data() = CreateGroupData(member_role, config.collabID);
+  callback(read_result);
+}
+
 void TestShareKitService::LeaveGroup(ShareKitLeaveConfiguration* config) {
   ShareKitDeleteConfiguration* deleteConfig =
       [[ShareKitDeleteConfiguration alloc] init];

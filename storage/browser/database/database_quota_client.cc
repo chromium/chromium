@@ -24,7 +24,6 @@
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/common/database/database_identifier.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "url/origin.h"
 
 using ::blink::StorageKey;
@@ -45,7 +44,6 @@ void DatabaseQuotaClient::GetBucketUsage(const BucketLocator& bucket,
                                          GetBucketUsageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
-  DCHECK_EQ(bucket.type, StorageType::kTemporary);
 
   // Skip non-default buckets because Storage Buckets are not planned to be
   // supported by WebSQL.
@@ -63,12 +61,10 @@ void DatabaseQuotaClient::GetBucketUsage(const BucketLocator& bucket,
   }
 }
 
-void DatabaseQuotaClient::GetStorageKeysForType(
-    StorageType type,
-    GetStorageKeysForTypeCallback callback) {
+void DatabaseQuotaClient::GetDefaultStorageKeys(
+    GetDefaultStorageKeysCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
-  DCHECK_EQ(type, StorageType::kTemporary);
 
   std::vector<StorageKey> all_storage_keys;
   std::vector<std::string> origin_identifiers;
@@ -85,7 +81,6 @@ void DatabaseQuotaClient::DeleteBucketData(const BucketLocator& bucket,
                                            DeleteBucketDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
-  DCHECK_EQ(bucket.type, StorageType::kTemporary);
 
   // Skip non-default buckets because Storage Buckets are not planned to be
   // supported by WebSQL.
@@ -106,11 +101,9 @@ void DatabaseQuotaClient::DeleteBucketData(const BucketLocator& bucket,
 }
 
 void DatabaseQuotaClient::PerformStorageCleanup(
-    blink::mojom::StorageType type,
     PerformStorageCleanupCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
-  DCHECK_EQ(type, StorageType::kTemporary);
 
   std::move(callback).Run();
 }

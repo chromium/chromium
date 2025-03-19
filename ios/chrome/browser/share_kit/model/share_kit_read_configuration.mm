@@ -10,6 +10,14 @@
 
 @end
 
+@implementation ShareKitReadGroupsConfiguration
+
+@end
+
+@implementation ShareKitReadGroupWithTokenConfiguration
+
+@end
+
 @implementation ShareKitReadConfiguration
 
 @end

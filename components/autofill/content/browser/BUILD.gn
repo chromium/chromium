@@ -22,6 +22,8 @@ static_library("browser") {
     "content_autofill_driver_factory.h",
     "content_autofill_shared_storage_handler.cc",
     "content_autofill_shared_storage_handler.h",
+    "content_identity_credential_delegate.cc",
+    "content_identity_credential_delegate.h",
     "renderer_forms_from_browser_form.cc",
     "renderer_forms_from_browser_form.h",
     "risk/fingerprint.cc",

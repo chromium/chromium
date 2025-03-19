@@ -30,7 +30,6 @@
 #include "media/base/video_codecs.h"
 #include "media/filters/hls_network_access_impl.h"
 #include "media/filters/manifest_demuxer.h"
-#include "media/formats/hls/audio_rendition.h"
 #include "media/formats/hls/media_playlist.h"
 #include "media/formats/hls/multivariant_playlist.h"
 #include "media/formats/hls/parse_status.h"
@@ -536,7 +535,7 @@ void HlsManifestDemuxerEngine::UpdateMediaPlaylistForRole(
 void HlsManifestDemuxerEngine::OnRenditionsReselected(
     hls::AdaptationReason reason,
     const hls::VariantStream* variant,
-    const hls::AudioRendition* audio_override_rendition) {
+    const hls::Rendition* audio_override_rendition) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   stats_reporter_.OnAdaptation(reason);
   ProcessAsyncAction<HlsDemuxerStatus>(
@@ -549,7 +548,7 @@ void HlsManifestDemuxerEngine::OnRenditionsReselected(
 
 void HlsManifestDemuxerEngine::AdaptationAction(
     const hls::VariantStream* variant,
-    const hls::AudioRendition* audio_override_rendition,
+    const hls::Rendition* audio_override_rendition,
     HlsDemuxerStatusCallback cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("media", "HLS::SelectRenditions", this,
@@ -755,7 +754,7 @@ void HlsManifestDemuxerEngine::OnMultivariantPlaylist(
 void HlsManifestDemuxerEngine::OnRenditionsSelected(
     HlsDemuxerStatusCallback on_complete,
     const hls::VariantStream* variant,
-    const hls::AudioRendition* audio_override_rendition) {
+    const hls::Rendition* audio_override_rendition) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
 
   // Ensure that if the variant changes, then we update the codecs that are

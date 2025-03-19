@@ -4051,9 +4051,6 @@
     <ph name="BEGIN_PARAGRAPH2" />您随时可在 Chrome 设备的设置中开始或停止发送这些报告。如果您是网域管理员，可在管理控制台中更改这一设置。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">夜晚，一座小木屋的上空绽放出了北极光。</translation>
 <translation id="3818102823568165369">已由操作系统或管理员添加的本地证书。</translation>
-<translation id="3818662907126913619">如果要在设备中使用您的 <ph name="DOMAIN" /> 个人资料，贵组织需要获取设备的相关信息。
-
-这可能包括已安装的软件、文件、您的浏览器和设备的操作系统等相关信息。</translation>
 <translation id="3819164369574292143">放大屏幕上的各项内容。使用搜索键 + Ctrl + M 可开启和关闭放大镜。使用 Ctrl + Alt + 箭头键可在放大后的屏幕上四处移动。</translation>
 <translation id="3819257035322786455">备份</translation>
 <translation id="3819261658055281761">系统未能为此设备存储长期的 API 访问令牌。</translation>
@@ -4370,9 +4367,6 @@
 <translation id="4031527940632463547">已禁止使用传感器</translation>
 <translation id="4033471457476425443">添加新文件夹</translation>
 <translation id="4033963223187371752">安全网站可能会内嵌不安全的内容，例如图片或 Web 框架</translation>
-<translation id="4034706080855851454">如要通过您在组织中的个人资料使用设备，贵组织需要获取该设备的相关信息。
-
-这可能包括与已安装的软件、文件、您的浏览器和设备的操作系统相关的信息。</translation>
 <translation id="4034824040120875894">打印机</translation>
 <translation id="4035758313003622889">任务管理器(&amp;T)</translation>
 <translation id="4035877632587724847">不允许</translation>

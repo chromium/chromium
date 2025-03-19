@@ -32,6 +32,8 @@ class CORE_EXPORT ViewTransitionUtils {
   // exists.
   static ViewTransition* GetTransition(const Document& document);
 
+  static ViewTransition* GetTransition(const Element& element);
+
   // Returns the view transition that the element associated with the specified
   // layout object is participating in, if one exists.
   static ViewTransition* TransitionForTaggedElement(const LayoutObject&);

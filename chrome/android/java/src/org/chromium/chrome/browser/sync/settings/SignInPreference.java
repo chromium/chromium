@@ -135,8 +135,7 @@ public class SignInPreference extends Preference
     /** Updates the title, summary, and image based on the current sign-in state. */
     private void update() {
         setVisible(!mIsShowingSigninPromo);
-        if (mSigninManager.isSigninDisabledByPolicy()) {
-            // TODO(crbug.com/40722691): Clean up after revising isSigninDisabledByPolicy.
+        if (!mPrefService.getBoolean(Pref.SIGNIN_ALLOWED)) {
             if (mPrefService.isManagedPreference(Pref.SIGNIN_ALLOWED)) {
                 setupSigninDisabledByPolicy();
             } else {

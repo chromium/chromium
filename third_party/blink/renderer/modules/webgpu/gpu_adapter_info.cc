@@ -12,6 +12,7 @@ GPUAdapterInfo::GPUAdapterInfo(const String& vendor,
                                const String& architecture,
                                uint32_t subgroup_min_size,
                                uint32_t subgroup_max_size,
+                               bool is_fallback_adapter,
                                const String& device,
                                const String& description,
                                const String& driver,
@@ -23,6 +24,7 @@ GPUAdapterInfo::GPUAdapterInfo(const String& vendor,
       architecture_(architecture),
       subgroup_min_size_(subgroup_min_size),
       subgroup_max_size_(subgroup_max_size),
+      is_fallback_adapter_(is_fallback_adapter),
       device_(device),
       description_(description),
       driver_(driver),
@@ -57,6 +59,10 @@ uint32_t GPUAdapterInfo::subgroupMinSize() const {
 
 uint32_t GPUAdapterInfo::subgroupMaxSize() const {
   return subgroup_max_size_;
+}
+
+bool GPUAdapterInfo::isFallbackAdapter() const {
+  return is_fallback_adapter_;
 }
 
 const String& GPUAdapterInfo::driver() const {

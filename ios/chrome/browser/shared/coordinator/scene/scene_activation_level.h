@@ -7,12 +7,12 @@
 
 // Describes the possible activation level of SceneState.
 // This is an iOS 12 compatible version of UISceneActivationState enum.
-enum SceneActivationLevel : NSUInteger {
-  // The scene is not connected and has no window.
-  SceneActivationLevelUnattached = 0,
+enum SceneActivationLevel : NSInteger {
   // The scene has been disconnected. It also corresponds to
   // UISceneActivationStateUnattached.
-  SceneActivationLevelDisconnected,
+  SceneActivationLevelDisconnected = -1,
+  // The scene is not connected and has no window.
+  SceneActivationLevelUnattached = 0,
   // The scene is connected, and has a window associated with it. The window is
   // not visible to the user, except possibly in the app switcher.
   SceneActivationLevelBackground,

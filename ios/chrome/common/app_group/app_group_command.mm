@@ -74,6 +74,15 @@ void PutCommandInNSUserDefault(NSDictionary* command) {
   PutCommandInNSUserDefault(command);
 }
 
+- (void)prepareToOpenURLInIncognito:(NSURL*)URL {
+  NSMutableDictionary* command = [self
+      baseCommandDictionary:app_group::kChromeAppGroupOpenURLInIcognitoCommand];
+  NSString* textPrefKey =
+      base::SysUTF8ToNSString(app_group::kChromeAppGroupCommandTextPreference);
+  command[textPrefKey] = URL.absoluteString;
+  PutCommandInNSUserDefault(command);
+}
+
 - (void)prepareToSearchText:(NSString*)text {
   NSMutableDictionary* command = [self
       baseCommandDictionary:base::SysUTF8ToNSString(
@@ -84,10 +93,30 @@ void PutCommandInNSUserDefault(NSDictionary* command) {
   PutCommandInNSUserDefault(command);
 }
 
+- (void)prepareToIncognitoSearchText:(NSString*)text {
+  NSMutableDictionary* command =
+      [self baseCommandDictionary:
+                app_group::kChromeAppGroupIncognitoSearchTextCommand];
+  NSString* textPrefKey =
+      base::SysUTF8ToNSString(app_group::kChromeAppGroupCommandTextPreference);
+  command[textPrefKey] = text;
+  PutCommandInNSUserDefault(command);
+}
+
 - (void)prepareToSearchImage:(UIImage*)image {
   NSMutableDictionary* command = [self
       baseCommandDictionary:base::SysUTF8ToNSString(
                                 app_group::kChromeAppGroupSearchImageCommand)];
+  NSString* dataPrefKey =
+      base::SysUTF8ToNSString(app_group::kChromeAppGroupCommandDataPreference);
+  command[dataPrefKey] = UIImageJPEGRepresentation(image, 1.0);
+  PutCommandInNSUserDefault(command);
+}
+
+- (void)prepareToIncognitoSearchImage:(UIImage*)image {
+  NSMutableDictionary* command =
+      [self baseCommandDictionary:
+                app_group::kChromeAppGroupIncognitoSearchImageCommand];
   NSString* dataPrefKey =
       base::SysUTF8ToNSString(app_group::kChromeAppGroupCommandDataPreference);
   command[dataPrefKey] = UIImageJPEGRepresentation(image, 1.0);

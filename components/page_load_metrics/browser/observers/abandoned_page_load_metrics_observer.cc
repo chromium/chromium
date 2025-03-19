@@ -393,6 +393,9 @@ void AbandonedPageLoadMetricsObserver::LogMilestoneHistogram(
     NavigationMilestone milestone,
     base::TimeTicks event_time,
     base::TimeTicks relative_start_time) {
+  if (!IsAllowedToLogUMA()) {
+    return;
+  }
   std::string base_suffix = GetHistogramSuffix(milestone, event_time);
   for (std::string additional_suffix : GetAdditionalSuffixes()) {
     std::string suffix = base_suffix + additional_suffix;
@@ -707,6 +710,10 @@ AbandonedPageLoadMetricsObserver::OnCommit(
       NavigationMilestone::kDidCommit,
       navigation_handle->GetNavigationHandleTiming().navigation_did_commit_time,
       navigation_start_time_);
+
+  // Update the navigation handle timings explicitly here since it is not
+  // triggered when we update the commit timings.
+  OnNavigationHandleTimingUpdated(navigation_handle);
 
   // If there's any previous hiding/backgrounding that hasn't been logged (e.g.
   // if the navigation didn't allow logging when these abandonments happen),

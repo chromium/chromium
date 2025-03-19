@@ -84,6 +84,11 @@ const base::FeatureParam<base::TimeDelta>
 const base::FeatureParam<bool> kAutofillAiServerModelSendPageUrl{
     &kAutofillAiServerModel, "autofill_ai_model_send_page_url", false};
 
+// Whether the user may use the locally cached results from the server model
+// to provide AutofillAI predictions for filling and importing.
+const base::FeatureParam<bool> kAutofillAiServerModelUseCacheResults{
+    &kAutofillAiServerModel, "autofill_ai_model_use_cache_results", false};
+
 // Enables the second iteration AutofillAI.
 // This feature is independent of `autofill_ai::kAutofillAi`.
 BASE_FEATURE(kAutofillAiWithDataSchema,

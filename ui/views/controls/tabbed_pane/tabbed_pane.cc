@@ -533,7 +533,8 @@ TabbedPaneTabStrip::Coordinates TabbedPaneTabStrip::GetIconLabelStartEndingX(
 bool TabbedPaneTabStrip::AcceleratorPressed(
     const ui::Accelerator& accelerator) {
   // Handle Ctrl+Tab and Ctrl+Shift+Tab navigation of pages.
-  DCHECK(accelerator.key_code() == ui::VKEY_TAB && accelerator.IsCtrlDown());
+  DCHECK_EQ(accelerator.key_code(), ui::VKEY_TAB);
+  DCHECK(accelerator.IsCtrlDown());
   return MoveSelectionBy(accelerator.IsShiftDown() ? -1 : 1);
 }
 

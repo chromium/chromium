@@ -1044,6 +1044,9 @@ BASE_DECLARE_FEATURE(kNonModalSignInPromo);
 // Returns whether the non-modal sign-in promo is enabled.
 bool IsNonModalSignInPromoEnabled();
 
+// Feature flag to remove section breaks when detecting addresses.
+BASE_DECLARE_FEATURE(kIOSOneTapMiniMapRemoveSectionsBreaks);
+
 // Feature flags for enhanced One Tap Minimap experiment
 // The main feature that controls of these restrictions. Different parameters
 // control the different available restrictions.

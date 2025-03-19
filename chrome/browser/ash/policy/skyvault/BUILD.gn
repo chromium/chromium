@@ -146,6 +146,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/file_system_provider",
     "//chrome/browser/ash/file_system_provider:test_support",
     "//chrome/browser/ash/policy/skyvault/test:test_support",
+    "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",

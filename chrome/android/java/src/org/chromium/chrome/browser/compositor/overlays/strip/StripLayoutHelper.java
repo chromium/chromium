@@ -379,7 +379,7 @@ public class StripLayoutHelper
     // Delegates that manage different functions for the tab strip.
     private final ActionConfirmationManager mActionConfirmationManager;
     private final StripStacker mStripStacker = new ScrollingStripStacker();
-    private final ScrollDelegate mScrollDelegate = new ScrollDelegate();
+    private final ScrollDelegate mScrollDelegate;
     private ReorderDelegate mReorderDelegate = new ReorderDelegate();
 
     // Common state used for animations on the strip triggered by independent actions including and
@@ -574,6 +574,7 @@ public class StripLayoutHelper
         mModalDialogManager = modalDialogManager;
         mBottomSheetController = bottomSheetController;
         mShareDelegateSupplier = shareDelegateSupplier;
+        mScrollDelegate = new ScrollDelegate(context);
 
         // Use toolbar menu button padding to align NTB with menu button.
         mFixedEndPadding =
@@ -987,18 +988,6 @@ public class StripLayoutHelper
         if ((orientationChanged && wasSelectedTabVisible) || !mTabStateInitialized) {
             bringSelectedTabToVisibleArea(time, mTabStateInitialized);
         }
-    }
-
-    /**
-     * Updates all internal resources and dimensions.
-     *
-     * @param context The current Android {@link Context}.
-     */
-    public void onContextChanged(Context context) {
-        // TODO(crbug.com/360206998): Clean up this method as the Context doesn't change.
-        mContext = context;
-
-        mScrollDelegate.onContextChanged(context);
     }
 
     /**

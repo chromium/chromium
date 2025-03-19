@@ -40,6 +40,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -83,6 +86,7 @@
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "url/gurl.h"
 
 namespace blink {
 
@@ -1540,6 +1544,77 @@ TEST_P(ResourceFetcherTest, StrongReferenceThreshold) {
   ASSERT_TRUE(perform_fetch.Run(KURL("http://127.0.0.1:8000/foo.png")));
   ASSERT_TRUE(perform_fetch.Run(KURL("http://127.0.0.1:8000/bar.png")));
   ASSERT_FALSE(perform_fetch.Run(KURL("http://127.0.0.1:8000/baz.png")));
+}
+
+TEST_F(ResourceFetcherTestBase, PopulateResourceRequestPermissionsPolicy) {
+  // TODO(crbug.com/382291442): Remove `scoped_feature_list` once launched.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      network::features::kPopulatePermissionsPolicyOnRequest);
+
+  MockFetchContext* context = MakeGarbageCollected<MockFetchContext>();
+
+  url::Origin origin = url::Origin::Create(GURL("https://example.com"));
+  std::unique_ptr<network::PermissionsPolicy> permissions_policy =
+      network::PermissionsPolicy::CreateFromParentPolicy(
+          /*parent_policy=*/nullptr,
+          /*header_policy=*/
+          {{{network::mojom::PermissionsPolicyFeature::
+                 kBrowsingTopics, /*allowed_origins=*/
+             {*network::OriginWithPossibleWildcards::FromOrigin(origin)},
+             /*self_if_matches=*/std::nullopt,
+             /*matches_all_origins=*/false,
+             /*matches_opaque_src=*/false},
+            {network::mojom::PermissionsPolicyFeature::kSharedStorage,
+             /*allowed_origins=*/{},
+             /*self_if_matches=*/std::nullopt,
+             /*matches_all_origins=*/false,
+             /*matches_opaque_src=*/false}}},
+          /*container_policy=*/{}, origin);
+  network::PermissionsPolicy* raw_policy_ptr = permissions_policy.get();
+  context->SetPermissionsPolicy(std::move(permissions_policy));
+
+  auto* fetcher = CreateFetcher(
+      *MakeGarbageCollected<TestResourceFetcherProperties>(), context);
+  network::ResourceRequest request;
+  fetcher->PopulateResourceRequestPermissionsPolicy(&request);
+
+  EXPECT_EQ(request.permissions_policy, std::make_optional(*raw_policy_ptr));
+}
+
+// TODO(crbug.com/382291442): Remove test once feature is launched.
+TEST_F(ResourceFetcherTestBase,
+       PopulateResourceRequestPermissionsPolicy_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      network::features::kPopulatePermissionsPolicyOnRequest);
+
+  MockFetchContext* context = MakeGarbageCollected<MockFetchContext>();
+
+  url::Origin origin = url::Origin::Create(GURL("https://example.com"));
+  context->SetPermissionsPolicy(
+      network::PermissionsPolicy::CreateFromParentPolicy(
+          /*parent_policy=*/nullptr,
+          /*header_policy=*/
+          {{{network::mojom::PermissionsPolicyFeature::
+                 kBrowsingTopics, /*allowed_origins=*/
+             {*network::OriginWithPossibleWildcards::FromOrigin(origin)},
+             /*self_if_matches=*/std::nullopt,
+             /*matches_all_origins=*/false,
+             /*matches_opaque_src=*/false},
+            {network::mojom::PermissionsPolicyFeature::kSharedStorage,
+             /*allowed_origins=*/{},
+             /*self_if_matches=*/std::nullopt,
+             /*matches_all_origins=*/false,
+             /*matches_opaque_src=*/false}}},
+          /*container_policy=*/{}, origin));
+
+  auto* fetcher = CreateFetcher(
+      *MakeGarbageCollected<TestResourceFetcherProperties>(), context);
+  network::ResourceRequest request;
+  fetcher->PopulateResourceRequestPermissionsPolicy(&request);
+
+  EXPECT_FALSE(request.permissions_policy);
 }
 
 class ResourceFetcherInspectorTest

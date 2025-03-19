@@ -80,10 +80,6 @@ class PageLiveStateDataImpl
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return is_auto_discardable_;
   }
-  bool WasDiscarded() const override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return was_discarded_;
-  }
   bool IsActiveTab() const override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return is_active_tab_;
@@ -130,9 +126,6 @@ class PageLiveStateDataImpl
   }
   void SetIsAutoDiscardableForTesting(bool value) override {
     set_is_auto_discardable(value);
-  }
-  void SetWasDiscardedForTesting(bool value) override {
-    set_was_discarded(value);
   }
   void SetIsActiveTabForTesting(bool value) override {
     set_is_active_tab(value);
@@ -232,12 +225,6 @@ class PageLiveStateDataImpl
     for (auto& obs : observers_)
       obs.OnIsAutoDiscardableChanged(page_node_);
   }
-  void set_was_discarded(bool was_discarded) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (was_discarded_ == was_discarded)
-      return;
-    was_discarded_ = was_discarded;
-  }
   void set_is_active_tab(bool is_active_tab) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (is_active_tab_ == is_active_tab)
@@ -286,7 +273,6 @@ class PageLiveStateDataImpl
   bool is_capturing_window_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool is_capturing_display_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool is_auto_discardable_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
-  bool was_discarded_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool is_active_tab_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool is_pinned_tab_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool is_dev_tools_open_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
@@ -441,18 +427,6 @@ void PageLiveStateDecorator::SetIsAutoDiscardable(
 }
 
 // static
-void PageLiveStateDecorator::SetWasDiscarded(content::WebContents* contents,
-                                             bool was_discarded) {
-  // TODO(crbug.com/391179510): This check validates the assumption that the
-  // WasDiscarded() property is not set correctly. If that assumption holds,
-  // remove all code that depends on it as discussed on the bug.
-  CHECK(!was_discarded, base::NotFatalUntil::M136);
-
-  SetPropertyForWebContentsPageNode(
-      contents, &PageLiveStateDataImpl::set_was_discarded, was_discarded);
-}
-
-// static
 void PageLiveStateDecorator::SetIsActiveTab(content::WebContents* contents,
                                             bool is_active_tab) {
   SetPropertyForWebContentsPageNode(
@@ -540,12 +514,6 @@ bool PageLiveStateDecorator::IsAutoDiscardable(content::WebContents* contents) {
 }
 
 // static
-bool PageLiveStateDecorator::WasDiscarded(content::WebContents* contents) {
-  return GetPropertyForWebContentsPageNode<bool>(
-      contents, &PageLiveStateDataImpl::WasDiscarded);
-}
-
-// static
 bool PageLiveStateDecorator::IsActiveTab(content::WebContents* contents) {
   return GetPropertyForWebContentsPageNode<bool>(
       contents, &PageLiveStateDataImpl::IsActiveTab);
@@ -598,7 +566,6 @@ base::Value::Dict PageLiveStateDecorator::DescribePageNodeData(
   ret.Set("IsCapturingWindow", data->IsCapturingWindow());
   ret.Set("IsCapturingDisplay", data->IsCapturingDisplay());
   ret.Set("IsAutoDiscardable", data->IsAutoDiscardable());
-  ret.Set("WasDiscarded", data->WasDiscarded());
   ret.Set("IsActiveTab", data->IsActiveTab());
   ret.Set("IsPinnedTab", data->IsPinnedTab());
   ret.Set("IsDevToolsOpen", data->IsDevToolsOpen());

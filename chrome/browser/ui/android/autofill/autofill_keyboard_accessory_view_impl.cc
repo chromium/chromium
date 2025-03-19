@@ -12,8 +12,10 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -94,7 +96,9 @@ void AutofillKeyboardAccessoryViewImpl::Show() {
     }
 
     std::u16string label = suggestion.main_text.value;
-    std::u16string sublabel = suggestion.minor_text.value;
+    std::u16string sublabel = base::JoinString(
+        base::ToVector(suggestion.minor_texts, &Suggestion::Text::value), u" ");
+
     if (std::vector<std::vector<autofill::Suggestion::Text>> suggestion_labels =
             controller_->GetSuggestionLabelsAt(i);
         !suggestion_labels.empty()) {

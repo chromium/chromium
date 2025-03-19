@@ -1004,8 +1004,41 @@ class PixelTestPages():
   # Currently this is Windows and Linux.
   @staticmethod
   def SwiftShaderPages(base_name: str) -> List[PixelTestPage]:
-    browser_args = [cba.DISABLE_GPU]
+    browser_args = [
+        cba.DISABLE_GPU, '--enable-features=AllowSwiftShaderFallback',
+        '--disable-features=AllowD3D11WarpFallback'
+    ]
     suffix = '_SwiftShader'
+    standard_crop = ca.NonWhiteContentCropAction(
+        initial_crop=ca.FixedRectCropAction(0, 0, 350, 350))
+    return [
+        PixelTestPage('pixel_canvas2d.html',
+                      base_name + '_Canvas2DRedBox' + suffix,
+                      crop_action=standard_crop,
+                      browser_args=browser_args),
+        PixelTestPage('pixel_css3d.html',
+                      base_name + '_CSS3DBlueBox' + suffix,
+                      crop_action=standard_crop,
+                      browser_args=browser_args),
+        PixelTestPage('pixel_webgl_aa_alpha.html',
+                      base_name + '_WebGLGreenTriangle_AA_Alpha' + suffix,
+                      crop_action=standard_crop,
+                      browser_args=browser_args),
+        PixelTestPage('pixel_repeated_webgl_to_2d.html',
+                      base_name + '_RepeatedWebGLTo2D' + suffix,
+                      crop_action=standard_crop,
+                      browser_args=browser_args),
+    ]
+
+  # Only add these tests on platforms where D3D11 WARP is enabled.
+  # Currently this is Windows.
+  @staticmethod
+  def WARPPages(base_name: str) -> List[PixelTestPage]:
+    browser_args = [
+        cba.DISABLE_GPU, '--disable-features=AllowSwiftShaderFallback',
+        '--enable-features=AllowD3D11WarpFallback'
+    ]
+    suffix = '_WARP'
     standard_crop = ca.NonWhiteContentCropAction(
         initial_crop=ca.FixedRectCropAction(0, 0, 350, 350))
     return [

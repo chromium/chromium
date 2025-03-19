@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -62,10 +63,10 @@ bool ParseProcStatLine(const std::string& line, std::vector<CpuInfo>* infos) {
   uint64_t sys = 0;
   uint64_t idle = 0;
   uint32_t cpu_index = 0;
-  int vals =
-      sscanf(line.c_str(),
-             "cpu%" SCNu32 " %" SCNu64 " %" SCNu64 " %" SCNu64 " %" SCNu64,
-             &cpu_index, &user, &nice, &sys, &idle);
+  int vals = UNSAFE_TODO(sscanf(line.c_str(),
+                                "cpu%" SCNu32 " %" SCNu64 " %" SCNu64
+                                " %" SCNu64 " %" SCNu64,
+                                &cpu_index, &user, &nice, &sys, &idle));
   if (vals != 5 || cpu_index >= infos->size()) {
     NOTREACHED();
   }
@@ -211,8 +212,8 @@ std::optional<GpuInfo> GetGpuInfoFromI915EngineInfo() {
     // the usage percentage to 100% in the frontend. If needed, we can consider
     // exposing the per-engine breakdown.
     int64_t engine_runtime_ms = 0;
-    if (sscanf(line.data(), "\tRuntime: %" PRId64 "ms", &engine_runtime_ms) !=
-        1) {
+    if (UNSAFE_TODO(sscanf(line.data(), "\tRuntime: %" PRId64 "ms",
+                           &engine_runtime_ms)) != 1) {
       continue;
     }
 

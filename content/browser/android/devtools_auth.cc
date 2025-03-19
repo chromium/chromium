@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 
 namespace content {
@@ -21,8 +22,10 @@ bool CanUserConnectToDevTools(
     return false;
   }
   if (credentials.group_id == credentials.user_id &&
-      (strcmp("root", creds->pw_name) == 0 ||   // For rooted devices
-       strcmp("shell", creds->pw_name) == 0 ||  // For non-rooted devices
+      (UNSAFE_TODO(strcmp("root", creds->pw_name)) ==
+           0 ||  // For rooted devices
+       UNSAFE_TODO(strcmp("shell", creds->pw_name)) ==
+           0 ||  // For non-rooted devices
 
        // From processes signed with the same key
        credentials.user_id == getuid())) {

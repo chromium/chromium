@@ -202,7 +202,7 @@ bool GLContextEGL::InitializeImpl(GLSurface* compatible_surface,
     DCHECK(context_client_minor_version == 0);
   }
 
-  bool is_swangle = IsSoftwareGLImplementation(GetGLImplementationParts());
+  bool is_swangle = IsSwiftShaderGLImplementation(GetGLImplementationParts());
 
   if (attribs.webgl_compatibility_context && is_swangle &&
       IsARMSwiftShaderPlatform() &&

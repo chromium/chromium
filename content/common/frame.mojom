@@ -62,6 +62,7 @@ import "third_party/blink/public/mojom/widget/visual_properties.mojom";
 import "third_party/blink/public/mojom/window_features/window_features.mojom";
 import "ui/accessibility/mojom/ax_tree_update.mojom";
 import "ui/base/mojom/window_open_disposition.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/scheme_host_port.mojom";
 import "url/mojom/url.mojom";
@@ -588,6 +589,9 @@ struct CreateNewWindowParams {
   // Whether new window is created for a form submission.
   bool is_form_submission;
 
+  // Whether a user gesture will be consumed by the opener.
+  bool consumes_user_activation;
+
   // Body of HTTP POST request for form submission.
   network.mojom.URLRequestBody? form_submission_post_data;
 
@@ -707,6 +711,10 @@ struct CreateNewWindowReply {
   // This must be null unless the view being created is a partitioned popin.
   // See https://explainers-by-googlers.github.io/partitioned-popins/
   blink.mojom.PartitionedPopinParams? partitioned_popin_params;
+
+  // Initial window geometry.
+  gfx.mojom.Rect? widget_screen_rect;
+  gfx.mojom.Rect? window_screen_rect;
 };
 
 // A per-navigation interface passed along with the BeginNavigation call, used

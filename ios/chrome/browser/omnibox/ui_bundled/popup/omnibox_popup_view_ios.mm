@@ -52,13 +52,13 @@ void OmniboxPopupViewIOS::UpdatePopupAppearance() {
 }
 
 bool OmniboxPopupViewIOS::IsOpen() const {
-  return omnibox_autocomplete_controller_.omniboxPopupController.hasSuggestions;
+  return omnibox_autocomplete_controller_.hasSuggestions;
 }
 
 #pragma mark - OmniboxPopupProvider
 
 bool OmniboxPopupViewIOS::IsPopupOpen() {
-  return omnibox_autocomplete_controller_.omniboxPopupController.hasSuggestions;
+  return omnibox_autocomplete_controller_.hasSuggestions;
 }
 
 void OmniboxPopupViewIOS::SetTextAlignment(NSTextAlignment alignment) {

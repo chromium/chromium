@@ -63,7 +63,7 @@ found in the LICENSE file.
 
     <!-- Local credit card editor -->
     <dimen name="local_card_scanner_height">64dp</dimen>
-    <dimen name="local_card_expiration_date_editor_width">100dp</dimen>
+    <dimen name="local_card_expiration_date_editor_width">150dp</dimen>
     <dimen name="local_card_cvc_editor_width">150dp</dimen>
     <dimen name="local_card_cvc_image_horizontal_margin">8dp</dimen>
     <dimen name="local_card_cvc_image_large_horizontal_margin">16dp</dimen>

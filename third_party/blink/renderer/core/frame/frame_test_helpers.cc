@@ -958,6 +958,7 @@ WebView* TestWebFrameClient::CreateNewWindow(
     const WebURLRequest&,
     const WebWindowFeatures&,
     const WebString& name,
+    const gfx::Rect& requested_screen_rect,
     WebNavigationPolicy,
     network::mojom::blink::WebSandboxFlags,
     const SessionStorageNamespaceId&,

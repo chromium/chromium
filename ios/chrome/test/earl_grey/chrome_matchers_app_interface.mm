@@ -662,6 +662,20 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
                     nil);
 }
 
++ (id<GREYMatcher>)managedProfileCreationNavigationBarBackButton {
+  UINavigationBar* navBar = base::apple::ObjCCastStrict<UINavigationBar>(
+      SubviewWithAccessibilityIdentifier(
+          kManagedProfileCreationNavigationBarAccessibilityIdentifier,
+          GetAnyKeyWindow()));
+  NSString* buttonTitle = navBar.backItem.title;
+  return grey_allOf(
+      grey_anyOf(grey_accessibilityLabel(buttonTitle),
+                 grey_accessibilityLabel(@"Back"), grey_buttonTitle(@"Back"),
+                 grey_descendant(grey_buttonTitle(buttonTitle)), nil),
+      grey_kindOfClassName(@"_UIButtonBarButton"),
+      grey_ancestor(grey_kindOfClass([UINavigationBar class])), nil);
+}
+
 + (id<GREYMatcher>)addAccountButton {
   return grey_accessibilityID(kSettingsAccountsTableViewAddAccountCellId);
 }

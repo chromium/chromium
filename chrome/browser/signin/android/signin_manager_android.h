@@ -52,7 +52,7 @@ class SigninManagerAndroid : public KeyedService {
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
-  bool IsSigninAllowedByPolicy(JNIEnv* env) const;
+  bool IsSigninAllowed(JNIEnv* env) const;
 
   bool IsForceSigninEnabled(JNIEnv* env);
 

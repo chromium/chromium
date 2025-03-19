@@ -10,4 +10,8 @@ BASE_FEATURE(kEnterpriseSecurityEventReportingOnAndroid,
              "EnterpriseSecurityEventReportingOnAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnterpriseUrlFilteringEventReportingOnAndroid,
+             "EnterpriseUrlFilteringEventReportingOnAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace enterprise_connectors

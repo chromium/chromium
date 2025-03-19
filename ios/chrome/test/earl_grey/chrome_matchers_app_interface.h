@@ -221,6 +221,9 @@
 // Matcher for the back button on the Bookmarks navigation bar.
 + (id<GREYMatcher>)bookmarksNavigationBarBackButton;
 
+// Matcher for the back button on the Managed profile creation navigation bar.
++ (id<GREYMatcher>)managedProfileCreationNavigationBarBackButton;
+
 // Returns matcher for the add account accounts button.
 + (id<GREYMatcher>)addAccountButton;
 

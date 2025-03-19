@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/grit/theme_resources.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/integrators/autofill_ai_delegate.h"
@@ -222,6 +223,20 @@ void SaveOrUpdateAutofillAiDataControllerImpl::DoShowBubble() {
 base::WeakPtr<SaveOrUpdateAutofillAiDataController>
 SaveOrUpdateAutofillAiDataControllerImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+// TODO(389629676): Return proper resources once we have them.
+std::pair<int, int>
+SaveOrUpdateAutofillAiDataControllerImpl::GetTitleImagesResourceId() const {
+  switch (new_entity_->type().name()) {
+    case autofill::EntityTypeName::kVehicle:
+      return {IDR_SAVE_ADDRESS, IDR_SAVE_ADDRESS_DARK};
+    case autofill::EntityTypeName::kPassport:
+      return {IDR_SAVE_ADDRESS, IDR_SAVE_ADDRESS_DARK};
+    case autofill::EntityTypeName::kDriversLicense:
+      return {IDR_SAVE_ADDRESS, IDR_SAVE_ADDRESS_DARK};
+  }
+  NOTREACHED();
 }
 
 base::optional_ref<const autofill::EntityInstance>

@@ -285,11 +285,8 @@ void AccountHoverButton::SetDisabledOpacity() {
         ->SetDisabledOpacity();
   }
 
-  title()->SetDefaultEnabledColorId(ui::kColorLabelForegroundDisabled);
+  title()->SetEnabledColor(ui::kColorLabelForegroundDisabled);
   subtitle()->SetEnabledColor(ui::kColorLabelForegroundDisabled);
-
-  // Recreates the StyledLabel with the new default enabled color id.
-  title()->PreferredSizeChanged();
 }
 
 bool AccountHoverButton::HasDisabledOpacity() {

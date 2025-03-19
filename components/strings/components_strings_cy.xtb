@@ -54,7 +54,6 @@
 <translation id="1090629319939036170">Dewislen VR</translation>
 <translation id="1091463901118115503">Parhau i ddarllen</translation>
 <translation id="1091779689406092804">sgrinluniau</translation>
-<translation id="1094777233105318927">Gwybodaeth am eich porwr, OS, dyfais, meddalwedd sydd wedi'i gosod a ffeiliau</translation>
 <translation id="1096545575934602868">Ni ddylai'r maes hwn fod â mwy na <ph name="MAX_ITEMS_LIMIT" /> ymgais. Bydd pob cofnod pellach yn cael ei waredu.</translation>
 <translation id="1097803577928227769">Parciau Rhanbarthol a Gerddi</translation>
 <translation id="1099928364755383720">llun mewn llun awtomatig</translation>
@@ -4478,7 +4477,6 @@ Manylion ychwanegol:
 <translation id="8919895429178014996">Cuddio pob eitem</translation>
 <translation id="8922013791253848639">Caniatáu hysbysebion ar y wefan hon bob amser</translation>
 <translation id="8922734931659847428">Rhestr gyfyngedig o gyfeiriadau URL tudalennau rydych yn ymweld â nhw lle mae <ph name="BEGIN_LINK" />digwyddiadau technoleg etifeddol<ph name="END_LINK" /> yn digwydd</translation>
-<translation id="8924109546403192898">Pan fydd digwyddiadau diogelwch yn cael eu nodi gan Chrome, anfonir data perthnasol am y digwyddiadau at eich gweinyddwr. Gall hyn gynnwys cyfeiriadau URL o dudalennau rydych yn ymweld â nhw yn Chrome, cyfeiriadau URL tudalennau y gwnaethoch gopïo data ohonynt, enwau ffeiliau neu fetaddata, toriadau porwr neu dab a'r enw defnyddiwr rydych yn ei ddefnyddio i fewngofnodi i apiau ar-lein, i'ch dyfais ac i Chrome.</translation>
 <translation id="892588693504540538">Twll ar y dde uchaf</translation>
 <translation id="8926389886865778422">Peidiwch â gofyn eto</translation>
 <translation id="8932102934695377596">Mae eich cloc yn araf</translation>

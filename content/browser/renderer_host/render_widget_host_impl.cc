@@ -901,7 +901,15 @@ void RenderWidgetHostImpl::WasShown(
   // SendScreenRects() and SynchronizeVisualProperties() should happen
   // together as one message, but we send them back-to-back for now so that
   // all state gets to the renderer as close together as possible.
-  SynchronizeVisualProperties();
+  //
+  // If we are evicted we need to unthrottle the synchronization. The pending
+  // ack could have been set after we were hidden. We need to always sync the
+  // new `viz::LocalSurfaceId` to restore from being evicted.
+  if (view_->is_evicted()) {
+    SynchronizeVisualPropertiesIgnoringPendingAck();
+  } else {
+    SynchronizeVisualProperties();
+  }
 
   CHECK(!pending_show_params_);
   if (!waiting_for_init_) {

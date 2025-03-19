@@ -195,6 +195,8 @@ public class SigninPromoCoordinatorTest {
                 .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME);
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME);
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.SIGNIN_PROMO_HISTORY_PAGE_LAST_SHOWN_TIME);
     }
 
     @Test
@@ -416,9 +418,7 @@ public class SigninPromoCoordinatorTest {
                     ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
                             SigninPreferencesManager.SigninPromoAccessPointId.HISTORY_PAGE);
             ChromeSharedPreferences.getInstance()
-                    .writeInt(
-                            preferenceName,
-                            HistoryPageSigninPromoDelegate.MAX_IMPRESSIONS_HISTORY_PAGE);
+                    .writeInt(preferenceName, HistoryPageSigninPromoDelegate.MAX_IMPRESSIONS);
         }
         signinAndOptOutHistorySyncIfNeeded(accessPoint);
         setUpSignInPromo(accessPoint);
@@ -430,6 +430,54 @@ public class SigninPromoCoordinatorTest {
                     } else {
                         assertTrue(mPromoCoordinator.canShowPromo());
                     }
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testHistoryPageImpressionDelay_firstShown() {
+        signinAndOptOutHistorySyncIfNeeded(SigninAccessPoint.HISTORY_PAGE);
+
+        setUpSignInPromo(SigninAccessPoint.HISTORY_PAGE);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(mPromoCoordinator.canShowPromo());
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testHistoryPageImpressionDelay_delayNotReached() {
+        ChromeSharedPreferences.getInstance()
+                .writeLong(
+                        ChromePreferenceKeys.SIGNIN_PROMO_HISTORY_PAGE_LAST_SHOWN_TIME,
+                        System.currentTimeMillis());
+        signinAndOptOutHistorySyncIfNeeded(SigninAccessPoint.HISTORY_PAGE);
+
+        setUpSignInPromo(SigninAccessPoint.HISTORY_PAGE);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertFalse(mPromoCoordinator.canShowPromo());
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testHistoryPageImpressionDelay_delayReached() {
+        ChromeSharedPreferences.getInstance()
+                .writeLong(
+                        ChromePreferenceKeys.SIGNIN_PROMO_HISTORY_PAGE_LAST_SHOWN_TIME,
+                        System.currentTimeMillis()
+                                - HistoryPageSigninPromoDelegate.MIN_DELAY_BETWEEN_IMPRESSIONS_MS);
+        signinAndOptOutHistorySyncIfNeeded(SigninAccessPoint.HISTORY_PAGE);
+
+        setUpSignInPromo(SigninAccessPoint.HISTORY_PAGE);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(mPromoCoordinator.canShowPromo());
                 });
     }
 
@@ -535,7 +583,7 @@ public class SigninPromoCoordinatorTest {
     private static String getAccessPointToRenderId(@SigninAccessPoint int accessPoint) {
         return switch (accessPoint) {
             case SigninAccessPoint.BOOKMARK_MANAGER -> "BookmarkManager";
-            case SigninAccessPoint.HISTORY_PAGE -> "History";
+            case SigninAccessPoint.HISTORY_PAGE -> "HistoryPage";
             case SigninAccessPoint.NTP_FEED_TOP_PROMO -> "NtpFeedTopPromo";
             case SigninAccessPoint.RECENT_TABS -> "RecentTabs";
             default -> throw new IllegalArgumentException("Invalid sign-in promo access point");

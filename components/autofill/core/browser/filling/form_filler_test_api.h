@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_FORM_FILLER_TEST_API_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_FORM_FILLER_TEST_API_H_
 
+#include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/filling/form_filler.h"
 
 namespace autofill {
@@ -26,6 +27,12 @@ class FormFillerTestApi {
       bool is_refill) {
     form_filler_->form_autofill_history_.AddFormFillEntry(
         filled_fields, filled_autofill_fields, filling_product, is_refill);
+  }
+
+  void TriggerRefill(const FormData& form,
+                     AutofillTriggerSource trigger_source,
+                     RefillTriggerReason refill_trigger_reason) {
+    form_filler_->TriggerRefill(form, trigger_source, refill_trigger_reason);
   }
 
  private:

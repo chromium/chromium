@@ -29,15 +29,15 @@ class ASH_EXPORT DisableTouchpadEventRewriter : public ui::EventRewriter {
       const Continuation continuation) override;
 
   void HandleKeyEvent(const ui::KeyEvent* event);
-  void HandleShiftKeyPress();
-  void ResetShiftKeyPressTracking();
+  void HandleShiftKeyRelease();
+  void ResetShiftKeyReleaseTracking();
   ui::EventDispatchDetails HandleMouseOrScrollEvent(
       const ui::Event& event,
       const Continuation continuation);
 
   bool enabled_ = false;
-  int shift_press_count_ = 0;
-  base::TimeTicks first_shift_press_time_ = base::TimeTicks();
+  int shift_release_count_ = 0;
+  base::TimeTicks first_shift_release_time_ = base::TimeTicks();
 };
 
 }  // namespace ash

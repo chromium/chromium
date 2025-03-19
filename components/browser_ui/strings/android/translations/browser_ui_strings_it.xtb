@@ -87,6 +87,7 @@
 <translation id="2215727959747642672">Modifica di file</translation>
 <translation id="2218389616572918761">I siti possono chiedere di utilizzare il microfono</translation>
 <translation id="2228071138934252756">Per consentire all'app <ph name="APP_NAME" /> di accedere alla fotocamera, attiva la fotocamera anche nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
+<translation id="2231160360698766265">I siti possono riprodurre contenuti protetti</translation>
 <translation id="2235344399760031203">I cookie di terze parti sono bloccati</translation>
 <translation id="2238944249568001759">Ricerche suggerite in base all'ultima scheda</translation>
 <translation id="2241587408274973373">Contenuti nuove schede</translation>
@@ -630,6 +631,7 @@
 <translation id="9138217887606523162">Al momento lo zoom è <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9156722768168878035">Consenti a Chrome di mostrare le schede recenti nell'elenco di app e nei risultati di ricerca del dispositivo. Puoi disattivare questa funzionalità in qualsiasi momento nelle impostazioni di Chrome.</translation>
 <translation id="9162462602695099906">Questa pagina è pericolosa</translation>
+<translation id="9182556968660520230">Non consentire ai siti di riprodurre contenuti protetti</translation>
 <translation id="947156494302904893">I siti che visiti possono verificare che sei una persona reale e non un bot</translation>
 <translation id="959682366969460160">Organizzazione</translation>
 <translation id="967624055006145463">Dati memorizzati</translation>

@@ -10,6 +10,7 @@
 
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_file.h"
 #include "base/memory/page_size.h"
@@ -157,7 +158,7 @@ class PreFreezeSelfCompactionTest : public testing::Test {
     region.end = region.start + size;
     mapped_regions_.push_back(region);
     // We memset to guarantee that the memory we just allocated is resident.
-    memset(addr, 02, size);
+    UNSAFE_TODO(memset(addr, 02, size));
     return addr;
   }
 
@@ -697,7 +698,7 @@ TEST_F(PreFreezeSelfCompactionTest, Simple) {
   ASSERT_NE(addr, MAP_FAILED);
 
   // we touch the memory here to dirty it, so that it is definitely resident.
-  memset((void*)addr, 1, size);
+  UNSAFE_TODO(memset((void*)addr, 1, size));
 
   EXPECT_EQ(CountResidentPagesInRange(addr, size), kNumPages);
 
@@ -739,7 +740,7 @@ TEST_F(PreFreezeSelfCompactionTest, File) {
   ASSERT_NE(addr, MAP_FAILED);
 
   // we touch the memory here to dirty it, so that it is definitely resident.
-  memset((void*)addr, 2, size);
+  UNSAFE_TODO(memset((void*)addr, 2, size));
 
   EXPECT_EQ(CountResidentPagesInRange(addr, size), kNumPages);
 
@@ -777,7 +778,7 @@ TEST_F(PreFreezeSelfCompactionTest, Locked) {
   ASSERT_EQ(mlock(addr, size), 0);
 
   // we touch the memory here to dirty it, so that it is definitely resident.
-  memset((void*)addr, 1, size);
+  UNSAFE_TODO(memset((void*)addr, 1, size));
 
   EXPECT_EQ(CountResidentPagesInRange(addr, size), kNumPages);
 

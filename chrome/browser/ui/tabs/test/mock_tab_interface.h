@@ -71,6 +71,10 @@ class MockTabInterface : public testing::NiceMock<TabInterface> {
   MOCK_METHOD(TabFeatures*, GetTabFeatures, (), (override));
   MOCK_METHOD(bool, IsPinned, (), (const override));
   MOCK_METHOD(bool, IsSplit, (), (const override));
+  MOCK_METHOD(std::optional<split_tabs::SplitTabId>,
+              GetSplit,
+              (),
+              (const override));
   MOCK_METHOD(std::optional<tab_groups::TabGroupId>,
               GetGroup,
               (),

@@ -302,6 +302,11 @@ id<GREYMatcher> BookmarksNavigationBarBackButton() {
   return [ChromeMatchersAppInterface bookmarksNavigationBarBackButton];
 }
 
+id<GREYMatcher> ManagedProfileCreationNavigationBarBackButton() {
+  return [ChromeMatchersAppInterface
+      managedProfileCreationNavigationBarBackButton];
+}
+
 id<GREYMatcher> AddAccountButton() {
   return [ChromeMatchersAppInterface addAccountButton];
 }

@@ -60,7 +60,7 @@ inline bool IsHorizontalWritingMode(WritingMode writing_mode) {
 // Lines have vertical orientation; modes vertical-lr, vertical-rl.
 inline bool IsVerticalWritingMode(WritingMode writing_mode) {
   return writing_mode == WritingMode::kVerticalLr ||
-         writing_mode == WritingMode::kVerticalLr;
+         writing_mode == WritingMode::kVerticalRl;
 }
 
 // Bottom of the line occurs earlier in the block; modes vertical-lr.

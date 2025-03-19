@@ -87,6 +87,7 @@
 <translation id="2215727959747642672">ファイルの編集</translation>
 <translation id="2218389616572918761">サイトがマイクへのアクセスを要求できるようにする</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> にカメラへのアクセスを許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でもカメラをオンにしてください。</translation>
+<translation id="2231160360698766265">保護されたコンテンツの再生をサイトに許可する</translation>
 <translation id="2235344399760031203">サードパーティの Cookie がブロックされています</translation>
 <translation id="2238944249568001759">最後のタブに基づく検索キーワードの候補</translation>
 <translation id="2241587408274973373">新しいタブページのカード</translation>
@@ -630,6 +631,7 @@
 <translation id="9138217887606523162">現在のズームレベルは <ph name="ZOOM_LEVEL" />%% です</translation>
 <translation id="9156722768168878035">Chrome で最近使ったタブをデバイスのアプリリストと検索結果に表示できます。この機能は Chrome の設定でいつでもオフにできます。</translation>
 <translation id="9162462602695099906">このページは危険です</translation>
+<translation id="9182556968660520230">サイトに保護されたコンテンツの再生を許可しない</translation>
 <translation id="947156494302904893">アクセスしたサイトは、あなたが bot ではなく実在のユーザーであることを確認できます</translation>
 <translation id="959682366969460160">タブを整理</translation>
 <translation id="967624055006145463">保存データ</translation>

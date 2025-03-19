@@ -30,6 +30,12 @@ struct BackgroundThreadData {
   size_t task_count = 0;
 };
 
+// Instructs `FakeTask` to trigger task retries.
+struct RetrySettings {
+  size_t required_retries = 0;
+  size_t max_retries = 0;
+};
+
 // FakeTask returns how many tasks has been executed on the background thread
 // including the current one, at the moment of the task running.
 class FakeTask : public internal::BackgroundTaskImpl<size_t> {
@@ -38,13 +44,23 @@ class FakeTask : public internal::BackgroundTaskImpl<size_t> {
       BackgroundThreadData& background_data,
       BackgroundTaskPriority priority,
       base::OnceCallback<void(size_t)> callback = base::DoNothing(),
+      RetrySettings retry_settings = RetrySettings(),
       BackgroundTaskType type = BackgroundTaskType::kSign)
       : internal::BackgroundTaskImpl<size_t>(
             base::BindLambdaForTesting(
                 [&background_data]() { return ++background_data.task_count; }),
             std::move(callback),
             priority,
-            type) {}
+            type,
+            retry_settings.max_retries),
+        required_retries_(retry_settings.required_retries) {}
+
+  bool ShouldRetryBasedOnResult(const size_t& task_count) const override {
+    return GetRetryCount() < required_retries_;
+  }
+
+ private:
+  const size_t required_retries_;
 };
 
 // Shortcut functions for converting a task priority and a task type to a
@@ -126,6 +142,30 @@ TEST_F(BackgroundLongTaskSchedulerTest, PostTwoTasks_Sequentially) {
       future2.GetCallback()));
   task_environment().RunUntilIdle();
   EXPECT_EQ(future2.Get(), 2U);
+}
+
+TEST_F(BackgroundLongTaskSchedulerTest, PostTaskFromCallback) {
+  base::test::TestFuture<size_t> future;
+  base::test::TestFuture<size_t> future_from_callback;
+  scheduler().PostTask(std::make_unique<FakeTask>(
+      background_data(), BackgroundTaskPriority::kBestEffort,
+      base::BindLambdaForTesting([&](size_t count) {
+        future.SetValue(count);
+        scheduler().PostTask(std::make_unique<FakeTask>(
+            background_data(), BackgroundTaskPriority::kBestEffort,
+            future_from_callback.GetCallback()));
+      })));
+
+  // Post an extra task to make sure that the scheduling order is respected.
+  base::test::TestFuture<size_t> future2;
+  scheduler().PostTask(std::make_unique<FakeTask>(
+      background_data(), BackgroundTaskPriority::kBestEffort,
+      future2.GetCallback()));
+
+  task_environment().RunUntilIdle();
+  EXPECT_EQ(future.Get(), 1U);
+  EXPECT_EQ(future2.Get(), 2U);
+  EXPECT_EQ(future_from_callback.Get(), 3U);
 }
 
 TEST_F(BackgroundLongTaskSchedulerTest, TaskPriority) {
@@ -296,7 +336,7 @@ TEST_F(BackgroundLongTaskSchedulerTest, QueueWaitAndRunDurationHistograms) {
   scheduler().PostTask(std::make_unique<FakeTask>(
       background_data(), kFirstTask.priority,
       base::IgnoreArgs<size_t>(task_environment().QuitClosure()),
-      kFirstTask.type));
+      RetrySettings(), kFirstTask.type));
   // Zero wait time as the task queue is empty when the first task is posted.
   histogram_tester.ExpectUniqueTimeSample(
       kQueueWaitHistogram + ToString(kFirstTask.priority), base::TimeDelta(),
@@ -304,9 +344,9 @@ TEST_F(BackgroundLongTaskSchedulerTest, QueueWaitAndRunDurationHistograms) {
 
   // Schedule the next task immediately after the first one. Its wait time
   // should be equal to the run time of the first task.
-  scheduler().PostTask(
-      std::make_unique<FakeTask>(background_data(), kSecondTask.priority,
-                                 base::DoNothing(), kSecondTask.type));
+  scheduler().PostTask(std::make_unique<FakeTask>(
+      background_data(), kSecondTask.priority, base::DoNothing(),
+      RetrySettings(), kSecondTask.type));
 
   // `FastForwardBy()` would execute already posted tasks so use
   // `AdvanceClock()` instead to emulate that some time passed before background
@@ -337,6 +377,90 @@ TEST_F(BackgroundLongTaskSchedulerTest, QueueWaitAndRunDurationHistograms) {
   // tasks.
   histogram_tester.ExpectTotalCount(kQueueWaitHistogram, 2);
   histogram_tester.ExpectTotalCount(kRunHistogram, 2);
+}
+
+TEST_F(BackgroundLongTaskSchedulerTest, RetryOnce) {
+  base::test::TestFuture<size_t> future;
+  scheduler().PostTask(std::make_unique<FakeTask>(
+      background_data(), BackgroundTaskPriority::kBestEffort,
+      future.GetCallback(),
+      RetrySettings{.required_retries = 1, .max_retries = 2}));
+  task_environment().RunUntilIdle();
+
+  // It took two attempts to complete the task.
+  EXPECT_EQ(future.Get(), 2U);
+}
+
+TEST_F(BackgroundLongTaskSchedulerTest, RetryTwice) {
+  base::test::TestFuture<size_t> future;
+  scheduler().PostTask(std::make_unique<FakeTask>(
+      background_data(), BackgroundTaskPriority::kBestEffort,
+      future.GetCallback(),
+      RetrySettings{.required_retries = 2, .max_retries = 2}));
+  task_environment().RunUntilIdle();
+
+  // It took three attempts to complete the task.
+  EXPECT_EQ(future.Get(), 3U);
+}
+
+TEST_F(BackgroundLongTaskSchedulerTest, RetryReachedMax) {
+  base::test::TestFuture<size_t> future;
+  scheduler().PostTask(std::make_unique<FakeTask>(
+      background_data(), BackgroundTaskPriority::kBestEffort,
+      future.GetCallback(),
+      RetrySettings{.required_retries = 2, .max_retries = 1}));
+  task_environment().RunUntilIdle();
+
+  // Only one retry was allowed.
+  EXPECT_EQ(future.Get(), 2U);
+}
+
+TEST_F(BackgroundLongTaskSchedulerTest, RetryWithNonEmptyQueue) {
+  // taskA:
+  base::test::TestFuture<size_t> futureA;
+  scheduler().PostTask(std::make_unique<FakeTask>(
+      background_data(), BackgroundTaskPriority::kBestEffort,
+      futureA.GetCallback(),
+      RetrySettings{.required_retries = 1, .max_retries = 2}));
+
+  // taskB:
+  base::test::TestFuture<size_t> futureB;
+  scheduler().PostTask(std::make_unique<FakeTask>(
+      background_data(), BackgroundTaskPriority::kBestEffort,
+      futureB.GetCallback()));
+
+  task_environment().RunUntilIdle();
+
+  // Expected sequence:
+  //   1) taskA (failure)
+  //   2) taskB (success)
+  //   3) taskA (success)
+  EXPECT_EQ(futureA.Get(), 3U);
+  EXPECT_EQ(futureB.Get(), 2U);
+}
+
+TEST_F(BackgroundLongTaskSchedulerTest, RetryWithHigherPriority) {
+  // taskA:
+  base::test::TestFuture<size_t> futureA;
+  scheduler().PostTask(std::make_unique<FakeTask>(
+      background_data(), BackgroundTaskPriority::kUserBlocking,
+      futureA.GetCallback(),
+      RetrySettings{.required_retries = 1, .max_retries = 2}));
+
+  // taskB:
+  base::test::TestFuture<size_t> futureB;
+  scheduler().PostTask(std::make_unique<FakeTask>(
+      background_data(), BackgroundTaskPriority::kBestEffort,
+      futureB.GetCallback()));
+
+  task_environment().RunUntilIdle();
+
+  // Expected sequence:
+  //   1) taskA (failure)
+  //   2) taskA (success)
+  //   3) taskB (success)
+  EXPECT_EQ(futureA.Get(), 2U);
+  EXPECT_EQ(futureB.Get(), 3U);
 }
 
 }  // namespace unexportable_keys

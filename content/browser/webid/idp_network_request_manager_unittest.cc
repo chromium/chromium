@@ -641,14 +641,76 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountMalformed) {
       AccountsResponseInvalidReason::kResponseIsNotJsonOrDict, 1);
 }
 
-TEST_F(IdpNetworkRequestManagerTest, ParseAccountLabels) {
+TEST_F(IdpNetworkRequestManagerTest, ParseAccountLabelsOldSyntax) {
+  // New syntax should be ignored with the flag disabled.
   const auto* test_accounts_json = R"({
   "accounts" : [
     {
       "id": "1234",
       "email": "ken@idp.test",
       "name": "Ken R. Example",
+      "label_hints": ["x1", 42, "x2"],
       "labels": ["l1", 42, "l2"]
+    }
+  ]
+  })";
+
+  FetchStatus accounts_response;
+  std::vector<IdentityRequestAccountPtr> accounts;
+  std::tie(accounts_response, accounts) =
+      SendAccountsRequestAndWaitForResponse(test_accounts_json);
+
+  EXPECT_EQ(ParseStatus::kSuccess, accounts_response.parse_status);
+  EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
+  EXPECT_EQ("1234", accounts[0]->id);
+  // The integer in the second position should be ignored.
+  ASSERT_EQ(2u, accounts[0]->labels.size());
+  EXPECT_EQ("l1", accounts[0]->labels[0]);
+  EXPECT_EQ("l2", accounts[0]->labels[1]);
+}
+
+TEST_F(IdpNetworkRequestManagerTest, ParseAccountLabelsOldAndNewSyntax) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmUseOtherAccountAndLabelsNewSyntax);
+
+  // label_hints should take precedence.
+  const auto* test_accounts_json = R"({
+  "accounts" : [
+    {
+      "id": "1234",
+      "email": "ken@idp.test",
+      "name": "Ken R. Example",
+      "label_hints": ["l1", 42, "l2"],
+      "labels": ["x1", 42, "x2"]
+    }
+  ]
+  })";
+
+  FetchStatus accounts_response;
+  std::vector<IdentityRequestAccountPtr> accounts;
+  std::tie(accounts_response, accounts) =
+      SendAccountsRequestAndWaitForResponse(test_accounts_json);
+
+  ASSERT_EQ(ParseStatus::kSuccess, accounts_response.parse_status);
+  EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
+  EXPECT_EQ("1234", accounts[0]->id);
+  // The integer in the second position should be ignored.
+  ASSERT_EQ(2u, accounts[0]->labels.size());
+  EXPECT_EQ("l1", accounts[0]->labels[0]);
+  EXPECT_EQ("l2", accounts[0]->labels[1]);
+}
+
+TEST_F(IdpNetworkRequestManagerTest, ParseAccountLabelHints) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmUseOtherAccountAndLabelsNewSyntax);
+
+  const auto* test_accounts_json = R"({
+  "accounts" : [
+    {
+      "id": "1234",
+      "email": "ken@idp.test",
+      "name": "Ken R. Example",
+      "label_hints": ["l1", 42, "l2"]
     }
   ]
   })";
@@ -1150,12 +1212,59 @@ TEST_F(IdpNetworkRequestManagerTest,
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmUseOtherAccount);
 
+  // The toplevel field should be ignored with the flag disabled.
   const char test_json[] = R"({
+  "supports_use_other_account": false,
   "modes": {
     "passive": {
       "supports_use_other_account": true
     }
   }
+  })";
+
+  FetchStatus fetch_status;
+  IdentityProviderMetadata idp_metadata;
+  std::tie(fetch_status, idp_metadata) = SendConfigRequestAndWaitForResponse(
+      test_json, net::HTTP_OK, "application/json",
+      blink::mojom::RpMode::kPassive);
+
+  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
+  EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
+  EXPECT_EQ(true, idp_metadata.supports_add_account);
+}
+
+TEST_F(IdpNetworkRequestManagerTest,
+       ParseConfigSupportsOtherAccountOldAndNewSyntax) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmUseOtherAccountAndLabelsNewSyntax);
+
+  // The toplevel field should take precedence.
+  const char test_json[] = R"({
+  "supports_use_other_account": true,
+  "modes": {
+    "passive": {
+      "supports_use_other_account": false
+    }
+  }
+  })";
+
+  FetchStatus fetch_status;
+  IdentityProviderMetadata idp_metadata;
+  std::tie(fetch_status, idp_metadata) = SendConfigRequestAndWaitForResponse(
+      test_json, net::HTTP_OK, "application/json",
+      blink::mojom::RpMode::kPassive);
+
+  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
+  EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
+  EXPECT_EQ(true, idp_metadata.supports_add_account);
+}
+
+TEST_F(IdpNetworkRequestManagerTest, ParseConfigSupportsOtherAccountNewSyntax) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmUseOtherAccountAndLabelsNewSyntax);
+
+  const char test_json[] = R"({
+  "supports_use_other_account": true
   })";
 
   FetchStatus fetch_status;
@@ -1258,11 +1367,53 @@ TEST_F(IdpNetworkRequestManagerTest,
   EXPECT_EQ(false, idp_metadata.supports_add_account);
 }
 
-TEST_F(IdpNetworkRequestManagerTest, ParseConfigRequestedLabel) {
+TEST_F(IdpNetworkRequestManagerTest, ParseConfigRequestedLabelOldSyntax) {
+  // New syntax should be ignored with flag disabled.
   const char test_json[] = R"({
+    "account_label": "l1",
     "accounts": {
       "include": "l1"
     }
+  })";
+
+  FetchStatus fetch_status;
+  IdentityProviderMetadata idp_metadata;
+  std::tie(fetch_status, idp_metadata) =
+      SendConfigRequestAndWaitForResponse(test_json);
+
+  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
+  EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
+  EXPECT_EQ("l1", idp_metadata.requested_label);
+}
+
+TEST_F(IdpNetworkRequestManagerTest, ParseConfigRequestedLabelOldAndNewSyntax) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmUseOtherAccountAndLabelsNewSyntax);
+
+  // New syntax should take precedence over old syntax.
+  const char test_json[] = R"({
+    "account_label": "l1",
+    "accounts": {
+      "include": "l5"
+    }
+  })";
+
+  FetchStatus fetch_status;
+  IdentityProviderMetadata idp_metadata;
+  std::tie(fetch_status, idp_metadata) =
+      SendConfigRequestAndWaitForResponse(test_json);
+
+  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
+  EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
+  EXPECT_EQ("l1", idp_metadata.requested_label);
+}
+
+TEST_F(IdpNetworkRequestManagerTest, ParseConfigRequestedLabel) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmUseOtherAccountAndLabelsNewSyntax);
+
+  const char test_json[] = R"({
+    "account_label": "l1"
   })";
 
   FetchStatus fetch_status;

@@ -87,6 +87,7 @@
 <translation id="2215727959747642672">파일 수정</translation>
 <translation id="2218389616572918761">사이트에서 마이크를 요청할 수 있음</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" />에서 카메라에 액세스하도록 허용하려면 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서도 카메라를 사용 설정하세요.</translation>
+<translation id="2231160360698766265">사이트가 보호된 콘텐츠를 재생할 수 있음</translation>
 <translation id="2235344399760031203">타사 쿠키가 차단됨</translation>
 <translation id="2238944249568001759">마지막 탭을 바탕으로 한 추천 검색어</translation>
 <translation id="2241587408274973373">새 탭 페이지 카드</translation>
@@ -630,6 +631,7 @@
 <translation id="9138217887606523162">현재 확대/축소 레벨은 <ph name="ZOOM_LEVEL" />%%입니다</translation>
 <translation id="9156722768168878035">Chrome에서 기기의 앱 목록과 검색 결과에 최근 탭을 표시하도록 허용합니다. 이 기능은 Chrome 설정에서 언제든지 사용 중지할 수 있습니다.</translation>
 <translation id="9162462602695099906">위험한 페이지입니다.</translation>
+<translation id="9182556968660520230">사이트에서 보호된 콘텐츠를 재생하도록 허용하지 않음</translation>
 <translation id="947156494302904893">방문하는 사이트에서 내가 봇이 아니라 실제 사람인지 확인할 수 있습니다</translation>
 <translation id="959682366969460160">깔끔하게 정리하기</translation>
 <translation id="967624055006145463">저장된 데이터</translation>

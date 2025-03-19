@@ -2520,20 +2520,10 @@ rust_bindgen("logging_log_severity_bindgen") {
   deps = [ ":debugging_buildflags" ]
 }
 
-rust_bindgen("logging_rust_log_integration_bindgen") {
-  header = "logging/rust_log_integration.h"
-  cpp = true
-  visibility = [ ":*" ]
-
-  # Transitive generated header dependency.
-  deps = [ ":debugging_buildflags" ]
-}
-
 rust_static_library("rust_logger") {
   allow_unsafe = true  # Unsafe needed for FFI.
   deps = [
     ":logging_log_severity_bindgen",
-    ":logging_rust_log_integration_bindgen",
     "//third_party/rust/log/v0_4:lib",
   ]
   visibility = [ ":base" ]

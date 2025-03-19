@@ -4058,9 +4058,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
     <ph name="BEGIN_PARAGRAPH2" />Pots iniciar o aturar l'enviament d'aquests informes en qualsevol moment a la configuració del dispositiu Chrome. Si ets l'administrador d'un domini, pots canviar aquesta opció de configuració a la consola d'administració.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">Aurora boreal de nit, sobre una masia petita.</translation>
 <translation id="3818102823568165369">Certificats locals que el sistema operatiu o l'administrador han afegit.</translation>
-<translation id="3818662907126913619">Per utilitzar el dispositiu amb el perfil de <ph name="DOMAIN" />, la teva organització necessita informació del dispositiu,
-
-que pot incloure dades del programari instal·lat, de fitxers, del navegador i del sistema operatiu.</translation>
 <translation id="3819164369574292143">Amplia perquè els elements de la pantalla siguin més grans. Fes servir Cerca+Ctrl+M per activar i desactivar la lupa. Fes servir Ctrl+Alt+tecles de fletxa per moure't quan la pantalla estigui ampliada.</translation>
 <translation id="3819257035322786455">Còpia de seguretat</translation>
 <translation id="3819261658055281761">El sistema no ha pogut emmagatzemar el testimoni d'accés a l'API de llarg termini per a aquest dispositiu.</translation>
@@ -4377,9 +4374,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4031527940632463547">Sensors bloquejats</translation>
 <translation id="4033471457476425443">Afegeix una carpeta nova</translation>
 <translation id="4033963223187371752">Els llocs web segurs poden inserir contingut com ara imatges o marcs web que no siguin segurs</translation>
-<translation id="4034706080855851454">Per utilitzar el dispositiu amb el perfil de l'organització, la teva organització necessita informació sobre el dispositiu,
-
-que pot incloure dades del programari instal·lat, de fitxers, del navegador i del sistema operatiu.</translation>
 <translation id="4034824040120875894">Impressora</translation>
 <translation id="4035758313003622889">Gestor de &amp;tasques</translation>
 <translation id="4035877632587724847">No permetis</translation>

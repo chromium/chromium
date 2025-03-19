@@ -139,6 +139,9 @@ class InputSyncWriterTest
     if (confirm_reads_via_shmem_) {
       scoped_feature_list_.InitWithFeatures(
           {base::test::FeatureRef(media::kAudioInputConfirmReadsViaShmem)}, {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {}, {base::test::FeatureRef(media::kAudioInputConfirmReadsViaShmem)});
     }
 
     const int sampling_frequency_hz = 16000;

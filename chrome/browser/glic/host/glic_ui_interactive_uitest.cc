@@ -10,7 +10,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/glic/glic.mojom-shared.h"
 #include "chrome/browser/glic/host/glic_ui.h"
-#include "chrome/browser/glic/interactive_glic_test.h"
+#include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/test/browser_test.h"

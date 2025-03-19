@@ -39,7 +39,8 @@ class CheckTraceVisitor : public clang::RecursiveASTVisitor<CheckTraceVisitor> {
   bool CheckTraceFieldMemberCall(clang::CXXMemberCallExpr* call);
   bool CheckTraceFieldCall(const std::string& name,
                            clang::CXXRecordDecl* callee,
-                           clang::Expr* arg);
+                           clang::Expr* arg1,
+                           clang::Expr* arg2);
   bool CheckRegisterWeakMembers(clang::CXXMemberCallExpr* call);
   bool CheckImplicitCastExpr(clang::CallExpr* call,
                              clang::ImplicitCastExpr* expr);

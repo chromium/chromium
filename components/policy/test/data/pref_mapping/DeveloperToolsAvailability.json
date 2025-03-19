@@ -4,8 +4,7 @@
       "win",
       "linux",
       "mac",
-      "chromeos_ash",
-      "chromeos_lacros",
+      "chromeos",
       "fuchsia"
     ],
     "simple_policy_pref_mapping_test": {
@@ -23,8 +22,7 @@
       "win",
       "linux",
       "mac",
-      "chromeos_ash",
-      "chromeos_lacros",
+      "chromeos",
       "fuchsia"
     ],
     "policy_pref_mapping_tests": [

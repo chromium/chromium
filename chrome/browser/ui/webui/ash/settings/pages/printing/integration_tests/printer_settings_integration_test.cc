@@ -312,6 +312,8 @@ class PrinterSettingsIntegrationTest : public AshIntegrationTest {
                                        kEditButtonQuery),
         ClickElement(kSettingsWebContentsId, kEditButtonQuery),
         Log("Editing the printer name"),
+        WaitForElementToExistAndRender(kSettingsWebContentsId,
+                                       kEditNameInputQuery),
         ExecuteJsAt(
             kSettingsWebContentsId, kEditNameInputQuery,
             base::StrCat({"(el) => { el.value = '", printer_name,
@@ -361,9 +363,7 @@ IN_PROC_BROWSER_TEST_F(PrinterSettingsIntegrationTest, ViewPpd) {
                     "() => document.body.textContent", kDefaultPpd));
 }
 
-// TODO(b:329467826): Disable due to flakiness.
-IN_PROC_BROWSER_TEST_F(PrinterSettingsIntegrationTest,
-                       DISABLED_AddAndEditPrinter) {
+IN_PROC_BROWSER_TEST_F(PrinterSettingsIntegrationTest, AddAndEditPrinter) {
   SetupContextWidget();
 
   login_mixin().Login();

@@ -59,10 +59,11 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
           kSharedImageUsageFlags, this);
     }
     if (!provider) {
-      provider = CanvasResourceProvider::CreateSoftwareSharedImageProvider(
-          Size(), GetN32FormatForCanvas(), kPremul_SkAlphaType,
-          gfx::ColorSpace::CreateSRGB(), kShouldInitialize,
-          SharedGpuContext::SharedImageInterfaceProvider(), this);
+      provider = CanvasResourceProvider::
+          CreateSharedImageProviderForSoftwareCompositor(
+              Size(), GetN32FormatForCanvas(), kPremul_SkAlphaType,
+              gfx::ColorSpace::CreateSRGB(), kShouldInitialize,
+              SharedGpuContext::SharedImageInterfaceProvider(), this);
     }
     if (!provider) {
       provider = CanvasResourceProvider::CreateBitmapProvider(

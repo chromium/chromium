@@ -91,9 +91,9 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
                            std::string_view debug_label,
                            gfx::BufferUsage buffer_usage);
 
-    void SetSharedImageForTesting(scoped_refptr<gpu::ClientSharedImage> si) {
-      shared_image_ = std::move(si);
-    }
+    void CreateSharedImageForTesting();
+    void CreateSharedImageForTesting(uint32_t texture_target);
+
     // NOTE: This can be called on worker threads but the client must ensure
     // that `can_access_shared_image_on_compositor_thread` is true at any time
     // this method would be invoked on a worker thread. As the client can not in

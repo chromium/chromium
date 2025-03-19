@@ -65,7 +65,7 @@
   _viewController = [[SadTabViewController alloc] init];
   _viewController.delegate = self;
   _viewController.overscrollDelegate = self.overscrollDelegate;
-  _viewController.offTheRecord = self.browser->GetProfile()->IsOffTheRecord();
+  _viewController.offTheRecord = self.profile->IsOffTheRecord();
   _viewController.repeatedFailure = self.repeatedFailure;
 
   [self.baseViewController addChildViewController:_viewController];
@@ -118,7 +118,7 @@
     showSuggestionsPageWithURL:(const GURL&)URL {
   OpenNewTabCommand* command = [OpenNewTabCommand
       commandWithURLFromChrome:URL
-                   inIncognito:self.browser->GetProfile()->IsOffTheRecord()];
+                   inIncognito:self.profile->IsOffTheRecord()];
 
   // TODO(crbug.com/40670043): Use HandlerForProtocol after commands protocol
   // clean up.

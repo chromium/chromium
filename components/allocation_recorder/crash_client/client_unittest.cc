@@ -8,6 +8,7 @@
 #include <iterator>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/debug/allocation_trace.h"
 #include "components/allocation_recorder/internal/internal.h"
 #include "components/crash/core/common/crash_buildflags.h"
@@ -73,7 +74,7 @@ AllocationStackRecorderCrashClientTest::FindAllocationRecorderAnnotations(
   for (auto* annotation : annotation_list) {
     if (annotation && (annotation->type() == kAnnotationType) &&
         (annotation->name() &&
-         (0 == strcmp(annotation->name(), kAnnotationName)))) {
+         (0 == UNSAFE_TODO(strcmp(annotation->name(), kAnnotationName))))) {
       annotations.push_back(annotation);
     }
   }

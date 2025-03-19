@@ -22,7 +22,6 @@
 #include "components/dbus/utils/check_for_service_and_start.h"
 #include "components/dbus/utils/name_has_owner.h"
 #include "components/os_crypt/async/browser/key_provider.h"
-#include "crypto/encryptor.h"
 #include "dbus/bus.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"

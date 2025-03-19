@@ -61,6 +61,12 @@ BASE_FEATURE(kLightweightExtensionOverrideConfirmations,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(IS_WIN)
+BASE_FEATURE(kOfferPinToTaskbarWhenSettingToDefault,
+             "OfferPinToTaskbarWhenSettingDefault",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // Preloads a WebContents with a Top Chrome WebUI on BrowserView initialization,
 // so that it can be shown instantly at a later time when necessary.
 BASE_FEATURE(kPreloadTopChromeWebUI,

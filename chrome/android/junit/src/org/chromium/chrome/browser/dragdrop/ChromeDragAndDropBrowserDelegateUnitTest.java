@@ -248,7 +248,7 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
         MultiWindowTestUtils.enableMultiInstance();
         var tab = MockTab.createAndInitialize(1, mProfile);
         var dropData = createTabDropData(1, true);
-        int sourceWindowId = TabWindowManagerSingleton.getInstance().getIndexForWindow(mActivity);
+        int sourceWindowId = TabWindowManagerSingleton.getInstance().getIdForWindow(mActivity);
         var item =
                 withItem
                         ? new Item(

@@ -34,7 +34,6 @@ enum class CannotDiscardReason {
   kPinnedTab,
   kDevToolsOpen,
   kBackgroundActivity,
-  kWasDiscarded,  // Non-ChromeOS only.
   kFormInteractions,
   kUserEdits
 };

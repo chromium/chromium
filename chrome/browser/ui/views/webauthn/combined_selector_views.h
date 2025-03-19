@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBAUTHN_COMBINED_SELECTOR_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_COMBINED_SELECTOR_VIEWS_H_
 
-#include <optional>
 #include <string_view>
 #include <vector>
 

@@ -9,7 +9,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/autofill/autofill_ai/save_or_update_autofill_ai_data_controller.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
-#include "chrome/browser/ui/views/autofill/popup/autofill_ai/autofill_ai_icon_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -44,14 +43,23 @@ constexpr int kBubbleWidth = 320;
 constexpr int kNewOrUpdatedAttributeDotSize = 4;
 constexpr int kNewOrUpdatedAttributeDotSpacing = 4;
 
+int GetVerticaSpaceBetweenDialogSections() {
+  return ChromeLayoutProvider::Get()->GetDistanceMetric(
+             DISTANCE_CONTROL_LIST_VERTICAL) *
+         2;
+}
+
 std::unique_ptr<views::View> GetAttributeValueView(
     const SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateDetails&
         detail,
     bool is_save_prompt) {
   std::unique_ptr<views::Label> label =
-      std::make_unique<views::Label>(detail.attribute_value);
-  label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT);
-  label->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
+      views::Builder<views::Label>()
+          .SetText(detail.attribute_value)
+          .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT)
+          .SetTextStyle(views::style::STYLE_BODY_3_MEDIUM)
+          .SetAccessibleRole(ax::mojom::Role::kDefinition)
+          .Build();
 
   // Only update dialogs have a dot circle in front of added or updated values.
   const bool existing_entity_added_or_updated_attribute =
@@ -59,42 +67,36 @@ std::unique_ptr<views::View> GetAttributeValueView(
       detail.update_type !=
           SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateType::
               kNewEntityAttributeUnchanged;
-  if (existing_entity_added_or_updated_attribute) {
-    auto row = views::Builder<views::BoxLayoutView>()
-                   .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-                   .SetCrossAxisAlignment(
-                       views::BoxLayout::CrossAxisAlignment::kCenter)
-                   .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
-                   .Build();
-
-    views::BoxLayoutView* upated_entity_dot = row->AddChildView(
-        views::Builder<views::BoxLayoutView>()
-            .SetProperty(
-                views::kMarginsKey,
-                gfx::Insets::TLBR(0, 0, 0, kNewOrUpdatedAttributeDotSpacing))
-            .Build());
-    upated_entity_dot->SetPreferredSize(gfx::Size(
-        kNewOrUpdatedAttributeDotSize, kNewOrUpdatedAttributeDotSize));
-    upated_entity_dot->SizeToPreferredSize();
-    upated_entity_dot->SetBackground(
-        views::CreateRoundedRectBackground(ui::kColorButtonBackgroundProminent,
-                                           kNewOrUpdatedAttributeDotSize / 2));
-    row->AddChildView(std::move(label));
-    row->SetAccessibleRole(ax::mojom::Role::kTerm);
-    row->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
-    row->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
-        detail.update_type ==
-                SaveOrUpdateAutofillAiDataController::
-                    EntityAttributeUpdateType::kNewEntityAttributeAdded
-            ? IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_NEW_ATTRIBUTE_ACCESSIBLE_NAME
-            : IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_UPDATED_ATTRIBUTE_ACCESSIBLE_NAME,
-        detail.attribute_value));
-    return row;
-  } else {
-    label->SetAccessibleRole(ax::mojom::Role::kTerm);
-    label->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
+  if (!existing_entity_added_or_updated_attribute) {
     return label;
   }
+  auto row =
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+          .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter)
+          .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
+          .Build();
+
+  views::BoxLayoutView* updated_entity_dot = row->AddChildView(
+      views::Builder<views::BoxLayoutView>()
+          .SetProperty(
+              views::kMarginsKey,
+              gfx::Insets::TLBR(0, 0, 0, kNewOrUpdatedAttributeDotSpacing))
+          .Build());
+  updated_entity_dot->SetPreferredSize(
+      gfx::Size(kNewOrUpdatedAttributeDotSize, kNewOrUpdatedAttributeDotSize));
+  updated_entity_dot->SizeToPreferredSize();
+  updated_entity_dot->SetBackground(views::CreateRoundedRectBackground(
+      ui::kColorButtonBackgroundProminent, kNewOrUpdatedAttributeDotSize / 2));
+  label->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
+      detail.update_type ==
+              SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateType::
+                  kNewEntityAttributeAdded
+          ? IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_NEW_ATTRIBUTE_ACCESSIBLE_NAME
+          : IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_UPDATED_ATTRIBUTE_ACCESSIBLE_NAME,
+      detail.attribute_value));
+  row->AddChildView(std::move(label));
+  return row;
 }
 
 // Helper to create a row displayed in the dialog. This row contains information
@@ -112,8 +114,7 @@ std::unique_ptr<views::View> BuildEntityAttributeRow(
           .SetText(detail.attribute_name)
           .SetTextStyle(views::style::STYLE_BODY_4)
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-          .SetAccessibleRole(ax::mojom::Role::kDefinition)
-          .SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY)
+          .SetAccessibleRole(ax::mojom::Role::kTerm)
           .Build());
   row->AddChildView(GetAttributeValueView(detail, is_save_prompt));
   // Set every child to expand with the same ratio.
@@ -166,14 +167,10 @@ SaveOrUpdateAutofillAiDataBubbleView::SaveOrUpdateAutofillAiDataBubbleView(
       views::DialogContentType::kControl, views::DialogContentType::kControl));
   SetAccessibleTitle(controller_->GetDialogTitle());
 
-  const int kVerticalSpacingBetweenAttributes =
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          DISTANCE_CONTROL_LIST_VERTICAL);
-
   auto* main_content_wrapper = AddChildView(
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
-          .SetBetweenChildSpacing(kVerticalSpacingBetweenAttributes * 2)
+          .SetBetweenChildSpacing(GetVerticaSpaceBetweenDialogSections())
           .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
           .Build());
 
@@ -195,13 +192,15 @@ SaveOrUpdateAutofillAiDataBubbleView::SaveOrUpdateAutofillAiDataBubbleView(
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .SetAccessibleRole(ax::mojom::Role::kDescriptionList)
-          .SetBetweenChildSpacing(kVerticalSpacingBetweenAttributes * 2)
+          .SetBetweenChildSpacing(GetVerticaSpaceBetweenDialogSections())
           .Build());
   auto* new_entity_added_or_updated_attributes_container =
       attributes_wrapper->AddChildView(
           views::Builder<views::BoxLayoutView>()
               .SetOrientation(views::BoxLayout::Orientation::kVertical)
-              .SetBetweenChildSpacing(kVerticalSpacingBetweenAttributes)
+              .SetBetweenChildSpacing(
+                  ChromeLayoutProvider::Get()->GetDistanceMetric(
+                      DISTANCE_CONTROL_LIST_VERTICAL))
               .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
               .Build());
   new_entity_added_or_updated_attributes_container->SetID(
@@ -214,7 +213,9 @@ SaveOrUpdateAutofillAiDataBubbleView::SaveOrUpdateAutofillAiDataBubbleView(
         attributes_wrapper->AddChildView(
             views::Builder<views::BoxLayoutView>()
                 .SetOrientation(views::BoxLayout::Orientation::kVertical)
-                .SetBetweenChildSpacing(kVerticalSpacingBetweenAttributes)
+                .SetBetweenChildSpacing(
+                    ChromeLayoutProvider::Get()->GetDistanceMetric(
+                        DISTANCE_CONTROL_LIST_VERTICAL))
                 .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
                 .Build());
     new_entity_unchanged_attributes_container->SetID(
@@ -270,14 +271,10 @@ void SaveOrUpdateAutofillAiDataBubbleView::Hide() {
 }
 
 void SaveOrUpdateAutofillAiDataBubbleView::AddedToWidget() {
-  const int kHorizontalSpacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_RELATED_LABEL_HORIZONTAL_LIST);
   auto header_container =
       views::Builder<views::BoxLayoutView>()
-          .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-          .SetBetweenChildSpacing(kHorizontalSpacing)
-          .SetMainAxisAlignment(views::LayoutAlignment::kStart)
-          .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+          .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .SetBetweenChildSpacing(GetVerticaSpaceBetweenDialogSections())
           // The bottom padding has to be subtracted by the distance between the
           // information that will be saved, so to avoid double padding.
           .SetInsideBorderInsets(gfx::Insets::TLBR(
@@ -287,15 +284,21 @@ void SaveOrUpdateAutofillAiDataBubbleView::AddedToWidget() {
                                   DISTANCE_CONTROL_LIST_VERTICAL)),
               kHeaderPadding))
           .Build();
-  header_container->AddChildView(
-      autofill_ai::CreateLargeAutofillAiIconImageView());
+  if (controller_->IsSavePrompt()) {
+    std::pair<int, int> images = controller_->GetTitleImagesResourceId();
+    header_container->AddChildView(
+        std::make_unique<ThemeTrackingNonAccessibleImageView>(
+            ui::ImageModel::FromResourceId(images.first),
+            ui::ImageModel::FromResourceId(images.second),
+            base::BindRepeating(&views::BubbleDialogDelegate::background_color,
+                                base::Unretained(this))));
+  }
   header_container->AddChildView(
       views::Builder<views::Label>()
           .SetText(controller_->GetDialogTitle())
           .SetTextStyle(views::style::STYLE_HEADLINE_4)
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
           .SetAccessibleRole(ax::mojom::Role::kHeading)
-          .SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY)
           .Build());
   GetBubbleFrameView()->SetHeaderView(std::move(header_container));
 }

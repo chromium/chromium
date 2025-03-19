@@ -63,6 +63,7 @@ public class ColorPickerAdvancedComponent {
                                 R.drawable.color_picker_advanced_select_handle)
                         .getIntrinsicWidth();
         mSeekBar.setThumbOffset(offset / 2);
+        mSeekBar.setContentDescription(context.getString(textResourceId));
     }
 
     /** @return The value represented by this component, maintained by the seek bar progress. */

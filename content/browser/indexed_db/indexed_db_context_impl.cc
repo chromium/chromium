@@ -1180,10 +1180,8 @@ void IndexedDBContextImpl::GetBucketUsage(const BucketLocator& bucket,
   }
 }
 
-void IndexedDBContextImpl::GetStorageKeysForType(
-    blink::mojom::StorageType type,
-    GetStorageKeysForTypeCallback callback) {
-  DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
+void IndexedDBContextImpl::GetDefaultStorageKeys(
+    GetDefaultStorageKeysCallback callback) {
   std::vector<StorageKey> storage_keys;
   storage_keys.reserve(bucket_set_.size());
   for (const BucketLocator& bucket_locator : bucket_set_) {
@@ -1193,9 +1191,7 @@ void IndexedDBContextImpl::GetStorageKeysForType(
 }
 
 void IndexedDBContextImpl::PerformStorageCleanup(
-    blink::mojom::StorageType type,
     PerformStorageCleanupCallback callback) {
-  DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
   std::move(callback).Run();
 }
 

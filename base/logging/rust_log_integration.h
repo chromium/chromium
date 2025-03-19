@@ -5,6 +5,8 @@
 #ifndef BASE_LOGGING_RUST_LOG_INTEGRATION_H_
 #define BASE_LOGGING_RUST_LOG_INTEGRATION_H_
 
+#include <stdint.h>
+
 #include "base/base_export.h"
 #include "base/logging/log_severity.h"
 
@@ -17,11 +19,11 @@ namespace internal {
 //
 // TODO(danakj): Should this helper function be replaced with C-like apis next
 // to logging::LogMessage that Rust uses more directly?
-void BASE_EXPORT print_rust_log(const char* msg,
-                                const char* file,
-                                int line,
-                                LogSeverity severity,
-                                bool verbose);
+void print_rust_log(const char* msg,
+                    const char* file,
+                    int32_t line,
+                    int32_t severity,
+                    bool verbose);
 
 }  // namespace internal
 }  // namespace logging

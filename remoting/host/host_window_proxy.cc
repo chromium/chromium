@@ -160,7 +160,7 @@ void HostWindowProxy::Core::DisconnectSession(
   if (!caller_task_runner_->BelongsToCurrentThread()) {
     caller_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&Core::DisconnectSession, this, error,
-                                  error_details, error_location));
+                                  std::string(error_details), error_location));
     return;
   }
 

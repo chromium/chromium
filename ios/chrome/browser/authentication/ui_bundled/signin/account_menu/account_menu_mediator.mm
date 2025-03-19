@@ -443,7 +443,6 @@
   BOOL success =
       result == SigninCoordinatorResult::SigninCoordinatorResultSuccess;
   if (success) {
-    [_delegate triggerAccountSwitchSnackbarWithIdentity:newIdentity];
     [_delegate mediatorWantsToBeDismissed:self
                                withResult:result
                            signedIdentity:newIdentity

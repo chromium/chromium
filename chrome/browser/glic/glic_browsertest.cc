@@ -4,7 +4,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/glic_enabling.h"
-#include "chrome/browser/glic/glic_test_util.h"
+#include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_features.h"

@@ -812,7 +812,7 @@ public class ChromeTabUtils {
                         .getTabGroupModelFilter(tab1.isIncognito());
 
         filter.mergeTabsToGroup(tab1.getId(), tab2.getId());
-        Assert.assertEquals(tab1.getRootId(), tab2.getRootId());
+        Assert.assertEquals(tab1.getTabGroupId(), tab2.getTabGroupId());
     }
 
     /**

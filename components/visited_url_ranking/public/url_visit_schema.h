@@ -37,6 +37,13 @@ enum URLVisitAggregateRankingModelInputSignals {
   kDismissedCountLast30Days = 22,
   kSameTimeGroupVisitCount = 23,
   kSameDayGroupVisitCount = 24,
+  kTabRecentForegroundCount = 25,
+  kIsTabOpenedByUser = 26,
+  kAndroidTabLaunchType = 27,
+  kAndroidTabLaunchPackageName = 28,
+  kTabParentId = 29,
+  kTimeSinceTabCreationSec = 30,
+  kTabGroupSyncId = 31,
 };
 
 // Represents a field's metadata and is leveraged for the processing and
@@ -55,7 +62,7 @@ extern const std::array<FieldSchema, kTabResumptionNumInputs>
     kURLVisitAggregateSchema;
 
 // Collection of relevant fields for URL grouping computation.
-static constexpr size_t kSuggestionsNumInputs = 2;
+static constexpr size_t kSuggestionsNumInputs = 9;
 extern const std::array<FieldSchema, kSuggestionsNumInputs>
     kSuggestionsPredictionSchema;
 

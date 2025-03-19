@@ -11,6 +11,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
@@ -58,8 +59,8 @@ bool IsParagraphSeparator(char16_t c) {
 // Splits |text| into a vector of paragraphs.
 // Given an example "\nabc\ndef\n\n\nhij\n", the split results should be:
 // "", "abc", "def", "", "", "hij", and "".
-void SplitStringIntoParagraphs(const std::u16string& text,
-                               std::vector<std::u16string>* paragraphs) {
+void SplitStringIntoParagraphs(std::u16string_view text,
+                               std::vector<std::u16string_view>* paragraphs) {
   paragraphs->clear();
 
   size_t start = 0;
@@ -72,6 +73,26 @@ void SplitStringIntoParagraphs(const std::u16string& text,
   paragraphs->push_back(text.substr(start, text.length() - start));
 }
 
+std::unique_ptr<views::Label> GetLabelView(
+    std::u16string_view text,
+    gfx::HorizontalAlignment alignment,
+    views::MessageBoxView::MessageLabels& message_labels) {
+  return views::Builder<views::Label>()
+      .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+      .SetText(std::move(text.data()))
+      // Avoid empty multi-line labels, which have a height of 0.
+      .SetMultiLine(!text.empty())
+      .SetAllowCharacterBreak(true)
+      .SetHorizontalAlignment(alignment)
+      .CustomConfigure(base::BindOnce(
+          [](views::MessageBoxView::MessageLabels& message_labels,
+             views::Label* message_label) {
+            message_labels.push_back(message_label);
+          },
+          std::ref(message_labels)))
+      .Build();
+}
+
 }  // namespace
 
 namespace views {
@@ -81,7 +102,8 @@ namespace views {
 
 MessageBoxView::MessageBoxView(const std::u16string& message,
                                bool detect_directionality)
-    : inter_row_vertical_spacing_(LayoutProvider::Get()->GetDistanceMetric(
+    : detect_directionality_(detect_directionality),
+      inter_row_vertical_spacing_(LayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_RELATED_CONTROL_VERTICAL)),
       message_width_(kDefaultMessageWidth) {
   const LayoutProvider* provider = LayoutProvider::Get();
@@ -94,37 +116,8 @@ MessageBoxView::MessageBoxView(const std::u16string& message,
           // We explicitly set insets on the message contents instead of the
           // scroll view so that the scroll view borders are not capped by
           // dialog insets.
-          .SetBorder(CreateEmptyBorder(GetHorizontalInsets(provider)));
-
-  auto add_label = [&message_contents, this](
-                       const std::u16string& text,
-                       gfx::HorizontalAlignment alignment) {
-    message_contents.AddChild(
-        Builder<Label>()
-            .SetText(text)
-            .SetTextContext(style::CONTEXT_DIALOG_BODY_TEXT)
-            .SetMultiLine(!text.empty())
-            .SetAllowCharacterBreak(true)
-            .SetHorizontalAlignment(alignment)
-            .CustomConfigure(base::BindOnce(
-                [](std::vector<raw_ptr<Label, VectorExperimental>>&
-                       message_labels,
-                   Label* message_label) {
-                  message_labels.push_back(message_label);
-                },
-                std::ref(message_labels_))));
-  };
-
-  if (detect_directionality) {
-    std::vector<std::u16string> texts;
-    SplitStringIntoParagraphs(message, &texts);
-    for (const auto& text : texts) {
-      // Avoid empty multi-line labels, which have a height of 0.
-      add_label(text, gfx::ALIGN_TO_HEAD);
-    }
-  } else {
-    add_label(message, gfx::ALIGN_LEFT);
-  }
+          .SetBorder(CreateEmptyBorder(GetHorizontalInsets(provider)))
+          .CopyAddressTo(&message_contents_);
 
   Builder<MessageBoxView>(this)
       .SetOrientation(BoxLayout::Orientation::kVertical)
@@ -158,6 +151,8 @@ MessageBoxView::MessageBoxView(const std::u16string& message,
               .SetVisible(false))
       .BuildChildren();
 
+  SetMessageLabel(message);
+
   // Don't enable text selection if multiple labels are used, since text
   // selection can't span multiple labels.
   if (message_labels_.size() == 1u) {
@@ -168,6 +163,31 @@ MessageBoxView::MessageBoxView(const std::u16string& message,
 }
 
 MessageBoxView::~MessageBoxView() = default;
+
+void MessageBoxView::SetMessageLabel(std::u16string_view message) {
+  CHECK(message_contents_);
+
+  // Cleanup the message contents to remove old message.
+  message_labels_.clear();
+  message_contents_->RemoveAllChildViews();
+
+  label_text_ = message;
+  if (detect_directionality_) {
+    std::vector<std::u16string_view> texts;
+    SplitStringIntoParagraphs(message, &texts);
+    for (const auto& text : texts) {
+      message_contents_->AddChildView(GetLabelView(
+          /*text=*/text,
+          /*alignment=*/gfx::ALIGN_TO_HEAD,
+          /*message_label_*/ message_labels_));
+    }
+  } else {
+    message_contents_->AddChildView(GetLabelView(
+        /*text=*/message,
+        /*alignment=*/gfx::ALIGN_LEFT,
+        /*message_label_*/ message_labels_));
+  }
+}
 
 views::Textfield* MessageBoxView::GetVisiblePromptField() {
   return prompt_field_ && prompt_field_->GetVisible() ? prompt_field_.get()
@@ -275,7 +295,8 @@ void MessageBoxView::ViewHierarchyChanged(
 
 bool MessageBoxView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   // We only accept Ctrl-C.
-  DCHECK(accelerator.key_code() == 'C' && accelerator.IsCtrlDown());
+  DCHECK_EQ(accelerator.key_code(), 'C');
+  DCHECK(accelerator.IsCtrlDown());
 
   // We must not intercept Ctrl-C when we have a text box and it's focused.
   if (prompt_field_ && prompt_field_->HasFocus()) {

@@ -85,6 +85,7 @@
 <translation id="2194856509914051091">इन बातों का ध्यान रखें</translation>
 <translation id="2215727959747642672">फ़ाइल में बदलाव करना</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> को कैमरे का ऐक्सेस देने के लिए, <ph name="BEGIN_LINK" />Android की सेटिंग<ph name="END_LINK" /> में जाकर भी कैमरा चालू करें.</translation>
+<translation id="2231160360698766265">साइटें सुरक्षित कॉन्टेंट दिखा सकती हैं</translation>
 <translation id="2235344399760031203">तीसरे पक्ष की कुकी ब्लॉक हैं</translation>
 <translation id="2238944249568001759">आपके आखिरी टैब के आधार पर सुझाई गई खोजें</translation>
 <translation id="2241587408274973373">'नया टैब' पेज पर दिखने वाले कार्ड</translation>
@@ -623,6 +624,7 @@
 <translation id="9138217887606523162">मौजूदा ज़ूम लेवल <ph name="ZOOM_LEVEL" />%% है</translation>
 <translation id="9156722768168878035">Chrome को आपके हाल ही में इस्तेमाल किए गए टैब, आपके डिवाइस की ऐप्लिकेशन की सूची और खोज के नतीजों में दिखाने की अनुमति दें. Chrome की सेटिंग में जाकर, इसे कभी भी बंद किया जा सकता है.</translation>
 <translation id="9162462602695099906">यह पेज सुरक्षित नहीं है</translation>
+<translation id="9182556968660520230">साइटों को सुरक्षित कॉन्टेंट चलाने की अनुमति न दें</translation>
 <translation id="947156494302904893">किसी साइट को विज़िट करने पर, वह इस बात की पुष्टि कर सकती है कि आप बॉट के बजाय असली उपयोगकर्ता हैं</translation>
 <translation id="959682366969460160">व्‍यवस्‍थित हों</translation>
 <translation id="967624055006145463">डेटा सेव किया गया</translation>

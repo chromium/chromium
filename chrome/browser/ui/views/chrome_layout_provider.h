@@ -81,8 +81,6 @@ enum ChromeDistanceMetric {
   DISTANCE_UNRELATED_CONTROL_HORIZONTAL_LARGE,
   // Larger vertical spacing between unrelated controls.
   DISTANCE_UNRELATED_CONTROL_VERTICAL_LARGE,
-  // Width of larger modal dialogs that require extra width.
-  DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH,
   // Width and height of a vector icon in a bubble's header (i.e. the one
   // returned from GetWindowIcon).
   DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE,

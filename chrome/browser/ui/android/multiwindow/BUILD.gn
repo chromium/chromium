@@ -17,6 +17,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/multiwindow/TargetSelectorItemProperties.java",
     "java/src/org/chromium/chrome/browser/multiwindow/TargetSelectorItemViewBinder.java",
     "java/src/org/chromium/chrome/browser/multiwindow/UiUtils.java",
+    "java/src/org/chromium/chrome/browser/multiwindow/WindowId.java",
   ]
   deps = [
     ":java_resources",

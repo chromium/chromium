@@ -14,9 +14,8 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.R;
@@ -25,6 +24,7 @@ import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.widget.Toast;
 
 /**
@@ -79,8 +79,7 @@ public final class SigninAndHistorySyncActivityLauncherImpl
             return true;
         }
         // TODO(crbug.com/354912290): Update the UI related to sign-in errors.
-        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
-        if (signinManager.isSigninDisabledByPolicy()) {
+        if (UserPrefs.get(profile).isManagedPreference(Pref.SIGNIN_ALLOWED)) {
             RecordHistogram.recordEnumeratedHistogram(
                     "Signin.SigninDisabledNotificationShown",
                     accessPoint,

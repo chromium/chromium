@@ -4,6 +4,8 @@
 
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_data_storage.h"
 
+#include <optional>
+
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_fetcher.h"
@@ -42,12 +44,11 @@ namespace ip_protection {
 
 IpProtectionProbabilisticRevealTokenDataStorage::
     IpProtectionProbabilisticRevealTokenDataStorage(
-        const base::FilePath& path_to_database)
+        std::optional<base::FilePath> path_to_database)
     : path_to_database_(path_to_database),
       db_(sql::DatabaseOptions{},
           sql::Database::Tag("IpProtectionProbabilisticRevealTokens")) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
-  DCHECK(!path_to_database_.empty());
 }
 
 IpProtectionProbabilisticRevealTokenDataStorage::
@@ -69,7 +70,13 @@ bool IpProtectionProbabilisticRevealTokenDataStorage::InitializeDB() {
       &IpProtectionProbabilisticRevealTokenDataStorage::DatabaseErrorCallback,
       base::Unretained(this)));
 
-  const base::FilePath dir = path_to_database_.DirName();
+  if (!path_to_database_.has_value() || path_to_database_->empty()) {
+    DLOG(ERROR) << "Failed to initialize Probabilistic Reveal Token database. "
+                   "No path given.";
+    return false;
+  }
+
+  const base::FilePath dir = path_to_database_->DirName();
   if (!base::CreateDirectory(dir)) {
     DLOG(ERROR)
         << "Failed to create directory for Probabilistic Reveal Token database";
@@ -80,7 +87,7 @@ bool IpProtectionProbabilisticRevealTokenDataStorage::InitializeDB() {
         << "Probabilistic Reveal Token database directory is not writable";
     return false;
   }
-  if (!db_.Open(path_to_database_)) {
+  if (!db_.Open(*path_to_database_)) {
     DLOG(ERROR) << "Failed to open Probabilistic Reveal Token database: "
                 << db_.GetErrorMessage();
     return false;

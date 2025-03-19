@@ -239,7 +239,7 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
   }
 
   // Returns a rect covering the pixels that can be affected by pixels in
-  // |inputRect|. The rects are in the space of localTransformSpace.
+  // `input_rect`. The rects are in the space of `LocalTransformSpace`.
   gfx::RectF MapRect(const gfx::RectF& input_rect) const;
 
   bool HasDirectCompositingReasons() const {

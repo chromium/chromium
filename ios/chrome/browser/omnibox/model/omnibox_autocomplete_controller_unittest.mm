@@ -192,7 +192,7 @@ TEST_F(OmniboxAutocompleteControllerTest, AddFakeMatches) {
 TEST_F(OmniboxAutocompleteControllerTest, RequestResultEmpty) {
   OCMExpect(
       [popup_ updateWithSortedResults:autocomplete_controller_->result()]);
-  [controller_ requestResultsWithVisibleSuggestionCount:0];
+  [controller_ requestSuggestionsWithVisibleSuggestionCount:0];
   EXPECT_OCMOCK_VERIFY(popup_);
 }
 
@@ -209,7 +209,7 @@ TEST_F(OmniboxAutocompleteControllerTest, RequestResultsAllVisible) {
       [popup_ updateWithSortedResults:autocomplete_controller_->result()]);
 
   // Request results with everything visible.
-  [controller_ requestResultsWithVisibleSuggestionCount:0];
+  [controller_ requestSuggestionsWithVisibleSuggestionCount:0];
 
   EXPECT_OCMOCK_VERIFY(popup_);
 }
@@ -227,7 +227,7 @@ TEST_F(OmniboxAutocompleteControllerTest, RequestResultVisibleOverflow) {
       [popup_ updateWithSortedResults:autocomplete_controller_->result()]);
 
   // Request results with more visible than available.
-  [controller_ requestResultsWithVisibleSuggestionCount:100];
+  [controller_ requestSuggestionsWithVisibleSuggestionCount:100];
 
   EXPECT_OCMOCK_VERIFY(popup_);
 }
@@ -252,7 +252,7 @@ TEST_F(OmniboxAutocompleteControllerTest, RequestResultPartVisible) {
       [popup_ updateWithSortedResults:autocomplete_controller_->result()]);
 
   // Request results with everything visible.
-  [controller_ requestResultsWithVisibleSuggestionCount:visible_count];
+  [controller_ requestSuggestionsWithVisibleSuggestionCount:visible_count];
 
   EXPECT_OCMOCK_VERIFY(popup_);
 }

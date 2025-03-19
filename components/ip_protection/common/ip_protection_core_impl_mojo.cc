@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
@@ -64,7 +65,8 @@ IpProtectionCoreImplMojo::IpProtectionCoreImplMojo(
     MaskedDomainListManager* masked_domain_list_manager,
     ProbabilisticRevealTokenRegistry* probabilistic_reveal_token_registry,
     bool is_ip_protection_enabled,
-    bool ip_protection_incognito)
+    bool ip_protection_incognito,
+    std::optional<base::FilePath> data_directory)
     : IpProtectionCoreImpl(
           masked_domain_list_manager,
           core_host_remote
@@ -82,7 +84,8 @@ IpProtectionCoreImplMojo::IpProtectionCoreImplMojo(
               ? std::make_unique<IpProtectionProbabilisticRevealTokenManager>(
                     std::make_unique<
                         IpProtectionProbabilisticRevealTokenMojoFetcher>(
-                        core_host_remote))
+                        core_host_remote),
+                    data_directory)
               : nullptr,
           is_ip_protection_enabled,
           ip_protection_incognito),

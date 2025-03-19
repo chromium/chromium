@@ -293,7 +293,9 @@ struct AuthenticatorRequestDialogModel
     kGPMLockedPin,
     // ChallengeUrl failure.
     kErrorFetchingChallenge,
-    kMaxValue = kErrorFetchingChallenge,
+    // OS authentication after selecting a password.
+    kPasswordOsAuth,
+    kMaxValue = kPasswordOsAuth,
   };
 
   // Views and controllers implement this interface to receive events, which

@@ -16,11 +16,11 @@
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
+#include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/test/fake_cws_chrome_apps.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ash/app_mode/test/network_state_mixin.h"
-#include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -43,6 +43,7 @@ using kiosk::test::CloseAppWindow;
 using kiosk::test::CurrentProfile;
 using kiosk::test::IsAppInstalled;
 using kiosk::test::OfflineEnabledChromeAppV1;
+using kiosk::test::OpenA11ySettings;
 using kiosk::test::TheKioskApp;
 
 namespace {
@@ -115,17 +116,14 @@ IN_PROC_BROWSER_TEST_P(KioskTest, HidesShelf) {
 }
 
 IN_PROC_BROWSER_TEST_P(KioskTest, CanOpenA11ySettings) {
-  auto& session = CHECK_DEREF(KioskController::Get().GetKioskSystemSession());
-  Browser* settings = OpenA11ySettingsBrowser(&session);
+  Browser* settings = OpenA11ySettings(CurrentProfile());
   ASSERT_NE(settings, nullptr);
   EXPECT_TRUE(settings->window()->IsActive());
   EXPECT_TRUE(settings->window()->IsVisible());
 }
 
 IN_PROC_BROWSER_TEST_P(KioskTest, ExitsIfOnlySettingsWindowRemainsOpen) {
-  auto& session = CHECK_DEREF(KioskController::Get().GetKioskSystemSession());
-
-  Browser& settings = CHECK_DEREF(OpenA11ySettingsBrowser(&session));
+  Browser& settings = CHECK_DEREF(OpenA11ySettings(CurrentProfile()));
   EXPECT_GT(BrowserList::GetInstance()->size(), 0u);
 
   // Close the app window and verify the settings browser gets closed too.
@@ -133,17 +131,17 @@ IN_PROC_BROWSER_TEST_P(KioskTest, ExitsIfOnlySettingsWindowRemainsOpen) {
   ASSERT_TRUE(TestBrowserClosedWaiter(&settings).WaitUntilClosed());
   EXPECT_EQ(BrowserList::GetInstance()->size(), 0u);
 
+  auto& session = CHECK_DEREF(KioskController::Get().GetKioskSystemSession());
   EXPECT_TRUE(session.is_shutting_down());
 }
 
 IN_PROC_BROWSER_TEST_P(KioskTest, DoesNotExitWhenSettingsWindowCloses) {
-  auto& session = CHECK_DEREF(KioskController::Get().GetKioskSystemSession());
-
-  Browser& settings = CHECK_DEREF(OpenA11ySettingsBrowser(&session));
+  Browser& settings = CHECK_DEREF(OpenA11ySettings(CurrentProfile()));
   EXPECT_EQ(BrowserList::GetInstance()->GetLastActive(), &settings);
 
   settings.window()->Close();
   ASSERT_TRUE(TestBrowserClosedWaiter(&settings).WaitUntilClosed());
+  auto& session = CHECK_DEREF(KioskController::Get().GetKioskSystemSession());
   EXPECT_FALSE(session.is_shutting_down());
 }
 

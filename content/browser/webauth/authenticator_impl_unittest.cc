@@ -20,6 +20,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/apple/owned_objc.h"
 #include "base/base64url.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -9420,10 +9421,7 @@ class ICloudKeychainAuthenticatorImplTest : public AuthenticatorImplTest {
         base::span<const device::CableDiscoveryData> pairings_from_extension,
         bool is_enclave_authenticator_available,
         device::FidoDiscoveryFactory* fido_discovery_factory) override {
-      // nswindow must be set for the iCloud Keychain authenticator to be
-      // discovered.
-      fido_discovery_factory->set_nswindow(
-          device::fido::icloud_keychain::kFakeNSWindowForTesting);
+      fido_discovery_factory->set_allow_no_nswindow_for_testing(true);
     }
 
     void OnTransportAvailabilityEnumerated(

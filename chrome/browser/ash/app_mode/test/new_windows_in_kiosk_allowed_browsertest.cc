@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
-#include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_web_app_install_util.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
@@ -39,11 +38,12 @@
 
 namespace ash {
 
-namespace {
-
 using kiosk::test::CachePolicy;
 using kiosk::test::CurrentProfile;
+using kiosk::test::DidKioskCloseNewWindow;
 using kiosk::test::TheKioskWebApp;
+
+namespace {
 
 bool GetPolicyValueInPrefs(Profile& profile) {
   return profile.GetPrefs()->GetBoolean(prefs::kNewWindowsInKioskAllowed);
@@ -138,15 +138,15 @@ class NewWindowsInKioskAllowedTest : public MixinBasedInProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(NewWindowsInKioskAllowedTest, AllowsNewPopupWindows) {
-  ASSERT_TRUE(GetPolicyValueInPrefs(CurrentProfile()));
+  auto& profile = CurrentProfile();
+  ASSERT_TRUE(GetPolicyValueInPrefs(profile));
 
   ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
   Browser& initial_browser = CHECK_DEREF(BrowserList::GetInstance()->get(0));
-  auto& session = CHECK_DEREF(KioskController::Get().GetKioskSystemSession());
 
-  Browser& popup = OpenPopupBrowser(CurrentProfile(), TheKioskWebApp());
+  Browser& popup = OpenPopupBrowser(profile, TheKioskWebApp());
 
-  ASSERT_FALSE(DidSessionCloseNewWindow(&session));
+  ASSERT_FALSE(DidKioskCloseNewWindow());
   EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
 
   EXPECT_FALSE(initial_browser.GetBrowserView().CanUserEnterFullscreen());

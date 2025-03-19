@@ -180,6 +180,13 @@ void DataSharingSDKDelegateDesktop::ShowErrorDialog(int status_code) {
   // No-op for this class.
 }
 
+void DataSharingSDKDelegateDesktop::OnShareLinkRequested(
+    const std::string& group_id,
+    const std::string& access_token,
+    base::OnceCallback<void(const std::optional<GURL>&)> callback) {
+  // No-op for this class.
+}
+
 void DataSharingSDKDelegateDesktop::Shutdown() {
   // Since WebContents depends on BrowserContext, it needs to be destroyed
   // before the BrowserContext is destroyed.
@@ -200,6 +207,16 @@ void DataSharingSDKDelegateDesktop::OnReadGroups(
     *result.add_group_data() = ConvertGroup(group);
   }
   std::move(callback).Run(result);
+}
+
+void DataSharingSDKDelegateDesktop::ReadGroupWithToken(
+    const data_sharing_pb::ReadGroupWithTokenParams& params,
+    base::OnceCallback<void(
+        const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&)>
+        callback) {
+  // TODO(crbug.com/402208925): Implement this.
+  std::move(callback).Run(base::unexpected(absl::Status(
+      absl::StatusCode::kUnimplemented, "Read Groups not implemented")));
 }
 
 void DataSharingSDKDelegateDesktop::OnLeaveGroup(

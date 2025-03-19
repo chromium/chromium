@@ -5,11 +5,9 @@
 #include "chrome/browser/enterprise/data_controls/chrome_rules_service.h"
 
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/enterprise/data_controls/core/browser/features.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -25,19 +23,8 @@ constexpr char kFirstRuleID[] = "1234";
 
 class DataControlsRulesServiceTest : public testing::Test {
  public:
-  explicit DataControlsRulesServiceTest(bool screenshot_feature_enabled = true)
+  DataControlsRulesServiceTest()
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    if (screenshot_feature_enabled) {
-      enabled_features.push_back(kEnableScreenshotProtection);
-    } else {
-      disabled_features.push_back(kEnableScreenshotProtection);
-    }
-
-    scoped_features_.InitWithFeatures(enabled_features, disabled_features);
-
     EXPECT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile("test-user-1");
     other_profile_ = profile_manager_.CreateTestingProfile("test-user-2");
@@ -138,7 +125,6 @@ class DataControlsRulesServiceTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_features_;
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_;
   raw_ptr<TestingProfile> other_profile_;
@@ -148,24 +134,9 @@ class DataControlsRulesServiceTest : public testing::Test {
   std::unique_ptr<content::WebContents> incognito_web_contents_;
 };
 
-class DataControlsRulesServiceScreenshotFeatureEnabledTest
-    : public DataControlsRulesServiceTest {
- public:
-  DataControlsRulesServiceScreenshotFeatureEnabledTest()
-      : DataControlsRulesServiceTest(true) {}
-};
-
-class DataControlsRulesServiceScreenshotFeatureDisabledTest
-    : public DataControlsRulesServiceTest {
- public:
-  DataControlsRulesServiceScreenshotFeatureDisabledTest()
-      : DataControlsRulesServiceTest(false) {}
-};
-
 }  // namespace
 
-TEST_F(DataControlsRulesServiceScreenshotFeatureEnabledTest,
-       VerdictsForAllRestrictions) {
+TEST_F(DataControlsRulesServiceTest, VerdictsForAllRestrictions) {
   SetDataControls(profile()->GetPrefs(), {R"({
                     "name": "block",
                     "rule_id": "1234",
@@ -198,42 +169,6 @@ TEST_F(DataControlsRulesServiceScreenshotFeatureEnabledTest,
   EXPECT_TRUE(ChromeRulesServiceFactory::GetInstance()
                   ->GetForBrowserContext(profile())
                   ->BlockScreenshots(google_url()));
-}
-
-TEST_F(DataControlsRulesServiceScreenshotFeatureDisabledTest,
-       NoVerdictsForScreenshotRestriction) {
-  SetDataControls(profile()->GetPrefs(), {R"({
-                    "name": "block",
-                    "rule_id": "1234",
-                    "sources": {
-                      "urls": ["google.com"]
-                    },
-                    "restrictions": [
-                      {"class": "PRINTING", "level": "BLOCK"},
-                      {"class": "CLIPBOARD", "level": "BLOCK"},
-                      {"class": "SCREENSHOT", "level": "BLOCK"}
-                    ]
-                  })"});
-  ExpectBlockVerdict(ChromeRulesServiceFactory::GetInstance()
-                         ->GetForBrowserContext(profile())
-                         ->GetPrintVerdict(google_url()));
-  ExpectBlockVerdict(ChromeRulesServiceFactory::GetInstance()
-                         ->GetForBrowserContext(profile())
-                         ->GetPasteVerdict(
-                             /*source*/ google_url_endpoint(),
-                             /*destination*/ empty_endpoint(),
-                             /*metadata*/ {}));
-  ExpectBlockVerdict(ChromeRulesServiceFactory::GetInstance()
-                         ->GetForBrowserContext(profile())
-                         ->GetCopyToOSClipboardVerdict(
-                             /*source*/ google_url()));
-  ExpectBlockVerdict(ChromeRulesServiceFactory::GetInstance()
-                         ->GetForBrowserContext(profile())
-                         ->GetCopyRestrictedBySourceVerdict(
-                             /*source*/ google_url()));
-  EXPECT_FALSE(ChromeRulesServiceFactory::GetInstance()
-                   ->GetForBrowserContext(profile())
-                   ->BlockScreenshots(google_url()));
 }
 
 TEST_F(DataControlsRulesServiceTest, NoRuleSet) {

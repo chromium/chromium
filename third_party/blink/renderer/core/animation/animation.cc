@@ -311,7 +311,8 @@ Animation* Animation::Create(AnimationEffect* effect,
   }
 
   auto* context = timeline->GetDocument()->GetExecutionContext();
-  return MakeGarbageCollected<Animation>(context, timeline, effect);
+  return MakeGarbageCollected<Animation>(context, timeline, effect,
+                                         /*trigger=*/nullptr);
 }
 
 Animation* Animation::Create(ExecutionContext* execution_context,
@@ -326,8 +327,8 @@ Animation* Animation::Create(ExecutionContext* execution_context,
                              AnimationTimeline* timeline,
                              ExceptionState& exception_state) {
   if (!timeline) {
-    Animation* animation =
-        MakeGarbageCollected<Animation>(execution_context, nullptr, effect);
+    Animation* animation = MakeGarbageCollected<Animation>(
+        execution_context, nullptr, effect, /*trigger=*/nullptr);
     return animation;
   }
 
@@ -336,7 +337,8 @@ Animation* Animation::Create(ExecutionContext* execution_context,
 
 Animation::Animation(ExecutionContext* execution_context,
                      AnimationTimeline* timeline,
-                     AnimationEffect* content)
+                     AnimationEffect* content,
+                     AnimationTrigger* trigger)
     : ActiveScriptWrappable<Animation>({}),
       ExecutionContextLifecycleObserver(nullptr),
       playback_rate_(1),
@@ -359,7 +361,8 @@ Animation::Animation(ExecutionContext* execution_context,
       compositor_group_(0),
       effect_suppressed_(false),
       compositor_property_animations_have_no_effect_(false),
-      animation_has_no_effect_(false) {
+      animation_has_no_effect_(false),
+      trigger_(trigger) {
   if (execution_context && !execution_context->IsContextDestroyed())
     SetExecutionContext(execution_context);
 
@@ -3563,6 +3566,7 @@ void Animation::Trace(Visitor* visitor) const {
   visitor->Trace(style_dependent_range_start_);
   visitor->Trace(style_dependent_range_end_);
   visitor->Trace(prior_native_paint_worklet_target_);
+  visitor->Trace(trigger_);
   EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }

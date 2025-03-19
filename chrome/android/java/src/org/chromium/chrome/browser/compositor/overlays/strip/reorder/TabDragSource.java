@@ -28,7 +28,6 @@ import org.chromium.base.Log;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
@@ -48,7 +47,6 @@ import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadataExtractor;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.tab_management.MultiThumbnailCardProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
@@ -96,8 +94,7 @@ public class TabDragSource implements View.OnDragListener {
     /** Drag shadow properties */
     @Nullable private StripDragShadowView mShadowView;
 
-    private ObservableSupplierImpl<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier;
-    private TabModelSelectorObserver mTabModelSelectorObserver;
+    private ObservableSupplier<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier;
     private MultiThumbnailCardProvider mMultiThumbnailCardProvider;
 
     /** Drag Event Listener trackers */
@@ -195,10 +192,9 @@ public class TabDragSource implements View.OnDragListener {
                                 || MultiWindowUtils.getInstanceCount()
                                         < MultiWindowUtils.getMaxInstances());
 
-        TabGroupModelFilter tabGroupModelFilter =
-                mTabModelSelector.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter();
-        boolean isTabInGroup = tabGroupModelFilter.isTabInTabGroup(tabBeingDragged);
-        int windowId = TabWindowManagerSingleton.getInstance().getIndexForWindow(getActivity());
+        boolean isTabInGroup =
+                mCurrentTabGroupModelFilterSupplier.get().isTabInTabGroup(tabBeingDragged);
+        int windowId = TabWindowManagerSingleton.getInstance().getIdForWindow(getActivity());
 
         // Build shared state with all info.
         ChromeDropDataAndroid dropData =
@@ -256,10 +252,9 @@ public class TabDragSource implements View.OnDragListener {
                                 < MultiWindowUtils.getMaxInstances());
 
         // Extract tab group metadata.
-        TabGroupModelFilter tabGroupModelFilter =
-                mTabModelSelector.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter();
-        List<Tab> groupedTabs = tabGroupModelFilter.getTabsInGroup(tabGroupId);
-        int windowId = TabWindowManagerSingleton.getInstance().getIndexForWindow(getActivity());
+        List<Tab> groupedTabs =
+                mCurrentTabGroupModelFilterSupplier.get().getTabsInGroup(tabGroupId);
+        int windowId = TabWindowManagerSingleton.getInstance().getIdForWindow(getActivity());
         TabGroupMetadata metadata =
                 TabGroupMetadataExtractor.extractTabGroupMetadata(
                         groupedTabs, windowId, mTabModelSelector.getCurrentTabId());
@@ -395,19 +390,12 @@ public class TabDragSource implements View.OnDragListener {
     /** Sets @{@link TabModelSelector} to retrieve model info. */
     public void setTabModelSelector(TabModelSelector tabModelSelector) {
         mTabModelSelector = tabModelSelector;
-
-        mCurrentTabGroupModelFilterSupplier = new ObservableSupplierImpl<>();
-        mTabModelSelectorObserver =
-                new TabModelSelectorObserver() {
-                    @Override
-                    public void onChange() {
-                        mCurrentTabGroupModelFilterSupplier.set(
-                                mTabModelSelector
-                                        .getTabGroupModelFilterProvider()
-                                        .getCurrentTabGroupModelFilter());
-                    }
-                };
-        mTabModelSelector.addObserver(mTabModelSelectorObserver);
+        // This supplier will be reset in TabGroupModelFilterProvider#onCurrentTabModelChanged when
+        // the tab model switches.
+        mCurrentTabGroupModelFilterSupplier =
+                mTabModelSelector
+                        .getTabGroupModelFilterProvider()
+                        .getCurrentTabGroupModelFilterSupplier();
     }
 
     /** Whether a view drag and drop has started. */
@@ -417,11 +405,6 @@ public class TabDragSource implements View.OnDragListener {
 
     /** Cleans up internal state. */
     public void destroy() {
-        if (mTabModelSelector != null) {
-            mTabModelSelector.removeObserver(mTabModelSelectorObserver);
-            mTabModelSelector = null;
-            mTabModelSelectorObserver = null;
-        }
         if (mMultiThumbnailCardProvider != null) {
             mMultiThumbnailCardProvider.destroy();
             mMultiThumbnailCardProvider = null;
@@ -502,18 +485,20 @@ public class TabDragSource implements View.OnDragListener {
         }
 
         if (clipDescription.hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_TAB_GROUP)) {
-            return handleGroupDrop();
+            return handleGroupDrop(dropEvent, helper);
         }
 
         return false;
     }
 
     private boolean handleTabDrop(DragEvent dropEvent, StripLayoutHelper helper) {
-        Tab tabBeingDragged = getTabFromGlobalState(dropEvent);
+        Tab tabBeingDragged =
+                ChromeDragDropUtils.getTabFromGlobalState(getDragDropGlobalState(dropEvent));
         if (tabBeingDragged == null) {
             return false;
         }
-        boolean tabDraggedBelongToCurrentModel = doesBelongToCurrentModel(tabBeingDragged);
+        boolean tabDraggedBelongToCurrentModel =
+                doesBelongToCurrentModel(tabBeingDragged.isIncognitoBranded());
 
         // Record user action if a grouped tab is going to be re-parented.
         recordTabRemovedFromGroupUserAction();
@@ -538,9 +523,32 @@ public class TabDragSource implements View.OnDragListener {
         return true;
     }
 
-    private boolean handleGroupDrop() {
-        // TODO(crbug.com/401029454): Implement.
-        return false;
+    // TODO(crbug.com/384979079): record metrics for tab group drop.
+    private boolean handleGroupDrop(DragEvent dropEvent, StripLayoutHelper helper) {
+        @Nullable
+        TabGroupMetadata tabGroupMetadata =
+                ChromeDragDropUtils.getTabGroupMetadataFromGlobalState(
+                        getDragDropGlobalState(dropEvent));
+        if (tabGroupMetadata == null) {
+            return false;
+        }
+        boolean tabGroupDraggedBelongToCurrentModel =
+                doesBelongToCurrentModel(tabGroupMetadata.isIncognito);
+
+        // Move tab group to another window.
+        if (!tabGroupDraggedBelongToCurrentModel) {
+            mMultiInstanceManager.moveTabGroupToWindow(
+                    getActivity(),
+                    tabGroupMetadata,
+                    mTabModelSelector.getModel(tabGroupMetadata.isIncognito).getCount());
+            showDroppedDifferentModelToast(mWindowAndroid.getContext().get());
+        } else {
+            // Reparent tab group at drop index and merge to group on destination if needed.
+            // TODO(crbug.com/384978938) Handle merge to group.
+            int tabIndex = helper.getTabIndexForTabDrop(dropEvent.getX() * mPxToDp);
+            mMultiInstanceManager.moveTabGroupToWindow(getActivity(), tabGroupMetadata, tabIndex);
+        }
+        return true;
     }
 
     private boolean onDragEnd(boolean dropHandled, boolean didExitToolbar) {
@@ -563,7 +571,9 @@ public class TabDragSource implements View.OnDragListener {
 
         // If tab was dragged and dropped out of source toolbar but the drop was not handled,
         // move to a new window.
-        Tab tabBeingDragged = getTabFromGlobalState(null);
+        Tab tabBeingDragged =
+                ChromeDragDropUtils.getTabFromGlobalState(
+                        getDragDropGlobalState(/* dragEvent= */ null));
         // TODO(crbug.com/404149905): Update app launch using OS when XR moves to Android 15.
         if (XrUtils.isXrDevice() && didExitToolbar && !dropHandled && tabBeingDragged != null) {
 
@@ -653,15 +663,10 @@ public class TabDragSource implements View.OnDragListener {
         builder.update(show);
     }
 
-    private Tab getTabFromGlobalState(@Nullable DragEvent dragEvent) {
-        DragDropGlobalState globalState =
-                dragEvent != null
-                        ? DragDropGlobalState.getState(dragEvent)
-                        : DragDropGlobalState.getState(sDragTrackerToken);
-        // We should only attempt to access this while we know there's an active drag.
-        assert globalState != null : "Attempting to access dragged tab with invalid drag state.";
-        if (!(globalState.getData() instanceof ChromeTabDropDataAndroid)) return null;
-        return ((ChromeTabDropDataAndroid) globalState.getData()).tab;
+    private DragDropGlobalState getDragDropGlobalState(@Nullable DragEvent dragEvent) {
+        return dragEvent != null
+                ? DragDropGlobalState.getState(dragEvent)
+                : DragDropGlobalState.getState(sDragTrackerToken);
     }
 
     private boolean isDragSource() {
@@ -690,8 +695,8 @@ public class TabDragSource implements View.OnDragListener {
         Toast.makeText(context, R.string.tab_dropped_different_model, Toast.LENGTH_LONG).show();
     }
 
-    private boolean doesBelongToCurrentModel(Tab tabBeingDragged) {
-        return mTabModelSelector.getCurrentModel().isIncognito() == tabBeingDragged.isIncognito();
+    private boolean doesBelongToCurrentModel(boolean draggedIncognito) {
+        return mTabModelSelector.getCurrentModel().isIncognitoBranded() == draggedIncognito;
     }
 
     private Activity getActivity() {
@@ -773,9 +778,7 @@ public class TabDragSource implements View.OnDragListener {
     }
 
     private boolean shouldAllowGroupDragToCreateInstance(Token groupId) {
-        TabGroupModelFilter filter =
-                mTabModelSelector.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter();
-        int groupSize = filter.getTabCountForGroup(groupId);
+        int groupSize = mCurrentTabGroupModelFilterSupplier.get().getTabCountForGroup(groupId);
 
         return mTabModelSelector.getTotalTabCount() > groupSize
                 && TabUiFeatureUtilities.doesOemSupportDragToCreateInstance();

@@ -39,6 +39,12 @@ void SyncBreadcrumbsLog() {
         });
   });
 }
+
+// Delay the propagation of changes to SceneState's -activationLevel until
+// the profile is loaded.
+constexpr ActivationLevelPolicy kPropagationPolicy =
+    ActivationLevelPolicy::kDelayedIfProfileLoading;
+
 }  // namespace
 
 @implementation SceneDelegate
@@ -51,7 +57,8 @@ void SyncBreadcrumbsLog() {
     MainApplicationDelegate* appDelegate =
         base::apple::ObjCCastStrict<MainApplicationDelegate>(
             UIApplication.sharedApplication.delegate);
-    _sceneState = [[SceneState alloc] initWithAppState:appDelegate.appState];
+    _sceneState = [[SceneState alloc] initWithAppState:appDelegate.appState
+                                     propagationPolicy:kPropagationPolicy];
     _sceneController = [[SceneController alloc] initWithSceneState:_sceneState];
     _sceneState.controller = _sceneController;
   }

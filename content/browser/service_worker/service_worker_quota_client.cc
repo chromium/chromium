@@ -49,7 +49,6 @@ void ServiceWorkerQuotaClient::GetBucketUsage(
     const storage::BucketLocator& bucket,
     GetBucketUsageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(bucket.type, StorageType::kTemporary);
 
   // Skip non-default buckets until Storage Buckets are supported for
   // ServiceWorkers.
@@ -63,11 +62,9 @@ void ServiceWorkerQuotaClient::GetBucketUsage(
       base::BindOnce(&FindUsageForStorageKey, std::move(callback)));
 }
 
-void ServiceWorkerQuotaClient::GetStorageKeysForType(
-    StorageType type,
-    GetStorageKeysForTypeCallback callback) {
+void ServiceWorkerQuotaClient::GetDefaultStorageKeys(
+    GetDefaultStorageKeysCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(type, StorageType::kTemporary);
   context_->registry()->GetRegisteredStorageKeys(std::move(callback));
 }
 
@@ -75,7 +72,6 @@ void ServiceWorkerQuotaClient::DeleteBucketData(
     const storage::BucketLocator& bucket,
     DeleteBucketDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(bucket.type, StorageType::kTemporary);
 
   // Skip non-default buckets until Storage Buckets are supported for
   // ServiceWorkers.
@@ -90,10 +86,8 @@ void ServiceWorkerQuotaClient::DeleteBucketData(
 }
 
 void ServiceWorkerQuotaClient::PerformStorageCleanup(
-    blink::mojom::StorageType type,
     PerformStorageCleanupCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(type, StorageType::kTemporary);
   context_->registry()->PerformStorageCleanup(std::move(callback));
 }
 

@@ -158,8 +158,11 @@ bool TipsNotificationClient::HandleNotificationInteraction(
                                   TipsNotificationType::kError);
     return false;
   }
-  base::UmaHistogramEnumeration("IOS.Notifications.Tips.Interaction",
-                                interacted_type_.value());
+  const char* histogram =
+      IsProactiveTipsNotification(response.notification.request)
+          ? "IOS.Notifications.Tips.Proactive.Interaction"
+          : "IOS.Notifications.Tips.Interaction";
+  base::UmaHistogramEnumeration(histogram, interacted_type_.value());
 
   // If the app is not yet foreground active, store the notification type and
   // handle it later when the app becomes foreground active.
@@ -619,7 +622,10 @@ void TipsNotificationClient::MarkNotificationTypeSent(
   local_state_->SetInteger(kTipsNotificationsSentPref, sent_bitfield);
   local_state_->SetInteger(kTipsNotificationsLastSent, int(type));
   local_state_->SetTime(kTipsNotificationsLastRequestedTime, base::Time::Now());
-  base::UmaHistogramEnumeration("IOS.Notifications.Tips.Sent", type);
+  const char* histogram = CanSendReactivation()
+                              ? "IOS.Notifications.Tips.Proactive.Sent"
+                              : "IOS.Notifications.Tips.Sent";
+  base::UmaHistogramEnumeration(histogram, type);
 }
 
 void TipsNotificationClient::MarkNotificationTypeNotSent(
@@ -641,7 +647,10 @@ void TipsNotificationClient::MaybeLogTriggeredNotification() {
 
   TipsNotificationType type =
       static_cast<TipsNotificationType>(last_sent->GetValue()->GetInt());
-  base::UmaHistogramEnumeration("IOS.Notifications.Tips.Triggered", type);
+  const char* triggered_histogram =
+      CanSendReactivation() ? "IOS.Notifications.Tips.Proactive.Triggered"
+                            : "IOS.Notifications.Tips.Triggered";
+  base::UmaHistogramEnumeration(triggered_histogram, type);
   base::UmaHistogramEnumeration("IOS.Notification.Received",
                                 NotificationTypeForTipsNotificationType(type));
   local_state_->SetInteger(kTipsNotificationsLastTriggered, int(type));
@@ -681,7 +690,10 @@ void TipsNotificationClient::OnGetDeliveredNotifications(
   local_state_->SetInteger(kTipsNotificationsDismissCount, dismiss_count);
   TipsNotificationType type = static_cast<TipsNotificationType>(
       local_state_->GetInteger(kTipsNotificationsLastTriggered));
-  base::UmaHistogramEnumeration("IOS.Notifications.Tips.Dismissed", type);
+  const char* dismissed_histogram =
+      CanSendReactivation() ? "IOS.Notifications.Tips.Proactive.Dismissed"
+                            : "IOS.Notifications.Tips.Dismissed";
+  base::UmaHistogramEnumeration(dismissed_histogram, type);
   local_state_->ClearPref(kTipsNotificationsLastTriggered);
 }
 

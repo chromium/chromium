@@ -7,6 +7,8 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/to_vector.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view_controller.h"
@@ -87,11 +89,14 @@ bool TouchToFillPaymentMethodViewImpl::Show(
                 !suggestion.labels[1][0].value.empty()
             ? suggestion.labels[1][0].value
             : u"";
+    std::u16string minor_text = base::JoinString(
+        base::ToVector(suggestion.minor_texts, &Suggestion::Text::value), u" ");
+
     Suggestion::PaymentsPayload payments_payload =
         suggestion.GetPayload<Suggestion::PaymentsPayload>();
     suggestions_array.push_back(
         Java_TouchToFillPaymentMethodViewBridge_createAutofillSuggestion(
-            env, suggestion.main_text.value, suggestion.minor_text.value,
+            env, suggestion.main_text.value, minor_text,
             suggestion.labels[0][0].value, secondarySubLabel,
             payments_payload.main_text_content_description,
             suggestion.HasDeactivatedStyle(),

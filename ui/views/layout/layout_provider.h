@@ -99,6 +99,8 @@ enum DistanceMetric {
   // Width of modal dialogs unless the content is too wide to make that
   // feasible.
   DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH,
+  // Width of larger modal dialogs that require extra width.
+  DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH,
   // The spacing between a pair of related horizontal buttons, used for
   // dialog layout.
   DISTANCE_RELATED_BUTTON_HORIZONTAL,

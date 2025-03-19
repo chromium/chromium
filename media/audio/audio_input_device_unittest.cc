@@ -214,6 +214,10 @@ TEST_P(AudioInputDeviceTest, CreateStream) {
 
 TEST_P(AudioInputDeviceTest, CaptureCallback) {
   base::test::TaskEnvironment ste;
+
+  scoped_feature_list_.InitWithFeatures(
+      {}, {base::test::FeatureRef(media::kAudioInputConfirmReadsViaShmem)});
+
   CreateInputDevice();
 
   uint32_t buffer_index = 0;

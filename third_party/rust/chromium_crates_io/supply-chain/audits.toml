@@ -2807,6 +2807,14 @@ Still no `unsafe` anywhere.
 """
 
 [[audits.rand]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "ub-risk-2"]
+version = "0.8.5"
+notes = """
+For more detailed unsafe review notes please see https://crrev.com/c/6362797
+"""
+
+[[audits.rand]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 version = "0.8.5"
@@ -2823,6 +2831,22 @@ version = "0.3.1"
 notes = """
 This crate doesn't actually implement ChaCha, it uses the implementation in
 `c2-chacha`.  Note that this review has been internally tracked in b/330501364.
+"""
+
+[[audits.rand_chacha]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "ub-risk-2"]
+version = "0.3.1"
+notes = """
+For more detailed unsafe review notes please see https://crrev.com/c/6362797
+"""
+
+[[audits.rand_core]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "ub-risk-2"]
+version = "0.6.4"
+notes = """
+For more detailed unsafe review notes please see https://crrev.com/c/6362797
 """
 
 [[audits.rand_pcg]]

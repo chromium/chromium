@@ -834,7 +834,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
   EXPECT_EQ(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .first.value(),
-      FirstPartySetsOverridesPolicy(net::SetsMutation({}, {})));
+      FirstPartySetsOverridesPolicy(net::SetsMutation({}, {}, {})));
 }
 
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
@@ -849,7 +849,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
   EXPECT_EQ(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .first.value(),
-      FirstPartySetsOverridesPolicy(net::SetsMutation({}, {})));
+      FirstPartySetsOverridesPolicy(net::SetsMutation({}, {}, {})));
 }
 
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
@@ -1071,7 +1071,8 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                    net::FirstPartySetEntry(primary3, net::SiteType::kAssociated,
                                            std::nullopt)},
               },
-          })));
+          },
+          {})));
 }
 
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
@@ -1120,7 +1121,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                                            std::nullopt)},
               },
           },
-          {})));
+          {}, {})));
 }
 
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
@@ -1158,7 +1159,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                                            std::nullopt)},
               },
           },
-          {})));
+          {}, {})));
 }
 
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
@@ -1342,7 +1343,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                 net::FirstPartySetEntry(primary2, net::SiteType::kAssociated,
                                         std::nullopt)},
            }},
-          {})));
+          {}, {})));
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .second,
@@ -1403,7 +1404,8 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
               {associatedSite3,
                net::FirstPartySetEntry(primary3, net::SiteType::kAssociated,
                                        std::nullopt)},
-          }})));
+          }},
+          {})));
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .second,
@@ -1461,7 +1463,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                net::FirstPartySetEntry(primary1, net::SiteType::kAssociated,
                                        std::nullopt)},
           }},
-          {})));
+          {}, {})));
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .second,
@@ -1477,6 +1479,9 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
   net::SchemefulSite primary2(GURL("https://primary2.test"));
   net::SchemefulSite primary2_cctld(GURL("https://primary2.cctld"));
   net::SchemefulSite associated_site2(GURL("https://associatedsite2.test"));
+  net::SchemefulSite primary3(GURL("https://primary3.test"));
+  net::SchemefulSite service3(GURL("https://service3.test"));
+  net::SchemefulSite service3_cctld(GURL("https://service3.cctld"));
 
   base::Value policy_value = base::JSONReader::Read(R"(
              {
@@ -1496,6 +1501,15 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                       "https://primary2.test": ["https://primary2.cctld"]
                     }
                   }
+                ],
+                "additions": [
+                  {
+                    "primary": "https://primary3.test",
+                    "serviceSites": ["https://service3.test"],
+                    "ccTLDs": {
+                      "https://service3.test": ["https://service3.cctld"]
+                    }
+                  }
                 ]
               }
             )")
@@ -1504,6 +1518,7 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
           .first.value(),
       FirstPartySetsOverridesPolicy(net::SetsMutation(
+          /*replacement_sets=*/
           {{
                {primary1, net::FirstPartySetEntry(
                               primary1, net::SiteType::kPrimary, std::nullopt)},
@@ -1524,7 +1539,22 @@ TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,
                 net::FirstPartySetEntry(primary2, net::SiteType::kAssociated,
                                         std::nullopt)},
            }},
-          {})));
+          /*addition_sets=*/
+          {{
+              {primary3, net::FirstPartySetEntry(
+                             primary3, net::SiteType::kPrimary, std::nullopt)},
+              {service3, net::FirstPartySetEntry(
+                             primary3, net::SiteType::kService, std::nullopt)},
+              {service3_cctld,
+               net::FirstPartySetEntry(primary3, net::SiteType::kService,
+                                       std::nullopt)},
+          }},
+          /*aliases=*/
+          {
+              {primary2_cctld, primary2},
+              {associated_site1_cctld, associated_site1},
+              {service3_cctld, service3},
+          })));
 
   EXPECT_THAT(
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_value.GetDict())
@@ -1707,7 +1737,7 @@ TEST(FirstPartySetParser, EnterprisePolicies_ExemptFromAssociatedSiteLimit) {
                net::FirstPartySetEntry(primary1, net::SiteType::kAssociated,
                                        std::nullopt)},
           }},
-          {})));
+          {}, {})));
 }
 
 TEST(FirstPartySetParser, ParseFromCommandLine_Invalid_MultipleSets) {

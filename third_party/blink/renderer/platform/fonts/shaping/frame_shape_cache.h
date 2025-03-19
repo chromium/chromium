@@ -26,7 +26,8 @@ class ShapeResult;
 //
 // The caches are aware of frames distinguished by DidSwitchFrame() calls. This
 // allows the caches to purge old entries when the frame is switched.
-class FrameShapeCache : public GarbageCollected<FrameShapeCache> {
+class PLATFORM_EXPORT FrameShapeCache
+    : public GarbageCollected<FrameShapeCache> {
  public:
   FrameShapeCache();
   void Trace(Visitor* visitor) const;

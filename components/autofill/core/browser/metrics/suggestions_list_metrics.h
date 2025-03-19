@@ -8,9 +8,11 @@
 #include <cstddef>
 
 #include "base/containers/flat_map.h"
+#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 
 namespace autofill {
+class AutofillField;
 enum class FillingProduct;
 
 namespace autofill_metrics {
@@ -83,6 +85,11 @@ void LogAutofillShowCardsFromGoogleAccountButtonEventMetric(
 // ranking algorithm compared to the legacy ranking algorithm.
 void LogAutofillRankingSuggestionDifference(
     SuggestionRankingContext::RelativePosition ranking_difference);
+
+// Logs metrics related to an autofill on typing suggestion being accepted.
+void LogAddressAutofillOnTypingSuggestionAccepted(
+    FieldType field_type_used,
+    const AutofillField* autofill_trigger_field);
 
 }  // namespace autofill_metrics
 }  // namespace autofill

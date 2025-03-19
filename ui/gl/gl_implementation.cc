@@ -20,6 +20,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "ui/gl/angle_implementation.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_features.h"
@@ -109,6 +110,8 @@ std::string GLImplementationParts::ANGLEString() const {
       return "swiftshader";
     case ANGLEImplementation::kMetal:
       return "metal";
+    case ANGLEImplementation::kD3D11Warp:
+      return "d3d11-warp";
     case ANGLEImplementation::kDefault:
       return "default";
   }
@@ -134,6 +137,10 @@ const struct {
      GLImplementationParts(ANGLEImplementation::kD3D11)},
     {kGLImplementationANGLEName, kANGLEImplementationD3D11on12Name,
      GLImplementationParts(ANGLEImplementation::kD3D11)},
+    {kGLImplementationANGLEName, kANGLEImplementationD3D11WarpName,
+     GLImplementationParts(ANGLEImplementation::kD3D11Warp)},
+    {kGLImplementationANGLEName, kANGLEImplementationD3D11WarpForWebGLName,
+     GLImplementationParts(ANGLEImplementation::kD3D11Warp)},
     {kGLImplementationANGLEName, kANGLEImplementationD3D11NULLName,
      GLImplementationParts(ANGLEImplementation::kD3D11)},
     {kGLImplementationANGLEName, kANGLEImplementationOpenGLName,
@@ -226,22 +233,49 @@ GLImplementationParts GetNamedGLImplementation(const std::string& gl_name,
 }
 
 GLImplementationParts GetSoftwareGLImplementation() {
+#if BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(features::kAllowD3D11WarpFallback)) {
+    return GLImplementationParts(ANGLEImplementation::kD3D11Warp);
+  }
+#endif
   return GLImplementationParts(ANGLEImplementation::kSwiftShader);
 }
 
 bool IsSoftwareGLImplementation(GLImplementationParts implementation) {
-  return (implementation == GetSoftwareGLImplementation());
+  return implementation.angle == ANGLEImplementation::kSwiftShader ||
+         implementation.angle == ANGLEImplementation::kD3D11Warp;
 }
 
-void SetSoftwareGLCommandLineSwitches(base::CommandLine* command_line) {
-  GLImplementationParts implementation = GetSoftwareGLImplementation();
+GL_EXPORT bool IsSwiftShaderGLImplementation(
+    GLImplementationParts implementation) {
+  return implementation.angle == ANGLEImplementation::kSwiftShader;
+}
+
+void SetGLImplementationCommandLineSwitches(
+    const GLImplementationParts& implementation,
+    base::CommandLine* command_line) {
   command_line->AppendSwitchASCII(
       switches::kUseGL, gl::GetGLImplementationGLName(implementation));
   command_line->AppendSwitchASCII(
       switches::kUseANGLE, gl::GetGLImplementationANGLEName(implementation));
 }
 
+void SetSoftwareGLCommandLineSwitches(base::CommandLine* command_line) {
+  GLImplementationParts implementation = GetSoftwareGLImplementation();
+  SetGLImplementationCommandLineSwitches(implementation, command_line);
+}
+
 void SetSoftwareWebGLCommandLineSwitches(base::CommandLine* command_line) {
+#if BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(features::kAllowD3D11WarpFallback)) {
+    command_line->AppendSwitchASCII(switches::kUseGL,
+                                    kGLImplementationANGLEName);
+    command_line->AppendSwitchASCII(switches::kUseANGLE,
+                                    kANGLEImplementationD3D11WarpForWebGLName);
+    return;
+  }
+#endif
+
   command_line->AppendSwitchASCII(switches::kUseGL, kGLImplementationANGLEName);
   command_line->AppendSwitchASCII(switches::kUseANGLE,
                                   kANGLEImplementationSwiftShaderForWebGLName);
@@ -281,11 +315,6 @@ GetRequestedGLImplementationFromCommandLine(
     gl_name = kGLImplementationANGLEName;
   }
 
-  if ((gl_name == kGLImplementationANGLEName) &&
-      ((angle_name == kANGLEImplementationSwiftShaderName) ||
-       (angle_name == kANGLEImplementationSwiftShaderForWebGLName))) {
-    return GLImplementationParts(ANGLEImplementation::kSwiftShader);
-  }
   return GetNamedGLImplementation(gl_name, angle_name);
 }
 

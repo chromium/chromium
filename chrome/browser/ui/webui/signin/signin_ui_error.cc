@@ -182,6 +182,11 @@ ForceSigninUIError ForceSigninUIError::SigninPatternNotMatching(
   return ForceSigninUIError(Type::kSigninPatternNotMatching, email);
 }
 
+// static
+ForceSigninUIError ForceSigninUIError::ReauthNotSupportedByGlicFlow() {
+  return ForceSigninUIError(Type::kReauthNotSupportedByGlicFlow, std::string());
+}
+
 ForceSigninUIError::UiTexts ForceSigninUIError::GetErrorTexts() const {
   CHECK_NE(type_, Type::kNone);
   switch (type_) {
@@ -209,6 +214,12 @@ ForceSigninUIError::UiTexts ForceSigninUIError::GetErrorTexts() const {
       return {l10n_util::GetStringFUTF16(IDS_SIGNIN_ERROR_EMAIL_TITLE,
                                          base::UTF8ToUTF16(email_)),
               l10n_util::GetStringUTF16(IDS_SYNC_LOGIN_NAME_PROHIBITED)};
+    case Type::kReauthNotSupportedByGlicFlow:
+      return {
+          l10n_util::GetStringUTF16(
+              IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_NOT_SUPPORTED_BY_GLIC_FLOW_TITLE),
+          l10n_util::GetStringUTF16(
+              IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_NOT_SUPPORTED_BY_GLIC_FLOW_BODY)};
     case Type::kNone:
       NOTREACHED();
   }

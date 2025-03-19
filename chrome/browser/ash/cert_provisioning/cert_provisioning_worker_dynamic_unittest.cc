@@ -176,6 +176,7 @@ constexpr char kEcNamedCurve[] = "P-256";
 
 constexpr base::TimeDelta kInitialFetchInstructionRetryDelay =
     base::Seconds(30);
+constexpr base::TimeDelta kSmallDelay = base::Milliseconds(500);
 
 const std::string& GetPublicKey(KeyType key_type) {
   static base::NoDestructor<base::flat_map<KeyType, std::string>> public_key;
@@ -508,7 +509,6 @@ class CertProvisioningWorkerDynamicTest : public ::testing::Test {
       const CertProvisioningClient::ProvisioningProcess& provisioning_process,
       const CertProvisioningWorkerDynamic& worker,
       base::TimeDelta backoff_max_delay) {
-    const base::TimeDelta kSmallDelay = base::Milliseconds(500);
     // The jitter comes from the backoff policy in the worker. It will reduce
     // the actual waiting time by up to 10% compared to the max delay.
     const double kEffectiveJitterFactor = 0.9;
@@ -2726,8 +2726,6 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterWaitRsaKeys) {
       cert_profile, &cert_provisioning_client_, MakeInvalidator(),
       GetStateChangeCallback(), GetResultCallback());
 
-  const base::TimeDelta small_delay = base::Milliseconds(500);
-
   EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
       .Times(AtLeast(1));
   {
@@ -2785,7 +2783,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterWaitRsaKeys) {
         GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
         base::unexpected(InstructionNotYetAvailable()));
 
-    FastForwardBy(kInitialFetchInstructionRetryDelay + small_delay);
+    FastForwardBy(kInitialFetchInstructionRetryDelay + kSmallDelay);
     EXPECT_EQ(worker.GetState(),
               CertProvisioningWorkerState::kReadyForNextOperation);
   }
@@ -2811,7 +2809,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterWaitRsaKeys) {
         GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
         base::unexpected(InstructionNotYetAvailable()));
 
-    FastForwardBy(kInitialFetchInstructionRetryDelay + small_delay);
+    FastForwardBy(kInitialFetchInstructionRetryDelay + kSmallDelay);
     EXPECT_EQ(worker.GetState(),
               CertProvisioningWorkerState::kReadyForNextOperation);
   }
@@ -2826,7 +2824,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterWaitRsaKeys) {
     EXPECT_IMPORT_CERTIFICATE_OK(
         ImportCertificate(TokenId::kUser, /*certificate=*/_, /*callback=*/_));
 
-    FastForwardBy(kInitialFetchInstructionRetryDelay + small_delay);
+    FastForwardBy(kInitialFetchInstructionRetryDelay + kSmallDelay);
     EXPECT_EQ(worker.GetState(), CertProvisioningWorkerState::kSucceeded);
 
     EXPECT_EQ(callback_observer_.Get<CertProfile>(), cert_profile);
@@ -2886,7 +2884,6 @@ TEST_F(CertProvisioningWorkerDynamicTest, FetchNextInstructionWithBackOff) {
               CertProvisioningWorkerState::kReadyForNextOperation);
   }
 
-  const base::TimeDelta kSmallDelay = base::Milliseconds(500);
   constexpr base::TimeDelta kMaxDelay = base::Hours(8);
   // The configured jitter is 10%, it is always subtracted.
 
@@ -2938,8 +2935,6 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterWaitEcKeys) {
       process_id, CertScope::kUser, GetProfile(), &testing_pref_service_,
       cert_profile, &cert_provisioning_client_, MakeInvalidator(),
       GetStateChangeCallback(), GetResultCallback());
-
-  const base::TimeDelta small_delay = base::Milliseconds(500);
 
   EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
       .Times(AtLeast(1));
@@ -2998,7 +2993,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterWaitEcKeys) {
         GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
         base::unexpected(InstructionNotYetAvailable()));
 
-    FastForwardBy(kInitialFetchInstructionRetryDelay + small_delay);
+    FastForwardBy(kInitialFetchInstructionRetryDelay + kSmallDelay);
     EXPECT_EQ(worker.GetState(),
               CertProvisioningWorkerState::kReadyForNextOperation);
   }
@@ -3025,7 +3020,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterWaitEcKeys) {
         GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
         base::unexpected(InstructionNotYetAvailable()));
 
-    FastForwardBy(kInitialFetchInstructionRetryDelay + small_delay);
+    FastForwardBy(kInitialFetchInstructionRetryDelay + kSmallDelay);
     EXPECT_EQ(worker.GetState(),
               CertProvisioningWorkerState::kReadyForNextOperation);
   }
@@ -3040,7 +3035,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterWaitEcKeys) {
     EXPECT_IMPORT_CERTIFICATE_OK(
         ImportCertificate(TokenId::kUser, /*certificate=*/_, /*callback=*/_));
 
-    FastForwardBy(kInitialFetchInstructionRetryDelay + small_delay);
+    FastForwardBy(kInitialFetchInstructionRetryDelay + kSmallDelay);
     EXPECT_EQ(worker.GetState(), CertProvisioningWorkerState::kSucceeded);
 
     EXPECT_EQ(callback_observer_.Get<CertProfile>(), cert_profile);
@@ -3787,7 +3782,6 @@ TEST_F(CertProvisioningWorkerDynamicTest, BackoffStrategyRsaKeys) {
       GetStateChangeCallback(), GetResultCallback());
 
   base::TimeDelta next_delay = base::Seconds(30);
-  const base::TimeDelta small_delay = base::Milliseconds(500);
 
   EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
       .Times(AtLeast(1));
@@ -3815,7 +3809,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, BackoffStrategyRsaKeys) {
     EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
                  base::unexpected(
                      DmStatusError(policy::DM_STATUS_TEMPORARY_UNAVAILABLE)));
-    FastForwardBy(next_delay + small_delay * 10);
+    FastForwardBy(next_delay + kSmallDelay * 10);
     next_delay *= 2;
   }
 
@@ -3825,7 +3819,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, BackoffStrategyRsaKeys) {
     EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
                  base::unexpected(
                      DmStatusError(policy::DM_STATUS_TEMPORARY_UNAVAILABLE)));
-    FastForwardBy(next_delay + small_delay * 10);
+    FastForwardBy(next_delay + kSmallDelay * 10);
     next_delay *= 2;
   }
 
@@ -3835,7 +3829,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, BackoffStrategyRsaKeys) {
     EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
                  base::unexpected(
                      DmStatusError(policy::DM_STATUS_TEMPORARY_UNAVAILABLE)));
-    FastForwardBy(next_delay + small_delay);
+    FastForwardBy(next_delay + kSmallDelay);
     next_delay *= 2;
   }
 
@@ -3864,7 +3858,6 @@ TEST_F(CertProvisioningWorkerDynamicTest, BackoffStrategyEcKeys) {
       GetStateChangeCallback(), GetResultCallback());
 
   base::TimeDelta next_delay = base::Seconds(30);
-  const base::TimeDelta small_delay = base::Milliseconds(500);
 
   EXPECT_CALL(state_change_callback_observer_, StateChangeCallback)
       .Times(AtLeast(1));
@@ -3892,7 +3885,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, BackoffStrategyEcKeys) {
     EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
                  base::unexpected(
                      DmStatusError(policy::DM_STATUS_TEMPORARY_UNAVAILABLE)));
-    FastForwardBy(next_delay + small_delay * 10);
+    FastForwardBy(next_delay + kSmallDelay * 10);
     next_delay *= 2;
   }
 
@@ -3902,7 +3895,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, BackoffStrategyEcKeys) {
     EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
                  base::unexpected(
                      DmStatusError(policy::DM_STATUS_TEMPORARY_UNAVAILABLE)));
-    FastForwardBy(next_delay + small_delay * 10);
+    FastForwardBy(next_delay + kSmallDelay * 10);
     next_delay *= 2;
   }
 
@@ -3912,7 +3905,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, BackoffStrategyEcKeys) {
     EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
                  base::unexpected(
                      DmStatusError(policy::DM_STATUS_TEMPORARY_UNAVAILABLE)));
-    FastForwardBy(next_delay + small_delay);
+    FastForwardBy(next_delay + kSmallDelay);
     next_delay *= 2;
   }
 

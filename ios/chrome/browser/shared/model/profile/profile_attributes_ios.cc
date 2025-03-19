@@ -26,6 +26,16 @@ constexpr std::string_view kDiscardedSessions = "discarded_sessions";
 constexpr std::string_view kNotificationPermissions =
     "notification_permissions";
 
+// Converts `value` to a base::Value.
+base::Value ToValue(const std::string& value) {
+  return base::Value(value);
+}
+
+// Converts `value` to a base::Value.
+base::Value ToValue(const GaiaId& value) {
+  return base::Value(value.ToString());
+}
+
 // Retrieves a bool value from the dictionary.
 bool GetBool(const Dict& dict, std::string_view key) {
   return dict.FindBool(key).value_or(false);
@@ -84,30 +94,14 @@ StringSet GetStringSet(const Dict& dict, std::string_view key) {
 }
 
 // Stores a string set value in the dictionary.
-void SetStringSet(Dict& dict,
-                  std::string_view key,
-                  const std::set<std::string>& set) {
+template <typename StringSet = std::set<std::string>>
+void SetStringSet(Dict& dict, std::string_view key, const StringSet& set) {
   if (set.empty()) {
     dict.Remove(key);
   } else {
     base::Value::List list;
-    for (const std::string& string : set) {
-      list.Append(string);
-    }
-    dict.Set(key, std::move(list));
-  }
-}
-
-// Same as above but takes GaiaIdSet as input.
-void SetGaiaIdSet(Dict& dict,
-                  std::string_view key,
-                  const ProfileAttributesIOS::GaiaIdSet& set) {
-  if (set.empty()) {
-    dict.Remove(key);
-  } else {
-    base::Value::List list;
-    for (const GaiaId& gaia_id : set) {
-      list.Append(gaia_id.ToString());
+    for (const auto& string : set) {
+      list.Append(ToValue(string));
     }
     dict.Set(key, std::move(list));
   }
@@ -231,7 +225,7 @@ void ProfileAttributesIOS::SetHasAuthenticationError(bool value) {
 }
 
 void ProfileAttributesIOS::SetAttachedGaiaIds(const GaiaIdSet& gaia_ids) {
-  SetGaiaIdSet(storage_, kAttachedGaiaIdsKey, gaia_ids);
+  SetStringSet(storage_, kAttachedGaiaIdsKey, gaia_ids);
 }
 
 void ProfileAttributesIOS::SetLastActiveTime(base::Time time) {

@@ -10,6 +10,7 @@
 #include <sstream>
 #include <string>
 #include <utility>
+#include <variant>
 
 #include "ipcz/node_link.h"
 #include "ipcz/node_link_memory.h"
@@ -42,7 +43,7 @@ void Parcel::SetDataFromMessage(Message::ReceivedDataBuffer buffer,
 void Parcel::AllocateData(size_t num_bytes,
                           bool allow_partial,
                           NodeLinkMemory* memory) {
-  ABSL_ASSERT(absl::holds_alternative<absl::monostate>(data_.storage));
+  ABSL_ASSERT(std::holds_alternative<std::monostate>(data_.storage));
 
   Fragment fragment;
   if (num_bytes > 0 && memory) {
@@ -108,7 +109,7 @@ void Parcel::CommitData(size_t num_bytes) {
     return;
   }
 
-  DataFragment& storage = absl::get<DataFragment>(data_.storage);
+  DataFragment& storage = std::get<DataFragment>(data_.storage);
   ABSL_ASSERT(storage.is_valid());
   ABSL_ASSERT(num_bytes <= storage.fragment().size() + sizeof(FragmentHeader));
   auto& header = *reinterpret_cast<FragmentHeader*>(
@@ -125,8 +126,8 @@ void Parcel::CommitData(size_t num_bytes) {
 
 void Parcel::ReleaseDataFragment() {
   ABSL_ASSERT(has_data_fragment());
-  std::ignore = absl::get<DataFragment>(data_.storage).release();
-  data_.storage.emplace<absl::monostate>();
+  std::ignore = std::get<DataFragment>(data_.storage).release();
+  data_.storage.emplace<std::monostate>();
   data_.view = {};
 }
 

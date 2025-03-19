@@ -71,6 +71,7 @@ class BnplManagerTest : public Test {
   const std::string kInstrumentId = "INSTRUMENT_ID";
   const std::string kContextToken = "CONTEXT_TOKEN";
   const GURL kRedirectUrl = GURL("REDIRECT_URL");
+  const GURL kPopupUrl = GURL("https://test.url/sometestpath/");
   const std::string kIssuerId = "ISSUER_ID";
   const std::string kAppLocale = "en-GB";
   const std::u16string kLegalMessage = u"LEGAL_MESSAGE";
@@ -298,7 +299,7 @@ TEST_F(BnplManagerTest, FetchVcnDetails_CallsGetBnplPaymentInstrument) {
               GetBnplPaymentInstrumentForFetchingVcn(
                   /*request_details=*/
                   FieldsAre(kBillingCustomerNumber, kInstrumentId, kRiskData,
-                            kContextToken, kRedirectUrl, kIssuerId),
+                            kContextToken, kPopupUrl, kIssuerId),
                   /*callback=*/_));
 
   BnplFetchVcnResponseDetails response_details;
@@ -329,7 +330,7 @@ TEST_F(BnplManagerTest, FetchVcnDetails_CallsGetBnplPaymentInstrument) {
       });
   EXPECT_NE(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
 
-  test_api(*bnpl_manager_).FetchVcnDetails();
+  test_api(*bnpl_manager_).FetchVcnDetails(kPopupUrl);
   test_api(*bnpl_manager_)
       .OnVcnDetailsFetched(PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
                            response_details);
@@ -356,7 +357,7 @@ TEST_F(BnplManagerTest, FetchVcnDetails_RpcError) {
   EXPECT_CALL(on_bnpl_vcn_fetched_callback, Run(_)).Times(0);
   EXPECT_NE(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
 
-  test_api(*bnpl_manager_).FetchVcnDetails();
+  test_api(*bnpl_manager_).FetchVcnDetails(kPopupUrl);
   test_api(*bnpl_manager_)
       .OnVcnDetailsFetched(PaymentsAutofillClient::PaymentsRpcResult::
                                kVcnRetrievalPermanentFailure,
@@ -497,14 +498,21 @@ TEST_F(BnplManagerTest, OnPopupWindowCompleted_WithSuccess) {
   EXPECT_CALL(payments_window_manager, InitBnplFlow)
       .WillOnce([&](PaymentsWindowManager::BnplContext bnpl_context) {
         std::move(bnpl_context.completion_callback)
-            .Run(PaymentsWindowManager::BnplFlowResult::kSuccess);
+            .Run(PaymentsWindowManager::BnplFlowResult::kSuccess, kPopupUrl);
       });
 
+  GetBnplPaymentInstrumentForFetchingVcnRequestDetails request_details;
   EXPECT_CALL(*payments_network_interface_,
               GetBnplPaymentInstrumentForFetchingVcn)
-      .Times(1);
+      .Times(1)
+      .WillOnce(testing::SaveArg<0>(&request_details));
 
   OnIssuerSelected(linked_issuer);
+
+  EXPECT_EQ(request_details.billing_customer_number, kBillingCustomerNumber);
+  EXPECT_EQ(request_details.issuer_id, linked_issuer.issuer_id());
+  EXPECT_EQ(request_details.redirect_url, kPopupUrl);
+  EXPECT_EQ(request_details.risk_data, "some risk data");
 }
 
 // Tests that when BNPL flow completed with user closed, the flow status will
@@ -526,7 +534,7 @@ TEST_F(BnplManagerTest, OnPopupWindowCompleted_UserClosed) {
   EXPECT_CALL(payments_window_manager, InitBnplFlow)
       .WillOnce([&](PaymentsWindowManager::BnplContext bnpl_context) {
         std::move(bnpl_context.completion_callback)
-            .Run(PaymentsWindowManager::BnplFlowResult::kUserClosed);
+            .Run(PaymentsWindowManager::BnplFlowResult::kUserClosed, kPopupUrl);
       });
 
   EXPECT_CALL(*payments_network_interface_,
@@ -551,7 +559,7 @@ TEST_F(BnplManagerTest, FetchVcnDetails_ShowAutofillProgressDialog) {
   EXPECT_FALSE(autofill_client_->GetPaymentsAutofillClient()
                    ->autofill_error_dialog_shown());
 
-  test_api(*bnpl_manager_).FetchVcnDetails();
+  test_api(*bnpl_manager_).FetchVcnDetails(kPopupUrl);
 
   EXPECT_TRUE(autofill_client_->GetPaymentsAutofillClient()
                   ->autofill_progress_dialog_shown());
@@ -574,7 +582,7 @@ TEST_F(BnplManagerTest, FetchVcnDetails_Reset) {
                    ->autofill_error_dialog_shown());
   EXPECT_NE(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
 
-  test_api(*bnpl_manager_).FetchVcnDetails();
+  test_api(*bnpl_manager_).FetchVcnDetails(kPopupUrl);
 
   EXPECT_TRUE(autofill_client_->GetPaymentsAutofillClient()
                   ->autofill_progress_dialog_shown());

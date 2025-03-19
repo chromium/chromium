@@ -1158,7 +1158,7 @@ void GpuInit::SaveHardwareGpuInfoAndGpuFeatureInfo() {
 
 void GpuInit::AdjustInfoToSwiftShader() {
   gpu_info_.passthrough_cmd_decoder = false;
-  gpu_feature_info_ = ComputeGpuFeatureInfoForSwiftShader();
+  gpu_feature_info_ = ComputeGpuFeatureInfoForSoftwareGL();
   CollectContextGraphicsInfo(&gpu_info_);
 
   DCHECK_EQ(gpu_info_.passthrough_cmd_decoder, false);

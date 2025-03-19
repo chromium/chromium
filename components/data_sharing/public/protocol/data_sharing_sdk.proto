@@ -21,21 +21,16 @@ message CreateGroupResult {
 }
 
 message ReadGroupsParams {
-  // TODO(crbug.com/369856322): remove this field once all SDK implementations
-  // are migrated to use `group_params`.
-  repeated string group_ids = 1;
+  reserved 1, 3;
 
   message GroupParams {
+    reserved 3;
+
     optional string group_id = 1;
     // Might be empty if the client needs the most fresh data.
     optional string consistency_token = 2;
-    // Only set for reading new group user is not part of.
-    optional string access_token = 3;
   }
   repeated GroupParams group_params = 2;
-
-  // DEPRECTAED: Set this in group params.
-  optional string access_token = 3;
 }
 
 message FailedReadGroupResult {
@@ -53,6 +48,11 @@ message FailedReadGroupResult {
 message ReadGroupsResult {
   repeated GroupData group_data = 1;
   repeated FailedReadGroupResult failed_read_group_results = 2;
+}
+
+message ReadGroupWithTokenParams {
+  optional string group_id = 1;
+  optional string access_token = 2;
 }
 
 message AddMemberParams {

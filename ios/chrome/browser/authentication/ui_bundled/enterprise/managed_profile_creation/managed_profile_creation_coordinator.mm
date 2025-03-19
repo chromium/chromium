@@ -76,7 +76,7 @@
       self;
   _viewController.modalInPresentation = YES;
 
-  ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
+  ProfileIOS* profile = self.profile->GetOriginalProfile();
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(profile);
   ChromeAccountManagerService* accountManagerService =
@@ -97,6 +97,9 @@
       initWithRootViewController:_viewController];
   _navigationController.delegate = self;
   [_navigationController setNavigationBarHidden:YES animated:NO];
+
+  _navigationController.navigationBar.accessibilityIdentifier =
+      kManagedProfileCreationNavigationBarAccessibilityIdentifier;
   [self.baseViewController presentViewController:_navigationController
                                         animated:YES
                                       completion:nil];

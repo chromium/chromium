@@ -4,13 +4,16 @@
 
 package org.chromium.components.browser_ui.accessibility;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.accessibility.AccessibilityState.State;
 
+@NullMarked
 public class DeviceAccessibilitySettingsHandler implements AccessibilityState.Listener {
-    private static DeviceAccessibilitySettingsHandler sInstance;
+    private static @Nullable DeviceAccessibilitySettingsHandler sInstance;
 
     private final BrowserContextHandle mBrowserContextHandle;
 

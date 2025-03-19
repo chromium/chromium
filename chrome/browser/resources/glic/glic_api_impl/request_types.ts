@@ -242,6 +242,11 @@ export declare interface WebClientRequestTypes {
       resizing: boolean,
     },
   };
+  glicWebClientNotifyOsHotkeyStateChanged: {
+    request: {
+      hotkey: string,
+    },
+  };
 }
 
 

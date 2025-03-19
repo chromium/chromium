@@ -40,7 +40,7 @@ public class ScrollDelegateUnitTest {
     private static final long TIMESTAMP = 0;
 
     private final Context mContext = RuntimeEnvironment.systemContext;
-    private final ScrollDelegate mScrollDelegate = new ScrollDelegate();
+    private ScrollDelegate mScrollDelegate;
 
     @Mock private StripLayoutGroupTitle mGroupTitle;
     @Mock private StripLayoutTab mTab1;
@@ -51,7 +51,7 @@ public class ScrollDelegateUnitTest {
 
     @Before
     public void setup() {
-        mScrollDelegate.onContextChanged(mContext);
+        mScrollDelegate = new ScrollDelegate(mContext);
         mScrollDelegate.setMinScrollOffsetForTesting(TEST_MIN_SCROLL_OFFSET);
     }
 

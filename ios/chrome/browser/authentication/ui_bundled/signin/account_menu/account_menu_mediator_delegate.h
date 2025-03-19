@@ -34,10 +34,6 @@
                          completion:
                              (signin_ui::SigninCompletionCallback)completion;
 
-// Displays the identity snackbar with `systemIdentity`.
-- (void)triggerAccountSwitchSnackbarWithIdentity:
-    (id<SystemIdentity>)systemIdentity;
-
 // Sign out, display a toast, and call `callback` with argument stating whether
 // it’s a success.
 // It should only be called when the current scene is not blocked.

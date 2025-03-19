@@ -74,29 +74,29 @@ NSString* GetGaiaIdForProfile(ProfileIOS* profile) {
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  ProfileIOS* profile = self.profile;
   self.tableViewController = [[PriceNotificationsTableViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
   self.tableViewController.showCurrentPage = self.showCurrentPage;
-  PrefService* prefService = self.browser->GetProfile()->GetPrefs();
+  PrefService* prefService = profile->GetPrefs();
   self.tableViewController.hasPreviouslyViewed =
       prefService->GetBoolean(prefs::kPriceNotificationsHasBeenShown);
   if (!self.tableViewController.hasPreviouslyViewed) {
     prefService->SetBoolean(prefs::kPriceNotificationsHasBeenShown, true);
   }
 
-  NSString* gaiaID = GetGaiaIdForProfile(self.browser->GetProfile());
+  NSString* gaiaID = GetGaiaIdForProfile(profile);
   PushNotificationService* pushNotificationService =
       GetApplicationContext()->GetPushNotificationService();
   commerce::ShoppingService* shoppingService =
-      commerce::ShoppingServiceFactory::GetForProfile(
-          self.browser->GetProfile());
+      commerce::ShoppingServiceFactory::GetForProfile(profile);
   bookmarks::BookmarkModel* bookmarkModel =
-      ios::BookmarkModelFactory::GetForProfile(self.browser->GetProfile());
+      ios::BookmarkModelFactory::GetForProfile(profile);
   web::WebState* webState =
       self.browser->GetWebStateList()->GetActiveWebState();
   std::unique_ptr<image_fetcher::ImageDataFetcher> imageFetcher =
       std::make_unique<image_fetcher::ImageDataFetcher>(
-          self.browser->GetProfile()->GetSharedURLLoaderFactory());
+          profile->GetSharedURLLoaderFactory());
   self.mediator = [[PriceNotificationsPriceTrackingMediator alloc]
       initWithShoppingService:shoppingService
                 bookmarkModel:bookmarkModel
