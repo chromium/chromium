@@ -162,6 +162,14 @@ struct CC_EXPORT TransformNode {
   // root of a visible frame subtree.
   ElementId visible_frame_element_id;
 
+ private:
+  DamageReasonSet damage_reasons_;
+
+ public:
+  // Only meant to be used for mojo deserialization.
+  bool SetDamageReasonsForDeserialization(DamageReasonSet reasons);
+  DamageReasonSet damage_reasons() const { return damage_reasons_; }
+
 #if DCHECK_IS_ON()
   bool operator==(const TransformNode& other) const;
 #endif

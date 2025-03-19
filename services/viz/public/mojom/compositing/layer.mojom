@@ -211,6 +211,10 @@ struct TransformNode {
   // corresponding to this node, if this node corresponds to the root of a
   // visible frame.
   cc.mojom.ElementId? visible_frame_element_id;
+
+  // cc::DamageReasonsSet bit mask tracking the damage reasons for changes to
+  // this node.
+  uint64 damage_reasons_bit_mask;
 };
 
 // Details about a new or updated node within a clip property tree.

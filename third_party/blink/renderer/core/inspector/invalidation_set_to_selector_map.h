@@ -58,7 +58,8 @@ class CORE_EXPORT InvalidationSetToSelectorMap final
   // Instantiates a new mapping if a diagnostic tracing session with the
   // appropriate configuration has started, or deletes an existing mapping if
   // tracing is no longer enabled.
-  static void StartOrStopTrackingIfNeeded(StyleEngine& style_engine);
+  static void StartOrStopTrackingIfNeeded(const TreeScope& tree_scope,
+                                          StyleEngine& style_engine);
 
   // Call at the start and end of indexing rules within a StyleSheetContents.
   static void BeginStyleSheetContents(const StyleSheetContents* contents);
@@ -135,6 +136,10 @@ class CORE_EXPORT InvalidationSetToSelectorMap final
 
   // Holds the back-map described above.
   Member<InvalidationSetMap> invalidation_set_map_;
+
+  // Holds the set of stylesheets that have been revisited for indexing into
+  // the back-map.
+  HeapHashSet<Member<const StyleSheetContents>> revisited_style_sheets_;
 
   // Used during back-map construction.
   // Holds the stylesheet currently being analyzed.

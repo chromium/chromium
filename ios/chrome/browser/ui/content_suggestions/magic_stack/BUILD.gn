@@ -125,6 +125,7 @@ source_set("cells") {
     ":public",
     ":utils",
     "//base",
+    "//components/commerce/core:feature_list",
     "//google_apis",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/push_notification/model:push_notification_client_id",

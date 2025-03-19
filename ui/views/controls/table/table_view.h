@@ -73,6 +73,10 @@ struct TableHeaderStyle {
   std::optional<ui::ColorId> separator_horizontal_color_id;
   std::optional<ui::ColorId> separator_vertical_color_id;
   std::optional<ui::ColorId> background_color_id;
+
+  // Applied to the top left corner of the first column, and top right corner
+  // of the last column. Applied to both if there is only one column.
+  std::optional<float> focus_ring_upper_corner_radius;
 };
 
 struct TableBackgroundStyle {

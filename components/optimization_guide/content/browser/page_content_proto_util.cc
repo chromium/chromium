@@ -133,8 +133,8 @@ void ConvertSelection(
     const blink::mojom::AIPageContentSelection& mojom_selection,
     optimization_guide::proto::Selection* proto_selection) {
   proto_selection->set_selected_text(mojom_selection.selected_text);
-  proto_selection->set_start_node_id(mojom_selection.start_node_id);
-  proto_selection->set_end_node_id(mojom_selection.end_node_id);
+  proto_selection->set_start_node_id(mojom_selection.start_dom_node_id);
+  proto_selection->set_end_node_id(mojom_selection.end_dom_node_id);
   proto_selection->set_start_offset(mojom_selection.start_offset);
   proto_selection->set_end_offset(mojom_selection.end_offset);
 }
@@ -155,13 +155,13 @@ void ConvertPageInteractionInfo(
         mojom_page_interaction_info,
     optimization_guide::proto::PageInteractionInfo*
         proto_page_interaction_info) {
-  if (mojom_page_interaction_info.focused_node_id) {
+  if (mojom_page_interaction_info.focused_dom_node_id) {
     proto_page_interaction_info->set_focused_node_id(
-        *mojom_page_interaction_info.focused_node_id);
+        *mojom_page_interaction_info.focused_dom_node_id);
   }
-  if (mojom_page_interaction_info.accessibility_focused_node_id) {
+  if (mojom_page_interaction_info.accessibility_focused_dom_node_id) {
     proto_page_interaction_info->set_accessibility_focused_node_id(
-        *mojom_page_interaction_info.accessibility_focused_node_id);
+        *mojom_page_interaction_info.accessibility_focused_dom_node_id);
   }
   if (mojom_page_interaction_info.mouse_position) {
     ConvertPoint(*mojom_page_interaction_info.mouse_position,
@@ -374,15 +374,9 @@ void ConvertTableRowData(
 bool ConvertAttributes(
     const blink::mojom::AIPageContentAttributes& mojom_attributes,
     optimization_guide::proto::ContentAttributes* proto_attributes) {
-  proto_attributes->set_content_node_id(mojom_attributes.content_node_id);
-
-  for (const auto& dom_node_id : mojom_attributes.dom_node_ids) {
-    proto_attributes->add_dom_node_ids(dom_node_id);
-  }
-
-  if (mojom_attributes.common_ancestor_dom_node_id.has_value()) {
+  if (mojom_attributes.dom_node_id.has_value()) {
     proto_attributes->set_common_ancestor_dom_node_id(
-        mojom_attributes.common_ancestor_dom_node_id.value());
+        mojom_attributes.dom_node_id.value());
   }
 
   proto_attributes->set_attribute_type(
@@ -566,6 +560,7 @@ bool ConvertNode(content::GlobalRenderFrameHostToken source_frame_token,
 }  // namespace
 
 bool ConvertAIPageContentToProto(
+    blink::mojom::AIPageContentOptionsPtr main_frame_options,
     content::GlobalRenderFrameHostToken main_frame_token,
     const AIPageContentMap& page_content_map,
     GetRenderFrameInfo get_render_frame_info,
@@ -611,8 +606,13 @@ bool ConvertAIPageContentToProto(
         proto_main_frame_data->mutable_frame_interaction_info());
   }
 
-  page_content_result.proto.set_version(
-      optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
+  auto version = optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0;
+  if (main_frame_options->enable_experimental_actionable_data) {
+    version = optimization_guide::proto::
+        ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0;
+  }
+  page_content_result.proto.set_version(version);
+
   return true;
 }
 

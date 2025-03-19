@@ -367,6 +367,7 @@ bool WebRequestPermissions::HideRequest(
   // domain. However once the old webstore is turned down we can change it over
   // during that cleanup.
   if (extension_urls::IsWebstoreUpdateUrl(url) ||
+      extension_urls::IsWebstoreApiUrl(url) ||
       extension_urls::IsBlocklistUpdateUrl(url) ||
       extension_urls::IsSafeBrowsingUrl(url) ||
       (url.DomainIs("chrome.google.com") &&

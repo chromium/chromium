@@ -69,7 +69,8 @@ UNSAFE_BUFFER_USAGE base::span<uint64_t> ToSpan_uint64(uint8_t* data,
 GLDisplay* GLTestSupport::InitializeGL(
     std::optional<GLImplementationParts> prefered_impl) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  gpu::EnsureNonSoftwareDeviceForTesting(gl::GpuPreference ::kDefault);
+  gpu::TrySetNonSoftwareDevicePreferenceForTesting(
+      gl::GpuPreference ::kDefault);
 #endif
 
 #if BUILDFLAG(IS_OZONE)

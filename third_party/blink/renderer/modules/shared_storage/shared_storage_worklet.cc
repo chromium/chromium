@@ -242,12 +242,35 @@ void SharedStorageWorklet::AddModuleHelper(
   network::mojom::CredentialsMode credentials_mode =
       Request::V8RequestCredentialsToCredentialsMode(
           options->credentials().AsEnum());
+  auto* window = DynamicTo<LocalDOMWindow>(execution_context);
+  if (window->document() && window->document()->IsPrerendering()) {
+    window->document()->AddPostPrerenderingActivationStep(WTF::BindOnce(
+        &SharedStorageWorklet::AddModuleOnLocalDomWindow,
+        WrapWeakPersistent(this), WrapWeakPersistent(window),
+        std::move(script_source_url), std::move(shared_storage_security_origin),
+        data_origin_type, credentials_mode, resolve_to_worklet, start_time,
+        WrapPersistent(resolver)));
+  } else {
+    AddModuleOnLocalDomWindow(window, std::move(script_source_url),
+                              std::move(shared_storage_security_origin),
+                              data_origin_type, credentials_mode,
+                              resolve_to_worklet, start_time, resolver);
+  }
+}
 
+void SharedStorageWorklet::AddModuleOnLocalDomWindow(
+    LocalDOMWindow* dom_window,
+    KURL script_source_url,
+    scoped_refptr<SecurityOrigin> shared_storage_security_origin,
+    SharedStorageDataOrigin data_origin_type,
+    network::mojom::CredentialsMode credentials_mode,
+    bool resolve_to_worklet,
+    base::TimeTicks start_time,
+    ScriptPromiseResolverBase* resolver) {
   std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
       origin_trial_features =
-          OriginTrialContext::GetInheritedTrialFeatures(execution_context);
-
-  SharedStorageWindowSupplement::From(To<LocalDOMWindow>(*execution_context))
+          OriginTrialContext::GetInheritedTrialFeatures(dom_window);
+  SharedStorageWindowSupplement::From(*dom_window)
       ->GetSharedStorageDocumentService()
       ->CreateWorklet(
           script_source_url, shared_storage_security_origin,
@@ -258,7 +281,7 @@ void SharedStorageWorklet::AddModuleHelper(
           origin_trial_features ? *origin_trial_features
                                 : Vector<mojom::blink::OriginTrialFeature>(),
           worklet_host_.BindNewEndpointAndPassReceiver(
-              execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI)),
+              dom_window->GetTaskRunner(TaskType::kMiscPlatformAPI)),
           WTF::BindOnce(
               [](ScriptPromiseResolverBase* resolver,
                  SharedStorageWorklet* shared_storage_worklet,

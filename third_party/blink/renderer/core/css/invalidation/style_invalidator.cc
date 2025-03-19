@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
+#include "third_party/blink/renderer/core/inspector/invalidation_set_to_selector_map.h"
 
 namespace blink {
 
@@ -248,6 +249,14 @@ void StyleInvalidator::InvalidateShadowRootChildren(Element& element) {
         !root->NeedsStyleInvalidation()) {
       return;
     }
+    // Tree boundary crossing happens due to selectors such as `:host(.a) .b`
+    // which exist in the child tree but index into invalidation sets in the
+    // parent tree. If invalidation tracing is active, we would have revisited
+    // stylesheets in the parent tree when we scheduled the set, but we may not
+    // yet have revisited stylesheets in the child tree.
+    InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded(
+        root->GetTreeScope(), root->GetDocument().GetStyleEngine());
+
     RecursionCheckpoint checkpoint(this);
     SiblingData sibling_data;
     if (!WholeSubtreeInvalid()) {

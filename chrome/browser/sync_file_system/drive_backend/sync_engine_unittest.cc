@@ -55,7 +55,6 @@ class SyncEngineTest : public testing::Test {
         nullptr,  // drive_task_runner
         profile_dir_.GetPath(),
         nullptr,    // task_logger
-        nullptr,    // notification_manager
         nullptr,    // extension_service
         nullptr,    // extension_registry
         nullptr,    // identity_manager

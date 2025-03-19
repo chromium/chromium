@@ -786,7 +786,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // Returns true if marked dirty for layout
   bool UpdateLastSuccessfulPositionFallbacksAndAnchorScrollShift();
 
-  void RevisitActiveStyleSheetsForInspector();
+  void RevisitStyleSheetForInspector(StyleSheetContents* contents);
 
  private:
   void UpdateCounters(const Element& element,

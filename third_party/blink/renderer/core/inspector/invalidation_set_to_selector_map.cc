@@ -7,6 +7,7 @@
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_tracing_flag.h"
+#include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/inspector/style_rule_to_style_sheet_contents_map.h"
@@ -45,14 +46,30 @@ InvalidationSetToSelectorMap::IndexedSelector::GetStyleSheetContents() const {
 
 // static
 void InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded(
+    const TreeScope& tree_scope,
     StyleEngine& style_engine) {
   Persistent<InvalidationSetToSelectorMap>& instance = GetInstanceReference();
   const bool is_tracing_enabled = InvalidationTracingFlag::IsEnabled();
-  if (is_tracing_enabled && instance == nullptr) [[unlikely]] {
-    instance = MakeGarbageCollected<InvalidationSetToSelectorMap>();
+  if (is_tracing_enabled) [[unlikely]] {
+    if (instance == nullptr) {
+      instance = MakeGarbageCollected<InvalidationSetToSelectorMap>();
+    }
     // Revisit active style sheets to capture relationships for previously
     // existing rules.
-    style_engine.RevisitActiveStyleSheetsForInspector();
+    // TODO(crbug.com/337076014): Also revisit other stylesheets such as user
+    // sheets and UA sheets.
+    const ScopedStyleResolver* scoped_style_resolver =
+        tree_scope.GetScopedStyleResolver();
+    if (scoped_style_resolver != nullptr) {
+      for (const ActiveStyleSheet& sheet :
+           scoped_style_resolver->GetActiveStyleSheets()) {
+        StyleSheetContents* contents = sheet.first->Contents();
+        if (!instance->revisited_style_sheets_.Contains(contents)) {
+          instance->revisited_style_sheets_.insert(contents);
+          style_engine.RevisitStyleSheetForInspector(contents);
+        }
+      }
+    }
   } else if (!is_tracing_enabled && instance != nullptr) [[unlikely]] {
     instance.Clear();
   }
@@ -254,6 +271,7 @@ InvalidationSetToSelectorMap::InvalidationSetToSelectorMap() {
 
 void InvalidationSetToSelectorMap::Trace(Visitor* visitor) const {
   visitor->Trace(invalidation_set_map_);
+  visitor->Trace(revisited_style_sheets_);
   visitor->Trace(current_style_sheet_contents_);
   visitor->Trace(current_selector_);
   visitor->Trace(style_rule_to_sheet_map_);

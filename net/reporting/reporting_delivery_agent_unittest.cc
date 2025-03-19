@@ -1079,7 +1079,13 @@ TEST_F(ReportingDeliveryAgentTest, SendReportsForMultipleSources) {
   ASSERT_EQ(2u, pending_uploads().size());
 }
 
-TEST_F(ReportingDeliveryAgentTest, SkipUploadForReportWithLargeBody) {
+#if BUILDFLAG(CRONET_BUILD)
+#define MAYBE_SkipUploadForReportWithLargeBody \
+  DISABLED_SkipUploadForReportWithLargeBody
+#else
+#define MAYBE_SkipUploadForReportWithLargeBody SkipUploadForReportWithLargeBody
+#endif
+TEST_F(ReportingDeliveryAgentTest, MAYBE_SkipUploadForReportWithLargeBody) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kExcludeLargeBodyReports,

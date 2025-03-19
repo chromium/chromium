@@ -153,4 +153,6 @@ void IdentityRequestDialogController::RequestIdPRegistrationPermision(
   std::move(callback).Run(false);
 }
 
+void IdentityRequestDialogController::NotifyAutofillSourceReadyForTesting() {}
+
 }  // namespace content

@@ -703,6 +703,9 @@ inline constexpr char kHomeCustomizationMagicStackParcelTrackingEnabled[] =
     "ios.home_customization.magic_stack.parcel_tracking.enabled";
 inline constexpr char kHomeCustomizationMagicStackTipsEnabled[] =
     "ios.home_customization.magic_stack.tips.enabled";
+inline constexpr char
+    kHomeCustomizationMagicStackShopCardPriceTrackingEnabled[] =
+        "ios.home_customization.magic_stack.shop_card_price_tracking.enabled";
 
 // List preference that stores the positions in the Magic Stack where the Safety
 // Check module with the notifications opt-in button is shown.

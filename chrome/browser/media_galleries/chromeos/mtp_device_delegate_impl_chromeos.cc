@@ -10,6 +10,8 @@
 
 #include <algorithm>
 #include <limits>
+#include <ostream>
+#include <string_view>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -20,6 +22,7 @@
 #include "base/files/safe_base_name.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -429,7 +432,7 @@ class MTPDeviceDelegateImplLinux::MTPFileNode {
   MTPFileNode(uint32_t file_id,
               const std::string& file_name,
               MTPFileNode* parent,
-              FileIdToMTPFileNodeMap* file_id_to_node_map);
+              MTPFileNodesById& nodes_by_id);
 
   MTPFileNode(const MTPFileNode&) = delete;
   MTPFileNode& operator=(const MTPFileNode&) = delete;
@@ -456,32 +459,45 @@ class MTPDeviceDelegateImplLinux::MTPFileNode {
   using ChildNodes =
       std::unordered_map<std::string, std::unique_ptr<MTPFileNode>>;
 
+  friend std::ostream& operator<<(std::ostream& out, const ChildNodes& nodes) {
+    if (nodes.empty()) {
+      return out << "no children";
+    }
+
+    out << nodes.size() << " children: ";
+    for (std::string_view sep; const ChildNodes::value_type& v : nodes) {
+      out << sep << "'" << v.first << "'";
+      sep = ", ";
+    }
+
+    return out;
+  }
+
   const uint32_t file_id_;
   const std::string file_name_;
 
   ChildNodes children_;
   const raw_ptr<MTPFileNode> parent_;
-  raw_ptr<FileIdToMTPFileNodeMap> file_id_to_node_map_;
+  const raw_ref<MTPFileNodesById> nodes_by_id_;
 };
 
 MTPDeviceDelegateImplLinux::MTPFileNode::MTPFileNode(
     uint32_t file_id,
     const std::string& file_name,
     MTPFileNode* parent,
-    FileIdToMTPFileNodeMap* file_id_to_node_map)
+    MTPFileNodesById& nodes_by_id)
     : file_id_(file_id),
       file_name_(file_name),
       parent_(parent),
-      file_id_to_node_map_(file_id_to_node_map) {
+      nodes_by_id_(nodes_by_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK(file_id_to_node_map_);
-  DCHECK(!base::Contains(*file_id_to_node_map_, file_id_));
-  (*file_id_to_node_map_)[file_id_] = this;
+  const bool ok = nodes_by_id_->try_emplace(file_id_, this).second;
+  DCHECK(ok);
 }
 
 MTPDeviceDelegateImplLinux::MTPFileNode::~MTPFileNode() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  size_t erased = file_id_to_node_map_->erase(file_id_);
+  const size_t erased = nodes_by_id_->erase(file_id_);
   DCHECK_EQ(1U, erased);
 }
 
@@ -489,51 +505,46 @@ const MTPDeviceDelegateImplLinux::MTPFileNode*
 MTPDeviceDelegateImplLinux::MTPFileNode::GetChild(
     const std::string& name) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  auto it = children_.find(name);
-  if (it == children_.end()) {
-    return nullptr;
-  }
-  return it->second.get();
+  const ChildNodes::const_iterator it = children_.find(name);
+  return it != children_.cend() ? it->second.get() : nullptr;
 }
 
 void MTPDeviceDelegateImplLinux::MTPFileNode::EnsureChildExists(
     const std::string& name,
     uint32_t id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  const MTPFileNode* child = GetChild(name);
-  if (child && child->file_id() == id) {
-    return;
+  std::unique_ptr<MTPFileNode>& child = children_[name];
+  if (!child || child->file_id() != id) {
+    child = std::make_unique<MTPFileNode>(id, name, this, *nodes_by_id_);
   }
-
-  children_[name] =
-      std::make_unique<MTPFileNode>(id, name, this, file_id_to_node_map_);
 }
 
 void MTPDeviceDelegateImplLinux::MTPFileNode::ClearNonexistentChildren(
     const std::set<std::string>& children_to_keep) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  std::vector<std::string> children_to_erase;
-  for (const auto& child : children_) {
-    if (base::Contains(children_to_keep, child.first)) {
-      continue;
-    }
-    children_to_erase.push_back(child.first);
-  }
-  for (const auto& child : children_to_erase) {
-    children_.erase(child);
-  }
+  std::erase_if(children_,
+                [&children_to_keep](const ChildNodes::value_type& child) {
+                  return !children_to_keep.contains(child.first);
+                });
 }
 
 bool MTPDeviceDelegateImplLinux::MTPFileNode::DeleteChild(uint32_t file_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  for (auto it = children_.begin(); it != children_.end(); ++it) {
-    if (it->second->file_id() == file_id) {
-      DCHECK(!it->second->HasChildren());
-      children_.erase(it);
-      return true;
-    }
+  const ChildNodes::const_iterator it = std::ranges::find_if(
+      children_, [file_id](const ChildNodes::value_type& child) {
+        return child.second->file_id() == file_id;
+      });
+
+  if (it == children_.cend()) {
+    VLOG(1) << "Cannot find MTP node with file ID " << file_id;
+    return false;
   }
-  return false;
+
+  VLOG_IF(1, !it->second->children_.empty())
+      << "Deleting MTP node '" << it->first << "' which has "
+      << it->second->children_;
+  children_.erase(it);
+  return true;
 }
 
 bool MTPDeviceDelegateImplLinux::MTPFileNode::HasChildren() const {
@@ -550,7 +561,7 @@ MTPDeviceDelegateImplLinux::MTPDeviceDelegateImplLinux(
       root_node_(std::make_unique<MTPFileNode>(mtpd::kRootFileId,
                                                "",  // Root node has no name.
                                                nullptr,  // And no parent node.
-                                               &file_id_to_node_map_)) {
+                                               nodes_by_id_)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(!device_path_.empty());
   DCHECK(!storage_name_.empty());
@@ -1239,9 +1250,8 @@ void MTPDeviceDelegateImplLinux::DeleteDirectoryInternal(
 
   // Checks the cache first. If it has children in cache, the directory cannot
   // be empty.
-  FileIdToMTPFileNodeMap::const_iterator it =
-      file_id_to_node_map_.find(*directory_id);
-  if (it != file_id_to_node_map_.end() && it->second->HasChildren()) {
+  const MTPFileNodesById::const_iterator it = nodes_by_id_.find(*directory_id);
+  if (it != nodes_by_id_.end() && it->second->HasChildren()) {
     std::move(error_callback).Run(base::File::FILE_ERROR_NOT_EMPTY);
     return;
   }
@@ -1680,9 +1690,9 @@ void MTPDeviceDelegateImplLinux::OnDidReadDirectory(
     bool has_more) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  FileIdToMTPFileNodeMap::iterator it = file_id_to_node_map_.find(dir_id);
-  CHECK(it != file_id_to_node_map_.end(), base::NotFatalUntil::M130);
-  MTPFileNode* dir_node = it->second;
+  const MTPFileNodesById::iterator it = nodes_by_id_.find(dir_id);
+  CHECK(it != nodes_by_id_.end());
+  MTPFileNode* const dir_node = it->second;
 
   // Traverse the MTPFileNode tree to reconstuct the full path for |dir_id|.
   base::circular_deque<std::string> dir_path_parts;
@@ -2001,16 +2011,14 @@ std::optional<uint32_t> MTPDeviceDelegateImplLinux::CachedPathToId(
 }
 
 void MTPDeviceDelegateImplLinux::EvictCachedPathToId(uint32_t id) {
-  FileIdToMTPFileNodeMap::iterator it = file_id_to_node_map_.find(id);
-  if (it == file_id_to_node_map_.end()) {
+  const MTPFileNodesById::const_iterator it = nodes_by_id_.find(id);
+  if (it != nodes_by_id_.cend()) {
     return;
   }
 
-  DCHECK(!it->second->HasChildren());
-  MTPFileNode* parent = it->second->parent();
-  if (parent) {
-    bool ret = parent->DeleteChild(id);
-    DCHECK(ret);
+  if (MTPFileNode* const parent = it->second->parent()) {
+    const bool ok = parent->DeleteChild(id);
+    DCHECK(ok);
   }
 }
 

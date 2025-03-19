@@ -12,6 +12,7 @@ source_set("utils") {
     "home_customization_metrics_recorder.mm",
   ]
   deps = [
+    "//components/commerce/core:feature_list",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ui/base",

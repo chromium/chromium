@@ -863,37 +863,6 @@
             ]
         }
     ],
-    "AppMallStudy": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20241010",
-                    "enable_features": [
-                        "CrosMall",
-                        "CrosMallSwa"
-                    ]
-                },
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AppInstallServiceUri",
-                        "CrosMall"
-                    ]
-                },
-                {
-                    "name": "Enabled_20240619",
-                    "enable_features": [
-                        "AppInstallServiceUri",
-                        "CrosMall",
-                        "CrosMallSwa"
-                    ]
-                }
-            ]
-        }
-    ],
     "AppStreamingAccessibilityIntegration": [
         {
             "platforms": [
@@ -7081,21 +7050,6 @@
             ]
         }
     ],
-    "CrOSLockMainProgramText": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CrOSLockMainProgramText"
-                    ]
-                }
-            ]
-        }
-    ],
     "CrOSMglruNoKVMOpt": [
         {
             "platforms": [
@@ -10174,33 +10128,6 @@
             ]
         }
     ],
-    "FlattenCpuCgroups": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithFlattenCpuCgroups",
-                    "params": {
-                        "unified_cpu_cgroup": "false"
-                    },
-                    "enable_features": [
-                        "FlattenCpuCgroups"
-                    ]
-                },
-                {
-                    "name": "EnabledWithUnifiedCpuCgroup",
-                    "params": {
-                        "unified_cpu_cgroup": "true"
-                    },
-                    "enable_features": [
-                        "FlattenCpuCgroups"
-                    ]
-                }
-            ]
-        }
-    ],
     "FledgeBiddingAndAuctionNonceSupport": [
         {
             "platforms": [
@@ -10997,7 +10924,7 @@
                         "AllocationSamplingRange": "20",
                         "MaxAllocations": "2048",
                         "MaxMetadata": "2048",
-                        "ProcessSamplingProbability": "0.015",
+                        "ProcessSamplingProbability": "0.1",
                         "TotalPages": "6144"
                     },
                     "enable_features": [
@@ -19803,27 +19730,6 @@
             ]
         }
     ],
-    "RenderArcNotificationsByChrome": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230913_Dogfood",
-                    "enable_features": [
-                        "RenderArcNotificationsByChrome"
-                    ]
-                },
-                {
-                    "name": "Enabled_20230913",
-                    "enable_features": [
-                        "RenderArcNotificationsByChrome"
-                    ]
-                }
-            ]
-        }
-    ],
     "RenderBlockingFullFrameRate": [
         {
             "platforms": [
@@ -26141,6 +26047,60 @@
                     "name": "Disabled_webrtc-hw-decoding",
                     "disable_features": [
                         "webrtc-hw-decoding"
+                    ]
+                }
+            ]
+        }
+    ],
+    "WebUIBundledCodeCache": [
+        {
+            "platforms": [
+                "linux",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledSyncFetch",
+                    "params": {
+                        "WebUIBundledCodeCacheGenerateResourceMap": "true"
+                    },
+                    "enable_features": [
+                        "WebUIBundledCodeCache"
+                    ],
+                    "disable_features": [
+                        "WebUIBundledCodeCacheAsyncFetch"
+                    ]
+                },
+                {
+                    "name": "EnabledAsyncFetch",
+                    "params": {
+                        "WebUIBundledCodeCacheGenerateResourceMap": "true"
+                    },
+                    "enable_features": [
+                        "WebUIBundledCodeCache",
+                        "WebUIBundledCodeCacheAsyncFetch"
+                    ]
+                },
+                {
+                    "name": "EnvironmentControl",
+                    "params": {
+                        "WebUIBundledCodeCacheGenerateResourceMap": "false"
+                    },
+                    "enable_features": [
+                        "WebUIBundledCodeCache"
+                    ],
+                    "disable_features": [
+                        "WebUIBundledCodeCacheAsyncFetch"
+                    ]
+                },
+                {
+                    "name": "FeatureControl",
+                    "params": {
+                        "WebUIBundledCodeCacheGenerateResourceMap": "false"
+                    },
+                    "disable_features": [
+                        "WebUIBundledCodeCache",
+                        "WebUIBundledCodeCacheAsyncFetch"
                     ]
                 }
             ]

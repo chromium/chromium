@@ -142,6 +142,10 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
   async glicWebClientCheckResponsive(): Promise<void> {
     return this.webClient.checkResponsive?.();
   }
+
+  glicWebClientNotifyManualResizeChanged(payload: {resizing: boolean}) {
+    this.host.isManuallyResizing().assignAndSignal(payload.resizing);
+  }
 }
 
 class GlicBrowserHostImpl implements GlicBrowserHost {
@@ -166,6 +170,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   panelActiveValue = ObservableValueImpl.withNoValue<boolean>();
   private fitWindow = false;
   private metrics: GlicBrowserHostMetricsImpl;
+  private manuallyResizing = ObservableValueImpl.withValue<boolean>(false);
 
   constructor(public webClient: GlicWebClient, windowProxy: WindowProxy) {
     // TODO(harringtond): Ideally, we could ensure we only process requests from
@@ -445,6 +450,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     return (await this.sender.requestWithResponse(
                 'glicBrowserGetOsMicrophonePermissionStatus', undefined))
         .enabled;
+  }
+
+  isManuallyResizing(): ObservableValueImpl<boolean> {
+    return this.manuallyResizing;
   }
 }
 
