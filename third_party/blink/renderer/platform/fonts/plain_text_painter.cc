@@ -19,6 +19,7 @@ PlainTextPainter::PlainTextPainter(PlainTextPainter::Mode mode) : mode_(mode) {}
 
 void PlainTextPainter::Trace(Visitor* visitor) const {
   visitor->Trace(cache_map_);
+  MemoryPressureListener::Trace(visitor);
 }
 
 PlainTextPainter& PlainTextPainter::Shared() {
@@ -296,6 +297,10 @@ FrameShapeCache* PlainTextPainter::GetCacheFor(const Font& font) {
     cache = result.stored_value->value;
   }
   return cache;
+}
+
+void PlainTextPainter::OnPurgeMemory() {
+  cache_map_.clear();
 }
 
 }  // namespace blink

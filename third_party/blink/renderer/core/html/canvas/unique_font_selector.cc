@@ -12,11 +12,16 @@
 namespace blink {
 
 UniqueFontSelector::UniqueFontSelector(FontSelector* base_selector)
-    : base_selector_(base_selector) {}
+    : base_selector_(base_selector) {
+  if (base_selector != nullptr && IsMainThread()) {
+    MemoryPressureListenerRegistry::Instance().RegisterClient(this);
+  }
+}
 
 void UniqueFontSelector::Trace(Visitor* visitor) const {
   visitor->Trace(base_selector_);
   visitor->Trace(font_cache_);
+  MemoryPressureListener::Trace(visitor);
 }
 
 const Font* UniqueFontSelector::FindOrCreateFont(
@@ -65,6 +70,11 @@ void UniqueFontSelector::RegisterForInvalidationCallbacks(
   if (base_selector_ != nullptr) {
     base_selector_->RegisterForInvalidationCallbacks(client);
   }
+}
+
+void UniqueFontSelector::OnPurgeMemory() {
+  font_cache_.clear();
+  lru_list_.clear();
 }
 
 void UniqueFontSelector::CacheValue::Trace(Visitor* visitor) const {
