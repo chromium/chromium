@@ -501,8 +501,7 @@ public class TabGroupListMediatorUnitTest {
         when(mTabGroupModelFilter.getRootIdFromTabGroupId(LOCAL_GROUP_ID1)).thenReturn(ROOT_ID1);
         when(mTabGroupModelFilter.getRootIdFromTabGroupId(LOCAL_GROUP_ID2))
                 .thenReturn(Tab.INVALID_TAB_ID);
-        when(mTabGroupModelFilter.getRelatedTabListForRootId(ROOT_ID1))
-                .thenReturn(Arrays.asList(mTab1));
+        when(mTabGroupModelFilter.getTabsInGroup(LOCAL_GROUP_ID1)).thenReturn(Arrays.asList(mTab1));
         when(mComprehensiveModel.getCount()).thenReturn(1);
         when(mComprehensiveModel.getTabAt(0)).thenReturn(mTab1);
         when(mTab1.getRootId()).thenReturn(ROOT_ID1);
@@ -545,8 +544,7 @@ public class TabGroupListMediatorUnitTest {
         group1.localId = new LocalTabGroupId(LOCAL_GROUP_ID1);
 
         when(mTabGroupModelFilter.getRootIdFromTabGroupId(LOCAL_GROUP_ID1)).thenReturn(ROOT_ID1);
-        when(mTabGroupModelFilter.getRelatedTabListForRootId(ROOT_ID1))
-                .thenReturn(Arrays.asList(mTab1));
+        when(mTabGroupModelFilter.getTabsInGroup(LOCAL_GROUP_ID1)).thenReturn(Arrays.asList(mTab1));
         when(mComprehensiveModel.getCount()).thenReturn(1);
         when(mComprehensiveModel.getTabAt(0)).thenReturn(mTab1);
         when(mTab1.getRootId()).thenReturn(ROOT_ID1);
@@ -620,8 +618,7 @@ public class TabGroupListMediatorUnitTest {
         group1.collaborationId = COLLABORATION_ID1;
 
         when(mTabGroupModelFilter.getRootIdFromTabGroupId(LOCAL_GROUP_ID1)).thenReturn(ROOT_ID1);
-        when(mTabGroupModelFilter.getRelatedTabListForRootId(ROOT_ID1))
-                .thenReturn(Arrays.asList(mTab1));
+        when(mTabGroupModelFilter.getTabsInGroup(LOCAL_GROUP_ID1)).thenReturn(Arrays.asList(mTab1));
         when(mComprehensiveModel.getCount()).thenReturn(1);
         when(mComprehensiveModel.getTabAt(0)).thenReturn(mTab1);
         when(mTab1.getRootId()).thenReturn(ROOT_ID1);
@@ -664,7 +661,7 @@ public class TabGroupListMediatorUnitTest {
         group1.collaborationId = COLLABORATION_ID1;
 
         when(mTabGroupModelFilter.getRootIdFromTabGroupId(LOCAL_GROUP_ID1)).thenReturn(ROOT_ID1);
-        when(mTabGroupModelFilter.getRelatedTabListForRootId(ROOT_ID1)).thenReturn(List.of(mTab1));
+        when(mTabGroupModelFilter.getTabsInGroup(LOCAL_GROUP_ID1)).thenReturn(List.of(mTab1));
         when(mComprehensiveModel.getCount()).thenReturn(1);
         when(mComprehensiveModel.getTabAt(0)).thenReturn(mTab1);
         when(mTab1.getRootId()).thenReturn(ROOT_ID1);
@@ -711,8 +708,7 @@ public class TabGroupListMediatorUnitTest {
         group1.collaborationId = COLLABORATION_ID1;
 
         when(mTabGroupModelFilter.getRootIdFromTabGroupId(LOCAL_GROUP_ID1)).thenReturn(ROOT_ID1);
-        when(mTabGroupModelFilter.getRelatedTabListForRootId(ROOT_ID1))
-                .thenReturn(Arrays.asList(mTab1));
+        when(mTabGroupModelFilter.getTabsInGroup(LOCAL_GROUP_ID1)).thenReturn(Arrays.asList(mTab1));
         when(mComprehensiveModel.getCount()).thenReturn(1);
         when(mComprehensiveModel.getTabAt(0)).thenReturn(mTab1);
         when(mTab1.getRootId()).thenReturn(ROOT_ID1);

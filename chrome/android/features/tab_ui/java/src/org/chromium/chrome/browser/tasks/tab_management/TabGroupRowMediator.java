@@ -316,13 +316,12 @@ class TabGroupRowMediator {
             // more tabs we need to forcibly remove the group.
             mTabGroupSyncService.removeGroup(mSavedTabGroup.syncId);
         } else if (state == GroupWindowState.IN_CURRENT) {
-            int rootId =
-                    mTabGroupModelFilter.getRootIdFromTabGroupId(mSavedTabGroup.localId.tabGroupId);
             mTabGroupModelFilter
                     .getTabModel()
                     .getTabRemover()
                     .closeTabs(
-                            TabClosureParams.forCloseTabGroup(mTabGroupModelFilter, rootId)
+                            TabClosureParams.forCloseTabGroup(
+                                            mTabGroupModelFilter, mSavedTabGroup.localId.tabGroupId)
                                     .allowUndo(false)
                                     .build(),
                             allowDialog);
