@@ -316,7 +316,18 @@ BASE_EXPORT int GetVlogLevelHelper(const char* file_start, size_t N);
 // Gets the current vlog level for the given file (usually taken from __FILE__).
 template <size_t N>
 int GetVlogLevel(const char (&file)[N]) {
+  // Disable runtime VLOG()s in official Android builds. This saves ~135k on the
+  // android-binary-size bot in crrev.com/c/6344673. Parts of the code can, and
+  // do, override ENABLED_VLOG_LEVEL to collect logs in the wild. The rest is
+  // dead-code stripped.
+  //
+  // TODO(crbug.com/404291877): Figure out if we want to deploy this on all
+  // platforms. Local chrome.stripped on Linux seems to shave off ~460k.
+#if defined(OFFICIAL_BUILD) && BUILDFLAG(IS_ANDROID)
+  return -1;
+#else
   return GetVlogLevelHelper(file, N);
+#endif  // defined(OFFICIAL_BUILD) && BUILDFLAG(IS_ANDROID)
 }
 
 // Sets the common items you want to be prepended to each log message.
