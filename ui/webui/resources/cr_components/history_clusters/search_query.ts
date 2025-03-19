@@ -56,8 +56,8 @@ export class SearchQueryElement extends SearchQueryElementBase {
   // Properties
   //============================================================================
 
-  index: number = -1;  // Initialized to an invalid value.
-  searchQuery?: SearchQuery;
+  accessor index: number = -1;  // Initialized to an invalid value.
+  accessor searchQuery: SearchQuery|undefined;
 
   //============================================================================
   // Event handlers

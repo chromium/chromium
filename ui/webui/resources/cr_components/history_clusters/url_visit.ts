@@ -100,14 +100,15 @@ export class UrlVisitElement extends ClusterMenuElementBase {
   // Properties
   //============================================================================
 
-  query: string = '';
-  visit?: URLVisit;
-  fromPersistence: boolean = false;
+  accessor query: string = '';
+  accessor visit: URLVisit|undefined;
+  accessor fromPersistence: boolean = false;
   protected annotations_: string[] = [];
-  protected allowDeletingHistory_: boolean =
+  protected accessor allowDeletingHistory_: boolean =
       loadTimeData.getBoolean('allowDeletingHistory');
-  private inSidePanel_: boolean = loadTimeData.getBoolean('inSidePanel');
-  protected renderActionMenu_: boolean = false;
+  private accessor inSidePanel_: boolean =
+      loadTimeData.getBoolean('inSidePanel');
+  protected accessor renderActionMenu_: boolean = false;
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);

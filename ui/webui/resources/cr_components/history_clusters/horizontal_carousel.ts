@@ -63,8 +63,8 @@ export class HorizontalCarouselElement extends CrLitElement {
 
   private resizeObserver_: ResizeObserver|null = null;
   private eventTracker_: EventTracker = new EventTracker();
-  protected showBackButton_: boolean = false;
-  protected showForwardButton_: boolean = false;
+  protected accessor showBackButton_: boolean = false;
+  protected accessor showForwardButton_: boolean = false;
 
   //============================================================================
   // Overridden methods
