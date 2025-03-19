@@ -16,7 +16,7 @@ bool IsManagedClientCertificateForUserEnabled() {
 
 BASE_FEATURE(kManagedBrowserClientCertificateEnabled,
              "ManagedBrowserClientCertificateEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsManagedBrowserClientCertificateEnabled() {
   return base::FeatureList::IsEnabled(kManagedBrowserClientCertificateEnabled);
