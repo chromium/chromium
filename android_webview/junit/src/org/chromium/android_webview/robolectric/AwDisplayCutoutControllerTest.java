@@ -35,13 +35,16 @@ import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.android_webview.AwDisplayCutoutController;
 import org.chromium.android_webview.AwDisplayCutoutController.Insets;
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.base.Log;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 
 /** JUnit tests for AwDisplayCutoutController. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@EnableFeatures(AwFeatures.WEBVIEW_SAFE_AREA_INCLUDES_SYSTEM_BARS)
 public class AwDisplayCutoutControllerTest {
     private static final String TAG = "DisplayCutoutTest";
     private static final boolean DEBUG = false;
