@@ -104,10 +104,6 @@ BASE_FEATURE(kCreateWarningShownClientSafeBrowsingReports,
              "CreateWarningShownClientSafeBrowsingReports",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDeepScanningCriteria,
-             "SafeBrowsingDeepScanningCriteria",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDelayedWarnings,
              "SafeBrowsingDelayedWarnings",
              base::FEATURE_DISABLED_BY_DEFAULT);
