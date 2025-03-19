@@ -10,14 +10,12 @@
 #include <string>
 
 #include "base/auto_reset.h"
-#include "base/command_line.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/browser/ash/app_mode/fake_cws.h"
 #include "chrome/browser/ash/app_mode/fake_cws_mixin.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
-#include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
 #include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
@@ -25,7 +23,6 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_browser_window_handler.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "components/account_id/account_id.h"
 #include "content/public/test/browser_test_utils.h"
@@ -46,22 +43,8 @@ extern const char kTestEnterpriseKioskAppId[];
 
 extern const char kTestEnterpriseAccountId[];
 
-// This is a simple test chrome app that does not have `kiosk_enabled` flag in
-// manifest. Webstore data json is in
-//   chrome/test/data/chromeos/app_mode/webstore/inlineinstall/
-//       detail/gbcgichpbeeimejckkpgnaighpndpped
-constexpr char kTestNonKioskEnabledApp[] = "gbcgichpbeeimejckkpgnaighpndpped";
-
 extern const test::UIPath kConfigNetwork;
 extern const char kSizeChangedMessage[];
-
-// Waits until `session` observes a new browser window was created, and returns
-// whether this new window is closing.
-bool DidSessionCloseNewWindow(KioskSystemSession* session);
-
-// Opens accessibility settings browser and waits until it will be handled by
-// `session`.
-Browser* OpenA11ySettingsBrowser(KioskSystemSession* session);
 
 // Base class for Chrome App Kiosk browser tests.
 class KioskBaseTest : public OobeBaseTest {

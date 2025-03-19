@@ -9,12 +9,10 @@
 
 #include "apps/test/app_window_waiter.h"
 #include "ash/public/cpp/login_screen_test_api.h"
-#include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "base/check_deref.h"
 #include "base/functional/callback_forward.h"
 #include "base/json/json_reader.h"
 #include "base/notreached.h"
-#include "base/test/test_future.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/ash/app_mode/consumer_kiosk_test_helper.h"
@@ -38,7 +36,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
@@ -54,25 +51,6 @@ const char kTestEnterpriseAccountId[] = "enterprise-kiosk-app@localhost";
 
 const test::UIPath kConfigNetwork = {"app-launch-splash", "configNetwork"};
 const char kSizeChangedMessage[] = "size_changed";
-
-bool DidSessionCloseNewWindow(KioskSystemSession* session) {
-  base::test::TestFuture<bool> future;
-  session->SetOnHandleBrowserCallbackForTesting(future.GetRepeatingCallback());
-  return future.Take();
-}
-
-Browser* OpenA11ySettingsBrowser(KioskSystemSession* session) {
-  auto* settings_manager = chrome::SettingsWindowManager::GetInstance();
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-
-  settings_manager->ShowOSSettings(
-      profile, chromeos::settings::mojom::kManageAccessibilitySubpagePath);
-
-  EXPECT_FALSE(DidSessionCloseNewWindow(session));
-
-  Browser* settings_browser = session->GetSettingsBrowserForTesting();
-  return settings_browser;
-}
 
 KioskBaseTest::KioskBaseTest()
     : settings_helper_(false),
