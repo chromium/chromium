@@ -112,11 +112,6 @@ GlicButton* GetGlicButton(const Browser& browser) {
       ->GetGlicButton();
 }
 
-gfx::Size GetWidgetInitialSize() {
-  return {features::kGlicInitialWidth.Get(),
-          features::kGlicInitialHeight.Get()};
-}
-
 display::Display GetDisplayForOpeningDetached() {
   // Get the Display for the most recently active browser. If there was no
   // recently active browser, use the primary display.
@@ -841,7 +836,7 @@ void GlicWindowController::ShowFinish() {
 
   // Set the draggable area to the top bar of the window, by default.
   GetGlicView()->SetDraggableAreas(
-      {{0, 0, GetGlicView()->width(), GetWidgetInitialSize().height()}});
+      {{0, 0, GetGlicView()->width(), GlicWidget::GetInitialSize().height()}});
   NotifyIfPanelStateChanged();
 }
 
@@ -1157,7 +1152,7 @@ gfx::Vector2d GlicWindowController::GetClampedMouseDragOffset(
     const gfx::Vector2d& mouse_offset) {
   static const int kMinimumDragOffset = 10;
   const int max_x = GetGlicView()->width() - kMinimumDragOffset;
-  const int max_y = GetWidgetInitialSize().height() - kMinimumDragOffset;
+  const int max_y = GlicWidget::GetInitialSize().height() - kMinimumDragOffset;
   CHECK_GT(max_x, kMinimumDragOffset);
   CHECK_GT(max_y, kMinimumDragOffset);
 
@@ -1223,8 +1218,8 @@ Browser* GlicWindowController::FindBrowserForAttachment() {
     // Define attachment zone as the right of the tab strip. It either is the
     // width of the widget or 1/3 of the tab strip, whichever is smaller.
     gfx::Rect attachment_zone = tab_strip_region_view->GetBoundsInScreen();
-    int width =
-        std::min(attachment_zone.width() / 3, GetWidgetInitialSize().width());
+    int width = std::min(attachment_zone.width() / 3,
+                         GlicWidget::GetInitialSize().width());
     attachment_zone.SetByBounds(attachment_zone.right() - width,
                                 attachment_zone.y() - kAttachmentBuffer,
                                 attachment_zone.right() + kAttachmentBuffer,
@@ -1455,7 +1450,14 @@ void GlicWindowController::EnableChanged() {
 
 gfx::Size GlicWindowController::GetLastRequestedSizeClamped(
     int display_height) const {
-  gfx::Size min = GetWidgetInitialSize();
+  gfx::Size min = GlicWidget::GetInitialSize();
+  if (glic_widget_) {
+    gfx::Size widget_min = glic_widget_->GetMinimumSize();
+    if (!widget_min.IsEmpty()) {
+      min = widget_min;
+    }
+  }
+
   gfx::Size max(
       min.width(),
       display_height * features::kGlicMaxHeightPercentOfScreen.Get() / 100);
