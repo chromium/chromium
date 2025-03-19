@@ -2166,3 +2166,55 @@ absolute time and civil time.
 *** promo
 Overlaps with `base/time/`.
 ***
+
+### Variant <sup>[banned]</sup>
+
+```c++
+absl::bad_variant_access;
+absl::get;
+absl::get_if;
+absl::holds_alternative;
+absl::monostate;
+absl::variant;
+absl::variant_alternative;
+absl::variant_alternative_t;
+absl::variant_npos;
+absl::variant_size;
+absl::variant_size_v;
+absl::visit;
+```
+
+**Description:** A backport of C++17's std::variant type-safe union and related utilities.
+
+**Notes:**
+*** promo
+These are just aliases to the std counterparts these days. Use std instead.
+***
+
+### Utility library <sup>[banned]</sup>
+
+```c++
+absl::apply;
+absl::exchange;
+absl::forward;
+absl::in_place;
+absl::in_place_index;
+absl::in_place_index_t;
+absl::in_place_t;
+absl::in_place_type;
+absl::in_place_type_t;
+absl::index_sequence;
+absl::index_sequence_for;
+absl::integer_sequence;
+absl::make_from_tuple;
+absl::make_index_sequence;
+absl::make_integer_sequence;
+absl::move;
+```
+
+**Description:** Backports of various C++17 template utilities.
+
+**Notes:**
+*** promo
+These are just aliases to the std counterparts these days. Use std instead.
+***
