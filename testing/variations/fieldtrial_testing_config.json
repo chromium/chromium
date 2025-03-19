@@ -24516,6 +24516,21 @@
             ]
         }
     ],
+    "UseFirstCoalescedFrameAsFlingGenerationTimestamp": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseFirstCoalescedFrameAsFlingGenerationTimestamp"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseGMSCoreForBrandingInfo": [
         {
             "platforms": [
