@@ -103,7 +103,10 @@
   },
   "win": {
     "exclusions": [
-      "build/toolchain/win/rc/win/rc.exe.sha1"
+      "build/toolchain/win/rc/win/rc.exe.sha1",
+      "build/toolchain/win/rc/rc.py",
+      "build/toolchain/win/midl.py",
+      "build/toolchain/win/ml.py"
     ]
   }
 }
