@@ -9,7 +9,9 @@
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
+#include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -25,7 +27,7 @@ class InvalidationSetToSelectorMapTest : public PageTestBase {
   void TearDown() override {
     // Ensure we do not carry over an instance from one test to another.
     InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded(
-        GetDocument().GetStyleEngine());
+        GetDocument(), GetDocument().GetStyleEngine());
     CHECK(GetInstance() == nullptr);
 
     PageTestBase::TearDown();
@@ -365,7 +367,7 @@ TEST_F(InvalidationSetToSelectorMapTest, SubtreeInvalidation) {
 TEST_F(InvalidationSetToSelectorMapTest, InvalidationSetRemoval) {
   StartTracing();
   InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded(
-      GetDocument().GetStyleEngine());
+      GetDocument(), GetDocument().GetStyleEngine());
   EXPECT_NE(GetInstance(), nullptr);
 
   CSSStyleSheet* sheet = css_test_helpers::CreateStyleSheet(GetDocument());
@@ -644,7 +646,7 @@ TEST_F(InvalidationSetToSelectorMapTest,
   // to set up for the next part of the test.
   StopTracing();
   InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded(
-      GetDocument().GetStyleEngine());
+      GetDocument(), GetDocument().GetStyleEngine());
   EXPECT_EQ(GetInstance(), nullptr);
   StartTracing();
 
@@ -964,6 +966,119 @@ TEST_F(InvalidationSetToSelectorMapTest, AttributePseudos) {
   ASSERT_NE(selector_list, nullptr);
   EXPECT_EQ(selector_list->size(), 1u);
   EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".b p::first-letter");
+}
+
+TEST_F(InvalidationSetToSelectorMapTest, MultipleTreeScopes) {
+  SetBodyInnerHTML(R"HTML(
+    <template id="custom-template">
+      <style>
+        .a .b { background: yellow; }
+      </style>
+      <div class="a">Shadow Outer
+        <div class="b">Shadow Inner</div>
+      </div>
+    </template>
+    <div id="parent1"></div>
+    <div id="parent2"></div>
+  )HTML");
+
+  const char* parent_ids[] = {"parent1", "parent2"};
+  for (const char* parent_id : parent_ids) {
+    ShadowRoot& shadow_root =
+        GetElementById(parent_id)->AttachShadowRootForTesting(
+            ShadowRootMode::kOpen);
+    shadow_root.appendChild(
+        To<HTMLTemplateElement>(GetElementById("custom-template"))
+            ->content()
+            ->cloneNode(true));
+  }
+
+  UpdateAllLifecyclePhasesForTest();
+
+  for (const char* parent_id : parent_ids) {
+    SCOPED_TRACE(testing::Message() << "Parent element id: " << parent_id);
+    StartTracing();
+    ShadowRoot* shadow_root = GetElementById(parent_id)->GetShadowRoot();
+    shadow_root->QuerySelector(AtomicString(".a"))
+        ->removeAttribute(html_names::kClassAttr);
+    UpdateAllLifecyclePhasesForTest();
+    auto analyzer = StopTracing();
+
+    trace_analyzer::TraceEventVector invalidation_events;
+    analyzer->FindEvents(trace_analyzer::Query::EventNameIs(
+                             "StyleInvalidatorInvalidationTracking"),
+                         &invalidation_events);
+    size_t found_event_count = 0;
+    for (auto event : invalidation_events) {
+      ASSERT_TRUE(event->HasDictArg("data"));
+      base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+      std::string* reason = data_dict.FindString("reason");
+      if (reason != nullptr && *reason == "Invalidation set matched class") {
+        base::Value::List* selector_list = data_dict.FindList("selectors");
+        ASSERT_NE(selector_list, nullptr);
+        EXPECT_EQ(selector_list->size(), 1u);
+        EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".a .b");
+        const CSSStyleSheet* sheet =
+            To<HTMLStyleElement>(
+                shadow_root->QuerySelector(AtomicString("style")))
+                ->sheet();
+        EXPECT_EQ(StyleSheetIdAtIndex(selector_list, 0),
+                  IdentifiersFactory::IdForCSSStyleSheet(sheet).Utf8());
+        found_event_count++;
+      }
+    }
+    EXPECT_EQ(found_event_count, 1u);
+  }
+}
+
+TEST_F(InvalidationSetToSelectorMapTest, HostSelector) {
+  SetBodyInnerHTML(R"HTML(
+    <template id="custom-template">
+      <style>
+        :host(.a) .b { background: yellow; }
+      </style>
+      <div class="b">Shadow Inner</div>
+    </template>
+    <div id="parent" class="a"></div>
+  )HTML");
+
+  Element* parent = GetElementById("parent");
+  ShadowRoot& shadow_root =
+      parent->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  shadow_root.appendChild(
+      To<HTMLTemplateElement>(GetElementById("custom-template"))
+          ->content()
+          ->cloneNode(true));
+  UpdateAllLifecyclePhasesForTest();
+
+  StartTracing();
+  parent->removeAttribute(html_names::kClassAttr);
+  UpdateAllLifecyclePhasesForTest();
+  auto analyzer = StopTracing();
+
+  trace_analyzer::TraceEventVector invalidation_events;
+  analyzer->FindEvents(trace_analyzer::Query::EventNameIs(
+                           "StyleInvalidatorInvalidationTracking"),
+                       &invalidation_events);
+  size_t found_event_count = 0;
+  for (auto event : invalidation_events) {
+    ASSERT_TRUE(event->HasDictArg("data"));
+    base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+    std::string* reason = data_dict.FindString("reason");
+    if (reason != nullptr && *reason == "Invalidation set matched class") {
+      base::Value::List* selector_list = data_dict.FindList("selectors");
+      ASSERT_NE(selector_list, nullptr);
+      EXPECT_EQ(selector_list->size(), 1u);
+      EXPECT_EQ(SelectorAtIndex(selector_list, 0), ":host(.a) .b");
+      const CSSStyleSheet* sheet =
+          To<HTMLStyleElement>(shadow_root.QuerySelector(AtomicString("style")))
+              ->sheet();
+      EXPECT_EQ(StyleSheetIdAtIndex(selector_list, 0),
+                IdentifiersFactory::IdForCSSStyleSheet(sheet).Utf8());
+      found_event_count++;
+    }
+  }
+  EXPECT_EQ(found_event_count, 1u);
 }
 
 }  // namespace blink

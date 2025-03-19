@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
 
 #import "base/notreached.h"
+#import "components/commerce/core/commerce_feature_list.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -39,6 +40,13 @@
           IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_TITLE_PARCEL_TRACKING);
     case CustomizationToggleType::kTips:
       return l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_TIP_TITLE);
+    case CustomizationToggleType::kShopCard:
+      if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
+        return l10n_util::GetNSString(
+            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_CUSTOMIZE_CARDS);
+      }
+      // TODO(crbug.com/404335872) Implement for reviews (arm 2).
+      return @"";
   }
 }
 
@@ -71,6 +79,13 @@
     case CustomizationToggleType::kTips:
       return l10n_util::GetNSString(
           IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_SUBTITLE_TIPS);
+    case CustomizationToggleType::kShopCard:
+      if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
+        return l10n_util::GetNSString(
+            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_CUSTOMIZE_CARDS_SUBTITLE);
+      }
+      // TODO(crbug.com/404335872) Implement for reviews (arm 2).
+      return @"";
   }
 }
 
@@ -102,6 +117,19 @@
     case CustomizationToggleType::kTips:
       return DefaultSymbolWithPointSize(kListBulletClipboardSymbol,
                                         kToggleIconPointSize);
+    case CustomizationToggleType::kShopCard: {
+      UIImageSymbolConfiguration* fallbackImageConfig =
+          [UIImageSymbolConfiguration
+              configurationWithWeight:UIImageSymbolWeightLight];
+      if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
+        return CustomSymbolWithConfiguration(kDownTrendSymbol,
+                                             fallbackImageConfig);
+      }
+      // Placeholder until arm 2 (product reviews) is implemented
+      // (crbug.com/404335872).
+      return CustomSymbolWithConfiguration(kChromeProductSymbol,
+                                           fallbackImageConfig);
+    }
   }
 }
 
@@ -127,6 +155,12 @@
       return kCustomizationToggleParcelTrackingIdentifier;
     case CustomizationToggleType::kTips:
       return kCustomizationToggleTipsIdentifier;
+    case CustomizationToggleType::kShopCard:
+      if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
+        return kCustomizationToggleShopCardPriceTrackingIdentifier;
+      }
+      // TODO(crbug.com/404335872) Implement for arm 2 (reviews).
+      return @"";
   }
 }
 
@@ -151,6 +185,8 @@
     case CustomizationToggleType::kParcelTracking:
       return nil;
     case CustomizationToggleType::kTips:
+      return nil;
+    case CustomizationToggleType::kShopCard:
       return nil;
   }
 }

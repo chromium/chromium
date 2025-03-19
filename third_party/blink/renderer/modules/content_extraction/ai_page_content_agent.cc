@@ -136,7 +136,8 @@ const LayoutIFrame* GetIFrame(const LayoutObject& object) {
 
 bool IsGenericContainer(
     const LayoutObject& object,
-    const Vector<mojom::blink::AIPageContentAnnotatedRole>& annotated_roles) {
+    const Vector<mojom::blink::AIPageContentAnnotatedRole>& annotated_roles,
+    const base::flat_set<DOMNodeId>& interactive_dom_node_ids) {
   if (object.Style()->GetPosition() == EPosition::kFixed) {
     return true;
   }
@@ -157,22 +158,16 @@ bool IsGenericContainer(
     if (element->HasTagName(html_names::kFigureTag)) {
       return true;
     }
-
-    if (element->IsFocused()) {
-      return true;
-    }
-  }
-
-  if (AXObjectCache* ax_object_cache =
-          object.GetDocument().ExistingAXObjectCache()) {
-    if (Node* ax_focused_node = ax_object_cache->GetAccessibilityFocus()) {
-      if (object.GetNode() == ax_focused_node) {
-        return true;
-      }
-    }
   }
 
   if (!annotated_roles.empty()) {
+    return true;
+  }
+
+  // Use `ExistingIdForNode` since an Id should have already been generated if
+  // this node is interactive.
+  if (interactive_dom_node_ids.contains(
+          DOMNodeIds::ExistingIdForNode(object.GetNode()))) {
     return true;
   }
 
@@ -493,15 +488,9 @@ void RecordLatencyMetrics(base::TimeDelta latency,
   }
 }
 
-// Runs the given tasks.
-void RunTasks(WTF::Vector<base::OnceClosure> tasks) {
-  for (auto& task : tasks) {
-    std::move(task).Run();
-  }
-}
-
-bool ShouldRunLifecycleForSyncExtraction(
-    const mojom::blink::AIPageContentOptions& options) {
+// Returns true if extracting the content can't be deferred until the next
+// frame.
+bool NeedsSyncExtraction(const mojom::blink::AIPageContentOptions& options) {
   // Including hidden searchable content requires layout for nodes which are
   // skipped during rendering. So we need a special lifecycle for them and can't
   // use the computed state from the regular lifecycle update.
@@ -566,7 +555,10 @@ void AIPageContentAgent::Trace(Visitor* visitor) const {
 }
 
 void AIPageContentAgent::DidFinishPostLifecycleSteps(const LocalFrameView&) {
-  RunTasksIfReady();
+  for (auto& task : std::move(async_extraction_tasks_)) {
+    std::move(task).Run();
+  }
+  async_extraction_tasks_.clear();
 }
 
 void AIPageContentAgent::GetAIPageContent(
@@ -574,46 +566,27 @@ void AIPageContentAgent::GetAIPageContent(
     GetAIPageContentCallback callback) {
   base::TimeTicks start_time = base::TimeTicks::Now();
 
-  if (ShouldRunLifecycleForSyncExtraction(*options)) {
+  LocalFrameView* view = GetSupplementable()->View();
+
+  // If there's no lifecycle pending, we can't rely on post lifecycle
+  // notifications and the layout is likely clean.
+  const bool can_do_sync_extraction = !view || !view->LifecycleUpdatePending();
+
+  if (can_do_sync_extraction || NeedsSyncExtraction(*options)) {
     GetAIPageContentSync(std::move(options), std::move(callback), start_time);
     return;
   }
 
   if (!is_registered_) {
     is_registered_ = true;
-    if (LocalFrameView* view = GetSupplementable()->View()) {
-      view->RegisterForLifecycleNotifications(this);
-    }
+    view->RegisterForLifecycleNotifications(this);
   }
 
-  // Running lifecycle beyond layout is expensive and the information is only
-  // needed to compute geometry. Limit the update to layout if we don't need the
-  // geometry.
   // We don't expect many overlapping calls to this service as the browser will
   // only issue one request at a time.
-  if (options->include_geometry) {
-    geometry_tasks_.push_back(WTF::BindOnce(
-        &AIPageContentAgent::GetAIPageContentSync, WrapWeakPersistent(this),
-        std::move(options), std::move(callback), start_time));
-  } else {
-    layout_clean_tasks_.push_back(WTF::BindOnce(
-        &AIPageContentAgent::GetAIPageContentSync, WrapWeakPersistent(this),
-        std::move(options), std::move(callback), start_time));
-  }
-
-  // Run tasks if the document lifecycle is at least as advanced.
-  RunTasksIfReady();
-}
-
-void AIPageContentAgent::RunTasksIfReady() {
-  if (GetSupplementable()->Lifecycle().GetState() >=
-      DocumentLifecycle::kPrePaintClean) {
-    RunTasks(std::move(geometry_tasks_));
-  }
-  if (GetSupplementable()->Lifecycle().GetState() >=
-      DocumentLifecycle::kLayoutClean) {
-    RunTasks(std::move(layout_clean_tasks_));
-  }
+  async_extraction_tasks_.push_back(WTF::BindOnce(
+      &AIPageContentAgent::GetAIPageContentSync, WrapWeakPersistent(this),
+      std::move(options), std::move(callback), start_time));
 }
 
 void AIPageContentAgent::GetAIPageContentSync(
@@ -642,14 +615,13 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::GetAIPageContentInternal(
     return nullptr;
   }
 
-  auto* builder = MakeGarbageCollected<ContentBuilder>(options);
-  return builder->Build(*frame);
+  ContentBuilder builder(options);
+  return builder.Build(*frame);
 }
 
 AIPageContentAgent::ContentBuilder::ContentBuilder(
     const mojom::blink::AIPageContentOptions& options)
-    : options_(options),
-      content_node_id_map_(MakeGarbageCollected<ContentNodeIdMap>()) {}
+    : options_(options) {}
 
 AIPageContentAgent::ContentBuilder::~ContentBuilder() = default;
 
@@ -667,35 +639,33 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
   // activation reason of FindInPage.
   std::vector<DisplayLockDocumentState::ScopedForceActivatableDisplayLocks>
       forced_activatable_locks;
-  if (ShouldRunLifecycleForSyncExtraction(*options_)) {
-    if (options_->include_hidden_searchable_content) {
-      forced_activatable_locks.emplace_back(
-          document.GetDisplayLockDocumentState()
-              .GetScopedForceActivatableLocks());
-      document.View()->ForAllChildLocalFrameViews(
-          [&](LocalFrameView& frame_view) {
-            if (!frame_view.GetFrame().GetDocument()) {
-              return;
-            }
+  if (options_->include_hidden_searchable_content) {
+    forced_activatable_locks.emplace_back(
+        document.GetDisplayLockDocumentState()
+            .GetScopedForceActivatableLocks());
+    document.View()->ForAllChildLocalFrameViews(
+        [&](LocalFrameView& frame_view) {
+          if (!frame_view.GetFrame().GetDocument()) {
+            return;
+          }
 
-            forced_activatable_locks.emplace_back(
-                frame_view.GetFrame()
-                    .GetDocument()
-                    ->GetDisplayLockDocumentState()
-                    .GetScopedForceActivatableLocks());
-          });
-    }
+          forced_activatable_locks.emplace_back(
+              frame_view.GetFrame()
+                  .GetDocument()
+                  ->GetDisplayLockDocumentState()
+                  .GetScopedForceActivatableLocks());
+        });
+  }
 
-    // Running lifecycle beyond layout is expensive and the information is only
-    // needed to compute geometry. Limit the update to layout if we don't need
-    // the geometry.
-    if (options_->include_geometry) {
-      document.View()->UpdateAllLifecyclePhasesExceptPaint(
-          DocumentUpdateReason::kUnknown);
-    } else {
-      document.View()->UpdateLifecycleToLayoutClean(
-          DocumentUpdateReason::kUnknown);
-    }
+  // Running lifecycle beyond layout is expensive and the information is only
+  // needed to compute geometry. Limit the update to layout if we don't need
+  // the geometry.
+  if (options_->include_geometry) {
+    document.View()->UpdateAllLifecyclePhasesExceptPaint(
+        DocumentUpdateReason::kUnknown);
+  } else {
+    document.View()->UpdateLifecycleToLayoutClean(
+        DocumentUpdateReason::kUnknown);
   }
 
   auto* layout_view = document.GetLayoutView();
@@ -703,15 +673,15 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
   auto root_node = MaybeGenerateContentNode(*layout_view, *document_style);
   CHECK(root_node);
 
-  WalkChildren(*layout_view, *root_node, *document_style);
-  page_content->root_node = std::move(root_node);
-
-  // Must add page and frame interaction info after the entire tree is built.
+  // Add interaction metadata before walking the tree to ensure we promote
+  // interactive DOM nodes to ContentNodes.
   AddPageInteractionInfo(document, *page_content);
-
   auto frame_data = mojom::blink::AIPageContentFrameData::New();
   AddFrameData(frame, *frame_data);
   page_content->frame_data = std::move(frame_data);
+
+  WalkChildren(*layout_view, *root_node, *document_style);
+  page_content->root_node = std::move(root_node);
 
   return page_content;
 }
@@ -751,10 +721,16 @@ void AIPageContentAgent::ContentBuilder::AddMetaData(
   }
 }
 
+void AIPageContentAgent::ContentBuilder::AddInteractiveNode(
+    DOMNodeId dom_node_id) {
+  CHECK_NE(dom_node_id, kInvalidDOMNodeId);
+  interactive_dom_node_ids_.insert(dom_node_id);
+}
+
 bool AIPageContentAgent::ContentBuilder::WalkChildren(
     const LayoutObject& object,
     mojom::blink::AIPageContentNode& content_node,
-    const ComputedStyle& document_style) const {
+    const ComputedStyle& document_style) {
   if (object.ChildPrePaintBlockedByDisplayLock()) {
     return false;
   }
@@ -794,7 +770,7 @@ bool AIPageContentAgent::ContentBuilder::WalkChildren(
 
 void AIPageContentAgent::ContentBuilder::ProcessIframe(
     const LayoutIFrame& object,
-    mojom::blink::AIPageContentNode& content_node) const {
+    mojom::blink::AIPageContentNode& content_node) {
   CHECK(IsVisible(object));
 
   content_node.content_attributes->attribute_type =
@@ -809,6 +785,16 @@ void AIPageContentAgent::ContentBuilder::ProcessIframe(
   content_node.content_attributes->iframe_data = std::move(iframe_data);
 
   auto* local_frame = DynamicTo<LocalFrame>(frame);
+
+  // Add interaction metadata before walking the tree to ensure we promote
+  // interactive DOM nodes to ContentNodes.
+  if (local_frame && local_frame->GetDocument()) {
+    auto frame_data = mojom::blink::AIPageContentFrameData::New();
+    AddFrameData(*local_frame, *frame_data);
+    content_node.content_attributes->iframe_data->local_frame_data =
+        std::move(frame_data);
+  }
+
   auto* child_layout_view =
       local_frame ? local_frame->ContentLayoutObject() : nullptr;
   if (child_layout_view) {
@@ -825,19 +811,12 @@ void AIPageContentAgent::ContentBuilder::ProcessIframe(
                  *child_layout_view->Style());
     content_node.children_nodes.emplace_back(std::move(child_content_node));
   }
-
-  if (local_frame && local_frame->GetDocument()) {
-    auto frame_data = mojom::blink::AIPageContentFrameData::New();
-    AddFrameData(*local_frame, *frame_data);
-    content_node.content_attributes->iframe_data->local_frame_data =
-        std::move(frame_data);
-  }
 }
 
 mojom::blink::AIPageContentNodePtr
 AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
     const LayoutObject& object,
-    const ComputedStyle& document_style) const {
+    const ComputedStyle& document_style) {
   auto content_node = mojom::blink::AIPageContentNode::New();
   content_node->content_attributes =
       mojom::blink::AIPageContentAttributes::New();
@@ -905,7 +884,8 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
                          element->HasTagName(html_names::kDdTag))) {
     attributes.attribute_type =
         mojom::blink::AIPageContentAttributeType::kListItem;
-  } else if (IsGenericContainer(object, attributes.annotated_roles)) {
+  } else if (IsGenericContainer(object, attributes.annotated_roles,
+                                interactive_dom_node_ids_)) {
     // Be sure to set annotated roles before calling IsGenericContainer, as
     // IsGenericContainer will check for annotated roles.
     // Keep container at the bottom of the list as it is the least specific.
@@ -916,15 +896,8 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
     return nullptr;
   }
 
-  // Set the content node id once it is clear that the node will be generated.
-  attributes.content_node_id = content_node_id_counter_;
-  content_node_id_counter_++;
-  if (Node* node = object.GetNode()) {
-    content_node_id_map_->insert(node, attributes.content_node_id);
-  }
-
-  if (auto dom_node_id = AddDomNodeId(object, attributes)) {
-    attributes.common_ancestor_dom_node_id = *dom_node_id;
+  if (auto dom_node_id = GetDomNodeId(object)) {
+    attributes.dom_node_id = *dom_node_id;
   }
 
   AddNodeGeometry(object, attributes);
@@ -932,17 +905,6 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
   AddNodeInteractionInfo(object, attributes);
 
   return content_node;
-}
-
-std::optional<DOMNodeId> AIPageContentAgent::ContentBuilder::AddDomNodeId(
-    const LayoutObject& object,
-    mojom::blink::AIPageContentAttributes& attributes) const {
-  if (auto node_id = GetDomNodeId(object)) {
-    attributes.dom_node_ids.push_back(*node_id);
-    return node_id;
-  }
-
-  return std::nullopt;
 }
 
 void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
@@ -971,7 +933,7 @@ void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
 
 void AIPageContentAgent::ContentBuilder::AddPageInteractionInfo(
     const Document& document,
-    mojom::blink::AIPageContent& page_content) const {
+    mojom::blink::AIPageContent& page_content) {
   page_content.page_interaction_info =
       mojom::blink::AIPageContentPageInteractionInfo::New();
   mojom::blink::AIPageContentPageInteractionInfo& page_interaction_info =
@@ -979,21 +941,17 @@ void AIPageContentAgent::ContentBuilder::AddPageInteractionInfo(
 
   // Focused element
   if (Element* element = document.FocusedElement()) {
-    auto focused_node_id = content_node_id_map_->find(element);
-    if (focused_node_id != content_node_id_map_->end()) {
-      page_interaction_info.focused_node_id = focused_node_id->value;
-    }
+    page_interaction_info.focused_dom_node_id = DOMNodeIds::IdForNode(element);
+    AddInteractiveNode(*page_interaction_info.focused_dom_node_id);
   }
 
   // Accessibility focus
   if (AXObjectCache* ax_object_cache = document.ExistingAXObjectCache()) {
     if (Node* ax_focused_node = ax_object_cache->GetAccessibilityFocus()) {
-      auto accessibility_focused_node_id =
-          content_node_id_map_->find(ax_focused_node);
-      if (accessibility_focused_node_id != content_node_id_map_->end()) {
-        page_interaction_info.accessibility_focused_node_id =
-            accessibility_focused_node_id->value;
-      }
+      page_interaction_info.accessibility_focused_dom_node_id =
+          DOMNodeIds::IdForNode(ax_focused_node);
+      AddInteractiveNode(
+          *page_interaction_info.accessibility_focused_dom_node_id);
     }
   }
 
@@ -1007,8 +965,7 @@ void AIPageContentAgent::ContentBuilder::AddPageInteractionInfo(
 
 void AIPageContentAgent::ContentBuilder::AddFrameData(
     const LocalFrame& frame,
-    mojom::blink::AIPageContentFrameData& frame_data) const {
-
+    mojom::blink::AIPageContentFrameData& frame_data) {
   frame_data.frame_interaction_info =
       mojom::blink::AIPageContentFrameInteractionInfo::New();
   AddFrameInteractionInfo(frame, *frame_data.frame_interaction_info);
@@ -1017,8 +974,7 @@ void AIPageContentAgent::ContentBuilder::AddFrameData(
 
 void AIPageContentAgent::ContentBuilder::AddFrameInteractionInfo(
     const LocalFrame& frame,
-    mojom::blink::AIPageContentFrameInteractionInfo& frame_interaction_info)
-    const {
+    mojom::blink::AIPageContentFrameInteractionInfo& frame_interaction_info) {
   // Selection
   if (!frame.SelectedText().empty()) {
     frame_interaction_info.selection =
@@ -1033,14 +989,18 @@ void AIPageContentAgent::ContentBuilder::AddFrameInteractionInfo(
     const Position& end_position = frame_selection.ComputeEndPosition();
     Node* start_node = start_position.ComputeContainerNode();
     Node* end_node = end_position.ComputeContainerNode();
-    auto start_node_id = content_node_id_map_->find(start_node);
-    auto end_node_id = content_node_id_map_->find(end_node);
-    if (start_node_id != content_node_id_map_->end()) {
-      selection.start_node_id = start_node_id->value;
+
+    if (start_node) {
+      selection.start_dom_node_id = DOMNodeIds::IdForNode(start_node);
+      AddInteractiveNode(selection.start_dom_node_id);
+
       selection.start_offset = start_position.ComputeOffsetInContainerNode();
     }
-    if (end_node_id != content_node_id_map_->end()) {
-      selection.end_node_id = end_node_id->value;
+
+    if (end_node) {
+      selection.end_dom_node_id = DOMNodeIds::IdForNode(end_node);
+      AddInteractiveNode(selection.end_dom_node_id);
+
       selection.end_offset = end_position.ComputeOffsetInContainerNode();
     }
   }
@@ -1049,6 +1009,10 @@ void AIPageContentAgent::ContentBuilder::AddFrameInteractionInfo(
 void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
     const LayoutObject& object,
     mojom::blink::AIPageContentAttributes& attributes) const {
+  if (!options_->enable_experimental_actionable_data) {
+    return;
+  }
+
   attributes.node_interaction_info =
       mojom::blink::AIPageContentNodeInteractionInfo::New();
   mojom::blink::AIPageContentNodeInteractionInfo& node_interaction_info =
@@ -1078,10 +1042,6 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
     node_interaction_info.is_draggable = element->draggable();
     node_interaction_info.is_clickable = element->IsMaybeClickable();
   }
-}
-
-void AIPageContentAgent::ContentBuilder::Trace(Visitor* visitor) const {
-  visitor->Trace(content_node_id_map_);
 }
 
 }  // namespace blink

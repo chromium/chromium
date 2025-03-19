@@ -64,8 +64,8 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   class MTPFileNode;
 
   // Maps file ids to file nodes.
-  typedef std::map<uint32_t, raw_ptr<MTPFileNode, CtnExperimental>>
-      FileIdToMTPFileNodeMap;
+  using MTPFileNodesById =
+      std::map<uint32_t, raw_ptr<MTPFileNode, CtnExperimental>>;
 
   // Maps file paths to file info.
   typedef std::map<base::FilePath, MTPDeviceTaskHelper::MTPEntry> FileInfoCache;
@@ -496,7 +496,7 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   // A mapping for quick lookups into the |root_node_| tree structure. Since
   // |root_node_| contains pointers to this map, it must be declared after this
   // so destruction happens in the right order.
-  FileIdToMTPFileNodeMap file_id_to_node_map_;
+  MTPFileNodesById nodes_by_id_;
 
   // The root node of a tree-structure that caches the directory structure of
   // the MTP device.

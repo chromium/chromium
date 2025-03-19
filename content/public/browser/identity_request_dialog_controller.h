@@ -259,6 +259,9 @@ class CONTENT_EXPORT IdentityRequestDialogController {
       const url::Origin& origin,
       base::OnceCallback<void(bool accepted)> callback);
 
+  // Notifies when the autofill data source is ready to be queried.
+  virtual void NotifyAutofillSourceReadyForTesting();
+
  protected:
   bool is_interception_enabled_{false};
 };

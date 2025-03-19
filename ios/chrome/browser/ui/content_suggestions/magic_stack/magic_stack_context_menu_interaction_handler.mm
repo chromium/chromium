@@ -6,6 +6,7 @@
 
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/commerce/core/commerce_feature_list.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
@@ -41,6 +42,8 @@ BOOL AllowsLongPressForModuleType(ContentSuggestionsModuleType type) {
     case ContentSuggestionsModuleType::kTips:
     case ContentSuggestionsModuleType::kMostVisited:
       return YES;
+    case ContentSuggestionsModuleType::kShopCard:
+      return commerce::kShopCardVariation.Get() == commerce::kShopCardArm1;
     default:
       return NO;
   }
@@ -64,6 +67,7 @@ NSString* GetContextMenuTitleForType(ContentSuggestionsModuleType type) {
       return l10n_util::GetNSString(IDS_IOS_PARCEL_TRACKING_CONTEXT_MENU_TITLE);
     case ContentSuggestionsModuleType::kPriceTrackingPromo:
     case ContentSuggestionsModuleType::kSendTabPromo:
+
       return @"";
     case ContentSuggestionsModuleType::kTipsWithProductImage:
     case ContentSuggestionsModuleType::kTips:
@@ -72,6 +76,13 @@ NSString* GetContextMenuTitleForType(ContentSuggestionsModuleType type) {
     case ContentSuggestionsModuleType::kMostVisited:
       return l10n_util::GetNSString(
           IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_CONTEXT_MENU_DESCRIPTION);
+    case ContentSuggestionsModuleType::kShopCard:
+      if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
+        return l10n_util::GetNSString(
+            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_TITLE);
+      }
+      // TODO(crbug.com/404335870) Implement for arm 2 (reviews).
+      return @"";
     default:
       NOTREACHED();
   }
@@ -120,6 +131,12 @@ NSString* GetContextMenuHideDescriptionForType(
     case ContentSuggestionsModuleType::kMostVisited:
       return l10n_util::GetNSString(
           IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_HIDE_CARD);
+    case ContentSuggestionsModuleType::kShopCard:
+      if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
+        return l10n_util::GetNSString(
+            IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_HIDE);
+      }
+      return @"";
     default:
       NOTREACHED();
   }

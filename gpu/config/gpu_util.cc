@@ -1070,7 +1070,8 @@ std::string VulkanVersionToString(uint32_t vulkan_version) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 // GPU picking is only effective with ANGLE/Metal backend on Mac and
 // on Windows with EGL.
-void EnsureNonSoftwareDeviceForTesting(gl::GpuPreference gpu_preference) {
+void TrySetNonSoftwareDevicePreferenceForTesting(
+    gl::GpuPreference gpu_preference) {
   // `SetGpuPreferenceEGL` fails when a preference was previously already set.
   if (GetSystemDeviceIdEGLForTesting(gpu_preference) != 0) {  // IN-TEST
     return;
@@ -1089,11 +1090,14 @@ void EnsureNonSoftwareDeviceForTesting(gl::GpuPreference gpu_preference) {
                                       });
              it != gpu_info.secondary_gpus.end()) {
     non_software_renderer_device_id = it->system_device_id;
-  } else {
-    LOG(FATAL) << "No non-software renderer device available.";
   }
 
-  SetGpuPreferenceEGL(gpu_preference, non_software_renderer_device_id);
+  if (non_software_renderer_device_id != 0) {
+    SetGpuPreferenceEGL(gpu_preference, non_software_renderer_device_id);
+  } else {
+    LOG(WARNING) << "No hardware renderer device available. Tests that require "
+                    "one may fail.";
+  }
 }
 #endif
 

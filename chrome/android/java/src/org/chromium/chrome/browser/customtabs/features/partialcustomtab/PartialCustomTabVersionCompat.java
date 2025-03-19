@@ -23,6 +23,7 @@ import androidx.annotation.Px;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.customtabs.features.CustomTabDimensionUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -96,16 +97,7 @@ abstract class PartialCustomTabVersionCompat {
         @Override
         @Px
         int getDisplayWidth() {
-            Insets navbarInsets =
-                    mActivity
-                            .getWindowManager()
-                            .getCurrentWindowMetrics()
-                            .getWindowInsets()
-                            .getInsets(
-                                    WindowInsets.Type.navigationBars()
-                                            | WindowInsets.Type.displayCutout());
-            int navbarWidth = navbarInsets.left + navbarInsets.right;
-            return windowBounds().width() - navbarWidth;
+            return CustomTabDimensionUtils.getDisplayWidthR(mActivity);
         }
 
         @Override
@@ -245,10 +237,7 @@ abstract class PartialCustomTabVersionCompat {
         @Override
         @Px
         int getDisplayWidth() {
-            Display display = mActivity.getWindowManager().getDefaultDisplay();
-            Point size = new Point();
-            display.getSize(size);
-            return size.x;
+            return CustomTabDimensionUtils.getDisplayWidth(mActivity);
         }
 
         @Override

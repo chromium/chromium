@@ -14,6 +14,7 @@ source_set("coordinator") {
   ]
   deps = [
     "//base",
+    "//components/commerce/core:feature_list",
     "//components/prefs",
     "//ios/chrome/browser/home_customization/ui",
     "//ios/chrome/browser/home_customization/utils",

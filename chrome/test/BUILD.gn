@@ -4866,7 +4866,6 @@ if (!is_android) {
         "../browser/apps/platform_apps/app_window_interactive_uitest_base.h",
         "../browser/chromeos/video_conference/video_conference_manager_client_browsertest.cc",
         "../browser/device_api/device_attribute_api_browsertest.cc",
-        "../browser/drive/drive_notification_manager_factory_browsertest.cc",
         "../browser/enterprise/connectors/device_trust/signals/decorators/ash/ash_signals_decorator_browsertest.cc",
         "../browser/feedback/show_feedback_page_browsertest.cc",
         "../browser/file_system_access/cloud_identifier/cloud_identifier_util_ash_browsertest.cc",

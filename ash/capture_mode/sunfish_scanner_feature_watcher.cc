@@ -17,15 +17,12 @@ namespace ash {
 SunfishScannerFeatureWatcher::SunfishScannerFeatureWatcher(
     SessionControllerImpl& session_controller)
     : can_show_sunfish_ui_(::ash::CanShowSunfishUi()),
-      can_show_scanner_ui_(ScannerController::CanShowUiForShell()),
-      session_controller_(session_controller) {
-  session_controller_->AddObserver(this);
-  OnActiveUserPrefServiceChanged(session_controller_->GetActivePrefService());
+      can_show_scanner_ui_(ScannerController::CanShowUiForShell()) {
+  session_controller_observation_.Observe(&session_controller);
+  OnActiveUserPrefServiceChanged(session_controller.GetActivePrefService());
 }
 
-SunfishScannerFeatureWatcher::~SunfishScannerFeatureWatcher() {
-  session_controller_->RemoveObserver(this);
-}
+SunfishScannerFeatureWatcher::~SunfishScannerFeatureWatcher() = default;
 
 void SunfishScannerFeatureWatcher::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);

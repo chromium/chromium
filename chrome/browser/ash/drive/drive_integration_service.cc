@@ -39,7 +39,6 @@
 #include "chrome/browser/chromeos/drivefs/drivefs_native_message_host.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_prefs.h"
-#include "chrome/browser/drive/drive_notification_manager_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_handler.h"

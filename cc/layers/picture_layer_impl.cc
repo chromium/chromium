@@ -2263,12 +2263,11 @@ gfx::ContentColorUsage PictureLayerImpl::GetContentColorUsage() const {
 }
 
 DamageReasonSet PictureLayerImpl::GetDamageReasons() const {
-  DamageReasonSet reasons;
+  DamageReasonSet reasons = GetDamageReasonsFromLayerPropertyChange();
   if (has_animated_image_update_rect_) {
     reasons.Put(DamageReason::kAnimatedImage);
   }
-  if (LayerPropertyChanged() || has_non_animated_image_update_rect_ ||
-      !damage_rect_.IsEmpty()) {
+  if (has_non_animated_image_update_rect_ || !damage_rect_.IsEmpty()) {
     reasons.Put(DamageReason::kUntracked);
   }
   return reasons;

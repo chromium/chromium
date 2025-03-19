@@ -620,6 +620,10 @@ void TaskManagerView::Init() {
                                                ? IDS_TASK_MANAGER_KILL_V2
                                                : IDS_TASK_MANAGER_KILL));
 
+  const auto* provider = ChromeLayoutProvider::Get();
+  const float corner_radius =
+      provider->GetCornerRadiusMetric(views::Emphasis::kHigh);
+
   if (table_config_.header_style) {
     views::TableHeaderStyle header_style = {
         .cell_vertical_padding = 14,
@@ -629,7 +633,9 @@ void TaskManagerView::Init() {
         .font_weight = gfx::Font::Weight::MEDIUM,
         .separator_horizontal_color_id = ui::kColorSysDivider,
         .separator_vertical_color_id = ui::kColorSysDivider,
-        .background_color_id = kColorTaskManagerTableHeaderBackground};
+        .background_color_id = kColorTaskManagerTableHeaderBackground,
+        .focus_ring_upper_corner_radius = corner_radius,
+    };
     tab_table->SetHeaderStyle(header_style);
   }
 
@@ -649,8 +655,6 @@ void TaskManagerView::Init() {
     };
     tab_table->SetTableStyle(table_style);
   }
-
-  const auto* provider = ChromeLayoutProvider::Get();
 
   // Margins around all contents
   const gfx::Insets dialog_insets = provider->GetInsetsMetric(
@@ -683,11 +687,10 @@ void TaskManagerView::Init() {
 
   if (table_config_.scroll_view_rounded) {
     tab_table_parent_->SetPaintToLayer(ui::LAYER_TEXTURED);
+
     ui::Layer* scroll_view_layer = tab_table_parent_->layer();
-
-    scroll_view_layer->SetRoundedCornerRadius(gfx::RoundedCornersF(
-        provider->GetCornerRadiusMetric(views::Emphasis::kHigh)));
-
+    scroll_view_layer->SetRoundedCornerRadius(
+        gfx::RoundedCornersF(corner_radius));
     scroll_view_layer->SetIsFastRoundedCorner(true);
   }
 

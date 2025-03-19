@@ -210,14 +210,11 @@ void VideoLayerImpl::SetNeedsRedraw() {
 
 DamageReasonSet VideoLayerImpl::GetDamageReasons() const {
   // Treat all update_rect() as kVideoLayer updates. However keep
-  // LayerPropertyChanged() as kUntracked because it probably has nothing to do
-  // with the video itself.
-  DamageReasonSet reasons;
+  // LayerPropertyChanged() as default behavior because it probably has nothing
+  // to do with the video itself.
+  DamageReasonSet reasons = GetDamageReasonsFromLayerPropertyChange();
   if (!update_rect().IsEmpty()) {
     reasons.Put(DamageReason::kVideoLayer);
-  }
-  if (LayerPropertyChanged()) {
-    reasons.Put(DamageReason::kUntracked);
   }
   return reasons;
 }

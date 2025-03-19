@@ -291,6 +291,7 @@ public abstract class ChromeFeatureList {
     public static final String CCT_RESIZABLE_FOR_THIRD_PARTIES = "CCTResizableForThirdParties";
     public static final String CCT_REVAMPED_BRANDING = "CCTRevampedBranding";
     public static final String CCT_TAB_MODAL_DIALOG = "CCTTabModalDialog";
+    public static final String CCT_TOOLBAR_REFACTOR = "CCTToolbarRefactor";
     public static final String CHANGE_UNFOCUSED_PRIORITY = "ChangeUnfocusedPriority";
     public static final String CHROME_SURVEY_NEXT_ANDROID = "ChromeSurveyNextAndroid";
     public static final String CLANK_STARTUP_LATENCY_INJECTION = "ClankStartupLatencyInjection";
@@ -694,6 +695,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCctNestedSecurityIcon =
             newCachedFlag(CCT_NESTED_SECURITY_ICON, true);
     public static final CachedFlag sCctTabModalDialog = newCachedFlag(CCT_TAB_MODAL_DIALOG, true);
+    public static final CachedFlag sCctToolbarRefactor = newCachedFlag(CCT_TOOLBAR_REFACTOR, false);
     public static final CachedFlag sClankStartupLatencyInjection =
             newCachedFlag(CLANK_STARTUP_LATENCY_INJECTION, false);
     public static final CachedFlag sCollectAndroidFrameTimelineMetrics =
@@ -908,6 +910,7 @@ public abstract class ChromeFeatureList {
                     sCctRevampedBranding,
                     sCctNestedSecurityIcon,
                     sCctTabModalDialog,
+                    sCctToolbarRefactor,
                     sClankStartupLatencyInjection,
                     sCollectAndroidFrameTimelineMetrics,
                     sCommandLineOnNonRooted,

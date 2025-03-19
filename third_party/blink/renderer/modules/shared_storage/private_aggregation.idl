@@ -8,5 +8,7 @@
     ContextEnabled=PrivateAggregationInSharedStorage
 ] interface PrivateAggregation {
     [CallWith=ScriptState, RaisesException] void contributeToHistogram(PrivateAggregationHistogramContribution contribution);
+    [CallWith=ScriptState, RaisesException, RuntimeEnabled=PrivateAggregationApiErrorReporting] void contributeToHistogramOnEvent(
+        DOMString event, PrivateAggregationHistogramContribution contribution);
     [CallWith=ScriptState, RaisesException] void enableDebugMode(optional PrivateAggregationDebugModeOptions options);
 };

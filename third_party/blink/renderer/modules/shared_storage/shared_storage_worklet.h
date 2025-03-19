@@ -70,6 +70,16 @@ class MODULES_EXPORT SharedStorageWorklet final : public ScriptWrappable {
                        scoped_refptr<SecurityOrigin> custom_data_origin);
 
  private:
+  void AddModuleOnLocalDomWindow(
+      LocalDOMWindow* dom_window,
+      KURL script_source_url,
+      scoped_refptr<SecurityOrigin> shared_storage_origin,
+      SharedStorageDataOrigin data_origin_type,
+      network::mojom::CredentialsMode credentials_mode,
+      bool resolve_to_worklet,
+      base::TimeTicks start_time,
+      ScriptPromiseResolverBase* resolver);
+
   // Set when addModule() was called and passed early renderer checks.
   HeapMojoAssociatedRemote<mojom::blink::SharedStorageWorkletHost>
       worklet_host_{nullptr};

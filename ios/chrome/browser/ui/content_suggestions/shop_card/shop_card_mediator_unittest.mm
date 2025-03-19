@@ -6,6 +6,9 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/commerce/core/mock_shopping_service.h"
+#import "components/prefs/pref_registry_simple.h"
+#import "components/prefs/testing_pref_service.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/content_suggestions/shop_card/shop_card_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/shop_card/shop_card_mediator+testing.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -20,7 +23,10 @@ class ShopCardMediatorTest : public PlatformTest {
   ShopCardMediatorTest() {
     shopping_service_ = std::make_unique<commerce::MockShoppingService>();
     mediator_ = [[ShopCardMediator alloc]
-        initWithShoppingService:shopping_service_.get()];
+        initWithShoppingService:shopping_service_.get()
+                    prefService:pref_service()];
+    pref_service_.registry()->RegisterBooleanPref(
+        prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled, true);
   }
 
   ~ShopCardMediatorTest() override {}
@@ -29,7 +35,10 @@ class ShopCardMediatorTest : public PlatformTest {
 
   ShopCardMediator* mediator() { return mediator_; }
 
+  PrefService* pref_service() { return &pref_service_; }
+
  protected:
+  TestingPrefServiceSimple pref_service_;
   std::unique_ptr<commerce::MockShoppingService> shopping_service_;
   ShopCardMediator* mediator_;
   web::WebTaskEnvironment task_environment_;

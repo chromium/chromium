@@ -20,7 +20,14 @@ class GroupSuggestionsServiceAndroid : public base::SupportsUserData::Data {
   explicit GroupSuggestionsServiceAndroid(GroupSuggestionsService* service);
   ~GroupSuggestionsServiceAndroid() override;
 
-  void DidAddTab(JNIEnv* env, int tab_id, int type);
+  void DidAddTab(JNIEnv* env, int tab_id, int tab_launch_type);
+
+  void DidSelectTab(JNIEnv* env,
+                    int tab_id,
+                    int tab_selection_type,
+                    int last_id);
+
+  void DidEnterTabSwitcher(JNIEnv* env);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 

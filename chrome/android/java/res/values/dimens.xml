@@ -233,6 +233,18 @@ found in the LICENSE file.
     <dimen name="custom_tabs_menu_footer_icon_size">16sp</dimen>
     <dimen name="custom_tabs_menu_footer_margin_horizontal">8dp</dimen>
     <dimen name="custom_tabs_menu_footer_margin_vertical">12dp</dimen>
+    <dimen name="custom_tabs_toolbar_start_aligned_button_one_start_padding">16dp</dimen>
+    <dimen name="custom_tabs_toolbar_start_aligned_button_one_end_padding">8dp</dimen>
+    <dimen name="custom_tabs_toolbar_start_aligned_button_two_start_padding">8dp</dimen>
+    <dimen name="custom_tabs_toolbar_start_aligned_button_two_end_padding">16dp</dimen>
+    <dimen name="custom_tabs_toolbar_start_aligned_button_three_start_padding">0dp</dimen>
+    <dimen name="custom_tabs_toolbar_start_aligned_button_three_end_padding">24dp</dimen>
+    <dimen name="custom_tabs_toolbar_end_aligned_button_one_start_padding">8dp</dimen>
+    <dimen name="custom_tabs_toolbar_end_aligned_button_one_end_padding">16dp</dimen>
+    <dimen name="custom_tabs_toolbar_end_aligned_button_two_start_padding">16dp</dimen>
+    <dimen name="custom_tabs_toolbar_end_aligned_button_two_end_padding">8dp</dimen>
+    <dimen name="custom_tabs_toolbar_end_aligned_button_three_start_padding">24dp</dimen>
+    <dimen name="custom_tabs_toolbar_end_aligned_button_three_end_padding">0dp</dimen>
 
     <dimen name="custom_tabs_toast_branding_icon_size">28dp</dimen>
     <dimen name="custom_tabs_toast_branding_height">50dp</dimen>

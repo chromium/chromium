@@ -237,6 +237,11 @@ export declare interface WebClientRequestTypes {
     },
   };
   glicWebClientCheckResponsive: {};
+  glicWebClientNotifyManualResizeChanged: {
+    request: {
+      resizing: boolean,
+    },
+  };
 }
 
 
