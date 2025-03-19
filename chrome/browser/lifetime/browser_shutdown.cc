@@ -64,7 +64,7 @@
 #include "components/rlz/rlz_tracker.h"  // nogncheck crbug.com/1125897
 #endif
 
-#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO_PROFILING)
+#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO)
 #include "base/run_loop.h"
 #include "content/public/browser/profiling_utils.h"
 #endif
@@ -132,13 +132,13 @@ void OnShutdownStarting(ShutdownType type) {
 
   // TODO(crbug.com/40685224): Check if this should also be enabled for
   // coverage builds.
-#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO_PROFILING)
+#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO)
   // Wait for all the child processes to dump their profiling data without
   // blocking the main thread.
   base::RunLoop nested_run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   content::AskAllChildrenToDumpProfilingData(nested_run_loop.QuitClosure());
   nested_run_loop.Run();
-#endif
+#endif  // BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO)
 
   // Call FastShutdown on all of the RenderProcessHosts.  This will be
   // a no-op in some cases, so we still need to go through the normal

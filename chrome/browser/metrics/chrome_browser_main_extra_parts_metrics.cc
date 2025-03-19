@@ -971,7 +971,7 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
 
   // Log once here at browser start rather than at each renderer launch.
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial("ClangPGO",
-#if BUILDFLAG(CLANG_PGO_OPTIMIZED)
+#if BUILDFLAG(CLANG_PGO)
 #if BUILDFLAG(USE_THIN_LTO)
                                                             "EnabledWithThinLTO"
 #else

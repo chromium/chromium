@@ -161,7 +161,7 @@ ChildProcess::~ChildProcess() {
     base::ThreadPoolInstance::Get()->Shutdown();
   }
 
-#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO_PROFILING)
+#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO)
   // Flush the profiling data to disk. Doing this manually (vs relying on this
   // being done automatically when the process exits) will ensure that this data
   // doesn't get lost if the process is fast killed.

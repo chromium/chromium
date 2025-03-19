@@ -2576,38 +2576,14 @@ if (is_linux || is_chromeos) {
 buildflag_header("cfi_buildflags") {
   header = "cfi_buildflags.h"
 
-  flags = []
-
-  # TODO(pcc): remove CFI_CAST_CHECK, see https://crbug.com/626794.
-  if (is_cfi && use_cfi_cast) {
-    flags += [ "CFI_CAST_CHECK=true" ]
-  } else {
-    flags += [ "CFI_CAST_CHECK=false" ]
-  }
-
-  if (is_cfi && use_cfi_diag) {
-    flags += [ "CFI_DIAG=true" ]
-  } else {
-    flags += [ "CFI_DIAG=false" ]
-  }
-
-  if (is_cfi && use_cfi_icall) {
-    flags += [ "CFI_ICALL_CHECK=true" ]
-  } else {
-    flags += [ "CFI_ICALL_CHECK=false" ]
-  }
-
-  if (is_cfi && !use_cfi_diag) {
-    flags += [ "CFI_ENFORCEMENT_TRAP=true" ]
-  } else {
-    flags += [ "CFI_ENFORCEMENT_TRAP=false" ]
-  }
-
-  if (is_cfi && use_cfi_diag && !use_cfi_recover) {
-    flags += [ "CFI_ENFORCEMENT_DIAGNOSTIC=true" ]
-  } else {
-    flags += [ "CFI_ENFORCEMENT_DIAGNOSTIC=false" ]
-  }
+  flags = [
+    # TODO(pcc): remove CFI_CAST_CHECK, see https://crbug.com/626794.
+    "CFI_CAST_CHECK=$is_cfi && $use_cfi_cast",
+    "CFI_DIAG=$is_cfi && $use_cfi_diag",
+    "CFI_ICALL_CHECK=$is_cfi && $use_cfi_icall",
+    "CFI_ENFORCEMENT_TRAP=$is_cfi && !$use_cfi_diag",
+    "CFI_ENFORCEMENT_DIAGNOSTIC=$is_cfi && $use_cfi_diag && !$use_cfi_recover",
+  ]
 }
 
 buildflag_header("debugging_buildflags") {
