@@ -85,6 +85,9 @@ namespace ash::boca {
     return ::boca::LockedNavigationOptions::
         SAME_DOMAIN_OPEN_OTHER_DOMAIN_LIMITED_NAVIGATION;
   }
+  if (type == "WORKSPACE_NAVIGATION") {
+    return ::boca::LockedNavigationOptions::WORKSPACE_NAVIGATION;
+  }
   return ::boca::LockedNavigationOptions::NAVIGATION_TYPE_UNKNOWN;
 }
 
