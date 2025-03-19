@@ -13063,6 +13063,13 @@ be describing additional metrics about the same event.
       Media.WatchTime UMA metrics.
     </summary>
   </metric>
+  <metric name="WatchTime.AutoPip">
+    <summary>
+      Watch time for automatic picture in picture. Only reported for the
+      &quot;media playback&quot; automatic picture in picture reason, regardless
+      of the picture in picture window type: document vs. video.
+    </summary>
+  </metric>
   <metric name="WatchTime.Battery">
     <summary>
       Watch time on battery power in milliseconds for this playback. See
