@@ -508,7 +508,7 @@ bool FocusManager::ProcessAccelerator(const ui::Accelerator& accelerator) {
   // breaks processing accelerators by the bubble itself.
   return false;
 #else
-  return RedirectAcceleratorToParentWidget(accelerator);
+  return RedirectAcceleratorToBubbleAnchorWidget(accelerator);
 #endif
 }
 
@@ -587,14 +587,21 @@ void FocusManager::OnViewIsDeleting(View* view) {
   SetFocusedView(nullptr);
 }
 
-bool FocusManager::RedirectAcceleratorToParentWidget(
+bool FocusManager::RedirectAcceleratorToBubbleAnchorWidget(
     const ui::Accelerator& accelerator) {
-  Widget* parent_widget = widget_->parent();
-  if (!parent_widget || !widget_->widget_delegate()) {
+  if (!widget_->widget_delegate()) {
     return false;
   }
 
-  FocusManager* focus_manager = parent_widget->GetFocusManager();
+  views::BubbleDialogDelegate* widget_delegate =
+      widget_->widget_delegate()->AsBubbleDialogDelegate();
+  Widget* anchor_widget =
+      widget_delegate ? widget_delegate->anchor_widget() : nullptr;
+  if (!anchor_widget) {
+    return false;
+  }
+
+  FocusManager* focus_manager = anchor_widget->GetFocusManager();
   if (!focus_manager->IsAcceleratorRegistered(accelerator)) {
     return false;
   }
@@ -606,14 +613,11 @@ bool FocusManager::RedirectAcceleratorToParentWidget(
   // variable.
   base::WeakPtr<Widget> widget_weak_ptr = widget_->GetWeakPtr();
   const bool close_widget_on_deactivate =
-      widget_->widget_delegate()->AsBubbleDialogDelegate() &&
-      widget_->widget_delegate()
-          ->AsBubbleDialogDelegate()
-          ->ShouldCloseOnDeactivate();
+      widget_delegate->ShouldCloseOnDeactivate();
 #endif
 
   // The parent view must be focused for it to process events.
-  focus_manager->SetFocusedView(parent_widget->GetRootView());
+  focus_manager->SetFocusedView(anchor_widget->GetRootView());
   const bool accelerator_processed =
       focus_manager->ProcessAccelerator(accelerator);
 
