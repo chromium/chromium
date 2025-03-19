@@ -219,6 +219,7 @@ def _gpu_windows_builder(*, name, **kwargs):
     kwargs.setdefault("builderless", True)
     kwargs.setdefault("cores", 8)
     kwargs.setdefault("os", os.WINDOWS_ANY)
+    kwargs.setdefault("ssd", None)
     return ci.builder(name = name, **kwargs)
 
 def thin_tester(
