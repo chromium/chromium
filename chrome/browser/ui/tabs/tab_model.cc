@@ -247,6 +247,10 @@ bool TabModel::IsPinned() const {
 }
 
 bool TabModel::IsSplit() const {
+  return split_.has_value();
+}
+
+std::optional<split_tabs::SplitTabId> TabModel::GetSplit() const {
   return split_;
 }
 

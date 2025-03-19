@@ -1370,12 +1370,18 @@ void TabStripModel::AddToNewSplit(const std::vector<int> indices) {
   CHECK(std::ranges::is_sorted(indices));
   CHECK(std::ranges::adjacent_find(indices) == indices.end());
 
+  split_tabs::SplitTabId split = split_tabs::SplitTabId::GenerateNew();
+
   std::vector<tabs::TabInterface*> tabs = {};
   for (int i : indices) {
     tabs::TabModel* tab_model = GetTabModelAtIndex(i);
     CHECK(!tab_model->IsSplit());
     tabs.push_back(tab_model);
-    tab_model->set_split(true);
+    // TODO(crbug.com/392950857): Once SplitTabCollection is hooked up, set the
+    // split id of the collection in this function, then set the split ids of
+    // tabs in SplitTabCollection::AddTab. For now, set the split ids of these
+    // tabs here so that we can tell they are part of the same split tab.
+    tab_model->set_split(split);
   }
 
   // Find a destination for the first tab that's not pinned or grouped. We will
