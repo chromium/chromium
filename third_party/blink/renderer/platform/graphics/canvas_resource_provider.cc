@@ -1055,7 +1055,7 @@ CanvasResourceProvider::CreateBitmapProvider(
 }
 
 std::unique_ptr<CanvasResourceProvider>
-CanvasResourceProvider::CreateSoftwareSharedImageProvider(
+CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
     gfx::Size size,
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
