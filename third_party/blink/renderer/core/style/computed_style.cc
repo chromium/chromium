@@ -1599,10 +1599,10 @@ PointAndTangent ComputedStyle::CalculatePointAndTangentOnBasicShape(
     // but that argument is omitted, and the element defines
     // an offset starting position via offset-position,
     // it uses the specified offset starting position for that argument.
-    circle_or_ellipse->GetPathFromCenter(
-        path, starting_point, gfx::RectF(reference_box_size), EffectiveZoom());
+    path = circle_or_ellipse->GetPathFromCenter(
+        starting_point, gfx::RectF(reference_box_size), EffectiveZoom());
   } else {
-    shape.GetPath(path, gfx::RectF(reference_box_size), EffectiveZoom());
+    path = shape.GetPath(gfx::RectF(reference_box_size), EffectiveZoom());
   }
   float shape_length = path.length();
   float path_length = FloatValueForLength(OffsetDistance(), shape_length);
@@ -1686,9 +1686,8 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
       }
       case BasicShape::kStyleShapeType: {
         const StyleShape& shape = To<StyleShape>(basic_shape);
-        Path path;
-        shape.GetPath(path, bounding_box, EffectiveZoom());
-        path_position = CalculatePointAndTangentOnPath(path);
+        path_position = CalculatePointAndTangentOnPath(
+            shape.GetPath(bounding_box, EffectiveZoom()));
         break;
       }
       case BasicShape::kStyleRayType: {

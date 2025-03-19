@@ -50,12 +50,11 @@ bool StylePath::IsEqualAssumingSameType(const BasicShape& o) const {
   return wind_rule_ == other.wind_rule_ && byte_stream_ == other.byte_stream_;
 }
 
-void StylePath::GetPath(Path& path,
-                        const gfx::RectF& offset_rect,
-                        float zoom) const {
-  path = GetPath();
+Path StylePath::GetPath(const gfx::RectF& offset_rect, float zoom) const {
+  Path path = GetPath();
   path.Transform(AffineTransform::Translation(offset_rect.x(), offset_rect.y())
                      .Scale(zoom));
+  return path;
 }
 
 }  // namespace blink
