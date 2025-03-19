@@ -202,6 +202,47 @@ const CGFloat kShareSheetCornerRadius = 20;
   }
 }
 
+- (void)didTapSearchInIncognitoShareExtensionSheet:
+    (ShareExtensionSheet*)shareExtensionSheet {
+  CHECK(!self.shareURL);
+  __weak ExtendedShareViewController* weakSelf = self;
+  AppGroupCommand* command = [[AppGroupCommand alloc]
+      initWithSourceApp:app_group::kOpenCommandSourceShareExtension
+         URLOpenerBlock:^(NSURL* openURL) {
+           ExtensionOpenURL(openURL, weakSelf, nil);
+         }];
+  if (self.shareText) {
+    [command prepareToIncognitoSearchText:self.shareText];
+    [command executeInApp];
+    [self queueActionItemURL:_shareURL
+                       title:_shareText
+                      // TODO(crbug.com/398803565): Add and handle search text
+                      // and image in ShareExtensionItemType.
+                      action:app_group::OPEN_IN_CHROME_ITEM
+                      cancel:NO
+                  completion:^{
+                    [weakSelf dismissAndReturnItem:weakSelf.shareItem
+                                             error:nil];
+                  }];
+    return;
+  }
+
+  if (self.shareImage) {
+    [command prepareToIncognitoSearchImage:self.shareImage];
+    [command executeInApp];
+    [self queueActionItemURL:_shareURL
+                       title:_shareTitle
+                      // TODO(crbug.com/398803565): Add and handle search text
+                      // and image in ShareExtensionItemType.
+                      action:app_group::OPEN_IN_CHROME_ITEM
+                      cancel:NO
+                  completion:^{
+                    [weakSelf dissmissAndShowShareItem];
+                  }];
+    return;
+  }
+}
+
 #pragma mark - Private methods
 
 - (void)displayShareSheet {
@@ -524,7 +565,7 @@ const CGFloat kShareSheetCornerRadius = 20;
 - (UIAlertAction*)openInIncognitoAlertAction {
   __weak ExtendedShareViewController* weakSelf = self;
   // TODO(crbug.com/398803565): Add strings translation.
-  return [UIAlertAction actionWithTitle:@"Open in Incognitos"
+  return [UIAlertAction actionWithTitle:@"Open in Incognito"
                                   style:UIAlertActionStyleDefault
                                 handler:^(UIAlertAction* action) {
                                   [weakSelf handleOpeningInIncognito];
@@ -554,7 +595,22 @@ const CGFloat kShareSheetCornerRadius = 20;
 }
 
 - (void)handleOpeningInIncognito {
-  // TODO(crbug.com/402278503): Add the incognito URL opening.
+  __weak ExtendedShareViewController* weakSelf = self;
+  AppGroupCommand* command = [[AppGroupCommand alloc]
+      initWithSourceApp:app_group::kOpenCommandSourceShareExtension
+         URLOpenerBlock:^(NSURL* openURL) {
+           ExtensionOpenURL(openURL, weakSelf, nil);
+         }];
+  [command prepareToOpenURLInIncognito:_shareURL];
+  [command executeInApp];
+
+  [self queueActionItemURL:_shareURL
+                     title:_shareTitle
+                    action:app_group::OPEN_IN_CHROME_ITEM
+                    cancel:NO
+                completion:^{
+                  [weakSelf dissmissAndShowShareItem];
+                }];
 }
 
 - (void)dissmissAndShowShareItem {
