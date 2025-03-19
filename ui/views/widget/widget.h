@@ -214,6 +214,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     kMaxValue = kAcceptButtonClicked
   };
 
+  // This struct had unused fields that were removed, but may be of interest to
+  // future users:
+  // - force_show_in_taskbar: https://crrev.com/c/6356649
   struct VIEWS_EXPORT InitParams {
     enum Type {
       TYPE_WINDOW,  // A decorated Window, like a frame window.
@@ -459,10 +462,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // Linux. Nullptr is allowed on Chrome OS, which will place the window on
     // the default desktop for new windows.
     gfx::NativeWindow context = gfx::NativeWindow();
-
-    // If true, forces the window to be shown in the taskbar, even for window
-    // types that do not appear in the taskbar by default (popup and bubble).
-    bool force_show_in_taskbar = false;
 
 #if BUILDFLAG(IS_WIN)
     // If true, force the window not to be shown in the taskbar, even for
