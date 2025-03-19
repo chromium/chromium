@@ -98,6 +98,7 @@ class PLATFORM_EXPORT PlainTextNode : public GarbageCollected<PlainTextNode> {
   const String& TextContent() const { return text_content_; }
   TextDirection BaseDirection() const { return base_direction_; }
   bool ContainsRtlItems() const { return contains_rtl_items_; }
+  bool HasVerticalOffsets() const { return has_vertical_offsets_; }
   const PlainTextItemList& ItemList() const { return item_list_; }
 
  private:
@@ -128,6 +129,7 @@ class PLATFORM_EXPORT PlainTextNode : public GarbageCollected<PlainTextNode> {
   bool normalize_space_ = false;
   TextDirection base_direction_ = TextDirection::kLtr;
   bool contains_rtl_items_ = false;
+  bool has_vertical_offsets_ = false;
 };
 
 }  // namespace blink

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<canvas id="target" style="writing-mode:vertical-rl"></canvas>
+<script>
+// https://crbug.com/404448251
+test(() => {
+  const ctx = document.getElementById('target').getContext('2d');
+  ctx.font = '25px Arial';
+  ctx.fillText('\u96EA', 0, 0);
+
+  // This is a crash test. Nothing to assert.
+}, 'Vertical writing-modes should not cause crashs');
+</script>
