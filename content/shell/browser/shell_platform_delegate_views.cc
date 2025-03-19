@@ -373,10 +373,12 @@ void ShellPlatformDelegate::CreatePlatformWindow(
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
   params.bounds = gfx::Rect(initial_size);
   params.delegate = delegate.release();
+#if BUILDFLAG(IS_LINUX)
   params.wm_class_class = "chromium-content_shell";
   params.wm_class_name = params.wm_class_class;
+#endif  // BUILDFLAG(IS_LINUX)
   shell_data.window_widget->Init(std::move(params));
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // |window_widget| is made visible in PlatformSetContents(), so that the
   // platform-window size does not need to change due to layout again.
