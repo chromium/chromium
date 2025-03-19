@@ -401,17 +401,20 @@ class LensOverlayProtoConverterTest : public testing::Test {
   void VerifyGeometriesAreEqual(lens::Geometry server_geometry,
                                 lens::mojom::GeometryPtr mojo_geometry,
                                 const float height_scale = 1,
-                                const float width_scale = 1) {
-    EXPECT_EQ(
-        gfx::PointF(server_geometry.bounding_box().center_x() * width_scale,
-                    server_geometry.bounding_box().center_y() * height_scale),
-        mojo_geometry->bounding_box->box.origin());
+                                const float width_scale = 1,
+                                const float zoom_scale = 1) {
+    EXPECT_EQ(gfx::PointF(server_geometry.bounding_box().center_x() *
+                              width_scale * zoom_scale,
+                          server_geometry.bounding_box().center_y() *
+                              height_scale * zoom_scale),
+              mojo_geometry->bounding_box->box.origin());
     EXPECT_EQ(server_geometry.bounding_box().rotation_z(),
               mojo_geometry->bounding_box->rotation);
-    EXPECT_EQ(
-        gfx::SizeF(server_geometry.bounding_box().width() * width_scale,
-                   server_geometry.bounding_box().height() * height_scale),
-        mojo_geometry->bounding_box->box.size());
+    EXPECT_EQ(gfx::SizeF(server_geometry.bounding_box().width() * width_scale *
+                             zoom_scale,
+                         server_geometry.bounding_box().height() *
+                             height_scale * zoom_scale),
+              mojo_geometry->bounding_box->box.size());
     EXPECT_EQ(
         static_cast<int>(server_geometry.bounding_box().coordinate_type()),
         static_cast<int>(mojo_geometry->bounding_box->coordinate_type));
@@ -837,12 +840,14 @@ TEST_F(LensOverlayProtoConverterTest, CreateTextMojomFromInteractionResponse) {
   // Create a fake region crop box.
   const float height_scale = 0.5;
   const float width_scale = 0.5;
-  lens::CenterRotatedBox box;
-  box.set_height(height_scale);
-  box.set_width(width_scale);
+  const float zoom_scale = 0.5;
+  lens::ZoomedCrop region_crop;
+  region_crop.set_zoom(zoom_scale);
+  region_crop.mutable_crop()->set_height(height_scale);
+  region_crop.mutable_crop()->set_width(width_scale);
 
   lens::mojom::TextPtr mojo_text = lens::CreateTextMojomFromInteractionResponse(
-      server_response.interaction_response(), box,
+      server_response.interaction_response(), region_crop,
       /*resized_bitmap_size=*/gfx::Size());
   ASSERT_TRUE(mojo_text);
 
@@ -865,14 +870,14 @@ TEST_F(LensOverlayProtoConverterTest, CreateTextMojomFromInteractionResponse) {
             static_cast<int>(kTestText.writing_direction));
   VerifyGeometriesAreEqual(server_paragraph.geometry(),
                            mojo_paragraph->geometry->Clone(), height_scale,
-                           width_scale);
+                           width_scale, zoom_scale);
 
   // Compare line for a paragraph.
   EXPECT_EQ(mojo_paragraph->lines.size(), static_cast<unsigned long>(1));
   lens::TextLayout_Line server_line = server_paragraph.lines()[0];
   lens::mojom::LinePtr mojo_line = mojo_paragraph->lines[0]->Clone();
   VerifyGeometriesAreEqual(server_line.geometry(), mojo_line->geometry->Clone(),
-                           height_scale, width_scale);
+                           height_scale, width_scale, zoom_scale);
 
   // Compare words in line.
   EXPECT_EQ(mojo_line->words.size(), static_cast<unsigned long>(1));
@@ -882,7 +887,7 @@ TEST_F(LensOverlayProtoConverterTest, CreateTextMojomFromInteractionResponse) {
   EXPECT_EQ(mojo_word->text_separator, test_word_struct.text_separator);
   lens::TextLayout_Word server_word = server_line.words()[0];
   VerifyGeometriesAreEqual(server_word.geometry(), mojo_word->geometry->Clone(),
-                           height_scale, width_scale);
+                           height_scale, width_scale, zoom_scale);
   EXPECT_TRUE(mojo_word->writing_direction.has_value());
   EXPECT_EQ(static_cast<int>(mojo_word->writing_direction.value()),
             static_cast<int>(kTestText.writing_direction));

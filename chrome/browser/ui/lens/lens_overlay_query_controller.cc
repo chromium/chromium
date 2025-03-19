@@ -1794,8 +1794,7 @@ void LensOverlayQueryController::InteractionFetchResponseHandler(
         latest_interaction_request_data_.get()
             ->request_->interaction_request()
             .image_crop()
-            .zoomed_crop()
-            .crop(),
+            .zoomed_crop(),
         resized_bitmap_size_));
   }
 

@@ -95,7 +95,7 @@ lens::mojom::PolygonPtr CreatePolygonMojomFromProto(
 
 lens::mojom::GeometryPtr CreateGeometryMojomFromProto(
     const lens::Geometry& response_geometry,
-    base::optional_ref<const lens::CenterRotatedBox> region_crop_box) {
+    base::optional_ref<const lens::ZoomedCrop> region_crop_box) {
   lens::mojom::GeometryPtr geometry = lens::mojom::Geometry::New();
   if (!response_geometry.has_bounding_box()) {
     return geometry;
@@ -104,20 +104,23 @@ lens::mojom::GeometryPtr CreateGeometryMojomFromProto(
   // If the `region_crop_box` was provided, scale the resulting geometry mojom
   // by the region in order for it to be normalized by the full image instead.
   const float width_scale =
-      region_crop_box.has_value() ? region_crop_box->width() : 1;
+      region_crop_box.has_value() ? region_crop_box->crop().width() : 1;
   const float height_scale =
-      region_crop_box.has_value() ? region_crop_box->height() : 1;
+      region_crop_box.has_value() ? region_crop_box->crop().height() : 1;
+  const float zoom_scale =
+      region_crop_box.has_value() ? region_crop_box->zoom() : 1;
 
   auto bounding_box_response = response_geometry.bounding_box();
   lens::mojom::CenterRotatedBoxPtr center_rotated_box =
       lens::mojom::CenterRotatedBox::New();
-  gfx::SizeF box_size(bounding_box_response.width() * width_scale,
-                      bounding_box_response.height() * height_scale);
+  gfx::SizeF box_size(
+      bounding_box_response.width() * width_scale * zoom_scale,
+      bounding_box_response.height() * height_scale * zoom_scale);
   // TODO(b/333562179): Replace this setting of the origin with just a point and
   // size that is passed to the WebUI.
   gfx::PointF center_point =
-      gfx::PointF(bounding_box_response.center_x() * width_scale,
-                  bounding_box_response.center_y() * height_scale);
+      gfx::PointF(bounding_box_response.center_x() * width_scale * zoom_scale,
+                  bounding_box_response.center_y() * height_scale * zoom_scale);
   center_rotated_box->box.set_origin(center_point);
   center_rotated_box->box.set_size(box_size);
   center_rotated_box->coordinate_type =
@@ -138,7 +141,7 @@ lens::mojom::GeometryPtr CreateGeometryMojomFromProto(
 
 lens::mojom::WordPtr CreateWordMojomFromProto(
     const lens::TextLayout_Word& proto_word,
-    base::optional_ref<const lens::CenterRotatedBox> region_crop_box,
+    base::optional_ref<const lens::ZoomedCrop> region_crop_box,
     lens::WritingDirection writing_direction) {
   lens::mojom::WordPtr word = lens::mojom::Word::New();
   word->plain_text = proto_word.plain_text();
@@ -161,7 +164,7 @@ lens::mojom::WordPtr CreateWordMojomFromProto(
 
 lens::mojom::LinePtr CreateLineMojomFromProto(
     const lens::TextLayout_Line& proto_line,
-    base::optional_ref<const lens::CenterRotatedBox> region_crop_box,
+    base::optional_ref<const lens::ZoomedCrop> region_crop_box,
     lens::WritingDirection writing_direction) {
   lens::mojom::LinePtr line = lens::mojom::Line::New();
   std::vector<lens::mojom::WordPtr> words;
@@ -338,7 +341,7 @@ lens::mojom::TranslatedParagraphPtr CreateTranslatedParagraphMojomFromProto(
 lens::mojom::ParagraphPtr CreateParagraphMojomFromProto(
     const lens::TextLayout_Paragraph& proto_paragraph,
     base::optional_ref<const lens::DeepGleamData> deep_gleam,
-    base::optional_ref<const lens::CenterRotatedBox> region_crop_box,
+    base::optional_ref<const lens::ZoomedCrop> region_crop_box,
     const gfx::Size& resized_bitmap_size) {
   lens::mojom::ParagraphPtr paragraph = lens::mojom::Paragraph::New();
   paragraph->content_language = proto_paragraph.content_language();
@@ -368,7 +371,7 @@ lens::mojom::TextPtr CreateTextMojomFromProto(
     const lens::Text& response_text,
     const ::google::protobuf::RepeatedPtrField<::lens::DeepGleamData>
         deep_gleams,
-    base::optional_ref<const lens::CenterRotatedBox> region_crop_box,
+    base::optional_ref<const lens::ZoomedCrop> region_crop_box,
     const gfx::Size& resized_bitmap_size) {
   lens::mojom::TextPtr text = lens::mojom::Text::New();
   text->content_language = response_text.content_language();
@@ -443,7 +446,7 @@ lens::mojom::TextPtr CreateTextMojomFromServerResponse(
 
 lens::mojom::TextPtr CreateTextMojomFromInteractionResponse(
     const lens::LensOverlayInteractionResponse& response,
-    const lens::CenterRotatedBox& region_crop_box,
+    const lens::ZoomedCrop& region_crop_box,
     const gfx::Size& resized_bitmap_size) {
   if (!response.has_text()) {
     return lens::mojom::TextPtr();
