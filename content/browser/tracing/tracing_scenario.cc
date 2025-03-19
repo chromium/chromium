@@ -668,11 +668,14 @@ void TracingScenario::OnTracingStop() {
 
 void TracingScenario::OnTracingCloned() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (current_state_ != State::kCloning) {
+  if (current_state_ == State::kCloning) {
+    SetState(State::kRecording);
+  }
+  if (current_state_ != State::kStarting &&
+      current_state_ != State::kRecording) {
     // Tracing was stopped.
     return;
   }
-  SetState(State::kRecording);
   // All nested scenarios are re-enabled.
   for (auto& scenario : nested_scenarios_) {
     scenario->Enable();
