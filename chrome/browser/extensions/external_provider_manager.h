@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -83,6 +84,9 @@ class ExternalProviderManager
       base::OnceClosure callback) {
     external_updates_finished_callback_ = std::move(callback);
   }
+
+  // While disabled all calls to CheckForExternalUpdates() will bail out.
+  static base::AutoReset<bool> DisableExternalUpdatesForTesting();
 
  private:
   // Returns true if all the external extension providers are ready.

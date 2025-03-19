@@ -751,7 +751,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
       external_provider_manager, mojom::ManifestLocation::kExternalPref);
   provider->UpdateOrAddExtension(kExtensionId, "1.0.0.0", crx_path);
   external_provider_manager->AddProviderForTesting(std::move(provider));
-  extension_service()->CheckForExternalUpdates();
+  external_provider_manager->CheckForExternalUpdates();
 
   auto extension = observer.WaitForExtensionInstalled();
   EXPECT_EQ(extension->id(), kExtensionId);

@@ -404,6 +404,12 @@ export declare interface GlicBrowserHost {
    * Get the status of the OS Microphone permission currently granted to Chrome.
    */
   getOsMicrophonePermissionStatus?(): Promise<boolean>;
+
+  /**
+   * Returns an observable that signals true when the user starts resizing the
+   * panel and false when the user stops.
+   */
+  isManuallyResizing?(): ObservableValue<boolean>;
 }
 
 /** Holds optional parameters for `GlicBrowserHost#resizeWindow`. */
@@ -1032,43 +1038,39 @@ export declare interface GlicApiBootMessage {
 // Types used in presubmit check.
 //
 
-// Types consumed by the client. These are subject to stricter checks than
-// those in TypesConsumedByHost.
-export interface TypesConsumedByClient {
-  hostRegistry: GlicHostRegistry;
-  browserHost: GlicBrowserHost;
-  tabContextResult: TabContextResult;
-  tabData: TabData;
-  imageOriginAnnotations: ImageOriginAnnotations;
-  screenshot: Screenshot;
-  userProfileInfo: UserProfileInfo;
-  chromeVersion: ChromeVersion;
-  focusedTabData: FocusedTabData;
-  focusedTabCandidate: FocusedTabCandidate;
-  pdfDocumentData: PdfDocumentData;
-  webPageData: WebPageData;
-  documentData: DocumentData;
-  panelState: PanelState;
-  annotatedPageData: AnnotatedPageData;
-  panelOpeningData: PanelOpeningData;
+// Types to be checked for backwards compatibility on presubmit, excluding
+// enums.
+export interface BackwardsCompatibleTypes {
+  actInFocusedTabParams: ActInFocusedTabParams;
   actInFocusedTabResult: ActInFocusedTabResult;
-}
-
-// Types consumed by the host.
-export interface TypesConsumedByHost {
-  webClient: GlicWebClient;
-  resizeWindowOptions: ResizeWindowOptions;
+  annotatedPageData: AnnotatedPageData;
+  browserHost: GlicBrowserHost;
+  chromeVersion: ChromeVersion;
   createTabOptions: CreateTabOptions;
-  glicBrowserHostMetrics: GlicBrowserHostMetrics;
-  openPanelInfo: OpenPanelInfo;
-  tabContextOptions: TabContextOptions;
+  documentData: DocumentData;
   draggableArea: DraggableArea;
-  subscriber: Subscriber;
+  focusedTabCandidate: FocusedTabCandidate;
+  focusedTabData: FocusedTabData;
+  glicBrowserHostMetrics: GlicBrowserHostMetrics;
+  hostRegistry: GlicHostRegistry;
+  imageOriginAnnotations: ImageOriginAnnotations;
+  openPanelInfo: OpenPanelInfo;
+  panelOpeningData: PanelOpeningData;
+  panelState: PanelState;
+  pdfDocumentData: PdfDocumentData;
+  resizeWindowOptions: ResizeWindowOptions;
+  screenshot: Screenshot;
   scrollToParams: ScrollToParams;
   scrollToSelector: ScrollToSelector;
-  scrollToTextSelector: ScrollToTextSelector;
   scrollToTextFragmentSelector: ScrollToTextFragmentSelector;
-  actInFocusedTabParams: ActInFocusedTabParams;
+  scrollToTextSelector: ScrollToTextSelector;
+  subscriber: Subscriber;
+  tabContextOptions: TabContextOptions;
+  tabContextResult: TabContextResult;
+  tabData: TabData;
+  userProfileInfo: UserProfileInfo;
+  webClient: GlicWebClient;
+  webPageData: WebPageData;
 }
 
 // Enums that should not be changed.

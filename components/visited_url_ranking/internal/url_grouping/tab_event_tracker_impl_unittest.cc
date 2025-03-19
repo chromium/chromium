@@ -32,14 +32,17 @@ class TabEventTrackerImplTest : public testing::Test {
 
 TEST_F(TabEventTrackerImplTest, CallbackCalled) {
   EXPECT_CALL(mock_callback_, Run());
-  tab_event_tracker_->DidAddTab(1);
+  tab_event_tracker_->DidAddTab(1, 0);
 
   EXPECT_CALL(mock_callback_, Run());
   tab_event_tracker_->DidMoveTab(1, 2, 3);
 
   EXPECT_CALL(mock_callback_, Run());
   tab_event_tracker_->DidSelectTab(
-      1, TabEventTracker::TabSelectionType::kFromAppExit);
+      1, TabEventTracker::TabSelectionType::kFromAppExit, 2);
+
+  EXPECT_CALL(mock_callback_, Run());
+  tab_event_tracker_->DidEnterTabSwitcher();
 }
 
 }  // namespace visited_url_ranking

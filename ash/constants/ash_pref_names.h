@@ -2474,20 +2474,19 @@ inline constexpr char kCaptureModePolicySavePath[] =
 inline constexpr char kSunfishEnabled[] = "ash.capture_mode.sunfish_enabled";
 
 // The name of a boolean pref that records whether the Scanner consent
-// disclaimer has been accepted.
-// Contrary to this pref's name, this pref is actually for Scanner, not Sunfish.
-inline constexpr char kSunfishConsentDisclaimerAccepted[] =
+// disclaimer has been accepted (despite the pref path being for Sunfish).
+inline constexpr char kScannerConsentDisclaimerAccepted[] =
     "ash.capture_mode.sunfish_consent_disclaimer_accepted";
 
 // A boolean pref that records whether the Scanner consent disclaimer has been
 // acknowledged from the smart actions button entry point.
-// If this is true, then `kSunfishConsentDisclaimerAccepted` must also be true.
+// If this is true, then `kScannerConsentDisclaimerAccepted` must also be true.
 inline constexpr char kScannerEntryPointDisclaimerAckSmartActionsButton[] =
     "ash.scanner.entry_point_disclaimer_ack.smart_actions_button";
 
 // A boolean pref that records whether the Scanner consent disclaimer has been
 // acknowledged from the dedicated Sunfish capture mode session.
-// If this is true, then `kSunfishConsentDisclaimerAccepted` must also be true.
+// If this is true, then `kScannerConsentDisclaimerAccepted` must also be true.
 inline constexpr char kScannerEntryPointDisclaimerAckSunfishSession[] =
     "ash.scanner.entry_point_disclaimer_ack.sunfish_session";
 

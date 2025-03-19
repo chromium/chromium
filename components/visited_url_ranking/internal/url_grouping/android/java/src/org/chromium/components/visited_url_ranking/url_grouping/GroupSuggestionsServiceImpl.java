@@ -33,8 +33,19 @@ public class GroupSuggestionsServiceImpl implements GroupSuggestionsService {
     }
 
     @Override
-    public void didAddTab(int tabId, int type) {
-        GroupSuggestionsServiceImplJni.get().didAddTab(mNativePtr, tabId, type);
+    public void didAddTab(int tabId, int tabLaunchType) {
+        GroupSuggestionsServiceImplJni.get().didAddTab(mNativePtr, tabId, tabLaunchType);
+    }
+
+    @Override
+    public void didSelectTab(int tabId, int tabSelectionType, int lastId) {
+        GroupSuggestionsServiceImplJni.get()
+                .didSelectTab(mNativePtr, tabId, tabSelectionType, lastId);
+    }
+
+    @Override
+    public void didEnterTabSwitcher() {
+        GroupSuggestionsServiceImplJni.get().didEnterTabSwitcher(mNativePtr);
     }
 
     @Override
@@ -55,6 +66,14 @@ public class GroupSuggestionsServiceImpl implements GroupSuggestionsService {
 
     @NativeMethods
     interface Natives {
-        void didAddTab(long nativeGroupSuggestionsServiceAndroid, int tabId, int type);
+        void didAddTab(long nativeGroupSuggestionsServiceAndroid, int tabId, int tabLaunchType);
+
+        void didSelectTab(
+                long nativeGroupSuggestionsServiceAndroid,
+                int tabId,
+                int tabSelectionType,
+                int lastId);
+
+        void didEnterTabSwitcher(long nativeGroupSuggestionsServiceAndroid);
     }
 }

@@ -32,6 +32,7 @@ using GetRenderFrameInfo =
     base::RepeatingCallback<std::optional<RenderFrameInfo>(int child_process_id,
                                                            blink::FrameToken)>;
 bool ConvertAIPageContentToProto(
+    blink::mojom::AIPageContentOptionsPtr main_frame_options,
     content::GlobalRenderFrameHostToken main_frame_token,
     const AIPageContentMap& page_content_map,
     GetRenderFrameInfo get_render_frame_info,

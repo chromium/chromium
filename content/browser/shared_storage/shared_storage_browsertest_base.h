@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -83,7 +84,7 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
 
   void ExecuteScriptInWorklet(
       const ToRenderFrameHost& execution_target,
-      const std::string& script,
+      std::string_view script,
       GURL* out_module_script_url,
       size_t expected_total_host_count = 1u,
       bool keep_alive_after_operation = true,

@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -206,7 +207,7 @@ SharedStorageBrowserTestBase::GetSharedStorageReportingMap(
 
 void SharedStorageBrowserTestBase::ExecuteScriptInWorklet(
     const ToRenderFrameHost& execution_target,
-    const std::string& script,
+    std::string_view script,
     GURL* out_module_script_url,
     size_t expected_total_host_count,
     bool keep_alive_after_operation,

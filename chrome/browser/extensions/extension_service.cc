@@ -135,8 +135,6 @@ using LoadErrorBehavior = ExtensionRegistrar::LoadErrorBehavior;
 
 namespace {
 
-bool g_external_updates_disabled_for_test_ = false;
-
 // Wait this long after an extensions becomes idle before updating it.
 constexpr base::TimeDelta kUpdateIdleDelay = base::Seconds(5);
 
@@ -383,7 +381,7 @@ void ExtensionService::Init() {
 
   // TODO(erikkay): this should probably be deferred to a future point
   // rather than running immediately at startup.
-  CheckForExternalUpdates();
+  external_provider_manager_->CheckForExternalUpdates();
 
   safe_browsing_verdict_handler_.Init();
 
@@ -493,10 +491,6 @@ scoped_refptr<CrxInstaller> ExtensionService::CreateUpdateInstaller(
   installer->set_install_cause(extension_misc::INSTALL_CAUSE_UPDATE);
 
   return installer;
-}
-
-base::AutoReset<bool> ExtensionService::DisableExternalUpdatesForTesting() {
-  return base::AutoReset<bool>(&g_external_updates_disabled_for_test_, true);
 }
 
 void ExtensionService::LoadExtensionsFromCommandLineFlag(
@@ -913,25 +907,6 @@ void ExtensionService::CheckForUpdatesSoon() {
   }
 
   updater_->CheckSoon();
-}
-
-// Some extensions will autoupdate themselves externally from Chrome.  These
-// are typically part of some larger client application package. To support
-// these, the extension will register its location in the preferences file
-// (and also, on Windows, in the registry) and this code will periodically
-// check that location for a .crx file, which it will then install locally if
-// a new version is available.
-// Errors are reported through LoadErrorReporter. Success is not reported.
-void ExtensionService::CheckForExternalUpdates() {
-  if (g_external_updates_disabled_for_test_) {
-    return;
-  }
-
-  external_provider_manager_->CheckForExternalUpdates();
-}
-
-void ExtensionService::ReinstallProviderExtensions() {
-  external_provider_manager_->ReinstallProviderExtensions();
 }
 
 void ExtensionService::UnloadExtension(const std::string& extension_id,

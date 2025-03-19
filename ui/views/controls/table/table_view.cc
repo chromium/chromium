@@ -2514,6 +2514,7 @@ void TableView::SetHeaderStyle(const TableHeaderStyle& style) {
     PreferredSizeChanged();
     SchedulePaint();
     header_->SchedulePaint();
+    header_->UpdateFocusState();
   }
 }
 

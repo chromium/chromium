@@ -423,10 +423,10 @@ static const char kAllTracingCategories[] = "*";
       content::BrowserAccessibilityState::GetInstance();
   if (UIAccessibilityIsVoiceOverRunning()) {
     accessibility_state->EnableProcessAccessibility();
-    browser_ax_state->SetKnownScreenReaderAppActive(true);
+    accessibility_state->SetScreenReaderAppActive(true);
   } else {
     accessibility_state->DisableProcessAccessibility();
-    browser_ax_state->SetKnownScreenReaderAppActive(false);
+    accessibility_state->SetScreenReaderAppActive(false);
   }
 }
 @end

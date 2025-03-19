@@ -33,7 +33,8 @@ class GlicWindowAnimator : public gfx::AnimationDelegate {
                                 base::OnceClosure callback);
 
   // Runs the detached open widget animation for the Glic widget.
-  void RunOpenDetachedAnimation(base::OnceClosure callback);
+  void RunOpenDetachedAnimation(base::OnceClosure callback,
+                                int animate_down_distance);
 
   // Runs the attached close animation for the Glic widget.
   void RunCloseAnimation(GlicButton* glic_button, base::OnceClosure callback);

@@ -141,6 +141,10 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
 
   node.visible_frame_element_id = wire.visible_frame_element_id;
   node.SetTransformChanged(cc::DamageReason::kUntracked);
+  if (!node.SetDamageReasonsForDeserialization(
+          cc::DamageReasonSet::FromEnumBitmask(wire.damage_reasons_bit_mask))) {
+    return base::unexpected("Invalid damage_reasons_bit_mask");
+  }
   return base::ok();
 }
 

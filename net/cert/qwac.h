@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <set>
 #include <utility>
 #include <vector>

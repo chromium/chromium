@@ -51,6 +51,8 @@ namespace {
 BASE_FEATURE(kCheckExternalExtensionInstallLocation,
              "CheckExternalExtensionInstallLocation",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool g_external_updates_disabled_for_test_ = false;
 }  // namespace
 
 using extensions::mojom::ManifestLocation;
@@ -90,7 +92,18 @@ void ExternalProviderManager::CreateExternalProviders() {
       &external_extension_providers_);
 }
 
+// Some extensions will autoupdate themselves externally from Chrome.  These
+// are typically part of some larger client application package. To support
+// these, the extension will register its location in the preferences file
+// (and also, on Windows, in the registry) and this code will periodically
+// check that location for a .crx file, which it will then install locally if
+// a new version is available.
+// Errors are reported through LoadErrorReporter. Success is not reported.
 void ExternalProviderManager::CheckForExternalUpdates() {
+  if (g_external_updates_disabled_for_test_) {
+    return;
+  }
+
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   TRACE_EVENT0("browser,startup",
                "ExternalProviderManager::CheckForExternalUpdates");
@@ -221,6 +234,11 @@ void ExternalProviderManager::AddProviderForTesting(
     std::unique_ptr<ExternalProviderInterface> test_provider) {
   CHECK(test_provider);
   external_extension_providers_.push_back(std::move(test_provider));
+}
+
+base::AutoReset<bool>
+ExternalProviderManager::DisableExternalUpdatesForTesting() {
+  return base::AutoReset<bool>(&g_external_updates_disabled_for_test_, true);
 }
 
 bool ExternalProviderManager::OnExternalExtensionFileFound(

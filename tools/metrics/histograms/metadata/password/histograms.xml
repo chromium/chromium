@@ -2314,6 +2314,17 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.MediationConditional"
+    enum="CredentialManagerGetResult" expires_after="2025-06-22">
+  <owner>goto@google.com</owner>
+  <owner>markusheintz@google.com</owner>
+  <owner>yigu@google.com</owner>
+  <summary>
+    Tracks result of navigator.credentials.get() with
+    mediation=&quot;conditional&quot;. Used in unified sign-in and sign-up.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.MediationOptional"
     enum="CredentialManagerGetResult" expires_after="2025-06-08">
   <owner>kazinova@google.com</owner>

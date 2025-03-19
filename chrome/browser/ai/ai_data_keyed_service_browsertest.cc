@@ -275,11 +275,29 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, SiteEngagementScores) {
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, AIPageContent) {
   AiData ai_data = LoadSimplePageAndData();
   ASSERT_TRUE(ai_data.has_value());
-  const auto& page_content = ai_data->page_context().annotated_page_content();
-  const auto& content_attributes =
-      page_content.root_node().content_attributes();
-  EXPECT_EQ(content_attributes.attribute_type(),
-            optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
+
+  {
+    const auto& page_content = ai_data->page_context().annotated_page_content();
+    EXPECT_EQ(page_content.version(),
+              optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
+    const auto& content_attributes =
+        page_content.root_node().content_attributes();
+    EXPECT_EQ(content_attributes.attribute_type(),
+              optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
+    EXPECT_FALSE(content_attributes.has_interaction_info());
+  }
+
+  {
+    const auto& page_content = ai_data->action_annotated_page_content();
+    EXPECT_EQ(page_content.version(),
+              optimization_guide::proto::
+                  ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
+    const auto& content_attributes =
+        page_content.root_node().content_attributes();
+    EXPECT_EQ(content_attributes.attribute_type(),
+              optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
+    EXPECT_TRUE(content_attributes.has_interaction_info());
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, SpecifierOn) {

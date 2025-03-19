@@ -50,7 +50,7 @@ BASE_FEATURE(kOneGroupPerRenderer,
 
 BASE_FEATURE(kFlattenCpuCgroups,
              "FlattenCpuCgroups",
-             FEATURE_DISABLED_BY_DEFAULT);
+             FEATURE_ENABLED_BY_DEFAULT);
 
 // If FlattenCpuCgroupsUnified parameter is enabled, foreground renderer
 // processes uses /sys/fs/cgroup/cpu/ui cgroup instead of
@@ -310,7 +310,7 @@ Process::Priority GetProcessPriorityCGroup(std::string_view cgroup_contents) {
     if (fields.size() != 3U) {
       NOTREACHED();
     }
-    if (fields[2] == kBackground) {
+    if (fields[2] == kBackgroundExperiment || fields[2] == kBackground) {
       return Process::Priority::kBestEffort;
     }
   }

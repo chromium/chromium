@@ -184,14 +184,14 @@ each histogram. Maybe add here or add a new performance controls one
 
 <histogram
     name="PerformanceControls.Intervention.BackgroundTab.{ResourceType}.RateLimitedCount"
-    units="count" expires_after="2025-04-27">
+    units="count" expires_after="2025-08-31">
   <owner>stluong@chromium.org</owner>
   <owner>estalin@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
   <summary>
     Logs daily the number of times the intervention message is unable to show
     due to rate limiting on the previous day. This will be used to understand
-    how often we supress the message and whether our rate limiting threshold is
+    how often we suppress the message and whether our rate limiting threshold is
     too low.
   </summary>
   <token key="ResourceType">

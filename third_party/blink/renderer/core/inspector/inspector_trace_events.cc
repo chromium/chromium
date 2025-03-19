@@ -664,6 +664,7 @@ void FillCommonPart(perfetto::TracedDictionary& dict,
 }
 void FillSelectors(
     perfetto::TracedDictionary& dict,
+    Element& element,
     const InvalidationSet& invalidation_set,
     InvalidationSetToSelectorMap::SelectorFeatureType feature_type,
     const AtomicString& feature_value) {
@@ -677,11 +678,10 @@ void FillSelectors(
       auto selector_dict = array.AppendDictionary();
       selector_dict.Add("selector", selector->GetSelectorText());
       const StyleSheetContents* contents = selector->GetStyleSheetContents();
-      // TODO(crbug.com/337076014): This will pick an arbitrary stylesheet
-      // instantiation. In web components scenarios, it would be clearer to
-      // pick an instantiation local to the affected element.
       const CSSStyleSheet* style_sheet =
-          (contents != nullptr) ? contents->AnyClient() : nullptr;
+          (contents != nullptr)
+              ? contents->ClientInTreeScope(element.GetTreeScope())
+              : nullptr;
       selector_dict.Add("style_sheet_id",
                         IdentifiersFactory::IdForCSSStyleSheet(style_sheet));
     }
@@ -722,7 +722,7 @@ void inspector_style_invalidator_invalidate_event::SelectorPart(
   }
   if (feature_type !=
       InvalidationSetToSelectorMap::SelectorFeatureType::kUnknown) {
-    FillSelectors(dict, invalidation_set, feature_type, selector_part);
+    FillSelectors(dict, element, invalidation_set, feature_type, selector_part);
   }
 
   {
