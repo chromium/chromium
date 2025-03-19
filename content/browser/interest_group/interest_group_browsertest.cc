@@ -839,9 +839,9 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          // HTTP origins like those below aren't supported for FLEDGE -- some
          // tests verify that HTTP origins are rejected, even if somehow they
          // are allowed by the allowlist.
-         embedded_https_test_server().GetOrigin("a.test"),
-         embedded_https_test_server().GetOrigin("b.test"),
-         embedded_https_test_server().GetOrigin("c.test")});
+         embedded_test_server()->GetOrigin("a.test"),
+         embedded_test_server()->GetOrigin("b.test"),
+         embedded_test_server()->GetOrigin("c.test")});
   }
 
   void TearDownOnMainThread() override {
