@@ -274,6 +274,8 @@ source_set("eg2_tests") {
   deps = [
     ":eg_test_support+eg2",
     "//base/test:test_support",
+    "//components/policy/core/browser",
+    "//components/signin/public/base:signin_switches",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/authentication/ui_bundled/signin/account_menu:constants",
