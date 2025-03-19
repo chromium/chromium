@@ -64,6 +64,7 @@ namespace {
 // Default value for adding a buffer to the attachment zone.
 constexpr static int kAttachmentBuffer = 20;
 constexpr static int kDetachYDistance = 36;
+constexpr static int kInitialPositionBuffer = 4;
 
 constexpr static base::TimeDelta kAnimationDuration = base::Milliseconds(300);
 
@@ -395,6 +396,36 @@ void GlicWindowController::Toggle(BrowserWindowInterface* bwi,
     }
   }
 
+  if (!AlwaysDetached()) {
+    ToggleWhenNotAlwaysDetached(new_attached_browser, prevent_close, source);
+    return;
+  }
+
+  auto maybe_close = [this, prevent_close] {
+    if (!prevent_close) {
+      Close();
+    }
+  };
+  // If floaty is closed, open floaty
+  if (state_ == State::kClosed) {
+    Show(new_attached_browser, source);
+    return;
+  }
+  // If floaty is focused or the source is the top button, close it
+  // If floaty is unfocused, focus it
+  if (IsActive() || source == mojom::InvocationSource::kTopChromeButton) {
+    maybe_close();
+  } else {
+    // TODO(crbug.com/404601783): Bring focus to the textbox.
+    GetGlicWidget()->Activate();
+    GetGlicView()->web_view()->GetWebContents()->Focus();
+  }
+}
+
+void GlicWindowController::ToggleWhenNotAlwaysDetached(
+    Browser* new_attached_browser,
+    bool prevent_close,
+    mojom::InvocationSource source) {
   auto maybe_close = [this, prevent_close] {
     if (!prevent_close) {
       Close();
@@ -424,9 +455,6 @@ void GlicWindowController::Toggle(BrowserWindowInterface* bwi,
         // Button clicked on a different browser: attach to that one.
         MovePositionToBrowserGlicButton(*new_attached_browser,
                                         /*animate=*/true);
-        if (AlwaysDetached()) {
-          return;
-        }
         AttachToBrowser(*new_attached_browser);
       }
       return;
@@ -586,13 +614,12 @@ void GlicWindowController::AuthCheckDoneBeforeShow(
   glic_window_animator_ = std::make_unique<GlicWindowAnimator>(this);
   if (browser_for_attachment) {
     if (AlwaysDetached()) {
-      MovePositionToBrowserGlicButton(*browser_for_attachment.get(), false);
-      OpenDetached();
+      OpenDetached(browser_for_attachment.get());
     } else {
       OpenAttached(*browser_for_attachment.get());
     }
   } else {
-    OpenDetached();
+    OpenDetached(nullptr);
   }
 
   // Immediately hook up the WebView to the WebContents.
@@ -634,6 +661,32 @@ gfx::Rect GlicWindowController::GetInitialDetachedBounds() {
   return {position, widget_size};
 }
 
+gfx::Rect GlicWindowController::GetInitialDetachedBoundsFromBrowser(
+    Browser* browser) {
+  gfx::Rect display_bounds = GetDisplayForOpeningDetached().work_area();
+  gfx::Size widget_size = GetLastRequestedSizeClamped(display_bounds.height());
+  gfx::Point origin = display_bounds.top_right();
+
+  // Open detached relative to the browser.
+  gfx::Rect browser_bounds =
+      browser->GetBrowserView().GetWidget()->GetWindowBoundsInScreen();
+  GlicButton* glic_button = GetGlicButton(*browser);
+  CHECK(glic_button);
+  gfx::Rect glic_button_inset_bounds = glic_button->GetBoundsWithInset();
+  // If glic can't fit to the right of the browser,
+  // set the origin so the top right of glic meets the bottom left of the glic
+  // button.
+  if (display_bounds.width() - browser_bounds.right() > widget_size.width()) {
+    origin = glic_button_inset_bounds.bottom_right();
+  } else {
+    origin =
+        gfx::Point(glic_button_inset_bounds.x() - widget_size.width() -
+                       kInitialPositionBuffer,
+                   glic_button_inset_bounds.bottom() + kInitialPositionBuffer);
+  }
+  return {origin, widget_size};
+}
+
 void GlicWindowController::OpenAttached(Browser& browser) {
   CHECK(!AlwaysDetached());
   GlicButton* glic_button = GetGlicButton(browser);
@@ -670,8 +723,10 @@ void GlicWindowController::OpenAttached(Browser& browser) {
                      GetWeakPtr()));
 }
 
-void GlicWindowController::OpenDetached() {
-  gfx::Rect initial_bounds = GetInitialDetachedBounds();
+void GlicWindowController::OpenDetached(Browser* browser) {
+  gfx::Rect initial_bounds = (browser)
+                                 ? GetInitialDetachedBoundsFromBrowser(browser)
+                                 : GetInitialDetachedBounds();
 
   // Make the widget.
   glic_widget_ = CreateGlicWidget(initial_bounds);
@@ -692,8 +747,10 @@ void GlicWindowController::OpenDetached() {
   }
   GetGlicWidget()->Show();
 
-  glic_window_animator_->RunOpenDetachedAnimation(base::BindOnce(
-      &GlicWindowController::OpenAnimationFinished, GetWeakPtr()));
+  glic_window_animator_->RunOpenDetachedAnimation(
+      base::BindOnce(&GlicWindowController::OpenAnimationFinished,
+                     GetWeakPtr()),
+      browser ? 0 : kDefaultDetachedTopRightDistance);
 }
 
 // This happens after the web client is initialized. It signals the web client
