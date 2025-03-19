@@ -473,6 +473,8 @@ crbug.com/402171652 [ win11 amd-0x7480 ] Pixel_DirectComposition_Video_VP9_YUY2 
 crbug.com/402171652 [ win11 amd-0x7480 ] Pixel_DirectComposition_Video_VP9_BGRA [ Failure ]
 crbug.com/402429382 [ win11 amd-0x7480 ] Pixel_ReflectedDiv [ Failure ]
 
+crbug.com/404887521 [ android android-chromium android-nexus-5x ] Pixel_OffscreenCanvasAccelerated2D [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
