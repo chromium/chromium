@@ -54,9 +54,12 @@ std::unique_ptr<views::View> GetAttributeValueView(
         detail,
     bool is_save_prompt) {
   std::unique_ptr<views::Label> label =
-      std::make_unique<views::Label>(detail.attribute_value);
-  label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT);
-  label->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
+      views::Builder<views::Label>()
+          .SetText(detail.attribute_value)
+          .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT)
+          .SetTextStyle(views::style::STYLE_BODY_3_MEDIUM)
+          .SetAccessibleRole(ax::mojom::Role::kDefinition)
+          .Build();
 
   // Only update dialogs have a dot circle in front of added or updated values.
   const bool existing_entity_added_or_updated_attribute =
@@ -64,42 +67,36 @@ std::unique_ptr<views::View> GetAttributeValueView(
       detail.update_type !=
           SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateType::
               kNewEntityAttributeUnchanged;
-  if (existing_entity_added_or_updated_attribute) {
-    auto row = views::Builder<views::BoxLayoutView>()
-                   .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-                   .SetCrossAxisAlignment(
-                       views::BoxLayout::CrossAxisAlignment::kCenter)
-                   .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
-                   .Build();
-
-    views::BoxLayoutView* upated_entity_dot = row->AddChildView(
-        views::Builder<views::BoxLayoutView>()
-            .SetProperty(
-                views::kMarginsKey,
-                gfx::Insets::TLBR(0, 0, 0, kNewOrUpdatedAttributeDotSpacing))
-            .Build());
-    upated_entity_dot->SetPreferredSize(gfx::Size(
-        kNewOrUpdatedAttributeDotSize, kNewOrUpdatedAttributeDotSize));
-    upated_entity_dot->SizeToPreferredSize();
-    upated_entity_dot->SetBackground(
-        views::CreateRoundedRectBackground(ui::kColorButtonBackgroundProminent,
-                                           kNewOrUpdatedAttributeDotSize / 2));
-    row->AddChildView(std::move(label));
-    row->SetAccessibleRole(ax::mojom::Role::kTerm);
-    row->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
-    row->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
-        detail.update_type ==
-                SaveOrUpdateAutofillAiDataController::
-                    EntityAttributeUpdateType::kNewEntityAttributeAdded
-            ? IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_NEW_ATTRIBUTE_ACCESSIBLE_NAME
-            : IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_UPDATED_ATTRIBUTE_ACCESSIBLE_NAME,
-        detail.attribute_value));
-    return row;
-  } else {
-    label->SetAccessibleRole(ax::mojom::Role::kTerm);
-    label->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
+  if (!existing_entity_added_or_updated_attribute) {
     return label;
   }
+  auto row =
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+          .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter)
+          .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
+          .Build();
+
+  views::BoxLayoutView* updated_entity_dot = row->AddChildView(
+      views::Builder<views::BoxLayoutView>()
+          .SetProperty(
+              views::kMarginsKey,
+              gfx::Insets::TLBR(0, 0, 0, kNewOrUpdatedAttributeDotSpacing))
+          .Build());
+  updated_entity_dot->SetPreferredSize(
+      gfx::Size(kNewOrUpdatedAttributeDotSize, kNewOrUpdatedAttributeDotSize));
+  updated_entity_dot->SizeToPreferredSize();
+  updated_entity_dot->SetBackground(views::CreateRoundedRectBackground(
+      ui::kColorButtonBackgroundProminent, kNewOrUpdatedAttributeDotSize / 2));
+  label->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
+      detail.update_type ==
+              SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateType::
+                  kNewEntityAttributeAdded
+          ? IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_NEW_ATTRIBUTE_ACCESSIBLE_NAME
+          : IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_UPDATED_ATTRIBUTE_ACCESSIBLE_NAME,
+      detail.attribute_value));
+  row->AddChildView(std::move(label));
+  return row;
 }
 
 // Helper to create a row displayed in the dialog. This row contains information
@@ -117,8 +114,7 @@ std::unique_ptr<views::View> BuildEntityAttributeRow(
           .SetText(detail.attribute_name)
           .SetTextStyle(views::style::STYLE_BODY_4)
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-          .SetAccessibleRole(ax::mojom::Role::kDefinition)
-          .SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY)
+          .SetAccessibleRole(ax::mojom::Role::kTerm)
           .Build());
   row->AddChildView(GetAttributeValueView(detail, is_save_prompt));
   // Set every child to expand with the same ratio.
@@ -303,7 +299,6 @@ void SaveOrUpdateAutofillAiDataBubbleView::AddedToWidget() {
           .SetTextStyle(views::style::STYLE_HEADLINE_4)
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
           .SetAccessibleRole(ax::mojom::Role::kHeading)
-          .SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY)
           .Build());
   GetBubbleFrameView()->SetHeaderView(std::move(header_container));
 }
