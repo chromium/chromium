@@ -1063,12 +1063,6 @@ void EmitProcessUmaAndUkm(const GlobalMemoryDump::ProcessDump& pmd,
       base::StrCat({std::string(kMemoryHistogramPrefix), process_name,
                     ".MappingsCount"}),
       pmd.os_dump().mappings_count);
-  base::UmaHistogramMemoryMB(
-      base::StrCat({kMemoryHistogramPrefix, process_name, ".Pss"}),
-      pmd.os_dump().pss_kb / kKiB);
-  base::UmaHistogramMemoryMB(
-      base::StrCat({kMemoryHistogramPrefix, process_name, ".SwapPss"}),
-      pmd.os_dump().swap_pss_kb / kKiB);
 #endif
 
   if (record_uma) {
