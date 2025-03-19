@@ -535,15 +535,10 @@ bool IsSupported() {
   return false;
 }
 
-std::unique_ptr<FidoDiscoveryBase> NewDiscovery(uintptr_t ns_window) {
+std::unique_ptr<FidoDiscoveryBase> NewDiscovery(
+    base::apple::WeakNSWindow ns_window) {
   if (@available(macOS 13.5, *)) {
-    NSWindow* window = nullptr;
-    if (ns_window != kFakeNSWindowForTesting) {
-      window = (__bridge NSWindow*)(void*)ns_window;
-      static_assert(sizeof(window) == sizeof(ns_window));
-    }
-
-    return std::make_unique<Discovery>(window);
+    return std::make_unique<Discovery>(ns_window.Get());
   }
 
   NOTREACHED();
