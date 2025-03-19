@@ -23,6 +23,10 @@ class HistoryService;
 namespace history_embeddings {
 class HistoryEmbeddingsService;
 }
+namespace passage_embeddings {
+class PassageEmbedderModelObserver;
+}
+
 namespace content {
 class NavigationHandle;
 class WeakDocumentPtr;
@@ -98,6 +102,8 @@ class HistoryEmbeddingsTabHelper
   // Helper functions to return the embeddings and history services.
   // `GetHistoryClustersService()` may return nullptr (in tests).
   history_embeddings::HistoryEmbeddingsService* GetHistoryEmbeddingsService();
+  passage_embeddings::PassageEmbedderModelObserver*
+  GetPassageEmbedderModelObserver();
   // `GetHistoryService()` may return nullptr.
   history::HistoryService* GetHistoryService();
 
