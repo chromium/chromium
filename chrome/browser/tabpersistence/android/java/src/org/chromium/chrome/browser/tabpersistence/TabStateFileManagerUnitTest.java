@@ -558,7 +558,7 @@ public class TabStateFileManagerUnitTest {
         assertEquals(PARENT_ID, state.parentId);
         assertEquals(OPENER_APP_ID, state.openerAppId);
         assertEquals(VERSION, state.contentsState.version());
-        assertEquals(THEME_COLOR, state.getThemeColor());
+        assertEquals(THEME_COLOR, state.themeColor);
         assertEquals(LAUNCH_TYPE_AT_CREATION, state.tabLaunchTypeAtCreation);
         assertEquals(ROOT_ID, state.rootId);
         assertEquals(USER_AGENT, state.userAgent);

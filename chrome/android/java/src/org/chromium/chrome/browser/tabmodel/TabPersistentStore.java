@@ -2123,7 +2123,7 @@ public class TabPersistentStore {
     private boolean isIncognitoTabBeingRestored(TabRestoreDetails tabDetails, TabState tabState) {
         if (tabState != null) {
             // The Tab's previous state was completely restored.
-            return tabState.isIncognito();
+            return tabState.isIncognito;
         } else if (tabDetails.isIncognito != null) {
             // The TabState couldn't be restored, but we have some information about the tab.
             return tabDetails.isIncognito;

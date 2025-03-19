@@ -353,11 +353,17 @@ public interface Tab extends TabLifecycle {
      */
     void setParentId(@TabId int parentId);
 
-    // TODO(crbug.com/41497290): deprecate RootId once TabGroupId has finished replacing it.
     /**
      * Returns the root identifier for the {@link Tab}. This method will be replaced by {@link
      * getTabGroupId()} as part of https://crbug.com/1523745.
+     *
+     * @deprecated Use {@link #getTabGroupId()} instead. Most public tabmodel methods have been
+     *     migrated to support tab group id. Any remaining usecases should be migrated to tab group
+     *     id. The only remaining usecase that should require a root id is fetching metadata about
+     *     the tab group (color, title, etc.). The metadata is still stored in shared prefs by root
+     *     ID key until a migration to a better storage system happens.
      */
+    @Deprecated
     @TabId
     int getRootId();
 
