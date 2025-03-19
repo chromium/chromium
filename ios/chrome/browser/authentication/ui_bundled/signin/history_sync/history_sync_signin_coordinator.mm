@@ -25,12 +25,12 @@
 }
 
 - (void)start {
-  ProfileIOS* profile = self.browser->GetProfile();
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(profile);
+      IdentityManagerFactory::GetForProfile(self.profile);
   CHECK(identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
-  syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForProfile(self.profile);
   syncer::SyncUserSettings* userSettings = syncService->GetUserSettings();
   BOOL alreadyOptIn = userSettings->GetSelectedTypes().HasAll(
       {syncer::UserSelectableType::kHistory,
@@ -62,7 +62,7 @@
   id<SystemIdentity> identity;
   if (result == SigninCoordinatorResultSuccess) {
     AuthenticationService* authService =
-        AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
+        AuthenticationServiceFactory::GetForProfile(self.profile);
     identity = authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   }
 
