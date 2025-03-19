@@ -729,8 +729,8 @@ TEST_F(ResourcePoolTest, MetadataSentToDisplayCompositor) {
   EXPECT_EQ(transfer[0].sync_token(), sync_token);
   EXPECT_EQ(transfer[0].texture_target(),
             resource.backing()->shared_image()->GetTextureTarget());
-  EXPECT_EQ(transfer[0].size, metadata.size);
-  EXPECT_EQ(transfer[0].format, metadata.format);
+  EXPECT_EQ(transfer[0].size, resource.backing()->shared_image()->size());
+  EXPECT_EQ(transfer[0].format, resource.backing()->shared_image()->format());
   EXPECT_EQ(
       transfer[0].synchronization_type,
       viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted);
