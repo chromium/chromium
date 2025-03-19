@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_transition_options.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -263,9 +264,14 @@ ViewTransition* ViewTransitionSupplement::GetTransition() {
   return document_transition_.Get();
 }
 
-ViewTransition* ViewTransitionSupplement::GetTransition(Element& element) {
+ViewTransition* ViewTransitionSupplement::GetTransition(
+    const Element& element) {
   if (element.IsDocumentElement()) {
     return document_transition_.Get();
+  }
+  if (element.IsPseudoElement()) {
+    return GetTransition(
+        To<PseudoElement>(element).UltimateOriginatingElement());
   }
   auto transition = element_transitions_.find(&element);
   return transition == element_transitions_.end() ? nullptr : transition->value;

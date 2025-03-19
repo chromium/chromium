@@ -4700,6 +4700,15 @@ StyleRecalcChange Element::RecalcOwnStyle(
     }
     layout_object->SetStyle(layout_style, apply_changes);
   }
+
+  if (RuntimeEnabledFeatures::ScopedViewTransitionsEnabled() &&
+      !IsDocumentElement() && ViewTransitionUtils::GetTransition(*this)) {
+    // TODO(kevers): Retrieve vector of VT names from the view transition.
+    // TODO(kevers): Determine if it is safe to remove the call from StyleEngine
+    // for the document element here.
+    RecalcTransitionPseudoTreeStyle({});
+  }
+
   return child_change;
 }
 
@@ -8878,9 +8887,12 @@ Element* Element::GetStyledPseudoElement(
     return nullptr;
   }
 
-  // The transition pseudos can currently only exist on the document element.
-  if (!IsDocumentElement()) {
-    return nullptr;
+  if (!RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()) {
+    // The transition pseudos can currently only exist on the document element
+    // unless scoped view transitions are enabled.
+    if (!IsDocumentElement()) {
+      return nullptr;
+    }
   }
 
   // This traverses the pseudo element hierarchy generated in
@@ -9166,8 +9178,7 @@ const ComputedStyle* Element::StyleForSearchTextPseudoElement(
 
 bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
   if (pseudo_id == kPseudoIdViewTransition) {
-    DCHECK_EQ(this, GetDocument().documentElement());
-    return !!ViewTransitionUtils::GetTransition(GetDocument());
+    return !!ViewTransitionUtils::GetTransition(*this);
   }
   if (pseudo_id == kPseudoIdFirstLetter && IsSVGElement()) {
     return false;
@@ -10803,8 +10814,8 @@ void Element::InvalidateStyleAttribute(
 
 void Element::RecalcTransitionPseudoTreeStyle(
     const Vector<AtomicString>& view_transition_names) {
-  DCHECK_EQ(this, GetDocument().documentElement());
-
+  DCHECK(RuntimeEnabledFeatures::ScopedViewTransitionsEnabled() ||
+         this == GetDocument().documentElement());
   DisplayLockStyleScope display_lock_style_scope(this);
   if (!display_lock_style_scope.ShouldUpdateChildStyle()) {
     return;
@@ -10812,7 +10823,8 @@ void Element::RecalcTransitionPseudoTreeStyle(
 
   PseudoElement* old_transition_pseudo =
       GetPseudoElement(kPseudoIdViewTransition);
-  const auto* transition = ViewTransitionUtils::GetTransition(GetDocument());
+  const auto* transition = ViewTransitionUtils::GetTransition(*this);
+
   if (!transition && !old_transition_pseudo) {
     return;
   }

@@ -1049,10 +1049,12 @@ void StyleResolver::ForEachUARulesForElement(const Element& element,
       default_style_sheets.DefaultPseudoElementStyleOrNull()) {
     func(default_style_sheets.DefaultPseudoElementStyleOrNull(),
          kPseudoElementUASheet);
-  } else if (IsTransitionPseudoElement(pseudo_id) &&
-             GetDocument().GetStyleEngine().DefaultViewTransitionStyle()) {
-    func(GetDocument().GetStyleEngine().DefaultViewTransitionStyle(),
-         kViewTransitionUASheet);
+  } else if (IsTransitionPseudoElement(pseudo_id)) {
+    if (auto* rule_set =
+            GetDocument().GetStyleEngine().DefaultViewTransitionStyle(
+                element)) {
+      func(rule_set, kViewTransitionUASheet);
+    }
   }
 }
 

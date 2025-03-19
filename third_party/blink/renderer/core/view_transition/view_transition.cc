@@ -138,7 +138,7 @@ ViewTransition::ViewTransition(PassKey,
       has_document_scope_(element->IsDocumentElement()),
       delegate_(delegate),
       style_tracker_(
-          MakeGarbageCollected<ViewTransitionStyleTracker>(*document_,
+          MakeGarbageCollected<ViewTransitionStyleTracker>(*element,
                                                            transition_token_)),
       script_delegate_(MakeGarbageCollected<DOMViewTransition>(
           *element->GetExecutionContext(),
