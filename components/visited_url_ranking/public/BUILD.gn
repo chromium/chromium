@@ -93,13 +93,17 @@ source_set("test_support") {
 
 if (is_android) {
   android_library("public_java") {
+    srcjar_deps = [ ":group_suggestions_generated_enums" ]
+
     sources = [
       "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/GroupSuggestion.java",
       "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/GroupSuggestions.java",
       "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/GroupSuggestionsService.java",
+      "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/UserResponseMetadata.java",
     ]
 
     deps = [
+      "//base:callback_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
@@ -109,6 +113,11 @@ if (is_android) {
     sources = [
       "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/GroupSuggestion.java",
       "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/GroupSuggestions.java",
+      "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/UserResponseMetadata.java",
     ]
+  }
+
+  java_cpp_enum("group_suggestions_generated_enums") {
+    sources = [ "url_grouping/group_suggestions_delegate.h" ]
   }
 }

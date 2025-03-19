@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/android/jni_array.h"
+#include "base/android/jni_callback.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "components/visited_url_ranking/public/url_grouping/group_suggestions_delegate.h"
@@ -17,9 +18,11 @@
 #include "components/visited_url_ranking/internal/jni_headers/GroupSuggestionsServiceImpl_jni.h"
 #include "components/visited_url_ranking/public/jni_headers/GroupSuggestion_jni.h"
 #include "components/visited_url_ranking/public/jni_headers/GroupSuggestions_jni.h"
+#include "components/visited_url_ranking/public/jni_headers/UserResponseMetadata_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -50,7 +53,50 @@ TabEventTracker::TabSelectionType ConvertIntToTabSelectionType(
       return TabEventTracker::TabSelectionType::kUnknown;
   }
 }
+
+GroupSuggestionsDelegate::UserResponse ConvertIntToUserResponse(
+    int user_response) {
+  switch (user_response) {
+    case 0:
+      return GroupSuggestionsDelegate::UserResponse::kUnknown;
+    case 1:
+      return GroupSuggestionsDelegate::UserResponse::kNotShown;
+    case 2:
+      return GroupSuggestionsDelegate::UserResponse::kAccepted;
+    case 3:
+      return GroupSuggestionsDelegate::UserResponse::kRejected;
+    case 4:
+      return GroupSuggestionsDelegate::UserResponse::kIgnored;
+    default:
+      return GroupSuggestionsDelegate::UserResponse::kUnknown;
+  }
+}
 }  // namespace
+
+// static
+GroupSuggestionsDelegate::UserResponseMetadata
+GroupSuggestionsServiceAndroid::ToNativeUserResponse(
+    JNIEnv* env,
+    const JavaRef<jobject>& j_metadata) {
+  GroupSuggestionsDelegate::UserResponseMetadata data;
+  int suggestion_id_int = static_cast<int>(
+      Java_UserResponseMetadata_getSuggestionId(env, j_metadata));
+  data.suggestion_id =
+      UrlGroupingSuggestionId::FromUnsafeValue(suggestion_id_int);
+  int response_int = static_cast<int>(
+      Java_UserResponseMetadata_getUserResponse(env, j_metadata));
+  data.user_response = ConvertIntToUserResponse(response_int);
+  return data;
+}
+
+ScopedJavaLocalRef<jobject>
+GroupSuggestionsServiceAndroid::FromNativeUserResponse(
+    JNIEnv* env,
+    const GroupSuggestionsDelegate::UserResponseMetadata& metadata) {
+  return Java_UserResponseMetadata_create(
+      env, static_cast<jint>(metadata.suggestion_id.GetUnsafeValue()),
+      static_cast<jint>(metadata.user_response));
+}
 
 // Native counterpart of Java DelegateBridge. Observes the native service and
 // sends events to the Java bridge.
@@ -118,7 +164,8 @@ void GroupSuggestionsServiceAndroid::SuggestionDelegateBridge::ShowSuggestion(
   Java_DelegateBridge_showSuggestion(
       env, java_obj_,
       Java_GroupSuggestions_createGroupSuggestions(
-          env, base::android::ToJavaArrayOfObjects(env, suggestions)));
+          env, base::android::ToJavaArrayOfObjects(env, suggestions)),
+      base::android::ToJniCallback(env, std::move(response_callback)));
 }
 
 void GroupSuggestionsServiceAndroid::SuggestionDelegateBridge::
