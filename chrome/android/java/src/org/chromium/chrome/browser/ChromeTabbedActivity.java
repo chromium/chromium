@@ -2583,7 +2583,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
 
         if (ChromeFeatureList.sPriceChangeModule.isEnabled()) {
             PriceChangeModuleBuilder priceChangeModuleBuilder =
-                    new PriceChangeModuleBuilder(this, mTabModelProfileSupplier, mTabModelSelector);
+                    new PriceChangeModuleBuilder(
+                            this, getProfileProviderSupplier(), mTabModelSelector);
             moduleRegistry.registerModule(ModuleType.PRICE_CHANGE, priceChangeModuleBuilder);
         }
 

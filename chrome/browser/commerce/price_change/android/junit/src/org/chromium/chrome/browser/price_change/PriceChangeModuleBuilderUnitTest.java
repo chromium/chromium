@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.price_change;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -22,15 +21,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
@@ -38,6 +35,7 @@ import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
@@ -55,6 +53,7 @@ public class PriceChangeModuleBuilderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Profile mProfile;
+    @Mock private ProfileProvider mProfileProvider;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private ShoppingService mShoppingService;
     @Mock private ModuleDelegate mModuleDelegate;
@@ -66,32 +65,18 @@ public class PriceChangeModuleBuilderUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         when(mFaviconHelperJniMock.init()).thenReturn(1L);
         FaviconHelperJni.setInstanceForTesting(mFaviconHelperJniMock);
         when(mProfile.isOffTheRecord()).thenReturn(false);
+        when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
         CommerceFeatureUtilsJni.setInstanceForTesting(mCommerceFeatureUtilsJniMock);
         doReturn(true).when(mCommerceFeatureUtilsJniMock).isPriceAnnotationsEnabled(anyLong());
 
+        var profileProviderSupplier = new OneshotSupplierImpl<ProfileProvider>();
+        profileProviderSupplier.set(mProfileProvider);
         mModuleBuilder =
                 new PriceChangeModuleBuilder(
-                        RuntimeEnvironment.application,
-                        new ObservableSupplier<>() {
-                            @Override
-                            public Profile addObserver(
-                                    Callback<Profile> obs, @NotifyBehavior int behavior) {
-                                return null;
-                            }
-
-                            @Override
-                            public void removeObserver(Callback<Profile> obs) {}
-
-                            @Override
-                            public Profile get() {
-                                return mProfile;
-                            }
-                        },
-                        mTabModelSelector);
+                        RuntimeEnvironment.application, profileProviderSupplier, mTabModelSelector);
         ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
     }
 
@@ -107,8 +92,19 @@ public class PriceChangeModuleBuilderUnitTest {
 
     @Test
     @SmallTest
-    public void testBuildModule_NotEligibleWithoutProfileInitialized() {
-        mProfile = null;
+    public void testBuildModule_NotEligibleWithoutProfileProvider() {
+        mModuleBuilder =
+                new PriceChangeModuleBuilder(
+                        RuntimeEnvironment.application,
+                        new OneshotSupplierImpl<ProfileProvider>(),
+                        mTabModelSelector);
+        assertFalse(mModuleBuilder.isEligible());
+    }
+
+    @Test
+    @SmallTest
+    public void testBuildModule_NotEligibleWithoutProfile() {
+        when(mProfileProvider.getOriginalProfile()).thenReturn(null);
         assertFalse(mModuleBuilder.isEligible());
     }
 
@@ -121,15 +117,5 @@ public class PriceChangeModuleBuilderUnitTest {
 
         assertTrue(mModuleBuilder.build(mModuleDelegate, mBuildCallback));
         verify(mBuildCallback, times(1)).onResult(any(ModuleProvider.class));
-    }
-
-    @Test
-    @SmallTest
-    public void testGetRegularProfile() {
-        Profile regularProfile = Mockito.mock(Profile.class);
-        when(mProfile.isOffTheRecord()).thenReturn(true);
-        when(mProfile.getOriginalProfile()).thenReturn(regularProfile);
-
-        assertEquals(regularProfile, mModuleBuilder.getRegularProfile());
     }
 }
