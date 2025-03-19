@@ -2775,6 +2775,7 @@ const CSSValue* StyleResolver::ComputeValue(
     const CSSValue& value) {
   const ComputedStyle* base_style = element->GetComputedStyle();
   StyleResolverState state(element->GetDocument(), *element);
+  state.EnsureParentStyle();
   STACK_UNINITIALIZED StyleCascade cascade(state);
   state.SetStyle(*base_style);
   auto* set =
