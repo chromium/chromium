@@ -26,6 +26,7 @@ class WhatsNewSceneAgentTest : public PlatformTest {
  public:
   WhatsNewSceneAgentTest() : PlatformTest() {
     scene_state_ = [[SceneState alloc] initWithAppState:app_state_];
+    scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
     scene_state_.scene = static_cast<UIWindowScene*>(
         [[[UIApplication sharedApplication] connectedScenes] anyObject]);
     std::unique_ptr<TestProfileIOS> profile_ =
