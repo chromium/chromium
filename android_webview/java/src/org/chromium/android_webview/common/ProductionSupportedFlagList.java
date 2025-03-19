@@ -1058,7 +1058,10 @@ public final class ProductionSupportedFlagList {
                 "Enable Fenced Frames HTML Element extra APIs."),
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_SHORT_CIRCUIT_SHOULD_INTERCEPT_REQUEST,
-                "Short circuit shouldInterceptRequest calls when they're not overridden.")
+                "Short circuit shouldInterceptRequest calls when they're not overridden."),
+        Flag.baseFeature(
+                BlinkFeatures.MEMORY_SAVER_MODE_RENDER_TUNING,
+                "Enables v8 memory saver mode on low memory thresholds."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

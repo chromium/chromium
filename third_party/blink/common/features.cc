@@ -1821,6 +1821,15 @@ BASE_FEATURE_PARAM(int,
                    "memory_cache_strong_ref_resource_size_threshold",
                    3 * 1024 * 1024);
 
+BASE_FEATURE(kMemorySaverModeRenderTuning,
+             "MemorySaverModeRenderTuning",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(int,
+                   kAvailableMemoryThresholdParamMb,
+                   &kMemorySaverModeRenderTuning,
+                   "available_memory_threshold_mb",
+                   740);
+
 BASE_FEATURE(kMHTML_Improvements,
              "MHTML_Improvements",
              base::FEATURE_DISABLED_BY_DEFAULT);
