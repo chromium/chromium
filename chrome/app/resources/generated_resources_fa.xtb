@@ -5548,7 +5548,7 @@
 <translation id="4878718769565915065">اثر انگشت به این کلید امنیتی اضافه نشد</translation>
 <translation id="4879491255372875719">خودکار (پیش‌فرض)</translation>
 <translation id="4880315242806573837">‏به‌روزرسانی‌های امنیتی به‌زودی به‌اتمام می‌رسد. به Chromebook جدید ارتقا دهید.</translation>
-<translation id="4880827082731008257">سابقه جستجو</translation>
+<translation id="4880827082731008257">سابقه «جستجو»</translation>
 <translation id="4881685975363383806">دفعه بعد به من یادآوری نشود</translation>
 <translation id="4881695831933465202">باز کردن</translation>
 <translation id="4882312758060467256">به این سایت دسترسی دارد</translation>
@@ -6409,7 +6409,7 @@
 <translation id="5499476581866658341">اکنون می‌توانید عکس‌ها و رسانه‌های جدید تلفنتان را مشاهده کنید</translation>
 <translation id="549957179819296104">نماد جدید</translation>
 <translation id="5500163593833085874">وقتی دکمه سمت چپ موشواره انتخاب شده است، از «+» برای دوکلیک کردن استفاده کنید</translation>
-<translation id="5500168250243071806">‏وقتی به سیستم وارد شده باشید، ممکن است <ph name="BEGIN_LINK_SEARCH" />سابقه جستجو<ph name="END_LINK_SEARCH" /> و <ph name="BEGIN_LINK_GOOGLE" />انواع دیگر فعالیت<ph name="END_LINK_GOOGLE" /> در «حساب Google» شما ذخیره شوند. هر زمان خواستید می‌توانید آن‌ها را حذف کنید.</translation>
+<translation id="5500168250243071806">‏وقتی به سیستم وارد شده باشید، ممکن است <ph name="BEGIN_LINK_SEARCH" />سابقه «جستجو»<ph name="END_LINK_SEARCH" /> و <ph name="BEGIN_LINK_GOOGLE" />انواع دیگر فعالیت<ph name="END_LINK_GOOGLE" /> در «حساب Google» شما ذخیره شوند. هر زمان خواستید می‌توانید آن‌ها را حذف کنید.</translation>
 <translation id="5501322521654567960">پانل کناری ترازشده به‌چپ</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{دریافت <ph name="ATTACHMENTS" /> از <ph name="DEVICE_NAME" /> ناموفق بود}one{دریافت <ph name="ATTACHMENTS" /> از <ph name="DEVICE_NAME" /> ناموفق بود}other{دریافت <ph name="ATTACHMENTS" /> از <ph name="DEVICE_NAME" /> ناموفق بود}}</translation>
 <translation id="5502500733115278303">‏وارد شده از Firefox</translation>
@@ -11449,7 +11449,7 @@
 <translation id="9108294543511800041">اکنون می‌توانید عکس‌ها، رسانه‌ها، و اعلان‌های جدید تلفنتان را مشاهده کنید</translation>
 <translation id="9108674852930645435">ویژگی‌های جدید <ph name="DEVICE_TYPE" /> را کاوش کنید</translation>
 <translation id="9109122242323516435">برای آزاد کردن فضا، فایل‌ها را در حافظه دستگاه حذف کنید.</translation>
-<translation id="9109283579179481106">اتصال به شبکه تلفن همراه</translation>
+<translation id="9109283579179481106">متصل شدن به شبکه تلفن همراه</translation>
 <translation id="9110739391922513676">‏راه‌اندازی Microsoft 365 برای باز کردن فایل‌ها</translation>
 <translation id="9111102763498581341">باز کردن قفل</translation>
 <translation id="9111305600911828693">پروانه راه‌اندازی نشده است</translation>

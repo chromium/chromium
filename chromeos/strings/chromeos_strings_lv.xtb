@@ -463,7 +463,7 @@
 <translation id="3178532070248519384">avangards</translation>
 <translation id="3182676044300231689">Ievadiet uzvedni, piemēram, “padarīt to pārliecinošāku”.</translation>
 <translation id="3188257591659621405">Mani faili</translation>
-<translation id="319101249942218879">Iemiesojuma attēls ir nomainīts</translation>
+<translation id="319101249942218879">avatāra attēls ir nomainīts</translation>
 <translation id="3192947282887913208">Audio faili</translation>
 <translation id="3199982728237701504">Dokumentu padevējs (divpusēji)</translation>
 <translation id="3201315366910775591">Kopīgotos albumus var atjaunināt citi lietotāji</translation>
@@ -475,7 +475,7 @@
 <translation id="324961752321393509">Jūsu administrators neļauj aizvērt šo lietotni.</translation>
 <translation id="3263941347294171263">Lai turpinātu atjaunināšanas procesu, atvienojiet un atkārtoti pievienojiet ierīci (<ph name="DEVICE_NAME" />).</translation>
 <translation id="3268178239013324452">Neizdevās — durtiņas ir atvērtas</translation>
-<translation id="3275729367986477355">Iemiesojuma attēls</translation>
+<translation id="3275729367986477355">avatāra attēls</translation>
 <translation id="3283504360622356314">{0,plural, =1{Rediģēt failu}zero{Rediģēt failus}one{Rediģēt failus}other{Rediģēt failus}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3286538390144397061">Restartēt tūlīt</translation>
@@ -544,7 +544,7 @@
 <translation id="3595596368722241419">Akumulators pilns</translation>
 <translation id="3600339377155080675">Spoguļot ekrānu</translation>
 <translation id="3602290021589620013">Priekšskatīt</translation>
-<translation id="3603829704940252505">Iemiesojums</translation>
+<translation id="3603829704940252505">avatārs</translation>
 <translation id="3604713164406837697">Fona tapetes mainīšana</translation>
 <translation id="360565022852130722">Wi-Fi tīklu sargā nedrošs protokols WEP 802.1x</translation>
 <translation id="3606583719724308068">Augsts latentums HTTPS vietnēs</translation>
@@ -710,7 +710,7 @@
 <translation id="439429847087949098">Notiek ierīces “<ph name="DEVICE_NAME" />” restartēšana</translation>
 <translation id="4395835743215824109">tastatūras pielāgošana</translation>
 <translation id="439946595190720558">Šis fons tika izveidots, izmantojot MI un šādu tekstu: “<ph name="PROMPT" />”.</translation>
-<translation id="4415951057168511744">Pašreizējais iemiesojums</translation>
+<translation id="4415951057168511744">Pašreizējais avatārs</translation>
 <translation id="4417830657741848074">Administrators ir iestatījis dažu lietotņu automātisku palaišanu. Dažas no šīm lietotnēm nevar aizvērt.</translation>
 <translation id="4422041425070339732">lejupvērstais bulttaustiņš</translation>
 <translation id="4425149324548788773">Mans disks</translation>
@@ -1438,7 +1438,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="7656388927906093505">Ierīce ir pele.</translation>
 <translation id="7658239707568436148">Atcelt</translation>
 <translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
-<translation id="7665800271478495366">Mainīt iemiesojumu</translation>
+<translation id="7665800271478495366">Mainīt avatāru</translation>
 <translation id="7673177760638264939">dārza roze</translation>
 <translation id="7683228889864052081">tastatūras nokrāsa</translation>
 <translation id="7690294790491645610">Apstipriniet jauno paroli</translation>

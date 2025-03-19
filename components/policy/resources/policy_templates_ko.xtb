@@ -6393,7 +6393,7 @@ URL 패턴 목록과 처리 유형 쌍을 받습니다. URL 패턴이 순서대�
 정책에서 삭제하면 도메인이 PDF 뷰어에서 file:// URL에 액세스할 수 없습니다.
 정책을 설정하지 않으면 모든 도메인이 PDF 뷰어에서 file:// URL에 액세스할 수 없습니다.</translation>
 <translation id="5585424654425017599">통합 허용</translation>
-<translation id="5586942249556966598">취소</translation>
+<translation id="5586942249556966598">아무 작업도 하지 않음</translation>
 <translation id="5598417829613725146">캔버스(버전 90 이후 지원)</translation>
 <translation id="5598821717813911176">이 정책은 <ph name="DOCUMENTSCAN_API" /> 함수 <ph name="GET_SCANNER_LIST_FUNCTION" /> 및 <ph name="START_SCAN_FUNCTION" />을 사용할 때 확인 대화상자를 건너뛸 수 있는 확장 프로그램을 지정합니다.
 

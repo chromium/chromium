@@ -2542,7 +2542,7 @@
 <translation id="2737916598897808047">Η εφαρμογή <ph name="APP_NAME" /> θέλει να μοιραστεί το περιεχόμενο της οθόνης σας με την καρτέλα <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Να μην επιτρέπεται στους ιστότοπους να χρησιμοποιούν τις γραμματοσειρές που είναι εγκατεστημένες στη συσκευή σας</translation>
 <translation id="2738771556149464852">Όχι αργότερα από</translation>
-<translation id="2739191690716947896">Εντοπισμός σφαλμάτων</translation>
+<translation id="2739191690716947896">Αποσφαλμάτωση</translation>
 <translation id="2739240477418971307">Αλλαγή των ρυθμίσεων προσβασιμότητας</translation>
 <translation id="2739331588276254426">Συνδέθηκε στο διαδίκτυο μέσω της συσκευής <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="274029851662193272">Συμπτυγμένο</translation>
@@ -6028,7 +6028,7 @@
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{Να καταργηθεί η ομαδοποίηση της ομάδας καρτελών;}other{Να καταργηθεί η ομαδοποίηση των ομάδων καρτελών;}}</translation>
 <translation id="5230190638672215545">Πληκτρολογήστε "uow" για τους χαρακτήρες "ươ"</translation>
 <translation id="5230516054153933099">Παράθυρο</translation>
-<translation id="5233019165164992427">NaCl Εντοπισμός σφαλμάτων θύρας</translation>
+<translation id="5233019165164992427">NaCl Αποσφαλμάτωση θύρας</translation>
 <translation id="5233231016133573565">Αναγνωριστικό διαδικασίας</translation>
 <translation id="5233638681132016545">Νέα καρτέλα</translation>
 <translation id="5233736638227740678">&amp;Επικόλληση</translation>
@@ -10488,7 +10488,7 @@
 <translation id="8431977087510901105">Επαναφορά ρυθμίσεων δείκτη</translation>
 <translation id="8433186206711564395">Ρυθμίσεις δικτύου</translation>
 <translation id="8434109185104929038">Γωνιά ανάγνωσης</translation>
-<translation id="8434480141477525001">NaCl Εντοπισμός σφαλμάτων θύρας</translation>
+<translation id="8434480141477525001">NaCl Αποσφαλμάτωση θύρας</translation>
 <translation id="8434837876193928924">Λεπτομέρειες ομάδας καρτελών</translation>
 <translation id="8436800506934625875">Δημιουργήστε ένα αλφαριθμητικό PIN ανάκτησης για τη Διαχείριση κωδικών πρόσβασης Google</translation>
 <translation id="8437209419043462667">ΗΠΑ</translation>

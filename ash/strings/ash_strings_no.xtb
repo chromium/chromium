@@ -923,7 +923,7 @@ Koble enheten til strøm.</translation>
 <translation id="4146671046252289537">Flytt til slutten av neste ord</translation>
 <translation id="4146833061457621061">Spill av musikk</translation>
 <translation id="4150201353443180367">Skjerm</translation>
-<translation id="4151054805501931758">Retusjer portrettet</translation>
+<translation id="4151054805501931758">Portrettretusjering</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" /> % batteri gjenstår (ca. <ph name="TIME_LEFT" />).
 Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4158003972857765638">Organiser på et nytt skrivebord</translation>
@@ -2376,7 +2376,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8938800817013097409">USB-C-enhet (høyre port på baksiden)</translation>
 <translation id="8939855324412367560">Innenheten for lyd er «<ph name="INPUT_DEVICE_NAME" />», og utenheten for lyd er «<ph name="OUTPUT_DEVICE_NAME" />». Gå til innstillingene for å endre dette.</translation>
 <translation id="8940956008527784070">Lavt batterinivå (<ph name="PERCENTAGE" /> %)</translation>
-<translation id="8945508919180478719">Mikrofon i studiostil</translation>
+<translation id="8945508919180478719">Studiomikrofon</translation>
 <translation id="894774083269346314">Det er ikke merket av for <ph name="PROFILE_NAME" /> (<ph name="EMAIL" />).</translation>
 <translation id="8949925099261528566">Tilkoblet – ingen internettilgang</translation>
 <translation id="8951539504029375108">Kun godkjente Thunderbolt-enheter er kompatible med Chromebooken din</translation>
