@@ -29,6 +29,8 @@ namespace autofill {
 
 namespace {
 
+using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
+
 // Returns whether `action` is relevant for data transparency, i.e. viewing
 // and removing data. These are actions that are generally permitted even if
 // the AutofillAI is disabled.
@@ -41,6 +43,7 @@ namespace {
     case AutofillAiAction::kIphForOptIn:
     case AutofillAiAction::kOptIn:
     case AutofillAiAction::kServerClassificationModel:
+    case AutofillAiAction::kUseCachedServerClassificationModelResults:
       return false;
     case AutofillAiAction::kEditAndDeleteEntityInstanceInSettings:
     case AutofillAiAction::kListEntityInstancesInSettings:
@@ -51,34 +54,26 @@ namespace {
 
 // Checks whether all requirements for `base::Feature` state are satisfied
 // (`kAutofillAiWithDataSchema`, `kAutofillAiServerModel`).
-[[nodiscard]] bool SatisfiesFeatureRequirements(
-    const GoogleGroupsManager* google_groups_manager,
-    AutofillAiAction action) {
-  auto is_enabled = [&](const base::Feature& feature) {
-#if !BUILDFLAG(IS_FUCHSIA)
-    return google_groups_manager
-               ? google_groups_manager->IsFeatureEnabledForProfile(feature)
-               : base::FeatureList::IsEnabled(feature);
-#else
-    return base::FeatureList::IsEnabled(feature);
-#endif
-  };
-
+[[nodiscard]] bool SatisfiesFeatureRequirements(FeatureCheck is_enabled,
+                                                AutofillAiAction action) {
   // Everything requires that `kAutofillAiWithDataSchema` is enabled.
   if (!is_enabled(features::kAutofillAiWithDataSchema)) {
     return false;
   }
 
   switch (action) {
+    case AutofillAiAction::kIphForOptIn:
+      return is_enabled(feature_engagement::kIPHAutofillAiOptInFeature);
     case AutofillAiAction::kServerClassificationModel:
       return is_enabled(features::kAutofillAiServerModel);
+    case AutofillAiAction::kUseCachedServerClassificationModelResults:
+      return is_enabled(features::kAutofillAiServerModel) &&
+             features::kAutofillAiServerModelUseCacheResults.Get();
     case AutofillAiAction::kAddEntityInstanceInSettings:
     case AutofillAiAction::kCrowdsourcingVote:
     case AutofillAiAction::kEditAndDeleteEntityInstanceInSettings:
     case AutofillAiAction::kFilling:
     case AutofillAiAction::kImport:
-    case AutofillAiAction::kIphForOptIn:
-      return is_enabled(feature_engagement::kIPHAutofillAiOptInFeature);
     case AutofillAiAction::kListEntityInstancesInSettings:
     case AutofillAiAction::kOptIn:
       return true;
@@ -129,11 +124,12 @@ namespace {
   switch (action) {
     case AutofillAiAction::kAddEntityInstanceInSettings:
     case AutofillAiAction::kCrowdsourcingVote:
+    case AutofillAiAction::kEditAndDeleteEntityInstanceInSettings:
     case AutofillAiAction::kFilling:
     case AutofillAiAction::kImport:
-    case AutofillAiAction::kServerClassificationModel:
-    case AutofillAiAction::kEditAndDeleteEntityInstanceInSettings:
     case AutofillAiAction::kListEntityInstancesInSettings:
+    case AutofillAiAction::kServerClassificationModel:
+    case AutofillAiAction::kUseCachedServerClassificationModelResults:
       return autofill_ai_enabled;
     case AutofillAiAction::kIphForOptIn:
       // IPH should only show if the user has not opted in yet.
@@ -177,6 +173,7 @@ namespace {
 // Checks whether miscellaneous "other" requirements (OTR, app-locale, Geo-IP)
 // are satisfied.
 [[nodiscard]] bool SatisfiesMiscellaneousRequirements(
+    FeatureCheck is_enabled,
     bool is_off_the_record,
     bool has_entity_data_saved,
     const GeoIpCountryCode& country_code,
@@ -198,7 +195,8 @@ namespace {
       break;
     }
     case AutofillAiAction::kFilling:
-      // Filling is the only action we permit when OTR.
+    case AutofillAiAction::kUseCachedServerClassificationModelResults:
+      // Filling and cache use are permitted when OTR.
       break;
   }
 
@@ -212,7 +210,7 @@ namespace {
   }
 
   if (country_code != GeoIpCountryCode("US") &&
-      !base::FeatureList::IsEnabled(features::kAutofillAiIgnoreGeoIp)) {
+      !is_enabled(features::kAutofillAiIgnoreGeoIp)) {
     return false;
   }
 
@@ -223,7 +221,21 @@ namespace {
 
 bool MayPerformAutofillAiAction(const AutofillClient& client,
                                 AutofillAiAction action) {
-  if (!SatisfiesFeatureRequirements(client.GetGoogleGroupsManager(), action)) {
+#if !BUILDFLAG(IS_FUCHSIA)
+  const GoogleGroupsManager* const google_groups_manager =
+      client.GetGoogleGroupsManager();
+#endif
+  auto feature_check = [&](const base::Feature& feature) {
+#if !BUILDFLAG(IS_FUCHSIA)
+    return google_groups_manager
+               ? google_groups_manager->IsFeatureEnabledForProfile(feature)
+               : base::FeatureList::IsEnabled(feature);
+#else
+    return base::FeatureList::IsEnabled(feature);
+#endif
+  };
+
+  if (!SatisfiesFeatureRequirements(feature_check, action)) {
     return false;
   }
 
@@ -243,7 +255,7 @@ bool MayPerformAutofillAiAction(const AutofillClient& client,
   }
 
   return SatisfiesMiscellaneousRequirements(
-      client.IsOffTheRecord(), has_entity_data_saved,
+      feature_check, client.IsOffTheRecord(), has_entity_data_saved,
       client.GetVariationConfigCountryCode(), client.GetAppLocale(), action);
 }
 

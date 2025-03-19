@@ -55,6 +55,8 @@ std::string GetTestSuffix(
       return "kOptIn";
     case AutofillAiAction::kServerClassificationModel:
       return "kServerClassificationModel";
+    case AutofillAiAction::kUseCachedServerClassificationModelResults:
+      return "kUseCachedServerClassificationModelResults";
   }
   NOTREACHED();
 }
@@ -65,8 +67,10 @@ class AutofillAiPermissionUtilsTest : public TestWithParam<AutofillAiAction> {
  public:
   AutofillAiPermissionUtilsTest() {
     // Features.
-    feature_list_.InitWithFeatures(
-        {features::kAutofillAiWithDataSchema, features::kAutofillAiServerModel},
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kAutofillAiWithDataSchema, {}},
+         {features::kAutofillAiServerModel,
+          {{"autofill_ai_model_use_cache_results", "true"}}}},
         {});
 
     // Pref and identity state.
@@ -107,18 +111,37 @@ TEST_P(AutofillAiPermissionUtilsTest, ReturnsFalseWhenMainFeatureIsOff) {
   EXPECT_FALSE(MayPerformAutofillAiAction(client(), GetParam()));
 }
 
-// Tests that the server model cannot be run if `kAutofillAiServerModel` is
-// disabled.
+// Tests that the server model cannot be run and its cache cannot be used if
+// `kAutofillAiServerModel` is disabled.
 TEST_P(AutofillAiPermissionUtilsTest, ModelFeatureOff) {
   base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kAutofillAiServerModel);
 
   // The opt-in IPH cannot be run either since we simulate a state in which the
   // user has opted into the feature.
   const bool is_allowed =
       (GetParam() != AutofillAiAction::kServerClassificationModel) &&
+      (GetParam() !=
+       AutofillAiAction::kUseCachedServerClassificationModelResults) &&
       (GetParam() != AutofillAiAction::kIphForOptIn);
+  EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
+}
 
-  feature_list.InitAndDisableFeature(features::kAutofillAiServerModel);
+// Tests that the server model cache cannot be used if the feature parameter
+// governing it is false.
+TEST_P(AutofillAiPermissionUtilsTest, FeatureParamForModelCacheUseOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kAutofillAiServerModel,
+        {{"autofill_ai_model_use_cache_results", "false"}}}},
+      {});
+
+  // The opt-in IPH cannot be run either since we simulate a state in which the
+  // user has opted into the feature.
+  const bool is_allowed =
+      (GetParam() !=
+       AutofillAiAction::kUseCachedServerClassificationModelResults) &&
+      (GetParam() != AutofillAiAction::kIphForOptIn);
   EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
 }
 
@@ -128,10 +151,9 @@ TEST_P(AutofillAiPermissionUtilsTest, OptInIphFeatureOff) {
   feature_list.InitAndDisableFeature(
       feature_engagement::kIPHAutofillAiOptInFeature);
 
-  const bool is_allowed = GetParam() == AutofillAiAction::kOptIn;
   client().GetPrefs()->SetBoolean(prefs::kAutofillPredictionImprovementsEnabled,
                                   false);
-
+  const bool is_allowed = GetParam() == AutofillAiAction::kOptIn;
   EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
 }
 
@@ -235,10 +257,13 @@ TEST_P(AutofillAiPermissionUtilsTest, MayNotRunModel) {
   EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
 }
 
-// Tests that only filling is allowed off-the-record.
+// Tests that only filling and cache use are allowed off-the-record.
 TEST_P(AutofillAiPermissionUtilsTest, OffTheRecord) {
   client().set_is_off_the_record(true);
-  const bool is_allowed = GetParam() == AutofillAiAction::kFilling;
+  const bool is_allowed =
+      (GetParam() == AutofillAiAction::kFilling) ||
+      (GetParam() ==
+       AutofillAiAction::kUseCachedServerClassificationModelResults);
   EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
 }
 
@@ -275,7 +300,8 @@ INSTANTIATE_TEST_SUITE_P(
            AutofillAiAction::kIphForOptIn,
            AutofillAiAction::kListEntityInstancesInSettings,
            AutofillAiAction::kOptIn,
-           AutofillAiAction::kServerClassificationModel),
+           AutofillAiAction::kServerClassificationModel,
+           AutofillAiAction::kUseCachedServerClassificationModelResults),
     GetTestSuffix);
 
 }  // namespace
