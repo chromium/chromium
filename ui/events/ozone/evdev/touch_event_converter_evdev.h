@@ -67,6 +67,10 @@ class COMPONENT_EXPORT(EVDEV) TouchEventConverterEvdev
       SharedPalmDetectionFilterState* shared_palm_state,
       DeviceEventDispatcherEvdev* dispatcher);
 
+  // Get model ID for heatmap supported devices.
+  static HeatmapPalmDetector::ModelId GetHidrawModelId(
+      const EventDeviceInfo& info);
+
   // EventConverterEvdev:
   bool HasTouchscreen() const override;
   bool HasPen() const override;
@@ -280,6 +284,9 @@ class COMPONENT_EXPORT(EVDEV) TouchEventConverterEvdev
 
   // Finds touches that are palms with user software not just firmware.
   const std::unique_ptr<PalmDetectionFilter> palm_detection_filter_;
+
+  // Finds touches that are palms based on heatmap data.
+  const std::unique_ptr<PalmDetectionFilter> heatmap_palm_detection_filter_;
 
   // Records the recent touch events. It is used to fill the feedback reports
   TouchEventLogEvdev touch_evdev_debug_buffer_;

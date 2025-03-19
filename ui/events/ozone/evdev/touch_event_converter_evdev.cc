@@ -35,7 +35,6 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_util_linux.h"
 #include "ui/events/event.h"
@@ -45,6 +44,7 @@
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
 #include "ui/events/ozone/evdev/touch_evdev_types.h"
 #include "ui/events/ozone/evdev/touch_filter/false_touch_finder.h"
+#include "ui/events/ozone/evdev/touch_filter/heatmap_palm_detection_filter.h"
 #include "ui/events/ozone/evdev/touch_filter/neural_stylus_palm_detection_filter.h"
 #include "ui/events/ozone/evdev/touch_filter/palm_detection_filter.h"
 #include "ui/events/ozone/evdev/touch_filter/palm_detection_filter_factory.h"
@@ -162,23 +162,6 @@ std::vector<SupportedHidrawDevice> GetSupportedHidrawDevices() {
   };
 }
 
-ui::HeatmapPalmDetector::ModelId GetHidrawModelId(
-    const ui::EventDeviceInfo& info) {
-  // Do not initialize hidraw device for stylus devices.
-  if (info.HasKeyEvent(BTN_TOOL_PEN)) {
-    return ui::HeatmapPalmDetector::ModelId::kNotSupported;
-  }
-  std::vector<SupportedHidrawDevice> supported_hidraw_devices =
-      GetSupportedHidrawDevices();
-  for (const SupportedHidrawDevice& device : GetSupportedHidrawDevices()) {
-    if (info.name() == device.name && info.vendor_id() == device.vendor_id &&
-        info.product_id() == device.product_id) {
-      return device.model_id;
-    }
-  }
-  return ui::HeatmapPalmDetector::ModelId::kNotSupported;
-}
-
 base::FilePath GetHidrawPath(const base::FilePath& root_path) {
   return base::FileEnumerator(root_path, false,
                               base::FileEnumerator::DIRECTORIES)
@@ -230,6 +213,8 @@ TouchEventConverterEvdev::TouchEventConverterEvdev(
       dispatcher_(dispatcher),
       palm_detection_filter_(
           CreatePalmDetectionFilter(devinfo, shared_palm_state)),
+      heatmap_palm_detection_filter_(
+          CreateHeatmapPalmDetectionFilter(devinfo, shared_palm_state)),
       palm_on_touch_major_max_(
           base::FeatureList::IsEnabled(kEnablePalmOnMaxTouchMajor)),
       palm_on_tool_type_palm_(
@@ -261,6 +246,24 @@ std::unique_ptr<TouchEventConverterEvdev> TouchEventConverterEvdev::Create(
       dispatcher);
   converter->Initialize(devinfo);
   return converter;
+}
+
+// static
+HeatmapPalmDetector::ModelId TouchEventConverterEvdev::GetHidrawModelId(
+    const EventDeviceInfo& info) {
+  // Do not initialize hidraw device for stylus devices.
+  if (info.HasKeyEvent(BTN_TOOL_PEN)) {
+    return HeatmapPalmDetector::ModelId::kNotSupported;
+  }
+  std::vector<SupportedHidrawDevice> supported_hidraw_devices =
+      GetSupportedHidrawDevices();
+  for (const SupportedHidrawDevice& device : GetSupportedHidrawDevices()) {
+    if (info.name() == device.name && info.vendor_id() == device.vendor_id &&
+        info.product_id() == device.product_id) {
+      return device.model_id;
+    }
+  }
+  return HeatmapPalmDetector::ModelId::kNotSupported;
 }
 
 void TouchEventConverterEvdev::Initialize(const EventDeviceInfo& info) {
@@ -709,7 +712,16 @@ bool TouchEventConverterEvdev::MaybeCancelAllTouches() {
 bool TouchEventConverterEvdev::IsPalm(const InProgressTouchEvdev& touch) {
   if (support_heatmap_palm_detection_) {
     auto* palm_detector = HeatmapPalmDetector::GetInstance();
-    if (palm_detector && palm_detector->IsReady()) {
+    bool should_run = true;
+    if (heatmap_palm_detection_filter_) {
+      auto* heatmap_palm_detection_filter =
+          static_cast<HeatmapPalmDetectionFilter*>(
+              heatmap_palm_detection_filter_.get());
+      should_run =
+          heatmap_palm_detection_filter->ShouldRunModel(touch.tracking_id);
+    }
+
+    if (palm_detector && palm_detector->IsReady() && should_run) {
       return palm_detector->IsPalm(touch.tracking_id);
     }
   }
