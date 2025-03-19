@@ -272,6 +272,11 @@ bool IsNaN(PixelsAndPercent value, bool allows_negative_percentage_reference) {
 std::optional<PixelsAndPercent> EvaluateValueIfNaNorInfinity(
     scoped_refptr<const blink::CalculationExpressionNode> value,
     bool allows_negative_percentage_reference) {
+  if (value->HasColorChannelKeyword()) {
+    // We cannot correctly evaluate for NaN or infinity until we know the
+    // color channel values to substitute in.
+    return std::nullopt;
+  }
   // |input| is not needed because this function is just for handling
   // inf and NaN.
   float evaluated_value = value->Evaluate(1, {});

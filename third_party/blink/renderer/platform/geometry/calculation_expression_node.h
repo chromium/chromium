@@ -65,6 +65,7 @@ class PLATFORM_EXPORT CalculationExpressionNode
   // calc-size() act as though it has a percent.
   bool HasPercent() const { return has_percent_; }
   bool HasPercentOrStretch() const { return has_percent_ || has_stretch_; }
+  bool HasColorChannelKeyword() const { return has_color_channel_keyword_; }
 
   virtual bool HasMinContent() const { return false; }
   virtual bool HasMaxContent() const { return false; }
@@ -98,6 +99,7 @@ class PLATFORM_EXPORT CalculationExpressionNode
   bool has_auto_ = false;
   bool has_percent_ = false;
   bool has_stretch_ = false;
+  bool has_color_channel_keyword_ = false;
 };
 
 class PLATFORM_EXPORT CalculationExpressionNumberNode final
