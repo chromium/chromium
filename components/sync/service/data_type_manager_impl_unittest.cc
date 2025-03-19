@@ -77,14 +77,6 @@ MATCHER(ConfigureAborted, "") {
   return arg.status == DataTypeManager::ABORTED;
 }
 
-MATCHER_P(MatchesDictionary, dict_matcher, "") {
-  if (!arg.is_dict()) {
-    *result_listener << "Not a dictionary";
-    return false;
-  }
-  return dict_matcher.MatchAndExplain(arg.GetDict(), result_listener);
-}
-
 // Fake DataTypeConfigurer implementation that allows the test body to control
 // when downloads complete and whether failures occurred.
 class FakeDataTypeConfigurer : public DataTypeConfigurer {
@@ -2113,10 +2105,10 @@ TEST_F(DataTypeManagerImplTest, ShouldGetAllNodesForDebugging) {
       mock_completion_callback;
   EXPECT_CALL(
       mock_completion_callback,
-      Run(UnorderedElementsAre(MatchesDictionary(base::test::DictionaryHasValue(
-                                   "type", base::Value("Encryption Keys"))),
-                               MatchesDictionary(base::test::DictionaryHasValue(
-                                   "type", base::Value("Bookmarks"))))));
+      Run(UnorderedElementsAre(
+          base::test::DictionaryHasValue("type",
+                                         base::Value("Encryption Keys")),
+          base::test::DictionaryHasValue("type", base::Value("Bookmarks")))));
 
   dtm_->GetAllNodesForDebugging(mock_completion_callback.Get());
 }

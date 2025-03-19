@@ -15,6 +15,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
 
@@ -53,18 +54,73 @@ namespace internal {
 inline constexpr int kDefaultJsonParseOptions =
     JSON_PARSE_CHROMIUM_EXTENSIONS | JSON_ALLOW_TRAILING_COMMAS;
 
+class DictionaryHasValueMatcher {
+ public:
+  explicit DictionaryHasValueMatcher(std::string key,
+                                     const base::Value& expected_value);
+
+  DictionaryHasValueMatcher(const DictionaryHasValueMatcher&);
+  DictionaryHasValueMatcher& operator=(const DictionaryHasValueMatcher&);
+  DictionaryHasValueMatcher(DictionaryHasValueMatcher&&) = default;
+  DictionaryHasValueMatcher& operator=(DictionaryHasValueMatcher&&) = default;
+
+  ~DictionaryHasValueMatcher();
+
+  bool MatchAndExplain(const base::Value::Dict& value,
+                       testing::MatchResultListener* listener) const;
+  bool MatchAndExplain(const base::Value& dict,
+                       testing::MatchResultListener* listener) const;
+
+  void DescribeTo(std::ostream* os) const;
+
+  void DescribeNegationTo(std::ostream* os) const;
+
+ private:
+  std::string key_;
+  base::Value expected_value_;
+};
+
+class DictionaryHasValuesMatcher {
+ public:
+  explicit DictionaryHasValuesMatcher(const base::Value::Dict& template_value);
+
+  DictionaryHasValuesMatcher(const DictionaryHasValuesMatcher&);
+  DictionaryHasValuesMatcher& operator=(const DictionaryHasValuesMatcher&);
+  DictionaryHasValuesMatcher(DictionaryHasValuesMatcher&&) = default;
+  DictionaryHasValuesMatcher& operator=(DictionaryHasValuesMatcher&&) = default;
+
+  ~DictionaryHasValuesMatcher();
+
+  bool MatchAndExplain(const base::Value::Dict& dict,
+                       testing::MatchResultListener* listener) const;
+  bool MatchAndExplain(const base::Value& dict,
+                       testing::MatchResultListener* listener) const;
+
+  void DescribeTo(std::ostream* os) const;
+
+  void DescribeNegationTo(std::ostream* os) const;
+
+ private:
+  base::Value::Dict template_value_;
+};
+
 }  // namespace internal
 
-// A custom GMock matcher which matches if a base::Value::Dict has a key |key|
-// that is equal to |value|.
-testing::Matcher<const base::Value::Dict&> DictionaryHasValue(
-    const std::string& key,
-    const base::Value& expected_value);
+// A custom GMock matcher which matches if a `base::Value` or
+// `base::Value::Dict` has a key `key` that is equal to `value`.
+inline testing::PolymorphicMatcher<internal::DictionaryHasValueMatcher>
+DictionaryHasValue(std::string key, const base::Value& expected_value) {
+  return testing::MakePolymorphicMatcher(
+      internal::DictionaryHasValueMatcher(key, expected_value));
+}
 
-// A custom GMock matcher which matches if a base::Value::Dict contains all
-// key/value pairs from |template_value|.
-testing::Matcher<const base::Value::Dict&> DictionaryHasValues(
-    const base::Value::Dict& template_value);
+// A custom GMock matcher which matches if a `base::Value` or
+// `base::Value::Dict` contains all key/value pairs from `template_value`.
+inline testing::PolymorphicMatcher<internal::DictionaryHasValuesMatcher>
+DictionaryHasValues(const base::Value::Dict& template_value) {
+  return testing::MakePolymorphicMatcher(
+      internal::DictionaryHasValuesMatcher(template_value));
+}
 
 // A custom GMock matcher.  For details, see
 // https://github.com/google/googletest/blob/644319b9f06f6ca9bf69fe791be399061044bc3d/googlemock/docs/CookBook.md#writing-new-polymorphic-matchers
