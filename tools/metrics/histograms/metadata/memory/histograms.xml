@@ -2829,6 +2829,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory{ProfiledProcess}.Pss" units="MiB"
+    expires_after="2025-07-13">
+  <owner>thiabaud@google.com</owner>
+  <summary>
+    PSS metric for the process. Recorded on Android, Linux, and ChromeOS only.
+  </summary>
+  <token key="ProfiledProcess" variants="ProfiledProcess"/>
+</histogram>
+
+<histogram name="Memory{ProfiledProcess}.SwapPss" units="MiB"
+    expires_after="2025-07-13">
+  <owner>thiabaud@google.com</owner>
+  <summary>
+    Swap PSS metric for the process. Recorded on Android, Linux, and ChromeOS
+    only.
+  </summary>
+  <token key="ProfiledProcess" variants="ProfiledProcess"/>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

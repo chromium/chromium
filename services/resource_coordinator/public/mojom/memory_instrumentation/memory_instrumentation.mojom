@@ -161,6 +161,14 @@ struct RawOSMemDump {
   // that collection failed.
   [EnableIf=is_android|is_chromeos|is_linux]
   uint32 mappings_count = 0;
+
+  // PSS for the process. 0 indicates that collection failed.
+  [EnableIf=is_android|is_chromeos|is_linux]
+  uint32 pss_kb = 0;
+
+  // Swap PSS for the process. 0 indicates that collection failed.
+  [EnableIf=is_android|is_chromeos|is_linux]
+  uint32 swap_pss_kb = 0;
 };
 
 // These structs are public:
@@ -198,6 +206,14 @@ struct OSMemDump {
   // limit. Report it.
   [EnableIf=is_android|is_chromeos|is_linux]
   uint32 mappings_count = 0;
+
+  // PSS for the process. 0 is recorded when collection fails.
+  [EnableIf=is_android|is_chromeos|is_linux]
+  uint32 pss_kb = 0;
+
+  // Swap PSS for the process. 0 is recorded when collection fails.
+  [EnableIf=is_android|is_chromeos|is_linux]
+  uint32 swap_pss_kb = 0;
 };
 
 // This struct contains information about a particular allocator dump
