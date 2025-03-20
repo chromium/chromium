@@ -15,10 +15,12 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -28,6 +30,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class FeedPlaceholderLayoutTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock AnimatorSet mAnimatorSet;
 
     private static class TestFeedPlaceholderLayout extends FeedPlaceholderLayout {
@@ -55,7 +58,6 @@ public class FeedPlaceholderLayoutTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mLayout = new TestFeedPlaceholderLayout(ApplicationProvider.getApplicationContext());
         mLayout.setAnimatorSetForTesting(mAnimatorSet);
     }

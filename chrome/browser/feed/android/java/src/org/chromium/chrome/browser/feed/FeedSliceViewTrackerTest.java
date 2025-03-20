@@ -34,12 +34,14 @@ import androidx.test.filters.SmallTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
@@ -58,6 +60,7 @@ import java.util.concurrent.TimeUnit;
         shadows = {ShadowSystemClock.class})
 public class FeedSliceViewTrackerTest {
     // Mocking dependencies that are always present, but using a real FeedListContentManager.
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock RecyclerView mParentView;
     @Mock FeedSliceViewTracker.Observer mObserver;
     @Mock LinearLayoutManager mLayoutManager;
@@ -83,7 +86,6 @@ public class FeedSliceViewTrackerTest {
     @Before
     public void setUp() {
         ShadowLog.stream = System.out;
-        MockitoAnnotations.initMocks(this);
         mContentManager = new FeedListContentManager();
         doReturn(mLayoutManager).when(mParentView).getLayoutManager();
         doReturn(mViewTreeObserver).when(mParentView).getViewTreeObserver();

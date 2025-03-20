@@ -14,11 +14,13 @@ import android.view.View;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.CallbackUtils;
@@ -35,6 +37,7 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 /** Test for the WebFeedFollowIntroView class. */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class WebFeedFollowIntroViewTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private WebFeedFollowIntroView mWebFeedFollowIntroView;
     private Activity mActivity;
     private View mMenuButtonAnchorView;
@@ -47,7 +50,6 @@ public final class WebFeedFollowIntroViewTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         Mockito.when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
         mActivity = Robolectric.setupActivity(Activity.class);

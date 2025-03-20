@@ -13,12 +13,14 @@ import static org.mockito.Mockito.verify;
 import android.app.Activity;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
@@ -44,6 +46,7 @@ import java.util.Arrays;
 /** Tests {@link FollowManagementMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class FollowManagementMediatorTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Activity mActivity;
     private ModelList mModelList;
     private FollowManagementMediator mFollowManagementMediator;
@@ -70,7 +73,6 @@ public class FollowManagementMediatorTest {
     public void setUpTest() {
         mActivity = Robolectric.setupActivity(Activity.class);
         mModelList = new ModelList();
-        MockitoAnnotations.initMocks(this);
         WebFeedBridgeJni.setInstanceForTesting(mWebFeedBridgeJni);
         FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);
 
