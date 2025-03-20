@@ -20,8 +20,6 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.util.Pair;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -122,7 +120,6 @@ public class TabWindowManagerTest {
 
     /** Test that a single {@link Activity} can request a {@link TabModelSelector}. */
     @Test
-    @SmallTest
     @Feature({"Multiwindow"})
     public void testSingleActivity() {
         ActivityController<Activity> activityController0 = createActivity();
@@ -147,7 +144,6 @@ public class TabWindowManagerTest {
 
     /** Test that two {@link Activity}s can request different {@link TabModelSelector}s. */
     @Test
-    @SmallTest
     @Feature({"Multiwindow"})
     public void testMultipleActivities() {
         assertTrue("Not enough selectors", mSubject.getMaxSimultaneousSelectors() >= 2);
@@ -191,7 +187,6 @@ public class TabWindowManagerTest {
      * properly capped and returns {@code null}.
      */
     @Test
-    @SmallTest
     @Feature({"Multiwindow"})
     public void testTooManyActivities() {
         List<ActivityController<Activity>> activityControllerList = new ArrayList<>();
@@ -233,7 +228,6 @@ public class TabWindowManagerTest {
      * model for a different available index instead. In this case, a higher index (0 -> 1).
      */
     @Test
-    @SmallTest
     @Feature({"Multiwindow"})
     public void testIndexFallback() {
         assertTrue("Not enough selectors", mSubject.getMaxSimultaneousSelectors() >= 2);
@@ -278,7 +272,6 @@ public class TabWindowManagerTest {
      * model for a different available index instead. In this case, a lower index (2 -> 0).
      */
     @Test
-    @SmallTest
     @Feature({"Multiwindow"})
     public void testIndexFallback2() {
         assertTrue("Not enough selectors", mSubject.getMaxSimultaneousSelectors() >= 3);
@@ -323,7 +316,6 @@ public class TabWindowManagerTest {
      * TabWindowManagerImpl}.
      */
     @Test
-    @SmallTest
     @Feature({"Multiwindow"})
     public void testActivityDeathRemovesSingle() {
         ActivityController<Activity> activityController0 = createActivity();
@@ -355,7 +347,6 @@ public class TabWindowManagerTest {
      * {@link Activity} can take that {@link TabModelSelector}.
      */
     @Test
-    @SmallTest
     @Feature({"Multiwindow"})
     public void testActivityDeathLetsModelReassign() {
         ActivityController<Activity> activityController0 = createActivity();
@@ -406,7 +397,6 @@ public class TabWindowManagerTest {
      * Activity}s assigned {@link TabModelSelector}s.
      */
     @Test
-    @SmallTest
     @Feature({"Multiwindow"})
     public void testActivityDeathWithMultipleActivities() {
         assertTrue("Not enough selectors", mSubject.getMaxSimultaneousSelectors() >= 2);
@@ -471,7 +461,6 @@ public class TabWindowManagerTest {
 
     /** Tests that tabExistsInAnySelector() functions properly. */
     @Test
-    @SmallTest
     @Feature({"Multiwindow"})
     public void testTabExistsInAnySelector() {
         ActivityController<Activity> activityController0 = createActivity();
@@ -524,7 +513,6 @@ public class TabWindowManagerTest {
 
     /** Tests that getTabById() functions properly. */
     @Test
-    @SmallTest
     @Feature({"Multiwindow"})
     public void testGetTabById() {
         ActivityController<Activity> activityController0 = createActivity();
@@ -577,7 +565,6 @@ public class TabWindowManagerTest {
 
     /** Tests that getTabModelForTab(...) functions properly. */
     @Test
-    @SmallTest
     @Feature({"Multiwindow"})
     public void getTabModelForTab() {
         ActivityController<Activity> activityController0 = createActivity();
@@ -725,7 +712,6 @@ public class TabWindowManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testcanTabStateBeDeleted_ArchiveDisabled() {
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -735,7 +721,6 @@ public class TabWindowManagerTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH)
     public void testcanTabStateBeDeleted() {
         ActivityController<Activity> activityController0 = createActivity();
@@ -801,7 +786,6 @@ public class TabWindowManagerTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH)
     public void testcanTabThumbnailBeDeleted() {
         ActivityController<Activity> activityController0 = createActivity();

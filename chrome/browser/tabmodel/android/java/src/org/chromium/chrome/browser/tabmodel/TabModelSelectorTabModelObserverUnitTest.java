@@ -9,8 +9,6 @@ import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,7 +44,6 @@ public class TabModelSelectorTabModelObserverUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testAlreadyInitializedSelector() throws TimeoutException {
         // ARRANGE
         mTabModels.add(mTabModel);
@@ -71,7 +68,6 @@ public class TabModelSelectorTabModelObserverUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testUninitializedSelector() throws TimeoutException {
         // ARRANGE
         ArgumentCaptor<TabModelSelectorObserver> arg1 =
@@ -100,7 +96,6 @@ public class TabModelSelectorTabModelObserverUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDestroySelector() {
         // ARRANGE
         ArgumentCaptor<TabModelSelectorObserver> arg1 =
