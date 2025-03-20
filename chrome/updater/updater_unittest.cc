@@ -12,7 +12,6 @@
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/updater/updater_branding.h"
 #include "chrome/updater/util/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,7 +22,6 @@
 #if BUILDFLAG(IS_WIN)
 #include <shlobj.h>
 
-#include "base/file_version_info_win.h"
 #include "base/win/access_token.h"
 #include "base/win/windows_types.h"
 #endif
@@ -53,24 +51,6 @@ TEST(UpdaterTest, UpdaterExitCode) {
 }
 
 #if BUILDFLAG(IS_WIN)
-// Tests that the updater test target version resource contains specific
-// information to disambiguate the binary. For Windows builds and during tests,
-// the "updater_test.exe" file is being installed as "updater.exe", therefore
-// it is useful to have a hint of information available somewhere, to determine
-// whether "updater.exe" is the test variant or the production variant.
-TEST(UpdaterTest, UpdaterTestVersionResource) {
-  const base::FilePath updater_test_name(FILE_PATH_LITERAL("updater_test.exe"));
-  base::FilePath out_dir;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &out_dir));
-  const base::FilePath updater_test_path(out_dir.Append(updater_test_name));
-  ASSERT_TRUE(base::PathExists(updater_test_path)) << updater_test_path;
-  const std::unique_ptr<FileVersionInfoWin> version_info =
-      FileVersionInfoWin::CreateFileVersionInfoWin(updater_test_path);
-  ASSERT_NE(version_info, nullptr);
-  EXPECT_EQ(version_info->original_filename(),
-            updater_test_name.AsUTF16Unsafe());
-}
-
 // Checks that the unit test has the SE_DEBUG_NAME privilege when the process is
 // running as Administrator.
 TEST(UpdaterTest, UpdaterTestDebugPrivilege) {

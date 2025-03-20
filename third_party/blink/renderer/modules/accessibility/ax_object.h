@@ -1013,12 +1013,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Get the bounds in frame-relative coordinates as a PhysicalRect.
   PhysicalRect GetBoundsInFrameCoordinates() const;
 
-  // Explicitly set an object's bounding rect and offset container.
-  void SetElementRect(const PhysicalRect& r, AXObject* container) {
-    explicit_element_rect_ = r;
-    explicit_container_id_ = container->AXObjectID();
-  }
-
   // Hit testing.
   // Called on the root AX object to return the deepest available element.
   virtual AXObject* AccessibilityHitTest(const gfx::Point&) const {
@@ -1498,9 +1492,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // The final role, taking into account the ARIA role and native role.
   ax::mojom::blink::Role role_;
-
-  PhysicalRect explicit_element_rect_;
-  AXID explicit_container_id_;
 
   virtual void AddChildren() = 0;
 

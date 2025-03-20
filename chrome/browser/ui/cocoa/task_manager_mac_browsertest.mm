@@ -43,6 +43,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest_mac.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
 namespace task_manager {
@@ -254,8 +255,8 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, PressingEnterKillsProcess) {
 
   for (size_t i = 0; i < tester->GetRowCount(); ++i) {
     // Press down to select the first/next row.
-    ui_controls::SendKeyPress(window_controller.window, ui::VKEY_DOWN, false,
-                              false, false, false);
+    ui_controls::SendKeyPress(gfx::NativeWindow(window_controller.window),
+                              ui::VKEY_DOWN, false, false, false, false);
 
     ASSERT_TRUE(TableFirstSelectedRow().has_value());
 
@@ -276,8 +277,8 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, PressingEnterKillsProcess) {
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
 
     // Press Enter/return to simulate a click on the end process button.
-    ui_controls::SendKeyPress(window_controller.window, ui::VKEY_RETURN, false,
-                              false, false, false);
+    ui_controls::SendKeyPress(gfx::NativeWindow(window_controller.window),
+                              ui::VKEY_RETURN, false, false, false, false);
 
     // The rows for the tab should disappear.
     size_t no_rows = 0;
@@ -454,29 +455,29 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, DISABLED_NavigateSelection) {
       GetTaskManagerMac()->CocoaControllerForTests();
 
   // Navigate off of the grouped tasks into a different process task
-  ui_controls::SendKeyPress(window_controller.window, ui::VKEY_DOWN, false,
-                            false, false, false);
+  ui_controls::SendKeyPress(gfx::NativeWindow(window_controller.window),
+                            ui::VKEY_DOWN, false, false, false, false);
   expected_selected_row = expected_selected_row + 3;
   EXPECT_EQ(expected_selected_row, TableFirstSelectedRow().value());
   EXPECT_EQ(1, GetTable().numberOfSelectedRows);
 
   // Navigate into the three grouped tasks
-  ui_controls::SendKeyPress(window_controller.window, ui::VKEY_UP, false, false,
-                            false, false);
+  ui_controls::SendKeyPress(gfx::NativeWindow(window_controller.window),
+                            ui::VKEY_UP, false, false, false, false);
   expected_selected_row -= num_group_tasks;
   EXPECT_EQ(expected_selected_row, TableFirstSelectedRow().value());
   EXPECT_EQ(num_group_tasks, GetTable().numberOfSelectedRows);
 
   // Navigate off of grouped tasks
-  ui_controls::SendKeyPress(window_controller.window, ui::VKEY_UP, false, false,
-                            false, false);
+  ui_controls::SendKeyPress(gfx::NativeWindow(window_controller.window),
+                            ui::VKEY_UP, false, false, false, false);
   expected_selected_row--;
   EXPECT_EQ(expected_selected_row, TableFirstSelectedRow().value());
   EXPECT_EQ(1, GetTable().numberOfSelectedRows);
 
   // Navigate back into the three grouped tasks
-  ui_controls::SendKeyPress(window_controller.window, ui::VKEY_DOWN, false,
-                            false, false, false);
+  ui_controls::SendKeyPress(gfx::NativeWindow(window_controller.window),
+                            ui::VKEY_DOWN, false, false, false, false);
   expected_selected_row++;
   EXPECT_EQ(expected_selected_row, TableFirstSelectedRow().value());
   EXPECT_EQ(num_group_tasks, GetTable().numberOfSelectedRows);

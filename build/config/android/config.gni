@@ -130,12 +130,12 @@ if (is_android) {
 
   public_android_sdk_root = "//third_party/android_sdk/public"
   public_android_sdk_build_tools =
-      "${public_android_sdk_root}/build-tools/35.0.0"
-  public_android_sdk_platform_version = "35"
+      "${public_android_sdk_root}/build-tools/36.0.0"
+  public_android_sdk_platform_version = "36"
   if (android_sdk_release == "v") {
     default_android_sdk_root = public_android_sdk_root
     default_android_sdk_platform_version = public_android_sdk_platform_version
-    default_android_sdk_build_tools_version = "35.0.0"
+    default_android_sdk_build_tools_version = "36.0.0"
     public_android_sdk = true
   }
 

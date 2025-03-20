@@ -135,6 +135,12 @@ BASE_FEATURE(kZeroSuggestPrefetchingOnWeb,
              "ZeroSuggestPrefetchingOnWeb",
              DISABLED);
 
+// Enables fullfillment of contextual zero-prefix suggestions by delegating the
+// logic to Lens.
+BASE_FEATURE(kContextualZeroSuggestLensFulfillment,
+             "kContextualZeroSuggestLensFullfilment",
+             DISABLED);
+
 // Features to provide head and tail non personalized search suggestion from
 // compact on device models. More specifically, feature name with suffix
 // Incognito / NonIncognito  will only controls behaviors under incognito /

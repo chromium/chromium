@@ -70,10 +70,6 @@ void WebThreadScheduler::ResumeTimersForAndroidWebView() {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-void WebThreadScheduler::SetRendererProcessType(WebRendererProcessType type) {
-  NOTREACHED();
-}
-
 void WebThreadScheduler::OnUrgentMessageReceived() {
   NOTREACHED();
 }

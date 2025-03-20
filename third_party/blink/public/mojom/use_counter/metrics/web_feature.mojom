@@ -4758,6 +4758,8 @@ enum WebFeature {
   kSpeculationRulesTargetHintBlank = 5372,
   kInterestTarget = 5373,
   kTextAutoSizingDisabledOnFlexbox = 5374,
+  kAriaLabeledByAlternativeSpelling = 5375,
+
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
   // spaces or comments in this file. Comments belong next to the usage of

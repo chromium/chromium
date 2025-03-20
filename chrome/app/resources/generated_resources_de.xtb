@@ -624,6 +624,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1430915738399379752">Drucken</translation>
 <translation id="1431188203598586230">Letztes Softwareupdate</translation>
 <translation id="1432581352905426595">Suchmaschinen verwalten</translation>
+<translation id="1432650420699700107">Websites können nachfragen, ob eine Verbindung mit einem beliebigen Gerät in deinem lokalen Netzwerk hergestellt werden darf</translation>
 <translation id="1433478348197382180">Lesemodus</translation>
 <translation id="1433980411933182122">Starten</translation>
 <translation id="1434696352799406980">Mit dieser Funktion werden deine "Beim Start"-Seite, deine Suchmaschine, die "Neuer Tab"-Seite und angepinnte Tabs zurückgesetzt. Außerdem werden alle Erweiterungen deaktiviert und temporäre Daten wie Cookies gelöscht. Deine Lesezeichen, der Verlauf und gespeicherte Passwörter werden nicht gelöscht.</translation>
@@ -4820,6 +4821,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4364830672918311045">Benachrichtigungen einblenden</translation>
 <translation id="4367971618859387374">Anzeigename</translation>
 <translation id="4368960422722232719">Arbeitsspeichernutzung auf Vorschaukarte anzeigen, die beim Bewegen des Mauszeigers auf einen Tab erscheint</translation>
+<translation id="4369151461324628035">Websites nicht erlauben, eine Verbindung zu Geräten in deinem lokalen Netzwerk herzustellen</translation>
 <translation id="4369215744064167350">Websiteanfrage genehmigt</translation>
 <translation id="4369233657762989723">Spracheingabe ein/aus</translation>
 <translation id="436926121798828366">Du kannst diese Einstellung jederzeit unter <ph name="SETTINGS_LINK" /> ändern</translation>
@@ -5373,6 +5375,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4772914216048388646">Ordentlich</translation>
 <translation id="4773112038801431077">Linux aktualisieren</translation>
 <translation id="4773122030389014189">Tabgruppe „<ph name="GROUP_NAME" />“ freigeben</translation>
+<translation id="4773253008034797668">Dürfen eine Verbindung zu beliebigen Geräten in deinem lokalen Netzwerk herstellen</translation>
 <translation id="477548766361111120">Erweiterung erlauben, diese Website zu lesen und zu ändern</translation>
 <translation id="4776311127346151860">„<ph name="DEVICE_NAME" />“ wurde verbunden</translation>
 <translation id="4776594120007763294">Wenn du eine Seite zum späteren Lesen hinzufügen möchtest, klicke auf die Schaltfläche</translation>
@@ -7832,6 +7835,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6563002009564846727">Aus Windows importierte Zertifikate ansehen</translation>
 <translation id="6563055593659435495">Verbindung mit deinem Smartphone kann nicht aufrechterhalten werden. Dein Smartphone muss sich in der Nähe befinden, entsperrt sein und Bluetooth und WLAN müssen aktiviert sein.</translation>
 <translation id="6564860838537532172">Wenn du im Browserverlauf suchst, werden deine Anfragen in der Verlaufssuche, die Seiteninhalte der besten Ergebnisse und die generierten Modellausgaben an Google gesendet und möglicherweise von Prüfern zur Verbesserung dieser Funktion angesehen.</translation>
+<translation id="6565144332292237355">Websites können diese Funktion verwenden, um nach Geräten in deinem lokalen Netzwerk zu suchen und sich mit ihnen zu verbinden</translation>
 <translation id="6569931898053264308">Mittlere Einsparungen</translation>
 <translation id="6570622975915850879">Anderes Gerät verwenden</translation>
 <translation id="65711204837946324">Du musst die Berechtigung haben, die Datei herunterzuladen</translation>
@@ -11546,6 +11550,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
       <ph name="LIST_ITEM" />Verbindungsdiagnose für Chrome ausführen
     <ph name="END_LIST" /></translation>
 <translation id="9161172953291434881">Möchtest du dieser Website deine Daten anvertrauen?</translation>
+<translation id="9164418710391288146">Darf keine Verbindung zu Geräten in deinem lokalen Netzwerk herstellen</translation>
 <translation id="9165856803582999927">Scanne diesen QR‑Code mit der Kamera des Geräts, auf dem du deinen Passkey für „<ph name="APP_NAME" />“ erstellen und speichern möchtest</translation>
 <translation id="916607977885256133">Bild im Bild</translation>
 <translation id="9166253503936244008">Scanne diesen QR-Code mit dem Gerät mit dem Passkey, den du für <ph name="APP_NAME" /> verwenden möchtest</translation>

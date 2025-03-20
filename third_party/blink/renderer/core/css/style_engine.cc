@@ -4307,13 +4307,12 @@ void StyleEngine::SetPageColorSchemes(const CSSValue* color_scheme) {
         static_cast<ColorSchemeFlags>(ColorSchemeFlag::kNormal);
   }
   DCHECK(GetDocument().documentElement());
-  // kSubtreeStyleChange is necessary since the page color schemes may affect
-  // used values of any element in the document with a specified color-scheme of
-  // 'normal'. A more targeted invalidation would need to traverse the whole
-  // document tree for specified values.
-  GetDocument().documentElement()->SetNeedsStyleRecalc(
-      kSubtreeStyleChange, StyleChangeReasonForTracing::Create(
-                               style_change_reason::kPlatformColorChange));
+  // MarkAllElementsForStyleRecalc is necessary since the page color schemes
+  // may affect used values of any element in the document with a specified
+  // color-scheme of 'normal'. A more targeted invalidation would need
+  // to traverse the whole document tree for specified values.
+  MarkAllElementsForStyleRecalc(StyleChangeReasonForTracing::Create(
+      style_change_reason::kPlatformColorChange));
   UpdateColorScheme();
   UpdateColorSchemeBackground();
 }

@@ -22,6 +22,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
+#include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -40,6 +41,7 @@
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
@@ -339,7 +341,7 @@ void InstalledLoader::Load(const ExtensionInfo& info, bool write_to_prefs) {
 
     if ((disable_reasons.contains(disable_reason::DISABLE_CORRUPTED))) {
       CorruptedExtensionReinstaller* corrupted_extension_reinstaller =
-          extension_service_->corrupted_extension_reinstaller();
+          CorruptedExtensionReinstaller::Get(extension_service_->profile());
       if (policy->MustRemainEnabled(extension.get(), nullptr)) {
         // This extension must have been disabled due to corruption on a
         // previous run of chrome, and for some reason we weren't successful in
@@ -374,7 +376,8 @@ void InstalledLoader::Load(const ExtensionInfo& info, bool write_to_prefs) {
   if (write_to_prefs)
     extension_prefs_->UpdateManifest(extension.get());
 
-  extension_service_->AddExtension(extension.get());
+  ExtensionRegistrar::Get(extension_service_->profile())
+      ->AddExtension(extension.get());
 }
 
 void InstalledLoader::LoadAllExtensions() {

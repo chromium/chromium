@@ -95,6 +95,18 @@ class GURL;
 // TODO(crbug.com/40067025): Remove this last remark when sync is disabled.
 - (void)signinWithFakeIdentity:(FakeSystemIdentity*)identity;
 
+// Signs in with the fake identity and access point Settings.
+// Adds the fake-identity to the identity manager if necessary.
+// Converts the personal profile into a managed one.
+// Only intended for tests requiring sign-in but not covering the sign-in UI
+// behavior to speed up and simplify those tests.
+// Will bypass the usual verifications before signin and other
+// entry-point-implemented behavior (e.g. history & tabs sync will be disabled,
+// no check for management status, sign-in related
+// metrics will not be sent)
+- (void)signinWithFakeManagedIdentityInPersonalProfile:
+    (FakeSystemIdentity*)identity;
+
 // Calls `[self signinWithFakeIdentity:identity]` and then waits for sync
 // transport state to become active.
 - (void)signinAndWaitForSyncTransportStateActive:(FakeSystemIdentity*)identity;

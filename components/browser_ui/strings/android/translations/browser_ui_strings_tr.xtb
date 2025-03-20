@@ -39,7 +39,9 @@
 <translation id="1538031354170655462">Siteler, yakındaki takip cihazları veya diğer cihazlarla çalışmak (ör. rozetleri taramak veya temassız ödeme yapmak) için genellikle Near Field Communication (NFC) teknolojisini kullanır</translation>
 <translation id="1547123415014299762">Üçüncü taraf çerezlerine izin verilir</translation>
 <translation id="1593426485665524382">Ekranın üst kısmına yakın bir yerde yeni işlemler mevcut</translation>
+<translation id="1615755956145364867">Siteler korunan içerikleri oynatmak isteyebilir</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1621729191093924223">Mikrofonun kullanılmasını gerektiren özellikler çalışmaz</translation>
 <translation id="1633720957382884102">İlgili siteler</translation>
 <translation id="1644574205037202324">Geçmiş</translation>
 <translation id="1652197001188145583">Bu düğme açıkken siteler NFC cihazları kullanmak isteyebilir. Düğme kapalıyken siteler NFC cihazları kullanamaz.</translation>
@@ -54,6 +56,7 @@
 <translation id="1743802530341753419">Sitelerin bir cihaza bağlanmasına izin verilmeden önce sor (önerilir)</translation>
 <translation id="1779089405699405702">Görsel kod çözücüsü</translation>
 <translation id="1785415724048343560">En iyi deneyim için önerilir</translation>
+<translation id="1796588414813960292">Ses kullanılmasını gerektiren özellikler çalışmaz</translation>
 <translation id="1799920918471566157">Chrome İpuçları</translation>
 <translation id="1816835383954230954">Etkinleştirildiğinde Chrome daha hızlı çalışır ve JavaScript kullanan özellikler tasarlandığı şekilde çalışır. Devre dışı bırakılması performansı düşürür ancak V8'i saldırılara karşı daha dirençli hale getirir.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> uygulamasının artırılmış gerçekliği (AR) kullanması için <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> kamerayı da açın.</translation>
@@ -71,6 +74,7 @@
 <translation id="1994173015038366702">Site URL'si</translation>
 <translation id="2004697686368036666">Bazı sitelerdeki özellikler çalışmayabilir</translation>
 <translation id="2025115093177348061">Artırılmış gerçeklik</translation>
+<translation id="2028449514182362831">Hareket sensörlerinin kullanılmasını gerektiren özellikler çalışmaz</translation>
 <translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" /> sekmesine dönmek için dokunun</translation>
 <translation id="2079545284768500474">Geri al</translation>
 <translation id="2091887806945687916">Ses</translation>
@@ -257,6 +261,7 @@
 <translation id="4259722352634471385">Gezinme engellendi: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Siz bir siteden çıktıktan sonra o site, fotoğrafları yükleme veya sohbet mesajı gönderme gibi görevleri tamamlamak için senkronizasyona devam edebilir</translation>
 <translation id="4278390842282768270">İzin veriliyor</translation>
+<translation id="4290791284969893584">Bir sayfa kapatıldıktan sonra, başladığınız görevler tamamlanmayabilir</translation>
 <translation id="429312253194641664">Bir site medya oynatıyor</translation>
 <translation id="42981349822642051">Genişlet</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Süresi yarın dolacak}other{Süresi # gün içinde dolacak}}</translation>
@@ -531,6 +536,7 @@
 <translation id="8010630645305864042">{TILE_COUNT,plural, =1{Bu sekmeyle devam et kartını gizle}other{Bu sekmelerle devam et kartını gizle}}</translation>
 <translation id="802154636333426148">İndirilemedi</translation>
 <translation id="8042586301629853791">Sıralama ölçütü:</translation>
+<translation id="8051193500142930381">Kameranın kullanılmasını gerektiren özellikler çalışmaz</translation>
 <translation id="8067883171444229417">Videoyu oynat</translation>
 <translation id="8068648041423924542">Sertifika seçilemiyor.</translation>
 <translation id="8077120325605624147">Ziyaret ettiğiniz herhangi bir site size reklam gösterebilir</translation>

@@ -329,6 +329,8 @@ void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
       extensions, "EGL_ANGLE_create_context_backwards_compatible");
   b_EGL_ANGLE_create_context_client_arrays =
       gfx::HasExtension(extensions, "EGL_ANGLE_create_context_client_arrays");
+  b_EGL_ANGLE_create_context_passthrough_shaders = gfx::HasExtension(
+      extensions, "EGL_ANGLE_create_context_passthrough_shaders");
   b_EGL_ANGLE_create_context_webgl_compatibility = gfx::HasExtension(
       extensions, "EGL_ANGLE_create_context_webgl_compatibility");
   b_EGL_ANGLE_d3d_share_handle_client_buffer =

@@ -20,7 +20,6 @@
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_controller.h"
@@ -44,6 +43,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -287,7 +287,7 @@ void PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
     driver_->PreviewGenerationSuggestion(current_generated_password_);
 
     // For the screen reader users, move the focus to the accept button on show.
-    if (accessibility_state_utils::IsScreenReaderEnabled()) {
+    if (ui::AXPlatform::GetInstance().IsScreenReaderActive()) {
       SelectElement(PasswordGenerationPopupElement::kAcceptButton);
     }
   }

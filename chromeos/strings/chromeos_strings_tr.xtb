@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Transkripti gizle</translation>
 <translation id="160633243685262989">Resmi Önizle</translation>
 <translation id="1611649489706141841">ileri</translation>
-<translation id="1615144046047995187">İndirilemiyor. Tekrar deneyin veya Chromebook'unuzu yeniden başlatın.</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> sonrası veri kullanımı</translation>
 <translation id="1618566998877964907">Tema kullanın</translation>
 <translation id="1621067168122174824">Şarj testini çalıştır</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Ses kayıtlarının listesi</translation>
 <translation id="2561093647892030937">limonlar</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> adlı test çalıştırılıyor...</translation>
-<translation id="2573178735329662769">Tüm Chromebook sesleri kaydediliyor</translation>
 <translation id="2576253868710695442">Bu işlem için 2 GB kadar depolama alanı gerekir</translation>
 <translation id="2584547424703650812">Parıltılı manzaralar</translation>
 <translation id="2584559707064218956">Kurulum yapmak için Ayarlar'a gidin</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">mavi ve pembe</translation>
 <translation id="498186245079027698">Tarayıcıyı kontrol edip tekrar deneyin. Taranan dosyaların kaydedilmesi için yeterli yerel alan bulunduğundan emin olun.</translation>
 <translation id="4982627662315910959">Kısayol kullanılamıyor. Üst karakter ve bir tane daha değiştirici tuş (ctrl, alt veya <ph name="META_KEY" />) kullanarak yeni bir kısayola basın.</translation>
-<translation id="4983216687482551672">Chromebook sesi</translation>
 <translation id="4985509611418653372">Çalıştır</translation>
 <translation id="4987769320337599931">Güvenlik duvarı</translation>
 <translation id="4988526792673242964">Sayfalar</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Güncelleme işlemine devam etmek için <ph name="DEVICE_NAME" /> USB kablosunu çıkarıp tekrar takın</translation>
 <translation id="5099354524039520280">yukarı</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> tuşu olmayan kısayol bazı uygulamaların kısayoluyla çakışabilir. Kullanmaya devam etmek için bu kısayola tekrar basın veya <ph name="KEY" /> tuşunu kullanarak yeni bir kısayola basın. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399"><ph name="LANGUAGE_NAME" /> Metne dönüştürme modeli indirilemedi. Tekrar deneyin veya Chromebook'unuzu yeniden başlatın.</translation>
 <translation id="5108781503443873320">Benzer:</translation>
-<translation id="5121677070210013200">Metne dönüştürme modeli indirilemedi. Tekrar deneyin veya Chromebook'unuzu yeniden başlatın.</translation>
 <translation id="5130848777448318809">midilliler</translation>
 <translation id="5137451382116112100">Tam</translation>
 <translation id="5139813694804168398">Rahatsız Etmeyin</translation>
@@ -920,6 +915,7 @@
 <translation id="5286263799730375393">arka ışık rengi</translation>
 <translation id="5292579816060236070">Gün doğumu duvar kağıdı</translation>
 <translation id="5294769550414936029">sürüm: <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">Kamera erişimini aç/kapat</translation>
 <translation id="5300814202279832142">Pencereyi masaya taşı</translation>
 <translation id="5302048478445481009">Dil</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> cihazlara özel duvar kağıdı</translation>
@@ -1032,6 +1028,7 @@
 <translation id="5896602941605730551">Çal</translation>
 <translation id="5901630391730855834">Sarı</translation>
 <translation id="5903200662178656908">Bu cihaz bir klavye ile fare kombinasyonudur.</translation>
+<translation id="5903822368221507416">Sekmeleri gizle</translation>
 <translation id="5904994456462260490">Yeni bir APN ekleyin</translation>
 <translation id="590746845088109442">kediler</translation>
 <translation id="5907649332524363701">tuş rengi</translation>
@@ -1087,7 +1084,6 @@
 <translation id="6122191549521593678">Çevrimiçi</translation>
 <translation id="6122277663991249694">ChromeOS Giriş Yöntemi Hizmeti</translation>
 <translation id="6127426868813166163">beyaz</translation>
-<translation id="613049107179582049">Chromebook'un sesi açık olduğunda, Kaydedici bu cihazda çalan tüm sesleri kaydeder</translation>
 <translation id="6136285399872347291">geri sil</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Kullanıcı sertifikası</translation>
@@ -1417,7 +1413,6 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB dokunmatik ekran</translation>
 <translation id="757747079855995705">taş</translation>
-<translation id="7584853321964440104">İndirilemiyor. Tekrar deneyin veya Chromebook'unuzu yeniden başlatın.</translation>
 <translation id="7590883480672980941">Giriş ayarları</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> kaldı</translation>
 <translation id="7600430297804876776"><ph name="MANAGER" /> yöneticisi bu <ph name="DEVICE_TYPE" /> cihazın kullanılabileceği zamanı ayarladı.</translation>
@@ -1784,7 +1779,6 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="9218016617214286986">Bilinen APN'leri göster</translation>
 <translation id="932327136139879170">Ana Sayfa</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Mikrofonunuzun bağlandığından emin olun veya Chromebook'unuzu yeniden başlatmayı deneyin</translation>
 <translation id="945522503751344254">Geri bildirim gönder</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> tuşu eksik. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Kayıt boyunca sesleri karşılaştırarak her konuşmacının ne zaman ne söylediğinin transkriptte gösterilmesini sağlar.</translation>

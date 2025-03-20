@@ -52,7 +52,7 @@ class WebState;
 // highlighted. Only applies if the tab being processed is currently visible,
 // and if `shouldGetSnapshot` is enabled. Beware this does visibly highlight
 // said text in the webpage for the user for a split-second.
-@property(nonatomic, assign) NSString* textToHighlight;
+@property(nonatomic, copy) NSString* textToHighlight;
 
 // Boolean flags for enabling/disabling the async tasks that the PageContext
 // wrapper can execute.

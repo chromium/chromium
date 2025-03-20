@@ -950,6 +950,8 @@ void RestrictedCookieManager::SetCookieFromString(
   // The cookie is about to be set. Proactively increment the version so it's
   // instantly reflected.
   IncrementSharedVersion();
+  // Report that a write is being processed.
+  shared_memory_version_controller_.CommitWrite();
 
   const bool get_cookies_on_set =
       base::FeatureList::IsEnabled(features::kGetCookiesOnSet);

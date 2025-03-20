@@ -37,7 +37,7 @@ if (!limit_android_deps) {
     info_path = "committed/libs/androidx_activity_activity_compose/androidx_activity_activity_compose.info"
     enable_bytecode_checks = false
     deps = [
-      ":androidx_activity_activity_ktx_java",
+      ":androidx_activity_activity_java",
       ":androidx_compose_runtime_runtime_java",
       ":androidx_compose_runtime_runtime_saveable_java",
       ":androidx_compose_ui_ui_java",
@@ -336,7 +336,8 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_prebuilt("androidx_collection_collection_ktx_java") {
-    jar_path = "cipd/libs/androidx_collection_collection_ktx/collection-ktx-1.5.0-SNAPSHOT.jar"
+    jar_path =
+        "cipd/libs/androidx_collection_collection_ktx/collection-ktx-1.5.0.jar"
     output_name = "androidx_collection_collection_ktx"
     supports_android = true
     requires_android = true
@@ -483,7 +484,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_core_core_java") {
-    aar_path = "cipd/libs/androidx_core_core/core-1.16.0-SNAPSHOT.aar"
+    aar_path = "cipd/libs/androidx_core_core/core-1.17.0-SNAPSHOT.aar"
     info_path = "committed/libs/androidx_core_core/androidx_core_core.info"
     enable_bytecode_checks = false
     deps = [
@@ -493,9 +494,12 @@ if (!limit_android_deps) {
       ":androidx_concurrent_concurrent_futures_java",
       ":androidx_core_core_viewtree_java",
       ":androidx_interpolator_interpolator_java",
+      ":androidx_lifecycle_lifecycle_common_java",
       ":androidx_lifecycle_lifecycle_runtime_java",
       ":androidx_tracing_tracing_java",
       ":androidx_versionedparcelable_versionedparcelable_java",
+      "//third_party/android_deps:guava_android_java",
+      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
@@ -530,7 +534,8 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_credentials_credentials_java") {
-    aar_path = "cipd/libs/androidx_credentials_credentials/credentials-1.5.0-SNAPSHOT.aar"
+    aar_path =
+        "cipd/libs/androidx_credentials_credentials/credentials-1.5.0.aar"
     info_path = "committed/libs/androidx_credentials_credentials/androidx_credentials_credentials.info"
     enable_bytecode_checks = false
     deps = [
@@ -538,7 +543,6 @@ if (!limit_android_deps) {
       ":androidx_biometric_biometric_java",
       ":androidx_core_core_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
-      "//third_party/android_deps:org_jspecify_jspecify_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
@@ -546,7 +550,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_credentials_credentials_play_services_auth_java") {
-    aar_path = "cipd/libs/androidx_credentials_credentials_play_services_auth/credentials-play-services-auth-1.5.0-SNAPSHOT.aar"
+    aar_path = "cipd/libs/androidx_credentials_credentials_play_services_auth/credentials-play-services-auth-1.5.0.aar"
     info_path = "committed/libs/androidx_credentials_credentials_play_services_auth/androidx_credentials_credentials_play_services_auth.info"
     enable_bytecode_checks = false
     deps = [
@@ -1119,7 +1123,6 @@ if (!limit_android_deps) {
     info_path = "committed/libs/androidx_preference_preference/androidx_preference_preference.info"
     enable_bytecode_checks = false
     deps = [
-      ":androidx_activity_activity_ktx_java",
       ":androidx_annotation_annotation_java",
       ":androidx_appcompat_appcompat_java",
       ":androidx_collection_collection_java",
@@ -1447,7 +1450,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_transition_transition_java") {
     aar_path =
-        "cipd/libs/androidx_transition_transition/transition-1.6.0-SNAPSHOT.aar"
+        "cipd/libs/androidx_transition_transition/transition-1.7.0-SNAPSHOT.aar"
     info_path = "committed/libs/androidx_transition_transition/androidx_transition_transition.info"
     enable_bytecode_checks = false
     deps = [
@@ -1567,7 +1570,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_window_window_java") {
-    aar_path = "cipd/libs/androidx_window_window/window-1.5.0-SNAPSHOT.aar"
+    aar_path = "cipd/libs/androidx_window_window/window-1.7.0-SNAPSHOT.aar"
     info_path =
         "committed/libs/androidx_window_window/androidx_window_window.info"
     enable_bytecode_checks = false
@@ -1615,7 +1618,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_activity_activity_java",
@@ -1636,7 +1638,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -1656,7 +1657,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     testonly = true
     deps = [
@@ -1681,7 +1681,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     testonly = true
     deps = [ ":androidx_benchmark_benchmark_traceprocessor_android_java" ]
@@ -1699,7 +1698,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     testonly = true
     deps = [
@@ -1711,7 +1709,8 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_prebuilt("androidx_collection_collection_jvm_java") {
-    jar_path = "cipd/libs/androidx_collection_collection_jvm/collection-jvm-1.5.0-SNAPSHOT.jar"
+    jar_path =
+        "cipd/libs/androidx_collection_collection_jvm/collection-jvm-1.5.0.jar"
     output_name = "androidx_collection_collection_jvm"
     supports_android = true
     requires_android = true
@@ -1722,7 +1721,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -1737,7 +1735,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_compose_animation_animation_android_java" ]
   }
@@ -1754,7 +1751,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_experimental_java",
@@ -1778,7 +1774,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_compose_animation_animation_core_android_java" ]
   }
@@ -1795,7 +1790,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -1817,7 +1811,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_compose_foundation_foundation_android_java" ]
   }
@@ -1834,7 +1827,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_experimental_java",
@@ -1859,7 +1851,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_compose_foundation_foundation_layout_android_java" ]
   }
@@ -1876,7 +1867,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_experimental_java",
@@ -1904,7 +1894,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_activity_activity_compose_java",
@@ -1932,7 +1921,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_compose_material_material_ripple_android_java" ]
   }
@@ -1949,7 +1937,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_collection_collection_java",
@@ -1968,7 +1955,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_compose_runtime_runtime_android_java" ]
   }
@@ -1980,7 +1966,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_compose_runtime_runtime_saveable_android_java" ]
   }
@@ -1997,7 +1982,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2019,7 +2003,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_activity_activity_ktx_java",
@@ -2055,7 +2038,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_compose_ui_ui_geometry_android_java" ]
   }
@@ -2072,7 +2054,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2089,7 +2070,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_compose_ui_ui_graphics_android_java" ]
   }
@@ -2106,7 +2086,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_experimental_java",
@@ -2128,7 +2107,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     testonly = true
     deps = [ ":androidx_compose_ui_ui_test_android_java" ]
@@ -2146,7 +2124,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     testonly = true
     deps = [
@@ -2174,7 +2151,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_compose_ui_ui_text_android_java" ]
   }
@@ -2190,7 +2166,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_experimental_java",
@@ -2215,7 +2190,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_compose_ui_ui_unit_android_java" ]
   }
@@ -2231,7 +2205,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_experimental_java",
@@ -2252,7 +2225,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_compose_ui_ui_util_android_java" ]
   }
@@ -2268,7 +2240,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_experimental_java",
@@ -2291,7 +2262,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2301,7 +2271,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_core_core_ktx_java") {
-    aar_path = "cipd/libs/androidx_core_core_ktx/core-ktx-1.16.0-SNAPSHOT.aar"
+    aar_path = "cipd/libs/androidx_core_core_ktx/core-ktx-1.17.0-SNAPSHOT.aar"
     info_path =
         "committed/libs/androidx_core_core_ktx/androidx_core_core_ktx.info"
     enable_bytecode_checks = false
@@ -2311,7 +2281,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2332,7 +2301,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
   }
@@ -2348,7 +2316,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2368,7 +2335,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_core_core_ktx_java",
@@ -2388,7 +2354,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2404,7 +2369,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_datastore_datastore_core_okio_jvm_java" ]
   }
@@ -2422,7 +2386,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_datastore_datastore_core_java",
@@ -2444,7 +2407,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2466,7 +2428,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_collection_collection_java",
@@ -2486,7 +2447,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2510,7 +2470,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     testonly = true
     deps = [
@@ -2534,7 +2493,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_core_core_java",
@@ -2549,7 +2507,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_graphics_graphics_shapes_android_java" ]
   }
@@ -2566,7 +2523,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_experimental_java",
@@ -2588,7 +2544,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2610,7 +2565,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2641,7 +2595,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2663,7 +2616,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_lifecycle_lifecycle_livedata_core_java",
@@ -2682,7 +2634,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2704,7 +2655,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2725,7 +2675,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_lifecycle_lifecycle_runtime_compose_android_java" ]
   }
@@ -2742,7 +2691,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2764,7 +2712,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2786,7 +2733,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2809,7 +2755,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2835,7 +2780,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_lifecycle_lifecycle_viewmodel_java",
@@ -2856,7 +2800,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2883,7 +2826,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2907,7 +2849,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2922,7 +2863,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_navigation_navigation_common_android_java" ]
   }
@@ -2939,7 +2879,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2970,7 +2909,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_activity_activity_compose_java",
@@ -3008,7 +2946,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_activity_activity_ktx_java",
@@ -3039,7 +2976,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_collection_collection_java",
@@ -3058,7 +2994,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_core_core_java",
@@ -3079,7 +3014,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -3104,7 +3038,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -3119,7 +3052,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_room_room_common_jvm_java" ]
   }
@@ -3137,7 +3069,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -3156,7 +3087,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_savedstate_savedstate_java",
@@ -3176,7 +3106,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -3194,7 +3123,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_sqlite_sqlite_android_java" ]
   }
@@ -3206,7 +3134,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_sqlite_sqlite_framework_android_java" ]
   }
@@ -3223,7 +3150,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -3244,7 +3170,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -3264,7 +3189,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     testonly = true
     deps = [
@@ -3285,7 +3209,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     testonly = true
   }
@@ -3301,7 +3224,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -3321,7 +3243,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     testonly = true
     deps = [ ":androidx_tracing_tracing_java" ]
@@ -3339,7 +3260,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     testonly = true
     deps = [
@@ -3361,7 +3281,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     testonly = true
   }
@@ -3379,7 +3298,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     testonly = true
     deps = [ ":androidx_annotation_annotation_java" ]
@@ -3397,7 +3315,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -3413,14 +3330,13 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_window_window_core_android_java" ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_window_window_core_android_java") {
-    aar_path = "cipd/libs/androidx_window_window_core_android/window-core-android-1.5.0-SNAPSHOT.aar"
+    aar_path = "cipd/libs/androidx_window_window_core_android/window-core-android-1.7.0-SNAPSHOT.aar"
     info_path = "committed/libs/androidx_window_window_core_android/androidx_window_window_core_android.info"
     enable_bytecode_checks = false
 
@@ -3429,7 +3345,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -3448,7 +3363,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -3469,7 +3383,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -3492,7 +3405,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",

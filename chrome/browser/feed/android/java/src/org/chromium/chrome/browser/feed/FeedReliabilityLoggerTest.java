@@ -13,10 +13,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -36,6 +38,7 @@ public class FeedReliabilityLoggerTest {
     static final int CARD_CATEGORY = 101;
     static final int PAGE_ID = 5;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock FeedLaunchReliabilityLogger mLaunchLogger;
     @Mock FeedUserInteractionReliabilityLogger mUserInteractionLogger;
     @Mock FeedCardOpeningReliabilityLogger mCardOpeningReliabilityLogger;
@@ -44,7 +47,6 @@ public class FeedReliabilityLoggerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mFeedReliabilityLogger =
                 new FeedReliabilityLogger(
                         mLaunchLogger, mUserInteractionLogger, mCardOpeningReliabilityLogger);

@@ -18,12 +18,14 @@ import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityM
 import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_STATE_SHOWN;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.android.util.concurrent.RoboExecutorService;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
@@ -54,6 +56,7 @@ public class WebappDisclosureControllerTest {
     private static final String BOUND_PACKAGE = WebApkConstants.WEBAPK_PACKAGE_PREFIX + ".bound";
     private static final String SCOPE = "https://www.example.com";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock public CurrentPageVerifier mCurrentPageVerifier;
 
     @Captor public ArgumentCaptor<Runnable> mVerificationObserverCaptor;
@@ -62,7 +65,6 @@ public class WebappDisclosureControllerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         // Run AsyncTasks synchronously.
         PostTask.setPrenativeThreadPoolExecutorForTesting(new RoboExecutorService());
 

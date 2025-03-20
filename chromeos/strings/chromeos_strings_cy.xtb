@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Cuddio'r trawsgrifiad</translation>
 <translation id="160633243685262989">Rhagolwg o'r Llun</translation>
 <translation id="1611649489706141841">ymlaen</translation>
-<translation id="1615144046047995187">Methu â lawrlwytho. Rhowch gynnig arall arni neu ailgychwynwch eich Chromebook.</translation>
 <translation id="1615335640928990664">Defnydd data ers <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Defnyddiwch thema</translation>
 <translation id="1621067168122174824">Rhedeg prawf Gwefru</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Rhestr o recordiadau sain</translation>
 <translation id="2561093647892030937">lemwnau</translation>
 <translation id="2570743873672969996">Wrthi'n rhedeg y prawf <ph name="TEST_NAME" />...</translation>
-<translation id="2573178735329662769">Wrthi'n recordio holl sain Chromebook</translation>
 <translation id="2576253868710695442">Bydd hyn yn cymryd hyd at 2GB o'r storfa</translation>
 <translation id="2584547424703650812">Disgleirwedd</translation>
 <translation id="2584559707064218956">I osod, ewch i'r Gosodiadau</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">glas a phinc</translation>
 <translation id="498186245079027698">Gwiriwch y sganiwr a rhowch gynnig arall arni. Gwnewch yn siŵr bod digon o le lleol i gadw ffeiliau sydd wedi'u sganio.</translation>
 <translation id="4982627662315910959">Nid yw'r llwybr byr ar gael. Pwyswch lwybr byr newydd gan ddefnyddio Shift ac 1 fysell addasydd arall (ctrl, alt, neu <ph name="META_KEY" />).</translation>
-<translation id="4983216687482551672">Sain Chromebook</translation>
 <translation id="4985509611418653372">Rhedeg</translation>
 <translation id="4987769320337599931">Wal dân</translation>
 <translation id="4988526792673242964">Tudalennau</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Datgysylltwch y cebl USB <ph name="DEVICE_NAME" /> ac yna ei ailosod i barhau â'r broses ddiweddaru</translation>
 <translation id="5099354524039520280">i fyny</translation>
 <translation id="5107243100836678918">Gallai llwybr byr heb fysell <ph name="META_KEY" /> wrthdaro â llwybr byr rhai apiau. Pwyswch y llwybr byr hwn eto i barhau i'w ddefnyddio, neu pwyswch lwybr byr newydd gan ddefnyddio'r fysell <ph name="KEY" />. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Methu â lawrlwytho'r model trawsgrifio <ph name="LANGUAGE_NAME" />. Rhowch gynnig arall arni neu ailgychwynnwch eich Chromebook</translation>
 <translation id="5108781503443873320">Tebyg:</translation>
-<translation id="5121677070210013200">Methu â lawrlwytho'r model trawsgrifio. Rhowch gynnig arall arni neu ailgychwynnwch eich Chromebook.</translation>
 <translation id="5130848777448318809">merlod</translation>
 <translation id="5137451382116112100">Llawn</translation>
 <translation id="5139813694804168398">peidiwch ag aflonyddu</translation>
@@ -920,6 +915,7 @@
 <translation id="5286263799730375393">lliw ôl-olau</translation>
 <translation id="5292579816060236070">Papur wal codiad haul</translation>
 <translation id="5294769550414936029">fersiwn <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">toglo mynediad camera</translation>
 <translation id="5300814202279832142">Symud ffenestr i ddesg</translation>
 <translation id="5302048478445481009">Iaith</translation>
 <translation id="5303837385540978511">Papur wal unigryw <ph name="PRODUCT_NAME" /></translation>
@@ -1032,6 +1028,7 @@
 <translation id="5896602941605730551">Chwarae</translation>
 <translation id="5901630391730855834">Melyn</translation>
 <translation id="5903200662178656908">Mae'r ddyfais yn gyfuniad bysellfwrdd a llygoden.</translation>
+<translation id="5903822368221507416">Cuddio tabiau</translation>
 <translation id="5904994456462260490">Ychwanegu APN newydd</translation>
 <translation id="590746845088109442">cathod</translation>
 <translation id="5907649332524363701">lliw bysell</translation>
@@ -1087,7 +1084,6 @@
 <translation id="6122191549521593678">Ar-lein</translation>
 <translation id="6122277663991249694">Gwasanaeth Dull Mewnbynnu ChromeOS</translation>
 <translation id="6127426868813166163">gwyn</translation>
-<translation id="613049107179582049">Pan fydd sain Chromebook ymlaen, mae'r Recordydd yn dal yr holl sain sy'n chwarae ar y ddyfais hon</translation>
 <translation id="6136285399872347291">ôl-nod</translation>
 <translation id="6137614725462089991">seiberpync</translation>
 <translation id="6137767437444130246">Tystysgrif defnyddiwr</translation>
@@ -1417,7 +1413,6 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Sgrîn gyffwrdd USB</translation>
 <translation id="757747079855995705">carreg</translation>
-<translation id="7584853321964440104">Methu â lawrlwytho. Rhowch gynnig arall arni neu ailgychwynnwch eich Chromebook.</translation>
 <translation id="7590883480672980941">Gosodiadau mewnbynnu</translation>
 <translation id="7595982850646262331">Mae <ph name="TIME_VALUE" /> ar ôl</translation>
 <translation id="7600430297804876776">Mae'r gweinyddwr <ph name="MANAGER" /> wedi pennu pryd y gellir defnyddio'r <ph name="DEVICE_TYPE" /> hwn.</translation>
@@ -1784,7 +1779,6 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="9218016617214286986">Dangos APNs hysbys</translation>
 <translation id="932327136139879170">Cartref</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Sicrhewch fod eich meic wedi'i gysylltu neu rhowch gynnig ar ailgychwyn eich Chromebook</translation>
 <translation id="945522503751344254">Danfon adborth</translation>
 <translation id="950520315903467048">Mae'r fysell ar goll ar gyfer <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Cymharwch leisiau trwy gydol y recordiad fel bod y trawsgrifiad yn adlewyrchu'r hyn a ddywedodd pob siaradwr a phryd</translation>

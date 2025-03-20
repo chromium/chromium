@@ -603,6 +603,7 @@
 <translation id="2040894699575719559">位置已封鎖</translation>
 <translation id="2041788246978549610">使用可存取的麥克風 (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">紙匣 7</translation>
+<translation id="2043896419861982462">如要隱藏分期付款選項，請前往<ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="2045871135676061132">Personal 信封</translation>
 <translation id="2046951263634619614">圖書零售商</translation>
 <translation id="2048261947532620704">正在翻譯頁面</translation>
@@ -760,6 +761,7 @@
 <translation id="2293443924986248631">開啟此功能時，網站不能使用 Cookie 追蹤您的網絡活動。有些網站的功能可能會無法正常運作。</translation>
 <translation id="2295831393422400053">開啟「改善搜尋和瀏覽體驗」即可使用「幫我寫」功能</translation>
 <translation id="2296244067976588032">密鑰 • iCloud 鑰匙圈</translation>
+<translation id="2296331629987861142">輕鬆分期付款 (須符合資格並額外付費)</translation>
 <translation id="2300306941146563769">未上載</translation>
 <translation id="2301098101308036335">瀏覽過哪些網站和瀏覽時間。</translation>
 <translation id="230286397113210245">開無痕式視窗按鈕，啟動之後就可以開新嘅無痕式視窗私下瀏覽</translation>
@@ -1019,6 +1021,7 @@
 <translation id="2775884851269838147">第一列印頁</translation>
 <translation id="2781185443919227679">海灘和島嶼</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781799097551205934">正在準備結帳</translation>
 <translation id="2782088940970074970">租車</translation>
 <translation id="278436560439594386">家庭電器</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
@@ -1046,6 +1049,7 @@
 <translation id="2859383374160668142">你可隨時查看所追蹤產品的降價消息。</translation>
 <translation id="2859806420264540918">此網站顯示滋擾性或誤導廣告。</translation>
 <translation id="28618371182701850">電動和插電式汽車</translation>
+<translation id="287387905105155974">說明對話氣泡</translation>
 <translation id="28761159517501904">電影</translation>
 <translation id="2876489322757410363">即將退出無痕模式，改用外部應用程式付款。要繼續嗎？</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome 設定度管理安全瀏覽之類嘅功能</translation>
@@ -1105,6 +1109,7 @@
 <translation id="2959274854674276289">素食</translation>
 <translation id="2961809451460302960">人壽保險</translation>
 <translation id="2962073860865348475">12 x 18 吋</translation>
+<translation id="2965779286557330949">請稍候…</translation>
 <translation id="2967082089043584472">已加到「<ph name="SET" />」</translation>
 <translation id="2967098518029543669">將密碼儲存在 Google 帳戶中</translation>
 <translation id="297173220375858963">桌面排版</translation>
@@ -1477,6 +1482,7 @@
 <translation id="3600106876108433070">了解比較表格嘅詳情</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />，<ph name="DOMAIN" />，<ph name="TIME" /></translation>
 <translation id="3600492954573979888">管理 Google 私隱設定按鈕，啟動之後就可以去 Google 帳戶私隱設定</translation>
+<translation id="3602695245205338770">選擇分期付款服務商</translation>
 <translation id="3603507503523709">您的管理員已封鎖應用程式</translation>
 <translation id="3605899229568538311">5 x 5 吋</translation>
 <translation id="3606917451836803637">電視節目</translation>
@@ -2273,6 +2279,7 @@
 <translation id="5001526427543320409">第三方 Cookie</translation>
 <translation id="5002932099480077015">啟用後，Chrome 會在此裝置上儲存信用卡資料副本，以加快填表速度。</translation>
 <translation id="5007392906805964215">查看</translation>
+<translation id="5010599530303458903">每月付款或分 4 期免息分期付款 (須符合資格)</translation>
 <translation id="5011561501798487822">偵測到的語言</translation>
 <translation id="5015510746216210676">電腦名稱：</translation>
 <translation id="5017554619425969104">您複製的文字</translation>
@@ -2898,6 +2905,7 @@
 <translation id="6116338172782435947">查看複製到剪貼簿的文字和圖片</translation>
 <translation id="6117833587752089929">相紙 (光滑)</translation>
 <translation id="6118782133429281336">來源清單空白。</translation>
+<translation id="6120950591512958208">在結帳時使用此折扣代碼。</translation>
 <translation id="612178891608320683">純素菜式</translation>
 <translation id="6122181661879998141">信用卡正面</translation>
 <translation id="6124058285696691147">下載附件</translation>
@@ -3239,6 +3247,7 @@
 <translation id="6706005862292023715">窗簾及窗飾</translation>
 <translation id="6706210727756204531">範圍</translation>
 <translation id="6706678697074905703">此 IBAN 無法儲存至 Google 帳戶，因此已改為儲存至此裝置上的 Chrome。</translation>
+<translation id="6707388108229299854">如要在所有裝置上使用此地址，請驗證身分</translation>
 <translation id="6709133671862442373">新聞</translation>
 <translation id="6710213216561001401">上一個</translation>
 <translation id="6710594484020273272">&lt;輸入搜尋字詞&gt;</translation>
@@ -3917,6 +3926,7 @@
 <translation id="7887885240995164102">進入畫中畫</translation>
 <translation id="7888575728750733395">列印輸出意圖</translation>
 <translation id="7890748547282909375">登入 Microsoft OneDrive 即可儲存螢幕截圖</translation>
+<translation id="7892865709991296481">付款設定</translation>
 <translation id="7894280532028510793">如果拼字正確，<ph name="BEGIN_LINK" />請嘗試執行網絡診斷<ph name="END_LINK" />。</translation>
 <translation id="7901831439558593470">7 x 9 吋信封</translation>
 <translation id="7905064834449738336">如果你使用的密碼已在網上發佈，Chromium 就會發出警告。核對時，你的密碼和使用者名稱將會加密，任何人 (包括 Google) 均無法讀取。</translation>

@@ -26,6 +26,7 @@
 #include "components/saved_tab_groups/public/pref_names.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/sharing_message/pref_names.h"
+#include "components/sync/base/data_type.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/variations/service/google_groups_manager_prefs.h"
@@ -210,8 +211,9 @@ constexpr auto kCommonSyncablePrefsAllowlist =
           syncer::PRIORITY_PREFERENCES, PrefSensitivity::kNone,
           MergeBehavior::kNone}},
         {password_manager::prefs::kAutomaticPasskeyUpgrades,
-         {syncable_prefs_ids::kAutomaticPasskeyUpgrades, syncer::PREFERENCES,
-          PrefSensitivity::kNone, MergeBehavior::kNone}},
+         {syncable_prefs_ids::kAutomaticPasskeyUpgrades,
+          syncer::PRIORITY_PREFERENCES, PrefSensitivity::kNone,
+          MergeBehavior::kNone}},
         {password_manager::prefs::kPasswordDismissCompromisedAlertEnabled,
          {syncable_prefs_ids::kPasswordDismissCompromisedAlertEnabled,
           syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},

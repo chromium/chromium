@@ -557,10 +557,6 @@ BASE_FEATURE(kDisableLensCamera,
              "DisableLensCamera",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kClearDeviceDataOnSignOutForManagedUsers,
-             "ClearDeviceDataOnSignOutForManagedUsers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDownloadAutoDeletionFeatureEnabled,
              "DownloadAutoDeletionFeatureEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1321,4 +1317,8 @@ bool IsNotificationCollisionManagementEnabled() {
 
 BASE_FEATURE(kNotificationCollisionManagement,
              "NotificationCollisionManagement",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kIOSProvidesAppNotificationSettings,
+             "IOSProvidesAppNotificationSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);

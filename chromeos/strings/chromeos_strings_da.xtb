@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Skul transskription</translation>
 <translation id="160633243685262989">Forhåndsvisning</translation>
 <translation id="1611649489706141841">videresend</translation>
-<translation id="1615144046047995187">Download er ikke muligt. Prøv igen, eller genstart din Chromebook.</translation>
 <translation id="1615335640928990664">Dataforbrug siden <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Brug et tema</translation>
 <translation id="1621067168122174824">Kør opladningstest</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Liste over lydoptagelser</translation>
 <translation id="2561093647892030937">citroner</translation>
 <translation id="2570743873672969996">Kører testen <ph name="TEST_NAME" />...</translation>
-<translation id="2573178735329662769">Optagelse af al Chromebook-lyd</translation>
 <translation id="2576253868710695442">Dette kræver op til 2 GB lagerplads</translation>
 <translation id="2584547424703650812">Lysende landskaber</translation>
 <translation id="2584559707064218956">Gå til Indstillinger for at konfigurere</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">blå og lyserød</translation>
 <translation id="498186245079027698">Tjek scanneren, og prøv igen. Sørg for, at der er nok lokal lagerplads til at gemme de scannede filer.</translation>
 <translation id="4982627662315910959">Genvejen er ikke tilgængelig. Tryk en ny genvej ved hjælp af Shift og 1 anden ændringstast (Ctrl, Alt eller <ph name="META_KEY" />).</translation>
-<translation id="4983216687482551672">Lyd på Chromebook</translation>
 <translation id="4985509611418653372">Kør</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4988526792673242964">Sider</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Tag USB-kablet ud af <ph name="DEVICE_NAME" />, og sæt det derefter i igen for at fortsætte opdateringsprocessen</translation>
 <translation id="5099354524039520280">op</translation>
 <translation id="5107243100836678918">En genvej uden <ph name="META_KEY" />-tasten kan skabe problemer i forbindelse med genveje i visse apps. Tryk på denne genvej igen for at fortsætte med at bruge den, eller tryk på en ny genvej ved hjælp af <ph name="KEY" />-tasten. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Transskriptionsmodellen for <ph name="LANGUAGE_NAME" /> kan ikke downloades. Prøv igen, eller genstart din Chromebook</translation>
 <translation id="5108781503443873320">Lignende:</translation>
-<translation id="5121677070210013200">Transskriptionsmodellen kan ikke downloades. Prøv igen, eller genstart din Chromebook.</translation>
 <translation id="5130848777448318809">ponyer</translation>
 <translation id="5137451382116112100">Fuld</translation>
 <translation id="5139813694804168398">forstyr ikke</translation>
@@ -1089,7 +1084,6 @@
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Indtastningsmetodetjeneste for ChromeOS</translation>
 <translation id="6127426868813166163">hvid</translation>
-<translation id="613049107179582049">Når Chromebook-lyd er aktiveret, optager Lydoptager al lyd, der afspilles på denne enhed</translation>
 <translation id="6136285399872347291">tilbage</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Brugercertifikat</translation>
@@ -1419,7 +1413,6 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-touchskærm</translation>
 <translation id="757747079855995705">sten</translation>
-<translation id="7584853321964440104">Download er ikke muligt. Prøv igen, eller genstart din Chromebook.</translation>
 <translation id="7590883480672980941">Indstillinger for indtastning</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> tilbage</translation>
 <translation id="7600430297804876776">Administratoren af <ph name="MANAGER" /> har angivet, hvornår denne <ph name="DEVICE_TYPE" /> kan bruges.</translation>
@@ -1786,7 +1779,6 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="9218016617214286986">Vis kendte APN'er</translation>
 <translation id="932327136139879170">Start</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Sørg for, at din mikrofon er tilknyttet, eller prøv at genstarte din Chromebook</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="950520315903467048">Du mangler at angive tasten til handlingen <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Sammenlign stemmer i optagelsen, så det fremgår af transskriptionen, hvad hver person sagde, og hvornår de sagde det</translation>

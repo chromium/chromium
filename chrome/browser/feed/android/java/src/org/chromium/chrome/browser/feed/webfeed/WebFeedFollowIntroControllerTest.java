@@ -27,7 +27,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLog;
@@ -74,6 +75,8 @@ public final class WebFeedFollowIntroControllerTest {
     private static final SharedPreferencesManager sChromeSharedPreferences =
             ChromeSharedPreferences.getInstance();
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
@@ -104,7 +107,6 @@ public final class WebFeedFollowIntroControllerTest {
         // Print logs to stdout.
         ShadowLog.stream = System.out;
 
-        MockitoAnnotations.initMocks(this);
         WebFeedBridgeJni.setInstanceForTesting(mWebFeedBridgeJniMock);
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
 

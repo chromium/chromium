@@ -209,6 +209,6 @@ BASE_FEATURE(kDebuggerAPIRestrictedToDevMode,
 
 BASE_FEATURE(kExtensionBrowserNamespaceAlternative,
              "ExtensionBrowserNamespaceAlternative",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace extensions_features

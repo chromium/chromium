@@ -204,7 +204,8 @@ TEST_F(CollaborationServiceImplTest, StartJoinFlow) {
   std::unique_ptr<MockCollaborationControllerDelegate> mock_delegate_invalid =
       std::make_unique<MockCollaborationControllerDelegate>();
   EXPECT_CALL(*mock_delegate_invalid, OnFlowFinished());
-  service_->StartJoinFlow(std::move(mock_delegate_invalid), url);
+  service_->StartJoinFlow(std::move(mock_delegate_invalid), url,
+                          CollaborationServiceJoinEntryPoint::kUnknown);
   // Wait for post tasks.
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return service_->GetJoinControllersForTesting().size() == 1; }));
@@ -220,7 +221,8 @@ TEST_F(CollaborationServiceImplTest, StartJoinFlow) {
   std::unique_ptr<MockCollaborationControllerDelegate> mock_delegate =
       std::make_unique<MockCollaborationControllerDelegate>();
   EXPECT_CALL(*mock_delegate, OnFlowFinished());
-  service_->StartJoinFlow(std::move(mock_delegate), url);
+  service_->StartJoinFlow(std::move(mock_delegate), url,
+                          CollaborationServiceJoinEntryPoint::kUnknown);
 
   // Wait for post tasks.
   EXPECT_TRUE(base::test::RunUntil(
@@ -229,7 +231,8 @@ TEST_F(CollaborationServiceImplTest, StartJoinFlow) {
   // Existing join flow will stop all conflicting flows and will be appended
   // similar to a new join flow.
   service_->StartJoinFlow(
-      std::make_unique<MockCollaborationControllerDelegate>(), url);
+      std::make_unique<MockCollaborationControllerDelegate>(), url,
+      CollaborationServiceJoinEntryPoint::kUnknown);
   EXPECT_EQ(service_->GetJoinControllersForTesting().size(), 1u);
 }
 

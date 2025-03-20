@@ -23,7 +23,9 @@
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/native_event_processor_mac.h"
 #include "content/public/browser/native_event_processor_observer_mac.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/common/content_features.h"
+#include "ui/accessibility/ax_mode.h"
 #include "ui/base/cocoa/accessibility_focus_overrider.h"
 
 namespace chrome_browser_application_mac {
@@ -145,6 +147,7 @@ std::string DescriptionForNSEvent(NSEvent* event) {
   base::ObserverList<content::NativeEventProcessorObserver>::Unchecked
       _observers;
   BOOL _handlingSendEvent;
+  std::unique_ptr<content::ScopedAccessibilityMode> _scoped_accessibility_mode;
 }
 
 + (void)initialize {
@@ -456,13 +459,14 @@ std::string DescriptionForNSEvent(NSEvent* event) {
 // Accessibility Support
 
 - (void)enableScreenReaderCompleteMode:(BOOL)enable {
-  content::BrowserAccessibilityState* accessibility_state =
-      content::BrowserAccessibilityState::GetInstance();
-
   if (enable) {
-    accessibility_state->OnScreenReaderDetected();
+    if (!_scoped_accessibility_mode) {
+      _scoped_accessibility_mode =
+          content::BrowserAccessibilityState::GetInstance()
+              ->CreateScopedModeForProcess(ui::kAXModeComplete);
+    }
   } else {
-    accessibility_state->OnScreenReaderStopped();
+    _scoped_accessibility_mode.reset();
   }
 }
 

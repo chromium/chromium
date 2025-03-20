@@ -8,11 +8,21 @@
 #include <cstdint>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace tabs {
 class TabInterface;
-}
+}  // namespace tabs
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace actor {
 
@@ -30,6 +40,17 @@ class ActorCoordinator {
   void Act(tabs::TabInterface* tab,
            const optimization_guide::proto::BrowserAction& action,
            ActionResultCallback callback);
+
+ private:
+  void OnMayActOnTabResponse(
+      base::WeakPtr<content::WebContents> web_contents,
+      const optimization_guide::proto::BrowserAction& action,
+      const url::Origin& evaluated_origin,
+      ActionResultCallback callback,
+      bool may_act);
+
+  SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<ActorCoordinator> weak_ptr_factory_{this};
 };
 
 }  // namespace actor

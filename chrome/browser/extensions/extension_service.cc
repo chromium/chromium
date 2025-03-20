@@ -45,6 +45,7 @@
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/delayed_install_manager.h"
 #include "chrome/browser/extensions/extension_action_storage_manager.h"
+#include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_disabled_ui.h"
 #include "chrome/browser/extensions/extension_error_controller.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
@@ -89,6 +90,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
@@ -196,7 +198,7 @@ ExtensionService::ExtensionService(
       system_(ExtensionSystem::Get(profile)),
       extension_prefs_(extension_prefs),
       blocklist_(blocklist),
-      allowlist_(profile_, extension_prefs, this),
+      allowlist_(ExtensionAllowlist::Get(profile)),
       safe_browsing_verdict_handler_(extension_prefs,
                                      ExtensionRegistry::Get(profile),
                                      this),
@@ -291,11 +293,6 @@ ExtensionService::ExtensionService(
                           base::Unretained(this)));
 }
 
-CorruptedExtensionReinstaller*
-ExtensionService::corrupted_extension_reinstaller() {
-  return corrupted_extension_reinstaller_;
-}
-
 base::WeakPtr<ExtensionServiceInterface> ExtensionService::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
@@ -325,6 +322,7 @@ void ExtensionService::Shutdown() {
   pending_extension_manager_ = nullptr;
   external_provider_manager_ = nullptr;
   error_controller_ = nullptr;
+  allowlist_ = nullptr;
 }
 
 void ExtensionService::Init() {
@@ -386,12 +384,12 @@ void ExtensionService::Init() {
   safe_browsing_verdict_handler_.Init();
 
   // Must be called after extensions are loaded.
-  allowlist_.Init();
+  allowlist_->Init();
 
   // Check for updates especially for corrupted user installed extension from
   // the webstore. This will do nothing if an extension update check was
   // triggered before and is still running.
-  if (corrupted_extension_reinstaller()->HasAnyReinstallForCorruption()) {
+  if (corrupted_extension_reinstaller_->HasAnyReinstallForCorruption()) {
     CheckForUpdatesSoon();
   }
 }
@@ -555,7 +553,7 @@ void ExtensionService::PerformActionBasedOnOmahaAttributes(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   omaha_attributes_handler_.PerformActionBasedOnOmahaAttributes(extension_id,
                                                                 attributes);
-  allowlist_.PerformActionBasedOnOmahaAttributes(extension_id, attributes);
+  allowlist_->PerformActionBasedOnOmahaAttributes(extension_id, attributes);
   // Show an error for the newly blocklisted extension.
   error_controller_->ShowErrorIfNeeded();
 }
@@ -966,7 +964,7 @@ void ExtensionService::AddComponentExtension(const Extension* extension) {
     return;
   }
 
-  AddExtension(extension);
+  extension_registrar_->AddExtension(extension);
 }
 
 void ExtensionService::OnExtensionInstalled(
@@ -983,11 +981,11 @@ void ExtensionService::OnExtensionInstalled(
   const PendingExtensionInfo* pending_extension_info =
       pending_extension_manager_->GetById(id);
   bool is_reinstall_for_corruption =
-      corrupted_extension_reinstaller()->IsReinstallForCorruptionExpected(
+      corrupted_extension_reinstaller_->IsReinstallForCorruptionExpected(
           extension->id());
 
   if (is_reinstall_for_corruption) {
-    corrupted_extension_reinstaller()->MarkResolved(id);
+    corrupted_extension_reinstaller_->MarkResolved(id);
   }
 
   if (pending_extension_info) {

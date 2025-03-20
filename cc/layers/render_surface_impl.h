@@ -299,6 +299,15 @@ class CC_EXPORT RenderSurfaceImpl {
   const viz::ViewTransitionElementResourceId& ViewTransitionElementResourceId()
       const;
 
+  // Identifies whether this render surface may have a view transition render
+  // pass contribution.
+  bool has_view_transition_capture_contributions() const {
+    return has_view_transition_capture_contributions_;
+  }
+  void set_has_view_transition_capture_contributions(bool flag) {
+    has_view_transition_capture_contributions_ = flag;
+  }
+
  private:
   void SetContentRect(const gfx::Rect& content_rect);
   gfx::Rect CalculateClippedAccumulatedContentRect();
@@ -396,6 +405,8 @@ class CC_EXPORT RenderSurfaceImpl {
   std::vector<LayerImpl*> deferred_contributing_layers_;
 
   gfx::Rect view_transition_capture_content_rect_;
+
+  bool has_view_transition_capture_contributions_ = false;
 };
 
 }  // namespace cc

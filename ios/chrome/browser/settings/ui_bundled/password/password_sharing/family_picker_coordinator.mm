@@ -82,8 +82,7 @@
   self.viewController.delegate = self;
   self.mediator = [[FamilyPickerMediator alloc]
           initWithRecipients:_recipients
-      sharedURLLoaderFactory:self.browser->GetProfile()
-                                 ->GetSharedURLLoaderFactory()];
+      sharedURLLoaderFactory:self.profile->GetSharedURLLoaderFactory()];
   self.mediator.consumer = self.viewController;
 
   if (_shouldNavigateBack) {

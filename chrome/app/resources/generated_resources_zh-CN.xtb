@@ -267,6 +267,7 @@
 <translation id="1175572348579024023">滚动</translation>
 <translation id="1175914831232945926">数字</translation>
 <translation id="1176471985365269981">不得修改您设备上的文件或文件夹</translation>
+<translation id="1176864681932214421">利用 AI 制作图片</translation>
 <translation id="1177073277575830464">Android 快速设置已完成。请在 <ph name="DEVICE_TYPE" /> 上继续设置。</translation>
 <translation id="1177440945615690056">您可在“设置”中连接到任何符合条件的移动网络</translation>
 <translation id="1177548198167638471">不再询问</translation>
@@ -3675,6 +3676,7 @@
 <translation id="3582057310199111521">在诈骗网站上输入过，并且遭遇了数据泄露</translation>
 <translation id="3582299299336701326">将亮屏幕调暗，或将暗屏幕调亮。按搜索键 + Ctrl + H 即可开启和关闭颜色反转功能。</translation>
 <translation id="3584169441612580296">读取和更改您计算机上的照片、音乐和其他媒体</translation>
+<translation id="3586741240886978899">您在此网站上使用过</translation>
 <translation id="3586806079541226322">无法打开此文件</translation>
 <translation id="3586931643579894722">隐藏详细信息</translation>
 <translation id="3587279952965197737">不能超过 <ph name="MAX_CHARACTER_COUNT" /> 个字符</translation>
@@ -9338,6 +9340,7 @@
 <translation id="7650582458329409456">{COUNT,plural, =1{已设置 1 个指纹}other{已设置 {COUNT} 个指纹}}</translation>
 <translation id="7650677314924139716">当前的流量使用设置是“仅限 WLAN”</translation>
 <translation id="7650920359639954963">未启用原因：<ph name="REASON" /></translation>
+<translation id="7651182181030187705">如需在您的所有设备上获取此书签，请验证您的身份</translation>
 <translation id="7651400349472467012">有可用的即时热点</translation>
 <translation id="7651784568388208829">Phone Hub 任务延续</translation>
 <translation id="765293928828334535">无法从该网站添加应用、扩展程序和用户脚本</translation>
@@ -9376,6 +9379,7 @@
 <translation id="7670434942695515800">为了获得最佳性能，请升级到最新版本。建议您备份文件，以防无法完成升级。一旦开始升级，Linux 即会关闭。请先保存已打开的文件，然后再继续。<ph name="LINK_START" />了解详情<ph name="LINK_END" /></translation>
 <translation id="7670483791111801022">字幕</translation>
 <translation id="7671130400130574146">使用系统标题栏和边框</translation>
+<translation id="7671139479636735732">右键点击即可轻松直观呈现您的想法</translation>
 <translation id="767127784612208024">轻触以确认重置</translation>
 <translation id="7671472752213333268">“<ph name="EXTENSION_NAME" />”想从“<ph name="SCANNER_NAME" />”扫描。</translation>
 <translation id="7672504401554182757">选择用于<ph name="APP_NAME" />的通行密钥在哪部设备中</translation>

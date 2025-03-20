@@ -68,7 +68,6 @@ class VizProcessTransportFactory : public ui::ContextFactory,
   SharedMainThreadRasterContextProvider() override;
 
   void RemoveCompositor(ui::Compositor* compositor) override;
-  gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager() override;
   cc::TaskGraphRunner* GetTaskGraphRunner() override;
   viz::FrameSinkId AllocateFrameSinkId() override;
   viz::SubtreeCaptureId AllocateSubtreeCaptureId() override;

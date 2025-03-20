@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ଲୁଚାନ୍ତୁ</translation>
 <translation id="160633243685262989">ଇମେଜର ପ୍ରିଭ୍ୟୁ କରନ୍ତୁ</translation>
 <translation id="1611649489706141841">ଆଗକୁ ବଢ଼ିବା କୀ</translation>
-<translation id="1615144046047995187">ଡାଉନଲୋଡ କରାଯାଇପାରିବ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କ Chromebookକୁ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ।</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />ଠାରୁ ଡାଟା ବ୍ୟବହାର</translation>
 <translation id="1618566998877964907">ଏକ ଥିମ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="1621067168122174824">ବ୍ୟାଟେରୀ ଚାର୍ଜ ଟେଷ୍ଟ ଚଲାନ୍ତୁ</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">ଅଡିଓ ରେକର୍ଡିଂଗୁଡ଼ିକର ତାଲିକା</translation>
 <translation id="2561093647892030937">ଲେମ୍ବୁ</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> ପରୀକ୍ଷା ଚଲାଯାଉଛି...</translation>
-<translation id="2573178735329662769">ସମସ୍ତ Chromebook ଅଡିଓକୁ ରେକର୍ଡିଂ କରାଯାଉଛି</translation>
 <translation id="2576253868710695442">ଏହା 2GB ପର୍ଯ୍ୟନ୍ତ ଷ୍ଟୋରେଜ ସ୍ପେସ ନେବ</translation>
 <translation id="2584547424703650812">ଗ୍ଲୋସ୍କେପଗୁଡ଼ିକ</translation>
 <translation id="2584559707064218956">ସେଟ ଅପ କରିବାକୁ, ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">ନୀଳ ଏବଂ ଗୋଲାପୀ</translation>
 <translation id="498186245079027698">ସ୍କାନର୍ ଯାଞ୍ଚ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ। ସ୍କାନ୍ କରାଯାଇଥିବା ଫାଇଲଗୁଡ଼ିକୁ ସେଭ୍ କରିବାକୁ ଯଥେଷ୍ଟ ଲୋକାଲ୍ ସ୍ଥାନ ଥିବା ନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="4982627662315910959">ସର୍ଟକଟ ଉପଲବ୍ଧ ନାହିଁ। shift ଏବଂ 1 ଅଧିକ ମୋଡିଫାୟର କୀ (ctrl, alt କିମ୍ବା <ph name="META_KEY" />) ବ୍ୟବହାର କରି ଏକ ନୂଆ ସର୍ଟକଟ ଦବାନ୍ତୁ।</translation>
-<translation id="4983216687482551672">Chromebook ଅଡିଓ</translation>
 <translation id="4985509611418653372">ଚଲାନ୍ତୁ</translation>
 <translation id="4987769320337599931">ଫାୟାରୱାଲ୍</translation>
 <translation id="4988526792673242964">ପୃଷ୍ଠାଗୁଡ଼ିକ</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003"><ph name="DEVICE_NAME" /> USB କେବୁଲକୁ ଅନପ୍ଲଗ କରି ଅପଡେଟ ପ୍ରକ୍ରିୟା ଜାରି ରଖିବା ପାଇଁ ଏହାକୁ ପୁଣି ଇନସାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="5099354524039520280">ଉପର</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> କୀ ବିନା ସର୍ଟକଟ କିଛି ଆପର ସର୍ଟକଟ ସହ ବିବାଦ ସୃଷ୍ଟି କରିପାରେ। ଏହି ସର୍ଟକଟକୁ ବ୍ୟବହାର କରିବା ଜାରି ରଖିବା ପାଇଁ ପୁଣି ଏହାକୁ ଦବାନ୍ତୁ କିମ୍ବା <ph name="KEY" /> କୀ ବ୍ୟବହାର କରି ଏକ ନୂଆ ସର୍ଟକଟ ଦବାନ୍ତୁ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399"><ph name="LANGUAGE_NAME" /> ଟ୍ରାନ୍ସକ୍ରିପ୍ସନ ମଡେଲକୁ ଡାଉନଲୋଡ କରାଯାଇପାରିବ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କ Chromebookକୁ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="5108781503443873320">ସମାନ:</translation>
-<translation id="5121677070210013200">ଟ୍ରାନ୍ସକ୍ରିପ୍ସନ ମଡେଲକୁ ଡାଉନଲୋଡ କରାଯାଇପାରିବ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କ Chromebookକୁ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ।</translation>
 <translation id="5130848777448318809">ପୋନି</translation>
 <translation id="5137451382116112100">ପୂର୍ଣ୍ଣସ୍କ୍ରିନ</translation>
 <translation id="5139813694804168398">ବିରକ୍ତ କରନ୍ତୁ ନାହିଁ</translation>
@@ -1089,7 +1084,6 @@
 <translation id="6122191549521593678">ଅନ୍‌ଲାଇନ୍</translation>
 <translation id="6122277663991249694">ChromeOS ଇନପୁଟ ପଦ୍ଧତି ସେବା</translation>
 <translation id="6127426868813166163">ଧଳା</translation>
-<translation id="613049107179582049">Chromebook ଅଡିଓ ଚାଲୁ ଥିଲେ, Recorder ଏହି ଭିଡିଓରେ ପ୍ଲେ ହେଉଥିବା ସମସ୍ତ ଅଡିଓକୁ କେପଚର କରେ</translation>
 <translation id="6136285399872347291">Backspace</translation>
 <translation id="6137614725462089991">ସାଇବରପଙ୍କ</translation>
 <translation id="6137767437444130246">ୟୁଜରଙ୍କ ସାର୍ଟିଫିକେଟ</translation>
@@ -1419,7 +1413,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB ଟଚସ୍କ୍ରିନ</translation>
 <translation id="757747079855995705">ପଥର</translation>
-<translation id="7584853321964440104">ଡାଉନଲୋଡ କରାଯାଇପାରିବ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କ Chromebookକୁ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ।</translation>
 <translation id="7590883480672980941">ଇନପୁଟ୍ ସେଟିଂସ୍</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> ବାକି ଅଛି</translation>
 <translation id="7600430297804876776">ଏହି <ph name="DEVICE_TYPE" />କୁ କେତେବେଳେ ବ୍ୟବହାର କରାଯାଇପାରିବ ତାହା <ph name="MANAGER" /> ଆଡମିନିଷ୍ଟ୍ରେଟର ସେଟ କରିଛନ୍ତି।</translation>
@@ -1556,7 +1549,7 @@
           ଅଧିକ ସ୍ୱତନ୍ତ୍ର ଏବଂ ବିଭିନ୍ନ AI ଇମେଜ ବିକଳ୍ପ ପାଇବା ପାଇଁ "ମୋତେ ପ୍ରେରଣା ଦିଅନ୍ତୁ"କୁ ଚୟନ କରନ୍ତୁ।
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          ଯେତେବେଳେ ଆପଣ ନିଜର ୱାଲପେପର ତିଆରି କରନ୍ତି, ଇମେଜ ଜେନେରେଟ କରିବା ଏବଂ ଉତ୍ପାଦକୁ ଉନ୍ନତ କରିବା ପାଇଁ ପ୍ରମ୍ପ୍ଟ Google ସର୍ଭରକୁ ପଠାଯାଏ, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleର ଗୋପନୀୟତା ନୀତି<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ଅନୁଯାୟୀ Google AI ସର୍ଭରଗୁଡ଼ିକୁ ପ୍ରମ୍ପ୍ଟ ପଠାଯାଏ। କୌଣସି ବ୍ୟକ୍ତିଗତ, ସମ୍ବେଦନଶୀଳ କିମ୍ବା ଗୋପନୀୟ ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ ନାହିଁ।
+          ଆପଣ ନିଜର ୱାଲପେପର ତିଆରି କରିବା ବେଳେ ଇମେଜ ଜେନେରେଟ କରିବା ଏବଂ ପ୍ରଡକ୍ଟକୁ ଉନ୍ନତ କରିବା ପାଇଁ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleର ସେବାର ସର୍ତ୍ତାବଳୀ ଏବଂ ଗୋପନୀୟତା ନୀତି<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ଅଧୀନରେ Google ସର୍ଭରଗୁଡ଼ିକୁ ପ୍ରମ୍ପ୍ଟ ପଠାଯାଏ। କୌଣସି ବ୍ୟକ୍ତିଗତ, ସମ୍ବେଦନଶୀଳ କିମ୍ବା ଗୋପନୀୟ ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ ନାହିଁ।
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           ଜେନେରେଟିଭ AI ଭୁଲ କରିପାରେ, ଯେଉଁଥିରେ ଲୋକମାନଙ୍କ ବିଷୟରେ ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ, ତେଣୁ ଏହାକୁ ଦୁଇଥର-ଯାଞ୍ଚ କରନ୍ତୁ। <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
@@ -1786,7 +1779,6 @@
 <translation id="9218016617214286986">ଜଣାଥିବା APNଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
 <translation id="932327136139879170">Home</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">ଆପଣଙ୍କ ମାଇକ ସଂଯୁକ୍ତ ଅଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କ Chromebook ରିଷ୍ଟାର୍ଟ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="945522503751344254">ମତାମତ ପଠାନ୍ତୁ</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> ପାଇଁ କୀ ଉପଲବ୍ଧ ନାହିଁ। <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">ସମ୍ପୂର୍ଣ୍ଣ ରେକର୍ଡିଂରେ ଭଏସଗୁଡ଼ିକୁ ତୁଳନା କରିବା ଯାହା ଫଳରେ ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ପ୍ରତ୍ୟେକ ସ୍ପିକର କଣ ଏବଂ କେତେବେଳେ କହିଲେ ତାହା ପ୍ରତିଫଳିତ କରେ</translation>

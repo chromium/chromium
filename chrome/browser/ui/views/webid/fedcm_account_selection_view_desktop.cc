@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
@@ -28,6 +27,7 @@
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-shared.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
 
@@ -976,7 +976,7 @@ std::unique_ptr<views::Widget> FedCmAccountSelectionView::CreateDialogWidget() {
     views::Widget* top_level_widget =
         views::Widget::GetWidgetForNativeWindow(top_level_native_window);
     dialog_widget = base::WrapUnique(views::DialogDelegate::CreateDialogWidget(
-        modal, /*context=*/nullptr,
+        modal, /*context=*/gfx::NativeWindow(),
         /*parent=*/top_level_widget->GetNativeView()));
   }
 

@@ -18,6 +18,7 @@
 #include "base/version.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "mojo/public/cpp/base/shared_memory_version.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -212,18 +213,20 @@ class RestrictedCookieManagerSync {
     return future.Get();
   }
 
-  void SetCookieFromString(
+  mojom::CookiesResponsePtr SetCookieFromString(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
       const url::Origin& top_frame_origin,
       net::StorageAccessApiStatus storage_access_api_status,
+      bool get_version_shared_memory,
+      bool apply_devtools_overrides,
       const std::string& cookie) {
-    base::test::TestFuture<network::mojom::CookiesResponsePtr> future;
+    base::test::TestFuture<mojom::CookiesResponsePtr> future;
     cookie_service_->SetCookieFromString(
         url, site_for_cookies, top_frame_origin, storage_access_api_status,
-        /*get_version_shared_memory=*/false,
-        /*apply_devtools_overrides=*/false, cookie, future.GetCallback());
-    ASSERT_TRUE(future.Wait());
+        get_version_shared_memory, apply_devtools_overrides, cookie,
+        future.GetCallback());
+    return future.Take();
   }
 
   void AddChangeListener(
@@ -588,12 +591,10 @@ TEST_P(RestrictedCookieManagerTest, CookieVersion) {
   // Version is still at initial value since nothing modified the cookie.
   EXPECT_EQ(version, mojom::kInitialCookieVersion);
 
-  network::mojom::CookiesResponsePtr response;
-  EXPECT_TRUE(backend()->SetCookieFromString(
+  auto response = sync_service_->SetCookieFromString(
       kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
       net::StorageAccessApiStatus::kNone, /*get_version_shared_memory=*/false,
-      /*apply_devtools_overrides=*/false, "new-name=new-value;path=/",
-      &response));
+      /*apply_devtools_overrides=*/false, "new-name=new-value;path=/");
   if (GetCookiesOnSetEnabled()) {
     ASSERT_TRUE(response);
     // Version is incremented when setting a cookie.
@@ -1183,18 +1184,20 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookieHttpOnly) {
 }
 
 TEST_P(RestrictedCookieManagerTest, SetCookieFromString) {
-  network::mojom::CookiesResponsePtr response;
-  EXPECT_TRUE(backend()->SetCookieFromString(
+  auto response = sync_service_->SetCookieFromString(
       kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
       net::StorageAccessApiStatus::kNone, /*get_version_shared_memory=*/true,
-      /*apply_devtools_overrides=*/false, "new-name=new-value;path=/",
-      &response));
+      /*apply_devtools_overrides=*/false, "new-name=new-value;path=/");
+  std::optional<mojo::SharedMemoryVersionClient> client;
   if (GetCookiesOnSetEnabled()) {
     ASSERT_TRUE(response);
     EXPECT_NE(response->version, mojom::kInvalidCookieVersion);
     EXPECT_NE(response->version, mojom::kInitialCookieVersion);
-    EXPECT_TRUE(response->version_buffer.IsValid());
     EXPECT_EQ(response->cookies, "new-name=new-value");
+    ASSERT_TRUE(response->version_buffer.IsValid());
+    client.emplace(std::move(response->version_buffer));
+    EXPECT_FALSE(client->CommittedWritesIsLessThan(1));
+    EXPECT_TRUE(client->CommittedWritesIsLessThan(2));
   } else {
     EXPECT_FALSE(response);
   }
@@ -1206,17 +1209,34 @@ TEST_P(RestrictedCookieManagerTest, SetCookieFromString) {
           kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
           net::StorageAccessApiStatus::kNone, std::move(options)),
       ElementsAre(net::MatchesCookieNameValue("new-name", "new-value")));
+
+  // Another call to SetCookieFromString updates the committed writes counter.
+  response = sync_service_->SetCookieFromString(
+      kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
+      net::StorageAccessApiStatus::kNone, /*get_version_shared_memory=*/false,
+      /*apply_devtools_overrides=*/false, "new-name=updated-value;path=/");
+  if (GetCookiesOnSetEnabled()) {
+    EXPECT_EQ(response->cookies, "new-name=updated-value");
+    EXPECT_FALSE(client->CommittedWritesIsLessThan(2));
+    EXPECT_TRUE(client->CommittedWritesIsLessThan(3));
+  }
+  options = mojom::CookieManagerGetOptions::New();
+  options->name = "new-name";
+  options->match_type = mojom::CookieMatchType::EQUALS;
+  EXPECT_THAT(
+      sync_service_->GetAllForUrl(
+          kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
+          net::StorageAccessApiStatus::kNone, std::move(options)),
+      ElementsAre(net::MatchesCookieNameValue("new-name", "updated-value")));
 }
 
 TEST_P(RestrictedCookieManagerTest, SetCookieFromStringCrossOrigin) {
-  network::mojom::CookiesResponsePtr response;
   service_->OverrideIsolationInfoForTesting(kOtherIsolationInfo);
-  EXPECT_TRUE(backend()->SetCookieFromString(
+  auto response = sync_service_->SetCookieFromString(
       kDefaultUrlWithPath, net::SiteForCookies(), kDefaultOrigin,
-      net::StorageAccessApiStatus::kNone,
-      /*get_version_shared_memory=*/false,
+      net::StorageAccessApiStatus::kNone, /*get_version_shared_memory=*/false,
       /*apply_devtools_overrides=*/ThirdPartyCookieDisabledByDevtools(),
-      "new-name=new-value;path=/; SameSite=none; Secure", &response));
+      "new-name=new-value;path=/; SameSite=none; Secure");
   if (GetCookiesOnSetEnabled() && !ThirdPartyCookieDisabledByDevtools()) {
     ASSERT_TRUE(response);
     EXPECT_NE(response->version, mojom::kInvalidCookieVersion);
@@ -1284,13 +1304,11 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookieWithMismatchingDomain) {
 }
 
 TEST_P(RestrictedCookieManagerTest, SetCookieFromStringWrongOrigin) {
-  network::mojom::CookiesResponsePtr response;
   ExpectBadMessage();
-  EXPECT_TRUE(backend()->SetCookieFromString(
+  auto response = sync_service_->SetCookieFromString(
       kOtherUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
       net::StorageAccessApiStatus::kNone, /*get_version_shared_memory=*/false,
-      /*apply_devtools_overrides=*/false, "new-name=new-value;path=/",
-      &response));
+      /*apply_devtools_overrides=*/false, "new-name=new-value;path=/");
   EXPECT_FALSE(response);
   ASSERT_TRUE(received_bad_message());
 }
@@ -1792,6 +1810,8 @@ TEST_P(RestrictedCookieManagerTest, PartitionedCookies) {
   sync_service_->SetCookieFromString(
       kCookieURL, kSiteForCookies, kTopFrameOrigin,
       net::StorageAccessApiStatus::kNone,
+      /*get_version_shared_memory=*/false,
+      /*apply_devtools_overrides=*/false,
       "__Host-foo=bar; Secure; SameSite=None; Path=/; Partitioned");
 
   {  // Test request from the same top-level site.
@@ -2089,7 +2109,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     RestrictedCookieManagerTest,
     testing::Combine(
-        testing::Values(false, true),
+        testing::Bool(),
         testing::Values(mojom::RestrictedCookieManagerRole::SCRIPT,
                         mojom::RestrictedCookieManagerRole::NETWORK),
         testing::Values(

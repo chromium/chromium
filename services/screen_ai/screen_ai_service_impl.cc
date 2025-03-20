@@ -60,6 +60,7 @@ constexpr base::TimeDelta kCoolDownTime = base::Seconds(10);
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // See `screen_ai_service.mojom` for more info.
+// LINT.IfChange(OcrClientType)
 enum class OcrClientTypeForMetrics {
   kTest = 0,
   kPdfViewer = 1,
@@ -70,6 +71,20 @@ enum class OcrClientTypeForMetrics {
   kScreenshotTextDetection,
   kMaxValue = kScreenshotTextDetection
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:OcrClientType)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// See `screen_ai_service.mojom` for more info.
+// LINT.IfChange(MainContentExtractionClientType)
+enum class MainContentExtractionClientTypeForMetrics {
+  kTest = 0,
+  kReadingMode = 1,
+  kMainNode = 2,
+  kMahi = 3,
+  kMaxValue = kMahi
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:MainContentExtractionClientType)
 
 OcrClientTypeForMetrics GetClientType(mojom::OcrClientType client_type) {
   switch (client_type) {
@@ -86,6 +101,21 @@ OcrClientTypeForMetrics GetClientType(mojom::OcrClientType client_type) {
       return OcrClientTypeForMetrics::kMediaApp;
     case mojom::OcrClientType::kScreenshotTextDetection:
       return OcrClientTypeForMetrics::kScreenshotTextDetection;
+  }
+}
+
+MainContentExtractionClientTypeForMetrics GetClientType(
+    mojom::MceClientType client_type) {
+  switch (client_type) {
+    case mojom::MceClientType::kTest:
+      CHECK_IS_TEST();
+      return MainContentExtractionClientTypeForMetrics::kTest;
+    case mojom::MceClientType::kReadingMode:
+      return MainContentExtractionClientTypeForMetrics::kReadingMode;
+    case mojom::MceClientType::kMainNode:
+      return MainContentExtractionClientTypeForMetrics::kMainNode;
+    case mojom::MceClientType::kMahi:
+      return MainContentExtractionClientTypeForMetrics::kMahi;
   }
 }
 
@@ -465,7 +495,8 @@ void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,
                                          ExtractMainContentCallback callback) {
   ui::AXTree tree;
   std::optional<std::vector<int32_t>> content_node_ids;
-  bool success = ExtractMainContentInternal(snapshot, tree, content_node_ids);
+  bool success = ExtractMainContentInternalAndRecordMetrics(snapshot, tree,
+                                                            content_node_ids);
 
   if (success) {
     std::move(callback).Run(*content_node_ids);
@@ -478,7 +509,8 @@ void ScreenAIService::ExtractMainNode(const ui::AXTreeUpdate& snapshot,
                                       ExtractMainNodeCallback callback) {
   ui::AXTree tree;
   std::optional<std::vector<int32_t>> content_node_ids;
-  bool success = ExtractMainContentInternal(snapshot, tree, content_node_ids);
+  bool success = ExtractMainContentInternalAndRecordMetrics(snapshot, tree,
+                                                            content_node_ids);
 
   if (success) {
     ui::AXNodeID main_node_id = ComputeMainNode(&tree, *content_node_ids);
@@ -492,7 +524,8 @@ void ScreenAIService::IdentifyMainNode(const ui::AXTreeUpdate& snapshot,
                                        IdentifyMainNodeCallback callback) {
   ui::AXTree tree;
   std::optional<std::vector<int32_t>> content_node_ids;
-  bool success = ExtractMainContentInternal(snapshot, tree, content_node_ids);
+  bool success = ExtractMainContentInternalAndRecordMetrics(snapshot, tree,
+                                                            content_node_ids);
 
   if (success) {
     ui::AXNodeID main_node_id = ComputeMainNode(&tree, *content_node_ids);
@@ -502,38 +535,76 @@ void ScreenAIService::IdentifyMainNode(const ui::AXTreeUpdate& snapshot,
   }
 }
 
-bool ScreenAIService::ExtractMainContentInternal(
+bool ScreenAIService::ExtractMainContentInternalAndRecordMetrics(
     const ui::AXTreeUpdate& snapshot,
     ui::AXTree& tree,
     std::optional<std::vector<int32_t>>& content_node_ids) {
-  // TODO(crbug.com/chrome/359853518): Add latency, usage, and success metrics
-  // separated on client type and add client type as crash key.
   CHECK(base::Contains(mce_client_types_,
                        screen2x_main_content_extractors_.current_receiver()));
   main_content_extraction_last_used_ = base::TimeTicks::Now();
+  MainContentExtractionClientTypeForMetrics client_type = GetClientType(
+      mce_client_types_[screen2x_main_content_extractors_.current_receiver()]);
+
+  static crash_reporter::CrashKeyString<2> cpu_info(
+      "main_content_extraction_client");
+  cpu_info.Set(base::StringPrintf("%i", static_cast<int>(client_type)));
+
   // Early return if input is empty.
   if (snapshot.nodes.empty()) {
+    base::UmaHistogramEnumeration(
+        "Accessibility.ScreenAI.MainContentExtraction.Error.SnapshotEmpty",
+        client_type);
     return false;
   }
 
   // Deserialize the snapshot and reserialize it to a view hierarchy proto.
-  CHECK(tree.Unserialize(snapshot));
-  std::optional<ViewHierarchyAndTreeSize> converted_snapshot =
-      SnapshotToViewHierarchy(tree);
-  if (!converted_snapshot) {
-    VLOG(0) << "Proto not generated.";
+  if (!tree.Unserialize(snapshot)) {
+    base::UmaHistogramEnumeration(
+        "Accessibility.ScreenAI.MainContentExtraction.Error."
+        "SnapshotUnserialize",
+        client_type);
     return false;
   }
 
+  std::optional<ViewHierarchyAndTreeSize> converted_snapshot =
+      SnapshotToViewHierarchy(tree);
+  if (!converted_snapshot) {
+    base::UmaHistogramEnumeration(
+        "Accessibility.ScreenAI.MainContentExtraction.Error.SnapshotProto",
+        client_type);
+    return false;
+  }
+
+  base::TimeTicks start_time = base::TimeTicks::Now();
   content_node_ids =
       library_->ExtractMainContent(converted_snapshot->serialized_proto);
+  base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
+
+  bool successful =
+      content_node_ids.has_value() && content_node_ids->size() > 0;
   base::UmaHistogramBoolean(
-      "Accessibility.ScreenAI.MainContentExtraction.Successful",
-      content_node_ids.has_value());
-  if (content_node_ids.has_value() && content_node_ids->size() > 0) {
+      "Accessibility.ScreenAI.MainContentExtraction.Successful2", successful);
+
+  if (!content_node_ids.has_value()) {
+    base::UmaHistogramEnumeration(
+        "Accessibility.ScreenAI.MainContentExtraction.Error.ResultNull",
+        client_type);
+  } else if (content_node_ids->empty()) {
+    base::UmaHistogramEnumeration(
+        "Accessibility.ScreenAI.MainContentExtraction.Error.ResultEmpty",
+        client_type);
+  }
+
+  if (successful) {
+    base::UmaHistogramTimes(
+        "Accessibility.ScreenAI.MainContentExtraction.Latency.Success",
+        elapsed_time);
     VLOG(2) << "Screen2x returned " << content_node_ids->size() << " node ids.";
     return true;
   } else {
+    base::UmaHistogramTimes(
+        "Accessibility.ScreenAI.MainContentExtraction.Latency.Failure",
+        elapsed_time);
     VLOG(0) << "Screen2x returned no results.";
     return false;
   }

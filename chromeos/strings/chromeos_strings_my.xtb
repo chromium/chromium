@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">စာသားမှတ်တမ်းကို ဖျောက်ပါ</translation>
 <translation id="160633243685262989">ပုံ အစမ်းကြည့်ရှုရန်</translation>
 <translation id="1611649489706141841">ရှေ့သို့</translation>
-<translation id="1615144046047995187">ဒေါင်းလုဒ်လုပ်၍မရပါ။ ထပ်စမ်းကြည့်ပါ (သို့) သင့် Chromebook ကို ပြန်စပါ။</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> မှစ၍ ဒေတာသုံးစွဲမှု</translation>
 <translation id="1618566998877964907">အပြင်အဆင် သုံးပါ</translation>
 <translation id="1621067168122174824">အားဝင်ရောက်မှု စစ်ဆေးရန်</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">အသံသွင်းချက်စာရင်း</translation>
 <translation id="2561093647892030937">သံပရိုသီး</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> စစ်ဆေးမှု လုပ်ဆောင်နေသည်...</translation>
-<translation id="2573178735329662769">Chromebook အသံအားလုံးကို ဖမ်းယူခြင်း</translation>
 <translation id="2576253868710695442">၎င်းက သိုလှောင်ခန်း 2GB အထိ နေရာယူမည်</translation>
 <translation id="2584547424703650812">တောက်ပသောမြင်ကွင်း</translation>
 <translation id="2584559707064218956">စနစ်ထည့်သွင်းရန် ဆက်တင်များသို့ သွားပါ</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">အပြာနှင့် ပန်းရောင်</translation>
 <translation id="498186245079027698">စကင်ဖတ်စက်ကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။ စကင်ဖတ်ထားသောဖိုင်များကို သိမ်းရန် စက်တွင်းနေရာ လုံလောက်ကြောင်း သေချာပါစေ။</translation>
 <translation id="4982627662315910959">ဖြတ်လမ်းလင့်ခ် မရနိုင်ပါ။ Shift နှင့် မွမ်းမံခလုတ် (Ctrl၊ Alt၊ သို့မဟုတ် <ph name="META_KEY" />) ၁ ခု ဖြင့် ဖြတ်လမ်းလင့်ခ်အသစ်ကို နှိပ်ပါ။</translation>
-<translation id="4983216687482551672">Chromebook အသံ</translation>
 <translation id="4985509611418653372">စဖွင့်ရန်</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4988526792673242964">စာမျက်နှာများ</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">အပ်ဒိတ်လုပ်ငန်းစဉ်ကို ရှေ့ဆက်ရန် <ph name="DEVICE_NAME" /> USB ကြိုးကို ပလတ်ဖြုတ်ပြီး ပြန်တပ်ပါ</translation>
 <translation id="5099354524039520280">အပေါ်သို့</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> ခလုတ်မပါသော ဖြတ်လမ်းလင့်ခ်သည် အက်ပ်အချို့၏ ဖြတ်လမ်းလင့်ခ်နှင့် ငြိနိုင်သည်။ ဆက်သုံးရန် ဤဖြတ်လမ်းလင့်ခ်ကို ထပ်နှိပ်ပါ (သို့) <ph name="KEY" /> ခလုတ်သုံးပြီး ဖြတ်လမ်းလင့်ခ်အသစ်ကို နှိပ်ပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399"><ph name="LANGUAGE_NAME" /> စာသားမှတ်တမ်း မော်ဒယ်ကို ဒေါင်းလုဒ်လုပ်၍ မရလိုက်ပါ။ ထပ်စမ်းကြည့်ပါ (သို့) သင့် Chromebook ကို ပြန်စပါ</translation>
 <translation id="5108781503443873320">အလားတူ-</translation>
-<translation id="5121677070210013200">စာသားမှတ်တမ်း မော်ဒယ်ကို ဒေါင်းလုပ်လုပ်၍ မရလိုက်ပါ။ ထပ်စမ်းကြည့်ပါ (သို့) သင့် Chromebook ကို ပြန်စပါ။</translation>
 <translation id="5130848777448318809">မြင်းပု</translation>
 <translation id="5137451382116112100">အပြည့်</translation>
 <translation id="5139813694804168398">မနှောင့်ယှက်ရ</translation>
@@ -920,6 +915,7 @@
 <translation id="5286263799730375393">နောက်ခံမီးအရောင်</translation>
 <translation id="5292579816060236070">နေထွက်သည့် နောက်ခံ</translation>
 <translation id="5294769550414936029">ဗားရှင်း <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">ကင်မရာသုံးခွင့် ပြောင်းရန်</translation>
 <translation id="5300814202279832142">ဝင်းဒိုးကို မျက်နှာပြင်နေရာသို့ ရွှေ့ရန်</translation>
 <translation id="5302048478445481009">ဘာသာစကား</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> သီးသန့် နောက်ခံ</translation>
@@ -1032,6 +1028,7 @@
 <translation id="5896602941605730551">ဖွင့်ရန်</translation>
 <translation id="5901630391730855834">အၐါရောင်</translation>
 <translation id="5903200662178656908">စက်ပစ္စည်းက ကီးဘုတ်နှင့်မောက်စ်အတွဲ ဖြစ်သည်။</translation>
+<translation id="5903822368221507416">တဘ်များ ဖျောက်ရန်</translation>
 <translation id="5904994456462260490">APN အသစ် ထည့်ရန်</translation>
 <translation id="590746845088109442">ကြောင်</translation>
 <translation id="5907649332524363701">ကီးအရောင်</translation>
@@ -1087,7 +1084,6 @@
 <translation id="6122191549521593678">အွန်လိုင်း</translation>
 <translation id="6122277663991249694">ChromeOS လက်ကွက်ဝန်ဆောင်မှု</translation>
 <translation id="6127426868813166163">အဖြူ</translation>
-<translation id="613049107179582049">Chromebook အသံဖွင့်ထားပါက Recorder သည် ဤစက်တွင်ဖွင့်ထားသော အသံအားလုံးကို ဖမ်းယူပါသည်</translation>
 <translation id="6136285399872347291">နောက်ပြန်</translation>
 <translation id="6137614725462089991">ဆိုက်ဘာသိပ္ပံ</translation>
 <translation id="6137767437444130246">အသုံးပြုသူ အသိအမှတ်ပြုလက်မှတ်</translation>
@@ -1417,7 +1413,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB တို့ထိမျက်နှာပြင်</translation>
 <translation id="757747079855995705">ကျောက်တုံး</translation>
-<translation id="7584853321964440104">ဒေါင်းလုဒ်လုပ်၍မရပါ။ ထပ်စမ်းကြည့်ပါ (သို့) သင့် Chromebook ကို ပြန်စပါ။</translation>
 <translation id="7590883480672980941">ထည့်သွင်းမှု ဆက်တင်များ</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> ကျန်သည်</translation>
 <translation id="7600430297804876776"><ph name="MANAGER" /> စီမံခန့်ခွဲသူက ဤ <ph name="DEVICE_TYPE" /> ကို သုံးနိုင်သည့်အချိန် သတ်မှတ်ထားသည်။</translation>
@@ -1784,7 +1779,6 @@
 <translation id="9218016617214286986">သိသော APN များကို ပြပါ</translation>
 <translation id="932327136139879170">ပင်မ</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">မိုက် ချိတ်ဆက်ထားကြောင်း သေချာအောင်လုပ်ပါ (သို့) သင့် Chromebook ကို ပြန်စကြည့်ပါ</translation>
 <translation id="945522503751344254">အကြံပြုချက် ပေးပို့မည်</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> အတွက် ကီးမရှိပါ။ <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">ပြောသူ ပြောသည့်အရာနှင့် ပြောချိန်ကို စာသားမှတ်တမ်းတွင် ဖော်ပြနိုင်ရန် အသံဖိုင်တစ်လျှောက် အသံများကို နှိုင်းယှဉ်သည်</translation>

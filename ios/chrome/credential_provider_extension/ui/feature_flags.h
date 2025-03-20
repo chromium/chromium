@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <optional>
+
 // Whether automatic passkey upgrade is enabled for the user.
 BOOL IsAutomaticPasskeyUpgradeEnabled();
 
@@ -23,12 +25,12 @@ BOOL IsPasswordCreationManaged();
 // Whether password sync is enabled for this user.
 BOOL IsPasswordSyncEnabled();
 
-// Whether passkey saving is allowed by policy. Always returns `YES` for
+// Policy about whether passkey saving is allowed. The return value isn't set if
+// the policy isn't set in user defaults. The policy itself returns `true` for
 // unmanaged users, or for users whose enterprise has not configured this
-// policy.
-// IMPORTANT: If `IsPasswordCreationUserEnabled()` is `NO`, that supercedes this
-// policy.
-BOOL IsPasskeyCreationAllowedByPolicy();
+// policy. IMPORTANT: If `IsPasswordCreationUserEnabled()` is `NO`, that
+// supercedes this policy.
+std::optional<bool> GetPasskeyCreationPolicy();
 
 // Whether the passkeys M2 feature is currently enabled.
 BOOL IsPasskeysM2Enabled();

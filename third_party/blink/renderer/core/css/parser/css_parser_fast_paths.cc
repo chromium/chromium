@@ -866,47 +866,6 @@ static inline bool MatchesLiteral(const UChar* a, const char (&b)[N]) {
   return true;
 }
 
-template <int N>
-static inline bool ConsumeMatchingLiteral(const LChar** a,
-                                          const LChar* end,
-                                          const char (&b)[N]) {
-  if (end - *a < N - 1) {
-    return false;
-  }
-  if (!MatchesLiteral(*a, b)) {
-    return false;
-  }
-  UNSAFE_TODO(*a += N - 1);
-
-  // Skip trailing whitespace.
-  while (*a != end && IsHTMLSpace(**a)) {
-    UNSAFE_TODO((*a)++);
-  }
-  return true;
-}
-
-static inline bool ConsumeFallbackValuesAndEndOfEnv(const LChar** a,
-                                                    const LChar* end) {
-  while (true) {
-    if (**a == *end) {
-      return false;
-    }
-    char ch = **a;
-    if (ch == ')') {
-      ConsumeMatchingLiteral(a, end, ")");
-      break;
-    }
-    // Tolerate simple fallback values like ", 0px".
-    if (!(IsHTMLSpace(ch) || ch == ',' || ch == '-' || ch == '.' ||
-          (ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9'))) {
-      return false;
-    }
-    UNSAFE_TODO((*a)++);
-  }
-
-  return true;
-}
-
 // Right-hand side must already be lowercase.
 static inline bool MatchesCaseInsensitiveLiteral4(const LChar* a,
                                                   const char (&b)[5]) {
@@ -1645,7 +1604,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kNormal ||
              value_id == CSSValueID::kStrict ||
              value_id == CSSValueID::kAfterWhiteSpace;
-    case CSSPropertyID::kWebkitPrintColorAdjust:
+    case CSSPropertyID::kPrintColorAdjust:
       return value_id == CSSValueID::kExact || value_id == CSSValueID::kEconomy;
     case CSSPropertyID::kWebkitRtlOrdering:
       return value_id == CSSValueID::kLogical ||
@@ -1869,7 +1828,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kWebkitFontSmoothing,
     CSSPropertyID::kLineBreak,
     CSSPropertyID::kWebkitLineBreak,
-    CSSPropertyID::kWebkitPrintColorAdjust,
+    CSSPropertyID::kPrintColorAdjust,
     CSSPropertyID::kWebkitRtlOrdering,
     CSSPropertyID::kWebkitRubyPosition,
     CSSPropertyID::kWebkitTextCombine,
@@ -2248,11 +2207,6 @@ static CSSValue* ParseSimpleTransform(CSSPropertyID property_id,
   return transform_list;
 }
 
-static bool IsCustomIdentChar(char c) {
-  return c == '-' || c == '_' || (c >= '0' && c <= '9') ||
-         (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
-}
-
 CSSValue* CSSParserFastPaths::MaybeParseValue(CSSPropertyID property_id,
                                               StringView string,
                                               const CSSParserContext* context) {
@@ -2287,81 +2241,6 @@ CSSValue* CSSParserFastPaths::MaybeParseValue(CSSPropertyID property_id,
     return transform;
   }
   return nullptr;
-}
-
-bool CSSParserFastPaths::IsSafeAreaInsetBottom(StringView string) {
-  if (!string.Is8Bit()) {
-    return false;
-  }
-  const LChar* pos = string.Characters8();
-  const LChar* end = UNSAFE_TODO(pos + string.length());
-
-  // We can be env(SAIB) or calc(env(SAIB) +/- ...).
-  // If calc(), env(SAIB) must be the first operand.
-  // Also allow simple fallback value in the env(), like env(SAIB, 10px).
-
-  if (ConsumeMatchingLiteral(&pos, end, "env(")) {
-    return ConsumeMatchingLiteral(&pos, end, "safe-area-inset-bottom");
-  }
-  if (ConsumeMatchingLiteral(&pos, end, "calc(")) {
-    if (!ConsumeMatchingLiteral(&pos, end, "env(")) {
-      return false;
-    }
-    if (!ConsumeMatchingLiteral(&pos, end, "safe-area-inset-bottom")) {
-      return false;
-    }
-    // Look for fallback values and the end of the env(...)
-    if (!ConsumeFallbackValuesAndEndOfEnv(&pos, end)) {
-      return false;
-    }
-
-    // Operator must be + or -
-    if (ConsumeMatchingLiteral(&pos, end, "+") ||
-        ConsumeMatchingLiteral(&pos, end, "-")) {
-      // Second operand can be var(--foo), simple length like "10px" or
-      // env(SAMIB).
-      if (ConsumeMatchingLiteral(&pos, end, "var(")) {
-        // TODO(crbug.com/373980016): Verify that the var actually exists.
-        while (pos != end && IsCustomIdentChar(*pos)) {
-          UNSAFE_TODO(pos++);
-        }
-        while (pos != end && IsHTMLSpace(*pos)) {
-          UNSAFE_TODO(pos++);
-        }
-        if (!ConsumeMatchingLiteral(&pos, end, ")")) {
-          return false;
-        }
-      } else if (ConsumeMatchingLiteral(&pos, end, "env(")) {
-        if (!ConsumeMatchingLiteral(&pos, end, "safe-area-max-inset-bottom")) {
-          return false;
-        }
-        // Look for fallback values and the end of the env(...)
-        if (!ConsumeFallbackValuesAndEndOfEnv(&pos, end)) {
-          return false;
-        }
-      } else {
-        // Look for simple length value.
-        const LChar* tok_end = pos;
-        while (tok_end != end && *tok_end != ')' && !IsHTMLSpace(*tok_end)) {
-          UNSAFE_TODO(tok_end++);
-        }
-        double number;
-        CSSPrimitiveValue::UnitType unit;
-        if (!ParseSimpleLength(pos, tok_end - pos, unit, number)) {
-          return false;
-        }
-        pos = tok_end;
-        while (pos != end && IsHTMLSpace(*pos)) {
-          UNSAFE_TODO(pos++);
-        }
-      }
-    }
-    // End of the calc() expression.
-    if (ConsumeMatchingLiteral(&pos, end, ")")) {
-      return pos == end;
-    }
-  }
-  return false;
 }
 
 }  // namespace blink

@@ -916,8 +916,7 @@ const CGFloat kHeaderTopPadding = 16.0f;
       UITableViewCell* cell;
       OmniboxPopupRowContentConfiguration* configuration;
 
-      if (base::FeatureList::IsEnabled(kOmniboxActionsInSuggest) &&
-          suggestion.actionsInSuggest.count > 0) {
+      if (suggestion.actionsInSuggest.count > 0) {
         cell = [self.tableView dequeueReusableCellWithIdentifier:
                                    OmniboxPopupActionsRowCellReuseIdentifier
                                                     forIndexPath:indexPath];

@@ -131,11 +131,7 @@ class Section {
   Section(const Section& section);
   ~Section();
 
-  // `std::variant` does not implement `operator<=>` - therefore the ordering
-  // needs to be specified manually. Once `std::variant` is `std::variant`,
-  // this return type can become `auto`.
-  friend std::strong_ordering operator<=>(const Section& lhs,
-                                          const Section& rhs) = default;
+  friend auto operator<=>(const Section& lhs, const Section& rhs) = default;
   friend bool operator==(const Section& lhs, const Section& rhs) = default;
   explicit operator bool() const;
 

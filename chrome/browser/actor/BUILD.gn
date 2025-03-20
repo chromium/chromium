@@ -12,14 +12,48 @@ source_set("actor") {
   sources = [
     "actor_coordinator.cc",
     "actor_coordinator.h",
+    "actor_features.cc",
+    "actor_features.h",
+    "site_policy.cc",
+    "site_policy.h",
   ]
   public_deps = [
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
   ]
   deps = [
+    "//chrome/browser/safe_browsing",
     "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/common",
+    "//components/safe_browsing:buildflags",
     "//content/public/browser",
+    "//net",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "site_policy_unittest.cc" ]
+  deps = [
+    ":actor",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "site_policy_browsertest.cc" ]
+  deps = [
+    ":actor",
+    "//base/test:test_support",
+    "//chrome/browser/safe_browsing",
+    "//chrome/test:test_support",
+    "//components/safe_browsing:buildflags",
+    "//components/safe_browsing/core/common:features",
+    "//testing/gtest",
   ]
 }

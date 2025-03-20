@@ -78,13 +78,6 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   // merged.
   config.features_enabled.push_back(
       policy::kUserPolicyForSigninAndNoSyncConsentLevel);
-  if ([self isRunningTest:@selector
-            (testSignOutWithManagedAccountFromNoneSyncingAccount)]) {
-    // Disable `kClearDeviceDataOnSignOutForManagedUsers` because the feature
-    // shows a different dialog
-    config.features_disabled.push_back(
-        kClearDeviceDataOnSignOutForManagedUsers);
-  }
   config.features_disabled.push_back(kIdentityDiscAccountMenu);
 
   return config;
@@ -504,7 +497,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
 
-  [SigninEarlGreyUI signOut];
+  [SigninEarlGreyUI signOutWithClearDataConfirmation:YES];
 
   // Open the Bookmarks screen on the Tools menu.
   [BookmarkEarlGreyUI openBookmarks];

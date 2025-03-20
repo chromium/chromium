@@ -23,7 +23,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
@@ -80,6 +81,8 @@ public class TabSuspensionTest {
             "/content/test/data/media/session/media-session.html";
     private static final String VIDEO_ID = "long-video";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
@@ -102,7 +105,6 @@ public class TabSuspensionTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        MockitoAnnotations.initMocks(this);
         SafeBrowsingApiBridge.setSafeBrowsingApiHandler(new MockSafeBrowsingApiHandler());
         UsageStatsBridgeJni.setInstanceForTesting(mUsageStatsNativeMock);
         doReturn(123456L).when(mUsageStatsNativeMock).init(any(), any());
@@ -213,7 +215,9 @@ public class TabSuspensionTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.P, message = "https://crbug.com/1036556")
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.P,
+            message = "https://crbug.com/1036556")
     public void testMediaSuspension() throws TimeoutException {
         mActivityTestRule.loadUrl(
                 mTestServer.getURLWithHostName(STARTING_FQDN, MEDIA_FILE_TEST_PATH));

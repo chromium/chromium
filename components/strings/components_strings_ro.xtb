@@ -603,6 +603,7 @@
 <translation id="2040894699575719559">Accesul la locație a fost blocat</translation>
 <translation id="2041788246978549610">Folosește microfoanele disponibile (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Tava 7</translation>
+<translation id="2043896419861982462">Pentru a ascunde opțiunile de plată în rate, accesează <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="2045871135676061132">Plic personal</translation>
 <translation id="2046951263634619614">Vânzători de carte</translation>
 <translation id="2048261947532620704">Se traduce pagina</translation>
@@ -760,6 +761,7 @@
 <translation id="2293443924986248631">Dacă opțiunea este activată, site-urile nu pot folosi cookie-uri care te urmăresc pe web. Este posibil ca funcțiile de pe anumite site-uri să fie întrerupte.</translation>
 <translation id="2295831393422400053">Activează setarea Îmbunătățește căutările și navigarea pentru a folosi funcția Ajută-mă să scriu</translation>
 <translation id="2296244067976588032">Cheie de acces • iCloud Keychain</translation>
+<translation id="2296331629987861142">Plătește în rate simple (în funcție de eligibilitate; se aplică taxe)</translation>
 <translation id="2300306941146563769">Nu s-a încărcat</translation>
 <translation id="2301098101308036335">ce site-uri sunt accesate și când.</translation>
 <translation id="230286397113210245">Butonul Deschide o fereastră incognito, activează pentru a deschide o nouă fereastră incognito ca să navighezi în privat</translation>
@@ -1019,6 +1021,7 @@
 <translation id="2775884851269838147">Prima pagină printată</translation>
 <translation id="2781185443919227679">Plaje și insule</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781799097551205934">Pregătim finalizarea achiziției</translation>
 <translation id="2782088940970074970">Închirieri auto</translation>
 <translation id="278436560439594386">Aparatură casnică</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
@@ -1046,6 +1049,7 @@
 <translation id="2859383374160668142">Poți vedea oricând scăderile de prețuri pentru produsele pe care le urmărești.</translation>
 <translation id="2859806420264540918">Acest site afișează anunțuri deranjante sau înșelătoare.</translation>
 <translation id="28618371182701850">Vehicule electrice și hibride</translation>
+<translation id="287387905105155974">Balon de ajutor</translation>
 <translation id="28761159517501904">Filme</translation>
 <translation id="2876489322757410363">Vei părăsi modul incognito pentru a plăti folosind o aplicație externă. Continui?</translation>
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a gestiona Navigarea sigură și alte opțiuni din setările Chrome</translation>
@@ -1105,6 +1109,7 @@
 <translation id="2959274854674276289">Bucătărie pentru vegetarieni</translation>
 <translation id="2961809451460302960">Asigurări de viață</translation>
 <translation id="2962073860865348475">12 x 18 in</translation>
+<translation id="2965779286557330949">Așteaptă câteva secunde...</translation>
 <translation id="2967082089043584472">S-a adăugat în <ph name="SET" /></translation>
 <translation id="2967098518029543669">salveaz-o în Contul Google</translation>
 <translation id="297173220375858963">Tehnoredactare computerizată</translation>
@@ -1478,6 +1483,7 @@
 <translation id="3600106876108433070">Află despre tabelele de comparație</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Butonul Gestionează setările de confidențialitate Google, activează pentru a accesa setările de confidențialitate ale Contului Google</translation>
+<translation id="3602695245205338770">Alege un furnizor de plăți în rate</translation>
 <translation id="3603507503523709">Aplicația a fost blocată de administrator</translation>
 <translation id="3605899229568538311">5 x 5 in</translation>
 <translation id="3606917451836803637">Seriale și programe</translation>
@@ -2274,6 +2280,7 @@
 <translation id="5001526427543320409">Cookie-uri terță parte</translation>
 <translation id="5002932099480077015">Dacă este activată, Chrome va stoca o copie a cardului pe acest dispozitiv, pentru completarea mai rapidă a formularelor.</translation>
 <translation id="5007392906805964215">Examinează</translation>
+<translation id="5010599530303458903">Plătește lunar sau în patru rate fără dobândă (în funcție de eligibilitate)</translation>
 <translation id="5011561501798487822">Limba detectată</translation>
 <translation id="5015510746216210676">Numele dispozitivului:</translation>
 <translation id="5017554619425969104">Textul copiat de tine</translation>
@@ -2899,6 +2906,7 @@
 <translation id="6116338172782435947">să afișeze textul și imaginile copiate în clipboard</translation>
 <translation id="6117833587752089929">Foto (satin)</translation>
 <translation id="6118782133429281336">Lista de origini este goală.</translation>
+<translation id="6120950591512958208">Folosește codul la finalizarea achiziției.</translation>
 <translation id="612178891608320683">Bucătărie vegană</translation>
 <translation id="6122181661879998141">partea din față a cardului</translation>
 <translation id="6124058285696691147">Descarcă atașamentul</translation>
@@ -3240,6 +3248,7 @@
 <translation id="6706005862292023715">Perdele și accesorii pentru geamuri</translation>
 <translation id="6706210727756204531">Aplicabilitate</translation>
 <translation id="6706678697074905703">Codul IBAN nu a putut fi salvat în Contul Google. A fost salvat în Chrome pe acest dispozitiv.</translation>
+<translation id="6707388108229299854">Confirmă-ți identitatea ca să folosești această adresă pe toate dispozitivele</translation>
 <translation id="6709133671862442373">Știri</translation>
 <translation id="6710213216561001401">Înapoi</translation>
 <translation id="6710594484020273272">&lt;Introdu termenul de căutare&gt;</translation>
@@ -3918,6 +3927,7 @@ Detalii suplimentare:
 <translation id="7887885240995164102">Intră în modul picture-in-picture</translation>
 <translation id="7888575728750733395">Intenția de redare a printării</translation>
 <translation id="7890748547282909375">Conectează-te la Microsoft OneDrive pentru a salva captura de ecran</translation>
+<translation id="7892865709991296481">setările pentru plăți</translation>
 <translation id="7894280532028510793">Dacă scrierea este corectă, <ph name="BEGIN_LINK" />încearcă să rulezi Diagnosticarea rețelei<ph name="END_LINK" />.</translation>
 <translation id="7901831439558593470">Plic de 7 x 9 inchi</translation>
 <translation id="7905064834449738336">Când folosești o parolă, Chromium te avertizează dacă a fost publicată online. Când face acest lucru, parolele și numele tale de utilizator sunt criptate, astfel încât să nu fie descifrate de nimeni, nici măcar de Google.</translation>

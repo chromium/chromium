@@ -606,8 +606,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
       "ldnnhddmnhbkjipkidpdiheffobcpfmf");
   base::FilePath base_path = test_data_dir_.AppendASCII("delayed_install");
 
-  ExtensionService* service = extension_service();
-  ASSERT_TRUE(service);
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser()->profile());
   ASSERT_TRUE(registry);
 
@@ -631,7 +629,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
   ASSERT_FALSE(v2_path.empty());
   ASSERT_TRUE(UpdateExtensionWaitForIdle(extension_id, v2_path, 0));
 
-  DelayedInstallManager* manager = service->delayed_install_manager();
+  DelayedInstallManager* manager = DelayedInstallManager::Get(profile());
+  ASSERT_TRUE(manager);
   ASSERT_EQ(1u, manager->delayed_installs().size());
   extension = registry->enabled_extensions().GetByID(extension_id);
   ASSERT_EQ("1.0", extension->version().GetString());

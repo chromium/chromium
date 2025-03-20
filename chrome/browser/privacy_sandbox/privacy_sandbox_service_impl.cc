@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <numeric>
+#include <optional>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -429,6 +430,50 @@ int EmitFakeNoticeShownMetrics(PrefService* pref_service,
                               true);
   }
   return current_suppression;
+}
+
+// Emits startup histograms relating to the user's topics enabled status on
+// both client and profile level.
+void RecordTopicsEnabledHistograms(Profile* profile, bool enabled) {
+  std::optional<privacy_sandbox::ProfileEnabledState> profile_enabled_state =
+      privacy_sandbox::GetProfileEnabledState(profile, enabled);
+
+  if (profile_enabled_state) {
+    base::UmaHistogramEnumeration(
+        "Settings.PrivacySandbox.Topics.EnabledForProfile",
+        profile_enabled_state.value());
+  }
+  base::UmaHistogramBoolean("Settings.PrivacySandbox.Topics.Enabled", enabled);
+}
+
+// Emits startup histograms relating to the user's fledge enabled status on
+// both client and profile level.
+void RecordProtectedAudienceEnabledHistograms(Profile* profile, bool enabled) {
+  std::optional<privacy_sandbox::ProfileEnabledState> profile_enabled_state =
+      privacy_sandbox::GetProfileEnabledState(profile, enabled);
+
+  if (profile_enabled_state) {
+    base::UmaHistogramEnumeration(
+        "Settings.PrivacySandbox.Fledge.EnabledForProfile",
+        profile_enabled_state.value());
+  }
+  base::UmaHistogramBoolean("Settings.PrivacySandbox.Fledge.Enabled", enabled);
+}
+
+// Emits startup histograms relating to the user's AdMeasurement enabled
+// status on both client and profile level.
+void RecordAdMeasurementEnabledHistograms(Profile* profile, bool enabled) {
+  std::optional<privacy_sandbox::ProfileEnabledState> profile_enabled_state =
+      privacy_sandbox::GetProfileEnabledState(profile, enabled);
+
+  if (profile_enabled_state) {
+    base::UmaHistogramEnumeration(
+
+        "Settings.PrivacySandbox.AdMeasurement.EnabledForProfile",
+        profile_enabled_state.value());
+  }
+  base::UmaHistogramBoolean("Settings.PrivacySandbox.AdMeasurement.Enabled",
+                            enabled);
 }
 
 }  // namespace
@@ -1290,9 +1335,9 @@ void PrivacySandboxServiceImpl::RecordPromptStartupStateHistograms(
         base::StrCat({"Settings.PrivacySandbox.", profile_bucket,
                       ".PromptStartupState"}),
         state);
-    base::UmaHistogramEnumeration("Settings.PrivacySandbox.PromptStartupState",
-                                  state);
   }
+  base::UmaHistogramEnumeration("Settings.PrivacySandbox.PromptStartupState",
+                                state);
 }
 
 std::optional<net::SchemefulSite>
@@ -1388,14 +1433,14 @@ void PrivacySandboxServiceImpl::RecordPrivacySandbox4StartupMetrics() {
   // Record the status of the APIs.
   const bool topics_enabled =
       pref_service_->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled);
-  base::UmaHistogramBoolean("Settings.PrivacySandbox.Topics.Enabled",
-                            topics_enabled);
-  base::UmaHistogramBoolean(
-      "Settings.PrivacySandbox.Fledge.Enabled",
-      pref_service_->GetBoolean(prefs::kPrivacySandboxM1FledgeEnabled));
-  base::UmaHistogramBoolean(
-      "Settings.PrivacySandbox.AdMeasurement.Enabled",
-      pref_service_->GetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled));
+  const bool fledge_enabled =
+      pref_service_->GetBoolean(prefs::kPrivacySandboxM1FledgeEnabled);
+  const bool ad_measurement_enabled =
+      pref_service_->GetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled);
+
+  RecordTopicsEnabledHistograms(profile_, topics_enabled);
+  RecordProtectedAudienceEnabledHistograms(profile_, fledge_enabled);
+  RecordAdMeasurementEnabledHistograms(profile_, ad_measurement_enabled);
 
   const bool user_reported_restricted =
       pref_service_->GetBoolean(prefs::kPrivacySandboxM1Restricted);

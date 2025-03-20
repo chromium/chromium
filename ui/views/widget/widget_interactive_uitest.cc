@@ -1110,7 +1110,8 @@ TEST_F(DesktopWidgetTestInteractive, WindowModalWindowDestroyedActivationTest) {
   dialog_delegate->SetModalType(ui::mojom::ModalType::kWindow);
 
   Widget* modal_dialog_widget = views::DialogDelegate::CreateDialogWidget(
-      dialog_delegate.release(), nullptr, top_level_widget->GetNativeView());
+      dialog_delegate.release(), gfx::NativeWindow(),
+      top_level_widget->GetNativeView());
   modal_dialog_widget->SetBounds(gfx::Rect(100, 100, 200, 200));
 
   // Note the dialog widget doesn't need a ShowSync. Since it is modal, it gains
@@ -2134,7 +2135,8 @@ TEST_F(WidgetCaptureTest, MAYBE_SystemModalWindowReleasesCapture) {
   dialog_delegate->SetModalType(ui::mojom::ModalType::kSystem);
 
   Widget* modal_dialog_widget = views::DialogDelegate::CreateDialogWidget(
-      dialog_delegate.release(), nullptr, top_level_widget->GetNativeView());
+      dialog_delegate.release(), gfx::NativeWindow(),
+      top_level_widget->GetNativeView());
   modal_dialog_widget->SetBounds(gfx::Rect(100, 100, 200, 200));
   ShowSync(modal_dialog_widget);
 

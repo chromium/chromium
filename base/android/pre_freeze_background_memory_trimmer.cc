@@ -553,10 +553,15 @@ void PreFreezeBackgroundMemoryTrimmer::FinishSelfCompaction(
     scoped_refptr<CompactionMetric> metric,
     base::TimeTicks triggered_at) {
   TRACE_EVENT0("base", "FinishSelfCompaction");
+  {
+    base::AutoLock locker(lock());
+    self_compaction_last_finished_ = base::TimeTicks::Now();
+  }
   if (ShouldContinueSelfCompaction(triggered_at)) {
     metric->RecordDelayedMetrics();
     base::AutoLock locker(lock());
-    metric->RecordTimeMetrics(self_compaction_last_cancelled_);
+    metric->RecordTimeMetrics(self_compaction_last_finished_,
+                              self_compaction_last_cancelled_);
   }
 }
 
@@ -579,12 +584,15 @@ void PreFreezeBackgroundMemoryTrimmer::MaybeCancelSelfCompactionInternal(
   base::AutoLock locker(lock());
   process_compacted_metadata_.reset();
   // Check for the last time cancelled here in order to avoid recording this
-  // metric multiple times.
-  if (self_compaction_last_cancelled_ < self_compaction_last_triggered_) {
-    UmaHistogramEnumeration("Memory.SelfCompact2.Renderer.CancellationReason",
+  // metric multiple times. Also, only record this metric if a compaction is
+  // currently running.
+  if (self_compaction_last_cancelled_ < self_compaction_last_triggered_ &&
+      self_compaction_last_finished_ < self_compaction_last_triggered_) {
+    UmaHistogramEnumeration("Memory.SelfCompact2.Renderer.CancellationReason2",
                             cancellation_reason);
   }
-  self_compaction_last_cancelled_ = base::TimeTicks::Now();
+  self_compaction_last_finished_ = self_compaction_last_cancelled_ =
+      base::TimeTicks::Now();
 }
 
 // static
@@ -841,10 +849,11 @@ size_t PreFreezeBackgroundMemoryTrimmer::GetNumberOfValuesBeforeForTesting()
 }
 
 // static
-void PreFreezeBackgroundMemoryTrimmer::
-    ResetSelfCompactionLastCancelledForTesting() {
+void PreFreezeBackgroundMemoryTrimmer::ResetSelfCompactionForTesting() {
   base::AutoLock locker(lock());
   Instance().self_compaction_last_cancelled_ = base::TimeTicks::Min();
+  Instance().self_compaction_last_finished_ = base::TimeTicks::Min();
+  Instance().self_compaction_last_triggered_ = base::TimeTicks::Min();
 }
 
 // static
@@ -944,12 +953,12 @@ void PreFreezeBackgroundMemoryTrimmer::CompactionMetric::
 }
 
 void PreFreezeBackgroundMemoryTrimmer::CompactionMetric::RecordTimeMetrics(
-    base::TimeTicks self_compaction_last_cancelled) {
-  const auto now = base::TimeTicks::Now();
+    base::TimeTicks last_finished,
+    base::TimeTicks last_cancelled) {
   UmaHistogramMediumTimes("Memory.SelfCompact2.Renderer.SelfCompactionTime",
-                          now - self_compaction_started_at_);
+                          last_finished - self_compaction_started_at_);
   UmaHistogramMediumTimes("Memory.SelfCompact2.Renderer.TimeSinceLastCancel",
-                          now - self_compaction_last_cancelled);
+                          last_finished - last_cancelled);
 }
 
 }  // namespace base::android

@@ -845,8 +845,7 @@ TEST_F(AutofillControllerTest, ReadFormName) {
 // successfully imported into the PersonalDataManager.
 TEST_F(AutofillControllerTest, ProfileImport) {
   PersonalDataManager* personal_data_manager =
-      PersonalDataManagerFactory::GetForProfile(
-          ProfileIOS::FromBrowserState(profile_.get()));
+      PersonalDataManagerFactory::GetForProfile(profile_.get());
   test_api(personal_data_manager->address_data_manager())
       .set_auto_accept_address_imports(true);
   // Check there are no registered profiles already.
@@ -884,8 +883,7 @@ void AutofillControllerTest::SetUpForSuggestions(
     NSString* data,
     size_t expected_number_of_forms) {
   PersonalDataManager* personal_data_manager =
-      PersonalDataManagerFactory::GetForProfile(
-          ProfileIOS::FromBrowserState(profile_.get()));
+      PersonalDataManagerFactory::GetForProfile(profile_.get());
   AutofillProfile profile(
       autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
   profile.SetRawInfo(NAME_FULL, u"Homer Simpson");
@@ -974,8 +972,7 @@ TEST_F(AutofillControllerTest, MultipleProfileSuggestions) {
   }
 
   PersonalDataManager* personal_data_manager =
-      PersonalDataManagerFactory::GetForProfile(
-          ProfileIOS::FromBrowserState(profile_.get()));
+      PersonalDataManagerFactory::GetForProfile(profile_.get());
   personal_data_manager->SetSyncServiceForTest(nullptr);
 
   AutofillProfile profile(
@@ -1171,8 +1168,7 @@ TEST_F(AutofillControllerTest, NoKeyValueSuggestionsWithoutTyping) {
 TEST_F(AutofillControllerTest, CreditCardImport) {
   InfoBarManagerImpl::CreateForWebState(web_state());
   PersonalDataManager* personal_data_manager =
-      PersonalDataManagerFactory::GetForProfile(
-          ProfileIOS::FromBrowserState(profile_.get()));
+      PersonalDataManagerFactory::GetForProfile(profile_.get());
   personal_data_manager->SetSyncServiceForTest(nullptr);
 
   // Check there are no registered profiles already.
@@ -1234,8 +1230,7 @@ TEST_F(AutofillControllerTest, CreditCardImport) {
 TEST_F(AutofillControllerTest, CreditCardImportAfterFormRemoval) {
   InfoBarManagerImpl::CreateForWebState(web_state());
   PersonalDataManager* personal_data_manager =
-      PersonalDataManagerFactory::GetForProfile(
-          ProfileIOS::FromBrowserState(profile_.get()));
+      PersonalDataManagerFactory::GetForProfile(profile_.get());
   personal_data_manager->SetSyncServiceForTest(nullptr);
 
   // Check there are no registered profiles already.
@@ -1308,8 +1303,7 @@ TEST_F(AutofillControllerTest,
        CreditCardImportWithFieldDataManagerValuesAfterFormRemoval) {
   InfoBarManagerImpl::CreateForWebState(web_state());
   PersonalDataManager* personal_data_manager =
-      PersonalDataManagerFactory::GetForProfile(
-          ProfileIOS::FromBrowserState(profile_.get()));
+      PersonalDataManagerFactory::GetForProfile(profile_.get());
   personal_data_manager->SetSyncServiceForTest(nullptr);
 
   // Check there are no registered profiles already.
@@ -1398,8 +1392,7 @@ TEST_F(AutofillControllerTest,
 // successfully imported into the PersonalDataManager.
 TEST_F(AutofillControllerTest, ProfileImportAfterFormlessFormRemoval) {
   PersonalDataManager* personal_data_manager =
-      PersonalDataManagerFactory::GetForProfile(
-          ProfileIOS::FromBrowserState(profile_.get()));
+      PersonalDataManagerFactory::GetForProfile(profile_.get());
   test_api(personal_data_manager->address_data_manager())
       .set_auto_accept_address_imports(true);
   // Check there are no registered profiles already.

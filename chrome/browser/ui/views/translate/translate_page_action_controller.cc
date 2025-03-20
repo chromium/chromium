@@ -8,8 +8,10 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -17,6 +19,7 @@
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
+#include "ui/actions/actions.h"
 #include "ui/base/ui_base_features.h"
 
 namespace {
@@ -32,7 +35,7 @@ ChromeTranslateClient& GetTranslateClient(
 TranslatePageActionController::TranslatePageActionController(
     tabs::TabInterface& tab_interface)
     : PageActionObserver(kActionShowTranslate), tab_interface_(tab_interface) {
-  CHECK(base::FeatureList::IsEnabled(features::kPageActionsMigration));
+  CHECK(IsPageActionMigrated(PageActionIconType::kTranslate));
   translate_observation_.Observe(
       GetTranslateClient(tab_interface).translate_driver());
   will_discard_contents_subscription_ =
@@ -97,6 +100,18 @@ void TranslatePageActionController::UpdatePageAction() {
   CHECK(page_action_controller);
 
   if (translate_enabled) {
+    // TODO(crbug.com/404190582): Currently, the translate manager doesn't
+    // update the action synchronously, and waits on tab state changes for
+    // updates instead, making it possible the action to be out of sync. If
+    // translation is enabled, then we should be ok to show the translate  UI,
+    // so we manually enable the action here. This should be removed once the
+    // bug is fixed.
+    actions::ActionManager::Get()
+        .FindAction(kActionShowTranslate,
+                    tab_interface_->GetBrowserWindowInterface()
+                        ->GetActions()
+                        ->root_action_item())
+        ->SetEnabled(true);
     page_action_controller->Show(kActionShowTranslate);
   } else {
     page_action_controller->Hide(kActionShowTranslate);

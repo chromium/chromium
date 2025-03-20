@@ -7,9 +7,11 @@
 
 #import <Foundation/Foundation.h>
 
+#import <string>
+
 @class UIScene;
 
 // Returns the identifier to use for the session for `scene`.
-NSString* SessionIdentifierForScene(UIScene* scene);
+std::string SessionIdentifierForScene(UIScene* scene);
 
 #endif  // IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_SCENE_UTIL_H_

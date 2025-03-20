@@ -14,10 +14,12 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.task.AsyncTask;
@@ -40,6 +42,7 @@ import java.util.List;
 /** Tests for TabbedModeTabModelOrchestrator */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabbedModeTabModelOrchestratorUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ChromeTabbedActivity mChromeActivity;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private TabCreatorManager mTabCreatorManager;
@@ -67,7 +70,6 @@ public class TabbedModeTabModelOrchestratorUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mProfileProviderSupplier.set(mProfileProvider);
         mCipherFactory = new CipherFactory();
     }

@@ -561,25 +561,25 @@ bool ComputedStyle::HighlightPseudoElementStylesDependOnRelativeUnits() const {
 bool ComputedStyle::HighlightPseudoElementStylesDependOnContainerUnits() const {
   const StyleHighlightData& highlight_data = HighlightData();
   if (highlight_data.Selection() &&
-      highlight_data.Selection()->HasContainerRelativeUnits()) {
+      highlight_data.Selection()->HasContainerRelativeValue()) {
     return true;
   }
   if (highlight_data.TargetText() &&
-      highlight_data.TargetText()->HasContainerRelativeUnits()) {
+      highlight_data.TargetText()->HasContainerRelativeValue()) {
     return true;
   }
   if (highlight_data.SpellingError() &&
-      highlight_data.SpellingError()->HasContainerRelativeUnits()) {
+      highlight_data.SpellingError()->HasContainerRelativeValue()) {
     return true;
   }
   if (highlight_data.GrammarError() &&
-      highlight_data.GrammarError()->HasContainerRelativeUnits()) {
+      highlight_data.GrammarError()->HasContainerRelativeValue()) {
     return true;
   }
   const CustomHighlightsStyleMap& custom_highlights =
       highlight_data.CustomHighlights();
   for (auto custom_highlight : custom_highlights) {
-    if (custom_highlight.value->HasContainerRelativeUnits()) {
+    if (custom_highlight.value->HasContainerRelativeValue()) {
       return true;
     }
   }

@@ -106,7 +106,7 @@ void ExtensionsMenuTestUtil::Press(const extensions::ExtensionId& id) {
 gfx::NativeView ExtensionsMenuTestUtil::GetPopupNativeView() {
   ToolbarActionViewController* popup_owner =
       extensions_container_->popup_owner_for_testing();
-  return popup_owner ? popup_owner->GetPopupNativeView() : nullptr;
+  return popup_owner ? popup_owner->GetPopupNativeView() : gfx::NativeView();
 }
 
 bool ExtensionsMenuTestUtil::HasPopup() {

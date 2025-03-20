@@ -245,6 +245,8 @@ const std::vector<ContentSettingsType>& GetTypesWithTemporaryGrants() {
       ContentSettingsType::MEDIASTREAM_CAMERA,
       ContentSettingsType::HAND_TRACKING,
       ContentSettingsType::SMART_CARD_DATA,
+      ContentSettingsType::AR,
+      ContentSettingsType::VR,
   }};
   return *types;
 }
@@ -260,6 +262,8 @@ const std::vector<ContentSettingsType>& GetTypesWithTemporaryGrantsInHcsm() {
       ContentSettingsType::MEDIASTREAM_MIC,
       ContentSettingsType::MEDIASTREAM_CAMERA,
       ContentSettingsType::HAND_TRACKING,
+      ContentSettingsType::AR,
+      ContentSettingsType::VR,
   }};
   return *types;
 }

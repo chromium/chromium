@@ -25,7 +25,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
@@ -58,6 +59,8 @@ public class DisclosureUiPickerTest {
     @Mock public NotificationManagerProxy mNotificationManager;
     @Mock public ActivityLifecycleDispatcher mLifecycleDispatcher;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public AutomotiveContextWrapperTestRule mAutomotiveContextWrapperTestRule =
             new AutomotiveContextWrapperTestRule();
@@ -67,7 +70,6 @@ public class DisclosureUiPickerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         when(mIntentDataProvider.getTwaDisclosureUi()).thenReturn(TwaDisclosureUi.DEFAULT);
         BaseNotificationManagerProxyFactory.setInstanceForTesting(mNotificationManager);

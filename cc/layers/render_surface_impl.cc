@@ -483,9 +483,8 @@ RenderSurfaceImpl::CreateViewTransitionCaptureRenderPass(
   auto pass = CreateRenderPassCommon(view_transition_capture_render_pass_id(),
                                      view_transition_capture_content_rect_);
 
-  DCHECK(IsViewTransitionElement());
-  DCHECK(ViewTransitionElementResourceId().MatchesToken(
-      capture_view_transition_tokens));
+  DCHECK(IsViewTransitionElement() ||
+         has_view_transition_capture_contributions());
   pass->view_transition_element_resource_id = ViewTransitionElementResourceId();
   return pass;
 }
@@ -531,6 +530,9 @@ void RenderSurfaceImpl::AppendQuads(const AppendQuadsContext& context,
   //     non-capture phase.
   // Overall, we only append in the case that we are doing a regular append
   // (not for capture) and the token matches. All other cases return here.
+  // Note that we only omit real ViewTransition render passes, since passes that
+  // has_view_transition_capture_contributions may also have contributions
+  // from non-view-transition items that need to be included.
   if (IsViewTransitionElement() &&
       (context.for_view_transition_capture ||
        !ViewTransitionElementResourceId().MatchesToken(
@@ -538,12 +540,10 @@ void RenderSurfaceImpl::AppendQuads(const AppendQuadsContext& context,
     return;
   }
 
-  gfx::Rect output_rect =
-      context.for_view_transition_capture &&
-              ViewTransitionElementResourceId().MatchesToken(
-                  context.capture_view_transition_tokens)
-          ? view_transition_capture_content_rect_
-          : content_rect();
+  gfx::Rect output_rect = context.for_view_transition_capture &&
+                                  has_view_transition_capture_contributions()
+                              ? view_transition_capture_content_rect_
+                              : content_rect();
   gfx::Rect unoccluded_output_rect =
       occlusion_in_content_space().GetUnoccludedContentRect(output_rect);
   if (unoccluded_output_rect.IsEmpty()) {
@@ -615,11 +615,16 @@ void RenderSurfaceImpl::AppendQuads(const AppendQuadsContext& context,
   gfx::RectF tex_coord_rect(gfx::Rect(output_rect.size()));
   auto* quad =
       render_pass->CreateAndAppendDrawQuad<viz::CompositorRenderPassDrawQuad>();
+  const auto& append_render_pass_id =
+      context.for_view_transition_capture &&
+              has_view_transition_capture_contributions()
+          ? view_transition_capture_render_pass_id()
+          : render_pass_id();
   quad->SetAll(
       shared_quad_state, output_rect, unoccluded_output_rect,
-      /*needs_blending=*/true, render_pass_id(), mask_resource_id, mask_uv_rect,
-      mask_texture_size, surface_contents_scale, gfx::PointF(), tex_coord_rect,
-      !layer_tree_impl_->settings().enable_edge_anti_aliasing,
+      /*needs_blending=*/true, append_render_pass_id, mask_resource_id,
+      mask_uv_rect, mask_texture_size, surface_contents_scale, gfx::PointF(),
+      tex_coord_rect, !layer_tree_impl_->settings().enable_edge_anti_aliasing,
       OwningEffectNode()->backdrop_filter_quality, intersects_damage_under_);
 }
 

@@ -21,10 +21,12 @@ import android.view.View;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -37,6 +39,7 @@ import java.util.ArrayList;
 @RunWith(BaseRobolectricTestRunner.class)
 public final class FeedItemDecorationTest {
     private static final int GUTTER_PADDING = 20;
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Canvas mCanvas;
     @Mock private RecyclerView mRecyclerView;
     @Mock private RecyclerView.State mState;
@@ -63,7 +66,6 @@ public final class FeedItemDecorationTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).get();
 
         mViewList.add(mView0);

@@ -104,6 +104,7 @@
 #endif
 
 using base::test::TestFuture;
+using extensions::CorruptedExtensionReinstaller;
 using extensions::CrxInstallError;
 using extensions::TestExtensionRegistryObserver;
 using extensions::mojom::ManifestLocation;
@@ -1535,7 +1536,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
 
   // Step 4: Check that we are going to reinstall the extension and wait for
   // extension reinstall.
-  EXPECT_TRUE(service->corrupted_extension_reinstaller()
+  EXPECT_TRUE(CorruptedExtensionReinstaller::Get(browser()->profile())
                   ->IsReinstallForCorruptionExpected(kGoodCrxId));
   registry_observer.WaitForExtensionWillBeInstalled();
 
@@ -1618,7 +1619,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Step 4: Check that we are going to reinstall the extension and wait for
   // extension reinstall.
-  EXPECT_TRUE(service->corrupted_extension_reinstaller()
+  EXPECT_TRUE(CorruptedExtensionReinstaller::Get(browser()->profile())
                   ->IsReinstallForCorruptionExpected(kGoodCrxId));
   observer.WaitForExtensionWillBeInstalled();
 
@@ -1695,7 +1696,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
 
   // Step 4: Check that we are not going to reinstall the extension, but we have
   // detected a corruption.
-  EXPECT_FALSE(service->corrupted_extension_reinstaller()
+  EXPECT_FALSE(CorruptedExtensionReinstaller::Get(browser()->profile())
                    ->IsReinstallForCorruptionExpected(kGoodCrxId));
   histogram_tester.ExpectUniqueSample(
       "Extensions.CorruptPolicyExtensionDetected3",

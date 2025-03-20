@@ -42,14 +42,13 @@ class CredentialManagerInterface {
   // Gets a credential that can be used to authenticate a user on a website.
   // The `mediation` argument indicates how and whether the user should be asked
   // to participate in the operation.
-  // The `requested_credential_type_flags` indicates which types of credentials
-  // are being requested.
+  // The `include_passwords` indicates whether passwords are being requested.
   // The `federations` argument decides from which origins the credentials are
   // being requested.
   // The `callback` should be executed with the single credential that will be
   // used to authenticate or with an error.
   virtual void Get(password_manager::CredentialMediationRequirement mediation,
-                   int requested_credential_type_flags,
+                   bool include_passwords,
                    const std::vector<GURL>& federations,
                    GetCallback callback) = 0;
 

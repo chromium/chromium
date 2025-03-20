@@ -28,6 +28,11 @@ def main(committed_dir_path):
       description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
   parser.add_argument(
       '--cipd-package-path', required=True, help='Path to cipd package.')
+  parser.add_argument(
+      '--no-git-add',
+      action='store_false',
+      dest='git_add',
+      help='Whether to git add the extracted files.')
   options = parser.parse_args()
 
   cipd_package_path = pathlib.Path(options.cipd_package_path)
@@ -64,5 +69,6 @@ def main(committed_dir_path):
           "before?")
     return
 
-  git_add_cmd = ['git', '-C', _SRC_PATH, 'add'] + changed_file_paths
-  subprocess.check_call(git_add_cmd)
+  if options.git_add:
+    git_add_cmd = ['git', '-C', _SRC_PATH, 'add'] + changed_file_paths
+    subprocess.check_call(git_add_cmd)

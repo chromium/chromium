@@ -142,10 +142,6 @@ void SkyVaultLocalStorageMisconfiguredHistogram(bool value) {
 
 void SkyVaultMigrationEnabledHistogram(MigrationDestination destination,
                                        bool value) {
-  if (destination == MigrationDestination::kDelete) {
-    // TODO(402074191): Implement UMA for deletion.
-    return;
-  }
   base::UmaHistogramBoolean(
       GetHistogramName(kMigrationEnabledSuffix, UploadTrigger::kMigration,
                        destination),
@@ -174,10 +170,6 @@ void SkyVaultMigrationRetryHistogram(int count) {
 
 void SkyVaultMigrationStoppedHistogram(MigrationDestination destination,
                                        bool value) {
-  if (destination == MigrationDestination::kDelete) {
-    // TODO(402074191): Implement UMA for deletion.
-    return;
-  }
   base::UmaHistogramBoolean(
       GetHistogramName(kMigrationStoppedSuffix, UploadTrigger::kMigration,
                        destination),
@@ -187,10 +179,6 @@ void SkyVaultMigrationStoppedHistogram(MigrationDestination destination,
 void SkyVaultMigrationWrongStateHistogram(MigrationDestination destination,
                                           StateErrorContext context,
                                           State state) {
-  if (destination == MigrationDestination::kDelete) {
-    // TODO(402074191): Implement UMA for deletion.
-    return;
-  }
   base::UmaHistogramEnumeration(
       GetHistogramName(kMigrationStateErrorContextSuffix,
                        UploadTrigger::kMigration, destination),
@@ -260,10 +248,6 @@ void SkyVaultMigrationCleanupErrorHistogram(MigrationDestination destination,
 
 void SkyVaultMigrationDialogActionHistogram(MigrationDestination destination,
                                             DialogAction action) {
-  if (destination == MigrationDestination::kDelete) {
-    // TODO(402074191): Implement UMA for deletion.
-    return;
-  }
   base::UmaHistogramEnumeration(
       GetHistogramName(kMigrationDialogActionSuffix, UploadTrigger::kMigration,
                        destination),
@@ -272,10 +256,6 @@ void SkyVaultMigrationDialogActionHistogram(MigrationDestination destination,
 
 void SkyVaultMigrationDialogShownHistogram(MigrationDestination destination,
                                            bool value) {
-  if (destination == MigrationDestination::kDelete) {
-    // TODO(402074191): Implement UMA for deletion.
-    return;
-  }
   base::UmaHistogramBoolean(
       GetHistogramName(kMigrationDialogShownSuffix, UploadTrigger::kMigration,
                        destination),

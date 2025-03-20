@@ -13,10 +13,12 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.UserDataHost;
@@ -30,6 +32,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 /** This class tests the behavior of the {@link ReaderModeToolbarButtonController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ReaderModeToolbarButtonControllerTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Tab mMockTab;
     @Mock private ReaderModeManager mMockReaderModeManager;
     @Mock private Supplier<Tab> mMockTabSupplier;
@@ -38,7 +41,6 @@ public class ReaderModeToolbarButtonControllerTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
         mUserDataHost = new UserDataHost();
 
         Context mockContext = mock(Context.class);

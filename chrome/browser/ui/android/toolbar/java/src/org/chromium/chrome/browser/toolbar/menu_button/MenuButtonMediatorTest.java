@@ -17,10 +17,12 @@ import android.content.res.Resources;
 import android.view.View;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -45,6 +47,7 @@ import java.lang.ref.WeakReference;
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.LEGACY)
 public class MenuButtonMediatorTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;
     @Mock private Activity mActivity;
     @Mock private MenuButtonCoordinator.SetFocusFunction mFocusFunction;
@@ -67,7 +70,6 @@ public class MenuButtonMediatorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mPropertyModel =
                 new PropertyModel.Builder(MenuButtonProperties.ALL_KEYS)
                         .with(

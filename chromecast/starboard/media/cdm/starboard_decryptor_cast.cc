@@ -153,6 +153,7 @@ StarboardDecryptorCast::StarboardDecryptorCast(
       starboard_(GetStarboardApiWrapper()) {
   CHECK(base::SequencedTaskRunner::HasCurrentDefault());
   task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
+  LOG(INFO) << "StarboardDecryptorCast constructor, this=" << this;
 }
 
 void StarboardDecryptorCast::CreateSessionAndGenerateRequest(
@@ -258,6 +259,15 @@ void StarboardDecryptorCast::CloseSession(
   LOG(INFO) << "StarboardDecryptorCast::CloseSession, web session id = "
             << web_session_id;
 
+  if (!session_ids_.contains(web_session_id)) {
+    LOG(INFO) << "StarboardDecryptorCast::CloseSession did not find session ID "
+              << web_session_id
+              << ". It is possible this session was already closed; resolving "
+                 "promise.";
+    promise->resolve();
+    return;
+  }
+
   std::vector<std::unique_ptr<::media::SimpleCdmPromise>>& promises =
       session_id_to_simple_cdm_promises_[web_session_id];
   promises.push_back(std::move(promise));
@@ -269,7 +279,7 @@ void StarboardDecryptorCast::CloseSession(
     starboard_->DrmCloseSession(drm_system_, web_session_id.c_str(),
                                 web_session_id.size());
   } else {
-    LOG(INFO) << "Session is already closing.";
+    LOG(INFO) << "Session " << web_session_id << " is currently closing.";
   }
 }
 
@@ -329,6 +339,8 @@ void StarboardDecryptorCast::SetVideoResolution(int width, int height) {
 
 StarboardDecryptorCast::~StarboardDecryptorCast() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  LOG(INFO) << "StarboardDecryptorCast destructor, this=" << this;
 
   if (drm_system_) {
     LOG(INFO) << "Destroying DRM system with address " << drm_system_;
@@ -474,6 +486,7 @@ void StarboardDecryptorCast::OnSessionUpdateRequest(
     // Success case.
     LOG(INFO) << "Created session id " << session_id << " for ticket "
               << it->first;
+    session_ids_.insert(session_id);
     it->second->resolve(session_id);
   }
   ticket_to_new_session_promise_.erase(it);
@@ -485,10 +498,12 @@ void StarboardDecryptorCast::OnSessionUpdateRequest(
     // Note that, per the documentation of
     // ContentDecryptionModule::CreateSessionAndGenerateRequest, this must be
     // called AFTER the promise has been resolved.
-    OnSessionMessage(
-        session_id,
-        std::vector<uint8_t>(content_span.begin(), content_span.end()),
-        ToCdmMessageType(type));
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&StarboardDecryptorCast::OnSessionMessage,
+                                  weak_factory_.GetWeakPtr(), session_id,
+                                  std::vector<uint8_t>(content_span.begin(),
+                                                       content_span.end()),
+                                  ToCdmMessageType(type)));
   }
 }
 
@@ -662,12 +677,6 @@ void StarboardDecryptorCast::OnKeyStatusesChanged(
     }
   }
 
-  if (usable_keys_exist) {
-    // At least one key is available for the session, so we need to track the
-    // session to clean it up on destruction.
-    session_ids_.insert(session_id);
-  }
-
   OnSessionKeysChange(session_id, usable_keys_exist, std::move(keys_info));
 }
 
@@ -708,6 +717,27 @@ void StarboardDecryptorCast::OnSessionClosed(void* drm_system,
 
   LOG(INFO) << "StarboardDecryptorCast::OnSessionClosed, session_id: "
             << session_id;
+
+  // This must be called before any promises run. If the promise is resolved
+  // before OnSessionClosed runs, MediaKeySession::Dispose gets called before
+  // CdmSessionAdapter::OnSessionClosed runs, so the session is no longer
+  // recognized and the JS is not notified that the session closed (in JS, the
+  // MediaKeySession.closed promise is never resolved).
+  //
+  // In production a MojoCdm is used. Since mojo does not guarantee ordering
+  // between different interfaces (ContentDecryptionModule.CloseSession and
+  // ContentDecryptionModuleClient.OnSessionClosed), technically there is not a
+  // guarantee that the OnSessionClosed callback will run before the promises
+  // are resolved. However, in practice posting the callbacks to a separate task
+  // seems to work.
+  //
+  // See crbug.com/402489622 and
+  // https://w3c.github.io/encrypted-media/#dom-mediakeysession-close for more
+  // info.
+  CastCdm::OnSessionClosed(session_id, ::media::CdmSessionClosedReason::kClose);
+  session_ids_.erase(session_id);
+  StarboardDrmKeyTracker::GetInstance().RemoveKeysForSession(session_id);
+
   auto it = session_id_to_simple_cdm_promises_.find(session_id);
   if (it == session_id_to_simple_cdm_promises_.end()) {
     LOG(ERROR)
@@ -716,12 +746,19 @@ void StarboardDecryptorCast::OnSessionClosed(void* drm_system,
     return;
   }
 
-  for (std::unique_ptr<::media::SimpleCdmPromise>& promise : it->second) {
-    promise->resolve();
-  }
-  session_id_to_simple_cdm_promises_.erase(it);
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](std::vector<std::unique_ptr<::media::SimpleCdmPromise>> promises) {
+            LOG(INFO) << "Resolving OnSessionClosed promises";
+            for (std::unique_ptr<::media::SimpleCdmPromise>& promise :
+                 promises) {
+              promise->resolve();
+            }
+          },
+          std::move(it->second)));
 
-  CastCdm::OnSessionClosed(session_id, ::media::CdmSessionClosedReason::kClose);
+  session_id_to_simple_cdm_promises_.erase(it);
 }
 
 void StarboardDecryptorCast::CallOnSessionUpdateRequest(

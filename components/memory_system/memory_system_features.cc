@@ -13,7 +13,7 @@ namespace memory_system::features {
 
 BASE_FEATURE(kAllocationTraceRecorder,
              "AllocationTraceRecorder",
-#if BUILDFLAG(CLANG_PGO) == 1 || BUILDFLAG(USE_CLANG_COVERAGE)
+#if BUILDFLAG(CLANG_PGO_PROFILING) || BUILDFLAG(USE_CLANG_COVERAGE)
              // If creating a profiling build include the allocation recorder
              // unconditionally. This way we ensure that the recorder is covered
              // by the profile even if the profiling device doesn't support MTE.
@@ -30,7 +30,7 @@ BASE_FEATURE_PARAM(
     kAllocationTraceRecorderForceAllProcesses,
     &kAllocationTraceRecorder,
     "atr_force_all_processes",
-#if BUILDFLAG(CLANG_PGO) == 1 || BUILDFLAG(USE_CLANG_COVERAGE)
+#if BUILDFLAG(CLANG_PGO_PROFILING) || BUILDFLAG(USE_CLANG_COVERAGE)
     // If creating a profiling build include the allocation recorder
     // unconditionally. This way we ensure that the recorder is covered by the
     // profile even if the profiling device doesn't support MTE.

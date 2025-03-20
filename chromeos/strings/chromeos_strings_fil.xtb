@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">I-hide ang transcript</translation>
 <translation id="160633243685262989">Larawan ng Preview</translation>
 <translation id="1611649489706141841">susunod</translation>
-<translation id="1615144046047995187">Hindi ma-download. Subukan ulit o i-restart ang iyong Chromebook.</translation>
 <translation id="1615335640928990664">Paggamit ng data simula noong <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Gumamit ng tema</translation>
 <translation id="1621067168122174824">Patakbuhin ang pagsusuri sa Pag-charge</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Listahan ng mga recording ng audio</translation>
 <translation id="2561093647892030937">mga lemon</translation>
 <translation id="2570743873672969996">Nagpapatakbo ng test sa <ph name="TEST_NAME" />...</translation>
-<translation id="2573178735329662769">Pag-record sa lahat ng audio ng Chromebook</translation>
 <translation id="2576253868710695442">Aabot ito ng hanggang 2GB na storage</translation>
 <translation id="2584547424703650812">Glowscapes</translation>
 <translation id="2584559707064218956">Para mag-set up, pumunta sa Mga Setting</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">asul at pink</translation>
 <translation id="498186245079027698">Suriin ang scanner at subukan ulit. Tiyaking may sapat na lokal na space para mag-save ng mga na-scan na file.</translation>
 <translation id="4982627662315910959">Hindi available ang shortcut. Pumindot ng bagong shortcut gamit ang shift at 1 pang modifier key (ctrl, alt, o <ph name="META_KEY" />).</translation>
-<translation id="4983216687482551672">Audio ng Chromebook</translation>
 <translation id="4985509611418653372">Patakbuhin</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4988526792673242964">Mga Page</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Bunutin ang USB cable ng <ph name="DEVICE_NAME" /> at ilagay ulit ito para ituloy ang proseso ng pag-update</translation>
 <translation id="5099354524039520280">pataas</translation>
 <translation id="5107243100836678918">Posibleng sumalungat sa shortcut ng ilang app ang shortcut na walang <ph name="META_KEY" /> key. Pindutin ulit ang shortcut na ito para ituloy ang paggamit nito, o pumindot ng bagong shortcut gamit ang <ph name="KEY" /> key. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Hindi ma-download ang modelo ng transcription sa <ph name="LANGUAGE_NAME" />. Subukan ulit o i-restart ang iyong Chromebook</translation>
 <translation id="5108781503443873320">Katulad:</translation>
-<translation id="5121677070210013200">Hindi ma-download ang modelo ng transcription. Subukan ulit o i-restart ang iyong Chromebook.</translation>
 <translation id="5130848777448318809">mga pony</translation>
 <translation id="5137451382116112100">Buo</translation>
 <translation id="5139813694804168398">huwag istorbohin</translation>
@@ -1089,7 +1084,6 @@
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Serbisyo ng Pamamaraan ng Pag-input ng ChromeOS</translation>
 <translation id="6127426868813166163">puti</translation>
-<translation id="613049107179582049">Kapag naka-on ang audio ng Chromebook, kina-capture ng Recorder ang lahat ng audio na nagpe-play sa device na ito</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Certificate ng user</translation>
@@ -1419,7 +1413,6 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB na touchscreen</translation>
 <translation id="757747079855995705">bato</translation>
-<translation id="7584853321964440104">Hindi ma-download. Subukan ulit o i-restart ang iyong Chromebook.</translation>
 <translation id="7590883480672980941">Mga setting ng input</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> pa</translation>
 <translation id="7600430297804876776">Itinakda ng administrator ng <ph name="MANAGER" /> kung kailan magagamit ang <ph name="DEVICE_TYPE" /> na ito.</translation>
@@ -1786,7 +1779,6 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="9218016617214286986">Ipakita ang mga kilalang APN</translation>
 <translation id="932327136139879170">Home</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Tiyaking nakakonekta ang iyong mikropono o subukang i-restart Chromebook mo</translation>
 <translation id="945522503751344254">Magpadala ng feedback</translation>
 <translation id="950520315903467048">Walang key para sa <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Paghambingin ang mga boses sa buong recording para maipakita ng transcript kung ano ang sinabi ng bawat speaker at kung kailan</translation>

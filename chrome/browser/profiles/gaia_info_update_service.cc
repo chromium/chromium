@@ -34,10 +34,6 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/glic_enabling.h"
-#endif
-
 namespace {
 
 void UpdateAccountsPrefs(
@@ -106,10 +102,6 @@ GAIAInfoUpdateService::GAIAInfoUpdateService(
   }
 
   gaia_id_of_profile_attribute_entry_ = entry->GetGAIAId();
-
-#if BUILDFLAG(ENABLE_GLIC)
-  UpdateGlicEligibility();
-#endif
 }
 
 GAIAInfoUpdateService::~GAIAInfoUpdateService() = default;
@@ -153,10 +145,6 @@ void GAIAInfoUpdateService::UpdatePrimaryAccount(const AccountInfo& info) {
     entry->SetGAIAPicture(info.last_downloaded_image_url_with_size,
                           info.account_image);
   }
-
-#if BUILDFLAG(ENABLE_GLIC)
-  UpdateGlicEligibility();
-#endif
 }
 
 void GAIAInfoUpdateService::UpdateAnyAccount(const AccountInfo& info) {
@@ -260,24 +248,3 @@ void GAIAInfoUpdateService::OnAccountsInCookieUpdated(
 bool GAIAInfoUpdateService::ShouldUpdatePrimaryAccount() {
   return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 }
-
-#if BUILDFLAG(ENABLE_GLIC)
-void GAIAInfoUpdateService::OnRefreshTokensLoaded() {
-  UpdateGlicEligibility();
-}
-
-void GAIAInfoUpdateService::UpdateGlicEligibility() {
-  if (!identity_manager_->AreRefreshTokensLoaded()) {
-    return;
-  }
-  ProfileAttributesEntry* entry =
-      profile_attributes_storage_->GetProfileAttributesWithPath(profile_path_);
-  if (!entry) {
-    return;
-  }
-
-  // TODO(crbug.com/388211126): Make the setter name match with the
-  // `GlicEnabling` function.
-  entry->SetIsGlicEligible(glic::GlicEnabling::IsEnabledForProfile(profile_));
-}
-#endif

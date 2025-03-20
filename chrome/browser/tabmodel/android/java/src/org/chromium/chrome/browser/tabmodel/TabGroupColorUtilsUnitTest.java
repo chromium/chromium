@@ -23,10 +23,12 @@ import android.content.SharedPreferences;
 import androidx.collection.ArraySet;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
@@ -76,6 +78,7 @@ public class TabGroupColorUtilsUnitTest {
     private static final int COLOR_8 = 7;
     private static final int COLOR_9 = 8;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock Context mContext;
     @Mock TabGroupModelFilter mFilter;
     @Mock SharedPreferences mSharedPreferences;
@@ -85,8 +88,6 @@ public class TabGroupColorUtilsUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         doReturn(mSharedPreferences)
                 .when(mContext)
                 .getSharedPreferences(TAB_GROUP_COLORS_FILE_NAME, Context.MODE_PRIVATE);

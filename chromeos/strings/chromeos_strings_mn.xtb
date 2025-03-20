@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Сийрүүлгийг нуух</translation>
 <translation id="160633243685262989">Зургийг урьдчилан үзэх</translation>
 <translation id="1611649489706141841">цааш</translation>
-<translation id="1615144046047995187">Татах боломжгүй байна. Дахин оролдож эсвэл Chromebook-ээ дахин эхлүүлнэ үү.</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />-с хойших дата ашиглалт</translation>
 <translation id="1618566998877964907">Загвар ашиглах</translation>
 <translation id="1621067168122174824">Цэнэглэх туршилтыг ажиллуулах</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Аудио бичлэгүүдийн жагсаалт</translation>
 <translation id="2561093647892030937">нимбэгүүд</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> тестийг ажиллуулж байна...</translation>
-<translation id="2573178735329662769">Chromebook-н бүх аудиог бичиж байна</translation>
 <translation id="2576253868710695442">Энэ нь 2ГБ-ын хадгалах санг эзэлнэ</translation>
 <translation id="2584547424703650812">Гялалзсан дүр зураг</translation>
 <translation id="2584559707064218956">Тохируулахын тулд Тохиргоо руу очно уу</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">цэнхэр болгон ягаан</translation>
 <translation id="498186245079027698">Сканнерыг шалгаад дахин оролдоно уу. Скан хийсэн файлуудыг хадгалах хангалттай дотоод зай байгаа эсэхийг шалгана уу.</translation>
 <translation id="4982627662315910959">Товчлол боломжгүй байна. Shift болон өөр 1 тохируулагч товчийг (ctrl, alt эсвэл <ph name="META_KEY" />) ашиглан шинэ товчлолыг дарна уу.</translation>
-<translation id="4983216687482551672">Chromebook-н аудио</translation>
 <translation id="4985509611418653372">Ажиллуулах</translation>
 <translation id="4987769320337599931">Галт хана</translation>
 <translation id="4988526792673242964">Хуудас</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Шинэчлэх явцыг үргэлжлүүлэхийн тулд <ph name="DEVICE_NAME" />-н USB кабелийг салгаад, дахин залгана уу</translation>
 <translation id="5099354524039520280">дээшээ</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> товчгүй товчлол нь зарим аппын товчлолтой зөрчилдөж магадгүй. Энэ товчлолыг үргэлжлүүлэн ашиглахын тулд үүнийг дахин дарах эсвэл <ph name="KEY" /> товчийг ашиглан шинэ товчлол дарна уу. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399"><ph name="LANGUAGE_NAME" />-н сийрүүлгийн загварыг татах боломжгүй. Дахин оролдох эсвэл Chromebook-ээ дахин эхлүүлнэ үү</translation>
 <translation id="5108781503443873320">Төстэй:</translation>
-<translation id="5121677070210013200">Сийрүүлгийн загварыг татах боломжгүй. Дахин оролдох эсвэл Chromebook-ээ дахин эхлүүлнэ үү.</translation>
 <translation id="5130848777448318809">одой морьд</translation>
 <translation id="5137451382116112100">Бүтэн</translation>
 <translation id="5139813694804168398">бүү саад бол</translation>
@@ -1089,7 +1084,6 @@
 <translation id="6122191549521593678">Онлайн</translation>
 <translation id="6122277663991249694">ChromeOS-н оруулах аргын үйлчилгээ</translation>
 <translation id="6127426868813166163">цагаан</translation>
-<translation id="613049107179582049">Chromebook-н аудио асаалттай байхад Дуу хураагуур энэ төхөөрөмж дээр тоглуулж буй бүх аудиог бичнэ</translation>
 <translation id="6136285399872347291">устгах</translation>
 <translation id="6137614725462089991">киберпанк</translation>
 <translation id="6137767437444130246">Хэрэглэгчийн сертификат</translation>
@@ -1419,7 +1413,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB мэдрэмтгий дэлгэц</translation>
 <translation id="757747079855995705">чулуу</translation>
-<translation id="7584853321964440104">Татах боломжгүй байна. Дахин оролдох эсвэл Chromebook-ээ дахин эхлүүлнэ үү.</translation>
 <translation id="7590883480672980941">Оролтын тохиргоо</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> үлдсэн</translation>
 <translation id="7600430297804876776">Энэ <ph name="DEVICE_TYPE" />-г хэзээ ашиглаж болохыг <ph name="MANAGER" />-н администратор тохируулсан байна.</translation>
@@ -1786,7 +1779,6 @@
 <translation id="9218016617214286986">Мэдэгдэж буй APN-уудыг харуулах</translation>
 <translation id="932327136139879170">Нүүр хуудас</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Микрофоноо холбогдсон эсэхийг нягтлах эсвэл Chromebook-г дахин эхлүүлж үзнэ үү</translation>
 <translation id="945522503751344254">Санал хүсэлт илгээх</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" />-н товч дутуу байна. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Бичлэгийн туршид дуу хоолойг харьцуулснаар яригч бүр хэзээ, юу гэж хэлснийг сийрүүлэгт тусгана</translation>

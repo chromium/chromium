@@ -32,10 +32,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -104,6 +106,7 @@ public class FastCheckoutMediatorTest {
                     FastCheckoutTestUtils.createSampleCreditCard(
                             "iyul", "https://www.example.com", "4118102027996045"));
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock RecyclerView mMockParentView;
     @Mock private FastCheckoutComponent.Delegate mMockDelegate;
     @Mock private BottomSheetContent mMockBottomSheetContent;
@@ -116,7 +119,6 @@ public class FastCheckoutMediatorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mActionTester = new UserActionTester();
         mMediator.initialize(mMockDelegate, mModel, mMockBottomSheetController);
     }

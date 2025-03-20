@@ -67,7 +67,7 @@
 
 - (void)start {
   [super start];
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   CHECK_EQ(profile, profile->GetOriginalProfile());
   _authenticationService = AuthenticationServiceFactory::GetForProfile(profile);
   syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);

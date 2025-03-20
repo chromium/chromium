@@ -18,6 +18,7 @@
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
 #include "content/public/browser/web_contents.h"
 #import "ui/base/cocoa/cocoa_base_utils.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace {
 
@@ -54,8 +55,8 @@ remote_cocoa::NativeWidgetNSWindowBridge* FindBridgeForSender(
   if ([sender respondsToSelector:@selector(window)]) {
     targetWindow = [sender window];
   }
-  auto* bridge = remote_cocoa::NativeWidgetNSWindowBridge::GetFromNativeWindow(
-      targetWindow);
+  auto* bridge =
+      remote_cocoa::NativeWidgetNSWindowBridge::GetFromNSWindow(targetWindow);
   DCHECK(bridge);
   return bridge;
 }
@@ -75,7 +76,7 @@ remote_cocoa::NativeWidgetNSWindowBridge* FindBridgeForSender(
   }
 
   auto* bridge =
-      remote_cocoa::NativeWidgetNSWindowBridge::GetFromNativeWindow(window);
+      remote_cocoa::NativeWidgetNSWindowBridge::GetFromNSWindow(window);
   DCHECK(bridge);
 
   remote_cocoa::mojom::ValidateUserInterfaceItemResultPtr result;

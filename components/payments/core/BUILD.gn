@@ -11,8 +11,6 @@ static_library("core") {
     "android_app_description_tools.cc",
     "android_app_description_tools.h",
     "csp_checker.h",
-    "currency_formatter.cc",
-    "currency_formatter.h",
     "error_logger.cc",
     "error_logger.h",
     "error_message_util.cc",
@@ -81,6 +79,7 @@ static_library("core") {
   }
 
   deps = [
+    ":currency_formatter",
     ":error_strings",
     ":method_strings",
     "//base",
@@ -107,9 +106,17 @@ static_library("core") {
 
   public_deps = [
     "//services/network/public/cpp",
-    "//third_party/icu",
     "//third_party/libaddressinput",
   ]
+}
+
+static_library("currency_formatter") {
+  sources = [
+    "currency_formatter.cc",
+    "currency_formatter.h",
+  ]
+  deps = [ "//base" ]
+  public_deps = [ "//third_party/icu:icu" ]
 }
 
 static_library("error_strings") {
@@ -198,6 +205,7 @@ source_set("unit_tests") {
 
   deps = [
     ":core",
+    ":currency_formatter",
     ":test_support",
     "//base",
     "//base/test:test_support",

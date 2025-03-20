@@ -39,7 +39,9 @@
 <translation id="1538031354170655462">I siti in genere utilizzano la tecnologia Near Field Communication (NFC) per interagire con tag o dispositivi nelle vicinanze, ad esempio per scansionare badge o effettuare pagamenti contactless</translation>
 <translation id="1547123415014299762">Sono consentiti i cookie di terze parti</translation>
 <translation id="1593426485665524382">Nuove azioni disponibili vicino alla parte superiore dello schermo</translation>
+<translation id="1615755956145364867">I siti possono chiedere di riprodurre contenuti protetti</translation>
 <translation id="1620510694547887537">Videocamera</translation>
+<translation id="1621729191093924223">Le funzionalità che richiedono un microfono non funzioneranno</translation>
 <translation id="1633720957382884102">Siti correlati</translation>
 <translation id="1644574205037202324">Cronologia</translation>
 <translation id="1652197001188145583">Quando l'opzione è attiva, i siti possono chiedere di usare i dispositivi NFC. Quando l'opzione è disattivata, i siti non possono utilizzare i dispositivi NFC.</translation>
@@ -54,6 +56,7 @@
 <translation id="1743802530341753419">Chiedi prima di consentire ai siti di connettersi a un dispositivo (opzione consigliata)</translation>
 <translation id="1779089405699405702">Decoder di immagini</translation>
 <translation id="1785415724048343560">Consigliato per un'esperienza ottimale</translation>
+<translation id="1796588414813960292">Le funzionalità che richiedono l'audio non funzioneranno</translation>
 <translation id="1799920918471566157">Suggerimenti per Chrome</translation>
 <translation id="1816835383954230954">Quando l'opzione è attivata, Chrome funziona più velocemente e le funzionalità che utilizzano JavaScript dovrebbero avere il comportamento previsto. Se disattivata, le prestazioni vengono ridotte, ma V8 diventa più resistente agli attacchi.</translation>
 <translation id="1818308510395330587">Per consentire all'app <ph name="APP_NAME" /> di utilizzare la realtà aumentata, attiva la fotocamera anche nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
@@ -71,6 +74,7 @@
 <translation id="1994173015038366702">URL sito</translation>
 <translation id="2004697686368036666">Le funzionalità su alcuni siti potrebbero non essere disponibili</translation>
 <translation id="2025115093177348061">Realtà aumentata</translation>
+<translation id="2028449514182362831">Le funzionalità che richiedono sensori di movimento non funzioneranno</translation>
 <translation id="2030769033451695672">Tocca per tornare a <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Annulla</translation>
 <translation id="2091887806945687916">Audio</translation>
@@ -257,6 +261,7 @@
 <translation id="4259722352634471385">Navigazione bloccata: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Dopo aver chiuso un sito, il sito può continuare la sincronizzazione per terminare attività come il caricamento di foto o l'invio di un messaggio di chat</translation>
 <translation id="4278390842282768270">Autorizzazione concessa</translation>
+<translation id="4290791284969893584">Dopo aver chiuso una pagina, le attività che hai avviato potrebbero non concludersi</translation>
 <translation id="429312253194641664">Un sito sta riproducendo contenuti multimediali</translation>
 <translation id="42981349822642051">Espandi</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Scade domani}other{Scade tra # giorni}}</translation>
@@ -524,6 +529,7 @@
 <translation id="789180354981963912">Blocca cookie di terze parti nella modalità di navigazione in incognito:</translation>
 <translation id="789722939441020330">Non consentire ai siti di scaricare automaticamente più file</translation>
 <translation id="7940722705963108451">Ricordami</translation>
+<translation id="7948081750384205628">Scopri di più su <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">I siti possono chiedere di vedere testo e immagini negli appunti</translation>
 <translation id="7986741934819883144">Seleziona un contatto</translation>
 <translation id="7990211076305263060">Quando l'opzione è attiva, i siti potrebbero chiedere l'utilizzo del microfono. Quando l'opzione è disattivata, i siti non possono utilizzare il microfono.</translation>
@@ -531,6 +537,7 @@
 <translation id="8010630645305864042">{TILE_COUNT,plural, =1{Nascondi scheda Continua con questa scheda}other{Nascondi scheda Continua con queste schede}}</translation>
 <translation id="802154636333426148">Download non riuscito</translation>
 <translation id="8042586301629853791">Ordina per:</translation>
+<translation id="8051193500142930381">Le funzionalità che richiedono una videocamera non funzioneranno</translation>
 <translation id="8067883171444229417">Guarda il video</translation>
 <translation id="8068648041423924542">Impossibile selezionare il certificato.</translation>
 <translation id="8077120325605624147">Qualsiasi sito visitato può mostrarti qualsiasi annuncio</translation>

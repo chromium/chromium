@@ -158,6 +158,7 @@
 <translation id="1264309058268477500">อื่นๆ</translation>
 <translation id="1264974993859112054">กีฬา</translation>
 <translation id="1268480293435976622">Envelope Chinese #7</translation>
+<translation id="1269045546668906972">เปิดการป้อนข้อความอัตโนมัติด้วย AI เพื่อป้อนข้อมูลในช่องอื่นๆ เพิ่มเติมโดยอัตโนมัติ</translation>
 <translation id="1269516672602708785">สร้างเว็บไซต์แบบใหม่ใน Google Sites อย่างรวดเร็ว</translation>
 <translation id="1270328905573953738">การย้ายและเปลี่ยนสถานที่</translation>
 <translation id="1270502636509132238">วิธีการรับสินค้า</translation>
@@ -1138,6 +1139,7 @@
 <translation id="3005723025932146533">แสดงสำเนาที่บันทึกไว้</translation>
 <translation id="300580149047131921">ใช้ล่าสุด</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab เพื่อเรียกดูการดำเนินการที่ใช้ได้ จากนั้นกด Enter เพื่อเรียกใช้การดำเนินการที่เลือก</translation>
+<translation id="3010991137650052245">ให้สิทธิ์เข้าถึงแก่ <ph name="SHORT_PRODUCT_NAME" /> หากต้องการใช้<ph name="PERMISSION" />ในเว็บไซต์นี้</translation>
 <translation id="3013711734159931232">อุปกรณ์เครื่องใช้ในครัวเรือน</translation>
 <translation id="3014553260345122294">ข่าวธุรกิจ</translation>
 <translation id="3014726756341138577">ฟีเจอร์เครื่องพิมพ์ขั้นสูง</translation>
@@ -1787,6 +1789,7 @@
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">ขอบข่ายนโยบายไม่ได้รับการสนับสนุน</translation>
+<translation id="411918202192379658">การป้อนข้อความอัตโนมัติดีขึ้นกว่าเดิม</translation>
 <translation id="4121428309786185360">หมดอายุเมื่อวันที่</translation>
 <translation id="4123572138124678573">เจาะรูด้านล่าง 3 รู</translation>
 <translation id="412601465078863288">การอัปโหลดหมดเวลาแล้ว</translation>
@@ -2175,6 +2178,7 @@
 <translation id="4819347708020428563">แก้ไขคำอธิบายประกอบในมุมมองเริ่มต้นใช่ไหม</translation>
 <translation id="4822493756793346865">ราคาปกติอิงจากร้านค้าต่างๆ ทั่วทั้งอินเทอร์เน็ตในช่วง 90 วันที่ผ่านมา</translation>
 <translation id="4822922322149719535">ตรวจสอบบันทึกข้อผิดพลาด</translation>
+<translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> ต้องมีสิทธิ์เข้าถึง<ph name="PERMISSION" />ของอุปกรณ์</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อสร้างชีตใหม่ใน Google ชีตอย่างรวดเร็ว</translation>
 <translation id="4826588772550366629">กล้องและไมโครโฟน</translation>
 <translation id="4827283332383516812">ลบบัตร</translation>
@@ -2905,6 +2909,7 @@
 <translation id="6116338172782435947">ดูข้อความและรูปภาพที่คัดลอกไปที่คลิปบอร์ด</translation>
 <translation id="6117833587752089929">รูปภาพ (ซาติน)</translation>
 <translation id="6118782133429281336">รายการต้นทางว่างเปล่า</translation>
+<translation id="6120950591512958208">ใช้รหัสนี้เมื่อชำระเงิน</translation>
 <translation id="612178891608320683">อาหารวีแกน</translation>
 <translation id="6122181661879998141">ด้านหน้าบัตร</translation>
 <translation id="6124058285696691147">ดาวน์โหลดไฟล์แนบ</translation>

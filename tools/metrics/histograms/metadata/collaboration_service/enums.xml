@@ -26,6 +26,14 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(CollaborationServiceJoinEntryPoint) -->
+
+<enum name="CollaborationServiceJoinEntryPoint">
+  <int value="0" label="Unknown"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/collaboration/public/collaboration_flow_entry_point.h:CollaborationServiceJoinEntryPoint) -->
+
 <!-- LINT.IfChange(CollaborationServiceJoinEvent) -->
 
 <enum name="CollaborationServiceJoinEvent">
@@ -65,6 +73,14 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//components/collaboration/internal/metrics.h:CollaborationServiceJoinEvent) -->
+
+<!-- LINT.IfChange(CollaborationServiceShareOrManageEntryPoint) -->
+
+<enum name="CollaborationServiceShareOrManageEntryPoint">
+  <int value="0" label="Unknown"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/collaboration/public/collaboration_flow_entry_point.h:CollaborationServiceShareOrManageEntryPoint) -->
 
 <!-- LINT.IfChange(CollaborationServiceShareOrManageEvent) -->
 

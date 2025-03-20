@@ -17,7 +17,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import android.app.Activity;
 import android.content.res.ColorStateList;
@@ -39,6 +38,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
@@ -86,6 +87,8 @@ public class RecentTabsPageTest {
     private static final int COLOR_ID = TabGroupColorId.YELLOW;
     private static final int COLOR_ID_2 = TabGroupColorId.RED;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
@@ -108,7 +111,6 @@ public class RecentTabsPageTest {
 
     @Before
     public void setUp() throws Exception {
-        initMocks(this);
 
         RecentTabsManager.setRecentlyClosedTabManagerForTests(mManager);
         mActivityTestRule.startMainActivityOnBlankPage();

@@ -235,22 +235,24 @@ void ThreadGroupImpl::Start(
   DCHECK(!in_start().start_called);
   in_start().start_called = true;
 #endif
-  ThreadGroup::StartImpl(
-      max_tasks, max_best_effort_tasks, suggested_reclaim_time,
-      service_thread_task_runner, worker_thread_observer, worker_environment,
-      synchronous_thread_start_for_testing, may_block_threshold);
+  {
+    ScopedCommandsExecutor executor(this);
+    CheckedAutoLock auto_lock(lock_);
 
-  // Create thread group profiler if profiling is enabled after the thread group
-  // start but before worker threads are created.
+    ThreadGroup::StartImplLockRequired(
+        max_tasks, max_best_effort_tasks, suggested_reclaim_time,
+        service_thread_task_runner, worker_thread_observer, worker_environment,
+        synchronous_thread_start_for_testing, may_block_threshold);
+
+    DCHECK(workers_.empty());
+    EnsureEnoughWorkersLockRequired(&executor);
+  }
+
   if (ThreadGroupProfiler::IsProfilingEnabled()) {
+    // This call posts a task, so do it outside of the lock.
     thread_group_profiler_.emplace(service_thread_task_runner,
                                    thread_group_type_);
   }
-
-  ScopedCommandsExecutor executor(this);
-  CheckedAutoLock auto_lock(lock_);
-  DCHECK(workers_.empty());
-  EnsureEnoughWorkersLockRequired(&executor);
 }
 
 ThreadGroupImpl::~ThreadGroupImpl() {

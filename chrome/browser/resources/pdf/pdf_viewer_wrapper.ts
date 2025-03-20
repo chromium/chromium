@@ -22,6 +22,7 @@ export {PluginControllerEventType} from './controller.js';
 export {InkBrushSelectorElement} from './elements/ink_brush_selector.js';
 export {InkColorSelectorElement, PEN_COLORS} from './elements/ink_color_selector.js';
 export {InkSizeSelectorElement, PEN_SIZES} from './elements/ink_size_selector.js';
+export {SelectableIconButtonElement} from './elements/selectable_icon_button.js';
 // </if>
 export {ViewerAttachmentElement} from './elements/viewer_attachment.js';
 export {ViewerAttachmentBarElement} from './elements/viewer_attachment_bar.js';

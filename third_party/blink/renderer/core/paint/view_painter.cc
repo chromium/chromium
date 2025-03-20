@@ -327,11 +327,11 @@ void ViewPainter::PaintRootElementGroup(
   if (!root_object || !root_object->IsBox()) {
     background_renderable = false;
   } else {
-    const auto& view_contents_state =
-        layout_view.FirstFragment().ContentsProperties();
-    if (view_contents_state != background_paint_state) {
+    const auto& view_contents_transform =
+        layout_view.FirstFragment().ContentsTransform();
+    if (&view_contents_transform != &background_paint_state.Transform()) {
       GeometryMapper::SourceToDestinationRect(
-          view_contents_state.Transform(), background_paint_state.Transform(),
+          view_contents_transform, background_paint_state.Transform(),
           paint_rect);
       if (paint_rect.IsEmpty())
         background_renderable = false;

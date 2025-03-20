@@ -17,11 +17,13 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
@@ -66,6 +68,7 @@ public final class ToolbarSecurityIconTest {
                 ConnectionSecurityLevel.SECURE
             };
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Tab mTab;
 
     @Mock SecurityStateModel.Natives mSecurityStateMocks;
@@ -82,7 +85,6 @@ public final class ToolbarSecurityIconTest {
 
     @Before
     public void setUp() throws ExecutionException {
-        MockitoAnnotations.initMocks(this);
 
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         SecurityStateModelJni.setInstanceForTesting(mSecurityStateMocks);

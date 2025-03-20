@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Skjul transkripsjonen</translation>
 <translation id="160633243685262989">Forhåndsvisningsbilde</translation>
 <translation id="1611649489706141841">fremover</translation>
-<translation id="1615144046047995187">Kan ikke laste ned. Prøv på nytt, eller start Chromebooken på nytt.</translation>
 <translation id="1615335640928990664">Databruk siden <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Bruk et tema</translation>
 <translation id="1621067168122174824">Kjør ladetest</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Liste over lydopptak</translation>
 <translation id="2561093647892030937">sitroner</translation>
 <translation id="2570743873672969996">Kjører test av <ph name="TEST_NAME" /> …</translation>
-<translation id="2573178735329662769">Tar opp all Chromebook-lyd</translation>
 <translation id="2576253868710695442">Dette bruker opptil 2 GB lagringsplass</translation>
 <translation id="2584547424703650812">Skinnende landskap</translation>
 <translation id="2584559707064218956">For å konfigurere nettverket, gå til Innstillinger</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">blå og rosa</translation>
 <translation id="498186245079027698">Sjekk skanneren, og prøv på nytt. Sørg for at det er nok lokal lagringsplass til å lagre skannede filer.</translation>
 <translation id="4982627662315910959">Hurtigtasten er ikke tilgjengelig. Trykk på en ny hurtigtast som inneholder Shift og én modifikatortast til (Ctrl, Alt eller <ph name="META_KEY" />).</translation>
-<translation id="4983216687482551672">Chromebook-lyd</translation>
 <translation id="4985509611418653372">Kjør</translation>
 <translation id="4987769320337599931">Brannmur</translation>
 <translation id="4988526792673242964">Sider</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Koble fra USB-kabelen for <ph name="DEVICE_NAME" /> og sett den inn igjen for å fortsette oppdateringsprosessen</translation>
 <translation id="5099354524039520280">opp</translation>
 <translation id="5107243100836678918">Hurtigtaster uten <ph name="META_KEY" />-tasten kan komme i konflikt med hurtigtastene i enkelte apper. Trykk på hurtigtasten en gang til for å fortsette å bruke den, eller trykk på en ny hurtigtast som inneholder <ph name="KEY" />-tasten. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Kan ikke laste ned transkripsjonsmodellen for <ph name="LANGUAGE_NAME" />. Prøv på nytt, eller start Chromebooken på nytt</translation>
 <translation id="5108781503443873320">Lignende:</translation>
-<translation id="5121677070210013200">Kan ikke laste ned transkripsjonsmodellen. Prøv på nytt, eller start Chromebooken på nytt.</translation>
 <translation id="5130848777448318809">ponnier</translation>
 <translation id="5137451382116112100">Full</translation>
 <translation id="5139813694804168398">ikke forstyrr</translation>
@@ -1089,7 +1084,6 @@
 <translation id="6122191549521593678">Pålogget</translation>
 <translation id="6122277663991249694">Tjeneste for ChromeOS-inndatametode</translation>
 <translation id="6127426868813166163">hvit</translation>
-<translation id="613049107179582049">Når Chromebook-lyd er på, tar Lydopptaker opp all lyd som spilles av på denne enheten</translation>
 <translation id="6136285399872347291">tilbake</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Brukersertifikat</translation>
@@ -1419,7 +1413,6 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-berøringsskjerm</translation>
 <translation id="757747079855995705">stein</translation>
-<translation id="7584853321964440104">Kan ikke laste ned modellen. Prøv på nytt, eller start Chromebooken på nytt.</translation>
 <translation id="7590883480672980941">Inndatainnstillinger</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> igjen</translation>
 <translation id="7600430297804876776">Administratoren for <ph name="MANAGER" /> har angitt når denne <ph name="DEVICE_TYPE" />-enheten kan brukes.</translation>
@@ -1786,7 +1779,6 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="9218016617214286986">Vis kjente APN</translation>
 <translation id="932327136139879170">Gå til startsiden</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Sjekk at mikrofonen er koblet til, eller prøv å starte Chromebooken på nytt</translation>
 <translation id="945522503751344254">Send tilbakemelding</translation>
 <translation id="950520315903467048">Tasten mangler for <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">sammenligne stemmene i opptaket, slik at transkripsjonen gjenspeiler hva hver enkelt person sier, og når</translation>

@@ -26,11 +26,13 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowSystemClock;
@@ -47,6 +49,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
         manifest = Config.NONE,
         shadows = {ShadowSystemClock.class})
 public class MiniPlayerLayoutUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private final Activity mActivity;
     private MiniPlayerLayout mLayout;
 
@@ -61,7 +64,6 @@ public class MiniPlayerLayoutUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mLayout =
                 (MiniPlayerLayout)
                         mActivity

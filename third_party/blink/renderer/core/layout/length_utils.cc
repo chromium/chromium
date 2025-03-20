@@ -1354,13 +1354,13 @@ int ResolveUsedColumnCount(int computed_count,
   return std::max(1, std::min(computed_count, count_from_width));
 }
 
-int ResolveUsedColumnCount(LayoutUnit available_size,
-                           const ComputedStyle& style) {
+int ResolveUsedColumnCount(const ComputedStyle& style,
+                           LayoutUnit available_size) {
   LayoutUnit computed_column_inline_size =
       style.HasAutoColumnWidth()
           ? kIndefiniteSize
           : std::max(LayoutUnit(1), LayoutUnit(style.ColumnWidth()));
-  LayoutUnit gap = ResolveUsedColumnGap(available_size, style);
+  LayoutUnit gap = ResolveColumnGapForMulticol(style, available_size);
   int computed_count = style.HasAutoColumnCount() ? 0 : style.ColumnCount();
   return ResolveUsedColumnCount(computed_count, computed_column_inline_size,
                                 gap, available_size);
@@ -1376,8 +1376,8 @@ LayoutUnit ResolveUsedColumnInlineSize(int computed_count,
                   LayoutUnit());
 }
 
-LayoutUnit ResolveUsedColumnInlineSize(LayoutUnit available_size,
-                                       const ComputedStyle& style) {
+LayoutUnit ResolveUsedColumnInlineSize(const ComputedStyle& style,
+                                       LayoutUnit available_size) {
   // Should only attempt to resolve this if columns != auto.
   DCHECK(!style.HasAutoColumnCount() || !style.HasAutoColumnWidth());
 
@@ -1386,24 +1386,37 @@ LayoutUnit ResolveUsedColumnInlineSize(LayoutUnit available_size,
           ? kIndefiniteSize
           : std::max(LayoutUnit(1), LayoutUnit(style.ColumnWidth()));
   int computed_count = style.HasAutoColumnCount() ? 0 : style.ColumnCount();
-  LayoutUnit used_gap = ResolveUsedColumnGap(available_size, style);
+  LayoutUnit used_gap = ResolveColumnGapForMulticol(style, available_size);
   return ResolveUsedColumnInlineSize(computed_count, computed_size, used_gap,
                                      available_size);
 }
 
-LayoutUnit ResolveUsedColumnGap(LayoutUnit available_size,
-                                const ComputedStyle& style) {
-  if (const std::optional<Length>& column_gap = style.ColumnGap()) {
-    return ValueForLength(*column_gap, available_size);
+std::optional<LayoutUnit> ResolveColumnGapLength(const ComputedStyle& style,
+                                                 LayoutUnit available_size) {
+  if (const std::optional<Length>& gap = style.ColumnGap()) {
+    return MinimumValueForLength(*gap, available_size.ClampIndefiniteToZero());
   }
-  return LayoutUnit(style.GetFontDescription().ComputedPixelSize());
+  return std::nullopt;
 }
 
-LayoutUnit ColumnInlineProgression(LayoutUnit available_size,
-                                   const ComputedStyle& style) {
-  LayoutUnit column_inline_size =
-      ResolveUsedColumnInlineSize(available_size, style);
-  return column_inline_size + ResolveUsedColumnGap(available_size, style);
+LayoutUnit ResolveColumnGapForMulticol(const ComputedStyle& style,
+                                       LayoutUnit available_size) {
+  return ResolveColumnGapLength(style, available_size)
+      .value_or(LayoutUnit(style.GetFontDescription().ComputedPixelSize()));
+}
+
+std::optional<LayoutUnit> ResolveRowGapLength(const ComputedStyle& style,
+                                              LayoutUnit available_size) {
+  if (const std::optional<Length>& gap = style.RowGap()) {
+    return MinimumValueForLength(*gap, available_size.ClampIndefiniteToZero());
+  }
+  return std::nullopt;
+}
+
+LayoutUnit ColumnInlineProgression(const ComputedStyle& style,
+                                   LayoutUnit available_size) {
+  return ResolveUsedColumnInlineSize(style, available_size) +
+         ResolveColumnGapForMulticol(style, available_size);
 }
 
 PhysicalBoxStrut ComputePhysicalMargins(

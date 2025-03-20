@@ -138,14 +138,14 @@ class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
   double lineDashOffset() const;
   void setLineDashOffset(double);
 
-  virtual double shadowOffsetX() const;
-  virtual void setShadowOffsetX(double);
+  double shadowOffsetX() const;
+  void setShadowOffsetX(double);
 
-  virtual double shadowOffsetY() const;
-  virtual void setShadowOffsetY(double);
+  double shadowOffsetY() const;
+  void setShadowOffsetY(double);
 
-  virtual double shadowBlur() const;
-  virtual void setShadowBlur(double);
+  double shadowBlur() const;
+  void setShadowBlur(double);
 
   String shadowColor() const;
   void setShadowColor(const String&);
@@ -195,8 +195,8 @@ class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
                     double dx,
                     double dy);
   void setTransform(DOMMatrixInit*, ExceptionState&);
-  virtual DOMMatrix* getTransform();
-  virtual void resetTransform();
+  DOMMatrix* getTransform();
+  void resetTransform();
 
   void beginPath();
 
@@ -416,7 +416,7 @@ class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
   const UsageCounters& GetUsage();
 
  protected:
-  Canvas2DRecorderContext();
+  explicit Canvas2DRecorderContext(float effective_zoom = 1.0f);
 
   virtual HTMLCanvasElement* HostAsHTMLCanvasElement() const;
   virtual OffscreenCanvas* HostAsOffscreenCanvas() const;
@@ -458,6 +458,12 @@ class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
   // Counts how many states have been pushed with BeginLayer.
   int layer_count_ = 0;
   AntiAliasingMode clip_antialiasing_ = kNotAntiAliased;
+  // The paint worklet canvas operates on CSS pixels, and that's different than
+  // the HTML canvas which operates on physical pixels. In other words, the
+  // paint worklet canvas needs to handle device scale factor and page style
+  // zoom, and this is designed for that purpose. It's 1 for Canvas2D and
+  // offscreencanvas.
+  float effective_zoom_ = 1.0f;
 
   virtual void DisableAcceleration() {}
 

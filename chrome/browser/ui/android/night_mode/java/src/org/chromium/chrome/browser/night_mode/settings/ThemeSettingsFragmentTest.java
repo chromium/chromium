@@ -25,7 +25,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -53,6 +54,8 @@ import org.chromium.components.feature_engagement.Tracker;
 @DisableFeatures(DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)
 public class ThemeSettingsFragmentTest {
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public BlankUiTestActivitySettingsTestRule mSettingsTestRule =
             new BlankUiTestActivitySettingsTestRule();
@@ -69,7 +72,6 @@ public class ThemeSettingsFragmentTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         ChromeSharedPreferences.getInstance().removeKey(UI_THEME_SETTING);
 
         WebsitePreferenceBridgeJni.setInstanceForTesting(mMockWebsitePreferenceBridgeJni);

@@ -19,6 +19,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
+#include "ui/gfx/native_widget_types.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/profiles/profile_picker.h"
@@ -36,7 +37,7 @@ ExtensionEnableFlow::~ExtensionEnableFlow() = default;
 void ExtensionEnableFlow::StartForWebContents(
     content::WebContents* parent_contents) {
   parent_contents_ = parent_contents;
-  parent_window_ = nullptr;
+  parent_window_ = gfx::NativeWindow();
   Run();
 }
 
@@ -158,9 +159,9 @@ void ExtensionEnableFlow::CheckPermissionAndMaybePromptUser() {
 }
 
 void ExtensionEnableFlow::CreatePrompt() {
-  prompt_.reset(parent_contents_
-                    ? new ExtensionInstallPrompt(parent_contents_)
-                    : new ExtensionInstallPrompt(profile_, nullptr));
+  prompt_.reset(parent_contents_ ? new ExtensionInstallPrompt(parent_contents_)
+                                 : new ExtensionInstallPrompt(
+                                       profile_, gfx::NativeWindow()));
 }
 
 void ExtensionEnableFlow::OnExtensionApprovalDone(

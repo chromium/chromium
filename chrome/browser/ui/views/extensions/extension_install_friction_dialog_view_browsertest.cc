@@ -71,7 +71,7 @@ class ExtensionInstallFrictionDialogViewTest
     ExtensionInstallFrictionDialogView* delegate_view = dialog.get();
 
     views::Widget* modal_dialog = views::DialogDelegate::CreateDialogWidget(
-        dialog.release(), nullptr,
+        dialog.release(), gfx::NativeWindow(),
         platform_util::GetViewForWindow(
             browser()->window()->GetNativeWindow()));
     modal_dialog->Show();

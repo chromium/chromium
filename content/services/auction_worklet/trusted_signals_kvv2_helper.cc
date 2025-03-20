@@ -723,22 +723,25 @@ TrustedSignalsKVv2RequestHelperBuilder ::
 TrustedSignalsKVv2RequestHelperBuilder::TrustedSignalsKVv2RequestHelperBuilder(
     std::string hostname,
     std::optional<int> experiment_group_id,
+    std::optional<std::string> contextual_data,
     mojom::TrustedSignalsPublicKeyPtr public_key)
     : hostname_(std::move(hostname)),
       experiment_group_id_(experiment_group_id),
+      contextual_data_(std::move(contextual_data)),
       public_key_(std::move(public_key)) {}
 
 std::unique_ptr<TrustedSignalsKVv2RequestHelper>
-TrustedSignalsKVv2RequestHelperBuilder::Build() {
+TrustedSignalsKVv2RequestHelperBuilder::Build() const {
   cbor::Value::MapValue request_map_value;
   AddPostRequestConstants(request_map_value);
 
-  // Add hostname to metadata.
+  // Add top-level `metadata`.
   cbor::Value::MapValue metadata;
   metadata.try_emplace(cbor::Value("hostname"), cbor::Value(hostname()));
   request_map_value.try_emplace(cbor::Value("metadata"),
                                 cbor::Value(std::move(metadata)));
 
+  // Add `partitions`.
   cbor::Value::ArrayValue partition_array;
   for (const auto& group_pair : compression_groups()) {
     int compression_group_id = group_pair.first;
@@ -754,6 +757,24 @@ TrustedSignalsKVv2RequestHelperBuilder::Build() {
 
   request_map_value.try_emplace(cbor::Value("partitions"),
                                 cbor::Value(std::move(partition_array)));
+
+  // Add `perPartitionMetadata` and subfield `contextualData`.
+  if (contextual_data().has_value()) {
+    cbor::Value::MapValue partitioned_metadata_map;
+    cbor::Value::ArrayValue contextual_data_array;
+    cbor::Value::MapValue contextual_data_map;
+    contextual_data_map.try_emplace(cbor::Value("value"),
+                                    cbor::Value(contextual_data().value()));
+    contextual_data_array.emplace_back(std::move(contextual_data_map));
+    partitioned_metadata_map.try_emplace(
+        cbor::Value("contextualData"),
+        cbor::Value(std::move(contextual_data_array)));
+    request_map_value.try_emplace(
+        cbor::Value("perPartitionMetadata"),
+        cbor::Value(std::move(partitioned_metadata_map)));
+  }
+
+  // Generate OHTTP request.
   quiche::ObliviousHttpRequest request =
       CreateOHttpRequest(public_key(), std::move(request_map_value));
   std::string encrypted_request = request.EncapsulateAndSerialize();
@@ -810,10 +831,12 @@ TrustedBiddingSignalsKVv2RequestHelperBuilder::
     TrustedBiddingSignalsKVv2RequestHelperBuilder(
         const std::string& hostname,
         std::optional<int> experiment_group_id,
+        std::optional<std::string> contextual_data,
         mojom::TrustedSignalsPublicKeyPtr public_key,
         const std::string& trusted_bidding_signals_slot_size_param)
     : TrustedSignalsKVv2RequestHelperBuilder(hostname,
                                              experiment_group_id,
+                                             std::move(contextual_data),
                                              std::move(public_key)) {
   // Parse trusted bidding signals slot size parameter to a pair, which
   // parameter key is first and value is second.
@@ -901,7 +924,7 @@ cbor::Value::MapValue
 TrustedBiddingSignalsKVv2RequestHelperBuilder::BuildMapForPartition(
     const Partition& partition,
     int partition_id,
-    int compression_group_id) {
+    int compression_group_id) const {
   cbor::Value::MapValue partition_cbor_map;
 
   partition_cbor_map.try_emplace(cbor::Value("id"), cbor::Value(partition_id));
@@ -937,9 +960,11 @@ TrustedScoringSignalsKVv2RequestHelperBuilder::
     TrustedScoringSignalsKVv2RequestHelperBuilder(
         const std::string& hostname,
         std::optional<int> experiment_group_id,
+        std::optional<std::string> contextual_data,
         mojom::TrustedSignalsPublicKeyPtr public_key)
     : TrustedSignalsKVv2RequestHelperBuilder(hostname,
                                              experiment_group_id,
+                                             std::move(contextual_data),
                                              std::move(public_key)) {}
 TrustedScoringSignalsKVv2RequestHelperBuilder::
     ~TrustedScoringSignalsKVv2RequestHelperBuilder() = default;
@@ -986,7 +1011,7 @@ cbor::Value::MapValue
 TrustedScoringSignalsKVv2RequestHelperBuilder::BuildMapForPartition(
     const Partition& partition,
     int partition_id,
-    int compression_group_id) {
+    int compression_group_id) const {
   cbor::Value::MapValue partition_cbor_map;
 
   partition_cbor_map.try_emplace(cbor::Value("id"), cbor::Value(partition_id));

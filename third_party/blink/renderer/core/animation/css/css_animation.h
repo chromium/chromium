@@ -74,17 +74,38 @@ class CORE_EXPORT CSSAnimation : public Animation {
   // <property>.
   // https://drafts.csswg.org/css-animations-2/#interaction-between-animation-play-state-and-web-animations-API
   bool GetIgnoreCSSPlayState() { return ignore_css_play_state_; }
+  void SetIgnoreCSSPlayState(bool ignore) { ignore_css_play_state_ = ignore; }
   void ResetIgnoreCSSPlayState() { ignore_css_play_state_ = false; }
   bool GetIgnoreCSSTimeline() const { return ignore_css_timeline_; }
+  void SetIgnoreCSSTimeline(bool ignore) { ignore_css_timeline_ = ignore; }
   void ResetIgnoreCSSTimeline() { ignore_css_timeline_ = false; }
   bool GetIgnoreCSSRangeStart() { return ignore_css_range_start_; }
+  void SetIgnoreCSSRangeStart(bool ignore) { ignore_css_range_start_ = ignore; }
   void ResetIgnoreCSSRangeStart() { ignore_css_range_start_ = false; }
   bool GetIgnoreCSSRangeEnd() { return ignore_css_range_end_; }
+  void SetIgnoreCSSRangeEnd(bool ignore) { ignore_css_range_end_ = ignore; }
   void ResetIgnoreCSSRangeEnd() { ignore_css_range_end_ = false; }
 
   void setTrigger(AnimationTrigger* trigger) override;
   bool GetIgnoreCSSTrigger() { return ignore_css_trigger_; }
+  void SetIgnoreCSSTrigger(bool ignore) { ignore_css_trigger_ = ignore; }
   void ResetIgnoreCSSTrigger() { ignore_css_trigger_ = false; }
+
+  class ScopedResetIgnoreCSSProperties {
+    STACK_ALLOCATED();
+
+   public:
+    explicit ScopedResetIgnoreCSSProperties(CSSAnimation* animation);
+    ~ScopedResetIgnoreCSSProperties();
+
+   private:
+    bool ignore_css_play_state_ = false;
+    bool ignore_css_timeline_ = false;
+    bool ignore_css_range_start_ = false;
+    bool ignore_css_range_end_ = false;
+    bool ignore_css_trigger_ = false;
+    CSSAnimation* animation_ = nullptr;
+  };
 
   void Trace(blink::Visitor* visitor) const override {
     Animation::Trace(visitor);

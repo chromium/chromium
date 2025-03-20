@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/mojo/services/oop_video_decoder_service.h"
+
 #include <sys/mman.h>
 
 #include "base/posix/eintr_wrapper.h"
@@ -14,8 +16,7 @@
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "media/mojo/mojom/media_log.mojom.h"
 #include "media/mojo/mojom/video_decoder.mojom.h"
-#include "media/mojo/services/stable_video_decoder_factory_service.h"
-#include "media/mojo/services/stable_video_decoder_service.h"
+#include "media/mojo/services/oop_video_decoder_factory_service.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"

@@ -79,6 +79,7 @@
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/menus/cocoa/text_services_context_menu.h"
 
 using blink::WebInputEvent;
@@ -220,7 +221,7 @@ RenderWidgetHostViewMac::RenderWidgetHostViewMac(RenderWidgetHost* widget)
   // https://crbug.com/357443
   auto* screen = display::Screen::GetScreen();
   screen_infos_ = screen->GetScreenInfosNearestDisplay(
-      screen->GetDisplayNearestWindow([NSApp keyWindow]).id());
+      screen->GetDisplayNearestWindow(gfx::NativeWindow(NSApp.keyWindow)).id());
   original_screen_infos_ = screen_infos_;
 
   viz::FrameSinkId frame_sink_id = host()->GetFrameSinkId();
@@ -571,7 +572,7 @@ void RenderWidgetHostViewMac::SetBounds(const gfx::Rect& rect) {
 }
 
 gfx::NativeView RenderWidgetHostViewMac::GetNativeView() {
-  return GetInProcessNSView();
+  return gfx::NativeView(GetInProcessNSView());
 }
 
 gfx::NativeViewAccessible RenderWidgetHostViewMac::GetNativeViewAccessible() {
@@ -2243,7 +2244,7 @@ void RenderWidgetHostViewMac::ForwardKeyboardEventWithCommands(
   }
   const blink::WebKeyboardEvent& keyboard_event =
       static_cast<const blink::WebKeyboardEvent&>(input_event->Event());
-  input::NativeWebKeyboardEvent native_event(keyboard_event, nil);
+  input::NativeWebKeyboardEvent native_event(keyboard_event, gfx::NativeView());
   native_event.skip_if_unhandled = skip_if_unhandled;
   // The NSEvent constructed from the InputEvent sent over mojo is not even
   // close to the original NSEvent, resulting in all sorts of bugs. Use the

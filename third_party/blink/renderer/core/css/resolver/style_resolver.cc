@@ -443,7 +443,7 @@ void ApplyLengthConversionFlags(StyleResolverState& state) {
   }
   if (flags & static_cast<Flags>(Flag::kContainerRelative)) {
     builder.SetDependsOnSizeContainerQueries(true);
-    builder.SetHasContainerRelativeUnits();
+    builder.SetHasContainerRelativeValue();
   }
   if (flags & static_cast<Flags>(Flag::kTreeScopedReference)) {
     state.SetHasTreeScopedReference();
@@ -2780,6 +2780,12 @@ const CSSValue* StyleResolver::ComputeValue(
   state.EnsureParentStyle();
   STACK_UNINITIALIZED StyleCascade cascade(state);
   state.SetStyle(*base_style);
+  // This method does not load any resources, which means that the ComputedStyle
+  // contains StylePendingImages. As those are not expected to exist on style
+  // for rendered elements, there is a DCHECK that is triggered when trying to
+  // read out computed <image> values. Work around that DCHECK by saying this
+  // style is not for a rendered element.
+  state.StyleBuilder().SetIsEnsuredInDisplayNone();
   auto* set =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(state.GetParserMode());
   set->SetProperty(property_name, value);

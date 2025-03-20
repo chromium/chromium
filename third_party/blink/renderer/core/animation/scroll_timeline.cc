@@ -18,21 +18,6 @@ namespace blink {
 
 namespace {
 
-ScrollOrientation ToPhysicalScrollOrientation(ScrollAxis axis,
-                                              const LayoutBox& source_box) {
-  bool is_horizontal = source_box.IsHorizontalWritingMode();
-  switch (axis) {
-    case ScrollAxis::kBlock:
-      return is_horizontal ? kVerticalScroll : kHorizontalScroll;
-    case ScrollAxis::kInline:
-      return is_horizontal ? kHorizontalScroll : kVerticalScroll;
-    case ScrollAxis::kX:
-      return kHorizontalScroll;
-    case ScrollAxis::kY:
-      return kVerticalScroll;
-  }
-}
-
 Node* ResolveSource(Element* source) {
   if (source && source == source->GetDocument().ScrollingElementNoLayout()) {
     return &source->GetDocument();
@@ -284,6 +269,43 @@ std::optional<double> ScrollTimeline::GetMaximumScrollPosition() const {
       ToPhysicalScrollOrientation(GetAxis(), *scroll_container);
   return physical_orientation == kHorizontalScroll ? scroll_dimensions.x()
                                                    : scroll_dimensions.y();
+}
+
+std::optional<double> ScrollTimeline::GetCurrentScrollPosition() const {
+  Node* source = ComputeResolvedSource();
+  LayoutBox* scroll_container = ComputeScrollContainer(source);
+  if (!scroll_container) {
+    return std::nullopt;
+  }
+
+  PaintLayerScrollableArea* scrollable_area =
+      scroll_container->GetScrollableArea();
+  if (!scrollable_area) {
+    return std::nullopt;
+  }
+
+  ScrollOffset scroll_offset = scrollable_area->GetScrollOffset();
+  auto physical_orientation =
+      ToPhysicalScrollOrientation(GetAxis(), *scroll_container);
+  return (physical_orientation == kHorizontalScroll) ? scroll_offset.x()
+                                                     : scroll_offset.y();
+}
+
+// static
+ScrollOrientation ScrollTimeline::ToPhysicalScrollOrientation(
+    ScrollAxis axis,
+    const LayoutBox& source_box) {
+  bool is_horizontal = source_box.IsHorizontalWritingMode();
+  switch (axis) {
+    case ScrollAxis::kBlock:
+      return is_horizontal ? kVerticalScroll : kHorizontalScroll;
+    case ScrollAxis::kInline:
+      return is_horizontal ? kHorizontalScroll : kVerticalScroll;
+    case ScrollAxis::kX:
+      return kHorizontalScroll;
+    case ScrollAxis::kY:
+      return kVerticalScroll;
+  }
 }
 
 }  // namespace blink

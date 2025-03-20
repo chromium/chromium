@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">ซ่อนข้อความถอดเสียง</translation>
 <translation id="160633243685262989">แสดงตัวอย่างรูปภาพ</translation>
 <translation id="1611649489706141841">ไปข้างหน้า</translation>
-<translation id="1615144046047995187">ดาวน์โหลดไม่ได้ โปรดลองอีกครั้งหรือรีสตาร์ท Chromebook</translation>
 <translation id="1615335640928990664">ปริมาณการใช้อินเทอร์เน็ตตั้งแต่ <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">ใช้ธีม</translation>
 <translation id="1621067168122174824">ทดสอบการชาร์จแบตเตอรี่</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">รายการเสียงที่บันทึกไว้</translation>
 <translation id="2561093647892030937">เลมอน</translation>
 <translation id="2570743873672969996">กำลังทำการทดสอบ <ph name="TEST_NAME" />...</translation>
-<translation id="2573178735329662769">กำลังบันทึกเสียงทั้งหมดจาก Chromebook</translation>
 <translation id="2576253868710695442">การดำเนินการนี้จะใช้พื้นที่เก็บข้อมูลสูงสุด 2 GB</translation>
 <translation id="2584547424703650812">แสงเงา</translation>
 <translation id="2584559707064218956">ไปที่การตั้งค่าเพื่อตั้งค่า</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">น้ำเงินและชมพู</translation>
 <translation id="498186245079027698">ตรวจสอบเครื่องสแกนแล้วลองอีกครั้ง ตรวจดูว่ามีพื้นที่ว่างในเครื่องเพียงพอสำหรับบันทึกไฟล์ที่สแกน</translation>
 <translation id="4982627662315910959">แป้นพิมพ์ลัดไม่พร้อมใช้งาน กดแป้นพิมพ์ลัดใหม่โดยใช้ Shift และแป้นกดร่วมอีก 1 รายการ (Ctrl, Alt หรือ<ph name="META_KEY" />)</translation>
-<translation id="4983216687482551672">เสียงจาก Chromebook</translation>
 <translation id="4985509611418653372">เรียกใช้</translation>
 <translation id="4987769320337599931">ไฟร์วอลล์</translation>
 <translation id="4988526792673242964">หน้า</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">ถอดสาย USB ของ <ph name="DEVICE_NAME" /> แล้วเสียบใหม่เพื่ออัปเดตต่อ</translation>
 <translation id="5099354524039520280">ขึ้น</translation>
 <translation id="5107243100836678918">แป้นพิมพ์ลัดที่ไม่มีแป้น<ph name="META_KEY" />อาจขัดแย้งกับแป้นพิมพ์ลัดของบางแอป กดแป้นพิมพ์ลัดนี้อีกครั้งเพื่อใช้ต่อไป หรือกดแป้นพิมพ์ลัดใหม่โดยใช้แป้น<ph name="KEY" /> <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">ดาวน์โหลดโมเดลการถอดเสียงเป็นคำของภาษา<ph name="LANGUAGE_NAME" />ไม่ได้ โปรดลองอีกครั้งหรือรีสตาร์ท Chromebook</translation>
 <translation id="5108781503443873320">คล้ายกัน:</translation>
-<translation id="5121677070210013200">ดาวน์โหลดโมเดลการถอดเสียงเป็นคำไม่ได้ โปรดลองอีกครั้งหรือรีสตาร์ท Chromebook</translation>
 <translation id="5130848777448318809">ม้าแคระ</translation>
 <translation id="5137451382116112100">เต็ม</translation>
 <translation id="5139813694804168398">ห้ามรบกวน</translation>
@@ -1089,7 +1084,6 @@
 <translation id="6122191549521593678">ออนไลน์</translation>
 <translation id="6122277663991249694">บริการวิธีการป้อนข้อมูลของ Chrome OS</translation>
 <translation id="6127426868813166163">ขาว</translation>
-<translation id="613049107179582049">เมื่อเสียง Chromebook เปิดอยู่ โปรแกรมอัดเสียงจะบันทึกเสียงทั้งหมดที่เล่นในอุปกรณ์นี้</translation>
 <translation id="6136285399872347291">ลบถอยหลัง</translation>
 <translation id="6137614725462089991">ไซเบอร์พังก์</translation>
 <translation id="6137767437444130246">ใบรับรองของผู้ใช้</translation>
@@ -1419,7 +1413,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">หน้าจอสัมผัส USB</translation>
 <translation id="757747079855995705">หิน</translation>
-<translation id="7584853321964440104">ดาวน์โหลดไม่ได้ โปรดลองอีกครั้งหรือรีสตาร์ท Chromebook</translation>
 <translation id="7590883480672980941">การตั้งค่าการป้อนข้อมูล</translation>
 <translation id="7595982850646262331">เหลือ <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">ผู้ดูแลระบบ <ph name="MANAGER" /> ได้กำหนดเวลาที่จะใช้ <ph name="DEVICE_TYPE" /> เครื่องนี้ได้</translation>
@@ -1786,7 +1779,6 @@
 <translation id="9218016617214286986">แสดง APN ที่รู้จัก</translation>
 <translation id="932327136139879170">หน้าแรก</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">ตรวจสอบว่าไมค์เชื่อมต่ออยู่หรือลองรีสตาร์ท Chromebook</translation>
 <translation id="945522503751344254">ส่งความคิดเห็น</translation>
 <translation id="950520315903467048">ไม่มีคีย์สำหรับ <ph name="DIRECTION" /> <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">เปรียบเทียบเสียงในเสียงที่บันทึกไว้ตั้งแต่ต้นจนจบเพื่อให้ข้อความถอดเสียงแสดงข้อความของผู้พูดแต่ละคนและเวลาที่พูด</translation>

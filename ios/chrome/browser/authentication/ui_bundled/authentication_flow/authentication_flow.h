@@ -26,7 +26,9 @@ class Browser;
 // Designated initializer.
 // * `browser` is the current browser where the authentication flow is being
 //   presented.
-// * `accessPoint` is the sign-in access point
+// * `accessPoint` is the sign-in access point.
+// * `precedingHistorySync` specifies whether the History Sync Opt-In screen
+//   follows after the flow completes with success.
 // * `postSignInActions` represents the actions to be taken once `identity` is
 //   signed in.
 // * `presentingViewController` is the top presented view controller.
@@ -34,6 +36,7 @@ class Browser;
 - (instancetype)initWithBrowser:(Browser*)browser
                        identity:(id<SystemIdentity>)identity
                     accessPoint:(signin_metrics::AccessPoint)accessPoint
+           precedingHistorySync:(BOOL)precedingHistorySync
               postSignInActions:(PostSignInActionSet)postSignInActions
        presentingViewController:(UIViewController*)presentingViewController
                      anchorView:(UIView*)anchorView
@@ -62,10 +65,6 @@ class Browser;
 
 // Sign-in access point
 @property(nonatomic, assign, readonly) signin_metrics::AccessPoint accessPoint;
-
-// Whether the History Sync Opt-In screen follows after authentication flow
-// completes with success.
-@property(nonatomic, assign) BOOL precedingHistorySync;
 
 @end
 

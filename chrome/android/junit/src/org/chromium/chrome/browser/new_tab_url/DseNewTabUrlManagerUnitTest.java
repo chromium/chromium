@@ -13,12 +13,14 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -43,6 +45,7 @@ import org.chromium.url.JUnitTestGURLs;
 public class DseNewTabUrlManagerUnitTest {
     private static final String SEARCH_URL = JUnitTestGURLs.SEARCH_URL.getSpec();
     private static final String NEW_TAB_URL = JUnitTestGURLs.NTP_URL.getSpec();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
     private ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
     @Mock private RegionalCapabilitiesService mRegionalCapabilities;
@@ -56,7 +59,6 @@ public class DseNewTabUrlManagerUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mSharedPreferenceManager = ChromeSharedPreferences.getInstance();
 
         doReturn(SEARCH_URL).when(mTemplateUrl).getURL();

@@ -221,6 +221,7 @@ bool IsSingleFieldFillerFillingProduct(FillingProduct filling_product) {
     case FillingProduct::kAutocomplete:
     case FillingProduct::kIban:
     case FillingProduct::kMerchantPromoCode:
+    case FillingProduct::kLoyaltyCard:
       return true;
     case FillingProduct::kPlusAddresses:
     case FillingProduct::kAutofillAi:
@@ -241,6 +242,8 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
       return FillDataType::kSingleFieldFillerPromoCode;
     case SuggestionType::kIbanEntry:
       return FillDataType::kSingleFieldFillerIban;
+    case SuggestionType::kLoyaltyCardEntry:
+      return FillDataType::kSingleFieldFillerLoyaltyCard;
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kAddressEntry:
     case SuggestionType::kAddressEntryOnTyping:
@@ -249,6 +252,7 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
     case SuggestionType::kManageAutofillAi:
     case SuggestionType::kManageCreditCard:
     case SuggestionType::kManageIban:
+    case SuggestionType::kManageLoyaltyCard:
     case SuggestionType::kManagePlusAddress:
     case SuggestionType::kUndoOrClear:
     case SuggestionType::kComposeResumeNudge:

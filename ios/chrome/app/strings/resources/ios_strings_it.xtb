@@ -785,6 +785,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4405320213589929829">Usa gli indirizzi nelle pagine web per ricevere informazioni locali e indicazioni stradali.</translation>
 <translation id="441218095371040430">Usa la tastiera</translation>
 <translation id="4415276339145661267">Gestisci il tuo Account Google</translation>
+<translation id="4425365312778464779">Questo account è gestito</translation>
 <translation id="4430277756566635951">Selezione attuale: <ph name="EMAIL" />. Scegli un account.</translation>
 <translation id="4430505936695785931">Recupera le password salvate in altre app</translation>
 <translation id="4431224949908513835">Seleziona un metodo di pagamento da inserire.</translation>
@@ -1848,6 +1849,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8813277370772331957">Ricordamelo dopo</translation>
 <translation id="8814719628147284151">Continua</translation>
+<translation id="8819155700324279105">Aggiungi un ulteriore livello di protezione dalle minacce online</translation>
 <translation id="8820817407110198400">Preferiti</translation>
 <translation id="8822421075653507124">Per garantire che questo dispositivo possa essere usato in sicurezza, la tua organizzazione potrebbe dover accedere alle informazioni relative al sistema operativo, al browser, alle impostazioni e al software installato sul dispositivo.</translation>
 <translation id="8825562130641217944">Trova preferiti, password e altri dati.</translation>

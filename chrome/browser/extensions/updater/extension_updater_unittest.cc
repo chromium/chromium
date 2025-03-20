@@ -41,7 +41,6 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_sync_data.h"
 #include "chrome/browser/extensions/fake_crx_installer.h"
@@ -242,8 +241,6 @@ class MockService : public TestExtensionService {
       TestExtensionPrefs* prefs,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
       : prefs_(prefs),
-        corrupted_extension_reinstaller_(
-            CorruptedExtensionReinstaller::Get(prefs->profile())),
         downloader_delegate_override_(nullptr),
         test_shared_url_loader_factory_(url_loader_factory) {}
 
@@ -260,10 +257,6 @@ class MockService : public TestExtensionService {
 
   signin::IdentityTestEnvironment* identity_test_env() {
     return identity_test_env_.get();
-  }
-
-  CorruptedExtensionReinstaller* corrupted_extension_reinstaller() override {
-    return corrupted_extension_reinstaller_;
   }
 
   const CoreAccountId& account_id() { return account_info_.account_id; }
@@ -310,7 +303,6 @@ class MockService : public TestExtensionService {
 
  protected:
   const raw_ptr<TestExtensionPrefs> prefs_;
-  const raw_ptr<CorruptedExtensionReinstaller> corrupted_extension_reinstaller_;
 
  private:
   std::unique_ptr<ExtensionDownloader> CreateExtensionDownloader(
@@ -451,10 +443,6 @@ class ServiceForDownloadTests : public MockService {
 
   PendingExtensionManager* pending_extension_manager() {
     return PendingExtensionManager::Get(profile());
-  }
-
-  CorruptedExtensionReinstaller* corrupted_extension_reinstaller() override {
-    return corrupted_extension_reinstaller_;
   }
 
   const ExtensionId& extension_id() const { return extension_id_; }

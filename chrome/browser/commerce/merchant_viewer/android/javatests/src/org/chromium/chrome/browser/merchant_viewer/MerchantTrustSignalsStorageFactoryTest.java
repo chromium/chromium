@@ -8,10 +8,12 @@ import static org.mockito.Mockito.doReturn;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
@@ -30,6 +32,7 @@ public class MerchantTrustSignalsStorageFactoryTest {
 
     @Mock private Profile mMockProfile2;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private MerchantTrustSignalsEventStorage.Natives mMockStorage;
 
     private ObservableSupplierImpl<Profile> mProfileSupplier;
@@ -38,7 +41,6 @@ public class MerchantTrustSignalsStorageFactoryTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         MerchantTrustSignalsEventStorageJni.setInstanceForTesting(mMockStorage);
         ProfileJni.setInstanceForTesting(mMockProfileNatives);
 

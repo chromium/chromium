@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Hide transcript</translation>
 <translation id="160633243685262989">Preview image</translation>
 <translation id="1611649489706141841">forward</translation>
-<translation id="1615144046047995187">Can't download. Try again or restart your Chromebook.</translation>
 <translation id="1615335640928990664">Data usage since <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Use a theme</translation>
 <translation id="1621067168122174824">Run charge test</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">List of audio recordings</translation>
 <translation id="2561093647892030937">lemons</translation>
 <translation id="2570743873672969996">Running <ph name="TEST_NAME" /> test…</translation>
-<translation id="2573178735329662769">Recording all Chromebook audio</translation>
 <translation id="2576253868710695442">This will take up to 2 GB of storage</translation>
 <translation id="2584547424703650812">Glowscapes</translation>
 <translation id="2584559707064218956">To set up, go to Settings</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">blue and pink</translation>
 <translation id="498186245079027698">Check the scanner and try again. Make sure that there is enough local space to save scanned files.</translation>
 <translation id="4982627662315910959">Shortcut not available. Press a new shortcut using shift and one more modifier key (ctrl, alt or <ph name="META_KEY" />).</translation>
-<translation id="4983216687482551672">Chromebook audio</translation>
 <translation id="4985509611418653372">Run</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4988526792673242964">Pages</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Unplug the <ph name="DEVICE_NAME" /> USB cable and then reinsert it to continue the update process</translation>
 <translation id="5099354524039520280">up</translation>
 <translation id="5107243100836678918">Shortcut without <ph name="META_KEY" /> key might conflict with some app's shortcut. Press this shortcut again to continue using it, or press a new shortcut using the <ph name="KEY" /> key. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Can't download <ph name="LANGUAGE_NAME" /> transcription model. Try again or restart your Chromebook</translation>
 <translation id="5108781503443873320">Similar:</translation>
-<translation id="5121677070210013200">Can't download transcription model. Try again or restart your Chromebook.</translation>
 <translation id="5130848777448318809">ponies</translation>
 <translation id="5137451382116112100">Full</translation>
 <translation id="5139813694804168398">do not disturb</translation>
@@ -1033,6 +1028,7 @@
 <translation id="5896602941605730551">Play</translation>
 <translation id="5901630391730855834">Yellow</translation>
 <translation id="5903200662178656908">Device is a keyboard and mouse combo.</translation>
+<translation id="5903822368221507416">Hide tabs</translation>
 <translation id="5904994456462260490">Add a new APN</translation>
 <translation id="590746845088109442">cats</translation>
 <translation id="5907649332524363701">key colour</translation>
@@ -1088,7 +1084,6 @@
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Chrome OS input method service</translation>
 <translation id="6127426868813166163">White</translation>
-<translation id="613049107179582049">When Chromebook audio is on, Recorder captures all audio playing on this device</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">User certificate</translation>
@@ -1418,7 +1413,6 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB touchscreen</translation>
 <translation id="757747079855995705">stone</translation>
-<translation id="7584853321964440104">Can't download. Try again or restart your Chromebook.</translation>
 <translation id="7590883480672980941">Input settings</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> left</translation>
 <translation id="7600430297804876776">The <ph name="MANAGER" /> administrator has set when this <ph name="DEVICE_TYPE" /> can be used.</translation>
@@ -1785,7 +1779,6 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="9218016617214286986">Show known APNs</translation>
 <translation id="932327136139879170">Home</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Make sure that your mic is connected or try restarting your Chromebook</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="950520315903467048">Key is missing for <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Compare voices throughout the recording so that the transcript reflects what each speaker said and when</translation>

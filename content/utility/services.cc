@@ -104,7 +104,7 @@ extern sandbox::TargetServices* g_utility_target_services;
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
     (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
 #include "content/common/features.h"
-#include "media/mojo/services/stable_video_decoder_factory_process_service.h"  // nogncheck
+#include "media/mojo/services/oop_video_decoder_factory_process_service.h"  // nogncheck
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
         // (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
 

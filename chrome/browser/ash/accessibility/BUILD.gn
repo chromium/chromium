@@ -175,6 +175,8 @@ source_set("browser_tests") {
     "dictation_bubble_test_helper.cc",
     "dictation_bubble_test_helper.h",
     "facegaze_browsertest.cc",
+    "facegaze_bubble_test_helper.cc",
+    "facegaze_bubble_test_helper.h",
     "magnification_controller_browsertest.cc",
     "magnification_manager_browsertest.cc",
     "select_to_speak_browsertest.cc",

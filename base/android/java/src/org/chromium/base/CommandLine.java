@@ -30,44 +30,79 @@ import java.util.Map;
  * Java mirror of base/command_line.h. Android applications don't have command line arguments.
  * Instead, they're "simulated" by reading a file at a specific location early during startup.
  * Applications each define their own files, e.g., ContentShellApplication.COMMAND_LINE_FILE.
+ *
+ * <p>Starts as being backed by a Java Map, and then switches to JNI once the native library is
+ * loaded.
+ *
+ * <p>Thread Safety: The native implementation requires initialization and all writes to occur on
+ * the same sequence (e.g. main thread), but reads can happen from any thread (although it's not
+ * clear why this is safe...). The Java implementation is thread-safe through the use of locks, but
+ * only until switching to the native implementation.
+ *
+ * <p>TODO(crbug.com/40258939): Enable native sequence checker.
  */
 @NullMarked
+@SuppressWarnings({"NoSynchronizedMethodCheck", "NoSynchronizedThisCheck"}) // Unnecessary advice.
 public class CommandLine {
     private static final String TAG = "CommandLine";
     private static final String SWITCH_PREFIX = "--";
     private static final String SWITCH_TERMINATOR = SWITCH_PREFIX;
     private static final String SWITCH_VALUE_SEPARATOR = "=";
-    private static @Nullable CommandLine sInstance;
+    private static final CommandLine sInstance = new CommandLine();
 
-    /**
-     * @return true if the command line has already been initialized.
-     */
+    // Fields are initialized by initInternal() and set to null upon switching to native impl.
+    private @Nullable Map<String, String> mSwitches;
+    private @Nullable ArrayList<String> mArgs;
+
+    // The index of the first non-switch argument (first arg that does not start with --).
+    private volatile int mArgsBegin;
+
+    /** Returns true if the command line has already been initialized. */
     public static boolean isInitialized() {
-        return sInstance != null;
+        // Not initialized: mArgsBegin == 0
+        // Initialized, but pre-native: mArgsBegin > 0 && mArgs != null
+        // Initialized & using native impl: mArgsBegin > 0 && mArgs == null
+        return sInstance.mArgsBegin != 0;
+    }
+
+    /** Determine if the command line is bound to the native (JNI) implementation. */
+    public static boolean hasSwitchedToNative() {
+        assert isInitialized();
+        return sInstance.mArgs == null;
     }
 
     // Equivalent to CommandLine::ForCurrentProcess in C++.
     public static CommandLine getInstance() {
-        assert sInstance != null;
+        assert isInitialized();
         return sInstance;
     }
 
     /**
-     * Initialize the singleton instance, must be called exactly once (either directly or via one of
-     * the convenience wrappers below) before using the static singleton instance.
+     * Initialize from an array of tokenized args.
      *
      * @param args command line flags in 'argv' format: args[0] is the program name.
      */
     public static void init(String @Nullable [] args) {
-        assert sInstance == null || !sInstance.hasSwitchedToNative();
-        sInstance = new CommandLine(args);
+        sInstance.initInternal(args);
     }
 
     /**
-     * Initialize the command line from the command-line file.
-     *
-     * @param file The fully qualified command line file.
+     * @param fileName the file to read in.
+     * @return Array of chars read from the file, or null if the file cannot be read.
      */
+    private static char @Nullable [] readFileAsUtf8(String fileName) {
+        File f = new File(fileName);
+        try (FileReader reader = new FileReader(f)) {
+            char[] buffer = new char[(int) f.length()];
+            int charsRead = reader.read(buffer);
+            // charsRead < f.length() in the case of multibyte characters.
+            return Arrays.copyOfRange(buffer, 0, charsRead);
+        } catch (IOException e) {
+            return null; // Most likely file not found.
+        }
+    }
+
+    /** Initialize using arguments from the given command-line file. */
     public static void initFromFile(String file) {
         char[] buffer = readFileAsUtf8(file);
         String[] tokenized = buffer == null ? null : tokenizeQuotedArguments(buffer);
@@ -81,9 +116,22 @@ public class CommandLine {
 
     /** For use by tests that test command-line functionality. */
     public static void resetForTesting(boolean initialize) {
-        CommandLine origCommandLine = sInstance;
-        sInstance = initialize ? new CommandLine(null) : null;
-        ResettersForTesting.register(() -> sInstance = origCommandLine);
+        CommandLine instance = sInstance;
+        var origSwitches = instance.mSwitches;
+        var origArgs = instance.mArgs;
+        var origArgsBegin = instance.mArgsBegin;
+        instance.mSwitches = null;
+        instance.mArgs = null;
+        instance.mArgsBegin = 0;
+        if (initialize) {
+            instance.initInternal(null);
+        }
+        ResettersForTesting.register(
+                () -> {
+                    instance.mSwitches = origSwitches;
+                    instance.mArgs = origArgs;
+                    instance.mArgsBegin = origArgsBegin;
+                });
     }
 
     /**
@@ -138,15 +186,16 @@ public class CommandLine {
         return args.toArray(new String[args.size()]);
     }
 
-    /**
-     * Switch from Java->Native CommandLine implementation. If another thread is modifying the
-     * command line when this happens, all bets are off (as per the native CommandLine).
-     */
-    public static void enableNativeProxy() {
-        if (!isInitialized()) {
-            init(null);
+    /** Switch from Java->Native CommandLine implementation. Safe to call redundantly. */
+    public synchronized void switchToNativeImpl() {
+        if (hasSwitchedToNative()) {
+            // Already switched to native.
+            return;
         }
-        getInstance().switchToNative();
+        CommandLineJni.get().init(assumeNonNull(mArgs));
+        mArgs = null;
+        mSwitches = null;
+        Log.v(TAG, "Switched to native command-line");
     }
 
     /** Returns the list of current switches. Cannot be called after enableNativeProxy(). */
@@ -158,45 +207,20 @@ public class CommandLine {
         return assumeNonNull(commandLine.mArgs).toArray(new String[0]);
     }
 
-    /**
-     * @param fileName the file to read in.
-     * @return Array of chars read from the file, or null if the file cannot be read.
-     */
-    private static char @Nullable [] readFileAsUtf8(String fileName) {
-        File f = new File(fileName);
-        try (FileReader reader = new FileReader(f)) {
-            char[] buffer = new char[(int) f.length()];
-            int charsRead = reader.read(buffer);
-            // charsRead < f.length() in the case of multibyte characters.
-            return Arrays.copyOfRange(buffer, 0, charsRead);
-        } catch (IOException e) {
-            return null; // Most likely file not found.
-        }
-    }
-
-    private @Nullable HashMap<String, String> mSwitches = new HashMap<>();
-    private @Nullable ArrayList<String> mArgs = new ArrayList<>();
-
-    // The arguments begin at index 1, since index 0 contains the executable name.
-    private int mArgsBegin = 1;
-
-    private CommandLine(String @Nullable [] args) {
-        assumeNonNull(mArgs); // https://github.com/uber/NullAway/issues/1135
+    private synchronized void initInternal(String @Nullable [] args) {
+        // TODO(agrieve): Make it an error to be called twice in all cases.
+        assert !isInitialized() || !hasSwitchedToNative()
+                : "Cannot reinitialize after having switched to native.";
+        mArgs = new ArrayList<>();
+        mSwitches = new HashMap<>();
+        mArgsBegin = 1;
         // Invariant: we always have the argv[0] program name element.
         if (args == null || args.length == 0 || args[0] == null) {
             mArgs.add("");
         } else {
             mArgs.add(args[0]);
-            appendSwitchesInternal(args, 1);
+            appendSwitchesInternalLocked(args, 1);
         }
-    }
-
-    private void switchToNative() {
-        assert mArgs != null;
-        CommandLineJni.get().init(mArgs);
-        mArgs = null;
-        mSwitches = null;
-        Log.v(TAG, "Switched to native command-line");
     }
 
     /**
@@ -213,23 +237,17 @@ public class CommandLine {
     }
 
     /**
-     * Determine if the command line is bound to the native (JNI) implementation.
-     *
-     * @return true if the underlying implementation is delegating to the native command line.
-     */
-    public boolean hasSwitchedToNative() {
-        return mArgs == null;
-    }
-
-    /**
      * Returns true if this command line contains the given switch. (Switch names ARE
      * case-sensitive).
      */
     public boolean hasSwitch(String switchString) {
-        HashMap<String, String> switches = mSwitches;
-        return switches == null
-                ? CommandLineJni.get().hasSwitch(switchString)
-                : switches.containsKey(switchString);
+        Map<String, String> switches = mSwitches;
+        if (switches == null) {
+            return CommandLineJni.get().hasSwitch(switchString);
+        }
+        synchronized (this) {
+            return switches.containsKey(switchString);
+        }
     }
 
     /**
@@ -239,19 +257,28 @@ public class CommandLine {
      * @return switch value, or null if the switch is not set or set to empty.
      */
     public @Nullable String getSwitchValue(String switchString) {
-        HashMap<String, String> switches = mSwitches;
-        String ret =
-                switches == null
-                        ? CommandLineJni.get().getSwitchValue(switchString)
-                        : switches.get(switchString);
+        Map<String, String> switches = mSwitches;
+        String ret;
+        if (switches == null) {
+            ret = CommandLineJni.get().getSwitchValue(switchString);
+        } else {
+            synchronized (this) {
+                ret = switches.get(switchString);
+            }
+        }
         // Native does not distinguish empty values from key not present.
         return TextUtils.isEmpty(ret) ? null : ret;
     }
 
     /** Return a copy of all switches, along with their values. */
     public Map<String, String> getSwitches() {
-        HashMap<String, String> switches = mSwitches;
-        return switches == null ? CommandLineJni.get().getSwitches() : new HashMap<>(switches);
+        Map<String, String> switches = mSwitches;
+        if (switches == null) {
+            return CommandLineJni.get().getSwitches();
+        }
+        synchronized (this) {
+            return new HashMap<>(switches);
+        }
     }
 
     /**
@@ -271,16 +298,15 @@ public class CommandLine {
      * @param switchString the switch to add. It should NOT start with '--' !
      * @param value the value for this switch. For example, --foo=bar becomes 'foo', 'bar'.
      */
-    public void appendSwitchWithValue(String switchString, @Nullable String value) {
+    public synchronized void appendSwitchWithValue(String switchString, @Nullable String value) {
         if (value == null) {
             value = "";
         }
-        ArrayList<String> args = mArgs;
-        if (args == null) {
+
+        if (mSwitches == null) {
             CommandLineJni.get().appendSwitchWithValue(switchString, value);
             return;
         }
-        assumeNonNull(mSwitches);
         mSwitches.put(switchString, value);
 
         // Append the switch and update the switches/arguments divider mArgsBegin.
@@ -289,7 +315,8 @@ public class CommandLine {
             combinedSwitchString += SWITCH_VALUE_SEPARATOR + value;
         }
 
-        args.add(mArgsBegin++, combinedSwitchString);
+        assumeNonNull(mArgs);
+        mArgs.add(mArgsBegin++, combinedSwitchString);
     }
 
     /**
@@ -300,17 +327,17 @@ public class CommandLine {
      *     other append routines, these switches SHOULD start with '--' . Unlike init(), this does
      *     not include the program name in array[0].
      */
-    public void appendSwitchesAndArguments(String[] array) {
+    public synchronized void appendSwitchesAndArguments(String[] array) {
         if (mArgs == null) {
             CommandLineJni.get().appendSwitchesAndArguments(array);
         } else {
-            appendSwitchesInternal(array, 0);
+            appendSwitchesInternalLocked(array, 0);
         }
     }
 
     // Add the specified arguments, but skipping the first |skipCount| elements.
     @RequiresNonNull("mArgs")
-    private void appendSwitchesInternal(String[] array, int skipCount) {
+    private void appendSwitchesInternalLocked(String[] array, int skipCount) {
         boolean parseSwitches = true;
         for (String arg : array) {
             if (skipCount > 0) {
@@ -337,7 +364,7 @@ public class CommandLine {
      *
      * @param switchString The switch key to lookup. It should NOT start with '--' !
      */
-    public void removeSwitch(String switchString) {
+    public synchronized void removeSwitch(String switchString) {
         ArrayList<String> args = mArgs;
         if (args == null) {
             CommandLineJni.get().removeSwitch(switchString);

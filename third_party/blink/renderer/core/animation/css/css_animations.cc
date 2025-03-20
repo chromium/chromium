@@ -1512,6 +1512,9 @@ AnimationTrigger* CSSAnimations::ComputeTrigger(
       (existing_trigger ? existing_trigger->GetTimelineInternal() : nullptr);
   AnimationTimeline* new_timeline = ComputeTimeline(
       element, style_trigger_timeline, update, existing_timeline);
+  if (!new_timeline) {
+    new_timeline = &element->GetDocument().Timeline();
+  }
   EAnimationTriggerType type =
       CSSAnimationData::GetRepeated(data->TriggerTypeList(), animation_index);
   V8AnimationTriggerType new_type = AnimationTrigger::ToV8TriggerType(type);
@@ -2194,6 +2197,8 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
       css_animation.setTrigger(entry.trigger);
       css_animation.ResetIgnoreCSSTrigger();
     }
+    css_animation.SetTriggerActionPlayState(
+        entry.play_state_list[entry.index % entry.play_state_list.size()]);
     running_animations_[entry.index]->Update(entry);
     entry.animation->Update(kTimingUpdateOnDemand);
   }
@@ -2224,10 +2229,22 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
     auto* animation = MakeGarbageCollected<CSSAnimation>(
         element->GetExecutionContext(), entry.timeline, effect,
         entry.position_index, entry.name, entry.trigger);
-    animation->play();
-    if (inert_animation->Paused())
-      animation->pause();
-    animation->ResetIgnoreCSSPlayState();
+    animation->SetTriggerActionPlayState(
+        entry.play_state_list[entry.name_index % entry.play_state_list.size()]);
+    // If this animation has a trigger, do not play it automatically, wait for
+    // its trigger to play it.
+    AnimationTrigger* trigger = animation->GetTriggerInternal();
+    // At the moment, only progress-based animation triggers are supported,
+    // so we should only wait for progress-based triggers.
+    bool wait_for_trigger = trigger && trigger->GetTimelineInternal() &&
+                            trigger->GetTimelineInternal()->IsProgressBased();
+    if (!wait_for_trigger) {
+      animation->play();
+      if (inert_animation->Paused()) {
+        animation->pause();
+      }
+      animation->ResetIgnoreCSSPlayState();
+    }
     animation->SetRange(entry.range_start, entry.range_end);
     animation->ResetIgnoreCSSRangeStart();
     animation->ResetIgnoreCSSRangeEnd();

@@ -39,7 +39,9 @@
 <translation id="1538031354170655462">網站通常會使用近距離無線通訊 (NFC) 技術，與鄰近的追蹤器或裝置搭配運作，例如掃描徽章或感應支付</translation>
 <translation id="1547123415014299762">已允許第三方 Cookie</translation>
 <translation id="1593426485665524382">畫面頂端附近有可執行的新動作</translation>
+<translation id="1615755956145364867">網站可以要求播放受著作權保護的內容</translation>
 <translation id="1620510694547887537">攝影機</translation>
+<translation id="1621729191093924223">需要麥克風的功能將無法運作</translation>
 <translation id="1633720957382884102">相關網站</translation>
 <translation id="1644574205037202324">歷史記錄</translation>
 <translation id="1652197001188145583">如果啟用，網站就可以要求使用 NFC 裝置。如果停用，網站將無法使用 NFC 裝置。</translation>
@@ -54,6 +56,7 @@
 <translation id="1743802530341753419">允許網站連線至裝置前，必須先詢問你 (建議)</translation>
 <translation id="1779089405699405702">影像解碼器</translation>
 <translation id="1785415724048343560">建議勾選以獲得最佳體驗</translation>
+<translation id="1796588414813960292">需要使用音訊的功能將無法運作</translation>
 <translation id="1799920918471566157">Chrome 提示</translation>
 <translation id="1816835383954230954">啟用後，可提高 Chrome 執行速度，使用 JavaScript 的功能應該會正常運作。關閉時，效能會降低，但可提高 V8 防範攻擊的能力。</translation>
 <translation id="1818308510395330587">如要允許 <ph name="APP_NAME" /> 使用 AR，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟攝影機。</translation>
@@ -71,6 +74,7 @@
 <translation id="1994173015038366702">網站網址</translation>
 <translation id="2004697686368036666">某些網站的功能可能無法運作</translation>
 <translation id="2025115093177348061">擴增實境</translation>
+<translation id="2028449514182362831">需要動作感應器的功能將無法運作</translation>
 <translation id="2030769033451695672">輕觸即可返回 <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">復原</translation>
 <translation id="2091887806945687916">音訊</translation>
@@ -257,6 +261,7 @@
 <translation id="4259722352634471385">瀏覽的網址已封鎖：<ph name="URL" /></translation>
 <translation id="4274673989874969668">在你離開網站後，網站可以繼續透過同步作業完成各項工作，例如上傳相片或傳送即時通訊訊息等等</translation>
 <translation id="4278390842282768270">允許</translation>
+<translation id="4290791284969893584">關閉網頁後，你已啟動的工作可能無法完成</translation>
 <translation id="429312253194641664">一個網站正在播放媒體內容</translation>
 <translation id="42981349822642051">展開</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{明天到期}other{# 天後到期}}</translation>
@@ -531,6 +536,7 @@
 <translation id="8010630645305864042">{TILE_COUNT,plural, =1{隱藏「繼續使用這個分頁」資訊卡}other{隱藏「繼續使用這些分頁」資訊卡}}</translation>
 <translation id="802154636333426148">下載失敗</translation>
 <translation id="8042586301629853791">排序依據：</translation>
+<translation id="8051193500142930381">需要攝影機的功能將無法運作</translation>
 <translation id="8067883171444229417">播放影片</translation>
 <translation id="8068648041423924542">無法選取憑證。</translation>
 <translation id="8077120325605624147">你造訪的網站都能對你顯示所有廣告</translation>

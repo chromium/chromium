@@ -151,7 +151,6 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="1604959087182679653">Masquer la transcription</translation>
 <translation id="160633243685262989">Aperçu de l'image</translation>
 <translation id="1611649489706141841">suivant</translation>
-<translation id="1615144046047995187">Impossible d'effectuer le téléchargement. Réessayez ou redémarrez votre Chromebook.</translation>
 <translation id="1615335640928990664">Utilisation de données depuis le <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Utiliser un thème</translation>
 <translation id="1621067168122174824">Exécuter le test de recharge</translation>
@@ -370,7 +369,6 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="2560876255701405320">Liste des enregistrements audio</translation>
 <translation id="2561093647892030937">citrons</translation>
 <translation id="2570743873672969996">Le test <ph name="TEST_NAME" /> est en cours d'exécution…</translation>
-<translation id="2573178735329662769">Enregistrement de tous les sons sur ce Chromebook</translation>
 <translation id="2576253868710695442">Cela prendra jusqu'à 2 Go d'espace de stockage</translation>
 <translation id="2584547424703650812">Paysages lumineux</translation>
 <translation id="2584559707064218956">Pour configurer le réseau, accédez à Paramètres</translation>
@@ -849,7 +847,6 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="4981003703840817201">bleu et rose</translation>
 <translation id="498186245079027698">Vérifiez le numériseur et réessayez. Assurez-vous qu'il y a suffisamment d'espace local pour enregistrer les fichiers numérisés.</translation>
 <translation id="4982627662315910959">Raccourci non accessible. Appuyez sur un nouveau raccourci à l'aide de la touche Majuscule et d'une autre touche de modification (Ctrl, Alt ou <ph name="META_KEY" />).</translation>
-<translation id="4983216687482551672">Audio du Chromebook</translation>
 <translation id="4985509611418653372">Exécuter</translation>
 <translation id="4987769320337599931">Pare-feu</translation>
 <translation id="4988526792673242964">Pages</translation>
@@ -875,9 +872,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="5095761549884461003">Débranchez le câble USB de l'appareil <ph name="DEVICE_NAME" />, puis réinsérez-le pour poursuivre le processus de mise à jour</translation>
 <translation id="5099354524039520280">haut</translation>
 <translation id="5107243100836678918">Un raccourci ne comprenant pas la touche de <ph name="META_KEY" /> peut entrer en conflit avec le raccourci de certaines applications. Appuyez à nouveau sur ce raccourci pour continuer à l'utiliser ou appuyez sur un nouveau raccourci à l'aide de la touche de <ph name="KEY" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Impossible de télécharger le modèle de transcription pour cette langue : <ph name="LANGUAGE_NAME" />. Réessayez ou redémarrez votre Chromebook.</translation>
 <translation id="5108781503443873320">Mots de sens similaire :</translation>
-<translation id="5121677070210013200">Impossible de télécharger le modèle de transcription. Réessayez ou redémarrez votre Chromebook.</translation>
 <translation id="5130848777448318809">poneys</translation>
 <translation id="5137451382116112100">Plein écran</translation>
 <translation id="5139813694804168398">Ne pas déranger</translation>
@@ -1033,6 +1028,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="5896602941605730551">Lire</translation>
 <translation id="5901630391730855834">Jaune</translation>
 <translation id="5903200662178656908">L'appareil est un ensemble clavier et souris.</translation>
+<translation id="5903822368221507416">Masquer les onglets</translation>
 <translation id="5904994456462260490">Ajouter un nouveau nom de point d'accès</translation>
 <translation id="590746845088109442">chats</translation>
 <translation id="5907649332524363701">couleur de touche</translation>
@@ -1088,7 +1084,6 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="6122191549521593678">En ligne</translation>
 <translation id="6122277663991249694">Service de méthode d'entrée Chrome OS</translation>
 <translation id="6127426868813166163">blanc</translation>
-<translation id="613049107179582049">Lorsque les sons sur ce Chromebook sont activés, l'Enregistreur capture tous les sons joués sur cet appareil</translation>
 <translation id="6136285399872347291">effacement arrière</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Certificat utilisateur</translation>
@@ -1418,7 +1413,6 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Écran tactile USB</translation>
 <translation id="757747079855995705">pierre</translation>
-<translation id="7584853321964440104">Impossible d'effectuer le téléchargement. Réessayez ou redémarrez votre Chromebook.</translation>
 <translation id="7590883480672980941">Paramètres d'entrée</translation>
 <translation id="7595982850646262331">Il reste <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">L'administrateur <ph name="MANAGER" /> a configuré quand l'appareil suivant peut être utilisé : <ph name="DEVICE_TYPE" />.</translation>
@@ -1785,7 +1779,6 @@ L'IA générative peut se tromper, même à propos de personnes. Veuillez donc v
 <translation id="9218016617214286986">Afficher les noms de point d'accès connus</translation>
 <translation id="932327136139879170">Accueil</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Assurez-vous que votre microphone est connecté ou essayez de redémarrer votre Chromebook</translation>
 <translation id="945522503751344254">Envoyer un commentaire à Google</translation>
 <translation id="950520315903467048">La touche est manquante pour <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Comparer les voix tout au long de l'enregistrement afin que la transcription reflète ce que chaque locuteur a dit et à quel moment</translation>

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_BOOKMARKS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_TABS_MENU_MODEL_H_
 
 #include <map>
+#include <optional>
 
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -52,6 +53,10 @@ class STGTabsMenuModel : public ui::SimpleMenuModel,
   bool IsCommandIdEnabled(int command_id) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
 
+  // Returns the sync_id of the group this menu is showing the tabs for.
+  // This will return nullopt until Build() has been called.
+  std::optional<base::Uuid> sync_id() { return sync_id_.value(); }
+
  private:
   // The action users can perform on a saved tab group's submenu.
   struct Action {
@@ -83,6 +88,7 @@ class STGTabsMenuModel : public ui::SimpleMenuModel,
   raw_ptr<Browser> browser_;
   base::CancelableTaskTracker cancelable_task_tracker_;
   bool should_enable_move_menu_item_;
+  std::optional<base::Uuid> sync_id_ = std::nullopt;
 
   // The key is a submenu command id, i.e. one of the following:
   //        Open Group

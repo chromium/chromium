@@ -131,13 +131,9 @@ public class StartupHelperUnitTest {
     }
 
     private void createLocalGroupWithTwoTabs() {
-        List<Integer> tabIds = new ArrayList<>();
         List<Tab> tabs = new ArrayList<>();
-        tabIds.add(TAB_ID_1);
-        tabIds.add(TAB_ID_2);
         tabs.add(mTab1);
         tabs.add(mTab2);
-        when(mTabGroupModelFilter.getRelatedTabIds(ROOT_ID_1)).thenReturn(tabIds);
         when(mTabGroupModelFilter.getRelatedTabList(ROOT_ID_1)).thenReturn(tabs);
         when(mTabGroupModelFilter.getTabsInGroup(TOKEN_1)).thenReturn(tabs);
 

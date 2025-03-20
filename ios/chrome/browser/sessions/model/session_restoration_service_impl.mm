@@ -33,6 +33,18 @@ namespace {
 // Maximum size of session state NSData objects.
 const int kMaxSessionState = 5 * 1024 * 1024;
 
+// Status of loading the WebStateStorage.
+enum class WebStateStorageStatus {
+  kSuccess,
+  kFailure,
+};
+
+// Records whether loading a WebStateStorage was a success or not.
+void RecordLoadingWebStateStorageStatus(WebStateStorageStatus status) {
+  base::UmaHistogramBoolean("Tabs.MissingWebStateStorageFileOnSessionRestore",
+                            status != WebStateStorageStatus::kSuccess);
+}
+
 // Deletes all files and directory in `path` not present in `items_to_keep`.
 void DeleteUnknownContent(const base::FilePath& path,
                           const std::set<base::FilePath>& items_to_keep) {
@@ -49,14 +61,23 @@ void DeleteUnknownContent(const base::FilePath& path,
   }
 }
 
-// Loads WebState storage from `web_state_dir` into `storage`.
-web::proto::WebStateStorage LoadWebStateStorage(const base::FilePath& path) {
+// Loads storage for WebState at `path`.
+std::optional<web::proto::WebStateStorage> LoadWebStateStorage(
+    const base::FilePath& path) {
   web::proto::WebStateStorage storage;
-  std::ignore = ios::sessions::ParseProto(path, storage);
-  return storage;
+  if (ios::sessions::ParseProto(path, storage)) {
+    RecordLoadingWebStateStorageStatus(WebStateStorageStatus::kSuccess);
+    return storage;
+  }
+
+  // Loading the file failed, inform the caller by returning nullopt.
+  // They can decide what to do (e.g. ignore the WebState, try to
+  // recover from metadata, ...).
+  RecordLoadingWebStateStorageStatus(WebStateStorageStatus::kFailure);
+  return std::nullopt;
 }
 
-// Loads Webstate native session from `web_state_dir`. It is okay if the file
+// Loads Webstate native session from `path`. It is okay if the file
 // is missing, in that case the function return `nil`.
 NSData* LoadWebStateSession(const base::FilePath& path) {
   return ios::sessions::ReadFile(path);
@@ -84,6 +105,16 @@ std::unique_ptr<web::WebState> CreateWebState(
       base::BindOnce(&LoadWebStateSession, web_state_session_path));
 
   return web_state;
+}
+
+// Helper that invoke `callback` with `optional` value if not null or
+// does nothing otherwise.
+void AdaptWebStateStorageCallback(
+    base::OnceCallback<void(web::proto::WebStateStorage)> callback,
+    std::optional<web::proto::WebStateStorage> optional) {
+  if (optional.has_value()) {
+    std::move(callback).Run(std::move(optional).value());
+  }
 }
 
 // Delete data for discarded sessions with `identifiers` in `storage_path`
@@ -193,7 +224,12 @@ void IterateDataForSessionAtPath(const base::FilePath& session_dir,
         ios::sessions::WebStateDirectory(session_dir, web_state_id)
             .Append(kWebStateStorageFilename);
 
-    iterator.Run(web_state_id, LoadWebStateStorage(web_state_storage_path));
+    // Client code can't know before hand how many tabs exists, so
+    // it is okay to drop tabs that cannot be loaded.
+    if (std::optional<web::proto::WebStateStorage> storage =
+            LoadWebStateStorage(web_state_storage_path)) {
+      iterator.Run(web_state_id, std::move(storage).value());
+    }
   }
 }
 
@@ -506,10 +542,11 @@ void SessionRestorationServiceImpl::LoadWebStateStorage(
 
   // Post the task to read the data from disk. It will execute after all the
   // pending requests, so if the WebState has recently been created by calling
-  // CreateUnrealizedWebState(...), the data should be available.
+  // CreateUnrealizedWebState(...), the data should be available. If it is not
+  // then the callback is not called.
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&::LoadWebStateStorage, storage_path),
-      std::move(callback));
+      base::BindOnce(&AdaptWebStateStorageCallback, std::move(callback)));
 }
 
 void SessionRestorationServiceImpl::AttachBackup(Browser* browser,
@@ -602,7 +639,7 @@ SessionRestorationServiceImpl::CreateUnrealizedWebState(
   // main thread while it is being written to disk on a background thread.
   return web::WebState::CreateWithStorage(
       browser->GetProfile(), web_state_id, std::move(metadata),
-      base::ReturnValueOnce(std::move(storage)),
+      base::ReturnValueOnce(std::make_optional(std::move(storage))),
       base::ReturnValueOnce<NSData*>(nil));
 }
 

@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">លាក់​ប្រតិចារឹក</translation>
 <translation id="160633243685262989">មើល​រូបភាពសាកល្បង</translation>
 <translation id="1611649489706141841">ទៅមុខ</translation>
-<translation id="1615144046047995187">មិនអាច​ទាញយកបានទេ។ សូម​ព្យាយាម​ម្ដងទៀត ឬ​ចាប់ផ្ដើម Chromebook របស់អ្នក​ឡើងវិញ។</translation>
 <translation id="1615335640928990664">ការប្រើទិន្នន័យចាប់តាំងពីថ្ងៃ<ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">ប្រើ​ទម្រង់រចនា</translation>
 <translation id="1621067168122174824">ដំណើរការតេស្តសាកថ្ម</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">បញ្ជីសំឡេងថត</translation>
 <translation id="2561093647892030937">ក្រូចឆ្មារបារាំង</translation>
 <translation id="2570743873672969996">កំពុងដំណើរការតេស្ត <ph name="TEST_NAME" />...</translation>
-<translation id="2573178735329662769">ការថតសំឡេង Chromebook ទាំងអស់</translation>
 <translation id="2576253868710695442">សកម្មភាពនេះនឹងត្រូវការទំហំផ្ទុករហូតដល់ 2GB</translation>
 <translation id="2584547424703650812">រូបភាពដែល​បញ្ចេញពន្លឺ</translation>
 <translation id="2584559707064218956">ដើម្បីរៀបចំ សូមចូលទៅកាន់ការកំណត់</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">ខៀវ និងផ្កាឈូក</translation>
 <translation id="498186245079027698">ពិនិត្យមើល​កម្មវិធីស្កេន រួចព្យាយាមម្ដងទៀត។ ត្រូវប្រាកដថា មានទំហំផ្ទុក​ក្នុងឧបករណ៍​គ្រប់គ្រាន់ ដើម្បីរក្សាទុក​ឯកសារដែលបានស្កេន។</translation>
 <translation id="4982627662315910959">មិនអាចប្រើ​ផ្លូវកាត់​បានទេ។ សូមចុច​ផ្លូវកាត់ថ្មី​ដោយប្រើ shift និងគ្រាប់ចុចកែសម្រួល 1 ទៀត (ctrl, alt ឬ<ph name="META_KEY" />)។</translation>
-<translation id="4983216687482551672">សំឡេង Chromebook</translation>
 <translation id="4985509611418653372">ដំណើរការ</translation>
 <translation id="4987769320337599931">ជញ្ជាំង​ភ្លើង</translation>
 <translation id="4988526792673242964">ទំព័រ</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">ដក​ខ្សែ USB <ph name="DEVICE_NAME" /> រួចដោតវា​ចូលម្ដង​ទៀត ដើម្បីបន្ត​ដំណើរការ​ដំឡើងកំណែ</translation>
 <translation id="5099354524039520280">ឡើងលើ</translation>
 <translation id="5107243100836678918">ផ្លូវកាត់​ដែលគ្មានគ្រាប់ចុច<ph name="META_KEY" />ប្រហែលជា​ជាន់គ្នា​ជាមួយ​ផ្លូវកាត់​របស់កម្មវិធី​មួយចំនួន។ សូមចុច​ផ្លូវកាត់នេះ​ម្ដងទៀត ដើម្បីបន្ត​ប្រើប្រាស់​វា ឬចុច​ផ្លូវកាត់ថ្មី​ដោយប្រើគ្រាប់ចុច<ph name="KEY" />។ <ph name="LINK_BEGIN" />ស្វែងយល់​បន្ថែម<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">មិនអាច​ទាញយកគំរូប្រតិចារឹកជាភាសា<ph name="LANGUAGE_NAME" />បានទេ។ សូម​ព្យាយាម​ម្ដងទៀត ឬ​ចាប់ផ្ដើម Chromebook របស់អ្នក​ឡើងវិញ</translation>
 <translation id="5108781503443873320">ស្រដៀង៖</translation>
-<translation id="5121677070210013200">មិនអាច​ទាញយក​គំរូ​ប្រតិចារឹក​បានទេ។ សូម​ព្យាយាម​ម្ដងទៀត ឬ​ចាប់ផ្ដើម Chromebook របស់អ្នក​ឡើងវិញ។</translation>
 <translation id="5130848777448318809">កូនសេះ</translation>
 <translation id="5137451382116112100">អេក្រង់ពេញ</translation>
 <translation id="5139813694804168398">កុំរំខាន</translation>
@@ -1089,7 +1084,6 @@
 <translation id="6122191549521593678">លើអ៊ីនធឺណិត</translation>
 <translation id="6122277663991249694">សេវាកម្ម​វិធីបញ្ចូល ChromeOS</translation>
 <translation id="6127426868813166163">ស</translation>
-<translation id="613049107179582049">នៅពេលបើក​សំឡេង Chromebook កម្មវិធី​ថតសំឡេង​នឹងថត​សំឡេង​ទាំងអស់​ដែលចាក់​នៅលើ​ឧបករណ៍នេះ</translation>
 <translation id="6136285399872347291">លុបថយក្រោយ</translation>
 <translation id="6137614725462089991">បច្ចេកវិទ្យាទំនើប</translation>
 <translation id="6137767437444130246">វិញ្ញាបនបត្រ​អ្នក​ប្រើប្រាស់</translation>
@@ -1419,7 +1413,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">អេក្រង់ថាច់ USB</translation>
 <translation id="757747079855995705">ថ្ម</translation>
-<translation id="7584853321964440104">មិនអាច​ទាញយកបានទេ។ សូម​ព្យាយាម​ម្ដងទៀត ឬ​ចាប់ផ្ដើម Chromebook របស់អ្នក​ឡើងវិញ។</translation>
 <translation id="7590883480672980941">ការកំណត់ការបញ្ចូល</translation>
 <translation id="7595982850646262331">នៅសល់ <ph name="TIME_VALUE" /> ទៀត</translation>
 <translation id="7600430297804876776">អ្នកគ្រប់គ្រង <ph name="MANAGER" /> បាន​កំណត់​ពេលដែលអាចប្រើ <ph name="DEVICE_TYPE" /> នេះបាន។</translation>
@@ -1786,7 +1779,6 @@
 <translation id="9218016617214286986">បង្ហាញ APN ដែលស្គាល់</translation>
 <translation id="932327136139879170">ទំព័រដើម</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">ត្រូវប្រាកដថា​បានភ្ជាប់​មីក្រូហ្វូន​របស់អ្នក ឬ​សាកល្បង​ចាប់ផ្ដើម Chromebook របស់អ្នក​ឡើងវិញ</translation>
 <translation id="945522503751344254">ផ្ញើមតិ</translation>
 <translation id="950520315903467048">បាត់​គ្រាប់ចុចសម្រាប់<ph name="DIRECTION" />។ <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">ប្រៀបធៀប​សំឡេង​ក្នុង​សំឡេងថតទាំងមូល ដើម្បីឱ្យ​ប្រតិចារឹក​បង្ហាញ​ខ្លឹមសារ និងពេលវេលាដែល​អ្នកនិយាយ​ម្នាក់ៗបាន​និយាយ</translation>

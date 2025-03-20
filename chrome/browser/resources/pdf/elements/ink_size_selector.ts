@@ -64,7 +64,7 @@ export class InkSizeSelectorElement extends InkSizeSelectorElementBase {
 
   override focus() {
     const selectedButton = this.shadowRoot.querySelector<HTMLElement>(
-        'cr-icon-button[data-selected="true"]');
+        'selectable-icon-button[checked]');
     assert(selectedButton);
     selectedButton.focus();
   }
@@ -72,41 +72,12 @@ export class InkSizeSelectorElement extends InkSizeSelectorElementBase {
   currentSize: number = 0;
   currentType: AnnotationBrushType = AnnotationBrushType.PEN;
 
-  protected isCurrentSize_(size: number): boolean {
-    return this.currentSize === size;
+  protected currentSizeString_(): string {
+    return this.currentSize.toString();
   }
 
-  protected getTabIndexForSize_(size: number): number {
-    return this.isCurrentSize_(size) ? 0 : -1;
-  }
-
-  protected onSizeClick_(e: Event) {
-    this.setBrushSize_(e.currentTarget as HTMLElement);
-  }
-
-  protected onSizeKeydown_(e: KeyboardEvent) {
-    // Only handle arrow keys.
-    const isPrevious = e.key === 'ArrowLeft' || e.key === 'ArrowUp';
-    const isNext = e.key === 'ArrowRight' || e.key === 'ArrowDown';
-    if (!isPrevious && !isNext) {
-      return;
-    }
-    e.preventDefault();
-
-    const currSizeButton = e.target as HTMLElement;
-    const currentIndex = Number(currSizeButton.dataset['index']);
-
-    const brushSizes = this.getCurrentBrushSizes_();
-    const numOptions = brushSizes.length;
-    const delta = isNext ? 1 : -1;
-    const newIndex = (numOptions + currentIndex + delta) % numOptions;
-
-    const newSize = brushSizes[newIndex]!.size;
-    const newSizeButton =
-        this.shadowRoot.querySelector<HTMLElement>(`[data-size='${newSize}']`);
-    assert(newSizeButton);
-    this.setBrushSize_(newSizeButton);
-    newSizeButton.focus();
+  protected onSelectedChanged_(e: CustomEvent<{value: string}>) {
+    this.currentSize = Number(e.detail.value);
   }
 
   protected getCurrentBrushSizes_(): SizeOption[] {
@@ -114,15 +85,6 @@ export class InkSizeSelectorElement extends InkSizeSelectorElementBase {
     return this.currentType === AnnotationBrushType.HIGHLIGHTER ?
         HIGHLIGHTER_SIZES :
         PEN_SIZES;
-  }
-
-  private setBrushSize_(sizeButton: HTMLElement): void {
-    const size = Number(sizeButton.dataset['size']);
-    if (this.currentSize === size) {
-      return;
-    }
-
-    this.currentSize = size;
   }
 }
 

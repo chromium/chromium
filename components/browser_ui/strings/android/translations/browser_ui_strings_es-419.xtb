@@ -39,7 +39,9 @@
 <translation id="1538031354170655462">Por lo general, los sitios usan la Comunicación de campo cercano (NFC) para trabajar con etiquetas o dispositivos cercanos, como escanear insignias o pagar sin contacto</translation>
 <translation id="1547123415014299762">Se permiten las cookies de terceros</translation>
 <translation id="1593426485665524382">Nuevas acciones disponibles cerca de la parte superior de la pantalla</translation>
+<translation id="1615755956145364867">Permitir que los sitios soliciten permiso para reproducir contenido protegido</translation>
 <translation id="1620510694547887537">Cámara</translation>
+<translation id="1621729191093924223">No se habilitarán las funciones que necesitan un micrófono.</translation>
 <translation id="1633720957382884102">Sitios relacionados</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1652197001188145583">Cuando esta opción está activada, los sitios pueden solicitar permiso para usar dispositivos NFC. Cuando está desactivada, los sitios no pueden usar dispositivos NFC.</translation>
@@ -54,6 +56,7 @@
 <translation id="1743802530341753419">Preguntar antes de permitir que los sitios se conecten a un dispositivo (recomendado)</translation>
 <translation id="1779089405699405702">Decodificador de imágenes</translation>
 <translation id="1785415724048343560">Recomendado para obtener la mejor experiencia</translation>
+<translation id="1796588414813960292">No se habilitarán las funciones que necesitan sonido.</translation>
 <translation id="1799920918471566157">Sugerencias de Chrome</translation>
 <translation id="1816835383954230954">Cuando está activado, Chrome se ejecuta más rápido y las funciones que usan JavaScript deberían funcionar según lo previsto. Si está desactivado, se reduce el rendimiento, pero V8 es más resistente a los ataques.</translation>
 <translation id="1818308510395330587">Para permitir el uso de la RA en <ph name="APP_NAME" />, también debes activar la cámara en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
@@ -71,6 +74,7 @@
 <translation id="1994173015038366702">URL del sitio</translation>
 <translation id="2004697686368036666">Es posible que algunas funciones no puedan utilizarse en algunos sitios.</translation>
 <translation id="2025115093177348061">Realidad aumentada</translation>
+<translation id="2028449514182362831">No se habilitarán las funciones que necesitan sensores de movimiento.</translation>
 <translation id="2030769033451695672">Presiona para volver a <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Deshacer</translation>
 <translation id="2091887806945687916">Sonido</translation>
@@ -257,6 +261,7 @@
 <translation id="4259722352634471385">Navegación bloqueada: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Después de que sales de los sitios, por lo general se siguen sincronizando para completar tareas, como la de subir fotos o enviar un mensaje de chat.</translation>
 <translation id="4278390842282768270">Permitidas</translation>
+<translation id="4290791284969893584">Después de cerrar una página, es posible que no puedas completar las tareas que empezaste.</translation>
 <translation id="429312253194641664">Un sitio está reproduciendo contenido multimedia</translation>
 <translation id="42981349822642051">Expandir</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Vence mañana}other{Vence dentro de # días}}</translation>
@@ -531,6 +536,7 @@
 <translation id="8010630645305864042">{TILE_COUNT,plural, =1{Ocultar la tarjeta Continúa con esta pestaña}other{Ocultar la tarjeta Continúa con estas pestañas}}</translation>
 <translation id="802154636333426148">Error en la descarga</translation>
 <translation id="8042586301629853791">Ordenar por:</translation>
+<translation id="8051193500142930381">No se habilitarán las funciones que necesitan una cámara.</translation>
 <translation id="8067883171444229417">Reproducir video</translation>
 <translation id="8068648041423924542">No es posible seleccionar un certificado</translation>
 <translation id="8077120325605624147">Cualquier sitio que visites puede mostrarte cualquier anuncio</translation>

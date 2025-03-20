@@ -93,6 +93,7 @@ enum SearchEngineType {
   SEARCH_ENGINE_LILO = 74,
   SEARCH_ENGINE_STARTPAGE = 75,
   SEARCH_ENGINE_STARTER_PACK_PAGE = 76,
+  SEARCH_ENGINE_MCAFEE = 77,
 
   SEARCH_ENGINE_MAX  // Bounding value needed for UMA histogram macro.
 };

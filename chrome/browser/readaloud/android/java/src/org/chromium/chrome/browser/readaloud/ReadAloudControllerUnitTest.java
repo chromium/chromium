@@ -32,15 +32,19 @@ import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.common.collect.ImmutableMap;
+
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
@@ -114,7 +118,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import com.google.common.collect.ImmutableMap;
 
 /** Unit tests for {@link ReadAloudController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -134,6 +137,7 @@ public class ReadAloudControllerUnitTest {
     private static final Locale EN_US = new Locale("en", "US");
     private static final Locale FR_FR = new Locale("fr", "FR");
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private MockTab mTab;
     private ReadAloudController mController;
     private ReadAloudController mController2;
@@ -211,7 +215,6 @@ public class ReadAloudControllerUnitTest {
     public void setUp() {
         mDefaultLocale = Locale.getDefault();
 
-        MockitoAnnotations.initMocks(this);
         mLayoutStateProviderSupplier.set(mLayoutStateProvider);
         mProfileSupplier = new ObservableSupplierImpl<>();
         mProfileSupplier.set(mMockProfile);
@@ -760,7 +763,13 @@ public class ReadAloudControllerUnitTest {
                 .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
         boolean failed = false;
         try {
-            mCallbackCaptor.getValue().onSuccess("", ImmutableMap.of(PlaybackMode.CLASSIC, new ReadAloudReadabilityHooks.ReadabilityResult(true, true)));
+            mCallbackCaptor
+                    .getValue()
+                    .onSuccess(
+                            "",
+                            ImmutableMap.of(
+                                    PlaybackMode.CLASSIC,
+                                    new ReadAloudReadabilityHooks.ReadabilityResult(true, true)));
         } catch (AssertionError e) {
             failed = true;
         }
@@ -2990,7 +2999,13 @@ public class ReadAloudControllerUnitTest {
         // if somehow an empty url sneaks into the readability maps
         boolean failed = false;
         try {
-            mCallbackCaptor.getValue().onSuccess("", ImmutableMap.of(PlaybackMode.CLASSIC, new ReadAloudReadabilityHooks.ReadabilityResult(true, true)));
+            mCallbackCaptor
+                    .getValue()
+                    .onSuccess(
+                            "",
+                            ImmutableMap.of(
+                                    PlaybackMode.CLASSIC,
+                                    new ReadAloudReadabilityHooks.ReadabilityResult(true, true)));
         } catch (AssertionError e) {
             failed = true;
         }

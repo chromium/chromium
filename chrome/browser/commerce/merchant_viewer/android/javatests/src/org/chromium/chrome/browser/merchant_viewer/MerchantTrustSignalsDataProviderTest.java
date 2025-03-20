@@ -10,10 +10,12 @@ import static org.mockito.Mockito.doReturn;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
@@ -34,6 +36,7 @@ import java.util.concurrent.TimeoutException;
 @SuppressWarnings("DoNotMock") // Mocking GURL
 public class MerchantTrustSignalsDataProviderTest {
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private GURL mMockDestinationGurl;
 
     @Mock private Profile mMockProfile;
@@ -44,7 +47,6 @@ public class MerchantTrustSignalsDataProviderTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         doReturn(false).when(mMockProfile).isOffTheRecord();
         ProfileManager.setLastUsedProfileForTesting(mMockProfile);
         ShoppingServiceFactory.setShoppingServiceForTesting(mMockShoppingService);

@@ -102,7 +102,7 @@ net::HttpRequestHeaders ComputeAttributionReportingHeaders(
             AttributionReportingHeaderGreaseOptions::FromBits(grease_bits &
                                                               0xff));
     grease_bits >>= 8;
-    headers.SetHeader("Ad-Auction-Registration-Eligible",
+    headers.SetHeader("Sec-Ad-Auction-Event-Recording-Eligible",
                       std::move(ad_auction_registration_eligible));
   }
 

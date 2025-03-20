@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "extensions/browser/allowlist_state.h"
 #include "extensions/browser/extension_prefs.h"
@@ -21,11 +22,11 @@ class Value;
 }  // namespace base
 
 namespace extensions {
+class ExtensionRegistrar;
 class ExtensionRegistry;
-class ExtensionService;
 
 // Manages the Safe Browsing CRX Allowlist.
-class ExtensionAllowlist : private ExtensionPrefsObserver {
+class ExtensionAllowlist : public KeyedService, public ExtensionPrefsObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -38,15 +39,11 @@ class ExtensionAllowlist : private ExtensionPrefsObserver {
         bool show_warning) {}
   };
 
-  // Constructor stores pointers to `profile`, `extension_prefs` and
-  // `extension_service`. They must outlive this object and the ownership
-  // remains at caller.
-  ExtensionAllowlist(Profile* profile,
-                     ExtensionPrefs* extension_prefs,
-                     ExtensionService* extension_service);
+  static ExtensionAllowlist* Get(Profile* profile);
+
   ExtensionAllowlist(const ExtensionAllowlist&) = delete;
   ExtensionAllowlist& operator=(const ExtensionAllowlist&) = delete;
-  ~ExtensionAllowlist();
+  ~ExtensionAllowlist() override;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -88,6 +85,11 @@ class ExtensionAllowlist : private ExtensionPrefsObserver {
   bool warnings_enabled() const { return warnings_enabled_; }
 
  private:
+  friend class ExtensionAllowlistFactory;
+
+  // `profile` must outlive this object and the ownership remains at caller.
+  explicit ExtensionAllowlist(Profile* profile);
+
   // Set if the allowlist should be enforced or not.
   void SetAllowlistEnforcementFields();
 
@@ -125,7 +127,7 @@ class ExtensionAllowlist : private ExtensionPrefsObserver {
 
   raw_ptr<Profile> profile_ = nullptr;
   raw_ptr<ExtensionPrefs> extension_prefs_ = nullptr;
-  raw_ptr<ExtensionService> extension_service_ = nullptr;
+  raw_ptr<ExtensionRegistrar> extension_registrar_ = nullptr;
   raw_ptr<ExtensionRegistry> registry_ = nullptr;
 
   bool init_done_ = false;

@@ -1695,6 +1695,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3964661563329879394">{COUNT,plural, =0{Cap}=1{D'1 lloc }other{De # llocs }}</translation>
 <translation id="3965672182149944205">Vols desar l'adreça?</translation>
 <translation id="3966044442021752214">Seguretat del producte</translation>
+<translation id="3969869202926863008">Accés a la xarxa local</translation>
 <translation id="397105322502079400">S’està calculant...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> està bloquejat</translation>
 <translation id="3975852104434126461">Sector de l'automoció</translation>
@@ -2051,6 +2052,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="460848736049414407">Bloquejat per l'administrador</translation>
 <translation id="4610279718074907952">Aquest lloc web forma part d'un grup, definit per <ph name="SET_OWNER" />, que pot veure la teva activitat</translation>
 <translation id="46128681529823442">Equipament per a futbol</translation>
+<translation id="4612904677925722054">És possible que aquest lloc web inclogui contingut no apte per a menors. El teu pare, mare o tutor ha de dir si pots visitar-lo.</translation>
 <translation id="4619564267100705184">Verifica la teva identitat</translation>
 <translation id="4622292761762557753">Transfereix igualment</translation>
 <translation id="4622647778991854660">Activa les notificacions al Centre de notificacions. Obre <ph name="LINK" />.</translation>
@@ -2648,6 +2650,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5660122698869360728">Una carpeta intel·ligent nova que et permet desar totes les teves pàgines de compra en un sol lloc i fer un seguiment automàtic dels preus, obtenir estadístiques de preus i més.</translation>
 <translation id="5663955426505430495">L'administrador del dispositiu ha instal·lat extensions per obtenir funcions addicionals. Les extensions tenen accés a algunes de les teves dades.</translation>
 <translation id="5667827081946850877">Audiollibres</translation>
+<translation id="5674082555327905359">Pot demanar permís per connectar-se a qualsevol dispositiu de la teva xarxa local</translation>
 <translation id="5675650730144413517">Aquesta pàgina no funciona</translation>
 <translation id="5675809467256309336">Música dance i electrònica</translation>
 <translation id="5675959228867414813">Mostra per data</translation>
@@ -2896,6 +2899,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6116338172782435947">Veure el text i les imatges copiats al porta-retalls</translation>
 <translation id="6117833587752089929">Foto (setinada)</translation>
 <translation id="6118782133429281336">La llista d'origen està buida.</translation>
+<translation id="6120950591512958208">Utilitza aquest codi en el moment de tramitar la compra.</translation>
 <translation id="612178891608320683">Cuina vegana</translation>
 <translation id="6122181661879998141">a l'anvers de la targeta</translation>
 <translation id="6124058285696691147">Baixa el fitxer adjunt</translation>
@@ -2921,6 +2925,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6159908896951210943">Formal</translation>
 <translation id="6160391204859821737">Activa una funció de privadesa d'anuncis</translation>
 <translation id="6162403104168428984">Vols actualitzar l'adreça?</translation>
+<translation id="6164605812717770913">El teu pare, mare o tutor ha dit que no pots visitar aquest lloc web. Pots demanar-li que el desbloquegi.</translation>
 <translation id="6165508094623778733">Més informació</translation>
 <translation id="6167577165590485365">Darrer intent de recollida:</translation>
 <translation id="617256461084925519">Google Chrome està provant de verificar la teva identitat per poder emplenar la informació de pagament.</translation>
@@ -3012,6 +3017,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6321917430147971392">Reviseu la configuració de DNS</translation>
 <translation id="6322182122604171028">No s'ha pogut fer servir Windows Hello</translation>
 <translation id="6326947323444967009">Estableix Chrome com a navegador predeterminat del sistema a la configuració d'iOS</translation>
+<translation id="6327065120806001832">accés a la xarxa local</translation>
 <translation id="6328639280570009161">Proveu de desactivar la predicció de xarxa</translation>
 <translation id="6335029926534404762">Sabatilles esportives</translation>
 <translation id="6337133576188860026">Allibera menys de <ph name="SIZE" />. És possible que alguns llocs web es carreguin més a poc a poc la propera vegada que els visitis.</translation>

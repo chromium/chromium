@@ -23,13 +23,13 @@ buildflag_header("branding_buildflags") {
 
   if (is_chrome_branded) {
     flags = [
-      "CHROMIUM_BRANDING=0",
-      "GOOGLE_CHROME_BRANDING=1",
+      "CHROMIUM_BRANDING=false",
+      "GOOGLE_CHROME_BRANDING=true",
     ]
   } else {
     flags = [
-      "CHROMIUM_BRANDING=1",
-      "GOOGLE_CHROME_BRANDING=0",
+      "CHROMIUM_BRANDING=true",
+      "GOOGLE_CHROME_BRANDING=false",
     ]
   }
 
@@ -37,9 +37,9 @@ buildflag_header("branding_buildflags") {
     assert(!is_chrome_branded,
            "`is_chrome_for_testing` is incompatible with `is_chrome_branded`")
 
-    flags += [ "CHROME_FOR_TESTING=1" ]
+    flags += [ "CHROME_FOR_TESTING=true" ]
   } else {
-    flags += [ "CHROME_FOR_TESTING=0" ]
+    flags += [ "CHROME_FOR_TESTING=false" ]
   }
 
   # Note: `GOOGLE_CHROME_FOR_TESTING_BRANDING` and `CHROMIUM_BRANDING` are not
@@ -48,9 +48,9 @@ buildflag_header("branding_buildflags") {
     assert(is_chrome_for_testing,
            "`is_chrome_for_testing_branded` requires `is_chrome_for_testing`")
 
-    flags += [ "GOOGLE_CHROME_FOR_TESTING_BRANDING=1" ]
+    flags += [ "GOOGLE_CHROME_FOR_TESTING_BRANDING=true" ]
   } else {
-    flags += [ "GOOGLE_CHROME_FOR_TESTING_BRANDING=0" ]
+    flags += [ "GOOGLE_CHROME_FOR_TESTING_BRANDING=false" ]
   }
 }
 

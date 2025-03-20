@@ -18,7 +18,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
  * TabModel organizes all the open tabs and allows you to create new ones. Regular and Incognito
  * tabs are kept in different TabModels.
  */
-public interface TabModel extends TabList {
+public interface TabModel extends SupportsTabModelObserver, TabList {
     /** Returns the profile associated with the current model. */
     Profile getProfile();
 
@@ -131,18 +131,4 @@ public interface TabModel extends TabList {
      * @param creationState How the tab was created.
      */
     void addTab(Tab tab, int index, @TabLaunchType int type, @TabCreationState int creationState);
-
-    /**
-     * Subscribes a {@link TabModelObserver} to be notified about changes to this model.
-     *
-     * @param observer The observer to be subscribed.
-     */
-    void addObserver(TabModelObserver observer);
-
-    /**
-     * Unsubscribes a previously subscribed {@link TabModelObserver}.
-     *
-     * @param observer The observer to be unsubscribed.
-     */
-    void removeObserver(TabModelObserver observer);
 }

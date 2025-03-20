@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">إخفاء نص التسجيل</translation>
 <translation id="160633243685262989">معاينة الصورة</translation>
 <translation id="1611649489706141841">للأمام</translation>
-<translation id="1615144046047995187">‏يتعذّر التنزيل. يُرجى إعادة المحاولة أو إعادة تشغيل جهاز Chromebook.</translation>
 <translation id="1615335640928990664">عرض معدل استخدام البيانات منذ تاريخ <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">استخدام مظهر</translation>
 <translation id="1621067168122174824">تشغيل اختبار فحص البطارية</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">قائمة التسجيلات الصوتية</translation>
 <translation id="2561093647892030937">ليمون</translation>
 <translation id="2570743873672969996">جارٍ تنفيذ اختبار <ph name="TEST_NAME" />...</translation>
-<translation id="2573178735329662769">‏تسجيل كلّ الأصوات على جهاز Chromebook</translation>
 <translation id="2576253868710695442">ستستهلك عملية التسجيل ما يصل إلى 2 غيغابايت من مساحة التخزين</translation>
 <translation id="2584547424703650812">منظر بألوان لامعة</translation>
 <translation id="2584559707064218956">لضبط إعدادات الشبكة، انتقِل إلى "الإعدادات".</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">الأزرق والوردي</translation>
 <translation id="498186245079027698">يجب التحقُّق من جهاز "المسح الضوئي" ثم إعادة المحاولة. ويجب التأكّد من توفّر مساحة على الجهاز لحفظ الملفات التي تم "مسحها ضوئيًا".</translation>
 <translation id="4982627662315910959">‏هذا الاختصار غير متاح. اضغط على اختصار جديد باستخدام مفتاح Shift مع مفتاح تعديل واحد آخر (Ctrl أو Alt أو مفتاح <ph name="META_KEY" />).</translation>
-<translation id="4983216687482551672">‏الصوت على جهاز Chromebook</translation>
 <translation id="4985509611418653372">تشغيل</translation>
 <translation id="4987769320337599931">جدار الحماية</translation>
 <translation id="4988526792673242964">الصفحات</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">‏عليك فصل كابل USB في <ph name="DEVICE_NAME" /> ثم إعادة توصيله لمواصلة عملية التحديث</translation>
 <translation id="5099354524039520280">لأعلى</translation>
 <translation id="5107243100836678918">قد يتعارض الاختصار بدون مفتاح <ph name="META_KEY" /> مع اختصار بعض التطبيقات. اضغط على هذا الاختصار مرة أخرى لمواصلة استخدامه، أو اضغط على اختصار جديد يستخدِم مفتاح <ph name="KEY" />. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">‏يتعذَّر تنزيل نموذج تحويل الصوت إلى نص باللغة <ph name="LANGUAGE_NAME" />. يُرجى إعادة المحاولة أو إعادة تشغيل جهاز Chromebook</translation>
 <translation id="5108781503443873320">المرادفات المشابهة:</translation>
-<translation id="5121677070210013200">‏تعذَّر تنزيل نموذج تحويل الصوت إلى نص. يُرجى إعادة المحاولة أو إعادة تشغيل جهاز Chromebook.</translation>
 <translation id="5130848777448318809">مهور</translation>
 <translation id="5137451382116112100">ملء الشاشة</translation>
 <translation id="5139813694804168398">عدم الإزعاج</translation>
@@ -1089,7 +1084,6 @@
 <translation id="6122191549521593678">متصل</translation>
 <translation id="6122277663991249694">‏خدمة أساليب الإدخال لنظام التشغيل Chrome</translation>
 <translation id="6127426868813166163">أبيض</translation>
-<translation id="613049107179582049">‏عندما يكون صوت جهاز Chromebook مفعّلاً، يسجِّل تطبيق "المسجّلة الذكية" كل الأصوات الذي يتم تشغيلها على هذا الجهاز</translation>
 <translation id="6136285399872347291">مسافة للخلف</translation>
 <translation id="6137614725462089991">الخيال العلمي المستقبلي</translation>
 <translation id="6137767437444130246">شهادة المستخدم</translation>
@@ -1419,7 +1413,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">‏شاشة USB تعمل باللمس</translation>
 <translation id="757747079855995705">الحجر</translation>
-<translation id="7584853321964440104">‏يتعذر التنزيل. يُرجى إعادة المحاولة أو إعادة تشغيل جهاز Chromebook.</translation>
 <translation id="7590883480672980941">إعدادات الإدخال</translation>
 <translation id="7595982850646262331">الوقت المتبقّي: <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">ضبطَ مشرف <ph name="MANAGER" /> وقتًا لاستخدام جهاز <ph name="DEVICE_TYPE" /> خلاله.</translation>
@@ -1786,7 +1779,6 @@
 <translation id="9218016617214286986">‏عرض أسماء نقاط الوصول (APN) المعروفة</translation>
 <translation id="932327136139879170">الصفحة الرئيسية</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">‏يُرجى التأكّد من توصيل الميكروفون أو محاولة إعادة تشغيل جهاز Chromebook</translation>
 <translation id="945522503751344254">إرسال ملاحظات</translation>
 <translation id="950520315903467048">لم يتم تخصيص مفتاح لـ <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">مقارنة الأصوات طوال مدة التسجيل ليعرض النص ما يقوله كل متحدّث ووقت الكلام</translation>

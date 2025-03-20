@@ -19,11 +19,13 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -45,6 +47,7 @@ import org.chromium.url.GURL;
 @Config(manifest = Config.NONE)
 @SuppressWarnings("DoNotMock") // Mocks GURL
 public final class VoiceToolbarButtonControllerUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Context mContext;
     @Mock private Resources mResources;
     @Mock private Tab mTab;
@@ -60,8 +63,6 @@ public final class VoiceToolbarButtonControllerUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         mConfiguration.screenWidthDp = AdaptiveToolbarFeatures.DEFAULT_MIN_WIDTH_DP;
         doReturn(mConfiguration).when(mResources).getConfiguration();
         doReturn(mResources).when(mContext).getResources();

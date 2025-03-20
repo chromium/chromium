@@ -74,6 +74,7 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/search_engines/android/template_url_service_android.h"
@@ -1552,6 +1553,16 @@ void TemplateURLService::OnWebDataServiceRequestDone(
   if (default_search_provider_) {
     SearchEngineType engine_type =
         default_search_provider_->GetEngineType(search_terms_data());
+    // Check for search engines types not present in prepopulated_engines.json.
+    // TODO(https://issues.chromium.org/405167888): Remove this check once it is
+    // no longer necessary to track these additional search engine types.
+    if (engine_type == SEARCH_ENGINE_OTHER) {
+      GURL search_url = GURL(default_search_provider_->url());
+      if (search_url.is_valid() &&
+          url::DomainIs(search_url.host_piece(), "siteadvisor.com")) {
+        engine_type = SEARCH_ENGINE_MCAFEE;
+      }
+    }
     base::UmaHistogramEnumeration("Search.DefaultSearchProviderType2",
                                   engine_type, SEARCH_ENGINE_MAX);
     if (default_search_provider_->CreatedByDefaultSearchProviderPolicy()) {

@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">ტრანსკრიპტის დამალვა</translation>
 <translation id="160633243685262989">სურათის გადახედვა</translation>
 <translation id="1611649489706141841">წინ</translation>
-<translation id="1615144046047995187">ჩამოტვირთვა ვერ ხერხდება. ხელახლა ცადეთ ან გადატვირთეთ Chromebook.</translation>
 <translation id="1615335640928990664">მონაცემთა მოხმარება <ph name="FRIENDLY_DATE" />-დან</translation>
 <translation id="1618566998877964907">გამოიყენეთ თემა</translation>
 <translation id="1621067168122174824">დატენის ტესტის გაშვება</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">აუდიოჩანაწერების სია</translation>
 <translation id="2561093647892030937">ლიმონები</translation>
 <translation id="2570743873672969996">გაშვებულია <ph name="TEST_NAME" /> ტესტი...</translation>
-<translation id="2573178735329662769">Chromebook-ის ყველა აუდიოს ჩაწერა</translation>
 <translation id="2576253868710695442">ეს მეხსიერების 2 გბაიტს დაიკავებს</translation>
 <translation id="2584547424703650812">გაბრწყინებული პეიზაჟები</translation>
 <translation id="2584559707064218956">დასაყენებლად გადადით პარამეტრებზე</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">ლურჯი და ვარდისფერი</translation>
 <translation id="498186245079027698">შეამოწმეთ სკანერი და ცადეთ ხელახლა. დარწმუნდით, რომ ადგილობრივი მეხსიერება საკმარისია სკანირებული ფაილების შესანახად.</translation>
 <translation id="4982627662315910959">მალსახმობი მიუწვდომელია. დააჭირეთ ახალ მალსახმობს shift-ისა და კიდევ ერთი მოდიფიკატორი კლავიშის (ctrl, alt ან <ph name="META_KEY" />) მეშვეობით.</translation>
-<translation id="4983216687482551672">Chromebook აუდიო</translation>
 <translation id="4985509611418653372">გაშვება</translation>
 <translation id="4987769320337599931">ქსელის დაცვა</translation>
 <translation id="4988526792673242964">გვერდები</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">გამოაერთეთ <ph name="DEVICE_NAME" />-ის ელკვების კაბელი და ისევ შეაერთეთ, რომ განახლება განაგრძოთ</translation>
 <translation id="5099354524039520280">ზემოთ</translation>
 <translation id="5107243100836678918">მალსახმობები „<ph name="META_KEY" />“ კლავიშის გარეშე, შესაძლოა, კონფლიქტში აღმოჩნდეს ზოგიერთი აპის მალსახმობებთან. ხელახლა დააჭირეთ ამ მალსახმობს, რომ გააგრძელოთ მისი გამოყენება, ან დააჭირეთ ახალ მალსახმობს „<ph name="KEY" />“ კლავიშთან ერთად. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399"><ph name="LANGUAGE_NAME" /> ენის ტრანსკრიფციის მოდელის ჩამოტვირთვა შეუძლებელია. ხელახლა ცადეთ ან გადატვირთეთ Chromebook</translation>
 <translation id="5108781503443873320">სინონიმური:</translation>
-<translation id="5121677070210013200">ტრანსკრიფციის მოდელის ჩამოტვირთვა შეუძლებელია. ხელახლა ცადეთ ან გადატვირთეთ Chromebook.</translation>
 <translation id="5130848777448318809">პონები</translation>
 <translation id="5137451382116112100">სრულ ეკრანზე</translation>
 <translation id="5139813694804168398">არ შემაწუხოთ</translation>
@@ -1089,7 +1084,6 @@
 <translation id="6122191549521593678">ონლაინ</translation>
 <translation id="6122277663991249694">ChromeOS-ის შეყვანის მეთოდის სერვისი</translation>
 <translation id="6127426868813166163">თეთრი</translation>
-<translation id="613049107179582049">როცა Chromebook აუდიო ჩართულია, რეკორდერი ჩაიწერს ამ მოწყობილობაზე დაკრულ ყველა აუდიოს</translation>
 <translation id="6136285399872347291">უკუშლა</translation>
 <translation id="6137614725462089991">კიბერპანკი</translation>
 <translation id="6137767437444130246">მომხმარებლის სერტიფიკატი</translation>
@@ -1419,7 +1413,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB სენსორული ეკრანი</translation>
 <translation id="757747079855995705">ქვა</translation>
-<translation id="7584853321964440104">ჩამოტვირთვა ვერ ხერხდება. ხელახლა ცადეთ ან გადატვირთეთ Chromebook.</translation>
 <translation id="7590883480672980941">შეყვანის პარამეტრები</translation>
 <translation id="7595982850646262331">დარჩენილია <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776"><ph name="MANAGER" />-ის ადმინისტრატორმა დააყენა, როდის შეიძლება ამ <ph name="DEVICE_TYPE" />-ის გამოყენება</translation>
@@ -1786,7 +1779,6 @@
 <translation id="9218016617214286986">ნაცნობი APN-ების ჩვენება</translation>
 <translation id="932327136139879170">საწყისი გვერდი</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">დარწმუნდით, რომ თქვენი მიკროფონი დაკავშირებულია და ცადეთ Chromebook-ის გადატვირთვა</translation>
 <translation id="945522503751344254">შეფასების გაგზავნა</translation>
 <translation id="950520315903467048">მოქმედებისთვის „<ph name="DIRECTION" />“ აკლია კლავიში. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">აფასებს ჩანაწერის ხმებს ისე, რომ ტრანსკრიპტი აჩვენებს, რა და როდის თქვა თითოეულმა მოსაუბრემ</translation>

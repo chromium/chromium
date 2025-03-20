@@ -15,10 +15,12 @@ import android.net.Uri;
 import android.text.TextUtils;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -51,6 +53,7 @@ public class RelatedSearchesStampTest {
     private static final String SPANISH = "es";
     private static final String GERMAN = "de";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
 
     private ContextualSearchPolicy mPolicy;
@@ -60,7 +63,6 @@ public class RelatedSearchesStampTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         mPolicy = new ContextualSearchPolicy(mProfile, null, null);
         mStamp = new RelatedSearchesStamp(mPolicy);
     }

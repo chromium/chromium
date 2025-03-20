@@ -385,8 +385,8 @@ TEST_F(SessionLoadingTest, LoadSessionStorage_MissingSession) {
       "Tabs.DroppedDuplicatesCountOnSessionRestore", 0);
 }
 
-// Tests that LoadSessionStorage returns an empty session if some of the
-// items data is missing.
+// Tests that LoadSessionStorage returns a valid session even if some
+// of the item storage are missing.
 TEST_F(SessionLoadingTest, LoadSessionStorage_MissingItemStorage) {
   base::ScopedTempDir scoped_temp_dir;
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
@@ -398,11 +398,11 @@ TEST_F(SessionLoadingTest, LoadSessionStorage_MissingItemStorage) {
 
   // Delete one item storage.
   ASSERT_GT(session.items_size(), 0);
-  const web::WebStateID item_id =
+  const web::WebStateID deleted_item_id =
       web::WebStateID::FromSerializedValue(session.items(0).identifier());
 
   const base::FilePath item_metadata_path =
-      ios::sessions::WebStateDirectory(root, item_id)
+      ios::sessions::WebStateDirectory(root, deleted_item_id)
           .Append(kWebStateStorageFilename);
 
   ASSERT_TRUE(ios::sessions::DeleteRecursively(item_metadata_path));
@@ -410,13 +410,21 @@ TEST_F(SessionLoadingTest, LoadSessionStorage_MissingItemStorage) {
   // Load the session and check it is empty.
   const ios::proto::WebStateListStorage loaded =
       ios::sessions::LoadSessionStorage(root);
-  EXPECT_EQ(loaded, EmptySessionStorage());
-  EXPECT_EQ(loaded.items_size(), 0);
+  EXPECT_EQ(loaded, session);
 
-  // Expect no log as there was a missing item storage. We never got to complete
-  // the filtering stage.
-  histogram_tester_.ExpectTotalCount(
-      "Tabs.DroppedDuplicatesCountOnSessionRestore", 0);
+  for (const auto& item : loaded.items()) {
+    const web::WebStateID item_id =
+        web::WebStateID::FromSerializedValue(item.identifier());
+
+    // Check that the item has been correctly loaded.
+    ASSERT_TRUE(item.has_metadata());
+    ASSERT_EQ(item.metadata().active_page().page_url(),
+              TestUrlForIdentifier(item_id));
+  }
+
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnSessionRestore", 0, 1);
 }
 
 // Tests that LoadSessionStorage returns an empty session if the identifiers

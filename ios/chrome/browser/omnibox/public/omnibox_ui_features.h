@@ -7,7 +7,4 @@
 
 #import "base/feature_list.h"
 
-// Feature flag to enable actions in suggest.
-BASE_DECLARE_FEATURE(kOmniboxActionsInSuggest);
-
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_PUBLIC_OMNIBOX_UI_FEATURES_H_

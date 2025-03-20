@@ -118,6 +118,8 @@ chromium-metrics-reviews@google.com.
   <variant name="CreditCard"
       summary="User chose to fill a form or field with a credit card profile."/>
   <variant name="Iban" summary="User chose to fill a field with an iban."/>
+  <variant name="LoyaltyCard"
+      summary="User chose to fill a field with a loyalty card."/>
   <variant name="MerchantPromoCode"
       summary="User chose to fill a field with a merchant promo code."/>
   <variant name="None" summary="No filling product matches."/>

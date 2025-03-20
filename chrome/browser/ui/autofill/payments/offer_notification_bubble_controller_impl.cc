@@ -276,7 +276,7 @@ void OfferNotificationBubbleControllerImpl::HideBubbleAndClearTimestamp(
 void OfferNotificationBubbleControllerImpl::UpdatePageAction() {
   // Page action icons do not exist for Android.
 #if !BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(::features::kPageActionsMigration)) {
+  if (!IsPageActionMigrated(PageActionIconType::kPaymentsOfferNotification)) {
     return;
   }
   // TODO(crbug.com/403255843): AutofillBubbleControllerBase relies on

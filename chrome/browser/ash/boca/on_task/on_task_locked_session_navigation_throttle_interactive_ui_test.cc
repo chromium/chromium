@@ -40,6 +40,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "extensions/common/extension_urls.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/resource_request_body.h"
@@ -59,7 +60,6 @@ constexpr char kTabUrl2Host[] = "company.org";
 constexpr char kTabUrlRedirectHost[] = "redirect-url.com";
 constexpr char kTabGoogleHost[] = "google.com";
 constexpr char kTabGoogleDocsHost[] = "docs.google.com";
-constexpr char kCWSHost[] = "chromewebstore.google.com";
 
 // Fake delegate implementation for the `OnTaskNotificationsManager` to minimize
 // dependency on Ash UI.
@@ -250,7 +250,11 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
   ASSERT_EQ(tab_strip_model->GetActiveWebContents()->GetLastCommittedURL(),
             tab_url);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      boca_app_browser, embedded_test_server()->GetURL(kCWSHost, "/")));
+      boca_app_browser, extension_urls::GetWebstoreLaunchURL()));
+  EXPECT_EQ(tab_strip_model->GetActiveWebContents()->GetLastCommittedURL(),
+            tab_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      boca_app_browser, extension_urls::GetNewWebstoreLaunchURL()));
   EXPECT_EQ(tab_strip_model->GetActiveWebContents()->GetLastCommittedURL(),
             tab_url);
 }

@@ -20,7 +20,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -50,7 +49,6 @@ public class DeviceLockCoordinatorTest {
 
     @Before
     public void setUpTest() {
-        MockitoAnnotations.initMocks(this);
         mActivityTestRule.setFinishActivity(true);
 
         mActivityTestRule.launchActivity(null);

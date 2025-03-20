@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace autofill {
 
@@ -45,7 +46,7 @@ AutofillSuggestionControllerForTest::AutofillSuggestionControllerForTest(
           web_contents,
           PopupControllerCommon(element_bounds,
                                 base::i18n::UNKNOWN_DIRECTION,
-                                nullptr),
+                                gfx::NativeView()),
 #if !BUILDFLAG(IS_ANDROID)
           /*form_control_ax_id=*/0
 #endif

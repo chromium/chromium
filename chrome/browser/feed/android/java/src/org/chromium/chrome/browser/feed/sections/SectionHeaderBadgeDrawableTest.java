@@ -14,10 +14,12 @@ import android.graphics.Rect;
 import android.widget.LinearLayout;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -26,6 +28,7 @@ import org.chromium.chrome.browser.feed.test.R;
 /** Tests for the {@link SectionHeaderBadgeDrawabe} class. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SectionHeaderBadgeDrawableTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Activity mActivity;
     private SectionHeaderBadgeDrawable mDrawable;
 
@@ -33,7 +36,6 @@ public class SectionHeaderBadgeDrawableTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.setupActivity(Activity.class);
         mActivity.setTheme(R.style.Theme_MaterialComponents);
 

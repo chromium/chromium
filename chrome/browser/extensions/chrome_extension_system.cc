@@ -167,16 +167,17 @@ void ChromeExtensionSystem::Shared::RegisterManagementPolicyProviders() {
 
 void ChromeExtensionSystem::Shared::InitInstallGates() {
   update_install_gate_ = std::make_unique<UpdateInstallGate>(profile_);
-  extension_service_->delayed_install_manager()->RegisterInstallGate(
+  auto* delayed_install_manager = DelayedInstallManager::Get(profile_);
+  delayed_install_manager->RegisterInstallGate(
       ExtensionPrefs::DelayReason::kWaitForIdle, update_install_gate_.get());
-  extension_service_->delayed_install_manager()->RegisterInstallGate(
+  delayed_install_manager->RegisterInstallGate(
       ExtensionPrefs::DelayReason::kWaitForImports,
       extension_service_->shared_module_service());
 #if BUILDFLAG(IS_CHROMEOS)
   if (IsRunningInForcedAppMode()) {
     kiosk_app_update_install_gate_ =
         std::make_unique<ash::KioskAppUpdateInstallGate>(profile_);
-    extension_service_->delayed_install_manager()->RegisterInstallGate(
+    delayed_install_manager->RegisterInstallGate(
         ExtensionPrefs::DelayReason::kWaitForOsUpdate,
         kiosk_app_update_install_gate_.get());
   }

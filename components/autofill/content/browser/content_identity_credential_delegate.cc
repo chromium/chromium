@@ -63,10 +63,8 @@ void ContentIdentityCredentialDelegate::NotifySuggestionAccepted(
   Suggestion::IdentityCredentialPayload payload =
       suggestion.GetPayload<Suggestion::IdentityCredentialPayload>();
 
-  // TODO(crbug.com/380367784): rename this to be more compatible with the
-  // suggestion lifecycle, such as NotifySuggestionAccepted rather than
-  // NotifyAutofillSelection (which can be understood as "hovering").
-  source->NotifyAutofillSelection(payload.config_url, payload.account_id);
+  source->NotifyAutofillSuggestionAccepted(payload.config_url,
+                                           payload.account_id);
 }
 
 }  // namespace autofill

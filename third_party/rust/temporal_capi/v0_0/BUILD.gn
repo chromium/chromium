@@ -1,0 +1,54 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "temporal_capi"
+  epoch = "0.0"
+  crate_type = "rlib"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/temporal_capi-0.0.6/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-0.0.6/src/calendar.rs",
+    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-0.0.6/src/duration.rs",
+    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-0.0.6/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-0.0.6/src/instant.rs",
+    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-0.0.6/src/iso.rs",
+    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-0.0.6/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-0.0.6/src/options.rs",
+    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-0.0.6/src/plain_date.rs",
+    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-0.0.6/src/plain_date_time.rs",
+    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-0.0.6/src/plain_month_day.rs",
+    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-0.0.6/src/plain_time.rs",
+    "//third_party/rust/chromium_crates_io/vendor/temporal_capi-0.0.6/src/plain_year_month.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2021"
+  cargo_pkg_version = "0.0.6"
+  cargo_pkg_authors = "boa-dev"
+  cargo_pkg_name = "temporal_capi"
+  cargo_pkg_description = "C interface to temporal_rs"
+  library_configs -= [ "//build/config/coverage:default_coverage" ]
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
+  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
+  deps = [
+    "//third_party/rust/diplomat/v0_10:lib",
+    "//third_party/rust/diplomat_runtime/v0_10:lib",
+    "//third_party/rust/icu_calendar/v2:lib",
+    "//third_party/rust/temporal_rs/v0_0:lib",
+  ]
+  rustflags = [
+    "--cap-lints=allow",  # Suppress all warnings in crates.io crates
+  ]
+}

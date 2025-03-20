@@ -22,11 +22,13 @@ import android.view.MenuItem;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
@@ -58,6 +60,7 @@ import java.util.Random;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ChromeActionModeHandlerUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Tab mTab;
     @Mock private ActionModeCallbackHelper mActionModeCallbackHelper;
     @Mock private ActionMode mActionMode;
@@ -89,7 +92,6 @@ public class ChromeActionModeHandlerUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         mActionModeCallback =
                 Mockito.spy(new TestChromeActionModeCallback(mTab, mActionModeCallbackHelper));

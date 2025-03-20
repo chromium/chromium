@@ -52,7 +52,8 @@ ViewsTestHelperMac::~ViewsTestHelperMac() {
   @autoreleasepool {
     NSArray* native_windows = NSApp.windows;
     for (NSWindow* window : native_windows) {
-      DCHECK(!Widget::GetWidgetForNativeWindow(window)) << "Widget not closed.";
+      DCHECK(!Widget::GetWidgetForNativeWindow(gfx::NativeWindow(window)))
+          << "Widget not closed.";
     }
 
     ui::test::EventGeneratorDelegate::SetFactoryFunction(

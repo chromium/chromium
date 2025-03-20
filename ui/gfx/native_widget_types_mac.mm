@@ -10,7 +10,7 @@
 
 namespace gfx {
 
-NativeView::NativeView(std::nullptr_t) {}
+NativeView::NativeView() = default;
 
 NativeView::NativeView(NSView* ns_view) : base::apple::WeakNSView(ns_view) {}
 
@@ -22,7 +22,7 @@ std::string NativeView::ToString() const {
   return base::SysNSStringToUTF8(GetNativeNSView().description);
 }
 
-NativeWindow::NativeWindow(std::nullptr_t) {}
+NativeWindow::NativeWindow() = default;
 
 NativeWindow::NativeWindow(NSWindow* ns_window)
     : base::apple::WeakNSWindow(ns_window),

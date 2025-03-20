@@ -315,6 +315,60 @@ TEST_F(MasonryLayoutAlgorithmTest, ExplicitlyPlacedVirtualItems) {
   }
 }
 
+TEST_F(MasonryLayoutAlgorithmTest, AutoPlacedVirtualItems) {
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    body { font: 10px/1 Ahem }
+    #masonry {
+      display: masonry;
+      masonry-template-tracks: repeat(3, auto);
+    }
+    </style>
+    <div id="masonry">
+      <div>X X X X X</div>
+      <div style="masonry-track: span 2">XXX X</div>
+      <div>XX XX XX XX XX</div>
+      <div style="masonry-track: span 2">X XX X</div>
+      <div>X XX XXX XX X</div>
+    </div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("masonry"));
+
+  const auto space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(100), LayoutUnit(100)),
+      /*stretch_inline_size_if_auto=*/true,
+      /*is_new_formatting_context=*/true);
+
+  const auto fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
+
+  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  ComputeGeometry(algorithm);
+
+  const auto item_count = VirtualItemCount();
+  EXPECT_EQ(item_count, 5u);
+
+  for (wtf_size_t i = 0; i < item_count; ++i) {
+    LayoutUnit expected_max_size, expected_min_size;
+    const auto& span = VirtualItemSpan(i);
+    if (span == GridSpan::TranslatedDefiniteGridSpan(0, 2) ||
+        span == GridSpan::TranslatedDefiniteGridSpan(1, 3)) {
+      expected_max_size = LayoutUnit(60);
+      expected_min_size = LayoutUnit(30);
+    } else if (span == GridSpan::TranslatedDefiniteGridSpan(0, 1) ||
+               span == GridSpan::TranslatedDefiniteGridSpan(1, 2) ||
+               span == GridSpan::TranslatedDefiniteGridSpan(2, 3)) {
+      expected_max_size = LayoutUnit(140);
+      expected_min_size = LayoutUnit(30);
+    }
+    EXPECT_EQ(MaxContentContribution(i), expected_max_size);
+    EXPECT_EQ(MinContentContribution(i), expected_min_size);
+  }
+}
+
 TEST_F(MasonryLayoutAlgorithmTest, BuildIntrinsicTrackSizes) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(

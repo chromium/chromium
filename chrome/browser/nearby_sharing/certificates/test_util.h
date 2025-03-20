@@ -16,7 +16,6 @@
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_private_certificate.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 #include "crypto/ec_private_key.h"
-#include "crypto/symmetric_key.h"
 #include "third_party/nearby/sharing/proto/encrypted_metadata.pb.h"
 #include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 
@@ -29,8 +28,10 @@ extern const char kTestUnparsedBluetoothMacAddress[];
 std::unique_ptr<crypto::ECPrivateKey> GetNearbyShareTestP256KeyPair();
 const std::vector<uint8_t>& GetNearbyShareTestP256PublicKey();
 
-std::unique_ptr<crypto::SymmetricKey> GetNearbyShareTestSecretKey();
-const std::vector<uint8_t>& GetNearbyShareTestCertificateId();
+const std::array<uint8_t, kNearbyShareNumBytesSecretKey>&
+GetNearbyShareTestSecretKey();
+const std::array<uint8_t, kNearbyShareNumBytesCertificateId>&
+GetNearbyShareTestCertificateId();
 
 const std::array<uint8_t, kNearbyShareNumBytesMetadataEncryptionKey>&
 GetNearbyShareTestMetadataEncryptionKey();
