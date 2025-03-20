@@ -19,18 +19,16 @@ steps:
 # 3. Fetch the Code
 - name: 'ubuntu'
   id: 'configure-gclient'
-  waitFor: [ 'fetch-code' ]
+  waitFor: [ 'clone-depot-tools' ]
   entrypoint: 'bash'
   args:
       - '-c'
       - |
           cd /workspace/hopium
-          gclient config --unmanaged --name src \
+          /workspace/depot_tools/gclient config --unmanaged --name src \
           --custom-var build_with_hopium=True \
           --custom-var checkout_pgo_profiles=True \
           git@github.com:protectednet/hopium.git
-  env:
-    - 'PATH=/workspace/depot_tools:\$PATH'
 
 - name: 'ubuntu'
   id: 'sync-deps'
@@ -40,9 +38,7 @@ steps:
       - '-c'
       - |
           cd /workspace/hopium
-          gclient sync -r $TAG_NAME
-  env:
-    - 'PATH=/workspace/depot_tools:\$PATH'
+          /workspace/depot_tools/gclient sync -r $TAG_NAME
 
 - name: 'ubuntu'
   id: 'checkout-branch'
@@ -53,9 +49,7 @@ steps:
       - |
           cd /workspace/hopium/src
           git checkout $TAG_NAME
-          gclient sync -D
-  env:
-    - 'PATH=/workspace/depot_tools:\$PATH'
+          /workspace/depot_tools/gclient sync -D
 
 # 4. Configure & Build
 - name: 'ubuntu'
@@ -119,4 +113,4 @@ steps:
 - name: 'gcr.io/cloud-builders/gsutil'
   id: 'upload-artifact'
   waitFor: [ 'verify-binary' ]
-  args: ['cp', '-r', '/workspace/hopium/src/out/Debug/TotalBrowser', 'gs://tmp_tbr_build_output_bucket/$TAG']
+  args: ['cp', '-r', '/workspace/hopium/src/out/Debug/TotalBrowser', 'gs://tmp_tbr_build_output_bucket/$TAG_NAME']
