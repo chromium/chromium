@@ -214,6 +214,13 @@ struct CheckedBitPatternAlignedStruct {
   a: u16,
 }
 
+#[derive(Clone, Copy, CheckedBitPattern)]
+#[repr(C, packed)]
+struct CheckedBitPatternPackedStruct {
+  a: u8,
+  b: u16,
+}
+
 #[derive(Debug, Clone, Copy, CheckedBitPattern, PartialEq, Eq)]
 #[repr(C)]
 enum CheckedBitPatternCDefaultDiscriminantEnumWithFields {

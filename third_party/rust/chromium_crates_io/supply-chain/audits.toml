@@ -546,6 +546,11 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "1.8.0 -> 1.8.1"
 notes = "Changes do not impact safety."
 
+[[audits.bytemuck_derive]]
+who = "Chris Palmer <palmer@google.com>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.8.1 -> 1.9.2"
+
 [[audits.byteorder]]
 who = "danakj <danakj@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]

@@ -1,6 +1,20 @@
 
 ## `bytemuck_derive` changelog
 
+## 1.9.2
+
+* Removes the `resolver` key from the manifest. This breaks the build
+  with cryptic error messages despite current docs vaguely saying otherwise.
+
+## 1.9.1
+
+* Fix the derive of CheckedBitPattern when used with a packed struct.
+  The Debug impl did not account for possibly-unaligned fields.
+
+## 1.9.0
+
+* The crate now declares an MSRV, so updates going forward should be simpler.
+
 ## 1.8.1
 
 * https://github.com/Lokathor/bytemuck/pull/287

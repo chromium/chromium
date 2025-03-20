@@ -1,7 +1,7 @@
 [package]
 name = "bytemuck_derive"
 description = "derive proc-macros for `bytemuck`"
-version = "1.8.1"
+version = "1.9.2"
 authors = ["Lokathor <zefria@gmail.com>"]
 repository = "https://github.com/Lokathor/bytemuck"
 readme = "README.md"
@@ -9,6 +9,9 @@ keywords = ["transmute", "bytes", "casting"]
 categories = ["encoding", "no-std"]
 edition = "2018"
 license = "Zlib OR Apache-2.0 OR MIT"
+rust-version = "1.84"
+#note(lokathor): do not publish with this set
+#resolver = "3"
 
 [lib]
 name = "bytemuck_derive"

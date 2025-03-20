@@ -302,6 +302,8 @@ third_party/afl/src/docs 11 2
 third_party/afl/src/llvm_mode 1 1
 third_party/afl/src/qemu_mode 1 1
 third_party/android_build_tools/json 1 1
+third_party/android_deps/autorolled/committed/libs/com_google_auto_service_auto_service_annotations 1 1
+third_party/android_deps/autorolled/committed/libs/com_google_errorprone_error_prone_annotations 1 1
 third_party/android_deps/buildSrc/src/main/groovy 37 2
 third_party/android_deps/libs 1 1
 third_party/android_deps/libs/com_google_auto_service_auto_service_annotations 1 1

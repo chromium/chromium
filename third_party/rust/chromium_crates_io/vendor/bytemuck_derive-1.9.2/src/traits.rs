@@ -623,7 +623,7 @@ fn generate_checked_bit_pattern_struct(
           impl ::core::fmt::Debug for #bits_ty {
             fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
               let mut debug_struct = ::core::fmt::Formatter::debug_struct(f, ::core::stringify!(#bits_ty));
-              #(::core::fmt::DebugStruct::field(&mut debug_struct, ::core::stringify!(#field_name), &self.#field_name);)*
+              #(::core::fmt::DebugStruct::field(&mut debug_struct, ::core::stringify!(#field_name), &{ self.#field_name });)*
               ::core::fmt::DebugStruct::finish(&mut debug_struct)
             }
           }
