@@ -412,6 +412,7 @@ gn_args.config(
 gn_args.config(
     name = "cronet_android",
     args = {
+        # LINT.IfChange(cronet_android)
         "use_partition_alloc": False,
         "enable_reporting": True,
         "use_hashed_jni_names": True,
@@ -421,6 +422,7 @@ gn_args.config(
         # https://crbug.com/1136963
         "use_thin_lto": False,
         "enable_resource_allowlist_generation": False,
+        # LINT.ThenChange(//tools/mb/mb_config.pyl:cronet_android)
     },
     configs = [
         "android",
@@ -443,11 +445,13 @@ gn_args.config(
 gn_args.config(
     name = "cronet_common",
     args = {
+        # LINT.IfChange(cronet_common)
         "disable_file_support": True,
         "enable_websockets": False,
         "include_transport_security_state_preload_list": False,
         "is_cronet_build": True,
         "use_platform_icu_alternatives": True,
+        # LINT.ThenChange(//tools/mb/mb_config.pyl:cronet_common)
     },
 )
 
