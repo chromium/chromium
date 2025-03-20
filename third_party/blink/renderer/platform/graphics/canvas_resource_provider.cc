@@ -851,12 +851,6 @@ class CanvasResourceProviderPassThrough final : public CanvasResourceProvider {
   bool IsSingleBuffered() const override { return true; }
 
  private:
-  scoped_refptr<CanvasResource> CreateResource() final {
-    // This class has no CanvasResource to provide: this must be imported via
-    // ImportResource() and kept in the parent class.
-    NOTREACHED();
-  }
-
   scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) final {
     return NewOrRecycledResource();
   }
