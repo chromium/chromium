@@ -30,7 +30,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -111,7 +110,6 @@ public final class WebFeedSnackbarControllerTest {
         LocaleUtils.setDefaultLocalesFromConfiguration(config);
 
         ProfileManager.setLastUsedProfileForTesting(mProfile);
-        MockitoAnnotations.initMocks(this);
         WebFeedBridgeJni.setInstanceForTesting(mWebFeedBridgeJniMock);
         FeedServiceBridgeJni.setInstanceForTesting(mFeedServideBridgeJniMock);
         mContext = Robolectric.setupActivity(Activity.class);
