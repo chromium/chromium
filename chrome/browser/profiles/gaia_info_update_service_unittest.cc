@@ -529,6 +529,8 @@ class GAIAInfoUpdateServiceWithGlicEnablingTest
 };
 
 TEST_F(GAIAInfoUpdateServiceWithGlicEnablingTest, LogInLogOut) {
+  signin::WaitForRefreshTokensLoaded(identity_manager());
+
   std::string email = "pat@example.com";
   AccountInfo info = signin::MakePrimaryAccountAvailable(
       identity_manager(), email, signin::ConsentLevel::kSignin);
@@ -568,6 +570,8 @@ TEST_F(GAIAInfoUpdateServiceWithGlicEnablingTest, LogInLogOut) {
 
 TEST_F(GAIAInfoUpdateServiceWithGlicEnablingTest,
        SignInThenEnableGlicThenRestart) {
+  signin::WaitForRefreshTokensLoaded(identity_manager());
+
   // Sign in without making the Profile Glic eligible.
   std::string email = "pat@example.com";
   AccountInfo info = signin::MakePrimaryAccountAvailable(
