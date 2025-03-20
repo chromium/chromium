@@ -5,6 +5,7 @@
 import {assert} from '//resources/js/assert.js';
 
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
+import {WritingDirection} from './text.mojom-webui.js';
 import type {TextResponse} from './text_rendering.js';
 
 // Percentage of allowance for the difference in top positions of two
@@ -14,6 +15,10 @@ const DELTA_TOP_ALLOWANCE = 0.2;
 // consecutive word boxes. This value is used to decide whether to coalesce two
 // bounding boxes that are next to each other horizontally.
 const DELTA_WIDTH_ALLOWANCE = 0.75;
+// Allowance for the difference in angle positions of two consecuitve word boxes
+// in radians. This value is used to decide whether to coalesce two bounding
+// boxes that have different rotations.
+const DELTA_ANGLE_ALLOWANCE = 0.002;
 
 // Shared interface representing a highlighted lines. All values are normalized
 // relative to selection overlay.
@@ -83,24 +88,43 @@ function shouldCoalesce(
     return false;
   }
 
+  const deltaAngle = Math.abs(box.rotation - nextBox.rotation);
+  if (deltaAngle >= DELTA_ANGLE_ALLOWANCE) {
+    return false;
+  }
+
   const wordLeft = box.box.x - box.box.width / 2;
   const wordTop = box.box.y - box.box.height / 2;
 
   const nextWordLeft = nextBox.box.x - nextBox.box.width / 2;
   const nextWordTop = nextBox.box.y - nextBox.box.height / 2;
 
-  const deltaTop = Math.abs(nextWordTop - wordTop);
-  const maxHeight = Math.max(box.box.height, nextBox.box.height);
-  const deltaTopAllowance = DELTA_TOP_ALLOWANCE * maxHeight;
+  const word = text.receivedWords[wordIndex];
+  const isVerticalWritingDirection =
+      word.writingDirection === WritingDirection.kTopToBottom;
+
+  const deltaTop = isVerticalWritingDirection ?
+      Math.abs(
+          (nextWordLeft + nextBox.box.width) - (wordLeft + box.box.width)) :
+      Math.abs(nextWordTop - wordTop);
+  const maxHeightOrWidth = isVerticalWritingDirection ?
+      Math.max(box.box.width, nextBox.box.width) :
+      Math.max(box.box.height, nextBox.box.height);
+  const deltaTopAllowance = DELTA_TOP_ALLOWANCE * maxHeightOrWidth;
   if (deltaTop >= deltaTopAllowance) {
     return false;
   }
 
-  const minLeft = Math.min(wordLeft, nextWordLeft);
-  const maxRight =
+  const minLeftOrTop = isVerticalWritingDirection ?
+      Math.min(wordTop, nextWordTop) :
+      Math.min(wordLeft, nextWordLeft);
+  const maxRightOrBottom = isVerticalWritingDirection ?
+      Math.max(wordTop + box.box.height, nextWordTop + nextBox.box.height) :
       Math.max(wordLeft + box.box.width, nextWordLeft + nextBox.box.width);
-  const unionWidth = maxRight - minLeft;
-  const sumWidth = box.box.width + nextBox.box.width;
+  const unionWidth = maxRightOrBottom - minLeftOrTop;
+  const sumWidth = isVerticalWritingDirection ?
+      box.box.height + nextBox.box.height :
+      box.box.width + nextBox.box.width;
   return sumWidth / unionWidth >= DELTA_WIDTH_ALLOWANCE;
 }
 

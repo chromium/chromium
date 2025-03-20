@@ -51,7 +51,7 @@
   _viewController = [[BulkUploadViewController alloc] init];
   _viewController.delegate = self;
 
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(profile);
   syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);

@@ -691,6 +691,12 @@ void LocalFilesMigrationManager::OnCleanupDone(
   }
 
   cleanup_in_progress_ = false;
+  if (migration_destination_ != MigrationDestination::kNotSpecified) {
+    // Cleanup is called even if migration destination isn't specified if there
+    // are no local files, but skip recording in that case.
+    SkyVaultMigrationCleanupErrorHistogram(migration_destination_,
+                                           error_message.has_value());
+  }
   if (error_message.has_value()) {
     // TODO(402074191): UMA when failed.
     LOG(ERROR) << "Local files cleanup failed: " << error_message.value();

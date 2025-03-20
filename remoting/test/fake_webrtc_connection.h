@@ -30,7 +30,9 @@ class FakeWebrtcConnection final
   // protocol::WebrtcTransport::EventHandler implementations.
   void OnWebrtcTransportConnecting() override;
   void OnWebrtcTransportConnected() override;
-  void OnWebrtcTransportError(protocol::ErrorCode error) override;
+  void OnWebrtcTransportError(protocol::ErrorCode error,
+                              std::string_view error_details,
+                              const base::Location& error_location) override;
   void OnWebrtcTransportProtocolChanged() override;
   void OnWebrtcTransportIncomingDataChannel(
       const std::string& name,

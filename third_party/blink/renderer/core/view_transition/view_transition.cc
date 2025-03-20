@@ -48,9 +48,14 @@
 namespace blink {
 
 ViewTransition::ScopedPauseRendering::ScopedPauseRendering(
-    const Document& document) {
+    const Element& element) {
+  const Document& document = element.GetDocument();
   if (!document.GetFrame()->IsLocalRoot())
     return;
+
+  if (!element.IsDocumentElement()) {
+    return;
+  }
 
   auto& client = document.GetPage()->GetChromeClient();
   cc_paused_ = client.PauseRendering(*document.GetFrame());
@@ -935,10 +940,11 @@ void ViewTransition::PauseRendering() {
   if (!document_->GetPage() || !document_->View())
     return;
 
-  rendering_paused_scope_.emplace(*document_);
+  rendering_paused_scope_.emplace(*scope_);
   document_->GetPage()->GetChromeClient().UnregisterFromCommitObservation(this);
 
-  if (rendering_paused_scope_->ShouldThrottleRendering() && document_->View()) {
+  if (has_document_scope_ &&
+      rendering_paused_scope_->ShouldThrottleRendering() && document_->View()) {
     document_->View()->SetThrottledForViewTransition(true);
     style_tracker_->DidThrottleLocalSubframeRendering();
   }

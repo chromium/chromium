@@ -46,6 +46,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "ewallet_manager_unittest.cc",
+    "facilitated_payments_driver_unittest.cc",
     "network_api/facilitated_payments_initiate_payment_request_details_unittest.cc",
     "network_api/facilitated_payments_initiate_payment_request_unittest.cc",
     "network_api/facilitated_payments_network_interface_unittest.cc",

@@ -2553,6 +2553,12 @@ BASE_FEATURE(kScannerDogfood,
              "ScannerDogfood",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the toast which allows users to provide feedback after a Scanner
+// action is completed.
+BASE_FEATURE(kScannerFeedbackToast,
+             "ScannerFeedbackToast",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the scanner update.
 BASE_FEATURE(kScannerUpdate,
              "ScannerUpdate",
@@ -2896,12 +2902,6 @@ BASE_FEATURE(kAllowPasswordlessSetup,
 // a password as their main factor.
 BASE_FEATURE(kAllowPasswordlessRecovery,
              "AllowPasswordlessRecovery",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// This features controls whether or not pin will be setup as timeout based
-// lockout or attempt based lockout.
-BASE_FEATURE(kAllowPinTimeoutSetup,
-             "AllowPinTimeoutSetup",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This features controls whether or not we'll show the legacy WebAuthNDialog,
@@ -4349,6 +4349,10 @@ bool IsScannerEnabled() {
          base::FeatureList::IsEnabled(kScannerDogfood);
 }
 
+bool IsScannerFeedbackToastEnabled() {
+  return base::FeatureList::IsEnabled(kScannerFeedbackToast);
+}
+
 bool IsSeaPenDemoModeEnabled() {
   return IsSeaPenEnabled() && base::FeatureList::IsEnabled(kSeaPenDemoMode);
 }
@@ -4664,10 +4668,6 @@ bool IsAllowPasswordlessRecoveryEnabled() {
 
 bool IsLocalAuthenticationWithPinEnabled() {
   return base::FeatureList::IsEnabled(kLocalAuthenticationWithPin);
-}
-
-bool IsAllowPinTimeoutSetupEnabled() {
-  return base::FeatureList::IsEnabled(kAllowPinTimeoutSetup);
 }
 
 bool IsWebAuthNAuthDialogMergeEnabled() {

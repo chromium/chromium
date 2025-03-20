@@ -49,6 +49,10 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
               (override));
   MOCK_METHOD(bool, IsInLandscapeMode, (), (override));
   MOCK_METHOD(bool, IsFoldable, (), (override));
+  MOCK_METHOD(optimization_guide::OptimizationGuideDecider*,
+              GetOptimizationGuideDecider,
+              (),
+              (override));
   MOCK_METHOD(void,
               ShowPixPaymentPrompt,
               (base::span<const autofill::BankAccount> pix_account_suggestions,

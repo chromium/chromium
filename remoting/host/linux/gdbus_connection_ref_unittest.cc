@@ -17,6 +17,7 @@
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "dbus/test_service.h"
+#include "remoting/host/base/loggable.h"
 #include "remoting/host/linux/dbus_interfaces/org_chromium_TestInterface.h"
 #include "remoting/host/linux/dbus_interfaces/org_freedesktop_DBus_Properties.h"
 #include "remoting/host/linux/gvariant_ref.h"
@@ -33,7 +34,7 @@ class GDBusConnectionRefTest : public testing::Test {
     ASSERT_TRUE(test_service_.StartService());
     test_service_.WaitUntilServiceIsStarted();
 
-    base::test::TestFuture<base::expected<GDBusConnectionRef, std::string>>
+    base::test::TestFuture<base::expected<GDBusConnectionRef, Loggable>>
         connection;
     GDBusConnectionRef::CreateForSessionBus(connection.GetCallback());
     ASSERT_TRUE(connection.Get().has_value());
@@ -47,7 +48,7 @@ class GDBusConnectionRefTest : public testing::Test {
       "/org/chromium/TestObject";
 
   void PingBus() {
-    base::test::TestFuture<base::expected<gvariant::Ignored, std::string>>
+    base::test::TestFuture<base::expected<gvariant::Ignored, Loggable>>
         response;
     connection_.Call("org.freedesktop.DBus", "/", "org.freedesktop.DBus.Peer",
                      "Ping", std::tuple(), response.GetCallback());
@@ -65,9 +66,9 @@ class GDBusConnectionRefTest : public testing::Test {
 
 TEST_F(GDBusConnectionRefTest, MethodCall) {
   std::array kMessages = {"one", "two", "three"};
-  std::array<base::test::TestFuture<
-                 base::expected<std::tuple<std::string>, std::string>>,
-             3>
+  std::array<
+      base::test::TestFuture<base::expected<std::tuple<std::string>, Loggable>>,
+      3>
       futures;
 
   for (std::size_t i = 0; i < 3; ++i) {
@@ -83,15 +84,15 @@ TEST_F(GDBusConnectionRefTest, MethodCall) {
 }
 
 TEST_F(GDBusConnectionRefTest, MethodCallError) {
-  base::test::TestFuture<base::expected<std::tuple<>, std::string>> result;
+  base::test::TestFuture<base::expected<std::tuple<>, Loggable>> result;
   connection_.Call<test_interface::BrokenMethod>(
       service_name_.c_str(), kObjectPath, std::tuple(), result.GetCallback());
   EXPECT_FALSE(result.Get().has_value());
 }
 
 TEST_F(GDBusConnectionRefTest, GetProperty) {
-  base::test::TestFuture<base::expected<std::string, std::string>> name_value;
-  base::test::TestFuture<base::expected<std::vector<std::string>, std::string>>
+  base::test::TestFuture<base::expected<std::string, Loggable>> name_value;
+  base::test::TestFuture<base::expected<std::vector<std::string>, Loggable>>
       methods_value;
 
   connection_.GetProperty<test_interface::Name>(
@@ -121,7 +122,7 @@ TEST_F(GDBusConnectionRefTest, SetProperty) {
               service_name_.c_str(), kObjectPath,
               change_signal.GetRepeatingCallback());
 
-  base::test::TestFuture<base::expected<void, std::string>> set_complete;
+  base::test::TestFuture<base::expected<void, Loggable>> set_complete;
 
   const char* value = "new value";
 

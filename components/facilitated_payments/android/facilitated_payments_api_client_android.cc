@@ -38,8 +38,8 @@ LazyInitFacilitatedPaymentsApiClient(
 // `facilitated_payments_api_client_factory.h`.
 FacilitatedPaymentsApiClientCreator GetFacilitatedPaymentsApiClientCreator(
     content::GlobalRenderFrameHostId render_frame_host_id) {
-  return base::BindOnce(&LazyInitFacilitatedPaymentsApiClient,
-                        render_frame_host_id);
+  return base::BindRepeating(&LazyInitFacilitatedPaymentsApiClient,
+                             render_frame_host_id);
 }
 
 FacilitatedPaymentsApiClientAndroid::FacilitatedPaymentsApiClientAndroid(

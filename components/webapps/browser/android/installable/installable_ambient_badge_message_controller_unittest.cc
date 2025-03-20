@@ -204,19 +204,6 @@ TEST_F(InstallableAmbientBadgeMessageControllerTest, Dismiss) {
   TriggerMessageDismissedWithGesture();
 }
 
-// Tests that when the user dismisses the message with a gesture, client's
-// BadgeDismissed method is called and the message is not enqueued
-// because of throttling.
-TEST_F(InstallableAmbientBadgeMessageControllerTest, Throttle) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(features::kInstallMessageThrottle);
-  EnqueueMessage();
-  EXPECT_CALL(client_mock(), AddToHomescreenFromBadge).Times(0);
-  DismissMessage(true);
-  EnqueueMessageWithExpectNotCalled();
-  ASSERT_FALSE(message_controller()->IsMessageEnqueued());
-}
-
 // Tests that when the message is dismissed with the timer, client's
 // BadgeIgnored method is called.
 TEST_F(InstallableAmbientBadgeMessageControllerTest, TimerDismissed) {

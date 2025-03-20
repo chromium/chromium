@@ -1603,6 +1603,9 @@ extern const char kOmniboxSearchAggregatorDescription[];
 extern const char kOmniboxFocusTriggersWebAndSRPZeroSuggestName[];
 extern const char kOmniboxFocusTriggersWebAndSRPZeroSuggestDescription[];
 
+extern const char kOmniboxHideSuggestionGroupHeadersName[];
+extern const char kOmniboxHideSuggestionGroupHeadersDescription[];
+
 extern const char kOmniboxUrlSuggestionsOnFocus[];
 extern const char kOmniboxUrlSuggestionsOnFocusDecription[];
 

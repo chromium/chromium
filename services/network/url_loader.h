@@ -40,6 +40,7 @@
 #include "services/network/attribution/attribution_request_helper.h"
 #include "services/network/keepalive_statistics_recorder.h"
 #include "services/network/network_service.h"
+#include "services/network/partial_decoder.h"
 #include "services/network/private_network_access_checker.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/initiator_lock_compatibility.h"
@@ -295,6 +296,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   }
 
   void SetEnableReportingRawHeaders(bool enable);
+
+  void set_partial_decoder_decoding_buffer_size_for_testing(
+      int partial_decoder_decoding_buffer_size) {
+    partial_decoder_decoding_buffer_size_ =
+        partial_decoder_decoding_buffer_size;
+  }
 
   // Gets the URLLoader associated with this request.
   static URLLoader* ForRequest(const net::URLRequest& request);
@@ -677,6 +684,19 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // `load_with_storage_access` field should be set.
   bool ShouldSetLoadWithStorageAccess() const;
 
+  // Reads more decoded data from the PartialDecoder.
+  void ReadDecodedDataFromPartialDecoder();
+
+  // Callback function to asynchronously receive the result from the
+  // PartialDecoder.
+  void OnReadDecodedDataFromPartialDecoder(int result);
+
+  // Checks the result from the PartialDecoder, performs MIME and ORB sniffing
+  // on the decoded data, and determines if more sniffing is needed.
+  // If no further decoding is needed, `partial_decoder_` is reset, and
+  // `partial_decoder_result_` is set unless an error occurred during decoding.
+  void CheckPartialDecoderResult(int result);
+
   // Records metrics about GET requests.
   void RecordRequestMetrics();
 
@@ -905,6 +925,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // high-priority requests that cannot yet be written to the mojo data pipe
   // because it is full.
   std::unique_ptr<SlopBucket> slop_bucket_;
+
+  // For decoding a small part of the response body to check its type (for ORB
+  // and MIME sniffing) when the response might be compressed and client-side
+  // content decoding is enabled.
+  std::unique_ptr<PartialDecoder> partial_decoder_;
+
+  // Keeps the original, compressed data from `partial_decoder_`.
+  std::optional<PartialDecoderResult> partial_decoder_result_;
+
+  // How much decoded data `partial_decoder_` should hold for the type check.
+  int partial_decoder_decoding_buffer_size_;
 
   // Keeps the result of IsSharedDictionaryReadAllowed(). Used only for metrics.
   bool shared_dictionary_allowed_check_passed_ = false;

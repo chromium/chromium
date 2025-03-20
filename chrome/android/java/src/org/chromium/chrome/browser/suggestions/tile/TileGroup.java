@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.suggestions.SuggestionsOfflineModelObserver;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
+import org.chromium.chrome.browser.suggestions.mostvisited.CustomLinkOperations;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSites;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
@@ -49,11 +50,11 @@ public class TileGroup implements MostVisitedSites.Observer {
     /**
      * Performs work in other parts of the system that the {@link TileGroup} should not know about.
      */
-    public interface Delegate {
+    public interface Delegate extends CustomLinkOperations {
         /**
          * @param tile The tile corresponding to the most visited item to remove.
          * @param removalUndoneCallback The callback to invoke if the removal is reverted. The
-         *                              callback's argument is the URL being restored.
+         *     callback's argument is the URL being restored.
          */
         void removeMostVisitedItem(Tile tile, Callback<GURL> removalUndoneCallback);
 
@@ -63,6 +64,7 @@ public class TileGroup implements MostVisitedSites.Observer {
 
         /**
          * Gets the list of most visited sites.
+         *
          * @param observer The observer to be notified with the list of sites.
          * @param maxResults The maximum number of sites to retrieve.
          */

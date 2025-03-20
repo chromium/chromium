@@ -439,7 +439,6 @@ TEST_F(SavedTabGroupBarUnitTest, UnpinTabGroupRemoveButton) {
   service()->UpdateGroupPosition(sync_id, false, std::nullopt);
   EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
 }
-
 TEST_F(SavedTabGroupBarUnitTest, PinAndUnpinMultipleTabGroups) {
   EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
 
@@ -487,20 +486,35 @@ TEST_F(SavedTabGroupBarUnitTest, PinAndUnpinMultipleTabGroups) {
 }
 
 TEST_F(SavedTabGroupBarUnitTest, OnlyShowEverthingButton) {
-  EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
-
+  ASSERT_EQ(1u, saved_tab_group_bar()->children().size());
   AddGroupFromLocal();
+  ASSERT_EQ(2u, saved_tab_group_bar()->children().size());
 
+  const int button_preferred_size = saved_tab_group_bar()
+                                        ->GetSavedTabGroupButtons()
+                                        .at(0)
+                                        ->GetPreferredSize()
+                                        .width() +
+                                    SavedTabGroupBar::kBetweenElementSpacing;
+  const int overflow_preferred_width =
+      saved_tab_group_bar()->overflow_button()->GetPreferredSize().width() +
+      SavedTabGroupBar::kBetweenElementSpacing;
+
+  // Not enough width for even the overflow button
+  saved_tab_group_bar()->SetBounds(0, 0, overflow_preferred_width - 1, 100);
+  EXPECT_FALSE(saved_tab_group_bar()->IsOverflowButtonVisible());
+  EXPECT_EQ(0, saved_tab_group_bar()->GetNumberOfVisibleGroups());
+
+  // Just enough width for overflow button only
+  saved_tab_group_bar()->SetBounds(0, 0, overflow_preferred_width + 1, 100);
+  EXPECT_TRUE(saved_tab_group_bar()->IsOverflowButtonVisible());
+  EXPECT_EQ(0, saved_tab_group_bar()->GetNumberOfVisibleGroups());
+
+  // Enough width to show one saved group button and the overflow button
   saved_tab_group_bar()->SetBounds(
-      0, 2, saved_tab_group_bar()->CalculatePreferredWidthRestrictedBy(2), 2);
-
-  // Saved tab group button is not visible because there's not enough space.
-  // Everything button is visible.
-  EXPECT_FALSE(saved_tab_group_bar()->children()[1]->GetVisible());
-
-  // Saved tab group button is not visible because there's not enough space.
-  // Everything button is visible.
-  EXPECT_TRUE(saved_tab_group_bar()->children()[0]->GetVisible());
+      0, 0, button_preferred_size + overflow_preferred_width, 100);
+  EXPECT_TRUE(saved_tab_group_bar()->IsOverflowButtonVisible());
+  EXPECT_EQ(1, saved_tab_group_bar()->GetNumberOfVisibleGroups());
 }
 
 TEST_F(SavedTabGroupBarUnitTest, AccessibleProperties) {

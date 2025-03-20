@@ -312,9 +312,18 @@ TEST_P(JapaneseTesting, CreateJapaneseSettingsFromPrefsTest) {
   jp_prefs.Set("numberOfSuggestions", 5);
 
   base::Value::Dict full_prefs;
-  // Note: Japanese prefs are always stored for nacl_mozc_jp, but then getting
-  // from jp/us should get the same prefs.
+
+  // TODO(crbug.com/203464079): Use distinct CrOS prefs for nacl_mozc_jp
+  // ("Japanese [for JIS keyboard]") and nacl_mozc_us ("Japanese for US
+  // keyboard") input methods. Due to singleton constraints in the legacy
+  // implementation, unlike all other input methods whose settings were distinct
+  // from one another, these two input methods shared the same settings. Upon
+  // migration to CrOS prefs, the unintended sharing was intentionally retained
+  // until the issue is separately addressed outside the scope of the said
+  // migration. Thus a single Japanese prefs entry with key "nacl_mozc_jp" is
+  // currently used for both "nacl_mozc_jp" and "nacl_mozc_us" input methods.
   full_prefs.Set(kJapaneseEngineId, std::move(jp_prefs));
+
   TestingPrefServiceSimple prefs;
   RegisterTestingPrefs(prefs, full_prefs);
 

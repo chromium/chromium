@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/widget/input/main_thread_event_queue.h"
 
+#include <atomic>
 #include <utility>
 
 #include "base/containers/circular_deque.h"
@@ -461,7 +462,7 @@ void MainThreadEventQueue::HandleEvent(
     event_callback = std::move(callback);
   }
 
-  if (has_pointerrawupdate_handlers_) {
+  if (has_pointerrawupdate_handlers_.load(std::memory_order_relaxed)) {
     if (event->Event().GetType() == WebInputEvent::Type::kMouseMove) {
       auto raw_event = std::make_unique<WebCoalescedInputEvent>(
           std::make_unique<WebPointerEvent>(
@@ -762,9 +763,12 @@ bool MainThreadEventQueue::IsRafAlignedEvent(
     case WebInputEvent::Type::kMouseMove:
     case WebInputEvent::Type::kMouseWheel:
     case WebInputEvent::Type::kTouchMove:
-      return allow_raf_aligned_input_ && !needs_low_latency_ &&
-             !needs_low_latency_until_pointer_up_ &&
-             !needs_unbuffered_input_for_debugger_;
+      return allow_raf_aligned_input_ &&
+             !needs_low_latency_.load(std::memory_order_relaxed) &&
+             !needs_low_latency_until_pointer_up_.load(
+                 std::memory_order_relaxed) &&
+             !needs_unbuffered_input_for_debugger_.load(
+                 std::memory_order_relaxed);
     default:
       return false;
   }
@@ -795,7 +799,7 @@ bool MainThreadEventQueue::HandleEventOnMainThread(
                                         std::move(handled_callback));
   }
 
-  if (needs_low_latency_until_pointer_up_) {
+  if (needs_low_latency_until_pointer_up_.load(std::memory_order_relaxed)) {
     // Reset the needs low latency until pointer up mode if necessary.
     switch (event.Event().GetType()) {
       case WebInputEvent::Type::kMouseUp:
@@ -803,7 +807,8 @@ bool MainThreadEventQueue::HandleEventOnMainThread(
       case WebInputEvent::Type::kTouchEnd:
       case WebInputEvent::Type::kPointerCancel:
       case WebInputEvent::Type::kPointerUp:
-        needs_low_latency_until_pointer_up_ = false;
+        needs_low_latency_until_pointer_up_.store(false,
+                                                  std::memory_order_relaxed);
         break;
       default:
         break;
@@ -836,20 +841,21 @@ void MainThreadEventQueue::ClearClient() {
 }
 
 void MainThreadEventQueue::SetNeedsLowLatency(bool low_latency) {
-  needs_low_latency_ = low_latency;
+  needs_low_latency_.store(low_latency, std::memory_order_relaxed);
 }
 
 void MainThreadEventQueue::SetNeedsUnbufferedInputForDebugger(bool unbuffered) {
-  needs_unbuffered_input_for_debugger_ = unbuffered;
+  needs_unbuffered_input_for_debugger_.store(unbuffered,
+                                             std::memory_order_relaxed);
 }
 
 void MainThreadEventQueue::SetHasPointerRawUpdateEventHandlers(
     bool has_handlers) {
-  has_pointerrawupdate_handlers_ = has_handlers;
+  has_pointerrawupdate_handlers_.store(has_handlers, std::memory_order_relaxed);
 }
 
 void MainThreadEventQueue::RequestUnbufferedInputEvents() {
-  needs_low_latency_until_pointer_up_ = true;
+  needs_low_latency_until_pointer_up_.store(true, std::memory_order_relaxed);
 }
 
 void MainThreadEventQueue::UnblockQueuedBlockingTouchMovesIfNeeded(

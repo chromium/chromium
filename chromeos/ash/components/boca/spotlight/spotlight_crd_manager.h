@@ -22,7 +22,7 @@ class SpotlightCrdManager {
 
   // Starts the CRD session and returns the connection code for the request.
   virtual void InitiateSpotlightSession(
-      base::OnceCallback<void(std::optional<std::string>)> callback) = 0;
+      base::OnceCallback<void(const std::string&)> callback) = 0;
 
  protected:
   SpotlightCrdManager() = default;

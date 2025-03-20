@@ -83,7 +83,6 @@ using signin_metrics::PromoAction;
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _closeSettingsOnAddAccount = closeSettingsOnAddAccount;
-    _showAddAccountButton = YES;
   }
   return self;
 }

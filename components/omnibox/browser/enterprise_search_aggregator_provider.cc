@@ -24,7 +24,6 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
@@ -34,6 +33,7 @@
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
+#include "components/omnibox/common/string_cleaning.h"
 #include "components/search/search.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
@@ -246,7 +246,7 @@ std::set<std::u16string> GetWords(std::vector<std::u16string> strings) {
   std::set<std::u16string> words = {};
   for (const auto& string : strings) {
     auto string_words = String16VectorFromString16(
-        bookmarks::CleanUpTitleForMatching(string), nullptr);
+        string_cleaning::CleanUpTitleForMatching(string), nullptr);
     std::move(string_words.begin(), string_words.end(),
               std::inserter(words, words.begin()));
   }

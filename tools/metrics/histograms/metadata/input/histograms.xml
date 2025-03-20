@@ -2005,26 +2005,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="InputMethod.TouchSelection.{TouchSelectionResult}Session.TouchDownCount"
-    units="units" expires_after="2025-03-09">
-  <owner>michellegc@google.com</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    The number of touch down movements made by a user in a 'successful'
-    {TouchSelectionResult} session. A session starts from the first touch down
-    that activates touch selection and ends 'successfully' if an editing action
-    occurs after {TouchSelectionResult}, e.g. typing a character or using the
-    menu cut, copy or paste actions. The touch down count is recorded at the end
-    of a successful session (and is not recorded for sessions that end due to
-    the window closing, timing out after 10s of inactivity, etc.).
-  </summary>
-  <token key="TouchSelectionResult">
-    <variant name="Cursor" summary="cursor placement"/>
-    <variant name="Selection" summary="text selection"/>
-  </token>
-</histogram>
-
 <histogram name="InputMethod.VirtualKeyboard.BackspaceCount" units="units"
     expires_after="2025-11-01">
   <owner>shend@chromium.org</owner>

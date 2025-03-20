@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/platform/graphics/gradient_generated_image.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/size.h"
@@ -400,7 +401,7 @@ void CSSGradientValue::AddDeprecatedStops(
   for (const auto& stop : stops_sorted) {
     float offset;
     if (stop.offset_->IsPercentage()) {
-      offset = stop.offset_->ComputePercentage(conversion_data) / 100;
+      offset = stop.offset_->ComputePercentage<float>(conversion_data) / 100;
     } else {
       // Deprecated gradients are only parsed with either percentage or number.
       DCHECK(stop.offset_->IsNumber());
@@ -573,6 +574,21 @@ std::tuple<T, T> AdjustedGradientDomainForOffsetRange(const T& v0,
   return std::make_tuple(v0 + d * first_offset, v0 + d * last_offset);
 }
 
+template <>
+std::tuple<float, float> AdjustedGradientDomainForOffsetRange(
+    const float& v0,
+    const float& v1,
+    float first_offset,
+    float last_offset) {
+  DCHECK_LE(first_offset, last_offset);
+
+  const auto d = v1 - v0;
+
+  // The offsets are relative to the [v0 , v1] segment.
+  return std::make_tuple(ClampTo<float>(v0 + d * first_offset),
+                         ClampTo<float>(v0 + d * last_offset));
+}
+
 // Update the radial gradient radii to align with the given offset range.
 void AdjustGradientRadiiForOffsetRange(CSSGradientValue::GradientDesc& desc,
                                        float first_offset,
@@ -654,7 +670,7 @@ void CSSGradientValue::AddStops(
     if (stop.offset_) {
       if (stop.offset_->IsPercentage()) {
         stops[i].offset =
-            stop.offset_->ComputePercentage(conversion_data) / 100;
+            stop.offset_->ComputePercentage<float>(conversion_data) / 100;
       } else if (stop.offset_->IsLength() ||
                  !stop.offset_->IsResolvableBeforeLayout()) {
         float length;
@@ -843,8 +859,9 @@ static float PositionFromValue(const CSSValue* value,
   }
 
   if (primitive_value->IsPercentage()) {
-    return origin + sign * primitive_value->ComputePercentage(conversion_data) /
-                        100.f * edge_distance;
+    return origin +
+           sign * primitive_value->ComputePercentage<float>(conversion_data) /
+               100.f * edge_distance;
   }
 
   if (!primitive_value->IsResolvableBeforeLayout()) {
@@ -1521,8 +1538,8 @@ float ResolveRadius(const CSSPrimitiveValue* radius,
   if (radius->IsNumber()) {
     result = radius->ComputeNumber(conversion_data) * conversion_data.Zoom();
   } else if (width_or_height && radius->IsPercentage()) {
-    result =
-        *width_or_height * radius->ComputePercentage(conversion_data) / 100;
+    result = *width_or_height *
+             radius->ComputePercentage<float>(conversion_data) / 100;
   } else {
     result = radius->ComputeLength<float>(conversion_data);
   }

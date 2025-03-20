@@ -162,6 +162,40 @@ using base::UserMetricsAction;
   [self.omniboxTextController onUserRemoveAdditionalText];
 }
 
+- (void)clearText {
+  [self.omniboxTextController clearText];
+}
+
+- (void)onDidBeginEditing {
+  [self.omniboxTextController onDidBeginEditing];
+}
+
+- (BOOL)shouldChangeCharactersInRange:(NSRange)range
+                    replacementString:(NSString*)newText {
+  return [self.omniboxTextController shouldChangeCharactersInRange:range
+                                                 replacementString:newText];
+}
+
+- (void)textDidChangeWithUserEvent:(BOOL)isProcessingUserEvent {
+  [self.omniboxTextController textDidChangeWithUserEvent:isProcessingUserEvent];
+}
+
+- (void)onAcceptAutocomplete {
+  [self.omniboxTextController onAcceptAutocomplete];
+}
+
+- (void)onCopy {
+  [self.omniboxTextController onCopy];
+}
+
+- (void)willPaste {
+  [self.omniboxTextController willPaste];
+}
+
+- (void)onDeleteBackward {
+  [self.omniboxTextController onDeleteBackward];
+}
+
 #pragma mark - OmniboxTextControllerDelegate
 
 #pragma mark - PopupMatchPreviewDelegate

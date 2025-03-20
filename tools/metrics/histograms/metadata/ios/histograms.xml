@@ -4041,6 +4041,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.ReaderMode.Heuristic.Latency" units="ms"
+    expires_after="2025-11-24">
+  <owner>fernandex@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Logs the latency of triggering the heuristic for Reader Mode from when the
+    JavaScript is executed until there are values for distillation. Sampled on a
+    subset of user page loads based on page load probability configuration which
+    will be dependent on the milestone and channel for iOS.
+  </summary>
+</histogram>
+
+<histogram name="IOS.ReaderMode.Heuristic.Result"
+    enum="ReaderModeHeuristicState" expires_after="2025-11-24">
+  <owner>fernandex@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Logs the result of the triggering heuristic for Reader Mode. Sampled on a
+    subset of user page loads based on page load probability configuration which
+    will be dependent on the milestone and channel for iOS.
+  </summary>
+</histogram>
+
 <histogram name="IOS.ReadingList.BulkAddURLsCount" units="count"
     expires_after="2026-01-31">
   <owner>nicolasmacbeth@google.com</owner>

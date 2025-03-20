@@ -438,5 +438,26 @@ TEST_F(GlicMetricsTest, InputModesUsed) {
                                       InputModesUsed::kOnlyAudio, 1);
 }
 
+TEST_F(GlicMetricsTest, AttachStateChanges) {
+  // Attach changes during initialization should not be counted.
+  metrics_->OnAttachedToBrowser(AttachChangeReason::kInit);
+  metrics_->OnGlicWindowClose();
+  histogram_tester_.ExpectTotalCount("Glic.Session.AttachStateChanges", 1);
+  histogram_tester_.ExpectBucketCount("Glic.Session.AttachStateChanges", 0, 1);
+
+  metrics_->OnAttachedToBrowser(AttachChangeReason::kDrag);
+  metrics_->OnGlicWindowClose();
+  histogram_tester_.ExpectTotalCount("Glic.Session.AttachStateChanges", 2);
+  histogram_tester_.ExpectBucketCount("Glic.Session.AttachStateChanges", 1, 1);
+
+  metrics_->OnAttachedToBrowser(AttachChangeReason::kMenu);
+  metrics_->OnDetachedFromBrowser(AttachChangeReason::kMenu);
+  metrics_->OnAttachedToBrowser(AttachChangeReason::kMenu);
+  metrics_->OnDetachedFromBrowser(AttachChangeReason::kMenu);
+  metrics_->OnGlicWindowClose();
+  histogram_tester_.ExpectTotalCount("Glic.Session.AttachStateChanges", 3);
+  histogram_tester_.ExpectBucketCount("Glic.Session.AttachStateChanges", 4, 1);
+}
+
 }  // namespace
 }  // namespace glic

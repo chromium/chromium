@@ -44,14 +44,14 @@ class GlicFreControllerBrowserTest : public glic::test::InteractiveGlicTest {
 
   void WaitForFreShow() {
     ASSERT_TRUE(base::test::RunUntil(
-        [&]() { return glic_fre_controller()->IsShowingDialogForTesting(); }));
+        [&]() { return glic_fre_controller()->IsShowingDialog(); }));
   }
 
   void EnsureFreDoesNotShow() {
     auto end_time = base::TimeTicks::Now() + base::Milliseconds(500);
     ASSERT_TRUE(base::test::RunUntil(
         [&]() { return end_time < base::TimeTicks::Now(); }));
-    ASSERT_FALSE(glic_fre_controller()->IsShowingDialogForTesting());
+    ASSERT_FALSE(glic_fre_controller()->IsShowingDialog());
   }
 };
 
@@ -116,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest,
 
   // Close the FRE on the active tab.
   glic_fre_controller()->DismissFreIfOpenOnActiveTab(browser());
-  EXPECT_FALSE(glic_fre_controller()->IsShowingDialogForTesting());
+  EXPECT_FALSE(glic_fre_controller()->IsShowingDialog());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest,
@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(GlicFreControllerBrowserTest,
 
   // Attempting to close the FRE on the active tab should do nothing.
   glic_fre_controller()->DismissFreIfOpenOnActiveTab(browser());
-  EXPECT_TRUE(glic_fre_controller()->IsShowingDialogForTesting());
+  EXPECT_TRUE(glic_fre_controller()->IsShowingDialog());
 }
 
 // TODO(crbug.com/402310277): Re-enable this test.

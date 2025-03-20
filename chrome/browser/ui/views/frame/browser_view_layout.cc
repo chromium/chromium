@@ -40,6 +40,7 @@
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/compositor/compositor_switches.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -61,6 +62,24 @@ namespace {
 // The number of pixels the constrained window should overlap the bottom
 // of the omnibox.
 const int kConstrainedWindowOverlap = 3;
+
+// The normal clipping created by `View::Paint()` may not cover the bottom of
+// the TopContainerView at certain scale factor because both of the position and
+// the height might be roudned down. This function sets the clip path that
+// enlarges the height at 2 DPs to compensate this error (both origin and size)
+// that the canvas can cover the entire TopContainerView.  See
+// crbug.com/390669712 for more details.  TODO(crbug.com/41344902): Remove this
+// hack once the pixel canvas is enabled on all aura platforms.  Note that macOS
+// supports integer scale only, so this isn't necessary on macOS.
+void SetClipPathWithBottomAllowance(views::View* view) {
+  if (!ui::IsPixelCanvasRecordingEnabled()) {
+    constexpr int kBottomPaintAllowance = 2;
+    const gfx::Rect local_bounds = view->GetLocalBounds();
+    const int extended_height = local_bounds.height() + kBottomPaintAllowance;
+    view->SetClipPath(
+        SkPath::Rect(SkRect::MakeWH(local_bounds.width(), extended_height)));
+  }
+}
 
 }  // namespace
 
@@ -498,6 +517,12 @@ int BrowserViewLayout::LayoutToolbar(int top) {
   SetViewVisibility(toolbar_, toolbar_visible);
   toolbar_->SetBounds(vertical_layout_rect_.x(), top, browser_view_width,
                       height);
+  if (bookmark_bar_ && bookmark_bar_->GetVisible()) {
+    // Remove the clip if the toolbar is not at the bottom.
+    toolbar_->SetClipPath({});
+  } else {
+    SetClipPathWithBottomAllowance(toolbar_);
+  }
   return toolbar_->bounds().bottom();
 }
 
@@ -549,6 +574,16 @@ int BrowserViewLayout::LayoutBookmarkBar(int top) {
   int bookmark_bar_height = bookmark_bar_->GetPreferredSize().height();
   bookmark_bar_->SetBounds(vertical_layout_rect_.x(), top,
                            vertical_layout_rect_.width(), bookmark_bar_height);
+  SetClipPathWithBottomAllowance(bookmark_bar_);
+  // Make sure the contents separator is painted last as the background for
+  // BookmarkVieBar/ToolbarView may paint over it otherwise.
+  // TODO(crbug.com/41344902): Remove once the pixel canvas is enabled on
+  // all aura platforms.
+  if (top_container_ == bookmark_bar_->parent()) {
+    top_container_->ReorderChildView(contents_separator_,
+                                     top_container_->children().size());
+  }
+
   // Set visibility after setting bounds, as the visibility update uses the
   // bounds to determine if the mouse is hovering over a button.
   SetViewVisibility(bookmark_bar_, true);
@@ -762,6 +797,7 @@ void BrowserViewLayout::UpdateTopContainerBounds() {
             top_container_bounds.size()));
   }
   top_container_->SetBoundsRect(top_container_bounds);
+  SetClipPathWithBottomAllowance(top_container_);
 }
 
 int BrowserViewLayout::LayoutDownloadShelf(int bottom) {

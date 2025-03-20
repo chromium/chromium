@@ -326,7 +326,6 @@ class DropSenderView : public views::WidgetDelegateView,
     params.activatable = views::Widget::InitParams::Activatable::kNo;
     params.context = context;
     params.delegate = this;
-    params.wants_mouse_events_when_inactive = true;
 
     views::Widget* widget = new views::Widget();
     widget->Init(std::move(params));
@@ -390,7 +389,6 @@ class DropTargetView : public views::WidgetDelegateView {
     params.activatable = views::Widget::InitParams::Activatable::kNo;
     params.context = context;
     params.delegate = this;
-    params.wants_mouse_events_when_inactive = true;
 
     views::Widget* widget = new views::Widget();
     widget->Init(std::move(params));

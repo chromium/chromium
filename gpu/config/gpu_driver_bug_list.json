@@ -3467,6 +3467,18 @@
       "features": [
         "max_num_hw_video_decoders_10"
       ]
+    },
+    {
+      "id": 442,
+      "cr_bugs": [394610795],
+      "description": "Forcing RGB10A2 overlay due to MSFT bug, this enables HDR to take overlay path for AMD",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x1002",
+      "features": [
+        "force_rgb10a2_overlay_support"
+      ]
     }
   ]
 }

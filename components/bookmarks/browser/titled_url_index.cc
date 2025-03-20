@@ -23,6 +23,7 @@
 #include "components/bookmarks/browser/titled_url_match.h"
 #include "components/bookmarks/browser/titled_url_node.h"
 #include "components/bookmarks/common/bookmark_features.h"
+#include "components/omnibox/common/string_cleaning.h"
 #include "components/query_parser/snippet.h"
 #include "third_party/icu/source/common/unicode/normalizer2.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
@@ -234,8 +235,8 @@ std::optional<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodeWithQuery(
   const std::u16string lower_title =
       base::i18n::ToLower(Normalize(node->GetTitledUrlNodeTitle()));
   base::OffsetAdjuster::Adjustments adjustments;
-  const std::u16string clean_url =
-      CleanUpUrlForMatching(node->GetTitledUrlNodeUrl(), &adjustments);
+  const std::u16string clean_url = string_cleaning::CleanUpUrlForMatching(
+      node->GetTitledUrlNodeUrl(), &adjustments);
   std::vector<std::u16string> lower_ancestor_titles;
   std::ranges::transform(
       node->GetTitledUrlNodeAncestorTitles(),
@@ -468,7 +469,8 @@ std::vector<std::u16string> TitledUrlIndex::ExtractIndexTerms(
     terms.push_back(term);
   }
 
-  for (const std::u16string& term : ExtractQueryWords(CleanUpUrlForMatching(
+  for (const std::u16string& term :
+       ExtractQueryWords(string_cleaning::CleanUpUrlForMatching(
            node->GetTitledUrlNodeUrl(), /*adjustments=*/nullptr))) {
     terms.push_back(term);
   }

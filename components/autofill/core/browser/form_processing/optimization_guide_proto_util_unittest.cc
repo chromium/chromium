@@ -7,6 +7,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -19,7 +20,17 @@ class AutofillOptimizationGuideProtoUtilTest : public testing::Test {
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 
-TEST_F(AutofillOptimizationGuideProtoUtilTest, ToFormDataProto) {
+class ByConversionReason
+    : public AutofillOptimizationGuideProtoUtilTest,
+      public testing::WithParamInterface<FormDataProtoConversionReason> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    AutofillOptimizationGuideProtoUtilTest,
+    ByConversionReason,
+    testing::Values(FormDataProtoConversionReason::kModelRequest,
+                    FormDataProtoConversionReason::kExtensionAPI));
+
+TEST_P(ByConversionReason, ToFormDataProto) {
   FormData form = test::GetFormData(
       {.fields = {{.is_focusable = true,
                    .is_visible = true,
@@ -42,7 +53,8 @@ TEST_F(AutofillOptimizationGuideProtoUtilTest, ToFormDataProto) {
                                        {.value = u"2", .text = u"text2"}}
 
                    }}}});
-  optimization_guide::proto::FormData form_data_proto = ToFormDataProto(form);
+  optimization_guide::proto::FormData form_data_proto =
+      ToFormDataProto(form, /*conversion_reason=*/GetParam());
   ASSERT_EQ(form_data_proto.fields_size(), 3);
 
   optimization_guide::proto::FormFieldData field_data1 =
@@ -80,6 +92,38 @@ TEST_F(AutofillOptimizationGuideProtoUtilTest, ToFormDataProto) {
       field_data3.select_options(1);
   EXPECT_EQ("2", select_option2.value());
   EXPECT_EQ("text2", select_option2.text());
+}
+
+// Tests that the "ForExtensionAPI" flavor additionally populates signatures and
+// global IDs.
+TEST_F(AutofillOptimizationGuideProtoUtilTest, ToFormDataProtoForExtensionAPI) {
+  const FormGlobalId form_id = test::MakeFormGlobalId();
+  const FieldGlobalId field_id = test::MakeFieldGlobalId();
+  FormData form = test::GetFormData({
+      .fields = {{.host_frame = field_id.frame_token,
+                  .renderer_id = field_id.renderer_id,
+                  .name = u"name"}},
+      .host_frame = form_id.frame_token,
+      .renderer_id = form_id.renderer_id,
+  });
+  optimization_guide::proto::FormData form_proto =
+      ToFormDataProto(form, FormDataProtoConversionReason::kExtensionAPI);
+
+  // Form-level metadata.
+  EXPECT_EQ(form_proto.global_id().frame_token(),
+            form_id.frame_token->ToString());
+  EXPECT_EQ(form_proto.global_id().renderer_id(), *form_id.renderer_id);
+  EXPECT_EQ(form_proto.form_signature(), *CalculateFormSignature(form));
+
+  // Field-level metadata.
+  ASSERT_EQ(form_proto.fields_size(), 1);
+  const optimization_guide::proto::FormFieldData& field_proto =
+      form_proto.fields(0);
+  EXPECT_EQ(field_proto.global_id().frame_token(),
+            field_id.frame_token->ToString());
+  EXPECT_EQ(field_proto.global_id().renderer_id(), *field_id.renderer_id);
+  EXPECT_EQ(field_proto.field_signature(),
+            *CalculateFieldSignatureForField(form.fields()[0]));
 }
 
 }  // namespace

@@ -349,6 +349,12 @@ void TabGroupSyncServiceProxy::AddObserver(Observer* observer) {
   }
 
   observers_.AddObserver(observer);
+
+  // TabGroupSyncServiceImpl calls OnInitialized when an observer is added,
+  // mirroring this functionality here.
+  if (service_->model()->is_loaded()) {
+    observer->OnInitialized();
+  }
 }
 
 void TabGroupSyncServiceProxy::RemoveObserver(Observer* observer) {

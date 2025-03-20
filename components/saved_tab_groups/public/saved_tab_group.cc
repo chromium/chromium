@@ -88,6 +88,17 @@ SavedTabGroup::~SavedTabGroup() = default;
 SavedTabGroup::RemovedTabMetadata::RemovedTabMetadata() = default;
 SavedTabGroup::RemovedTabMetadata::~RemovedTabMetadata() = default;
 
+std::optional<base::Uuid> SavedTabGroup::GetOriginatingTabGroupGuid(
+    bool for_sync) const {
+  if (use_originating_tab_group_guid_ || for_sync) {
+    return originating_tab_group_guid_;
+  }
+
+  // The current user must always be an owner of saved tab groups.
+  CHECK(is_shared_tab_group() || !originating_tab_group_guid_.has_value());
+  return std::nullopt;
+}
+
 const SavedTabGroupTab* SavedTabGroup::GetTab(
     const base::Uuid& saved_tab_guid) const {
   std::optional<int> index = GetIndexOfTab(saved_tab_guid);
@@ -229,8 +240,10 @@ SavedTabGroup& SavedTabGroup::SetCollaborationId(
 }
 
 SavedTabGroup& SavedTabGroup::SetOriginatingTabGroupGuid(
-    std::optional<base::Uuid> originating_tab_group_guid) {
+    std::optional<base::Uuid> originating_tab_group_guid,
+    bool use_originating_tab_group_guid) {
   originating_tab_group_guid_ = std::move(originating_tab_group_guid);
+  use_originating_tab_group_guid_ = use_originating_tab_group_guid;
   return *this;
 }
 
@@ -443,14 +456,16 @@ SavedTabGroup SavedTabGroup::CloneAsSharedTabGroup(
   SavedTabGroup shared_group = CopyBaseFieldsWithTabs();
   shared_group.is_transitioning_to_shared_ = true;
   shared_group.SetCollaborationId(std::move(collaboration_id));
-  shared_group.SetOriginatingTabGroupGuid(saved_guid());
+  shared_group.SetOriginatingTabGroupGuid(
+      saved_guid(), /*use_originating_tab_group_guid=*/true);
   return shared_group;
 }
 
 SavedTabGroup SavedTabGroup::CloneAsSavedTabGroup() const {
   DCHECK(is_shared_tab_group());
   SavedTabGroup saved_group = CopyBaseFieldsWithTabs();
-  saved_group.SetOriginatingTabGroupGuid(saved_guid());
+  saved_group.SetOriginatingTabGroupGuid(
+      saved_guid(), /*use_originating_tab_group_guid=*/true);
   return saved_group;
 }
 

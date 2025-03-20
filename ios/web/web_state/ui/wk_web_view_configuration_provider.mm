@@ -123,6 +123,7 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
     configuration_ = [configuration copy];
   }
 
+  WKWebsiteDataStore* original_data_store = website_data_store_;
   // Update the configuration's website data store.
   if (!configuration) {
     // Purge `website_data_store_` if current website data store is set from
@@ -136,6 +137,10 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
   } else {
     website_data_store_ = configuration.websiteDataStore;
     is_data_store_originated_from_ios_web_ = false;
+  }
+
+  if (website_data_store_ != original_data_store) {
+    website_data_store_updated_callbacks_.Notify(website_data_store_);
   }
 
   [configuration_ setIgnoresViewportScaleLimits:YES];
@@ -184,8 +189,6 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
 
   content_rule_list_provider_->SetUserContentController(
       configuration_.userContentController);
-
-  configuration_created_callbacks_.Notify(configuration_);
 }
 
 WKWebViewConfiguration*
@@ -281,10 +284,10 @@ void WKWebViewConfigurationProvider::Purge() {
 }
 
 base::CallbackListSubscription
-WKWebViewConfigurationProvider::RegisterConfigurationCreatedCallback(
-    ConfigurationCreatedCallbackList::CallbackType callback) {
+WKWebViewConfigurationProvider::RegisterWebSiteDataStoreUpdatedCallback(
+    WebSiteDataStoreUpdatedCallbackList::CallbackType callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequence_checker_);
-  return configuration_created_callbacks_.Add(std::move(callback));
+  return website_data_store_updated_callbacks_.Add(std::move(callback));
 }
 
 }  // namespace web

@@ -44,6 +44,8 @@ void SkyVaultMigrationWaitForConnectionHistogram(
 void SkyVaultMigrationReconnectionDurationHistogram(
     MigrationDestination destination,
     base::TimeDelta duration);
+void SkyVaultMigrationCleanupErrorHistogram(MigrationDestination destination,
+                                            bool value);
 
 // Helper functions to log UMA stats on migration dialog interactions.
 void SkyVaultMigrationDialogActionHistogram(MigrationDestination destination,

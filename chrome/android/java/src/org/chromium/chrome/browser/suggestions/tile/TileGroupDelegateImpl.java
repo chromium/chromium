@@ -8,6 +8,7 @@ import android.content.Context;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
@@ -62,6 +63,32 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
                 SuggestionsDependencyFactory.getInstance().createMostVisitedSites(profile);
     }
 
+    // CustomLinkOperations -> TileGroup.Delegate implementation.
+    @Override
+    public boolean addCustomLink(String name, @Nullable GURL url) {
+        assert !mIsDestroyed;
+        return mMostVisitedSites.addCustomLink(name, url);
+    }
+
+    @Override
+    public boolean assignCustomLink(GURL keyUrl, String name, @Nullable GURL url) {
+        assert !mIsDestroyed;
+        return mMostVisitedSites.assignCustomLink(keyUrl, name, url);
+    }
+
+    @Override
+    public boolean deleteCustomLink(GURL keyUrl) {
+        assert !mIsDestroyed;
+        return mMostVisitedSites.deleteCustomLink(keyUrl);
+    }
+
+    @Override
+    public boolean queryCustomLink(GURL keyUrl) {
+        assert !mIsDestroyed;
+        return mMostVisitedSites.queryCustomLink(keyUrl);
+    }
+
+    // TileGroup.Delegate implementation.
     @Override
     public void removeMostVisitedItem(Tile item, Callback<GURL> removalUndoneCallback) {
         assert !mIsDestroyed;

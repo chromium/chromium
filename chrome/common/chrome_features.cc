@@ -424,6 +424,10 @@ BASE_FEATURE(kGlicSizingFitWindow,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicWarming, "GlicWarming", base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGlicWarmMultiple,
+             "GlicWarmMultiple",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 BASE_FEATURE(kTabstripComboButton,

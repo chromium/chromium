@@ -19,7 +19,9 @@
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/account_pref_utils.h"
 
 #if !BUILDFLAG(IS_FUCHSIA)
 #include "components/variations/service/google_groups_manager.h"  // nogncheck
@@ -257,6 +259,43 @@ bool MayPerformAutofillAiAction(const AutofillClient& client,
   return SatisfiesMiscellaneousRequirements(
       feature_check, client.IsOffTheRecord(), has_entity_data_saved,
       client.GetVariationConfigCountryCode(), client.GetAppLocale(), action);
+}
+
+bool GetAutofillAiOptInStatus(const AutofillClient& client) {
+  const PrefService* const prefs = client.GetPrefs();
+  const signin::IdentityManager* const identity_manager =
+      client.GetIdentityManager();
+  if (!prefs || !identity_manager) {
+    return false;
+  }
+
+  const GaiaId gaia_id =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia;
+  if (gaia_id.empty()) {
+    return false;
+  }
+
+  const base::Value* const value =
+      syncer::GetAccountKeyedPrefValue(prefs, prefs::kAutofillAiOptInStatus,
+                                       signin::GaiaIdHash::FromGaiaId(gaia_id));
+  return value && value->GetIfBool().value_or(false);
+}
+
+bool SetAutofillAiOptInStatus(AutofillClient& client, bool opt_in_status) {
+  if (!MayPerformAutofillAiAction(client, AutofillAiAction::kOptIn)) {
+    return false;
+  }
+
+  const GaiaId gaia_id =
+      client.GetIdentityManager()
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia;
+  CHECK(!gaia_id.empty());
+  syncer::SetAccountKeyedPrefValue(
+      client.GetPrefs(), prefs::kAutofillAiOptInStatus,
+      signin::GaiaIdHash::FromGaiaId(gaia_id), base::Value(opt_in_status));
+  return true;
 }
 
 }  // namespace autofill

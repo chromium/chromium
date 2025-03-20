@@ -496,6 +496,8 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Unauthorized error"/>
 </enum>
 
+<!-- LINT.IfChange(PromoBrowserCommandEnum) -->
+
 <enum name="PromoBrowserCommandEnum">
   <int value="0" label="Unknown Command"/>
   <int value="1" label="Open Safety Check"/>
@@ -510,9 +512,13 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Start Password Manager Tutorial"/>
   <int value="11" label="Start Saved Tab Group Tutorial"/>
   <int value="12" label="Open AI Settings"/>
-  <int value="13" label="Open Safety Check from Whats New"/>
+  <int value="13" label="Open Safety Check from What's New"/>
   <int value="14" label="Open Payments Settings"/>
+  <int value="15" label="[Deprecated] Open History Search Settings"/>
+  <int value="16" label="Open Glic"/>
 </enum>
+
+<!-- LINT.ThenChange(//ui/webui/resources/js/browser_command/browser_command.mojom:Command) -->
 
 <enum name="SearchResumptionModule.ModuleNotShownReason">
   <int value="0" label="Not enough suggestions available"/>

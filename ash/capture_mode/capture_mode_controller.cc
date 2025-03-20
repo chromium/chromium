@@ -1606,13 +1606,9 @@ void CaptureModeController::StopAllScreenShare() {
 }
 
 void CaptureModeController::OnPinnedStateChanged(aura::Window* pinned_window) {
-  // This can change whether sunfish/scanner can be used. Update the
-  auto* shell = Shell::Get();
-  if (auto* feature_watcher = shell->sunfish_scanner_feature_watcher()) {
-    feature_watcher->UpdateFeatureStates();
-  }
-
-  if (!shell->screen_pinning_controller()->IsPinned()) {
+  // TODO: crbug.com/404941151 - Remove this method and use
+  // `SunfishScannerFeatureWatcher` instead.
+  if (!Shell::Get()->screen_pinning_controller()->IsPinned()) {
     return;
   }
 

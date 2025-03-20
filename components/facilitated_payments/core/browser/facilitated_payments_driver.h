@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 class GURL;
@@ -15,6 +16,7 @@ class GURL;
 namespace payments::facilitated {
 
 class EwalletManager;
+class FacilitatedPaymentsClient;
 class PixManager;
 
 // A cross-platform interface which is a gateway for all Facilitated Payments
@@ -27,8 +29,9 @@ class PixManager;
 // to handle common logics shared by cross-platform.
 class FacilitatedPaymentsDriver {
  public:
-  FacilitatedPaymentsDriver(std::unique_ptr<PixManager> pix_manager,
-                            std::unique_ptr<EwalletManager> ewallet_manager);
+  FacilitatedPaymentsDriver(
+      FacilitatedPaymentsClient* client,
+      FacilitatedPaymentsApiClientCreator api_client_creator);
   FacilitatedPaymentsDriver(const FacilitatedPaymentsDriver&) = delete;
   FacilitatedPaymentsDriver& operator=(const FacilitatedPaymentsDriver&) =
       delete;
@@ -58,8 +61,9 @@ class FacilitatedPaymentsDriver {
       std::unique_ptr<EwalletManager> ewallet_manager);
 
  private:
+  const raw_ref<FacilitatedPaymentsClient> facilitated_payments_client_;
+  FacilitatedPaymentsApiClientCreator api_client_creator_;
   std::unique_ptr<PixManager> pix_manager_;
-
   std::unique_ptr<EwalletManager> ewallet_manager_;
 };
 

@@ -205,12 +205,11 @@ bool TouchSelectionControllerClientChildFrame::IsCommandIdEnabled(
 
 void TouchSelectionControllerClientChildFrame::ExecuteCommand(int command_id,
                                                               int event_flags) {
-  const bool should_dismiss_handles =
-      command_id != ui::TouchEditable::kSelectAll &&
-      command_id != ui::TouchEditable::kSelectWord;
-  manager_->GetTouchSelectionController()->OnMenuCommand(
-      should_dismiss_handles);
-
+  if (command_id != ui::TouchEditable::kSelectAll &&
+      command_id != ui::TouchEditable::kSelectWord) {
+    manager_->GetTouchSelectionController()
+        ->HideAndDisallowShowingAutomatically();
+  }
   RenderWidgetHostDelegate* host_delegate = rwhv_->host()->delegate();
   if (!host_delegate)
     return;

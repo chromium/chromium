@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -851,21 +852,10 @@ std::unique_ptr<HttpResponse> HandleExabyteResponse(
 // enough memory to contain the body, but DCHECKs if that fails.
 std::unique_ptr<HttpResponse> HandleGzipBody(const HttpRequest& request) {
   std::string uncompressed_body = request.GetURL().query();
-  // Attempt to pick size that's large enough even in the worst case (deflate
-  // block headers should be shorter than 512 bytes, and deflating should never
-  // double size of data, modulo headers).
-  // TODO(mmenke): This is rather awkward. Worth improving CompressGzip?
-  std::vector<char> compressed_body(uncompressed_body.size() * 2 + 512);
-  size_t compressed_size = compressed_body.size();
-  CompressGzip(uncompressed_body.c_str(), uncompressed_body.size(),
-               compressed_body.data(), &compressed_size,
-               true /* gzip_framing */);
-  // CompressGzip should DCHECK itself if this fails, anyways.
-  DCHECK_GE(compressed_body.size(), compressed_size);
+  auto compressed_body = CompressGzip(uncompressed_body);
 
   auto http_response = std::make_unique<BasicHttpResponse>();
-  http_response->set_content(
-      std::string(compressed_body.data(), compressed_size));
+  http_response->set_content(base::as_string_view(compressed_body));
   http_response->AddCustomHeader("Content-Encoding", "gzip");
   http_response->AddCustomHeader("Cache-Control", "max-age=60");
   return http_response;

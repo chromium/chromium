@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/global_features.h"
@@ -119,19 +120,49 @@ void GlicProfileManager::OnServiceShutdown(GlicKeyedService* glic) {
   }
 }
 
+void GlicProfileManager::OnLoadingClientForService(GlicKeyedService* glic) {
+  if (base::FeatureList::IsEnabled(features::kGlicWarmMultiple)) {
+    return;
+  }
+
+  if (last_loaded_glic_ && last_loaded_glic_.get() != glic) {
+    last_loaded_glic_->CloseUI();
+  }
+
+  if (glic) {
+    last_loaded_glic_ = glic->GetWeakPtr();
+  } else {
+    last_loaded_glic_.reset();
+  }
+}
+
 bool GlicProfileManager::ShouldPreloadForProfile(Profile* profile) const {
   if (!GlicEnabling::IsReadyForProfile(profile) ||
       !base::FeatureList::IsEnabled(features::kGlicWarming)) {
     return false;
   }
 
-  if (profile != GetProfileForLaunch()) {
+  if (last_loaded_glic_ && last_loaded_glic_->profile() == profile) {
+    return false;
+  }
+
+  if (last_active_glic_ && last_active_glic_->profile() == profile) {
     return false;
   }
 
   // Code below adapted from WebUIContentsPreloadManager.
   if (profile->ShutdownStarted()) {
     return false;
+  }
+
+  if (!base::FeatureList::IsEnabled(features::kGlicWarmMultiple) &&
+      last_active_glic_) {
+    if (last_active_glic_->window_controller().IsShowing() ||
+        last_active_glic_->window_controller()
+            .fre_controller()
+            ->IsShowingDialog()) {
+      return false;
+    }
   }
 
   // Don't preload if under heavy memory pressure.

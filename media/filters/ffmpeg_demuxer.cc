@@ -1774,6 +1774,7 @@ void FFmpegDemuxer::FindAndEnableProperTracks(
   bool any_track_changed = false;
 
   std::set<FFmpegDemuxerStream*> enabled_streams;
+  std::vector<FFmpegDemuxerStream*> needs_flush;
   for (const auto& id : track_ids) {
     auto it = track_id_to_demux_stream_map_.find(id);
     if (it == track_id_to_demux_stream_map_.end())
@@ -1790,6 +1791,7 @@ void FFmpegDemuxer::FindAndEnableProperTracks(
     enabled_streams.insert(stream);
     if (!stream->IsEnabled()) {
       any_track_changed = true;
+      needs_flush.push_back(stream);
     }
     stream->SetEnabled(true, curr_time);
   }
@@ -1811,7 +1813,8 @@ void FFmpegDemuxer::FindAndEnableProperTracks(
                                       enabled_streams.end());
   base::OnceCallback<void(int)> seek_cb = base::BindOnce(
       &FFmpegDemuxer::OnTrackChangeSeekComplete, weak_factory_.GetWeakPtr(),
-      base::BindOnce(std::move(change_completed_cb), std::move(streams)));
+      base::BindOnce(std::move(change_completed_cb), std::move(streams)),
+      std::move(needs_flush));
 
   if (any_track_changed) {
     SeekInternal(curr_time, std::move(seek_cb));
@@ -1820,12 +1823,13 @@ void FFmpegDemuxer::FindAndEnableProperTracks(
   }
 }
 
-void FFmpegDemuxer::OnTrackChangeSeekComplete(base::OnceClosure cb,
-                                              int seek_status) {
-  for (const auto& stream : streams_) {
-    if (stream && stream->IsEnabled()) {
-      stream->FlushBuffers(true);
-    }
+void FFmpegDemuxer::OnTrackChangeSeekComplete(
+    base::OnceClosure cb,
+    std::vector<FFmpegDemuxerStream*> needs_flush,
+    int seek_status) {
+  for (const auto& stream : needs_flush) {
+    CHECK(stream->IsEnabled());
+    stream->FlushBuffers(true);
   }
   // TODO(crbug.com/40898124): Report seek failures for track changes too.
   std::move(cb).Run();

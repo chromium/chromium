@@ -94,9 +94,6 @@ class SavedTabGroup {
   const std::optional<CollaborationId>& collaboration_id() const {
     return collaboration_id_;
   }
-  std::optional<base::Uuid> originating_tab_group_guid() const {
-    return originating_tab_group_guid_;
-  }
   const SharedAttribution& shared_attribution() const {
     return shared_attribution_;
   }
@@ -107,6 +104,9 @@ class SavedTabGroup {
     return is_transitioning_to_shared_;
   }
   bool is_transitioning_to_saved() const { return is_transitioning_to_saved_; }
+  bool use_originating_tab_group_guid() const {
+    return use_originating_tab_group_guid_;
+  }
 
   const std::map<base::Uuid, RemovedTabMetadata>& last_removed_tabs_metadata()
       const {
@@ -116,6 +116,14 @@ class SavedTabGroup {
   std::vector<SavedTabGroupTab>& saved_tabs() { return saved_tabs_; }
 
   bool is_hidden() const { return is_hidden_; }
+
+  // Returns the originating tab group guid which is set when a group is
+  // converted from saved to shared. It's used and available by default to the
+  // group owner only. Returns null if the signed-in user is not the owner of
+  // the group. If `for_sync` is true, the originating tab group guid is
+  // returned regardless of the group owner.
+  std::optional<base::Uuid> GetOriginatingTabGroupGuid(
+      bool for_sync = false) const;
 
   // Accessors for Tabs based on id.
   const SavedTabGroupTab* GetTab(const base::Uuid& saved_tab_guid) const;
@@ -152,7 +160,8 @@ class SavedTabGroup {
   SavedTabGroup& SetCollaborationId(
       std::optional<CollaborationId> collaboration_id);
   SavedTabGroup& SetOriginatingTabGroupGuid(
-      std::optional<base::Uuid> originating_tab_group_guid);
+      std::optional<base::Uuid> originating_tab_group_guid,
+      bool use_originating_tab_group_guid);
   SavedTabGroup& SetIsTransitioningToSaved(bool is_transitioning_to_saved);
 
   // Sets the updater of the tab group, and also the creator if it's the first
@@ -313,15 +322,18 @@ class SavedTabGroup {
   // metrics.
   base::Time last_user_interaction_time_;
 
-  // Fields below are only used for shared tab groups.
-
-  // Collaboration ID in case if the group is shared.
-  std::optional<CollaborationId> collaboration_id_;
-
   // The saved guid of the group that this group was created from. Used for
   // both shared and saved tab groups when they are converted from the other
   // type.
   std::optional<base::Uuid> originating_tab_group_guid_;
+
+  // Whether the originating tab group is owned by the user.
+  bool use_originating_tab_group_guid_ = false;
+
+  // Fields below are only used for shared tab groups.
+
+  // Collaboration ID in case if the group is shared.
+  std::optional<CollaborationId> collaboration_id_;
 
   // Atribution data for the shared tab group.
   SharedAttribution shared_attribution_;

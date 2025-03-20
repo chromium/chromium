@@ -242,10 +242,6 @@ SkFont FontPlatformData::CreateSkFont(
         WebTestSupport::IsTextSubpixelPositioningAllowedForTest();
   }
 
-  if (RuntimeEnabledFeatures::DisableAhemAntialiasEnabled() && IsAhem()) {
-    should_antialias = false;
-  }
-
   SkFont skfont(typeface_);
   if (should_antialias && should_smooth_fonts) {
     skfont.setEdging(SkFont::Edging::kSubpixelAntiAlias);

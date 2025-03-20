@@ -18,8 +18,10 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/location.h"
 #include "base/strings/strcat.h"
 #include "base/types/expected.h"
+#include "remoting/host/base/loggable.h"
 #include "remoting/host/linux/gvariant_type.h"
 
 namespace remoting::gvariant {
@@ -154,13 +156,14 @@ ObjectPathCStr::ObjectPathCStr(const ObjectPath& path LIFETIME_BOUND)
     : path_(path.c_str()) {}
 
 // static
-base::expected<ObjectPathCStr, std::string> ObjectPathCStr::TryFrom(
+base::expected<ObjectPathCStr, Loggable> ObjectPathCStr::TryFrom(
     const char* path LIFETIME_BOUND) {
   if (g_variant_is_object_path(path)) {
     return base::ok(ObjectPathCStr(path, Checked()));
   } else {
     return base::unexpected(
-        base::StrCat({"String is not a valid object path: ", path}));
+        Loggable(FROM_HERE,
+                 base::StrCat({"String is not a valid object path: ", path})));
   }
 }
 
@@ -172,7 +175,7 @@ ObjectPath::ObjectPath() : path_("/") {}
 ObjectPath::ObjectPath(ObjectPathCStr path) : path_(path.c_str()) {}
 
 // static
-base::expected<ObjectPath, std::string> ObjectPath::TryFrom(std::string path) {
+base::expected<ObjectPath, Loggable> ObjectPath::TryFrom(std::string path) {
   return ObjectPathCStr::TryFrom(path.c_str()).transform([&](ObjectPathCStr) {
     return ObjectPath(std::move(path));
   });
@@ -193,13 +196,14 @@ TypeSignatureCStr::TypeSignatureCStr(
     : signature_(signature.c_str()) {}
 
 // static
-base::expected<TypeSignatureCStr, std::string> TypeSignatureCStr::TryFrom(
+base::expected<TypeSignatureCStr, Loggable> TypeSignatureCStr::TryFrom(
     const char* signature LIFETIME_BOUND) {
   if (g_variant_is_signature(signature)) {
     return base::ok(TypeSignatureCStr(signature, Checked()));
   } else {
-    return base::unexpected(
-        base::StrCat({"String is not a valid type signature: ", signature}));
+    return base::unexpected(Loggable(
+        FROM_HERE,
+        base::StrCat({"String is not a valid type signature: ", signature})));
   }
 }
 
@@ -213,7 +217,7 @@ TypeSignature::TypeSignature(TypeSignatureCStr signature)
     : signature_(signature.c_str()) {}
 
 // static
-base::expected<TypeSignature, std::string> TypeSignature::TryFrom(
+base::expected<TypeSignature, Loggable> TypeSignature::TryFrom(
     std::string signature) {
   return TypeSignatureCStr::TryFrom(signature.c_str())
       .transform([&](TypeSignatureCStr) {
@@ -366,7 +370,7 @@ auto Mapping<std::string>::From(const std::string& value)
 
 // static
 auto Mapping<std::string>::TryFrom(const std::string& value)
-    -> base::expected<GVariantRef<kType>, std::string> {
+    -> base::expected<GVariantRef<kType>, Loggable> {
   return GVariantRef<kType>::TryFrom(std::string_view(value));
 }
 
@@ -387,9 +391,9 @@ auto Mapping<std::string_view>::From(std::string_view value)
 
 // static
 auto Mapping<std::string_view>::TryFrom(std::string_view value)
-    -> base::expected<GVariantRef<kType>, std::string> {
+    -> base::expected<GVariantRef<kType>, Loggable> {
   if (!g_utf8_validate(value.data(), value.length(), nullptr)) {
-    return base::unexpected("String is not valid UTF-8");
+    return base::unexpected(Loggable(FROM_HERE, "String is not valid UTF-8"));
   }
 
   return base::ok(CreateStringVariantUnchecked<kType>(value));
@@ -402,7 +406,7 @@ auto Mapping<const char*>::From(const char* value) -> GVariantRef<kType> {
 
 // static
 auto Mapping<const char*>::TryFrom(const char* value)
-    -> base::expected<GVariantRef<kType>, std::string> {
+    -> base::expected<GVariantRef<kType>, Loggable> {
   return GVariantRef<kType>::TryFrom(std::string_view(value));
 }
 

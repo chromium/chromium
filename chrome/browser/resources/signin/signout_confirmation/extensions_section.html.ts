@@ -11,7 +11,7 @@ export function getHtml(this: ExtensionsSectionElement) {
   return html`<!--_html_template_start_-->
 <div id="extensionsSection">
   <div id="header-row">
-    <cr-checkbox id="checkbox" aria-label="${this.title_}">
+    <cr-checkbox id="checkbox" aria-label-override="${this.title_}">
     </cr-checkbox>
     <div id="title-container">
       <span id="title">${this.title_}</span>
@@ -21,13 +21,14 @@ export function getHtml(this: ExtensionsSectionElement) {
           icon="cr:info-outline"
           tabindex="0"
           role="img"
-          aria-label="${this.tooltip_}"
-          aria-describedby="tooltip">
+          aria-label="${this.tooltip_}">
       </cr-icon>
     </div>
     <cr-expand-button id="expandButton" no-hover
         ?expanded="${this.expanded_}"
-        @expanded-changed="${this.onExpandChanged_}">
+        @expanded-changed="${this.onExpandChanged_}"
+        role="button"
+        aria-label="${this.title_}">
     </cr-expand-button>
   </div>
   <cr-tooltip id="tooltip" for="tooltip-icon" position="right" offset="0"

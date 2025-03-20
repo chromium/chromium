@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/types/pass_key.h"
 #include "media/base/media_export.h"
+#include "media/base/media_track.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/tags.h"
 #include "media/formats/hls/types.h"
@@ -35,6 +36,8 @@ class MEDIA_EXPORT RenditionGroup : public base::RefCounted<RenditionGroup> {
   RenditionGroup& operator=(const RenditionGroup&) = delete;
   RenditionGroup& operator=(RenditionGroup&&) = delete;
 
+  using RenditionTrack = std::tuple<MediaTrack, raw_ptr<const Rendition>>;
+
   // Adds a rendition specified by the given `XMediaTag` to this group. The
   // caller is responsible for ensuring that the rendition passed in is
   // individually valid, has a type matching Rendition::Type, and belongs to
@@ -43,7 +46,15 @@ class MEDIA_EXPORT RenditionGroup : public base::RefCounted<RenditionGroup> {
   ParseStatus::Or<std::monostate> AddRendition(
       base::PassKey<MultivariantPlaylist>,
       XMediaTag tag,
-      const GURL& playlist_uri);
+      const GURL& playlist_uri,
+      uint64_t rendition_unique_id);
+
+  // Returns the set of renditions that belong to this group with the media
+  // track object that can be exposed to the web.
+  const base::flat_map<MediaTrack::Id, RenditionTrack>& GetRenditionMapping()
+      const {
+    return renditions_map_;
+  }
 
   // Returns the id of this rendition group.
   const std::string& GetId() const { return id_; }
@@ -67,9 +78,7 @@ class MEDIA_EXPORT RenditionGroup : public base::RefCounted<RenditionGroup> {
   // pointer stability.
   std::list<Rendition> renditions_;
 
-  // Set of renditions within this group, keyed by their NAME attribute.
-  base::flat_map<std::string, raw_ptr<const Rendition, CtnExperimental>>
-      renditions_map_;
+  base::flat_map<MediaTrack::Id, RenditionTrack> renditions_map_;
 
   // Default rendition, `nullptr` if none.
   raw_ptr<const Rendition> default_rendition_ = nullptr;

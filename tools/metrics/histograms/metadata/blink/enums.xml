@@ -5977,6 +5977,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5371" label="V8AIWriter_InputQuota_AttributeGetter"/>
   <int value="5372" label="SpeculationRulesTargetHintBlank"/>
   <int value="5373" label="InterestTarget"/>
+  <int value="5374" label="TextAutoSizingDisabledOnFlexbox"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -7915,6 +7916,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="308" label="DRAFT_ExplicitResourceManagement"/>
   <int value="309" label="LaunchHandler"/>
   <int value="310" label="DRAFT_CssFunction"/>
+  <int value="311" label="DRAFT_CssIf"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

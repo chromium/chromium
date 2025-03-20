@@ -12118,6 +12118,11 @@
                     "enable_features": [
                         "LensUnaryApisWithHttpTransportEnabled",
                         "LensUnaryHttpTransportEnabled"
+                    ],
+                    "disable_features": [
+                        "LensBlockFetchObjectsInteractionRPCsOnSeparateHandshake",
+                        "LensPrewarmHardStickinessInInputSelection",
+                        "LensPrewarmHardStickinessInQueryFormulation"
                     ]
                 }
             ]
@@ -13921,6 +13926,24 @@
                         "LobsterDogfood",
                         "LobsterQuickInsertZeroState",
                         "LobsterRightClickMenu"
+                    ]
+                }
+            ]
+        }
+    ],
+    "LocalWebApprovalsLinuxMacWindows": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LocalWebApprovals",
+                        "SupervisedUserBlockInterstitialV3"
                     ]
                 }
             ]
@@ -18185,6 +18208,26 @@
             ]
         }
     ],
+    "PrivacySandboxAdsApiUxEnhancements": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PrivacySandboxAdsApiUxEnhancements"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrivacySandboxAdsNoticeCCT": [
         {
             "platforms": [
@@ -18378,6 +18421,25 @@
                     "name": "Enabled",
                     "enable_features": [
                         "PrivacySandboxAdTopicsContentParity"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PrivacySandboxRelatedWebsiteSetsUi": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PrivacySandboxRelatedWebsiteSetsUi"
                     ]
                 }
             ]
@@ -19932,6 +19994,26 @@
                     "name": "Enabled",
                     "enable_features": [
                         "RenderPassDrawnRect"
+                    ]
+                }
+            ]
+        }
+    ],
+    "RendererSideContentDecoding": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RendererSideContentDecoding"
                     ]
                 }
             ]
@@ -26643,6 +26725,24 @@
                     },
                     "enable_features": [
                         "Spark"
+                    ]
+                }
+            ]
+        }
+    ],
+    "WinPlatformLocationProvider": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "LocationProviderManagerMode": "PlatformOnly"
+                    },
+                    "enable_features": [
+                        "LocationProviderManager"
                     ]
                 }
             ]

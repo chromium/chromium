@@ -241,6 +241,9 @@ class BrowserCommandControllerBrowserTestLockedFullscreen
     browser()->command_controller()->FullscreenStateChanged();
     browser()->command_controller()->PrintingStateChanged();
     browser()->command_controller()->ExtensionStateChanged();
+    browser()->command_controller()->FindBarVisibilityChanged();
+    browser()->command_controller()->UpdateReloadStopState(/*is_loading=*/true,
+                                                           /*force=*/false);
   }
 
   void ExitLockedFullscreen() {
@@ -307,9 +310,11 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestLockedFullscreen,
       IDC_CUT, IDC_COPY, IDC_PASTE,
       // Page navigation commands.
       IDC_BACK, IDC_FORWARD, IDC_RELOAD, IDC_RELOAD_BYPASSING_CACHE,
-      IDC_RELOAD_CLEARING_CACHE,
+      IDC_RELOAD_CLEARING_CACHE, IDC_STOP,
       // Tab navigation commands.
-      IDC_SELECT_NEXT_TAB, IDC_SELECT_PREVIOUS_TAB};
+      IDC_SELECT_NEXT_TAB, IDC_SELECT_PREVIOUS_TAB,
+      // Find content commands.
+      IDC_FIND, IDC_FIND_NEXT, IDC_FIND_PREVIOUS, IDC_CLOSE_FIND_OR_STOP};
 
   // Go through all the command ids and ensure only allowlisted commands are
   // enabled.

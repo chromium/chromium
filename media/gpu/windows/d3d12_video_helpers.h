@@ -17,6 +17,10 @@ EncoderStatus CheckD3D12VideoEncoderCodec(
     ID3D12VideoDevice* video_device,
     D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC* codec);
 
+// Get the supported configurations for the codec and profile. This method
+// handles the special variation of the usages for HEVC documented in
+// https://learn.microsoft.com/en-us/windows/win32/api/d3d12video/ns-d3d12video-d3d12_feature_data_video_encoder_codec_configuration_support#members
+// and always returns a supported configuration if there is any.
 EncoderStatus CheckD3D12VideoEncoderCodecConfigurationSupport(
     ID3D12VideoDevice* video_device,
     D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT* support);

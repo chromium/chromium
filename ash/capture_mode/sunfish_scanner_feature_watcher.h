@@ -7,6 +7,8 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/shell.h"
+#include "ash/shell_observer.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -16,6 +18,7 @@
 namespace ash {
 
 class SessionControllerImpl;
+class Shell;
 
 // A BEST-EFFORT source of Sunfish and Scanner feature states that observers can
 // observe. Not all feature state updates may be sent to observers automatically
@@ -27,7 +30,8 @@ class SessionControllerImpl;
 // accuracy is required. If this class is used, it should always be used as the
 // source of truth to ensure that a consistent view of the feature states is
 // seen.
-class ASH_EXPORT SunfishScannerFeatureWatcher : public SessionObserver {
+class ASH_EXPORT SunfishScannerFeatureWatcher : public SessionObserver,
+                                                public ShellObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -40,9 +44,10 @@ class ASH_EXPORT SunfishScannerFeatureWatcher : public SessionObserver {
         SunfishScannerFeatureWatcher& source) = 0;
   };
 
-  // `session_controller` must outlive this class.
+  // `session_controller` and `shell` must outlive this class.
   explicit SunfishScannerFeatureWatcher(
-      SessionControllerImpl& session_controller);
+      SessionControllerImpl& session_controller,
+      Shell& shell);
   ~SunfishScannerFeatureWatcher() override;
 
   SunfishScannerFeatureWatcher(const SunfishScannerFeatureWatcher&) = delete;
@@ -88,6 +93,9 @@ class ASH_EXPORT SunfishScannerFeatureWatcher : public SessionObserver {
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
+  // ShellObserver:
+  void OnPinnedStateChanged(aura::Window* pinned_window) override;
+
  private:
   bool can_show_sunfish_ui_;
   bool can_show_scanner_ui_;
@@ -98,6 +106,7 @@ class ASH_EXPORT SunfishScannerFeatureWatcher : public SessionObserver {
   PrefChangeRegistrar pref_change_registrar_;
   base::ScopedObservation<SessionControllerImpl, SessionObserver>
       session_controller_observation_{this};
+  base::ScopedObservation<Shell, ShellObserver> shell_observation_{this};
 
   base::WeakPtrFactory<SunfishScannerFeatureWatcher> weak_ptr_factory_{this};
 };
