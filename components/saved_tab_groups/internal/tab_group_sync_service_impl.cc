@@ -277,6 +277,10 @@ void TabGroupSyncServiceImpl::OnPrimaryAccountChanged(
 
 void TabGroupSyncServiceImpl::SetIsInitializedForTesting(bool initialized) {
   is_initialized_ = initialized;
+
+  if (initialized) {
+    NotifyServiceInitialized();
+  }
 }
 
 CollaborationFinder*
