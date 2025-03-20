@@ -1064,6 +1064,7 @@ interface CanvasRenderingContext2D
     getter globalCompositeOperation
     getter imageSmoothingEnabled
     getter imageSmoothingQuality
+    getter lang
     getter letterSpacing
     getter lineCap
     getter lineDashOffset
@@ -1136,6 +1137,7 @@ interface CanvasRenderingContext2D
     setter globalCompositeOperation
     setter imageSmoothingEnabled
     setter imageSmoothingQuality
+    setter lang
     setter letterSpacing
     setter lineCap
     setter lineDashOffset
@@ -6379,6 +6381,7 @@ interface OffscreenCanvasRenderingContext2D
     getter globalCompositeOperation
     getter imageSmoothingEnabled
     getter imageSmoothingQuality
+    getter lang
     getter letterSpacing
     getter lineCap
     getter lineDashOffset
@@ -6450,6 +6453,7 @@ interface OffscreenCanvasRenderingContext2D
     setter globalCompositeOperation
     setter imageSmoothingEnabled
     setter imageSmoothingQuality
+    setter lang
     setter letterSpacing
     setter lineCap
     setter lineDashOffset

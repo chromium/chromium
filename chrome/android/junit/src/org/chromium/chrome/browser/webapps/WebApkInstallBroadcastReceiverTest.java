@@ -16,10 +16,12 @@ import android.graphics.Bitmap;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowNotificationManager;
@@ -44,6 +46,7 @@ public class WebApkInstallBroadcastReceiverTest {
     private static final String MANIFEST_URL = "https://test.com/manifest.json";
     private static final String SHORT_NAME = "webapk";
     private static final String URL = "https://test.com";
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private final Bitmap mIcon = Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8);
     private final byte[] mSerializedProto = new byte[] {1, 2};
 
@@ -56,7 +59,6 @@ public class WebApkInstallBroadcastReceiverTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         mContext = spy(RuntimeEnvironment.application);
         ContextUtils.initApplicationContextForTests(mContext);

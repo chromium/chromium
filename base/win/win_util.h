@@ -380,6 +380,10 @@ BASE_EXPORT ProcessPowerState GetProcessTimerThrottleState(HANDLE process);
 BASE_EXPORT bool SetProcessTimerThrottleState(HANDLE process,
                                               ProcessPowerState state);
 
+// Returns the serial number of the device.  Needs to be called from a COM
+// enabled thread.
+BASE_EXPORT std::optional<std::wstring> GetSerialNumber();
+
 // Allows changing the domain enrolled state for the life time of the object.
 // The original state is restored upon destruction.
 class BASE_EXPORT ScopedDomainStateForTesting {

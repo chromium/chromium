@@ -16,10 +16,12 @@ import androidx.annotation.Nullable;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -78,6 +80,7 @@ public class BaseButtonDataProviderTest {
         public void onClick(View view) {}
     }
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Activity mActivity;
     @Mock private Tab mMockTab;
     @Mock private ObservableSupplier<Tab> mMockTabSupplier;
@@ -87,8 +90,6 @@ public class BaseButtonDataProviderTest {
     public void setUp() {
         mActivity = Robolectric.setupActivity(Activity.class);
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-
-        MockitoAnnotations.initMocks(this);
 
         when(mMockTab.getContext()).thenReturn(mActivity);
         when(mMockTabSupplier.get()).thenReturn(mMockTab);

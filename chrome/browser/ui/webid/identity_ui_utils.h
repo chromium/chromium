@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBID_IDENTITY_UI_UTILS_H_
 #define CHROME_BROWSER_UI_WEBID_IDENTITY_UI_UTILS_H_
 
+#include <optional>
+
 #include "ui/gfx/image/image_skia.h"
 
 namespace content {

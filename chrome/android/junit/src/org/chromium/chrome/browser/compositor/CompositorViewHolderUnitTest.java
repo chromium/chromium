@@ -34,12 +34,14 @@ import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -119,6 +121,7 @@ public class CompositorViewHolderUnitTest {
         TOUCH_EVENT_OBSERVER;
     }
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Activity mActivity;
     @Mock private Profile mProfile;
     @Mock private Profile mIncognitoProfile;
@@ -155,7 +158,6 @@ public class CompositorViewHolderUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         OnscreenContentProviderJni.setInstanceForTesting(mOnscreenContentProviderJni);
         ContentCaptureFeaturesJni.setInstanceForTesting(mContentCaptureFeaturesJni);
         InputHintCheckerJni.setInstanceForTesting(mInputHintCheckerJni);

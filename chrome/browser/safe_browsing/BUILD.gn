@@ -534,11 +534,22 @@ source_set("verdict_cache_manager_factory") {
 
 static_library("advanced_protection") {
   sources = [
-    "advanced_protection_status_manager.cc",
     "advanced_protection_status_manager.h",
     "advanced_protection_status_manager_factory.cc",
     "advanced_protection_status_manager_factory.h",
   ]
+
+  if (is_android) {
+    sources += [
+      "advanced_protection_status_manager_android.cc",
+      "advanced_protection_status_manager_android.h",
+    ]
+  } else {
+    sources += [
+      "advanced_protection_status_manager_desktop.cc",
+      "advanced_protection_status_manager_desktop.h",
+    ]
+  }
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 

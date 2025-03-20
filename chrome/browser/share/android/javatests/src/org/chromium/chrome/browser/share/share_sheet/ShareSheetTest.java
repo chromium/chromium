@@ -25,9 +25,11 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
@@ -66,6 +68,7 @@ public class ShareSheetTest {
     public static final ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Profile mProfile;
     private List<ResolveInfo> mAvailableResolveInfos;
 
@@ -149,7 +152,6 @@ public class ShareSheetTest {
         ContextUtils.initApplicationContextForTests(
                 new PackageManagerReplacingContext(ContextUtils.getApplicationContext(), this));
 
-        MockitoAnnotations.initMocks(this);
         sActivityTestRule.startMainActivityOnBlankPage();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

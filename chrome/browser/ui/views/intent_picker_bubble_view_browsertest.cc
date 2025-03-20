@@ -73,8 +73,9 @@ class IntentPickerBrowserTest : public web_app::WebAppNavigationBrowserTest {
  public:
   IntentPickerBrowserTest() {
     if (IsMigrationEnabled()) {
-      scoped_feature_list_.InitWithFeatures({::features::kPageActionsMigration},
-                                            {});
+      scoped_feature_list_.InitAndEnableFeatureWithParameters(
+          features::kPageActionsMigration,
+          {{features::kPageActionsMigrationIntentPicker.name, "true"}});
     } else {
       scoped_feature_list_.InitWithFeatures(
           {}, {::features::kPageActionsMigration});

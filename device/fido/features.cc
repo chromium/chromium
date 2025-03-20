@@ -82,11 +82,6 @@ BASE_FEATURE(kWebAuthnUseInsecureSoftwareUnexportableKeys,
              "WebAuthenticationUseInsecureSoftwareUnexportableKeys",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Default enabled in M126. Remove in or after M129.
-BASE_FEATURE(kWebAuthnCredProtectWin10BugWorkaround,
-             "WebAuthenticationCredProtectWin10BugWorkaround",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Development flag. Must not be enabled by default.
 BASE_FEATURE(kWebAuthnEnclaveAuthenticatorDelay,
              "WebAuthnEnclaveAuthenticatorDelay",

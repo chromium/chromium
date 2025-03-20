@@ -17,10 +17,12 @@ import android.graphics.Color;
 import android.view.View;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
@@ -33,6 +35,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 public class StatusIndicatorMediatorTest {
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock TabObscuringHandler mTabObscuringHandler;
     @Mock View mStatusIndicatorView;
@@ -48,7 +51,6 @@ public class StatusIndicatorMediatorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         doNothing().when(mRegisterResource).run();
         doNothing().when(mUnregisterResource).run();
         when(mCanAnimateNativeBrowserControls.get()).thenReturn(true);

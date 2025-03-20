@@ -16,6 +16,24 @@ package sync_pb;
 
 // Account-local metadata for shared tab groups.
 message SharedTabGroupAccountDataSpecifics {
-  // TODO(crbug.com/397767033): In CL #2, add fields that you wish to sync, then
-  // update proto_visitors.h and potentially proto_enum_conversions.*.
+  // The guid of this entity. As there is only 1 entity right now, this
+  // is the SharedTab guid (see SharedTabGroupDataSpecifics).
+  optional string guid = 1;
+
+  // The collaboration group.
+  optional string collaboration_id = 2;
+
+  // This may change to a oneof in the future to accommodate metadata
+  // about shared groups or other entities.
+  optional SharedTabDetails shared_tab_details = 3;
+}
+
+// Stores account-specific metadata about a shared tab.
+message SharedTabDetails {
+  // The GUID of the SharedTabGroup this is a member of. This is the same
+  // as that from SharedTab in SharedTabGroupDataSpecifics.
+  optional string shared_tab_group_guid = 1;
+
+  // Last time this tab was focused.
+  optional int64 last_seen_timestamp_windows_epoch = 2;
 }

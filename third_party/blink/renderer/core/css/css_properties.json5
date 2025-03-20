@@ -4841,6 +4841,17 @@
       invalidate: ["layout", "paint"],
     },
     {
+      name: "print-color-adjust",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      independent: false,  // Actually true, but setting it to false saves a precious bit in ComputedStyleBase.
+      inherited: true,
+      field_template: "keyword",
+      keywords: ["economy", "exact"],
+      default_value: "economy",
+      valid_for_permission_element: true,
+      invalidate: ["paint"],
+    },
+    {
       name: "quotes",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       inherited: true,
@@ -6879,17 +6890,6 @@
       legacy_overlapping: true,
     },
     {
-      name: "-webkit-print-color-adjust",
-      property_methods: ["CSSValueFromComputedStyleInternal"],
-      independent: false,  // Actually true, but setting it to false saves a precious bit in ComputedStyleBase.
-      inherited: true,
-      field_template: "keyword",
-      keywords: ["economy", "exact"],
-      default_value: "economy",
-      valid_for_permission_element: true,
-      invalidate: ["paint"],
-    },
-    {
       name: "-webkit-rtl-ordering",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       independent: true,
@@ -7852,6 +7852,10 @@
     {
       name: "-webkit-max-logical-height",
       alias_for: "max-block-size",
+    },
+    {
+      name: "-webkit-print-color-adjust",
+      alias_for: "print-color-adjust",
     },
 
     // Properties that we ignore in the StyleBuilder.

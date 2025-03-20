@@ -13,10 +13,12 @@ import static org.mockito.Mockito.verify;
 import androidx.browser.customtabs.CustomTabsCallback;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
@@ -33,12 +35,12 @@ import java.util.Optional;
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class CustomTabNavigationEventObserverUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private CustomTabsConnection mConnection;
     @Mock private SessionHolder<?> mSessionHolder;
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         CustomTabsConnection.setInstanceForTesting(mConnection);
     }
 

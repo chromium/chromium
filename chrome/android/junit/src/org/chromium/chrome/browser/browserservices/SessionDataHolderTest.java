@@ -17,12 +17,14 @@ import android.content.Intent;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
@@ -46,6 +48,7 @@ public class SessionDataHolderTest {
     private SessionHolder<?> mSession1;
     private SessionHolder<?> mSession2;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock CustomTabsConnection mConnection;
     @Mock SessionHandler mHandler1;
     @Mock SessionHandler mHandler2;
@@ -55,7 +58,6 @@ public class SessionDataHolderTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         CustomTabsConnection.setInstanceForTesting(mConnection);
         mIntent1 = createIntentWithSessionId(1);
         mSession1 = SessionHolder.getSessionHolderFromIntent(mIntent1);

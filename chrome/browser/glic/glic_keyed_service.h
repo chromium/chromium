@@ -18,6 +18,7 @@
 
 class BrowserWindowInterface;
 class Profile;
+class ProfileManager;
 
 namespace signin {
 class IdentityManager;
@@ -44,7 +45,8 @@ class GlicKeyedService : public KeyedService {
  public:
   explicit GlicKeyedService(Profile* profile,
                             signin::IdentityManager* identity_manager,
-                            GlicProfileManager* profile_manager);
+                            ProfileManager* profile_manager,
+                            GlicProfileManager* glic_profile_manager);
   GlicKeyedService(const GlicKeyedService&) = delete;
   GlicKeyedService& operator=(const GlicKeyedService&) = delete;
   ~GlicKeyedService() override;
@@ -199,7 +201,7 @@ class GlicKeyedService : public KeyedService {
   std::unique_ptr<AuthController> auth_controller_;
   std::unique_ptr<GlicActorController> actor_controller_;
   // Unowned
-  raw_ptr<GlicProfileManager> profile_manager_;
+  raw_ptr<GlicProfileManager> glic_profile_manager_;
   base::OnceCallbackList<void()> web_client_created_callbacks_;
   // The set of live `GlicPageHandler`s.
   base::flat_set<raw_ptr<GlicPageHandler>> page_handlers_;

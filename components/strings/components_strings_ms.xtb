@@ -158,6 +158,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1264309058268477500">Alternatif</translation>
 <translation id="1264974993859112054">Sukan</translation>
 <translation id="1268480293435976622">Sampul Cina #7</translation>
+<translation id="1269045546668906972">Hidupkan autolengkap dengan AI untuk melengkapkan lebih banyak medan secara automatik</translation>
 <translation id="1269516672602708785">Buat laman baharu dalam Google Sites dengan pantas</translation>
 <translation id="1270328905573953738">Pemindahan &amp; Penempatan Semula</translation>
 <translation id="1270502636509132238">Kaedah Pengambilan</translation>
@@ -1138,6 +1139,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3005723025932146533">Paparkan salinan disimpan</translation>
 <translation id="300580149047131921">Digunakan baru-baru ini</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab untuk menyemak imbas tindakan yang tersedia, kemudian tekan Enter untuk melaksanakan tindakan yang dipilih.</translation>
+<translation id="3010991137650052245">Untuk menggunakan <ph name="PERMISSION" /> anda pada laman ini, berikan akses kepada <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3013711734159931232">Bekalan Isi Rumah</translation>
 <translation id="3014553260345122294">Berita Perniagaan</translation>
 <translation id="3014726756341138577">Ciri lanjutan pencetak</translation>
@@ -1789,6 +1791,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">Skop dasar tidak disokong.</translation>
+<translation id="411918202192379658">Autolengkap telah ditingkatkan</translation>
 <translation id="4121428309786185360">Tamat Tempoh Pada</translation>
 <translation id="4123572138124678573">Tiga tebukan bawah</translation>
 <translation id="412601465078863288">Muat naik tamat masa</translation>
@@ -2177,6 +2180,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4819347708020428563">Edit anotasi dalam paparan lalai?</translation>
 <translation id="4822493756793346865">Harga biasa adalah berdasarkan kedai dalam seluruh web sepanjang 90 hari yang lalu.</translation>
 <translation id="4822922322149719535">Semak log ralat</translation>
+<translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> memerlukan akses kepada <ph name="PERMISSION" /> peranti anda</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan kekunci Tab kemudian Enter untuk membuat Google Sheet baharu dengan pantas</translation>
 <translation id="4826588772550366629">kamera dan mikrofon</translation>
 <translation id="4827283332383516812">Padamkan kad</translation>
@@ -2907,6 +2911,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6116338172782435947">Lihat teks dan imej yang disalin ke papan keratan</translation>
 <translation id="6117833587752089929">Foto (Satin)</translation>
 <translation id="6118782133429281336">Senarai asalan kosong.</translation>
+<translation id="6120950591512958208">Gunakan kod ini semasa semak keluar.</translation>
 <translation id="612178891608320683">Hidangan Vegan</translation>
 <translation id="6122181661879998141">bahagian hadapan kad anda</translation>
 <translation id="6124058285696691147">Muat turun lampiran</translation>

@@ -26,7 +26,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
@@ -67,6 +68,8 @@ public class CustomTabActivityUrlLoadingTest {
         }
     }
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public final CustomTabActivityContentTestEnvironment env =
             new CustomTabActivityContentTestEnvironment();
@@ -85,7 +88,6 @@ public class CustomTabActivityUrlLoadingTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         UrlUtilitiesJni.setInstanceForTesting(mUrlUtilitiesJniMock);
         CustomTabAuthUrlHeuristicsJni.setInstanceForTesting(mCustomTabAuthUrlHeuristicsJniMock);
         WebContentsFactoryJni.setInstanceForTesting(mWebContentsFactoryJni);

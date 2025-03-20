@@ -1,7 +1,9 @@
 This is a testharness.js-based test.
-Found 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Pattern: [{"protocol":"http","port":"80 "}] Inputs: [{"protocol":"http","port":"80"}]
   Failed to construct 'URLPattern': Invalid port pattern '80 '. Invalid port pattern '80 '.
+[FAIL] Pattern: ["https://{sub.}?example{.com/}foo"] Inputs: ["https://example.com/foo"]
+  Failed to construct 'URLPattern': Invalid hostname pattern '{sub.}?example{.com/}foo'. Invalid hostname pattern 'example.com/foo'.
 [FAIL] Pattern: [{"hostname":"bad#hostname"}] Inputs: [{"hostname":"bad"}]
   Failed to construct 'URLPattern': Invalid hostname pattern 'bad#hostname'. Invalid hostname pattern 'bad#hostname'.
 [FAIL] Pattern: [{"hostname":"bad/hostname"}] Inputs: [{"hostname":"bad"}]

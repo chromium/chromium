@@ -673,6 +673,14 @@ BASE_FEATURE(kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature,
 BASE_FEATURE(kIPHiOSSettingsInOverflowMenuBubbleFeature,
              "IPH_iOSSettingsInOverflowMenuBubbleFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
+// Note: Feed swipe IPHs will only be triggered if `kFeedSwipeInProductHelp` is
+// enabled.
+BASE_FEATURE(kIPHiOSFeedSwipeStaticFeature,
+             "IPH_iOSFeedSwipeStaticFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSFeedSwipeAnimatedFeature,
+             "IPH_iOSFeedSwipeAnimatedFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Non-FET feature.
 BASE_FEATURE(kDefaultBrowserEligibilitySlidingWindow,

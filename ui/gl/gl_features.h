@@ -42,6 +42,7 @@ GL_EXPORT bool IsAndroidFrameDeadlineEnabled();
 
 GL_EXPORT bool UsePassthroughCommandDecoder();
 GL_EXPORT bool IsANGLEValidationEnabled();
+GL_EXPORT bool IsANGLEPassthroughShadersAllowed();
 
 GL_EXPORT void GetANGLEFeaturesFromCommandLineAndFinch(
     const base::CommandLine* command_line,

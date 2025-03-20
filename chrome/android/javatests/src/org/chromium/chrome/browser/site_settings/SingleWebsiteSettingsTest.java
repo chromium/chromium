@@ -24,13 +24,13 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Assume;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
@@ -81,6 +81,8 @@ public class SingleWebsiteSettingsTest {
     @ClassRule
     public static ChromeTabbedActivityTestRule sCTATestRule = new ChromeTabbedActivityTestRule();
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
             new BlankCTATabInitialStateRule(sCTATestRule, false);
@@ -101,11 +103,6 @@ public class SingleWebsiteSettingsTest {
             }
             return testCases;
         }
-    }
-
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
     }
 
     @Test

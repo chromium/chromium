@@ -27,7 +27,6 @@
 #include "chrome/browser/extensions/devtools_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -820,8 +819,8 @@ class UserInstalledContentVerifierTest : public ContentVerifierTest {
         test_data_dir_.AppendASCII(kStoragePermissionExtensionCrx));
   }
 
-  CorruptedExtensionReinstaller* corrupted_extension_reinstaller() {
-    return extension_service()->corrupted_extension_reinstaller();
+  CorruptedExtensionReinstaller* GetCorruptedExtensionReinstaller() {
+    return CorruptedExtensionReinstaller::Get(profile());
   }
 };
 
@@ -869,7 +868,7 @@ IN_PROC_BROWSER_TEST_F(UserInstalledContentVerifierTest,
 
   // The extension should be disabled and not be in expected to be repaired yet.
   EXPECT_FALSE(
-      corrupted_extension_reinstaller()->IsReinstallForCorruptionExpected(
+      GetCorruptedExtensionReinstaller()->IsReinstallForCorruptionExpected(
           kStoragePermissionExtensionId));
   EXPECT_THAT(ExtensionPrefs::Get(profile())->GetDisableReasons(
                   kStoragePermissionExtensionId),
@@ -892,7 +891,7 @@ IN_PROC_BROWSER_TEST_F(UserInstalledContentVerifierTest,
   // happen, wait for it.
   if (disable_reasons.contains(disable_reason::DISABLE_CORRUPTED)) {
     EXPECT_TRUE(
-        corrupted_extension_reinstaller()->IsReinstallForCorruptionExpected(
+        GetCorruptedExtensionReinstaller()->IsReinstallForCorruptionExpected(
             kStoragePermissionExtensionId));
     TestExtensionRegistryObserver registry_observer(
         registry, kStoragePermissionExtensionId);
@@ -900,7 +899,7 @@ IN_PROC_BROWSER_TEST_F(UserInstalledContentVerifierTest,
     disable_reasons = prefs->GetDisableReasons(kStoragePermissionExtensionId);
   }
   EXPECT_FALSE(
-      corrupted_extension_reinstaller()->IsReinstallForCorruptionExpected(
+      GetCorruptedExtensionReinstaller()->IsReinstallForCorruptionExpected(
           kStoragePermissionExtensionId));
   EXPECT_TRUE(disable_reasons.empty());
   const Extension* extension =

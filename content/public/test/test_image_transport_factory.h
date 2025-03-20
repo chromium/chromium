@@ -14,7 +14,6 @@
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "components/viz/test/test_frame_sink_manager.h"
 #include "content/browser/compositor/image_transport_factory.h"
-#include "gpu/command_buffer/client/test_gpu_memory_buffer_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/compositor/compositor.h"
 
@@ -40,7 +39,6 @@ class TestImageTransportFactory : public ui::ContextFactory,
   scoped_refptr<viz::RasterContextProvider>
   SharedMainThreadRasterContextProvider() override;
   void RemoveCompositor(ui::Compositor* compositor) override {}
-  gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager() override;
   cc::TaskGraphRunner* GetTaskGraphRunner() override;
   viz::FrameSinkId AllocateFrameSinkId() override;
   viz::SubtreeCaptureId AllocateSubtreeCaptureId() override;
@@ -52,7 +50,6 @@ class TestImageTransportFactory : public ui::ContextFactory,
 
  private:
   cc::TestTaskGraphRunner task_graph_runner_;
-  gpu::TestGpuMemoryBufferManager gpu_memory_buffer_manager_;
   viz::RendererSettings renderer_settings_;
   viz::FrameSinkIdAllocator frame_sink_id_allocator_;
   viz::SubtreeCaptureIdAllocator subtree_capture_id_allocator_;

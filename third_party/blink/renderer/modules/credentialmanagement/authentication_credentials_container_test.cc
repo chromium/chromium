@@ -96,7 +96,7 @@ class MockCredentialManager : public mojom::blink::CredentialManager {
              StoreCallback callback) override {}
   void PreventSilentAccess(PreventSilentAccessCallback callback) override {}
   void Get(blink::mojom::blink::CredentialMediationRequirement mediation,
-           int requested_credential_types,
+           bool include_passwords,
            const WTF::Vector<::blink::KURL>& federations,
            GetCallback callback) override {
     get_callback_ = std::move(callback);

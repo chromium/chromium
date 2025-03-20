@@ -16,7 +16,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -77,7 +76,6 @@ public class BookmarkSaveFlowMediatorUnitTest {
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
 
-        MockitoAnnotations.initMocks(this);
         PriceTrackingUtilsJni.setInstanceForTesting(mMockPriceTrackingUtilsJni);
         mMediator =
                 new BookmarkSaveFlowMediator(

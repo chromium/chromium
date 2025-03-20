@@ -35,7 +35,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLog;
@@ -72,6 +73,8 @@ import java.util.ArrayList;
 public final class WebFeedMainMenuItemTest {
     private static final GURL TEST_URL = JUnitTestGURLs.EXAMPLE_URL;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
@@ -95,7 +98,6 @@ public final class WebFeedMainMenuItemTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         // Print logs to stdout.
         ShadowLog.stream = System.out;
         WebFeedBridgeJni.setInstanceForTesting(mWebFeedBridgeJniMock);

@@ -13,10 +13,12 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -39,6 +41,7 @@ public class PersistedTabDataTest {
     private static final int INITIAL_VALUE = 42;
     private static final int CHANGED_VALUE = 51;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock ShoppingPersistedTabData mShoppingPersistedTabDataMock;
     @Mock Profile mProfile;
 
@@ -53,10 +56,7 @@ public class PersistedTabDataTest {
         // ShoppingPersistedTabData must be mocked on the ui thread, otherwise a thread assert will
         // fail. An ObserverList is created when creating the mock. The same ObserverList is used
         // later in the test.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    MockitoAnnotations.initMocks(this);
-                });
+        ThreadUtils.runOnUiThreadBlocking(() -> {});
 
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
 

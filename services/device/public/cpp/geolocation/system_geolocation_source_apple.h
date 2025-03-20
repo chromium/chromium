@@ -99,6 +99,11 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSourceApple
   // Gets the location manager delegate for testing.
   LocationManagerDelegate* GetDelegateForTesting() { return delegate_; }
 
+#if BUILDFLAG(IS_IOS_TVOS)
+  // Calls requestLocation for the one-time delivery of the location.
+  void OnRequestLocationThrottleTimerFiring();
+#endif
+
  private:
   friend class SystemGeolocationSourceAppleTest;
   // The enum represents the possible outcomes of a session (from starting to
@@ -131,6 +136,12 @@ class COMPONENT_EXPORT(GEOLOCATION) SystemGeolocationSourceApple
   // Time when position watching started. Used to calculate the time to first
   // position is updated.
   base::TimeTicks watch_start_time_;
+#if BUILDFLAG(IS_IOS_TVOS)
+  // This timer is used to throttle location requests to mitigate a client
+  // control. Once the timer fires, OnRequestLocationThrottleTimerFiring() will
+  // be called.
+  base::OneShotTimer request_throttle_timer_;
+#endif
   base::WeakPtrFactory<SystemGeolocationSourceApple> weak_ptr_factory_{this};
 };
 

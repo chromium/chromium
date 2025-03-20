@@ -3856,6 +3856,7 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
 
 En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias que se gestionen mediante MDM, que estén vinculadas a un dominio a través de MCX o que se hayan registrado en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
 <translation id="3845318141474759319">Permitir fondos de pantalla creados con IA generativa sin mejorar los modelos de IA</translation>
+<translation id="3849923496599301707">Forzar la habilitación de las aplicaciones de Chrome en el modo Kiosco</translation>
 <translation id="3851443303439635700">Controlar el umbral de anidación antes del cual se empezará a redondear la función setTimeout() de JavaScript</translation>
 <translation id="3854609566862485607">Esta política controla una etiqueta personalizada que se utiliza para identificar perfiles gestionados. En los perfiles gestionados, esta etiqueta se mostrará junto al avatar en la barra de herramientas. La etiqueta personalizada no se traducirá.
 
@@ -4147,18 +4148,6 @@ La política se aplica tanto a la URL a la que va el usuario como a los iframes.
 <translation id="4052529125939620019">Cargar la extensión del componente CryptoToken al iniciar el navegador</translation>
 <translation id="4053157306171963473">Inhabilitar los informes sobre el tiempo de actividad del dispositivo</translation>
 <translation id="4056910949759281379">Inhabilitar protocolo SPDY</translation>
-<translation id="4057113125482566814">Habilita el proveedor del framework de accesibilidad de <ph name="UIA_NAME" /> en <ph name="PRODUCT_NAME" /> para que lo utilicen las herramientas de accesibilidad.
-
-Esta política está disponible en <ph name="PRODUCT_NAME" /> durante un periodo de transición de un año para que los administradores de empresas puedan controlar si se implementa el proveedor del framework de accesibilidad de <ph name="UIA_NAME" /> en el navegador. Puede que se requieran actualizaciones para que la accesibilidad y otras herramientas que usan el framework de accesibilidad de <ph name="UIA_NAME" /> para interoperar con el navegador funcionen correctamente con el proveedor de <ph name="UIA_NAME" /> del navegador. Los administradores pueden usar esta política para inhabilitar temporalmente el proveedor de <ph name="UIA_NAME" /> del navegador (y, por lo tanto, volver al comportamiento anterior) mientras trabajan con los proveedores para proporcionar actualizaciones a las herramientas afectadas.
-
-Si se le asigna el valor "false", <ph name="PRODUCT_NAME" /> solo habilitará su proveedor de <ph name="MSAA_NAME" />. La accesibilidad y otras herramientas que utilicen el framework de accesibilidad <ph name="UIA_NAME" /> más reciente para interoperar con el navegador se comunicarán con él mediante un corrector de compatibilidad en <ph name="MS_WIN_NAME" />.
-
-Si se le asigna el valor "true", <ph name="PRODUCT_NAME" /> habilitará su proveedor de <ph name="UIA_NAME" />, además de su proveedor de <ph name="MSAA_NAME" />.
-La accesibilidad y otras herramientas que utilizan el framework de accesibilidad <ph name="UIA_NAME" /> más reciente para interoperar con el navegador se comunicarán directamente con él.
-
-Si no se define, el framework de variaciones de <ph name="PRODUCT_NAME" /> se usará para habilitar o inhabilitar el proveedor.
-
-Este ajuste de la política dejará de estar disponible en <ph name="PRODUCT_NAME" /> 136.</translation>
 <translation id="4057442294431066708">Esta política controla la opción de combinación de teclas seleccionada para reasignar eventos
 a F11/F12 en la subpágina de reasignación de teclas. Estos ajustes solo se aplican a los teclados de ChromeOS
 y están inhabilitados de forma predeterminada si no se define la política.</translation>
@@ -4689,7 +4678,7 @@ En el caso de <ph name="PRODUCT_OS_NAME" />, esta política siempre es efectiva.
 <translation id="4481202456143946404">La versión válida de los Términos del Servicio derivados de Google3 CL, donde se introdujo la nueva versión de los Términos.</translation>
 <translation id="4481804933320714808">Esta función está en fase beta. Dado que esta función se encuentra en fase de desarrollo y solo está disponible para testers de confianza, ten en cuenta que puede sufrir cambios y actualizaciones.
 
-Esta política permite a los administradores definir un agregador empresarial de búsqueda determinado que proporcionará recomendaciones y resultados de búsqueda en la barra de direcciones cuando se active mediante una palabra clave específica. Los usuarios pueden iniciar la búsqueda en la barra de direcciones escribiendo la palabra clave indicada en el campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> con o sin el prefijo @ (por ejemplo, <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />) y, después, pulsando la barra espaciadora o Tabulador.
+Esta política permite a los administradores definir un agregador empresarial de búsqueda determinado que proporcionará recomendaciones y resultados de búsqueda en la barra de direcciones cuando se active mediante una palabra clave específica. Los usuarios pueden iniciar la búsqueda en la barra de direcciones con la palabra clave indicada en el campo <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" /> con o sin el prefijo @ (por ejemplo, <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS" />) y, después, pulsando la barra espaciadora o Tabulador.
 
 Los siguientes campos son obligatorios: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD" />.
 
@@ -5505,6 +5494,11 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 <translation id="5041315457555330432">Permitir que <ph name="PRODUCT_NAME" /> solo se conecte a dispositivos con direcciones IP privadas, a menos que la función CastAllowAllIPs esté activada.</translation>
 <translation id="504689994545234073">Habilitar el almacenamiento local de archivos de usuario</translation>
 <translation id="5048890362473520096">Habilitar el entorno aislado de LPAC para servicios de impresión</translation>
+<translation id="5049989450078943331">Si se le asigna el valor True a esta política, las aplicaciones de Chrome podrán seguir ejecutándose en una sesión de kiosco, independientemente de la habilitación predeterminada de las aplicaciones de Chrome.
+
+Si no se establece esta política o se le asigna el valor False, se usará el comportamiento predeterminado definido en el dispositivo.
+
+Si el usuario intenta iniciar una aplicación de Chrome inhabilitada, se le mostrará un mensaje en el que se explica por qué no se ha iniciado la aplicación y se le sugiere que se ponga en contacto con su departamento de TI.</translation>
 <translation id="5055474681190962362">Día del mes [1-31] en el que se debe reiniciar, interpretado en la zona horaria local del dispositivo. Solo se utiliza si el valor de "frequency" (frecuencia) es "MONTHLY" (mensual). Si este valor es superior al número máximo de días de un mes concreto, se seleccionará el último día del mes.</translation>
 <translation id="5055513974503523022">La IA generativa en VC Background permite a los usuarios expresarse mediante funciones de IA generativa con las que crear fondos personalizados para videoconferencias en <ph name="PRODUCT_OS_NAME" />.
 
@@ -5757,9 +5751,9 @@ Si no se define esta política o la lista no contiene ninguna referencia a una i
       Si no se asigna ningún valor, se usa el periodo predeterminado de 604.800.000 milisegundos (una semana).</translation>
 <translation id="5212810195096589189">Especificar el permiso de la interfaz de línea de comandos para máquinas virtuales</translation>
 <translation id="5213038356678567351">Sitios web que nunca deben activar un cambio de navegador.</translation>
-<translation id="5216520638921067085">Especifica la antigüedad mínima de lanzamiento más allá de la cual las notificaciones de reinicio son más agresivas. La antigüedad se calcula desde la última vez que se sirvió la versión actualmente en ejecución a los clientes.
+<translation id="5216520638921067085">Especifica la antigüedad mínima de lanzamiento más allá de la cual las notificaciones de reinicio son más frecuentes. La antigüedad se calcula desde la última vez que se entregó la versión en ejecución a los clientes.
 
-Si hay una nueva versión pendiente, se necesita reiniciar el navegador o el dispositivo, y si la versión actual ha sido sustituida durante más tiempo que el número de días especificado en este ajuste, la política <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> se establece a 2 horas. Si se asigna el valor 1 ("Requerido") a la política <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" />, los usuarios tendrán que reiniciar al final del periodo.
+Si hay una nueva versión pendiente, se necesita reiniciar el navegador o el dispositivo, y si ha pasado más tiempo que el número de días especificado en este ajuste desde la actualización de la versión actual, la política <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> se establece a 2 horas. Si se asigna el valor 1 ("Requerido") a la política <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" />, los usuarios tendrán que reiniciar al final del periodo.
 
 Si no se establece o si no se puede determinar la antigüedad de lanzamiento, se usará la política <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> para todas las actualizaciones.</translation>
 <translation id="5216815237712190041">Permite configurar en cada dispositivo la imagen de fondo de pantalla que se muestra en la pantalla de inicio de sesión si ningún usuario ha iniciado sesión en el dispositivo. La política se define especificando la URL desde la que el dispositivo ChromeOS puede descargar la imagen de fondo de pantalla y un hash criptográfico que se utiliza para verificar la integridad de la descarga. La imagen debe tener formato JPEG y un tamaño que no supere los 16 MB. Se debe poder acceder a la URL sin autenticación. La imagen de fondo de pantalla se descargará y almacenará en caché. Se volverá a descargar si se cambia la URL o el hash.
@@ -6386,6 +6380,7 @@ Si a esta política se le asigna una lista que no está vacía y hay una extensi
 Si no se define esta política o se le asigna una lista vacía, se le mostrarán al usuario cuadros de diálogo de confirmación de escaneado cuando se llame a <ph name="GET_SCANNER_LIST_FUNCTION" /> o <ph name="START_SCAN_FUNCTION" />.</translation>
 <translation id="5599461642204007579">Configuración de administración de <ph name="MS_AD_NAME" /></translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5605676983184673391">Permitir que las aplicaciones de Chrome se ejecuten en sesiones de kiosco.</translation>
 <translation id="5607021831414604820">Habilitar los informes sobre el estado del almacenamiento del dispositivo</translation>
 <translation id="5608114828230655271">Comportamiento predeterminado del dispositivo</translation>
 <translation id="561001683838346956">Esta política se retiró en la versión 124 de <ph name="PRODUCT_NAME" />. Desde esa versión, nunca se admiten los hashes no seguros. En versiones anteriores, esta política controlaba si el navegador admitía hashes antiguos no seguros durante el proceso de handshake TLS.
@@ -6508,6 +6503,7 @@ Para obtener información detallada sobre los patrones de URL válidos, consulta
 
 Ten en cuenta que esta política solo se aplica si el origen tiene permiso para usar la API Direct Sockets.
 Consulta <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> y <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" /> para obtener más información.</translation>
+<translation id="566569751231933416">Usar el comportamiento predeterminado.</translation>
 <translation id="5666457529647159548">Permite que los usuarios gestionen los certificados de cliente instalados.</translation>
 <translation id="5670249935663090320">Si se habilita esta política o no se establece, se activará <ph name="PRODUCT_NAME" />. Los usuarios pueden iniciarlo desde el menú de la aplicación, los menús contextuales de páginas, los controles multimedia de sitios web compatibles con Google Cast y, si aparece, con el icono de Cast en la barra de herramientas.
 

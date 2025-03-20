@@ -30,13 +30,15 @@ import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureOverrides;
@@ -58,6 +60,7 @@ import java.util.function.BooleanSupplier;
 /** Unit tests for OptionalButtonCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class OptionalButtonCoordinatorTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ViewGroup mMockRootView;
     @Mock private BooleanSupplier mMockIsAnimationAllowedDelegate;
     @Mock private OptionalButtonView mMockOptionalButtonView;
@@ -72,8 +75,6 @@ public class OptionalButtonCoordinatorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         doReturn(ApplicationProvider.getApplicationContext())
                 .when(mMockOptionalButtonView)
                 .getContext();

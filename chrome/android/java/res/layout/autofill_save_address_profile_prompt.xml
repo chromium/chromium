@@ -14,8 +14,6 @@ found in the LICENSE file.
   <RelativeLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:focusable="true"
-      android:focusableInTouchMode="true"
       android:importantForAccessibility="no"
       android:textDirection="locale">
 

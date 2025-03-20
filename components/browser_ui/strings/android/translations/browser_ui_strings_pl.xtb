@@ -39,7 +39,9 @@
 <translation id="1538031354170655462">Strony zwykle używają komunikacji Near Field Communication (NFC) do obsługi tagów lub urządzeń w pobliżu, na przykład do skanowania identyfikatorów lub dokonywania płatności zbliżeniowych</translation>
 <translation id="1547123415014299762">Pliki cookie innych firm są dozwolone</translation>
 <translation id="1593426485665524382">Nowe działania są dostępne u góry ekranu</translation>
+<translation id="1615755956145364867">Strony mogą prosić o zgodę na odtwarzanie treści chronionych</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1621729191093924223">Nie będą działać funkcje, które potrzebują mikrofonu</translation>
 <translation id="1633720957382884102">Powiązane witryny</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1652197001188145583">Gdy ta opcja jest włączona, strony internetowe mogą prosić o zgodę na użycie urządzeń z NFC. Gdy jest wyłączona, strony nie mogą używać takich urządzeń.</translation>
@@ -54,6 +56,7 @@
 <translation id="1743802530341753419">Pytaj, zanim zezwolisz stronom na połączenie z urządzeniem (zalecane)</translation>
 <translation id="1779089405699405702">Dekoder obrazów</translation>
 <translation id="1785415724048343560">Polecane dla wygody przeglądania</translation>
+<translation id="1796588414813960292">Funkcje, które wymagają dźwięku, nie będą działać</translation>
 <translation id="1799920918471566157">Chrome – wskazówki</translation>
 <translation id="1816835383954230954">Gdy ta opcja jest włączona, Chrome działa szybciej, a funkcje używające JavaScriptu powinny działać zgodnie z założeniami. Po jej wyłączeniu wydajność spada, ale mechanizm V8 jest bardziej odporny na ataki.</translation>
 <translation id="1818308510395330587">Aby w aplikacji <ph name="APP_NAME" /> można było korzystać z rzeczywistości rozszerzonej, włącz też aparat w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
@@ -71,6 +74,7 @@
 <translation id="1994173015038366702">URL strony</translation>
 <translation id="2004697686368036666">W niektórych witrynach mogą nie działać funkcje</translation>
 <translation id="2025115093177348061">Rzeczywistość rozszerzona</translation>
+<translation id="2028449514182362831">Nie będą działać funkcje, które potrzebują czujników ruchu</translation>
 <translation id="2030769033451695672">Kliknij, by wrócić na <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Cofnij</translation>
 <translation id="2091887806945687916">Dźwięk</translation>
@@ -257,6 +261,7 @@
 <translation id="4259722352634471385">Adres zablokowany: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Gdy zamkniesz witrynę, może ona kontynuować synchronizację, aby dokończyć zadania takie jak przesłanie zdjęć czy wysłanie wiadomości czatu</translation>
 <translation id="4278390842282768270">Dozwolone</translation>
+<translation id="4290791284969893584">Po zamknięciu strony rozpoczęte zadania mogą nie zostać ukończone</translation>
 <translation id="429312253194641664">Strona odtwarza multimedia</translation>
 <translation id="42981349822642051">Rozwiń</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Wygasa jutro}few{Wygasa za # dni}many{Wygasa za # dni}other{Wygasa za # dnia}}</translation>
@@ -524,6 +529,7 @@
 <translation id="789180354981963912">Blokuj pliki cookie innych firm w trybie incognito:</translation>
 <translation id="789722939441020330">Nie zezwalaj witrynom na automatyczne pobieranie wielu plików</translation>
 <translation id="7940722705963108451">Przypomnij mi</translation>
+<translation id="7948081750384205628">Dowiedz się więcej o ustawieniu <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Strony mogą prosić o dostęp do tekstu i obrazów w schowku</translation>
 <translation id="7986741934819883144">Wybierz kontakt</translation>
 <translation id="7990211076305263060">Gdy ta opcja jest włączona, strony internetowe mogą prosić o dostęp do mikrofonu. Gdy jest wyłączona, strony nie mogą go używać.</translation>
@@ -531,6 +537,7 @@
 <translation id="8010630645305864042">{TILE_COUNT,plural, =1{Ukryj kartę Kontynuuj na tej karcie}few{Ukryj kartę Kontynuuj na tych kartach}many{Ukryj kartę Kontynuuj na tych kartach}other{Ukryj kartę Kontynuuj na tych kartach}}</translation>
 <translation id="802154636333426148">Nie udało się pobrać</translation>
 <translation id="8042586301629853791">Sortuj według:</translation>
+<translation id="8051193500142930381">Nie będą działać funkcje, które potrzebują kamery</translation>
 <translation id="8067883171444229417">Odtwórz film</translation>
 <translation id="8068648041423924542">Nie można wybrać certyfikatu.</translation>
 <translation id="8077120325605624147">Każda witryna, którą odwiedzasz, może wyświetlać Ci dowolne reklamy</translation>

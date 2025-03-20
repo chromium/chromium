@@ -24,12 +24,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -64,6 +66,7 @@ import org.chromium.url.JUnitTestGURLs;
 /** Unit tests for ChromeActivity. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ChromeActivityUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     Activity mActivity;
 
     @Mock RootUiCoordinator mRootUiCoordinatorMock;
@@ -129,7 +132,6 @@ public class ChromeActivityUnitTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
     }
 

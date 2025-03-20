@@ -1,0 +1,388 @@
+name: build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches: [ '**' ]
+  schedule:
+    # At 23:25 on Thursday.
+    - cron: "25 23 * * 4"
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        runs-on: [ubuntu-20.04, windows-2022, macos-12]
+        toolchain:
+          - "1.48"
+          - stable
+          - nightly
+        versions:
+          - ""
+          - "-Zminimal-versions"
+        exclude:
+          # `windows-core >= 0.51` uses `edition = "2021"`, but users of the library can can use
+          # `windows-core == 0.50` to be rust 1.48 compatible.
+          - runs-on: windows-2022
+            toolchain: "1.48"
+            versions: ""
+    runs-on: ${{ matrix.runs-on }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: maxim-lobanov/setup-xcode@v1
+        if: matrix.runs-on == 'macos-12' && matrix.toolchain == '1.48'
+        with:
+          xcode-version: "13.4.1"
+      - name: Install Rust
+        run: |
+          rustup toolchain install ${{ matrix.toolchain }} --profile minimal --no-self-update
+          rustup default ${{ matrix.toolchain }}
+      - name: Update lockfile
+        run: cargo generate-lockfile ${{ matrix.versions }}
+        env:
+          RUSTC_BOOTSTRAP: 1
+      - run: cargo test --all-targets
+      - run: cargo run --example stress-test
+
+  build-wasm:
+    strategy:
+      fail-fast: false
+      matrix:
+        versions:
+          - ""
+          - "-Zminimal-versions"
+        toolchain:
+          - stable
+          - nightly
+        include:
+          # Without `-Zminimal-versions` a too recent bumpalo version is selected. Newer versions use `edition = "2021"`.
+          - versions: "-Zminimal-versions"
+          - toolchain: "1.48"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Rust
+        run: |
+          rustup toolchain install ${{ matrix.toolchain }} --profile minimal --no-self-update --target wasm32-unknown-unknown
+          rustup default ${{ matrix.toolchain }}
+      - name: Update lockfile
+        run: cargo generate-lockfile ${{ matrix.versions }}
+        env:
+          RUSTC_BOOTSTRAP: 1
+      - run: cargo build --lib
+
+  test-wasm:
+    strategy:
+      fail-fast: false
+      matrix:
+        versions:
+          - ""
+          - "-Zminimal-versions"
+        toolchain:
+          - stable
+          - nightly
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Rust
+        run: |
+          rustup toolchain install ${{ matrix.toolchain }} --profile minimal --no-self-update --target wasm32-unknown-unknown
+          rustup default ${{ matrix.toolchain }}
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install "wasm-pack"
+        uses: taiki-e/install-action@v2
+        with:
+          tool: wasm-pack
+      - name: Update lockfile
+        run: cargo generate-lockfile ${{ matrix.versions }}
+        env:
+          RUSTC_BOOTSTRAP: 1
+      - run: wasm-pack test --node
+
+  build-cross:
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - x86_64-unknown-freebsd
+          - x86_64-unknown-illumos
+          - x86_64-unknown-netbsd
+          - sparcv9-sun-solaris
+        versions:
+          - ""
+          - "-Zminimal-versions"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Rust
+        run: |
+          rustup toolchain install stable --profile minimal --no-self-update --target ${{ matrix.target }}
+      - name: Update lockfile
+        run: cargo generate-lockfile ${{ matrix.versions }}
+        env:
+          RUSTC_BOOTSTRAP: 1
+
+      - name: Install "cross"
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cross
+
+      - run: cross build --target ${{ matrix.target }} --examples
+
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Rust
+        run: rustup toolchain install stable --profile minimal --no-self-update
+      - name: Add Rust components
+        run: rustup component add clippy rust-src
+      - name: Add Rust toolchain
+        run: rustup target add aarch64-linux-android armv7-linux-androideabi
+      - name: Setup Android NDK
+        uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r25b
+          local-cache: true
+
+      - name: Install "cargo ndk"
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-ndk
+
+      - name: Check
+        run: cargo ndk check --lib
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+
+      - name: Clippy
+        run: cargo ndk clippy --lib
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+
+      - name: Build library
+        run: cargo ndk build --lib
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+
+  build-ios-cross:
+    strategy:
+      fail-fast: false
+      matrix:
+        toolchain:
+          - "1.48"
+          - stable
+        target:
+          - x86_64-apple-ios
+        versions:
+          - ""
+          - "-Zminimal-versions"
+        exclude:
+          # Support for this target was added quite recently.
+          - target: aarch64-apple-ios-sim
+          - toolchain: "1.48"
+    runs-on: macos-12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Rust
+        run: |
+          rustup toolchain install ${{ matrix.toolchain }} --profile minimal --no-self-update --target ${{ matrix.target }}
+          rustup default ${{ matrix.toolchain }}
+      - name: Update lockfile
+        run: cargo generate-lockfile ${{ matrix.versions }}
+        env:
+          RUSTC_BOOTSTRAP: 1
+      - name: Install "cross"
+        run: curl --location --silent --show-error --fail https://github.com/cargo-bins/cargo-quickinstall/releases/download/cross-0.2.5-x86_64-apple-darwin/cross-0.2.5-x86_64-apple-darwin.tar.gz | tar -xzvvf - -C $HOME/.cargo/bin
+      - run: cross build --target ${{ matrix.target }} --examples
+
+  check:
+    strategy:
+      fail-fast: false
+      matrix:
+        toolchain:
+          - "1.48"
+          - stable
+          - nightly
+        versions:
+          - ""
+          - "-Zminimal-versions"
+    runs-on: ubuntu-latest
+    env:
+      RUSTFLAGS: -D warnings
+      RUST_BACKTRACE: 1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Rust
+        run: |
+          rustup toolchain install ${{ matrix.toolchain }} --profile minimal --no-self-update --component clippy
+          rustup default ${{ matrix.toolchain }}
+      - name: Update lockfile
+        run: cargo generate-lockfile ${{ matrix.versions }}
+        env:
+          RUSTC_BOOTSTRAP: 1
+      - run: cargo check --all-targets --workspace
+      - run: cargo clippy --all-targets --workspace -- -D warnings
+
+  no-docker-image-check-only:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Rust
+        run: |
+          rustup toolchain install nightly --profile minimal --no-self-update --component rust-src
+          rustup default nightly
+      - run: cargo check --target x86_64-unknown-haiku -Z build-std --examples
+
+  doc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Rust
+        run: |
+          rustup toolchain install nightly --profile minimal --no-self-update
+          rustup default nightly
+      - run: RUSTDOCFLAGS="-D warnings" cargo doc --all-features
+
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Audit
+        uses: rustsec/audit-check@v1.4.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  fallback:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Rust
+        run: |
+          rustup toolchain install stable --profile minimal --no-self-update --target x86_64-fortanix-unknown-sgx
+      # Should fail (outcome is negated):
+      - run: if cargo build --lib --target x86_64-fortanix-unknown-sgx; then exit 1; fi
+      # Should succeed:
+      - run: cargo build --lib --target x86_64-fortanix-unknown-sgx --features fallback
+
+  c:
+    name: Lint and format C
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install npm
+        run: npm i -f -g npm@8.16.0
+
+      - name: Lint and check formatting with clang-format
+        run: npx github:artichoke/clang-format --check
+
+  test-haiku:
+    strategy:
+      fail-fast: false
+      matrix:
+        runs-on: [ubuntu-20.04, windows-2022, macos-12]
+        toolchain:
+          - stable
+        versions:
+          - ""
+    runs-on: ${{ matrix.runs-on }}
+    env:
+      RUSTFLAGS: -D warnings
+      RUST_BACKTRACE: 1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Rust
+        run: |
+          rustup toolchain install ${{ matrix.toolchain }} --profile minimal --no-self-update --target x86_64-fortanix-unknown-sgx
+          rustup default ${{ matrix.toolchain }}
+      - name: Update lockfile
+        run: cargo generate-lockfile ${{ matrix.versions }}
+        working-directory: haiku
+        env:
+          RUSTC_BOOTSTRAP: 1
+      - run: cargo test --all-targets
+        working-directory: haiku
+
+  check-haiku:
+    strategy:
+      fail-fast: false
+      matrix:
+        toolchain:
+          - stable
+        versions:
+          - ""
+    runs-on: ubuntu-latest
+    env:
+      RUSTFLAGS: -D warnings
+      RUST_BACKTRACE: 1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Rust
+        run: |
+          rustup toolchain install ${{ matrix.toolchain }} --profile minimal --no-self-update --component clippy
+          rustup default ${{ matrix.toolchain }}
+      - name: Update lockfile
+        run: cargo generate-lockfile ${{ matrix.versions }}
+        working-directory: haiku
+        env:
+          RUSTC_BOOTSTRAP: 1
+      - run: cargo check --all-targets
+        working-directory: haiku
+      - run: cargo clippy --all-targets -- -D warnings
+        working-directory: haiku
+
+  check-all-versions:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        run: |
+          rustup toolchain install nightly --profile minimal --no-self-update
+          rustup default nightly
+
+      - name: Install "cargo hack"
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-hack
+
+      - run: cargo hack check --version-range 1.36.. --version-step 2 --clean-per-version --clean-per-run
+
+  generate-windows-bindings:
+    name: Generate windows-core bindings with windows-bindgen
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Clean
+        run: rm -rf src/Windows.rs
+      - name: Generate
+        run: cargo r --manifest-path=api_gen/Cargo.toml
+      - name: Diff generated Rust code
+        run: test -z "$(git status --porcelain)" || (echo "::error::Generated files are different, please regenerate with cargo run --manifest-path=api_gen/Cargo.toml!"; git status; false)

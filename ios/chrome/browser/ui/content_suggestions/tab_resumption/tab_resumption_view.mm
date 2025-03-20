@@ -142,6 +142,13 @@ void SetFallbackImageToImageView(UIImageView* image_view,
         previousPrice:_item.shopCardData.priceDrop->previous_price];
     [labelStackView addArrangedSubview:_priceNotificationsChip];
     self.accessibilityLabel = _item.shopCardData.accessibilityString;
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+          @[ UITraitPreferredContentSizeCategory.self ]);
+      [self registerForTraitChanges:traits
+                         withAction:@selector(hidePriceDropOnTraitChange)];
+    }
+
   } else {
     self.accessibilityLabel =
         [accessibilityLabel componentsJoinedByString:@", "];
@@ -449,6 +456,12 @@ void SetFallbackImageToImageView(UIImageView* image_view,
 // Called when the view has been tapped.
 - (void)tabResumptionItemTapped:(UIGestureRecognizer*)sender {
   [self.commandHandler openTabResumptionItem:_item];
+}
+
+- (void)hidePriceDropOnTraitChange {
+  _priceNotificationsChip.hidden =
+      self.traitCollection.preferredContentSizeCategory >
+      UIContentSizeCategoryExtraLarge;
 }
 
 @end

@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Транскрипцияны жашыруу</translation>
 <translation id="160633243685262989">Сүрөттү алдын ала көрүү</translation>
 <translation id="1611649489706141841">багыттоо</translation>
-<translation id="1615144046047995187">Жүктөлүп алынбай жатат. Кайталап көрүңүз же Chromebook түзмөгүңүздү өчүрүп күйгүзүңүз.</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> бери колдонулган трафик</translation>
 <translation id="1618566998877964907">Теманы колдонуу</translation>
 <translation id="1621067168122174824">Кубатталышын сыноо</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Аудио жаздыруулардын тизмеси</translation>
 <translation id="2561093647892030937">лимондор</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> тести аткарылууда...</translation>
-<translation id="2573178735329662769">Chromebook'тагы бардык үндөрдү жаздыруу</translation>
 <translation id="2576253868710695442">Бул 2Гб чейин сактагычты ээлейт</translation>
 <translation id="2584547424703650812">Жаркыраган пейзаж</translation>
 <translation id="2584559707064218956">Тууралоо үчүн Параметрлерге өтүңүз</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">көк жана кызгылтым</translation>
 <translation id="498186245079027698">Сканерди текшерип, кайталап көрүңүз. Скандалган файлдарды сактоо үчүн орун жетиштүү экенин текшериңиз.</translation>
 <translation id="4982627662315910959">Ыкчам баскыч жеткиликсиз. Shift жана дагы 1 өзгөртүүчү баскыч (ctrl, alt же <ph name="META_KEY" />) бар жаңы ыкчам баскычты басыңыз.</translation>
-<translation id="4983216687482551672">Chromebook аудиосу</translation>
 <translation id="4985509611418653372">Иштетүү</translation>
 <translation id="4987769320337599931">Тармактык коргоо</translation>
 <translation id="4988526792673242964">Барактар</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Жаңыртуу процессин улантуу үчүн <ph name="DEVICE_NAME" /> түзмөгүнүн USB кабелин сууруп, анан кайра сайыңыз</translation>
 <translation id="5099354524039520280">өйдө</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> баскычы жок ыкчам баскыч айрым колдонмолордун ыкчам баскычына каршы келиши мүмкүн. Бул ыкчам баскычты колдоно берүү үчүн кайра басыңыз же <ph name="KEY" /> баскычы бар жаңы ыкчам баскычты басыңыз. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399"><ph name="LANGUAGE_NAME" /> транскрипциянын үлгүсүн жүктөп алуу мүмкүн эмес. Кайталап көрүңүз же Chromebook түзмөгүңүздү өчүрүп күйгүзүңүз</translation>
 <translation id="5108781503443873320">Окшош:</translation>
-<translation id="5121677070210013200">Транскрипциянын үлгүсүн жүктөп алуу мүмкүн эмес. Кайталап көрүңүз же Chromebook түзмөгүңүздү өчүрүп күйгүзүңүз.</translation>
 <translation id="5130848777448318809">понилер</translation>
 <translation id="5137451382116112100">Толук</translation>
 <translation id="5139813694804168398">тынчымды алба</translation>
@@ -920,6 +915,7 @@
 <translation id="5286263799730375393">баскычтоптун жарыгынын түсү</translation>
 <translation id="5292579816060236070">Күндүн чыгышы тушкагазы</translation>
 <translation id="5294769550414936029"><ph name="MILESTONE_VERSION" /> версиясы</translation>
+<translation id="5300172019534884676">камераны колдонуу мүмкүнчүлүгүн өчүрүү/күйгүзүү</translation>
 <translation id="5300814202279832142">Терезени иш тактага жылдыруу</translation>
 <translation id="5302048478445481009">Тил</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> өзгөчө тушкагазы</translation>
@@ -1088,7 +1084,6 @@
 <translation id="6122191549521593678">Онлайн</translation>
 <translation id="6122277663991249694">ChromeOS киргизүү ыкмасынын кызматы</translation>
 <translation id="6127426868813166163">ак</translation>
-<translation id="613049107179582049">Chromebook аудиосу күйүп турганда, Диктофон бул түзмөктөн чыгып жаткан бардык үндөрдү жаздырат</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">киберпанк</translation>
 <translation id="6137767437444130246">Колдонуучунун тастыктамасы</translation>
@@ -1418,7 +1413,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB сенсордук экраны</translation>
 <translation id="757747079855995705">таш</translation>
-<translation id="7584853321964440104">Жүктөлүп алынбай жатат. Кайталап көрүңүз же Chromebook түзмөгүңүздү өчүрүп күйгүзүңүз.</translation>
 <translation id="7590883480672980941">Киргизүү параметрлери</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> калды</translation>
 <translation id="7600430297804876776"><ph name="MANAGER" /> администратору ушул <ph name="DEVICE_TYPE" /> түзмөгүн колдонууга боло турган убакытты көрсөттү.</translation>
@@ -1785,7 +1779,6 @@
 <translation id="9218016617214286986">Белгилүү APN'дерди көрсөтүү</translation>
 <translation id="932327136139879170">Башкы</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Микрофонуңуз туташып турганын текшерип же Chromebook түзмөгүңүздү өчүрүп күйгүзүп көрүңүз</translation>
 <translation id="945522503751344254">Пикириңизди билдириңиз</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> багыты үчүн баскыч жок. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Ар бир маектеш качан жана эмне дегенин транскрипцияда чагылдыруу үчүн жаздыруудагы үндөрдү салыштыруу</translation>

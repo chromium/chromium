@@ -195,7 +195,7 @@ std::unique_ptr<WebState> CreateUnrealizedWebStateWithItems(
 
   std::unique_ptr<WebState> web_state = WebState::CreateWithStorage(
       browser_state, WebStateID::NewUnique(), std::move(metadata),
-      base::ReturnValueOnce(std::move(storage)),
+      base::ReturnValueOnce(std::make_optional(std::move(storage))),
       base::ReturnValueOnce<NSData*>(nil));
 
   DCHECK(!web_state->IsRealized());

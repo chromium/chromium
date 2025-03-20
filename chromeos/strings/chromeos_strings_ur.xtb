@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">ٹرانسکرپٹ چھپائیں</translation>
 <translation id="160633243685262989">تصویر کا پیش منظر دیکھیں</translation>
 <translation id="1611649489706141841">فارورڈ کریں</translation>
-<translation id="1615144046047995187">‏ڈاؤن لوڈ نہیں کیا جا سکتا۔ دوبارہ کوشش کریں یا اپنی Chromebook کو ری سٹارٹ کریں۔</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> سے ڈیٹا کا استعمال</translation>
 <translation id="1618566998877964907">تھیم کا استعمال کریں</translation>
 <translation id="1621067168122174824">چارج ٹیسٹ چلائیں</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">آڈیو ریکارڈنگ کی فہرست</translation>
 <translation id="2561093647892030937">لیمونز</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> ٹیسٹ چل رہا ہے...</translation>
-<translation id="2573178735329662769">‏تمام Chromebook آڈیوز کو ریکارڈ کرنا</translation>
 <translation id="2576253868710695442">‏اس میں 2GB تک کی اسٹوریج صرف ہوگی</translation>
 <translation id="2584547424703650812">چمکتے ہوئے مناظر</translation>
 <translation id="2584559707064218956">سیٹ اپ کرنے کیلئے، ترتیبات پر جائیں</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">نیلا اور گلابی</translation>
 <translation id="498186245079027698">اسکینر چیک کریں اور دوبارہ کوشش کریں۔ یقینی بنائیں کہ اسکین کردہ فائلز محفوظ کرنے کے لیے کافی مقامی جگہ ہے۔</translation>
 <translation id="4982627662315910959">‏شارٹ کٹ دستیاب نہیں ہے۔ شفٹ اور 1 مزید موڈیفائر کلید (ctrl, alt یا <ph name="META_KEY" />) کا استعمال کرتے ہوئے ایک نیا شارٹ کٹ دبائیں۔</translation>
-<translation id="4983216687482551672">‏‫Chromebook آڈیو</translation>
 <translation id="4985509611418653372">چلائیں</translation>
 <translation id="4987769320337599931">فائروال</translation>
 <translation id="4988526792673242964">صفحات</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">‏اپ ڈیٹ ہونے کے عمل کو جاری رکھنے کے لیے <ph name="DEVICE_NAME" /> کے USB کیبل کو ان پلگ کریں اور پھر اسے دوبارہ داخل کریں</translation>
 <translation id="5099354524039520280">اوپر</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> کی کلید کے بغیر شارٹ کٹ کچھ ایپ کے شارٹ کٹ سے متصادم ہو سکتا ہے۔ اس شارٹ کٹ کا استعمال جاری رکھنے کے لیے اسے دوبارہ دبائیں یا <ph name="KEY" /> کی کلید کا استعمال کرتے ہوئے نیا شارٹ کٹ دبائیں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">‏<ph name="LANGUAGE_NAME" /> کے ٹرانسکرپشن ماڈل کو ڈاؤن لوڈ نہیں کیا جا سکتا۔ دوبارہ کوشش کریں یا اپنا Chromebook ری اسٹارٹ کریں</translation>
 <translation id="5108781503443873320">ملتا جلتا:</translation>
-<translation id="5121677070210013200">‏ٹرانسکرپشن ماڈل ڈاؤن لوڈ نہیں ہو سکتا۔ دوبارہ کوشش کریں یا اپنی Chromebook کو ری سٹارٹ کریں۔</translation>
 <translation id="5130848777448318809">پونیز</translation>
 <translation id="5137451382116112100">فُل</translation>
 <translation id="5139813694804168398">ڈسٹرب نہ کریں</translation>
@@ -1033,6 +1028,7 @@
 <translation id="5896602941605730551">چلائیں</translation>
 <translation id="5901630391730855834">پیلا</translation>
 <translation id="5903200662178656908">آلہ ایک کی بورڈ اور ماؤس کومبو ہے۔</translation>
+<translation id="5903822368221507416">ٹیبز چھپائیں</translation>
 <translation id="5904994456462260490">‏ایک نیا APN شامل کریں</translation>
 <translation id="590746845088109442">بلیاں</translation>
 <translation id="5907649332524363701">کلید کا رنگ</translation>
@@ -1088,7 +1084,6 @@
 <translation id="6122191549521593678">آن لائن</translation>
 <translation id="6122277663991249694">‏ChromeOS اندراج کے طریقہ کی سروس</translation>
 <translation id="6127426868813166163">سفید</translation>
-<translation id="613049107179582049">‏‫Chromebook آڈیو آن ہونے پر، ریکارڈر اس آلے پر چلنے والی تمام آڈیوز کو کیپچر کرتا ہے</translation>
 <translation id="6136285399872347291">بیک اسپیس</translation>
 <translation id="6137614725462089991">سائبر پنک</translation>
 <translation id="6137767437444130246">صارف کا سرٹیفیکیٹ</translation>
@@ -1418,7 +1413,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">‏USB ٹچ اسکرین</translation>
 <translation id="757747079855995705">پتھر</translation>
-<translation id="7584853321964440104">‏ڈاؤن لوڈ نہیں کر سکتے۔ دوبارہ کوشش کریں یا اپنی Chromebook کو ری سٹارٹ کریں۔</translation>
 <translation id="7590883480672980941">ان پٹ کی ترتیبات</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> باقی</translation>
 <translation id="7600430297804876776"><ph name="MANAGER" /> منتظم نے <ph name="DEVICE_TYPE" /> کے استعمال کیے جا سکنے کا وقت سیٹ کیا ہے۔</translation>
@@ -1785,7 +1779,6 @@
 <translation id="9218016617214286986">‏معلوم APNs دکھائیں</translation>
 <translation id="932327136139879170">ھوم</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">‏یقینی بنائیں کہ آپ کا مائیک منسلک ہے یا اپنا Chromebook ری سٹارٹ کرنے کی کوشش کریں</translation>
 <translation id="945522503751344254">تاثرات بھیجیں</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> کے لیے کلید موجود نہیں ہے۔ <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">پوری ریکارڈنگ کے دوران آوازوں کا موازنہ کریں تاکہ ٹرانسکرپٹ میں اس بات کی عکاسی کی جا سکے کہ ہر اسپیکر نے کیا اور کب کہا</translation>

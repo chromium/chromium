@@ -238,10 +238,20 @@ bool SkipGpmPasskeyCreationForOwnAccount(
 }
 
 bool PasswordsUsable(int credential_types, UIPresentation ui_presentation) {
-  // TODO(crbug.com/392549444): Also migrate ambient UI passwords here.
-  return ui_presentation == UIPresentation::kModalImmediate &&
-         (credential_types &
-          static_cast<int>(blink::mojom::CredentialTypeFlags::kPassword));
+  if (!(credential_types &
+        static_cast<int>(blink::mojom::CredentialTypeFlags::kPassword))) {
+    return false;
+  }
+
+  if (base::FeatureList::IsEnabled(device::kWebAuthnAmbientSignin) &&
+      ui_presentation == UIPresentation::kAutofill) {
+    // TODO(https://crbug.com/358119268): This will probably get its own
+    // mediation type, but for prototyping we assume any conditional request
+    // with passwords uses ambient.
+    return true;
+  }
+
+  return ui_presentation == UIPresentation::kModalImmediate;
 }
 
 }  // namespace

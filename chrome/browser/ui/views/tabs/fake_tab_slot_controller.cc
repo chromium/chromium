@@ -65,8 +65,8 @@ Tab* FakeTabSlotController::GetAdjacentTab(const Tab* tab, int offset) {
   return nullptr;
 }
 
-Tab* FakeTabSlotController::GetAdjacentSplitTab(const Tab* tab) {
-  return nullptr;
+std::vector<Tab*> FakeTabSlotController::GetTabsInSplit(const Tab* tab) {
+  return {};
 }
 
 bool FakeTabSlotController::HoverCardIsShowingForTab(Tab* tab) {

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/permissions/permissions_ai_handler.h"
 
+#include "base/check_is_test.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -24,9 +25,14 @@ using ::optimization_guide::proto::PermissionType;
 
 constexpr ModelBasedCapabilityKey kFeatureKey =
     ModelBasedCapabilityKey::kPermissionsAi;
+
 constexpr SessionConfigParams kSessionConfigParams = SessionConfigParams{
     .execution_mode = SessionConfigParams::ExecutionMode::kOnDeviceOnly,
 };
+
+// Max delay for permissions AI model execution; inquiries that need more time
+// get cancelled.
+constexpr base::TimeDelta kMaxModelExecutionDuration = base::Seconds(5);
 
 // Currently, the following errors, which are used when a model may have been
 // installed but not yet loaded, are treated as waitable.
@@ -87,6 +93,10 @@ void LogOnDeviceModelAvailabilityAtInquiryTime(bool success) {
   base::UmaHistogramBoolean("Permissions.AIv1.AvailableAtInquiryTime", success);
 }
 
+void LogOnDeviceModelExecutionTimedOut(bool timed_out) {
+  base::UmaHistogramBoolean("Permissions.AIv1.ExecutionTimedOut", timed_out);
+}
+
 PermissionType GetPermissionType(permissions::RequestType request_type) {
   switch (request_type) {
     case permissions::RequestType::kNotifications:
@@ -124,12 +134,13 @@ class PermissionsAiHandler::PermissionsAiSession {
     }
   }
 
-  bool Active() { return session_ != nullptr; }
+  bool IsActive() { return session_ != nullptr; }
 
   void ExecuteModel(
       std::string rendered_text,
       permissions::RequestType request_type,
-      base::OnceCallback<void(std::optional<PermissionsAiResponse>)> callback) {
+      base::OnceCallback<void(std::optional<PermissionsAiResponse>)> callback,
+      base::OneShotTimer* execution_timer) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (!session_) {
       std::move(callback).Run(std::nullopt);
@@ -147,56 +158,63 @@ class PermissionsAiHandler::PermissionsAiSession {
         request,
         base::BindRepeating(&PermissionsAiHandler::PermissionsAiSession::
                                 OnModelExecutionComplete,
-                            weak_ptr_factory_.GetWeakPtr()));
+                            weak_ptr_factory_.GetWeakPtr(), execution_timer));
   }
 
+ private:
   void OnModelExecutionComplete(
+      base::OneShotTimer* execution_timer,
       optimization_guide::OptimizationGuideModelStreamingExecutionResult
           result) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    // This is a non-error response, but since the result is not fully available
+    // yet, we defer callback execution until we get a complete response.
+    if (result.response.has_value() && !result.response->is_complete) {
+      return;
+    }
+
+    if (execution_timer) {
+      execution_timer->Stop();
+      LogOnDeviceModelExecutionTimedOut(/*timed_out=*/false);
+    }
+    // Since we do not want to reuse a once used session, lets make sure that we
+    // destroy it when the model execution has finished.
+    session_.reset();
+
+    // If there is no callback available anymore, we do not need to do any work
+    // here.
+    if (!inquire_on_device_model_callback_) {
+      return;
+    }
+
+    LogOnDeviceModelExecutionSuccessAndTime(/*success=*/
+                                            result.response.has_value(),
+                                            session_execution_start_time_);
     if (!result.response.has_value()) {
       VLOG(1)
           << "[PermissionsAIv1] OnModelExecutionComplete failed with error: "
           << static_cast<int>(result.response.error().error());
-      LogOnDeviceModelExecutionSuccessAndTime(/*success=*/false,
-                                              session_execution_start_time_);
-      if (inquire_on_device_model_callback_) {
-        std::move(inquire_on_device_model_callback_).Run(std::nullopt);
-      }
+      std::move(inquire_on_device_model_callback_).Run(std::nullopt);
       return;
     }
-
-    // This is a non-error response, but it's not completed, yet so we wait till
-    // it's complete. We will not respond to the callback yet because of this.
-    if (!result.response->is_complete) {
-      return;
-    }
-
-    LogOnDeviceModelExecutionSuccessAndTime(/*success=*/true,
-                                            session_execution_start_time_);
 
     std::optional<PermissionsAiResponse> permissions_ai_response =
         optimization_guide::ParsedAnyMetadata<PermissionsAiResponse>(
             result.response->response);
+    LogOnDeviceModelExecutionParse(
+        /*success=*/permissions_ai_response.has_value());
 
     if (!permissions_ai_response.has_value()) {
       VLOG(1) << "[PermissionsAIv1] OnModelExecutionComplete failed while "
                  "parsing the response proto.";
-      LogOnDeviceModelExecutionParse(/*success=*/false);
-      if (inquire_on_device_model_callback_) {
-        std::move(inquire_on_device_model_callback_).Run(std::nullopt);
-      }
+      std::move(inquire_on_device_model_callback_).Run(std::nullopt);
       return;
     }
 
-    LogOnDeviceModelExecutionParse(/*success=*/true);
-
-    if (inquire_on_device_model_callback_) {
-      std::move(inquire_on_device_model_callback_).Run(permissions_ai_response);
-    }
+    std::move(inquire_on_device_model_callback_).Run(permissions_ai_response);
   }
 
- private:
   SEQUENCE_CHECKER(sequence_checker_);
 
   std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
@@ -212,9 +230,11 @@ class PermissionsAiHandler::PermissionsAiSession {
 
 PermissionsAiHandler::PermissionsAiHandler(
     OptimizationGuideKeyedService* optimization_guide)
-    : optimization_guide_(optimization_guide) {}
+    : optimization_guide_(optimization_guide),
+      execution_timer_(std::make_unique<base::OneShotTimer>()) {}
 
 PermissionsAiHandler::~PermissionsAiHandler() {
+  execution_timer_->Stop();
   StopListeningToOnDeviceModelUpdate();
 }
 
@@ -235,7 +255,7 @@ void PermissionsAiHandler::StartListeningToOnDeviceModelUpdate() {
 
   permissions_ai_session_ =
       std::make_unique<PermissionsAiSession>(optimization_guide_);
-  if (permissions_ai_session_->Active()) {
+  if (permissions_ai_session_->IsActive()) {
     SetOnDeviceModelAvailable();
   } else {
     on_device_download_start_time_ = base::TimeTicks::Now();
@@ -284,52 +304,70 @@ bool PermissionsAiHandler::IsOnDeviceModelAvailable() {
   return is_on_device_model_available_;
 }
 
-bool PermissionsAiHandler::ModelExecutionAlreadyInProgress() {
-  if (permissions_ai_session_ && permissions_ai_session_->Active()) {
-    LogOnDeviceModelPreviousSessionFinishedInTime(/*success=*/false);
-    return true;
-  }
-  if (is_on_device_model_available_) {
-    LogOnDeviceModelPreviousSessionFinishedInTime(/*success=*/true);
-  }
-  return false;
+bool PermissionsAiHandler::IsModelExecutionInProgress() {
+  return permissions_ai_session_ && permissions_ai_session_->IsActive();
 }
 
 void PermissionsAiHandler::InquireAiOnDeviceModel(
     std::string rendered_text,
     permissions::RequestType request_type,
     base::OnceCallback<void(std::optional<PermissionsAiResponse>)> callback) {
-  if (ModelExecutionAlreadyInProgress()) {
-    // TODO(crbug.com/382447738): It can happen that a new inquiry comes before
-    // the previous finishes its execution. To avoid unexpected behavior return
-    // `std::nullopt` which means another type of CPSS logic will be executed.
+  if (IsModelExecutionInProgress()) {
+    LogOnDeviceModelPreviousSessionFinishedInTime(/*success=*/false);
+    // TODO(crbug.com/382447738): It can happen that a new inquiry comes
+    // before the previous finishes its execution. To avoid unexpected
+    // behavior return `std::nullopt` which means another type of CPSS logic
+    // will be executed.
     std::move(callback).Run(std::nullopt);
     return;
+  }
+  if (is_on_device_model_available_) {
+    LogOnDeviceModelPreviousSessionFinishedInTime(/*success=*/true);
   }
 
   base::TimeTicks session_creation_start_time = base::TimeTicks::Now();
   if (!is_on_device_model_available_) {
     StartListeningToOnDeviceModelUpdate();
   } else if (optimization_guide_) {
+    execution_timer_->Stop();
     // We make sure by recreating the session on every inquire call, that no
     // callback executions or timing data linked to the previous request gets
-    // accidentally mixed up with the new request. This is especially important
-    // when we start to use timers to cancel too lengthy executions.
+    // accidentally mixed up with the new request when we cancel lengthy model
+    // executions.
     permissions_ai_session_ =
         std::make_unique<PermissionsAiSession>(optimization_guide_);
   }
 
   LogOnDeviceModelSessionCreationSuccessAndTime(
-      /*success=*/(permissions_ai_session_ &&
-                   permissions_ai_session_->Active()),
-      session_creation_start_time);
+      /*success=*/IsModelExecutionInProgress(), session_creation_start_time);
   LogOnDeviceModelAvailabilityAtInquiryTime(is_on_device_model_available_);
 
   if (permissions_ai_session_) {
     permissions_ai_session_->ExecuteModel(std::move(rendered_text),
-                                          request_type, std::move(callback));
+                                          request_type, std::move(callback),
+                                          execution_timer_.get());
+
+    if (IsModelExecutionInProgress()) {
+      execution_timer_->Start(
+          FROM_HERE, kMaxModelExecutionDuration,
+          base::BindOnce(&PermissionsAiHandler::CancelModelExecution,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
   } else {
     std::move(callback).Run(std::nullopt);
   }
 }
+
+void PermissionsAiHandler::CancelModelExecution() {
+  permissions_ai_session_.reset();
+  execution_timer_->Stop();
+  LogOnDeviceModelExecutionTimedOut(/*timed_out=*/true);
+}
+
+void PermissionsAiHandler::set_execution_timer_for_testing(
+    std::unique_ptr<base::OneShotTimer> execution_timer) {
+  CHECK_IS_TEST();
+  execution_timer_ = std::move(execution_timer);
+}
+
 }  // namespace permissions

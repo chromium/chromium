@@ -40,6 +40,7 @@
 #import "ui/events/test/cocoa_test_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/controls/button/label_button.h"
@@ -100,7 +101,8 @@ namespace views::test {
 class BridgedNativeWidgetTestApi {
  public:
   explicit BridgedNativeWidgetTestApi(NSWindow* window)
-      : bridge_(*NativeWidgetMacNSWindowHost::GetFromNativeWindow(window)
+      : bridge_(*NativeWidgetMacNSWindowHost::GetFromNativeWindow(
+                     gfx::NativeWindow(window))
                      ->GetInProcessNSWindowBridge()) {}
 
   explicit BridgedNativeWidgetTestApi(Widget* widget)
@@ -416,7 +418,8 @@ TEST_F(NativeWidgetMacTest, DISABLED_HideAndShowExternally) {
 TEST_F(NativeWidgetMacTest, NotImplemented) {
   NSWindow* native_parent = MakeBorderlessNativeParent();
   NativeWidgetMacNSWindowHost* window_host =
-      NativeWidgetMacNSWindowHost::GetFromNativeWindow(native_parent);
+      NativeWidgetMacNSWindowHost::GetFromNativeWindow(
+          gfx::NativeWindow(native_parent));
 
   EXPECT_FALSE(window_host->native_widget_mac()->WillExecuteCommand(
       5001, WindowOpenDisposition::CURRENT_TAB, true));
@@ -430,7 +433,8 @@ TEST_F(NativeWidgetMacTest, NotImplemented) {
 TEST_F(NativeWidgetMacTest, WindowFrameTitlebarHeight) {
   NSWindow* native_parent = MakeBorderlessNativeParent();
   NativeWidgetMacNSWindowHost* window_host =
-      NativeWidgetMacNSWindowHost::GetFromNativeWindow(native_parent);
+      NativeWidgetMacNSWindowHost::GetFromNativeWindow(
+          gfx::NativeWindow(native_parent));
 
   bool override_titlebar_height = true;
   float titlebar_height = 100.0;
@@ -764,7 +768,8 @@ TEST_F(NativeWidgetMacTest, SetCursor) {
 
   // Use an event generator to ask views code to set the cursor. However, note
   // that this does not cause Cocoa to generate tracking rectangle updates.
-  ui::test::EventGenerator event_generator(GetContext(), widget_window);
+  ui::test::EventGenerator event_generator(GetContext(),
+                                           gfx::NativeWindow(widget_window));
 
   // Move the mouse over the first view, then simulate a tracking rectangle
   // update. Verify that the cursor changed from arrow to hand type.
@@ -833,7 +838,7 @@ Widget* AttachPopupToNativeParent(NSWindow* native_parent) {
   // manager.
   Widget* child = new Widget;
   Widget::InitParams init_params(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
-  init_params.parent = anchor_view;
+  init_params.parent = gfx::NativeView(anchor_view);
   init_params.child = true;
   init_params.type = Widget::InitParams::TYPE_POPUP;
   child->Init(std::move(init_params));
@@ -847,7 +852,7 @@ TEST_F(NativeWidgetMacTest, NonWidgetParent) {
   NSWindow* native_parent = MakeBorderlessNativeParent();
 
   Widget::Widgets children =
-      Widget::GetAllChildWidgets([native_parent contentView]);
+      Widget::GetAllChildWidgets(gfx::NativeView(native_parent.contentView));
   EXPECT_EQ(1u, children.size());
 
   Widget* child = AttachPopupToNativeParent(native_parent);
@@ -858,7 +863,7 @@ TEST_F(NativeWidgetMacTest, NonWidgetParent) {
   internal::NativeWidgetPrivate* top_level_widget =
       internal::NativeWidgetPrivate::GetTopLevelNativeWidget(
           child->GetNativeView());
-  EXPECT_EQ(Widget::GetWidgetForNativeWindow(native_parent),
+  EXPECT_EQ(Widget::GetWidgetForNativeWindow(gfx::NativeWindow(native_parent)),
             top_level_widget->GetWidget());
   EXPECT_NE(child, top_level_widget->GetWidget());
 
@@ -885,7 +890,8 @@ TEST_F(NativeWidgetMacTest, NonWidgetParent) {
   EXPECT_EQ(native_parent,
             [child->GetNativeWindow().GetNativeNSWindow() parentWindow]);
 
-  children.merge(Widget::GetAllChildWidgets([native_parent contentView]));
+  children.merge(
+      Widget::GetAllChildWidgets(gfx::NativeView(native_parent.contentView)));
   ASSERT_EQ(2u, children.size());
   EXPECT_EQ(1u, children.count(child));
 
@@ -988,7 +994,7 @@ TEST_F(NativeWidgetMacTest, NonWidgetParentLastReference) {
     NativeWidgetMacTestWindow* window;
     Widget::InitParams init_params =
         CreateParams(Widget::InitParams::TYPE_POPUP);
-    init_params.parent = [native_parent contentView];
+    init_params.parent = gfx::NativeView(native_parent.contentView);
     init_params.bounds = gfx::Rect(0, 0, 100, 200);
     CreateWidgetWithTestWindow(std::move(init_params), &window);
     window.deallocFlag = &child_dealloced;
@@ -1293,8 +1299,8 @@ ScopedSwizzleWaiter* ScopedSwizzleWaiter::instance_ = nullptr;
 // animation). However, testing with overlapping swizzlers is tricky.
 Widget* ShowChildModalWidgetAndWait(NSWindow* native_parent) {
   Widget* modal_dialog_widget = views::DialogDelegate::CreateDialogWidget(
-      MakeModalDialog(ui::mojom::ModalType::kChild), nullptr,
-      [native_parent contentView]);
+      MakeModalDialog(ui::mojom::ModalType::kChild), gfx::NativeWindow(),
+      gfx::NativeView(native_parent.contentView));
 
   modal_dialog_widget->SetBounds(gfx::Rect(50, 50, 200, 150));
   EXPECT_FALSE(modal_dialog_widget->IsVisible());
@@ -1325,8 +1331,8 @@ Widget* ShowChildModalWidgetAndWait(NSWindow* native_parent) {
 // sheet animation is blocking.
 Widget* ShowWindowModalWidget(NSWindow* native_parent) {
   Widget* sheet_widget = views::DialogDelegate::CreateDialogWidget(
-      MakeModalDialog(ui::mojom::ModalType::kWindow), nullptr,
-      [native_parent contentView]);
+      MakeModalDialog(ui::mojom::ModalType::kWindow), gfx::NativeWindow(),
+      gfx::NativeView(native_parent.contentView));
   sheet_widget->Show();
   return sheet_widget;
 }
@@ -1434,8 +1440,8 @@ TEST_F(NativeWidgetMacTest, ConfirmVisibleWindowRestoration) {
 TEST_F(NativeWidgetMacTest, ShowAnimationControl) {
   NSWindow* native_parent = MakeBorderlessNativeParent();
   Widget* modal_dialog_widget = views::DialogDelegate::CreateDialogWidget(
-      MakeModalDialog(ui::mojom::ModalType::kChild), nullptr,
-      [native_parent contentView]);
+      MakeModalDialog(ui::mojom::ModalType::kChild), gfx::NativeWindow(),
+      gfx::NativeView(native_parent.contentView));
 
   modal_dialog_widget->SetBounds(gfx::Rect(50, 50, 200, 150));
   EXPECT_FALSE(modal_dialog_widget->IsVisible());
@@ -1502,8 +1508,8 @@ TEST_F(NativeWidgetMacTest, MAYBE_WindowModalSheet) {
   NSWindow* native_parent = MakeClosableTitledNativeParent();
 
   Widget* sheet_widget = views::DialogDelegate::CreateDialogWidget(
-      MakeModalDialog(ui::mojom::ModalType::kWindow), nullptr,
-      [native_parent contentView]);
+      MakeModalDialog(ui::mojom::ModalType::kWindow), gfx::NativeWindow(),
+      gfx::NativeView(native_parent.contentView));
 
   WidgetChangeObserver widget_observer(sheet_widget);
 
@@ -1543,7 +1549,7 @@ TEST_F(NativeWidgetMacTest, MAYBE_WindowModalSheet) {
               }];
 
   Widget::Widgets children =
-      Widget::GetAllChildWidgets([native_parent contentView]);
+      Widget::GetAllChildWidgets(gfx::NativeView(native_parent.contentView));
   ASSERT_EQ(2u, children.size());
 
   sheet_widget->Show();  // Should run the above block, then animate the sheet.
@@ -1551,7 +1557,8 @@ TEST_F(NativeWidgetMacTest, MAYBE_WindowModalSheet) {
   [[NSNotificationCenter defaultCenter] removeObserver:observer];
 
   // Ensure sheets are included as a child.
-  children.merge(Widget::GetAllChildWidgets([native_parent contentView]));
+  children.merge(
+      Widget::GetAllChildWidgets(gfx::NativeView(native_parent.contentView)));
   ASSERT_EQ(2u, children.size());
   EXPECT_TRUE(children.count(sheet_widget));
 
@@ -1723,7 +1730,8 @@ TEST_F(NativeWidgetMacTest, CloseWindowModalSheetWithoutSheetParent) {
 TEST_F(NativeWidgetMacTest, NoopReparentNativeView) {
   NSWindow* parent = MakeBorderlessNativeParent();
   Widget* dialog = views::DialogDelegate::CreateDialogWidget(
-      new DialogDelegateView, nullptr, [parent contentView]);
+      new DialogDelegateView, gfx::NativeWindow(),
+      gfx::NativeView(parent.contentView));
   NativeWidgetMacNSWindowHost* window_host =
       NativeWidgetMacNSWindowHost::GetFromNativeWindow(
           dialog->GetNativeWindow());
@@ -1733,7 +1741,8 @@ TEST_F(NativeWidgetMacTest, NoopReparentNativeView) {
                 ->GetNativeWindow()
                 .GetNativeNSWindow(),
             parent);
-  Widget::ReparentNativeView(dialog->GetNativeView(), [parent contentView]);
+  Widget::ReparentNativeView(dialog->GetNativeView(),
+                             gfx::NativeView(parent.contentView));
   EXPECT_EQ(window_host->parent()
                 ->native_widget_mac()
                 ->GetNativeWindow()
@@ -1745,7 +1754,8 @@ TEST_F(NativeWidgetMacTest, NoopReparentNativeView) {
   Widget* parent_widget = CreateTopLevelNativeWidget();
   parent = parent_widget->GetNativeWindow().GetNativeNSWindow();
   dialog = views::DialogDelegate::CreateDialogWidget(
-      new DialogDelegateView, nullptr, [parent contentView]);
+      new DialogDelegateView, gfx::NativeWindow(),
+      gfx::NativeView(parent.contentView));
   window_host = NativeWidgetMacNSWindowHost::GetFromNativeWindow(
       dialog->GetNativeWindow());
 
@@ -1754,7 +1764,8 @@ TEST_F(NativeWidgetMacTest, NoopReparentNativeView) {
                 ->GetNativeWindow()
                 .GetNativeNSWindow(),
             parent);
-  Widget::ReparentNativeView(dialog->GetNativeView(), [parent contentView]);
+  Widget::ReparentNativeView(dialog->GetNativeView(),
+                             gfx::NativeView(parent.contentView));
   EXPECT_EQ(window_host->parent()
                 ->native_widget_mac()
                 ->GetNativeWindow()
@@ -1897,7 +1908,7 @@ TEST_F(NativeWidgetMacTest, NativeProperties) {
 
   // Create a dialog widget (also TYPE_WINDOW), but with a DialogDelegate.
   Widget* dialog_widget = views::DialogDelegate::CreateDialogWidget(
-      MakeModalDialog(ui::mojom::ModalType::kChild), nullptr,
+      MakeModalDialog(ui::mojom::ModalType::kChild), gfx::NativeWindow(),
       regular_widget->GetNativeView());
   EXPECT_TRUE([dialog_widget->GetNativeWindow().GetNativeNSWindow()
       canBecomeKeyWindow]);
@@ -2290,7 +2301,7 @@ class NativeWidgetMacViewsOrderTest : public WidgetTest {
         View* parent) {
       std::unique_ptr<NativeHostHolder> holder(new NativeHostHolder(
           parent->AddChildView(std::make_unique<NativeViewHost>())));
-      holder->host()->Attach(holder->view());
+      holder->host()->Attach(gfx::NativeView(holder->view()));
       return holder;
     }
 
@@ -2361,7 +2372,7 @@ TEST_F(NativeWidgetMacViewsOrderTest, NativeViewAttached) {
                 hosts_[0]->view(), hosts_[2]->view()
               ]]));
 
-  second_host->host()->Attach(second_host->view());
+  second_host->host()->Attach(gfx::NativeView(second_host->view()));
   EXPECT_NSEQ([GetContentNativeView() subviews],
               ([GetStartingSubviews() arrayByAddingObjectsFromArray:@[
                 hosts_[0]->view(), hosts_[1]->view(), hosts_[2]->view()
@@ -2447,7 +2458,8 @@ NSArray* ExtractTouchBarGroupIdentifiers(NSView* view) {
 // Test TouchBar integration.
 TEST_F(NativeWidgetMacTest, TouchBar) {
   DialogDelegate* delegate = MakeModalDialog(ui::mojom::ModalType::kNone);
-  views::DialogDelegate::CreateDialogWidget(delegate, nullptr, nullptr);
+  views::DialogDelegate::CreateDialogWidget(delegate, gfx::NativeWindow(),
+                                            gfx::NativeView());
   NSView* content =
       [delegate->GetWidget()->GetNativeWindow().GetNativeNSWindow()
           contentView];

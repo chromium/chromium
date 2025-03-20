@@ -2083,6 +2083,16 @@ chromium-metrics-reviews@google.com.
   <token key="BatteryState" variants="BatteryState"/>
 </histogram>
 
+<histogram name="Tabs.MissingWebStateStorageFileOnSessionRestore"
+    enum="Boolean" expires_after="2026-03-20">
+  <owner>justincohen@google.com</owner>
+  <owner>bling-fundamentals@google.com</owner>
+  <summary>
+    Records whether a web state session storage file is missing on session
+    restore. Recorded when the web state is realized.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.NewNavigationWithSameOriginTab" enum="Boolean"
     expires_after="2024-02-11">
   <owner>gjc@google.com</owner>

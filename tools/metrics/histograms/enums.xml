@@ -15106,6 +15106,7 @@ from previous Chrome versions.
   <int value="382131467"
       label="GridTabSwitcherLandscapeAspectRatioPhones:enabled"/>
   <int value="382478170" label="SemanticColorDebugOverride:disabled"/>
+  <int value="383647912" label="AndroidThemeModule:disabled"/>
   <int value="383974622" label="CrosPrivacyHubAppPermissionsV2:disabled"/>
   <int value="384054552" label="EnableDrDcVulkan:disabled"/>
   <int value="384677240" label="AssistMultiWordLacrosSupport:enabled"/>
@@ -16529,6 +16530,7 @@ from previous Chrome versions.
   <int value="951111587" label="MediaAppPhotosIntegrationVideo:disabled"/>
   <int value="951133343" label="UseSharedImagesForPepperVideo:disabled"/>
   <int value="951338017" label="SidePanelJourneysQueryless:enabled"/>
+  <int value="952085142" label="AndroidThemeModule:enabled"/>
   <int value="952558794" label="enable-remote-assistance"/>
   <int value="952625847"
       label="AboutThisSitePersistentSidePanelEntry:disabled"/>
@@ -20918,16 +20920,6 @@ Called by update_net_error_codes.py.-->
   <int value="14" label="Access Denied"/>
 </enum>
 
-<enum name="OCRClientType">
-  <int value="0" label="Tests"/>
-  <int value="1" label="PDF Viewer"/>
-  <int value="2" label="Local Search"/>
-  <int value="3" label="Camera App"/>
-  <int value="4" label="Not Used"/>
-  <int value="5" label="MediaApp"/>
-  <int value="6" label="Screenshot Text Detection"/>
-</enum>
-
 <enum name="OCSPResponseStatus">
   <int value="0" label="Not checked"/>
   <int value="1" label="Missing"/>
@@ -21060,6 +21052,7 @@ Called by update_net_error_codes.py.-->
   <int value="74" label="Lilo"/>
   <int value="75" label="Startpage"/>
   <int value="76" label="StarterPackPage"/>
+  <int value="77" label="McAfee"/>
 </enum>
 
 <enum name="OnboardingStartupState">

@@ -499,7 +499,7 @@ void ExtensionServiceTestBase::CreateExtensionService(
   // will register one specifically.
   ExternalProviderManager::Get(profile())->ClearProvidersForTesting();
 
-  service_->delayed_install_manager()->RegisterInstallGate(
+  DelayedInstallManager::Get(profile())->RegisterInstallGate(
       ExtensionPrefs::DelayReason::kWaitForImports,
       service_->shared_module_service());
 

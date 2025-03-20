@@ -427,9 +427,16 @@ No modifications.
         Set<Project> allProjects = [] as Set
         allProjects.add(project)
         allProjects.addAll(project.subprojects)
+
+        // During the migration, when processing the main project, do not tag
+        // autorolled deps as such since they should be treated normally until
+        // the migration is complete.
+        boolean tagTargetsAsAutorolled = !AUTOROLL_MIGRATION_IN_PROGRESS || pathToBuildGradle == AUTOROLLED_PROJECT_PATH
+
         ChromiumDepGraph graph = new ChromiumDepGraph(
                 projects: allProjects, logger: project.logger, skipLicenses: skipLicenses,
-                warnOnStaleDeps: pathToBuildGradle == MAIN_PROJECT_PATH)
+                warnOnStaleDeps: pathToBuildGradle == MAIN_PROJECT_PATH,
+                tagTargetsAsAutorolled: tagTargetsAsAutorolled)
 
         // 1. Parse the dependency data
         graph.timeIt("** Collecting all dependencies info") {
@@ -459,7 +466,7 @@ No modifications.
                 return
             }
 
-            dependencyDirectories.add(dependency.getPrefixedDirectoryPath(committedSubdir))
+            dependencyDirectories.add(dependency.committedDirectoryPath)
 
             if (project.file("${dependency.directoryPath}/${dependency.fileName}").exists()) {
                 logger.quiet("${dependency.id} exists, skipping.")
@@ -571,12 +578,10 @@ No modifications.
             } else if (depTargetName.startsWith('google_play_services_') || depTargetName.startsWith('google_firebase_')) {
                 gnTarget = '$google_play_services_package:' + depTargetName
             } else if (!partOfCurrentProject(dep)) {
-                // During the migration, autorolled targets still live in the
-                // main project BUILD.gn
-                if (dep.projectPath == AUTOROLLED_PROJECT_PATH && AUTOROLL_MIGRATION_IN_PROGRESS) {
-                    gnTarget = "//${MAIN_PROJECT_PATH}:${depTargetName}"
+                if (dep.isAndroidx) {
+                    gnTarget = "//${ANDROIDX_PROJECT_PATH}:${depTargetName}"
                 } else {
-                    gnTarget = "//${dep.projectPath}:${depTargetName}"
+                    gnTarget = "//${MAIN_PROJECT_PATH}:${depTargetName}"
                 }
             } else {
                 gnTarget = ":${depTargetName}"
@@ -600,6 +605,10 @@ No modifications.
             condition = 'google_play_services_package == "//third_party/android_deps"'
         }
 
+        String artifactPathPrefix = dependency.artifactDirectoryPath
+        if (dependency.isAutorolled) {
+            artifactPathPrefix = dependency.getRebasedArtifactDirectoryPath(MAIN_PROJECT_PATH)
+        }
         sb.append(GEN_REMINDER)
         if (condition != null) {
             sb.append("if ($condition) {\n")
@@ -608,7 +617,7 @@ No modifications.
             String targetType = dependency.isAndroidx ? 'androidx_java_prebuilt' : 'java_prebuilt'
             sb.append("""\
                 ${targetType}("${targetName}") {
-                  jar_path = "${dependency.getPrefixedDirectoryPath(artifactSubdir)}/${dependency.fileName}"
+                  jar_path = "${artifactPathPrefix}/${dependency.fileName}"
                   output_name = "${dependency.id}"
                 """.stripIndent(/* forceGroovyBehavior */ true))
             if (dependency.isRobolectric) {
@@ -623,10 +632,14 @@ No modifications.
             }
         } else if (dependency.extension == 'aar') {
             String targetType = dependency.isAndroidx ? 'androidx_android_aar_prebuilt' : 'android_aar_prebuilt'
+            String infoPathPrefix = dependency.committedDirectoryPath
+            if (dependency.isAutorolled) {
+                infoPathPrefix = dependency.getRebasedCommittedDirectoryPath(MAIN_PROJECT_PATH)
+            }
             sb.append("""\
                 ${targetType}("${targetName}") {
-                  aar_path = "${dependency.getPrefixedDirectoryPath(artifactSubdir)}/${dependency.fileName}"
-                  info_path = "${dependency.getPrefixedDirectoryPath(committedSubdir)}/${BuildConfigGenerator.reducedDependencyId(dependency.id)}.info"
+                  aar_path = "${artifactPathPrefix}/${dependency.fileName}"
+                  info_path = "$infoPathPrefix/${BuildConfigGenerator.reducedDependencyId(dependency.id)}.info"
             """.stripIndent(/* forceGroovyBehavior */ true))
         } else if (dependency.extension == 'group') {
             String targetType = dependency.isAndroidx ? 'androidx_java_group' : 'java_group'
@@ -987,7 +1000,7 @@ No modifications.
             String cipdPath = "${cipdPackagePrefix}/${dependency.directoryPath}"
             sb.append("""\
             |
-            |  'src/${pathToBuildGradle}/${dependency.getPrefixedDirectoryPath(artifactSubdir)}': {
+            |  'src/${pathToBuildGradle}/${dependency.artifactDirectoryPath}': {
             |      'packages': [
             |          {
             |              'package': '${cipdPath}',

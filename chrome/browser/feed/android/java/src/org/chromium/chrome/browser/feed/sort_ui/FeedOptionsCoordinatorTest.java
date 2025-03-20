@@ -13,10 +13,12 @@ import android.content.Context;
 import android.widget.TextView;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -35,6 +37,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class FeedOptionsCoordinatorTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
     @Mock private FeedOptionsView mView;
     @Mock private ChipView mChipView;
@@ -45,7 +48,6 @@ public class FeedOptionsCoordinatorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mContext = Robolectric.buildActivity(Activity.class).get();
         FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);
         when(mFeedServiceBridgeJniMock.getContentOrderForWebFeed())

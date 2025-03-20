@@ -12,7 +12,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
-#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "media/capture/video/create_video_capture_device_factory.h"
 #include "media/capture/video/fake_video_capture_device_factory.h"
@@ -86,7 +85,7 @@ class VideoCaptureServiceImpl::GpuDependenciesContext {
 
  private:
   // Task runner for operating |accelerator_factory_| and
-  // |gpu_memory_buffer_manager_| on. This must be a different thread from the
+  // |shared_image_interface_| on. This must be a different thread from the
   // main service thread in order to avoid a deadlock during shutdown where
   // the main service thread joins a video capture device thread that, in turn,
   // will try to post the release of the jpeg decoder to the thread it is
@@ -126,8 +125,6 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
     // |viz_gpu_|.
     if (context_provider_) {
       // Ensure there are no dangling pointers.
-      media::VideoCaptureGpuChannelHost::GetInstance()
-          .SetGpuMemoryBufferManager(nullptr);
       media::VideoCaptureGpuChannelHost::GetInstance().SetSharedImageInterface(
           nullptr);
 #if BUILDFLAG(IS_CHROMEOS)
@@ -154,10 +151,8 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
     DCHECK_EQ(context_provider_, nullptr);
     DCHECK(main_task_runner_->BelongsToCurrentThread());
 
-    // Reset GpuMemoryBufferManager, GpuChannelHost and related objects to begin
+    // Reset GpuChannelHost and related objects to begin
     // with. Set it back when GpuChannelHost is created/re-created successfully.
-    media::VideoCaptureGpuChannelHost::GetInstance().SetGpuMemoryBufferManager(
-        nullptr);
     media::VideoCaptureGpuChannelHost::GetInstance().SetSharedImageInterface(
         nullptr);
 #if BUILDFLAG(IS_CHROMEOS)
@@ -199,8 +194,6 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
     context_provider->AddObserver(this);
     context_provider_ = std::move(context_provider);
 
-    media::VideoCaptureGpuChannelHost::GetInstance().SetGpuMemoryBufferManager(
-        viz_gpu_->GetGpuMemoryBufferManager());
     media::VideoCaptureGpuChannelHost::GetInstance().SetSharedImageInterface(
         viz_gpu_->GetGpuChannel()->CreateClientSharedImageInterface());
 #if BUILDFLAG(IS_CHROMEOS)

@@ -1183,6 +1183,19 @@ void ClientSideDetectionHost::MaybeInquireOnDeviceForScamDetection(
   if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
       csd_service_->IsOnDeviceModelAvailable() &&
       (is_keyboard_lock_requested || is_intelligent_scan_requested)) {
+    if (is_keyboard_lock_requested &&
+        did_match_high_confidence_allowlist.has_value() &&
+        did_match_high_confidence_allowlist.value()) {
+      IntelligentScanInfo intelligent_scan_info;
+      intelligent_scan_info.set_no_info_reason(
+          IntelligentScanInfo::ALLOWLISTED);
+      *verdict->mutable_intelligent_scan_info() =
+          std::move(intelligent_scan_info);
+      MaybeGetAccessToken(std::move(verdict),
+                          did_match_high_confidence_allowlist);
+      return;
+    }
+
     delegate_->GetInnerText(
         base::BindOnce(&ClientSideDetectionHost::OnInnerTextComplete,
                        weak_factory_.GetWeakPtr(), std::move(verdict),

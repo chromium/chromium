@@ -19,7 +19,7 @@ namespace password_manager::prefs {
 // general can be disabled using `kCredentialsEnableService` and
 // `kCredentialsEnablePasskeys`, in which case this pref's value is ignored.
 inline constexpr char kAutomaticPasskeyUpgrades[] =
-    "password_manager.automatic_passkey_upgrades";
+    "credentials_enable_automatic_passkey_upgrades";
 
 // Boolean controlling whether the password manager allows automatic signing in
 // through Credential Management API.

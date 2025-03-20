@@ -133,7 +133,7 @@ void LockImpl::Unlock() {
 
 // This is an implementation used for AutoLock templated on the lock type.
 template <class LockType>
-class SCOPED_LOCKABLE BasicAutoLock {
+class [[nodiscard]] SCOPED_LOCKABLE BasicAutoLock {
   STACK_ALLOCATED();
 
  public:
@@ -168,7 +168,7 @@ class SCOPED_LOCKABLE BasicAutoLock {
 // This is an implementation used for MovableAutoLock templated on the lock
 // type.
 template <class LockType>
-class SCOPED_LOCKABLE BasicMovableAutoLock {
+class [[nodiscard]] SCOPED_LOCKABLE BasicMovableAutoLock {
  public:
   explicit BasicMovableAutoLock(
       LockType& lock,
@@ -199,7 +199,7 @@ class SCOPED_LOCKABLE BasicMovableAutoLock {
 
 // This is an implementation used for AutoTryLock templated on the lock type.
 template <class LockType>
-class SCOPED_LOCKABLE BasicAutoTryLock {
+class [[nodiscard]] SCOPED_LOCKABLE BasicAutoTryLock {
   STACK_ALLOCATED();
 
  public:
@@ -236,7 +236,7 @@ class SCOPED_LOCKABLE BasicAutoTryLock {
 
 // This is an implementation used for AutoUnlock templated on the lock type.
 template <class LockType>
-class BasicAutoUnlock {
+class [[nodiscard]] BasicAutoUnlock {
   STACK_ALLOCATED();
 
  public:
@@ -257,7 +257,7 @@ class BasicAutoUnlock {
 
 // This is an implementation used for AutoLockMaybe templated on the lock type.
 template <class LockType>
-class SCOPED_LOCKABLE BasicAutoLockMaybe {
+class [[nodiscard]] SCOPED_LOCKABLE BasicAutoLockMaybe {
   STACK_ALLOCATED();
 
  public:
@@ -288,7 +288,7 @@ class SCOPED_LOCKABLE BasicAutoLockMaybe {
 // This is an implementation used for ReleasableAutoLock templated on the lock
 // type.
 template <class LockType>
-class SCOPED_LOCKABLE BasicReleasableAutoLock {
+class [[nodiscard]] SCOPED_LOCKABLE BasicReleasableAutoLock {
   STACK_ALLOCATED();
 
  public:

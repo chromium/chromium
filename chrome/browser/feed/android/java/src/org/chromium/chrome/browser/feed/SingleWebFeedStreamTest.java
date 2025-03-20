@@ -23,12 +23,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
@@ -79,6 +81,7 @@ public class SingleWebFeedStreamTest {
     private static final String TEST_URL = JUnitTestGURLs.EXAMPLE_URL.getSpec();
     private static final OpenUrlOptions DEFAULT_OPEN_URL_OPTIONS = new OpenUrlOptions() {};
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Activity mActivity;
     private RecyclerView mRecyclerView;
     private FakeLinearLayoutManager mLayoutManager;
@@ -131,7 +134,6 @@ public class SingleWebFeedStreamTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).get();
 
         FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);

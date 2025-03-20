@@ -515,6 +515,7 @@ Se impostata su ChiediInUnaScheda, quando l'autenticazione dell'utente scade, ap
       Questa policy viene applicata per ignorare l'utilizzo della memoria e la modalità ad alta efficienza.
       Viene eseguito l'unload della pagina ignorata e le risorse della pagina vengono recuperate completamente. La scheda a cui è associata la pagina rimane nella tabstrip, ma se viene resa visibile viene attivato un ricaricamento completo.
       </translation>
+<translation id="1386369130542976774">Specifica intervalli settimanali in cui non è possibile utilizzare i dispositivi ChromeOS</translation>
 <translation id="138847842893090358">Indica lo stato di aggiornamento del sistema operativo</translation>
 <translation id="1389138080311956934">Risparmio di memoria massimo.</translation>
 <translation id="1390529781843037070">Se la policy viene impostata su Attivata o se non viene configurata, gli utenti possono stampare con <ph name="CLOUD_PRINT_NAME" /> dalla finestra di dialogo di stampa di <ph name="PRODUCT_NAME" />. <ph name="PRODUCT_NAME" /> può inviare documenti da stampare a <ph name="CLOUD_PRINT_NAME" />. Questo non impedisce agli utenti di inviare processi di stampa su siti web.
@@ -4144,6 +4145,16 @@ possono essere inviati i report aziendali.
 
       Se la policy viene impostata su True, le suite di crittografia 3DES in TLS verranno attivate. Se viene impostata su False, verranno disattivate. Se la policy non viene configurata, le suite di crittografia 3DES sono disattivate per impostazione predefinita. Questa policy potrebbe essere usata per mantenere momentaneamente la compatibilità con un server obsoleto. Si tratta di una misura temporanea ed è necessario riconfigurare il server.
       </translation>
+<translation id="4016078577612157250">Specifica intervalli settimanali in cui non è possibile utilizzare i dispositivi ChromeOS.
+
+Durante gli intervalli con limitazioni, le sessioni in corso vengono chiuse e gli utenti non possono accedere.
+
+Considerazioni:
+
+* Non sono supportati intervalli sovrapposti.
+* La programmazione delle limitazioni del dispositivo utilizza il fuso orario del dispositivo.
+* Per impedire agli utenti di modificare il fuso orario del dispositivo, utilizza SystemTimezone.
+* Per impedire agli utenti di modificare l'ora del dispositivo, utilizza SystemFeaturesDisableList per disattivare Crosh e URLBlocklist per bloccare chrome://set-time.</translation>
 <translation id="4016367078069682737">Questa policy è stata rimossa da M61.
 
       Consente di specificare il comportamento di un dispositivo con ecryptfs e richiede la transizione alla crittografia ext4.
@@ -4192,18 +4203,6 @@ La policy viene applicata sia all'URL a cui l'utente accede sia agli iframe. La 
 <translation id="4052529125939620019">Carica l'estensione del componente CryptoToken all'avvio</translation>
 <translation id="4053157306171963473">Disattiva i report sul tempo di attività del dispositivo</translation>
 <translation id="4056910949759281379">Disabilita protocollo SPDY</translation>
-<translation id="4057113125482566814">Consente di attivare il provider del framework di accessibilità di <ph name="UIA_NAME" /> in <ph name="PRODUCT_NAME" /> per l'utilizzo da parte degli strumenti di accessibilità.
-
-Questa policy è supportata in <ph name="PRODUCT_NAME" /> per un periodo di transizione di un anno in modo da consentire agli amministratori aziendali di controllare il deployment del provider del framework di accessibilità di <ph name="UIA_NAME" /> del browser. Gli strumenti di accessibilità e gli altri strumenti che utilizzano il framework di accessibilità di <ph name="UIA_NAME" /> per interoperare con il browser potrebbero richiedere aggiornamenti per funzionare correttamente con il provider di <ph name="UIA_NAME" /> del browser. Gli amministratori possono utilizzare questa policy per disattivare temporaneamente il provider di <ph name="UIA_NAME" /> del browser (ripristinando il comportamento precedente) mentre collaborano con i fornitori per fornire aggiornamenti agli strumenti interessati.
-
-Se la policy viene impostata su false, <ph name="PRODUCT_NAME" /> attiva solo il relativo provider <ph name="MSAA_NAME" />. Gli strumenti di accessibilità e gli altri strumenti che utilizzano il framework di accessibilità di <ph name="UIA_NAME" /> più recente per interoperare con il browser comunicheranno con quest'ultimo tramite uno shim di compatibilità in <ph name="MS_WIN_NAME" />.
-
-Se la policy viene impostata su true, <ph name="PRODUCT_NAME" /> attiva il proprio provider di <ph name="UIA_NAME" /> oltre al provider <ph name="MSAA_NAME" />.
-Gli strumenti di accessibilità e gli altri strumenti che utilizzano il framework di accessibilità di <ph name="UIA_NAME" /> più recente per interoperare con il browser comunicano direttamente con quest'ultimo.
-
-Se la policy non viene configurata, il framework delle varianti in <ph name="PRODUCT_NAME" /> viene utilizzato per attivare o disattivare il provider.
-
-Il supporto di questa impostazione delle policy terminerà con <ph name="PRODUCT_NAME" /> 136.</translation>
 <translation id="4057442294431066708">Questa policy consente di stabilire l'opzione della scorciatoia selezionata per la rimappatura degli eventi a
 F11/F12 nella pagina secondaria per rimappare i tasti. Queste impostazioni si applicano solo alle
 tastiere di ChromeOS e sono disattivate per impostazione predefinita se la policy non viene configurata.</translation>

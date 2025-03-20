@@ -29,7 +29,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.android.util.concurrent.RoboExecutorService;
@@ -90,6 +91,7 @@ public class WebApkUpdateManagerUnitTest {
     @Mock public Activity mActivityMock;
     @Mock public ActivityLifecycleDispatcher mLifecycleDispatcher;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public FakeTimeTestRule mClockRule = new FakeTimeTestRule();
 
     private static final String WEBAPK_PACKAGE_NAME = "org.chromium.webapk.test_package";
@@ -733,7 +735,6 @@ public class WebApkUpdateManagerUnitTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
 
         PathUtils.setPrivateDataDirectorySuffix("chrome");
         PostTask.setPrenativeThreadPoolExecutorForTesting(new RoboExecutorService());

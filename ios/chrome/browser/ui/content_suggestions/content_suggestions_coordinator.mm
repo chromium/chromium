@@ -286,7 +286,7 @@ using segmentation_platform::TipIdentifier;
   _started = YES;
 
   ProfileIOS* profile = self.profile;
-  PrefService* prefs = ProfileIOS::FromBrowserState(profile)->GetPrefs();
+  PrefService* prefs = profile->GetPrefs();
 
   _segmentationService =
       segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
@@ -756,8 +756,7 @@ using segmentation_platform::TipIdentifier;
 
     _magicStackHalfSheetMediator = [[MagicStackHalfSheetMediator alloc]
         initWithLocalState:GetApplicationContext()->GetLocalState()
-        profilePrefService:ProfileIOS::FromBrowserState(self.profile)
-                               ->GetPrefs()];
+        profilePrefService:self.profile->GetPrefs()];
     _magicStackHalfSheetMediator.consumer =
         _magicStackHalfSheetTableViewController;
     _magicStackHalfSheetTableViewController.delegate = self;

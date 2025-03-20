@@ -9,11 +9,13 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -35,6 +37,7 @@ public class HomepagePolicyManagerTest {
     public static final String TEST_URL = JUnitTestGURLs.EXAMPLE_URL.getSpec();
     public static final String CHROME_NTP = JUnitTestGURLs.NTP_URL.getSpec();
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private HomepagePolicyManager mHomepagePolicyManager;
 
     @Mock private PrefService mMockPrefService;
@@ -47,7 +50,6 @@ public class HomepagePolicyManagerTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
 
         // Reset shared preference
         mSharedPreferenceManager = ChromeSharedPreferences.getInstance();

@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.quick_delete.QuickDeleteAnimationGradientDraw
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -1336,9 +1337,13 @@ class TabListMediator implements TabListNotificationHandler {
         return filter == null ? new ArrayList<>() : filter.getRelatedTabList(id);
     }
 
-    private List<Integer> getRelatedTabsIds(int id) {
-        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
-        return filter == null ? new ArrayList<>() : filter.getRelatedTabIds(id);
+    private List<Integer> getRelatedTabIds(int id) {
+        List<Tab> relatedTabs = getRelatedTabsForId(id);
+        List<@TabId Integer> tabIds = new ArrayList<>(relatedTabs.size());
+        for (Tab tab : relatedTabs) {
+            tabIds.add(tab.getId());
+        }
+        return tabIds;
     }
 
     private int getInsertionIndexOfTab(Tab tab, boolean onlyShowRelatedTabs) {
@@ -2263,7 +2268,7 @@ class TabListMediator implements TabListNotificationHandler {
      * @return the index for the tab group within {@link mModelList}
      */
     int getIndexForTabIdWithRelatedTabs(int tabId) {
-        List<Integer> relatedTabIds = getRelatedTabsIds(tabId);
+        List<Integer> relatedTabIds = getRelatedTabIds(tabId);
         if (!relatedTabIds.isEmpty()) {
             for (int i = 0; i < mModelList.size(); i++) {
                 PropertyModel model = mModelList.get(i).model;
@@ -2763,7 +2768,7 @@ class TabListMediator implements TabListNotificationHandler {
 
             // Special case in defense of a group not being completely closed. We need to find the
             // group by the tab's old root ID.
-            int index = getIndexForTabIdWithRelatedTabs(tab.getRootId());
+            int index = getIndexForTabIdWithRelatedTabs(tab.getId());
             if (index != TabModel.INVALID_TAB_INDEX) {
                 if (mMode == TabListMode.GRID) {
                     mModelList

@@ -7,7 +7,7 @@
 import type {Bookmark, DocumentDimensions, LayoutOptions, PdfViewerElement, ViewerToolbarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {resetForTesting as resetMetricsForTesting, UserAction, Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // <if expr="enable_pdf_ink2">
-import type {AnnotationBrush, BeforeUnloadProxy, InkBrushSelectorElement, InkColorSelectorElement, InkSizeSelectorElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {AnnotationBrush, BeforeUnloadProxy, InkBrushSelectorElement, InkColorSelectorElement, InkSizeSelectorElement, SelectableIconButtonElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {AnnotationBrushType, BeforeUnloadProxyImpl, PluginController, PluginControllerEventType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // </if>
 import {assert} from 'chrome://resources/js/assert.js';
@@ -547,9 +547,9 @@ export function getBrushSelector(parentElement: HTMLElement):
  * @returns A list of exactly 5 size buttons.
  */
 export function getSizeButtons(selector: InkSizeSelectorElement):
-    NodeListOf<HTMLElement> {
+    NodeListOf<SelectableIconButtonElement> {
   const sizeButtons =
-      selector.shadowRoot.querySelectorAll<HTMLElement>('cr-icon-button');
+      selector.shadowRoot.querySelectorAll('selectable-icon-button');
   assert(sizeButtons);
   assert(sizeButtons.length === 5);
   return sizeButtons;
@@ -562,10 +562,10 @@ export function getSizeButtons(selector: InkSizeSelectorElement):
  * @param buttonIndex The expected selected size button.
  */
 export function assertSelectedSize(
-    sizeButtons: NodeListOf<HTMLElement>, buttonIndex: number) {
+    sizeButtons: NodeListOf<SelectableIconButtonElement>, buttonIndex: number) {
   for (let i = 0; i < sizeButtons.length; ++i) {
-    const buttonSelected = sizeButtons[i]!.dataset['selected'];
-    chrome.test.assertEq(i === buttonIndex ? 'true' : 'false', buttonSelected);
+    const buttonSelected = sizeButtons[i]!.checked;
+    chrome.test.assertEq(i === buttonIndex, buttonSelected);
   }
 }
 

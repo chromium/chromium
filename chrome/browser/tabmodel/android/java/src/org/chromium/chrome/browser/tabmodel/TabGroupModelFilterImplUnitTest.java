@@ -40,13 +40,15 @@ import androidx.annotation.Nullable;
 import androidx.collection.ArraySet;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.verification.VerificationMode;
 import org.robolectric.annotation.Config;
 
@@ -134,6 +136,7 @@ public class TabGroupModelFilterImplUnitTest {
     private static final String TAB_GROUP_SYNC_IDS_FILE_NAME = "tab_group_sync_ids";
     private static final String TAB_GROUP_COLLAPSED_FILE_NAME = "tab_group_collapsed";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock Profile mProfile;
     @Mock Token.Natives mTokenJniMock;
     @Mock TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
@@ -404,8 +407,6 @@ public class TabGroupModelFilterImplUnitTest {
         // After setUp, TabModel has 6 tabs in the following order: mTab1, mTab2, mTab3, mTab4,
         // mTab5, mTab6. While mTab2 and mTab3 are in a group, and mTab5 and mTab6 are in a separate
         // group.
-
-        MockitoAnnotations.initMocks(this);
 
         TokenJni.setInstanceForTesting(mTokenJniMock);
         TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJniMock);

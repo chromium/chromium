@@ -11,6 +11,7 @@
 <translation id="103269572468856066">Izbrisati i podatke s ovih web-lokacija i aplikacija?</translation>
 <translation id="1034259925032978114">Prozor je otvoren</translation>
 <translation id="1036348656032585052">Isključi</translation>
+<translation id="1045448422538531528">Dodaj u grupu</translation>
 <translation id="1045899828449635435">Izbrisati i podatke s ovih web-lokacija?</translation>
 <translation id="1049743911850919806">Anonimno</translation>
 <translation id="1052842760770519282">Neke od vaših zaporki nisu dostupne</translation>
@@ -535,6 +536,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="3513704683820682405">Proširena stvarnost</translation>
 <translation id="3516053221628030540">Otvorite Google Play</translation>
 <translation id="3518985090088779359">Prihvati i nastavi</translation>
+<translation id="351952459507671940">Dodaj u novu grupu</translation>
 <translation id="3521388823983121502">Nije moguće nastaviti s: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Dostupno je ažuriranje. Više opcija</translation>
 <translation id="3523789730715594198">Sinkronizaciju možete uvijek zaustaviti u postavkama. Google može prilagoditi Pretraživanje i druge usluge na temelju vaše povijesti.</translation>
@@ -582,6 +584,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="3721119614952978349">Vi i Google</translation>
 <translation id="3737319253362202215">Postavke prevođenja</translation>
 <translation id="3738139272394829648">Dodirnite za pretraživanje</translation>
+<translation id="3739455665973395693">Nema ugroženih zaporki na vašem Google računu</translation>
 <translation id="3739899004075612870">Označeno u pregledniku <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Na ovom uređaju glasovno pretraživanje nije dostupno</translation>
 <translation id="376561056759077985">Neki podaci još nisu spremljeni</translation>
@@ -635,6 +638,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="3985215325736559418">Želite li ponovo preuzeti datoteku <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">Kopiraj vezu</translation>
 <translation id="4000212216660919741">Početna stranica offline</translation>
+<translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{Jedna ugrožena zaporka na vašem Google računu}one{# ugrožena zaporka na vašem Google računu}few{# ugrožene zaporke na vašem Google računu}other{# ugroženih zaporki na vašem Google računu}}</translation>
 <translation id="4016425174436051808">Praćenje nije uspjelo. Došlo je do pogreške.</translation>
 <translation id="4024768890073681126">Preglednikom upravlja tvoj roditelj</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}one{# h}few{# h}other{# h}}</translation>
@@ -829,6 +833,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="4881695831933465202">Otvori</translation>
 <translation id="488187801263602086">Promijenite naziv datoteke</translation>
 <translation id="4885273946141277891">Nepodržan broj različitih verzija Chromea.</translation>
+<translation id="4890973535105146893">Na vašem Google računu nema spremljenih zaporki</translation>
 <translation id="4905823827770127520">Uključite vezu na stranicu</translation>
 <translation id="4908869848243824489">Googleov Discover</translation>
 <translation id="4910889077668685004">Aplikacije za plaćanje</translation>
@@ -1701,6 +1706,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="869891660844655955">Datum isteka</translation>
 <translation id="8699120352855309748">Nemoj nuditi prevođenje ovih jezika</translation>
 <translation id="8712637175834984815">Shvaćam</translation>
+<translation id="8715286883001906001">Ojačajte svoje zaporke na Google računu</translation>
 <translation id="8723453889042591629">Brzo prevedite ovu stranicu. Da biste uredili taj prečac, dodirnite ga i zadržite pritisak.</translation>
 <translation id="8725066075913043281">Pokušajte ponovo</translation>
 <translation id="8731268612289859741">Sigurnosni kôd</translation>
@@ -1828,6 +1834,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="970715775301869095">Preostalo minuta: <ph name="MINUTES" /></translation>
 <translation id="981121421437150478">Izvanmrežno</translation>
 <translation id="983192555821071799">Zatvori sve kartice</translation>
+<translation id="984756705737569814">Nije moguće provjeriti zaporke na vašem Google računu</translation>
 <translation id="987264212798334818">Općenito</translation>
 <translation id="988091779042748639">Da biste izbrisali povijest anonimnog pregledavanja s uređaja, zatvorite sve anonimne kartice.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> kartica/kartice</translation>

@@ -286,6 +286,13 @@
     "expiry_milestone": 138
   },
   {
+    "name": "android-theme-module",
+    "owners": [
+      "wenyufu@chromium.org"
+    ],
+    "expiry_milestone": 142
+  },
+  {
     "name": "animate-suggestions-list-appearance",
     "owners": [ "pnoland@chromium.org", "chrome-mobile-search@google.com" ],
     "expiry_milestone": 135
@@ -2958,7 +2965,7 @@
   {
     "name": "enable-enterprise-updated-profile-creation-screen",
     "owners": [ "ydago@chromium.org", "cbe-magic@google.com" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "enable-eol-notification-reset-dismissed-prefs",
@@ -5461,6 +5468,11 @@
       "bling-transactions@google.com"
     ],
     "expiry_milestone": 140
+  },
+  {
+    "name": "ios-provides-app-notification-settings",
+    "owners": ["scottyoder@google.com", "bling-get-set-up@google.com"],
+    "expiry_milestone": 141
   },
   {
     "name": "ios-provisional-notification-alert",

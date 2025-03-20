@@ -65,7 +65,7 @@ void STGTabsMenuModel::Build(
     base::RepeatingCallback<int()> get_next_command_id) {
   command_id_to_action_.clear();
   should_enable_move_menu_item_ = true;
-  base::Uuid group_id = saved_group.saved_guid();
+  sync_id_ = saved_group.saved_guid();
 
   // Add item: open in browser.
   int latest_command_id = get_next_command_id.Run();
@@ -76,7 +76,8 @@ void STGTabsMenuModel::Build(
   SetElementIdentifierAt(GetIndexOfCommandId(latest_command_id).value(),
                          kOpenGroup);
   command_id_to_action_.emplace(
-      latest_command_id, Action{Action::Type::OPEN_IN_BROWSER, group_id});
+      latest_command_id,
+      Action{Action::Type::OPEN_IN_BROWSER, sync_id_.value()});
 
   // Add item: open or move to new window.
   const std::u16string move_or_open_group_text =
@@ -94,7 +95,7 @@ void STGTabsMenuModel::Build(
                          kMoveGroupToNewWindowMenuItem);
   command_id_to_action_.emplace(
       latest_command_id,
-      Action{Action::Type::OPEN_OR_MOVE_TO_NEW_WINDOW, group_id});
+      Action{Action::Type::OPEN_OR_MOVE_TO_NEW_WINDOW, sync_id_.value()});
 
   // Add item: pin or unpin.
   latest_command_id = get_next_command_id.Run();
@@ -108,11 +109,12 @@ void STGTabsMenuModel::Build(
   SetElementIdentifierAt(GetIndexOfCommandId(latest_command_id).value(),
                          kToggleGroupPinStateMenuItem);
   command_id_to_action_.emplace(
-      latest_command_id, Action{Action::Type::PIN_OR_UNPIN_GROUP, group_id});
+      latest_command_id,
+      Action{Action::Type::PIN_OR_UNPIN_GROUP, sync_id_.value()});
 
   latest_command_id = get_next_command_id.Run();
   if (SavedTabGroupUtils::IsOwnerOfSharedTabGroup(browser_->profile(),
-                                                  group_id)) {
+                                                  sync_id_.value())) {
     // Add item: delete group.
     AddItemWithStringIdAndIcon(
         latest_command_id, IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP,
@@ -120,8 +122,9 @@ void STGTabsMenuModel::Build(
                                        ui::kColorMenuIcon, kUIUpdateIconSize));
     SetElementIdentifierAt(GetIndexOfCommandId(latest_command_id).value(),
                            kDeleteGroupMenuItem);
-    command_id_to_action_.emplace(latest_command_id,
-                                  Action{Action::Type::DELETE_GROUP, group_id});
+    command_id_to_action_.emplace(
+        latest_command_id,
+        Action{Action::Type::DELETE_GROUP, sync_id_.value()});
   } else {
     // Add item: leave group.
     AddItemWithStringIdAndIcon(
@@ -130,8 +133,8 @@ void STGTabsMenuModel::Build(
                                        ui::kColorMenuIcon, kUIUpdateIconSize));
     SetElementIdentifierAt(GetIndexOfCommandId(latest_command_id).value(),
                            kLeaveGroupMenuItem);
-    command_id_to_action_.emplace(latest_command_id,
-                                  Action{Action::Type::LEAVE_GROUP, group_id});
+    command_id_to_action_.emplace(
+        latest_command_id, Action{Action::Type::LEAVE_GROUP, sync_id_.value()});
   }
 
   // Add a separator and title.

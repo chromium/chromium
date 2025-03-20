@@ -522,8 +522,9 @@ void BidderWorklet::BeginGenerateBid(
         bid_finalizer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
-  generate_bid_tasks_.emplace_front();
-  auto generate_bid_task = generate_bid_tasks_.begin();
+  // Add to end of list to make best effort attempt to maintain task order.
+  auto generate_bid_task =
+      generate_bid_tasks_.emplace(generate_bid_tasks_.end());
   generate_bid_task->bidder_worklet_non_shared_params =
       std::move(bidder_worklet_non_shared_params);
   generate_bid_task->kanon_mode = kanon_mode;
@@ -660,8 +661,8 @@ void BidderWorklet::ReportWin(
         (!direct_from_seller_per_buyer_signals_header_ad_slot &&
          !direct_from_seller_auction_signals_header_ad_slot));
 
-  report_win_tasks_.emplace_front();
-  auto report_win_task = report_win_tasks_.begin();
+  // Add to end of list to make best effort attempt to maintain task order.
+  auto report_win_task = report_win_tasks_.emplace(report_win_tasks_.end());
   report_win_task->is_for_additional_bid = is_for_additional_bid;
   report_win_task->interest_group_name_reporting_id =
       interest_group_name_reporting_id;

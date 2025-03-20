@@ -19,12 +19,14 @@ import android.view.View.OnLongClickListener;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.supplier.ObservableSupplier;
@@ -49,6 +51,7 @@ import java.util.Set;
 @LooperMode(LooperMode.Mode.LEGACY)
 public class ToggleTabStackButtonCoordinatorTest {
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Context mContext;
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private ToggleTabStackButton mToggleTabStackButton;
@@ -79,8 +82,6 @@ public class ToggleTabStackButtonCoordinatorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         when(mContext.getResources()).thenReturn(mResources);
         doAnswer(invocation -> mOverviewOpen)
                 .when(mLayoutStateProvider)

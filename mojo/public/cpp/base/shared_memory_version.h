@@ -19,6 +19,12 @@ namespace mojo {
 class SharedMemoryVersionClient;
 
 using VersionType = uint64_t;
+using CountType = uint64_t;
+
+struct VersionState {
+  std::atomic<VersionType> version;
+  std::atomic<CountType> committed_writes_count;
+};
 
 // This file contains classes to share a version between processes through
 // shared memory. A version is a nonzero monotonically increasing integer. A
@@ -114,13 +120,18 @@ class COMPONENT_EXPORT(MOJO_BASE) SharedMemoryVersionController {
   // during normal operation. This invariant is guaranteed with a CHECK.
   void Increment();
 
+  // Increment the committed writes counter. This is not expected to cause a
+  // wrap of the value during normal operation. This invariant is guaranteed
+  // with a CHECK.
+  void CommitWrite();
+
   // Directly set shared version. `version` must be strictly larger than
   // previous version. `version` cannot be maximum representable value for
   // VersionType.
   void SetVersion(VersionType version);
 
  private:
-  std::optional<base::AtomicSharedMemory<VersionType>> mapped_region_;
+  std::optional<base::StructuredSharedMemory<VersionState>> mapped_region_;
 };
 
 // Used to keep track of a remote version number and compare it to a
@@ -143,11 +154,18 @@ class COMPONENT_EXPORT(MOJO_BASE) SharedMemoryVersionClient {
   bool SharedVersionIsLessThan(VersionType version) const;
   bool SharedVersionIsGreaterThan(VersionType version) const;
 
+  // This function can be used to form statements such as:
+  // "Perform IPC if `CommittedWritesIsLessThan()` returns true.""
+  // The function errs on the side of caution and returns true if the comparison
+  // is impossible, since issuing an IPC should always be an option.
+  bool CommittedWritesIsLessThan(CountType count) const;
+
  private:
   // Returns the current value in shared memory.
   VersionType GetSharedVersion() const;
 
-  const std::optional<base::AtomicSharedMemory<VersionType>::ReadOnlyMapping>
+  const std::optional<
+      base::StructuredSharedMemory<VersionState>::ReadOnlyMapping>
       read_only_mapping_;
 };
 

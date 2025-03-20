@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">隐藏转写内容</translation>
 <translation id="160633243685262989">预览图片</translation>
 <translation id="1611649489706141841">前进</translation>
-<translation id="1615144046047995187">无法下载，请重试，或重新启动 Chromebook。</translation>
 <translation id="1615335640928990664">自 <ph name="FRIENDLY_DATE" />开始的流量使用情况</translation>
 <translation id="1618566998877964907">使用主题</translation>
 <translation id="1621067168122174824">运行充电测试</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">录音列表</translation>
 <translation id="2561093647892030937">柠檬</translation>
 <translation id="2570743873672969996">正在运行<ph name="TEST_NAME" />测试…</translation>
-<translation id="2573178735329662769">录制所有 Chromebook 音频</translation>
 <translation id="2576253868710695442">将占用最多 2GB 存储空间</translation>
 <translation id="2584547424703650812">发光景观</translation>
 <translation id="2584559707064218956">若要进行设置，请转到“设置”</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">蓝色和粉色</translation>
 <translation id="498186245079027698">请检查扫描仪，然后重试。另请确保有足够的本地空间来保存扫描版文件。</translation>
 <translation id="4982627662315910959">此快捷键不可用。按新的快捷键时，请使用 shift 和另外 1 个辅助键（ctrl、alt 或<ph name="META_KEY" />键）。</translation>
-<translation id="4983216687482551672">Chromebook 音频</translation>
 <translation id="4985509611418653372">运行</translation>
 <translation id="4987769320337599931">防火墙</translation>
 <translation id="4988526792673242964">页面</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">请拔下<ph name="DEVICE_NAME" />的 USB 线，然后重新插入以继续更新流程</translation>
 <translation id="5099354524039520280">向上</translation>
 <translation id="5107243100836678918">不含<ph name="META_KEY" />键的快捷键可能会与某个应用的快捷方式冲突。再次按此快捷键可继续使用它，也可按含有<ph name="KEY" />键的新快捷键。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">无法下载<ph name="LANGUAGE_NAME" />转写模型。请重试，或重启 Chromebook</translation>
 <translation id="5108781503443873320">近义词：</translation>
-<translation id="5121677070210013200">无法下载转写模型。请重试，或重新启动 Chromebook。</translation>
 <translation id="5130848777448318809">小马</translation>
 <translation id="5137451382116112100">全屏</translation>
 <translation id="5139813694804168398">勿扰模式</translation>
@@ -1089,7 +1084,6 @@
 <translation id="6122191549521593678">在线</translation>
 <translation id="6122277663991249694">Chrome 操作系统输入法服务</translation>
 <translation id="6127426868813166163">白色</translation>
-<translation id="613049107179582049">当 Chromebook 音频处于开启状态时，录音机会录制此设备上播放的所有音频</translation>
 <translation id="6136285399872347291">删除</translation>
 <translation id="6137614725462089991">赛博朋克</translation>
 <translation id="6137767437444130246">用户证书</translation>
@@ -1419,7 +1413,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB 触摸屏</translation>
 <translation id="757747079855995705">石头</translation>
-<translation id="7584853321964440104">无法下载。请重试，或重启 Chromebook。</translation>
 <translation id="7590883480672980941">输入设置</translation>
 <translation id="7595982850646262331">电池续航时间还剩 <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776"><ph name="MANAGER" /> 管理员已设置此 <ph name="DEVICE_TYPE" /> 可供使用的时间。</translation>
@@ -1786,7 +1779,6 @@
 <translation id="9218016617214286986">显示已知的 APN</translation>
 <translation id="932327136139879170">首页</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">请确保麦克风已连接，或尝试重启 Chromebook</translation>
 <translation id="945522503751344254">发送反馈</translation>
 <translation id="950520315903467048">缺少表示<ph name="DIRECTION" />的按键。<ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">对整个录音中的各种语音进行比较，以便在转写内容中体现出每位讲者的说话内容和说话时间</translation>

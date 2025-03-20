@@ -315,6 +315,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-11-25">
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records the duration it took to download the on-device AIv1 model before
     first use. This is only logged if the model was downloaded successfully.
@@ -325,6 +326,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-12-02">
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records the duration it took to execute the on-device model. This happens if
     the on-device AIv1 model was downloaded successfully and the session is
@@ -338,6 +340,20 @@ chromium-metrics-reviews@google.com.
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     Records whether the on-device AIv1 model execution is successful or not.
+    This will not log when the session was canceled because it took too long;
+    these failures are logged by the ExecutionTimeOut histogram instead.
+  </summary>
+</histogram>
+
+<histogram name="Permissions.AIv1.ExecutionTimedOut" enum="BooleanTimedOut"
+    expires_after="2026-03-13">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records whether the on-device AIv1 model ran into a timeout during
+    execution. We do not want to block permission request evaluations too long
+    because of lengthy on-device model executions, so we cancel them if they
+    take more than 5 seconds.
   </summary>
 </histogram>
 
@@ -387,6 +403,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2025-12-02">
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records the duration it took to create an on-device AIv1 model session. This
     happens when the on-device model was downloaded successfully and is

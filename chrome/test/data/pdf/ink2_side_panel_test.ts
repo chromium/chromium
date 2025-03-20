@@ -54,9 +54,9 @@ chrome.test.runTests([
     assertSelectedSize(sizeButtons, /*buttonIndex=*/ 2);
 
     // Change the pen size.
-    let button = sizeButtons[0];
-    chrome.test.assertTrue(!!button);
-    button.click();
+    const sizeButton = sizeButtons[0];
+    chrome.test.assertTrue(!!sizeButton);
+    sizeButton.click();
     await microtasksFinished();
 
     assertAnnotationBrush(mockPlugin, {
@@ -67,9 +67,9 @@ chrome.test.runTests([
 
     // Change the pen color to '#fdd663'.
     const colorButtons = getColorButtons(getColorSelector());
-    button = colorButtons[6];
-    chrome.test.assertTrue(!!button);
-    button.click();
+    const colorButton = colorButtons[6];
+    chrome.test.assertTrue(!!colorButton);
+    colorButton.click();
     await microtasksFinished();
 
     assertAnnotationBrush(mockPlugin, {
@@ -124,9 +124,9 @@ chrome.test.runTests([
     assertSelectedSize(sizeButtons, /*buttonIndex=*/ 2);
 
     // Change the highlighter size.
-    let button = sizeButtons[4];
-    chrome.test.assertTrue(!!button);
-    button.click();
+    const sizeButton = sizeButtons[4];
+    chrome.test.assertTrue(!!sizeButton);
+    sizeButton.click();
     await microtasksFinished();
 
     assertAnnotationBrush(mockPlugin, {
@@ -137,9 +137,9 @@ chrome.test.runTests([
 
     // Change the highlighter color to '#34a853'.
     const colorButtons = getColorButtons(getColorSelector());
-    button = colorButtons[2];
-    chrome.test.assertTrue(!!button);
-    button.click();
+    const colorButton = colorButtons[2];
+    chrome.test.assertTrue(!!colorButton);
+    colorButton.click();
     await microtasksFinished();
 
     assertAnnotationBrush(mockPlugin, {

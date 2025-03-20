@@ -39,7 +39,9 @@
 <translation id="1538031354170655462">Site-urile folosesc de obicei tehnologia NFC (Near Field Communication) pentru a funcționa cu etichete sau dispozitive din apropiere, cum ar fi scanarea insignelor sau atingerea pentru a plăti</translation>
 <translation id="1547123415014299762">Sunt permise cookie-urile terță parte</translation>
 <translation id="1593426485665524382">Acțiuni noi disponibile în partea de sus a ecranului</translation>
+<translation id="1615755956145364867">Site-urile pot solicita permisiunea de a reda conținut protejat</translation>
 <translation id="1620510694547887537">Cameră</translation>
+<translation id="1621729191093924223">Funcțiile care au nevoie de microfon nu vor funcționa</translation>
 <translation id="1633720957382884102">Site-uri conexe</translation>
 <translation id="1644574205037202324">Istoric</translation>
 <translation id="1652197001188145583">Când opțiunea este activată, site-urile pot solicita permisiunea de a folosi dispozitive NFC. Când opțiunea este dezactivată, site-urile nu pot folosi dispozitive NFC.</translation>
@@ -54,6 +56,7 @@
 <translation id="1743802530341753419">Întreabă înainte de a permite site-urilor să se conecteze la un dispozitiv (recomandat)</translation>
 <translation id="1779089405699405702">Decodor de imagini</translation>
 <translation id="1785415724048343560">Se recomandă pentru o experiență optimă</translation>
+<translation id="1796588414813960292">Opțiunile care au nevoie de sunet nu vor funcționa</translation>
 <translation id="1799920918471566157">Sfaturi Chrome</translation>
 <translation id="1816835383954230954">Când opțiunea este activată, Chrome rulează mai rapid și funcțiile care folosesc JavaScript ar trebui să ruleze corespunzător. Când este dezactivată, performanța scade, dar motorul V8 devine mai rezistent la atacuri.</translation>
 <translation id="1818308510395330587">Pentru a permite aplicației <ph name="APP_NAME" /> să folosească RA, activează camera foto și în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
@@ -71,6 +74,7 @@
 <translation id="1994173015038366702">Adresa URL a site-ului</translation>
 <translation id="2004697686368036666">Este posibil ca funcțiile din anumite site-uri să nu funcționeze</translation>
 <translation id="2025115093177348061">Realitate augmentată</translation>
+<translation id="2028449514182362831">Funcțiile care au nevoie de senzori de mișcare nu vor funcționa</translation>
 <translation id="2030769033451695672">Atinge pentru a reveni la <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Anulează</translation>
 <translation id="2091887806945687916">Sunet</translation>
@@ -257,6 +261,7 @@
 <translation id="4259722352634471385">Navigarea este blocată: <ph name="URL" /></translation>
 <translation id="4274673989874969668">După ce ieși de pe un site, acesta poate continua sincronizarea pentru a finaliza activități, cum ar fi încărcarea fotografiilor sau trimiterea unui mesaj de chat</translation>
 <translation id="4278390842282768270">Se permite</translation>
+<translation id="4290791284969893584">După ce închizi o pagină, este posibil ca activitățile începute să nu se finalizeze</translation>
 <translation id="429312253194641664">Un site redă fișiere media</translation>
 <translation id="42981349822642051">Extinde</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Expiră mâine}few{Expiră peste # zile}other{Expiră peste # de zile}}</translation>
@@ -531,6 +536,7 @@
 <translation id="8010630645305864042">{TILE_COUNT,plural, =1{Ascunde cardul Continuă cu această filă}few{Ascunde cardul Continuă cu aceste file}other{Ascunde cardul Continuă cu aceste file}}</translation>
 <translation id="802154636333426148">Descărcarea nu a reușit</translation>
 <translation id="8042586301629853791">Sortează după:</translation>
+<translation id="8051193500142930381">Funcțiile care au nevoie de cameră nu vor funcționa</translation>
 <translation id="8067883171444229417">Redă videoclipul</translation>
 <translation id="8068648041423924542">Certificatul nu poate fi selectat.</translation>
 <translation id="8077120325605624147">Orice site pe care îl accesezi îți poate afișa orice anunț</translation>

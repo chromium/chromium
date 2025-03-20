@@ -33,7 +33,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -57,6 +58,8 @@ import org.chromium.net.NetId;
         shadows = {ShadowUrlUtilities.class})
 @Features.EnableFeatures(ChromeFeatureList.CCT_PREWARM_TAB)
 public class CustomTabActivityTabControllerUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public final CustomTabActivityContentTestEnvironment env =
             new CustomTabActivityContentTestEnvironment();
@@ -75,7 +78,6 @@ public class CustomTabActivityTabControllerUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         when(env.profileProvider.getOriginalProfile()).thenReturn(mProfile);
         when(env.profileProvider.getOffTheRecordProfile(eq(true))).thenReturn(mIncognitoProfile);
         when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);

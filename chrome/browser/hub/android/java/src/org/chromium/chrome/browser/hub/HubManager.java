@@ -44,6 +44,6 @@ public interface HubManager {
     /** Sets the app header height. */
     void setAppHeaderHeight(int height);
 
-    /** Gets the supplier providing the Hub Toolbar color. */
-    ObservableSupplier<Integer> getHubToolbarOverviewColorSupplier();
+    /** Gets the supplier providing the Hub Overview color. */
+    ObservableSupplier<Integer> getHubOverviewColorSupplier();
 }

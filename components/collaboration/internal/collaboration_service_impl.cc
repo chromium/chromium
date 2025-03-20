@@ -76,7 +76,9 @@ void CollaborationServiceImpl::RemoveObserver(
 
 void CollaborationServiceImpl::StartJoinFlow(
     std::unique_ptr<CollaborationControllerDelegate> delegate,
-    const GURL& url) {
+    const GURL& url,
+    CollaborationServiceJoinEntryPoint entry) {
+  metrics::RecordJoinEntryPoint(data_sharing_service_->GetLogger(), entry);
   const data_sharing::DataSharingService::ParseUrlResult parse_result =
       data_sharing_service_->ParseDataSharingUrl(url);
 
@@ -98,8 +100,9 @@ void CollaborationServiceImpl::StartJoinFlow(
 
 void CollaborationServiceImpl::StartShareOrManageFlow(
     std::unique_ptr<CollaborationControllerDelegate> delegate,
-    const tab_groups::EitherGroupID& group_id) {
-  auto it = share_controllers_.find(group_id);
+    const tab_groups::EitherGroupID& either_id,
+    CollaborationServiceShareOrManageEntryPoint entry) {
+  auto it = share_controllers_.find(either_id);
   if (it != share_controllers_.end()) {
     it->second->delegate()->PromoteCurrentScreen();
     return;
@@ -107,7 +110,7 @@ void CollaborationServiceImpl::StartShareOrManageFlow(
 
   ExitConflictingFlows(base::BindOnce(
       &CollaborationServiceImpl::StartShareOrManageFlowInternal,
-      weak_ptr_factory_.GetWeakPtr(), std::move(delegate), group_id));
+      weak_ptr_factory_.GetWeakPtr(), std::move(delegate), either_id));
 
   RecordShareOrManageEvent(data_sharing_service_->GetLogger(),
                            CollaborationServiceShareOrManageEvent::kStarted);

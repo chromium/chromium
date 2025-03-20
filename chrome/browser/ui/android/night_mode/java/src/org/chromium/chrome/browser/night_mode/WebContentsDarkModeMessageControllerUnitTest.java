@@ -20,11 +20,13 @@ import android.content.res.Resources;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
@@ -151,6 +153,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
         }
     }
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock Activity mMockActivity;
     @Mock Profile mMockProfile;
     @Mock WebContents mMockWebContents;
@@ -165,8 +168,6 @@ public class WebContentsDarkModeMessageControllerUnitTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
-
         when(mMockActivity.getResources()).thenReturn(mMockResources);
         when(mMockResources.getString(anyInt())).thenReturn(TEST_LINK_STRING);
         when(mMockResources.getString(eq(R.string.auto_dark_message_title)))

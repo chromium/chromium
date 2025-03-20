@@ -4,6 +4,7 @@
 
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 
+#include <memory>
 #include <string>
 
 #include "build/build_config.h"
@@ -11,10 +12,12 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/scoped_browser_locale.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -22,10 +25,21 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/variations_switches.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+namespace {
+
+std::unique_ptr<KeyedService> CreateTestSyncService(
+    content::BrowserContext* context) {
+  return std::make_unique<syncer::TestSyncService>();
+}
+
+}  // namespace
 
 class NewTabPageUtilBrowserTest : public InProcessBrowserTest {
  public:
@@ -77,7 +91,8 @@ class NewTabPageUtilEnableFlagBrowserTest : public NewTabPageUtilBrowserTest {
          ntp_features::kNtpCalendarModule,
          ntp_features::kNtpMicrosoftAuthenticationModule,
          ntp_features::kNtpOutlookCalendarModule,
-         ntp_features::kNtpSharepointModule},
+         ntp_features::kNtpSharepointModule,
+         ntp_features::kNtpDriveModuleNoSyncRequirement},
         {});
   }
 };
@@ -90,7 +105,8 @@ class NewTabPageUtilDisableFlagBrowserTest : public NewTabPageUtilBrowserTest {
              ntp_features::kNtpCalendarModule,
              ntp_features::kNtpMicrosoftAuthenticationModule,
              ntp_features::kNtpOutlookCalendarModule,
-             ntp_features::kNtpSharepointModule});
+             ntp_features::kNtpSharepointModule,
+             ntp_features::kNtpDriveModuleNoSyncRequirement});
   }
 };
 
@@ -122,28 +138,63 @@ IN_PROC_BROWSER_TEST_F(NewTabPageUtilDisableFlagBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageUtilBrowserTest, EnableDriveByToT) {
+  TestingProfile profile;
+  auto* sync_service = static_cast<syncer::TestSyncService*>(
+      SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          &profile, base::BindRepeating(&CreateTestSyncService)));
+  sync_service->SetSignedIn(signin::ConsentLevel::kSync);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  EXPECT_TRUE(IsDriveModuleEnabled());
+  EXPECT_TRUE(
+      IsDriveModuleEnabledForProfile(/*is_managed_profile=*/true, &profile));
   CheckInternalsLog(std::string(ntp_features::kNtpDriveModule.name) +
                     " enabled: default feature flag value");
 #else
-  EXPECT_FALSE(IsDriveModuleEnabled());
+  EXPECT_FALSE(
+      IsDriveModuleEnabledForProfile(/*is_managed_profile=*/true, &profile));
   CheckInternalsLog(std::string(ntp_features::kNtpDriveModule.name) +
                     " disabled: default feature flag value");
 #endif
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageUtilEnableFlagBrowserTest, EnableDriveByFlag) {
-  EXPECT_TRUE(IsDriveModuleEnabled());
+  EXPECT_TRUE(IsDriveModuleEnabledForProfile(/*is_managed_profile=*/true,
+                                             browser()->profile()));
   CheckInternalsLog(std::string(ntp_features::kNtpDriveModule.name) +
                     " enabled: feature flag forced on");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageUtilDisableFlagBrowserTest,
                        DisableDriveByFlag) {
-  EXPECT_FALSE(IsDriveModuleEnabled());
+  EXPECT_FALSE(IsDriveModuleEnabledForProfile(/*is_managed_profile=*/true,
+                                              browser()->profile()));
   CheckInternalsLog(std::string(ntp_features::kNtpDriveModule.name) +
                     " disabled: feature flag forced off");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageUtilEnableFlagBrowserTest, DriveIsNotManaged) {
+  EXPECT_FALSE(IsDriveModuleEnabledForProfile(/*is_managed_profile=*/false,
+                                              browser()->profile()));
+  CheckInternalsLog(std::string(ntp_features::kNtpDriveModule.name) +
+                    " disabled: account not managed");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageUtilBrowserTest, SyncRequired) {
+  TestingProfile profile;
+  auto* sync_service = static_cast<syncer::TestSyncService*>(
+      SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          &profile, base::BindRepeating(&CreateTestSyncService)));
+  sync_service->SetSignedIn(signin::ConsentLevel::kSignin);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  EXPECT_FALSE(
+      IsDriveModuleEnabledForProfile(/*is_managed_profile=*/true, &profile));
+  CheckInternalsLog(std::string(ntp_features::kNtpDriveModule.name) +
+                    " disabled: no sync");
+#else
+  EXPECT_FALSE(
+      IsDriveModuleEnabledForProfile(/*is_managed_profile=*/true, &profile));
+  CheckInternalsLog(std::string(ntp_features::kNtpDriveModule.name) +
+                    " disabled: default feature flag value");
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageUtilEnableFlagBrowserTest,

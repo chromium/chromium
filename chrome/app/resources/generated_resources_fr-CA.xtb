@@ -625,6 +625,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1430915738399379752">Imprimer</translation>
 <translation id="1431188203598586230">Dernière mise à jour logicielle</translation>
 <translation id="1432581352905426595">Gérer les moteurs de recherche</translation>
+<translation id="1432650420699700107">Les sites peuvent demander à se connecter à n'importe quel appareil de votre réseau local</translation>
 <translation id="1433478348197382180">Mode de lecture</translation>
 <translation id="1433980411933182122">Démarrage</translation>
 <translation id="1434696352799406980">Ceci entraînera la réinitialisation de votre page de démarrage, de votre page Nouvel onglet, de votre moteur de recherche et de vos onglets épinglés. Toutes vos extensions seront également désactivées et vos données temporaires, comme les témoins, seront supprimées. Vos favoris, votre historique et vos mots de passe enregistrés ne seront pas supprimés.</translation>
@@ -4828,6 +4829,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4364830672918311045">Afficher les notifications</translation>
 <translation id="4367971618859387374">Nom à afficher</translation>
 <translation id="4368960422722232719">Afficher l'utilisation de la mémoire sur la fiche informative d'aperçu de l'onglet</translation>
+<translation id="4369151461324628035">Ne pas autoriser les sites à se connecter à un appareil de votre réseau local</translation>
 <translation id="4369215744064167350">Demande de site Web approuvée</translation>
 <translation id="4369233657762989723">Dictée activée/désactivée</translation>
 <translation id="436926121798828366">Vous pouvez changer cette option en tout temps dans <ph name="SETTINGS_LINK" /></translation>
@@ -5381,6 +5383,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4772914216048388646">Ordonné</translation>
 <translation id="4773112038801431077">Mettre à niveau Linux</translation>
 <translation id="4773122030389014189">Partager le groupe d'onglets « <ph name="GROUP_NAME" /> »</translation>
+<translation id="4773253008034797668">Autorisé à se connecter à n'importe quel appareil sur votre réseau local</translation>
 <translation id="477548766361111120">Autoriser l'extension à lire et modifier ce site</translation>
 <translation id="4776311127346151860">Connexion de votre <ph name="DEVICE_NAME" /> réussie</translation>
 <translation id="4776594120007763294">Pour ajouter une page à lire plus tard, cliquez sur le bouton</translation>
@@ -7843,6 +7846,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6563002009564846727">Afficher les certificats importés de Windows</translation>
 <translation id="6563055593659435495">Impossible de maintenir une connexion avec votre téléphone. Assurez-vous que votre téléphone est à proximité et déverrouillé, et que le Bluetooth et le Wi-Fi sont activés.</translation>
 <translation id="6564860838537532172">Lorsque vous effectuez une recherche dans l'historique de navigation, vos recherches dans l'historique, le contenu des pages des meilleurs résultats et les sorties du modèle générées sont envoyés à Google et peuvent être vus par des réviseurs humains afin d'améliorer cette fonctionnalité.</translation>
+<translation id="6565144332292237355">Les sites peuvent utiliser cette fonctionnalité pour rechercher n'importe quel appareil sur votre réseau local et s'y connecter</translation>
 <translation id="6569931898053264308">Économies moyennes</translation>
 <translation id="6570622975915850879">Utiliser un autre appareil</translation>
 <translation id="65711204837946324">Le téléchargement exige une autorisation</translation>
@@ -11557,6 +11561,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
       <ph name="LIST_ITEM" />Exécutez l'utilitaire Chrome Connectivity Diagnostics
     <ph name="END_LIST" /></translation>
 <translation id="9161172953291434881">Faites-vous confiance à ce site pour vos données?</translation>
+<translation id="9164418710391288146">Non autorisé à se connecter à un appareil sur votre réseau local</translation>
 <translation id="9165856803582999927">Balayez ce code QR avec l'appareil photo de l'appareil sur lequel vous souhaitez créer et enregistrer votre clé d'accès pour <ph name="APP_NAME" /></translation>
 <translation id="916607977885256133">Incrustation d'image</translation>
 <translation id="9166253503936244008">Numérisez ce code QR avec l'appareil qui possède la clé d'accès que vous souhaitez utiliser pour <ph name="APP_NAME" /></translation>

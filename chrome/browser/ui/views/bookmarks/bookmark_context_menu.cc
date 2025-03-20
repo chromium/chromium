@@ -16,6 +16,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -50,7 +51,8 @@ BookmarkContextMenu::BookmarkContextMenu(
         selection,
     bool close_on_remove)
     : controller_(new BookmarkContextMenuController(
-          parent_widget ? parent_widget->GetNativeWindow() : nullptr,
+          parent_widget ? parent_widget->GetNativeWindow()
+                        : gfx::NativeWindow(),
           this,
           browser,
           profile,

@@ -1986,7 +1986,7 @@ class CaptureLoseWindowFinder : public WindowFinder {
       const std::set<gfx::NativeWindow>& ignore) override {
     static_cast<views::View*>(tab_strip_->GetDragContext())
         ->OnMouseCaptureLost();
-    return nullptr;
+    return gfx::NativeWindow();
   }
 
  private:

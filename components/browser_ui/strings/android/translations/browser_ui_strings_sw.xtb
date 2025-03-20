@@ -39,7 +39,9 @@
 <translation id="1538031354170655462">Kwa kawaida tovuti hutumia mawasiliano ya vifaa vinavyokaribiana (NFC) ili kufanya kazi na vifaa au vishikizo vilivyo karibu, kama vile kuchanganua beji au kulipa kielektroniki</translation>
 <translation id="1547123415014299762">Vidakuzi vya washirika wengine vinaruhusiwa</translation>
 <translation id="1593426485665524382">Vitendo vipya vinapatikana karibu na sehemu ya juu ya skrini</translation>
+<translation id="1615755956145364867">Tovuti zinaweza kuomba ruhusa ya kucheza maudhui yanayolindwa</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1621729191093924223">Vipengele vinavyohitaji maikrofoni havitafanya kazi</translation>
 <translation id="1633720957382884102">Tovuti zinazohusiana</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1652197001188145583">Kikiwashwa, tovuti zinaweza kuomba ruhusa ya kutumia vifaa vya NFC. Kikizimwa, tovuti haziwezi kutumia vifaa vya NFC.</translation>
@@ -54,6 +56,7 @@
 <translation id="1743802530341753419">Iulize kabla ya kuruhusu tovuti ziunganishe kwenye kifaa (inapendekezwa)</translation>
 <translation id="1779089405699405702">Kisimbuaji cha picha</translation>
 <translation id="1785415724048343560">Inapendekezwa kwa ajili ya hali bora ya utumiaji</translation>
+<translation id="1796588414813960292">Vipengele vinavyohitaji sauti havitafanya kazi</translation>
 <translation id="1799920918471566157">Vidokezo vya Chrome</translation>
 <translation id="1816835383954230954">Ikiwa imewashwa, Chrome hufanya kazi haraka zaidi na vipengele vinavyotumia JavaScript vinapaswa kufanya kazi kama vilivyokusudiwa. Ikiwa imezimwa, hatua hii hupunguza utendaji lakini hufanya V8 kustahimili zaidi mashambulizi.</translation>
 <translation id="1818308510395330587">Ili uruhusu <ph name="APP_NAME" /> itumie Uhalisia Ulioboreshwa, washa pia kamera katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>
@@ -71,6 +74,7 @@
 <translation id="1994173015038366702">URL ya Tovuti</translation>
 <translation id="2004697686368036666">Huenda vipengele kwenye baadhi ya tovuti visifanye kazi</translation>
 <translation id="2025115093177348061">Uhalisia ulioboreshwa</translation>
+<translation id="2028449514182362831">Vipengele vinavyohitaji vitambuzi vya mwendo havitafanya kazi</translation>
 <translation id="2030769033451695672">Gusa ili urudi kwenye <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Tendua</translation>
 <translation id="2091887806945687916">Sauti</translation>
@@ -257,6 +261,7 @@
 <translation id="4259722352634471385">Kudurusu kumezuiwa: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Ukifunga tovuti, inaweza kuendelea kusawazisha ili kukamilisha majukumu, kama vile kupakia picha au kutuma ujumbe kwenye gumzo</translation>
 <translation id="4278390842282768270">Imeruhusiwa</translation>
+<translation id="4290791284969893584">Baada ya kufunga ukurasa, huenda majukumu uliyoyaanza yasimalizike</translation>
 <translation id="429312253194641664">Tovuti inacheza maudhui</translation>
 <translation id="42981349822642051">Panua</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Muda wa matumizi utaisha kesho}other{Muda wa matumizi utaisha baada ya siku #}}</translation>
@@ -531,6 +536,7 @@
 <translation id="8010630645305864042">{TILE_COUNT,plural, =1{Ficha kadi ya endelea "endelea ukitumia kichupo hiki"}other{Ficha kadi ya "endelea ukitumia kichupo hiki"}}</translation>
 <translation id="802154636333426148">Haikuweza kupakua</translation>
 <translation id="8042586301629853791">Panga kulingana na:</translation>
+<translation id="8051193500142930381">Vipengele vinavyohitaji kamera havitafanya kazi</translation>
 <translation id="8067883171444229417">Cheza video</translation>
 <translation id="8068648041423924542">Imeshindwa kuchagua cheti.</translation>
 <translation id="8077120325605624147">Tovuti yoyote unayotembelea inaweza kukuonyesha tangazo lolote</translation>

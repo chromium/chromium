@@ -41,7 +41,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -98,6 +99,8 @@ public class CustomTabActivityAppMenuTest {
     private static final String TEST_MENU_TITLE = "testMenuTitle";
     @Mock private TranslateBridge.Natives mTranslateBridgeJniMock;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
 
@@ -134,7 +137,6 @@ public class CustomTabActivityAppMenuTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
 
         // Mock translate bridge so "Translate..." menu item doesn't unexpectedly show up.
         org.chromium.chrome.browser.translate.TranslateBridgeJni.setInstanceForTesting(

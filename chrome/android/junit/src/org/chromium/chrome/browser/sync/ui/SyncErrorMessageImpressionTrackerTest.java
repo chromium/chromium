@@ -14,7 +14,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.FakeTimeTestRule;
@@ -30,6 +31,7 @@ import org.chromium.components.prefs.PrefService;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SyncErrorMessageImpressionTrackerTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
     @Mock private PrefService mPrefService;
@@ -38,7 +40,6 @@ public class SyncErrorMessageImpressionTrackerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mSharedPrefsManager = ChromeSharedPreferences.getInstance();
     }
 

@@ -165,7 +165,14 @@ def _calculate_and_filter_optimal_shard_counts(overhead_dict, durations,
 
     overhead = overhead_dict.get(try_builder, {}).get(test_suite,
                                                       {}).get(shard_count)
-    if not overhead:
+    if overhead:
+      # Suites can be in a bad sharding. Since we only use one set of shards
+      # (n and n+1) this can create a bad value for the overhead so clamp it
+      # to reasonable values. At the time of writing this the min and max are
+      # around 0.21 and 4.01. Ideally we could use more than one set of
+      # shardings to determine this overhead.
+      overhead = max(min(overhead, 4.0), 0.2)
+    else:
       if 'android' in try_builder:
         overhead = ANDROID_OVERHEAD_SEC / 60
       else:

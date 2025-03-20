@@ -21,10 +21,12 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
@@ -49,6 +51,7 @@ public class NotificationPermissionUpdaterTest {
     private static final String APP_LABEL = "name";
     private static final String OTHER_PACKAGE_NAME = "com.other.package.name";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock public TrustedWebActivityClient mTrustedWebActivityClient;
     @Mock public InstalledWebappPermissionStore mStore;
 
@@ -58,7 +61,6 @@ public class NotificationPermissionUpdaterTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         PackageManager pm = RuntimeEnvironment.application.getPackageManager();
         mShadowPackageManager = shadowOf(pm);

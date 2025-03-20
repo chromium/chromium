@@ -39,7 +39,9 @@
 <translation id="1538031354170655462">Tavaliselt kasutavad saidid lähedalasuvate märgendite või seadmetega töötamiseks lähiväljasidet (NFC) (nt märkide skannimiseks või viipemakseks)</translation>
 <translation id="1547123415014299762">Kolmanda osapoole küpsisefailid on lubatud</translation>
 <translation id="1593426485665524382">Uued toimingud on saadaval ekraanikuva ülaosas</translation>
+<translation id="1615755956145364867">Saidid saavad paluda esitada kaitstud sisu</translation>
 <translation id="1620510694547887537">Kaamera</translation>
+<translation id="1621729191093924223">Mikrofoni vajavad funktsioonid ei tööta</translation>
 <translation id="1633720957382884102">Seotud saidid</translation>
 <translation id="1644574205037202324">Ajalugu</translation>
 <translation id="1652197001188145583">Kui see on sisse lülitatud, võivad saidid küsida luba NFC-seadmete kasutamiseks. Kui see on välja lülitatud, ei saa saidid NFC-seadmeid kasutada.</translation>
@@ -54,6 +56,7 @@
 <translation id="1743802530341753419">Küsi luba, kui saidid üritavad seadmega ühendust luua (soovitatav)</translation>
 <translation id="1779089405699405702">Pildi dekooder</translation>
 <translation id="1785415724048343560">Soovitatav parima kasutuskogemuse saamiseks</translation>
+<translation id="1796588414813960292">Heli vajavad funktsioonid ei tööta</translation>
 <translation id="1799920918471566157">Chrome’i nõuanded</translation>
 <translation id="1816835383954230954">Kui seade on sees, töötab Chrome kiiremini ja JavaScripti kasutavad funktsioonid peaksid töötama kavandatud viisil. Kui seade on väljas, vähendab see jõudlust, kuid muudab V8 rünnakutele vastupidavamaks.</translation>
 <translation id="1818308510395330587">Selleks et rakendus <ph name="APP_NAME" /> saaks AR-i kasutada, lülitage sisse kaamera ka <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
@@ -71,6 +74,7 @@
 <translation id="1994173015038366702">Saidi URL</translation>
 <translation id="2004697686368036666">Funktsioonid ei pruugi mõnel saidil toimida</translation>
 <translation id="2025115093177348061">Liitreaalsus</translation>
+<translation id="2028449514182362831">Liikumisandureid vajavad funktsioonid ei tööta</translation>
 <translation id="2030769033451695672">Puudutage vahelehele <ph name="URL_OF_THE_CURRENT_TAB" /> naasmiseks</translation>
 <translation id="2079545284768500474">Võta tagasi</translation>
 <translation id="2091887806945687916">Heli</translation>
@@ -257,6 +261,7 @@
 <translation id="4259722352634471385">Navigeerimine on blokeeritud: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Kui lahkute saidilt, võib see sünkroonimist jätkata, et toimingud (nt fotode üleslaadimine või vestlussõnumi saatmine) lõpule viia</translation>
 <translation id="4278390842282768270">Lubatud</translation>
+<translation id="4290791284969893584">Pärast lehe sulgemist ei pruugita alustatud toiminguid lõpule viia</translation>
 <translation id="429312253194641664">Sait esitab meediasisu</translation>
 <translation id="42981349822642051">Laienda</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Aegub homme}other{Aegub # päeva pärast}}</translation>
@@ -531,6 +536,7 @@
 <translation id="8010630645305864042">{TILE_COUNT,plural, =1{Peida valik Selle vahelehe kaardiga jätkamine}other{Peida valik Nende vahelehtede kaardiga jätkamine}}</translation>
 <translation id="802154636333426148">Allalaadimine ebaõnnestus</translation>
 <translation id="8042586301629853791">Sortimisalus:</translation>
+<translation id="8051193500142930381">Kaamerat vajavad funktsioonid ei tööta</translation>
 <translation id="8067883171444229417">Esita video</translation>
 <translation id="8068648041423924542">Sertifikaati ei saa valida.</translation>
 <translation id="8077120325605624147">Mis tahes külastatav sait saab teile kuvada mis tahes reklaami</translation>

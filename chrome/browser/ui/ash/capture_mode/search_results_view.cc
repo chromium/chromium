@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace ash {
 
@@ -51,7 +52,26 @@ content::WebContents* SearchResultsView::OpenURLFromTab(
   // Open the URL specified by `params` in a new tab.
   NavigateParams new_tab_params(static_cast<Browser*>(nullptr), params.url,
                                 params.transition);
-  new_tab_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  switch (params.disposition) {
+    case WindowOpenDisposition::UNKNOWN:
+    case WindowOpenDisposition::NEW_BACKGROUND_TAB:
+    case WindowOpenDisposition::CURRENT_TAB:
+    case WindowOpenDisposition::SINGLETON_TAB:
+      new_tab_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+      break;
+    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
+    case WindowOpenDisposition::NEW_POPUP:
+    case WindowOpenDisposition::NEW_WINDOW:
+    case WindowOpenDisposition::SAVE_TO_DISK:
+    case WindowOpenDisposition::OFF_THE_RECORD:
+    case WindowOpenDisposition::IGNORE_ACTION:
+    case WindowOpenDisposition::SWITCH_TO_TAB:
+    case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
+      // These other dispositions will open new windows / tabs, so use these
+      // dispositions as-is.
+      new_tab_params.disposition = params.disposition;
+      break;
+  }
   new_tab_params.initiating_profile =
       Profile::FromBrowserContext(source->GetBrowserContext());
   OpenURLFromTabInternal(new_tab_params);

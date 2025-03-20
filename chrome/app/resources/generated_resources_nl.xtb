@@ -1336,6 +1336,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1918127774159128277">Wifi Direct-mogelijkheden vernieuwen</translation>
 <translation id="1918141783557917887">&amp;Kleiner</translation>
 <translation id="1918281588461452432">Als je op sites browst, wordt de content van de pagina's versleuteld en opgeslagen op je apparaat</translation>
+<translation id="1919096511823372013">Voeg onder andere links en emoji's in. Je kunt ook hulp krijgen bij het schrijven en maken van afbeeldingen met AI van Google.</translation>
 <translation id="1919872106782726755">Als je een vingerafdruk wilt instellen, laat je je kind de vingerafdruksensor rechtsboven op het toetsenbord aanraken, naast de aan/uit-knop. De vingerafdrukgegevens van je kind worden beveiligd opgeslagen en blijven uitsluitend op de <ph name="DEVICE_TYPE" /> staan.</translation>
 <translation id="192015196730532810">Je kunt je eigen tabbladgroep maken.</translation>
 <translation id="1920314570001095522">Er zijn geen vergelijkbare tabbladen om te ordenen, maar misschien vind je deze groepen wel leuk</translation>
@@ -1879,6 +1880,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300332192655962933">Bestand was niet beschikbaar op site</translation>
 <translation id="2300383962156589922"><ph name="APP_NAME" /> aanpassen en beheren</translation>
+<translation id="2301064673700597535">Gekwalificeerde certificaatverklaringen</translation>
 <translation id="2301382460326681002">Hoofddirectory van extensie is ongeldig.</translation>
 <translation id="2301402091755573488">Gedeeld tabblad</translation>
 <translation id="2302342861452486996"><ph name="BEGIN_H3" />Functies voor foutopsporing<ph name="END_H3" />
@@ -8965,6 +8967,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7377451353532943397">Toegang tot sensoren blijven blokkeren</translation>
 <translation id="7377481913241237033">Koppelen met een code</translation>
 <translation id="73786666777299047">Open de Chrome Web Store</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Een andere taak in dezelfde takengroep: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. # andere taken in dezelfde takengroep: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380272457268061606">Herstel van lokale gegevens uitzetten?</translation>
 <translation id="7380459290951585794">Zorg dat je telefoon in de buurt en ontgrendeld is en dat bluetooth en wifi aanstaan.</translation>
 <translation id="7380622428988553498">Apparaatnaam bevat ongeldige tekens</translation>

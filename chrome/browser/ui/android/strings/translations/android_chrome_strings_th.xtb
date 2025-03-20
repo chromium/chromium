@@ -11,6 +11,7 @@
 <translation id="103269572468856066">ล้างข้อมูลเว็บไซต์และแอปเหล่านี้ด้วยไหม</translation>
 <translation id="1034259925032978114">หน้าต่างเปิดอยู่</translation>
 <translation id="1036348656032585052">ปิด</translation>
+<translation id="1045448422538531528">เพิ่มในกลุ่ม</translation>
 <translation id="1045899828449635435">ล้างข้อมูลเว็บไซต์เหล่านี้ด้วยไหม</translation>
 <translation id="1049743911850919806">โหมดไม่ระบุตัวตน</translation>
 <translation id="1052842760770519282">รหัสผ่านบางรายการเข้าถึงไม่ได้</translation>
@@ -535,6 +536,7 @@
 <translation id="3513704683820682405">Augmented Reality</translation>
 <translation id="3516053221628030540">ไปที่ Google Play</translation>
 <translation id="3518985090088779359">ยอมรับและทำต่อ</translation>
+<translation id="351952459507671940">เพิ่มไปยังกลุ่มใหม่</translation>
 <translation id="3521388823983121502">ดำเนินการต่อด้วย <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ไม่ได้</translation>
 <translation id="3522247891732774234">มีการอัปเดตให้บริการ ตัวเลือกเพิ่มเติม</translation>
 <translation id="3523789730715594198">คุณหยุดการซิงค์ได้ทุกเมื่อในการตั้งค่า Google อาจปรับเปลี่ยน Search และบริการอื่นๆ ให้เหมาะกับคุณโดยอิงจากประวัติการเข้าชม</translation>
@@ -582,6 +584,7 @@
 <translation id="3721119614952978349">คุณและ Google</translation>
 <translation id="3737319253362202215">การตั้งค่าการแปล</translation>
 <translation id="3738139272394829648">แตะเพื่อค้นหา</translation>
+<translation id="3739455665973395693">ไม่มีรหัสผ่านที่ถูกละเมิดในบัญชี Google</translation>
 <translation id="3739899004075612870">บุ๊กมาร์กไว้ใน <ph name="PRODUCT_NAME" /> แล้ว</translation>
 <translation id="3740525748616366977">การค้นหาด้วยเสียงไม่พร้อมใช้งานในอุปกรณ์นี้</translation>
 <translation id="376561056759077985">ยังไม่ได้บันทึกข้อมูลบางอย่าง</translation>
@@ -635,6 +638,7 @@
 <translation id="3985215325736559418">คุณต้องการดาวน์โหลด <ph name="FILE_NAME" /> อีกครั้งไหม</translation>
 <translation id="3987993985790029246">คัดลอกลิงก์</translation>
 <translation id="4000212216660919741">หน้าแรกออฟไลน์</translation>
+<translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{มีรหัสผ่านที่ถูกละเมิด 1 รายการในบัญชี Google}other{มีรหัสผ่านที่ถูกละเมิด # รายการในบัญชี Google}}</translation>
 <translation id="4016425174436051808">ติดตามไม่ได้ เกิดข้อผิดพลาด</translation>
 <translation id="4024768890073681126">ผู้ปกครองของคุณเป็นผู้จัดการเบราว์เซอร์</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ชม.}other{# ชม.}}</translation>
@@ -829,6 +833,7 @@
 <translation id="4881695831933465202">เปิด</translation>
 <translation id="488187801263602086">เปลี่ยนชื่อไฟล์</translation>
 <translation id="4885273946141277891">อินสแตนซ์ของ Chrome เกินจำนวนที่สนับสนุน</translation>
+<translation id="4890973535105146893">ไม่มีรหัสผ่านที่บันทึกไว้ในบัญชี Google</translation>
 <translation id="4905823827770127520">ใส่ลิงก์ลงในหน้า</translation>
 <translation id="4908869848243824489">ฟีเจอร์สำรวจโดย Google</translation>
 <translation id="4910889077668685004">แอปชำระเงิน</translation>
@@ -1701,6 +1706,7 @@
 <translation id="869891660844655955">วันหมดอายุ</translation>
 <translation id="8699120352855309748">ไม่ต้องเสนอการแปลภาษาเหล่านี้</translation>
 <translation id="8712637175834984815">รับทราบ</translation>
+<translation id="8715286883001906001">เสริมความรัดกุมให้รหัสผ่านในบัญชี Google</translation>
 <translation id="8723453889042591629">แปลหน้านี้อย่างรวดเร็ว หากต้องการแก้ไขทางลัดนี้ ให้แตะค้างไว้</translation>
 <translation id="8725066075913043281">ลองอีกครั้ง</translation>
 <translation id="8731268612289859741">รหัสความปลอดภัย</translation>
@@ -1828,6 +1834,7 @@
 <translation id="970715775301869095">เหลือ <ph name="MINUTES" /> นาที</translation>
 <translation id="981121421437150478">ออฟไลน์</translation>
 <translation id="983192555821071799">ปิดแท็บทั้งหมด</translation>
+<translation id="984756705737569814">ตรวจสอบรหัสผ่านในบัญชี Google ไม่ได้</translation>
 <translation id="987264212798334818">ทั่วไป</translation>
 <translation id="988091779042748639">ปิดแท็บที่ไม่ระบุตัวตนทั้งหมดเพื่อลบประวัติการท่องเว็บแบบไม่ระบุตัวตนออกจากอุปกรณ์</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> แท็บ</translation>

@@ -14,6 +14,7 @@
 #include "ui/base/accelerators/accelerator_manager.h"
 #import "ui/base/cocoa/nsmenu_additions.h"
 #include "ui/content_accelerators/accelerator_util.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
 
 @implementation ChromeCommandDispatcherDelegate
@@ -50,7 +51,7 @@
   ui::Accelerator accelerator =
       ui::GetAcceleratorFromNativeWebKeyboardEvent(keyboard_event);
   auto* bridge =
-      remote_cocoa::NativeWidgetNSWindowBridge::GetFromNativeWindow(window);
+      remote_cocoa::NativeWidgetNSWindowBridge::GetFromNSWindow(window);
   bool was_handled = false;
   if (bridge) {
     bridge->host()->HandleAccelerator(
@@ -107,7 +108,7 @@
   }
 
   auto* bridge =
-      remote_cocoa::NativeWidgetNSWindowBridge::GetFromNativeWindow(window);
+      remote_cocoa::NativeWidgetNSWindowBridge::GetFromNSWindow(window);
   if (bridge == nullptr) {
     return ui::PerformKeyEquivalentResult::kUnhandled;
   }
@@ -157,7 +158,7 @@
 
   if (result.found()) {
     auto* bridge =
-        remote_cocoa::NativeWidgetNSWindowBridge::GetFromNativeWindow(window);
+        remote_cocoa::NativeWidgetNSWindowBridge::GetFromNSWindow(window);
     if (bridge) {
       // postPerformKeyEquivalent: is only called on events that are not
       // reserved. We want to bypass the main menu if and only if the event is

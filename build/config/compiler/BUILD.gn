@@ -3171,10 +3171,25 @@ config("default_init_stack_vars") {
 buildflag_header("compiler_buildflags") {
   header = "compiler_buildflags.h"
 
-  flags = [
-    "CLANG_PGO=$chrome_pgo_phase",
-    "SYMBOL_LEVEL=$symbol_level",
-  ]
+  flags = []
+
+  if (chrome_pgo_phase == 1) {
+    flags += [ "CLANG_PGO_PROFILING=true" ]
+  } else {
+    flags += [ "CLANG_PGO_PROFILING=false" ]
+  }
+
+  if (chrome_pgo_phase == 2) {
+    flags += [ "CLANG_PGO_OPTIMIZED=true" ]
+  } else {
+    flags += [ "CLANG_PGO_OPTIMIZED=false" ]
+  }
+
+  if (symbol_level > 0) {
+    flags += [ "HAS_SYMBOLS=true" ]
+  } else {
+    flags += [ "HAS_SYMBOLS=false" ]
+  }
 }
 
 config("cet_shadow_stack") {

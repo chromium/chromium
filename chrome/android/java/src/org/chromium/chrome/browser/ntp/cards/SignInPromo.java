@@ -118,13 +118,7 @@ public abstract class SignInPromo {
                         && mCanShowPersonalizedSuggestions
                         && isAccountsCachePopulated
                         && mSigninManager.isSigninSupported(/* requireUpdatedPlayServices= */ true);
-        boolean canShowPersonalizedSyncPromo =
-                mSigninManager.isSyncOptInAllowed()
-                        && mSyncPromoController.canShowSyncPromo()
-                        && isUserSignedInButNotSyncing()
-                        && mCanShowPersonalizedSuggestions
-                        && isAccountsCachePopulated;
-        setVisibilityInternal(canShowPersonalizedSigninPromo || canShowPersonalizedSyncPromo);
+        setVisibilityInternal(canShowPersonalizedSigninPromo);
     }
 
     /**

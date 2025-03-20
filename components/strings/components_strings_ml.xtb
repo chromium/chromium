@@ -158,6 +158,7 @@
 <translation id="1264309058268477500">ഇതര ട്രേ</translation>
 <translation id="1264974993859112054">കായികം</translation>
 <translation id="1268480293435976622">Envelope Chinese #7</translation>
+<translation id="1269045546668906972">കൂടുതൽ ഫീൽഡുകൾ സ്വയമേവ പൂരിപ്പിക്കാൻ AI ഉപയോഗിച്ചുള്ള സ്വയമേവ പൂരിപ്പിക്കൽ ഓണാക്കുക</translation>
 <translation id="1269516672602708785">Google Sites-ൽ പുതിയൊരു സൈറ്റ് വേഗത്തിൽ സൃഷ്ടിക്കുക</translation>
 <translation id="1270328905573953738">സാധനങ്ങൾ മാറ്റലും സ്ഥലം മാറലും</translation>
 <translation id="1270502636509132238">പിക്കപ്പ് രീതി</translation>
@@ -1138,6 +1139,7 @@
 <translation id="3005723025932146533">സംരക്ഷിച്ച പകർപ്പ് കാണിക്കുക</translation>
 <translation id="300580149047131921">അടുത്തിടെ ഉപയോഗിച്ചത്</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, ലഭ്യമായ പ്രവർത്തനങ്ങൾ ബ്രൗസ് ചെയ്യാൻ ടാബ് അമർത്തുക, തുടർന്ന് തിരഞ്ഞെടുത്ത പ്രവർത്തനം നടപ്പിലാക്കാൻ Enter അമർത്തുക.</translation>
+<translation id="3010991137650052245">ഈ സൈറ്റിൽ നിങ്ങളുടെ <ph name="PERMISSION" /> ഉപയോഗിക്കാൻ <ph name="SHORT_PRODUCT_NAME" /> എന്നതിന് ആക്സസ് നൽകുക</translation>
 <translation id="3013711734159931232">വീട്ടാവശ്യങ്ങൾക്കുള്ള സാമഗ്രികൾ</translation>
 <translation id="3014553260345122294">ബിസിനസ് വാർത്തകൾ</translation>
 <translation id="3014726756341138577">വിപുലമായ പ്രിന്റർ ഫീച്ചറുകൾ</translation>
@@ -1787,6 +1789,7 @@
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">നയ പരിധി പിന്തുണയ്ക്കുന്നില്ല.</translation>
+<translation id="411918202192379658">സ്വയമേവ പൂരിപ്പിക്കൽ ഇപ്പോൾ കൂടുതൽ മികച്ചതായിരിക്കുന്നു</translation>
 <translation id="4121428309786185360">ഇനിപ്പറയുന്നയന്ന് കാലഹരണപ്പെടുന്നു</translation>
 <translation id="4123572138124678573">താഴെ മൂന്ന് തവണ പഞ്ച് ചെയ്യുക</translation>
 <translation id="412601465078863288">അപ്‌ലോഡ് ചെയ്യുന്നത് ടൈംഔട്ട് ആയി</translation>
@@ -2175,6 +2178,7 @@
 <translation id="4819347708020428563">ഡിഫോൾട്ട് കാഴ്‌ചയിൽ കുറിപ്പുകൾ എഡിറ്റ് ചെയ്യണോ?</translation>
 <translation id="4822493756793346865">വെബിൽ ഉടനീളമുള്ള സ്റ്റോറുകളിലെ കഴിഞ്ഞ 90 ദിവസത്തെ നിരക്കുകൾ അടിസ്ഥാനമാക്കിയുള്ളതാണ് 'സാധാരണ നിരക്കുകൾ'.</translation>
 <translation id="4822922322149719535">പിശക് ലോഗ് അവലോകനം ചെയ്യുക</translation>
+<translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> എന്നതിന് നിങ്ങളുടെ ഉപകരണത്തിന്റെ <ph name="PERMISSION" /> എന്നതിലേക്ക് ആക്സസ് ആവശ്യമാണ്</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, പുതിയൊരു Google Sheet വേഗത്തിൽ സൃഷ്ടിക്കാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="4826588772550366629">ക്യാമറയും മൈക്രോഫോണും</translation>
 <translation id="4827283332383516812">കാർഡ് ഇല്ലാതാക്കുക</translation>
@@ -2905,6 +2909,7 @@
 <translation id="6116338172782435947">ക്ലിപ്പ്‌ബോർഡിലേക്ക് പകർത്തിയിട്ടുള്ള ടെക്‌സ്റ്റും ചിത്രങ്ങളും കാണുക</translation>
 <translation id="6117833587752089929">ഫോട്ടോ (സാറ്റിൻ)</translation>
 <translation id="6118782133429281336">ഒറിജിൻ ലിസ്റ്റ് ശൂന്യമാണ്.</translation>
+<translation id="6120950591512958208">ചെക്കൗട്ട് ചെയ്യുമ്പോൾ ഈ കോഡ് ഉപയോഗിക്കുക.</translation>
 <translation id="612178891608320683">വീഗൻ ഭക്ഷണം</translation>
 <translation id="6122181661879998141">നിങ്ങളുടെ കാർഡിന്റെ മുൻവശത്ത്</translation>
 <translation id="6124058285696691147">അറ്റാച്ച്മെന്റ് ഡൗൺലോഡ് ചെയ്യുക</translation>

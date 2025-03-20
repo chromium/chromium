@@ -450,6 +450,23 @@ chromium-metrics-reviews@google.com.
   <int value="-1652896464" label="new-tab-page"/>
 </enum>
 
+<!-- LINT.IfChange(SettingsPrivacySandboxProfileEnabledState) -->
+
+<enum name="SettingsPrivacySandboxProfileEnabledState">
+  <int value="0" label="Profile1_True"/>
+  <int value="1" label="Profile1_False"/>
+  <int value="2" label="Profile2_True"/>
+  <int value="3" label="Profile2_False"/>
+  <int value="4" label="Profile3_True"/>
+  <int value="5" label="Profile3_False"/>
+  <int value="6" label="Profile4_True"/>
+  <int value="7" label="Profile4_False"/>
+  <int value="8" label="Profile5+_True"/>
+  <int value="9" label="Profile5+_False"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/privacy_sandbox/profile_bucket_metrics.h:SettingsPrivacySandboxProfileEnabledState) -->
+
 <enum name="SettingsPrivacySandboxPromptHelperEvent">
   <int value="0" label="Helper Created"/>
   <int value="1" label="Prompt not required"/>

@@ -14,6 +14,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -21,7 +22,8 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -72,6 +74,7 @@ public class TileInteractionDelegateTest {
         }
     }
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock Tile mTile;
     @Mock SuggestionsTileView mTileView;
     @Mock SiteSuggestion mData;
@@ -92,7 +95,6 @@ public class TileInteractionDelegateTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         when(mTile.getUrl()).thenReturn(new GURL("https://example.com"));
         when(mTile.getData()).thenReturn(mData);
         when(mAndroidPrerenderManager.startPrerendering(any())).thenReturn(true);

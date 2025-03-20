@@ -55,7 +55,7 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
 
 @implementation SceneState {
   // Cache the session identifier.
-  NSString* _sceneSessionID;
+  std::string _sceneSessionID;
 
   // The AppState passed to the initializer.
   AppState* _appState;
@@ -97,7 +97,6 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
     _contentVisibility = ContentVisibility::kUnknown;
     _agents = [[NSMutableArray alloc] init];
     _propagationPolicy = policy;
-    _sceneSessionID = @"";
 
     // AppState might be nil in tests.
     if (appState) {
@@ -168,12 +167,16 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
   return self.rootViewController.view;
 }
 
+- (const std::string&)sceneSessionID {
+  return _sceneSessionID;
+}
+
 - (void)setScene:(UIWindowScene*)scene {
   _scene = scene;
   if (_scene) {
     _sceneSessionID = SessionIdentifierForScene(_scene);
   } else {
-    _sceneSessionID = @"";
+    _sceneSessionID.clear();
   }
 }
 

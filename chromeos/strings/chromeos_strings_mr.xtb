@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">ट्रान्स्क्रिप्ट लपवा</translation>
 <translation id="160633243685262989">इमेजचे पूर्वावलोकन करा</translation>
 <translation id="1611649489706141841">फॉरवर्ड करा</translation>
-<translation id="1615144046047995187">डाउनलोड करू शकत नाही. पुन्हा प्रयत्न करा किंवा तुमचे Chromebook रीस्टार्ट करा.</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> पासूनचा डेटा वापर</translation>
 <translation id="1618566998877964907">थीम वापरा</translation>
 <translation id="1621067168122174824">चार्ज चाचणी रन करा</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">ऑडिओ रेकॉर्डिंगची सूची</translation>
 <translation id="2561093647892030937">लिंबे</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> चाचणी रन होत आहे...</translation>
-<translation id="2573178735329662769">सर्व Chromebook ऑडिओ रेकॉर्ड करत आहे</translation>
 <translation id="2576253868710695442">यासाठी कमाल २GB स्टोरेज लागेल</translation>
 <translation id="2584547424703650812">ग्लोस्केप</translation>
 <translation id="2584559707064218956">सेट करण्यासाठी, सेटिंग्ज वर जा</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">निळा आणि गुलाबी</translation>
 <translation id="498186245079027698">स्कॅनर तपासा आणि पुन्हा प्रयत्न करा. स्कॅन केलेल्या फाइल सेव्ह करण्यासाठी पुरेशी स्थानिक जागा उपलब्ध असल्याची खात्री करा.</translation>
 <translation id="4982627662315910959">शॉर्टकट उपलब्ध नाही. शिफ्ट आणि आणखी १ मॉडिफायर की (कंट्रोल, ऑल्ट किंवा <ph name="META_KEY" />) वापरून नवीन शॉर्टकट प्रेस करा.</translation>
-<translation id="4983216687482551672">Chromebook ऑडिओ</translation>
 <translation id="4985509611418653372">रन</translation>
 <translation id="4987769320337599931">फायरवॉल</translation>
 <translation id="4988526792673242964">पेज</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">अपडेट करण्याची प्रक्रिया पुढे सुरू ठेवण्यासाठी, <ph name="DEVICE_NAME" /> ची USB केबल अनप्लग करून नंतर ती पुन्हा घाला</translation>
 <translation id="5099354524039520280">वर</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> कीशिवाय शॉर्टकटचा वापर केल्याने, काही अ‍ॅप्सच्या शॉर्टकटमध्ये समस्या निर्माण होऊ शकतात. हा शॉर्टकट वापरणे पुढे सुरू ठेवण्यासाठी, तो पुन्हा प्रेस करा किंवा <ph name="KEY" /> की वापरून नवीन शॉर्टकट प्रेस करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399"><ph name="LANGUAGE_NAME" /> ट्रान्स्क्रिप्शन मॉडेल डाउनलोड करू शकत नाही. पुन्हा प्रयत्न करा किंवा तुमचे Chromebook रीस्टार्ट करा.</translation>
 <translation id="5108781503443873320">समानार्थी:</translation>
-<translation id="5121677070210013200">ट्रान्स्क्रिप्शन मॉडेल डाउनलोड करू शकत नाही. पुन्हा प्रयत्न करा किंवा तुमचे Chromebook रीस्टार्ट करा.</translation>
 <translation id="5130848777448318809">पोनी</translation>
 <translation id="5137451382116112100">फुलस्क्रीन करा</translation>
 <translation id="5139813694804168398">व्यत्यय आणू नका</translation>
@@ -1089,7 +1084,6 @@
 <translation id="6122191549521593678">ऑनलाइन</translation>
 <translation id="6122277663991249694">ChromeOS इनपुट पद्धत सेवा</translation>
 <translation id="6127426868813166163">पांढरे</translation>
-<translation id="613049107179582049">Chromebook चा ऑडिओ सुरू असतो, तेव्हा Recorder या डिव्हाइसवर प्ले होणारे सर्व ऑडिओ कॅप्चर करते</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">सायबरपंक</translation>
 <translation id="6137767437444130246">वापरकर्ता सर्टिफिकेट</translation>
@@ -1419,7 +1413,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB टचस्क्रीन</translation>
 <translation id="757747079855995705">दगड</translation>
-<translation id="7584853321964440104">डाउनलोड करू शकत नाही. पुन्हा प्रयत्न करा किंवा तुमचे Chromebook रीस्टार्ट करा.</translation>
 <translation id="7590883480672980941">इनपुट सेटिंग्ज</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> शिल्लक</translation>
 <translation id="7600430297804876776">हे <ph name="DEVICE_TYPE" /> कधी वापरले जाऊ शकते ते <ph name="MANAGER" /> च्या अ‍ॅडमिनिस्ट्रेटरने सेट केले आहे.</translation>
@@ -1786,7 +1779,6 @@
 <translation id="9218016617214286986">माहीत असलेली APNs दाखवा</translation>
 <translation id="932327136139879170">होम</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">तुमचा माइक कनेक्ट केलेला असल्याची खात्री करा किंवा तुमचे Chromebook रीस्टार्ट करून पहा</translation>
 <translation id="945522503751344254">अभिप्राय पाठवा</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> साठी की उपलब्ध नाही. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">संपूर्ण रेकॉर्डिंगमधील आवाजांची तुलना करा, जेणेकरून प्रत्येक स्पीकर काय आणि केव्हा म्हणाला ते ट्रान्स्क्रिप्ट दाखवेल</translation>

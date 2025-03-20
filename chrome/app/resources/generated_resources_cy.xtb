@@ -628,6 +628,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="1430915738399379752">Argraffu</translation>
 <translation id="1431188203598586230">Diweddariad meddalwedd terfynol</translation>
 <translation id="1432581352905426595">Rheoli peiriannau chwilio</translation>
+<translation id="1432650420699700107">Gall gwefannau ofyn am gael cysylltu ag unrhyw ddyfais ar eich rhwydwaith lleol</translation>
 <translation id="1433478348197382180">Modd Darllen</translation>
 <translation id="1433980411933182122">Cychwyn</translation>
 <translation id="1434696352799406980">Bydd hyn yn ailosod eich tudalen gychwyn, tudalen tab newydd, peiriant chwilio, a thabiau sydd wedi'u pinio. Bydd hefyd yn analluogi'r holl estyniadau ac yn clirio data dros dro megis cwcis. Ni fydd eich nodau tudalen, eich hanes na'ch cyfrineiriau sydd wedi'u cadw yn cael eu clirio.</translation>
@@ -1348,6 +1349,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1918127774159128277">Adnewyddu Galluoedd WiFi Uniongyrchol</translation>
 <translation id="1918141783557917887">&amp;Llai</translation>
 <translation id="1918281588461452432">Wrth i chi bori gwefannau, mae cynnwys eu tudalen yn cael ei amgryptio a'i gadw i'ch dyfais</translation>
+<translation id="1919096511823372013">Mewnosod dolenni, emojis, a rhagor. Gallwch hefyd gael help i ysgrifennu a chreu lluniau gyda Google AI.</translation>
 <translation id="1919872106782726755">I osod olion bysedd, gofynnwch i'ch plentyn gyffwrdd â'r synhwyrydd olion bysedd ar gornel dde uchaf y bysellfwrdd, wrth ymyl y botwm Pŵer. Mae data olion bysedd eich plentyn yn cael eu storio'n ddiogel a byth yn gadael y <ph name="DEVICE_TYPE" /> hwn.</translation>
 <translation id="192015196730532810">Gallwch greu eich grŵp tab eich hun.</translation>
 <translation id="1920314570001095522">Nid oes unrhyw dabiau tebyg i'w trefnu, ond efallai y byddwch yn hoffi'r grwpiau hyn</translation>
@@ -1894,6 +1896,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300332192655962933">Nid oedd y ffeil ar gael ar y wefan</translation>
 <translation id="2300383962156589922">Personoleiddio a rheoli <ph name="APP_NAME" /></translation>
+<translation id="2301064673700597535">Datganiadau Tystysgrif Cymwys</translation>
 <translation id="2301382460326681002">Mae cyfeiriadur gwraidd yr estyniad yn annilys.</translation>
 <translation id="2301402091755573488">Tab wedi'i Rannu</translation>
 <translation id="2302342861452486996"><ph name="BEGIN_H3" />Nodweddion dadfygio<ph name="END_H3" />
@@ -4840,6 +4843,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4364830672918311045">Dangos hysbysiadau</translation>
 <translation id="4367971618859387374">Enw arddangos</translation>
 <translation id="4368960422722232719">Dangos defnydd cof ar gerdyn rhagolwg hofran tab</translation>
+<translation id="4369151461324628035">Peidiwch â chaniatáu i wefannau gysylltu ag unrhyw ddyfais ar eich rhwydwaith lleol</translation>
 <translation id="4369215744064167350">Cais am fynediad at wefan wedi'i gymeradwyo</translation>
 <translation id="4369233657762989723">Arddweud ymlaen/wedi'i ddiffodd</translation>
 <translation id="436926121798828366">Gallwch newid hyn unrhyw bryd yn <ph name="SETTINGS_LINK" /></translation>
@@ -5393,6 +5397,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="4772914216048388646">Trefnus</translation>
 <translation id="4773112038801431077">Uwchraddio Linux</translation>
 <translation id="4773122030389014189">Rhannu grŵp tabiau "<ph name="GROUP_NAME" />"</translation>
+<translation id="4773253008034797668">Caniateir i chi gysylltu ag unrhyw ddyfais ar eich rhwydwaith lleol</translation>
 <translation id="477548766361111120">Caniatáu i estyniad ddarllen a newid y wefan hon</translation>
 <translation id="4776311127346151860">Mae <ph name="DEVICE_NAME" /> wedi'i gysylltu</translation>
 <translation id="4776594120007763294">I ychwanegu tudalen i'w darllen yn nes ymlaen, cliciwch y botwm</translation>
@@ -7857,6 +7862,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="6563002009564846727">Gweld tystysgrifau a fewnforiwyd o Windows</translation>
 <translation id="6563055593659435495">Methu â chynnal cysylltiad â'ch ffôn. Sicrhewch fod eich ffôn gerllaw, wedi'i ddatgloi a bod Bluetooth a Wi-FI wedi'u troi ymlaen.</translation>
 <translation id="6564860838537532172">Pan fyddwch yn chwilio hanes pori, bydd eich chwiliadau hanes, cynnwys tudalennau'r gemau gorau, ac allbynnau model a gynhyrchir yn cael eu hanfon at Google a gall adolygwyr dynol eu gweld i wella'r nodwedd hon.</translation>
+<translation id="6565144332292237355">Gall gwefannau ddefnyddio'r nodwedd hon i chwilio am a chysylltu ag unrhyw ddyfais ar eich rhwydwaith lleol</translation>
 <translation id="6569931898053264308">Arbedion Canolig</translation>
 <translation id="6570622975915850879">Defnyddio dyfais wahanol</translation>
 <translation id="65711204837946324">Mae angen caniatâd i lawrlwytho</translation>
@@ -8993,6 +8999,7 @@ es pori a dod o hyd i wefannau y gwnaethoch ymweld â nhw. Gallwch hefyd ofyn cw
 <translation id="7377451353532943397">Parhau i rwystro mynediad synhwyrydd</translation>
 <translation id="7377481913241237033">Cysylltu gyda chod</translation>
 <translation id="73786666777299047">Agor Chrome Web Store</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Tasg arall yn yr un grŵp tasgau: <ph name="OTHER_TASKS" />}two{<ph name="TASK_ROW" />. # dasg arall yn yr un grŵp tasgau: <ph name="OTHER_TASKS" />}few{<ph name="TASK_ROW" />. # tasg arall yn yr un grŵp tasgau: <ph name="OTHER_TASKS" />}many{<ph name="TASK_ROW" />. # thasg arall yn yr un grŵp tasgau: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. # tasg arall yn yr un grŵp tasgau: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380272457268061606">Analluogi adfer data lleol?</translation>
 <translation id="7380459290951585794">Gwnewch yn siŵr bod eich ffôn gerllaw, wedi'i ddatgloi, a bod Bluetooth a Wi-Fi wedi'u troi ymlaen</translation>
 <translation id="7380622428988553498">Mae enw'r ddyfais yn cynnwys nodau annilys</translation>
@@ -11581,6 +11588,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
       <ph name="LIST_ITEM" />Rhedeg Diagnosteg Cysylltedd Chrome
     <ph name="END_LIST" /></translation>
 <translation id="9161172953291434881">Ydych chi'n ymddiried yn y wefan hon gyda'ch data?</translation>
+<translation id="9164418710391288146">Ni chaniateir cysylltu ag unrhyw ddyfais ar eich rhwydwaith lleol</translation>
 <translation id="9165856803582999927">Sganiwch y cod QR hwn gyda'r camera ar y ddyfais lle rydych chi am greu ac arbed eich cyfrinair ar gyfer <ph name="APP_NAME" /></translation>
 <translation id="916607977885256133">Llun mewn Llun</translation>
 <translation id="9166253503936244008">Sganiwch y cod QR hwn gyda'r ddyfais sydd â'r cod pas rydych am ei ddefnyddio ar gyfer <ph name="APP_NAME" /></translation>

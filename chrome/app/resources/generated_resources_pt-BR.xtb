@@ -625,6 +625,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1431188203598586230">Atualização de software final</translation>
 <translation id="1432581352905426595">Gerenciar mecanismos de pesquisa</translation>
+<translation id="1432650420699700107">Os sites podem pedir para se conectar a qualquer dispositivo na sua rede local</translation>
 <translation id="1433478348197382180">Modo de leitura</translation>
 <translation id="1433980411933182122">Inicialização</translation>
 <translation id="1434696352799406980">Esta função irá redefinir sua página de inicialização, a página "Nova guia", o mecanismo de pesquisa e as guias fixadas. Além disso, desativará todas as extensões e limpará dados temporários, como cookies. Seus favoritos, histórico e senhas salvas não serão limpos.</translation>
@@ -4839,6 +4840,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4364830672918311045">Exibir notificações</translation>
 <translation id="4367971618859387374">Nome de exibição</translation>
 <translation id="4368960422722232719">Mostrar o uso da memória no card de visualização ao passar cursor sobre a guia</translation>
+<translation id="4369151461324628035">Não permitir que os sites se conectem aos dispositivos na sua rede local</translation>
 <translation id="4369215744064167350">A solicitação de acesso ao site foi aprovada</translation>
 <translation id="4369233657762989723">Ditado ativado/desativado</translation>
 <translation id="436926121798828366">Você pode mudar essa opção quando quiser nas <ph name="SETTINGS_LINK" /></translation>
@@ -5392,6 +5394,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4772914216048388646">Organizado</translation>
 <translation id="4773112038801431077">Fazer upgrade do Linux</translation>
 <translation id="4773122030389014189">Compartilhar o grupo de guias "<ph name="GROUP_NAME" />"</translation>
+<translation id="4773253008034797668">Podem se conectar a qualquer dispositivo na sua rede local</translation>
 <translation id="477548766361111120">Permitir que a extensão leia e modifique este site</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> conectado</translation>
 <translation id="4776594120007763294">Para adicionar uma página à lista, clique no botão</translation>
@@ -7857,6 +7860,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6563002009564846727">Ver certificados importados do Windows</translation>
 <translation id="6563055593659435495">Não é possível manter uma conexão com o smartphone. Confira se o smartphone está por perto, desbloqueado e com o Bluetooth e o Wi-Fi ativados.</translation>
 <translation id="6564860838537532172">Quando você pesquisa no histórico de navegação, as pesquisas do histórico, o conteúdo da página das melhores correspondências e as saídas do modelo geradas são enviados ao Google e podem ser vistos por revisores humanos para melhorar esse recurso.</translation>
+<translation id="6565144332292237355">Os sites podem usar esse recurso para buscar e se conectar a qualquer dispositivo na sua rede local</translation>
 <translation id="6569931898053264308">Economia média</translation>
 <translation id="6570622975915850879">Usar um dispositivo diferente</translation>
 <translation id="65711204837946324">É preciso ter permissão para fazer o download</translation>
@@ -11574,6 +11578,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
       <ph name="LIST_ITEM" />Execute o Chrome Connectivity Diagnostics.
     <ph name="END_LIST" /></translation>
 <translation id="9161172953291434881">Você confia seus dados a este site?</translation>
+<translation id="9164418710391288146">Não podem se conectar a nenhum dispositivo na sua rede local</translation>
 <translation id="9165856803582999927">Faça a leitura deste QR code com a câmera no dispositivo em que você quer criar e salvar sua chave de acesso para o app <ph name="APP_NAME" /></translation>
 <translation id="916607977885256133">Picture-in-picture</translation>
 <translation id="9166253503936244008">Leia este QR code com o dispositivo que tem a senha de acesso que você quer usar para o app <ph name="APP_NAME" /></translation>

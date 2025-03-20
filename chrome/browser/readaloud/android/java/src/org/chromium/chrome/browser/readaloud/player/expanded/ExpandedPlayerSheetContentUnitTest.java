@@ -24,10 +24,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -45,6 +47,7 @@ import java.util.Locale;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ExpandedPlayerSheetContentUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private InteractionHandler mInteractionHandler;
     @Mock private PropertyModel mModel;
@@ -70,7 +73,6 @@ public class ExpandedPlayerSheetContentUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mContext = ApplicationProvider.getApplicationContext();
         mPlayDrawable = mContext.getDrawable(R.drawable.play_button);
         mPauseDrawable = mContext.getDrawable(R.drawable.pause_button);

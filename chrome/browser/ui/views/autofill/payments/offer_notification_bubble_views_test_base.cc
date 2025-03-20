@@ -216,7 +216,7 @@ OfferNotificationBubbleViewsTestBase::GetOfferNotificationBubbleViews() {
 IconLabelBubbleView*
 OfferNotificationBubbleViewsTestBase::GetOfferNotificationPageActionView() {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  if (base::FeatureList::IsEnabled(::features::kPageActionsMigration)) {
+  if (IsPageActionMigrated(PageActionIconType::kPaymentsOfferNotification)) {
     return browser_view->toolbar_button_provider()->GetPageActionView(
         kActionOffersAndRewardsForPage);
   }

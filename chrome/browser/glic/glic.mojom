@@ -193,6 +193,7 @@ struct WebClientInitialState {
   // Whether the panel is active. See `NotifyPanelActiveChange`.
   bool panel_is_active;
   WebClientSizingMode sizing_mode;
+  bool browser_is_open;
 };
 
 // Options for getting tab context.
@@ -571,6 +572,9 @@ interface WebClient {
 
   // The OS Hotkey has changed.
   NotifyOsHotkeyStateChanged(string hotkey);
+
+  // True if the browser has at least one open window.
+  NotifyBrowserIsOpenChanged(bool browser_is_open);
 };
 
 // Information extracted from a tab.

@@ -205,12 +205,12 @@ component("services") {
 
   if ((is_chromeos || is_linux) && (use_vaapi || use_v4l2_codec)) {
     sources += [
-      "stable_video_decoder_factory_process_service.cc",
-      "stable_video_decoder_factory_process_service.h",
-      "stable_video_decoder_factory_service.cc",
-      "stable_video_decoder_factory_service.h",
-      "stable_video_decoder_service.cc",
-      "stable_video_decoder_service.h",
+      "oop_video_decoder_factory_process_service.cc",
+      "oop_video_decoder_factory_process_service.h",
+      "oop_video_decoder_factory_service.cc",
+      "oop_video_decoder_factory_service.h",
+      "oop_video_decoder_service.cc",
+      "oop_video_decoder_service.h",
     ]
 
     public_deps += [ "//media/mojo/mojom" ]

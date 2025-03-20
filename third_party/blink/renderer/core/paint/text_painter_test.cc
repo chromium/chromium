@@ -137,8 +137,8 @@ TEST_F(TextPainterTest,
       CSSPropertyID::kWebkitTextStrokeColor, CSSValueID::kLime);
   GetDocument().body()->SetInlineStyleProperty(
       CSSPropertyID::kTextEmphasisColor, CSSValueID::kBlue);
-  GetDocument().body()->SetInlineStyleProperty(
-      CSSPropertyID::kWebkitPrintColorAdjust, CSSValueID::kEconomy);
+  GetDocument().body()->SetInlineStyleProperty(CSSPropertyID::kPrintColorAdjust,
+                                               CSSValueID::kEconomy);
   GetDocument().GetSettings()->SetShouldPrintBackgrounds(false);
   gfx::SizeF page_size(500, 800);
   GetFrame().StartPrinting(WebPrintParams(page_size));
@@ -164,8 +164,8 @@ TEST_F(TextPainterTest, TextPaintingStyle_ForceBackgroundToWhite_Darkened) {
       CSSPropertyID::kWebkitTextStrokeColor, "rgb(220, 255, 220)");
   GetDocument().body()->SetInlineStyleProperty(
       CSSPropertyID::kTextEmphasisColor, "rgb(220, 220, 255)");
-  GetDocument().body()->SetInlineStyleProperty(
-      CSSPropertyID::kWebkitPrintColorAdjust, CSSValueID::kEconomy);
+  GetDocument().body()->SetInlineStyleProperty(CSSPropertyID::kPrintColorAdjust,
+                                               CSSValueID::kEconomy);
   GetDocument().GetSettings()->SetShouldPrintBackgrounds(false);
   gfx::SizeF page_size(500, 800);
   GetFrame().StartPrinting(WebPrintParams(page_size));

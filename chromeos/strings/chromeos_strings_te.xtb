@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">టైప్ చేసిన మాటల ఫైల్‌ను దాచండి</translation>
 <translation id="160633243685262989">ఇమేజ్ ప్రివ్యూను చూడండి</translation>
 <translation id="1611649489706141841">ముందుకు</translation>
-<translation id="1615144046047995187">డౌన్‌లోడ్ చేయడం సాధ్యపడలేదు. మళ్లీ ట్రై చేయండి లేదా మీ Chromebookను రీస్టార్ట్ చేయండి.</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> నుండి డేటా వినియోగం</translation>
 <translation id="1618566998877964907">ఒక థీమ్‌ను ఉపయోగించండి</translation>
 <translation id="1621067168122174824">ఛార్జ్ పరీక్షను రన్ చేయండి</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">ఆడియో రికార్డింగ్‌లకు సంబంధించిన లిస్ట్</translation>
 <translation id="2561093647892030937">నిమ్మకాయలు</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> పరీక్షను రన్ చేస్తోంది...</translation>
-<translation id="2573178735329662769">Chromebook ఆడియో మొత్తం రికార్డ్ అవుతుంది</translation>
 <translation id="2576253868710695442">దీనికి గరిష్టంగా 2GB స్టోరేజ్ పడుతుంది</translation>
 <translation id="2584547424703650812">గ్లోస్కేప్స్</translation>
 <translation id="2584559707064218956">సెటప్ చేయడానికి, సెట్టింగ్‌లకు వెళ్లండి</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">నీలం రంగు, గులాబీ రంగు</translation>
 <translation id="498186245079027698">స్కానర్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి. స్కాన్ చేయబడిన ఫైల్స్‌ను సేవ్ చేయడానికి తగినంత స్థానిక స్పేస్ ఉందని నిర్దారించుకోండి.</translation>
 <translation id="4982627662315910959">షార్ట్‌కట్ అందుబాటులో లేదు. shift, ఇంకో 1 మోడిఫయర్ కీని (ctrl, alt, లేదా <ph name="META_KEY" />) ఉపయోగించి కొత్త షార్ట్‌కట్‌ను నొక్కండి.</translation>
-<translation id="4983216687482551672">Chromebook ఆడియో</translation>
 <translation id="4985509611418653372">రన్ చేయి</translation>
 <translation id="4987769320337599931">ఫైర్‌వాల్</translation>
 <translation id="4988526792673242964">పేజీలు</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">అప్‌డేట్ ప్రాసెస్‌ను కొనసాగించడానికి, <ph name="DEVICE_NAME" /> USB కేబుల్‌ను అన్‌ప్లగ్ చేసి, దాన్ని మళ్లీ ఇన్‌సర్ట్ చేయండి</translation>
 <translation id="5099354524039520280">పైకి</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> కీ లేని షార్ట్‌కట్ కొన్ని యాప్ షార్ట్‌కట్‌కు విరుద్ధంగా ఉండవచ్చు. దీన్ని ఉపయోగించడం కొనసాగించడానికి ఈ షార్ట్‌కట్‌ను మళ్లీ నొక్కండి లేదా <ph name="KEY" /> కీని ఉపయోగించి కొత్త షార్ట్‌కట్‌ను నొక్కండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399"><ph name="LANGUAGE_NAME" />లో మాటల టైపింగ్ మోడల్‌ను డౌన్‌లోడ్ చేయడం సాధ్యం కాదు. మళ్లీ ట్రై చేయండి లేదా మీ Chromebookను రీస్టార్ట్ చేయండి</translation>
 <translation id="5108781503443873320">పోలినవి:</translation>
-<translation id="5121677070210013200">మాటల టైపింగ్ మోడల్‌ను డౌన్‌లోడ్ చేయడం సాధ్యం కాదు. మళ్లీ ట్రై చేయండి లేదా మీ Chromebookను రీస్టార్ట్ చేయండి.</translation>
 <translation id="5130848777448318809">గుఱ్ఱం పిల్లలు</translation>
 <translation id="5137451382116112100">పూర్తిగా</translation>
 <translation id="5139813694804168398">అంతరాయం కలిగించవద్దు</translation>
@@ -1033,6 +1028,7 @@
 <translation id="5896602941605730551">ప్లే చేయండి</translation>
 <translation id="5901630391730855834">పసుపు</translation>
 <translation id="5903200662178656908">పరికరం అనేది కీబోర్డ్, మౌస్ కలయిక.</translation>
+<translation id="5903822368221507416">ట్యాబ్‌లను దాచండి</translation>
 <translation id="5904994456462260490">కొత్త APNని జోడించండి</translation>
 <translation id="590746845088109442">పిల్లులు</translation>
 <translation id="5907649332524363701">కీ రంగు</translation>
@@ -1088,7 +1084,6 @@
 <translation id="6122191549521593678">ఆన్‌లైన్</translation>
 <translation id="6122277663991249694">ChromeOS ఇన్‌పుట్ విధాన సర్వీస్</translation>
 <translation id="6127426868813166163">తెలుపు రంగు</translation>
-<translation id="613049107179582049">Chromebook ఆడియో ఆన్‌లో ఉన్నప్పుడు, ఈ పరికరంలో ప్లే అవుతున్న ఆడియో మొత్తాన్ని రికార్డర్ క్యాప్చర్ చేస్తుంది</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">సైబర్‌పంక్</translation>
 <translation id="6137767437444130246">యూజర్ సర్టిఫికెట్</translation>
@@ -1418,7 +1413,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB టచ్‌స్క్రీన్</translation>
 <translation id="757747079855995705">రాయి</translation>
-<translation id="7584853321964440104">డౌన్‌లోడ్ చేయడం సాధ్యపడలేదు. మళ్లీ ట్రై చేయండి లేదా మీ Chromebookను రీస్టార్ట్ చేయండి.</translation>
 <translation id="7590883480672980941">ఇన్‌పుట్ సెట్టింగ్‌లు</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> మిగిలి ఉంది</translation>
 <translation id="7600430297804876776">ఈ <ph name="DEVICE_TYPE" />‌ను ఎప్పుడు ఉపయోగించవచ్చో <ph name="MANAGER" /> అడ్మినిస్ట్రేటర్ సెట్ చేశారు.</translation>
@@ -1785,7 +1779,6 @@
 <translation id="9218016617214286986">తరచుగా ఉపయోగించే APNలను చూపండి</translation>
 <translation id="932327136139879170">హోమ్</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">మీ మైక్ కనెక్ట్ అయి ఉందని నిర్ధారించుకోండి లేదా మీ Chromebookను రీస్టార్ట్ చేయడానికి ట్రై చేయండి</translation>
 <translation id="945522503751344254">ఫీడ్‌బ్యాక్ పంపండి</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> కోసం కీ ఏదీ నొక్కబడలేదు. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">రికార్డింగ్ అంతటా వాయిస్‌లను సరిపోల్చండి, తద్వారా టైప్ చేసిన మాటల ఫైల్ ప్రతి వాయిస్ ఏమి చెప్పింది, ఎప్పుడు చెప్పింది అనే విషయాన్ని ప్రతిబింబిస్తుంది</translation>

@@ -105,7 +105,8 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
                             getContentContainer(),
                             mCompositorViewHolderSupplier,
                             mContentView,
-                            mToolbarManager);
+                            mToolbarManager,
+                            getBrowserControlsManager());
         } else {
             mSimpleAnimationLayout =
                     new SimpleAnimationLayout(context, this, renderHost, getContentContainer());

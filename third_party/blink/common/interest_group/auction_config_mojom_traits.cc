@@ -213,6 +213,7 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
   if (!data.ReadInterestGroupBuyers(&out->interest_group_buyers) ||
       !data.ReadAuctionSignals(&out->auction_signals) ||
       !data.ReadSellerSignals(&out->seller_signals) ||
+      !data.ReadSellerTkvSignals(&out->seller_tkv_signals) ||
       !data.ReadSellerTimeout(&out->seller_timeout) ||
       !data.ReadPerBuyerSignals(&out->per_buyer_signals) ||
       !data.ReadPerBuyerTkvSignals(&out->per_buyer_tkv_signals) ||

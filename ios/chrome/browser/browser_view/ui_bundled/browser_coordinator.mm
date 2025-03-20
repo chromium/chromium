@@ -1697,8 +1697,7 @@ enum class ToolbarKind {
 - (void)contextualPanelEntrypointIPHDidDismissWithConfig:
             (base::WeakPtr<ContextualPanelItemConfiguration>)config
                                          dismissalReason:
-                                             (IPHDismissalReasonType)
-                                                 IPHDismissalReasonType {
+                                             (IPHDismissalReasonType)reason {
   ContextualPanelItemConfiguration* config_ptr = config.get();
   if (!config_ptr) {
     return;
@@ -1718,17 +1717,16 @@ enum class ToolbarKind {
   engagementTracker->Dismissed(*config_ptr->iph_feature);
   _contextualPanelEntrypointHelpPresenter = nil;
 
-  if (IPHDismissalReasonType == IPHDismissalReasonType::kTappedAnchorView ||
-      IPHDismissalReasonType == IPHDismissalReasonType::kTappedIPH) {
+  if (reason == IPHDismissalReasonType::kTappedAnchorView ||
+      reason == IPHDismissalReasonType::kTappedIPH) {
     [self openContextualSheet];
     [self recordContextualPanelEntrypointIPHDismissed:
               ContextualPanelIPHDismissedReason::UserInteracted];
     return;
   }
 
-  if (IPHDismissalReasonType ==
-          IPHDismissalReasonType::kTappedOutsideIPHAndAnchorView ||
-      IPHDismissalReasonType == IPHDismissalReasonType::kTappedClose) {
+  if (reason == IPHDismissalReasonType::kTappedOutsideIPHAndAnchorView ||
+      reason == IPHDismissalReasonType::kTappedClose) {
     engagementTracker->NotifyEvent(
         config_ptr->iph_entrypoint_explicitly_dismissed);
     [self recordContextualPanelEntrypointIPHDismissed:
@@ -1736,7 +1734,7 @@ enum class ToolbarKind {
     return;
   }
 
-  if (IPHDismissalReasonType == IPHDismissalReasonType::kTimedOut) {
+  if (reason == IPHDismissalReasonType::kTimedOut) {
     [self recordContextualPanelEntrypointIPHDismissed:
               ContextualPanelIPHDismissedReason::TimedOut];
     return;
@@ -2357,11 +2355,9 @@ enum class ToolbarKind {
   base::WeakPtr<ContextualPanelItemConfiguration> config_weak_ptr =
       config_ref.weak_ptr_factory.GetWeakPtr();
   CallbackWithIPHDismissalReasonType dismissalCallback = ^(
-      IPHDismissalReasonType IPHDismissalReasonType,
-      feature_engagement::Tracker::SnoozeAction snoozeAction) {
+      IPHDismissalReasonType reason) {
     [weakSelf contextualPanelEntrypointIPHDidDismissWithConfig:config_weak_ptr
-                                               dismissalReason:
-                                                   IPHDismissalReasonType];
+                                               dismissalReason:reason];
   };
 
   _contextualPanelEntrypointHelpPresenter =

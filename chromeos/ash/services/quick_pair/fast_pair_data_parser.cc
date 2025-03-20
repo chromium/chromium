@@ -14,6 +14,7 @@
 #include <optional>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_decoder.h"
 #include "base/base64.h"
 #include "base/containers/circular_deque.h"
@@ -157,10 +158,16 @@ FastPairDataParser::~FastPairDataParser() = default;
 void FastPairDataParser::GetHexModelIdFromServiceData(
     const std::vector<uint8_t>& service_data,
     GetHexModelIdFromServiceDataCallback callback) {
-  std::move(callback).Run(
-      fast_pair_decoder::HasModelId(&service_data)
-          ? fast_pair_decoder::GetHexModelIdFromServiceData(&service_data)
-          : std::nullopt);
+  // TODO(399163998): Clean up logic post-feature launch.
+  if (features::IsFastPairAdvertisingFormat2025Enabled()) {
+    std::move(callback).Run(
+        fast_pair_decoder::GetHexModelIdFromServiceData(&service_data));
+  } else {
+    std::move(callback).Run(
+        fast_pair_decoder::HasModelId(&service_data)
+            ? fast_pair_decoder::GetHexModelIdFromServiceData(&service_data)
+            : std::nullopt);
+  }
 }
 
 void FastPairDataParser::ParseDecryptedResponse(

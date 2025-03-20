@@ -11,9 +11,11 @@ import android.view.View.MeasureSpec;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -27,6 +29,7 @@ public class SimpleHorizontalLayoutViewTest {
     private static final int SMALL_VIEW_WIDTH = 50;
     private static final int LARGE_VIEW_WIDTH = 120;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private SimpleHorizontalLayoutViewForTest mView;
     private Activity mActivity;
 
@@ -65,8 +68,6 @@ public class SimpleHorizontalLayoutViewTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mView = new SimpleHorizontalLayoutViewForTest(mActivity);
 

@@ -38,7 +38,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.Supplier;
@@ -69,6 +70,8 @@ public class GoogleBottomBarViewCreatorTest {
     private static final Map<Integer, Integer> BUTTON_ID_TO_CUSTOM_BUTTON_ID_MAP =
             Map.of(SAVE, 100, SHARE, 101, PIH_BASIC, 103, CUSTOM, 105, SEARCH, 106, HOME, 107);
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
@@ -89,8 +92,6 @@ public class GoogleBottomBarViewCreatorTest {
     @Before
     public void setup() {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
-        MockitoAnnotations.initMocks(this);
-
         mConfigCreator = new BottomBarConfigCreator(mActivity);
 
         when(mTabSupplier.get()).thenReturn(mTab);

@@ -24,10 +24,12 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
@@ -48,6 +50,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
         manifest = Config.NONE,
         shadows = {ShadowOmniboxResourceProvider.class})
 public class UrlBarViewBinderUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock Callback<Boolean> mFocusChangeCallback;
 
     private Activity mActivity;
@@ -72,7 +75,6 @@ public class UrlBarViewBinderUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
 
         mModel = new PropertyModel(UrlBarProperties.ALL_KEYS);

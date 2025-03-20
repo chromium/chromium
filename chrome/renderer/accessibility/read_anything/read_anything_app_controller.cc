@@ -606,8 +606,8 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
 }
 
 void ReadAnythingAppController::RecordNumSelections() {
-  ukm::builders::Accessibility_ReadAnything_EmptyState(model_.UkmSourceId())
-      .SetTotalNumSelections(model_.NumSelections())
+  ukm::builders::Accessibility_ReadAnything_EmptyState(model_.GetUkmSourceId())
+      .SetTotalNumSelections(model_.GetNumSelections())
       .Record(ukm_recorder_.get());
   model_.SetNumSelections(0);
 }
@@ -670,7 +670,7 @@ void ReadAnythingAppController::Distill(bool for_training_data) {
   }
   CHECK(serializer.SerializeChanges(tree->root(), &snapshot));
   model_.set_distillation_in_progress(true);
-  distiller_->Distill(*tree, snapshot, model_.UkmSourceId());
+  distiller_->Distill(*tree, snapshot, model_.GetUkmSourceId());
 }
 
 void ReadAnythingAppController::OnAXTreeDistilled(
@@ -1459,7 +1459,6 @@ const std::string& ReadAnythingAppController::GetDefaultLanguageCodeForSpeech()
 void ReadAnythingAppController::OnConnected() {
   // This needs to be logged here in the controller so we can base it off of the
   // controller's constructor time.
-  web_ui_connected_time_ms_ = base::TimeTicks::Now();
   base::UmaHistogramLongTimes(
       "Accessibility.ReadAnything.TimeFromEntryTriggeredToWebUIConnected",
       base::TimeTicks::Now() - renderer_load_triggered_time_ms_);
@@ -1497,12 +1496,12 @@ void ReadAnythingAppController::OnFontSizeReset() {
 }
 
 void ReadAnythingAppController::OnLinksEnabledToggled() {
-  model_.ToggleLinksEnabled();
+  model_.set_links_enabled(!model_.links_enabled());
   page_handler_->OnLinksEnabledChanged(model_.links_enabled());
 }
 
 void ReadAnythingAppController::OnImagesEnabledToggled() {
-  model_.ToggleImagesEnabled();
+  model_.set_images_enabled(!model_.images_enabled());
   page_handler_->OnImagesEnabledChanged(model_.images_enabled());
 }
 
@@ -1768,14 +1767,6 @@ void ReadAnythingAppController::SetContentForTesting(
 }
 
 void ReadAnythingAppController::ShouldShowUI() {
-  // These need to be logged here in the controller so we can base them off of
-  // the controller's constructor time.
-  base::UmaHistogramLongTimes(
-      "Accessibility.ReadAnything.TimeFromEntryTriggeredToContentLoaded",
-      base::TimeTicks::Now() - renderer_load_triggered_time_ms_);
-  base::UmaHistogramLongTimes(
-      "Accessibility.ReadAnything.TimeFromWebUIConnectToContentLoaded",
-      base::TimeTicks::Now() - web_ui_connected_time_ms_);
   page_handler_factory_->ShouldShowUI();
 }
 

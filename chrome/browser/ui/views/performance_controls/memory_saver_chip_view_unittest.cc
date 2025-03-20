@@ -59,8 +59,10 @@ class MemorySaverChipViewTest
   MemorySaverChipViewTest()
       : MemorySaverUnitTestMixin(
             base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitWithFeatureState(features::kPageActionsMigration,
-                                              IsMigrationEnabled());
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kPageActionsMigration,
+        {{features::kPageActionsMigrationMemorySaver.name,
+          IsMigrationEnabled() ? "true" : "false"}});
   }
 
   void SetUp() override {

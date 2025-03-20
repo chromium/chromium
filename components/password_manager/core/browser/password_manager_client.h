@@ -541,15 +541,6 @@ class PasswordManagerClient {
   // Refreshes password manager settings stored in prefs.
   virtual void RefreshPasswordManagerSettingsIfNeeded() const;
 
-  // Display username/password options to the user in the "ambient" sign-in
-  // bubble, which can also display other credential types for sign-in.
-  // If the user selects a password from the bubble, `callback` is invoked with
-  // the selected `PasswordForm`.
-  virtual void ShowCredentialsInAmbientBubble(
-      std::vector<std::unique_ptr<password_manager::PasswordForm>> forms,
-      int credential_type_flags,
-      CredentialsCallback callback);
-
   virtual void TriggerSignIn(signin_metrics::AccessPoint access_point) const;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \

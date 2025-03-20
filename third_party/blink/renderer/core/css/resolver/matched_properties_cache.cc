@@ -257,7 +257,7 @@ bool MatchedPropertiesCache::IsStyleCacheable(
   if (builder.TextAutosizingMultiplier() != 1) {
     return false;
   }
-  if (builder.HasContainerRelativeUnits()) {
+  if (builder.HasContainerRelativeValue()) {
     return false;
   }
   if (builder.HasAnchorFunctions()) {

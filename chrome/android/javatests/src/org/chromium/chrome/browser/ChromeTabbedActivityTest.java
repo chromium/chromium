@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser;
 
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
 import android.content.Intent;
@@ -21,7 +22,6 @@ import com.google.common.collect.Lists;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,11 +34,11 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.util.ApplicationTestUtils;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -61,7 +61,6 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
@@ -76,23 +75,12 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 /** Instrumentation tests for ChromeTabbedActivity. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(Batch.PER_CLASS)
+@DoNotBatch(reason = "Testing state in static singletons from multiple activities.")
 public class ChromeTabbedActivityTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
-    @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
-
     private static final Token TAB_GROUP_ID = new Token(2L, 2L);
     private static final String TAB_GROUP_TITLE = "Regrouped tabs";
     private static final int ROOT_ID = 1;
@@ -102,16 +90,22 @@ public class ChromeTabbedActivityTest {
                             Map.entry(1, "https://www.amazon.com/"),
                             Map.entry(2, "https://www.youtube.com/"),
                             Map.entry(3, "https://www.facebook.com/")));
-
-    @Mock private TabGroupSyncService mTabGroupSyncService;
-
     private static final String FILE_PATH = "/chrome/test/data/android/test.html";
 
+    @Rule
+    public final ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private TabGroupSyncService mTabGroupSyncService;
     private ChromeTabbedActivity mActivity;
 
     @Before
     public void setUp() {
+        sActivityTestRule.startMainActivityOnBlankPage();
         mActivity = sActivityTestRule.getActivity();
+        assertNotNull(mActivity);
     }
 
     /**
@@ -410,8 +404,7 @@ public class ChromeTabbedActivityTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
-    @EnableFeatures(ChromeFeatureList.TAB_WINDOW_MANAGER_INDEX_REASSIGNMENT_ACTIVITY_FINISHING)
-    public void testHandleMismatchedIndices_ActivityFinishing() throws ExecutionException {
+    public void testHandleMismatchedIndices_ActivityFinishing() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectAnyRecordTimes(
@@ -446,8 +439,7 @@ public class ChromeTabbedActivityTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
-    @EnableFeatures(ChromeFeatureList.TAB_WINDOW_MANAGER_INDEX_REASSIGNMENT_ACTIVITY_IN_SAME_TASK)
-    public void testHandleMismatchedIndices_ActivityInSameTask() throws ExecutionException {
+    public void testHandleMismatchedIndices_ActivityInSameTask() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectAnyRecordTimes(
@@ -484,9 +476,7 @@ public class ChromeTabbedActivityTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
-    @EnableFeatures(
-            ChromeFeatureList.TAB_WINDOW_MANAGER_INDEX_REASSIGNMENT_ACTIVITY_NOT_IN_APP_TASKS)
-    public void testHandleMismatchedIndices_ActivityNotInAppTasks() throws ExecutionException {
+    public void testHandleMismatchedIndices_ActivityNotInAppTasks() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectAnyRecordTimes(
@@ -580,7 +570,6 @@ public class ChromeTabbedActivityTest {
     @Test
     @MediumTest
     public void testBackShouldCloseTab_Collaboration() {
-
         sActivityTestRule.getTestServer(); // Triggers the lazy initialization of the test server.
         Tab tab =
                 ThreadUtils.runOnUiThreadBlocking(

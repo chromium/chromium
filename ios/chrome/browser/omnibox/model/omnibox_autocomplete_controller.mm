@@ -255,7 +255,7 @@ using base::UserMetricsAction;
               didInvalidatePedals:(NSArray<id<AutocompleteSuggestionGroup>>*)
                                       nonPedalSuggestionsGroups {
   [self.delegate omniboxAutocompleteController:self
-                           didInvalidatePedals:nonPedalSuggestionsGroups];
+                    didUpdateSuggestionsGroups:nonPedalSuggestionsGroups];
 }
 
 #pragma mark - Private

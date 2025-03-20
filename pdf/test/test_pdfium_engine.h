@@ -98,6 +98,8 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   MOCK_METHOD(void, SetGrayscale, (bool), (override));
 
+  MOCK_METHOD(bool, IsPDFDocTagged, (), (const override));
+
   uint32_t GetLoadedByteSize() override;
 
   bool ReadLoadedBytes(base::span<uint8_t> buffer) override;

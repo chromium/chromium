@@ -4900,8 +4900,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Survey.DownloadRequested2" enum="BooleanRequested"
-    expires_after="2025-04-19">
-  <owner>twellington@chromium.org</owner>
+    expires_after="2025-10-19">
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -4912,8 +4911,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Survey.DownloadResponseCode2"
-    enum="SurveyDownloadResponseCodes2" expires_after="2025-08-24">
-  <owner>skym@chromium.org</owner>
+    enum="SurveyDownloadResponseCodes2" expires_after="2025-10-19">
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -4925,10 +4923,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Survey.ShowSurveyStatus"
-    enum="SurveyPresentationStatusCode" expires_after="2025-08-24">
-  <owner>aishwaryarj@google.com</owner>
-  <owner>twellington@chromium.org</owner>
+    enum="SurveyPresentationStatusCode" expires_after="2025-10-19">
   <owner>wenyufu@chromium.org</owner>
+  <owner>aishwaryarj@google.com</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
     The result of the request to show the survey after it has been downloaded.
@@ -4940,9 +4937,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Survey.SurveyCompleted" enum="BooleanCompleted"
-    expires_after="2025-04-19">
-  <owner>skym@chromium.org</owner>
+    expires_after="2025-10-19">
   <owner>wenyufu@chromium.org</owner>
+  <owner>skym@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
     Whether a user completed the survey after it was presented. This histogram
@@ -4952,9 +4949,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Survey.SurveyFilteringResults"
-    enum="SurveyFilteringResult" expires_after="2025-08-24">
-  <owner>twellington@chromium.org</owner>
+    enum="SurveyFilteringResult" expires_after="2025-10-24">
   <owner>wenyufu@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
     The result of the survey filtering process. Each enum represents a different

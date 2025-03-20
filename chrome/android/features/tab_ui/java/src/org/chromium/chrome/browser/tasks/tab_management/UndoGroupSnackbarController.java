@@ -187,8 +187,7 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
                 mTabModelSelector
                         .getTabGroupModelFilterProvider()
                         .getCurrentTabGroupModelFilter()
-                        .getRelatedTabIds(tabUndoInfo.get(0).tab.getId())
-                        .size();
+                        .getTabCountForGroup(tabUndoInfo.get(0).tab.getTabGroupId());
 
         String content = String.format(Locale.getDefault(), "%d", mergedGroupSize);
         String templateText;

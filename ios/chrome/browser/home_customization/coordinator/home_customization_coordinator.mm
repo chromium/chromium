@@ -59,8 +59,7 @@ CGFloat const kSheetCornerRadius = 30;
 
 - (void)start {
   _mediator = [[HomeCustomizationMediator alloc]
-      initWithPrefService:ProfileIOS::FromBrowserState(self.profile)
-                              ->GetPrefs()];
+      initWithPrefService:self.profile->GetPrefs()];
   _mediator.navigationDelegate = self;
 
   // The Customization menu consists of a stack of presenting view controllers.

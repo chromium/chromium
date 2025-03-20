@@ -30,11 +30,13 @@ import androidx.test.core.app.ApplicationProvider;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
@@ -166,6 +168,7 @@ public class RequestDesktopUtilsUnitTest {
         }
     }
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
     @Mock private MessageDispatcher mMessageDispatcher;
     @Mock private Activity mActivity;
@@ -198,7 +201,6 @@ public class RequestDesktopUtilsUnitTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         WebsitePreferenceBridgeJni.setInstanceForTesting(mWebsitePreferenceBridgeJniMock);
         UserPrefsJni.setInstanceForTesting(mUserPrefsJni);
 

@@ -133,8 +133,7 @@ class PreFreezeBackgroundMemoryTrimmerTest : public testing::Test {
 class PreFreezeSelfCompactionTest : public testing::Test {
  public:
   void SetUp() override {
-    PreFreezeBackgroundMemoryTrimmer::
-        ResetSelfCompactionLastCancelledForTesting();
+    PreFreezeBackgroundMemoryTrimmer::ResetSelfCompactionForTesting();
   }
 
   bool ShouldContinueSelfCompaction(base::TimeTicks compaction_started_at) {
@@ -855,10 +854,27 @@ TEST_F(PreFreezeSelfCompactionTest, Cancel) {
 
   ASSERT_EQ(regions.size(), 4u);
 
-  const auto started_at = base::TimeTicks::Now();
+  // We should not record the metric here, because we are not currently
+  // running.
+  PreFreezeBackgroundMemoryTrimmer::MaybeCancelSelfCompaction(
+      PreFreezeBackgroundMemoryTrimmer::SelfCompactCancellationReason::
+          kPageResumed);
+  histograms.ExpectTotalCount(
+      "Memory.SelfCompact2.Renderer.CancellationReason2", 0);
+
+  // We want the triggered time to be slightly after the last cancelled time;
+  // checks for whether we should cancel depend on this.
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  const auto triggered_at = base::TimeTicks::Now();
+  {
+    base::AutoLock locker(PreFreezeBackgroundMemoryTrimmer::lock());
+    PreFreezeBackgroundMemoryTrimmer::Instance()
+        .self_compaction_last_triggered_ = triggered_at;
+  }
   PreFreezeBackgroundMemoryTrimmer::Instance().StartSelfCompaction(
       task_environment_.GetMainThreadTaskRunner(), std::move(regions), 1,
-      started_at);
+      triggered_at);
 
   EXPECT_EQ(task_environment_.GetPendingMainThreadTaskCount(), 1u);
 
@@ -878,9 +894,20 @@ TEST_F(PreFreezeSelfCompactionTest, Cancel) {
 
   task_environment_.FastForwardBy(base::Seconds(60));
 
-  // No metrics should have been recorded, since we cancelled self compaction.
+  // We should have exactly one metric recorded, the metric telling us we
+  // cancelled self compaction.
   EXPECT_EQ(histograms.GetTotalCountsForPrefix("Memory.SelfCompact2").size(),
-            0);
+            1);
+  histograms.ExpectTotalCount(
+      "Memory.SelfCompact2.Renderer.CancellationReason2", 1);
+
+  // Still only expect it to be recorded once, because we were not running the
+  // second time we tried to cancel.
+  PreFreezeBackgroundMemoryTrimmer::MaybeCancelSelfCompaction(
+      PreFreezeBackgroundMemoryTrimmer::SelfCompactCancellationReason::
+          kPageResumed);
+  histograms.ExpectTotalCount(
+      "Memory.SelfCompact2.Renderer.CancellationReason2", 1);
 
   for (size_t i = 1; i < 5; i++) {
     Unmap(addrs[i], i * base::GetPageSize());

@@ -66,15 +66,6 @@ class MODULES_EXPORT PaintRenderingContext2D
 
   void WillDraw(const SkIRect&, CanvasPerformanceMonitor::DrawType) final;
 
-  double shadowOffsetX() const final;
-  void setShadowOffsetX(double) final;
-
-  double shadowOffsetY() const final;
-  void setShadowOffsetY(double) final;
-
-  double shadowBlur() const final;
-  void setShadowBlur(double) final;
-
   sk_sp<PaintFilter> StateGetFilter() final;
 
   bool HasAlpha() const final { return context_settings_->alpha(); }
@@ -87,8 +78,6 @@ class MODULES_EXPORT PaintRenderingContext2D
     return kRespectImageOrientation;
   }
 
-  DOMMatrix* getTransform() final;
-  void resetTransform() final;
   void reset() final;
 
   std::optional<cc::PaintRecord> FlushCanvas(FlushReason) final {
@@ -113,11 +102,6 @@ class MODULES_EXPORT PaintRenderingContext2D
   std::optional<PaintRecord> previous_frame_;
   gfx::Size container_size_;
   Member<const PaintRenderingContext2DSettings> context_settings_;
-  // The paint worklet canvas operates on CSS pixels, and that's different than
-  // the HTML canvas which operates on physical pixels. In other words, the
-  // paint worklet canvas needs to handle device scale factor and browser zoom,
-  // and this is designed for that purpose.
-  const float effective_zoom_;
   WeakMember<PaintWorkletGlobalScope> global_scope_;
 };
 

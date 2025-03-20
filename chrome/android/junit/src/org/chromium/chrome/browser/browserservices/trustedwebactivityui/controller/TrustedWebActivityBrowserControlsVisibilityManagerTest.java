@@ -16,11 +16,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -41,6 +43,7 @@ import org.chromium.components.security_state.SecurityStateModelJni;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock public TabObserverRegistrar mTabObserverRegistrar;
     @Mock public CustomTabActivityTabProvider mTabProvider;
     @Mock public Tab mTab;
@@ -52,7 +55,6 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         SecurityStateModelJni.setInstanceForTesting(mSecurityStateMocks);
         when(mTabProvider.getTab()).thenReturn(mTab);
         doReturn(Tab.INVALID_TAB_ID).when(mTab).getParentId();

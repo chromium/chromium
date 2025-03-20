@@ -17,6 +17,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -26,8 +27,8 @@ namespace {
 class NonTabWebView : public views::WidgetDelegate, public views::WebView {
  public:
   NonTabWebView(content::BrowserContext* browser_context, const GURL& url) {
-    auto* widget =
-        views::Widget::CreateWindowWithParent(this, /*parent=*/nullptr);
+    auto* widget = views::Widget::CreateWindowWithParent(
+        this, /*parent=*/gfx::NativeView());
     widget->Show();
 
     SetBrowserContext(browser_context);

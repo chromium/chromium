@@ -21,7 +21,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
-#include "base/win/wmi.h"
+#include "base/win/win_util.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace enterprise {
@@ -106,7 +106,10 @@ std::string ProfileIdDelegateImpl::GetId() {
   // generate a profile ID with whatever we have. Devices without serial number
   // will have higher chance of twin issue but it is still better than no ID at
   // all.
-  device_id += base::WideToUTF8(base::win::WmiComputerSystemInfo::Get().serial_number());
+  auto serial_number = base::win::GetSerialNumber();
+  if (serial_number) {
+    device_id += base::WideToUTF8(*serial_number);
+  }
 #endif  // BUILDFLAG(IS_WIN)
 
   return device_id;

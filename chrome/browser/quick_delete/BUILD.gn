@@ -162,6 +162,7 @@ android_library("javatests") {
     "//components/browsing_data/core:java",
     "//components/embedder_support/android:content_view_java",
     "//components/signin/public/android:java",
+    "//components/signin/public/android:signin_java_test_support",
     "//components/sync/android:sync_java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",

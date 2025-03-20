@@ -35,7 +35,6 @@ bool OptionalBooleanToBool(OptionalBoolean value);
 
 // Enum for different data types filled during autofill filling events,
 // including those of the SingleFieldFiller.
-// Values are recorded as metrics and must not change or be reused.
 enum class FillDataType : uint8_t {
   kUndefined = 0,
   kAutofillProfile = 1,
@@ -44,6 +43,7 @@ enum class FillDataType : uint8_t {
   kSingleFieldFillerIban = 4,
   kSingleFieldFillerPromoCode = 5,
   kAutofillAi = 6,
+  kSingleFieldFillerLoyaltyCard = 7,
 };
 
 // AreCollapsible(..., ...) are a set of functions that checks whether two

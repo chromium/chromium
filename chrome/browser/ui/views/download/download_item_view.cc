@@ -464,7 +464,7 @@ bool DownloadItemView::OnMouseDragged(const ui::MouseEvent& event) {
     const views::Widget* const widget = GetWidget();
     // TODO(shaktisahu): Make DragDownloadItem work with a model.
     DragDownloadItem(model_->GetDownloadItem(), file_icon,
-                     widget ? widget->GetNativeView() : nullptr);
+                     widget ? widget->GetNativeView() : gfx::NativeView());
     RecordDownloadShelfDragInfo(DownloadDragInfo::DRAG_STARTED);
   }
   return true;

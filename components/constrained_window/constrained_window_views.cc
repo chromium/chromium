@@ -22,6 +22,7 @@
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget.h"
@@ -275,7 +276,7 @@ views::Widget* CreateWebModalDialogViews(views::WidgetDelegate* dialog,
   web_modal::ModalDialogHost* const dialog_host =
       manager->delegate()->GetWebContentsModalDialogHost();
   views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
-      dialog, nullptr, dialog_host->GetHostView());
+      dialog, gfx::NativeWindow(), dialog_host->GetHostView());
   std::unique_ptr<ModalDialogHostObserver> observer =
       std::make_unique<ModalDialogHostObserverViews>(
           dialog_host, widget, /*auto_update_position=*/false);
@@ -301,9 +302,10 @@ views::Widget* CreateBrowserModalDialogViews(views::DialogDelegate* dialog,
   DCHECK(!parent || CurrentBrowserModalClient());
 
   gfx::NativeView parent_view =
-      parent ? CurrentBrowserModalClient()->GetDialogHostView(parent) : nullptr;
-  views::Widget* widget =
-      views::DialogDelegate::CreateDialogWidget(dialog, nullptr, parent_view);
+      parent ? CurrentBrowserModalClient()->GetDialogHostView(parent)
+             : gfx::NativeView();
+  views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
+      dialog, gfx::NativeWindow(), parent_view);
   widget->SetNativeWindowProperty(
       views::kWidgetIdentifierKey,
       const_cast<void*>(kConstrainedWindowWidgetIdentifier));
@@ -342,7 +344,7 @@ views::Widget* ShowBrowserModal(std::unique_ptr<ui::DialogModel> dialog_model,
   // dialogs support autosize.
   bool will_use_custom_frame = views::DialogDelegate::CanSupportCustomFrame(
       parent ? CurrentBrowserModalClient()->GetDialogHostView(parent)
-             : nullptr);
+             : gfx::NativeView());
   auto dialog = views::BubbleDialogModelHost::CreateModal(
       std::move(dialog_model), ui::mojom::ModalType::kWindow,
       will_use_custom_frame);

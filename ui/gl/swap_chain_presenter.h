@@ -21,6 +21,7 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gl/dc_layer_overlay_params.h"
 #include "ui/gl/dc_layer_tree.h"
+#include "ui/gl/gl_export.h"
 
 namespace gl {
 
@@ -54,6 +55,10 @@ class SwapChainPresenter : public base::PowerStateObserver {
   const Microsoft::WRL::ComPtr<IUnknown>& content() const { return content_; }
 
   const gfx::Size& content_size() const { return content_size_; }
+
+  // Valid HANDLE is needed for testing to create an IDCompositionSurface with
+  // `CreateSurfaceFromHandle`.
+  GL_EXPORT static bool CreateSurfaceHandleHelperForTesting(HANDLE* handle);
 
  private:
   // Mapped to DirectCompositonVideoPresentationMode UMA enum.  Do not remove or

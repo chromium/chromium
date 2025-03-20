@@ -8,16 +8,11 @@
 #include <string>
 #include <vector>
 
-#include "base/base_paths.h"
-#include "base/file_version_info_win.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_reg_util_win.h"
 #include "chrome/updater/test/unit_test_util.h"
-#include "chrome/updater/updater_branding.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/installer_api.h"
 #include "chrome/updater/win/win_constants.h"
@@ -210,24 +205,6 @@ TEST_P(MsiSetInstallerResultTest, MsiSetInstallerResult) {
 
 TEST(MsiCustomActionTest, ShowInstallerResultUIString) {
   EXPECT_EQ(ShowInstallerResultUIString(0), static_cast<UINT>(ERROR_SUCCESS));
-}
-
-// Tests that the MSI custom action DLL version resource contains the correct
-// information in the `Original filename` to identify the binary.
-TEST(MsiCustomActionTest, OriginalFilename) {
-  const base::FilePath msi_custom_action_dll_name(
-      L"" PRODUCT_FULLNAME_STRING "MsiInstallerCustomAction.dll");
-  base::FilePath out_dir;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &out_dir));
-  const base::FilePath msi_custom_action_dll_path(
-      out_dir.Append(L"msi_custom_action.dll"));
-  ASSERT_TRUE(base::PathExists(msi_custom_action_dll_path))
-      << msi_custom_action_dll_path;
-  const std::unique_ptr<FileVersionInfoWin> version_info =
-      FileVersionInfoWin::CreateFileVersionInfoWin(msi_custom_action_dll_path);
-  ASSERT_NE(version_info, nullptr);
-  EXPECT_EQ(version_info->original_filename(),
-            msi_custom_action_dll_name.AsUTF16Unsafe());
 }
 
 }  // namespace updater

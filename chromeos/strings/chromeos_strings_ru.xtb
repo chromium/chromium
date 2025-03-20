@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Скрыть расшифровку</translation>
 <translation id="160633243685262989">Предварительный просмотр изображения</translation>
 <translation id="1611649489706141841">вперед</translation>
-<translation id="1615144046047995187">При скачивании произошла ошибка. Повторите попытку или перезагрузите Chromebook.</translation>
 <translation id="1615335640928990664">Передача данных с <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Выберите тему</translation>
 <translation id="1621067168122174824">Запустить проверку зарядки</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Список аудиозаписей</translation>
 <translation id="2561093647892030937">лимоны</translation>
 <translation id="2570743873672969996">Запуск теста "<ph name="TEST_NAME" />"…</translation>
-<translation id="2573178735329662769">Запись всех звуков на Chromebook</translation>
 <translation id="2576253868710695442">Для работы функции потребуется не более 2 ГБ в хранилище</translation>
 <translation id="2584547424703650812">Сияющий пейзаж</translation>
 <translation id="2584559707064218956">Чтобы задать конфигурацию сети, перейдите в настройки.</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">синих и розовых</translation>
 <translation id="498186245079027698">Проверьте сканер и повторите попытку. Убедитесь, что на диске достаточно свободного места для хранения отсканированных файлов.</translation>
 <translation id="4982627662315910959">Недопустимое сочетание клавиш. Выберите новое с клавишей Shift и ещё одним модификатором: Ctrl, Alt или <ph name="META_KEY" />.</translation>
-<translation id="4983216687482551672">Аудио Chromebook</translation>
 <translation id="4985509611418653372">Проверить</translation>
 <translation id="4987769320337599931">Брандмауэр</translation>
 <translation id="4988526792673242964">Страницы</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Чтобы продолжить обновление, отсоедините и снова подключите USB-кабель устройства (<ph name="DEVICE_NAME" />).</translation>
 <translation id="5099354524039520280">вверх</translation>
 <translation id="5107243100836678918">Сочетание без клавиши <ph name="META_KEY" /> может конфликтовать с сочетаниями клавиш некоторых приложений. Нажмите это сочетание клавиш ещё раз, чтобы продолжить его использовать, или выберите новое с клавишей <ph name="KEY" />. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Не удается скачать модель расшифровки для этого языка: <ph name="LANGUAGE_NAME" />. Повторите попытку или перезапустите Chromebook.</translation>
 <translation id="5108781503443873320">Синонимы:</translation>
-<translation id="5121677070210013200">Не удалось скачать модель расшифровки. Повторите попытку или перезагрузите Chromebook.</translation>
 <translation id="5130848777448318809">пони</translation>
 <translation id="5137451382116112100">Полноэкранный режим</translation>
 <translation id="5139813694804168398">не беспокоить</translation>
@@ -1033,6 +1028,7 @@
 <translation id="5896602941605730551">Воспроизвести</translation>
 <translation id="5901630391730855834">Желтый</translation>
 <translation id="5903200662178656908">Устройство представляет собой комплект из мыши и клавиатуры.</translation>
+<translation id="5903822368221507416">Скрыть вкладки</translation>
 <translation id="5904994456462260490">Добавление точки доступа</translation>
 <translation id="590746845088109442">кошки</translation>
 <translation id="5907649332524363701">цвет клавиш</translation>
@@ -1088,7 +1084,6 @@
 <translation id="6122191549521593678">Онлайн</translation>
 <translation id="6122277663991249694">Выбор способа ввода в Chrome OS</translation>
 <translation id="6127426868813166163">белый</translation>
-<translation id="613049107179582049">Когда включен параметр "Аудио Chromebook", Диктофон записывает все звуки, которые воспроизводятся на устройстве.</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">киберпанк</translation>
 <translation id="6137767437444130246">Сертификат пользователя</translation>
@@ -1418,7 +1413,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Сенсорный экран USB</translation>
 <translation id="757747079855995705">камень</translation>
-<translation id="7584853321964440104">Не удалось скачать модель. Повторите попытку или перезапустите Chromebook.</translation>
 <translation id="7590883480672980941">Настройки ввода</translation>
 <translation id="7595982850646262331">Ещё <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">Администратор <ph name="MANAGER" /> ограничил время использования этого устройства (<ph name="DEVICE_TYPE" />).</translation>
@@ -1785,7 +1779,6 @@
 <translation id="9218016617214286986">Показать известные точки доступа</translation>
 <translation id="932327136139879170">Главная страница</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Убедитесь, что микрофон подключен, или перезагрузите Chromebook.</translation>
 <translation id="945522503751344254">Отправить отзыв</translation>
 <translation id="950520315903467048">Не выбрана клавиша для направления (<ph name="DIRECTION" />). <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">сравнивать голоса на протяжении всей записи, чтобы в расшифровке было видно, что и когда сказал каждый говорящий.</translation>

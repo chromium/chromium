@@ -1,0 +1,78 @@
+[workspace]
+resolver = "2"
+members = ["diplomat-gen", "temporal_capi"]
+
+[workspace.package]
+edition = "2021"
+version = "0.0.6"
+rust-version = "1.82.0"
+authors = ["boa-dev"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/boa-dev/temporal"
+readme = "./README.md"
+exclude = [
+    "docs/*",
+    ".github/*",
+    ".gitignore",
+    "CONTRIBUTING.md",
+    "cliff.toml",
+]
+
+[workspace.dependencies]
+temporal_rs = { version = "~0.0.6", path = ".", default-features = false }
+tinystr = "0.8.1"
+icu_calendar = { version = "2.0.0-beta2", default-features = false }
+rustc-hash = "2.1.0"
+num-traits = "0.2.19"
+ixdtf = "0.4.0"
+iana-time-zone = "0.1.61"
+log = "0.4.26"
+tzif = "0.3.0"
+jiff-tzdb = "0.1.3"
+combine = "4.6.7"
+web-time = "1.1.0"
+
+[package]
+name = "temporal_rs"
+keywords = ["date", "time", "calendar", "timezone", "duration"]
+categories = ["date-and-time", "internationalization"]
+description = "Temporal in Rust is an implementation of the TC39 Temporal Builtin Proposal in Rust."
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+readme.workspace = true
+exclude.workspace = true
+
+[dependencies]
+tinystr.workspace = true
+icu_calendar = { workspace = true, features = ["compiled_data"] }
+num-traits.workspace = true
+ixdtf = { workspace = true, features = ["duration"]}
+iana-time-zone.workspace = true
+writeable = "0.6.1"
+
+# log feature
+log = { workspace = true, optional = true }
+
+# tzdb feature
+tzif = { workspace = true, optional = true }
+jiff-tzdb = { workspace = true, optional = true }
+combine = { workspace = true, optional = true }
+
+# System time feature
+web-time = { workspace = true, optional =  true }
+
+[features]
+default = ["sys"]
+log = ["dep:log"]
+compiled_data = ["tzdb"]
+sys = ["std", "dep:web-time"]
+tzdb = ["dep:tzif", "std", "dep:jiff-tzdb", "dep:combine"]
+std = []
+
+[package.metadata.cargo-all-features]
+denylist = ["default"]
+max_combination_size = 4

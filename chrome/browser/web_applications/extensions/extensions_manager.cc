@@ -24,22 +24,21 @@
 
 namespace web_app {
 
-// This class registers itself to ExtensionService on construction and
+// This class registers itself to DelayedInstallManager on construction and
 // unregisters itself on destruction. It always delays extension install.
 class ExtensionInstallGateImpl : public extensions::InstallGate,
                                  public ExtensionInstallGate {
  public:
-  explicit ExtensionInstallGateImpl(Profile* profile)
-      : extension_service_(
-            extensions::ExtensionSystem::Get(profile)->extension_service()) {
-    CHECK(extension_service_);
-    extension_service_->delayed_install_manager()->RegisterInstallGate(
+  explicit ExtensionInstallGateImpl(Profile* profile) : profile_(profile) {
+    CHECK(profile);
+    extensions::DelayedInstallManager::Get(profile)->RegisterInstallGate(
         extensions::ExtensionPrefs::DelayReason::kGc,
         static_cast<ExtensionInstallGateImpl*>(this));
   }
 
   ~ExtensionInstallGateImpl() override {
-    extension_service_->delayed_install_manager()->UnregisterInstallGate(this);
+    extensions::DelayedInstallManager::Get(profile_)->UnregisterInstallGate(
+        this);
   }
 
   extensions::InstallGate::Action ShouldDelay(
@@ -49,7 +48,7 @@ class ExtensionInstallGateImpl : public extensions::InstallGate,
   }
 
  private:
-  raw_ptr<extensions::ExtensionService> extension_service_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 };
 
 ExtensionInstallGate::~ExtensionInstallGate() = default;

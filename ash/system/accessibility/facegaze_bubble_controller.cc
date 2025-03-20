@@ -8,6 +8,7 @@
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "base/functional/bind.h"
 #include "ui/display/screen.h"
+#include "ui/events/event.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget.h"
@@ -15,11 +16,14 @@
 namespace ash {
 
 namespace {
-constexpr base::TimeDelta kShowTimeout = base::Seconds(1);
+constexpr int kBubbleViewOutsets = 25;
 constexpr int kMarginFromTopDip = 8;
+constexpr base::TimeDelta kShowTimeout = base::Seconds(1);
 }  // namespace
 
-FaceGazeBubbleController::FaceGazeBubbleController() = default;
+FaceGazeBubbleController::FaceGazeBubbleController(
+    const base::RepeatingCallback<void()>& on_close_button_clicked)
+    : on_close_button_clicked_(std::move(on_close_button_clicked)) {}
 
 FaceGazeBubbleController::~FaceGazeBubbleController() {
   show_timer_.Stop();
@@ -53,8 +57,11 @@ void FaceGazeBubbleController::MaybeInitialize() {
     return;
   }
 
-  facegaze_bubble_view_ = new FaceGazeBubbleView(base::BindRepeating(
-      &FaceGazeBubbleController::OnMouseEntered, GetWeakPtr()));
+  facegaze_bubble_view_ = new FaceGazeBubbleView(
+      base::BindRepeating(&FaceGazeBubbleController::OnMouseEntered,
+                          GetWeakPtr()),
+      base::BindRepeating(&FaceGazeBubbleController::OnCloseButtonClicked,
+                          GetWeakPtr()));
   facegaze_bubble_view_->views::View::AddObserver(this);
 
   widget_ =
@@ -94,7 +101,29 @@ void FaceGazeBubbleController::OnMouseEntered() {
                                         GetWeakPtr()));
 }
 
+void FaceGazeBubbleController::OnCloseButtonClicked(const ui::Event& event) {
+  on_close_button_clicked_.Run();
+}
+
 void FaceGazeBubbleController::OnShowTimer() {
+  gfx::Point cursor_location =
+      display::Screen::GetScreen()->GetCursorScreenPoint();
+  // Expand the FaceGazeBubbleView bounds by 25 pixels in each direction.
+  // This provides a cushion so that we don't show the UI when the user is
+  // trying to click on an element that is a few pixels outside of the original
+  // bounds.
+  gfx::Rect scaled_bounds = facegaze_bubble_view_->GetBoundsInScreen();
+  scaled_bounds.Outset(kBubbleViewOutsets);
+  if (scaled_bounds.Contains(cursor_location)) {
+    // Though we hide FaceGazeBubble view only if the main content is hovered,
+    // we continue to hide it if the mouse is contained by the entire bounds of
+    // the view. This is to allow users to click on elements occluded by
+    // FaceGazeBubbleView.
+    OnMouseEntered();
+    return;
+  }
+
+  // If the mouse cursor isn't contained by the bubble, then we can show it.
   widget_->Show();
 }
 

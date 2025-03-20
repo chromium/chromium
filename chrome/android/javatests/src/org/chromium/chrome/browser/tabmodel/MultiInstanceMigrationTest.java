@@ -17,10 +17,12 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
@@ -49,6 +51,7 @@ import java.io.IOException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class MultiInstanceMigrationTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
     @Mock private Profile mIncognitoProfile;
 
@@ -57,7 +60,6 @@ public class MultiInstanceMigrationTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
 

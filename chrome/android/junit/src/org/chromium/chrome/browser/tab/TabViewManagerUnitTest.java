@@ -15,10 +15,12 @@ import android.view.View;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
@@ -42,6 +44,7 @@ public class TabViewManagerUnitTest {
         }
     }
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TabImpl mTab;
     @Mock private TabViewProvider mTabViewProvider0;
     @Mock private TabViewProvider mTabViewProvider1;
@@ -57,7 +60,6 @@ public class TabViewManagerUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mTabViewManager = new TabViewManagerImpl(mTab);
         when(mTabViewProvider0.getTabViewProviderType())
                 .thenReturn(TabViewManagerImpl.PRIORITIZED_TAB_VIEW_PROVIDER_TYPES[0]);

@@ -337,6 +337,7 @@
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - 网络登录</translation>
 <translation id="5924017743176219022">正在连接到互联网…</translation>
 <translation id="5941711191222866238">最小化</translation>
+<translation id="5949225980829865667">如需在您的所有设备上获取此书签等内容，请登录 Chromium</translation>
 <translation id="5972142260211327093">如果 Chromium 随机将您加入某项正在开展的试用活动的参与名单，您的浏览记录会影响您看到的广告以及系统推测出的兴趣（如下所示）。为了保护您的隐私，Chromium 每个月都会按保留时间先后顺序删除您的部分兴趣。兴趣会刷新，除非您将其移除。</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{贵组织会在 Chromium 闲置 1 分钟后自动关闭它。}other{贵组织会在 Chromium 闲置 # 分钟后自动关闭它。}}</translation>
 <translation id="5987687638152509985">更新 Chromium 以开始同步</translation>

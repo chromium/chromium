@@ -26,11 +26,13 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
@@ -81,6 +83,7 @@ public class ClientManagerTest {
     private static final String URL = "https://www.android.com";
     private static final String PACKAGE_NAME = "org.chromium.chrome";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private ClientManager mClientManager;
     private final SessionHolder<?> mSession =
             new SessionHolder<>(CustomTabsSessionToken.createMockSessionTokenForTesting());
@@ -102,7 +105,6 @@ public class ClientManagerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         OriginVerifierJni.setInstanceForTesting(mMockOriginVerifierJni);
 

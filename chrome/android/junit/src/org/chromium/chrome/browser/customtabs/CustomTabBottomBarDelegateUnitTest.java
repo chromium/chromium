@@ -33,7 +33,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -53,6 +54,8 @@ import org.chromium.ui.base.WindowAndroid;
 @Batch(Batch.UNIT_TESTS)
 @Config(manifest = Config.NONE)
 public class CustomTabBottomBarDelegateUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
@@ -77,7 +80,6 @@ public class CustomTabBottomBarDelegateUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         when(mIntent.getParcelableExtra(CustomTabsIntent.EXTRA_REMOTEVIEWS))
                 .thenReturn(mRemoteViews);

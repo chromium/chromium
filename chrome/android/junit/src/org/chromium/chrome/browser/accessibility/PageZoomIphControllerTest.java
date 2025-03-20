@@ -15,12 +15,14 @@ import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -35,6 +37,7 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 @Config(manifest = Config.NONE)
 public class PageZoomIphControllerTest {
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Context mContext;
     @Mock private AppMenuHandler mAppMenuHandler;
     @Mock private View mToolbarMenuButton;
@@ -46,7 +49,6 @@ public class PageZoomIphControllerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         Resources resources = ApplicationProvider.getApplicationContext().getResources();
         doReturn(resources).when(mContext).getResources();
