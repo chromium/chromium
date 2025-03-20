@@ -228,6 +228,8 @@ void AXTreeDistiller::DistillViaScreen2x(
     main_content_extractor_.set_disconnect_handler(
         base::BindOnce(&AXTreeDistiller::OnMainContentExtractorDisconnected,
                        weak_ptr_factory_.GetWeakPtr()));
+    main_content_extractor_->SetClientType(
+        screen_ai::mojom::MceClientType::kReadingMode);
   }
 
   base::TimeTicks screen2x_start_time = base::TimeTicks::Now();

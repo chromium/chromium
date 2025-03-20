@@ -107,6 +107,8 @@ class MainContentExtractionTest : public InProcessBrowserTest {
     ScreenAIServiceRouterFactory::GetForBrowserContext(browser()->profile())
         ->BindMainContentExtractor(
             main_content_extractor_.BindNewPipeAndPassReceiver());
+    main_content_extractor_->SetClientType(
+        screen_ai::mojom::MceClientType::kTest);
   }
 
   ui::AXTreeUpdate DistillPage(const std::string& relative_url) {
