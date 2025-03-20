@@ -484,7 +484,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_core_core_java") {
-    aar_path = "cipd/libs/androidx_core_core/core-1.16.0-SNAPSHOT.aar"
+    aar_path = "cipd/libs/androidx_core_core/core-1.17.0-SNAPSHOT.aar"
     info_path = "committed/libs/androidx_core_core/androidx_core_core.info"
     enable_bytecode_checks = false
     deps = [
@@ -494,9 +494,12 @@ if (!limit_android_deps) {
       ":androidx_concurrent_concurrent_futures_java",
       ":androidx_core_core_viewtree_java",
       ":androidx_interpolator_interpolator_java",
+      ":androidx_lifecycle_lifecycle_common_java",
       ":androidx_lifecycle_lifecycle_runtime_java",
       ":androidx_tracing_tracing_java",
       ":androidx_versionedparcelable_versionedparcelable_java",
+      "//third_party/android_deps:guava_android_java",
+      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
@@ -1447,7 +1450,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_transition_transition_java") {
     aar_path =
-        "cipd/libs/androidx_transition_transition/transition-1.6.0-SNAPSHOT.aar"
+        "cipd/libs/androidx_transition_transition/transition-1.7.0-SNAPSHOT.aar"
     info_path = "committed/libs/androidx_transition_transition/androidx_transition_transition.info"
     enable_bytecode_checks = false
     deps = [
@@ -2268,7 +2271,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_core_core_ktx_java") {
-    aar_path = "cipd/libs/androidx_core_core_ktx/core-ktx-1.16.0-SNAPSHOT.aar"
+    aar_path = "cipd/libs/androidx_core_core_ktx/core-ktx-1.17.0-SNAPSHOT.aar"
     info_path =
         "committed/libs/androidx_core_core_ktx/androidx_core_core_ktx.info"
     enable_bytecode_checks = false

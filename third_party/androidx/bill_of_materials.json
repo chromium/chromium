@@ -342,7 +342,7 @@
     {
         "name": "core",
         "group": "androidx.core",
-        "version": "1.16.0-SNAPSHOT"
+        "version": "1.17.0-SNAPSHOT"
     },
     {
         "name": "core-animation",
@@ -357,7 +357,7 @@
     {
         "name": "core-ktx",
         "group": "androidx.core",
-        "version": "1.16.0-SNAPSHOT"
+        "version": "1.17.0-SNAPSHOT"
     },
     {
         "name": "core-viewtree",
@@ -977,7 +977,7 @@
     {
         "name": "transition",
         "group": "androidx.transition",
-        "version": "1.6.0-SNAPSHOT"
+        "version": "1.7.0-SNAPSHOT"
     },
     {
         "name": "tvprovider",
