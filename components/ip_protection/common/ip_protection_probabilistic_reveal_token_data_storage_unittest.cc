@@ -113,11 +113,11 @@ TEST_F(ProbabilisticRevealTokenDataStorageTest,
   // [tokens], [meta].
   EXPECT_EQ(2u, sql::test::CountSQLTables(&db));
 
-  EXPECT_EQ(2, VersionFromMetaTable(db));
+  EXPECT_EQ(1, VersionFromMetaTable(db));
 
-  // `version`, `u`, `e`, `epoch_id`, `expiration`, `num_tokens_with_signal`,
-  // and `public_key`.
-  EXPECT_EQ(7u, sql::test::CountTableColumns(&db, "tokens"));
+  // `version`, `u`, `e`, `expiration`, `num_tokens_with_signal`, and
+  // `public_key`.
+  EXPECT_EQ(6u, sql::test::CountTableColumns(&db, "tokens"));
 
   EXPECT_EQ(0u, CountTokenEntries(db));
 }
@@ -125,7 +125,7 @@ TEST_F(ProbabilisticRevealTokenDataStorageTest,
 TEST_F(ProbabilisticRevealTokenDataStorageTest,
        LoadFromFile_CurrentVersion_Success) {
   ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(
-      DbPath(), GetSqlFilePath("probabilistic_reveal_tokens_v2.sql")));
+      DbPath(), GetSqlFilePath("probabilistic_reveal_tokens_v1.sql")));
 
   OpenDatabase();
   // Trigger the lazy-initialization.
@@ -137,14 +137,14 @@ TEST_F(ProbabilisticRevealTokenDataStorageTest,
   sql::Database db(sql::test::kTestTag);
   EXPECT_TRUE(db.Open(DbPath()));
   EXPECT_EQ(2u, sql::test::CountSQLTables(&db));
-  EXPECT_EQ(2, VersionFromMetaTable(db));
+  EXPECT_EQ(1, VersionFromMetaTable(db));
   EXPECT_EQ(1u, CountTokenEntries(db));
 }
 
 TEST_F(ProbabilisticRevealTokenDataStorageTest,
        LoadFromFile_VersionTooOld_Failure) {
   ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(
-      DbPath(), GetSqlFilePath("probabilistic_reveal_tokens_v1.too_old.sql")));
+      DbPath(), GetSqlFilePath("probabilistic_reveal_tokens_v0.too_old.sql")));
 
   OpenDatabase();
   // Trigger the lazy-initialization.
@@ -156,14 +156,14 @@ TEST_F(ProbabilisticRevealTokenDataStorageTest,
   sql::Database db(sql::test::kTestTag);
   EXPECT_TRUE(db.Open(DbPath()));
   EXPECT_EQ(2u, sql::test::CountSQLTables(&db));
-  EXPECT_EQ(2, VersionFromMetaTable(db));
+  EXPECT_EQ(1, VersionFromMetaTable(db));
   EXPECT_EQ(0u, CountTokenEntries(db));
 }
 
 TEST_F(ProbabilisticRevealTokenDataStorageTest,
        LoadFromFile_VersionTooNew_Failure) {
   ASSERT_TRUE(sql::test::CreateDatabaseFromSQL(
-      DbPath(), GetSqlFilePath("probabilistic_reveal_tokens_v3.too_new.sql")));
+      DbPath(), GetSqlFilePath("probabilistic_reveal_tokens_v2.too_new.sql")));
 
   OpenDatabase();
   // Trigger the lazy-initialization.
@@ -175,7 +175,7 @@ TEST_F(ProbabilisticRevealTokenDataStorageTest,
   sql::Database db(sql::test::kTestTag);
   EXPECT_TRUE(db.Open(DbPath()));
   EXPECT_EQ(2u, sql::test::CountSQLTables(&db));
-  EXPECT_EQ(2, VersionFromMetaTable(db));
+  EXPECT_EQ(1, VersionFromMetaTable(db));
   EXPECT_EQ(0u, CountTokenEntries(db));
 }
 
@@ -194,8 +194,7 @@ TEST_F(ProbabilisticRevealTokenDataStorageTest, StoreTokenOutcome) {
 
   // Store 3 tokens across two calls.
   OpenDatabase();
-  outcome.tokens.emplace_back(/*version=*/1, std::string(29, 'u'),
-                              std::string(29, 'e'), std::string(8, '0'));
+  outcome.tokens.emplace_back(/*version=*/1, "u1", "e1");
   outcome.expiration_time_seconds = 123;
   outcome.next_epoch_start_time_seconds = 456;
   outcome.num_tokens_with_signal = 100;
@@ -203,10 +202,8 @@ TEST_F(ProbabilisticRevealTokenDataStorageTest, StoreTokenOutcome) {
   storage()->StoreTokenOutcome(outcome);
 
   TryGetProbabilisticRevealTokensOutcome outcome2;
-  outcome2.tokens.emplace_back(/*version=*/1, std::string(29, 'u'),
-                              std::string(29, 'e'), std::string(8, '0'));
-  outcome2.tokens.emplace_back(/*version=*/1, std::string(29, 'u'),
-                              std::string(29, 'e'), std::string(8, '0'));
+  outcome2.tokens.emplace_back(/*version=*/1, "u2", "e2");
+  outcome2.tokens.emplace_back(/*version=*/1, "u3", "e3");
   outcome2.expiration_time_seconds = 234;
   outcome2.next_epoch_start_time_seconds = 567;
   outcome2.num_tokens_with_signal = 200;
@@ -254,8 +251,7 @@ TEST_F(ProbabilisticRevealTokenDataStorageTest, OpenCorruptedDatabase) {
 
   // Trigger the lazy-initialization by attempting to store a token.
   TryGetProbabilisticRevealTokensOutcome outcome;
-  outcome.tokens.emplace_back(/*version=*/1, std::string(29, 'u'),
-                              std::string(29, 'e'), std::string(8, '0'));
+  outcome.tokens.emplace_back(/*version=*/1, "u1", "e1");
   outcome.expiration_time_seconds = 123;
   outcome.next_epoch_start_time_seconds = 456;
   outcome.num_tokens_with_signal = 100;

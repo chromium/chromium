@@ -92,9 +92,8 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // - expiration_time_seconds take 8 bytes.
 // - next_epoch_start_time_seconds take 8 bytes.
 // - num_tokens_with_signal takes 4 bytes.
-// - epoch_id takes 8 bytes.
 //
-// This means response can be as much as (31208 + 37 + 8 + 8 + 4 + 8) 31273.
+// This means response can be as much as (31208 + 37 + 8 + 8 + 4) 31265.
 // Limit is set to 32 * 1024 (32768) which gives more than our rough estimate.
 //
 // Serialized response with 400 tokens size is 26443, obtained by tweaking test
@@ -106,7 +105,6 @@ constexpr int32_t kMaxNumberOfTokens = 400;
 constexpr int32_t kTokenVersion = 1;
 constexpr int32_t kTokenSize = 29;
 constexpr int32_t kMinNumTokensWithSignal = 0;
-constexpr int32_t kEpochIdSize = 8;
 constexpr base::TimeDelta kMinExpirationTimeDelta = base::Hours(3);
 constexpr base::TimeDelta kMaxExpirationTimeDelta = base::Days(3);
 
@@ -283,8 +281,7 @@ void IpProtectionProbabilisticRevealTokenDirectFetcher::
   // TODO(crbug.com/391358904): add success metrics before returning.
   TryGetProbabilisticRevealTokensOutcome outcome;
   for (const auto& t : response_proto.tokens()) {
-    outcome.tokens.emplace_back(t.version(), t.u(), t.e(),
-                                response_proto.epoch_id());
+    outcome.tokens.emplace_back(t.version(), t.u(), t.e());
   }
   outcome.public_key = std::move(response_proto.public_key().y());
   outcome.expiration_time_seconds = response_proto.expiration_time_seconds();
@@ -325,9 +322,6 @@ IpProtectionProbabilisticRevealTokenDirectFetcher::
           response.public_key().y(), {});
       !crypter.ok()) {
     return TryGetProbabilisticRevealTokensStatus::kInvalidPublicKey;
-  }
-  if (response.epoch_id().size() != kEpochIdSize) {
-    return TryGetProbabilisticRevealTokensStatus::kInvalidEpochIdSize;
   }
 
   for (const auto& t : response.tokens()) {

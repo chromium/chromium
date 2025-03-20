@@ -78,7 +78,7 @@ TEST(IpProtectionProbabilisticRevealTokenMojoFetcherTest, Success) {
   {
     std::vector<ProbabilisticRevealToken> tokens;
     for (int i = 0; i < 10; ++i) {
-      tokens.emplace_back(3, "u", "e", "epoch_id");
+      tokens.emplace_back(3, "u", "e");
     }
     std::string public_key = "y";
     core_host = std::make_unique<FakeCoreHost>(std::move(tokens),

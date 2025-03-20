@@ -18,9 +18,8 @@ namespace ip_protection {
 namespace {
 
 // Size of a PRT when TLS serialized, before base64 encoding.
-constexpr size_t kPRTSize = 71;
+constexpr size_t kPRTSize = 63;
 constexpr size_t kPRTPointSize = 29;
-constexpr size_t kEpochIdSize = 8;
 
 // Deserialize a given prt serialized using
 // `ProbabilisticRevealToken::SerializeAndEncode()`.
@@ -41,20 +40,16 @@ bool Deserialize(const std::string& serialized_encoded_prt,
   uint16_t e_size;
   std::string u(kPRTPointSize, '0');
   std::string e(kPRTPointSize, '0');
-  std::string epoch_id(kEpochIdSize, '0');
   if (!CBS_get_u8(&cbs, &version) || !CBS_get_u16(&cbs, &u_size) ||
       u_size != kPRTPointSize ||
       !CBS_copy_bytes(&cbs, reinterpret_cast<uint8_t*>(u.data()), u_size) ||
       !CBS_get_u16(&cbs, &e_size) || e_size != kPRTPointSize ||
-      !CBS_copy_bytes(&cbs, reinterpret_cast<uint8_t*>(e.data()), e_size) ||
-      !CBS_copy_bytes(&cbs, reinterpret_cast<uint8_t*>(epoch_id.data()),
-                      kEpochIdSize)) {
+      !CBS_copy_bytes(&cbs, reinterpret_cast<uint8_t*>(e.data()), e_size)) {
     return false;
   }
   out.version = version;
   out.u = std::move(u);
   out.e = std::move(e);
-  out.epoch_id = std::move(epoch_id);
   return true;
 }
 
@@ -130,36 +125,26 @@ TEST_F(IpProtectionPRTSerializeTest, SerializeEmptyPRT) {
 }
 
 TEST_F(IpProtectionPRTSerializeTest, WrongVersion) {
-  ProbabilisticRevealToken token{2, std::string(29, 'u'), std::string(29, 'e'),
-                                 std::string(8, '0')};
+  ProbabilisticRevealToken token{2, std::string(29, 'u'), std::string(29, 'e')};
   std::optional<std::string> res = token.SerializeAndEncode();
   EXPECT_FALSE(res.has_value());
 }
 
 TEST_F(IpProtectionPRTSerializeTest, WrongUSize) {
-  ProbabilisticRevealToken token{1, std::string(30, 'u'), std::string(29, 'e'),
-                                 std::string(8, '0')};
+  ProbabilisticRevealToken token{1, std::string(30, 'u'), std::string(29, 'e')};
   std::optional<std::string> res = token.SerializeAndEncode();
   EXPECT_FALSE(res.has_value());
 }
 
 TEST_F(IpProtectionPRTSerializeTest, WrongESize) {
-  ProbabilisticRevealToken token{1, std::string(29, 'u'), std::string(28, 'e'),
-                                 std::string(8, '0')};
-  std::optional<std::string> res = token.SerializeAndEncode();
-  EXPECT_FALSE(res.has_value());
-}
-
-TEST_F(IpProtectionPRTSerializeTest, WrongEpochIdSize) {
-  ProbabilisticRevealToken token{1, std::string(29, 'u'), std::string(29, 'e'),
-                                 std::string(9, '0')};
+  ProbabilisticRevealToken token{1, std::string(29, 'u'), std::string(28, 'e')};
   std::optional<std::string> res = token.SerializeAndEncode();
   EXPECT_FALSE(res.has_value());
 }
 
 TEST_F(IpProtectionPRTSerializeTest, Success) {
-  ProbabilisticRevealToken expected_token{
-      1, std::string(29, 'u'), std::string(29, 'e'), std::string(8, '0')};
+  ProbabilisticRevealToken expected_token{1, std::string(29, 'u'),
+                                          std::string(29, 'e')};
   std::optional<std::string> res = expected_token.SerializeAndEncode();
   ASSERT_TRUE(res.has_value());
   ProbabilisticRevealToken token;

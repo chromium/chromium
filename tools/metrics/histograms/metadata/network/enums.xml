@@ -1595,7 +1595,6 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Invalid Num Tokens With Signal"/>
   <int value="13" label="Request Backed Off"/>
   <int value="14" label="No Google Chrome Branding"/>
-  <int value="15" label="Invalid Epoch ID Size"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/ip_protection/common/ip_protection_data_types.h:TryGetProbabilisticRevealTokensStatus) -->

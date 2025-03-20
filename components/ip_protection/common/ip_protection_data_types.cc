@@ -9,7 +9,6 @@
 #include <optional>
 #include <sstream>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "base/base64.h"
@@ -23,9 +22,8 @@ namespace ip_protection {
 namespace {
 
 // Size of a PRT when TLS serialized, before base64 encoding.
-constexpr size_t kPRTSize = 71;
+constexpr size_t kPRTSize = 63;
 constexpr size_t kPRTPointSize = 29;
-constexpr size_t kEpochIdSize = 8;
 
 }  // namespace
 
@@ -105,25 +103,6 @@ TryGetProbabilisticRevealTokensOutcome&
 TryGetProbabilisticRevealTokensOutcome::operator=(
     TryGetProbabilisticRevealTokensOutcome&&) = default;
 
-ProbabilisticRevealToken::ProbabilisticRevealToken() = default;
-ProbabilisticRevealToken::ProbabilisticRevealToken(std::int32_t version,
-                                                   std::string u,
-                                                   std::string e,
-                                                   std::string epoch_id)
-    : version(version),
-      u(std::move(u)),
-      e(std::move(e)),
-      epoch_id(std::move(epoch_id)) {}
-ProbabilisticRevealToken::ProbabilisticRevealToken(
-    const ProbabilisticRevealToken&) = default;
-ProbabilisticRevealToken::ProbabilisticRevealToken(ProbabilisticRevealToken&&) =
-    default;
-ProbabilisticRevealToken& ProbabilisticRevealToken::operator=(
-    const ProbabilisticRevealToken&) = default;
-ProbabilisticRevealToken& ProbabilisticRevealToken::operator=(
-    ProbabilisticRevealToken&&) = default;
-ProbabilisticRevealToken::~ProbabilisticRevealToken() = default;
-
 /*
 Serialize and base64 encode the following struct given in TLS presentation
 language (rfc8446 section-3). Size of u and e depends on the version and only
@@ -134,20 +113,17 @@ struct {
   uint8 version;
   opaque u<0..2^16-1>;
   opaque e<0..2^16-1>;
-  opaque epoch_id[8];
 } tlsPRT;
 
 Once serialized (before base64 encoding), output bytes will be as follows.
 
 [1 byte for version |
  2 bytes for u size | 29 bytes for u |
- 2 bytes for e size | 29 bytes for e |
- 8 bytes for epoch_id]
+ 2 bytes for e size | 29 bytes for e ]
 */
 std::optional<std::string> ProbabilisticRevealToken::SerializeAndEncode()
     const {
-  if (version != 1 || u.size() != e.size() || u.size() != kPRTPointSize ||
-      epoch_id.size() != kEpochIdSize) {
+  if (version != 1 || u.size() != e.size() || u.size() != kPRTPointSize) {
     return std::nullopt;
   }
   bssl::ScopedCBB cbb;
@@ -161,9 +137,6 @@ std::optional<std::string> ProbabilisticRevealToken::SerializeAndEncode()
       !CBB_add_u16(cbb.get(), e.size()) ||
       !CBB_add_bytes(cbb.get(), reinterpret_cast<const uint8_t*>(e.data()),
                      e.size()) ||
-      !CBB_add_bytes(cbb.get(),
-                     reinterpret_cast<const uint8_t*>(epoch_id.data()),
-                     epoch_id.size()) ||
       !CBB_finish(cbb.get(), nullptr, &cbb_size)) {
     return std::nullopt;
   }

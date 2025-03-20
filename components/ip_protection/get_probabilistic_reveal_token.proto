@@ -50,8 +50,4 @@ message GetProbabilisticRevealTokenResponse {
 
   // The number of tokens with the signal.
   optional int32 num_tokens_with_signal = 5;
-
-  // The id of the epoch in which the tokens were issued, used to identify the
-  // corresponding key used to decrypt the tokens.
-  optional bytes epoch_id = 6;
 }
