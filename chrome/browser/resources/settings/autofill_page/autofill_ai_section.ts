@@ -29,11 +29,9 @@ import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 import type {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_dialog.js';
@@ -186,11 +184,6 @@ export class SettingsAutofillAiSectionElement extends
     this.entityDataManager_.removeEntityInstancesChangedListener(
         this.entityInstancesChangedListener_);
     this.entityInstancesChangedListener_ = null;
-  }
-
-  private onToggleSubLabelLinkClick_(): void {
-    OpenWindowProxyImpl.getInstance().openUrl(
-        loadTimeData.getString('autofillAiLearnMoreURL'));
   }
 
   private computeDisableAddButton_(
