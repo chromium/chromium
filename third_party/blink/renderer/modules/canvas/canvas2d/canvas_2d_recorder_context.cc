@@ -392,8 +392,9 @@ constexpr size_t kColorCacheMaxSize = 8;
 // Dummy overdraw test for ops that do not support overdraw detection
 const auto kNoOverdraw = [](const SkIRect& clip_bounds) { return false; };
 
-Canvas2DRecorderContext::Canvas2DRecorderContext()
-    : path2d_use_paint_cache_(
+Canvas2DRecorderContext::Canvas2DRecorderContext(float effective_zoom)
+    : effective_zoom_(effective_zoom),
+      path2d_use_paint_cache_(
           base::FeatureList::IsEnabled(features::kPath2DPaintCache)
               ? UsePaintCache::kEnabled
               : UsePaintCache::kDisabled) {
@@ -1246,11 +1247,17 @@ void Canvas2DRecorderContext::setMiterLimit(double limit) {
   state.SetMiterLimit(ClampTo<float>(limit));
 }
 
+// We need to account for the |effective_zoom_| for shadow effects, and not
+// for line width. This is because the line width is affected by skia's current
+// transform matrix (CTM) while shadows are not. The skia's CTM combines both
+// the canvas context transform and the CSS layout transform. That means, the
+// |effective_zoom_| is implicitly applied to line width through CTM.
 double Canvas2DRecorderContext::shadowOffsetX() const {
-  return GetState().ShadowOffset().x();
+  return GetState().ShadowOffset().x() / effective_zoom_;
 }
 
 void Canvas2DRecorderContext::setShadowOffsetX(double x) {
+  x *= effective_zoom_;
   if (!std::isfinite(x)) {
     return;
   }
@@ -1266,10 +1273,11 @@ void Canvas2DRecorderContext::setShadowOffsetX(double x) {
 }
 
 double Canvas2DRecorderContext::shadowOffsetY() const {
-  return GetState().ShadowOffset().y();
+  return GetState().ShadowOffset().y() / effective_zoom_;
 }
 
 void Canvas2DRecorderContext::setShadowOffsetY(double y) {
+  y *= effective_zoom_;
   if (!std::isfinite(y)) {
     return;
   }
@@ -1285,10 +1293,11 @@ void Canvas2DRecorderContext::setShadowOffsetY(double y) {
 }
 
 double Canvas2DRecorderContext::shadowBlur() const {
-  return GetState().ShadowBlur();
+  return GetState().ShadowBlur() / effective_zoom_;
 }
 
 void Canvas2DRecorderContext::setShadowBlur(double blur) {
+  blur *= effective_zoom_;
   if (!std::isfinite(blur) || blur < 0) {
     return;
   }
@@ -1602,6 +1611,14 @@ void Canvas2DRecorderContext::transform(double m11,
   }
 }
 
+// On a platform where zoom_for_dsf is not enabled, the recording canvas has its
+// logic to account for the device scale factor. Therefore, when the transform
+// of the canvas happen, we must account for the effective_zoom_ such that the
+// recording canvas would have the correct behavior.
+//
+// The setTransform always call resetTransform, so integrating the
+// |effective_zoom_| in resetTransform instead of setTransform, to avoid
+// integrating it twice if we have resetTransform and setTransform API calls.
 void Canvas2DRecorderContext::resetTransform() {
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
   if (!c) {
@@ -1617,6 +1634,9 @@ void Canvas2DRecorderContext::resetTransform() {
   // It is possible that CTM is identity while CTM is not invertible.
   // When CTM becomes non-invertible, realizeSaves() can make CTM identity.
   if (ctm.IsIdentity() && invertible_ctm) {
+    if (effective_zoom_ != 1) {
+      transform(effective_zoom_, 0, 0, effective_zoom_, 0, 0);
+    }
     return;
   }
 
@@ -1633,6 +1653,10 @@ void Canvas2DRecorderContext::resetTransform() {
   // when CTM became non-invertible.
   // It means that resetTransform() restores m_path just before CTM became
   // non-invertible.
+
+  if (effective_zoom_ != 1) {
+    transform(effective_zoom_, 0, 0, effective_zoom_, 0, 0);
+  }
 }
 
 void Canvas2DRecorderContext::setTransform(double m11,
@@ -1665,12 +1689,12 @@ void Canvas2DRecorderContext::setTransform(DOMMatrixInit* transform,
 DOMMatrix* Canvas2DRecorderContext::getTransform() {
   const AffineTransform& t = GetState().GetTransform();
   DOMMatrix* m = DOMMatrix::Create();
-  m->setA(t.A());
-  m->setB(t.B());
-  m->setC(t.C());
-  m->setD(t.D());
-  m->setE(t.E());
-  m->setF(t.F());
+  m->setA(t.A() / effective_zoom_);
+  m->setB(t.B() / effective_zoom_);
+  m->setC(t.C() / effective_zoom_);
+  m->setD(t.D() / effective_zoom_);
+  m->setE(t.E() / effective_zoom_);
+  m->setF(t.F() / effective_zoom_);
   return m;
 }
 

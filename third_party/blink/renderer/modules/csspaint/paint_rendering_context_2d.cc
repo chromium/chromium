@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "third_party/blink/renderer/core/geometry/dom_matrix.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_2d_recorder_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 
 namespace blink {
@@ -16,12 +17,12 @@ PaintRenderingContext2D::PaintRenderingContext2D(
     const PaintRenderingContext2DSettings* context_settings,
     float zoom,
     PaintWorkletGlobalScope* global_scope)
-    : paint_recorder_(container_size, this),
+    : Canvas2DRecorderContext(zoom),
+      paint_recorder_(container_size, this),
       container_size_(container_size),
       context_settings_(context_settings),
-      effective_zoom_(zoom),
       global_scope_(global_scope) {
-  scale(effective_zoom_, effective_zoom_);
+  scale(zoom, zoom);
 
   clip_antialiasing_ = kAntiAliased;
   GetState().SetShouldAntialias(true);
@@ -55,35 +56,6 @@ Color PaintRenderingContext2D::GetCurrentColor() const {
   return Color::kBlack;
 }
 
-// We need to account for the |effective_zoom_| for shadow effects only, and not
-// for line width. This is because the line width is affected by skia's current
-// transform matrix (CTM) while shadows are not. The skia's CTM combines both
-// the canvas context transform and the CSS layout transform. That means, the
-// |effective_zoom_| is implictly applied to line width through CTM.
-double PaintRenderingContext2D::shadowBlur() const {
-  return Canvas2DRecorderContext::shadowBlur() / effective_zoom_;
-}
-
-void PaintRenderingContext2D::setShadowBlur(double blur) {
-  Canvas2DRecorderContext::setShadowBlur(blur * effective_zoom_);
-}
-
-double PaintRenderingContext2D::shadowOffsetX() const {
-  return Canvas2DRecorderContext::shadowOffsetX() / effective_zoom_;
-}
-
-void PaintRenderingContext2D::setShadowOffsetX(double x) {
-  Canvas2DRecorderContext::setShadowOffsetX(x * effective_zoom_);
-}
-
-double PaintRenderingContext2D::shadowOffsetY() const {
-  return Canvas2DRecorderContext::shadowOffsetY() / effective_zoom_;
-}
-
-void PaintRenderingContext2D::setShadowOffsetY(double y) {
-  Canvas2DRecorderContext::setShadowOffsetY(y * effective_zoom_);
-}
-
 const cc::PaintCanvas* PaintRenderingContext2D::GetPaintCanvas() const {
   return &paint_recorder_.getRecordingCanvas();
 }
@@ -99,33 +71,6 @@ PredefinedColorSpace PaintRenderingContext2D::GetDefaultImageDataColorSpace()
     const {
   // PaintRenderingContext2D does not call getImageData or createImageData.
   NOTREACHED();
-}
-
-
-DOMMatrix* PaintRenderingContext2D::getTransform() {
-  const AffineTransform& t = GetState().GetTransform();
-  DOMMatrix* m = DOMMatrix::Create();
-  m->setA(t.A() / effective_zoom_);
-  m->setB(t.B() / effective_zoom_);
-  m->setC(t.C() / effective_zoom_);
-  m->setD(t.D() / effective_zoom_);
-  m->setE(t.E() / effective_zoom_);
-  m->setF(t.F() / effective_zoom_);
-  return m;
-}
-
-// On a platform where zoom_for_dsf is not enabled, the recording canvas has its
-// logic to account for the device scale factor. Therefore, when the transform
-// of the canvas happen, we must account for the effective_zoom_ such that the
-// recording canvas would have the correct behavior.
-//
-// The Canvas2DRecorderContext::setTransform calls resetTransform, so
-// integrating the effective_zoom_ in here instead of setTransform, to avoid
-// integrating it twice if we have resetTransform and setTransform API calls.
-void PaintRenderingContext2D::resetTransform() {
-  Canvas2DRecorderContext::resetTransform();
-  Canvas2DRecorderContext::transform(effective_zoom_, 0, 0, effective_zoom_, 0,
-                                     0);
 }
 
 void PaintRenderingContext2D::reset() {
