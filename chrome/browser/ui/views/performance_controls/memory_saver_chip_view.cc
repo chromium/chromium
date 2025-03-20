@@ -10,8 +10,6 @@
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_tab_helper.h"
@@ -24,15 +22,7 @@
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/performance_controls/memory_saver_bubble_view.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/feature_engagement/public/event_constants.h"
-#include "components/feature_engagement/public/feature_constants.h"
-#include "components/performance_manager/public/features.h"
-#include "components/performance_manager/public/user_tuning/prefs.h"
-#include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/text/bytes_formatting.h"
@@ -61,11 +51,6 @@ MemorySaverChipView::MemorySaverChipView(
           l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_CHIP_ACCNAME)) {
   DCHECK(browser_);
 
-  auto* manager = performance_manager::user_tuning::
-      UserPerformanceTuningManager::GetInstance();
-  user_performance_tuning_manager_observation_.Observe(manager);
-  OnMemorySaverModeChanged();
-
   SetUpForInOutAnimation(kChipAnimationDuration);
   SetBackgroundVisibility(BackgroundVisibility::kWithLabel);
   SetProperty(views::kElementIdentifierKey, kMemorySaverChipElementId);
@@ -92,8 +77,7 @@ void MemorySaverChipView::UpdateImpl() {
       MemorySaverChipTabHelper::FromWebContents(web_contents);
   auto chip_state = tab_helper->chip_state();
 
-  if (chip_state != memory_saver::ChipState::HIDDEN &&
-      is_memory_saver_mode_enabled_) {
+  if (chip_state != memory_saver::ChipState::HIDDEN) {
     if (!tab_helper->ShouldChipAnimate()) {
       return;
     }
@@ -167,12 +151,6 @@ const gfx::VectorIcon& MemorySaverChipView::GetVectorIcon() const {
 
 views::BubbleDialogDelegate* MemorySaverChipView::GetBubble() const {
   return bubble_;
-}
-
-void MemorySaverChipView::OnMemorySaverModeChanged() {
-  auto* manager = performance_manager::user_tuning::
-      UserPerformanceTuningManager::GetInstance();
-  is_memory_saver_mode_enabled_ = manager->IsMemorySaverModeActive();
 }
 
 BEGIN_METADATA(MemorySaverChipView)

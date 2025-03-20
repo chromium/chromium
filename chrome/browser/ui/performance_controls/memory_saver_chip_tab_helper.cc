@@ -133,7 +133,7 @@ void MemorySaverChipTabHelper::ComputeChipState(
   bool const is_site_supported =
       memory_saver::IsURLSupported(navigation_handle->GetURL());
 
-  if (!(was_discarded &&
+  if (!(is_memory_saver_mode_enabled_ && was_discarded &&
         (discard_reason == mojom::LifecycleUnitDiscardReason::PROACTIVE ||
          discard_reason == mojom::LifecycleUnitDiscardReason::SUGGESTED) &&
         is_site_supported)) {
@@ -163,11 +163,6 @@ void MemorySaverChipTabHelper::UpdatePageActionState() {
   memory_saver::MemorySaverChipController* controller =
       tab_features->memory_saver_chip_controller();
 
-  if (!is_memory_saver_mode_enabled_) {
-    controller->Hide();
-    return;
-  }
-
   switch (chip_state_) {
     case memory_saver::ChipState::HIDDEN:
       controller->Hide();
@@ -191,7 +186,13 @@ void MemorySaverChipTabHelper::UpdatePageActionState() {
 void MemorySaverChipTabHelper::OnMemorySaverModeChanged() {
   is_memory_saver_mode_enabled_ =
       UserPerformanceTuningManager::GetInstance()->IsMemorySaverModeActive();
-  UpdatePageActionState();
+
+  // If disabling the feature, clear any active UI. If enabling, let future
+  // navigation events show the UI.
+  if (!is_memory_saver_mode_enabled_) {
+    chip_state_ = memory_saver::ChipState::HIDDEN;
+    UpdatePageActionState();
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(MemorySaverChipTabHelper);
