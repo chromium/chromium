@@ -370,8 +370,19 @@ mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
   // subdictionary structure depends on the type of input method it's for.  The
   // subdictionary may be null if the user hasn't changed any settings for that
   // input method.
+
+  // TODO(crbug.com/203464079): Use distinct CrOS prefs for nacl_mozc_jp
+  // ("Japanese [for JIS keyboard]") and nacl_mozc_us ("Japanese for US
+  // keyboard") input methods. Due to singleton constraints in the legacy
+  // implementation, unlike all other input methods whose settings were distinct
+  // from one another, these two input methods shared the same settings. Upon
+  // migration to CrOS prefs, the unintended sharing was intentionally retained
+  // until the issue is separately addressed outside the scope of the said
+  // migration. Thus a single Japanese prefs entry with key "nacl_mozc_jp" is
+  // currently used for both "nacl_mozc_jp" and "nacl_mozc_us" input methods.
   std::string_view lookup_engine_id =
       engine_id == kJapaneseUsEngineId ? kJapaneseEngineId : engine_id;
+
   const base::Value::Dict* ime_prefs_ptr =
       prefs.GetDict(::prefs::kLanguageInputMethodSpecificSettings)
           .FindDict(lookup_engine_id);
@@ -408,10 +419,6 @@ mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
     return mojom::InputMethodSettings::NewJapaneseSettings(
         ToMojomInputMethodSettings(input_method_specific_pref));
   }
-  // TODO(b/232341104): Add the code to send the Japanese settings to
-  // the engine if the engine_id is nacl_mozc_jp or nacl_mozc_us.
-  // This will do the inverse of ConvertConfigToJapaneseSettings.
-  // This will be something like InputMethodSettings::NewJapaneseSettings(...)
 
   return nullptr;
 }
