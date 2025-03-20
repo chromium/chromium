@@ -230,6 +230,10 @@ void GlicMetrics::OnGlicWindowClose() {
   }
   inputs_modes_used_.clear();
   base::UmaHistogramEnumeration("Glic.Session.InputModesUsed", modes_used);
+
+  base::UmaHistogramCounts100("Glic.Session.AttachStateChanges",
+                              attach_change_count_);
+  attach_change_count_ = 0;
 }
 
 void GlicMetrics::SetControllers(GlicWindowController* window_controller,
@@ -313,10 +317,16 @@ void GlicMetrics::OnPinningPrefChanged() {
 
 void GlicMetrics::OnAttachedToBrowser(AttachChangeReason reason) {
   base::UmaHistogramEnumeration("Glic.AttachedToBrowser", reason);
+  if (reason != AttachChangeReason::kInit) {
+    attach_change_count_++;
+  }
 }
 
 void GlicMetrics::OnDetachedFromBrowser(AttachChangeReason reason) {
   base::UmaHistogramEnumeration("Glic.DetachedFromBrowser", reason);
+  if (reason != AttachChangeReason::kInit) {
+    attach_change_count_++;
+  }
 }
 
 }  // namespace glic

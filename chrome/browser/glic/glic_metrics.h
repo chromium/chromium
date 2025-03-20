@@ -177,6 +177,7 @@ class GlicMetrics {
   mojom::WebClientMode input_mode_;
   bool did_request_context_ = false;
   std::set<mojom::WebClientMode> inputs_modes_used_;
+  int attach_change_count_ = 0;
 
   // Session state. `session_start_time_` is a sentinel that is cleared in
   // OnGlicWindowClose() and is used to determine whether OnGlicWindowOpen was
