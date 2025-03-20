@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/ui/addresses/android/autofill_address_editor_ui_info_android.h"
 #include "components/autofill/core/browser/ui/addresses/android/autofill_address_ui_component_android.h"
+#include "components/autofill/core/browser/ui/addresses/android/dropdown_key_value_android.h"
 #include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_field.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_metadata.h"
@@ -49,28 +50,23 @@ static std::string JNI_AutofillProfileBridge_GetDefaultCountryCode(
       g_browser_process->GetApplicationLocale());
 }
 
-static void JNI_AutofillProfileBridge_GetSupportedCountries(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_country_code_list,
-    const JavaParamRef<jobject>& j_country_name_list) {
+static std::vector<DropdownKeyValueAndroid>
+JNI_AutofillProfileBridge_GetSupportedCountries(JNIEnv* env) {
   std::vector<std::string> country_codes = GetRegionCodes();
-  std::vector<std::string> known_country_codes;
-  std::vector<std::u16string> known_country_names;
+  std::vector<DropdownKeyValueAndroid> display_countries;
+  display_countries.reserve(country_codes.size());
   std::string locale = g_browser_process->GetApplicationLocale();
-  for (auto country_code : country_codes) {
-    const std::u16string& country_name =
+  for (auto& country_code : country_codes) {
+    std::u16string country_name =
         l10n_util::GetDisplayNameForCountry(country_code, locale);
     // Don't display a country code for which a name is not known yet.
     if (country_name != base::UTF8ToUTF16(country_code)) {
-      known_country_codes.push_back(country_code);
-      known_country_names.push_back(country_name);
+      display_countries.emplace_back(std::move(country_code),
+                                     std::move(country_name));
     }
   }
 
-  Java_AutofillProfileBridge_stringArrayToList(
-      env, ToJavaArrayOfStrings(env, known_country_codes), j_country_code_list);
-  Java_AutofillProfileBridge_stringArrayToList(
-      env, ToJavaArrayOfStrings(env, known_country_names), j_country_name_list);
+  return display_countries;
 }
 
 static std::vector<int> JNI_AutofillProfileBridge_GetRequiredFields(
