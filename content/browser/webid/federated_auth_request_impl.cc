@@ -1908,7 +1908,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
       render_frame_host().GetMainFrame()->GetLastCommittedURL().path() != "/");
 }
 
-void FederatedAuthRequestImpl::NotifyAutofillSelection(
+void FederatedAuthRequestImpl::NotifyAutofillSuggestionAccepted(
     const GURL& idp,
     const std::string& account_id) {
   // TODO(crbug.com/380367784): The third argument of OnAccountSelected checks

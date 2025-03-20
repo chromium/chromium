@@ -2125,7 +2125,7 @@ IN_PROC_BROWSER_TEST_F(WebIdDelegationBrowserTest, ConditionalMediation) {
   EXPECT_EQ(suggestions->size(), 1ul);
 
   auto account = (*suggestions)[0];
-  source->NotifyAutofillSelection(
+  source->NotifyAutofillSuggestionAccepted(
       account->identity_provider->idp_metadata.config_url, account->id);
 
   auto public_key = sdjwt::ExportPublicKey(*private_key_);
