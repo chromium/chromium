@@ -231,7 +231,7 @@
     <module name="RegexpSinglelineJava">
       <property name="id" value="ParamComments"/>
       <property name="severity" value="warning"/>
-      <property name="format" value="/\*\*? ?\w+ ?\*/,|, /\*\*? ?\w+ ?\*/"/>
+      <property name="format" value="/\*\*? ?\w+ ?\*/,|, /\*\*? ?\w+ ?\*/(?!\s+InvocationHandler\b)"/>
       <property name="message" value="Parameter comments should use the ErrorProne-aware syntax: /* paramName= */."/>
     </module>
     <module name="RegexpSinglelineJava">
