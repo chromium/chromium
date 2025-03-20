@@ -165,11 +165,6 @@ class MEDIA_EXPORT RenditionManager {
   // usually so small that an iteration is not significantly slow.
   std::optional<RenditionID> LookupRendition(const Rendition* rendition);
 
-  // Determines the set and order of format components used to generate a human
-  // readable (and differentiable!) name for a variant stream.
-  std::vector<VariantStream::FormatComponent> DetermineVariantStreamFormatting()
-      const;
-
   // Selects the best rendition based with an optionally given language, and a
   // flag stating whether only renditions tagged with "AUTOSELECT=TRUE" may be
   // selected. The premise here is to prefer renditions in order of:

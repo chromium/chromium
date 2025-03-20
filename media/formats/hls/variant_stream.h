@@ -47,6 +47,13 @@ class MEDIA_EXPORT VariantStream {
   VariantStream& operator=(const VariantStream&) = delete;
   VariantStream& operator=(VariantStream&&) = delete;
 
+  // Determine an optimal way to format media tracks that point back to the
+  // collection of variants. This determines both the minimum set of unique
+  // properties that can be used to uniquely identify a variant as well as an
+  // order of precedence.
+  static std::vector<FormatComponent> OptimalFormatForCollection(
+      const std::vector<VariantStream>& streams);
+
   // The URI of the rendition provided by the playlist for clients that do not
   // support multiple renditions.
   const GURL& GetPrimaryRenditionUri() const { return primary_rendition_uri_; }
