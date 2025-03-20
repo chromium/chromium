@@ -19358,7 +19358,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "IsWasmTtsComponentUpdaterEnabled"
+                        "WasmTtsComponentUpdaterEnabled"
                     ]
                 }
             ]
