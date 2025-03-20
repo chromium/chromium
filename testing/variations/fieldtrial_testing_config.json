@@ -12118,6 +12118,11 @@
                     "enable_features": [
                         "LensUnaryApisWithHttpTransportEnabled",
                         "LensUnaryHttpTransportEnabled"
+                    ],
+                    "disable_features": [
+                        "LensBlockFetchObjectsInteractionRPCsOnSeparateHandshake",
+                        "LensPrewarmHardStickinessInInputSelection",
+                        "LensPrewarmHardStickinessInQueryFormulation"
                     ]
                 }
             ]
