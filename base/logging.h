@@ -321,11 +321,14 @@ int GetVlogLevel(const char (&file)[N]) {
   // on Linux (tested locally by pbos@, 2025-03-14). Parts of the code can, and
   // do, override ENABLED_VLOG_LEVEL to collect logs in the wild. The rest is
   // dead-code stripped.
-#if defined(OFFICIAL_BUILD)
+  //
+  // This is currently disabled on ChromeOS as anecdata seems to suggest that
+  // they rely much more on capturing logs in the wild.
+#if defined(OFFICIAL_BUILD) && !BUILDFLAG(IS_CHROMEOS)
   return -1;
 #else
   return GetVlogLevelHelper(file, N);
-#endif  // defined(OFFICIAL_BUILD)
+#endif  // defined(OFFICIAL_BUILD) && !BUILDFLAG(IS_CHROMEOS)
 }
 
 // Sets the common items you want to be prepended to each log message.
