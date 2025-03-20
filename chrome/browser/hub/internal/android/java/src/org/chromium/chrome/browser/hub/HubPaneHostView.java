@@ -12,7 +12,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +19,6 @@ import android.view.ViewParent;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
@@ -35,15 +33,11 @@ public class HubPaneHostView extends FrameLayout {
     private ViewGroup mSnackbarContainer;
     private @Nullable View mCurrentViewRoot;
     private final AnimationHandler mFadeAnimatorHandler;
-    private final AnimationHandler mColorBlendAnimatorHandler;
-    private final HubColorBlendAnimatorSetHelper mAnimatorSetBuilder;
 
     /** Default {@link FrameLayout} constructor called by inflation. */
     public HubPaneHostView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
         mFadeAnimatorHandler = new AnimationHandler();
-        mColorBlendAnimatorHandler = new AnimationHandler();
-        mAnimatorSetBuilder = new HubColorBlendAnimatorSetHelper();
     }
 
     @Override
@@ -53,8 +47,6 @@ public class HubPaneHostView extends FrameLayout {
         mPaneFrame = findViewById(R.id.pane_frame);
         mHairline = findViewById(R.id.pane_top_hairline);
         mSnackbarContainer = findViewById(R.id.pane_host_view_snackbar_container);
-
-        registerColorBlends();
     }
 
     void setRootView(@Nullable View newRootView) {
@@ -91,25 +83,13 @@ public class HubPaneHostView extends FrameLayout {
         }
     }
 
-    void setColorScheme(HubColorSchemeUpdate colorSchemeUpdate) {
-        @HubColorScheme int newColorScheme = colorSchemeUpdate.newColorScheme;
-        @HubColorScheme int prevColorScheme = colorSchemeUpdate.previousColorScheme;
-
-        @ColorInt int hairlineColor = HubColors.getHairlineColor(getContext(), newColorScheme);
-        mHairline.setImageTintList(ColorStateList.valueOf(hairlineColor));
-
-        AnimatorSet animatorSet =
-                mAnimatorSetBuilder
-                        .setNewColorScheme(newColorScheme)
-                        .setPreviousColorScheme(prevColorScheme)
-                        .build();
-        mColorBlendAnimatorHandler.startAnimation(animatorSet);
+    void setColorMixer(HubColorMixer mixer) {
+        registerColorBlends(mixer);
     }
 
-    private void registerColorBlends() {
+    private void registerColorBlends(HubColorMixer mixer) {
         Context context = getContext();
-
-        mAnimatorSetBuilder.registerBlend(
+        mixer.registerBlend(
                 new SingleHubViewColorBlend(
                         PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
                         colorScheme -> HubColors.getBackgroundColor(context, colorScheme),

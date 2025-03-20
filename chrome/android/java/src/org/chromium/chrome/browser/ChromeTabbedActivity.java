@@ -980,9 +980,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                 new ObservableSupplierImpl<>(SemanticColorUtils.getDefaultBgColor(this));
         mHubManagerSupplier.onAvailable(
                 (hubManager) -> {
-                    ObservableSupplier<Integer> hubToolbarOverviewColorSupplier =
-                            hubManager.getHubToolbarOverviewColorSupplier();
-                    Callback<Integer> hubToolbarOverviewColorObserver = overviewColorSupplier::set;
+                    ObservableSupplier<Integer> hubOverviewColorSupplier =
+                            hubManager.getHubOverviewColorSupplier();
+                    Callback<Integer> hubOverviewColorObserver = overviewColorSupplier::set;
 
                     ObservableSupplier<Boolean> hubVisibilitySupplier =
                             hubManager.getHubVisibilitySupplier();
@@ -990,11 +990,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                     Callback<Boolean> hubVisibilityObserver =
                             isVisible -> {
                                 if (isVisible) {
-                                    hubToolbarOverviewColorSupplier.addObserver(
-                                            hubToolbarOverviewColorObserver);
+                                    hubOverviewColorSupplier.addObserver(hubOverviewColorObserver);
                                 } else {
-                                    hubToolbarOverviewColorSupplier.removeObserver(
-                                            hubToolbarOverviewColorObserver);
+                                    hubOverviewColorSupplier.removeObserver(
+                                            hubOverviewColorObserver);
                                 }
                             };
                     hubVisibilitySupplier.addObserver(hubVisibilityObserver);
@@ -1002,8 +1001,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                     mCleanUpHubOverviewColorObserver =
                             () -> {
                                 hubVisibilitySupplier.removeObserver(hubVisibilityObserver);
-                                hubToolbarOverviewColorSupplier.removeObserver(
-                                        hubToolbarOverviewColorObserver);
+                                hubOverviewColorSupplier.removeObserver(hubOverviewColorObserver);
                             };
                 });
         return overviewColorSupplier;

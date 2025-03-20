@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.hub;
 
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.ACTION_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION;
-import static org.chromium.chrome.browser.hub.HubToolbarProperties.COLOR_SCHEME;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.HUB_SEARCH_ENABLED_STATE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_VISIBLE;
@@ -16,7 +15,6 @@ import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LISTENER;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LOUPE_VISIBLE;
-import static org.chromium.chrome.browser.hub.HubToolbarProperties.TOOLBAR_OVERVIEW_COLOR_SETTER;
 
 import android.content.ComponentCallbacks;
 import android.content.Context;
@@ -32,7 +30,6 @@ import androidx.core.util.Pair;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
@@ -130,8 +127,7 @@ public class HubToolbarMediator {
             @NonNull PropertyModel propertyModel,
             @NonNull PaneManager paneManager,
             @NonNull Tracker tracker,
-            @NonNull SearchActivityClient searchActivityClient,
-            @NonNull ObservableSupplierImpl<Integer> hubToolbarOverviewColorSupplier) {
+            @NonNull SearchActivityClient searchActivityClient) {
         mContext = context;
         mPropertyModel = propertyModel;
         mPaneManager = paneManager;
@@ -176,7 +172,6 @@ public class HubToolbarMediator {
             mComponentCallbacks.onConfigurationChanged(mContext.getResources().getConfiguration());
             mContext.registerComponentCallbacks(mComponentCallbacks);
         }
-        mPropertyModel.set(TOOLBAR_OVERVIEW_COLOR_SETTER, hubToolbarOverviewColorSupplier::set);
     }
 
     /** Cleans up observers. */
@@ -265,16 +260,22 @@ public class HubToolbarMediator {
         mPropertyModel.set(PANE_SWITCHER_BUTTON_DATA, buttonDataList);
     }
 
+    private FullButtonData wrapButtonData(
+            @PaneId int paneId, @NonNull DisplayButtonData referenceButtonData) {
+        Runnable onPress =
+                () -> {
+                    // TODO(crbug.com/345492118): Move the event name into the tab group pane impl.
+                    if (paneId == PaneId.TAB_GROUPS) {
+                        mTracker.notifyEvent("tab_groups_surface_clicked");
+                    }
+                    mPaneManager.focusPane(paneId);
+                    RecordHistogram.recordEnumeratedHistogram(
+                            "Android.Hub.PaneFocused.PaneSwitcher", paneId, PaneId.COUNT);
+                };
+        return new DelegateButtonData(referenceButtonData, onPress);
+    }
+
     private void onFocusedPaneChange(@Nullable Pane focusedPane) {
-        @HubColorScheme int newColorScheme = HubColors.getColorSchemeSafe(focusedPane);
-        @HubColorScheme
-        int prevColorScheme =
-                mPropertyModel.get(COLOR_SCHEME) == null
-                        ? newColorScheme
-                        : mPropertyModel.get(COLOR_SCHEME).newColorScheme;
-
-        mPropertyModel.set(COLOR_SCHEME, new HubColorSchemeUpdate(newColorScheme, prevColorScheme));
-
         @Nullable Integer focusedPaneId = focusedPane == null ? null : focusedPane.getPaneId();
         if (focusedPaneId == null) {
             mPropertyModel.set(PANE_SWITCHER_INDEX, INVALID_PANE_SWITCHER_INDEX);
@@ -310,21 +311,6 @@ public class HubToolbarMediator {
 
     private void onHubSearchEnabledStateChange(boolean enabled) {
         mPropertyModel.set(HUB_SEARCH_ENABLED_STATE, enabled);
-    }
-
-    private FullButtonData wrapButtonData(
-            @PaneId int paneId, @NonNull DisplayButtonData referenceButtonData) {
-        Runnable onPress =
-                () -> {
-                    // TODO(crbug.com/345492118): Move the event name into the tab group pane impl.
-                    if (paneId == PaneId.TAB_GROUPS) {
-                        mTracker.notifyEvent("tab_groups_surface_clicked");
-                    }
-                    mPaneManager.focusPane(paneId);
-                    RecordHistogram.recordEnumeratedHistogram(
-                            "Android.Hub.PaneFocused.PaneSwitcher", paneId, PaneId.COUNT);
-                };
-        return new DelegateButtonData(referenceButtonData, onPress);
     }
 
     private void consumeButtonLookup(PaneButtonLookup paneButtonLookup) {
