@@ -263,8 +263,7 @@ enum class PermissionPromptDisposition {
   // automatically shows a bubble.
   LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE = 12,
 
-  // Only used on desktop, a bubble shown near the embedded permission element,
-  // after the user clicks on the element.
+  // A prompt shown as a result of the user clicking the permission element.
   ELEMENT_ANCHORED_BUBBLE = 13,
 
   // Only used on macOS, a native OS provided permission prompt.

@@ -59,12 +59,16 @@ EmbeddedPermissionPromptAndroid::Create(content::WebContents* web_contents,
 
 PermissionPromptDisposition
 EmbeddedPermissionPromptAndroid::GetPromptDisposition() const {
-  return PermissionPromptDisposition::MODAL_DIALOG;
+  return PermissionPromptDisposition::ELEMENT_ANCHORED_BUBBLE;
 }
 
 bool EmbeddedPermissionPromptAndroid::ShouldFinalizeRequestAfterDecided()
     const {
   return false;
+}
+
+bool EmbeddedPermissionPromptAndroid::IsAskPrompt() const {
+  return (GetEmbeddedPromptVariant() == Variant::kAsk);
 }
 
 std::vector<permissions::ElementAnchoredBubbleVariant>
