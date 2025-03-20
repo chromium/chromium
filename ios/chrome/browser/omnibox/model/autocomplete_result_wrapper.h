@@ -12,12 +12,19 @@
 @protocol AutocompleteSuggestionGroup;
 @class AutocompleteMatchFormatter;
 class AutocompleteResult;
+class OmniboxClient;
 @class OmniboxPedalAnnotator;
 class TemplateURLService;
 
 // The autocomplete match wrapper. This class is responsible for wrapping
 // AutocompleteResult.
 @interface AutocompleteResultWrapper : NSObject
+
+/// Initializes the wrapper with the given omnibox client.
+- (instancetype)initWithOmniboxClient:(OmniboxClient*)omniboxClient
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 /// The autocomplete match wrapper delegate.
 @property(nonatomic, weak) id<AutocompleteResultWrapperDelegate> delegate;

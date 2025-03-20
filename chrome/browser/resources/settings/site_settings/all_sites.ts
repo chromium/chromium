@@ -623,10 +623,13 @@ export class AllSitesElement extends AllSitesElementBase {
    *     is applied.
    */
   private getClearDataButtonString_(): string {
-    const buttonStringId = this.isFiltered_() && !this.isRwsV2Filtered_() ?
-        'siteSettingsDeleteDisplayedStorageLabel' :
-        'siteSettingsDeleteAllStorageLabel';
-    return this.i18n(buttonStringId);
+    if (this.isFiltered_()) {
+      const messageId = this.isRwsV2Filtered_() ?
+          'allSitesRwsDeleteDataButtonLabel' :
+          'siteSettingsDeleteDisplayedStorageLabel';
+      return this.i18n(messageId);
+    }
+    return this.i18n('siteSettingsDeleteAllStorageLabel');
   }
 
   /**
@@ -757,10 +760,13 @@ export class AllSitesElement extends AllSitesElementBase {
    * @return The appropriate title for clear storage confirmation dialog.
    */
   private getClearAllStorageDialogTitle_(): string {
-    const titleId = this.isFiltered_() && !this.isRwsV2Filtered_() ?
-        'siteSettingsDeleteDisplayedStorageDialogTitle' :
-        'siteSettingsDeleteAllStorageDialogTitle';
-    return loadTimeData.substituteString(this.i18n(titleId), this.totalUsage_);
+    if (this.isFiltered_()) {
+      const messageId = this.isRwsV2Filtered_() ?
+          'allSitesRwsDeleteDataDialogTitle' :
+          'siteSettingsDeleteDisplayedStorageDialogTitle';
+      return this.i18n(messageId);
+    }
+    return this.i18n('siteSettingsDeleteAllStorageDialogTitle');
   }
 
   /**

@@ -47653,6 +47653,7 @@ should be able to be added at any place in this file.
 </action-suffix>
 
 <action-suffix separator="." ordering="suffix">
+  <suffix name="Glic" label="Glic edition."/>
   <suffix name="SafetyAwareness" label="Safety Awareness edition."/>
   <suffix name="Spark" label="Spark edition."/>
   <suffix name="TestEdition" label="Test edition."/>

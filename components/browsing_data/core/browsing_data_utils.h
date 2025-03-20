@@ -76,7 +76,8 @@ enum class DeleteBrowsingDataAction {
   kHistoryPageEntries = 5,
   kQuickDelete = 6,
   kPageInfoResetPermissions = 7,
-  kMaxValue = kPageInfoResetPermissions,
+  kRwsDeleteAllData = 8,
+  kMaxValue = kRwsDeleteAllData,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

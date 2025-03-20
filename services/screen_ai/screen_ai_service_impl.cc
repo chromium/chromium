@@ -429,6 +429,11 @@ void ScreenAIService::SetClientType(mojom::OcrClientType client_type) {
   ocr_client_types_[screen_ai_annotators_.current_receiver()] = client_type;
 }
 
+void ScreenAIService::SetClientType(mojom::MceClientType client_type) {
+  mce_client_types_[screen2x_main_content_extractors_.current_receiver()] =
+      client_type;
+}
+
 void ScreenAIService::PerformOcrAndReturnAnnotation(
     const SkBitmap& image,
     PerformOcrAndReturnAnnotationCallback callback) {
@@ -458,7 +463,6 @@ void ScreenAIService::PerformOcrAndReturnAXTreeUpdate(
 
 void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,
                                          ExtractMainContentCallback callback) {
-  main_content_extraction_last_used_ = base::TimeTicks::Now();
   ui::AXTree tree;
   std::optional<std::vector<int32_t>> content_node_ids;
   bool success = ExtractMainContentInternal(snapshot, tree, content_node_ids);
@@ -502,6 +506,11 @@ bool ScreenAIService::ExtractMainContentInternal(
     const ui::AXTreeUpdate& snapshot,
     ui::AXTree& tree,
     std::optional<std::vector<int32_t>>& content_node_ids) {
+  // TODO(crbug.com/chrome/359853518): Add latency, usage, and success metrics
+  // separated on client type and add client type as crash key.
+  CHECK(base::Contains(mce_client_types_,
+                       screen2x_main_content_extractors_.current_receiver()));
+  main_content_extraction_last_used_ = base::TimeTicks::Now();
   // Early return if input is empty.
   if (snapshot.nodes.empty()) {
     return false;

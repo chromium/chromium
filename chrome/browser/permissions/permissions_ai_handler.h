@@ -33,6 +33,7 @@ class PermissionsAiHandler
           callback);
 
  private:
+  class PermissionsAiSession;
   // Adds itself as OnDeviceModelAvailabilityObserver to the optimization guide
   // infrastructure.
   void StartListeningToOnDeviceModelUpdate();
@@ -41,9 +42,6 @@ class PermissionsAiHandler
   // guide infrastructure, e.g. when the model is done downloading.
   void StopListeningToOnDeviceModelUpdate();
 
-  // Initializes session_ field.
-  void CreateModelExecutorSession();
-
   // optimization_guide::OnDeviceModelAvailabilityObserver.
   void OnDeviceModelAvailabilityChanged(
       optimization_guide::ModelBasedCapabilityKey feature,
@@ -51,12 +49,8 @@ class PermissionsAiHandler
 
   void SetOnDeviceModelAvailable();
 
-  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-      session_;
-
-  void OnModelExecutionComplete(
-      optimization_guide::OptimizationGuideModelStreamingExecutionResult
-          result);
+  // Previous inquiry to the on-device model is not finished yet.
+  bool ModelExecutionAlreadyInProgress();
 
   // The underlying session provided by optimization guide component.
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_;
@@ -68,11 +62,8 @@ class PermissionsAiHandler
 
   // Model downloading has begun at this point in time.
   base::TimeTicks on_device_download_start_time_;
-  base::TimeTicks session_execution_start_time_;
-  base::OnceCallback<void(
-      std::optional<optimization_guide::proto::PermissionsAiResponse>)>
-      inquire_on_device_model_callback_;
-  base::WeakPtrFactory<PermissionsAiHandler> weak_ptr_factory_{this};
+
+  std::unique_ptr<PermissionsAiSession> permissions_ai_session_;
 };
 }  // namespace permissions
 

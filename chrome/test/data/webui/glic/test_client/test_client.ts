@@ -146,6 +146,8 @@ class WebClient implements GlicWebClient {
     logMessage('initialize called');
     $.pageHeader!.classList.add('connected');
 
+
+
     const ver = await browser.getChromeVersion();
     logMessage(`Chrome version: ${JSON.stringify(ver)}`);
 
@@ -326,6 +328,10 @@ async function checkMicrophonePermission():
     return 'unknown';
   }
 }
+
+$.pageHeader.addEventListener('contextmenu', function(event) {
+  event.preventDefault();
+});
 
 // Test Sizing:
 $.enableTestSizingMode.addEventListener('click', () => {

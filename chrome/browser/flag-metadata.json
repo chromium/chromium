@@ -6612,6 +6612,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "omnibox-hide-suggestion-group-headers",
+    "owners": ["khalidpeer@chromium.org", "chrome-desktop-search@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "omnibox-https-upgrades",
     "owners": ["meacer@chromium.org", "trusty-transport@chromium.org" ],
     "expiry_milestone": 110

@@ -2804,6 +2804,12 @@ const char kOmniboxFocusTriggersWebAndSRPZeroSuggestDescription[] =
     "focused, subject to the same conditions and restrictions as on-clobber "
     "suggestions.";
 
+const char kOmniboxHideSuggestionGroupHeadersName[] =
+    "Hide suggestion group headers in the Omnibox popup";
+const char kOmniboxHideSuggestionGroupHeadersDescription[] =
+    "If enabled, suggestion group headers will be hidden in the Omnibox popup "
+    "(e.g. to minimize visual clutter in the zero-prefix state)";
+
 const char kOmniboxUrlSuggestionsOnFocus[] =
     "Omnibox on-focus URL suggestions on web and SRP";
 const char kOmniboxUrlSuggestionsOnFocusDecription[] =

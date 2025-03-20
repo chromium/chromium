@@ -9,6 +9,7 @@ import type {CenterRotatedBox} from 'chrome-untrusted://lens-overlay/geometry.mo
 import type {LensPageRemote} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
 import {SemanticEvent} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
 import type {SimplifiedTextLayerElement} from 'chrome-untrusted://lens-overlay/simplified_text_layer.js';
+import {WritingDirection} from 'chrome-untrusted://lens-overlay/text.mojom-webui.js';
 import type {TextCopyCallback} from 'chrome-untrusted://lens-overlay/text_layer_base.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
@@ -16,13 +17,48 @@ import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/pol
 import {eventToPromise} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {assertWithinThreshold} from '../utils/object_utils.js';
-import {addEmptyTextToPage, addGenericWordsToPageNormalized} from '../utils/text_utils.js';
+import {addEmptyTextToPage, addGenericWordsToPageNormalized, addTextToPage, createLine, createParagraph, createText, createWord} from '../utils/text_utils.js';
 
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
 
 const TEXT_RECEIVED_TIMEOUT_MS = 1000000;
 const COPY_TEXT_TIMEOUT_MS = 1000001;
 const TRANSLATE_TEXT_TIMEOUT_MS = 1000002;
+
+const CURVED_TEXT = createText([
+  createParagraph([
+    createLine([
+      createWord(
+          'hello', {x: 0.1, y: 0.1, width: 0.1, height: 0.1},
+          /*rotation=*/ 0.1),
+      createWord(
+          'there', {x: 0.11, y: 0.11, width: 0.1, height: 0.1},
+          /*rotation=*/ 0.101),
+    ]),
+  ]),
+  createParagraph([
+    createLine([createWord(
+        'world', {x: 0.3, y: 0.3, width: 0.1, height: 0.1},
+        /*rotation=*/ 0.2)]),
+  ]),
+]);
+const TOP_TO_BOTTOM_TEXT = createText([
+  createParagraph([
+    createLine([
+      createWord(
+          'hello', {x: 0.1, y: 0.1, width: 0.1, height: 0.11}, /*rotation=*/ 0,
+          WritingDirection.kTopToBottom),
+      createWord(
+          'there', {x: 0.11, y: 0.11, width: 0.12, height: 0.1},
+          /*rotation=*/ 0, WritingDirection.kTopToBottom),
+    ]),
+  ]),
+  createParagraph([
+    createLine([createWord(
+        'world', {x: 0.3, y: 0.3, width: 0.1, height: 0.11}, /*rotation=*/ 0,
+        WritingDirection.kTopToBottom)]),
+  ]),
+]);
 
 suite('SimplifiedSelection', function() {
   let testBrowserProxy: TestLensOverlayBrowserProxy;
@@ -379,6 +415,17 @@ suite('SimplifiedSelection', function() {
     assertWithinThreshold(
         (expectedLine2.y - expectedLine2.height / 2),
         secondRect.top / bodyRect.height, threshold);
+  });
+
+  test('NewRegionTextClearsHighlights', async () => {
+    await addEmptyTextToPage(callbackRouterRemote);
+    // Add 3 words to the region text response.
+    await addGenericWordsToPageNormalized(callbackRouterRemote);
+    await waitAfterNextRender(textLayerElement);
+    assertEquals(
+        2,
+        textLayerElement.shadowRoot.querySelectorAll('.highlighted-line')
+            .length);
 
     // Getting a follow-up text response should clear highlights.
     await addEmptyTextToPage(callbackRouterRemote);
@@ -387,5 +434,99 @@ suite('SimplifiedSelection', function() {
         0,
         textLayerElement.shadowRoot.querySelectorAll('.highlighted-line')
             .length);
+
+    // Add 3 words to the region text response.
+    await addTextToPage(callbackRouterRemote, TOP_TO_BOTTOM_TEXT);
+    await waitAfterNextRender(textLayerElement);
+    assertEquals(
+        2,
+        textLayerElement.shadowRoot.querySelectorAll('.highlighted-line')
+            .length);
+  });
+
+  test('ShowHighlightedRegionTextCurvedText', async () => {
+    await addEmptyTextToPage(callbackRouterRemote);
+    // Add 3 words with writing direction kTopToBottom.
+    await addTextToPage(callbackRouterRemote, CURVED_TEXT);
+    await waitAfterNextRender(textLayerElement);
+
+    const highlightedLineElements: NodeListOf<HTMLElement> =
+        textLayerElement.shadowRoot.querySelectorAll('.highlighted-line');
+    assertEquals(2, highlightedLineElements.length);
+    const bodyRect = document.body.getBoundingClientRect();
+    const threshold = 1e-2;
+
+    const firstHighlightedLine = highlightedLineElements.item(0);
+    const expectedLine1 = {x: 0.105, y: 0.105, width: 0.11, height: 0.11};
+    assertWithinThreshold(
+        expectedLine1.width, firstHighlightedLine.offsetWidth / bodyRect.width,
+        threshold);
+    assertWithinThreshold(
+        expectedLine1.height,
+        firstHighlightedLine.offsetHeight / bodyRect.height, threshold);
+    assertWithinThreshold(
+        (expectedLine1.x - expectedLine1.width / 2),
+        firstHighlightedLine.offsetLeft / bodyRect.width, threshold);
+    assertWithinThreshold(
+        (expectedLine1.y - expectedLine1.height / 2),
+        firstHighlightedLine.offsetTop / bodyRect.height, threshold);
+
+    const secondLine = highlightedLineElements.item(1);
+    const expectedLine2 = {x: 0.3, y: 0.3, width: 0.1, height: 0.1};
+    assertWithinThreshold(
+        expectedLine2.width, secondLine.offsetWidth / bodyRect.width,
+        threshold);
+    assertWithinThreshold(
+        expectedLine2.height, secondLine.offsetHeight / bodyRect.height,
+        threshold);
+    assertWithinThreshold(
+        (expectedLine2.x - expectedLine2.width / 2),
+        secondLine.offsetLeft / bodyRect.width, threshold);
+    assertWithinThreshold(
+        (expectedLine2.y - expectedLine2.height / 2),
+        secondLine.offsetTop / bodyRect.height, threshold);
+  });
+
+  test('ShowHighlightedRegionTextTopToBottomWritingDirection', async () => {
+    await addEmptyTextToPage(callbackRouterRemote);
+    // Add 3 words with writing direction kTopToBottom.
+    await addTextToPage(callbackRouterRemote, TOP_TO_BOTTOM_TEXT);
+    await waitAfterNextRender(textLayerElement);
+
+    const highlightedLineElements: NodeListOf<Element> =
+        textLayerElement.shadowRoot.querySelectorAll('.highlighted-line');
+    assertEquals(2, highlightedLineElements.length);
+    const bodyRect = document.body.getBoundingClientRect();
+    const threshold = 1e-4;
+
+    const firstHighlightedLine = highlightedLineElements.item(0);
+    const rect = firstHighlightedLine.getBoundingClientRect();
+
+    const expectedLine1 = {x: 0.11, y: 0.1025, width: 0.12, height: 0.115};
+    assertWithinThreshold(
+        expectedLine1.width, rect.width / bodyRect.width, threshold);
+    assertWithinThreshold(
+        expectedLine1.height, rect.height / bodyRect.height, threshold);
+    assertWithinThreshold(
+        (expectedLine1.x - expectedLine1.width / 2), rect.left / bodyRect.width,
+        threshold);
+    assertWithinThreshold(
+        (expectedLine1.y - expectedLine1.height / 2),
+        rect.top / bodyRect.height, threshold);
+
+    const secondLine = highlightedLineElements.item(1);
+    const secondRect = secondLine.getBoundingClientRect();
+
+    const expectedLine2 = {x: 0.3, y: 0.3, width: 0.1, height: 0.11};
+    assertWithinThreshold(
+        expectedLine2.width, secondRect.width / bodyRect.width, threshold);
+    assertWithinThreshold(
+        expectedLine2.height, secondRect.height / bodyRect.height, threshold);
+    assertWithinThreshold(
+        (expectedLine2.x - expectedLine2.width / 2),
+        secondRect.left / bodyRect.width, threshold);
+    assertWithinThreshold(
+        (expectedLine2.y - expectedLine2.height / 2),
+        secondRect.top / bodyRect.height, threshold);
   });
 });

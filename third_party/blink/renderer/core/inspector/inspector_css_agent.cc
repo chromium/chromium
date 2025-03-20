@@ -2236,6 +2236,11 @@ protocol::Response InspectorCSSAgent::resolveValues(
   }
   DCHECK(property_name.has_value());
 
+  if (CSSProperty::Get(property_name->Id()).IsShorthand()) {
+    return protocol::Response::ServerError(
+        "Property name should not be a shorthand.");
+  }
+
   *results = std::make_unique<protocol::Array<String>>();
   for (auto value : *values) {
     const CSSValue* parsed_value = nullptr;

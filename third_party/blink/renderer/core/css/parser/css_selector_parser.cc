@@ -1346,13 +1346,25 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeCompoundSelector(
     return {};  // Failure.
   }
 
+  std::vector<size_t> has_pseudo_index_in_compound;
   // Consume all the simple selectors that are not tag names.
   while (ConsumeSimpleSelector(stream, result_flags)) {
     const CSSSelector& simple_selector = output_.back();
     if (simple_selector.Match() == CSSSelector::kPseudoElement) {
       restricting_pseudo_element_ = simple_selector.GetPseudoType();
     }
+    if (simple_selector.GetPseudoType() == CSSSelector::kPseudoHas) {
+      has_pseudo_index_in_compound.push_back(output_.size() - 1);
+    }
     output_.back().SetRelation(CSSSelector::kSubSelector);
+  }
+  if (found_host_in_compound_) {
+    for (size_t has_pseudo_index : has_pseudo_index_in_compound) {
+      DCHECK_LT(has_pseudo_index, output_.size());
+      CSSSelector* has_pseudo = &output_[has_pseudo_index];
+      DCHECK_EQ(has_pseudo->GetPseudoType(), CSSSelector::kPseudoHas);
+      has_pseudo->SetHasArgumentMatchInShadowTree();
+    }
   }
 
   // While inside a nested selector like :is(), the default namespace shall
@@ -1745,9 +1757,6 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
       }
       if (local_result_flags & kContainsComplexSelector) {
         selector.SetContainsComplexLogicalCombinationsInsideHasPseudoClass();
-      }
-      if (found_host_in_compound_) {
-        selector.SetHasArgumentMatchInShadowTree();
       }
       output_.push_back(std::move(selector));
       result_flags |= local_result_flags;

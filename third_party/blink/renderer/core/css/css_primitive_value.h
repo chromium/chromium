@@ -463,7 +463,9 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   // ConsumeNumberOrPercent() and call ComputeNumber() on whatever we get
   // back.
   double ComputeNumber(const CSSLengthResolver&) const;
-  double ComputePercentage(const CSSLengthResolver&) const;
+
+  template <typename T = double>
+  T ComputePercentage(const CSSLengthResolver&) const;
   double ComputeValueInCanonicalUnit(const CSSLengthResolver&) const;
 
   std::optional<double> GetValueIfKnown() const;

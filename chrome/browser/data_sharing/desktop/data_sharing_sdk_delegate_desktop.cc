@@ -209,6 +209,16 @@ void DataSharingSDKDelegateDesktop::OnReadGroups(
   std::move(callback).Run(result);
 }
 
+void DataSharingSDKDelegateDesktop::ReadGroupWithToken(
+    const data_sharing_pb::ReadGroupWithTokenParams& params,
+    base::OnceCallback<void(
+        const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&)>
+        callback) {
+  // TODO(crbug.com/402208925): Implement this.
+  std::move(callback).Run(base::unexpected(absl::Status(
+      absl::StatusCode::kUnimplemented, "Read Groups not implemented")));
+}
+
 void DataSharingSDKDelegateDesktop::OnLeaveGroup(
     base::OnceCallback<void(const absl::Status&)> callback,
     int status_code) {

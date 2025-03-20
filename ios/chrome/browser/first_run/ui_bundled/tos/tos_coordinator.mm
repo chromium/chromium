@@ -62,8 +62,8 @@
   DCHECK(TOSURL);
 
   // Create web view.
-  WKWebView* webView = web::BuildWKWebView(self.viewController.view.bounds,
-                                           self.browser->GetProfile());
+  WKWebView* webView =
+      web::BuildWKWebView(self.viewController.view.bounds, self.profile);
   webView.navigationDelegate = self;
 
   // Loads terms of service into the web view.

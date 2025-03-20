@@ -13,11 +13,6 @@
 namespace content {
 class RenderFrameHost;
 }  // namespace content
-
-namespace optimization_guide {
-class OptimizationGuideDecider;
-}  // namespace optimization_guide
-
 namespace payments::facilitated {
 
 class FacilitatedPaymentsClient;
@@ -33,7 +28,6 @@ class ContentFacilitatedPaymentsDriver : public FacilitatedPaymentsDriver,
  public:
   ContentFacilitatedPaymentsDriver(
       FacilitatedPaymentsClient* client,
-      optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
       content::RenderFrameHost* render_frame_host,
       std::unique_ptr<SecurityChecker> security_checker);
   ContentFacilitatedPaymentsDriver(const ContentFacilitatedPaymentsDriver&) =

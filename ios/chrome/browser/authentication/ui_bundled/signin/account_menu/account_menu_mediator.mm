@@ -68,10 +68,6 @@
   // identities section
   NSMutableArray<id<SystemIdentity>>* _identities;
 
-  // The type of account error that is being displayed in the error section for
-  // signed in accounts. Is set to kNone when there is no error section.
-  syncer::SyncService::UserActionableError _diplayedAccountErrorType;
-
   // Records the displayed primary account info by the view. Used to limit the
   // view updates to only when one of these values is updated.
   NSString* _primaryAccountDisplayedEmail;
@@ -108,7 +104,6 @@
         signin::ConsentLevel::kSignin);
     _syncService = syncService;
     _syncObserver = std::make_unique<SyncObserverBridge>(self, _syncService);
-    _diplayedAccountErrorType = syncer::SyncService::UserActionableError::kNone;
     [self updateIdentitiesIfAllowed];
     _error = GetAccountErrorUIInfo(_syncService);
   }

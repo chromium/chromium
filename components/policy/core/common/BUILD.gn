@@ -335,7 +335,6 @@ source_set("internal") {
     deps += [ "//components/policy/android:jni_headers" ]
   }
   if (is_chromeos) {
-    visibility += [ "//chrome/browser/ash/boca/spotlight/*" ]
     deps += [ "//chromeos/ash/components/system" ]
     sources += [
       "default_chrome_apps_migrator.cc",

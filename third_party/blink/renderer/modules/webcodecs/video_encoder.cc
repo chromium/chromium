@@ -640,9 +640,10 @@ VideoEncoder::VideoEncoder(ScriptState* script_state,
 
 VideoEncoder::~VideoEncoder() = default;
 
-VideoEncoder::ParsedConfig* VideoEncoder::ParseConfig(
+VideoEncoder::ParsedConfig* VideoEncoder::OnNewConfigure(
     const VideoEncoderConfig* config,
     ExceptionState& exception_state) {
+  first_input_transformation_.reset();
   return ParseConfigStatic(config, exception_state);
 }
 
@@ -1073,12 +1074,23 @@ void VideoEncoder::ProcessEncode(Request* request) {
     frame->set_timestamp(blink_timestamp);
   }
 
-  if (frame->metadata().frame_duration.has_value()) {
-    auto duration = *frame->metadata().frame_duration;
-    if (!duration.is_zero() && duration != media::kInfiniteDuration) {
-      frame_metadata_[frame->timestamp()] = FrameMetadata{duration};
-    }
+  base::TimeDelta frame_duration;
+  if (frame->metadata().frame_duration &&
+      frame->metadata().frame_duration != media::kInfiniteDuration &&
+      frame->metadata().frame_duration != media::kNoTimestamp) {
+    frame_duration = *frame->metadata().frame_duration;
   }
+
+  // While this isn't allowed to change between calls to encode(), it may change
+  // after a call to configure(). So we put the transform in FrameMetadata to
+  // ensure orientation is attached to the right decoder config.
+  media::VideoTransformation frame_transform;
+  if (frame->metadata().transformation) {
+    frame_transform = *frame->metadata().transformation;
+  }
+
+  frame_metadata_[frame->timestamp()] = FrameMetadata{
+      .duration = frame_duration, .transformation = frame_transform};
 
   request->StartTracingVideoEncode(encode_options.key_frame,
                                    frame->timestamp());
@@ -1463,13 +1475,13 @@ void VideoEncoder::CallOutputCallback(
   buffer->set_timestamp(output.timestamp);
   buffer->set_is_key_frame(output.key_frame);
 
-  // Get duration from |frame_metadata_|.
+  auto output_transform = media::kNoTransformation;
   const auto it = frame_metadata_.find(output.timestamp);
   if (it != frame_metadata_.end()) {
-    const auto duration = it->second.duration;
-    if (!duration.is_zero() && duration != media::kNoTimestamp) {
-      buffer->set_duration(duration);
+    if (!it->second.duration.is_zero()) {
+      buffer->set_duration(it->second.duration);
     }
+    output_transform = it->second.transformation;
 
     // While encoding happens in presentation order, outputs may be out of order
     // for some codec configurations. The maximum number of reordered outputs is
@@ -1524,6 +1536,11 @@ void VideoEncoder::CallOutputCallback(
     decoder_config->setCodedHeight(encoded_size.height());
     decoder_config->setCodedWidth(encoded_size.width());
 
+    if (RuntimeEnabledFeatures::WebCodecsOrientationEnabled()) {
+      decoder_config->setRotation(output_transform.rotation);
+      decoder_config->setFlip(output_transform.mirrored);
+    }
+
     if (active_config->display_size.has_value()) {
       decoder_config->setDisplayAspectHeight(
           active_config->display_size.value().height());
@@ -1557,6 +1574,37 @@ void VideoEncoder::CallOutputCallback(
 void VideoEncoder::ResetInternal(DOMException* ex) {
   Base::ResetInternal(ex);
   active_encodes_ = 0;
+}
+
+void VideoEncoder::OnNewEncode(InputType* input,
+                               ExceptionState& exception_state) {
+  // Ignore orientation information when the feature is disabled.
+  if (!RuntimeEnabledFeatures::WebCodecsOrientationEnabled()) {
+    return;
+  }
+
+  auto frame = input->frame();
+  if (!frame) {
+    // Let the invalid frame path be taken by calling code.
+    return;
+  }
+
+  auto frame_transform =
+      frame->metadata().transformation.value_or(media::kNoTransformation);
+
+  if (!first_input_transformation_) {
+    first_input_transformation_ = frame_transform;
+    return;
+  }
+
+  if (first_input_transformation_ == frame_transform) {
+    return;
+  }
+
+  exception_state.ThrowDOMException(
+      DOMExceptionCode::kDataError,
+      "Encoding frames with different orientations is not allowed. You must "
+      "either reorient the frames or reconfigure the encoder.");
 }
 
 void FindAnySupported(ScriptPromiseResolver<VideoEncoderSupport>* resolver,

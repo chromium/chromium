@@ -12,9 +12,13 @@
 #include "chrome/browser/ui/views/translate/translate_bubble_view.h"
 #include "content/public/browser/web_contents.h"
 
+// Controls both TranslateBubbleView and PartialTranslateBubbleView shown for
+// a given browser. This controller ensures only one of the two are shown at
+// a time, and is responsible for creating/hiding the bubbles.
 class TranslateBubbleController : public PartialTranslateBubbleModel::Observer {
  public:
-  TranslateBubbleController();
+  // `root_action_item` is used to retrieve the correct Translate ActionItem.
+  explicit TranslateBubbleController(actions::ActionItem* root_action_item);
   ~TranslateBubbleController() override;
   TranslateBubbleController(const TranslateBubbleController&) = delete;
   TranslateBubbleController& operator=(const TranslateBubbleController&) =
@@ -109,6 +113,11 @@ class TranslateBubbleController : public PartialTranslateBubbleModel::Observer {
 
   friend class TranslateBubbleControllerTest;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
+
+  // The action item associated with showing a Translate UI.
+  // The bubbles use this to appropriately configure its "IsBubbleShowing"
+  // property.
+  const base::WeakPtr<actions::ActionItem> action_item_;
 
   base::WeakPtrFactory<TranslateBubbleController> weak_ptr_factory_{this};
 };

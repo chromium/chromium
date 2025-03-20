@@ -3060,6 +3060,17 @@ SpecificTrustedType Element::ExpectedTrustedTypeForAttribute(
   return SpecificTrustedType::kNone;
 }
 
+void Element::ProcessElementRenderBlocking(const AtomicString& id_or_name) {
+  if (!GetDocument().HasPendingExpectLinkElements() || !isConnected() ||
+      !IsFinishedParsingChildren() || id_or_name.IsNull() ||
+      id_or_name.empty()) {
+    return;
+  }
+  DCHECK(GetDocument().GetRenderBlockingResourceManager());
+  GetDocument().GetRenderBlockingResourceManager()->RemovePendingParsingElement(
+      id_or_name, this);
+}
+
 DISABLE_CFI_PERF
 void Element::AttributeChanged(const AttributeModificationParams& params) {
   ParseAttribute(params);
@@ -3079,6 +3090,8 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
       AtomicString old_id = GetElementData()->SetIdForStyleResolution(new_id);
       GetDocument().GetStyleEngine().IdChangedForElement(old_id, new_id, *this);
     }
+
+    ProcessElementRenderBlocking(new_id);
 
     if (GetDocument().HasPendingExpectLinkElements() &&
         IsFinishedParsingChildren()) {
@@ -3395,6 +3408,8 @@ Node::InsertionNotificationRequest Element::InsertedInto(
         context->ElementConnected();
       }
     }
+
+    ProcessElementRenderBlocking(GetIdAttribute());
   }
 
   if (isConnected()) {

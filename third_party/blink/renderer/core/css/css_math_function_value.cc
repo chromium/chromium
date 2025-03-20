@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/css/css_value_clamping_utils.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_expression_node.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -140,7 +141,7 @@ double CSSMathFunctionValue::ComputePercentage(
   DCHECK_EQ(kCalcPercent, expression_->Category());
   double value =
       ClampToPermittedRange(expression_->ComputeNumber(length_resolver));
-  return std::isnan(value) ? 0.0 : value;
+  return CSSValueClampingUtils::ClampDouble(value);
 }
 
 double CSSMathFunctionValue::ComputeValueInCanonicalUnit(

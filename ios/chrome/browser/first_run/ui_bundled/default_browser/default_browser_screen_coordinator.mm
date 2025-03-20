@@ -73,7 +73,7 @@
 - (void)start {
   [super start];
 
-  _profile = self.browser->GetProfile()->GetOriginalProfile();
+  _profile = self.profile->GetOriginalProfile();
   base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
                                 first_run::kDefaultBrowserScreenStart);
   default_browser::NotifyDefaultBrowserFREPromoShown(

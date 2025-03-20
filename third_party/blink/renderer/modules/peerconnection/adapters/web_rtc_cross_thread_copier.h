@@ -17,13 +17,9 @@
 #include "third_party/webrtc/api/rtc_error.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/api/transport/network_types.h"
+#include "third_party/webrtc/p2p/base/port_allocator.h"
+#include "third_party/webrtc/p2p/base/transport_description.h"
 #include "third_party/webrtc/rtc_base/socket_address.h"
-
-namespace cricket {
-class Candidate;
-struct IceParameters;
-struct RelayServerConfig;
-}  // namespace cricket
 
 namespace webrtc {
 class DtlsTransportInformation;
@@ -32,14 +28,14 @@ class RtpReceiverInterface;
 class SctpTransportInformation;
 class VideoTrackInterface;
 struct DataBuffer;
-}
+}  // namespace webrtc
 
 namespace blink {
 
 class MockWebRtcVideoTrack;
 class MediaStreamVideoTrack;
 
-}
+}  // namespace blink
 
 namespace WTF {
 

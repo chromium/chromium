@@ -54,7 +54,7 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
       const std::optional<url::Origin>& requesting_origin) override;
 #if !BUILDFLAG(IS_ANDROID)
   std::optional<std::u16string> GetRwsOwner(const GURL& site_url) override;
-  bool IsRwsManaged() override;
+  bool IsRwsManaged(const GURL& site_url) override;
   bool CreateInfoBarDelegate() override;
   std::unique_ptr<content_settings::CookieControlsController>
   CreateCookieControlsController() override;

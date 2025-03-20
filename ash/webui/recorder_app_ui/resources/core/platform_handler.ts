@@ -36,6 +36,20 @@ export abstract class PlatformHandler {
   }
 
   /**
+   * Returns device type.
+   *
+   * This is the lower level function that is used to replace get device type
+   * string in core/i18n.ts, and shouldn't be directly used.
+   *
+   * This is declared as `static` so it can be directly use at module import
+   * time, and all implementations should ensure that it can be called at
+   * module import time.
+   */
+  static getDeviceType(): string {
+    throw new Error('getDeviceType not implemented');
+  }
+
+  /**
    * Initializes the platform handler.
    *
    * This should only be called once when the app starts.

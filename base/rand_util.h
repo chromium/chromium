@@ -46,6 +46,10 @@ BASE_EXPORT double RandDoubleAvoidAllocation();
 
 }  // namespace internal
 
+namespace test {
+class InsecureRandomGenerator;
+}  // namespace test
+
 // Returns a random number in range [0, UINT64_MAX]. Thread-safe.
 BASE_EXPORT uint64_t RandUint64();
 
@@ -268,6 +272,8 @@ class BASE_EXPORT InsecureRandomGenerator {
   friend class memory_simulator::MemoryHolder;
   // Uses the generator to sub-sample metrics.
   friend class MetricsSubSampler;
+  // test::InsecureRandomGenerator can be used for testing.
+  friend class test::InsecureRandomGenerator;
 
   FRIEND_TEST_ALL_PREFIXES(RandUtilTest,
                            InsecureRandomGeneratorProducesBothValuesOfAllBits);

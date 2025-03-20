@@ -120,7 +120,7 @@
 - (void)start {
   [super start];
 
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   _syncService = SyncServiceFactory::GetForProfile(profile);
   _authenticationService = AuthenticationServiceFactory::GetForProfile(profile);
   _accountManagerService =

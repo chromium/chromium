@@ -27,7 +27,6 @@ namespace autofill {
 
 namespace {
 
-using ::testing::TestWithParam;
 using ::testing::Values;
 
 constexpr auto kAutofillPredictionSettingsDisable =
@@ -63,7 +62,7 @@ std::string GetTestSuffix(
 
 // A test fixture that sets up default state so that all AutofillAI-related
 // actions are permitted.
-class AutofillAiPermissionUtilsTest : public TestWithParam<AutofillAiAction> {
+class AutofillAiPermissionUtilsTest : public ::testing::Test {
  public:
   AutofillAiPermissionUtilsTest() {
     // Features.
@@ -74,10 +73,10 @@ class AutofillAiPermissionUtilsTest : public TestWithParam<AutofillAiAction> {
         {});
 
     // Pref and identity state.
-    client().SetUpPrefsAndIdentityForAutofillAi();
     client().set_entity_data_manager(std::make_unique<EntityDataManager>(
         webdata_helper_.autofill_webdata_service(), /*history_service=*/nullptr,
         /*strike_database=*/nullptr));
+    client().SetUpPrefsAndIdentityForAutofillAi();
   }
 
   void AddEntity() {
@@ -96,15 +95,22 @@ class AutofillAiPermissionUtilsTest : public TestWithParam<AutofillAiAction> {
   TestAutofillClient client_;
 };
 
+class AutofillAiMayPerformActionTest
+    : public AutofillAiPermissionUtilsTest,
+      public ::testing::WithParamInterface<AutofillAiAction> {
+ public:
+  using AutofillAiPermissionUtilsTest::AutofillAiPermissionUtilsTest;
+};
+
 // Verifies that the test fixture sets up the client so that everything but
 // opt-in IPH is permitted.
-TEST_P(AutofillAiPermissionUtilsTest, ActionsWhenEnabled) {
+TEST_P(AutofillAiMayPerformActionTest, ActionsWhenEnabled) {
   EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()),
             GetParam() != AutofillAiAction::kIphForOptIn);
 }
 
 // Tests that `kAutofillAiWithDataSchema` is a requirement for all actions.
-TEST_P(AutofillAiPermissionUtilsTest, ReturnsFalseWhenMainFeatureIsOff) {
+TEST_P(AutofillAiMayPerformActionTest, ReturnsFalseWhenMainFeatureIsOff) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kAutofillAiWithDataSchema);
 
@@ -113,7 +119,7 @@ TEST_P(AutofillAiPermissionUtilsTest, ReturnsFalseWhenMainFeatureIsOff) {
 
 // Tests that the server model cannot be run and its cache cannot be used if
 // `kAutofillAiServerModel` is disabled.
-TEST_P(AutofillAiPermissionUtilsTest, ModelFeatureOff) {
+TEST_P(AutofillAiMayPerformActionTest, ModelFeatureOff) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kAutofillAiServerModel);
 
@@ -129,7 +135,7 @@ TEST_P(AutofillAiPermissionUtilsTest, ModelFeatureOff) {
 
 // Tests that the server model cache cannot be used if the feature parameter
 // governing it is false.
-TEST_P(AutofillAiPermissionUtilsTest, FeatureParamForModelCacheUseOff) {
+TEST_P(AutofillAiMayPerformActionTest, FeatureParamForModelCacheUseOff) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{features::kAutofillAiServerModel,
@@ -146,7 +152,7 @@ TEST_P(AutofillAiPermissionUtilsTest, FeatureParamForModelCacheUseOff) {
 }
 
 // Tests that the opt-in IPH cannot be shown if its feature is off.
-TEST_P(AutofillAiPermissionUtilsTest, OptInIphFeatureOff) {
+TEST_P(AutofillAiMayPerformActionTest, OptInIphFeatureOff) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       feature_engagement::kIPHAutofillAiOptInFeature);
@@ -159,7 +165,7 @@ TEST_P(AutofillAiPermissionUtilsTest, OptInIphFeatureOff) {
 
 // Tests that no action is permitted if the AutofillAI enterprise policy is
 // disabled and no data is saved in the EntityDataManager.
-TEST_P(AutofillAiPermissionUtilsTest,
+TEST_P(AutofillAiMayPerformActionTest,
        ActionsWhenAutofillAiEnterprisePolicyDisabled) {
   client().GetPrefs()->SetInteger(
       optimization_guide::prefs::
@@ -171,7 +177,7 @@ TEST_P(AutofillAiPermissionUtilsTest,
 // Tests that listing, editing and removing entities is permitted if the
 // AutofillAI enterprise policy is disabled and there is data is saved in the
 // EntityDataManager.
-TEST_P(AutofillAiPermissionUtilsTest,
+TEST_P(AutofillAiMayPerformActionTest,
        ActionsWhenAutofillAiEnterprisePolicyDisabledWithDataSaved) {
   AddEntity();
   client().GetPrefs()->SetInteger(
@@ -187,14 +193,14 @@ TEST_P(AutofillAiPermissionUtilsTest,
 
 // Tests that no action is permitted if address Autofill is disabled and no data
 // is saved in the EntityDataManager.
-TEST_P(AutofillAiPermissionUtilsTest, ActionsWhenAddressAutofillDisabled) {
+TEST_P(AutofillAiMayPerformActionTest, ActionsWhenAddressAutofillDisabled) {
   client().SetAutofillProfileEnabled(false);
   EXPECT_FALSE(MayPerformAutofillAiAction(client(), GetParam()));
 }
 
 // Tests that listing, editing and removing entities is permitted if address
 // Autofill is disabled and there is data is saved in the EntityDataManager.
-TEST_P(AutofillAiPermissionUtilsTest,
+TEST_P(AutofillAiMayPerformActionTest,
        ActionsWhenAddressAutofillDisabledWithDataSaved) {
   AddEntity();
   client().SetAutofillProfileEnabled(false);
@@ -207,7 +213,7 @@ TEST_P(AutofillAiPermissionUtilsTest,
 
 // Verifies that IPH for opt-in is permitted if the user has not enabled the
 // feature pref yet.
-TEST_P(AutofillAiPermissionUtilsTest, ActionsWhenAutofillAiPrefDisabled) {
+TEST_P(AutofillAiMayPerformActionTest, ActionsWhenAutofillAiPrefDisabled) {
   client().GetPrefs()->SetBoolean(prefs::kAutofillPredictionImprovementsEnabled,
                                   false);
   const bool is_allowed = (GetParam() == AutofillAiAction::kOptIn) ||
@@ -217,7 +223,7 @@ TEST_P(AutofillAiPermissionUtilsTest, ActionsWhenAutofillAiPrefDisabled) {
 
 // Tests that listing, editing and removing entities is permitted if the
 // AutofillAI pref is disabled, but there is data saved.
-TEST_P(AutofillAiPermissionUtilsTest,
+TEST_P(AutofillAiMayPerformActionTest,
        ActionsWhenAutofillAiPrefDisabledWithDataSaved) {
   AddEntity();
   client().GetPrefs()->SetBoolean(prefs::kAutofillPredictionImprovementsEnabled,
@@ -234,7 +240,7 @@ TEST_P(AutofillAiPermissionUtilsTest,
 #if !BUILDFLAG(IS_CHROMEOS)  // Signing out does not work on ChromeOS.
 // Tests that every action other than listing and editing data requires the user
 // to be signed in.
-TEST_P(AutofillAiPermissionUtilsTest, SignedOut) {
+TEST_P(AutofillAiMayPerformActionTest, SignedOut) {
   AddEntity();
   client().identity_test_environment().ClearPrimaryAccount();
   const bool is_allowed =
@@ -247,7 +253,7 @@ TEST_P(AutofillAiPermissionUtilsTest, SignedOut) {
 
 // Tests that every action other than listing and editing data requires that
 // user's account capabilities include running a model.
-TEST_P(AutofillAiPermissionUtilsTest, MayNotRunModel) {
+TEST_P(AutofillAiMayPerformActionTest, MayNotRunModel) {
   AddEntity();
   client().SetCanUseModelExecutionFeatures(false);
   const bool is_allowed =
@@ -258,7 +264,7 @@ TEST_P(AutofillAiPermissionUtilsTest, MayNotRunModel) {
 }
 
 // Tests that only filling and cache use are allowed off-the-record.
-TEST_P(AutofillAiPermissionUtilsTest, OffTheRecord) {
+TEST_P(AutofillAiMayPerformActionTest, OffTheRecord) {
   client().set_is_off_the_record(true);
   const bool is_allowed =
       (GetParam() == AutofillAiAction::kFilling) ||
@@ -267,19 +273,19 @@ TEST_P(AutofillAiPermissionUtilsTest, OffTheRecord) {
   EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
 }
 
-TEST_P(AutofillAiPermissionUtilsTest, CountryCode) {
+TEST_P(AutofillAiMayPerformActionTest, CountryCode) {
   client().SetVariationConfigCountryCode(GeoIpCountryCode("DE"));
   EXPECT_FALSE(MayPerformAutofillAiAction(client(), GetParam()));
 }
 
-TEST_P(AutofillAiPermissionUtilsTest, AppLocale) {
+TEST_P(AutofillAiMayPerformActionTest, AppLocale) {
   client().set_app_locale("de-DE");
   EXPECT_FALSE(MayPerformAutofillAiAction(client(), GetParam()));
 }
 
 // Tests that listing, editing and removing entities is permitted even if the
 // app locale is unsupported as long as there is data saved.
-TEST_P(AutofillAiPermissionUtilsTest, AppLocaleWithDataSaved) {
+TEST_P(AutofillAiMayPerformActionTest, AppLocaleWithDataSaved) {
   AddEntity();
   client().set_app_locale("de-DE");
   const bool is_allowed =
@@ -291,7 +297,7 @@ TEST_P(AutofillAiPermissionUtilsTest, AppLocaleWithDataSaved) {
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    AutofillAiPermissionUtilsTest,
+    AutofillAiMayPerformActionTest,
     Values(AutofillAiAction::kAddEntityInstanceInSettings,
            AutofillAiAction::kCrowdsourcingVote,
            AutofillAiAction::kEditAndDeleteEntityInstanceInSettings,
@@ -303,6 +309,49 @@ INSTANTIATE_TEST_SUITE_P(
            AutofillAiAction::kServerClassificationModel,
            AutofillAiAction::kUseCachedServerClassificationModelResults),
     GetTestSuffix);
+
+#if !BUILDFLAG(IS_CHROMEOS)  // Signing out does not work on ChromeOS.
+// Tests that opt-in status is tied to a GAIA id.
+TEST_F(AutofillAiPermissionUtilsTest, Muh) {
+  const std::string initial_email =
+      client()
+          .GetIdentityManager()
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .email;
+  const std::string other_email = "something_else@gmail.com";
+  ASSERT_NE(initial_email, other_email);
+
+  // The initially signed in account is opted in.
+  // TODO(crbug.com/404485362): Remove the next line once the test fixture
+  // transitions to this sign-in method.
+  EXPECT_TRUE(SetAutofillAiOptInStatus(client(), true));
+  EXPECT_TRUE(GetAutofillAiOptInStatus(client()));
+
+  // Signed out clients are never opted in.
+  client().identity_test_environment().ClearPrimaryAccount();
+  EXPECT_FALSE(GetAutofillAiOptInStatus(client()));
+
+  // After signing in with a different account, the opt-in is gone.
+  client().identity_test_environment().MakePrimaryAccountAvailable(
+      other_email, signin::ConsentLevel::kSignin);
+  client().SetCanUseModelExecutionFeatures(true);
+  EXPECT_FALSE(GetAutofillAiOptInStatus(client()));
+  EXPECT_TRUE(SetAutofillAiOptInStatus(client(), true));
+  EXPECT_TRUE(GetAutofillAiOptInStatus(client()));
+
+  // Switch back to the old account and the old opt-in is back.
+  client().identity_test_environment().ClearPrimaryAccount();
+  EXPECT_FALSE(GetAutofillAiOptInStatus(client()));
+  client().identity_test_environment().MakePrimaryAccountAvailable(
+      initial_email, signin::ConsentLevel::kSignin);
+  client().SetCanUseModelExecutionFeatures(true);
+  EXPECT_TRUE(GetAutofillAiOptInStatus(client()));
+
+  // Setting it to `false` works as well.
+  EXPECT_TRUE(SetAutofillAiOptInStatus(client(), false));
+  EXPECT_FALSE(GetAutofillAiOptInStatus(client()));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 

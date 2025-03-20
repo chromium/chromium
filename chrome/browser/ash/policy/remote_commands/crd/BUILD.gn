@@ -26,6 +26,8 @@ static_library("crd") {
     "device_command_start_crd_session_job.h",
     "remote_activity_notification_controller.cc",
     "remote_activity_notification_controller.h",
+    "shared_crd_session_impl.cc",
+    "shared_crd_session_impl.h",
     "start_crd_session_job_delegate.cc",
     "start_crd_session_job_delegate.h",
   ]
@@ -38,6 +40,7 @@ static_library("crd") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_mode/isolated_web_app",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/remote_commands/crd/public:interface",
     "//chrome/common:constants",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth",
     "//chromeos/ash/services/network_config:in_process_instance",
@@ -82,6 +85,7 @@ source_set("unit_tests") {
     "crd_admin_session_controller_unittest.cc",
     "device_command_fetch_crd_availability_info_job_unittest.cc",
     "device_command_start_crd_session_job_unittest.cc",
+    "shared_crd_session_impl_unittest.cc",
   ]
 
   deps = [
@@ -97,6 +101,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/policy/remote_commands:test_support",
     "//chrome/browser/ash/policy/remote_commands/crd",
     "//chrome/browser/ash/policy/remote_commands/crd:test_support",
+    "//chrome/browser/ash/policy/remote_commands/crd/public:interface",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/prefs",
     "//chrome/browser/ui/ash/login:test_support",

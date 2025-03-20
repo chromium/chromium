@@ -159,6 +159,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
         discrete_input_task_deferral_policy;
 
     bool input_scenario_priority_boost_enabled;
+    bool input_scenario_priority_boost_includes_loading;
   };
 
   static const char* RAILModeToString(RAILMode rail_mode);

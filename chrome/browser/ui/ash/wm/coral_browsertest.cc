@@ -476,19 +476,22 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, CloseTabAppUpdateChip) {
 
   // Closing a duplicated window (file manager) will not change the group.
   SelectFirstBrowser();
-  EXPECT_EQ(browser()->window()->GetNativeWindow()->GetTitle(), u"Files");
+  EXPECT_TRUE(
+      browser()->window()->GetNativeWindow()->GetTitle().starts_with(u"Files"));
   CloseBrowserSynchronously(browser());
   EXPECT_EQ(group->entities.size(), 2u);
 
   // Closing a non-duplicated window will decrease the items in the group.
   SelectFirstBrowser();
-  EXPECT_EQ(browser()->window()->GetNativeWindow()->GetTitle(), u"Files");
+  EXPECT_TRUE(
+      browser()->window()->GetNativeWindow()->GetTitle().starts_with(u"Files"));
   CloseBrowserSynchronously(browser());
   EXPECT_EQ(group->entities.size(), 1u);
 
   // Closing the last app window in group will remove the chip.
   SelectFirstBrowser();
-  EXPECT_EQ(browser()->window()->GetNativeWindow()->GetTitle(), u"YouTube");
+  EXPECT_TRUE(browser()->window()->GetNativeWindow()->GetTitle().starts_with(
+      u"YouTube"));
   CloseBrowserSynchronously(browser());
 
   EXPECT_FALSE(GetBirchChipButton());

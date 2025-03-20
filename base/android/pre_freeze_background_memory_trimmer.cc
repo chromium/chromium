@@ -628,15 +628,19 @@ void PreFreezeBackgroundMemoryTrimmer::CompactSelf(
 std::optional<uint64_t> PreFreezeBackgroundMemoryTrimmer::CompactRegion(
     debug::MappedMemoryRegion region) {
 #if defined(MADV_PAGEOUT)
+  using Permission = debug::MappedMemoryRegion::Permission;
   // Skip file-backed regions
   if (region.inode != 0 || region.dev_major != 0) {
     return 0;
   }
   // Skip shared regions
-  if ((region.permissions & debug::MappedMemoryRegion::Permission::PRIVATE) ==
-      0) {
+  if ((region.permissions & Permission::PRIVATE) == 0) {
     return 0;
   }
+
+  const bool is_inaccessible =
+      (region.permissions &
+       (Permission::READ | Permission::WRITE | Permission::EXECUTE)) == 0;
 
   TRACE_EVENT1("base", __PRETTY_FUNCTION__, "size", region.end - region.start);
 
@@ -658,7 +662,7 @@ std::optional<uint64_t> PreFreezeBackgroundMemoryTrimmer::CompactRegion(
     return 0;
   }
 
-  return region.end - region.start;
+  return is_inaccessible ? 0 : region.end - region.start;
 #else
   return std::nullopt;
 #endif

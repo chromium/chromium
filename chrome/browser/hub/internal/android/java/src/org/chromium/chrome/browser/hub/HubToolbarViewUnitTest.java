@@ -38,6 +38,7 @@ import androidx.core.content.ContextCompat;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.MediumTest;
 
+import com.google.android.material.color.MaterialColors;
 import com.google.android.material.tabs.TabLayout;
 
 import org.junit.Before;
@@ -53,10 +54,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -269,7 +267,6 @@ public class HubToolbarViewUnitTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
     public void testUpdateIncognitoElements() {
         mPropertyModel.set(IS_INCOGNITO, true);
         assertEquals(
@@ -282,13 +279,12 @@ public class HubToolbarViewUnitTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
     public void testUpdateSearchBoxColorScheme() {
         mPropertyModel.set(
                 COLOR_SCHEME,
                 new HubColorSchemeUpdate(HubColorScheme.INCOGNITO, HubColorScheme.INCOGNITO));
         assertEquals(
-                ContextCompat.getColor(mActivity, R.color.baseline_neutral_60),
+                ContextCompat.getColor(mActivity, R.color.default_text_color_secondary_light),
                 mSearchBoxText.getCurrentHintTextColor());
 
         GradientDrawable backgroundDrawable = (GradientDrawable) mSearchBox.getBackground();
@@ -301,7 +297,7 @@ public class HubToolbarViewUnitTest {
                 COLOR_SCHEME,
                 new HubColorSchemeUpdate(HubColorScheme.DEFAULT, HubColorScheme.DEFAULT));
         assertEquals(
-                SemanticColorUtils.getDefaultTextColor(mActivity),
+                MaterialColors.getColor(mActivity, R.attr.colorOnSurfaceVariant, "Test"),
                 mSearchBoxText.getCurrentHintTextColor());
         assertEquals(
                 ColorStateList.valueOf(
@@ -311,7 +307,6 @@ public class HubToolbarViewUnitTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
     public void testHubSearchEnabledState() {
         mPropertyModel.set(HUB_SEARCH_ENABLED_STATE, false);
         assertFalse(mSearchBoxText.isEnabled());

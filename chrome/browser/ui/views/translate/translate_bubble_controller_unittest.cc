@@ -10,6 +10,7 @@
 #include "base/observer_list.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -198,6 +199,11 @@ class TranslateBubbleControllerTest : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
 
+    actions::ActionManager::GetForTesting().AddActions(
+        actions::ActionItem::Builder()
+            .SetActionId(kActionShowTranslate)
+            .Build());
+
     // Create an anchor for the bubble.
     anchor_widget_ =
         CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
@@ -205,7 +211,8 @@ class TranslateBubbleControllerTest : public ChromeViewsTestBase {
     anchor_widget_->Show();
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
-    controller_ = std::make_unique<TranslateBubbleController>();
+    controller_ = std::make_unique<TranslateBubbleController>(
+        /*root_action_item=*/nullptr);
 
     // Use fake Translate bubble models instead of real implementations for
     // Translate bubble view construction in tests.

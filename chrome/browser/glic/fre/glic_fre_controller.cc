@@ -18,6 +18,7 @@
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
@@ -102,9 +103,7 @@ void GlicFreController::ShowFreDialogAfterAuthCheck(
   // Close any existing FRE dialog before showing.
   DismissFre();
 
-  fre_view_ = new GlicFreDialogView(
-      profile_, gfx::Size(features::kGlicFreInitialWidth.Get(),
-                          features::kGlicFreInitialHeight.Get()));
+  CreateView();
 
   tabs::TabInterface* tab_interface = browser->GetActiveTabInterface();
   // Note that this call to `CreateShowDialogAndBlockTabInteraction` is
@@ -158,7 +157,7 @@ void GlicFreController::AcceptFre() {
   // profile, which should correspond to the browser used by the FRE.
   if (Browser* new_attached_browser =
           chrome::FindLastActiveWithProfile(profile_)) {
-    glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile_)->ToggleUI(
+    GlicKeyedServiceFactory::GetGlicKeyedService(profile_)->ToggleUI(
         new_attached_browser, /*prevent_close=*/true,
         mojom::InvocationSource::kFre);
   }
@@ -329,7 +328,16 @@ void GlicFreController::OnTabShowingModalWillDetach(
   DismissFre();
 }
 
-bool GlicFreController::IsShowingDialogForTesting() const {
+void GlicFreController::CreateView() {
+  fre_view_ = new GlicFreDialogView(
+      profile_, gfx::Size(features::kGlicFreInitialWidth.Get(),
+                          features::kGlicFreInitialHeight.Get()));
+  auto* service = GlicKeyedServiceFactory::GetGlicKeyedService(profile_);
+  GlicProfileManager::GetInstance()->OnLoadingClientForService(service);
+}
+
+bool GlicFreController::IsShowingDialog() const {
   return !!fre_widget_;
 }
+
 }  // namespace glic

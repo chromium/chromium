@@ -18,6 +18,15 @@ class ReaderModeJavaScriptFeature : public web::JavaScriptFeature {
   // needed.
   static ReaderModeJavaScriptFeature* GetInstance();
 
+  // Triggers the heuristic to determine whether a web page is eligible for
+  // distillation.
+  void TriggerReaderModeHeuristic(web::WebFrame* web_frame);
+
+  // JavaScriptFeature:
+  std::optional<std::string> GetScriptMessageHandlerName() const override;
+  void ScriptMessageReceived(web::WebState* web_state,
+                             const web::ScriptMessage& message) override;
+
  private:
   friend class base::NoDestructor<ReaderModeJavaScriptFeature>;
 
@@ -27,11 +36,6 @@ class ReaderModeJavaScriptFeature : public web::JavaScriptFeature {
   ReaderModeJavaScriptFeature(const ReaderModeJavaScriptFeature&) = delete;
   ReaderModeJavaScriptFeature& operator=(const ReaderModeJavaScriptFeature&) =
       delete;
-
-  // JavaScriptFeature:
-  std::optional<std::string> GetScriptMessageHandlerName() const override;
-  void ScriptMessageReceived(web::WebState* web_state,
-                             const web::ScriptMessage& message) override;
 
   // Converts the JavaScript message `body` and `request_url` into a vector
   // that can be used to determine

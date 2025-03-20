@@ -8,7 +8,6 @@
 #import "components/omnibox/browser/omnibox_controller.h"
 #import "components/omnibox/browser/omnibox_view.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_popup_controller.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_view_ios.h"
 #import "ios/chrome/common/NSString+Chromium.h"
@@ -61,8 +60,7 @@
 }
 
 - (void)onThumbnailSet:(BOOL)hasThumbnail {
-  [self.omniboxAutocompleteController.omniboxPopupController
-      setHasThumbnail:hasThumbnail];
+  [self.omniboxAutocompleteController setHasThumbnail:hasThumbnail];
 }
 
 - (void)onUserRemoveThumbnail {
@@ -72,8 +70,7 @@
   }
 
   // Update the popup for suggestion wrapping.
-  [self.omniboxAutocompleteController.omniboxPopupController
-      setHasThumbnail:NO];
+  [self.omniboxAutocompleteController setHasThumbnail:NO];
 
   if (self.textField.userText.length) {
     // If the omnibox is not empty, start autocomplete.
@@ -85,6 +82,56 @@
     if (_omniboxViewIOS) {
       _omniboxViewIOS->CloseOmniboxPopup();
     }
+  }
+}
+
+- (void)clearText {
+  if (_omniboxViewIOS) {
+    _omniboxViewIOS->ClearText();
+  }
+}
+
+- (void)onDidBeginEditing {
+  if (_omniboxViewIOS) {
+    _omniboxViewIOS->OnDidBeginEditing();
+  }
+}
+
+- (BOOL)shouldChangeCharactersInRange:(NSRange)range
+                    replacementString:(NSString*)newText {
+  if (_omniboxViewIOS) {
+    return _omniboxViewIOS->OnWillChange(range, newText);
+  }
+  return YES;
+}
+
+- (void)textDidChangeWithUserEvent:(BOOL)isProcessingUserEvent {
+  if (_omniboxViewIOS) {
+    _omniboxViewIOS->OnDidChange(isProcessingUserEvent);
+  }
+}
+
+- (void)onAcceptAutocomplete {
+  if (_omniboxViewIOS) {
+    _omniboxViewIOS->OnAcceptAutocomplete();
+  }
+}
+
+- (void)onCopy {
+  if (_omniboxViewIOS) {
+    _omniboxViewIOS->OnCopy();
+  }
+}
+
+- (void)willPaste {
+  if (_omniboxViewIOS) {
+    _omniboxViewIOS->WillPaste();
+  }
+}
+
+- (void)onDeleteBackward {
+  if (_omniboxViewIOS) {
+    _omniboxViewIOS->OnDeleteBackward();
   }
 }
 

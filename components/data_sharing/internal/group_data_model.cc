@@ -310,7 +310,6 @@ void GroupDataModel::FetchBatchOfGroupsFromSDK(
     group_versions[group_id] =
         ComputeVersionToken(*collaboration_group_specifics_opt);
 
-    params.add_group_ids(group_id.value());
     data_sharing_pb::ReadGroupsParams::GroupParams* group_params =
         params.add_group_params();
     group_params->set_group_id(group_id.value());

@@ -13,10 +13,13 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
+#include "remoting/host/base/loggable.h"
 #include "remoting/host/linux/gdbus_fd_list.h"
 #include "remoting/host/linux/gvariant_ref.h"
 #include "ui/base/glib/scoped_gobject.h"
@@ -68,7 +71,9 @@ void GDBusConnectionRef::CreateForBus(GBusType bus, CreateCallback callback) {
       std::move(*callback).Run(
           base::ok(GDBusConnectionRef(TakeGObject(connection))));
     } else {
-      std::move(*callback).Run(base::unexpected(error->message));
+      std::move(*callback).Run(base::unexpected(Loggable(
+          FROM_HERE,
+          base::StrCat({"Failed to connect to bus: ", error->message}))));
       g_error_free(error);
     }
   };
@@ -108,7 +113,9 @@ void GDBusConnectionRef::CallInternal(const char* bus_name,
       std::move(*callback).Run(std::pair(
           GVariantRef<"r">::TakeUnchecked(variant), std::move(out_fds)));
     } else {
-      std::move(*callback).Run(base::unexpected(error->message));
+      std::move(*callback).Run(base::unexpected(
+          Loggable(FROM_HERE,
+                   base::StrCat({"Error invoking method: ", error->message}))));
       g_error_free(error);
     }
   };

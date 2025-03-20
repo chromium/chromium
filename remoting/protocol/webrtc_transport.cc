@@ -17,7 +17,9 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ref.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -436,7 +438,7 @@ WebrtcTransport::WebrtcTransport(
 
 WebrtcTransport::~WebrtcTransport() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  Close(ErrorCode::OK);
+  Close(ErrorCode::OK, /* error_details= */ {}, FROM_HERE);
 }
 
 webrtc::PeerConnectionInterface* WebrtcTransport::peer_connection() {
@@ -549,15 +551,18 @@ bool WebrtcTransport::ProcessTransportInfo(XmlElement* transport_info) {
         !handshake_hmac_.Verify(
             type_string + " " + sdp_message.NormalizedForSignature(),
             signature)) {
-      LOG(WARNING) << "Received session-description with invalid signature.";
+      static constexpr char kErrorDetails[] =
+          "Received session-description with invalid signature.";
       bool ignore_error = false;
 #if !defined(NDEBUG)
       ignore_error = base::CommandLine::ForCurrentProcess()->HasSwitch(
           kDisableAuthenticationSwitchName);
 #endif
       if (!ignore_error) {
-        Close(ErrorCode::AUTHENTICATION_FAILED);
+        Close(ErrorCode::AUTHENTICATION_FAILED, kErrorDetails, FROM_HERE);
         return true;
+      } else {
+        LOG(WARNING) << kErrorDetails;
       }
     }
 
@@ -732,7 +737,9 @@ void WebrtcTransport::ClosePeerConnection(
       data_channel_state_polling_interval);
 }
 
-void WebrtcTransport::Close(ErrorCode error) {
+void WebrtcTransport::Close(ErrorCode error,
+                            std::string_view error_details,
+                            const base::Location& error_location) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!peer_connection_wrapper_) {
     return;
@@ -749,7 +756,8 @@ void WebrtcTransport::Close(ErrorCode error) {
                       std::move(peer_connection_wrapper_));
 
   if (error != ErrorCode::OK) {
-    event_handler_->OnWebrtcTransportError(error);
+    event_handler_->OnWebrtcTransportError(error, error_details,
+                                           error_location);
   }
 }
 
@@ -785,15 +793,16 @@ void WebrtcTransport::OnLocalSessionDescriptionCreated(
   }
 
   if (!description) {
-    LOG(ERROR) << "PeerConnection offer creation failed: " << error;
-    Close(ErrorCode::CHANNEL_CONNECTION_ERROR);
+    Close(ErrorCode::CHANNEL_CONNECTION_ERROR,
+          base::StrCat({"PeerConnection offer creation failed: ", error}),
+          FROM_HERE);
     return;
   }
 
   std::string description_sdp;
   if (!description->ToString(&description_sdp)) {
-    LOG(ERROR) << "Failed to serialize description.";
-    Close(ErrorCode::CHANNEL_CONNECTION_ERROR);
+    Close(ErrorCode::CHANNEL_CONNECTION_ERROR,
+          "Failed to serialize description.", FROM_HERE);
     return;
   }
 
@@ -809,9 +818,10 @@ void WebrtcTransport::OnLocalSessionDescriptionCreated(
   description = webrtc::CreateSessionDescription(description->GetType(),
                                                  description_sdp, &parse_error);
   if (!description) {
-    LOG(ERROR) << "Failed to parse the session description: "
-               << parse_error.description << " line: " << parse_error.line;
-    Close(ErrorCode::CHANNEL_CONNECTION_ERROR);
+    Close(ErrorCode::CHANNEL_CONNECTION_ERROR,
+          base::StrCat({"Failed to parse the session description: ",
+                        parse_error.description, " line: ", parse_error.line}),
+          FROM_HERE);
     return;
   }
 
@@ -849,8 +859,9 @@ void WebrtcTransport::OnLocalDescriptionSet(bool success,
   }
 
   if (!success) {
-    LOG(ERROR) << "Failed to set local description: " << error;
-    Close(ErrorCode::CHANNEL_CONNECTION_ERROR);
+    Close(ErrorCode::CHANNEL_CONNECTION_ERROR,
+          base::StrCat({"Failed to set local description: ", error}),
+          FROM_HERE);
     return;
   }
 
@@ -875,8 +886,9 @@ void WebrtcTransport::OnRemoteDescriptionSet(bool send_answer,
   }
 
   if (!success) {
-    LOG(ERROR) << "Failed to set remote description: " << error;
-    Close(ErrorCode::CHANNEL_CONNECTION_ERROR);
+    Close(ErrorCode::CHANNEL_CONNECTION_ERROR,
+          base::StrCat({"Failed to set remote description: ", error}),
+          FROM_HERE);
     return;
   }
 
@@ -906,8 +918,6 @@ void WebrtcTransport::SendAnswer() {
 }
 
 void WebrtcTransport::OnCloseAfterDisconnectTimeout() {
-  LOG(WARNING) << "ICE has not reconnected in " << kCloseAfterDisconnectTimeout
-               << ". Client may be offline.";
   // Close() fails DCHECKs if the data channels are not in the kClosing or
   // kClosed state.
   if (control_data_channel_) {
@@ -916,7 +926,11 @@ void WebrtcTransport::OnCloseAfterDisconnectTimeout() {
   if (event_data_channel_) {
     event_data_channel_->Close();
   }
-  Close(ErrorCode::PEER_IS_OFFLINE);
+  Close(ErrorCode::PEER_IS_OFFLINE,
+        base::StringPrintf(
+            "ICE has not reconnected in %ds. Client may be offline.",
+            kCloseAfterDisconnectTimeout.InSeconds()),
+        FROM_HERE);
 }
 
 void WebrtcTransport::OnSignalingChange(
@@ -1245,8 +1259,8 @@ void WebrtcTransport::AddPendingCandidatesIfPossible() {
       webrtc::PeerConnectionInterface::kStable) {
     for (const auto& candidate : pending_incoming_candidates_) {
       if (!peer_connection()->AddIceCandidate(candidate.get())) {
-        LOG(ERROR) << "Failed to add incoming candidate";
-        Close(ErrorCode::CHANNEL_CONNECTION_ERROR);
+        Close(ErrorCode::CHANNEL_CONNECTION_ERROR,
+              "Failed to add incoming candidate", FROM_HERE);
         return;
       }
     }

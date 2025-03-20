@@ -34,7 +34,7 @@ public class BackPressMetrics {
             "Android.BackPress.IncorrectEdgeSwipe";
     private static final String INCORRECT_EDGE_SWIPE_COUNT_CHAINED_HISTOGRAM =
             "Android.BackPress.IncorrectEdgeSwipe.CountChained";
-    private static final String BACK_FALSING_HISTOGRAM = "Android.BackPress.Backfalsing";
+    private static final String BACK_FALSING_HISTOGRAM = "Android.BackPress.Backfalsing2";
 
     @IntDef({
         PredictiveGestureNavPhase.ACTIVATED,
@@ -73,6 +73,8 @@ public class BackPressMetrics {
         int NUM_ENTRIES = 4;
     }
 
+    // These values are persisted to logs. Entries should not be renumbered and numeric values
+    // should never be reused.
     @IntDef({
         NavigationDirection.FORWARD,
         NavigationDirection.BACKWARD,

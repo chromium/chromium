@@ -42,12 +42,14 @@ constexpr char kMigrationWriteAccessErrorSuffix[] = "WriteAccessError";
 constexpr char kMigrationUploadErrorSuffix[] = "UploadError";
 constexpr char kMigrationWaitForConnectionSuffix[] = "WaitForConnection";
 constexpr char kMigrationReconnectionDurationSuffix[] = "ReconnectionDuration";
+constexpr char kMigrationCleanupErrorSuffix[] = "CleanupError";
 constexpr char kMigrationDialogActionSuffix[] = "DialogAction";
 constexpr char kMigrationDialogShownSuffix[] = "DialogShown";
 
 // Constants for cloud providers used in histogram names.
 constexpr char kGoogleDriveProvider[] = "GoogleDrive";
 constexpr char kOneDriveProvider[] = "OneDrive";
+constexpr char kDelete[] = "Delete";
 
 // Constants for upload triggers used in histogram names.
 constexpr char kDownloadTrigger[] = "Download";
@@ -78,8 +80,7 @@ std::string GetUMAMigrationDestination(MigrationDestination destination) {
     case MigrationDestination::kOneDrive:
       return kOneDriveProvider;
     case MigrationDestination::kDelete:
-      // TODO(402074191): Implement UMA for deletion.
-      return "";
+      return kDelete;
   }
 }
 
@@ -247,6 +248,14 @@ void SkyVaultMigrationReconnectionDurationHistogram(
                        UploadTrigger::kMigration, destination),
       duration, kReconnectionDurationMin, kReconnectionDurationMax,
       kReconnectionDurationBuckets);
+}
+
+void SkyVaultMigrationCleanupErrorHistogram(MigrationDestination destination,
+                                            bool value) {
+  base::UmaHistogramBoolean(
+      GetHistogramName(kMigrationCleanupErrorSuffix, UploadTrigger::kMigration,
+                       destination),
+      value);
 }
 
 void SkyVaultMigrationDialogActionHistogram(MigrationDestination destination,

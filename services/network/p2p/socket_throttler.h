@@ -10,10 +10,7 @@
 #include <memory>
 
 #include "base/component_export.h"
-
-namespace rtc {
-class DataRateLimiter;
-}
+#include "third_party/webrtc/rtc_base/data_rate_limiter.h"
 
 namespace network {
 

@@ -1414,6 +1414,12 @@
       // [1] https://drafts.csswg.org/css-scoping-1/#shadow-names
       name: "CSSTreeScopedTimelines",
     },
+    {
+      // The var() fallback does not validate against the type
+      // of the custom property being referenced.
+      name: "CSSTypeAgnosticVarFallback",
+      status: "stable",
+    },
     // Support for `user-select:contain`.
     {
       name: "CSSUserSelectContain",
@@ -1561,11 +1567,6 @@
       name: "DirectSocketsInSharedWorkers",
       status: "test",
       depends_on: ["DirectSockets"],
-    },
-    {
-      // Disables anti-aliasing for the Ahem font. Anti-aliasing this font breaks a
-      // significant amount of WPT test expectations.
-      name: "DisableAhemAntialias",
     },
     {
       name: "DisableDifferentOriginSubframeDialogSuppression",
@@ -4405,6 +4406,10 @@
     // For unit tests.
     {
       name: "TestFeatureStable",
+      status: "stable",
+    },
+    {
+      name: "TextAutoSizingDisabledOnFlexbox",
       status: "stable",
     },
     {

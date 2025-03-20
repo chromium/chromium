@@ -29,7 +29,8 @@ class TabCollection {
   // - PINNED:    A container for pinned tabs.
   // - UNPINNED:  A container for unpinned tabs.
   // - GROUP:     A container to grouped tabs.
-  enum class Type { TABSTRIP, PINNED, UNPINNED, GROUP };
+  // - SPLIT:     A container for split tabs.
+  enum class Type { TABSTRIP, PINNED, UNPINNED, GROUP, SPLIT };
 
   virtual ~TabCollection() = default;
   TabCollection(const TabCollection&) = delete;

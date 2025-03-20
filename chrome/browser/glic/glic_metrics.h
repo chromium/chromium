@@ -83,7 +83,11 @@ enum class ResponseSegmentation {
   kUnsupportedAttachedAudio = 34,
   kUnsupportedDetachedText = 35,
   kUnsupportedDetachedAudio = 36,
-  kMaxValue = kUnsupportedDetachedAudio,
+  kWhatsNewAttachedText = 37,
+  kWhatsNewAttachedAudio = 38,
+  kWhatsNewDetachedText = 39,
+  kWhatsNewDetachedAudio = 40,
+  kMaxValue = kWhatsNewDetachedAudio,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicResponseSegmentation)
 
@@ -99,6 +103,21 @@ enum class InputModesUsed {
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInputModesUsed)
+
+// LINT.IfChange(AttachChangeReason)
+
+enum class AttachChangeReason {
+  // Attach state changed because of a drag gesture.
+  kDrag = 0,
+  // Attach state changed because of a menu click.
+  kMenu = 1,
+  // Attachment state initialized.
+  kInit = 2,
+
+  kMaxValue = kInit,
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicAttachChangeReason)
 
 class GlicEnabling;
 class GlicFocusedTabManager;
@@ -122,6 +141,8 @@ class GlicMetrics {
   void OnResponseStopped();
   void OnSessionTerminated();
   void OnResponseRated(bool positive);
+  void OnAttachedToBrowser(AttachChangeReason reason);
+  void OnDetachedFromBrowser(AttachChangeReason reason);
 
   // ----Public API called by other glic classes-----
   // Called when the glic window starts to open.
@@ -156,6 +177,7 @@ class GlicMetrics {
   mojom::WebClientMode input_mode_;
   bool did_request_context_ = false;
   std::set<mojom::WebClientMode> inputs_modes_used_;
+  int attach_change_count_ = 0;
 
   // Session state. `session_start_time_` is a sentinel that is cleared in
   // OnGlicWindowClose() and is used to determine whether OnGlicWindowOpen was

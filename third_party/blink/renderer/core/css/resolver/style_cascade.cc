@@ -1619,7 +1619,8 @@ bool StyleCascade::ResolveVarInto(CSSParserTokenStream& stream,
   // TODO(crbug.com/372475301): Remove this, if possible.
   //
   // https://drafts.css-houdini.org/css-properties-values-api-1/#fallbacks-in-var-references
-  if (has_comma && !ValidateFallback(property, fallback.OriginalText())) {
+  if (!RuntimeEnabledFeatures::CSSTypeAgnosticVarFallbackEnabled() &&
+      has_comma && !ValidateFallback(property, fallback.OriginalText())) {
     CountUse(WebFeature::kVarFallbackValidation);
     return false;
   }

@@ -2146,9 +2146,6 @@ LRESULT HWNDMessageHandler::OnMouseActivate(UINT message,
     if (delegate_->CanActivate()) {
       return MA_ACTIVATE;
     }
-    if (delegate_->WantsMouseEventsWhenInactive()) {
-      return MA_NOACTIVATE;
-    }
     return MA_NOACTIVATEANDEAT;
   }
   if (GetWindowLong(hwnd(), GWL_EXSTYLE) & WS_EX_NOACTIVATE) {

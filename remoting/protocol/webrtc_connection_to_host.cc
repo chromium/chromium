@@ -138,7 +138,10 @@ void WebrtcConnectionToHost::OnWebrtcTransportConnecting() {
 
 void WebrtcConnectionToHost::OnWebrtcTransportConnected() {}
 
-void WebrtcConnectionToHost::OnWebrtcTransportError(ErrorCode error) {
+void WebrtcConnectionToHost::OnWebrtcTransportError(
+    ErrorCode error,
+    std::string_view error_details,
+    const base::Location& error_location) {
   CloseChannels();
   SetState(FAILED, error);
 }

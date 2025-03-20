@@ -126,9 +126,14 @@ sync_pb::SharedTabGroupDataSpecifics SharedTabGroupToSpecifics(
   sync_pb::SharedTabGroup* pb_group = pb_specifics.mutable_tab_group();
   pb_group->set_color(TabGroupColorToSyncColor(group.color()));
   pb_group->set_title(base::UTF16ToUTF8(group.title()));
-  if (group.originating_tab_group_guid().has_value()) {
+
+  // Force returning originating tab group GUID for specifics (both local and
+  // network).
+  if (group.GetOriginatingTabGroupGuid(/*for_sync=*/true).has_value()) {
     pb_group->set_originating_tab_group_guid(
-        group.originating_tab_group_guid().value().AsLowercaseString());
+        group.GetOriginatingTabGroupGuid(/*for_sync=*/true)
+            .value()
+            .AsLowercaseString());
   }
   return pb_specifics;
 }
@@ -136,7 +141,8 @@ sync_pb::SharedTabGroupDataSpecifics SharedTabGroupToSpecifics(
 SavedTabGroup SpecificsToSharedTabGroup(
     const sync_pb::SharedTabGroupDataSpecifics& specifics,
     const syncer::CollaborationMetadata& collaboration_metadata,
-    base::Time creation_time) {
+    base::Time creation_time,
+    bool use_originating_tab_group_guid) {
   CHECK(specifics.has_tab_group());
   CHECK(!collaboration_metadata.collaboration_id()->empty());
 
@@ -167,7 +173,8 @@ SavedTabGroup SpecificsToSharedTabGroup(
   group.SetCreatedByAttribution(collaboration_metadata.created_by());
   group.SetUpdatedByAttribution(collaboration_metadata.last_updated_by());
   if (originating_tab_group_guid.is_valid()) {
-    group.SetOriginatingTabGroupGuid(std::move(originating_tab_group_guid));
+    group.SetOriginatingTabGroupGuid(std::move(originating_tab_group_guid),
+                                     use_originating_tab_group_guid);
   }
 
   // Set the remote update time explicitly because the setters above could have
@@ -384,7 +391,8 @@ LoadStoredEntries(std::vector<proto::SharedTabGroupData> stored_entries,
     }
     SavedTabGroup group = SpecificsToSharedTabGroup(
         specifics, collaboration_metadata,
-        ExtractCreationTimeFromMetadata(sync_metadata, storage_key));
+        ExtractCreationTimeFromMetadata(sync_metadata, storage_key),
+        proto.local_group_data().use_originating_tab_group_guid());
     // Load remaining local-only fields.
     if (AreLocalIdsPersisted() &&
         proto.local_group_data().has_local_group_id()) {
@@ -485,6 +493,8 @@ proto::LocalSharedTabGroupData GroupToLocalOnlyData(
   local_group_data.set_is_transitioning_to_saved(
       group.is_transitioning_to_saved());
   local_group_data.set_is_group_hidden(group.is_hidden());
+  local_group_data.set_use_originating_tab_group_guid(
+      group.use_originating_tab_group_guid());
   return local_group_data;
 }
 
@@ -1206,8 +1216,12 @@ SharedTabGroupDataSyncBridge::AddGroupToLocalStorage(
     // tab strip, and associate its local group ID. This is currently prevented
     // by delaying observer calls in the TabGroupSyncService.
     StoreSharedGroup(write_batch, specifics, proto::LocalSharedTabGroupData());
+    bool use_originating_tab_group_guid =
+        collaboration_metadata.created_by() ==
+        GaiaId(change_processor()->TrackedAccountId());
     model_wrapper_->AddGroup(SpecificsToSharedTabGroup(
-        specifics, collaboration_metadata, creation_time));
+        specifics, collaboration_metadata, creation_time,
+        use_originating_tab_group_guid));
     return std::nullopt;
   }
 

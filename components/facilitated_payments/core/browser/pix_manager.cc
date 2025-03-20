@@ -20,6 +20,7 @@
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
+#include "components/optimization_guide/core/optimization_guide_decider.h"
 
 namespace payments::facilitated {
 namespace {
@@ -35,13 +36,12 @@ PixManager::PixManager(
     FacilitatedPaymentsApiClientCreator api_client_creator,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider)
     : client_(CHECK_DEREF(client)),
-      api_client_creator_(std::move(api_client_creator)),
+      api_client_creator_(api_client_creator),
       optimization_guide_decider_(optimization_guide_decider),
       initiate_payment_request_details_(
           std::make_unique<
               FacilitatedPaymentsInitiatePaymentRequestDetails>()) {
   DCHECK(optimization_guide_decider_);
-  RegisterPixAllowlist();
 }
 
 PixManager::~PixManager() {
@@ -81,11 +81,6 @@ void PixManager::OnPixCodeCopiedToClipboard(const GURL& render_frame_host_url,
       pix_code, base::BindOnce(&PixManager::OnPixCodeValidated,
                                weak_ptr_factory_.GetWeakPtr(), pix_code,
                                base::TimeTicks::Now()));
-}
-
-void PixManager::RegisterPixAllowlist() const {
-  optimization_guide_decider_->RegisterOptimizationTypes(
-      {optimization_guide::proto::PIX_MERCHANT_ORIGINS_ALLOWLIST});
 }
 
 bool PixManager::IsMerchantAllowlisted(const GURL& url) const {
@@ -167,7 +162,7 @@ void PixManager::OnPixCodeValidated(
 FacilitatedPaymentsApiClient* PixManager::GetApiClient() {
   if (!api_client_) {
     if (api_client_creator_) {
-      api_client_ = std::move(api_client_creator_).Run();
+      api_client_ = api_client_creator_.Run();
     }
   }
 

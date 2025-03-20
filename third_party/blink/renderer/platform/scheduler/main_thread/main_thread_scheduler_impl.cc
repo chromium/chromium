@@ -466,8 +466,9 @@ MainThreadSchedulerImpl::SchedulingSettings::SchedulingSettings()
                     features::kTaskDeferralPolicyParam.Get())
               : std::nullopt),
       input_scenario_priority_boost_enabled(
-          base::FeatureList::IsEnabled(features::kInputScenarioPriorityBoost)) {
-}
+          base::FeatureList::IsEnabled(features::kInputScenarioPriorityBoost)),
+      input_scenario_priority_boost_includes_loading(
+          features::kInputScenarioPriorityBoostIncludesLoading.Get()) {}
 
 MainThreadSchedulerImpl::AnyThread::~AnyThread() = default;
 
@@ -2259,22 +2260,20 @@ void MainThreadSchedulerImpl::OnTaskStarted(
   if (scheduling_settings().input_scenario_priority_boost_enabled) {
     // Check if the input scenario has changed and update the main thread
     // priority boost accordingly.
-    performance_scenarios::InputScenario input_scenario =
-        GetInputScenario(performance_scenarios::ScenarioScope::kCurrentProcess)
-            ->load(std::memory_order_relaxed);
-
-    switch (input_scenario) {
-      case performance_scenarios::InputScenario::kNoInput:
-        if (main_thread_only().main_thread_priority_boost.has_value()) {
-          main_thread_only().main_thread_priority_boost.reset();
-        }
-        break;
-      case performance_scenarios::InputScenario::kTyping:
-        if (!main_thread_only().main_thread_priority_boost.has_value()) {
-          main_thread_only().main_thread_priority_boost.emplace(
-              base::ThreadType::kDisplayCritical);
-        }
-        break;
+    performance_scenarios::ScenarioPattern idle_pattern{
+        .input = {performance_scenarios::InputScenario::kNoInput},
+    };
+    if (scheduling_settings().input_scenario_priority_boost_includes_loading) {
+      idle_pattern.loading = {
+          performance_scenarios::LoadingScenario::kNoPageLoading};
+    }
+    if (performance_scenarios::CurrentScenariosMatch(
+            performance_scenarios::ScenarioScope::kCurrentProcess,
+            idle_pattern)) {
+      main_thread_only().main_thread_priority_boost.reset();
+    } else if (!main_thread_only().main_thread_priority_boost.has_value()) {
+      main_thread_only().main_thread_priority_boost.emplace(
+          base::ThreadType::kDisplayCritical);
     }
   }
 }

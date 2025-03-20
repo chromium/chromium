@@ -102,12 +102,12 @@ int MigrateSchema(SqlDatabase* db, int current_version_number) {
 
 }  // namespace
 
-ImageInfo::ImageInfo(const std::set<std::string>& annotations,
-                     const base::FilePath& path,
-                     const base::Time& last_modified,
+ImageInfo::ImageInfo(std::set<std::string> annotations,
+                     base::FilePath path,
+                     base::Time last_modified,
                      int64_t file_size)
-    : annotations(annotations),
-      path(path),
+    : annotations(std::move(annotations)),
+      path(std::move(path)),
       last_modified(last_modified),
       file_size(file_size) {}
 
@@ -277,7 +277,7 @@ std::vector<ImageInfo> AnnotationStorage::GetAllAnnotationsForTest() {
 
   std::vector<ImageInfo> matched_paths;
   while (statement->Step()) {
-    const std::string annotation = statement->ColumnString(0);
+    std::string annotation = statement->ColumnString(0);
     base::FilePath file_path(statement->ColumnStringView(1));
     file_path = file_path.Append(statement->ColumnStringView(2));
     const base::Time time = statement->ColumnTime(3);
@@ -285,11 +285,11 @@ std::vector<ImageInfo> AnnotationStorage::GetAllAnnotationsForTest() {
     DVLOG(1) << "Select find: " << annotation << ", " << file_path << ", "
              << time << ", " << file_size;
     ImageInfo image_info(
-        {{}, std::move(file_path), std::move(time), file_size});
+        /*annotations=*/{}, std::move(file_path), time, file_size);
 
     const int source = statement->ColumnInt(5);
     if (source == 0) {  // OCR annotation.
-      image_info.annotations.insert(annotation);
+      image_info.annotations.insert(std::move(annotation));
     } else if (source == 1) {  // ICA annotation.
       AnnotationInfo annotation_info;
       annotation_info.score = statement->ColumnDouble(6);
@@ -302,7 +302,7 @@ std::vector<ImageInfo> AnnotationStorage::GetAllAnnotationsForTest() {
       if (statement->GetColumnType(9) != sql::ColumnType::kNull) {
         annotation_info.area = statement->ColumnDouble(9);
       }
-      image_info.annotation_map[annotation] = annotation_info;
+      image_info.annotation_map[std::move(annotation)] = annotation_info;
     }
     matched_paths.push_back(image_info);
   }
@@ -370,15 +370,13 @@ std::vector<ImageInfo> AnnotationStorage::FindImagePath(
 
   std::vector<ImageInfo> matched_paths;
   while (statement->Step()) {
-    const std::string annotation = statement->ColumnString(0);
+    std::string annotation = statement->ColumnString(0);
     const base::Time time = statement->ColumnTime(3);
     const int64_t file_size = statement->ColumnInt64(4);
     DVLOG(1) << "Select find: " << annotation << ", " << image_path << ", "
              << time << ", " << file_size;
-    matched_paths.push_back({{std::move(annotation)},
-                             std::move(image_path),
-                             std::move(time),
-                             file_size});
+    matched_paths.emplace_back(std::set<std::string>{std::move(annotation)},
+                               image_path, time, file_size);
   }
 
   return matched_paths;
@@ -472,7 +470,7 @@ std::vector<FileSearchResult> AnnotationStorage::PrefixSearch(
              << file_path << ", " << time << " rl: " << relevance;
 
     if (matched_paths.empty() || matched_paths.back().file_path != file_path) {
-      matched_paths.emplace_back(file_path, std::move(time), relevance);
+      matched_paths.emplace_back(std::move(file_path), time, relevance);
     } else if (matched_paths.back().relevance < relevance) {
       matched_paths.back().relevance = relevance;
     }

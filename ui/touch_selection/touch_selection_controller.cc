@@ -172,8 +172,6 @@ void TouchSelectionController::OnViewportChanged(
 }
 
 bool TouchSelectionController::WillHandleTouchEvent(const MotionEvent& event) {
-  const bool is_down_event = event.GetAction() == MotionEvent::Action::DOWN;
-  session_metrics_recorder_.OnTouchEvent(is_down_event);
   bool handled = WillHandleTouchEventImpl(event);
   // If Action::DOWN is consumed, the rest of touch sequence should be consumed,
   // too, regardless of value of |handled|.
@@ -181,7 +179,7 @@ bool TouchSelectionController::WillHandleTouchEvent(const MotionEvent& event) {
   // Ideally we should consume until the final Action::UP/Action::CANCEL.
   // But, apparently, we can't reliably determine the final Action::CANCEL in a
   // multi-touch scenario. See https://crbug.com/653212.
-  if (is_down_event) {
+  if (event.GetAction() == MotionEvent::Action::DOWN) {
     consume_touch_sequence_ = handled;
   }
   return handled || consume_touch_sequence_;
@@ -245,18 +243,6 @@ void TouchSelectionController::OnUpdateNativeViewTree(
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-void TouchSelectionController::OnMenuCommand(bool should_dismiss_handles) {
-  session_metrics_recorder_.OnMenuCommand(should_dismiss_handles);
-  if (should_dismiss_handles) {
-    HideAndDisallowShowingAutomatically();
-  }
-}
-
-void TouchSelectionController::OnSessionEndEvent(const Event& event) {
-  session_metrics_recorder_.OnSessionEndEvent(event);
-  HideAndDisallowShowingAutomatically();
-}
-
 void TouchSelectionController::HideHandles() {
   response_pending_input_event_ = INPUT_EVENT_TYPE_NONE;
   DeactivateInsertion();
@@ -268,7 +254,6 @@ void TouchSelectionController::HideHandles() {
 }
 
 void TouchSelectionController::HideAndDisallowShowingAutomatically() {
-  session_metrics_recorder_.ResetMetrics();
   HideHandles();
   show_touch_handles_ = false;
 }
@@ -652,7 +637,6 @@ void TouchSelectionController::OnSelectionChanged() {
 
 bool TouchSelectionController::ActivateInsertionIfNecessary() {
   DCHECK_NE(SELECTION_ACTIVE, active_status_);
-  session_metrics_recorder_.OnCursorActivationEvent();
 
   if (!insertion_handle_) {
     insertion_handle_ = std::make_unique<TouchHandle>(
@@ -681,7 +665,6 @@ void TouchSelectionController::DeactivateInsertion() {
 
 bool TouchSelectionController::ActivateSelectionIfNecessary() {
   DCHECK_NE(INSERTION_ACTIVE, active_status_);
-  session_metrics_recorder_.OnSelectionActivationEvent();
 
   if (!start_selection_handle_) {
     start_selection_handle_ =

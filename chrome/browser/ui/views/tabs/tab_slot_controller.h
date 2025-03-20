@@ -156,10 +156,9 @@ class TabSlotController {
   // Returns nullptr if that offset does not result in a valid model index.
   virtual Tab* GetAdjacentTab(const Tab* tab, int offset) = 0;
 
-  // Returns a vector of all split tabs in a split with the provided tab.
-  // Returns an empty vector if `tab` is not a split tab.
-  // TODO(crbug.com/403546598): replace `tab` with split ID.
-  virtual std::vector<Tab*> GetTabsInSplit(const Tab* tab) = 0;
+  // Returns the split tab adjacent to the provided tab. Returns nullptr if
+  // `tab` is not a split tab.
+  virtual Tab* GetAdjacentSplitTab(const Tab* tab) = 0;
 
   // Invoked when a mouse event occurs on `source`.
   virtual void OnMouseEventInTab(views::View* source,
