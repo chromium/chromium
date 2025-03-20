@@ -28,6 +28,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -126,10 +127,16 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
 
     test_profile_ = profile_manager_->CreateTestingProfile("testing_profile");
 
+    // TODO(crbug.com/399376916): Remove direct dependency to
+    // enterprise_connectors::GetProfileEmail which uses the profile-bound
+    // IdentityManager.
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(test_profile_);
     signin::SetPrimaryAccount(identity_manager, "test@example.com",
                               signin::ConsentLevel::kSignin);
+
+    identity_test_env_.MakePrimaryAccountAvailable(
+        "test@example.com", signin::ConsentLevel::kSignin);
 
     enterprise_rt_service_ = CreateServiceAndEnablePolicy(
         test_profile_, /*set_raw_token_fetcher=*/true);
@@ -167,7 +174,8 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
         std::move(token_fetcher),
         enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
             profile),
-        referrer_chain_provider_.get(), &test_pref_service_);
+        referrer_chain_provider_.get(), &test_pref_service_,
+        identity_test_env_.identity_manager());
 
     test_pref_service_.SetInteger(
         enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
@@ -253,6 +261,7 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
   content::BrowserTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
+  signin::IdentityTestEnvironment identity_test_env_;
   // TestingProfileManager owns `test_profile_` so it must be freed after all
   // reference to the test profile are freed.
   std::unique_ptr<TestingProfileManager> profile_manager_;

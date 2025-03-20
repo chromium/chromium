@@ -26,6 +26,10 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
+namespace signin {
+class IdentityManager;
+}
+
 class PrefService;
 class Profile;
 
@@ -48,7 +52,8 @@ class ChromeEnterpriseRealTimeUrlLookupService
       std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
       enterprise_connectors::ConnectorsService* connectors_service,
       ReferrerChainProvider* referrer_chain_provider,
-      PrefService* pref_service);
+      PrefService* pref_service,
+      signin::IdentityManager* identity_manager);
 
   ChromeEnterpriseRealTimeUrlLookupService(
       const ChromeEnterpriseRealTimeUrlLookupService&) = delete;
@@ -113,6 +118,9 @@ class ChromeEnterpriseRealTimeUrlLookupService
 
   // Unowned object used for getting preference settings.
   raw_ptr<PrefService> pref_service_;
+
+  // Unowned object used for accessing the user's Google identity.
+  raw_ptr<signin::IdentityManager> identity_manager_;
 
   friend class ChromeEnterpriseRealTimeUrlLookupServiceTest;
 
