@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/threading/scoped_thread_priority.h"
 #include "chrome/common/chrome_paths.h"
 
 namespace {
@@ -58,6 +59,10 @@ CloudSyncStatus EvaluateOneDriveSyncStatus() {
 }
 
 bool IsCloudStorageSynced(const base::FilePath& file_path) {
+  // Because SHCreateItemFromParsingName can load DLLS, we wrap it with a
+  // background priority scope.
+  SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
+
   Microsoft::WRL::ComPtr<IShellItem2> shell_item;
   HRESULT hr = SHCreateItemFromParsingName(file_path.value().c_str(), nullptr,
                                            IID_PPV_ARGS(&shell_item));
