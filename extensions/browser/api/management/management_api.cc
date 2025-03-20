@@ -71,9 +71,9 @@ namespace {
 using ExtensionInfoList = std::vector<management::ExtensionInfo>;
 using IconInfoList = std::vector<management::IconInfo>;
 
-enum AutoConfirmForTest { DO_NOT_SKIP = 0, PROCEED, ABORT };
+enum class AutoConfirmForTest { kDoNotSkip = 0, kProceed, kAbort };
 
-AutoConfirmForTest auto_confirm_for_test = DO_NOT_SKIP;
+AutoConfirmForTest auto_confirm_for_test = AutoConfirmForTest::kDoNotSkip;
 
 // Returns true if the extension should be exposed via the chrome.management
 // API.
@@ -887,7 +887,8 @@ ManagementCreateAppShortcutFunction::~ManagementCreateAppShortcutFunction() =
 // static
 void ManagementCreateAppShortcutFunction::SetAutoConfirmForTest(
     bool should_proceed) {
-  auto_confirm_for_test = should_proceed ? PROCEED : ABORT;
+  auto_confirm_for_test = should_proceed ? AutoConfirmForTest::kProceed
+                                         : AutoConfirmForTest::kAbort;
 }
 
 void ManagementCreateAppShortcutFunction::OnCloseShortcutPrompt(bool created) {
@@ -926,11 +927,12 @@ ExtensionFunction::ResponseAction ManagementCreateAppShortcutFunction::Run() {
   }
 #endif
 
-  if (auto_confirm_for_test != DO_NOT_SKIP) {
+  if (auto_confirm_for_test != AutoConfirmForTest::kDoNotSkip) {
     // Matched with a Release() in OnCloseShortcutPrompt().
     AddRef();
 
-    OnCloseShortcutPrompt(auto_confirm_for_test == PROCEED);
+    OnCloseShortcutPrompt(auto_confirm_for_test ==
+                          AutoConfirmForTest::kProceed);
     // OnCloseShortcutPrompt() might have called Respond() already.
     return did_respond() ? AlreadyResponded() : RespondLater();
   }
