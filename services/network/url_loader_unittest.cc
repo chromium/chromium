@@ -199,20 +199,6 @@ const net::MockWrite kOriginTestWrites[] = {
                    "Accept-Encoding: gzip, deflate\r\n\r\n"),
 };
 
-// TODO(crbug.com/391950057): Move this method to //net/  .
-std::vector<uint8_t> CompressGzip(std::string_view uncompressed_body) {
-  // Attempt to pick size that's large enough even in the worst case (deflate
-  // block headers should be shorter than 512 bytes, and deflating should never
-  // double size of data, modulo headers).
-  std::vector<uint8_t> compressed_body(uncompressed_body.size() * 2 + 512);
-  size_t compressed_size = compressed_body.size();
-  net::CompressGzip(uncompressed_body.data(), uncompressed_body.size(),
-                    reinterpret_cast<char*>(compressed_body.data()),
-                    &compressed_size, true /* gzip_framing */);
-  compressed_body.resize(compressed_size);
-  return compressed_body;
-}
-
 static ResourceRequest CreateResourceRequest(const char* method,
                                              const GURL& url) {
   ResourceRequest request;
@@ -7473,7 +7459,7 @@ TEST_F(URLLoaderMockSocketTest, SniffMimeByteByByteRead) {
 
 TEST_F(URLLoaderMockSocketTest, CompressedResponseSniffMime) {
   const std::string_view kTestHtml = "<html><body>hello world</body></html>";
-  const auto compressed = CompressGzip(kTestHtml);
+  const auto compressed = net::CompressGzip(kTestHtml);
   const net::MockRead kReads[] = {
       net::MockRead(net::SYNCHRONOUS, /*seq=*/1,
                     "HTTP/1.1 200 OK\r\n"
@@ -7499,7 +7485,7 @@ TEST_F(URLLoaderMockSocketTest, CompressedResponseSniffMime) {
 TEST_F(URLLoaderMockSocketTest,
        CompressedResponseClienteSideDecodingSniffMimeSync) {
   const std::string_view kTestHtml = "<html><body>hello world</body></html>";
-  const auto compressed = CompressGzip(kTestHtml);
+  const auto compressed = net::CompressGzip(kTestHtml);
   const net::MockRead kReads[] = {
       net::MockRead(net::SYNCHRONOUS, /*seq=*/1,
                     "HTTP/1.1 200 OK\r\n"
@@ -7531,7 +7517,7 @@ TEST_F(URLLoaderMockSocketTest,
 TEST_F(URLLoaderMockSocketTest,
        CompressedResponseClienteSideDecodingSniffMimeAsync) {
   const std::string_view kTestHtml = "<html><body>hello world</body></html>";
-  const auto compressed = CompressGzip(kTestHtml);
+  const auto compressed = net::CompressGzip(kTestHtml);
   const net::MockRead kReads[] = {
       net::MockRead(net::ASYNC, /*seq=*/1,
                     "HTTP/1.1 200 OK\r\n"
@@ -7568,7 +7554,7 @@ TEST_F(URLLoaderMockSocketTest,
   // make the total 512 bytes.
   const std::string large_space_and_html =
       base::StrCat({std::string(512 - kTestHtml.size(), ' '), kTestHtml});
-  const auto compressed = CompressGzip(large_space_and_html);
+  const auto compressed = net::CompressGzip(large_space_and_html);
   std::vector<net::MockRead> reads;
   reads.emplace_back(net::ASYNC, /*seq=*/1,
                      "HTTP/1.1 200 OK\r\n"
@@ -7711,7 +7697,7 @@ TEST_F(URLLoaderMockSocketTest,
 TEST_F(URLLoaderMockSocketTest,
        CompressedResponseClienteSideDecodingSniffMimeSyncCancelAfterResponse) {
   const std::string_view kTestHtml = "<html><body>hello world</body></html>";
-  const auto compressed = CompressGzip(kTestHtml);
+  const auto compressed = net::CompressGzip(kTestHtml);
   const net::MockRead kReads[] = {
       net::MockRead(net::SYNCHRONOUS, /*seq=*/1,
                     "HTTP/1.1 200 OK\r\n"
@@ -7747,7 +7733,7 @@ TEST_F(URLLoaderMockSocketTest,
        CompressedResponseClienteSideDecodingOrbClosesSocketOnSniffingMimeType) {
   orb_enabled_ = true;
 
-  const auto compressed = CompressGzip("{\"x\" : 3}");
+  const auto compressed = net::CompressGzip("{\"x\" : 3}");
   const std::string first_read = base::StringPrintf(
       "HTTP/1.1 200 OK\r\n"
       "Connection: keep-alive\r\n"
@@ -7800,7 +7786,7 @@ TEST_F(URLLoaderMockSocketTest,
 
   const std::vector<uint8_t> raw_data = CreateRandomBytesWithSeed(
       /*seed=*/1234, /*size=*/data_pipe_size * 2);
-  const auto compressed = CompressGzip(base::as_string_view(raw_data));
+  const auto compressed = net::CompressGzip(base::as_string_view(raw_data));
   // Verify that the compressed data is indeed larger than the Mojo pipe's
   // capacity, which is a prerequisite for the test scenario.
   EXPECT_GT(compressed.size(), data_pipe_size);
@@ -7842,7 +7828,7 @@ TEST_F(URLLoaderMockSocketTest,
        CompressedResponseClienteSideDecodingOrbNotBlocked) {
   orb_enabled_ = true;
   const std::string_view kTestData = "            ";
-  const auto compressed = CompressGzip(kTestData);
+  const auto compressed = net::CompressGzip(kTestData);
   const std::string first_read = base::StringPrintf(
       "HTTP/1.1 200 OK\r\n"
       "Connection: keep-alive\r\n"
