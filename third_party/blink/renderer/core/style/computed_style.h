@@ -996,7 +996,8 @@ class ComputedStyle final : public ComputedStyleBase {
   }
   bool ColumnRuleEquivalent(const ComputedStyle& other_style) const;
   bool HasColumnRule() const {
-    if (!SpecifiesColumns() && Display() != EDisplay::kGrid) [[likely]] {
+    if (!SpecifiesColumns() && (Display() != EDisplay::kGrid &&
+                                Display() != EDisplay::kFlex)) [[likely]] {
       return false;
     }
     return ColumnRuleWidth().GetLegacyValue() && !ColumnRuleIsTransparent() &&
