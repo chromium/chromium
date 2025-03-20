@@ -5,6 +5,7 @@
 #include "content/services/auction_worklet/trusted_kvv2_signals.h"
 
 #include <cstddef>
+#include <optional>
 
 #include "base/containers/span_writer.h"
 #include "base/feature_list.h"
@@ -42,8 +43,6 @@ namespace auction_worklet {
 namespace {
 
 const char kPublisherHostName[] = "publisher.test";
-const int kExperimentGroupId = 12345;
-const char kTrustedBiddingSignalsSlotSizeParam[] = "slotSize=100,200";
 const char kJoiningOrigin[] = "https://foo.test/";
 const size_t kFramingHeaderSize = 5;  // bytes
 const size_t kOhttpHeaderSize = 55;   // bytes
@@ -152,8 +151,9 @@ CreateBiddingRequestHelperBuilder() {
           kKeyId);
 
   return std::make_unique<TrustedBiddingSignalsKVv2RequestHelperBuilder>(
-      kPublisherHostName, kExperimentGroupId, std::move(public_key),
-      kTrustedBiddingSignalsSlotSizeParam);
+      kPublisherHostName, /*experiment_group_id=*/std::nullopt,
+      /*contextual_data=*/std::nullopt, std::move(public_key),
+      /*trusted_bidding_signals_slot_size_param=*/"");
 }
 
 std::unique_ptr<TrustedScoringSignalsKVv2RequestHelperBuilder>
@@ -166,7 +166,8 @@ CreateScoringRequestHelperBuilder() {
           kKeyId);
 
   return std::make_unique<TrustedScoringSignalsKVv2RequestHelperBuilder>(
-      kPublisherHostName, kExperimentGroupId, std::move(public_key));
+      kPublisherHostName, /*experiment_group_id=*/std::nullopt,
+      /*contextual_data=*/std::nullopt, std::move(public_key));
 }
 
 class TrustedKVv2SignalsEmbeddedTest : public testing::Test {

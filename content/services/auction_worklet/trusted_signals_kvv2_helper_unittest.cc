@@ -48,6 +48,7 @@ namespace {
 
 const char kHostName[] = "publisher.test";
 const int kExperimentGroupId = 12345;
+const char kContexualData[] = "contextual_signals";
 const char kTrustedBiddingSignalsSlotSizeParam[] = "slotSize=100,200";
 const size_t kFramingHeaderSize = 5;  // bytes
 const size_t kOhttpHeaderSize = 55;   // bytes
@@ -414,7 +415,7 @@ TEST_F(TrustedSignalsKVv2RequestHelperTest,
       helper_builder =
           std::make_unique<TrustedBiddingSignalsKVv2RequestHelperBuilder>(
               kHostName, /*experiment_group_id=*/std::nullopt,
-              std::move(public_key_),
+              /*contextual_data=*/std::nullopt, std::move(public_key_),
               /*trusted_bidding_signals_slot_size_param=*/"");
 
   helper_builder->AddTrustedSignalsRequest(
@@ -471,8 +472,8 @@ TEST_F(TrustedSignalsKVv2RequestHelperTest,
   std::unique_ptr<TrustedBiddingSignalsKVv2RequestHelperBuilder>
       helper_builder =
           std::make_unique<TrustedBiddingSignalsKVv2RequestHelperBuilder>(
-              kHostName, kExperimentGroupId, std::move(public_key_),
-              kTrustedBiddingSignalsSlotSizeParam);
+              kHostName, kExperimentGroupId, kContexualData,
+              std::move(public_key_), kTrustedBiddingSignalsSlotSizeParam);
 
   helper_builder->AddTrustedSignalsRequest(
       std::string("groupA"), std::set<std::string>{"keyA", "keyAB"},
@@ -522,140 +523,114 @@ TEST_F(TrustedSignalsKVv2RequestHelperTest,
   // operation between the number and the number minus 1 should be 0.
   EXPECT_FALSE(request_length & (request_length - 1));
 
-  // Use cbor.me to convert from
-  // {
-  //   "metadata": {
-  //     "hostname": "publisher.test"
-  //   },
-  //   "partitions": [
-  //     {
-  //       "id": 0,
-  //       "metadata": {
-  //         "slotSize": "100,200",
-  //         "experimentGroupId": "12345"
-  //       },
-  //       "arguments": [
-  //         {
-  //           "data": [
-  //             "groupA",
-  //             "groupB"
-  //           ],
-  //           "tags": [
-  //             "interestGroupNames"
-  //           ]
-  //         },
-  //         {
-  //           "data": [
-  //             "keyA",
-  //             "keyAB",
-  //             "keyB"
-  //           ],
-  //           "tags": [
-  //             "keys"
-  //           ]
-  //         }
-  //       ],
-  //       "compressionGroupId": 0
-  //     },
-  //     {
-  //       "id": 1,
-  //       "metadata": {
-  //         "slotSize": "100,200",
-  //         "experimentGroupId": "12345"
-  //       },
-  //       "arguments": [
-  //         {
-  //           "data": [
-  //             "groupAB"
-  //           ],
-  //           "tags": [
-  //             "interestGroupNames"
-  //           ]
-  //         },
-  //         {
-  //           "data": [
-  //             "key"
-  //           ],
-  //           "tags": [
-  //             "keys"
-  //           ]
-  //         }
-  //       ],
-  //       "compressionGroupId": 0
-  //     },
-  //     {
-  //       "id": 0,
-  //       "metadata": {
-  //         "slotSize": "100,200",
-  //         "experimentGroupId": "12345"
-  //       },
-  //       "arguments": [
-  //         {
-  //           "data": [
-  //             "groupC",
-  //             "groupD"
-  //           ],
-  //           "tags": [
-  //             "interestGroupNames"
-  //           ]
-  //         },
-  //         {
-  //           "data": [
-  //             "keyC",
-  //             "keyCD",
-  //             "keyD",
-  //             "keyDD"
-  //           ],
-  //           "tags": [
-  //             "keys"
-  //           ]
-  //         }
-  //       ],
-  //       "compressionGroupId": 1
-  //     }
-  //   ],
-  //   "acceptCompression": [
-  //     "none",
-  //     "gzip"
-  //   ]
-  // }
-  const std::string kExpectedBodyHex =
-      "A3686D65746164617461A168686F73746E616D656E7075626C69736865722E746573746A"
-      "706172746974696F6E7383A462696400686D65746164617461A268736C6F7453697A6567"
-      "3130302C323030716578706572696D656E7447726F757049646531323334356961726775"
-      "6D656E747382A26464617461826667726F7570416667726F75704264746167738172696E"
-      "74657265737447726F75704E616D6573A2646461746183646B657941656B65794142646B"
-      "657942647461677381646B65797372636F6D7072657373696F6E47726F7570496400A462"
-      "696401686D65746164617461A268736C6F7453697A65673130302C323030716578706572"
-      "696D656E7447726F7570496465313233343569617267756D656E747382A2646461746181"
-      "6767726F7570414264746167738172696E74657265737447726F75704E616D6573A26464"
-      "61746181636B6579647461677381646B65797372636F6D7072657373696F6E47726F7570"
-      "496400A462696400686D65746164617461A268736C6F7453697A65673130302C32303071"
-      "6578706572696D656E7447726F7570496465313233343569617267756D656E747382A264"
-      "64617461826667726F7570436667726F75704464746167738172696E7465726573744772"
-      "6F75704E616D6573A2646461746184646B657943656B65794344646B657944656B657944"
-      "44647461677381646B65797372636F6D7072657373696F6E47726F757049640171616363"
-      "657074436F6D7072657373696F6E82646E6F6E6564677A6970";
-  // Prefix hex for `kExpectedBodyHex` which includes the compression format
-  // code and the length.
-  const std::string kExpectedPrefixHex = "0000000235";
-  // Padding zeros.
-  const std::string kPaddingString =
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000";
+  std::string expected_request_body =
+      test::CreateKVv2RequestBody(test::ToCborString(
+          R"({
+            "metadata": {
+              "hostname": "publisher.test"
+            },
+            "partitions": [
+              {
+                "id": 0,
+                "metadata": {
+                  "slotSize": "100,200",
+                  "experimentGroupId": "12345"
+                },
+                "arguments": [
+                  {
+                    "data": [
+                      "groupA",
+                      "groupB"
+                    ],
+                    "tags": [
+                      "interestGroupNames"
+                    ]
+                  },
+                  {
+                    "data": [
+                      "keyA",
+                      "keyAB",
+                      "keyB"
+                    ],
+                    "tags": [
+                      "keys"
+                    ]
+                  }
+                ],
+                "compressionGroupId": 0
+              },
+              {
+                "id": 1,
+                "metadata": {
+                  "slotSize": "100,200",
+                  "experimentGroupId": "12345"
+                },
+                "arguments": [
+                  {
+                    "data": [
+                      "groupAB"
+                    ],
+                    "tags": [
+                      "interestGroupNames"
+                    ]
+                  },
+                  {
+                    "data": [
+                      "key"
+                    ],
+                    "tags": [
+                      "keys"
+                    ]
+                  }
+                ],
+                "compressionGroupId": 0
+              },
+              {
+                "id": 0,
+                "metadata": {
+                  "slotSize": "100,200",
+                  "experimentGroupId": "12345"
+                },
+                "arguments": [
+                  {
+                    "data": [
+                      "groupC",
+                      "groupD"
+                    ],
+                    "tags": [
+                      "interestGroupNames"
+                    ]
+                  },
+                  {
+                    "data": [
+                      "keyC",
+                      "keyCD",
+                      "keyD",
+                      "keyDD"
+                    ],
+                    "tags": [
+                      "keys"
+                    ]
+                  }
+                ],
+                "compressionGroupId": 1
+              }
+            ],
+            "acceptCompression": [
+              "none",
+              "gzip"
+            ],
+            "perPartitionMetadata": {
+              "contextualData": [
+                {
+                  "value": "contextual_signals"
+                }
+              ]
+            }
+          })"));
 
   EXPECT_EQ(base::HexEncode(body_bytes),
-            kExpectedPrefixHex + kExpectedBodyHex + kPaddingString);
+            base::HexEncode(expected_request_body));
 }
 
 // TODO(crbug.com/337917489): When adding an identical trusted scoring signals
@@ -689,7 +664,8 @@ TEST_F(TrustedSignalsKVv2RequestHelperTest,
   std::unique_ptr<TrustedBiddingSignalsKVv2RequestHelperBuilder>
       helper_builder =
           std::make_unique<TrustedBiddingSignalsKVv2RequestHelperBuilder>(
-              kHostName, kExperimentGroupId, std::move(public_key_),
+              kHostName, /*experiment_group_id=*/std::nullopt,
+              /*contextual_data=*/std::nullopt, std::move(public_key_),
               kTrustedBiddingSignalsSlotSizeParam);
 
   EXPECT_EQ(
@@ -754,7 +730,7 @@ TEST_F(TrustedSignalsKVv2RequestHelperTest,
       helper_builder =
           std::make_unique<TrustedScoringSignalsKVv2RequestHelperBuilder>(
               kHostName, /*experiment_group_id=*/std::nullopt,
-              std::move(public_key_));
+              /*contextual_data=*/std::nullopt, std::move(public_key_));
 
   helper_builder->AddTrustedSignalsRequest(
       GURL(kOriginFooUrl), /*ad_component_render_urls=*/{},
@@ -804,7 +780,8 @@ TEST_F(TrustedSignalsKVv2RequestHelperTest,
   std::unique_ptr<TrustedScoringSignalsKVv2RequestHelperBuilder>
       helper_builder =
           std::make_unique<TrustedScoringSignalsKVv2RequestHelperBuilder>(
-              kHostName, kExperimentGroupId, std::move(public_key_));
+              kHostName, kExperimentGroupId, kContexualData,
+              std::move(public_key_));
 
   helper_builder->AddTrustedSignalsRequest(
       GURL(kOriginFooUrl), std::set<std::string>{kOriginFoosubUrl},
@@ -831,131 +808,104 @@ TEST_F(TrustedSignalsKVv2RequestHelperTest,
   // operation between the number and the number minus 1 should be 0.
   EXPECT_FALSE(request_length & (request_length - 1));
 
-  // Use cbor.me to convert from
-  // {
-  //   "metadata": {
-  //     "hostname": "publisher.test"
-  //   },
-  //   "partitions": [
-  //     {
-  //       "id": 0,
-  //       "metadata": {
-  //         "experimentGroupId": "12345"
-  //       },
-  //       "arguments": [
-  //         {
-  //           "data": [
-  //             "https://foo.test/"
-  //           ],
-  //           "tags": [
-  //             "renderURLs"
-  //           ]
-  //         },
-  //         {
-  //           "data": [
-  //             "https://foosub.test/"
-  //           ],
-  //           "tags": [
-  //             "adComponentRenderURLs"
-  //           ]
-  //         }
-  //       ],
-  //       "compressionGroupId": 0
-  //     },
-  //     {
-  //       "id": 1,
-  //       "metadata": {
-  //         "experimentGroupId": "12345"
-  //       },
-  //       "arguments": [
-  //         {
-  //           "data": [
-  //             "https://bar.test/"
-  //           ],
-  //           "tags": [
-  //             "renderURLs"
-  //           ]
-  //         },
-  //         {
-  //           "data": [
-  //             "https://barsub.test/"
-  //           ],
-  //           "tags": [
-  //             "adComponentRenderURLs"
-  //           ]
-  //         }
-  //       ],
-  //       "compressionGroupId": 0
-  //     },
-  //     {
-  //       "id": 0,
-  //       "metadata": {
-  //         "experimentGroupId": "12345"
-  //       },
-  //       "arguments": [
-  //         {
-  //           "data": [
-  //             "https://foo.test/"
-  //           ],
-  //           "tags": [
-  //             "renderURLs"
-  //           ]
-  //         },
-  //         {
-  //           "data": [
-  //             "https://foosub.test/"
-  //           ],
-  //           "tags": [
-  //             "adComponentRenderURLs"
-  //           ]
-  //         }
-  //       ],
-  //       "compressionGroupId": 1
-  //     }
-  //   ],
-  //   "acceptCompression": [
-  //     "none",
-  //     "gzip"
-  //   ]
-  // }
-
-  const std::string kExpectedBodyHex =
-      "A3686D65746164617461A168686F73746E616D656E7075626C69736865722E746573746A"
-      "706172746974696F6E7383A462696400686D65746164617461A1716578706572696D656E"
-      "7447726F7570496465313233343569617267756D656E747382A264646174618171687474"
-      "70733A2F2F666F6F2E746573742F6474616773816A72656E64657255524C73A264646174"
-      "61817468747470733A2F2F666F6F7375622E746573742F647461677381756164436F6D70"
-      "6F6E656E7452656E64657255524C7372636F6D7072657373696F6E47726F7570496400A4"
-      "62696401686D65746164617461A1716578706572696D656E7447726F7570496465313233"
-      "343569617267756D656E747382A26464617461817168747470733A2F2F6261722E746573"
-      "742F6474616773816A72656E64657255524C73A26464617461817468747470733A2F2F62"
-      "61727375622E746573742F647461677381756164436F6D706F6E656E7452656E64657255"
-      "524C7372636F6D7072657373696F6E47726F7570496400A462696400686D657461646174"
-      "61A1716578706572696D656E7447726F7570496465313233343569617267756D656E7473"
-      "82A26464617461817168747470733A2F2F666F6F2E746573742F6474616773816A72656E"
-      "64657255524C73A26464617461817468747470733A2F2F666F6F7375622E746573742F64"
-      "7461677381756164436F6D706F6E656E7452656E64657255524C7372636F6D7072657373"
-      "696F6E47726F757049640171616363657074436F6D7072657373696F6E82646E6F6E6564"
-      "677A6970";
-  // Prefix hex for `kExpectedBodyHex` which includes the compression format
-  // code and the length.
-  const std::string kExpectedPrefixHex = "0000000244";
-  // Padding zeros.
-  const std::string kPaddingString =
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000000000000000000000000000"
-      "000000000000000000000000000000000000000000000000";
+  std::string expected_request_body =
+      test::CreateKVv2RequestBody(test::ToCborString(
+          R"({
+            "metadata": {
+              "hostname": "publisher.test"
+            },
+            "partitions": [
+              {
+                "id": 0,
+                "metadata": {
+                  "experimentGroupId": "12345"
+                },
+                "arguments": [
+                  {
+                    "data": [
+                      "https://foo.test/"
+                    ],
+                    "tags": [
+                      "renderURLs"
+                    ]
+                  },
+                  {
+                    "data": [
+                      "https://foosub.test/"
+                    ],
+                    "tags": [
+                      "adComponentRenderURLs"
+                    ]
+                  }
+                ],
+                "compressionGroupId": 0
+              },
+              {
+                "id": 1,
+                "metadata": {
+                  "experimentGroupId": "12345"
+                },
+                "arguments": [
+                  {
+                    "data": [
+                      "https://bar.test/"
+                    ],
+                    "tags": [
+                      "renderURLs"
+                    ]
+                  },
+                  {
+                    "data": [
+                      "https://barsub.test/"
+                    ],
+                    "tags": [
+                      "adComponentRenderURLs"
+                    ]
+                  }
+                ],
+                "compressionGroupId": 0
+              },
+              {
+                "id": 0,
+                "metadata": {
+                  "experimentGroupId": "12345"
+                },
+                "arguments": [
+                  {
+                    "data": [
+                      "https://foo.test/"
+                    ],
+                    "tags": [
+                      "renderURLs"
+                    ]
+                  },
+                  {
+                    "data": [
+                      "https://foosub.test/"
+                    ],
+                    "tags": [
+                      "adComponentRenderURLs"
+                    ]
+                  }
+                ],
+                "compressionGroupId": 1
+              }
+            ],
+            "acceptCompression": [
+              "none",
+              "gzip"
+            ],
+            "perPartitionMetadata": {
+              "contextualData": [
+                {
+                  "value": "contextual_signals"
+                }
+              ]
+            }
+          })"));
 
   EXPECT_EQ(base::HexEncode(body_bytes),
-            kExpectedPrefixHex + kExpectedBodyHex + kPaddingString);
+            base::HexEncode(expected_request_body));
 }
 
 // TODO(crbug.com/337917489): When adding an identical trusted scoring signals
@@ -998,7 +948,8 @@ TEST_F(TrustedSignalsKVv2RequestHelperTest,
   std::unique_ptr<TrustedScoringSignalsKVv2RequestHelperBuilder>
       helper_builder =
           std::make_unique<TrustedScoringSignalsKVv2RequestHelperBuilder>(
-              kHostName, kExperimentGroupId, std::move(public_key_));
+              kHostName, /*experiment_group_id=*/std::nullopt,
+              /*contextual_data=*/std::nullopt, std::move(public_key_));
 
   EXPECT_EQ(TrustedSignalsKVv2RequestHelperBuilder::IsolationIndex(0, 0),
             helper_builder->AddTrustedSignalsRequest(
