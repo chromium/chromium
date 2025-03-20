@@ -217,6 +217,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // This struct had unused fields that were removed, but may be of interest to
   // future users:
   // - force_show_in_taskbar: https://crrev.com/c/6356649
+  // - wants_mouse_events_when_inactive: https://crrev.com/c/6354158
   struct VIEWS_EXPORT InitParams {
     enum Type {
       TYPE_WINDOW,  // A decorated Window, like a frame window.
@@ -486,9 +487,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
     // If true then the widget uses software compositing.
     bool force_software_compositing = false;
-
-    // If set, mouse events will be sent to the widget even if inactive.
-    bool wants_mouse_events_when_inactive = false;
 
     // If set, the widget was created in headless mode.
     bool headless_mode = false;
