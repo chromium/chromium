@@ -3545,7 +3545,11 @@
     },
     {
       name: "RasterInducingScroll",
-      status: "test",
+      status: {
+        "Linux": "stable",
+        "Win": "stable",
+        "default": "test",
+      }
     },
     {
       name: "ReadableStreamAsyncIterable",

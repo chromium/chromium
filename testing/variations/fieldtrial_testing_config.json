@@ -19174,22 +19174,6 @@
             ]
         }
     ],
-    "RasterInducingScroll": [
-        {
-            "platforms": [
-                "linux",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "RasterInducingScroll"
-                    ]
-                }
-            ]
-        }
-    ],
     "RawDrawAndDrDc": [
         {
             "platforms": [
