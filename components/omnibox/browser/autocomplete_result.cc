@@ -887,8 +887,18 @@ void AutocompleteResult::AttachPedalsToMatches(
 
 void AutocompleteResult::AttachContextualSearchActionToMatches() {
   for (AutocompleteMatch& match : matches_) {
+    if (match.subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX)) {
+      if (match.subtypes.contains(omnibox::SUBTYPE_CONTEXTUAL_SEARCH)) {
+        match.takeover_action = base::MakeRefCounted<ContextualSearchAction>(
+            match.destination_url, match.type,
+            match.subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX));
+      }
+      return;
+    }
     // TODO(crbug.com/400952597): Add a check on the provider type once one
-    // provider is created for @page suggestions.
+    // provider is created for @page suggestions. That also means we can cleanup
+    // the above logic to only check if its from the contextual search provider
+    // or has the subtype omnibox::SUBTYPE_CONTEXTUAL_SEARCH.
     match.takeover_action = base::MakeRefCounted<ContextualSearchAction>(
         match.destination_url, match.type,
         match.subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX));

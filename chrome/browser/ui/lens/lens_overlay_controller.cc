@@ -479,16 +479,29 @@ void LensOverlayController::IssueContextualSearchRequest(
     AutocompleteMatchType::Type match_type,
     bool is_zero_prefix_suggestion) {
   // Ignore the request if the overlay is off or closing.
-  if (state_ == State::kOff || IsOverlayClosing()) {
+  if (IsOverlayClosing()) {
     return;
+  }
+
+  // If the overlay is off, turn it on so the request can be fulfilled.
+  if (state_ == State::kOff) {
+    // TODO(crbug.com/402497756): For prototyping, reusing the existing
+    // omnibox entry point. However, for production, create a new invocation
+    // source for this new entry point.
+    // TODO(crbug.com/403573362): This is a temporary fix to unblock
+    // prototyping. Since this flow goes straight to the side panel results with
+    // not overlay UI, this flow does a lot of unnecessary work. There should be
+    // a new flow that can contextualize without the overlay UI being
+    // initialized.
+    ShowUI(lens::LensOverlayInvocationSource::kOmnibox);
   }
 
   // Hold the request until the overlay has finished initializing.
   if (IsOverlayInitializing()) {
-    pending_contextual_search_request_ = base::BindOnce(
-        &LensOverlayController::IssueContextualSearchRequest,
-        weak_factory_.GetWeakPtr(), destination_url, match_type,
-        is_zero_prefix_suggestion);
+    pending_contextual_search_request_ =
+        base::BindOnce(&LensOverlayController::IssueContextualSearchRequest,
+                       weak_factory_.GetWeakPtr(), destination_url, match_type,
+                       is_zero_prefix_suggestion);
     return;
   }
 
