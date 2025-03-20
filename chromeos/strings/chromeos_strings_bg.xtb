@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Скриване на преписа</translation>
 <translation id="160633243685262989">Визуализация на изображението</translation>
 <translation id="1611649489706141841">напред</translation>
-<translation id="1615144046047995187">Изтеглянето не е възможно. Опитайте отново или рестартирайте своя Chromebook.</translation>
 <translation id="1615335640928990664">Пренос на данни от <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Използване на тема</translation>
 <translation id="1621067168122174824">Стартиране на тест на зареждането</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Списък с аудиозаписи</translation>
 <translation id="2561093647892030937">лимони</translation>
 <translation id="2570743873672969996">Изпълняван тест: <ph name="TEST_NAME" /></translation>
-<translation id="2573178735329662769">Записване на цялото аудио от Chromebook</translation>
 <translation id="2576253868710695442">Той ще заеме до 2 GB в хранилището</translation>
 <translation id="2584547424703650812">Сияйни пейзажи</translation>
 <translation id="2584559707064218956">За настройване отворете „Настройки“</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">синьо и розово</translation>
 <translation id="498186245079027698">Проверете скенера и опитайте отново. Уверете се, че на устройството ви има достатъчно място за запазване на сканираните файлове.</translation>
 <translation id="4982627662315910959">Клавишната комбинация не е налице. Използвайте друга, като натиснете Shift и още 1 модифициращ клавиш (Ctrl, Alt или „<ph name="META_KEY" />“).</translation>
-<translation id="4983216687482551672">Аудио от Chromebook</translation>
 <translation id="4985509611418653372">Стартиране</translation>
 <translation id="4987769320337599931">Защитна стена</translation>
 <translation id="4988526792673242964">Страници</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Изключете USB кабела на <ph name="DEVICE_NAME" /> и го включете отново, за да продължите процеса на актуализиране</translation>
 <translation id="5099354524039520280">нагоре</translation>
 <translation id="5107243100836678918">Клавишната комбинация без клавиша „<ph name="META_KEY" />“ може да е в конфликт с комбинация в приложение. Натиснете тази комбинация отново, за да продължите да я използвате, или натиснете нова, като включите и клавиша „<ph name="KEY" />“. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Моделът за преписи на <ph name="LANGUAGE_NAME" /> не може да се изтегли. Опитайте отново или рестартирайте своя Chromebook</translation>
 <translation id="5108781503443873320">Подобни:</translation>
-<translation id="5121677070210013200">Моделът за преписи не може да се изтегли. Опитайте отново или рестартирайте своя Chromebook.</translation>
 <translation id="5130848777448318809">понита</translation>
 <translation id="5137451382116112100">Цял екран</translation>
 <translation id="5139813694804168398">не безпокойте</translation>
@@ -1033,6 +1028,7 @@
 <translation id="5896602941605730551">Пускане</translation>
 <translation id="5901630391730855834">Жълто</translation>
 <translation id="5903200662178656908">Устройството е комбинирана клавиатура и мишка.</translation>
+<translation id="5903822368221507416">Скриване на разделите</translation>
 <translation id="5904994456462260490">Добавяне на ново име на точката за достъп (APN)</translation>
 <translation id="590746845088109442">котки</translation>
 <translation id="5907649332524363701">цвят на клавишите</translation>
@@ -1088,7 +1084,6 @@
 <translation id="6122191549521593678">Онлайн</translation>
 <translation id="6122277663991249694">Услуга за метод на въвеждане в Chrome OS</translation>
 <translation id="6127426868813166163">бяло</translation>
-<translation id="613049107179582049">Когато аудиото от Chromebook е включено, „Рекордер“ записва целия звук, който се възпроизвежда на това устройство</translation>
 <translation id="6136285399872347291">изтриване назад</translation>
 <translation id="6137614725462089991">киберпънк</translation>
 <translation id="6137767437444130246">Потребителски сертификат</translation>
@@ -1418,7 +1413,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Сензорен екран с USB</translation>
 <translation id="757747079855995705">камък</translation>
-<translation id="7584853321964440104">Изтеглянето не е възможно. Опитайте отново или рестартирайте своя Chromebook.</translation>
 <translation id="7590883480672980941">Настройки за въвеждане</translation>
 <translation id="7595982850646262331">Оставащо време: <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">Администраторът на <ph name="MANAGER" /> е задал кога може да се използва това устройство (<ph name="DEVICE_TYPE" />).</translation>
@@ -1785,7 +1779,6 @@
 <translation id="9218016617214286986">Показване на известните имена на точки за достъп (APN)</translation>
 <translation id="932327136139879170">Начална страница</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Уверете се, че микрофонът ви е свързан, или опитайте да рестартирате своя Chromebook</translation>
 <translation id="945522503751344254">Изпращане на отзиви</translation>
 <translation id="950520315903467048">Липсва клавиш за <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">сравняване на гласовете в записа, така че преписът да отразява какво е казал всеки от говорещите и кога.</translation>

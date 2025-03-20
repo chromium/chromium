@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">ट्रान्स्क्रिप्ट लुकाउनुहोस्</translation>
 <translation id="160633243685262989">फोटो प्रिभ्यू गर्नुहोस्</translation>
 <translation id="1611649489706141841">फर्वाड गर्नुहोस्</translation>
-<translation id="1615144046047995187">डाउनलोड गर्न सकिएन। फेरि प्रयास गर्नुहोस् वा आफ्नो Chromebook रिस्टार्ट गर्नुहोस्।</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> देखि प्रयोग गरिएको डेटा</translation>
 <translation id="1618566998877964907">कुनै थिम प्रयोग गर्नुहोस्</translation>
 <translation id="1621067168122174824">ब्याट्रीको चार्जसम्बन्धी परीक्षण गर्नुहोस्</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">अडियो रेकर्डिङहरूको सूची</translation>
 <translation id="2561093647892030937">कागतीहरू</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> परीक्षण गरिँदै छ...</translation>
-<translation id="2573178735329662769">Chromebook का सबै अडियो रेकर्ड गरिँदै छ</translation>
 <translation id="2576253868710695442">यसले भण्डारणमा बढीमा २ जि.बि. ठाउँ ओगट्ने छ</translation>
 <translation id="2584547424703650812">ग्लोस्केप</translation>
 <translation id="2584559707064218956">नेटवर्क सेटअप गर्न सेटिङमा जानुहोस्</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">निलो र गुलाबी</translation>
 <translation id="498186245079027698">स्क्यानर जाँच्नुहोस् र फेरि प्रयास गर्नुहोस्। स्क्यान गरिएका फाइलहरू सुरक्षित गर्न चाहिने पर्याप्त खाली ठाउँ छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="4982627662315910959">यो सर्टकट उपलब्ध छैन। सिफ्ट र थप एउटा मोडिफायर की (ctrl, alt वा <ph name="META_KEY" />) प्रयोग गरी नयाँ सर्टकट थिच्नुहोस्।</translation>
-<translation id="4983216687482551672">Chromebook को अडियो</translation>
 <translation id="4985509611418653372">चलाउनुहोस्</translation>
 <translation id="4987769320337599931">फायरवाल</translation>
 <translation id="4988526792673242964">पृष्ठहरू</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">अपडेट गर्ने प्रक्रिया जारी राख्न <ph name="DEVICE_NAME" /> को USB केबल निकाल्नुहोस् अनि फेरि घुसाउनुहोस्</translation>
 <translation id="5099354524039520280">माथि</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> की समावेश नगरिएको सर्टकट केही एपको सर्टकटसँग जुध्न सक्छ। यो सर्टकट प्रयोग गरिराख्न उक्त सर्टकट फेरि थिच्नुहोस् वा <ph name="KEY" /> की प्रयोग गरेर नयाँ सर्टकट थिच्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399"><ph name="LANGUAGE_NAME" /> भाषाको ट्रान्स्क्रिप्सन मोडेल डाउनलोड गर्न सकिएन। फेरि प्रयास गर्नुहोस् वा आफ्नो Chromebook रिस्टार्ट गर्नुहोस्</translation>
 <translation id="5108781503443873320">समानार्थक:</translation>
-<translation id="5121677070210013200">ट्रान्स्क्रिप्सन मोडेल डाउनलोड गर्न सकिएन। फेरि प्रयास गर्नुहोस् वा आफ्नो Chromebook रिस्टार्ट गर्नुहोस्।</translation>
 <translation id="5130848777448318809">पोनीहरू</translation>
 <translation id="5137451382116112100">फुल स्क्रिन</translation>
 <translation id="5139813694804168398">Do Not Disturb</translation>
@@ -1033,6 +1028,7 @@
 <translation id="5896602941605730551">प्ले गर्नुहोस्</translation>
 <translation id="5901630391730855834">पहेँलो</translation>
 <translation id="5903200662178656908">यो डिभाइस किबोर्ड र माउसको कम्बो हो।</translation>
+<translation id="5903822368221507416">ट्याबहरू लुकाउनुहोस्</translation>
 <translation id="5904994456462260490">नयाँ APN हाल्नुहोस्</translation>
 <translation id="590746845088109442">बिरालोहरू</translation>
 <translation id="5907649332524363701">कीको रङ</translation>
@@ -1088,7 +1084,6 @@
 <translation id="6122191549521593678">अनलाइन</translation>
 <translation id="6122277663991249694">ChromeOS को इनपुट विधिसम्बन्धी सेवा</translation>
 <translation id="6127426868813166163">सेतो</translation>
-<translation id="613049107179582049">Chromebook को अडियो अन हुँदा रेकर्डरले यो डिभाइसमा प्ले हुने सबै अडियो रेकर्ड गर्छ</translation>
 <translation id="6136285399872347291">ब्याकस्पेस</translation>
 <translation id="6137614725462089991">साइबरपङ्क</translation>
 <translation id="6137767437444130246">प्रयोगकर्ताको प्रमाणपत्र</translation>
@@ -1418,7 +1413,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB टचस्क्रिन</translation>
 <translation id="757747079855995705">ढुङ्गा</translation>
-<translation id="7584853321964440104">डाउनलोड गर्न सकिएन। फेरि प्रयास गर्नुहोस् वा आफ्नो Chromebook रिस्टार्ट गर्नुहोस्।</translation>
 <translation id="7590883480672980941">इनपुटसम्बन्धी सेटिङ</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> बाँकी</translation>
 <translation id="7600430297804876776"><ph name="MANAGER" /> का एड्मिनले यो <ph name="DEVICE_TYPE" /> प्रयोग गर्न सकिने समय तय गर्नुभएको छ।</translation>
@@ -1785,7 +1779,6 @@
 <translation id="9218016617214286986">ज्ञात APN देखाउनुहोस्</translation>
 <translation id="932327136139879170">गृहपृष्ठ</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">तपाईंको माइक कनेक्ट गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस् वा Chromebook रिस्टार्ट गरी हेर्नुहोस्</translation>
 <translation id="945522503751344254">पृष्ठपोषण पठाउनुहोस्</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> को की थिचिएको छैन। <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">हरेक वक्ताले कति बेला के भनेका छन् भन्ने कुरा ट्रान्स्क्रिप्टमा उल्लेख गरियोस् भन्नाका लागि रेकर्डिङको पूरै अवधिमा सुनिएका आवाजहरूको तुलना गर्न</translation>

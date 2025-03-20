@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">ટ્રાન્સ્ક્રિપ્ટ છુપાવો</translation>
 <translation id="160633243685262989">છબીનો પ્રીવ્યૂ જુઓ</translation>
 <translation id="1611649489706141841">ફોરવર્ડ કરો</translation>
-<translation id="1615144046047995187">ડાઉનલોડ કરી શકતા નથી. ફરીથી પ્રયાસ કરો અથવા તમારી Chromebook ફરી શરૂ કરો.</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />થી ડેટા વપરાશ</translation>
 <translation id="1618566998877964907">થીમનો ઉપયોગ કરો</translation>
 <translation id="1621067168122174824">ચાર્જિંગનું પરીક્ષણ ચાલુ કરો</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">ઑડિયો રેકોર્ડિંગની સૂચિ</translation>
 <translation id="2561093647892030937">લીંબુ</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> પરીક્ષણ ચલાવી રહ્યાં છીએ…</translation>
-<translation id="2573178735329662769">Chromebookનો તમામ ઑડિયો રેકોર્ડ કરવો</translation>
 <translation id="2576253868710695442">આમાં 2GB જેટલો સ્ટોરેજ જોશે</translation>
 <translation id="2584547424703650812">ગ્લોસ્કેપ</translation>
 <translation id="2584559707064218956">સેટઅપ કરવા માટે, સેટિંગમાં જાઓ</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">વાદળી અને ગુલાબી</translation>
 <translation id="498186245079027698">તમારું સ્કૅનર ચેક કરો અને ફરી પ્રયાસ કરો. ખાતરી કરો કે સ્કૅન કરેલી ફાઇલોને સાચવવા માટે પૂરતી સ્થાનિક સ્પેસ હોય.</translation>
 <translation id="4982627662315910959">શૉર્ટકટ ઉપલબ્ધ નથી. shift અને વધુ 1 મૉડિફાયર કી (ctrl, alt અથવા <ph name="META_KEY" />)નો ઉપયોગ કરીને નવો શૉર્ટકટ દબાવો.</translation>
-<translation id="4983216687482551672">Chromebook ઑડિયો</translation>
 <translation id="4985509611418653372">ચલાવો</translation>
 <translation id="4987769320337599931">ફાયરવૉલ</translation>
 <translation id="4988526792673242964">પેજ</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">અપડેટની પ્રક્રિયા ચાલુ રાખવા માટે <ph name="DEVICE_NAME" />ના USB કેબલને અનપ્લગ કરો અને પછી ફરીથી નાખો</translation>
 <translation id="5099354524039520280">ઉપર</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> કી વિનાનો શૉર્ટકટ કોઈ ઍપના શૉર્ટકટ સાથે વિસંગત હોઈ શકે છે. આ શૉર્ટકટનો ઉપયોગ કરવાનું ચાલુ રાખવા માટે તેને ફરીથી દબાવો અથવા <ph name="KEY" /> કીનો ઉપયોગ કરીને નવો શૉર્ટકટ દબાવો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399"><ph name="LANGUAGE_NAME" />નું ટ્રાન્સક્રિપ્શન મૉડલ ડાઉનલોડ કરી શકતા નથી. ફરીથી પ્રયાસ કરો અથવા તમારી Chromebook ફરી શરૂ કરો</translation>
 <translation id="5108781503443873320">સમાન:</translation>
-<translation id="5121677070210013200">ટ્રાન્સક્રિપ્શન મૉડલ ડાઉનલોડ કરી શકાતું નથી. ફરીથી પ્રયાસ કરો અથવા તમારી Chromebook ફરી શરૂ કરો.</translation>
 <translation id="5130848777448318809">ટટ્ટુઓ</translation>
 <translation id="5137451382116112100">સંપૂર્ણ</translation>
 <translation id="5139813694804168398">ખલેલ પાડશો નહીં</translation>
@@ -920,6 +915,7 @@
 <translation id="5286263799730375393">બૅકલાઇટનો રંગ</translation>
 <translation id="5292579816060236070">સનરાઇઝ વૉલપેપર</translation>
 <translation id="5294769550414936029">વર્ઝન <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">કૅમેરા ઍક્સેસ ટૉગલ કરો</translation>
 <translation id="5300814202279832142">વિન્ડોને 'ડેસ્ક' સબમેનૂ પર ખસેડો</translation>
 <translation id="5302048478445481009">ભાષા</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> માટે વિશિષ્ટ વૉલપેપર</translation>
@@ -1087,7 +1083,6 @@
 <translation id="6122191549521593678">ઓનલાઇન</translation>
 <translation id="6122277663991249694">ChromeOSની ઇનપુટ પદ્ધતિની સેવા</translation>
 <translation id="6127426868813166163">સફેદ</translation>
-<translation id="613049107179582049">જ્યારે Chromebook ઑડિયો ચાલુ હોય, ત્યારે Recorder આ ડિવાઇસ પર ચાલતો તમામ ઑડિયો કૅપ્ચર કરે છે</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">સાઇબરપન્ક</translation>
 <translation id="6137767437444130246">વપરાશકર્તા પ્રમાણપત્ર</translation>
@@ -1417,7 +1412,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB ટચસ્ક્રીન</translation>
 <translation id="757747079855995705">પથ્થર</translation>
-<translation id="7584853321964440104">ડાઉનલોડ કરી શકાતા નથી. ફરીથી પ્રયાસ કરો અથવા તમારી Chromebook ફરી શરૂ કરો.</translation>
 <translation id="7590883480672980941">ઇનપુટ સેટિંગ</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> બાકી</translation>
 <translation id="7600430297804876776">આ <ph name="DEVICE_TYPE" />નો ઉપયોગ ક્યારે કરી શકાય છે, એ <ph name="MANAGER" />ના ઍડમિનિસ્ટ્રેટર દ્વારા સેટ કરવામાં આવ્યું છે.</translation>
@@ -1784,7 +1778,6 @@
 <translation id="9218016617214286986">જાણીતા APNs બતાવો</translation>
 <translation id="932327136139879170">હોમ</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">ખાતરી કરો કે તમારું માઇક કનેક્ટેડ છે અથવા તમારી Chromebookને ફરી શરૂ કરવાનો પ્રયાસ કરો</translation>
 <translation id="945522503751344254">પ્રતિસાદ મોકલો</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> માટે કી ખૂટે છે. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">સમગ્ર રેકોર્ડિંગ દરમિયાન વૉઇસની તુલના કરે છે, જેથી ટ્રાન્સક્રિપ્ટ દર્શાવી શકે કે દરેક સ્પીકર દ્વારા શું કહેવામાં આવ્યું અને ક્યારે કહેવામાં આવ્યું</translation>

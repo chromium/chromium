@@ -241,6 +241,8 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1755556344721611131">App de diagnóstico</translation>
 <translation id="1756833229520115364">No se pudo guardar la plantilla. Hay demasiadas ventanas o pestañas.</translation>
 <translation id="1757857692711134412">Desactivada hasta el atardecer</translation>
+<translation id="1763084151787818322">Otras acciones</translation>
+<translation id="1768138163688567246">Cerrar el modo de búsqueda en pantalla</translation>
 <translation id="1768366657309696705">Se modificó la combinación de teclas <ph name="LAUNCHER_KEY_NAME" /> + signo de punto. Para usar la tecla Insertar, presiona la tecla <ph name="LAUNCHER_KEY_NAME" /> + Mayúsculas + retroceso.</translation>
 <translation id="1770726142253415363">Se movió a la fila <ph name="ROW_NUMBER" />, columna <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Desplazar hacia la derecha</translation>
@@ -1943,6 +1945,7 @@ Nueva instalación</translation>
 <translation id="742594950370306541">Cámara en uso</translation>
 <translation id="742608627846767349">Buenos días:</translation>
 <translation id="743058460480092004">Cámara y micrófono en uso</translation>
+<translation id="7440404390546433462">Búsqueda de Google</translation>
 <translation id="7441711280402516925">Reproduciendo · Cambiar a la pestaña</translation>
 <translation id="7453330308669753048">Se quitó el resultado del historial de búsqueda</translation>
 <translation id="7459485586006128091">Debido a un error interno, se desactivó el hotspot. Intenta volver a conectarte dentro de unos minutos.</translation>

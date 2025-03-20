@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Skrivanje prepisa</translation>
 <translation id="160633243685262989">Predogled slike</translation>
 <translation id="1611649489706141841">naprej</translation>
-<translation id="1615144046047995187">Ni mogoče prenesti. Poskusite znova ali znova zaženite Chromebook.</translation>
 <translation id="1615335640928990664">Prenesena količina podatkov od tega dne: <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Uporaba teme</translation>
 <translation id="1621067168122174824">Zaženi preizkus napolnjenosti</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Seznam zvočnih posnetkov</translation>
 <translation id="2561093647892030937">limone</translation>
 <translation id="2570743873672969996">Izvajanje preizkusa <ph name="TEST_NAME" /> …</translation>
-<translation id="2573178735329662769">Snemanje vsega zvoka v Chromebooku</translation>
 <translation id="2576253868710695442">To bo zavzelo do 2 GB prostora za shranjevanje</translation>
 <translation id="2584547424703650812">Svetleče pokrajine</translation>
 <translation id="2584559707064218956">Če želite nastaviti, odprite nastavitve.</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">modra in rožnata</translation>
 <translation id="498186245079027698">Preverite optični bralnik in poskusite znova. Poskrbite, da je na lokalnem disku dovolj prostora za shranjevanje optično prebranih datotek.</translation>
 <translation id="4982627662315910959">Bližnjica ni na voljo. Pritisnite novo bližnjico s tipko Shift in še 1 modifikatorsko tipko (ctrl, alt ali <ph name="META_KEY" />).</translation>
-<translation id="4983216687482551672">Zvok Chromebooka</translation>
 <translation id="4985509611418653372">Izvedi</translation>
 <translation id="4987769320337599931">Požarni zid</translation>
 <translation id="4988526792673242964">Strani</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Če želite nadaljevati postopek posodobitve, odklopite kabel USB naprave <ph name="DEVICE_NAME" /> in ga znova vstavite</translation>
 <translation id="5099354524039520280">gor</translation>
 <translation id="5107243100836678918">Bližnjica brez tipke <ph name="META_KEY" /> je morda v sporu z bližnjico katere druge aplikacije. Če želite še naprej uporabljati to bližnjico, jo znova pritisnite, ali pritisnite novo bližnjico s tipko <ph name="KEY" />. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Modela prepisa v jeziku <ph name="LANGUAGE_NAME" /> ni mogoče prenesti. Poskusite znova ali znova zaženite Chromebook.</translation>
 <translation id="5108781503443873320">Podobno:</translation>
-<translation id="5121677070210013200">Modela prepisa ni mogoče prenesti. Poskusite znova ali znova zaženite Chromebook.</translation>
 <translation id="5130848777448318809">poniji</translation>
 <translation id="5137451382116112100">Cel zaslon</translation>
 <translation id="5139813694804168398">Ne moti</translation>
@@ -1089,7 +1084,6 @@
 <translation id="6122191549521593678">Dosegljiv</translation>
 <translation id="6122277663991249694">Storitev načina vnosa v okolju Chrome OS</translation>
 <translation id="6127426868813166163">bele</translation>
-<translation id="613049107179582049">Ko je zvok Chromebooka vklopljen, snemalnik posname ves zvok, ki se predvaja v tej napravi</translation>
 <translation id="6136285399872347291">vračalka</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Uporabniško potrdilo</translation>
@@ -1419,7 +1413,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Zaslon na dotik USB</translation>
 <translation id="757747079855995705">kamen</translation>
-<translation id="7584853321964440104">Ni mogoče prenesti. Poskusite znova ali znova zaženite Chromebook.</translation>
 <translation id="7590883480672980941">Nastavitve vnosa</translation>
 <translation id="7595982850646262331">Še <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">Skrbnik <ph name="MANAGER" /> je določil, kdaj je mogoče uporabljati to napravo <ph name="DEVICE_TYPE" />.</translation>
@@ -1786,7 +1779,6 @@
 <translation id="9218016617214286986">Pokaži znane APN-je</translation>
 <translation id="932327136139879170">Domov</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Prepričajte se, da je mikrofon priključen, ali poskusite znova zagnati Chromebook</translation>
 <translation id="945522503751344254">Pošiljanje povratnih informacij</translation>
 <translation id="950520315903467048">Manjka tipka za <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Primerjajte glasove v celotnem posnetku, da bo iz prepisa razvidno, kaj so povedali posamezni govorci in kdaj so to povedali.</translation>

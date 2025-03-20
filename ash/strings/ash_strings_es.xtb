@@ -241,6 +241,8 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1755556344721611131">Aplicación Diagnóstico</translation>
 <translation id="1756833229520115364">No se ha podido guardar la plantilla. Hay demasiadas ventanas o pestañas.</translation>
 <translation id="1757857692711134412">Desactivada hasta el atardecer</translation>
+<translation id="1763084151787818322">Otras acciones</translation>
+<translation id="1768138163688567246">Cerrar la búsqueda en mi pantalla</translation>
 <translation id="1768366657309696705">La combinación de teclas <ph name="LAUNCHER_KEY_NAME" /> + punto ha cambiado. Para usar la tecla Insert, pulsa la tecla <ph name="LAUNCHER_KEY_NAME" /> + Mayús + Retroceso.</translation>
 <translation id="1770726142253415363">Se ha movido a la fila <ph name="ROW_NUMBER" />, columna <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Desplazar a la derecha</translation>
@@ -1943,6 +1945,7 @@ Nueva instalación</translation>
 <translation id="742594950370306541">La cámara se está utilizando.</translation>
 <translation id="742608627846767349">Buenos días,</translation>
 <translation id="743058460480092004">La cámara y el micrófono se están utilizando.</translation>
+<translation id="7440404390546433462">Búsqueda de Google</translation>
 <translation id="7441711280402516925">Reproduciendo · Cambiar a la pestaña</translation>
 <translation id="7453330308669753048">Resultado del historial de búsqueda eliminado</translation>
 <translation id="7459485586006128091">Debido a un error interno, se ha desactivado el punto de acceso. Prueba a conectarte de nuevo dentro de unos minutos.</translation>

@@ -11,6 +11,7 @@
 <translation id="103269572468856066">Kosongkan data?</translation>
 <translation id="1034259925032978114">Tetingkap dibuka</translation>
 <translation id="1036348656032585052">Matikan</translation>
+<translation id="1045448422538531528">Tambahkan pada kumpulan</translation>
 <translation id="1045899828449635435">Kosongkan data?</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1052842760770519282">Sesetengah kata laluan anda tidak dapat diakses</translation>
@@ -535,6 +536,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3513704683820682405">Realiti Tambahan</translation>
 <translation id="3516053221628030540">Akses Google Play</translation>
 <translation id="3518985090088779359">Terima &amp; teruskan</translation>
+<translation id="351952459507671940">Tambahkan pada kumpulan baharu</translation>
 <translation id="3521388823983121502">Tidak boleh meneruskan dengan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">Kemas kini tersedia. Lagi pilihan</translation>
 <translation id="3523789730715594198">Anda boleh menghentikan penyegerakan pada bila-bila masa dalam tetapan ini. Google mungkin memeribadikan Search dan perkhidmatan lain berdasarkan sejarah anda.</translation>
@@ -582,6 +584,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3721119614952978349">Anda dan Google</translation>
 <translation id="3737319253362202215">Tetapan terjemahan</translation>
 <translation id="3738139272394829648">Sentuh untuk Cari</translation>
+<translation id="3739455665973395693">Tiada kata laluan yang terjejas dalam Google Account anda</translation>
 <translation id="3739899004075612870">Ditandai halaman dalam <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Carian suara tidak tersedia pada peranti ini</translation>
 <translation id="376561056759077985">Sesetengah data belum disimpan</translation>
@@ -635,6 +638,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3985215325736559418">Adakah anda ingin memuat turun <ph name="FILE_NAME" /> semula?</translation>
 <translation id="3987993985790029246">Salin pautan</translation>
 <translation id="4000212216660919741">Rumah Luar Talian</translation>
+<translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 kata laluan yang terjejas dalam Google Account anda}other{# kata laluan yang terjejas dalam Google Account anda}}</translation>
 <translation id="4016425174436051808">Tidak dapat mengikuti. Kesilapan telah berlaku.</translation>
 <translation id="4024768890073681126">Penyemak imbas anda diurus oleh ibu/bapa anda</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# jam}other{# jam}}</translation>
@@ -829,6 +833,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="4881695831933465202">Buka</translation>
 <translation id="488187801263602086">Namakan semula fail</translation>
 <translation id="4885273946141277891">Bilangan kejadian Chrome tidak disokong.</translation>
+<translation id="4890973535105146893">Tiada kata laluan yang disimpan dalam Google Account anda</translation>
 <translation id="4905823827770127520">Sertakan pautan kepada halaman</translation>
 <translation id="4908869848243824489">Discover oleh Google</translation>
 <translation id="4910889077668685004">Apl pembayaran</translation>
@@ -1701,6 +1706,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="869891660844655955">Tarikh tamat tempoh</translation>
 <translation id="8699120352855309748">Jangan tawarkan untuk menterjemahkan bahasa ini</translation>
 <translation id="8712637175834984815">Faham</translation>
+<translation id="8715286883001906001">Kukuhkan kata laluan anda dalam Google Account anda</translation>
 <translation id="8723453889042591629">Terjemahkan halaman ini dengan pantas. Untuk mengedit pintasan ini, sentuh dan tahan.</translation>
 <translation id="8725066075913043281">Cuba lagi</translation>
 <translation id="8731268612289859741">Kod keselamatan</translation>
@@ -1828,6 +1834,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="970715775301869095"><ph name="MINUTES" /> minit lagi</translation>
 <translation id="981121421437150478">Luar talian</translation>
 <translation id="983192555821071799">Tutup semua tab</translation>
+<translation id="984756705737569814">Tidak dapat menyemak kata laluan dalam Google Account anda</translation>
 <translation id="987264212798334818">Umum</translation>
 <translation id="988091779042748639">Untuk memadamkan sejarah penyemakan imbas Inkognito daripada peranti anda, tutup semua tab Inkognito.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> tab</translation>

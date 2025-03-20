@@ -626,6 +626,7 @@
 <translation id="1430915738399379752">הדפסה</translation>
 <translation id="1431188203598586230">עדכון התוכנה האחרון</translation>
 <translation id="1432581352905426595">ניהול מנועי חיפוש</translation>
+<translation id="1432650420699700107">אתרים יכולים לבקש הרשאה להתחבר לכל מכשיר ברשת המקומית</translation>
 <translation id="1433478348197382180">מצב קריאה</translation>
 <translation id="1433980411933182122">הפעלה</translation>
 <translation id="1434696352799406980">‏פעולה זו תאפס את דף הפתיחה, את דף הכרטיסייה החדשה, את מנוע החיפוש ואת הכרטיסיות המוצמדות שלך. היא גם תשבית את כל התוספים ותמחק נתונים זמניים כגון קובצי Cookie. הסימניות, ההיסטוריה והסיסמאות השמורות לא יימחקו.</translation>
@@ -4838,6 +4839,7 @@
 <translation id="4364830672918311045">הצגת הודעות</translation>
 <translation id="4367971618859387374">השם המוצג</translation>
 <translation id="4368960422722232719">הצגת השימוש בזיכרון בכרטיס התצוגה המקדימה שמופיע כשמעבירים את העכבר מעל לכרטיסייה</translation>
+<translation id="4369151461324628035">אין הרשאה לאתרים להתחבר למכשירים ברשת המקומית</translation>
 <translation id="4369215744064167350">הבקשה לגבי האתר אושרה</translation>
 <translation id="4369233657762989723">הפעלה או השבתה של ההכתבה</translation>
 <translation id="436926121798828366">תמיד אפשר לשנות את זה ב<ph name="SETTINGS_LINK" />.</translation>
@@ -5392,6 +5394,7 @@
 <translation id="4772914216048388646">מסודר</translation>
 <translation id="4773112038801431077">‏שדרוג Linux</translation>
 <translation id="4773122030389014189">שיתוף קבוצת הכרטיסיות '<ph name="GROUP_NAME" />'</translation>
+<translation id="4773253008034797668">יש הרשאה להתחבר לכל מכשיר ברשת המקומית</translation>
 <translation id="477548766361111120">מתן הרשאה לתוסף לקרוא את האתר הזה ולשנות אותו</translation>
 <translation id="4776311127346151860">המכשיר <ph name="DEVICE_NAME" /> חובר</translation>
 <translation id="4776594120007763294">כדי להוסיף דף לקריאה במועד מאוחר יותר, לוחצים על הכפתור</translation>
@@ -7856,6 +7859,7 @@
 <translation id="6563002009564846727">‏הצגת אישורים שיובאו מ-Windows</translation>
 <translation id="6563055593659435495">‏החיבור לטלפון לא יציב. צריך לוודא שהטלפון נמצא בקרבת מקום ושהוא לא נעול. בנוסף, צריך לוודא שה-Bluetooth וה-Wi-Fi מופעלים.</translation>
 <translation id="6564860838537532172">‏כשמחפשים בהיסטוריית הגלישה, היסטוריית החיפוש תוכן הדפים של ההתאמות הטובות ביותר והפלטים מהמודלים שנוצרו נשלחים אל Google. יכול להיות שבודקים אנושיים יראו אותם כדי לשפר את התכונה הזו.</translation>
+<translation id="6565144332292237355">אתרים יכולים להשתמש בתכונה הזו כדי לחפש מכשירים ברשת המקומית ולהתחבר אליהם</translation>
 <translation id="6569931898053264308">חיסכון של נפח בינוני</translation>
 <translation id="6570622975915850879">שימוש במכשיר אחר</translation>
 <translation id="65711204837946324">נדרשת הרשאה כדי להוריד</translation>
@@ -11577,6 +11581,7 @@
       <ph name="LIST_ITEM" />להפעיל את Chrome Connectivity Diagnostics
     <ph name="END_LIST" /></translation>
 <translation id="9161172953291434881">האם לדעתך הנתונים שלך יהיו בטוחים באתר הזה?</translation>
+<translation id="9164418710391288146">אין הרשאה להתחבר למכשירים ברשת המקומית</translation>
 <translation id="9165856803582999927">‏צריך לסרוק את קוד ה-QR הזה באמצעות המצלמה במכשיר שבו רוצים ליצור ולשמור את מפתח הגישה ל-<ph name="APP_NAME" /></translation>
 <translation id="916607977885256133">תמונה בתוך תמונה</translation>
 <translation id="9166253503936244008">‏צריך לסרוק את קוד ה-QR הזה באמצעות המכשיר שמכיל את מפתח הגישה שבו ברצונך להשתמש עבור <ph name="APP_NAME" /></translation>

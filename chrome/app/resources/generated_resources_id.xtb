@@ -624,6 +624,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1430915738399379752">Cetak</translation>
 <translation id="1431188203598586230">Update software terakhir</translation>
 <translation id="1432581352905426595">Kelola mesin telusur</translation>
+<translation id="1432650420699700107">Situs dapat meminta terhubung ke perangkat apa pun di jaringan lokal Anda</translation>
 <translation id="1433478348197382180">Mode Baca</translation>
 <translation id="1433980411933182122">Saat perangkat diaktifkan</translation>
 <translation id="1434696352799406980">Fitur ini akan menyetel ulang halaman mulai, halaman tab baru, mesin telusur, dan tab terpasang. Fitur ini juga akan menonaktifkan semua ekstensi dan menghapus data sementara seperti cookie. Bookmark, histori, dan sandi yang tersimpan tidak akan dihapus.</translation>
@@ -1892,6 +1893,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300332192655962933">File tidak tersedia di situs</translation>
 <translation id="2300383962156589922">Sesuaikan dan kontrol <ph name="APP_NAME" /></translation>
+<translation id="2301064673700597535">Pernyataan Sertifikat Lolos Kualifikasi</translation>
 <translation id="2301382460326681002">Direktori akar ekstensi tidak valid.</translation>
 <translation id="2301402091755573488">Tab Dibagikan</translation>
 <translation id="2302342861452486996"><ph name="BEGIN_H3" />Fitur Proses Debug<ph name="END_H3" />
@@ -4838,6 +4840,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4364830672918311045">Tampilkan notifikasi</translation>
 <translation id="4367971618859387374">Nama tampilan</translation>
 <translation id="4368960422722232719">Tampilkan penggunaan memori pada pratinjau kartu informasi tab</translation>
+<translation id="4369151461324628035">Jangan izinkan situs terhubung ke perangkat apa pun di jaringan lokal Anda</translation>
 <translation id="4369215744064167350">Permintaan situs disetujui</translation>
 <translation id="4369233657762989723">Dikte aktif/nonaktif</translation>
 <translation id="436926121798828366">Anda dapat mengubahnya kapan saja di <ph name="SETTINGS_LINK" /></translation>
@@ -5391,6 +5394,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4772914216048388646">Teratur</translation>
 <translation id="4773112038801431077">Upgrade Linux</translation>
 <translation id="4773122030389014189">Bagikan grup tab “<ph name="GROUP_NAME" />”</translation>
+<translation id="4773253008034797668">Diizinkan terhubung ke perangkat apa pun di jaringan lokal Anda</translation>
 <translation id="477548766361111120">Izinkan ekstensi membaca dan mengubah situs ini</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> telah terhubung</translation>
 <translation id="4776594120007763294">Klik tombol guna menambahkan halaman untuk dibaca nanti</translation>
@@ -7855,6 +7859,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6563002009564846727">Lihat sertifikat yang diimpor dari Windows</translation>
 <translation id="6563055593659435495">Tidak dapat mempertahankan koneksi dengan ponsel Anda. Pastikan ponsel berada di dekat Anda, tidak terkunci, dan Bluetooth serta Wi-Fi aktif.</translation>
 <translation id="6564860838537532172">Saat Anda menelusuri histori penjelajahan, penelusuran histori Anda, konten halaman yang paling cocok, dan output model yang dihasilkan akan dikirim ke Google dan mungkin dilihat oleh petugas peninjau untuk meningkatkan kualitas fitur ini.</translation>
+<translation id="6565144332292237355">Situs dapat menggunakan fitur ini untuk mencari dan terhubung ke perangkat apa pun di jaringan lokal Anda</translation>
 <translation id="6569931898053264308">Penghematan Sedang</translation>
 <translation id="6570622975915850879">Gunakan perangkat lain</translation>
 <translation id="65711204837946324">Memerlukan izin untuk mendownload</translation>
@@ -11568,6 +11573,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
       <ph name="LIST_ITEM" />Jalankan Diagnosis Konektivitas Chrome
     <ph name="END_LIST" /></translation>
 <translation id="9161172953291434881">Apakah Anda memercayai situs ini untuk menggunakan data Anda?</translation>
+<translation id="9164418710391288146">Tidak diizinkan terhubung ke perangkat apa pun di jaringan lokal Anda</translation>
 <translation id="9165856803582999927">Pindai kode QR ini dengan kamera di perangkat tempat Anda ingin membuat dan menyimpan kunci sandi untuk <ph name="APP_NAME" /></translation>
 <translation id="916607977885256133">Picture-in-Picture</translation>
 <translation id="9166253503936244008">Pindai kode QR ini dengan perangkat yang memiliki kunci sandi yang ingin Anda gunakan untuk <ph name="APP_NAME" /></translation>

@@ -39,7 +39,9 @@
 <translation id="1538031354170655462">Els llocs web solen utilitzar la comunicació de camp proper (NFC) per treballar amb etiquetes o dispositius propers, com ara l'escaneig d'insígnies o el pagament sense contacte</translation>
 <translation id="1547123415014299762">Les galetes de tercers estan permeses</translation>
 <translation id="1593426485665524382">Hi ha noves accions disponibles a prop de la part superior de la pantalla</translation>
+<translation id="1615755956145364867">Els llocs web poden demanar permís per reproduir contingut protegit</translation>
 <translation id="1620510694547887537">Càmera</translation>
+<translation id="1621729191093924223">Les funcions que necessiten un micròfon no funcionaran</translation>
 <translation id="1633720957382884102">Llocs web relacionats</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1652197001188145583">Quan aquesta opció està activada, els llocs web poden demanar permís per utilitzar dispositius amb NFC. Quan aquesta opció està desactivada, els llocs web no poden fer servir dispositius amb NFC.</translation>
@@ -54,6 +56,7 @@
 <translation id="1743802530341753419">Pregunta abans de permetre que els llocs web es connectin a un dispositiu (opció recomanada)</translation>
 <translation id="1779089405699405702">Descodificador d'imatges</translation>
 <translation id="1785415724048343560">Opció recomanada per gaudir de la millor experiència</translation>
+<translation id="1796588414813960292">Les funcions que necessitin so no funcionaran</translation>
 <translation id="1799920918471566157">Consells per a Chrome</translation>
 <translation id="1816835383954230954">Quan està activat, Chrome s'executa més ràpidament i les funcions que utilitzen JavaScript haurien de funcionar tal com es van dissenyar. Quan està desactivat, es redueix el rendiment, però fa que V8 sigui més resistent als atacs.</translation>
 <translation id="1818308510395330587">Per permetre que <ph name="APP_NAME" /> utilitzi RA, activa també la càmera a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
@@ -71,6 +74,7 @@
 <translation id="1994173015038366702">URL del lloc web</translation>
 <translation id="2004697686368036666">Pot ser que les funcions d'alguns llocs web no funcionin</translation>
 <translation id="2025115093177348061">Realitat augmentada</translation>
+<translation id="2028449514182362831">Les funcions que necessiten un sensor de moviment no funcionaran</translation>
 <translation id="2030769033451695672">Toca per tornar a <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Desfés</translation>
 <translation id="2091887806945687916">So</translation>
@@ -257,6 +261,7 @@
 <translation id="4259722352634471385">S'ha bloquejat la navegació: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Quan surts d'un lloc web, el lloc pot continuar amb la sincronització per finalitzar les taques que estava fent, com ara penjar fotos o enviar un missatge de xat</translation>
 <translation id="4278390842282768270">Permès</translation>
+<translation id="4290791284969893584">En tancar una pàgina, pot ser que les tasques que hagis començat no finalitzin</translation>
 <translation id="429312253194641664">Un lloc web està reproduint contingut multimèdia</translation>
 <translation id="42981349822642051">Desplega</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Caduca demà}other{Caduca d'aquí a # dies}}</translation>
@@ -531,6 +536,7 @@
 <translation id="8010630645305864042">{TILE_COUNT,plural, =1{Amaga la targeta Continua amb aquesta pestanya}other{Amaga les targetes Continua amb aquesta pestanya}}</translation>
 <translation id="802154636333426148">Error de baixada</translation>
 <translation id="8042586301629853791">Ordena per:</translation>
+<translation id="8051193500142930381">Les funcions que necessiten una càmera no funcionaran</translation>
 <translation id="8067883171444229417">Reprodueix el vídeo</translation>
 <translation id="8068648041423924542">No es pot seleccionar el certificat.</translation>
 <translation id="8077120325605624147">Qualsevol lloc web que visitis pot mostrar-te qualsevol anunci</translation>

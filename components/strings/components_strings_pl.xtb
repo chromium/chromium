@@ -158,6 +158,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1264309058268477500">Alternatywne</translation>
 <translation id="1264974993859112054">Sport</translation>
 <translation id="1268480293435976622">Koperta chińska nr 7</translation>
+<translation id="1269045546668906972">Włącz autouzupełnianie za pomocą AI, aby automatycznie wypełniać więcej pól</translation>
 <translation id="1269516672602708785">Szybko utwórz nową witrynę w Witrynach Google</translation>
 <translation id="1270328905573953738">Przeprowadzki</translation>
 <translation id="1270502636509132238">Metoda odbioru</translation>
@@ -1138,6 +1139,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3005723025932146533">Pokaż zapisaną kopię</translation>
 <translation id="300580149047131921">Ostatnio używane</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />; naciśnij Tab, aby przejrzeć dostępne działania, a potem Enter, aby wykonać wybraną czynność.</translation>
+<translation id="3010991137650052245">Aby używać tego uprawnienia (<ph name="PERMISSION" />) w tej witrynie, pozwól <ph name="SHORT_PRODUCT_NAME" /> na dostęp</translation>
 <translation id="3013711734159931232">Artykuły dla domu</translation>
 <translation id="3014553260345122294">Informacje biznesowe</translation>
 <translation id="3014726756341138577">Zaawansowane funkcje drukarek</translation>
@@ -1788,6 +1790,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">Ten zakres zasad nie jest obsługiwany.</translation>
+<translation id="411918202192379658">Autouzupełnianie właśnie stało się lepsze</translation>
 <translation id="4121428309786185360">Wygasa dnia</translation>
 <translation id="4123572138124678573">Trzy otwory z dołu</translation>
 <translation id="412601465078863288">Przekroczono limit czasu przesyłania</translation>
@@ -2176,6 +2179,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4819347708020428563">Czy chcesz edytować adnotacje w widoku domyślnym?</translation>
 <translation id="4822493756793346865">Informacje o typowych cenach są podawane na podstawie danych ze sklepów w internecie z ostatnich 90 dni.</translation>
 <translation id="4822922322149719535">Sprawdź dziennik błędów</translation>
+<translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> potrzebuje dostępu do tego uprawnienia (<ph name="PERMISSION" />) na Twoim urządzeniu</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />; naciśnij Tab, a potem Enter, aby szybko utworzyć nowy arkusz Google</translation>
 <translation id="4826588772550366629">kamery i mikrofonu</translation>
 <translation id="4827283332383516812">Usuń kartę</translation>
@@ -2906,6 +2910,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6116338172782435947">Mieć dostęp do tekstu i obrazów skopiowanych do schowka</translation>
 <translation id="6117833587752089929">Zdjęcie (satyna)</translation>
 <translation id="6118782133429281336">Lista źródeł jest pusta.</translation>
+<translation id="6120950591512958208">Użyj tego kodu w momencie płatności.</translation>
 <translation id="612178891608320683">Kuchnia wegańska</translation>
 <translation id="6122181661879998141">z przodu karty</translation>
 <translation id="6124058285696691147">Pobierz załącznik</translation>

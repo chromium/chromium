@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Fihla umbhalo</translation>
 <translation id="160633243685262989">Buka kuqala umfanekiso</translation>
 <translation id="1611649489706141841">dlulisela</translation>
-<translation id="1615144046047995187">Ayikwazi ukudawuniloda. Zama futhi noma uqale kabusha iChromebook yakho.</translation>
 <translation id="1615335640928990664">Ukusetshenziswa kwedatha kusuka ngo-<ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Sebenzisa itimu</translation>
 <translation id="1621067168122174824">Qalisa ukuhlola kokushaja</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Uhlu lokurekhodwa komsindo</translation>
 <translation id="2561093647892030937">olamula</translation>
 <translation id="2570743873672969996">Iqalisa ukuhlola kwe-<ph name="TEST_NAME" />...</translation>
-<translation id="2573178735329662769">Ukurekhoda wonke umsindo weChromebook</translation>
 <translation id="2576253868710695442">Lokhu kuzothatha isitoreji esifika ku-2GB</translation>
 <translation id="2584547424703650812">Ama-glowscape</translation>
 <translation id="2584559707064218956">Ukuze usethe, iya Kumasethingi</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">okuluhlaza okwesibhakabhaka nokuphinki</translation>
 <translation id="498186245079027698">Hlola iskena bese uzame futhi. Qiniseka ukuthi kunesikhala esanele sensawo sokulondoloza amafayela askeniwe.</translation>
 <translation id="4982627662315910959">Isinqamuleli asitholakali. Chofoza isinqamuleli esisha usebenzisa u-shift nomunye ukhiye ongu-1 wokushintsha (ctrl, alt, noma <ph name="META_KEY" />).</translation>
-<translation id="4983216687482551672">I-Chromebook audio</translation>
 <translation id="4985509611418653372">Ukugijima</translation>
 <translation id="4987769320337599931">Uhlelo lokuvikela</translation>
 <translation id="4988526792673242964">Amakhasi</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Khipha ikhebuli ye-USB ye-<ph name="DEVICE_NAME" /> uphinde uyifake ukuze uqhube inqubo yokubuyekeza</translation>
 <translation id="5099354524039520280">phezulu</translation>
 <translation id="5107243100836678918">Isinqamuleli ngaphandle kokhiye we-<ph name="META_KEY" /> singase siphikisane nesinqamuleli samanye ama-app. Chofoza lesi sinqamuleli futhi ukuze uqhubeke usisebenzisa, noma uchofoze isinqamuleli esisha usebenzisa ukhiye we-<ph name="KEY" />. <ph name="LINK_BEGIN" />Funda kabanzi<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Ayikwazi ukudawuniloda imodeli yokulotshwe ngesi-<ph name="LANGUAGE_NAME" />. Zama futhi noma uqale kabusha iChromebook yakho</translation>
 <translation id="5108781503443873320">Okufanayo:</translation>
-<translation id="5121677070210013200">Ayikwazi ukudawuniloda imodeli yokubhala. Zama futhi noma uqale kabusha iChromebook yakho.</translation>
 <translation id="5130848777448318809">amaponi</translation>
 <translation id="5137451382116112100">Igcwele</translation>
 <translation id="5139813694804168398">ungaphazamisi</translation>
@@ -920,6 +915,7 @@
 <translation id="5286263799730375393">umbala wokukhanya kwangemuva</translation>
 <translation id="5292579816060236070">Isithombe sangemuva sokuvela kwelanga</translation>
 <translation id="5294769550414936029">inguqulo engu-<ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">guqula ukufinyelela kwekhamera</translation>
 <translation id="5300814202279832142">Hambisa iwindi etafuleni</translation>
 <translation id="5302048478445481009">Ulimi</translation>
 <translation id="5303837385540978511">Isithombe sangemuva se-<ph name="PRODUCT_NAME" /> esikhethekile</translation>
@@ -1032,6 +1028,7 @@
 <translation id="5896602941605730551">Dlala</translation>
 <translation id="5901630391730855834">Okuliphuzi</translation>
 <translation id="5903200662178656908">Idivayisi iyinhlanganisela yekhibhodi nemowusi</translation>
+<translation id="5903822368221507416">Fihla amathebhu</translation>
 <translation id="5904994456462260490">Engeza i-APN entsha</translation>
 <translation id="590746845088109442">amakati</translation>
 <translation id="5907649332524363701">umbala wokhiye</translation>
@@ -1087,7 +1084,6 @@
 <translation id="6122191549521593678">Ku-inthanethi</translation>
 <translation id="6122277663991249694">Isevisi Yendlela Yokufaka kwe-ChromeOS</translation>
 <translation id="6127426868813166163">okumhlophe</translation>
-<translation id="613049107179582049">Uma umsindo weChromebook uvuliwe, Irekhoda ithwebula wonke umsindo odlalayo kule divayisi</translation>
 <translation id="6136285399872347291">I-backspace</translation>
 <translation id="6137614725462089991">i-cyberpunk</translation>
 <translation id="6137767437444130246">Isitifiketi somsebenzisi</translation>
@@ -1417,7 +1413,6 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Isikrini esithintwayo se-USB</translation>
 <translation id="757747079855995705">i-stone</translation>
-<translation id="7584853321964440104">Ayikwazi ukudawuniloda. Zama futhi noma uqale kabusha iChromebook yakho.</translation>
 <translation id="7590883480672980941">Faka izilungiselelo</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> esele</translation>
 <translation id="7600430297804876776">Umlawuli we-<ph name="MANAGER" /> usethe ukuthi le <ph name="DEVICE_TYPE" /> ingasetshenziswa nini.</translation>
@@ -1784,7 +1779,6 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="9218016617214286986">Bonisa ama-APN aziwayo</translation>
 <translation id="932327136139879170">Ikhaya</translation>
 <translation id="939519157834106403">I-SSID</translation>
-<translation id="940663759301549538">Qiniseka ukuthi imakrofoni yakho ixhunyiwe noma zama ukuqalisa kabusha iChromebook yakho</translation>
 <translation id="945522503751344254">Thumela impendulo</translation>
 <translation id="950520315903467048">Ukhiye uyashoda ku-<ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Qhathanisa amazwi kukho konke okurekhodiwe ukuze okulotshiweyo kubonise lokho okushiwo isikhulumi ngasinye nokuthi nini</translation>

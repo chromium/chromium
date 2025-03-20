@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">ട്രാൻസ്ക്രിപ്റ്റ് മറയ്ക്കുക</translation>
 <translation id="160633243685262989">പ്രിവ്യൂ ചിത്രം</translation>
 <translation id="1611649489706141841">കൈമാറുക</translation>
-<translation id="1615144046047995187">ഡൗൺലോഡ് ചെയ്യാനാകില്ല. വീണ്ടും ശ്രമിക്കുക അല്ലെങ്കിൽ നിങ്ങളുടെ Chromebook റീസ്റ്റാർട്ട് ചെയ്യുക.</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> മുതലുള്ള ഡാറ്റാ ഉപയോഗം</translation>
 <translation id="1618566998877964907">തീം ഉപയോഗിക്കുക</translation>
 <translation id="1621067168122174824">ചാർജ് ടെസ്റ്റ് റൺ ചെയ്യുക</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">ഓഡിയോ റെക്കോർഡിംഗുകളുടെ ലിസ്റ്റ്</translation>
 <translation id="2561093647892030937">നാരങ്ങകൾ</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> പരീക്ഷണം റൺ ചെയ്യുന്നു...</translation>
-<translation id="2573178735329662769">എല്ലാ Chromebook ഓഡിയോയും റെക്കോർഡ് ചെയ്യുന്നു</translation>
 <translation id="2576253868710695442">ഇതിന് 2GB സ്റ്റോറേജ് വരെ ആവശ്യമായി വരും</translation>
 <translation id="2584547424703650812">ഗ്ലോസ്കേപ്പുകൾ</translation>
 <translation id="2584559707064218956">സജ്ജീകരിക്കാൻ ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">നീലയും പിങ്കും</translation>
 <translation id="498186245079027698">സ്കാനർ പരിശോധിച്ച ശേഷം വീണ്ടും ശ്രമിക്കുക. സ്കാൻ ചെയ്ത ഫയലുകൾ സംരക്ഷിക്കാൻ മതിയായ ലോക്കൽ സ്പെയ്‍സ് ഉണ്ടെന്ന് ഉറപ്പാക്കുക.</translation>
 <translation id="4982627662315910959">കുറുക്കുവഴി ലഭ്യമല്ല. shift-ഉം ഒരു മോഡിഫയർ കീയും (ctrl, alt അല്ലെങ്കിൽ <ph name="META_KEY" />) ഉപയോഗിച്ച് പുതിയൊരു കുറുക്കുവഴി അമർത്തുക.</translation>
-<translation id="4983216687482551672">Chromebook ഓഡിയോ</translation>
 <translation id="4985509611418653372">റൺ ചെയ്യുക</translation>
 <translation id="4987769320337599931">ഫയർവാൾ</translation>
 <translation id="4988526792673242964">പേജുകള്‍</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">അപ്‌ഡേറ്റ് പ്രക്രിയ തുടരാൻ <ph name="DEVICE_NAME" /> എന്നതിന്റെ USB കേബിൾ അൺപ്ലഗ് ചെയ്‌ത ശേഷം വീണ്ടും ഇൻസേർട്ട് ചെയ്യുക</translation>
 <translation id="5099354524039520280">മുകളിലേക്ക്</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> കീ ഇല്ലാത്ത കുറുക്കുവഴിയും മറ്റേതെങ്കിലും ആപ്പിന്റെ കുറുക്കുവഴികളും തമ്മിൽ മാറിപ്പോകാൻ ഇടയുണ്ട്. തുടർന്നും ഉപയോഗിക്കാൻ ഈ കുറുക്കുവഴിയിൽ അമർത്തുക, അല്ലെങ്കിൽ <ph name="KEY" /> കീ ഉപയോഗിക്കുന്ന പുതിയൊരു കുറുക്കുവഴിയിൽ അമർത്തുക. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399"><ph name="LANGUAGE_NAME" /> ട്രാൻസ്‌ക്രിപ്ഷൻ മോഡൽ ഡൗൺലോഡ് ചെയ്യാനാകുന്നില്ല. വീണ്ടും ശ്രമിക്കുക അല്ലെങ്കിൽ നിങ്ങളുടെ Chromebook റീസ്റ്റാർട്ട് ചെയ്യുക</translation>
 <translation id="5108781503443873320">സമാനമായത്:</translation>
-<translation id="5121677070210013200">ട്രാൻസ്‌ക്രിപ്ഷൻ മോഡൽ ഡൗൺലോഡ് ചെയ്യാനാകില്ല. വീണ്ടും ശ്രമിക്കുക അല്ലെങ്കിൽ നിങ്ങളുടെ Chromebook റീസ്റ്റാർട്ട് ചെയ്യുക.</translation>
 <translation id="5130848777448318809">പോണികൾ</translation>
 <translation id="5137451382116112100">പൂർണ്ണ സ്ക്രീൻ</translation>
 <translation id="5139813694804168398">ശല്യപ്പെടുത്തരുത്</translation>
@@ -1089,7 +1084,6 @@
 <translation id="6122191549521593678">ഓൺലൈൻ</translation>
 <translation id="6122277663991249694">ChromeOS ഇൻപുട്ട് രീതി ലഭ്യമാക്കുന്ന സേവനം</translation>
 <translation id="6127426868813166163">വെള്ള</translation>
-<translation id="613049107179582049">Chromebook ഓഡിയോ ഓണായിരിക്കുമ്പോൾ, ഈ ഉപകരണത്തിൽ പ്ലേ ചെയ്യുന്ന എല്ലാ ഓഡിയോയും Recorder ക്യാപ്ചർ ചെയ്യുന്നു</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">സൈബർപങ്ക്</translation>
 <translation id="6137767437444130246">ഉപയോക്തൃ സർട്ടിഫിക്കറ്റ്</translation>
@@ -1419,7 +1413,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB ടച്ച്സ്ക്രീൻ</translation>
 <translation id="757747079855995705">സ്‌റ്റോൺ</translation>
-<translation id="7584853321964440104">ഡൗൺലോഡ് ചെയ്യാനാകുന്നില്ല. വീണ്ടും ശ്രമിക്കുക അല്ലെങ്കിൽ നിങ്ങളുടെ Chromebook റീസ്റ്റാർട്ട് ചെയ്യുക.</translation>
 <translation id="7590883480672980941">ഇൻപുട്ട് ക്രമീകരണം</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> ശേഷിക്കുന്നു</translation>
 <translation id="7600430297804876776">ഈ <ph name="DEVICE_TYPE" /> ഉപയോഗിക്കാനാകുന്ന സമയം <ph name="MANAGER" /> അഡ്മിൻ സജ്ജീകരിച്ചു.</translation>
@@ -1786,7 +1779,6 @@
 <translation id="9218016617214286986">അറിയാവുന്ന APN-കൾ കാണിക്കുക</translation>
 <translation id="932327136139879170">ഹോം</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">മൈക്ക് കണക്റ്റ് ചെയ്തിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക അല്ലെങ്കിൽ Chromebook റീസ്റ്റാർട്ട് ചെയ്ത് നോക്കുക</translation>
 <translation id="945522503751344254">ഫീഡ്‌ബാക്ക് അയയ്‌ക്കുക</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> എന്നതിനുള്ള കീ നൽകിയിട്ടില്ല. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">റെക്കോർഡിംഗിലുടനീളമുള്ള ശബ്ദങ്ങൾ താരതമ്യം ചെയ്യുക, അതുവഴി ട്രാൻസ്ക്രിപ്റ്റ് ഓരോ സ്പീക്കറും എന്ത് പറഞ്ഞുവെന്നതും എപ്പോൾ പറഞ്ഞുവെന്നതും പ്രതിഫലിപ്പിക്കുന്നു</translation>

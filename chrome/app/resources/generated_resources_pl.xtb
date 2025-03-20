@@ -267,6 +267,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1175572348579024023">Przewijanie</translation>
 <translation id="1175914831232945926">Cyfry</translation>
 <translation id="1176471985365269981">Nie zezwolono na edytowanie plików ani folderów na urządzeniu</translation>
+<translation id="1176864681932214421">Twórz obrazy za pomocą AI</translation>
 <translation id="1177073277575830464">Szybka konfiguracja Androida została ukończona. Kontynuuj konfigurację na urządzeniu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1177440945615690056">Z dowolną obsługiwaną siecią komórkową możesz połączyć się w Ustawieniach</translation>
 <translation id="1177548198167638471">Nie pytaj ponownie</translation>
@@ -3668,6 +3669,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3582057310199111521">Wpisano na stronie wprowadzającej w błąd i doszło do naruszenia bezpieczeństwa danych</translation>
 <translation id="3582299299336701326">Zmienia jasne ekrany w ciemne, a ciemne – w jasne. Aby włączyć lub wyłączyć odwrócenie kolorów, naciśnij klawisz wyszukiwania + Ctrl + H.</translation>
 <translation id="3584169441612580296">Odczyt i zmiana zdjęć, muzyki oraz innych multimediów na komputerze</translation>
+<translation id="3586741240886978899">Używane w tej witrynie</translation>
 <translation id="3586806079541226322">Nie można otworzyć tego pliku</translation>
 <translation id="3586931643579894722">Ukryj szczegóły</translation>
 <translation id="3587279952965197737">Maksymalna liczba znaków to <ph name="MAX_CHARACTER_COUNT" /></translation>
@@ -9335,6 +9337,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7650582458329409456">{COUNT,plural, =1{Skonfigurowany jest 1 odcisk palca}few{Skonfigurowane są {COUNT} odciski palca}many{Skonfigurowanych jest {COUNT} odcisków palca}other{Skonfigurowane jest {COUNT} odcisku palca}}</translation>
 <translation id="7650677314924139716">Bieżące ustawienie transmisji danych: Tylko Wi-Fi</translation>
 <translation id="7650920359639954963">Niewłączone: <ph name="REASON" /></translation>
+<translation id="7651182181030187705">Aby uzyskać dostęp do tej zakładki na wszystkich swoich urządzeniach, potwierdź swoją tożsamość</translation>
 <translation id="7651400349472467012">Dostępny jest szybki hotspot</translation>
 <translation id="7651784568388208829">Kontynuacja zadania sterowania telefonem</translation>
 <translation id="765293928828334535">Z tej strony nie można dodawać aplikacji, rozszerzeń ani skryptów użytkownika</translation>
@@ -9373,6 +9376,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7670434942695515800">Zalecamy zaktualizowanie do najnowszej wersji – pozwoli to uzyskać najlepszą wydajność. Warto utworzyć kopię zapasową plików, aby nie utracić danych, jeśli nie uda się przeprowadzić uaktualnienia. Po rozpoczęciu uaktualnienia Linux zostanie wyłączony. Zanim przejdziesz dalej, zapisz otwarte pliki. <ph name="LINK_START" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="7670483791111801022">Napisy</translation>
 <translation id="7671130400130574146">Użyj systemowego paska tytułu i ramek</translation>
+<translation id="7671139479636735732">Kliknij prawym przyciskiem, aby łatwo wizualizować pomysły</translation>
 <translation id="767127784612208024">Dotknij, by potwierdzić resetowanie</translation>
 <translation id="7671472752213333268">„<ph name="EXTENSION_NAME" />” chce skanować za pomocą urządzenia „<ph name="SCANNER_NAME" />”.</translation>
 <translation id="7672504401554182757">Wybierz urządzenie, które ma klucz dla aplikacji <ph name="APP_NAME" /></translation>

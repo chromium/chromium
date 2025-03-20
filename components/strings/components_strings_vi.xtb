@@ -158,6 +158,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1264309058268477500">Khay thay thế</translation>
 <translation id="1264974993859112054">Thể thao</translation>
 <translation id="1268480293435976622">Phong bì kiểu Trung số 7</translation>
+<translation id="1269045546668906972">Bật tính năng tự động điền bằng AI để tự động điền thêm các trường</translation>
 <translation id="1269516672602708785">Tạo nhanh một trang web mới trong Google Sites</translation>
 <translation id="1270328905573953738">Di chuyển và chuyển nhà/văn phòng</translation>
 <translation id="1270502636509132238">Phương thức nhận hàng</translation>
@@ -1138,6 +1139,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3005723025932146533">Hiển thị bản sao đã lưu</translation>
 <translation id="300580149047131921">Vừa mới sử dụng</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab để duyệt xem các thao tác có sẵn, sau đó nhấn phím Enter để thực thi thao tác đã chọn.</translation>
+<translation id="3010991137650052245">Để dùng <ph name="PERMISSION" /> của bạn trên trang web này, hãy cấp cho <ph name="SHORT_PRODUCT_NAME" /> quyền truy cập</translation>
 <translation id="3013711734159931232">Đồ dùng gia đình</translation>
 <translation id="3014553260345122294">Tin tức kinh doanh</translation>
 <translation id="3014726756341138577">Tính năng nâng cao của máy in</translation>
@@ -1788,6 +1790,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">Phạm vi chính sách không được hỗ trợ.</translation>
+<translation id="411918202192379658">Tính năng tự động điền đã được cải tiến</translation>
 <translation id="4121428309786185360">Hết hạn Vào</translation>
 <translation id="4123572138124678573">Đục 3 lỗ dưới cùng</translation>
 <translation id="412601465078863288">Đã hết thời gian tải lên</translation>
@@ -2176,6 +2179,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4819347708020428563">Chỉnh sửa chú thích ở chế độ xem mặc định?</translation>
 <translation id="4822493756793346865">Giá thông thường được xác định dựa vào các cửa hàng trên web trong 90 ngày qua.</translation>
 <translation id="4822922322149719535">Xem lại nhật ký lỗi</translation>
+<translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> cần có quyền truy cập vào <ph name="PERMISSION" /> trên thiết bị của bạn</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn phím Enter để tạo nhanh một trang tính mới trong Google Trang tính</translation>
 <translation id="4826588772550366629">máy ảnh và micrô</translation>
 <translation id="4827283332383516812">Xoá thẻ</translation>
@@ -2906,6 +2910,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6116338172782435947">Xem văn bản và hình ảnh đã sao chép sang bảng nhớ tạm</translation>
 <translation id="6117833587752089929">Ảnh (Satin)</translation>
 <translation id="6118782133429281336">Danh sách nguồn gốc đang trống.</translation>
+<translation id="6120950591512958208">Sử dụng mã này khi thanh toán.</translation>
 <translation id="612178891608320683">Món thuần chay</translation>
 <translation id="6122181661879998141">mặt trước thẻ</translation>
 <translation id="6124058285696691147">Tải tệp đính kèm xuống</translation>

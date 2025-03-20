@@ -337,6 +337,7 @@
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Accesso rete</translation>
 <translation id="5924017743176219022">Connessione a Internet in corso…</translation>
 <translation id="5941711191222866238">Riduci a icona</translation>
+<translation id="5949225980829865667">Accedi a Chromium per trovare questo preferito e altro su tutti i tuoi dispositivi</translation>
 <translation id="5972142260211327093">Se Chromium ti ha inserito in modo casuale in una prova attiva, la cronologia di navigazione incide sugli annunci che ti vengono mostrati e sugli interessi stimati riportati qui sotto. Per tutelare la tua privacy, Chromium elimina i tuoi interessi ogni mese. A meno che non li rimuovi, gli interessi vengono aggiornati.</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{La tua organizzazione chiude automaticamente Chromium quando non viene utilizzato per 1 minuto.}other{La tua organizzazione chiude automaticamente Chromium quando non viene utilizzato per # minuti.}}</translation>
 <translation id="5987687638152509985">Aggiorna Chromium per avviare la sincronizzazione</translation>

@@ -145,7 +145,6 @@
 <translation id="1604959087182679653">Paslēpt transkripciju</translation>
 <translation id="160633243685262989">Priekšskatīt attēlu</translation>
 <translation id="1611649489706141841">pārsūtīt</translation>
-<translation id="1615144046047995187">Nevar lejupielādēt. Mēģiniet vēlreiz vai restartējiet Chromebook datoru.</translation>
 <translation id="1615335640928990664">Datu lietojums kopš šī datuma: <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Motīva izmantošana</translation>
 <translation id="1621067168122174824">Veikt uzlādes pārbaudi</translation>
@@ -364,7 +363,6 @@
 <translation id="2560876255701405320">Audio ierakstu saraksts</translation>
 <translation id="2561093647892030937">citroni</translation>
 <translation id="2570743873672969996">Notiek testa “<ph name="TEST_NAME" />” izpilde...</translation>
-<translation id="2573178735329662769">Visa Chromebook datora audio ierakstīšana</translation>
 <translation id="2576253868710695442">Tas aizņems līdz 2 GB krātuves vietas.</translation>
 <translation id="2584547424703650812">Mirdzošas ainavas</translation>
 <translation id="2584559707064218956">Lai iestatītu, pārejiet uz iestatījumiem.</translation>
@@ -843,7 +841,6 @@
 <translation id="4981003703840817201">zila un rozā</translation>
 <translation id="498186245079027698">Pārbaudiet skeneri un mēģiniet vēlreiz. Vietējā krātuvē jābūt pietiekami daudz vietas skenēto failu saglabāšanai.</translation>
 <translation id="4982627662315910959">Šie īsinājumtaustiņi nav pieejami. Nospiediet jaunus īsinājumtaustiņus, izmantojot taustiņu Shift un vēl vienu modificētājtaustiņu (Ctrl, Alt vai <ph name="META_KEY" />).</translation>
-<translation id="4983216687482551672">Chromebook datora audio</translation>
 <translation id="4985509611418653372">Izpildīt</translation>
 <translation id="4987769320337599931">Ugunsmūris</translation>
 <translation id="4988526792673242964">Lapas</translation>
@@ -869,9 +866,7 @@
 <translation id="5095761549884461003">Lai turpinātu atjaunināšanas procesu, atvienojiet ierīces (<ph name="DEVICE_NAME" />) USB vadu un pēc tam atkārtoti pievienojiet to.</translation>
 <translation id="5099354524039520280">uz augšu</translation>
 <translation id="5107243100836678918">Īsinājumtaustiņi, kuros netiek izmantots taustiņš <ph name="META_KEY" />, var būt pretrunā ar noteiktas lietotnes īsinājumtaustiņiem. Vēlreiz nospiediet šos īsinājumtaustiņus, lai turpinātu tos lietot, vai nospiediet jaunus īsinājumtaustiņus, kuros izmantots taustiņš <ph name="KEY" />. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
-<translation id="5107402373921342399">Nevar lejupielādēt <ph name="LANGUAGE_NAME" /> valodas transkribēšanas modeli. Mēģiniet vēlreiz vai restartējiet Chromebook datoru.</translation>
 <translation id="5108781503443873320">Līdzīga nozīme:</translation>
-<translation id="5121677070210013200">Nevarēja lejupielādēt transkribēšanas modeli. Mēģiniet vēlreiz vai restartējiet Chromebook datoru.</translation>
 <translation id="5130848777448318809">poniji</translation>
 <translation id="5137451382116112100">Pilnekrāna režīms</translation>
 <translation id="5139813694804168398">Netraucēt</translation>
@@ -1027,6 +1022,7 @@
 <translation id="5896602941605730551">Atskaņot</translation>
 <translation id="5901630391730855834">Dzeltena</translation>
 <translation id="5903200662178656908">Ierīce sastāv no tastatūras un peles.</translation>
+<translation id="5903822368221507416">Paslēpt cilnes</translation>
 <translation id="5904994456462260490">Jauna APN pievienošana</translation>
 <translation id="590746845088109442">kaķi</translation>
 <translation id="5907649332524363701">taustiņu krāsa</translation>
@@ -1082,7 +1078,6 @@
 <translation id="6122191549521593678">Tiešsaistē</translation>
 <translation id="6122277663991249694">Chrome OS ievades metodes pakalpojums</translation>
 <translation id="6127426868813166163">baltā</translation>
-<translation id="613049107179582049">Ja iespēja “Chromebook datora audio” ir ieslēgta, lietotnē Ierakstītājs tiek ierakstīts viss šajā ierīcē atskaņotais audio saturs.</translation>
 <translation id="6136285399872347291">atpakaļatkāpe</translation>
 <translation id="6137614725462089991">kiberpanks</translation>
 <translation id="6137767437444130246">Lietotāja sertifikāts</translation>
@@ -1412,7 +1407,6 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB skārienekrāns</translation>
 <translation id="757747079855995705">akmens</translation>
-<translation id="7584853321964440104">Nevar lejupielādēt. Mēģiniet vēlreiz vai restartējiet Chromebook datoru.</translation>
 <translation id="7590883480672980941">Ievades iestatījumi</translation>
 <translation id="7595982850646262331">Atlikušais laiks: <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">Vietnes <ph name="MANAGER" /> administrators iestatīja šīs <ph name="DEVICE_TYPE" /> ierīces izmantošanas ierobežojumu.</translation>
@@ -1773,7 +1767,6 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="9218016617214286986">Rādīt zināmos APN</translation>
 <translation id="932327136139879170">Sākums</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Pārbaudiet, vai mikrofons ir pievienots, vai restartējiet Chromebook datoru.</translation>
 <translation id="945522503751344254">Sūtīt atsauksmes</translation>
 <translation id="950520315903467048">Virzienam <ph name="DIRECTION" /> nav atlasīts taustiņš. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">salīdzinātu balsis visā ierakstā un tādējādi transkripcijā varētu norādīt, ko kurā brīdī teica katrs runātājs.</translation>

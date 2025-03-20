@@ -241,6 +241,8 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1755556344721611131">Teşhis Aracı uygulaması</translation>
 <translation id="1756833229520115364">Şablon kaydedilemedi. Çok fazla pencere veya sekme var.</translation>
 <translation id="1757857692711134412">Gün batımına kadar kapalı</translation>
+<translation id="1763084151787818322">Diğer işlemler</translation>
+<translation id="1768138163688567246">Ekranımı ara özelliğini kapat</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + Nokta klavye kısayolu değişti. Insert tuşunu kullanmak için <ph name="LAUNCHER_KEY_NAME" /> tuşu + Üst Karakter + Geri Tuşu'na basın.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />. satır, <ph name="COLUMN_NUMBER" />. sütuna taşındı.</translation>
 <translation id="1771761307086386028">Sağa kaydır</translation>
@@ -1942,6 +1944,7 @@ Yeni yüklenmiş</translation>
 <translation id="742594950370306541">Kamera kullanımda.</translation>
 <translation id="742608627846767349">Günaydın,</translation>
 <translation id="743058460480092004">Kamera ve mikrofon kullanımda.</translation>
+<translation id="7440404390546433462">Google Arama</translation>
 <translation id="7441711280402516925">Oynatılıyor · Sekmeye geç</translation>
 <translation id="7453330308669753048">Arama geçmişi sonucu kaldırıldı</translation>
 <translation id="7459485586006128091">Dahili bir hata nedeniyle hotspot kapatıldı. Birkaç dakika sonra tekrar bağlanmayı deneyin.</translation>

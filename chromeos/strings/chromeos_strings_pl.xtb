@@ -150,7 +150,6 @@
 <translation id="1604959087182679653">Ukryj transkrypcję</translation>
 <translation id="160633243685262989">Podgląd obrazu</translation>
 <translation id="1611649489706141841">do przodu</translation>
-<translation id="1615144046047995187">Nie udało się pobrać. Spróbuj jeszcze raz lub uruchom ponownie Chromebooka.</translation>
 <translation id="1615335640928990664">Użycie danych od <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Użyj motywu</translation>
 <translation id="1621067168122174824">Przeprowadź test ładowania</translation>
@@ -369,7 +368,6 @@
 <translation id="2560876255701405320">Lista nagrań dźwiękowych</translation>
 <translation id="2561093647892030937">cytryny</translation>
 <translation id="2570743873672969996">Wykonuję test <ph name="TEST_NAME" />…</translation>
-<translation id="2573178735329662769">Nagrywanie wszystkich dźwięków z Chromebooka</translation>
 <translation id="2576253868710695442">Zajmie to do 2 GB miejsca na dane</translation>
 <translation id="2584547424703650812">Rozświetlone krajobrazy</translation>
 <translation id="2584559707064218956">Aby skonfigurować sieć, otwórz Ustawienia</translation>
@@ -848,7 +846,6 @@
 <translation id="4981003703840817201">niebieskich i różowych</translation>
 <translation id="498186245079027698">Sprawdź skaner i spróbuj ponownie. Upewnij się, że na urządzeniu masz miejsce na zapisanie zeskanowanych plików.</translation>
 <translation id="4982627662315910959">Brak dostępnego skrótu. Naciśnij nowy skrót, używając klawisza Shift i 1 dodatkowego klawisza modyfikującego (Ctrl, Alt lub <ph name="META_KEY" />).</translation>
-<translation id="4983216687482551672">Dźwięk na Chromebooku</translation>
 <translation id="4985509611418653372">Uruchom</translation>
 <translation id="4987769320337599931">Zapora sieciowa</translation>
 <translation id="4988526792673242964">Strony</translation>
@@ -874,9 +871,7 @@
 <translation id="5095761549884461003">Aby kontynuować proces aktualizacji, odłącz kabel USB urządzenia <ph name="DEVICE_NAME" />, a następnie podłącz go ponownie</translation>
 <translation id="5099354524039520280">w górę</translation>
 <translation id="5107243100836678918">Skrót bez klawisza <ph name="META_KEY" /> może być w konflikcie z jakimś skrótem aplikacji. Naciśnij ten skrót ponownie, aby nadal go używać, albo naciśnij nowy skrót z użyciem klawisza <ph name="KEY" />. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Nie udało się pobrać modelu transkrypcji w języku: <ph name="LANGUAGE_NAME" />. Spróbuj jeszcze raz lub uruchom ponownie Chromebooka</translation>
 <translation id="5108781503443873320">Synonimy:</translation>
-<translation id="5121677070210013200">Nie udało się pobrać modelu transkrypcji. Spróbuj jeszcze raz lub uruchom ponownie Chromebooka.</translation>
 <translation id="5130848777448318809">kucyki</translation>
 <translation id="5137451382116112100">Pełne</translation>
 <translation id="5139813694804168398">Nie przeszkadzać</translation>
@@ -1088,7 +1083,6 @@
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Usługa metod wprowadzania w Chrome OS</translation>
 <translation id="6127426868813166163">biały</translation>
-<translation id="613049107179582049">Gdy dźwięk na Chromebooku jest włączony, Dyktafon rejestruje cały dźwięk odtwarzany na tym urządzeniu</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Certyfikat użytkownika</translation>
@@ -1416,7 +1410,6 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Ekran dotykowy USB</translation>
 <translation id="757747079855995705">kamienia</translation>
-<translation id="7584853321964440104">Nie udało się pobrać. Spróbuj jeszcze raz lub uruchom ponownie Chromebooka.</translation>
 <translation id="7590883480672980941">Ustawienia wprowadzania</translation>
 <translation id="7595982850646262331">Pozostało: <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">Administrator witryny <ph name="MANAGER" /> określił, kiedy można używać tego urządzenia <ph name="DEVICE_TYPE" />.</translation>
@@ -1782,7 +1775,6 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="9218016617214286986">Pokaż znane punkty APN</translation>
 <translation id="932327136139879170">Strona główna</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Sprawdź, czy mikrofon jest podłączony, lub uruchom ponownie Chromebooka</translation>
 <translation id="945522503751344254">Prześlij opinię</translation>
 <translation id="950520315903467048">Brak klawisza dla kierunku <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">porównywać głosy w całym nagraniu i zaznaczać w transkrypcji, co mówi która osoba.</translation>

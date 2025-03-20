@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Transkript ausblenden</translation>
 <translation id="160633243685262989">Bild in der Vorschau anzeigen</translation>
 <translation id="1611649489706141841">Weiter</translation>
-<translation id="1615144046047995187">Download nicht möglich. Versuche es noch einmal oder starte dein Chromebook neu.</translation>
 <translation id="1615335640928990664">Datennutzung seit <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Design verwenden</translation>
 <translation id="1621067168122174824">Ladetest ausführen</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Liste der Audioaufnahmen</translation>
 <translation id="2561093647892030937">Zitronen</translation>
 <translation id="2570743873672969996">Test für <ph name="TEST_NAME" /> wird ausgeführt…</translation>
-<translation id="2573178735329662769">Alle Chromebook-Audiodaten werden aufgezeichnet</translation>
 <translation id="2576253868710695442">Das erfordert bis zu 2 GB Speicherplatz</translation>
 <translation id="2584547424703650812">Leuchtende Landschaften</translation>
 <translation id="2584559707064218956">Gehe für die Einrichtung zu den Einstellungen</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">Blau und Rosa</translation>
 <translation id="498186245079027698">Prüfe den Scanner und versuche es noch einmal. Sieh nach, ob ausreichend lokaler Speicherplatz vorhanden ist, um die gescannten Dateien zu speichern.</translation>
 <translation id="4982627662315910959">Tastenkombination nicht verfügbar. Drücke eine neue Tastenkombination unter Verwendung der Umschalttaste und einer weiteren Modifikatortaste (Strg, Alt oder <ph name="META_KEY" />).</translation>
-<translation id="4983216687482551672">Chromebook-Audio</translation>
 <translation id="4985509611418653372">Ausführen</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4988526792673242964">Seiten</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Ziehe das USB-Kabel von <ph name="DEVICE_NAME" /> ab und schließe es dann wieder an, um das Update fortzusetzen</translation>
 <translation id="5099354524039520280">Nach oben</translation>
 <translation id="5107243100836678918">Eine Tastenkombination ohne <ph name="META_KEY" />-Taste kann einen Konflikt mit der Tastenkombination einer App verursachen. Wenn du diese Tastenkombination weiter verwenden möchtest, drück sie noch einmal. Anderenfalls kannst du eine neue Tastenkombination mit der <ph name="KEY" />-Taste eingeben. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Transkriptmodell für <ph name="LANGUAGE_NAME" /> kann nicht heruntergeladen werden. Versuche es noch einmal oder starte dein Chromebook neu.</translation>
 <translation id="5108781503443873320">Ähnlich:</translation>
-<translation id="5121677070210013200">Transkriptmodell kann nicht heruntergeladen werden. Versuche es noch einmal oder starte dein Chromebook neu.</translation>
 <translation id="5130848777448318809">Ponys</translation>
 <translation id="5137451382116112100">Voll</translation>
 <translation id="5139813694804168398">Bitte nicht stören</translation>
@@ -1033,6 +1028,7 @@
 <translation id="5896602941605730551">Wiedergeben</translation>
 <translation id="5901630391730855834">Gelb</translation>
 <translation id="5903200662178656908">Das Gerät ist eine Kombination aus Maus und Tastatur.</translation>
+<translation id="5903822368221507416">Tabs ausblenden</translation>
 <translation id="5904994456462260490">Neuen APN hinzufügen</translation>
 <translation id="590746845088109442">Katzen</translation>
 <translation id="5907649332524363701">Tastenfarbe</translation>
@@ -1088,7 +1084,6 @@
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Dienst für die Chrome OS-Eingabemethoden</translation>
 <translation id="6127426868813166163">weiß</translation>
-<translation id="613049107179582049">Wenn Chromebook-Audio aktiviert ist, werden alle auf diesem Gerät wiedergegebenen Audioinhalte von der Rekorder App aufgezeichnet</translation>
 <translation id="6136285399872347291">Letztes Zeichen löschen</translation>
 <translation id="6137614725462089991">Cyberpunk</translation>
 <translation id="6137767437444130246">Nutzerzertifikat</translation>
@@ -1418,7 +1413,6 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-Touchscreen</translation>
 <translation id="757747079855995705">Stein</translation>
-<translation id="7584853321964440104">Fehler beim Download. Bitte versuch es noch einmal oder starte dein Chromebook neu.</translation>
 <translation id="7590883480672980941">Eingabeeinstellungen</translation>
 <translation id="7595982850646262331">Noch <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">Der Administrator von <ph name="MANAGER" /> hat festgelegt, wann dieser Gerätetyp (<ph name="DEVICE_TYPE" />) verwendet werden kann.</translation>
@@ -1785,7 +1779,6 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="9218016617214286986">Bekannte APNs anzeigen</translation>
 <translation id="932327136139879170">Startseite</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Prüfe, ob das Mikrofon angeschlossen ist, oder starte dein Chromebook neu</translation>
 <translation id="945522503751344254">Feedback geben</translation>
 <translation id="950520315903467048">Taste für „<ph name="DIRECTION" />“ fehlt. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Stimmen in der Aufnahme vergleichen, damit im Transkript korrekt wiedergegeben wird, welcher Sprecher wann spricht</translation>

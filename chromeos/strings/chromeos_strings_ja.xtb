@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">文字起こしを非表示</translation>
 <translation id="160633243685262989">プレビュー画像</translation>
 <translation id="1611649489706141841">進む</translation>
-<translation id="1615144046047995187">ダウンロードできません。もう一度お試しになるか、Chromebook を再起動してください。</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> 以降のデータ使用量</translation>
 <translation id="1618566998877964907">テーマを使用</translation>
 <translation id="1621067168122174824">充電テストを実行</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">音声録音のリスト</translation>
 <translation id="2561093647892030937">レモン</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> のテストを実行しています...</translation>
-<translation id="2573178735329662769">Chromebook オーディオをすべて録音</translation>
 <translation id="2576253868710695442">この処理には最大 2 GB の保存容量が必要です</translation>
 <translation id="2584547424703650812">グロースケープ</translation>
 <translation id="2584559707064218956">設定を行うには [設定] に移動します</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">青色とピンク</translation>
 <translation id="498186245079027698">スキャナを確認して、もう一度お試しください。デバイスにスキャンしたファイルを保存するのに十分な容量があるかどうかも確認してください。</translation>
 <translation id="4982627662315910959">このショートカットは使用できません。Shift キーと他 1 個の修飾キー（Ctrl、Alt、または <ph name="META_KEY" />）を使用して新しいショートカットを押してください。</translation>
-<translation id="4983216687482551672">Chromebook オーディオ</translation>
 <translation id="4985509611418653372">実行</translation>
 <translation id="4987769320337599931">ファイアウォール</translation>
 <translation id="4988526792673242964">ページ</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">更新プロセスを続行するには、<ph name="DEVICE_NAME" /> の USB ケーブルを取り外してから、もう一度差し込んでください</translation>
 <translation id="5099354524039520280">上</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> キーを使わないショートカットは、一部のアプリのショートカットと競合する可能性があります。そのまま使用する場合は、このショートカットをもう一度押します。または、<ph name="KEY" /> キーを使用した新しいショートカットを押します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399"><ph name="LANGUAGE_NAME" /> の音声文字変換モデルをダウンロードできません。もう一度お試しになるか、Chromebook を再起動してください。</translation>
 <translation id="5108781503443873320">類義語:</translation>
-<translation id="5121677070210013200">音声文字変換モデルをダウンロードできません。もう一度お試しになるか、Chromebook を再起動してください。</translation>
 <translation id="5130848777448318809">ポニー</translation>
 <translation id="5137451382116112100">全画面表示</translation>
 <translation id="5139813694804168398">サイレント モード</translation>
@@ -1089,7 +1084,6 @@
 <translation id="6122191549521593678">オンライン</translation>
 <translation id="6122277663991249694">ChromeOS の入力方法サービス</translation>
 <translation id="6127426868813166163">ホワイト</translation>
-<translation id="613049107179582049">Chromebook オーディオがオンの場合、レコーダーはこのデバイスで再生されるすべての音声を録音します</translation>
 <translation id="6136285399872347291">Backspace</translation>
 <translation id="6137614725462089991">サイバーパンク</translation>
 <translation id="6137767437444130246">ユーザー証明書</translation>
@@ -1419,7 +1413,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB タッチスクリーン</translation>
 <translation id="757747079855995705">石</translation>
-<translation id="7584853321964440104">ダウンロードできません。もう一度お試しになるか、Chromebook を再起動してください。</translation>
 <translation id="7590883480672980941">入力設定</translation>
 <translation id="7595982850646262331">あと <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776"><ph name="MANAGER" /> の管理者が、この <ph name="DEVICE_TYPE" /> を使用できる時間を設定しました。</translation>
@@ -1786,7 +1779,6 @@
 <translation id="9218016617214286986">既知の APN を表示</translation>
 <translation id="932327136139879170">ホーム</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">マイクが接続されていることを確認するか、Chromebook を再起動してみてください</translation>
 <translation id="945522503751344254">フィードバックを送信</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> のキーが設定されていません。<ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">録音全体で音声を比較し、それぞれのスピーカーが話したタイミングと内容を文字起こしに反映させる</translation>
