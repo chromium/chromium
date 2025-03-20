@@ -611,7 +611,6 @@ public class TabWindowManagerImplUnitTest {
 
     @Test
     @Config(sdk = VERSION_CODES.Q)
-    @EnableFeatures(ChromeFeatureList.TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH)
     public void testAssertIndicesMismatch() {
         ActivityController<Activity> activityController0 = createActivity();
         Activity activity0 = activityController0.get();
@@ -658,7 +657,6 @@ public class TabWindowManagerImplUnitTest {
 
     @Test
     @Config(sdk = VERSION_CODES.Q)
-    @EnableFeatures({ChromeFeatureList.TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH})
     public void testWindowIdReassignmentWhenIndicesMismatch() {
         // Simulate successful window id mismatch handling, that will trigger reassignment.
         when(mMismatchedIndicesHandler.handleMismatchedIndices(any(), anyBoolean(), anyBoolean()))

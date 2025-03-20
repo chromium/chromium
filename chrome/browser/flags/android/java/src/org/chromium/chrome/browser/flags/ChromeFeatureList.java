@@ -559,12 +559,6 @@ public abstract class ChromeFeatureList {
     public static final String TAB_SWITCHER_CONTEXT_MENU_ANDROID = "TabSwitcherContextMenuAndroid";
     public static final String TAB_SWITCHER_FOREIGN_FAVICON_SUPPORT =
             "TabSwitcherForeignFaviconSupport";
-    public static final String TAB_WINDOW_MANAGER_INDEX_REASSIGNMENT_ACTIVITY_FINISHING =
-            "TabWindowManagerIndexReassignmentActivityFinishing";
-    public static final String TAB_WINDOW_MANAGER_INDEX_REASSIGNMENT_ACTIVITY_IN_SAME_TASK =
-            "TabWindowManagerIndexReassignmentActivityInSameTask";
-    public static final String TAB_WINDOW_MANAGER_INDEX_REASSIGNMENT_ACTIVITY_NOT_IN_APP_TASKS =
-            "TabWindowManagerIndexReassignmentActivityNotInAppTasks";
     public static final String TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH =
             "TabWindowManagerReportIndicesMismatch";
     public static final String TASK_MANAGER_CLANK = "TaskManagerClank";
@@ -846,12 +840,6 @@ public abstract class ChromeFeatureList {
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sTabStripGroupCollapse =
             newCachedFlag(TAB_STRIP_GROUP_COLLAPSE, /* defaultValue= */ true);
-    public static final CachedFlag sTabWindowManagerIndexReassignmentActivityFinishing =
-            newCachedFlag(TAB_WINDOW_MANAGER_INDEX_REASSIGNMENT_ACTIVITY_FINISHING, true);
-    public static final CachedFlag sTabWindowManagerIndexReassignmentActivityInSameTask =
-            newCachedFlag(TAB_WINDOW_MANAGER_INDEX_REASSIGNMENT_ACTIVITY_IN_SAME_TASK, true);
-    public static final CachedFlag sTabWindowManagerIndexReassignmentActivityNotInAppTasks =
-            newCachedFlag(TAB_WINDOW_MANAGER_INDEX_REASSIGNMENT_ACTIVITY_NOT_IN_APP_TASKS, true);
     public static final CachedFlag sTabWindowManagerReportIndicesMismatch =
             newCachedFlag(TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH, true);
     public static final CachedFlag sTestDefaultDisabled =
@@ -964,9 +952,6 @@ public abstract class ChromeFeatureList {
                     sTabStripGroupCollapse,
                     sTabStripIncognitoMigration,
                     sTabStripLayoutOptimization,
-                    sTabWindowManagerIndexReassignmentActivityFinishing,
-                    sTabWindowManagerIndexReassignmentActivityInSameTask,
-                    sTabWindowManagerIndexReassignmentActivityNotInAppTasks,
                     sTabWindowManagerReportIndicesMismatch,
                     sTraceBinderIpc,
                     sUseChimeAndroidSdk,

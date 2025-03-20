@@ -3969,15 +3969,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
             boolean isActivityInAppTasks,
             boolean isActivityInSameTask) {
         boolean shouldHandleMismatch =
-                (ChromeFeatureList.sTabWindowManagerIndexReassignmentActivityFinishing.isEnabled()
-                                && activityAtRequestedIndex.isFinishing())
-                        || (ChromeFeatureList.sTabWindowManagerIndexReassignmentActivityInSameTask
-                                        .isEnabled()
-                                && isActivityInSameTask)
-                        || (ChromeFeatureList
-                                        .sTabWindowManagerIndexReassignmentActivityNotInAppTasks
-                                        .isEnabled()
-                                && !isActivityInAppTasks);
+                activityAtRequestedIndex.isFinishing()
+                        || isActivityInSameTask
+                        || !isActivityInAppTasks;
 
         if (!shouldHandleMismatch
                 || !(activityAtRequestedIndex
