@@ -3545,6 +3545,8 @@ if (!is_android) {
       ]
 
       deps += [
+        "//chrome/browser/actor",
+        "//chrome/browser/actor:browser_tests",
         "//chrome/browser/background/glic:glic",
         "//chrome/browser/glic:browser_tests",
         "//chrome/browser/glic:glic",
@@ -6938,7 +6940,10 @@ test("unit_tests") {
   ]
 
   if (enable_glic) {
-    deps += [ "//chrome/browser/glic:glic" ]
+    deps += [
+      "//chrome/browser/actor",
+      "//chrome/browser/glic:glic",
+    ]
   }
 
   if (chrome_root_store_cert_management_ui) {
@@ -6973,6 +6978,7 @@ test("unit_tests") {
 
   if (enable_glic) {
     deps += [
+      "//chrome/browser/actor:unit_tests",
       "//chrome/browser/background/glic:unit_tests",
       "//chrome/browser/glic:test_support",
       "//chrome/browser/glic:unit_tests",
