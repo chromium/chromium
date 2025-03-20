@@ -11,6 +11,7 @@
 #include "chrome/browser/command_updater_delegate.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/ui/user_education/start_tutorial_in_page.h"
+#include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -50,7 +51,8 @@ class BrowserCommandHandler : public CommandUpdaterDelegate,
       mojo::PendingReceiver<browser_command::mojom::CommandHandler>
           pending_page_handler,
       Profile* profile,
-      std::vector<browser_command::mojom::Command> supported_commands);
+      std::vector<browser_command::mojom::Command> supported_commands,
+      content::WebContents* web_contents);
   ~BrowserCommandHandler() override;
 
   // browser_command::mojom::CommandHandler:
@@ -93,6 +95,7 @@ class BrowserCommandHandler : public CommandUpdaterDelegate,
   virtual void NavigateToEnhancedProtectionSetting();
   virtual void OpenPasswordManager();
   virtual void OpenAISettings();
+  virtual void OpenGlic();
   void StartTabGroupTutorial();
   void OpenNTPAndStartCustomizeChromeTutorial();
   void StartPasswordManagerTutorial();
@@ -103,6 +106,7 @@ class BrowserCommandHandler : public CommandUpdaterDelegate,
   std::vector<browser_command::mojom::Command> supported_commands_;
   std::unique_ptr<CommandUpdater> command_updater_;
   mojo::Receiver<browser_command::mojom::CommandHandler> page_handler_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_BROWSER_COMMAND_BROWSER_COMMAND_HANDLER_H_

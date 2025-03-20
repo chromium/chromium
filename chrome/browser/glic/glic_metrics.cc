@@ -25,53 +25,38 @@ namespace glic {
 
 namespace {
 
+enum class ModeOffset : int {
+  kTextAttached = 1,
+  kAudioAttached = 2,
+  kTextDetached = 3,
+  kAudioDetached = 4,
+  kMaxValue = kAudioDetached,
+};
+
 ResponseSegmentation GetResponseSegmentation(bool attached,
                                              mojom::WebClientMode mode,
                                              mojom::InvocationSource source) {
   if (mode == mojom::WebClientMode::kUnknown) {
     return ResponseSegmentation::kUnknown;
   }
-  // Entries start at 1 since 0 is kUnknown.
-  int entry = 1;
-  // Text mode is 0 mod 2, audio mode is 1 mod 2.
-  if (mode == mojom::WebClientMode::kAudio) {
-    entry += 1;
-  }
-  // Attached entries are 0,1 mod 4, detached entries are 2,3 mod 4.
-  if (!attached) {
-    entry += 2;
-  }
-  switch (source) {
-    case mojom::InvocationSource::kOsButton:
-      break;
-    case mojom::InvocationSource::kOsButtonMenu:
-      entry += 4;
-      break;
-    case mojom::InvocationSource::kOsHotkey:
-      entry += 8;
-      break;
-    case mojom::InvocationSource::kTopChromeButton:
-      entry += 12;
-      break;
-    case mojom::InvocationSource::kFre:
-      entry += 16;
-      break;
-    case mojom::InvocationSource::kProfilePicker:
-      entry += 20;
-      break;
-    case mojom::InvocationSource::kNudge:
-      entry += 24;
-      break;
-    case mojom::InvocationSource::kThreeDotsMenu:
-      entry += 28;
-      break;
-    case mojom::InvocationSource::kUnsupported:
-      entry += 32;
-      break;
-  }
-  return static_cast<ResponseSegmentation>(entry);
-}
 
+  ModeOffset modeOffset;
+  if (mode == mojom::WebClientMode::kText && attached) {
+    modeOffset = ModeOffset::kTextAttached;
+  } else if (mode == mojom::WebClientMode::kAudio && attached) {
+    modeOffset = ModeOffset::kAudioAttached;
+  } else if (mode == mojom::WebClientMode::kText && !attached) {
+    modeOffset = ModeOffset::kTextDetached;
+  } else {
+    modeOffset = ModeOffset::kAudioDetached;
+  }
+
+  int baseIndex =
+      static_cast<int>(source) * (static_cast<int>(ModeOffset::kMaxValue));
+  int offset = static_cast<int>(modeOffset);
+
+  return static_cast<ResponseSegmentation>(baseIndex + offset);
+}
 }  // namespace
 
 GlicMetrics::GlicMetrics(Profile* profile, GlicEnabling* enabling)

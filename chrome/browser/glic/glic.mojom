@@ -476,7 +476,9 @@ enum InvocationSource {
   // From 3-dot menu.
   kThreeDotsMenu = 7,
   // An unsupported/unknown source.
-  [Default] kUnsupported,
+  [Default] kUnsupported = 8,
+  // From the What's New page.
+  [ MinVersion=1 ] kWhatsNew = 9,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvocationSource, //chrome/browser/glic/glic_metrics.h:ResponseSegmentation)
 

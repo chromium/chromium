@@ -552,6 +552,8 @@ export enum InvocationSource {
   THREE_DOTS_MENU = 7,
   /** An unsupported/unknown source. */
   UNSUPPORTED = 8,
+  /** From the What's New page. */
+  WHATS_NEW = 9,
 }
 
 /** The default value of TabContextOptions.pdfSizeLimit. */

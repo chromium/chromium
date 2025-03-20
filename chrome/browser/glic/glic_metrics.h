@@ -83,7 +83,11 @@ enum class ResponseSegmentation {
   kUnsupportedAttachedAudio = 34,
   kUnsupportedDetachedText = 35,
   kUnsupportedDetachedAudio = 36,
-  kMaxValue = kUnsupportedDetachedAudio,
+  kWhatsNewAttachedText = 37,
+  kWhatsNewAttachedAudio = 38,
+  kWhatsNewDetachedText = 39,
+  kWhatsNewDetachedAudio = 40,
+  kMaxValue = kWhatsNewDetachedAudio,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicResponseSegmentation)
 
