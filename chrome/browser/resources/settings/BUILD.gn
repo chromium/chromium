@@ -215,6 +215,7 @@ build_webui("build") {
     web_component_files += [
       "a11y_page/live_caption_section.ts",
       "a11y_page/live_translate_section.ts",
+      "clear_browsing_data_dialog/clear_browsing_data_account_indicator.ts",
       "default_browser_page/default_browser_page.ts",
       "languages_page/add_languages_dialog.ts",
       "languages_page/languages_page.ts",

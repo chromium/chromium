@@ -705,8 +705,17 @@ class SettingsClearBrowsingDataV2Test : public SettingsBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataV2Test,
                        DeleteBrowsingDataDialog) {
-  RunTest("settings/clear_browsing_data_dialog_v2_test.js", "mocha.run()");
+  RunTest("settings/clear_browsing_data_dialog_v2_test.js",
+          "runMochaSuite('DeleteBrowsingDataDialog')");
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataV2Test,
+                       DeleteBrowsingDataAccountIndicator) {
+  RunTest("settings/clear_browsing_data_dialog_v2_test.js",
+          "runMochaSuite('DeleteBrowsingDataAccountIndicator')");
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 using SettingsCookiesPageTest = SettingsBrowserTest;
 
