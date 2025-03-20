@@ -8,6 +8,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/views/data_sharing/data_sharing_utils.h"
 #include "components/collaboration/public/collaboration_controller_delegate.h"
 #include "components/tab_groups/tab_group_id.h"
 
@@ -26,7 +27,9 @@ class CollaborationControllerDelegateDesktop
     : public collaboration::CollaborationControllerDelegate,
       public BrowserListObserver {
  public:
-  explicit CollaborationControllerDelegateDesktop(Browser* browser);
+  explicit CollaborationControllerDelegateDesktop(
+      Browser* browser,
+      std::optional<data_sharing::FlowType> flow = std::nullopt);
   ~CollaborationControllerDelegateDesktop() override;
 
   void PrepareFlowUI(base::OnceCallback<void()> exit_callback,
@@ -77,6 +80,10 @@ class CollaborationControllerDelegateDesktop
 
   // The browser this delegate shows UI on.
   raw_ptr<Browser> browser_;
+
+  // The flow of this delegate. Only needed to set to distinguish kLeave,
+  // kDelete and kRemoveLastTab flows.
+  std::optional<data_sharing::FlowType> flow_;
 
   // Collaboration service to query sign in and sync status.
   raw_ptr<collaboration::CollaborationService> collaboration_service_;
