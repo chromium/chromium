@@ -60,7 +60,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH)
-public class TabWindowManagerTest {
+public class TabWindowManagerImplUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private final NextTabPolicySupplier mNextTabPolicySupplier = () -> NextTabPolicy.HIERARCHICAL;
