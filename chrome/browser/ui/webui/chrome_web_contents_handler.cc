@@ -29,8 +29,7 @@ ChromeWebContentsHandler::~ChromeWebContentsHandler() = default;
 // Opens a new URL inside |source|. |context| is the browser context that the
 // browser should be owned by. |params| contains the URL to open and various
 // attributes such as disposition. Returns the WebContents opened by the browser
-// on success. Otherwise, returns nullptr. In ChromeOS Ash, the URL might be
-// opened in Lacros. In that case, this function returns nullptr.
+// on success. Otherwise, returns nullptr.
 WebContents* ChromeWebContentsHandler::OpenURLFromTab(
     content::BrowserContext* context,
     WebContents* source,
