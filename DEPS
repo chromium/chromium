@@ -2235,7 +2235,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/kotlinc',
-              'version': '4gyETiHffuTF0gj_3aCf4c5zzZ3QQtuxOoeF-U1nHFoC',
+              'version': 'Wood5j4J3uPDtbP0fk868sOS0Y0umzF5X7w6U6QWupgC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
