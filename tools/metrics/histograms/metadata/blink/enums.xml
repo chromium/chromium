@@ -6973,7 +6973,7 @@ Called by update_use_counter_css.py.-->
   <int value="309" label="alias-webkit-perspective-origin"/>
   <int value="310" label="webkit-perspective-origin-x"/>
   <int value="311" label="webkit-perspective-origin-y"/>
-  <int value="312" label="webkit-print-color-adjust"/>
+  <int value="312" label="alias-webkit-print-color-adjust"/>
   <int value="313" label="webkit-rtl-ordering"/>
   <int value="314" label="webkit-ruby-position"/>
   <int value="315" label="webkit-text-combine"/>
@@ -7509,6 +7509,7 @@ Called by update_use_counter_css.py.-->
   <int value="845" label="gap-rule-paint-order"/>
   <int value="846" label="row-rule-width"/>
   <int value="847" label="row-rule-color"/>
+  <int value="848" label="print-color-adjust"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->
