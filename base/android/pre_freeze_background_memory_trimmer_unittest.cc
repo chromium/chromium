@@ -756,6 +756,33 @@ TEST_F(PreFreezeSelfCompactionTest, File) {
   munmap(addr, size);
 }
 
+TEST_F(PreFreezeSelfCompactionTest, Inaccessible) {
+  // MADV_PAGEOUT is only supported starting from Linux 5.4. So, on devices
+  // don't support it, we bail out early. This is a known problem on some 32
+  // bit devices.
+  if (!PreFreezeBackgroundMemoryTrimmer::SelfCompactionIsSupported()) {
+    GTEST_SKIP() << "No kernel support";
+  }
+
+  const size_t kPageSize = base::GetPageSize();
+  const size_t kNumPages = 2;
+  const size_t size = kNumPages * kPageSize;
+
+  void* addr = nullptr;
+  addr = mmap(nullptr, size, PROT_NONE, MAP_PRIVATE | MAP_ANON, -1, 0);
+  ASSERT_NE(addr, MAP_FAILED);
+
+  const auto region = GetMappedMemoryRegion(addr);
+  ASSERT_TRUE(region);
+
+  // We expect to not count this region.
+  const auto result =
+      PreFreezeBackgroundMemoryTrimmer::CompactRegion(std::move(*region));
+  ASSERT_EQ(result, 0);
+
+  munmap(addr, size);
+}
+
 TEST_F(PreFreezeSelfCompactionTest, Locked) {
   // MADV_PAGEOUT is only supported starting from Linux 5.4. So, on devices
   // don't support it, we bail out early. This is a known problem on some 32
