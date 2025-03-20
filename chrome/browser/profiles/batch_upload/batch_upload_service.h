@@ -63,6 +63,9 @@ class BatchUploadService : public KeyedService {
   // Returns whether the dialog is currently showing on a browser.
   bool IsDialogOpened() const;
 
+  // Gets the ordered list of all available types in BatchUpload for testing.
+  static std::vector<syncer::DataType> AvailableTypesOrderForTesting();
+
  private:
   // Iterates over all available types that can be displayed in the dialog and
   // request the `syncer::LocalDataDescription that contains the list of items.
