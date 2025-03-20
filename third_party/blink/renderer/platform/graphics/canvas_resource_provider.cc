@@ -1954,7 +1954,7 @@ scoped_refptr<CanvasResource> CanvasResourceProvider::NewOrRecycledResource() {
 }
 
 bool CanvasResourceProvider::ImportResource(
-    scoped_refptr<CanvasResource>&& resource) {
+    scoped_refptr<ExternalCanvasResource>&& resource) {
   if (!IsSingleBuffered()) {
     return false;
   }
