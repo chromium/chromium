@@ -1,5 +1,6 @@
 include_rules = [
   "+components/eye_dropper/color_mixer.h",
+  "+components/fullscreen_control/color_mixer.h",
   "+third_party/skia/include",
   "+ui/color",
 ]

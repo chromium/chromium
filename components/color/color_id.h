@@ -13,6 +13,8 @@ namespace color {
 // clang-format off
 // Cross-platform IDs should be added here.
 #define COMMON_COMPONENTS_COLOR_IDS \
+  E_CPONLY(kFullscreenNotificationOpaqueBackgroundColor) \
+  E_CPONLY(kFullscreenNotificationTransparentBackgroundColor) \
 
 #if defined(USE_AURA)
 #define COMPONENTS_COLOR_IDS COMMON_COMPONENTS_COLOR_IDS \

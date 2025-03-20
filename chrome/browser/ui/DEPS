@@ -24,6 +24,7 @@ include_rules = [
   "+components/facilitated_payments/core/features",
   "+components/power_bookmarks/core",
   "+components/safety_check",
+  "+components/fullscreen_control",
   "+components/saved_tab_groups/public",
   "+components/saved_tab_groups/internal/saved_tab_group_model.h",
   "+components/saved_tab_groups/internal/saved_tab_group_model_observer.h",
