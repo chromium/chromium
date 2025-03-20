@@ -41,11 +41,14 @@ BOOL IsPasswordSyncEnabled() {
       boolValue];
 }
 
-BOOL IsPasskeyCreationAllowedByPolicy() {
-  return [[app_group::GetGroupUserDefaults()
+std::optional<bool> GetPasskeyCreationPolicy() {
+  id passkeyCreationPolicy = [app_group::GetGroupUserDefaults()
       objectForKey:
-          AppGroupUserDefaultsCredentialProviderSavingPasskeysEnabled()]
-      boolValue];
+          AppGroupUserDefaultsCredentialProviderSavingPasskeysEnabled()];
+  if (!passkeyCreationPolicy) {
+    return std::nullopt;
+  }
+  return [passkeyCreationPolicy boolValue];
 }
 
 BOOL IsPasskeysM2Enabled() {

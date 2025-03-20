@@ -665,7 +665,14 @@ enum class PasskeyCreationEligibility {
                                               (PasskeyRequestDetails*)
                                                   passkeyRequestDetails {
   // Granular policy that allows enterprises to disable just passkey creation.
-  if (!IsPasskeyCreationAllowedByPolicy()) {
+  std::optional<bool> passkeyCreationPolicy = GetPasskeyCreationPolicy();
+
+  if (!passkeyCreationPolicy) {
+    // If the policy isn't set at all, the user has to sign in to Chrome.
+    return PasskeyCreationEligibility::kSignedOut;
+  } else if (!passkeyCreationPolicy.value()) {
+    // If the policy is set to false, the user is not allowed to create
+    // passkeys.
     return PasskeyCreationEligibility::kSaveDisabledByEnterprise;
   }
 
