@@ -3287,7 +3287,7 @@ void LayerTreeHostImpl::UpdateDisplayTree(FrameData& frame) {
 
   layer_context_->UpdateDisplayTreeFrom(
       *active_tree(), *resource_provider(),
-      *layer_tree_frame_sink_->context_provider());
+      *layer_tree_frame_sink_->context_provider(), viewport_damage_rect_);
 }
 
 int LayerTreeHostImpl::RequestedMSAASampleCount() const {
