@@ -37,7 +37,7 @@ if (!limit_android_deps) {
     info_path = "committed/libs/androidx_activity_activity_compose/androidx_activity_activity_compose.info"
     enable_bytecode_checks = false
     deps = [
-      ":androidx_activity_activity_ktx_java",
+      ":androidx_activity_activity_java",
       ":androidx_compose_runtime_runtime_java",
       ":androidx_compose_runtime_runtime_saveable_java",
       ":androidx_compose_ui_ui_java",
@@ -336,7 +336,8 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_prebuilt("androidx_collection_collection_ktx_java") {
-    jar_path = "cipd/libs/androidx_collection_collection_ktx/collection-ktx-1.5.0-SNAPSHOT.jar"
+    jar_path =
+        "cipd/libs/androidx_collection_collection_ktx/collection-ktx-1.5.0.jar"
     output_name = "androidx_collection_collection_ktx"
     supports_android = true
     requires_android = true
@@ -530,7 +531,8 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_credentials_credentials_java") {
-    aar_path = "cipd/libs/androidx_credentials_credentials/credentials-1.5.0-SNAPSHOT.aar"
+    aar_path =
+        "cipd/libs/androidx_credentials_credentials/credentials-1.5.0.aar"
     info_path = "committed/libs/androidx_credentials_credentials/androidx_credentials_credentials.info"
     enable_bytecode_checks = false
     deps = [
@@ -538,7 +540,6 @@ if (!limit_android_deps) {
       ":androidx_biometric_biometric_java",
       ":androidx_core_core_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
-      "//third_party/android_deps:org_jspecify_jspecify_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
@@ -546,7 +547,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_credentials_credentials_play_services_auth_java") {
-    aar_path = "cipd/libs/androidx_credentials_credentials_play_services_auth/credentials-play-services-auth-1.5.0-SNAPSHOT.aar"
+    aar_path = "cipd/libs/androidx_credentials_credentials_play_services_auth/credentials-play-services-auth-1.5.0.aar"
     info_path = "committed/libs/androidx_credentials_credentials_play_services_auth/androidx_credentials_credentials_play_services_auth.info"
     enable_bytecode_checks = false
     deps = [
@@ -1119,7 +1120,6 @@ if (!limit_android_deps) {
     info_path = "committed/libs/androidx_preference_preference/androidx_preference_preference.info"
     enable_bytecode_checks = false
     deps = [
-      ":androidx_activity_activity_ktx_java",
       ":androidx_annotation_annotation_java",
       ":androidx_appcompat_appcompat_java",
       ":androidx_collection_collection_java",
@@ -1567,7 +1567,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_window_window_java") {
-    aar_path = "cipd/libs/androidx_window_window/window-1.5.0-SNAPSHOT.aar"
+    aar_path = "cipd/libs/androidx_window_window/window-1.7.0-SNAPSHOT.aar"
     info_path =
         "committed/libs/androidx_window_window/androidx_window_window.info"
     enable_bytecode_checks = false
@@ -1711,7 +1711,8 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_prebuilt("androidx_collection_collection_jvm_java") {
-    jar_path = "cipd/libs/androidx_collection_collection_jvm/collection-jvm-1.5.0-SNAPSHOT.jar"
+    jar_path =
+        "cipd/libs/androidx_collection_collection_jvm/collection-jvm-1.5.0.jar"
     output_name = "androidx_collection_collection_jvm"
     supports_android = true
     requires_android = true
@@ -3420,7 +3421,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_window_window_core_android_java") {
-    aar_path = "cipd/libs/androidx_window_window_core_android/window-core-android-1.5.0-SNAPSHOT.aar"
+    aar_path = "cipd/libs/androidx_window_window_core_android/window-core-android-1.7.0-SNAPSHOT.aar"
     info_path = "committed/libs/androidx_window_window_core_android/androidx_window_window_core_android.info"
     enable_bytecode_checks = false
 
