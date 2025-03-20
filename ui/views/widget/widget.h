@@ -217,6 +217,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // This struct had unused fields that were removed, but may be of interest to
   // future users:
   // - force_show_in_taskbar: https://crrev.com/c/6356649
+  // - native_theme: https://crrev.com/c/6356535
   // - wants_mouse_events_when_inactive: https://crrev.com/c/6354158
   struct VIEWS_EXPORT InitParams {
     enum Type {
@@ -517,12 +518,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // even if it matches with the compositor's keyboard shortcuts.
     bool inhibit_keyboard_shortcuts = false;
 #endif
-
-    // Directly sets the NativeTheme used by the Widget. Providing the
-    // NativeTheme here vs setting afterwards potentially avoids lots of
-    // notifications of theme changes.
-    // A value of null results in the default theme being used.
-    raw_ptr<ui::NativeTheme> native_theme = nullptr;
 
 #if BUILDFLAG(IS_MAC)
     // If set to true, tags the widget as an invisible overlay widget that
