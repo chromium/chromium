@@ -50,9 +50,9 @@ struct ImageInfo {
   int width;
   int height;
 
-  ImageInfo(const std::set<std::string>& annotations,
-            const base::FilePath& path,
-            const base::Time& last_modified,
+  ImageInfo(std::set<std::string> annotations,
+            base::FilePath path,
+            base::Time last_modified,
             int64_t file_size);
 
   ~ImageInfo();
