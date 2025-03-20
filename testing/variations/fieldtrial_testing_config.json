@@ -9413,22 +9413,17 @@
             ]
         }
     ],
-    "ExpandCompositedCullRect": [
+    "ExpandCompositedCullRectMobile": [
         {
             "platforms": [
                 "android",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
+                "android_webview"
             ],
             "experiments": [
                 {
-                    "name": "LargeChangedEnough",
+                    "name": "LikelyLaunch",
                     "params": {
-                        "changed_enough": "1024"
+                        "pixels": "2333"
                     },
                     "enable_features": [
                         "ExpandCompositedCullRect"
