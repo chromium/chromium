@@ -4,6 +4,7 @@
 
 #import "chrome/browser/app_controller_mac.h"
 
+#include <AppKit/AppKit.h>
 #include <dispatch/dispatch.h>
 #include <stddef.h>
 
@@ -292,24 +293,21 @@ void ConfigureNSAppForKioskMode() {
       NSApplicationPresentationFullScreen;
 }
 
-// Returns the list of gfx::NativeWindows for all browser windows (excluding
-// apps).
-std::set<gfx::NativeWindow> GetBrowserNativeWindows() {
-  std::set<gfx::NativeWindow> result;
+// Returns the list of windows for all browser windows (excluding apps).
+NSSet<NSWindow*>* GetBrowserWindows() {
+  NSMutableSet<NSWindow*>* result = [NSMutableSet set];
   for (Browser* browser : *BrowserList::GetInstance()) {
-    if (!browser)
-      continue;
     // When focusing Chrome, don't focus any browser windows associated with
-    // an app.
-    // https://crbug.com/960904
-    if (browser->is_type_app())
+    // an app (https://crbug.com/40626510).
+    if (browser->is_type_app()) {
       continue;
-    result.insert(browser->window()->GetNativeWindow());
+    }
+    [result addObject:browser->window()->GetNativeWindow().GetNativeNSWindow()];
   }
   return result;
 }
 
-void FocusWindowSetOnCurrentSpace(const std::set<gfx::NativeWindow>& windows) {
+void FocusWindowSetOnCurrentSpace(NSSet<NSWindow*>* windows) {
   // This callback runs before AppKit picks its own window to
   // deminiaturize, so we get to pick one from the right set. Limit to
   // the windows on the current workspace. Otherwise we jump spaces
@@ -319,7 +317,7 @@ void FocusWindowSetOnCurrentSpace(const std::set<gfx::NativeWindow>& windows) {
   // with the system unhiding the application. http://crbug.com/368238
   //
   // NOTE: If this is called in the
-  // applicationShouldHandleReopen:hasVisibleWindows: hook when
+  // -applicationShouldHandleReopen:hasVisibleWindows: hook when
   // clicking the dock icon, and that caused macOS to begin switch
   // spaces, isOnActiveSpace gives the answer for the PREVIOUS
   // space. This means that we actually raise and focus the wrong
@@ -338,15 +336,15 @@ void FocusWindowSetOnCurrentSpace(const std::set<gfx::NativeWindow>& windows) {
   NSWindow* frontmost_window = nil;
   NSWindow* frontmost_miniaturized_window = nil;
   bool all_miniaturized = true;
-  for (NSWindow* win in [[NSApp orderedWindows] reverseObjectEnumerator]) {
-    if (windows.find(gfx::NativeWindow(win)) == windows.end()) {
+  for (NSWindow* win in [NSApp.orderedWindows reverseObjectEnumerator]) {
+    if (![windows containsObject:win]) {
       continue;
     }
-    if ([win isMiniaturized]) {
+    if (win.miniaturized) {
       frontmost_miniaturized_window = win;
-    } else if ([win isVisible]) {
+    } else if (win.visible) {
       all_miniaturized = false;
-      if ([win isOnActiveSpace]) {
+      if (win.onActiveSpace) {
         // Raise the old |frontmost_window| (if any). The topmost |win| will be
         // raised with makeKeyAndOrderFront: below.
         [frontmost_window orderFront:nil];
@@ -1651,8 +1649,8 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   // If there are any, return here. Otherwise, the windows are panels or
   // notifications so we still need to open a new window.
   if (hasVisibleWindows) {
-    std::set<gfx::NativeWindow> browserWindows = GetBrowserNativeWindows();
-    if (!browserWindows.empty()) {
+    NSSet<NSWindow*>* browserWindows = GetBrowserWindows();
+    if (browserWindows.count) {
       FocusWindowSetOnCurrentSpace(browserWindows);
       // We've performed the unminimize, so AppKit shouldn't do anything.
       return NO;
@@ -1663,8 +1661,8 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   DCHECK_NE(lastProfilePath, ProfileManager::GetSystemProfilePath());
 
   // If launched as a hidden login item (due to installation of a persistent app
-  // or by the user, for example in System Preferences->Accounts->Login Items),
-  // allow session to be restored first time the user clicks on a Dock icon.
+  // or by the user, for example in System Settings->General->Login Items),
+  // allow the session to be restored first time the user clicks on a Dock icon.
   // Normally, it'd just open a new empty page.
   static BOOL doneOnce = NO;
   BOOL attemptRestore =
