@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_BROWSER_STABLE_VIDEO_DECODER_FACTORY_H_
-#define CONTENT_PUBLIC_BROWSER_STABLE_VIDEO_DECODER_FACTORY_H_
+#ifndef CONTENT_PUBLIC_BROWSER_OOP_VIDEO_DECODER_FACTORY_H_
+#define CONTENT_PUBLIC_BROWSER_OOP_VIDEO_DECODER_FACTORY_H_
 
 #include "content/common/content_export.h"
 #include "media/mojo/mojom/interface_factory.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-
-// TODO(crbug.com/347331029): rename this file to oop_video_decoder_factory.h.
 
 namespace content {
 
@@ -20,4 +18,4 @@ CONTENT_EXPORT void LaunchOOPVideoDecoderFactory(
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_STABLE_VIDEO_DECODER_FACTORY_H_
+#endif  // CONTENT_PUBLIC_BROWSER_OOP_VIDEO_DECODER_FACTORY_H_

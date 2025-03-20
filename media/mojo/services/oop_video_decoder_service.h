@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_MOJO_SERVICES_STABLE_VIDEO_DECODER_SERVICE_H_
-#define MEDIA_MOJO_SERVICES_STABLE_VIDEO_DECODER_SERVICE_H_
+#ifndef MEDIA_MOJO_SERVICES_OOP_VIDEO_DECODER_SERVICE_H_
+#define MEDIA_MOJO_SERVICES_OOP_VIDEO_DECODER_SERVICE_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
@@ -19,8 +19,6 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-
-// TODO(crbug.com/347331029): rename this file to oop_video_decoder_service.h.
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/components/cdm_factory_daemon/remote_cdm_context.h"
@@ -171,4 +169,4 @@ class MEDIA_MOJO_EXPORT OOPVideoDecoderService
 
 }  // namespace media
 
-#endif  // MEDIA_MOJO_SERVICES_STABLE_VIDEO_DECODER_SERVICE_H_
+#endif  // MEDIA_MOJO_SERVICES_OOP_VIDEO_DECODER_SERVICE_H_

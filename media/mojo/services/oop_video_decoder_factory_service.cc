@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/mojo/services/stable_video_decoder_factory_service.h"
+#include "media/mojo/services/oop_video_decoder_factory_service.h"
 
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -20,7 +20,7 @@
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
 #include "media/mojo/services/mojo_media_client.h"
 #include "media/mojo/services/mojo_video_decoder_service.h"
-#include "media/mojo/services/stable_video_decoder_service.h"
+#include "media/mojo/services/oop_video_decoder_service.h"
 #include "media/video/video_decode_accelerator.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_MOJO_SERVICES_STABLE_VIDEO_DECODER_FACTORY_SERVICE_H_
-#define MEDIA_MOJO_SERVICES_STABLE_VIDEO_DECODER_FACTORY_SERVICE_H_
+#ifndef MEDIA_MOJO_SERVICES_OOP_VIDEO_DECODER_FACTORY_SERVICE_H_
+#define MEDIA_MOJO_SERVICES_OOP_VIDEO_DECODER_FACTORY_SERVICE_H_
 
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
@@ -15,9 +15,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
-
-// TODO(crbug.com/347331029): rename this file to
-// oop_video_decoder_factory_service.h.
 
 namespace media {
 namespace mojom {
@@ -99,4 +96,4 @@ class MEDIA_MOJO_EXPORT OOPVideoDecoderFactoryService
 
 }  // namespace media
 
-#endif  // MEDIA_MOJO_SERVICES_STABLE_VIDEO_DECODER_FACTORY_SERVICE_H_
+#endif  // MEDIA_MOJO_SERVICES_OOP_VIDEO_DECODER_FACTORY_SERVICE_H_

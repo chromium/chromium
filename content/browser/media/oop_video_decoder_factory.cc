@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/browser/stable_video_decoder_factory.h"
+#include "content/public/browser/oop_video_decoder_factory.h"
 
 #include "base/containers/queue.h"
 #include "components/viz/common/switches.h"
@@ -16,8 +16,6 @@
 #include "media/mojo/mojom/video_decoder.mojom.h"
 #include "media/mojo/mojom/video_decoder_factory_process.mojom.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-
-// TODO(crbug.com/347331029): rename this file to oop_video_decoder_factory.cc.
 
 namespace content {
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/mojo/services/stable_video_decoder_service.h"
+#include "media/mojo/services/oop_video_decoder_service.h"
 
 #include "base/notreached.h"
 #include "media/gpu/chromeos/frame_registry.h"
@@ -39,11 +39,11 @@ OOPVideoDecoderService::OOPVideoDecoderService(
 OOPVideoDecoderService::~OOPVideoDecoderService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (cdm_id_) {
     cdm_service_context_->UnregisterRemoteCdmContext(cdm_id_.value());
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void OOPVideoDecoderService::GetSupportedConfigs(

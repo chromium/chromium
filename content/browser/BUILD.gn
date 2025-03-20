@@ -2594,7 +2594,7 @@ source_set("browser") {
   }
 
   if (allow_oop_video_decoder) {
-    sources += [ "media/stable_video_decoder_factory.cc" ]
+    sources += [ "media/oop_video_decoder_factory.cc" ]
     deps += [ "//media/mojo/mojom" ]
   }
 
