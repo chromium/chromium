@@ -6250,6 +6250,8 @@ static_library("browser") {
       "win/jumplist_update_util.h",
       "win/jumplist_updater.cc",
       "win/jumplist_updater.h",
+      "win/limited_access_features.cc",
+      "win/limited_access_features.h",
       "win/parental_controls.cc",
       "win/parental_controls.h",
       "win/remove_app_compat_entries.cc",

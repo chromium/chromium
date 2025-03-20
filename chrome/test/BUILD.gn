@@ -7028,6 +7028,7 @@ test("unit_tests") {
       "../browser/win/chrome_elf_init_unittest.cc",
       "../browser/win/jumplist_file_util_unittest.cc",
       "../browser/win/jumplist_update_util_unittest.cc",
+      "../browser/win/limited_access_features_unittest.cc",
       "../browser/win/remove_app_compat_entries_unittest.cc",
       "../browser/win/uninstallation_via_os_settings_unittest.cc",
       "../common/chrome_constants_win_unittest.cc",
