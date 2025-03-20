@@ -6,21 +6,13 @@
 #define CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_NOTICE_FRAMEWORK_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_notice.mojom.h"
 #include "components/privacy_sandbox/privacy_sandbox_notice_storage.h"
 
 namespace privacy_sandbox {
-
-// TODO(crbug.com/392612108): These enum values will replace the
-// privacy_sandbox_notice_constants.h file in the future. Move these to the
-// Catalog once it's created.
-enum class PrivacySandboxNotice {
-  kTopicsConsentNotice,
-  kProtectedAudienceMeasurementNotice,
-  kThreeAdsAPIsNotice,
-  kMeasurementNotice,
-};
 
 // This class will:
 // 1. Communicate with the Notice Storage Service
@@ -33,9 +25,10 @@ class PrivacySandboxNoticeFramework : public KeyedService {
   explicit PrivacySandboxNoticeFramework(Profile* profile);
   ~PrivacySandboxNoticeFramework() override;
 
-  std::vector<PrivacySandboxNotice> GetRequiredNotices();
+  std::vector<notice::mojom::PrivacySandboxNotice> GetRequiredNotices(
+      SurfaceType surface);
 
-  void EventOccurred(PrivacySandboxNotice notice, NoticeEvent event);
+  void EventOccurred(NoticeId notice, NoticeEvent event);
 
   // Service Accessors.
   PrivacySandboxNoticeStorage* GetNoticeStorage();
@@ -46,8 +39,8 @@ class PrivacySandboxNoticeFramework : public KeyedService {
 
  private:
   // TODO(crbug.com/392612108): Create eligibility and notice result callbacks.
-  // TODO(crbug.com/392612108): Keep track of an internal registry.
   raw_ptr<Profile> profile_;
+  std::unique_ptr<NoticeCatalog> catalog_;
   std::unique_ptr<PrivacySandboxNoticeStorage> notice_storage_;
 };
 
