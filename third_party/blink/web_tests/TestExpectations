@@ -9098,3 +9098,8 @@ crbug.com/404571518 [ Win11 ] external/wpt/mediacapture-record/MediaRecorder-can
 crbug.com/404571518 [ Win11 ] external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html?mimeType=video/mp4;codecs=avc3.64003E,mp4a.40.2 [ Failure ]
 crbug.com/404571518 [ Win11 ] external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html?mimeType=video/webm;codecs=vp9,opus [ Failure ]
 crbug.com/404571518 [ Win11 ] virtual/gpu/external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html?mimeType=video/mp4;codecs=avc3.64003E,mp4a.40.2 [ Failure ]
+
+# Gardener 2025-03-20
+crbug.com/404571518 [ Win11-arm64 ] external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html?mimeType=video/mp4;codecs=av01,mp4a.40.2 [ Failure ]
+crbug.com/404571518 [ Win11-arm64 ] external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html?mimeType=video/mp4;codecs=avc3.64003E,mp4a.40.2 [ Failure ]
+crbug.com/404571518 [ Win11-arm64 ] virtual/gpu/external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html?mimeType=video/mp4;codecs=avc3.64003E,mp4a.40.2 [ Failure ]
