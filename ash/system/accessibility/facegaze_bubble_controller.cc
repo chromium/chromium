@@ -16,8 +16,9 @@
 namespace ash {
 
 namespace {
-constexpr base::TimeDelta kShowTimeout = base::Seconds(1);
+constexpr int kBubbleViewOutsets = 25;
 constexpr int kMarginFromTopDip = 8;
+constexpr base::TimeDelta kShowTimeout = base::Seconds(1);
 }  // namespace
 
 FaceGazeBubbleController::FaceGazeBubbleController(
@@ -107,8 +108,13 @@ void FaceGazeBubbleController::OnCloseButtonClicked(const ui::Event& event) {
 void FaceGazeBubbleController::OnShowTimer() {
   gfx::Point cursor_location =
       display::Screen::GetScreen()->GetCursorScreenPoint();
-  gfx::Rect bubble_bounds = facegaze_bubble_view_->GetBoundsInScreen();
-  if (bubble_bounds.Contains(cursor_location)) {
+  // Expand the FaceGazeBubbleView bounds by 25 pixels in each direction.
+  // This provides a cushion so that we don't show the UI when the user is
+  // trying to click on an element that is a few pixels outside of the original
+  // bounds.
+  gfx::Rect scaled_bounds = facegaze_bubble_view_->GetBoundsInScreen();
+  scaled_bounds.Outset(kBubbleViewOutsets);
+  if (scaled_bounds.Contains(cursor_location)) {
     // Though we hide FaceGazeBubble view only if the main content is hovered,
     // we continue to hide it if the mouse is contained by the entire bounds of
     // the view. This is to allow users to click on elements occluded by
