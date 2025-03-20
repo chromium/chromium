@@ -1839,6 +1839,18 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//chrome/common/read_anything/read_anything_util.cc:ReadAnythingFont) -->
 
+<!-- LINT.IfChange(ReadAnythingHeuristics) -->
+
+<enum name="ReadAnythingHeuristics">
+  <int value="0" label="None"/>
+  <int value="1" label="NodeNotFound"/>
+  <int value="2" label="InvisibleOrIgnored"/>
+  <int value="3" label="NotExpanded"/>
+  <int value="4" label="NoDeepsetLastDecendent"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/renderer/accessibility/read_anything/read_anything_app_model.cc:ReadAnythingHeuristics) -->
+
 <!-- LINT.IfChange(ReadAnythingHighlightState) -->
 
 <enum name="ReadAnythingHighlightState">

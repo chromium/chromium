@@ -60,6 +60,24 @@ bool GetIsGoogleDocs(const GURL& url) {
   return false;
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(ReadAnythingHeuristics)
+enum class ReadAnythingHeuristics {
+  kNone = 0,
+  kNodeNotFound = 1,
+  kInvisibleOrIgnored = 2,
+  kNotExpanded = 3,
+  kNoDeepsetLastDecendent = 4,
+  kMaxValue = kNoDeepsetLastDecendent
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingHeuristics)
+
+void RecordHeuristicMetric(ReadAnythingHeuristics heuristic) {
+  base::UmaHistogramEnumeration("Accessibility.ReadAnything.Heuristics",
+                                heuristic);
+}
+
 }  // namespace
 
 ReadAnythingAppModel::ReadAnythingAppModel() {
@@ -340,7 +358,13 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
     // TODO(abigailbklein) This prevents the crash in crbug.com/1402788, but may
     // not be the correct approach. Do we need a version of
     // GetDeepestLastUnignoredDescendant() that works on ignored nodes?
-    if (!content_node || content_node->IsInvisibleOrIgnored()) {
+    if (!content_node) {
+      RecordHeuristicMetric(ReadAnythingHeuristics::kNodeNotFound);
+      continue;
+    }
+
+    if (content_node->IsInvisibleOrIgnored()) {
+      RecordHeuristicMetric(ReadAnythingHeuristics::kInvisibleOrIgnored);
       continue;
     }
 
@@ -352,6 +376,7 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
       // attribute directly for that reason.
       if (!content_node->HasState(ax::mojom::State::kExpanded)) {
         // Don't include collapsed aria-expanded items.
+        RecordHeuristicMetric(ReadAnythingHeuristics::kNotExpanded);
         continue;
       }
     }
@@ -382,12 +407,15 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
     ui::AXNode* deepest_last_descendant =
         content_node->GetDeepestLastUnignoredDescendant();
     if (!deepest_last_descendant) {
+      RecordHeuristicMetric(ReadAnythingHeuristics::kNoDeepsetLastDecendent);
       continue;
     }
     while (next_node != deepest_last_descendant) {
       next_node = next_node->GetNextUnignoredInTreeOrder();
       InsertIdIfNotIgnored(next_node->id(), display_node_ids_);
     }
+
+    RecordHeuristicMetric(ReadAnythingHeuristics::kNone);
   }
 }
 
