@@ -500,7 +500,7 @@ void HomeButton::OnShelfConfigUpdated() {
   button_image_view_->UpdateForShelfConfigChange();
 }
 
-void HomeButton::OnAssistantAvailabilityChanged() {
+void HomeButton::OnIconUpdated() {
   // `button_image_view_` may not be set during `HomeButton` construction -
   // `button_image_view_` is created after `controller_`, which can end up
   // calling this method in response to registering assistant state observer.

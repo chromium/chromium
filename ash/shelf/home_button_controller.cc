@@ -163,11 +163,11 @@ void HomeButtonController::OnDisplayTabletStateChanged(
 
 void HomeButtonController::OnAssistantFeatureAllowedChanged(
     assistant::AssistantAllowedState state) {
-  button_->OnAssistantAvailabilityChanged();
+  button_->OnIconUpdated();
 }
 
 void HomeButtonController::OnAssistantSettingsEnabled(bool enabled) {
-  button_->OnAssistantAvailabilityChanged();
+  button_->OnIconUpdated();
 }
 
 void HomeButtonController::OnUiVisibilityChanged(
@@ -175,12 +175,12 @@ void HomeButtonController::OnUiVisibilityChanged(
     AssistantVisibility old_visibility,
     std::optional<AssistantEntryPoint> entry_point,
     std::optional<AssistantExitPoint> exit_point) {
-  button_->OnAssistantAvailabilityChanged();
+  button_->OnIconUpdated();
 }
 
 void HomeButtonController::OnSunfishScannerFeatureStatesChanged(
     SunfishScannerFeatureWatcher& source) {
-  // TODO: crbug.com/391909810 - Update the button's visibility here.
+  // TODO: crbug.com/391909810 - Update the button's icon here.
 }
 
 void HomeButtonController::StartAssistantAnimation() {
