@@ -8,19 +8,18 @@ import type {ViewerSidePanelElement} from './viewer_side_panel.js';
 
 export function getHtml(this: ViewerSidePanelElement) {
   // clang-format off
-  return html`
+  return html`<!--_html_template_start_-->
     <ink-brush-selector .currentType="${this.currentType}">
     </ink-brush-selector>
     ${this.shouldShowBrushOptions_() ? html`
       <div id="brush-options">
-        <h2>Size</h2>
+        <h2>$i18n{ink2Size}</h2>
         <ink-size-selector .currentSize="${this.currentSize}"
             .currentType="${this.currentType}"></ink-size-selector>
-          <h2>Color</h2>
-          <ink-color-selector .currentColor="${this.currentColor}"
-              .currentType="${this.currentType}">
-          </ink-color-selector>
+        <h2>$i18n{ink2Color}</h2>
+        <ink-color-selector .currentColor="${this.currentColor}"
+            .currentType="${this.currentType}"></ink-color-selector>
       </div>` : ''}
-  `;
+  <!--_html_template_end_-->`;
   // clang-format on
 }
