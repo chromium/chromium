@@ -15,6 +15,10 @@
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "components/signin/public/identity_manager/account_info.h"
 
+namespace optimization_guide {
+class OptimizationGuideDecider;
+}  // namespace optimization_guide
+
 namespace autofill {
 class BankAccount;
 class PaymentsDataManager;
@@ -49,6 +53,12 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
 
   // Returns true if the device is a foldable device.
   virtual bool IsFoldable() = 0;
+
+  // Returns an instance of the OptimizationGuideDecider associated with the
+  // Chrome profile. It is used to determine whether a render frame host URL is
+  // part of a feature allowlist.
+  virtual optimization_guide::OptimizationGuideDecider*
+  GetOptimizationGuideDecider() = 0;
 
   // Shows the user's PIX accounts from their Google Wallet, and prompts to pay.
   // `bank_account_suggestions` is the list of PIX accounts to be shown to the

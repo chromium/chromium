@@ -85,7 +85,7 @@ class PixManagerTest : public testing::Test {
 
     pix_manager_ = std::make_unique<PixManager>(
         client_.get(), /*api_client_creator=*/
-        base::BindOnce(&MockFacilitatedPaymentsApiClient::CreateApiClient),
+        base::BindRepeating(&MockFacilitatedPaymentsApiClient::CreateApiClient),
         optimization_guide_decider_.get());
 
     // Using Autofill preferences since we use autofill's infra for syncing
@@ -131,17 +131,6 @@ class PixManagerTest : public testing::Test {
   syncer::TestSyncService sync_service_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
-
-// Test that the `PIX_PAYMENT_MERCHANT_ALLOWLIST` optimization type is
-// registered when RegisterPixOptimizationGuide is called.
-TEST_F(PixManagerTest, RegisterPixAllowlist) {
-  EXPECT_CALL(*optimization_guide_decider_,
-              RegisterOptimizationTypes(testing::ElementsAre(
-                  optimization_guide::proto::PIX_MERCHANT_ORIGINS_ALLOWLIST)))
-      .Times(1);
-
-  pix_manager_->RegisterPixAllowlist();
-}
 
 // If the facilitated payment API is not available, then the manager does not
 // show the Pix payment prompt.

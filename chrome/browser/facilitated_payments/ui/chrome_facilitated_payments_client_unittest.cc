@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/facilitated_payments/core/features/features.h"
 #include "components/optimization_guide/core/mock_optimization_guide_decider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,23 +47,21 @@ class ChromeFacilitatedPaymentsClientTest
     auto controller =
         std::make_unique<MockFacilitatedPaymentsController>(web_contents());
     controller_ = controller.get();
-    client().SetFacilitatedPaymentsControllerForTesting(std::move(controller));
+    client_->SetFacilitatedPaymentsControllerForTesting(std::move(controller));
   }
 
   void TearDown() override {
-    controller_ = nullptr;
-    client_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
   auto& base_client() {
     return static_cast<payments::facilitated::FacilitatedPaymentsClient&>(
-        client());
+        *client_);
   }
-  ChromeFacilitatedPaymentsClient& client() { return *client_; }
+
   MockFacilitatedPaymentsController& controller() { return *controller_; }
 
- private:
+ protected:
   optimization_guide::MockOptimizationGuideDecider optimization_guide_decider_;
   std::unique_ptr<ChromeFacilitatedPaymentsClient> client_;
   raw_ptr<MockFacilitatedPaymentsController> controller_;
@@ -83,6 +82,69 @@ TEST_F(ChromeFacilitatedPaymentsClientTest,
   EXPECT_CALL(controller(), Show);
 
   base_client().ShowPixPaymentPrompt({}, base::DoNothing());
+}
+
+// Test that the `PIX_PAYMENT_MERCHANT_ALLOWLIST` optimization type is
+// registered when the `ChromeFacilitatedPaymentClient` is created.
+TEST_F(ChromeFacilitatedPaymentsClientTest, RegisterPixAllowlist) {
+  base::test::ScopedFeatureList feature_list(
+      payments::facilitated::kEnablePixPayments);
+  EXPECT_CALL(optimization_guide_decider_,
+              RegisterOptimizationTypes(testing::ElementsAre(
+                  optimization_guide::proto::PIX_MERCHANT_ORIGINS_ALLOWLIST)))
+      .Times(1);
+
+  // Re-create the client; it should register the allowlist.
+  client_ = std::make_unique<ChromeFacilitatedPaymentsClient>(
+      web_contents(), &optimization_guide_decider_);
+}
+
+// Test that the `PIX_PAYMENT_MERCHANT_ALLOWLIST` optimization type is
+// not registered when the `ChromeFacilitatedPaymentClient` is created and the
+// Pix experiment is disabled.
+TEST_F(ChromeFacilitatedPaymentsClientTest, RegisterPixAllowlist_ExpOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(payments::facilitated::kEnablePixPayments);
+  EXPECT_CALL(optimization_guide_decider_,
+              RegisterOptimizationTypes(testing::ElementsAre(
+                  optimization_guide::proto::PIX_MERCHANT_ORIGINS_ALLOWLIST)))
+      .Times(0);
+
+  // Re-create the client; it should not register the allowlist.
+  client_ = std::make_unique<ChromeFacilitatedPaymentsClient>(
+      web_contents(), &optimization_guide_decider_);
+}
+
+// Test that the `EWALLET_MERCHANT_ALLOWLIST` optimization type is
+// registered when the `ChromeFacilitatedPaymentClient` is created.
+TEST_F(ChromeFacilitatedPaymentsClientTest, RegisterEwalletAllowlist) {
+  base::test::ScopedFeatureList feature_list(
+      payments::facilitated::kEwalletPayments);
+  EXPECT_CALL(optimization_guide_decider_,
+              RegisterOptimizationTypes(testing::ElementsAre(
+                  optimization_guide::proto::EWALLET_MERCHANT_ALLOWLIST)))
+      .Times(1);
+
+  // Re-create the client; it should register the allowlist.
+  client_ = std::make_unique<ChromeFacilitatedPaymentsClient>(
+      web_contents(), &optimization_guide_decider_);
+}
+
+// Test that the `EWALLET_MERCHANT_ALLOWLIST` optimization type is
+// registered when when the `ChromeFacilitatedPaymentClient` is created and the
+// eWallet experiment is disabled.
+TEST_F(ChromeFacilitatedPaymentsClientTest, RegisterEwalletAllowlist_ExpOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(payments::facilitated::kEwalletPayments);
+
+  EXPECT_CALL(optimization_guide_decider_,
+              RegisterOptimizationTypes(testing::ElementsAre(
+                  optimization_guide::proto::EWALLET_MERCHANT_ALLOWLIST)))
+      .Times(0);
+
+  // Re-create the client; it should not register the allowlist.
+  client_ = std::make_unique<ChromeFacilitatedPaymentsClient>(
+      web_contents(), &optimization_guide_decider_);
 }
 
 // Test the client forwards call for showing the progress screen to the

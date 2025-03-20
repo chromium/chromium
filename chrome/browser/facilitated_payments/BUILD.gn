@@ -15,6 +15,7 @@ static_library("facilitated_payments") {
   deps = [
     "//chrome/browser/autofill",
     "//chrome/browser/facilitated_payments/ui/android",
+    "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/autofill",
     "//components/autofill/core/browser",
@@ -33,6 +34,7 @@ source_set("unit_tests") {
     ":facilitated_payments",
     "//base",
     "//chrome/test:test_support",
+    "//components/facilitated_payments/core/features",
     "//components/optimization_guide/core:test_support",
   ]
 }

@@ -159,10 +159,6 @@ class PixManager {
   FRIEND_TEST_ALL_PREFIXES(PixManagerTestInLandscapeMode,
                            PixPayflowBlockedWhenFlagDisabled);
 
-  // Register optimization guide deciders for PIX. It is an allowlist of URLs
-  // where we attempt PIX code detection.
-  void RegisterPixAllowlist() const;
-
   // Queries the allowlist for the `url`. The result could be:
   // 1. In the allowlist
   // 2. Not in the allowlist
