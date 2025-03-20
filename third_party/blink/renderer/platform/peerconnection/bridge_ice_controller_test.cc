@@ -31,12 +31,6 @@
 #include "third_party/webrtc_overrides/p2p/base/ice_prune_proposal.h"
 #include "third_party/webrtc_overrides/p2p/base/ice_switch_proposal.h"
 
-namespace cricket {
-// This is an opaque type for the purposes of this test, so a forward
-// declaration suffices
-struct IceConfig;
-}  // namespace cricket
-
 namespace {
 
 using ::blink::BridgeIceController;

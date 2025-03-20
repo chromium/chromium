@@ -159,27 +159,37 @@ TEST_F(WKWebViewConfigurationProviderTest, Observers) {
   auto browser_state = std::make_unique<FakeBrowserState>();
   WKWebViewConfigurationProvider* provider = &GetProvider(browser_state.get());
 
-  // Register a callback to be notified when new configuration object are
-  // created and check that it is not invoked as part of the registration.
-  __block WKWebViewConfiguration* recorded_configuration;
+  // Register a callback to be notified when website data store is
+  // updated and check that it is not invoked as part of the registration.
+  __block WKWebsiteDataStore* recorded_data_store;
   base::CallbackListSubscription subscription =
-      provider->RegisterConfigurationCreatedCallback(
-          base::BindRepeating(^(WKWebViewConfiguration* new_configuration) {
-            recorded_configuration = new_configuration;
+      provider->RegisterWebSiteDataStoreUpdatedCallback(
+          base::BindRepeating(^(WKWebsiteDataStore* new_data_store) {
+            recorded_data_store = new_data_store;
           }));
-  ASSERT_FALSE(recorded_configuration);
+  ASSERT_FALSE(recorded_data_store);
 
   // Check that accessing the WebViewConfiguration for the first time
-  // creates a new configuration object.
+  // creates a new website date store object.
   WKWebViewConfiguration* config = provider->GetWebViewConfiguration();
-  EXPECT_NSEQ(config.preferences, recorded_configuration.preferences);
+  EXPECT_NSEQ(config.websiteDataStore, recorded_data_store);
+  // Check that the website data store getter returns the same object with the
+  // newly updated data store.
+  WKWebsiteDataStore* data_store = provider->GetWebsiteDataStore();
+  EXPECT_NSEQ(data_store, recorded_data_store);
 
   // Check that accessing the WebViewConfiguration again does not create
-  // a new configuration object and thus does not invoked the registered
+  // a new website data store object and thus does not invoked the registered
   // callback.
-  recorded_configuration = nil;
+  recorded_data_store = nil;
   config = provider->GetWebViewConfiguration();
-  EXPECT_FALSE(recorded_configuration);
+  EXPECT_FALSE(recorded_data_store);
+
+  // Check that accessing the WebsiteDataStore again does not create
+  // a new website data store object and thus does not invoked the registered
+  // callback.
+  data_store = provider->GetWebsiteDataStore();
+  EXPECT_FALSE(recorded_data_store);
 }
 
 // Tests that if -[ResetWithWebViewConfiguration:] copies and applies Chrome's
@@ -188,19 +198,12 @@ TEST_F(WKWebViewConfigurationProviderTest, ResetConfiguration) {
   auto browser_state = std::make_unique<FakeBrowserState>();
   WKWebViewConfigurationProvider* provider = &GetProvider(browser_state.get());
 
-  // Register a callback to be notified when new configuration object are
-  // created and check that it is not invoked as part of the registration.
-  __block WKWebViewConfiguration* recorded_configuration;
-  base::CallbackListSubscription subscription =
-      provider->RegisterConfigurationCreatedCallback(
-          base::BindRepeating(^(WKWebViewConfiguration* new_configuration) {
-            recorded_configuration = new_configuration;
-          }));
-  ASSERT_FALSE(recorded_configuration);
-
   WKWebViewConfiguration* config = [[WKWebViewConfiguration alloc] init];
   config.allowsInlineMediaPlayback = NO;
   provider->ResetWithWebViewConfiguration(config);
+
+  WKWebViewConfiguration* recorded_configuration =
+      provider->GetWebViewConfiguration();
   ASSERT_TRUE(recorded_configuration);
 
   // To check the configuration inside is reset.
@@ -391,15 +394,16 @@ TEST_F(WKWebViewConfigurationProviderTest,
   // created and check that it is not invoked as part of the registration.
   __block WKWebsiteDataStore* recorded_data_store;
   base::CallbackListSubscription subscription =
-      provider.RegisterConfigurationCreatedCallback(
-          base::BindRepeating(^(WKWebViewConfiguration* new_configuration) {
-            recorded_data_store = new_configuration.websiteDataStore;
+      provider.RegisterWebSiteDataStoreUpdatedCallback(
+          base::BindRepeating(^(WKWebsiteDataStore* new_data_store) {
+            recorded_data_store = new_data_store;
           }));
   ASSERT_FALSE(recorded_data_store);
 
+  // Check that the data store is not updated when the configuration is reset
+  // for the same `//ios/web` managed browser.
   provider.ResetWithWebViewConfiguration(nil);
-  // Ensure data store is not reset for the same `//ios/web` managed browser.
-  EXPECT_NSEQ(data_store, recorded_data_store);
+  ASSERT_FALSE(recorded_data_store);
 
   WKWebViewConfiguration* config = [[WKWebViewConfiguration alloc] init];
   WKWebsiteDataStore* config_data_store =
@@ -431,18 +435,16 @@ TEST_F(WKWebViewConfigurationProviderTest,
   // created and check that it is not invoked as part of the registration.
   __block WKWebsiteDataStore* recorded_data_store;
   base::CallbackListSubscription subscription =
-      provider.RegisterConfigurationCreatedCallback(
-          base::BindRepeating(^(WKWebViewConfiguration* new_configuration) {
-            recorded_data_store = new_configuration.websiteDataStore;
+      provider.RegisterWebSiteDataStoreUpdatedCallback(
+          base::BindRepeating(^(WKWebsiteDataStore* new_data_store) {
+            recorded_data_store = new_data_store;
           }));
   ASSERT_FALSE(recorded_data_store);
 
-  // The non-persistent data store is not expected to be changed for the same
-  // OffTheRecord browser. Note that
-  // `WKWebsiteDataStore.nonPersistentDataStore` will always return a new
-  // instance.
+  // Check that the data store is not updated when the configuration is reset
+  // for the same `//ios/web` managed OffTheRecord browser.
   provider.ResetWithWebViewConfiguration(nil);
-  EXPECT_NSEQ(data_store, recorded_data_store);
+  ASSERT_FALSE(recorded_data_store);
 
   WKWebViewConfiguration* config = [[WKWebViewConfiguration alloc] init];
   WKWebsiteDataStore* config_data_store =

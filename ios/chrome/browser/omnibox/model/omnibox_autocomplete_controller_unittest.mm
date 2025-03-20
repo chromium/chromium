@@ -20,7 +20,7 @@
 #import "components/omnibox/browser/test_omnibox_client.h"
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #import "components/prefs/testing_pref_service.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_popup_controller.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller_delegate.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/test/testing_application_context.h"
@@ -122,12 +122,13 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
     omnibox_edit_model_ = edit_model.get();
     omnibox_controller_->SetEditModelForTesting(std::move(edit_model));
 
+    controller_delegate_ =
+        OCMProtocolMock(@protocol(OmniboxAutocompleteControllerDelegate));
+
     controller_ = [[OmniboxAutocompleteController alloc]
         initWithOmniboxController:omnibox_controller_.get()
                    omniboxViewIOS:nullptr];
-
-    popup_ = [OCMockObject mockForClass:OmniboxPopupController.class];
-    controller_.omniboxPopupController = popup_;
+    controller_.delegate = controller_delegate_;
   }
 
   ~OmniboxAutocompleteControllerTest() override {
@@ -136,7 +137,7 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
     autocomplete_controller_ = nullptr;
     omnibox_edit_model_ = nullptr;
     omnibox_controller_ = nullptr;
-    popup_ = nil;
+    controller_delegate_ = nil;
     TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
     local_state_.reset();
   }
@@ -165,7 +166,7 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
   raw_ptr<MockOmniboxEditModel> omnibox_edit_model_;
   raw_ptr<FakeClipboardRecentContent> clipboard_;
   std::unique_ptr<OmniboxController> omnibox_controller_;
-  id popup_;
+  id controller_delegate_;
 };
 
 // Custom matcher for AutocompleteMatch
@@ -188,12 +189,13 @@ TEST_F(OmniboxAutocompleteControllerTest, AddFakeMatches) {
 #pragma mark - Request suggestion
 
 // Tests requesting result when there are none still calls
-// updateWithSortedResults.
+// the delegate to update the suggestions groups.
 TEST_F(OmniboxAutocompleteControllerTest, RequestResultEmpty) {
-  OCMExpect(
-      [popup_ updateWithSortedResults:autocomplete_controller_->result()]);
+  OCMExpect([controller_delegate_ omniboxAutocompleteController:[OCMArg any]
+                                     didUpdateSuggestionsGroups:[OCMArg any]]);
   [controller_ requestSuggestionsWithVisibleSuggestionCount:0];
-  EXPECT_OCMOCK_VERIFY(popup_);
+
+  EXPECT_OCMOCK_VERIFY(controller_delegate_);
 }
 
 // Tests requesting result with all of them visible.
@@ -205,13 +207,13 @@ TEST_F(OmniboxAutocompleteControllerTest, RequestResultsAllVisible) {
               GroupSuggestionsBySearchVsURL(
                   1, autocomplete_controller_->result().size()));
 
-  OCMExpect(
-      [popup_ updateWithSortedResults:autocomplete_controller_->result()]);
+  OCMExpect([controller_delegate_ omniboxAutocompleteController:[OCMArg any]
+                                     didUpdateSuggestionsGroups:[OCMArg any]]);
 
   // Request results with everything visible.
   [controller_ requestSuggestionsWithVisibleSuggestionCount:0];
 
-  EXPECT_OCMOCK_VERIFY(popup_);
+  EXPECT_OCMOCK_VERIFY(controller_delegate_);
 }
 
 // Tests requesting result with more suggestions visible than available.
@@ -223,13 +225,13 @@ TEST_F(OmniboxAutocompleteControllerTest, RequestResultVisibleOverflow) {
               GroupSuggestionsBySearchVsURL(
                   1, autocomplete_controller_->result().size()));
 
-  OCMExpect(
-      [popup_ updateWithSortedResults:autocomplete_controller_->result()]);
+  OCMExpect([controller_delegate_ omniboxAutocompleteController:[OCMArg any]
+                                     didUpdateSuggestionsGroups:[OCMArg any]]);
 
   // Request results with more visible than available.
   [controller_ requestSuggestionsWithVisibleSuggestionCount:100];
 
-  EXPECT_OCMOCK_VERIFY(popup_);
+  EXPECT_OCMOCK_VERIFY(controller_delegate_);
 }
 
 // Tests requesting result with part of them visible.
@@ -248,13 +250,13 @@ TEST_F(OmniboxAutocompleteControllerTest, RequestResultPartVisible) {
   EXPECT_CALL(*autocomplete_controller_,
               GroupSuggestionsBySearchVsURL(visible_count, result_size));
 
-  OCMExpect(
-      [popup_ updateWithSortedResults:autocomplete_controller_->result()]);
+  OCMExpect([controller_delegate_ omniboxAutocompleteController:[OCMArg any]
+                                     didUpdateSuggestionsGroups:[OCMArg any]]);
 
   // Request results with everything visible.
   [controller_ requestSuggestionsWithVisibleSuggestionCount:visible_count];
 
-  EXPECT_OCMOCK_VERIFY(popup_);
+  EXPECT_OCMOCK_VERIFY(controller_delegate_);
 }
 
 #pragma mark - Logging

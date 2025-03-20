@@ -90,6 +90,7 @@ MultivariantPlaylist::Parse(std::string_view source,
   std::vector<VariantStream> variants;
   base::flat_map<std::string_view, scoped_refptr<RenditionGroup>>
       audio_rendition_groups;
+  uint64_t rendition_unique_id = 0;
 
   // Get variants out of the playlist
   while (true) {
@@ -166,9 +167,9 @@ MultivariantPlaylist::Parse(std::string_view source,
             case MediaType::kAudio: {
               auto* group = GetOrCreateRenditionGroup(
                   {}, audio_rendition_groups, media_tag.group_id.Str());
-              auto rendition_result =
-                  group->AddRendition(base::PassKey<MultivariantPlaylist>(),
-                                      std::move(media_tag), uri);
+              auto rendition_result = group->AddRendition(
+                  base::PassKey<MultivariantPlaylist>(), std::move(media_tag),
+                  uri, ++rendition_unique_id);
               if (!rendition_result.has_value()) {
                 return std::move(rendition_result).error();
               }

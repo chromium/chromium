@@ -6,9 +6,11 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/bookmarks/browser/bookmark_model.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/autocomplete_match_classification.h"
 #import "components/omnibox/browser/autocomplete_result.h"
+#import "components/omnibox/browser/omnibox_client.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion.h"
@@ -32,21 +34,23 @@
   PedalSectionExtractor* _pedalSectionExtractor;
   /// List of suggestions without the pedal group. Used to debounce pedals.
   NSArray<id<AutocompleteSuggestionGroup>>* _nonPedalSuggestionsGroups;
+  /// The omnibox client.
+  base::WeakPtr<OmniboxClient> _omniboxClient;
 }
 
-- (instancetype)init {
+- (instancetype)initWithOmniboxClient:(OmniboxClient*)omniboxClient {
   self = [super init];
-
   if (self) {
+    _omniboxClient = omniboxClient->AsWeakPtr();
     _pedalSectionExtractor = [[PedalSectionExtractor alloc] init];
     _pedalSectionExtractor.delegate = self;
   }
-
   return self;
 }
 
 - (void)disconnect {
   _searchEngineObserver.reset();
+  _omniboxClient = nullptr;
 }
 
 - (NSArray<id<AutocompleteSuggestionGroup>>*)wrapAutocompleteResultInGroups:
@@ -113,7 +117,7 @@
                               fromResult:(const AutocompleteResult&)result {
   AutocompleteMatchFormatter* formatter =
       [AutocompleteMatchFormatter formatterWithMatch:match];
-  formatter.starred = [self.delegate isStarredMatch:match];
+  formatter.starred = [self isStarredMatch:match];
   formatter.incognito = self.isIncognito;
   formatter.defaultSearchEngineIsGoogle = _defaultSearchEngineIsGoogle;
   formatter.pedalData = [self.pedalAnnotator pedalForMatch:match];
@@ -266,6 +270,16 @@
   startNewGroup();
 
   return groups;
+}
+
+/// Whether `match` is a starred/bookmarked match.
+- (BOOL)isStarredMatch:(const AutocompleteMatch&)match {
+  if (_omniboxClient) {
+    auto* bookmark_model = _omniboxClient->GetBookmarkModel();
+    return bookmark_model &&
+           bookmark_model->IsBookmarked(match.destination_url);
+  }
+  return NO;
 }
 
 @end

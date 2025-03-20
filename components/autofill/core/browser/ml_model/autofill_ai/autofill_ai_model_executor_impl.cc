@@ -60,7 +60,8 @@ void AutofillAiModelExecutorImpl::GetPredictions(FormData form_data) {
     page_context->set_url(form_data.main_frame_origin().Serialize());
   }
 
-  *request.mutable_form_data() = ToFormDataProto(form_data);
+  *request.mutable_form_data() =
+      ToFormDataProto(form_data, FormDataProtoConversionReason::kModelRequest);
 
   optimization_guide::ModelExecutionCallbackWithLogging<
       optimization_guide::proto::FormsClassificationsLoggingData>

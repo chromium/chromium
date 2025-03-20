@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/resources_integrity.h"
 
 #include <algorithm>
@@ -21,7 +16,8 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
-#include "crypto/secure_hash.h"
+#include "crypto/hash.h"
+#include "crypto/secure_util.h"
 #include "ui/base/buildflags.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -36,7 +32,7 @@ namespace {
 
 bool CheckResourceIntegrityInternal(
     const base::FilePath& path,
-    base::span<const uint8_t, crypto::kSHA256Length> expected_signature) {
+    base::span<const uint8_t, crypto::hash::kSha256Size> expected_signature) {
   // Open the file for reading; allowing other consumers to also open it for
   // reading and deleting. Do not allow others to write to it.
   base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
@@ -45,7 +41,7 @@ bool CheckResourceIntegrityInternal(
   if (!file.IsValid())
     return false;
 
-  auto hash = crypto::SecureHash::Create(crypto::SecureHash::SHA256);
+  crypto::hash::Hasher hasher(crypto::hash::HashKind::kSha256);
   std::vector<uint8_t> buffer(base::GetPageSize());
 
   std::optional<size_t> bytes_read = 0;
@@ -54,13 +50,13 @@ bool CheckResourceIntegrityInternal(
     if (!bytes_read.has_value()) {
       return false;
     }
-    hash->Update(buffer.data(), *bytes_read);
+    hasher.Update(base::span(buffer).first(*bytes_read));
   } while (bytes_read.value_or(0) > 0);
 
-  std::array<uint8_t, crypto::kSHA256Length> digest;
-  hash->Finish(digest);
+  std::array<uint8_t, crypto::hash::kSha256Size> digest;
+  hasher.Finish(digest);
 
-  return std::ranges::equal(digest, expected_signature);
+  return crypto::SecureMemEqual(digest, expected_signature);
 }
 
 void ReportPakIntegrity(const std::string& histogram_name, bool hash_matches) {
@@ -103,12 +99,17 @@ void CheckPakFileIntegrity() {
   get_pak_file_hashes(&resources_hash_raw, &chrome_100_hash_raw,
                       &chrome_200_hash_raw);
 
-  base::span resources_hash(resources_hash_raw,
-                            base::fixed_extent<crypto::kSHA256Length>());
-  base::span chrome_100_hash(chrome_100_hash_raw,
-                             base::fixed_extent<crypto::kSHA256Length>());
-  base::span chrome_200_hash(chrome_200_hash_raw,
-                             base::fixed_extent<crypto::kSHA256Length>());
+  UNSAFE_BUFFERS(
+      // SAFETY: these are compile-time constant data exposed via a C ABI
+      // function, which means they can't be directly returned as spans or
+      // std::arrays.
+      base::span resources_hash(
+          resources_hash_raw, base::fixed_extent<crypto::hash::kSha256Size>());
+      base::span chrome_100_hash(
+          chrome_100_hash_raw, base::fixed_extent<crypto::hash::kSha256Size>());
+      base::span chrome_200_hash(
+          chrome_200_hash_raw,
+          base::fixed_extent<crypto::hash::kSha256Size>());)
 #else
   base::span resources_hash = kSha256_resources_pak;
   base::span chrome_100_hash = kSha256_chrome_100_percent_pak;

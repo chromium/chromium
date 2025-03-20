@@ -16,10 +16,6 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/webrtc/p2p/base/p2p_transport_channel.h"
 
-namespace rtc {
-class Thread;
-}
-
 namespace blink {
 
 class IceTransportHost;

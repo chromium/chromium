@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -336,6 +337,9 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
   // we have enough row views.
   const size_t result_size = autocomplete_controller->result().size();
   std::u16string previous_row_header = u"";
+  const bool force_hide_row_header =
+      OmniboxFieldTrial::IsHideSuggestionGroupHeadersEnabledInContext(
+          model()->GetPageClassification());
   for (size_t i = 0; i < result_size; ++i) {
     // Create child views lazily.  Since especially the first result view may
     // be expensive to create due to loading font data, this saves time and
@@ -350,7 +354,7 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
 
     const AutocompleteMatch& match = GetMatchAtIndex(i);
     std::u16string current_row_header =
-        match.suggestion_group_id.has_value()
+        match.suggestion_group_id.has_value() && !force_hide_row_header
             ? autocomplete_controller->result().GetHeaderForSuggestionGroup(
                   match.suggestion_group_id.value())
             : u"";
@@ -371,7 +375,11 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
     OmniboxResultView* const result_view = row_view->result_view();
     result_view->SetMatch(match);
     // Set visibility of the result view based on whether the group is hidden.
-    result_view->SetVisible(!group_hidden && !row_hidden);
+    // If the row header has been force-hidden (e.g. via an experiment), then
+    // the result view should always be shown (as the user has no way to
+    // toggle group visibility in this case).
+    result_view->SetVisible((!group_hidden && !row_hidden) ||
+                            force_hide_row_header);
     result_view->UpdateAccessibilityProperties();
 
     const SkBitmap* bitmap = model()->GetPopupRichSuggestionBitmap(i);

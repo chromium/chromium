@@ -12,6 +12,7 @@
 #include <string_view>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
@@ -741,34 +742,43 @@ void ScannerController::OnActionFinished(
       /*by_user=*/false);
 
   if (success) {
-    ToastData toast_data(kScannerActionSuccessToastId,
-                         ToastCatalogName::kScannerActionSuccess,
-                         GetToastMessageForActionSuccess(action_case));
+    if (features::IsScannerFeedbackToastEnabled()) {
+      ToastData toast_data(kScannerActionSuccessToastId,
+                           ToastCatalogName::kScannerActionSuccess,
+                           GetToastMessageForActionSuccess(action_case));
 
-    // TODO: b/367882164 - Pass in the account ID to this method to ensure that
-    // the feedback form is shown for the same account that performed the
-    // action.
-    const AccountId& account_id = session_controller_->GetActiveAccountId();
-    PrefService* prefs =
-        session_controller_->GetUserPrefServiceForUser(account_id);
+      // TODO: crbug.com/367882164 - Pass in the account ID to this method to
+      // ensure that the feedback form is shown for the same account that
+      // performed the action.
+      const AccountId& account_id = session_controller_->GetActiveAccountId();
+      PrefService* prefs =
+          session_controller_->GetUserPrefServiceForUser(account_id);
 
-    if (prefs &&
-        prefs->GetInteger(prefs::kScannerEnterprisePolicyAllowed) ==
-            static_cast<int>(
-                ScannerEnterprisePolicy::kAllowedWithModelImprovement)) {
-      toast_data.button_type = ToastData::ButtonType::kIconButton;
-      toast_data.button_text = l10n_util::GetStringUTF16(
-          IDS_ASH_SCANNER_ACTION_TOAST_FEEDBACK_ICON_ACCESSIBLE_NAME);
-      toast_data.button_icon = &kFeedbackIcon;
-      // TODO: b/259100049 - Change this to be `BindOnce` once
-      // `ToastData::button_callback` is migrated to be a `OnceClosure`.
-      toast_data.button_callback = base::BindRepeating(
-          &ScannerController::OpenFeedbackDialog,
-          weak_ptr_factory_.GetWeakPtr(), account_id,
-          std::move(populated_action), std::move(downscaled_jpeg_bytes));
+      if (prefs &&
+          prefs->GetInteger(prefs::kScannerEnterprisePolicyAllowed) ==
+              static_cast<int>(
+                  ScannerEnterprisePolicy::kAllowedWithModelImprovement)) {
+        toast_data.button_type = ToastData::ButtonType::kIconButton;
+        toast_data.button_text = l10n_util::GetStringUTF16(
+            IDS_ASH_SCANNER_ACTION_TOAST_FEEDBACK_ICON_ACCESSIBLE_NAME);
+        toast_data.button_icon = &kFeedbackIcon;
+        // TODO: crbug.com/259100049 - Change this to be `BindOnce` once
+        // `ToastData::button_callback` is migrated to be a `OnceClosure`.
+        toast_data.button_callback = base::BindRepeating(
+            &ScannerController::OpenFeedbackDialog,
+            weak_ptr_factory_.GetWeakPtr(), account_id,
+            std::move(populated_action), std::move(downscaled_jpeg_bytes));
+      }
+
+      ToastManager::Get()->Show(std::move(toast_data));
+    } else if (action_case == manta::proto::ScannerAction::kCopyToClipboard) {
+      // If feedback is disabled, only show a success toast for the copy to
+      // clipboard action.
+      ToastData toast_data(kScannerActionSuccessToastId,
+                           ToastCatalogName::kScannerActionSuccess,
+                           GetToastMessageForActionSuccess(action_case));
+      ToastManager::Get()->Show(std::move(toast_data));
     }
-
-    ToastManager::Get()->Show(std::move(toast_data));
   } else {
     ToastManager::Get()->Show(ToastData(
         kScannerActionFailureToastId, ToastCatalogName::kScannerActionFailure,

@@ -191,8 +191,9 @@ void WebrtcConnectionToClient::OnSessionStateChange(Session::State state) {
     case Session::FAILED:
       control_dispatcher_.reset();
       event_dispatcher_.reset();
-      transport_->Close(state == Session::CLOSED ? ErrorCode::OK
-                                                 : session_->error());
+      transport_->Close(
+          state == Session::CLOSED ? ErrorCode::OK : session_->error(),
+          /* error_details= */ {}, FROM_HERE);
       transport_.reset();
       event_handler_->OnConnectionClosed(
           state == Session::CLOSED ? ErrorCode::OK : session_->error());
@@ -227,10 +228,12 @@ void WebrtcConnectionToClient::OnWebrtcTransportConnected() {
   }
 }
 
-void WebrtcConnectionToClient::OnWebrtcTransportError(ErrorCode error) {
+void WebrtcConnectionToClient::OnWebrtcTransportError(
+    ErrorCode error,
+    std::string_view error_details,
+    const base::Location& error_location) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  // TODO: crbug.com/382334458 - Pass WebRTC error details to Close().
-  Disconnect(error, /* error_details= */ {}, FROM_HERE);
+  Disconnect(error, error_details, error_location);
 }
 
 void WebrtcConnectionToClient::OnWebrtcTransportProtocolChanged() {

@@ -41,9 +41,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryChromeOS final
       const VideoCaptureDeviceDescriptor& device_descriptor) final;
   void GetDevicesInfo(GetDevicesInfoCallback callback) override;
 
-  static gpu::GpuMemoryBufferManager* GetBufferManager();
-  static void SetGpuBufferManager(gpu::GpuMemoryBufferManager* buffer_manager);
-
   static void SetGpuChannelHost(
       scoped_refptr<gpu::GpuChannelHost> gpu_channel_host);
   static scoped_refptr<gpu::GpuChannelHost> GetGpuChannelHost();

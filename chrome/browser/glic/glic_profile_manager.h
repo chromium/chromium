@@ -44,6 +44,10 @@ class GlicProfileManager {
   // Called by GlicKeyedService.
   void OnServiceShutdown(GlicKeyedService* glic);
 
+  // Called by GlicWindowController and the GlicFreController when their
+  // respective web clients will be created.
+  void OnLoadingClientForService(GlicKeyedService* glic);
+
   // True if the given profile should be considered for preloading.
   bool ShouldPreloadForProfile(Profile* profile) const;
 
@@ -74,6 +78,7 @@ class GlicProfileManager {
 
   base::ObserverList<Observer> observers_;
   base::WeakPtr<GlicKeyedService> last_active_glic_;
+  base::WeakPtr<GlicKeyedService> last_loaded_glic_;
   bool did_auto_open_ = false;
   base::WeakPtrFactory<GlicProfileManager> weak_ptr_factory_{this};
 };

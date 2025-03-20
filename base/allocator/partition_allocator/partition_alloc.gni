@@ -89,8 +89,8 @@ if (is_nacl) {
 # TODO(crbug.com/329199197): Clean this up when experiments are complete.
 use_large_empty_slot_span_ring = true
 
-has_memory_tagging =
-    current_cpu == "arm64" && is_clang && !is_asan && (is_linux || is_android)
+has_memory_tagging = current_cpu == "arm64" && is_clang && !is_asan &&
+                     !is_hwasan && (is_linux || is_android)
 
 declare_args() {
   # Debug configuration.

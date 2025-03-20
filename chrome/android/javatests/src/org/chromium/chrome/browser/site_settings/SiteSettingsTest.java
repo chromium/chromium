@@ -977,6 +977,11 @@ public class SiteSettingsTest {
                 "\"Foo=Bar; Foo=Bar\"",
                 mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
 
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Privacy.DeleteBrowsingData.Action",
+                        DeleteBrowsingDataAction.RWS_DELETE_ALL_DATA);
+
         resetRwsGroupOnSingleWebsiteSettings(rwsOwner);
 
         // Load the page again and ensure the cookie is gone.
@@ -984,6 +989,7 @@ public class SiteSettingsTest {
         Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
         mPermissionRule.loadUrl(url2);
         Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        histogramExpectation.assertExpected();
     }
 
     /** Tests clearing cookies for the RWS group from GroupedWebsiteSettings. */
@@ -1024,6 +1030,11 @@ public class SiteSettingsTest {
         Assert.assertEquals(
                 "\"Foo=Bar\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
 
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Privacy.DeleteBrowsingData.Action",
+                        DeleteBrowsingDataAction.RWS_DELETE_ALL_DATA);
+
         resetRwsGroupOnGroupedWebsiteSettings(rwsGroup);
 
         // 1 and 2 got cleared; 3 stays intact.
@@ -1034,6 +1045,7 @@ public class SiteSettingsTest {
         mPermissionRule.loadUrl(url3);
         Assert.assertEquals(
                 "\"Foo=Bar\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        histogramExpectation.assertExpected();
     }
 
     /**

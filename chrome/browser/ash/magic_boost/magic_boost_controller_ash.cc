@@ -91,7 +91,6 @@ void MagicBoostControllerAsh::OnDisclaimerAcceptButtonPressed(
   }
   magic_boost_state->AsyncWriteConsentStatus(
       chromeos::HMRConsentStatus::kApproved);
-  magic_boost_state->AsyncWriteHMREnabled(/*enabled=*/true);
 
   switch (action) {
     case TransitionAction::kDoNothing:

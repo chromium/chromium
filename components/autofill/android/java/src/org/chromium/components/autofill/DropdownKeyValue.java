@@ -6,23 +6,32 @@ package org.chromium.components.autofill;
 
 import android.util.Pair;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
+
 /** A convenience class for displaying keyed values in a dropdown. */
+@JNINamespace("autofill")
 public class DropdownKeyValue extends Pair<String, String> {
-    public DropdownKeyValue(String key, String value) {
+    @CalledByNative
+    public DropdownKeyValue(
+            @JniType("std::string") String key, @JniType("std::u16string") String value) {
         super(key, value);
     }
 
     /**
      * @return The key identifier.
      */
-    public String getKey() {
+    @CalledByNative
+    public @JniType("std::string") String getKey() {
         return super.first;
     }
 
     /**
      * @return The human-readable localized display value.
      */
-    public String getValue() {
+    @CalledByNative
+    public @JniType("std::u16string") String getValue() {
         return super.second;
     }
 

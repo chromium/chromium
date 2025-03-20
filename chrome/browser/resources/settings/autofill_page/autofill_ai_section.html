@@ -14,7 +14,6 @@
   }
 </style>
 <div id="topSection">
-   <!-- 'label=" "'' is intentional here to avoid dropping the sub-label. -->
    <!-- If the user is not eligible for Autofill with Ai, the toggle is disabled
         and turned off regardless of the pref value.
         If the user is eligible for Autofill with Ai, the toggle is enabled.
@@ -23,18 +22,16 @@
   <template is="dom-if" if="[[!ineligibleUser]]" restamp>
     <settings-toggle-button
         id="prefToggle"
-        no-extension-indicator label=" "
-        sub-label-with-link="$i18n{autofillAiToggleSubLabel}"
-        on-sub-label-link-clicked="onToggleSubLabelLinkClick_"
+        no-extension-indicator label="$i18n{autofillAiPageTitle}"
+        sub-label="$i18n{autofillAiToggleSubLabel}"
         pref="{{prefs.autofill.prediction_improvements.enabled}}">
     </settings-toggle-button>
   </template>
   <template is="dom-if" if="[[ineligibleUser]]" restamp>
     <settings-toggle-button
         id="prefToggle" disabled
-        no-extension-indicator label=" "
-        sub-label-with-link="$i18n{autofillAiToggleSubLabel}"
-        on-sub-label-link-clicked="onToggleSubLabelLinkClick_">
+        no-extension-indicator label="$i18n{autofillAiPageTitle}"
+        sub-label="$i18n{autofillAiToggleSubLabel}">
     </settings-toggle-button>
   </template>
 

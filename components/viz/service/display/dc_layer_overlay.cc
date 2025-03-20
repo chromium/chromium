@@ -71,14 +71,17 @@ enum DCLayerResult {
 };
 
 DCLayerResult ValidateYUVOverlay(
-    const gfx::ProtectedVideoType& protected_video_type,
-    const gfx::ColorSpace& video_color_space,
-    const SharedImageFormat si_format,
-    const std::optional<gfx::HDRMetadata>& hdr_metadata,
+    const DisplayResourceProvider* resource_provider,
+    const TextureDrawQuad* quad,
+    const gfx::Rect& quad_target_rect,
     bool has_overlay_support,
     bool has_p010_video_processor_support,
     int allowed_yuv_overlay_count,
     int processed_yuv_overlay_count) {
+  const auto& video_color_space =
+      resource_provider->GetColorSpace(quad->resource_id);
+  auto si_format = resource_provider->GetSharedImageFormat(quad->resource_id);
+
   // Note: Do not override this value based on base::Feature values. It is the
   // result after the GPU blocklist has been consulted.
   if (!has_overlay_support) {
@@ -86,7 +89,8 @@ DCLayerResult ValidateYUVOverlay(
   }
 
   // Hardware protected video must use Direct Composition Overlay
-  if (protected_video_type == gfx::ProtectedVideoType::kHardwareProtected) {
+  if (quad->protected_video_type ==
+      gfx::ProtectedVideoType::kHardwareProtected) {
     return DC_LAYER_SUCCESS;
   }
 
@@ -100,15 +104,22 @@ DCLayerResult ValidateYUVOverlay(
     return DC_LAYER_FAILED_YUV_VIDEO_QUAD_UNSUPPORTED_COLORSPACE;
   }
 
-  // HLG shouldn't have the hdr metadata, but we don't want to promote it to
-  // overlay, as VideoProcessor doesn't support HLG tone mapping well between
-  // different gpu vendors, see: https://crbug.com/1144260#c6.
-  // Some HLG streams may carry hdr metadata, see: https://crbug.com/1429172.
-  if (video_color_space.GetTransferID() == gfx::ColorSpace::TransferID::HLG) {
-    return DC_LAYER_FAILED_YUV_VIDEO_QUAD_HLG;
+  // Only promote overlay for 10bit+ contents when video processor can
+  // handle P010 contents, otherwise disable overlay.
+  if (si_format == MultiPlaneFormat::kP010 &&
+      !has_p010_video_processor_support) {
+    return DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_P010_VIDEO_PROCESSOR_SUPPORT;
   }
 
   if (video_color_space.IsHDR()) {
+    // HLG shouldn't have the hdr metadata, but we don't want to promote it to
+    // overlay, as VideoProcessor doesn't support HLG tone mapping well between
+    // different gpu vendors, see: https://crbug.com/1144260#c6.
+    // Some HLG streams may carry hdr metadata, see: https://crbug.com/1429172.
+    if (video_color_space.GetTransferID() == gfx::ColorSpace::TransferID::HLG) {
+      return DC_LAYER_FAILED_YUV_VIDEO_QUAD_HLG;
+    }
+
     // We allow HDR10 overlays to be created without metadata if the input
     // stream is BT.2020 and the transfer function is PQ (Perceptual
     // Quantizer). For this combination, the corresponding DXGI color space is
@@ -127,13 +138,51 @@ DCLayerResult ValidateYUVOverlay(
     if (si_format != MultiPlaneFormat::kP010) {
       return DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_NON_P010;
     }
-  }
 
-  // Only promote overlay for 10bit+ contents when video processor can
-  // handle P010 contents, otherwise disable overlay.
-  if (si_format == MultiPlaneFormat::kP010 &&
-      !has_p010_video_processor_support) {
-    return DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_P010_VIDEO_PROCESSOR_SUPPORT;
+    int amd_hdr_hw_offload_max_width = 0, amd_hdr_hw_offload_max_height = 0;
+    bool amd_hdr_hw_offload_supported = false, amd_platform_detected = false;
+
+    gl::GetDirectCompositionMaxAMDHDRHwOffloadResolution(
+        &amd_hdr_hw_offload_supported, &amd_platform_detected,
+        &amd_hdr_hw_offload_max_width, &amd_hdr_hw_offload_max_height);
+
+    // If it's not an AMD branded GPU, skip further checks.
+    if (amd_platform_detected) {
+      // Reject if HDR hardware offload support is not available to avoid
+      // AMD shader path.
+      if (!amd_hdr_hw_offload_supported) {
+        return DC_LAYER_FAILED_OUTPUT_HDR;
+      }
+
+      // Get the resource size.
+      gfx::Size resource_size =
+          resource_provider->GetResourceBackedSize(quad->resource_id);
+
+      gfx::Size hdr_hw_offload_max_resolution(amd_hdr_hw_offload_max_width,
+                                              amd_hdr_hw_offload_max_height);
+
+      // Check `quad_target_rect` against both original and transposed max
+      // resolution.
+      bool exceeds_quad_limit =
+          !gfx::Rect(hdr_hw_offload_max_resolution)
+               .Contains(gfx::Rect(quad_target_rect.size())) &&
+          !gfx::Rect(gfx::TransposeSize(hdr_hw_offload_max_resolution))
+               .Contains(gfx::Rect(quad_target_rect.size()));
+
+      // Check `resource_size` separately against max resolution.
+      bool exceeds_resource_limit =
+          !gfx::Rect(hdr_hw_offload_max_resolution)
+               .Contains(gfx::Rect(resource_size)) &&
+          !gfx::Rect(gfx::TransposeSize(hdr_hw_offload_max_resolution))
+               .Contains(gfx::Rect(resource_size));
+
+      // Final result.
+      bool exceeds_limit = exceeds_quad_limit || exceeds_resource_limit;
+      // Reject if the limit exceeds.
+      if (exceeds_limit) {
+        return DC_LAYER_FAILED_OUTPUT_HDR;
+      }
+    }
   }
 
   return DC_LAYER_SUCCESS;
@@ -168,15 +217,10 @@ DCLayerResult ValidateTextureQuad(
   }
 
   if (quad->is_video_frame) {
-    const auto& color_space =
-        resource_provider->GetColorSpace(quad->resource_id);
-    const auto& hdr_metadata =
-        resource_provider->GetHDRMetadata(quad->resource_id);
-    auto si_format = resource_provider->GetSharedImageFormat(quad->resource_id);
     auto result = ValidateYUVOverlay(
-        quad->protected_video_type, color_space, si_format, hdr_metadata,
-        has_overlay_support, has_p010_video_processor_support,
-        allowed_yuv_overlay_count, processed_yuv_overlay_count);
+        resource_provider, quad, quad_target_rect, has_overlay_support,
+        has_p010_video_processor_support, allowed_yuv_overlay_count,
+        processed_yuv_overlay_count);
     return result;
   }
 
@@ -1160,6 +1204,7 @@ bool DCLayerOverlayProcessor::ShouldSkipOverlay(
       bool supports_rgb10a2_overlay =
           gl::GetDirectCompositionOverlaySupportFlags(
               DXGI_FORMAT_R10G10B10A2_UNORM) != 0;
+
       if (!supports_rgb10a2_overlay) {
         RecordDCLayerResult(DC_LAYER_FAILED_OUTPUT_HDR, *it);
         return true;

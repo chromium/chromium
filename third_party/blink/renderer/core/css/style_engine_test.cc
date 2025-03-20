@@ -4181,37 +4181,6 @@ TEST_F(StyleEngineTest, DynamicViewportUnitsInMediaQuery) {
   }
 }
 
-TEST_F(StyleEngineTest, ViewportUnitVariantsUseCounter) {
-  EXPECT_FALSE(IsWebDXFeatureCounted(WebDXFeature::kViewportUnitVariants));
-
-  GetDocument().body()->setInnerHTML("<style> body { top: 10vh; } </style>");
-  UpdateAllLifecyclePhases();
-  EXPECT_FALSE(IsWebDXFeatureCounted(WebDXFeature::kViewportUnitVariants));
-
-  GetDocument().body()->setInnerHTML("<style> body { top: 10vi; } </style>");
-  UpdateAllLifecyclePhases();
-  EXPECT_FALSE(IsWebDXFeatureCounted(WebDXFeature::kViewportUnitVariants));
-
-  GetDocument().body()->setInnerHTML("<style> body { top: 10vmax; } </style>");
-  UpdateAllLifecyclePhases();
-  EXPECT_FALSE(IsWebDXFeatureCounted(WebDXFeature::kViewportUnitVariants));
-
-  GetDocument().body()->setInnerHTML("<style> body { top: 10svh; } </style>");
-  UpdateAllLifecyclePhases();
-  EXPECT_TRUE(IsWebDXFeatureCounted(WebDXFeature::kViewportUnitVariants));
-  ClearWebDXFeatureCounter(WebDXFeature::kViewportUnitVariants);
-
-  GetDocument().body()->setInnerHTML("<style> body { top: 10lvi; } </style>");
-  UpdateAllLifecyclePhases();
-  EXPECT_TRUE(IsWebDXFeatureCounted(WebDXFeature::kViewportUnitVariants));
-  ClearWebDXFeatureCounter(WebDXFeature::kViewportUnitVariants);
-
-  GetDocument().body()->setInnerHTML("<style> body { top: 10dvmax; } </style>");
-  UpdateAllLifecyclePhases();
-  EXPECT_TRUE(IsWebDXFeatureCounted(WebDXFeature::kViewportUnitVariants));
-  ClearWebDXFeatureCounter(WebDXFeature::kViewportUnitVariants);
-}
-
 TEST_F(StyleEngineTest, MediaQueriesChangeDisplayState) {
   ScopedDesktopPWAsAdditionalWindowingControlsForTest scoped_feature(true);
   GetDocument().body()->setInnerHTML(R"HTML(

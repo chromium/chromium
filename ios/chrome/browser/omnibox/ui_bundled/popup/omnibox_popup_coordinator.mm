@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_popup_controller.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/carousel/carousel_item.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/carousel/carousel_item_menu_provider.h"
@@ -69,18 +68,20 @@
 @end
 
 @implementation OmniboxPopupCoordinator {
-  __weak OmniboxPopupController* _omniboxPopupController;
   __weak OmniboxAutocompleteController* _omniboxAutocompleteController;
 }
 
 #pragma mark - Public
 
-- (instancetype)
-    initWithBaseViewController:(UIViewController*)viewController
-                       browser:(Browser*)browser
-        autocompleteController:(AutocompleteController*)autocompleteController
-                     popupView:(std::unique_ptr<OmniboxPopupViewIOS>)popupView
-               popupController:(OmniboxPopupController*)popupController {
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                    autocompleteController:
+                        (AutocompleteController*)autocompleteController
+                                 popupView:
+                                     (std::unique_ptr<OmniboxPopupViewIOS>)
+                                         popupView
+             omniboxAutocompleteController:
+                 (OmniboxAutocompleteController*)omniboxAutocompleteController {
   self = [super initWithBaseViewController:nil browser:browser];
   if (self) {
     DCHECK(autocompleteController);
@@ -89,9 +90,7 @@
     _popupViewController = [[OmniboxPopupViewController alloc] init];
     _popupReturnDelegate = _popupViewController;
     _KeyboardDelegate = _popupViewController;
-    _omniboxPopupController = popupController;
-    _omniboxAutocompleteController =
-        _omniboxPopupController.omniboxAutocompleteController;
+    _omniboxAutocompleteController = omniboxAutocompleteController;
   }
   return self;
 }
@@ -152,28 +151,10 @@
   self.mediator.allowIncognitoActions =
       !IsIncognitoModeDisabled(self.profile->GetPrefs());
 
-  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-  OmniboxPedalAnnotator* annotator = [[OmniboxPedalAnnotator alloc] init];
-  annotator.applicationHandler =
-      HandlerForProtocol(dispatcher, ApplicationCommands);
-  annotator.settingsHandler = HandlerForProtocol(dispatcher, SettingsCommands);
-  annotator.omniboxHandler = HandlerForProtocol(dispatcher, OmniboxCommands);
-  annotator.quickDeleteHandler =
-      HandlerForProtocol(dispatcher, QuickDeleteCommands);
-
-  AutocompleteResultWrapper* autocompleteResultWrapper =
-      [[AutocompleteResultWrapper alloc] init];
-  autocompleteResultWrapper.pedalAnnotator = annotator;
-  autocompleteResultWrapper.templateURLService = templateURLService;
-  autocompleteResultWrapper.isIncognito = isIncognito;
-  autocompleteResultWrapper.delegate = _omniboxPopupController;
-
-  _omniboxPopupController.autocompleteResultWrapper = autocompleteResultWrapper;
-
   _omniboxAutocompleteController.delegate = self.mediator;
 
-  self.mediator.applicationCommandsHandler =
-      HandlerForProtocol(dispatcher, ApplicationCommands);
+  self.mediator.applicationCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
   self.mediator.incognito = isIncognito;
   self.mediator.sceneState = self.browser->GetSceneState();
   self.mediator.presenter = [[OmniboxPopupPresenter alloc]
@@ -181,10 +162,6 @@
                  popupViewController:self.popupViewController
                    layoutGuideCenter:LayoutGuideCenterForBrowser(self.browser)
                            incognito:isIncognito];
-
-  self.mediator.popupController = _omniboxPopupController;
-
-  _omniboxPopupController.delegate = self.mediator;
 
   if (experimental_flags::IsOmniboxDebuggingEnabled()) {
     [self setupDebug];
@@ -196,7 +173,6 @@
 
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
-  _omniboxPopupController.delegate = nil;
   _popupView.reset();
 }
 

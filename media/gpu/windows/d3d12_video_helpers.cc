@@ -63,6 +63,24 @@ std::string D3D12VideoEncoderRateControlToString(
   }
 }
 
+EncoderStatus CheckD3D12VideoEncoderCodecConfigurationSupportImpl(
+    ID3D12VideoDevice* video_device,
+    D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT* support) {
+  HRESULT hr = video_device->CheckFeatureSupport(
+      D3D12_FEATURE_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT, support,
+      sizeof(*support));
+  RETURN_ON_HR_FAILURE(
+      hr,
+      "CheckFeatureSupport for "
+      "D3D12_FEATURE_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT failed",
+      EncoderStatus::Codes::kSystemAPICallError);
+  if (!support->IsSupported) {
+    return {EncoderStatus::Codes::kEncoderUnsupportedProfile,
+            "D3D12VideoEncoder cannot get a valid codec configuration"};
+  }
+  return EncoderStatus::Codes::kOk;
+}
+
 }  // namespace
 
 EncoderStatus CheckD3D12VideoEncoderCodec(
@@ -84,19 +102,54 @@ EncoderStatus CheckD3D12VideoEncoderCodec(
 EncoderStatus CheckD3D12VideoEncoderCodecConfigurationSupport(
     ID3D12VideoDevice* video_device,
     D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT* support) {
-  HRESULT hr = video_device->CheckFeatureSupport(
-      D3D12_FEATURE_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT, support,
-      sizeof(*support));
-  RETURN_ON_HR_FAILURE(
-      hr,
-      "CheckFeatureSupport for "
-      "D3D12_FEATURE_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT failed",
-      EncoderStatus::Codes::kSystemAPICallError);
-  if (!support->IsSupported) {
-    return {EncoderStatus::Codes::kEncoderUnsupportedConfig,
-            "D3D12VideoEncoder does not support codec configuration"};
+  // According to the documentation, for HEVC we have a different usage of this
+  // calling. This method handle the special logic variation for HEVC to make it
+  // work like other codecs.
+  //
+  // **CodecSupportLimits**
+  // A D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT structure. For HEVC, the
+  // caller populates this structure with the desired encoder configuration. For
+  // H.264, the CheckFeatureSupport call populates the structure with the
+  // supported configuration.
+  // https://learn.microsoft.com/en-us/windows/win32/api/d3d12video/ns-d3d12video-d3d12_feature_data_video_encoder_codec_configuration_support#members
+  if (support->Codec != D3D12_VIDEO_ENCODER_CODEC_HEVC) {
+    return CheckD3D12VideoEncoderCodecConfigurationSupportImpl(video_device,
+                                                               support);
+  } else {
+    // The list of supported configurations of common devices.
+    const D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC
+        hevc_common_configurations[] = {
+#define NONE_FLAG D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC_FLAG_NONE
+#define CU_SIZE(a) D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_CUSIZE_##a##x##a
+#define TU_SIZE(a) D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_HEVC_TUSIZE_##a##x##a
+            // Ordered from broadest to narrowest
+            // Config known supported by AMD Radeon series.
+            {NONE_FLAG, CU_SIZE(8), CU_SIZE(64), TU_SIZE(4), TU_SIZE(32), 4, 4},
+            // Config known supported by Intel Arc series.
+            {NONE_FLAG, CU_SIZE(8), CU_SIZE(64), TU_SIZE(4), TU_SIZE(32), 2, 2},
+            // Configs known supported by NVIDIA GTX/RTX series.
+            {NONE_FLAG, CU_SIZE(8), CU_SIZE(32), TU_SIZE(4), TU_SIZE(32), 3, 3},
+            {NONE_FLAG, CU_SIZE(8), CU_SIZE(32), TU_SIZE(4), TU_SIZE(32), 2, 2},
+            {NONE_FLAG, CU_SIZE(8), CU_SIZE(32), TU_SIZE(4), TU_SIZE(32), 0, 0},
+#undef NONE_FLAG
+#undef CU_SIZE
+#undef TU_SIZE
+        };
+    CHECK_EQ(support->CodecSupportLimits.DataSize,
+             sizeof(D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_HEVC));
+    for (const auto& config : hevc_common_configurations) {
+      *support->CodecSupportLimits.pHEVCSupport = config;
+      EncoderStatus status =
+          CheckD3D12VideoEncoderCodecConfigurationSupportImpl(video_device,
+                                                              support);
+      if (status != EncoderStatus::Codes::kEncoderUnsupportedProfile) {
+        return status;
+      }
+    }
+    return {
+        EncoderStatus::Codes::kEncoderUnsupportedConfig,
+        "D3D12VideoEncoder cannot get a valid codec configuration for HEVC"};
   }
-  return EncoderStatus::Codes::kOk;
 }
 
 EncoderStatus CheckD3D12VideoEncoderInputFormat(

@@ -42,10 +42,6 @@ namespace bookmarks {
 
 namespace {
 
-// The maximum length of URL or title returned by the Cleanup functions.
-const size_t kCleanedUpUrlMaxLength = 1024u;
-const size_t kCleanedUpTitleMaxLength = 1024u;
-
 void CloneBookmarkNodeImpl(BookmarkModel* model,
                            const BookmarkNodeData::Element& element,
                            const BookmarkNode* parent,
@@ -108,25 +104,6 @@ const BookmarkNode* FindNode(const BookmarkNode* node, Predicate pred) {
     }
   }
   return nullptr;
-}
-
-// Attempts to shorten a URL safely (i.e., by preventing the end of the URL
-// from being in the middle of an escape sequence) to no more than
-// kCleanedUpUrlMaxLength characters, returning the result.
-std::string TruncateUrl(const std::string& url) {
-  if (url.length() <= kCleanedUpUrlMaxLength) {
-    return url;
-  }
-
-  // If we're in the middle of an escape sequence, truncate just before it.
-  if (url[kCleanedUpUrlMaxLength - 1] == '%') {
-    return url.substr(0, kCleanedUpUrlMaxLength - 1);
-  }
-  if (url[kCleanedUpUrlMaxLength - 2] == '%') {
-    return url.substr(0, kCleanedUpUrlMaxLength - 2);
-  }
-
-  return url.substr(0, kCleanedUpUrlMaxLength);
 }
 
 template <class type>
@@ -542,24 +519,6 @@ void RemoveAllBookmarks(BookmarkModel* model,
       model->Remove(node, metrics::BookmarkEditSource::kUser, location);
     }
   }
-}
-
-std::u16string CleanUpUrlForMatching(
-    const GURL& gurl,
-    base::OffsetAdjuster::Adjustments* adjustments) {
-  DCHECK(gurl.is_valid());
-
-  base::OffsetAdjuster::Adjustments tmp_adjustments;
-  return base::i18n::ToLower(url_formatter::FormatUrlWithAdjustments(
-      GURL(TruncateUrl(gurl.spec())),
-      url_formatter::kFormatUrlOmitUsernamePassword,
-      base::UnescapeRule::SPACES | base::UnescapeRule::PATH_SEPARATORS |
-          base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS,
-      nullptr, nullptr, adjustments ? adjustments : &tmp_adjustments));
-}
-
-std::u16string CleanUpTitleForMatching(const std::u16string& title) {
-  return base::i18n::ToLower(title.substr(0u, kCleanedUpTitleMaxLength));
 }
 
 bool IsBookmarkedByUser(BookmarkModel* model, const GURL& url) {

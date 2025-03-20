@@ -19,19 +19,11 @@ namespace payments::facilitated {
 
 ContentFacilitatedPaymentsDriver::ContentFacilitatedPaymentsDriver(
     FacilitatedPaymentsClient* client,
-    optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
     content::RenderFrameHost* render_frame_host,
     std::unique_ptr<SecurityChecker> security_checker)
-    : FacilitatedPaymentsDriver(
-          std::make_unique<PixManager>(client,
-                                       GetFacilitatedPaymentsApiClientCreator(
-                                           render_frame_host->GetGlobalId()),
-                                       optimization_guide_decider),
-          std::make_unique<EwalletManager>(
-              client,
-              GetFacilitatedPaymentsApiClientCreator(
-                  render_frame_host->GetGlobalId()),
-              optimization_guide_decider)),
+    : FacilitatedPaymentsDriver(client,
+                                GetFacilitatedPaymentsApiClientCreator(
+                                    render_frame_host->GetGlobalId())),
       render_frame_host_id_(render_frame_host->GetGlobalId()),
       security_checker_(std::move(security_checker)) {}
 

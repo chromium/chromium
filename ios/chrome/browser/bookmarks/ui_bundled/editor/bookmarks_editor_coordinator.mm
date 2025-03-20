@@ -83,7 +83,7 @@
                URL:base::SysUTF8ToNSString(_node->url().spec())
         folderName:bookmark_utils_ios::TitleForBookmarkNode(_node->parent())];
   _viewController.delegate = self;
-  ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
+  ProfileIOS* profile = self.profile->GetOriginalProfile();
   bookmarks::BookmarkModel* bookmarkModel =
       ios::BookmarkModelFactory::GetForProfile(profile);
   syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);

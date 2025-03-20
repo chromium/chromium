@@ -18,7 +18,6 @@
 #include "media/base/test_data_util.h"
 #include "media/capture/video/mock_video_capture_device_client.h"
 #include "media/capture/video/video_capture_gpu_channel_host.h"
-#include "media/video/fake_gpu_memory_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -82,8 +81,7 @@ class FileVideoCaptureDeviceTest : public ::testing::Test {
     EXPECT_CALL(*client_, OnError(_, _, _)).Times(0);
     EXPECT_CALL(*client_, OnStarted());
     device_ = std::make_unique<FileVideoCaptureDevice>(
-        GetTestDataFilePath("bear.mjpeg"),
-        std::make_unique<FakeGpuMemoryBufferSupport>());
+        GetTestDataFilePath("bear.mjpeg"));
     device_->AllocateAndStart(VideoCaptureParams(), std::move(client_));
     test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
     test_sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
@@ -196,8 +194,7 @@ TEST_F(FileVideoCaptureDeviceTest, CaptureWithGpuMemoryBuffer) {
   VideoCaptureParams params;
   params.buffer_type = VideoCaptureBufferType::kGpuMemoryBuffer;
   auto device = std::make_unique<FileVideoCaptureDevice>(
-      GetTestDataFilePath("bear.mjpeg"),
-      std::make_unique<FakeGpuMemoryBufferSupport>());
+      GetTestDataFilePath("bear.mjpeg"));
   device->AllocateAndStart(params, std::move(client));
   WaitForCapturedFrame();
   EXPECT_EQ(last_format_.pixel_format, PIXEL_FORMAT_NV12);

@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ash/app_list/search/local_image_search/file_search_result.h"
 
+#include <utility>
+
 namespace app_list {
 
-FileSearchResult::FileSearchResult(const base::FilePath& file_path,
-                                   const base::Time& last_modified,
+FileSearchResult::FileSearchResult(base::FilePath file_path,
+                                   base::Time last_modified,
                                    double relevance)
-    : file_path(file_path),
+    : file_path(std::move(file_path)),
       last_modified(last_modified),
       relevance(relevance) {}
 

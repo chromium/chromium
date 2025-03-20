@@ -184,8 +184,6 @@ void DesktopWindowTreeHostWin::OnWidgetThemeChanged(Widget* widget) {
 // DesktopWindowTreeHostWin, DesktopWindowTreeHost implementation:
 
 void DesktopWindowTreeHostWin::Init(const Widget::InitParams& params) {
-  wants_mouse_events_when_inactive_ = params.wants_mouse_events_when_inactive;
-
   wm::SetAnimationHost(content_window(), this);
   if (params.type == Widget::InitParams::TYPE_WINDOW &&
       !params.remove_standard_frame) {
@@ -916,10 +914,6 @@ bool DesktopWindowTreeHostWin::CanActivate() const {
   }
   return native_widget_delegate_ ? native_widget_delegate_->CanActivate()
                                  : false;
-}
-
-bool DesktopWindowTreeHostWin::WantsMouseEventsWhenInactive() const {
-  return wants_mouse_events_when_inactive_;
 }
 
 bool DesktopWindowTreeHostWin::WidgetSizeIsClientSize() const {

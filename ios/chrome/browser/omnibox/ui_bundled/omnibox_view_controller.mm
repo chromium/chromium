@@ -33,10 +33,7 @@ using base::UserMetricsAction;
 
 @interface OmniboxViewController () <OmniboxTextFieldDelegate,
                                      OmniboxKeyboardDelegate,
-                                     UIScribbleInteractionDelegate> {
-  // Weak, acts as a delegate
-  raw_ptr<OmniboxTextChangeDelegate> _textChangeDelegate;
-}
+                                     UIScribbleInteractionDelegate>
 
 // Override of UIViewController's view with a different type.
 @property(nonatomic, strong) OmniboxContainerView* view;
@@ -213,10 +210,6 @@ using base::UserMetricsAction;
 
 #pragma mark - properties
 
-- (void)setTextChangeDelegate:(OmniboxTextChangeDelegate*)textChangeDelegate {
-  _textChangeDelegate = textChangeDelegate;
-}
-
 - (UIView<TextFieldViewContaining>*)viewContainingTextField {
   return self.view;
 }
@@ -243,15 +236,11 @@ using base::UserMetricsAction;
 - (BOOL)textField:(UITextField*)textField
     shouldChangeCharactersInRange:(NSRange)range
                 replacementString:(NSString*)newText {
-  if (!_textChangeDelegate) {
-    // This can happen when the view controller is still alive but the model is
-    // already deconstructed on shutdown.
-    return YES;
-  }
-
   // Any change in the content of the omnibox should deselect thumbnail button.
   self.view.thumbnailButton.selected = NO;
-  self.processingUserEvent = _textChangeDelegate->OnWillChange(range, newText);
+  self.processingUserEvent =
+      [self.mutator shouldChangeCharactersInRange:range
+                                replacementString:newText];
   return self.processingUserEvent;
 }
 
@@ -270,12 +259,7 @@ using base::UserMetricsAction;
   BOOL savedProcessingUserEvent = self.processingUserEvent;
   self.processingUserEvent = NO;
   self.forwardingOnDidChange = YES;
-  if (!_textChangeDelegate) {
-    // This can happen when the view controller is still alive but the model is
-    // already deconstructed on shutdown.
-    return;
-  }
-  _textChangeDelegate->OnDidChange(savedProcessingUserEvent);
+  [self.mutator textDidChangeWithUserEvent:savedProcessingUserEvent];
   self.forwardingOnDidChange = NO;
 }
 
@@ -312,12 +296,7 @@ using base::UserMetricsAction;
   self.semanticContentAttribute = [self.textField bestSemanticContentAttribute];
 
   self.omniboxInteractedWhileFocused = NO;
-  if (!_textChangeDelegate) {
-    // This can happen when the view controller is still alive but the model is
-    // already deconstructed on shutdown.
-    return;
-  }
-  _textChangeDelegate->OnDidBeginEditing();
+  [self.mutator onDidBeginEditing];
 }
 
 // Record the metrics as needed.
@@ -334,33 +313,18 @@ using base::UserMetricsAction;
 }
 
 - (BOOL)textFieldShouldClear:(UITextField*)textField {
-  if (!_textChangeDelegate) {
-    // This can happen when the view controller is still alive but the model is
-    // already deconstructed on shutdown.
-    return YES;
-  }
-  _textChangeDelegate->ClearText();
+  [self.mutator clearText];
   self.processingUserEvent = YES;
   return YES;
 }
 
 - (void)onCopy {
   self.omniboxInteractedWhileFocused = YES;
-  if (!_textChangeDelegate) {
-    // This can happen when the view controller is still alive but the model is
-    // already deconstructed on shutdown.
-    return;
-  }
-  _textChangeDelegate->OnCopy();
+  [self.mutator onCopy];
 }
 
 - (void)willPaste {
-  if (!_textChangeDelegate) {
-    // This can happen when the view controller is still alive but the model is
-    // already deconstructed on shutdown.
-    return;
-  }
-  _textChangeDelegate->WillPaste();
+  [self.mutator willPaste];
 }
 
 - (void)onDeleteBackward {
@@ -372,18 +336,11 @@ using base::UserMetricsAction;
                          toPosition:textField.selectedTextRange.start] == 0) {
     [self didTapThumbnailButton];
   }
-  if (!_textChangeDelegate) {
-    // This can happen when the view controller is still alive but the model is
-    // already deconstructed on shutdown.
-    return;
-  }
-  _textChangeDelegate->OnDeleteBackward();
+  [self.mutator onDeleteBackward];
 }
 
 - (void)textFieldDidAcceptAutocomplete:(OmniboxTextFieldIOS*)textField {
-  if (_textChangeDelegate) {
-    _textChangeDelegate->OnAcceptAutocomplete();
-  }
+  [self.mutator onAcceptAutocomplete];
 }
 
 - (void)textFieldDidRemoveAdditionalText:(OmniboxTextFieldIOS*)textField {

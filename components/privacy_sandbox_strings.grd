@@ -936,6 +936,12 @@
       <message name="IDS_ALL_SITES_RWS_FILTER_VIEW_STORAGE_DESCRIPTION" desc="Describes how much storage is being used by all sites in the displayed list of related websites.">
         Total storage used by sites in the list: <ph name="TOTAL_USAGE">$1<ex>8 GB</ex></ph>
       </message>
+      <message name="IDS_ALL_SITES_RWS_DELETE_DATA_BUTTON_LABEL" desc="Label of a button to delete all site data for sites in a related website set.">
+        Delete data
+      </message>
+      <message name="IDS_ALL_SITES_RWS_DELETE_DATA_DIALOG_TITLE" desc="Title of the dialog that warns about deleting all site data for sites in a related website set.">
+        Delete data?
+      </message>
 
       <!-- RWS - Site Settings -->
       <message name="IDS_SITE_SETTINGS_RWS_DESCRIPTION_ANDROID" desc="Description explaining what related website sets are and how they relate to third-party cookies. Includes a Learn More link that takes the user to a Help Center article about managing settings for third-party cookies and related website sets." formatter_data="android_java">

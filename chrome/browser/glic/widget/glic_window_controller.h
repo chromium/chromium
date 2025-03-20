@@ -49,6 +49,7 @@ class GlicWindowAnimator;
 class ScopedGlicButtonIndicator;
 class GlicFreController;
 class GlicButton;
+enum class AttachChangeReason;
 
 // This class owns and manages the glic window. This class has the same lifetime
 // as the GlicKeyedService, so it exists if and only if the profile exists.
@@ -319,7 +320,7 @@ class GlicWindowController : public views::WidgetObserver,
 
   // Reparents the glic widget under 'browser' and runs an animation to move it
   // to its target position.
-  void AttachToBrowser(Browser& browser);
+  void AttachToBrowser(Browser& browser, AttachChangeReason reason);
 
   // Clamp the mouse drag offsets to keep glic within the visible region.
   gfx::Vector2d GetClampedMouseDragOffset(const gfx::Vector2d& mouse_offset);
@@ -341,7 +342,7 @@ class GlicWindowController : public views::WidgetObserver,
 
   // Reparents the glic window to an empty holder Widget when in a detached
   // state. Initializes the holder widget if it hasn't been created yet.
-  void MaybeCreateHolderWindowAndReparent();
+  void MaybeCreateHolderWindowAndReparent(AttachChangeReason reason);
 
   // Updates the position of the glic window to that of the glic button of
   // `browser`'s window. This position change is animated if `animate` is true.
@@ -379,6 +380,9 @@ class GlicWindowController : public views::WidgetObserver,
 
   // Create a GlicWidget.
   std::unique_ptr<GlicWidget> CreateGlicWidget(const gfx::Rect& bounds);
+
+  // Warms the web client and sets `contents_`.
+  void CreateContents();
 
   // Observes the glic widget.
   base::ScopedObservation<views::Widget, views::WidgetObserver>

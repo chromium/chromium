@@ -8,17 +8,21 @@
 #include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/scanner/scanner_controller.h"
 #include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "components/lens/lens_overlay_permission_utils.h"
+#include "ui/aura/window.h"
 
 namespace ash {
 
 SunfishScannerFeatureWatcher::SunfishScannerFeatureWatcher(
-    SessionControllerImpl& session_controller)
+    SessionControllerImpl& session_controller,
+    Shell& shell)
     : can_show_sunfish_ui_(::ash::CanShowSunfishUi()),
       can_show_scanner_ui_(ScannerController::CanShowUiForShell()) {
   session_controller_observation_.Observe(&session_controller);
+  shell_observation_.Observe(&shell);
   OnActiveUserPrefServiceChanged(session_controller.GetActivePrefService());
 }
 
@@ -81,6 +85,11 @@ void SunfishScannerFeatureWatcher::OnActiveUserPrefServiceChanged(
                              update_feature_states);
   // We do not need to observe Scanner consent, as that does not affect whether
   // UI can be shown.
+}
+
+void SunfishScannerFeatureWatcher::OnPinnedStateChanged(
+    aura::Window* pinned_window) {
+  UpdateFeatureStates();
 }
 
 }  // namespace ash

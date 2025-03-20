@@ -61,6 +61,9 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
   // mojom::ScreenAIAnnotator:
   void SetClientType(mojom::OcrClientType client) override;
 
+  // mojom::Screen2xMainContentExtractor:
+  void SetClientType(mojom::MceClientType client) override;
+
   // mojom::ScreenAIAnnotator:
   void PerformOcrAndReturnAXTreeUpdate(
       const SkBitmap& image,
@@ -146,6 +149,9 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
 
   // Client type for each OCR receiver.
   std::map<mojo::ReceiverId, mojom::OcrClientType> ocr_client_types_;
+
+  // Client type for each MCE receiver.
+  std::map<mojo::ReceiverId, mojom::MceClientType> mce_client_types_;
 
   // Browser side shutdown handler.
   mojo::Remote<mojom::ScreenAIServiceShutdownHandler>

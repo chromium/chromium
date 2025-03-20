@@ -128,6 +128,8 @@ void AXTreeExtractor::OnScreen2xReady(
   screen2x_main_content_extractor_.reset_on_disconnect();
   screen2x_main_content_extractor_.reset_on_idle_timeout(
       kScreenAIIdleDisconnectDelay);
+  screen2x_main_content_extractor_->SetClientType(
+      screen_ai::mojom::MceClientType::kMahi);
 }
 
 void AXTreeExtractor::ExtractContent(

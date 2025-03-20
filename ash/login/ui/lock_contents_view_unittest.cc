@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "ash/child_accounts/parent_access_controller_impl.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/detachable_base/detachable_base_pairing_status.h"
 #include "ash/login/login_screen_controller.h"
@@ -55,7 +54,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
@@ -153,6 +151,17 @@ class LockContentsViewUnitTest : public LoginTestBase {
     DataDispatcher()->SetSmartLockState(account_id, smart_lock_state);
     EXPECT_EQ(should_have_auth_method,
               test_api.HasAuthMethod(LoginAuthUserView::AUTH_SMART_LOCK));
+  }
+
+  void AdvanceClock(base::TimeDelta time_delta) {
+    task_environment()->AdvanceClock(time_delta);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  std::u16string GetExpectedPinStatusMessage(
+      const std::u16string& time_string) {
+    return l10n_util::GetStringFUTF16(IDS_ASH_LOGIN_POD_PIN_LOCKED_WARNING,
+                                      time_string);
   }
 };
 
@@ -3103,9 +3112,6 @@ class LockContentsViewWithKioskLicenseTest : public LoginTestBase {
 
   raw_ptr<LoginShelfView, DanglingUntriaged> login_shelf_view_ =
       nullptr;  // Unowned.
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Checks default message hides if device is with kiosk license but with apps.
@@ -3386,28 +3392,7 @@ TEST_F(LockContentsViewUnitTest, LoginToolTipViewAccessibleProperties) {
   EXPECT_EQ(data.role, ax::mojom::Role::kTooltip);
 }
 
-class LockContentsViewPinTimeoutUnitTest : public LockContentsViewUnitTest {
- public:
-  LockContentsViewPinTimeoutUnitTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kAllowPinTimeoutSetup);
-  }
-
-  void AdvanceClock(base::TimeDelta time_delta) {
-    task_environment()->AdvanceClock(time_delta);
-    base::RunLoop().RunUntilIdle();
-  }
-
-  std::u16string GetExpectedPinStatusMessage(
-      const std::u16string& time_string) {
-    return l10n_util::GetStringFUTF16(IDS_ASH_LOGIN_POD_PIN_LOCKED_WARNING,
-                                      time_string);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(LockContentsViewPinTimeoutUnitTest, PinDelayMessageCorrectness) {
+TEST_F(LockContentsViewUnitTest, PinDelayMessageCorrectness) {
   ASSERT_NO_FATAL_FAILURE(ShowLoginScreen());
   LockContentsView* contents =
       LockScreen::TestApi(LockScreen::Get()).contents_view();
@@ -3458,7 +3443,7 @@ TEST_F(LockContentsViewPinTimeoutUnitTest, PinDelayMessageCorrectness) {
   EXPECT_FALSE(pin_status_message_view->GetVisible());
 }
 
-TEST_F(LockContentsViewPinTimeoutUnitTest, TwoUsers) {
+TEST_F(LockContentsViewUnitTest, TwoUsers) {
   ASSERT_NO_FATAL_FAILURE(ShowLoginScreen());
   AddUsers(2);
 
@@ -3540,7 +3525,7 @@ TEST_F(LockContentsViewPinTimeoutUnitTest, TwoUsers) {
   EXPECT_FALSE(secondary_pin_status_message_view->GetVisible());
 }
 
-TEST_F(LockContentsViewPinTimeoutUnitTest, MultipleUsers) {
+TEST_F(LockContentsViewUnitTest, MultipleUsers) {
   ASSERT_NO_FATAL_FAILURE(ShowLoginScreen());
   AddUsers(3);
 

@@ -42,7 +42,7 @@ class SpotlightSessionManager : public boca::BocaSessionManager::Observer {
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  void OnConnectionCodeReceived(std::optional<std::string> connection_code);
+  void OnConnectionCodeReceived(const std::string& connection_code);
   void RegisterStudentScreen(const std::string& connection_code);
   void OnRegisterScreenRequestSent(
       base::expected<bool, google_apis::ApiErrorCode> result);

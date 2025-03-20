@@ -109,7 +109,7 @@ function render_rect_with_corner_shapes(style, ctx, width, height) {
   }
 
   function draw_inner_corner_from_params(params, phase = "both", direction) {
-    add_corner(ctx, ...params.inner_rect, params.shape, phase, direction);
+    add_corner(ctx, ...params.inner_rect, params.inner_shape, phase, direction);
   }
 
   function draw_inner_corner(corner, phase = "both", direction) {

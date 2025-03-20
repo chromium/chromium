@@ -210,7 +210,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   virtual bool IsSingleBuffered() const = 0;
 
   // Only works in single buffering mode.
-  bool ImportResource(scoped_refptr<CanvasResource>&&);
+  bool ImportResource(scoped_refptr<ExternalCanvasResource>&&);
 
   void RecycleResource(scoped_refptr<CanvasResource>&&);
   void SetResourceRecyclingEnabled(bool);

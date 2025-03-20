@@ -8,15 +8,21 @@ source_set("model") {
   sources = [
     "reader_mode_java_script_feature.h",
     "reader_mode_java_script_feature.mm",
+    "reader_mode_tab_helper.h",
+    "reader_mode_tab_helper.mm",
   ]
   deps = [
+    ":constants",
     ":features",
     ":reader_mode_js",
     "//components/dom_distiller/core",
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
   ]
+  public_deps = [ "//base" ]
 }
 
 source_set("features") {
@@ -24,7 +30,10 @@ source_set("features") {
     "features.h",
     "features.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    ":constants",
+    "//base",
+  ]
 }
 
 optimize_ts("reader_mode_js") {
@@ -33,5 +42,41 @@ optimize_ts("reader_mode_js") {
   deps = [
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "constants.h",
+    "constants.mm",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "reader_mode_java_script_feature_unittest.mm",
+    "reader_mode_tab_helper_unittest.mm",
+  ]
+  deps = [
+    ":constants",
+    ":features",
+    ":model",
+    "//base",
+    "//base/test:test_support",
+    "//components/sync_preferences",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/web/model:feature_flags",
+    "//ios/chrome/browser/web/model:web_internal",
+    "//ios/chrome/test/fakes",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
   ]
 }

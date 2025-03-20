@@ -14,16 +14,18 @@
 #include <cstddef>
 #include <cstdint>
 #include <optional>
-#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/scoped_file.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/posix/safe_strerror.h"
+#include "base/strings/strcat.h"
 #include "base/types/expected.h"
+#include "remoting/host/base/loggable.h"
 #include "ui/base/glib/scoped_gobject.h"
 
 namespace remoting {
@@ -80,12 +82,13 @@ GDBusFdList::Handle GDBusFdList::Insert(base::ScopedFD fd) {
   return Handle{static_cast<int32_t>(next_index)};
 }
 
-base::expected<GDBusFdList::Handle, std::string> GDBusFdList::InsertDup(
-    int fd) {
+base::expected<GDBusFdList::Handle, Loggable> GDBusFdList::InsertDup(int fd) {
   int new_fd = fcntl(fd, F_DUPFD_CLOEXEC, 0);
 
   if (new_fd == -1) {
-    return base::unexpected(base::safe_strerror(errno));
+    return base::unexpected(
+        Loggable(FROM_HERE, base::StrCat({"Error duplicating file descriptor: ",
+                                          base::safe_strerror(errno)})));
   }
 
   return base::ok(Insert(base::ScopedFD(new_fd)));

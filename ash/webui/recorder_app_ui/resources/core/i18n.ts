@@ -76,8 +76,8 @@ const noArgStringNames = [
   'micConnectionErrorDialogDescription',
   'micConnectionErrorDialogHeader',
   'micSelectionMenuButtonTooltip',
-  'micSelectionMenuChromebookAudioOption',
   'micSelectionMenuMicConnectionErrorDescription',
+  'micSelectionMenuSystemAudioOption',
   'onboardingDialogLanguageSelectionCancelButton',
   'onboardingDialogLanguageSelectionDescription',
   'onboardingDialogLanguageSelectionDownloadButton',
@@ -260,13 +260,41 @@ const withArgsStringNames = {
 } satisfies Record<string, I18nArgType[]>;
 type WithArgsStringNames = typeof withArgsStringNames;
 
+const withDeviceStringNames = [
+  'genAiDownloadErrorStatusMessage',
+  'genAiErrorModelLoadFailureLabel',
+  'languagePickerLanguageDownloadErrorAriaLabel',
+  'languagePickerLanguageDownloadErrorStatusMessage',
+  'languagePickerLanguageErrorDescription',
+  'micSelectionMenuSystemAudioOption',
+  'recordGeneralAudioErrorDialogDescription',
+  'recordTranscriptionUnusableErrorDescription',
+  'settingsOptionsGenAiErrorDescription',
+  'settingsOptionsTranscriptionErrorDescription',
+  'systemAudioConsentDialogDescription',
+  'systemAudioConsentDialogHeader',
+];
+
+function maybeReplaceDeviceType(name: string, i18nString: string) {
+  if (withDeviceStringNames.includes(name)) {
+    return i18nString.replaceAll(
+      '[deviceType]',
+      PlatformHandler.getDeviceType(),
+    );
+  }
+  return i18nString;
+}
+
 function getI18nString(name: string): string {
-  return PlatformHandler.getStringF(name);
+  return maybeReplaceDeviceType(name, PlatformHandler.getStringF(name));
 }
 
 function createI18nStringFormatter(name: string) {
   return (...args: I18nArgType[]) => {
-    return PlatformHandler.getStringF(name, ...args);
+    return maybeReplaceDeviceType(
+      name,
+      PlatformHandler.getStringF(name, ...args),
+    );
   };
 }
 

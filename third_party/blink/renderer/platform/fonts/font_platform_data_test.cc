@@ -77,8 +77,6 @@ TEST_F(FontPlatformDataTest, AhemSpaceLigatureHasNoSpaceWithoutFontFeatures) {
 }
 
 TEST_F(FontPlatformDataTest, AhemHasAliasing) {
-  RuntimeEnabledFeaturesTestHelpers::ScopedDisableAhemAntialias
-      scoped_feature_list_(true);
   Font* font = CreateTestFont(AtomicString("Ahem"),
                               test::PlatformTestDataPath("Ahem.woff"), 16);
   const FontPlatformData& platform_data = font->PrimaryFont()->PlatformData();

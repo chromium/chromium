@@ -42,6 +42,8 @@ void AXTreeFixingScreenAIService::IdentifyMainNode(
     screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(profile_)
         ->BindMainContentExtractor(std::move(receiver));
     screen_ai_service_.reset_on_disconnect();
+    screen_ai_service_->SetClientType(
+        screen_ai::mojom::MceClientType::kMainNode);
   }
 
   // Identify the main node using ScreenAI.

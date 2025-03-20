@@ -9,55 +9,37 @@
 #import "components/data_sharing/public/group_data.h"
 #import "components/data_sharing/test_support/mock_preview_server_proxy.h"
 #import "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
-#import "components/sync/service/sync_service.h"
+#import "components/saved_tab_groups/public/saved_tab_group.h"
+#import "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/test_share_kit_service.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/sync_test_util.h"
 
 namespace {
 
-// Returns the first regular (= non-incognito) profile from the loaded browser
-// states.
-ProfileIOS* GetRegularProfile() {
-  for (ProfileIOS* profile :
-       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
-    if (!profile->IsOffTheRecord()) {
-      return profile;
-    }
-  }
-  return nullptr;
-}
-
 // Returns the tab group sync service from the first regular profile.
 tab_groups::TabGroupSyncService* GetTabGroupSyncService() {
   CHECK(IsTabGroupSyncEnabled());
-  return tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-      GetRegularProfile());
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
+  return tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
 }
 
 // Returns the data sharing service from the first regular profile.
 data_sharing::DataSharingService* GetDataSharingService() {
-  ProfileIOS* profile = GetRegularProfile();
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   CHECK(IsSharedTabGroupsJoinEnabled(profile));
   return data_sharing::DataSharingServiceFactory::GetForProfile(profile);
 }
 
-// Returns the sync service from the first regular profile.
-syncer::SyncService* GetSyncService() {
-  return SyncServiceFactory::GetForProfile(GetRegularProfile());
-}
-
 // Returns the share kit service from the first regular profile.
 TestShareKitService* GetShareKitService() {
-  ProfileIOS* profile = GetRegularProfile();
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   CHECK(IsSharedTabGroupsJoinEnabled(profile));
   CHECK(IsSharedTabGroupsCreateEnabled(profile));
   return static_cast<TestShareKitService*>(
@@ -120,7 +102,7 @@ ACTION_TEMPLATE(InvokeCallbackArgument,
         CreateGroup(base::NumberToString16(i) + u"RemoteGroup", tabs, groupID));
   }
 
-  GetSyncService()->TriggerRefresh({syncer::SAVED_TAB_GROUP});
+  chrome_test_util::TriggerSyncCycle(syncer::SAVED_TAB_GROUP);
 }
 
 + (void)prepareFakeSharedTabGroups:(NSInteger)numberOfGroups {
@@ -134,7 +116,7 @@ ACTION_TEMPLATE(InvokeCallbackArgument,
     GetShareKitService()->CreateSharedTabGroupInFakeServer(collaborationID);
   }
 
-  GetSyncService()->TriggerRefresh({syncer::COLLABORATION_GROUP});
+  chrome_test_util::TriggerSyncCycle(syncer::COLLABORATION_GROUP);
 }
 
 + (void)removeAtIndex:(unsigned int)index {
@@ -144,7 +126,7 @@ ACTION_TEMPLATE(InvokeCallbackArgument,
   tab_groups::SavedTabGroup groupToRemove = groups[index];
   chrome_test_util::DeleteTabOrGroupFromFakeServer(groupToRemove.saved_guid());
 
-  GetSyncService()->TriggerRefresh({syncer::SAVED_TAB_GROUP});
+  chrome_test_util::TriggerSyncCycle(syncer::SAVED_TAB_GROUP);
 }
 
 + (void)cleanup {
@@ -156,7 +138,7 @@ ACTION_TEMPLATE(InvokeCallbackArgument,
     chrome_test_util::DeleteTabOrGroupFromFakeServer(group.saved_guid());
   }
 
-  GetSyncService()->TriggerRefresh({syncer::SAVED_TAB_GROUP});
+  chrome_test_util::TriggerSyncCycle(syncer::SAVED_TAB_GROUP);
 }
 
 + (int)countOfSavedTabGroups {

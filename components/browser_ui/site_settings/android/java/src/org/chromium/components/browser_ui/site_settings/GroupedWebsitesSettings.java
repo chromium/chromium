@@ -261,6 +261,10 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
         assumeNonNull(rwsInfo);
         WebsiteGroup group = new WebsiteGroup(rwsInfo.getOwner(), rwsInfo.getMembers());
         SiteDataCleaner.clearData(getSiteSettingsDelegate(), group, mDataClearedCallback);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Privacy.DeleteBrowsingData.Action",
+                DeleteBrowsingDataAction.RWS_DELETE_ALL_DATA,
+                DeleteBrowsingDataAction.MAX_VALUE);
     }
 
     public boolean onDeleteRwsDataPreferenceClick(Preference preference) {

@@ -40,6 +40,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/url_constants.h"
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/views/widget/widget.h"
@@ -130,7 +131,9 @@ void GlicKeyedService::GuestAdded(content::WebContents* guest_contents) {
   }
   auto* page_handler = GetPageHandler(top);
   if (page_handler) {
-    page_handler->GuestAdded(guest_contents);
+    auto* webview = extensions::WebViewGuest::FromWebContents(guest_contents);
+    CHECK(webview);
+    page_handler->GuestAdded(webview);
   }
 }
 

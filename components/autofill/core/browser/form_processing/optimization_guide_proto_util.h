@@ -12,17 +12,21 @@ class FormData;
 }  // namespace optimization_guide::proto
 
 namespace autofill {
-class FormStructure;
 class FormData;
 
-// Converts `form_structure` to its corresponding form data proto. It does not
-// populate `field_value` fields.
-optimization_guide::proto::FormData ToFormDataProto(const FormData& form_data);
+// The same proto is used to make model requests and to collect data through the
+// extension API. In the former case, only a subset of fields are necessary and
+// thus the proto is only partially populated in this case.
+enum class FormDataProtoConversionReason {
+  kModelRequest = 0,
+  kExtensionAPI = 1,
+};
 
-// Convenience overload that calls the function above.
-// TODO(crbug.com/395038288): Remove once user annotations are removed.
+// Converts `form_data` to its corresponding form data proto, populating all
+// fields necessary for the `conversion_reason`.
 optimization_guide::proto::FormData ToFormDataProto(
-    const FormStructure& form_structure);
+    const FormData& form_data,
+    FormDataProtoConversionReason conversion_reason);
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PROCESSING_OPTIMIZATION_GUIDE_PROTO_UTIL_H_

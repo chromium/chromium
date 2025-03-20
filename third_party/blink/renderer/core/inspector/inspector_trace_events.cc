@@ -1665,9 +1665,7 @@ void inspector_event_dispatch_event::Data(perfetto::TracedValue context,
       dict.Add("key", keyboard_event->key());
     }
 
-    const auto* mouse_event = DynamicTo<MouseEvent>(event);
-    const auto* wheel_event = DynamicTo<WheelEvent>(event);
-    if (mouse_event || wheel_event) {
+    if (const auto* mouse_event = DynamicTo<MouseEvent>(event)) {
       dict.Add("x", mouse_event->x());
       dict.Add("y", mouse_event->y());
       dict.Add("modifier", GetModifierFromEvent(*mouse_event));
@@ -1677,10 +1675,11 @@ void inspector_event_dispatch_event::Data(perfetto::TracedValue context,
       dict.Add("button", mouse_event->button());
       dict.Add("buttons", mouse_event->buttons());
       dict.Add("clickCount", mouse_event->detail());
-      if (wheel_event) {
-        dict.Add("deltaX", wheel_event->deltaX());
-        dict.Add("deltaY", wheel_event->deltaY());
-      }
+    }
+
+    if (const auto* wheel_event = DynamicTo<WheelEvent>(event)) {
+      dict.Add("deltaX", wheel_event->deltaX());
+      dict.Add("deltaY", wheel_event->deltaY());
     }
   }
   SetCallStack(isolate, dict);

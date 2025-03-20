@@ -63,7 +63,8 @@ class EwalletManagerTest : public testing::Test {
   EwalletManagerTest()
       : ewallet_manager_(std::make_unique<EwalletManager>(
             &client_, /*api_client_creator=*/
-            base::BindOnce(&MockFacilitatedPaymentsApiClient::CreateApiClient),
+            base::BindRepeating(
+                &MockFacilitatedPaymentsApiClient::CreateApiClient),
             &optimization_guide_decider_)) {
     // Using Autofill preferences since we use autofill's infra for syncing
     // eWallets.
@@ -815,22 +816,6 @@ TEST_F(EwalletManagerTest,
       /*expected_bucket_count=*/1);
 }
 
-// Test that the `EWALLET_MERCHANT_ALLOWLIST` optimization type is
-// registered when EwalletManager is created.
-TEST_F(EwalletManagerTest, RegisterEwalletAllowlist) {
-  ewallet_manager_.reset();
-
-  EXPECT_CALL(optimization_guide_decider_,
-              RegisterOptimizationTypes(testing::ElementsAre(
-                  optimization_guide::proto::EWALLET_MERCHANT_ALLOWLIST)));
-
-  ewallet_manager_ = std::make_unique<EwalletManager>(
-      &client_,
-      /*api_client_creator=*/
-      base::BindOnce(&MockFacilitatedPaymentsApiClient::CreateApiClient),
-      &optimization_guide_decider_);
-}
-
 // Test that API availability is invoked for websites in the allowlist.
 TEST_F(EwalletManagerTest,
        TriggerEwalletPushPayment_UrlInAllowlist_ApiAvailabilityInvoked) {
@@ -1151,7 +1136,8 @@ class EwalletManagerOnTransactionResultLoggingTest
   EwalletManagerOnTransactionResultLoggingTest()
       : ewallet_manager_(std::make_unique<EwalletManager>(
             &client_, /*api_client_creator=*/
-            base::BindOnce(&MockFacilitatedPaymentsApiClient::CreateApiClient),
+            base::BindRepeating(
+                &MockFacilitatedPaymentsApiClient::CreateApiClient),
             &optimization_guide_decider_)) {
     test_api(*ewallet_manager_)
         .set_scheme(PaymentLinkValidator::Scheme::kShopeePay);

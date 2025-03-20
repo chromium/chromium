@@ -4,9 +4,11 @@
 
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
 
+#import "base/metrics/histogram_macros.h"
 #import "base/values.h"
 #import "components/dom_distiller/core/distillable_page_detector.h"
 #import "components/dom_distiller/core/page_features.h"
+#import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
@@ -15,6 +17,16 @@
 namespace {
 const char kScriptName[] = "reader_mode";
 const char kScriptHandlerName[] = "ReaderModeMessageHandler";
+
+void RecordHeuristicLatencyIfAvailable(const base::Value::Dict& body) {
+  std::optional<double> opt_latency = body.FindDouble("time");
+  if (!opt_latency.has_value()) {
+    return;
+  }
+  UMA_HISTOGRAM_TIMES(kReaderModeHeuristicLatencyHistogram,
+                      base::Milliseconds(opt_latency.value()));
+}
+
 }  // namespace
 
 ReaderModeJavaScriptFeature::ReaderModeJavaScriptFeature()
@@ -44,23 +56,26 @@ void ReaderModeJavaScriptFeature::ScriptMessageReceived(
     web::WebState* web_state,
     const web::ScriptMessage& message) {
   std::optional<GURL> url = message.request_url();
-  if (!url.has_value() || UrlHasChromeScheme(url.value())) {
+  if (!url.has_value() || UrlHasChromeScheme(url.value()) ||
+      url->IsAboutBlank()) {
     // Ignore any Chrome-handled pages. JavaScript cannot be executed on NTP,
     // so this is also ignored by design.
     return;
   }
 
   if (!message.body() || !message.body()->is_dict()) {
-    // TODO(crbug.com/399378832): Track as malformed response for DOM
-    // distillation.
+    UMA_HISTOGRAM_ENUMERATION(kReaderModeHeuristicResultHistogram,
+                              ReaderModeHeuristicResult::kMalformedResponse);
     return;
   }
+
+  RecordHeuristicLatencyIfAvailable(message.body()->GetDict());
 
   std::optional<std::vector<double>> result =
       TransformToDerivedFeatures(message.body()->GetDict(), url.value());
   if (!result.has_value()) {
-    // TODO(crbug.com/399378832): Track as malformed response for DOM
-    // distillation.
+    UMA_HISTOGRAM_ENUMERATION(kReaderModeHeuristicResultHistogram,
+                              ReaderModeHeuristicResult::kMalformedResponse);
     return;
   }
 
@@ -74,9 +89,26 @@ void ReaderModeJavaScriptFeature::ScriptMessageReceived(
                            long_page_detector->GetThreshold();
 
   if (long_page_score > 0 && page_score > 0) {
-    // TODO(crbug.com/399378832): Collect metrics to determine the accuracy of
-    // the DOM Distiller heuristic used by Blink platforms.
+    UMA_HISTOGRAM_ENUMERATION(kReaderModeHeuristicResultHistogram,
+                              ReaderModeHeuristicResult::kReaderModeEligible);
+  } else if (page_score <= 0 && long_page_score <= 0) {
+    UMA_HISTOGRAM_ENUMERATION(
+        kReaderModeHeuristicResultHistogram,
+        ReaderModeHeuristicResult::kReaderModeNotEligibleContentAndLength);
+  } else if (page_score <= 0) {
+    UMA_HISTOGRAM_ENUMERATION(
+        kReaderModeHeuristicResultHistogram,
+        ReaderModeHeuristicResult::kReaderModeNotEligibleContentOnly);
+  } else {
+    UMA_HISTOGRAM_ENUMERATION(
+        kReaderModeHeuristicResultHistogram,
+        ReaderModeHeuristicResult::kReaderModeNotEligibleContentLength);
   }
+}
+
+void ReaderModeJavaScriptFeature::TriggerReaderModeHeuristic(
+    web::WebFrame* web_frame) {
+  CallJavaScriptFunction(web_frame, "readerMode.retrieveDOMFeatures", {});
 }
 
 std::optional<std::vector<double>>

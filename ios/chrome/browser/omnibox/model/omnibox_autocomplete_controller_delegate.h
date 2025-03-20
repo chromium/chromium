@@ -5,6 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_AUTOCOMPLETE_CONTROLLER_DELEGATE_H_
 #define IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_AUTOCOMPLETE_CONTROLLER_DELEGATE_H_
 
+#import <UIKit/UIKit.h>
+
+@protocol AutocompleteSuggestionGroup;
 @class OmniboxAutocompleteController;
 
 // The delegate for the OmniboxAutocompleteController.
@@ -15,6 +18,35 @@
             (OmniboxAutocompleteController*)autocompleteController
                                            hasSuggestions:(BOOL)hasSuggestions
                                                isFocusing:(BOOL)isFocusing;
+
+/// Notifies the delegate of text alignment change.
+- (void)omniboxAutocompleteController:
+            (OmniboxAutocompleteController*)omniboxAutocompleteController
+               didUpdateTextAlignment:(NSTextAlignment)alignment;
+
+/// Notifies the delegate of semantic content attribute change
+- (void)omniboxAutocompleteController:
+            (OmniboxAutocompleteController*)omniboxAutocompleteController
+    didUpdateSemanticContentAttribute:
+        (UISemanticContentAttribute)semanticContentAttribute;
+
+/// Notifies the delegate of thumbnail update.
+- (void)omniboxAutocompleteController:
+            (OmniboxAutocompleteController*)omniboxAutocompleteController
+                didUpdateHasThumbnail:(BOOL)hasThumbnail;
+
+/// Notifies the delegate of the updated suggestions groups.
+- (void)omniboxAutocompleteController:
+            (OmniboxAutocompleteController*)omniboxAutocompleteController
+           didUpdateSuggestionsGroups:
+               (NSArray<id<AutocompleteSuggestionGroup>>*)suggestionGroups;
+
+/// Notifies the delegate when pedals are invalidated.
+- (void)omniboxAutocompleteController:
+            (OmniboxAutocompleteController*)omniboxAutocompleteController
+                  didInvalidatePedals:
+                      (NSArray<id<AutocompleteSuggestionGroup>>*)
+                          suggestionGroups;
 
 @end
 

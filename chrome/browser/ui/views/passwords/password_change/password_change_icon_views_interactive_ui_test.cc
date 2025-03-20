@@ -2,14 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/test/run_until.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/passwords/manage_passwords_test.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller_mock.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/views/passwords/password_change/password_change_icon_views.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -147,4 +152,25 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeIconViewsTest,
           ->GetPasswordChangeDelegate();
   delegate->Stop();
   EXPECT_FALSE(GetView()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeIconViewsTest, TestPinnedToolbarTooltip) {
+  PinnedToolbarActionsModel::Get(browser()->profile())
+      ->UpdatePinnedState(kActionShowPasswordsBubbleOrPage, true);
+  BrowserActions* browser_actions = browser()->browser_actions();
+  std::u16string_view tooltip =
+      actions::ActionManager::Get()
+          .FindAction(kActionShowPasswordsBubbleOrPage,
+                      browser_actions->root_action_item())
+          ->GetTooltipText();
+  ASSERT_EQ(tooltip,
+            l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_TOOLTIP_MANAGE));
+
+  SetupPasswordChange();
+  tooltip = actions::ActionManager::Get()
+                .FindAction(kActionShowPasswordsBubbleOrPage,
+                            browser_actions->root_action_item())
+                ->GetTooltipText();
+  ASSERT_EQ(tooltip, l10n_util::GetStringUTF16(
+                         IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_ICON_TOOLTIP));
 }

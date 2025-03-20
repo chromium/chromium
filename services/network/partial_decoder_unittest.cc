@@ -47,19 +47,6 @@ class MockReader {
   base::WeakPtrFactory<MockReader> weak_ptr_factory_{this};
 };
 
-std::vector<uint8_t> CompressGzip(std::string_view uncompressed_body) {
-  // Attempt to pick size that's large enough even in the worst case (deflate
-  // block headers should be shorter than 512 bytes, and deflating should never
-  // double size of data, modulo headers).
-  std::vector<uint8_t> compressed_body(uncompressed_body.size() * 2 + 512);
-  size_t compressed_size = compressed_body.size();
-  net::CompressGzip(uncompressed_body.data(), uncompressed_body.size(),
-                    reinterpret_cast<char*>(compressed_body.data()),
-                    &compressed_size, true /* gzip_framing */);
-  compressed_body.resize(compressed_size);
-  return compressed_body;
-}
-
 void CheckResult(std::unique_ptr<PartialDecoder> partial_decoder,
                  std::string_view expected_decoded_data,
                  base::span<const uint8_t> expected_compressed_data,
@@ -101,7 +88,7 @@ class PartialDecoderTest : public testing::Test {
 };
 
 TEST_F(PartialDecoderTest, GzipSimpleSyncRead) {
-  const auto compressed = CompressGzip(kTestBody);
+  const auto compressed = net::CompressGzip(kTestBody);
   MockReader reader;
   EXPECT_CALL(reader, Read(_, _))
       .WillOnce([&](net::IOBuffer* dest, int dest_size) {
@@ -123,7 +110,7 @@ TEST_F(PartialDecoderTest, GzipSimpleSyncRead) {
 }
 
 TEST_F(PartialDecoderTest, GzipSimpleAsyncRead) {
-  const auto compressed = CompressGzip(kTestBody);
+  const auto compressed = net::CompressGzip(kTestBody);
   MockReader reader;
   std::unique_ptr<PartialDecoder> partial_decoder;
   EXPECT_CALL(reader, Read(_, _))
@@ -148,7 +135,7 @@ TEST_F(PartialDecoderTest, GzipSimpleAsyncRead) {
 }
 
 TEST_F(PartialDecoderTest, GzipSyncTwoReads) {
-  const auto compressed = CompressGzip(kTestBody);
+  const auto compressed = net::CompressGzip(kTestBody);
   auto [first_chunk, second_chunk] =
       base::span(compressed).split_at(compressed.size() / 2);
   MockReader reader;
@@ -177,7 +164,7 @@ TEST_F(PartialDecoderTest, GzipSyncTwoReads) {
 }
 
 TEST_F(PartialDecoderTest, GzipAsyncTwoReads) {
-  const auto compressed = CompressGzip(kTestBody);
+  const auto compressed = net::CompressGzip(kTestBody);
   auto [first_chunk, second_chunk] =
       base::span(compressed).split_at(compressed.size() / 2);
 
@@ -280,7 +267,7 @@ TEST_F(PartialDecoderTest, NoDecoding) {
 }
 
 TEST_F(PartialDecoderTest, GzipPartialRead) {
-  const auto compressed = CompressGzip(kTestBody);
+  const auto compressed = net::CompressGzip(kTestBody);
   // Only read half of the compressed data.
   static constexpr size_t kReadSize = kTestBody.size() / 2;
 
@@ -339,7 +326,7 @@ TEST_F(PartialDecoderTest, NoDecodingPartialRead) {
 }
 
 TEST_F(PartialDecoderTest, ConsumeRawDataInChunks) {
-  const auto compressed = CompressGzip(kTestBody);
+  const auto compressed = net::CompressGzip(kTestBody);
   auto [first_chunk, second_chunk] =
       base::span(compressed).split_at(compressed.size() / 2);
   MockReader reader;
