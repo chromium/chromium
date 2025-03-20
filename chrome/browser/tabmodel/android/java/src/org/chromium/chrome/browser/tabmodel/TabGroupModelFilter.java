@@ -17,21 +17,7 @@ import java.util.Set;
 
 /** Interface for getting tab groups for the tabs in the {@link TabModel}. */
 @NullMarked
-public interface TabGroupModelFilter extends TabList {
-    /**
-     * Adds a {@link TabModelObserver} to be notified on {@link TabGroupModelFilter} changes.
-     *
-     * @param observer The {@link TabModelObserver} to add.
-     */
-    void addObserver(TabModelObserver observer);
-
-    /**
-     * Removes a {@link TabModelObserver}.
-     *
-     * @param observer The {@link TabModelObserver} to remove.
-     */
-    void removeObserver(TabModelObserver observer);
-
+public interface TabGroupModelFilter extends SupportsTabModelObserver, TabList {
     /**
      * This method adds a {@link TabGroupModelFilterObserver} to be notified on {@link
      * TabGroupModelFilter} changes.
