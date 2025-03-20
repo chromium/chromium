@@ -1536,7 +1536,28 @@ source_set("platform_browser_tests") {
   }
 
   if (safe_browsing_mode != 0) {
-    deps += [ "//components/safe_browsing/content/browser:client_side_detection_service" ]
+    sources += [
+      "../browser/safe_browsing/safe_browsing_blocking_page_platform_test.cc",
+      "../browser/safe_browsing/safe_browsing_blocking_page_platform_test_helper.cc",
+      "../browser/safe_browsing/safe_browsing_blocking_page_platform_test_helper.h",
+    ]
+    deps += [
+      "//chrome/browser/safe_browsing:metrics_collector",
+      "//chrome/browser/safe_browsing:verdict_cache_manager_factory",
+      "//components/enterprise/connectors/core",
+      "//components/safe_browsing/content/browser",
+      "//components/safe_browsing/content/browser:client_side_detection_service",
+      "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
+      "//components/safe_browsing/core/browser:verdict_cache_manager",
+      "//components/security_interstitials/content:security_interstitial_page",
+      "//components/unified_consent:unified_consent",
+    ]
+    if (safe_browsing_mode == 1) {
+      deps += [
+        "//chrome/browser/ui/hats",
+        "//chrome/browser/ui/hats:test_support",
+      ]
+    }
   }
 }
 
