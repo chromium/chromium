@@ -35,8 +35,10 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.chrome.browser.back_press.BackPressMetrics;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -555,6 +557,86 @@ public class NavigateTest {
                 Boolean.FALSE,
                 toolbarManager.getHandleBackPressChangedSupplier().get());
         onView(withId(R.id.back_button)).check(matches(Matchers.not(isEnabled())));
+    }
+
+    /** Test the basic scenario in which the first navigation is triggered by gesture. */
+    @Test
+    @MediumTest
+    @Feature({"Navigation"})
+    public void testBackFalsing_basic() throws Exception {
+        final String[] urls = {
+            mTestServer.getURL("/chrome/test/data/android/navigate/one.html"),
+            mTestServer.getURL("/chrome/test/data/android/navigate/two.html"),
+        };
+        navigateAndObserve(urls[0]);
+
+        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        // Record FORWARD if the first gesture triggered by gesture and second gesture is FORWARD.
+        navigateAndObserve(urls[1]);
+        ThreadUtils.runOnUiThreadBlocking(tab::goBack);
+        ChromeTabUtils.waitForTabPageLoaded(tab, urls[0]);
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.BackPress.Backfalsing2",
+                        BackPressMetrics.NavigationDirection.FORWARD);
+        ThreadUtils.runOnUiThreadBlocking(tab::goForward);
+        ChromeTabUtils.waitForTabPageLoaded(tab, urls[1]);
+
+        watcher.assertExpected("Should record backfalsing histogram");
+
+        ThreadUtils.runOnUiThreadBlocking(tab::goBack);
+        ChromeTabUtils.waitForTabPageLoaded(tab, urls[0]);
+
+        // Record BACKWARD if the first gesture triggered by gesture and second gesture is BACKWARD.
+        ThreadUtils.runOnUiThreadBlocking(tab::goForward);
+        ChromeTabUtils.waitForTabPageLoaded(tab, urls[1]);
+        watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.BackPress.Backfalsing2",
+                        BackPressMetrics.NavigationDirection.BACKWARD);
+        ThreadUtils.runOnUiThreadBlocking(tab::goBack);
+        ChromeTabUtils.waitForTabPageLoaded(tab, urls[0]);
+
+        watcher.assertExpected("Should record backfalsing histogram");
+    }
+
+    /** Test the histogram should not be recorded if the url does not change when navigating. */
+    @Test
+    @MediumTest
+    @Feature({"Navigation"})
+    public void testBackFalsing_allSameUrls() throws Exception {
+        String url = mTestServer.getURL("/chrome/test/data/android/navigate/one.html");
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.BackPress.Backfalsing2")
+                        .build();
+        navigateAndObserve(url);
+        navigateAndObserve(url);
+        navigateAndObserve(url);
+        watcher.assertExpected("No record if visiting the same urls");
+    }
+
+    /** Test the histogram should not recorded if the navigation is not triggered by gesture. */
+    @Test
+    @MediumTest
+    @Feature({"Navigation"})
+    public void testBackFalsing_clickOnLinks() throws Exception {
+        final String[] urls = {
+            mTestServer.getURL("/chrome/test/data/android/navigate/one.html"),
+            mTestServer.getURL("/chrome/test/data/android/navigate/two.html"),
+        };
+        navigateAndObserve(urls[0]);
+        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+
+        // Not record when the first navigation is not triggered by gesture.
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.BackPress.Backfalsing2",
+                        BackPressMetrics.NavigationDirection.NEITHER);
+        navigateAndObserve(urls[1]);
+        ThreadUtils.runOnUiThreadBlocking(tab::goBack);
+        ChromeTabUtils.waitForTabPageLoaded(tab, urls[0]);
+        watcher.assertExpected("Neither if first transition is not triggered by gesture.");
     }
 
     @Test
