@@ -1313,7 +1313,7 @@ suite('EnableRelatedWebsiteSets', function() {
       });
 
   test(
-      'show RWS decription, clear button and data usage when filtering by RWS',
+      'show RWS decription, delete button and data usage when filtering by RWS',
       function() {
         TEST_SITE_GROUPS.forEach(siteGroup => {
           testElement.siteGroupMap.set(
@@ -1347,7 +1347,7 @@ suite('EnableRelatedWebsiteSets', function() {
             relatedWebsiteSetsDescription!.innerText.trim());
         assertTrue(sortComponent!.hidden);
         assertEquals(
-            loadTimeData.getString('siteSettingsDeleteAllStorageLabel'),
+            loadTimeData.getString('allSitesRwsDeleteDataButtonLabel'),
             clearAllButton.innerText.trim());
         assertEquals(
             loadTimeData.substituteString(
@@ -1410,7 +1410,7 @@ suite('EnableRelatedWebsiteSets', function() {
                   '#clearAllStorageDialogSignOutLabel')!.innerText.trim();
 
       assertEquals(
-          loadTimeData.getString('siteSettingsDeleteAllStorageDialogTitle'),
+          loadTimeData.getString('allSitesRwsDeleteDataDialogTitle'),
           confirmationTitle);
       const messageId = appInstalled ?
           'siteSettingsDeleteRwsStorageConfirmationInstalled' :
