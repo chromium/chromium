@@ -1758,6 +1758,17 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//chrome/services/speech/soda/soda_client.h:LoadSodaResult) -->
 
+<!-- LINT.IfChange(MainContentExtractionClientType) -->
+
+<enum name="MainContentExtractionClientType">
+  <int value="0" label="Tests"/>
+  <int value="1" label="Reading Mode"/>
+  <int value="2" label="MainNode"/>
+  <int value="3" label="ChromeOS Mahi"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/screen_ai/screen_ai_service_impl.cc:MainContentExtractionClientType) -->
+
 <!-- LINT.IfChange(MainNodeAnnotationResult) -->
 
 <enum name="MainNodeAnnotationResult">
@@ -1767,6 +1778,20 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <!-- LINT.ThenChange(//content/renderer/accessibility/annotations/ax_main_node_annotator.cc:MainNodeAnnotationResult) -->
+
+<!-- LINT.IfChange(OCRClientType) -->
+
+<enum name="OCRClientType">
+  <int value="0" label="Tests"/>
+  <int value="1" label="PDF Viewer"/>
+  <int value="2" label="Local Search"/>
+  <int value="3" label="Camera App"/>
+  <int value="4" label="Not Used"/>
+  <int value="5" label="MediaApp"/>
+  <int value="6" label="Screenshot Text Detection"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/screen_ai/screen_ai_service_impl.cc:OCRClientType) -->
 
 <!-- LINT.IfChange(PdfOcrRequestStatus) -->
 

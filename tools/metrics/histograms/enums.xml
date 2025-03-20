@@ -20918,16 +20918,6 @@ Called by update_net_error_codes.py.-->
   <int value="14" label="Access Denied"/>
 </enum>
 
-<enum name="OCRClientType">
-  <int value="0" label="Tests"/>
-  <int value="1" label="PDF Viewer"/>
-  <int value="2" label="Local Search"/>
-  <int value="3" label="Camera App"/>
-  <int value="4" label="Not Used"/>
-  <int value="5" label="MediaApp"/>
-  <int value="6" label="Screenshot Text Detection"/>
-</enum>
-
 <enum name="OCSPResponseStatus">
   <int value="0" label="Not checked"/>
   <int value="1" label="Missing"/>

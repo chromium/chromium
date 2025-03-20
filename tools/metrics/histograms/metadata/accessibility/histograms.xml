@@ -3002,6 +3002,50 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram
+    name="Accessibility.ScreenAI.MainContentExtraction.Error.{error_type}"
+    enum="MainContentExtractionClientType" expires_after="2026-03-21">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records if main content extraction failed because {error_type}.
+  </summary>
+  <token key="error_type">
+    <variant name="ResultEmpty" summary="Screen2x returned empty"/>
+    <variant name="ResultNull" summary="Screen2x returned null"/>
+    <variant name="SnapshotEmpty" summary="input snapshot was empty"/>
+    <variant name="SnapshotProto"
+        summary="input snapshot failed to convert to proto"/>
+    <variant name="SnapshotUnserialize"
+        summary="input snapshot could not be unserialized"/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.ScreenAI.MainContentExtraction.Latency.{result}"
+    units="ms" expires_after="2025-09-07">
+  <owner>rhalavati@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the time taken to run main content extraction when it has {result}
+    to return non empty results.
+  </summary>
+  <token key="result">
+    <variant name="Failure" summary="failed"/>
+    <variant name="Success" summary="succeeded"/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.ScreenAI.MainContentExtraction.Successful2"
+    enum="BooleanSuccess" expires_after="2026-03-21">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records if a request to Main Content Extraction feature of ScreenAI service
+    returned non empty results. This metric is recorded only for requests that
+    are sent to the Screen2x library and did not fail in preprocessing steps.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ScreenAI.OCR.ClientType" enum="OCRClientType"
     expires_after="2026-03-01">
   <owner>rhalavati@chromium.org</owner>
@@ -3090,6 +3134,16 @@ even if they fit the naming pattern. -->
   <summary>
     Records the client type of the OCR requests that are over the OCR resolution
     threshold and will be downsized before processsing.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ScreenAI.OCR.Successful" enum="BooleanSuccess"
+    expires_after="2026-03-21">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records if a request to Optical Character Recognition feature of ScreenAI
+    service was successful or not.
   </summary>
 </histogram>
 
@@ -3225,19 +3279,6 @@ even if they fit the naming pattern. -->
     <variant name="MainContentExtraction"
         summary="Main Content Extraction functionality"/>
     <variant name="OCR" summary="OCR functionality"/>
-  </token>
-</histogram>
-
-<histogram name="Accessibility.ScreenAI.{Feature}.Successful"
-    enum="BooleanSuccess" expires_after="2025-09-07">
-  <owner>rhalavati@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Records if a request to {Feature} of ScreenAI service was successful or not.
-  </summary>
-  <token key="Feature">
-    <variant name="MainContentExtraction" summary="Main Content Extraction"/>
-    <variant name="OCR" summary="Optical Character Recognition"/>
   </token>
 </histogram>
 
