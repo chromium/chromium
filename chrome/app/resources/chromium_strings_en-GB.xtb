@@ -402,6 +402,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="6539122709674868420">Your organisation closes Chromium when it isn't used for <ph name="TIMEOUT_DURATION" />. Browsing data was deleted. This could include history, autofill and downloads.</translation>
 <translation id="6542839706527980775">Each profile holds its own Chromium info, like bookmarks, history, passwords and more</translation>
 <translation id="6563921047760808519">Learn more about <ph name="BEGIN_LINK" />how Chromium keeps your data private<ph name="END_LINK" /></translation>
+<translation id="6564039629497156115">Changes to this setting will be applied once Chromium restarts.</translation>
 <translation id="656935081669708576">You can switch to see passwords from another Chromium profile</translation>
 <translation id="6570579332384693436">To fix spelling errors, Chromium sends the text that you type in text fields to Google</translation>
 <translation id="6598877126913850652">Go to Chromium notification settings</translation>

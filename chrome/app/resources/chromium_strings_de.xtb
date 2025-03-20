@@ -399,6 +399,7 @@
 <translation id="6539122709674868420">In deiner Organisation wird Chromium nach <ph name="TIMEOUT_DURATION" /> Inaktivität geschlossen. Browserdaten wurden gelöscht. Dazu können der Verlauf, Autofill-Daten und Downloads gehören.</translation>
 <translation id="6542839706527980775">In jedem Profil sind eigene Chromium-Daten wie zum Beispiel Lesezeichen, Verlauf und Passwörter enthalten</translation>
 <translation id="6563921047760808519"><ph name="BEGIN_LINK" />Weitere Informationen zum Datenschutz bei Chromium<ph name="END_LINK" /></translation>
+<translation id="6564039629497156115">Änderungen an dieser Einstellung werden nach dem Neustart von Chromium übernommen.</translation>
 <translation id="656935081669708576">Wenn du das Profil wechselst, kannst du dir Passwörter anderer Chromium-Profile anzeigen lassen</translation>
 <translation id="6570579332384693436">Zur Behebung von Tippfehlern sendet Chromium eingegebenen Text an Google</translation>
 <translation id="6598877126913850652">Zu Chromium-Benachrichtigungseinstellungen wechseln</translation>

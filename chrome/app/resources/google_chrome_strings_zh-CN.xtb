@@ -414,6 +414,7 @@
 <translation id="6520670145826811516">如需使用位置信息，请在<ph name="BEGIN_LINK" />系统设置<ph name="END_LINK" />中授予 Chrome 访问权限</translation>
 <translation id="659498884637196217">在此设备上的 Google 密码管理工具中</translation>
 <translation id="6632473616050862500">ChromeOS Flex 是借助了其他<ph name="BEGIN_LINK_CROS_OSS" />开放源代码软件<ph name="END_LINK_CROS_OSS" />才得以问世。</translation>
+<translation id="6634299872736643004">对此设置的更改将在 Chrome 重启后生效。</translation>
 <translation id="6660596345553328257">登录 Chrome？</translation>
 <translation id="6664219008737641504">如果您忘记了口令或想更改此设置，请<ph name="SETTINGS_LINK" />您账号中的 Chrome 数据</translation>
 <translation id="6676384891291319759">访问互联网</translation>

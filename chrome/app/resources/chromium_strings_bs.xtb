@@ -402,6 +402,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="6539122709674868420">Vaš organizacija zatvara Chromium kada se ne koristi <ph name="TIMEOUT_DURATION" />. Podaci o pregledanju su izbrisani. Ovo može uključivati historiju, automatsko popunjavanje i preuzimanja.</translation>
 <translation id="6542839706527980775">Svaki profil sadrži svoje Chromium informacije, poput oznaka, historije, lozinki i još mnogo toga</translation>
 <translation id="6563921047760808519">Saznajte više o tome <ph name="BEGIN_LINK" />kako Chromium štiti privatnost vaših podataka<ph name="END_LINK" /></translation>
+<translation id="6564039629497156115">Promjene postavke će se primijeniti čim se Chromium ponovo pokrene.</translation>
 <translation id="656935081669708576">Možete se prebaciti da vidite lozinke s drugog Chromium profila</translation>
 <translation id="6570579332384693436">Zbog ispravke pravopisnih grešaka, Chromium šalje Googleu tekst koji napišete u polja.</translation>
 <translation id="6598877126913850652">Idi u postavke obavještenja Chromiuma</translation>

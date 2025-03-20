@@ -416,6 +416,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6520670145826811516">Konumunuzu kullanması için <ph name="BEGIN_LINK" />sistem ayarlarında<ph name="END_LINK" /> Chrome'a erişim izni verin</translation>
 <translation id="659498884637196217">Bu cihazdaki Google Şifre Yöneticisi'nde</translation>
 <translation id="6632473616050862500">ChromeOS Flex, ek <ph name="BEGIN_LINK_CROS_OSS" />açık kaynak yazılımlardan<ph name="END_LINK_CROS_OSS" /> yararlanılarak geliştirilmiştir.</translation>
+<translation id="6634299872736643004">Bu ayarda yapılan değişiklikler, Chrome yeniden başlatıldığında uygulanır.</translation>
 <translation id="6660596345553328257">Chrome'da oturum açılsın mı?</translation>
 <translation id="6664219008737641504">Parolanızı unuttuysanız veya bu ayarı değiştirmek istiyorsanız hesabınızdaki Chrome verilerini <ph name="SETTINGS_LINK" />.</translation>
 <translation id="6676384891291319759">İnternet'e erişin</translation>

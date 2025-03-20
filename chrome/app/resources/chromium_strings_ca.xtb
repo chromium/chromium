@@ -400,6 +400,7 @@
 <translation id="6539122709674868420">La teva organització tanca Chromium quan no s'utilitza durant <ph name="TIMEOUT_DURATION" />. Les dades de navegació s'han suprimit. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades.</translation>
 <translation id="6542839706527980775">Cada perfil conserva la seva pròpia informació de Chromium, com ara les adreces d'interès, l'historial, les contrasenyes i més</translation>
 <translation id="6563921047760808519">Més informació sobre <ph name="BEGIN_LINK" />com Chromium manté la privadesa de les teves dades<ph name="END_LINK" /></translation>
+<translation id="6564039629497156115">Els canvis en aquesta opció de configuració s'aplicaran quan Chromium es reiniciï.</translation>
 <translation id="656935081669708576">Pots canviar de perfil per veure les contrasenyes d'un altre perfil de Chromium</translation>
 <translation id="6570579332384693436">Per corregir els errors d'ortografia, Chromium envia a Google el que escrius als camps de text</translation>
 <translation id="6598877126913850652">Ves a la configuració de notificacions de Chromium</translation>

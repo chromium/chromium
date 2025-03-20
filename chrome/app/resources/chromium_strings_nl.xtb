@@ -401,6 +401,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="6539122709674868420">Je organisatie sluit Chromium als deze <ph name="TIMEOUT_DURATION" /> niet wordt gebruikt. Browsegegevens zijn verwijderd. Dit kunnen onder andere de geschiedenis, gegevens voor automatisch invullen en downloads zijn.</translation>
 <translation id="6542839706527980775">Elk profiel heeft eigen Chromium-informatie, zoals bookmarks, geschiedenis en wachtwoorden</translation>
 <translation id="6563921047760808519">Meer informatie over <ph name="BEGIN_LINK" />hoe Chromium je gegevens privé houdt<ph name="END_LINK" /></translation>
+<translation id="6564039629497156115">Wijzigingen in deze instelling worden toegepast zodra Chromium opnieuw wordt gestart.</translation>
 <translation id="656935081669708576">Je kunt schakelen om wachtwoorden van een ander Chromium-profiel te bekijken</translation>
 <translation id="6570579332384693436">Chromium verzendt de tekst die je in tekstvelden typt naar Google om spelfouten te corrigeren</translation>
 <translation id="6598877126913850652">Ga naar instellingen voor Chromium-meldingen</translation>

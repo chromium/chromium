@@ -400,6 +400,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="6539122709674868420">Ваша організація закриває веб-переглядач Chromium, якщо він не використовується протягом <ph name="TIMEOUT_DURATION" />. Дані веб-перегляду, зокрема історію, дані автозаповнення й завантаження, було видалено.</translation>
 <translation id="6542839706527980775">У кожному профілі Chromium зберігається власна інформація, як-от закладки, історія, паролі тощо</translation>
 <translation id="6563921047760808519">Докладніше про те, <ph name="BEGIN_LINK" />як Chromium захищає ваші дані<ph name="END_LINK" /></translation>
+<translation id="6564039629497156115">Внесені в це налаштування зміни буде застосовано після перезапуску Chromium.</translation>
 <translation id="656935081669708576">Щоб переглянути паролі з іншого профілю Chromium, перейдіть у нього</translation>
 <translation id="6570579332384693436">Щоб виправляти орфографічні помилки, Chromium надсилає введений текст у Google</translation>
 <translation id="6598877126913850652">Перейти до налаштувань сповіщень Chromium</translation>

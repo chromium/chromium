@@ -400,6 +400,7 @@
 <translation id="6539122709674868420">Tổ chức của bạn sẽ đóng Chromium khi Chromium không được dùng đến trong <ph name="TIMEOUT_DURATION" />. Dữ liệu duyệt web đã bị xoá. Dữ liệu này có thể bao gồm nhật ký, nội dung tự động điền và tệp đã tải xuống.</translation>
 <translation id="6542839706527980775">Mỗi hồ sơ đều có thông tin riêng trên Chromium, chẳng hạn như dấu trang, các trang web đã truy cập, mật khẩu và nhiều thông tin khác</translation>
 <translation id="6563921047760808519">Tìm hiểu thêm về <ph name="BEGIN_LINK" />cách Chromium bảo mật dữ liệu của bạn<ph name="END_LINK" /></translation>
+<translation id="6564039629497156115">Các thay đổi đối với chế độ cài đặt này sẽ được áp dụng sau khi Chromium khởi động lại.</translation>
 <translation id="656935081669708576">Bạn có thể chuyển để xem mật khẩu trong một hồ sơ Chromium khác</translation>
 <translation id="6570579332384693436">Để sửa lỗi chính tả, Chromium sẽ gửi cho Google nội dung bạn nhập vào các trường văn bản</translation>
 <translation id="6598877126913850652">Chuyển đến phần cài đặt thông báo của Chromium</translation>

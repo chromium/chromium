@@ -399,6 +399,7 @@
 <translation id="6539122709674868420">由於 Chromium 閒置超過 <ph name="TIMEOUT_DURATION" />，貴機構已將其關閉。瀏覽資料已刪除，當中可能包含歷史記錄、自動填入的資料和下載內容。</translation>
 <translation id="6542839706527980775">每個設定檔都有獨立專屬的 Chromium 資訊，例如書籤、歷史記錄和密碼等等</translation>
 <translation id="6563921047760808519">進一步瞭解 <ph name="BEGIN_LINK" />Chromium 如何保護你的資料隱私<ph name="END_LINK" /></translation>
+<translation id="6564039629497156115">系統會在 Chromium 重新啟動後套用這項設定的變更。</translation>
 <translation id="656935081669708576">你可以切換查看其他 Chromium 設定檔的密碼</translation>
 <translation id="6570579332384693436">為修正拼字錯誤，Chromium 會將你在文字欄位輸入的文字傳送給 Google</translation>
 <translation id="6598877126913850652">前往 Chromium 通知設定</translation>

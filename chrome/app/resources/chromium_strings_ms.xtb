@@ -400,6 +400,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="6539122709674868420">Organisasi anda menutup Chromium apabila apl tersebut tidak digunakan selama <ph name="TIMEOUT_DURATION" />. Data semakan imbas telah dipadamkan. Pemadaman ini termasuk sejarah, autolengkap dan muat turun.</translation>
 <translation id="6542839706527980775">Setiap profil menyimpan maklumat Chromium profil itu sendiri seperti penanda halaman, sejarah, kata laluan dan pelbagai lagi</translation>
 <translation id="6563921047760808519">Ketahui lebih lanjut tentang <ph name="BEGIN_LINK" />cara Chromium mengekalkan data anda peribadi<ph name="END_LINK" /></translation>
+<translation id="6564039629497156115">Perubahan pada tetapan ini akan digunakan setelah Chromium dimulakan semula.</translation>
 <translation id="656935081669708576">Anda boleh menukar profil untuk melihat kata laluan daripada profil Chromium yang lain</translation>
 <translation id="6570579332384693436">Untuk membetulkan kesilapan ejaan, Chromium menghantar teks yang anda taip dalam medan teks kepada Google</translation>
 <translation id="6598877126913850652">Pergi ke tetapan pemberitahuan Chromium</translation>

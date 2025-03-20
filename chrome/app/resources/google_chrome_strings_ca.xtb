@@ -415,6 +415,7 @@
 <translation id="6520670145826811516">Per poder utilitzar la ubicació, dona accés a Chrome des de la <ph name="BEGIN_LINK" />configuració del sistema<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">Al gestor de contrasenyes de Google en aquest dispositiu</translation>
 <translation id="6632473616050862500">ChromeOS Flex és possible gràcies a <ph name="BEGIN_LINK_CROS_OSS" />programari lliure<ph name="END_LINK_CROS_OSS" /> addicional.</translation>
+<translation id="6634299872736643004">Els canvis en aquesta opció de configuració s'aplicaran quan Chrome es reiniciï.</translation>
 <translation id="6660596345553328257">Vols iniciar la sessió a Chrome?</translation>
 <translation id="6664219008737641504">Si has oblidat la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="SETTINGS_LINK" /> les dades de Chrome del teu compte</translation>
 <translation id="6676384891291319759">Accedeix a Internet</translation>

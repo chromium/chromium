@@ -400,6 +400,7 @@
 <translation id="6539122709674868420">Organisasi Anda menutup Chromium saat tidak digunakan selama <ph name="TIMEOUT_DURATION" />. Data penjelajahan dihapus. Data ini dapat mencakup histori, isi otomatis, dan download.</translation>
 <translation id="6542839706527980775">Setiap profil memiliki info Chromium tersendiri, seperti bookmark, histori, sandi, dan lainnya</translation>
 <translation id="6563921047760808519">Pelajari lebih lanjut <ph name="BEGIN_LINK" />cara Chromium menjaga privasi data Anda<ph name="END_LINK" /></translation>
+<translation id="6564039629497156115">Perubahan pada setelan ini akan diterapkan setelah Chromium dimulai ulang.</translation>
 <translation id="656935081669708576">Anda dapat beralih untuk melihat sandi dari profil Chromium lainnya</translation>
 <translation id="6570579332384693436">Untuk memperbaiki kesalahan ejaan, Chromium mengirimkan teks yang Anda ketik di kolom teks ke Google</translation>
 <translation id="6598877126913850652">Buka setelan notifikasi Chromium</translation>

@@ -400,6 +400,7 @@
 <translation id="6539122709674868420">Teie organisatsioon suleb Chromiumi, kui seda ei kasutata <ph name="TIMEOUT_DURATION" /> jooksul. Sirvimisandmed kustutati. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.</translation>
 <translation id="6542839706527980775">Igal profiilil on oma Chromiumi teave, nagu järjehoidjad, ajalugu, paroolid ja muu</translation>
 <translation id="6563921047760808519">Vaadake lisateavet, <ph name="BEGIN_LINK" />kuidas Chromium teie andmeid privaatsena hoiab<ph name="END_LINK" /></translation>
+<translation id="6564039629497156115">Selle seade muudatused rakendatakse Chromium taaskäivitamisel.</translation>
 <translation id="656935081669708576">Saate lülituda, et näha paroole teiselt Chromiumi profiililt</translation>
 <translation id="6570579332384693436">Õigekirjavigade parandamiseks saadab Chromium teie tekstiväljadel sisestatud teksti Google'ile</translation>
 <translation id="6598877126913850652">Ava Chromiumi märguandeseaded</translation>

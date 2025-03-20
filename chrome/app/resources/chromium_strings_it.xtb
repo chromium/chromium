@@ -399,6 +399,7 @@
 <translation id="6539122709674868420">La tua organizzazione chiude Chromium quando non viene utilizzato per <ph name="TIMEOUT_DURATION" />. I dati di navigazione sono stati eliminati. Potrebbero essere inclusi cronologia, compilazione automatica e download.</translation>
 <translation id="6542839706527980775">Ogni profilo dispone delle proprie informazioni di Chromium, come preferiti, cronologia, password e altro</translation>
 <translation id="6563921047760808519">Scopri di più su <ph name="BEGIN_LINK" />come Chromium mantiene privati i tuoi dati<ph name="END_LINK" /></translation>
+<translation id="6564039629497156115">Le modifiche a questa impostazione verranno applicate al riavvio di Chromium.</translation>
 <translation id="656935081669708576">Puoi cambiare per vedere le password di un altro profilo Chromium</translation>
 <translation id="6570579332384693436">Per correggere gli errori ortografici, Chromium invia a Google il testo digitato nei campi di testo</translation>
 <translation id="6598877126913850652">Vai alle impostazioni di notifica di Chromium</translation>
