@@ -68,6 +68,10 @@
 #include "ui/aura/window_tree_host.h"
 #endif
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
+#endif
+
 using content::DesktopMediaID;
 using content::RenderFrameHost;
 using content::WebContents;
@@ -370,8 +374,14 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
 #endif
 
   SetModalType(params.modality);
+  int message_id = IDS_DESKTOP_MEDIA_PICKER_SHARE;
+#if BUILDFLAG(ENABLE_GLIC)
+  if (request_source_ == RequestSource::kGlic) {
+    message_id = IDS_GLIC_SCREEN_PICKER_CTA;
+  }
+#endif
   SetButtonLabel(ui::mojom::DialogButton::kOk,
-                 l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_SHARE));
+                 l10n_util::GetStringUTF16(message_id));
   SetButtonStyle(ui::mojom::DialogButton::kCancel, ui::ButtonStyle::kTonal);
   RegisterDeleteDelegateCallback(base::BindOnce(
       [](DesktopMediaPickerDialogView* dialog) {
@@ -541,6 +551,13 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
                                      params.app_name, params.target_name));
     }
   }
+
+#if BUILDFLAG(ENABLE_GLIC)
+  if (request_source_ == RequestSource::kGlic) {
+    description_label_->SetText(
+        l10n_util::GetStringUTF16(IDS_GLIC_SCREEN_PICKER_DESCRIPTION));
+  }
+#endif
 
   DCHECK(!categories_.empty());
 
@@ -898,6 +915,11 @@ std::u16string DesktopMediaPickerDialogView::GetWindowTitle() const {
     return l10n_util::GetStringFUTF16(IDS_DISPLAY_MEDIA_PICKER_TITLE,
                                       app_name_);
   }
+#if BUILDFLAG(ENABLE_GLIC)
+  if (request_source_ == RequestSource::kGlic) {
+    return l10n_util::GetStringUTF16(IDS_GLIC_SCREEN_PICKER_HEADLINE);
+  }
+#endif
 
   int title_id = IDS_DESKTOP_MEDIA_PICKER_TITLE;
 
