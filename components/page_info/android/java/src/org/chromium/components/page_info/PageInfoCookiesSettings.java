@@ -371,6 +371,24 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                         }
                         return false;
                     });
+            mRwsInUse.setManagedPreferenceDelegate(
+                    new ForwardingManagedPreferenceDelegate(
+                            getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
+                        @Override
+                        public boolean isPreferenceControlledByPolicy(Preference preference) {
+                            return getSiteSettingsDelegate()
+                                    .isPartOfManagedRelatedWebsiteSet(currentOrigin);
+                        }
+
+                        /*
+                         * The entrypoint to site settings should work even for sites in a
+                         * managed set.
+                         */
+                        @Override
+                        public boolean isPreferenceClickDisabled(Preference preference) {
+                            return false;
+                        }
+                    });
         } else {
             mRwsInUse.setTitle(R.string.cookie_info_rws_title);
             mRwsInUse.setSummary(
