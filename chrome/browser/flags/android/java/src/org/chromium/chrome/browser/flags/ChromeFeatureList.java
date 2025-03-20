@@ -192,6 +192,7 @@ public abstract class ChromeFeatureList {
             "AndroidTabDeclutterRescueKillswitch";
     public static final String ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH =
             "AndroidTabSkipSaveTabsTaskKillswitch";
+    public static final String ANDROID_THEME_MODULE = "AndroidThemeModule";
     public static final String ANDROID_WINDOW_POPUP_LARGE_SCREEN = "AndroidWindowPopupLargeScreen";
     public static final String ANIMATED_IMAGE_DRAG_SHADOW = "AnimatedImageDragShadow";
     public static final String ANDROID_MINIMAL_UI_LARGE_SCREEN = "AndroidMinimalUiLargeScreen";
@@ -628,6 +629,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_TAB_DECLUTTER_DEDUPE_TAB_IDS_KILL_SWITCH, true);
     public static final CachedFlag sAndroidMinimalUiLargeScreen =
             newCachedFlag(ANDROID_MINIMAL_UI_LARGE_SCREEN, false);
+    public static final CachedFlag sAndroidThemeModule = newCachedFlag(ANDROID_THEME_MODULE, false);
     public static final CachedFlag sAndroidWindowPopupLargeScreen =
             newCachedFlag(ANDROID_WINDOW_POPUP_LARGE_SCREEN, false);
     public static final CachedFlag sAppSpecificHistory = newCachedFlag(APP_SPECIFIC_HISTORY, true);
@@ -863,6 +865,7 @@ public abstract class ChromeFeatureList {
                     sAndroidAppIntegrationWithFavicon,
                     sAndroidAppIntegrationMultiDataSource,
                     sAndroidTabSkipSaveTabsKillswitch,
+                    sAndroidThemeModule,
                     sAndroidBottomToolbar,
                     sAndroidElegantTextHeight,
                     sAndroidTabDeclutterDedupeTabIdsKillSwitch,

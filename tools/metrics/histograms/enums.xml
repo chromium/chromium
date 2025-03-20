@@ -15106,6 +15106,7 @@ from previous Chrome versions.
   <int value="382131467"
       label="GridTabSwitcherLandscapeAspectRatioPhones:enabled"/>
   <int value="382478170" label="SemanticColorDebugOverride:disabled"/>
+  <int value="383647912" label="AndroidThemeModule:disabled"/>
   <int value="383974622" label="CrosPrivacyHubAppPermissionsV2:disabled"/>
   <int value="384054552" label="EnableDrDcVulkan:disabled"/>
   <int value="384677240" label="AssistMultiWordLacrosSupport:enabled"/>
@@ -16529,6 +16530,7 @@ from previous Chrome versions.
   <int value="951111587" label="MediaAppPhotosIntegrationVideo:disabled"/>
   <int value="951133343" label="UseSharedImagesForPepperVideo:disabled"/>
   <int value="951338017" label="SidePanelJourneysQueryless:enabled"/>
+  <int value="952085142" label="AndroidThemeModule:enabled"/>
   <int value="952558794" label="enable-remote-assistance"/>
   <int value="952625847"
       label="AboutThisSitePersistentSidePanelEntry:disabled"/>

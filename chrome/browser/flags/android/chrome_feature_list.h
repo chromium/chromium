@@ -38,6 +38,7 @@ BASE_DECLARE_FEATURE(kAndroidTabDeclutterArchiveTabGroups);
 BASE_DECLARE_FEATURE(kAndroidTabDeclutterRescueKillswitch);
 BASE_DECLARE_FEATURE(kAndroidTabDeclutterDedupeTabIdsKillSwitch);
 BASE_DECLARE_FEATURE(kAndroidTabSkipSaveTabsKillswitch);
+BASE_DECLARE_FEATURE(kAndroidThemeModule);
 BASE_DECLARE_FEATURE(kAndroidToolbarScrollAblation);
 BASE_DECLARE_FEATURE(kAndroidWindowPopupLargeScreen);
 BASE_DECLARE_FEATURE(kAnimatedImageDragShadow);

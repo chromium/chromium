@@ -11902,6 +11902,12 @@ const FeatureEntry kFeatureEntries[] = {
      MULTI_VALUE_TYPE(kScannerDisclaimerDebugOverrideChoices)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"android-theme-module", flag_descriptions::kAndroidThemeModuleName,
+     flag_descriptions::kAndroidThemeModuleDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidThemeModule)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
     {"local-network-access-check",
