@@ -1080,4 +1080,8 @@ bool IsNotificationCollisionManagementEnabled();
 // Feature flag for enabling notification collision management.
 BASE_DECLARE_FEATURE(kNotificationCollisionManagement);
 
+// Feature flag to enable integration with iOS's
+// providesAppNotificationSettings.
+BASE_DECLARE_FEATURE(kIOSProvidesAppNotificationSettings);
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

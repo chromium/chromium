@@ -5463,6 +5463,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "ios-provides-app-notification-settings",
+    "owners": ["scottyoder@google.com", "bling-get-set-up@google.com"],
+    "expiry_milestone": 141
+  },
+  {
     "name": "ios-provisional-notification-alert",
     "owners": [
       "thegreenfrog@google.com",
