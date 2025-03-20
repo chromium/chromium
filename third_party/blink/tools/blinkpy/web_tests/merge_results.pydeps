@@ -11,6 +11,7 @@
 ../../../../catapult/third_party/typ/typ/pool.py
 ../../../../catapult/third_party/typ/typ/printer.py
 ../../../../catapult/third_party/typ/typ/python_2_3_compat.py
+../../../../catapult/third_party/typ/typ/reduced_glob.py
 ../../../../catapult/third_party/typ/typ/result_sink.py
 ../../../../catapult/third_party/typ/typ/runner.py
 ../../../../catapult/third_party/typ/typ/stats.py
