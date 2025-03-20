@@ -195,7 +195,7 @@ ash::LobsterSystemState LobsterSystemStateProviderImpl::GetSystemState(
   }
 
   // Performs a tablet mode check
-  if (!is_in_tablet_mode_) {
+  if (is_in_tablet_mode_) {
     system_state.status = ash::LobsterStatus::kBlocked;
     system_state.failed_checks.Put(
         ash::LobsterSystemCheck::kUnsupportedFormFactor);
