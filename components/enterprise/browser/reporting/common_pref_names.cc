@@ -28,4 +28,12 @@ const char kLastUploadSucceededTimestamp[] =
 const char kCloudReportingUploadFrequency[] =
     "enterprise_reporting.upload_frequency";
 
+// The state of the user security signals reporting feature.
+const char kUserSecuritySignalsReporting[] =
+    "enterprise_reporting.user_security_signals.enabled";
+
+// Whether user security signal reports should be uploaded with cookies or not.
+const char kUserSecurityAuthenticatedReporting[] =
+    "enterprise_reporting.user_security_signals.authenticated";
+
 }  // namespace enterprise_reporting
