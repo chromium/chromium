@@ -21050,6 +21050,7 @@ Called by update_net_error_codes.py.-->
   <int value="74" label="Lilo"/>
   <int value="75" label="Startpage"/>
   <int value="76" label="StarterPackPage"/>
+  <int value="77" label="McAfee"/>
 </enum>
 
 <enum name="OnboardingStartupState">
