@@ -69,12 +69,13 @@ bool IsDriveModuleEnabledForProfile(bool is_managed_profile, Profile* profile) {
     return false;
   }
 
-  // TODO(crbug.com/40837656): Explore not requiring sync for the drive
-  // module to be enabled.
-  auto* sync_service = SyncServiceFactory::GetForProfile(profile);
-  if (!sync_service || !sync_service->IsSyncFeatureEnabled()) {
-    LogModuleEnablement(ntp_features::kNtpDriveModule, false, "no sync");
-    return false;
+  if (!base::FeatureList::IsEnabled(
+          ntp_features::kNtpDriveModuleNoSyncRequirement)) {
+    auto* sync_service = SyncServiceFactory::GetForProfile(profile);
+    if (!sync_service || !sync_service->IsSyncFeatureEnabled()) {
+      LogModuleEnablement(ntp_features::kNtpDriveModule, false, "no sync");
+      return false;
+    }
   }
 
   if (!is_managed_profile) {
