@@ -36,6 +36,7 @@
 #include <tpcshrd.h>
 #include <uiviewsettingsinterop.h>
 #include <wbemidl.h>
+#include <windows.system.profile.systemmanufacturers.h>
 #include <windows.ui.viewmanagement.h>
 #include <winstring.h>
 #include <wrl/client.h>
@@ -71,6 +72,7 @@
 #include "base/win/access_token.h"
 #include "base/win/com_init_util.h"
 #include "base/win/core_winrt_util.h"
+#include "base/win/hstring_reference.h"
 #include "base/win/propvarutil.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_bstr.h"
@@ -1207,6 +1209,27 @@ bool SetProcessEcoQoSState(HANDLE process, ProcessPowerState state) {
 bool SetProcessTimerThrottleState(HANDLE process, ProcessPowerState state) {
   return SetProcessPowerThrottlingState(
       process, PROCESS_POWER_THROTTLING_IGNORE_TIMER_RESOLUTION, state);
+}
+
+std::optional<std::wstring> GetSerialNumber() {
+  AssertComInitialized();
+  Microsoft::WRL::ComPtr<ABI::Windows::System::Profile::SystemManufacturers::
+                             ISmbiosInformationStatics>
+      symbios_information_statics;
+  HRESULT hr = ::RoGetActivationFactory(
+      base::win::HStringReference(
+          RuntimeClass_Windows_System_Profile_SystemManufacturers_SmbiosInformation)
+          .Get(),
+      IID_PPV_ARGS(&symbios_information_statics));
+  if (SUCCEEDED(hr)) {
+    HSTRING serial_number;
+    hr = symbios_information_statics->get_SerialNumber(&serial_number);
+    if (SUCCEEDED(hr)) {
+      base::win::ScopedHString scoped_serial_number(serial_number);
+      return std::wstring(scoped_serial_number.Get());
+    }
+  }
+  return std::nullopt;
 }
 
 ScopedDomainStateForTesting::ScopedDomainStateForTesting(bool state)

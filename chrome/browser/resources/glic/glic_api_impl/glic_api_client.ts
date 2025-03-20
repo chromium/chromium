@@ -147,6 +147,10 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
     this.host.isManuallyResizing().assignAndSignal(payload.resizing);
   }
 
+  glicWebClientBrowserIsOpenChanged(payload: {browserIsOpen: boolean}) {
+    this.host.isBrowserOpenValue.assignAndSignal(payload.browserIsOpen);
+  }
+
   glicWebClientNotifyOsHotkeyStateChanged(payload: {hotkey: string}) {
     this.host.getOsHotkeyState().assignAndSignal(payload);
   }
@@ -173,6 +177,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
       ObservableValueImpl.withNoValue<boolean>();
   private osHotkeyState = ObservableValueImpl.withNoValue<{hotkey: string}>();
   panelActiveValue = ObservableValueImpl.withNoValue<boolean>();
+  isBrowserOpenValue = ObservableValueImpl.withNoValue<boolean>();
   private fitWindow = false;
   private metrics: GlicBrowserHostMetricsImpl;
   private manuallyResizing = ObservableValueImpl.withValue<boolean>(false);
@@ -225,6 +230,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     this.canAttachPanelValue.assignAndSignal(state.canAttach);
     this.chromeVersion = state.chromeVersion;
     this.panelActiveValue.assignAndSignal(state.panelIsActive);
+    this.isBrowserOpenValue.assignAndSignal(state.browserIsOpen);
     this.osHotkeyState.assignAndSignal({hotkey: state.hotkey});
     this.fitWindow = state.fitWindow;
 
@@ -364,6 +370,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   canAttachPanel(): ObservableValue<boolean> {
     return this.canAttachPanelValue;
+  }
+
+  isBrowserOpen(): ObservableValue<boolean> {
+    return this.isBrowserOpenValue;
   }
 
   getFocusedTabState(): ObservableValueImpl<TabData|undefined> {

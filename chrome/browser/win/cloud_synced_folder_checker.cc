@@ -15,6 +15,15 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/threading/scoped_thread_priority.h"
+#include "chrome/common/chrome_paths.h"
+
+namespace {
+// Returns whether filepath `a` is a subdirectory of or is filepath `b`.
+bool IsSubDirectoryOrEqual(const base::FilePath& a, const base::FilePath& b) {
+  return a == b || b.IsParent(a);
+}
+}  // namespace
 
 namespace cloud_synced_folder_checker {
 
@@ -34,17 +43,26 @@ CloudSyncStatus EvaluateOneDriveSyncStatus() {
 
   base::FilePath desktop_file_path;
   if (base::PathService::Get(base::DIR_USER_DESKTOP, &desktop_file_path)) {
-    desktop_file_path = base::MakeAbsoluteFilePath(desktop_file_path);
-    if (one_drive_file_path == desktop_file_path ||
-        one_drive_file_path.IsParent(desktop_file_path)) {
-      status.desktop_synced = true;
-    }
+    status.desktop_synced = IsSubDirectoryOrEqual(
+        base::MakeAbsoluteFilePath(desktop_file_path), one_drive_file_path);
+  }
+
+  base::FilePath documents_file_path;
+  if (base::PathService::Get(chrome::DIR_USER_DOCUMENTS,
+                             &documents_file_path)) {
+    documents_file_path = base::MakeAbsoluteFilePath(documents_file_path);
+    status.documents_synced = IsSubDirectoryOrEqual(
+        base::MakeAbsoluteFilePath(documents_file_path), one_drive_file_path);
   }
 
   return status;
 }
 
 bool IsCloudStorageSynced(const base::FilePath& file_path) {
+  // Because SHCreateItemFromParsingName can load DLLS, we wrap it with a
+  // background priority scope.
+  SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
+
   Microsoft::WRL::ComPtr<IShellItem2> shell_item;
   HRESULT hr = SHCreateItemFromParsingName(file_path.value().c_str(), nullptr,
                                            IID_PPV_ARGS(&shell_item));

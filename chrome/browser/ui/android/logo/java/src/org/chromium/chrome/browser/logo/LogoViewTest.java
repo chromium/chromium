@@ -26,7 +26,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
@@ -39,6 +40,8 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 /** Instrumentation tests for {@link LogoView}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class LogoViewTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
@@ -58,7 +61,6 @@ public class LogoViewTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         mBitmap = Bitmap.createBitmap(1, 1, Config.ALPHA_8);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
 

@@ -10,10 +10,12 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -27,6 +29,7 @@ import org.chromium.url.GURL;
 @SuppressWarnings("DoNotMock") // Mocking GURL
 public class MerchantTrustMessageContextTest {
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private GURL mMockGurl;
 
     @Mock private WebContents mMockWebContents;
@@ -35,7 +38,6 @@ public class MerchantTrustMessageContextTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         doReturn("fake_host").when(mMockGurl).getHost();
         doReturn("fake_spec").when(mMockGurl).getSpec();
         doReturn(mMockGurl).when(mMockNavigationHandle).getUrl();

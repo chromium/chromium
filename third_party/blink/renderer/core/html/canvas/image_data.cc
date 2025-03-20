@@ -135,18 +135,33 @@ ImageData* ImageData::ValidateAndCreate(
   }
 
   // If |data| is provided, ensure it is a reasonable format, and that it can
-  // work with |size|. Update |color_type| to reflect |data|'s format.
+  // work with |size| and |color_type|.
   if (data) {
     DCHECK(data);
     switch ((*data)->GetType()) {
       case DOMArrayBufferView::ViewType::kTypeUint8Clamped:
-        color_type = kRGBA_8888_SkColorType;
+        if (color_type != kRGBA_8888_SkColorType) {
+          exception_state.ThrowDOMException(
+              DOMExceptionCode::kInvalidStateError,
+              "Uint8ClampedArray must use rgba-unorm8 pixelFormat.");
+          return nullptr;
+        }
         break;
       case DOMArrayBufferView::ViewType::kTypeFloat16:
-        color_type = kRGBA_F16_SkColorType;
+        if (color_type != kRGBA_F16_SkColorType) {
+          exception_state.ThrowDOMException(
+              DOMExceptionCode::kInvalidStateError,
+              "Float16Array must use rgba-float16 pixelFormat.");
+          return nullptr;
+        }
         break;
       case DOMArrayBufferView::ViewType::kTypeFloat32:
-        color_type = kRGBA_F32_SkColorType;
+        if (color_type != kRGBA_F32_SkColorType) {
+          exception_state.ThrowDOMException(
+              DOMExceptionCode::kInvalidStateError,
+              "Float32Array must use rgba-float32 pixelFormat.");
+          return nullptr;
+        }
         break;
       default:
         exception_state.ThrowDOMException(

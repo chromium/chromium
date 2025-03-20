@@ -6,6 +6,7 @@ module gpu.mojom;
 
 // Corresponds to D3D_FEATURE_LEVEL in <d3dcommon.h>
 enum Direct3DFeatureLevel {
+  k1_0_Generic,
   k1_0_Core,
   k9_1,
   k9_2,

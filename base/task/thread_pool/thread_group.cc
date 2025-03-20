@@ -134,7 +134,7 @@ ThreadGroup::ThreadGroup(std::string_view histogram_label,
   DCHECK(!thread_group_label_.empty());
 }
 
-void ThreadGroup::StartImpl(
+void ThreadGroup::StartImplLockRequired(
     size_t max_tasks,
     size_t max_best_effort_tasks,
     TimeDelta suggested_reclaim_time,
@@ -160,8 +160,6 @@ void ThreadGroup::StartImpl(
       thread_type_hint_ != ThreadType::kBackground
           ? kForegroundBlockedWorkersPoll
           : kBackgroundBlockedWorkersPoll;
-
-  CheckedAutoLock auto_lock(lock_);
 
   max_tasks_ = max_tasks;
   baseline_max_tasks_ = max_tasks;

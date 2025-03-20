@@ -20,7 +20,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -41,6 +42,8 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 })
 @EnableFeatures(ChromeFeatureList.CCT_REPORT_PRERENDER_EVENTS)
 public class CustomTabsFilterTouchUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ActivityScenarioRule<CustomTabActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(CustomTabActivity.class);
@@ -52,7 +55,6 @@ public class CustomTabsFilterTouchUnitTest {
     @Before
     public void setUp() throws Exception {
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
-        MockitoAnnotations.initMocks(this);
     }
 
     @Test

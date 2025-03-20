@@ -501,6 +501,7 @@ Wenn „PromptInTab“ festgelegt ist und die Authentifizierung des Nutzers abl�
       Dies gilt für das Verwerfen bei hoher Speicherauslastung und bei der Verwendung des Modus für hohe Effizienz.
       Verworfene Seiten werden entfernt und die zugehörigen Ressourcen vollständig freigegeben. Der Tab, mit dem sie verknüpft sind, bleibt im Tabstreifen. Wird er jedoch sichtbar, wird eine vollständige Aktualisierung ausgelöst.
       </translation>
+<translation id="1386369130542976774">Legt wöchentliche Intervalle fest, in denen ChromeOS‑Geräte nicht verwendet werden können</translation>
 <translation id="138847842893090358">Update-Status des Betriebssystems melden</translation>
 <translation id="1389138080311956934">Maximale Arbeitsspeichereinsparungen.</translation>
 <translation id="1390529781843037070">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer im <ph name="PRODUCT_NAME" />-Druckdialogfeld über <ph name="CLOUD_PRINT_NAME" /> drucken. <ph name="PRODUCT_NAME" /> kann Dokumente zum Drucken an <ph name="CLOUD_PRINT_NAME" /> senden. Dies verhindert nicht, dass Nutzer Druckaufträge an Websites senden können.
@@ -3847,6 +3848,7 @@ Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 
 Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.</translation>
 <translation id="3845318141474759319">Hintergrund basierend auf generativer KI ohne Verbesserung von KI‑Modellen zulassen</translation>
+<translation id="3849923496599301707">„Chrome-Apps im Kioskmodus zulassen“ erzwingen</translation>
 <translation id="3851443303439635700">Steuert den Verschachtelungsgrenzwert, bevor die JavaScript-Funktion „setTimeout()“ verzögert wird</translation>
 <translation id="3854609566862485607">Über diese Richtlinie wird ein benutzerdefiniertes Label gesteuert, mit dem verwaltete Profile identifiziert werden können. Bei verwalteten Profilen wird dieses Label neben dem Avatar in der Symbolleiste angezeigt. Das benutzerdefinierte Label wird nicht übersetzt.
 
@@ -4081,6 +4083,16 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
 
       Wenn sie auf „true“ festgelegt ist, werden 3DES-Cipher Suites in TLS aktiviert. Ist die Richtlinie auf „false“ eingestellt, werden die 3DES-Cipher Suites deaktiviert. Wenn sie nicht konfiguriert ist, sind die 3DES-Cipher Suites standardmäßig deaktiviert. Diese Richtlinie kann verwendet werden, um vorübergehend eine Kompatibilität mit einem veralteten Server herzustellen. Dies ist aber nur eine provisorische Maßnahme und der Server sollte neu konfiguriert werden.
       </translation>
+<translation id="4016078577612157250">Legt wöchentliche Intervalle fest, in denen ChromeOS‑Geräte nicht verwendet werden können.
+
+Während der eingeschränkten Intervalle werden alle laufenden Sitzungen geschlossen und Nutzer können sich nicht anmelden.
+
+Folgendes ist zu beachten:
+
+* Intervalle, die sich überschneiden, werden nicht unterstützt.
+* Für den Zeitplan der Geräteeinschränkung wird die Zeitzone des Geräts verwendet.
+* Wenn du verhindern möchtest, dass Nutzer die Zeitzone ihres Geräts ändern, verwende „SystemTimezone“.
+* Wenn du verhindern möchtest, dass Nutzer die Zeit auf ihrem Gerät ändern, kannst du Crosh mit „SystemFeaturesDisableList“ deaktivieren und „chrome://set-time“ mit „URLBlocklist“ blockieren.</translation>
 <translation id="4016367078069682737">Diese Richtlinie wurde in M61 entfernt.
 
       Damit wird festgelegt, wie sich ein Gerät verhalten soll, das mit eCryptfs geliefert wurde und nun eine ext4-Verschlüsselung benötigt.
@@ -4129,18 +4141,6 @@ Die Richtlinie gilt sowohl für die vom Nutzer aufgerufene URL als auch für iFr
 <translation id="4052529125939620019">Komponentenerweiterung „CryptoToken“ beim Start laden</translation>
 <translation id="4053157306171963473">Melden der Aktivitätszeit auf Geräten deaktivieren</translation>
 <translation id="4056910949759281379">SPDY-Protokoll deaktivieren</translation>
-<translation id="4057113125482566814">Aktiviert den Anbieter des Bedienungshilfen-Frameworks zur <ph name="UIA_NAME" /> in <ph name="PRODUCT_NAME" /> für die Verwendung durch Bedienungshilfen.
-
-Diese Richtlinie wird in <ph name="PRODUCT_NAME" /> für einen einjährigen Übergangszeitraum unterstützt, damit Unternehmensadministratoren die Bereitstellung des browsereigenen Anbieters des Bedienungshilfen-Frameworks zur <ph name="UIA_NAME" /> steuern können. Bedienungshilfen und andere Tools, die das Bedienungshilfen-Framework zur <ph name="UIA_NAME" /> für die Interoperabilität mit dem Browser verwenden, müssen möglicherweise aktualisiert werden, damit sie ordnungsgemäß mit dem browsereigenen Anbieter der <ph name="UIA_NAME" /> funktionieren. Administratoren können den browsereigenen Anbieter der <ph name="UIA_NAME" /> mit dieser Richtlinie vorübergehend deaktivieren und damit zum alten Verhalten zurückkehren, während sie zusammen mit Anbietern daran arbeiten, Updates für betroffene Tools bereitzustellen.
-
-Wenn die Richtlinie auf „false“ gesetzt ist, aktiviert <ph name="PRODUCT_NAME" /> nur seinen <ph name="MSAA_NAME" />-Anbieter. Bedienungshilfen und andere Tools, die das neuere Bedienungshilfen-Framework zur <ph name="UIA_NAME" /> für die Interoperabilität mit dem Browser verwenden, kommunizieren mit diesem über einen Kompatibilitäts-Shim in <ph name="MS_WIN_NAME" />.
-
-Wenn die Richtlinie auf „true“ gesetzt ist, aktiviert <ph name="PRODUCT_NAME" /> seinen Anbieter der <ph name="UIA_NAME" /> zusätzlich zu seinem <ph name="MSAA_NAME" />-Anbieter.
-Bedienungshilfen und andere Tools, die das neuere Bedienungshilfen-Framework zur <ph name="UIA_NAME" /> für die Interoperabilität mit dem Browser verwenden, kommunizieren direkt mit ihm.
-
-Wenn die Richtlinie nicht konfiguriert ist, wird das Varianten-Framework in <ph name="PRODUCT_NAME" /> verwendet, um den Anbieter zu aktivieren oder zu deaktivieren.
-
-Die Unterstützung dieser Richtlinieneinstellung wird in <ph name="PRODUCT_NAME" /> 136 eingestellt.</translation>
 <translation id="4057442294431066708">Mit dieser Richtlinie wird die ausgewählte Tastenkombination für die Neuzuordnung von Ereignissen zu F11/F12 auf der Unterseite für die Tastenneuzuordnung festgelegt. Diese Einstellungen gelten nur für ChromeOS-Tastaturen und sind standardmäßig deaktiviert, wenn die Richtlinie nicht konfiguriert ist.</translation>
 <translation id="4061590579642538878">Informationen über Absturzberichte melden.</translation>
 <translation id="4062646759141042418">Hiermit aktivierst du <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> für eine Liste von URLs.
@@ -5471,6 +5471,11 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 <translation id="5041315457555330432"><ph name="PRODUCT_NAME" /> nur erlauben, Verbindungen zu Geräten unter privaten IP-Adressen herzustellen, es sei denn, die Funktion „CastAllowAllIPs“ ist aktiviert.</translation>
 <translation id="504689994545234073">Lokales Speichern von Nutzerdateien aktivieren</translation>
 <translation id="5048890362473520096">LPAC-Sandbox für Druckdienste aktivieren</translation>
+<translation id="5049989450078943331">Wenn diese Richtlinie auf „True“ gesetzt ist, können Chrome-Apps unabhängig von der Standardeinstellung für Chrome-Apps weiterhin in einer Kiosksitzung ausgeführt werden.
+
+Ist diese Richtlinie nicht konfiguriert oder auf „False“ gesetzt, wird das auf dem Gerät festgelegte Standardverhalten verwendet.
+
+Wenn versucht wird, eine deaktivierte Chrome-App zu starten, wird eine Meldung angezeigt, in der dem Nutzer erklärt wird, warum die App nicht gestartet wurde, und er aufgefordert wird, sich an die IT-Abteilung zu wenden.</translation>
 <translation id="5055474681190962362">Tag im Monat (1–31), an dem der Neustart ausgeführt werden soll, angegeben in der lokalen Zeit des Geräts. Diese Richtlinie wird nur verwendet, wenn „frequency“ auf „MONTHLY“ gesetzt ist. Falls der Wert höher ist als die maximale Anzahl von Tagen in einem bestimmten Monat, wird der jeweils letzte Tag des Monats gewählt.</translation>
 <translation id="5055513974503523022">Mit „VC‑Hintergrund basierend auf generativer KI“ können Nutzer mithilfe von auf generativer KI basierenden Funktion personalisierte Hintergründe für Videokonferenzen in <ph name="PRODUCT_OS_NAME" /> erstellen.
 
@@ -6349,6 +6354,7 @@ Wenn die Richtlinie auf eine nicht leere Liste festgelegt ist und diese eine Erw
 Wenn die Richtlinie nicht konfiguriert oder auf eine leere Liste festgelegt ist, werden dem Nutzer beim Aufrufen von „<ph name="GET_SCANNER_LIST_FUNCTION" />“ oder „<ph name="START_SCAN_FUNCTION" />“ Dialogfelder zur Bestätigung des Scanvorgangs angezeigt.</translation>
 <translation id="5599461642204007579"><ph name="MS_AD_NAME" />-Verwaltungseinstellungen</translation>
 <translation id="5601503069213153581">PIN</translation>
+<translation id="5605676983184673391">Chrome-Apps dürfen in Kiosksitzungen ausgeführt werden.</translation>
 <translation id="5607021831414604820">Melden des Speicherstatus auf Geräten aktivieren</translation>
 <translation id="5608114828230655271">Standardverhalten des Geräts</translation>
 <translation id="561001683838346956">Diese Richtlinie wurde in <ph name="PRODUCT_NAME" /> 124 entfernt. Ab dieser Version sind nicht sichere Hashes nicht mehr zulässig. In früheren Versionen steuerte diese Richtlinie, ob der Browser alte, nicht sichere Hashes während des TLS-Handshakes zulässt.
@@ -6470,6 +6476,7 @@ Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://cl
 
 Diese Richtlinie gilt nur, wenn der Ursprung die Direct Sockets API verwenden darf.
 Weitere Informationen findest du unter „<ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />“, „<ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" />“ und „<ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />“.</translation>
+<translation id="566569751231933416">Standardverhalten verwenden.</translation>
 <translation id="5666457529647159548">Nutzern erlauben, installierte Clientzertifikate zu verwalten.</translation>
 <translation id="5670249935663090320">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird <ph name="PRODUCT_NAME" /> aktiviert und kann von Nutzern über das App-Menü, Kontextmenüs von Seiten, Mediensteuerelemente auf für Google Cast optimierten Websites und das Symbol von Cast in der Symbolleiste (falls angezeigt) gestartet werden.
 

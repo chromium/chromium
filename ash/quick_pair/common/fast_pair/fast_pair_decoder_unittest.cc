@@ -10,7 +10,9 @@
 #include <optional>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_service_data_creator.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -37,15 +39,32 @@ class FastPairDecoderTest : public testing::Test {
   }
 };
 
+// #######################################################################
+// Begin: Tests with kFastPairAdvertisingFormat2025 disabled.
+// TODO(399163998): Deprecate these tests once the feature is rolled out.
+// #######################################################################
+
 TEST_F(FastPairDecoderTest, HasModelId_ThreeByteFormat) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{ash::features::kFastPairAdvertisingFormat2025});
   EXPECT_TRUE(HasModelIdString(kModelId));
 }
 
 TEST_F(FastPairDecoderTest, HasModelId_TooShort) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{ash::features::kFastPairAdvertisingFormat2025});
   EXPECT_FALSE(HasModelIdString("11"));
 }
 
 TEST_F(FastPairDecoderTest, HasModelId_LongFormat) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{ash::features::kFastPairAdvertisingFormat2025});
   std::vector<uint8_t> bytes = FastPairServiceDataCreator::Builder()
                                    .SetHeader(0b00001000)
                                    .SetModelId("11223344")
@@ -63,6 +82,10 @@ TEST_F(FastPairDecoderTest, HasModelId_LongFormat) {
 }
 
 TEST_F(FastPairDecoderTest, HasModelId_LongInvalidVersion) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{ash::features::kFastPairAdvertisingFormat2025});
   std::vector<uint8_t> bytes = FastPairServiceDataCreator::Builder()
                                    .SetHeader(0b00101000)
                                    .SetModelId("11223344")
@@ -72,6 +95,10 @@ TEST_F(FastPairDecoderTest, HasModelId_LongInvalidVersion) {
 }
 
 TEST_F(FastPairDecoderTest, HasModelId_LongInvalidLength) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{ash::features::kFastPairAdvertisingFormat2025});
   std::vector<uint8_t> bytes = FastPairServiceDataCreator::Builder()
                                    .SetHeader(0b00001010)
                                    .SetModelId("11223344")
@@ -87,6 +114,11 @@ TEST_F(FastPairDecoderTest, HasModelId_LongInvalidLength) {
 
   EXPECT_FALSE(HasModelId(&bytes));
 }
+
+// #######################################################################
+// Begin: Tests with kFastPairAdvertisingFormat2025 enabled, or tests to
+// be run for both feature enablement states.
+// #######################################################################
 
 TEST_F(FastPairDecoderTest, GetHexModelIdFromServiceData_NoResultForNullData) {
   EXPECT_EQ(GetHexModelIdFromServiceData(nullptr), std::nullopt);

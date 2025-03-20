@@ -452,11 +452,6 @@ TEST_F(MagicStackRankingModelTest, TestSetUpListConsumerCall) {
                                        allItemsCompleted:NO
                                               completion:[OCMArg any]]);
   set_up_list_prefs::MarkItemComplete(GetLocalState(),
-                                      SetUpListItemType::kSignInSync);
-  OCMExpect([setUpListConsumer_ setUpListItemDidComplete:[OCMArg any]
-                                       allItemsCompleted:NO
-                                              completion:[OCMArg any]]);
-  set_up_list_prefs::MarkItemComplete(GetLocalState(),
                                       SetUpListItemType::kDefaultBrowser);
   OCMExpect([setUpListConsumer_ setUpListItemDidComplete:[OCMArg any]
                                        allItemsCompleted:NO
@@ -499,22 +494,6 @@ TEST_F(MagicStackRankingModelTest, TestMetricsWithoutSetUpList) {
       }));
   histogram_tester_->ExpectTotalCount("IOS.SetUpList.Displayed", 0);
   histogram_tester_->ExpectTotalCount("IOS.SetUpList.ItemDisplayed", 0);
-}
-
-// Tests that when the user changes the setting to disable signin, the
-// SetUpList signin item is marked complete.
-TEST_F(MagicStackRankingModelTest, TestOnServiceStatusChanged) {
-  // Verify the initial state.
-  SetUpListItemState item_state = set_up_list_prefs::GetItemState(
-      GetLocalState(), SetUpListItemType::kSignInSync);
-  EXPECT_EQ(item_state, SetUpListItemState::kNotComplete);
-
-  // Simulate the user disabling signin.
-  GetProfile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
-  // Verify that the signin item is complete.
-  item_state = set_up_list_prefs::GetItemState(GetLocalState(),
-                                               SetUpListItemType::kSignInSync);
-  EXPECT_EQ(item_state, SetUpListItemState::kCompleteInList);
 }
 
 // Tests that logging for IOS.MagicStack.Module.Click.[ModuleName] works

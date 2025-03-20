@@ -66,11 +66,12 @@ class AuthenticationFlowInProfileTest : public PlatformTest {
       signin_metrics::AccessPoint access_point) {
     BOOL is_managed_identity = identity == managed_identity_;
     authentication_flow_in_profile_ = [[AuthenticationFlowInProfile alloc]
-          initWithBrowser:browser_.get()
-                 identity:identity
-        isManagedIdentity:is_managed_identity
-              accessPoint:access_point
-        postSignInActions:post_sign_in_actions];
+             initWithBrowser:browser_.get()
+                    identity:identity
+           isManagedIdentity:is_managed_identity
+                 accessPoint:access_point
+        precedingHistorySync:NO
+           postSignInActions:post_sign_in_actions];
     id<AuthenticationFlowPerformerDelegate> performer_delegate =
         GetAuthenticationFlowPerformerDelegate();
     OCMExpect([performer_mock_ initWithDelegate:performer_delegate

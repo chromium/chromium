@@ -24,7 +24,8 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
@@ -62,6 +63,8 @@ public class AllSiteSettingsTest {
     private static final String C_GITHUB_IO = "c.github.io";
     private static final String D_GITHUB_IO = "d.github.io";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
@@ -81,7 +84,6 @@ public class AllSiteSettingsTest {
     @Before
     public void setUp() throws TimeoutException {
         SiteSettingsTestUtils.cleanUpCookiesAndPermissions();
-        MockitoAnnotations.initMocks(this);
     }
 
     @Test

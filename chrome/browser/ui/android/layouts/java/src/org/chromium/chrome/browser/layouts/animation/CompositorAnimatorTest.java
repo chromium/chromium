@@ -16,9 +16,11 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.MathUtils;
@@ -71,6 +73,7 @@ public final class CompositorAnimatorTest {
         }
     }
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private final CallbackHelper mRequestRenderCallbackHelper = new CallbackHelper();
 
     /** The handler that is responsible for managing all {@link CompositorAnimator}s. */
@@ -84,8 +87,6 @@ public final class CompositorAnimatorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         mHandler = new CompositorAnimationHandler(mRequestRenderCallbackHelper::notifyCalled);
 
         mUpdateListener = new TestUpdateListener();

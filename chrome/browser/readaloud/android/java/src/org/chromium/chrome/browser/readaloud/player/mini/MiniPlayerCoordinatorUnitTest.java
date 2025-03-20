@@ -20,10 +20,12 @@ import android.view.View;
 import android.view.ViewStub;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -47,6 +49,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class MiniPlayerCoordinatorUnitTest {
     private static final String TITLE = "Title";
     private static final String PUBLISHER = "Publisher";
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock ReadAloudMiniPlayerSceneLayer.Natives mSceneLayerNativeMock;
 
     @Mock private Activity mActivity;
@@ -69,7 +72,6 @@ public class MiniPlayerCoordinatorUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         doReturn(mLayout).when(mViewStub).inflate();
         doReturn(mViewStub).when(mActivity).findViewById(eq(R.id.readaloud_mini_player_stub));
         doReturn(mLayoutInflater)

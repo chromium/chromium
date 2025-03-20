@@ -220,7 +220,9 @@ void V8ContextTracker::OnRemoteIframeAttached(
 
   base::WeakPtr<const FrameNode> weak_frame_node =
       PerformanceManager::GetFrameNodeForRenderFrameHost(rfh);
-  CHECK(weak_frame_node);
+  if (!weak_frame_node) {
+    return;
+  }
   FrameNodeImpl* frame_node = FrameNodeImpl::FromNode(weak_frame_node.get());
 
   OnRemoteIframeAttachedImpl(mojo::GetBadMessageCallback(), frame_node,

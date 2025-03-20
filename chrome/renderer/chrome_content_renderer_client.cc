@@ -422,11 +422,6 @@ void ChromeContentRendererClient::RenderThreadStarted() {
 
   const bool is_extension = IsStandaloneContentExtensionProcess();
 
-  thread->SetRendererProcessType(
-      is_extension
-          ? blink::scheduler::WebRendererProcessType::kExtensionRenderer
-          : blink::scheduler::WebRendererProcessType::kRenderer);
-
   if (is_extension) {
     // The process name was set to "Renderer" in RendererMain(). Update it to
     // "Extension Renderer" to highlight that it's hosting an extension.

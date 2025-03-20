@@ -65,10 +65,6 @@ class DistillerPageMediaBlocker : public web::WebStatePolicyDecider {
 DistillerPageIOS::DistillerPageIOS(web::BrowserState* browser_state)
     : browser_state_(browser_state), weak_ptr_factory_(this) {}
 
-bool DistillerPageIOS::StringifyOutput() {
-  return false;
-}
-
 DistillerPageIOS::~DistillerPageIOS() {
   DetachWebState();
 }

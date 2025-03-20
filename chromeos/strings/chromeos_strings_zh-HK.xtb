@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">隱藏轉錄文字</translation>
 <translation id="160633243685262989">預覽圖片</translation>
 <translation id="1611649489706141841">向前</translation>
-<translation id="1615144046047995187">無法下載，請再試一次或重新啟動 Chromebook。</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />至今的數據用量</translation>
 <translation id="1618566998877964907">使用主題</translation>
 <translation id="1621067168122174824">執行充電測試</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">錄音清單</translation>
 <translation id="2561093647892030937">檸檬</translation>
 <translation id="2570743873672969996">正在執行<ph name="TEST_NAME" />測試…</translation>
-<translation id="2573178735329662769">錄下所有 Chromebook 音訊</translation>
 <translation id="2576253868710695442">最多可能需要 2 GB 的儲存空間</translation>
 <translation id="2584547424703650812">發光景觀</translation>
 <translation id="2584559707064218956">如要進行設定，請前往「設定」頁面</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">藍色和粉紅色</translation>
 <translation id="498186245079027698">請檢查掃瞄器，然後再試一次。請確保本機有足夠空間儲存已掃瞄的檔案。</translation>
 <translation id="4982627662315910959">無法使用快速鍵。請透過 Shift 鍵和另外 1 個輔助鍵 (Ctrl、Alt 或<ph name="META_KEY" />) 按下新的快速鍵。</translation>
-<translation id="4983216687482551672">Chromebook 音訊</translation>
 <translation id="4985509611418653372">執行</translation>
 <translation id="4987769320337599931">防火牆</translation>
 <translation id="4988526792673242964">網頁</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">請拔除「<ph name="DEVICE_NAME" />」USB 線，然後重新插上以繼續更新程序</translation>
 <translation id="5099354524039520280">向上</translation>
 <translation id="5107243100836678918">使用快速鍵時如未按下<ph name="META_KEY" />鍵，可能會與部分應用程式的快速鍵發生衝突。再按下此快速鍵即可繼續使用，或按下<ph name="KEY" />鍵重新輸入快速鍵。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">無法下載<ph name="LANGUAGE_NAME" />轉錄模型，請再試一次或重新啟動 Chromebook</translation>
 <translation id="5108781503443873320">近義詞：</translation>
-<translation id="5121677070210013200">無法下載轉錄模型，請再試一次或重新啟動 Chromebook。</translation>
 <translation id="5130848777448318809">小馬</translation>
 <translation id="5137451382116112100">全螢幕</translation>
 <translation id="5139813694804168398">請勿騷擾</translation>
@@ -1089,7 +1084,6 @@
 <translation id="6122191549521593678">在線</translation>
 <translation id="6122277663991249694">Chrome OS 輸入方法服務</translation>
 <translation id="6127426868813166163">白色</translation>
-<translation id="613049107179582049">開啟 Chromebook 音訊後，「錄音機」會錄下此裝置播放的所有音訊</translation>
 <translation id="6136285399872347291">退格</translation>
 <translation id="6137614725462089991">數碼龐克</translation>
 <translation id="6137767437444130246">使用者憑證</translation>
@@ -1419,7 +1413,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB 觸控螢幕</translation>
 <translation id="757747079855995705">石</translation>
-<translation id="7584853321964440104">無法下載，請再試一次或重新啟動 Chromebook。</translation>
 <translation id="7590883480672980941">輸入法設定</translation>
 <translation id="7595982850646262331">剩餘 <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776"><ph name="MANAGER" /> 管理員已設定此 <ph name="DEVICE_TYPE" /> 的使用時間。</translation>
@@ -1786,7 +1779,6 @@
 <translation id="9218016617214286986">顯示已知的 APN</translation>
 <translation id="932327136139879170">首頁</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">請確保已連接麥克風，或嘗試重新啟動 Chromebook</translation>
 <translation id="945522503751344254">提供意見反映</translation>
 <translation id="950520315903467048">缺少「<ph name="DIRECTION" />」嘅按鍵。<ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">比較整段錄音中的語音，讓轉錄文字反映每位講者的講話內容和時間</translation>

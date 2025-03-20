@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Nascondi trascrizione</translation>
 <translation id="160633243685262989">Immagine di anteprima</translation>
 <translation id="1611649489706141841">avanti</translation>
-<translation id="1615144046047995187">Impossibile scaricare. Riprova o riavvia Chromebook.</translation>
 <translation id="1615335640928990664">Utilizzo dei dati da <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Usa un tema</translation>
 <translation id="1621067168122174824">Esegui test ricarica</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Elenco di registrazioni audio</translation>
 <translation id="2561093647892030937">limoni</translation>
 <translation id="2570743873672969996">Esecuzione del test <ph name="TEST_NAME" /> in corso…</translation>
-<translation id="2573178735329662769">Registrazione di tutto l'audio del Chromebook</translation>
 <translation id="2576253868710695442">Questa operazione occuperà fino a 2 GB di spazio di archiviazione</translation>
 <translation id="2584547424703650812">Paesaggi brillanti</translation>
 <translation id="2584559707064218956">Vai alle Impostazioni per la configurazione</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">blu e rosa</translation>
 <translation id="498186245079027698">Controlla lo scanner e riprova. Assicurati di avere spazio locale sufficiente per salvare i file sottoposti a scansione.</translation>
 <translation id="4982627662315910959">Scorciatoia non disponibile. Premi una nuova scorciatoia utilizzando Maiusc e 1 altro tasto di modifica (Ctrl, Alt o <ph name="META_KEY" />).</translation>
-<translation id="4983216687482551672">Audio di Chromebook</translation>
 <translation id="4985509611418653372">Esegui</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4988526792673242964">Pagine</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Scollega il cavo USB di <ph name="DEVICE_NAME" /> e reinseriscilo per continuare il processo di aggiornamento</translation>
 <translation id="5099354524039520280">su</translation>
 <translation id="5107243100836678918">La scorciatoia senza tasto <ph name="META_KEY" /> potrebbe essere in conflitto con la scorciatoia di alcune app. Premi di nuovo questa scorciatoia per continuare a utilizzarla oppure premine una nuova usando il tasto <ph name="KEY" />. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Impossibile scaricare il modello di trascrizione <ph name="LANGUAGE_NAME" />. Riprova o riavvia Chromebook.</translation>
 <translation id="5108781503443873320">Sinonimi:</translation>
-<translation id="5121677070210013200">Impossibile scaricare il modello di trascrizione. Riprova o riavvia Chromebook.</translation>
 <translation id="5130848777448318809">pony</translation>
 <translation id="5137451382116112100">Schermo intero</translation>
 <translation id="5139813694804168398">Non disturbare</translation>
@@ -1033,6 +1028,7 @@
 <translation id="5896602941605730551">Riproduci</translation>
 <translation id="5901630391730855834">Giallo</translation>
 <translation id="5903200662178656908">Il dispositivo è una combinazione di tastiera e mouse.</translation>
+<translation id="5903822368221507416">Nascondi schede</translation>
 <translation id="5904994456462260490">Aggiungi un nuovo APN</translation>
 <translation id="590746845088109442">gatti</translation>
 <translation id="5907649332524363701">colore tasti</translation>
@@ -1088,7 +1084,6 @@
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Servizio metodo di immissione di ChromeOS</translation>
 <translation id="6127426868813166163">bianco</translation>
-<translation id="613049107179582049">Quando l'audio del Chromebook è attivo, Registratore acquisisce tutto l'audio riprodotto su questo dispositivo</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Certificato utente</translation>
@@ -1418,7 +1413,6 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Touchscreen USB</translation>
 <translation id="757747079855995705">pietra</translation>
-<translation id="7584853321964440104">Impossibile scaricare. Riprova o riavvia Chromebook.</translation>
 <translation id="7590883480672980941">Impostazioni di immissione</translation>
 <translation id="7595982850646262331">Tempo rimanente: <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">L'amministratore di <ph name="MANAGER" /> ha impostato il periodo di utilizzo di <ph name="DEVICE_TYPE" />.</translation>
@@ -1785,7 +1779,6 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="9218016617214286986">Mostra APN noti</translation>
 <translation id="932327136139879170">Home page</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Assicurati che il microfono sia collegato o prova a riavviare Chromebook</translation>
 <translation id="945522503751344254">Invia feedback</translation>
 <translation id="950520315903467048">Tasto mancante per <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Confronta le voci dell'intera registrazione in modo che la trascrizione riporti correttamente ciò che ha detto ogni persona e quando</translation>

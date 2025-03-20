@@ -36,6 +36,9 @@ public final class TabGroupSyncServiceFactory {
             return null;
         }
 
+        // Throw an exception if the native pointer is not initialized. This is useful to get a more
+        // debuggable stacktrace than failing in native.
+        profile.ensureNativeInitialized();
         return TabGroupSyncServiceFactoryJni.get().getForProfile(profile);
     }
 

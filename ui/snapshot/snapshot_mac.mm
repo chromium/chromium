@@ -188,7 +188,7 @@ void GrabWindowSnapshot(gfx::NativeWindow native_window,
   // tabstrip.
   NSView* view = native_window.GetNativeNSWindow().contentView.superview;
 
-  GrabViewSnapshot(view, source_rect, std::move(callback));
+  GrabViewSnapshot(gfx::NativeView(view), source_rect, std::move(callback));
 }
 
 void GrabViewSnapshot(gfx::NativeView view,

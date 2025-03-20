@@ -347,6 +347,16 @@ BASE_FEATURE(kPageActionsMigration,
              base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kPageActionsMigrationLensOverlay{
     &kPageActionsMigration, "lens_overlay", false};
+const base::FeatureParam<bool> kPageActionsMigrationMemorySaver{
+    &kPageActionsMigration, "memory_saver", false};
+const base::FeatureParam<bool> kPageActionsMigrationTranslate{
+    &kPageActionsMigration, "translate", false};
+const base::FeatureParam<bool> kPageActionsMigrationIntentPicker{
+    &kPageActionsMigration, "intent_picker", false};
+const base::FeatureParam<bool> kPageActionsMigrationZoom{&kPageActionsMigration,
+                                                         "zoom", false};
+const base::FeatureParam<bool> kPageActionsMigrationOfferNotification{
+    &kPageActionsMigration, "offer_notification", false};
 
 BASE_FEATURE(kCompositorLoadingAnimations,
              "CompositorLoadingAnimations",

@@ -141,7 +141,7 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   bool DidRegisterTasksForTesting() const;
 
   static void OnPreFreezeForTesting() LOCKS_EXCLUDED(lock()) { OnPreFreeze(); }
-  static void ResetSelfCompactionLastCancelledForTesting();
+  static void ResetSelfCompactionForTesting();
 
   static std::optional<uint64_t> CompactRegion(
       debug::MappedMemoryRegion region);
@@ -211,7 +211,8 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
     CompactionMetric(base::TimeTicks triggered_at, base::TimeTicks started_at);
 
     void RecordDelayedMetrics();
-    void RecordTimeMetrics(base::TimeTicks self_compaction_last_cancelled);
+    void RecordTimeMetrics(base::TimeTicks self_compaction_last_finished,
+                           base::TimeTicks self_compaction_last_cancelled);
 
     void RecordBeforeMetrics();
     void MaybeRecordCompactionMetrics() LOCKS_EXCLUDED(lock());
@@ -335,6 +336,10 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
       base::TimeTicks::Min();
   // When we last triggered self compaction. Used to record metrics.
   base::TimeTicks self_compaction_last_triggered_ GUARDED_BY(lock()) =
+      base::TimeTicks::Min();
+  // When we last finished self compaction (either successfully, or from
+  // being cancelled). Used to record metrics.
+  base::TimeTicks self_compaction_last_finished_ GUARDED_BY(lock()) =
       base::TimeTicks::Min();
   std::optional<base::ScopedSampleMetadata> process_compacted_metadata_
       GUARDED_BY(lock());

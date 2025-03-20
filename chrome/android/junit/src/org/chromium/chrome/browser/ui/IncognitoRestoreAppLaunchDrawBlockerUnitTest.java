@@ -20,12 +20,14 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
@@ -50,6 +52,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 @Config(manifest = Config.NONE)
 @LooperMode(Mode.LEGACY)
 public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Bundle mSavedInstanceStateMock;
     @Mock private Intent mIntentMock;
     @Mock private CipherFactory mCipherFactoryMock;
@@ -91,7 +94,6 @@ public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(
                 /* isAvailable= */ false);
         mTabModelSelectorObservableSupplier.set(mTabModelSelectorMock);

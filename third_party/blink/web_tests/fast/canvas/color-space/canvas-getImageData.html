@@ -68,7 +68,7 @@ function run_test(canvas_color_space, canvas_pixel_format, data_color_space, dat
 function drawThenGetImageData() {
   color_spaces = ['srgb', 'display-p3', 'rec2020', null];
   canvas_pixel_formats = ['unorm8', 'float16'];
-  image_data_pixel_formats = ['rgba-unorm8', 'rgba-float32'];
+  image_data_pixel_formats = ['rgba-unorm8', 'rgba-float16'];
   var passed = true;
   for (var i = 0; i < 3; ++i) {
     for (var j = 0; j < 2; ++j) {

@@ -390,6 +390,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
                 totalHeight = 0;
             }
 
+            mBrowserControlsSizer.setBottomControlsAdditionalHeight(additionalHeight);
             offsetTagsInfo.mBottomControlsConstraints =
                     new OffsetTagConstraints(0, 0, 0, totalHeight + additionalHeight);
 

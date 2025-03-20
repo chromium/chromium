@@ -55,7 +55,7 @@ namespace base {
 // defined as a constant.
 
 // These constants are borrowed from glibc’s (arch)/bits/pthread_stack_min.h.
-#if defined(ARCH_CPU_ARM64)
+#if defined(ARCH_CPU_ARM64) || defined(ARCH_CPU_LOONGARCH64)
 #define PTHREAD_STACK_MIN_CONST \
   (__builtin_constant_p(PTHREAD_STACK_MIN) ? PTHREAD_STACK_MIN : 131072)
 #else

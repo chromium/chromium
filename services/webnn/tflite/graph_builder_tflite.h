@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/stack_allocated.h"
@@ -19,6 +20,7 @@
 #include "base/types/fixed_array.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "services/webnn/public/cpp/context_properties.h"
+#include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-forward.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
@@ -83,7 +85,9 @@ class GraphBuilderTflite final {
       ContextProperties context_properties,
       const mojom::GraphInfo& graph_info,
       const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
-          constant_operands);
+          constant_operands,
+      const base::flat_map<uint64_t, base::flat_set<size_t>>&
+          operand_to_dependent_operations);
 
   static ContextProperties GetContextProperties();
 
@@ -101,7 +105,9 @@ class GraphBuilderTflite final {
       ContextProperties context_properties,
       const mojom::GraphInfo& graph_info,
       const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
-          constant_operands);
+          constant_operands,
+      const base::flat_map<uint64_t, base::flat_set<size_t>>&
+          operand_to_dependent_operations);
   ~GraphBuilderTflite();
 
   // Maps to WebNN operand information.
@@ -142,7 +148,8 @@ class GraphBuilderTflite final {
   base::expected<TensorInfo, std::string> SerializeInputTensorInfo(
       uint64_t operand_id,
       QuantizateParametersOffset quantize_params = 0,
-      bool operation_supports_float16 = false);
+      bool operation_supports_float16 = false,
+      bool fuse_dequantize_quantize = false);
 
   // Call `SerializeOperand` to serialize the output operand and insert a TFLite
   // cast operator to convert float32 to float16 if the operand is graph output
@@ -165,7 +172,8 @@ class GraphBuilderTflite final {
   // Returns error messages if it could not be serialized because of unsupported
   // options or it is otherwise invalid.
   base::expected<void, std::string> SerializeOperation(
-      const mojom::Operation& op);
+      const mojom::Operation& op,
+      size_t operation_index);
 
   // Serializes the constant data (e.g. weights) to the flat buffer and returns
   // the index in the `tflite::Buffer` array if it's successful.
@@ -690,6 +698,29 @@ class GraphBuilderTflite final {
 
   bool RequiresFloat32Precision(const mojom::Operation& op);
 
+  // Check if conv2d's inputs and outputs are quantized tensors and matches
+  // fusion criteria required by TFLite, if so we can remove the
+  // preceding `dequantizeLinear` and subsequent `quantizeLinear`.
+  std::optional<TensorInfo> CanFuseQuantizeAndGetOutput(
+      const mojom::Conv2d& conv2d);
+  bool IsDequantizeOutput(uint64_t operand_id);
+  //   Get the dequantize op by its output operand id.
+  const mojom::DequantizeLinear& GetDequantizeOp(uint64_t operand_id);
+  const mojom::QuantizeLinear& GetQuantizeOp(size_t operation_index);
+  // Try to serialize `dequantize_linear`'s input with quantization params and
+  // return if it's successful.
+  bool TrySerializeQuantizedInput(
+      const mojom::DequantizeLinear& dequantize_linear,
+      size_t operation_index);
+  // Try to serialize `quantize_linear`'s output with quantization params and
+  // mark the `quantize_linear` to be skipped.
+  std::optional<TensorInfo> TrySerializeQuantizedOutput(size_t quantize_op_idx);
+  // Check if next op is quantize, if so mark it to-be skipped and return the
+  // quantized output.
+  std::optional<size_t> IsNextOpQuantize(
+      uint64_t output_operand_id,
+      SupportedDataTypes supported_quantized_types);
+
   // No further methods may be called on this class after calling this method
   // because the buffer of `buffer_` is now owned by the detached buffer.
   Result FinishAndTakeResult(base::span<const uint64_t> input_operands,
@@ -708,6 +739,11 @@ class GraphBuilderTflite final {
   base::raw_ref<
       const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>>
       constant_operands_;
+
+  // A reference to operand dependency map. The creator of
+  // `this` must ensure this reference is valid for as long as `this` exists.
+  base::raw_ref<const base::flat_map<uint64_t, base::flat_set<size_t>>>
+      operand_to_dependent_operations_;
 
   flatbuffers::FlatBufferBuilder builder_;
   // `is_created_model_` indicates whether the tflite model is created and the
@@ -758,6 +794,12 @@ class GraphBuilderTflite final {
   // hold the cast operator to insert after the unsupported float16 inference
   // operation.
   std::vector<OperatorOffset> graph_output_cast_operators_;
+
+  // output_operand_id -> [dequantize_operation_index, serialized].
+  // Tracks dequantizeLinear operations to be lazily serialized.
+  base::flat_map<uint64_t, std::pair<size_t, bool>>
+      lazy_serialized_dequantize_operations_;
+  base::flat_set<size_t> quantize_ops_to_skip_;
 };
 
 }  // namespace tflite

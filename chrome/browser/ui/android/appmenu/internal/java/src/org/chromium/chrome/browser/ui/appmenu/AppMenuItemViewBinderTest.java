@@ -21,9 +21,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
@@ -194,6 +196,7 @@ public class AppMenuItemViewBinderTest {
     static final String TITLE_6 = "Menu Item Six";
     static final String TITLE_7 = "Menu Item Seven";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Activity mActivity;
     private ModelListAdapter.ModelList mMenuList;
     private ModelListAdapter mModelListAdapter;
@@ -207,7 +210,6 @@ public class AppMenuItemViewBinderTest {
 
     @Before
     public void setUpTest() throws Exception {
-        MockitoAnnotations.initMocks(this);
         mClickHandler = new TestClickHandler();
 
         ThreadUtils.runOnUiThreadBlocking(

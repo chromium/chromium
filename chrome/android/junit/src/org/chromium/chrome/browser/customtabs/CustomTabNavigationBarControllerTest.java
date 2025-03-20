@@ -16,11 +16,13 @@ import android.os.Build;
 import android.view.Window;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -37,6 +39,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 @Batch(Batch.UNIT_TESTS)
 @Config(manifest = Config.NONE)
 public class CustomTabNavigationBarControllerTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ColorProvider mColorProvider;
     @Mock private CustomTabIntentDataProvider mCustomTabIntentDataProvider;
     @Mock private CustomTabsConnection mConnection;
@@ -45,7 +48,6 @@ public class CustomTabNavigationBarControllerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         Activity activity = Robolectric.buildActivity(Activity.class).get();
         mWindow = spy(activity.getWindow());
         mContext = activity;

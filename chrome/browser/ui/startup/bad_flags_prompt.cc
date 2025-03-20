@@ -46,6 +46,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/scoped_startup_resource_bundle.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/views_switches.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -261,5 +262,5 @@ void MaybeShowInvalidUserDataDirWarningDialog() {
       IDS_CANT_WRITE_USER_DIRECTORY_SUMMARY, user_data_dir.LossyDisplayName());
 
   // More complex dialogs cannot be shown before the earliest calls here.
-  chrome::ShowWarningMessageBox(nullptr, title, message);
+  chrome::ShowWarningMessageBox(gfx::NativeWindow(), title, message);
 }

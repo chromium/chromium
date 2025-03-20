@@ -186,48 +186,6 @@ class SetUpListTest : public PlatformTest {
   bool content_notification_feature_enabled_;
 };
 
-// Tests the SignInSync item is hidden if sync is disabled by policy.
-TEST_F(SetUpListTest, NoSignInSyncIfSyncDisabledByPolicy) {
-  prefs_->SetBoolean(syncer::prefs::internal::kSyncManaged, true);
-  BuildSetUpList();
-  ExpectListToNotInclude(SetUpListItemType::kSignInSync);
-
-  prefs_->ClearPref(syncer::prefs::internal::kSyncManaged);
-  BuildSetUpList();
-  ExpectListToInclude(SetUpListItemType::kSignInSync, NO);
-}
-
-// Tests the SignInSync item is hidden if sign-in is disabled by policy.
-TEST_F(SetUpListTest, NoSignInSyncItemIfSigninDisabledByPolicy) {
-  // Set sign-in disabled by policy.
-  GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
-                              static_cast<int>(BrowserSigninMode::kDisabled));
-  BuildSetUpList();
-  ExpectListToNotInclude(SetUpListItemType::kSignInSync);
-  // Re-enable signin policy.
-  GetLocalState()->SetInteger(prefs::kBrowserSigninPolicy,
-                              static_cast<int>(BrowserSigninMode::kEnabled));
-  BuildSetUpList();
-  ExpectListToInclude(SetUpListItemType::kSignInSync, NO);
-}
-
-// Tests that the SetUpList shows or hides the SignInSync item depending on
-// whether the user is currently signed-in.
-TEST_F(SetUpListTest, SignInSyncReactsToAccountChanges) {
-  SignInFakeIdentity();
-  BuildSetUpList();
-  ExpectListToInclude(SetUpListItemType::kSignInSync, YES);
-  EXPECT_EQ(GetItemState(SetUpListItemType::kSignInSync),
-            SetUpListItemState::kCompleteInList);
-
-  SetItemState(SetUpListItemType::kSignInSync,
-               SetUpListItemState::kCompleteNotInList);
-  BuildSetUpList();
-  ExpectListToNotInclude(SetUpListItemType::kSignInSync);
-  EXPECT_EQ(GetItemState(SetUpListItemType::kSignInSync),
-            SetUpListItemState::kCompleteNotInList);
-}
-
 // Tests that the SetUpList uses the correct criteria when including the
 // DefaultBrowser item.
 TEST_F(SetUpListTest, BuildListWithDefaultBrowser) {
@@ -383,11 +341,11 @@ TEST_F(SetUpListTest, ObservesPrefs) {
   BuildSetUpList();
   id delegate = [OCMockObject mockForProtocol:@protocol(SetUpListDelegate)];
   set_up_list_.delegate = delegate;
-  SetUpListItem* item = FindItem(SetUpListItemType::kSignInSync);
+  SetUpListItem* item = FindItem(SetUpListItemType::kDefaultBrowser);
   EXPECT_FALSE(item.complete);
   OCMExpect([delegate setUpListItemDidComplete:item allItemsCompleted:NO]);
   set_up_list_prefs::MarkItemComplete(GetLocalState(),
-                                      SetUpListItemType::kSignInSync);
+                                      SetUpListItemType::kDefaultBrowser);
   EXPECT_TRUE(item.complete);
   [delegate verify];
 }
@@ -458,5 +416,4 @@ TEST_F(SetUpListTest, MagicStackItemOrder) {
   EXPECT_EQ(GetItemIndex(SetUpListItemType::kDefaultBrowser), 0u);
   EXPECT_EQ(GetItemIndex(SetUpListItemType::kAutofill), 1u);
   EXPECT_EQ(GetItemIndex(SetUpListItemType::kNotifications), 2u);
-  EXPECT_EQ(GetItemIndex(SetUpListItemType::kSignInSync), 3u);
 }

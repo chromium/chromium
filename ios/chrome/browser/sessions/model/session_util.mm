@@ -44,11 +44,10 @@ std::unique_ptr<web::WebState> CreateWebStateWithNavigationEntries(
 
 std::string GetSessionIdentifier(Browser* browser) {
   SceneState* scene_state = browser->GetSceneState();
-  NSString* scene_session = scene_state.sceneSessionID;
-  DCHECK(scene_session.length);
+  const std::string& scene_session = scene_state.sceneSessionID;
+  DCHECK(!scene_session.empty());
 
-  return GetSessionIdentifier(base::SysNSStringToUTF8(scene_session),
-                              browser->IsInactive());
+  return GetSessionIdentifier(scene_session, browser->IsInactive());
 }
 
 std::string GetSessionIdentifier(const std::string& scene_session_identifier,

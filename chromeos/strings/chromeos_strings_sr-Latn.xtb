@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Sakrijte transkript</translation>
 <translation id="160633243685262989">Pregled slike</translation>
 <translation id="1611649489706141841">kretanje napred</translation>
-<translation id="1615144046047995187">Preuzimanje nije uspelo. Probajte ponovo ili restartujte Chromebook.</translation>
 <translation id="1615335640928990664">Potrošnja podataka od <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Koristite temu</translation>
 <translation id="1621067168122174824">Pokreni test punjenja</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Lista audio snimaka</translation>
 <translation id="2561093647892030937">limunovi</translation>
 <translation id="2570743873672969996">Pokreće se test <ph name="TEST_NAME" />...</translation>
-<translation id="2573178735329662769">Snimanje svih zvukova na Chromebook-u</translation>
 <translation id="2576253868710695442">Ovo će zauzeti do 2 GB memorijskog prostora</translation>
 <translation id="2584547424703650812">Svetleći pejzaži</translation>
 <translation id="2584559707064218956">Da biste podesili mrežu, idite u Podešavanja</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">plave i roze</translation>
 <translation id="498186245079027698">Proverite skener i probajte ponovo. Uverite se da ima dovoljno lokalne memorije za čuvanje skeniranih fajlova.</translation>
 <translation id="4982627662315910959">Prečica nije dostupna. Pritisnite novu prečicu pomoću tastera shift i još jednog modifikujućeg tastera (ctrl, alt ili <ph name="META_KEY" />).</translation>
-<translation id="4983216687482551672">Zvuk Chromebook-a</translation>
 <translation id="4985509611418653372">Pokreni</translation>
 <translation id="4987769320337599931">Zaštitni zid</translation>
 <translation id="4988526792673242964">Stranice</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Isključite USB kabl <ph name="DEVICE_NAME" />, pa ga ponovo priključite da biste nastavili proces ažuriranja</translation>
 <translation id="5099354524039520280">nagore</translation>
 <translation id="5107243100836678918">Prečica bez tastera <ph name="META_KEY" /> može da bude u suprotnosti sa prečicom neke aplikacije. Ponovo pritisnite ovu prečicu da biste nastavili da je koristite ili pritisnite novu prečicu pomoću tastera <ph name="KEY" />. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Preuzimanje modela transkripcije za jezik <ph name="LANGUAGE_NAME" /> nije uspelo. Probajte ponovo ili restartujte Chromebook</translation>
 <translation id="5108781503443873320">Slično:</translation>
-<translation id="5121677070210013200">Preuzimanje modela transkripcije nije uspelo. Probajte ponovo ili restartujte Chromebook.</translation>
 <translation id="5130848777448318809">poniji</translation>
 <translation id="5137451382116112100">Ceo ekran</translation>
 <translation id="5139813694804168398">ne uznemiravaj</translation>
@@ -1089,7 +1084,6 @@
 <translation id="6122191549521593678">Onlajn</translation>
 <translation id="6122277663991249694">Usluga metoda unosa za Chrome OS</translation>
 <translation id="6127426868813166163">beo/la</translation>
-<translation id="613049107179582049">Kada je zvuk Chromebook-a uključen, Snimač zvuka snima sve zvukove koji se puštaju na ovom uređaju</translation>
 <translation id="6136285399872347291">taster za brisanje unazad</translation>
 <translation id="6137614725462089991">sajberpank</translation>
 <translation id="6137767437444130246">Korisnički sertifikat</translation>
@@ -1419,7 +1413,6 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB dodirni ekran</translation>
 <translation id="757747079855995705">kamena</translation>
-<translation id="7584853321964440104">Preuzimanje nije uspelo. Probajte ponovo ili restartujte Chromebook.</translation>
 <translation id="7590883480672980941">Podešavanja unosa</translation>
 <translation id="7595982850646262331">Još <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">Administrator za <ph name="MANAGER" /> je podesio kada ovaj <ph name="DEVICE_TYPE" /> može da se koristi</translation>
@@ -1786,7 +1779,6 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="9218016617214286986">Prikaži poznate nazive pristupnih tačaka</translation>
 <translation id="932327136139879170">Početna</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Uverite se da je mikrofon povezan ili probajte da restartujete Chromebook</translation>
 <translation id="945522503751344254">Pošalji povratne informacije</translation>
 <translation id="950520315903467048">Nedostaje taster za <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Poređenje glasove na snimku da bi transkript odražavao šta je svaki govornik rekao i kada</translation>

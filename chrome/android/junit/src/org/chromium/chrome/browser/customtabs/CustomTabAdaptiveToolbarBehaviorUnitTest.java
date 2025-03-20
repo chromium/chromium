@@ -19,11 +19,13 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.Supplier;
@@ -47,6 +49,7 @@ import java.util.List;
 @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
 public class CustomTabAdaptiveToolbarBehaviorUnitTest {
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Context mContext;
     @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private Runnable mOpenInBrowserRunnable;
@@ -58,7 +61,6 @@ public class CustomTabAdaptiveToolbarBehaviorUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         initBehavior(List.of());
     }
 

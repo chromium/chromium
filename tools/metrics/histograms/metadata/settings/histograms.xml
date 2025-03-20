@@ -491,6 +491,16 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   </summary>
 </histogram>
 
+<histogram name="Settings.PrivacySandbox.AdMeasurement.EnabledForProfile"
+    enum="SettingsPrivacySandboxProfileEnabledState" expires_after="2025-08-03">
+  <owner>boujane@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the startup state of the ad measurement API on a Profile for Privacy
+    Sandbox GA M1. This is recorded during the profile start up.
+  </summary>
+</histogram>
+
 <histogram name="Settings.PrivacySandbox.ConsentCheckIsMismatched"
     enum="Boolean" expires_after="2025-05-04">
   <owner>boujane@google.com</owner>
@@ -522,6 +532,16 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   <summary>
     Records the startup state of the fledge API for Privacy Sandbox GA M1. This
     is recorded during the profile start up.
+  </summary>
+</histogram>
+
+<histogram name="Settings.PrivacySandbox.Fledge.EnabledForProfile"
+    enum="SettingsPrivacySandboxProfileEnabledState" expires_after="2025-08-03">
+  <owner>boujane@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the startup state of the fledge API on a Profile for Privacy Sandbox
+    GA M1. This is recorded during the profile start up.
   </summary>
 </histogram>
 
@@ -603,6 +623,16 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   <summary>
     Records the startup state of the topics API for Privacy Sandbox GA M1. This
     is recorded during the profile start up.
+  </summary>
+</histogram>
+
+<histogram name="Settings.PrivacySandbox.Topics.EnabledForProfile"
+    enum="SettingsPrivacySandboxProfileEnabledState" expires_after="2025-07-13">
+  <owner>boujane@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the startup state of the topics API on a Profile for Privacy Sandbox
+    GA M1. This is recorded during the profile start up.
   </summary>
 </histogram>
 

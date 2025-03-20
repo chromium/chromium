@@ -241,6 +241,8 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1755556344721611131">Diagnostická aplikace</translation>
 <translation id="1756833229520115364">Šablonu nelze uložit. Máte uloženo příliš mnoho oken nebo karet.</translation>
 <translation id="1757857692711134412">Do západu slunce vypnuto</translation>
+<translation id="1763084151787818322">Další akce</translation>
+<translation id="1768138163688567246">Zavřít vyhledávání obsahu na obrazovce</translation>
 <translation id="1768366657309696705">Klávesová zkratka <ph name="LAUNCHER_KEY_NAME" /> + tečka se změnila. Pokud chcete použít klávesu Insert, stiskněte klávesu <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Přesunuto na řádek <ph name="ROW_NUMBER" /> do sloupce <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Posunout doprava</translation>
@@ -1941,6 +1943,7 @@ Nová instalace</translation>
 <translation id="742594950370306541">Kamera je používána.</translation>
 <translation id="742608627846767349">Dobré ráno,</translation>
 <translation id="743058460480092004">Kamera a mikrofon jsou používány.</translation>
+<translation id="7440404390546433462">Vyhledávání Google</translation>
 <translation id="7441711280402516925">Přehrává se · Přepnout na kartu</translation>
 <translation id="7453330308669753048">Výsledek historie vyhledávání byl odstraněn</translation>
 <translation id="7459485586006128091">Hotspot byl kvůli interní chybě vypnut. Zkuste se znovu připojit za několik minut.</translation>

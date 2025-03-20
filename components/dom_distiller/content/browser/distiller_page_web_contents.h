@@ -73,7 +73,6 @@ class DistillerPageWebContents : public DistillerPage,
   DistillerPageWebContents& operator=(const DistillerPageWebContents&) = delete;
 
  protected:
-  bool StringifyOutput() override;
   void DistillPageImpl(const GURL& url, const std::string& script) override;
 
  private:

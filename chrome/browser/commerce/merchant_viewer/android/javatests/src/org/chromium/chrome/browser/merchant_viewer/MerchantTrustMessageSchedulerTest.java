@@ -19,10 +19,12 @@ import android.util.Pair;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureOverrides;
@@ -44,6 +46,7 @@ import java.util.concurrent.TimeoutException;
 @Config(manifest = Config.NONE)
 public class MerchantTrustMessageSchedulerTest {
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private MessageDispatcher mMockMessageDispatcher;
 
     @Mock private WebContents mMockWebContents;
@@ -60,8 +63,6 @@ public class MerchantTrustMessageSchedulerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         doAnswer(
                         invocation -> {
                             Runnable runnable = (Runnable) invocation.getArguments()[0];

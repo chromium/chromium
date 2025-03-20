@@ -23,8 +23,9 @@ class FederatedAuthAutofillSource {
 
   virtual const std::optional<std::vector<IdentityRequestAccountPtr>>
   GetAutofillSuggestions() const = 0;
-  virtual void NotifyAutofillSelection(const GURL& idp,
-                                       const std::string& account_id) = 0;
+  virtual void NotifyAutofillSuggestionAccepted(
+      const GURL& idp,
+      const std::string& account_id) = 0;
 
   // Returns the a data source for autofill if there is a pending conditional
   // FedCM requests. Returns null otherwise.

@@ -163,7 +163,6 @@
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/survey_config.h"
-#include "chrome/browser/ui/webauthn/ambient/ambient_signin_controller.h"
 #include "components/policy/core/common/features.h"
 #endif
 
@@ -1413,21 +1412,6 @@ ChromePasswordManagerClient::ShowCrossDomainConfirmationPopup(
 
   return controller;
 #endif  // BUILDFLAG(IS_ANDROID)
-}
-
-void ChromePasswordManagerClient::ShowCredentialsInAmbientBubble(
-    std::vector<std::unique_ptr<password_manager::PasswordForm>> forms,
-    int credential_type_flags,
-    CredentialsCallback callback) {
-#if !BUILDFLAG(IS_ANDROID)
-  auto* controller =
-      ambient_signin::AmbientSigninController::GetOrCreateForCurrentDocument(
-          web_contents()->GetPrimaryMainFrame());
-  controller->AddAndShowPasswordMethods(std::move(forms), credential_type_flags,
-                                        std::move(callback));
-#else
-  NOTREACHED();
-#endif
 }
 
 void ChromePasswordManagerClient::TriggerSignIn(

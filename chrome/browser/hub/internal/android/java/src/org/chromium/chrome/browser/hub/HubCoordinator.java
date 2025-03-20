@@ -70,10 +70,9 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
      * @param hubLayoutController The controller of the {@link HubLayout}.
      * @param currentTabSupplier The supplier of the current {@link Tab}.
      * @param menuButtonCoordinator Root component for the app menu.
-     * @param hubToolbarOverviewColorSupplier Notifies when the hub's toolbar overview color
-     *     changes.
      * @param edgeToEdgeSupplier The supplier of {@link EdgeToEdgeController}.
      * @param searchActivityClient A client for the search activity, used to launch search.
+     * @param hubColorMixer Mixes the Hub Overview Color.
      */
     public HubCoordinator(
             @NonNull Activity activity,
@@ -85,7 +84,7 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
             @NonNull MenuButtonCoordinator menuButtonCoordinator,
             @NonNull SearchActivityClient searchActivityClient,
             @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
-            @NonNull ObservableSupplierImpl<Integer> hubToolbarOverviewColorSupplier) {
+            @NonNull HubColorMixer hubColorMixer) {
         Context context = containerView.getContext();
         mBackPressStateChangeCallback = (ignored) -> updateHandleBackPressSupplier();
         mPaneManager = paneManager;
@@ -112,11 +111,12 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
                         menuButtonCoordinator,
                         tracker,
                         searchActivityClient,
-                        hubToolbarOverviewColorSupplier);
+                        hubColorMixer);
 
         HubPaneHostView hubPaneHostView = mContainerView.findViewById(R.id.hub_pane_host);
         mHubPaneHostCoordinator =
-                new HubPaneHostCoordinator(hubPaneHostView, paneManager.getFocusedPaneSupplier());
+                new HubPaneHostCoordinator(
+                        hubPaneHostView, paneManager.getFocusedPaneSupplier(), hubColorMixer);
 
         mHubLayoutController = hubLayoutController;
         mHandleBackPressSupplier = new ObservableSupplierImpl<>();

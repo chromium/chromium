@@ -22,10 +22,12 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.MathUtils;
@@ -40,6 +42,7 @@ import java.util.concurrent.TimeoutException;
 /** Tests related to the ToolbarProgressBar. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ToolbarProgressBarTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock ProgressBarObserver mMockProgressBarObserver;
     private ToolbarProgressBar mProgressBar;
     private ToolbarProgressBarAnimatingView mProgressBarAnimatingView;
@@ -48,8 +51,6 @@ public class ToolbarProgressBarTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         mShadowLooper = ShadowLooper.shadowMainLooper();
 
         mActivityScenario =

@@ -1515,7 +1515,7 @@ void MenuController::OnWidgetDestroying(Widget* widget) {
   DCHECK_EQ(owner_, widget);
   owner_->RemoveObserver(this);
   owner_ = nullptr;
-  native_view_for_gestures_ = nullptr;
+  native_view_for_gestures_ = gfx::NativeView();
 
 #if BUILDFLAG(IS_MAC)
   menu_closure_animation_.reset();

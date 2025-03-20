@@ -1695,6 +1695,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3964661563329879394">{COUNT,plural, =0{None}=1{From 1 site }other{From # sites }}</translation>
 <translation id="3965672182149944205">Save address?</translation>
 <translation id="3966044442021752214">Product safety</translation>
+<translation id="3969869202926863008">Local network access</translation>
 <translation id="397105322502079400">Calculating...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> is blocked</translation>
 <translation id="3975852104434126461">Automotive industry</translation>
@@ -2051,6 +2052,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="460848736049414407">Blocked by admin</translation>
 <translation id="4610279718074907952">This site is in a group, defined by <ph name="SET_OWNER" />, that can see your activity</translation>
 <translation id="46128681529823442">Football Equipment</translation>
+<translation id="4612904677925722054">This site may have mature content. A parent or guardian has to say that it's OK for you to visit this website.</translation>
 <translation id="4619564267100705184">Verify that it's you</translation>
 <translation id="4622292761762557753">Transfer anyway</translation>
 <translation id="4622647778991854660">Enable notifications in the Notification Centre. Open <ph name="LINK" />.</translation>
@@ -2648,6 +2650,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5660122698869360728">A new smart folder that helps you save all your shopping pages in one place, and automatically track prices, get price insights, and more.</translation>
 <translation id="5663955426505430495">The administrator of this device has installed extensions for additional functions. Extensions have access to some of your data.</translation>
 <translation id="5667827081946850877">Audiobooks</translation>
+<translation id="5674082555327905359">Can ask to connect to any device on your local network</translation>
 <translation id="5675650730144413517">This page isn’t working</translation>
 <translation id="5675809467256309336">Dance and electronic music</translation>
 <translation id="5675959228867414813">Show by date</translation>
@@ -2896,6 +2899,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6116338172782435947">See text and images copied to the clipboard</translation>
 <translation id="6117833587752089929">Photo (satin)</translation>
 <translation id="6118782133429281336">Origin list is empty.</translation>
+<translation id="6120950591512958208">Use this code at checkout.</translation>
 <translation id="612178891608320683">Vegan cuisine</translation>
 <translation id="6122181661879998141">front of your card</translation>
 <translation id="6124058285696691147">Download the attachment</translation>
@@ -2921,6 +2925,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6159908896951210943">Formal</translation>
 <translation id="6160391204859821737">Turn on an ad privacy feature</translation>
 <translation id="6162403104168428984">Update address?</translation>
+<translation id="6164605812717770913">A parent or guardian said that this site isn't OK for you to visit. You can ask them to unblock it.</translation>
 <translation id="6165508094623778733">Learn more</translation>
 <translation id="6167577165590485365">Last fetch attempted:</translation>
 <translation id="617256461084925519">Google Chrome is trying to verify it's you so it can fill in your payment info.</translation>
@@ -3012,6 +3017,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6321917430147971392">Check your DNS settings</translation>
 <translation id="6322182122604171028">Couldn't use Windows Hello</translation>
 <translation id="6326947323444967009">Set Chrome as the system's default browser in iOS settings</translation>
+<translation id="6327065120806001832">local network access</translation>
 <translation id="6328639280570009161">Try disabling network prediction</translation>
 <translation id="6335029926534404762">Trainers</translation>
 <translation id="6337133576188860026">Frees up less than <ph name="SIZE" />. Some sites may load more slowly on your next visit.</translation>

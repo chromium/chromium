@@ -121,6 +121,7 @@ class AuthenticationFlowTest : public PlatformTest {
         [[AuthenticationFlow alloc] initWithBrowser:browser_.get()
                                            identity:identity
                                         accessPoint:accessPoint
+                               precedingHistorySync:NO
                                   postSignInActions:postSignInActions
                            presentingViewController:view_controller_mock_
                                          anchorView:nil

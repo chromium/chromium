@@ -24,7 +24,6 @@
 
 namespace crypto {
 class ECPrivateKey;
-class SymmetricKey;
 }  // namespace crypto
 
 // Stores metadata and crypto keys for the local device. This certificate
@@ -54,10 +53,10 @@ class NearbySharePrivateCertificate {
       base::Time not_before,
       base::Time not_after,
       std::unique_ptr<crypto::ECPrivateKey> key_pair,
-      std::unique_ptr<crypto::SymmetricKey> secret_key,
+      base::span<const uint8_t, kNearbyShareNumBytesSecretKey> secret_key,
       base::span<const uint8_t, kNearbyShareNumBytesMetadataEncryptionKey>
           metadata_encryption_key,
-      std::vector<uint8_t> id,
+      base::span<const uint8_t, kNearbyShareNumBytesCertificateId> id,
       nearby::sharing::proto::EncryptedMetadata unencrypted_metadata,
       std::set<
           std::array<uint8_t, kNearbyShareNumBytesMetadataEncryptionKeySalt>>
@@ -72,7 +71,7 @@ class NearbySharePrivateCertificate {
 
   virtual ~NearbySharePrivateCertificate();
 
-  const std::vector<uint8_t>& id() const { return id_; }
+  base::span<const uint8_t> id() const { return id_; }
   nearby_share::mojom::Visibility visibility() const { return visibility_; }
   base::Time not_before() const { return not_before_; }
   base::Time not_after() const { return not_after_; }
@@ -152,7 +151,7 @@ class NearbySharePrivateCertificate {
   // |metadata_encryption_key_|, after which it can be safely advertised.  Also,
   // used to generate an authentication token hash. Included in the public
   // certificate.
-  std::unique_ptr<crypto::SymmetricKey> secret_key_;
+  std::array<uint8_t, kNearbyShareNumBytesSecretKey> secret_key_;
 
   // A 14-byte symmetric key used to encrypt |unencrypted_metadata_|. Not
   // included in public certificate.
@@ -160,7 +159,7 @@ class NearbySharePrivateCertificate {
       metadata_encryption_key_;
 
   // An ID for the certificate, generated from the secret key.
-  std::vector<uint8_t> id_;
+  std::array<uint8_t, kNearbyShareNumBytesCertificateId> id_;
 
   // Unencrypted device metadata. The proto name is misleading; it holds data
   // that will eventually be serialized and encrypted.

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.hub;
 
+import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
+
 import android.view.ViewGroup;
 
 import org.chromium.base.supplier.ObservableSupplier;
@@ -19,10 +21,16 @@ public class HubPaneHostCoordinator {
      *
      * @param hubPaneHostView The root view of this component. Inserted into hierarchy for us.
      * @param paneSupplier A way to observe and get the current {@link Pane}.
+     * @param hubColorMixer Mixes the Hub Overview Color.
      */
     public HubPaneHostCoordinator(
-            HubPaneHostView hubPaneHostView, ObservableSupplier<Pane> paneSupplier) {
-        PropertyModel model = new PropertyModel.Builder(HubPaneHostProperties.ALL_KEYS).build();
+            HubPaneHostView hubPaneHostView,
+            ObservableSupplier<Pane> paneSupplier,
+            HubColorMixer hubColorMixer) {
+        PropertyModel model =
+                new PropertyModel.Builder(HubPaneHostProperties.ALL_KEYS)
+                        .with(COLOR_MIXER, hubColorMixer)
+                        .build();
         PropertyModelChangeProcessor.create(model, hubPaneHostView, HubPaneHostViewBinder::bind);
         mMediator = new HubPaneHostMediator(model, paneSupplier);
     }

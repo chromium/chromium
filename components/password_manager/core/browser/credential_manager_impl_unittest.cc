@@ -26,7 +26,6 @@
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
 #include "components/password_manager/core/browser/credential_manager_pending_request_task.h"
 #include "components/password_manager/core/browser/credential_manager_utils.h"
-#include "components/password_manager/core/browser/credential_type_flags.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory.h"
@@ -67,9 +66,6 @@ namespace {
 const char kTestWebOrigin[] = "https://example.com/";
 const char kTestAndroidRealm1[] = "android://hash@com.example.one.android/";
 const char kTestAndroidRealm2[] = "android://hash@com.example.two.android/";
-
-constexpr int kIncludePasswordsFlag =
-    static_cast<int>(CredentialTypeFlags::kPassword);
 
 class MockLeakDetectionCheck : public LeakDetectionCheck {
  public:
@@ -403,10 +399,8 @@ class CredentialManagerImplTest : public testing::Test,
                bool include_passwords,
                const std::vector<GURL>& federations,
                GetCallback callback) {
-    cm_service_impl_->Get(mediation,
-                          /*requested_credential_type_flags=*/
-                              include_passwords ? kIncludePasswordsFlag : 0,
-                          federations, std::move(callback));
+    cm_service_impl_->Get(mediation, include_passwords, federations,
+                          std::move(callback));
   }
 
   void RunAllPendingTasks() { task_environment_.RunUntilIdle(); }

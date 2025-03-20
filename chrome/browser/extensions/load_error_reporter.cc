@@ -73,7 +73,7 @@ void LoadErrorReporter::ReportError(const std::u16string& message,
 
   if (enable_noisy_errors_ && be_noisy) {
     chrome::ShowWarningMessageBox(
-        nullptr,
+        gfx::NativeWindow(),
         l10n_util::GetStringUTF16(IDS_EXTENSIONS_LOAD_ERROR_ALERT_HEADING),
         message);
   }

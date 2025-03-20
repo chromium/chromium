@@ -1711,7 +1711,7 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextSimple', async function() {
   assertFalse(this.getBubbleIsWarning());
 
   this.triggerBubbleControllerTimeout();
-  assertEquals('', this.getBubbleText());
+  assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
 });
 
 AX_TEST_F('FaceGazeTest', 'BubbleTextMultiple', async function() {
@@ -1742,7 +1742,7 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextMultiple', async function() {
   assertFalse(this.getBubbleIsWarning());
 
   this.triggerBubbleControllerTimeout();
-  assertEquals('', this.getBubbleText());
+  assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
 });
 
 AX_TEST_F('FaceGazeTest', 'BubbleTextKeyCombination', async function() {
@@ -1791,7 +1791,7 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextKeyCombination', async function() {
   this.processFaceLandmarkerResult(result);
 
   this.triggerBubbleControllerTimeout();
-  assertEquals('', this.getBubbleText());
+  assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
 });
 
 AX_TEST_F(
@@ -1858,7 +1858,7 @@ AX_TEST_F(
       this.processFaceLandmarkerResult(result);
 
       this.triggerBubbleControllerTimeout();
-      assertEquals('', this.getBubbleText());
+      assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
     });
 
 AX_TEST_F(
@@ -2038,7 +2038,7 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextLongClickStateMessage', async function() {
   assertFalse(this.getBubbleIsWarning());
 
   this.triggerBubbleControllerTimeout();
-  assertEquals('', this.getBubbleText());
+  assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
   assertFalse(this.getBubbleIsWarning());
 });
 
@@ -2089,7 +2089,7 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextDictationStateMessage', async function() {
   assertEquals('Stop dictation (Open your mouth wide)', this.getBubbleText());
   assertFalse(this.getBubbleIsWarning());
   this.triggerBubbleControllerTimeout();
-  assertEquals('', this.getBubbleText());
+  assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
   assertFalse(this.getBubbleIsWarning());
 });
 
@@ -2175,7 +2175,7 @@ AX_TEST_F('FaceGazeTest', 'TurnOffActionsWhileInScrollMode', async function() {
 
   // Ensure scroll mode automatically toggled off.
   assertFalse(this.getScrollModeController().active());
-  assertEquals('', this.getBubbleText());
+  assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
 });
 
 AX_TEST_F(
@@ -2207,7 +2207,7 @@ AX_TEST_F(
 
       // Ensure scroll mode automatically toggled off.
       assertFalse(this.getScrollModeController().active());
-      assertEquals('', this.getBubbleText());
+      assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
     });
 
 AX_TEST_F('FaceGazeTest', 'GesturesDisabledInScrollMode', async function() {
@@ -2763,7 +2763,7 @@ AX_TEST_F('FaceGazeTest', 'PrecisionClickBubbleText', async function() {
       'Left-click the mouse (Open your mouth wide)', this.getBubbleText());
 
   this.triggerBubbleControllerTimeout();
-  assertEquals('', this.getBubbleText());
+  assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
 });
 
 AX_TEST_F('FaceGazeTest', 'PrecisionClickMouseMovement', async function() {
@@ -2826,7 +2826,7 @@ AX_TEST_F(
 
       // Ensure precision click is automatically toggled off.
       assertFalse(this.getMouseController().isPrecisionActive());
-      assertEquals('', this.getBubbleText());
+      assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
     });
 
 AX_TEST_F(
@@ -2856,7 +2856,7 @@ AX_TEST_F(
 
       // Ensure precision click is automatically toggled off.
       assertFalse(this.getMouseController().isPrecisionActive());
-      assertEquals('', this.getBubbleText());
+      assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
     });
 
 AX_TEST_F('FaceGazeTest', 'PrecisionClickAndScrollMode', async function() {
@@ -2967,7 +2967,7 @@ AX_TEST_F('FaceGazeTest', 'PrecisionRightClickBubbleText', async function() {
       'Right-click the mouse (Open your mouth wide)', this.getBubbleText());
 
   this.triggerBubbleControllerTimeout();
-  assertEquals('', this.getBubbleText());
+  assertEquals(this.getDefaultBubbleText(), this.getBubbleText());
 });
 
 AX_TEST_F('FaceGazeTest', 'PrecisionRightClickMouseEvents', async function() {

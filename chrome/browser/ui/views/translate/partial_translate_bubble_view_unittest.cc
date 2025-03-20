@@ -133,7 +133,9 @@ class PartialTranslateBubbleViewTest : public ChromeViewsTestBase {
   }
 
   void TearDown() override {
-    bubble_->GetWidget()->CloseNow();
+    if (bubble_) {
+      bubble_->GetWidget()->CloseNow();
+    }
     anchor_widget_.reset();
 
     ChromeViewsTestBase::TearDown();
@@ -220,6 +222,7 @@ TEST_F(PartialTranslateBubbleViewTest, ActionItemUpdatesWithBubbleLifetime) {
   EXPECT_FALSE(action_item_->GetIsShowingBubble());
   CreateAndShowBubble();
   EXPECT_TRUE(action_item_->GetIsShowingBubble());
-  bubble_->CloseBubble();
+  bubble_->GetWidget()->CloseNow();
   EXPECT_FALSE(action_item_->GetIsShowingBubble());
+  bubble_ = nullptr;
 }

@@ -19,10 +19,11 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "skia/buildflags.h"
 #include "ui/gl/gl_bindings.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/gl_implementation.h"
+#include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_utils.h"
-#include "ui/gl/gl_surface_egl.h"
 
 namespace gpu {
 namespace gles2 {
@@ -187,6 +188,8 @@ gl::GLContextAttribs GenerateGLContextAttribsForCompositor(
     // passthrough command decoder
     attribs.global_texture_share_group = true;
     attribs.global_semaphore_share_group = true;
+
+    attribs.passthrough_shaders = features::IsANGLEPassthroughShadersAllowed();
 
     // Disable resource initialization and buffer bounds checks for trusted
     // contexts.

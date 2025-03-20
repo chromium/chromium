@@ -22,7 +22,7 @@ function populate_array(data, data_color_space, data_pixel_format) {
     var multiplier = 1;
     if (data_pixel_format == 'rgba-unorm8')
       multiplier = 255;
-    if (data_pixel_format == 'rgba-float32')
+    if (data_pixel_format == 'rgba-float16')
       multiplier = 1.0;
 
     data[4*i + 0] = multiplier * data_color[0];
@@ -65,8 +65,8 @@ function run_test(canvas_color_space, canvas_pixel_format, data_color_space, dat
     var data = [];
     if (data_pixel_format == 'rgba-unorm8')
       data = new Uint8ClampedArray(length);
-    if (data_pixel_format == 'rgba-float32')
-      data = new Float32Array(length);
+    if (data_pixel_format == 'rgba-float16')
+      data = new Float16Array(length);
     populate_array(data, data_color_space, data_pixel_format);
 
     var data_to_put = new ImageData(data, data_width, data_height, {colorSpace:data_color_space, pixelFormat:data_pixel_format});
@@ -74,16 +74,17 @@ function run_test(canvas_color_space, canvas_pixel_format, data_color_space, dat
     subtest_name = 'constructor with data,width,height,settings';
   }
 
+  // To use any other pixel format, a `settings` parameter must be specified.
+  if (data_pixel_format != 'rgba-unorm8') {
+    return true;
+  }
+
   // Create and populate an array, then use that array to create an ImageData
   // without specifying the height. Note that this will also not specify the
   // ImageDataSettings, so the color space will implicitly be sRGB.
   {
     var length = 4 * data_width * data_height;
-    var data = [];
-    if (data_pixel_format == 'rgba-unorm8')
-      data = new Uint8ClampedArray(length);
-    if (data_pixel_format == 'rgba-float32')
-      data = new Float32Array(length);
+    var data = new Uint8ClampedArray(length);
     populate_array(data, 'srgb', data_pixel_format);
 
     var data_to_put = new ImageData(data, data_width);
@@ -97,11 +98,7 @@ function run_test(canvas_color_space, canvas_pixel_format, data_color_space, dat
   // sRGB.
   {
     var length = 4 * data_width * data_height;
-    var data = [];
-    if (data_pixel_format == 'rgba-unorm8')
-      data = new Uint8ClampedArray(length);
-    if (data_pixel_format == 'rgba-float32')
-      data = new Float32Array(length);
+    var data = new Uint8ClampedArray(length);
     populate_array(data, 'srgb', data_pixel_format);
 
     var data_to_put = new ImageData(data, data_width, data_height);
@@ -136,7 +133,7 @@ function run_test(canvas_color_space, canvas_pixel_format, data_color_space, dat
 function drawThenGetImageData() {
   color_spaces = ['srgb', 'display-p3', 'rec2020'];
   canvas_pixel_formats = ['unorm8', 'float16'];
-  image_data_pixel_formats = ['rgba-unorm8', 'rgba-float32'];
+  image_data_pixel_formats = ['rgba-unorm8', 'rgba-float16'];
   var passed = true;
   for (var i = 0; i < 3; ++i) {
     for (var j = 0; j < 2; ++j) {

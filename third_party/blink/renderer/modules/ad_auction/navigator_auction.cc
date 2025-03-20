@@ -1656,6 +1656,24 @@ void CopySellerSignalsFromIdlToMojo(
           mojom::blink::AuctionAdConfigField::kSellerSignals, "sellerSignals");
 }
 
+void CopySellerTKVSignalsFromIdlToMojo(
+    NavigatorAuction::AuctionHandle* auction_handle,
+    mojom::blink::AuctionAdConfigAuctionId* auction_id,
+    const AuctionAdConfig& input,
+    mojom::blink::AuctionAdConfig& output) {
+  if (!input.hasSellerTKVSignals()) {
+    output.auction_ad_config_non_shared_params->seller_tkv_signals =
+        mojom::blink::AuctionAdConfigMaybePromiseJson::NewValue(String());
+    return;
+  }
+
+  output.auction_ad_config_non_shared_params->seller_tkv_signals =
+      ConvertJsonPromiseFromIdlToMojo(
+          auction_handle, auction_id, input, input.sellerTKVSignals(),
+          mojom::blink::AuctionAdConfigField::kSellerTKVSignals,
+          "sellerTKVSignals");
+}
+
 // Attempts to build a DirectFromSellerSignalsSubresource. If there is no
 // registered subresource URL `subresource_url` returns nullptr -- processing
 // may continue with the next `subresource_url`.
@@ -2721,6 +2739,8 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
                                   *mojo_config);
   CopySellerSignalsFromIdlToMojo(auction_handle, auction_id.get(), config,
                                  *mojo_config);
+  CopySellerTKVSignalsFromIdlToMojo(auction_handle, auction_id.get(), config,
+                                    *mojo_config);
   CopyDirectFromSellerSignalsFromIdlToMojo(auction_handle, auction_id.get(),
                                            config, *mojo_config);
   CopyDirectFromSellerSignalsHeaderAdSlotFromIdlToMojo(

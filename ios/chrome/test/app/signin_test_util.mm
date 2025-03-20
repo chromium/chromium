@@ -161,6 +161,7 @@ void SignInWithoutSync(id<SystemIdentity> identity) {
                initWithBrowser:browser
                       identity:identity
                    accessPoint:signin_metrics::AccessPoint::kUnknown
+          precedingHistorySync:NO
              postSignInActions:PostSignInActionSet()
       presentingViewController:viewController
                     anchorView:nil

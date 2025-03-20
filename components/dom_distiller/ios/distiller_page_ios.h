@@ -36,7 +36,6 @@ class DistillerPageIOS : public DistillerPage, public web::WebStateObserver {
   ~DistillerPageIOS() override;
 
  protected:
-  bool StringifyOutput() override;
   void DistillPageImpl(const GURL& url, const std::string& script) override;
 
   // Sets the WebState that will be used for the distillation. Do not call

@@ -9,6 +9,7 @@
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_delegate.h"
 #include "ui/base/models/image_model.h"
+#include "ui/gfx/native_widget_types.h"
 
 TestToolbarActionViewController::TestToolbarActionViewController(
     const std::string& id)
@@ -79,7 +80,7 @@ void TestToolbarActionViewController::HidePopup() {
 }
 
 gfx::NativeView TestToolbarActionViewController::GetPopupNativeView() {
-  return nullptr;
+  return gfx::NativeView();
 }
 
 ui::MenuModel* TestToolbarActionViewController::GetContextMenu(

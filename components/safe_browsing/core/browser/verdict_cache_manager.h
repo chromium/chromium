@@ -213,10 +213,12 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
   void CacheArtificialUnsafeRealTimeUrlVerdictFromSwitch();
 
   // This adds a cached verdict for a URL that has artificially been marked as
-  // safe or unsafe (depending on |is_unsafe|). This applies to URL real-time
-  // lookups.
-  void CacheArtificialRealTimeUrlVerdict(const std::string& url_string,
-                                         bool is_unsafe);
+  // safe or unsafe (depending on |verdict_type| and |threat_type|). This
+  // applies to URL real-time lookups.
+  void CacheArtificialRealTimeUrlVerdict(
+      const std::string& url_string,
+      RTLookupResponse::ThreatInfo::VerdictType verdict_type,
+      std::optional<RTLookupResponse::ThreatInfo::ThreatType> threat_type);
 
   // This adds a cached verdict for a URL that has artificially been marked as
   // unsafe using the command line flag "mark_as_phish_guard_phishing". This

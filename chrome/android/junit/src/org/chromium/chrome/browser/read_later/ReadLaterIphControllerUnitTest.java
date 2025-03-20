@@ -16,12 +16,14 @@ import android.view.View;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -35,6 +37,7 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 @Config(manifest = Config.NONE)
 public class ReadLaterIphControllerUnitTest {
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock Activity mActivity;
     @Mock View mToolbarMenuButton;
     @Mock AppMenuHandler mAppMenuHandler;
@@ -47,7 +50,6 @@ public class ReadLaterIphControllerUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         doReturn(mResources).when(mContext).getResources();
         doReturn(mContext).when(mToolbarMenuButton).getContext();
 

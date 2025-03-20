@@ -7,10 +7,17 @@
 #include "base/logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+// TODO(crbug.com/405151792): Flaky on linux-chromeos.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_VerifyToString DISABLED_VerifyToString
+#else
+#define MAYBE_VerifyToString VerifyToString
+#endif
+
 // Verifying that Local_Surface_Id::ToString() prints its corresponding
 // UnguessableToken as ABCD... if logging is not verbose and prints full
 // 16-character token otherwise.
-TEST(LocalSurfaceIdTest, VerifyToString) {
+TEST(LocalSurfaceIdTest, MAYBE_VerifyToString) {
   const base::UnguessableToken token =
       base::UnguessableToken::CreateForTesting(0x111111, 0);
   const base::UnguessableToken big_token =

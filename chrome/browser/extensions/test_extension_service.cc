@@ -13,12 +13,6 @@ TestExtensionService::TestExtensionService() = default;
 
 TestExtensionService::~TestExtensionService() = default;
 
-extensions::CorruptedExtensionReinstaller*
-TestExtensionService::corrupted_extension_reinstaller() {
-  ADD_FAILURE();
-  return nullptr;
-}
-
 scoped_refptr<extensions::CrxInstaller>
 TestExtensionService::CreateUpdateInstaller(const extensions::CRXFileInfo& file,
                                             bool file_ownership_passed) {

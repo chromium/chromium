@@ -105,14 +105,7 @@ void EnhancedCalendarServiceImpl::OnEnhancedCalendarResponse(
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> entry) {
   mojom::EnhancedCalendarResponseResultPtr result_union;
 
-  if (!result.response.has_value()) {
-    std::string error_string =
-        base::StrCat({"Server model execution error: ",
-                      service_->ResponseForErrorCode(
-                          static_cast<int>(result.response.error().error()))});
-    result_union =
-        mojom::EnhancedCalendarResponseResult::NewError(error_string);
-  } else {
+  if (result.response.has_value()) {
     std::optional<optimization_guide::proto::EnhancedCalendarResponse>
         response_proto = optimization_guide::ParsedAnyMetadata<
             optimization_guide::proto::EnhancedCalendarResponse>(
@@ -125,6 +118,13 @@ void EnhancedCalendarServiceImpl::OnEnhancedCalendarResponse(
       result_union = mojom::EnhancedCalendarResponseResult::NewError(
           "Proto unmarshalling error.");
     }
+  } else {
+    std::string error_string =
+        base::StrCat({"Server model execution error: ",
+                      service_->ResponseForErrorCode(
+                          static_cast<int>(result.response.error().error()))});
+    result_union =
+        mojom::EnhancedCalendarResponseResult::NewError(error_string);
   }
 
   std::move(request_callback).Run(std::move(result_union));

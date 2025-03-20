@@ -1980,22 +1980,31 @@ void AuthenticatorRequestDialogController::StartAutofillRequest() {
   }
   ReportConditionalUiPasskeyCount(credentials.size());
 
+  // TODO(https://crbug.com/358119268): This will probably get its own mediation
+  // type, but for prototyping we assume any conditional request with passwords
+  // uses ambient.
+  bool has_ambient_credentials = !credentials.empty() || !passwords_.empty();
   if (base::FeatureList::IsEnabled(device::kWebAuthnAmbientSignin) &&
-      !credentials.empty()) {
+      has_ambient_credentials &&
+      (credential_types_ &
+       static_cast<int>(blink::mojom::CredentialTypeFlags::kPassword))) {
     auto* controller =
         ambient_signin::AmbientSigninController::GetOrCreateForCurrentDocument(
             render_frame_host);
+    // TODO(https://crbug.com/358119268): `AmbientSigninController` needs to be
+    // refactored, since this is now the single source of all credentials it
+    // shows.
     controller->AddAndShowWebAuthnMethods(
         model(), credentials, credential_types_,
         base::BindOnce(
-            [](base::WeakPtr<AuthenticatorRequestDialogController> controller,
-               std::vector<uint8_t> credential_id) {
-              if (!controller) {
-                return;
-              }
-              controller->OnAccountPreselected(std::move(credential_id));
-            },
+            IgnoreResult(
+                &AuthenticatorRequestDialogController::OnAccountPreselected),
             weak_factory_.GetWeakPtr()));
+    controller->AddAndShowPasswordMethods(
+        std::move(passwords_), credential_types_,
+        base::BindRepeating(
+            &AuthenticatorRequestDialogModel::OnPasswordCredentialSelected,
+            base::Unretained(model_)));
   }
 
   ChromeWebAuthnCredentialsDelegate* webauthn_credentials_delegate =

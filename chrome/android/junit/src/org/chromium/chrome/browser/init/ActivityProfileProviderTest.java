@@ -14,10 +14,12 @@ import androidx.annotation.Nullable;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
@@ -29,6 +31,7 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 /** Tests for ActivityProfileProviderInitializer. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ActivityProfileProviderTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mOriginalProfile;
     @Mock private Activity mActivity;
 
@@ -36,7 +39,6 @@ public class ActivityProfileProviderTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         ProfileManager.setLastUsedProfileForTesting(mOriginalProfile);
         mLifecycleDispatcher = new TestActivityLifecycleDispatcherImpl(mActivity);

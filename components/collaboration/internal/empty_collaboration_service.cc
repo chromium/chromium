@@ -20,11 +20,13 @@ void EmptyCollaborationService::RemoveObserver(Observer* observer) {}
 
 void EmptyCollaborationService::StartJoinFlow(
     std::unique_ptr<CollaborationControllerDelegate> delegate,
-    const GURL& url) {}
+    const GURL& url,
+    CollaborationServiceJoinEntryPoint entry) {}
 
 void EmptyCollaborationService::StartShareOrManageFlow(
     std::unique_ptr<CollaborationControllerDelegate> delegate,
-    const tab_groups::EitherGroupID& group_id) {}
+    const tab_groups::EitherGroupID& either_id,
+    CollaborationServiceShareOrManageEntryPoint entry) {}
 
 ServiceStatus EmptyCollaborationService::GetServiceStatus() {
   return ServiceStatus();

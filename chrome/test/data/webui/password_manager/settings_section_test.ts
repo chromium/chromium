@@ -823,13 +823,14 @@ suite('SettingsSectionTest', function() {
             '#passkeyUpgradeToggle');
     assertTrue(!!passkeyUpgradeToggle);
 
-    assertTrue(
-        settings.getPref('password_manager.automatic_passkey_upgrades').value);
+    assertTrue(settings.getPref('credentials_enable_automatic_passkey_upgrades')
+                   .value);
     assertTrue(passkeyUpgradeToggle.checked);
 
     passkeyUpgradeToggle.click();
     assertFalse(
-        settings.getPref('password_manager.automatic_passkey_upgrades').value);
+        settings.getPref('credentials_enable_automatic_passkey_upgrades')
+            .value);
     assertFalse(passkeyUpgradeToggle.checked);
   });
 

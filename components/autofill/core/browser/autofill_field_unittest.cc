@@ -86,24 +86,6 @@ TEST_F(AutofillFieldTest, Type_ServerPredictionOfCityAndNumber_OverrideHtml) {
             AutofillPredictionSource::kServerCrowdsourcing);
 }
 
-// Tests that a local heuristics prediction for `EMAIL_ADDRESS` overrides server
-// predictions for `USERNAME` or `SINGLE_USERNAME`.
-TEST_F(AutofillFieldTest, EmailOverridesUsernameType) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillGivePrecedenceToEmailOverUsername};
-  AutofillField field;
-
-  field.set_server_predictions({CreateFieldPrediction(USERNAME)});
-  field.set_heuristic_type(GetActiveHeuristicSource(), EMAIL_ADDRESS);
-  EXPECT_EQ(field.Type().GetStorableType(), EMAIL_ADDRESS);
-  EXPECT_EQ(field.PredictionSource(), AutofillPredictionSource::kHeuristics);
-
-  field.set_server_predictions({CreateFieldPrediction(SINGLE_USERNAME)});
-  field.set_heuristic_type(GetActiveHeuristicSource(), EMAIL_ADDRESS);
-  EXPECT_EQ(field.Type().GetStorableType(), EMAIL_ADDRESS);
-  EXPECT_EQ(field.PredictionSource(), AutofillPredictionSource::kHeuristics);
-}
-
 TEST_F(AutofillFieldTest, IsFieldFillable) {
   AutofillField field;
   ASSERT_EQ(UNKNOWN_TYPE, field.Type().GetStorableType());

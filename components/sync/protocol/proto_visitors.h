@@ -2003,8 +2003,15 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillLoyaltyCardSpecifics& proto) {
   VISIT(loyalty_card_suffix);
 }
 
+VISIT_PROTO_FIELDS(const sync_pb::SharedTabDetails& proto) {
+  VISIT(shared_tab_group_guid);
+  VISIT(last_seen_timestamp_windows_epoch);
+}
+
 VISIT_PROTO_FIELDS(const sync_pb::SharedTabGroupAccountDataSpecifics& proto) {
-  // TODO(crbug.com/397767033): In CL #2, VISIT fields added to specifics.
+  VISIT(guid);
+  VISIT(collaboration_id);
+  VISIT(shared_tab_details);
 }
 
 }  // namespace syncer

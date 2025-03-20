@@ -23,11 +23,11 @@ impl RecursionDepthCheck {
 }
 
 /// What type of aggregate JSON type is being deserialized.
-pub enum DeserializationTarget<'c, 'de> {
+pub enum DeserializationTarget<'c, 'k> {
     /// Deserialize by appending to a list.
     List { ctx: Pin<&'c mut List> },
     /// Deserialize by setting a dictionary key.
-    Dict { ctx: Pin<&'c mut Dict>, key: Cow<'de, str> },
+    Dict { ctx: Pin<&'c mut Dict>, key: &'k str },
 }
 
 // `Cow<T>` has a blanket `Deserialize` impl, but due to the lack of
@@ -71,13 +71,13 @@ impl<'de> DeserializeSeed<'de> for CowStrVisitor {
 /// Normally serde deserialization instantiates a new object, but this visitor
 /// is designed to call back into C++ for creating the deserialized objects. To
 /// achieve this we use a feature of serde called "stateful deserialization" (https://docs.serde.rs/serde/de/trait.DeserializeSeed.html).
-pub struct ValueVisitor<'c, 'de> {
-    aggregate: DeserializationTarget<'c, 'de>,
+pub struct ValueVisitor<'c, 'k> {
+    aggregate: DeserializationTarget<'c, 'k>,
     recursion_depth_check: RecursionDepthCheck,
 }
 
-impl<'c, 'de> ValueVisitor<'c, 'de> {
-    pub fn new(target: DeserializationTarget<'c, 'de>, max_depth: usize) -> Self {
+impl<'c, 'k> ValueVisitor<'c, 'k> {
+    pub fn new(target: DeserializationTarget<'c, 'k>, max_depth: usize) -> Self {
         Self {
             aggregate: target,
             // The `max_depth` includes the top level of the JSON input, which is where parsing
@@ -87,7 +87,7 @@ impl<'c, 'de> ValueVisitor<'c, 'de> {
     }
 }
 
-impl<'de, 'c> Visitor<'de> for ValueVisitor<'c, 'de> {
+impl<'de> Visitor<'de> for ValueVisitor<'_, '_> {
     // We call out to C++ to construct the deserialized type, so no output from the
     // visitor.
     type Value = ();
@@ -99,7 +99,7 @@ impl<'de, 'c> Visitor<'de> for ValueVisitor<'c, 'de> {
     fn visit_i32<E: serde::de::Error>(self, value: i32) -> Result<Self::Value, E> {
         match self.aggregate {
             DeserializationTarget::List { ctx } => ffi::list_append_i32(ctx, value),
-            DeserializationTarget::Dict { ctx, key } => ffi::dict_set_i32(ctx, &key, value),
+            DeserializationTarget::Dict { ctx, key } => ffi::dict_set_i32(ctx, key, value),
         };
         Ok(())
     }
@@ -111,7 +111,7 @@ impl<'de, 'c> Visitor<'de> for ValueVisitor<'c, 'de> {
     fn visit_bool<E: serde::de::Error>(self, value: bool) -> Result<Self::Value, E> {
         match self.aggregate {
             DeserializationTarget::List { ctx } => ffi::list_append_bool(ctx, value),
-            DeserializationTarget::Dict { ctx, key } => ffi::dict_set_bool(ctx, &key, value),
+            DeserializationTarget::Dict { ctx, key } => ffi::dict_set_bool(ctx, key, value),
         };
         Ok(())
     }
@@ -136,7 +136,7 @@ impl<'de, 'c> Visitor<'de> for ValueVisitor<'c, 'de> {
     fn visit_f64<E: serde::de::Error>(self, value: f64) -> Result<Self::Value, E> {
         match self.aggregate {
             DeserializationTarget::List { ctx } => ffi::list_append_f64(ctx, value),
-            DeserializationTarget::Dict { ctx, key } => ffi::dict_set_f64(ctx, &key, value),
+            DeserializationTarget::Dict { ctx, key } => ffi::dict_set_f64(ctx, key, value),
         };
         Ok(())
     }
@@ -144,7 +144,7 @@ impl<'de, 'c> Visitor<'de> for ValueVisitor<'c, 'de> {
     fn visit_str<E: serde::de::Error>(self, value: &str) -> Result<Self::Value, E> {
         match self.aggregate {
             DeserializationTarget::List { ctx } => ffi::list_append_str(ctx, value),
-            DeserializationTarget::Dict { ctx, key } => ffi::dict_set_str(ctx, &key, value),
+            DeserializationTarget::Dict { ctx, key } => ffi::dict_set_str(ctx, key, value),
         };
         Ok(())
     }
@@ -152,7 +152,7 @@ impl<'de, 'c> Visitor<'de> for ValueVisitor<'c, 'de> {
     fn visit_none<E: serde::de::Error>(self) -> Result<Self::Value, E> {
         match self.aggregate {
             DeserializationTarget::List { ctx } => ffi::list_append_none(ctx),
-            DeserializationTarget::Dict { ctx, key } => ffi::dict_set_none(ctx, &key),
+            DeserializationTarget::Dict { ctx, key } => ffi::dict_set_none(ctx, key),
         };
         Ok(())
     }
@@ -169,9 +169,9 @@ impl<'de, 'c> Visitor<'de> for ValueVisitor<'c, 'de> {
         // so we don't bother trying to reserve space here.
         let mut inner_ctx = match self.aggregate {
             DeserializationTarget::List { ctx } => ffi::list_append_dict(ctx),
-            DeserializationTarget::Dict { ctx, key } => ffi::dict_set_dict(ctx, &key),
+            DeserializationTarget::Dict { ctx, key } => ffi::dict_set_dict(ctx, key),
         };
-        while let Some(key) = access.next_key_seed(CowStrVisitor)? {
+        while let Some(ref key) = access.next_key_seed(CowStrVisitor)? {
             access.next_value_seed(ValueVisitor {
                 aggregate: DeserializationTarget::Dict { ctx: inner_ctx.as_mut(), key },
                 recursion_depth_check: self.recursion_depth_check.recurse()?,
@@ -188,7 +188,7 @@ impl<'de, 'c> Visitor<'de> for ValueVisitor<'c, 'de> {
         // so we don't bother trying to reserve space here.
         let mut inner_ctx = match self.aggregate {
             DeserializationTarget::List { ctx } => ffi::list_append_list(ctx),
-            DeserializationTarget::Dict { ctx, key } => ffi::dict_set_list(ctx, &key),
+            DeserializationTarget::Dict { ctx, key } => ffi::dict_set_list(ctx, key),
         };
         while let Some(_) = access.next_element_seed(ValueVisitor {
             aggregate: DeserializationTarget::List { ctx: inner_ctx.as_mut() },
@@ -198,7 +198,7 @@ impl<'de, 'c> Visitor<'de> for ValueVisitor<'c, 'de> {
     }
 }
 
-impl<'de, 'c> DeserializeSeed<'de> for ValueVisitor<'c, 'de> {
+impl<'de> DeserializeSeed<'de> for ValueVisitor<'_, '_> {
     // We call out to C++ to construct the deserialized type, so no output from
     // here.
     type Value = ();

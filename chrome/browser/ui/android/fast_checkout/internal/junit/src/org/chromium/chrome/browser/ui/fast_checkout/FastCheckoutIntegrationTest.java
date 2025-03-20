@@ -34,7 +34,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -120,15 +121,15 @@ public class FastCheckoutIntegrationTest {
 
     @Mock private FastCheckoutComponent.Delegate mMockBridge;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private BottomSheetController mBottomSheetController;
     private BottomSheetTestSupport mTestSupport;
 
-    public FastCheckoutIntegrationTest() {
-        MockitoAnnotations.initMocks(this);
-    }
+    public FastCheckoutIntegrationTest() {}
 
     @Before
     public void setUp() throws InterruptedException {

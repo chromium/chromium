@@ -320,19 +320,24 @@ def _builder_spec(
 
 def _ci_settings(
         *,
-        retry_failed_shards = None):
+        retry_failed_shards = None,
+        retry_invalid_shards = None):
     """Settings specific to CI builders.
 
     Args:
         retry_failed_shards: (bool) Whether or not failing shards of a test will
             be retried. If retries for all failed shards of a test succeed, the
             test will be considered to have passed.
+        retry_invalid_shards: (bool) Whether or not infra failed shards of tests
+            should be retried. If retries for all failed shards of a test
+            succeed, the test will be considered to have passed.
 
     Returns:
         A struct that can be passed to the `ci_settings` argument of the builder.
     """
     return struct(
         retry_failed_shards = retry_failed_shards,
+        retry_invalid_shards = retry_invalid_shards,
     )
 
 def _try_settings(

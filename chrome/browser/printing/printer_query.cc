@@ -25,6 +25,7 @@
 #include "printing/backend/print_backend.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/print_settings.h"
+#include "ui/gfx/native_widget_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
@@ -83,7 +84,7 @@ PrintingContextDelegate::~PrintingContextDelegate() = default;
 
 gfx::NativeView PrintingContextDelegate::GetParentView() {
   content::WebContents* wc = GetWebContents();
-  return wc ? wc->GetNativeView() : nullptr;
+  return wc ? wc->GetNativeView() : gfx::NativeView();
 }
 
 content::WebContents* PrintingContextDelegate::GetWebContents() {

@@ -45,6 +45,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/native_theme/native_theme.h"
 
 using extensions::ActionInfo;
@@ -367,7 +368,7 @@ void ExtensionActionViewController::HidePopup() {
 }
 
 gfx::NativeView ExtensionActionViewController::GetPopupNativeView() {
-  return popup_host_ ? popup_host_->view()->GetNativeView() : nullptr;
+  return popup_host_ ? popup_host_->view()->GetNativeView() : gfx::NativeView();
 }
 
 ui::MenuModel* ExtensionActionViewController::GetContextMenu(

@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "components/ui_devtools/views/widget_element.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/native_widget_mac.h"
 
 namespace ui_devtools {
@@ -70,8 +71,8 @@ std::unique_ptr<protocol::DOM::Node> DOMAgentMac::BuildTreeForWindow(
 
 void DOMAgentMac::InitializeRootsFromOpenWindows() {
   for (NSWindow* window in NSApp.windows) {
-    if (views::Widget* widget =
-            views::Widget::GetWidgetForNativeWindow(window)) {
+    if (views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
+            gfx::NativeWindow(window))) {
       // When in immersive fullscreen mode, an overlay widget has two associated
       // NSWindows:
       // 1. An invisible one created by Chrome, which serves as an anchor

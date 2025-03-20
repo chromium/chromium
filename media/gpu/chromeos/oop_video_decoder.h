@@ -223,20 +223,19 @@ class OOPVideoDecoder : public VideoDecoderMixin,
   // to the video decoder utility process.
   bool needs_transcryption_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
-  // |received_id_to_decoded_frame_map_| and
+  // |received_token_to_decoded_frame_map_| and
   // |generated_token_to_decoded_frame_map_| are maps that allow us to recycle
   // buffers safely. In the absence of them, the MailboxVideoFrameConverter
   // would create a SharedImage for every single incoming frame, and it would
   // destroy the SharedImage every time the client returns the decoded frame. To
   // avoid this churn, every time we get a decoded frame from the remote
   // decoder, we check if we already know about the underlying buffer by looking
-  // it up in |received_id_to_decoded_frame_map_|. If we do, we re-use it for
+  // it up in |received_token_to_decoded_frame_map_|. If we do, we re-use it for
   // the next stage in the pipeline. If we don't know about it, we insert it in
-  // |received_id_to_decoded_frame_map_| and we change the GpuMemoryBufferId of
-  // the incoming buffer to guarantee its uniqueness within the GPU process (at
-  // least among all clients of media::GetNextGpuMemoryBufferId()).
-  base::flat_map<gfx::GpuMemoryBufferId, scoped_refptr<FrameResource>>
-      received_id_to_decoded_frame_map_ GUARDED_BY_CONTEXT(sequence_checker_);
+  // |received_token_to_decoded_frame_map_|.
+  base::flat_map<base::UnguessableToken, scoped_refptr<FrameResource>>
+      received_token_to_decoded_frame_map_
+          GUARDED_BY_CONTEXT(sequence_checker_);
   base::flat_map<base::UnguessableToken,
                  raw_ptr<FrameResource, CtnExperimental>>
       generated_token_to_decoded_frame_map_

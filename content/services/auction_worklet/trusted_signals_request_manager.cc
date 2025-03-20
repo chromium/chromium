@@ -505,7 +505,8 @@ void TrustedSignalsRequestManager::StartBatchedTrustedSignalsRequest() {
       auto helper_builder(
           std::make_unique<TrustedBiddingSignalsKVv2RequestHelperBuilder>(
               top_level_origin_.host(), experiment_group_id_,
-              public_key_->Clone(), trusted_bidding_signals_slot_size_param_));
+              /*contextual_data=*/std::nullopt, public_key_->Clone(),
+              trusted_bidding_signals_slot_size_param_));
 
       for (auto& request : batched_request->requests) {
         CHECK(request->interest_group_name_.has_value());
@@ -550,7 +551,7 @@ void TrustedSignalsRequestManager::StartBatchedTrustedSignalsRequest() {
       auto helper_builder(
           std::make_unique<TrustedScoringSignalsKVv2RequestHelperBuilder>(
               top_level_origin_.host(), experiment_group_id_,
-              public_key_->Clone()));
+              /*contextual_data=*/std::nullopt, public_key_->Clone()));
 
       for (auto& request : batched_request->requests) {
         CHECK(request->ad_.has_value());

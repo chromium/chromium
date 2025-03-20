@@ -158,6 +158,7 @@
 <translation id="1264309058268477500">ఆల్టర్నేట్</translation>
 <translation id="1264974993859112054">క్రీడలు</translation>
 <translation id="1268480293435976622">ఎన్వలప్ చైనీస్ #7</translation>
+<translation id="1269045546668906972">మరిన్ని ఫీల్డ్‌లను ఆటోమేటిక్‌గా పూరించడానికి AIతో ఆటోఫిల్‌ను ఆన్ చేయండి</translation>
 <translation id="1269516672602708785">Google Sitesలో కొత్త సైట్‌ను త్వరగా క్రియేట్ చేయండి</translation>
 <translation id="1270328905573953738">మూవింగ్ &amp; రీలొకేషన్</translation>
 <translation id="1270502636509132238">పికప్ పద్ధతి</translation>
@@ -1133,6 +1134,7 @@
 <translation id="3005723025932146533">సేవ్ చేయబడిన కాపీని చూపు</translation>
 <translation id="300580149047131921">ఇటీవలే ఉపయోగించబడింది</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, అందుబాటులో ఉన్న చర్యలను బ్రౌజ్ చేయడానికి ట్యాబ్‌ను నొక్కండి, ఆపై ఎంచుకున్న చర్యను అమలు చేయడానికి ఎంటర్ చేయండి.</translation>
+<translation id="3010991137650052245">ఈ సైట్‌లో మీ <ph name="PERMISSION" /> అనుమతిని ఉపయోగించడానికి, <ph name="SHORT_PRODUCT_NAME" />‌కు యాక్సెస్ ఇవ్వండి</translation>
 <translation id="3013711734159931232">గృహ సామాగ్రి</translation>
 <translation id="3014553260345122294">బిజినెస్ వార్తలు</translation>
 <translation id="3014726756341138577">అధునాతన ప్రింటర్ ఫీచర్‌లు</translation>
@@ -1696,6 +1698,7 @@
 <translation id="3964661563329879394">{COUNT,plural, =0{ఏవీ కాదు}=1{1 సైట్ నుండి }other{# సైట్‌ల నుండి }}</translation>
 <translation id="3965672182149944205">అడ్రస్‌ను సేవ్ చేయాలా?</translation>
 <translation id="3966044442021752214">ప్రోడక్ట్ భద్రత</translation>
+<translation id="3969869202926863008">లోకల్ నెట్‌వర్క్ యాక్సెస్</translation>
 <translation id="397105322502079400">గణిస్తోంది...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> బ్లాక్ చేయబడింది</translation>
 <translation id="3975852104434126461">మోటార్ వెహికల్స్ పరిశ్రమ</translation>
@@ -1782,6 +1785,7 @@
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">విధానం పరిధికి మద్దతు లేదు.</translation>
+<translation id="411918202192379658">ఆటోఫిల్ ఫీచర్‌ను ఇప్పుడు మరింత మెరుగుపరిచాము</translation>
 <translation id="4121428309786185360">గడువు ముగిసేది</translation>
 <translation id="4123572138124678573">దిగువ భాగంలో మూడు రంధ్రాలు</translation>
 <translation id="412601465078863288">అప్‌లోడ్ చేయడానికి సమయం ముగిసింది</translation>
@@ -2052,6 +2056,7 @@
 <translation id="460848736049414407">అడ్మిన్ బ్లాక్ చేశారు</translation>
 <translation id="4610279718074907952">ఈ సైట్ <ph name="SET_OWNER" /> ద్వారా నిర్వచించబడిన గ్రూప్‌లో ఉంది, అది మీ యాక్టివిటీని చూడగలదు</translation>
 <translation id="46128681529823442">సాకర్ ఎక్విప్‌మెంట్</translation>
+<translation id="4612904677925722054">ఈ సైట్‌లో పెద్దవారికి మాత్రమే తగిన కంటెంట్ ఉండవచ్చు. ఈ వెబ్‌సైట్‌ను సందర్శించడానికి, తల్లి/తండ్రి లేదా గార్డియన్ తప్పనిసరిగా మిమ్మల్ని అనుమతించాలి.</translation>
 <translation id="4619564267100705184">ఇది మీరే అని వెరిఫై చేయండి</translation>
 <translation id="4622292761762557753">ఏదేమైనా బదిలీ చేయండి</translation>
 <translation id="4622647778991854660">నోటిఫికేషన్ సెంటర్‌లో నోటిఫికేషన్‌లను ఎనేబుల్ చేయండి. <ph name="LINK" /> తెరవండి.</translation>
@@ -2169,6 +2174,7 @@
 <translation id="4819347708020428563">అదనపు గమనికలను ఆటోమేటిక్ వీక్షణలో ఎడిట్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="4822493756793346865">సాధారణ ధరలు గత 90 రోజులలో వెబ్ అంతటా ఉన్న స్టోర్‌లపై ఆధారపడి ఉంటాయి.</translation>
 <translation id="4822922322149719535">ఎర్రర్ లాగ్‌ను రివ్యూ చేయండి</translation>
+<translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" />‌కు, మీ పరికరంలోని <ph name="PERMISSION" /> అనుమతి అవసరం</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, కొత్త Google షీట్‌ను త్వరగా క్రియేట్ చేయడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="4826588772550366629">కెమెరా, మైక్రోఫోన్</translation>
 <translation id="4827283332383516812">కార్డ్‌ను తొలగించండి</translation>
@@ -2650,6 +2656,7 @@
 <translation id="5660122698869360728">మీ షాపింగ్ పేజీలన్నింటినీ ఒకే చోట సేవ్ చేయడంలో, అలాగే ధరలను ఆటోమేటిక్‌గా ట్రాక్ చేయడం, ధరల గణాంకాలను పొందడం, అలాగే మరిన్నింటిని పొందడంలో మీకు సహాయపడే కొత్త స్మార్ట్ ఫోల్డర్.</translation>
 <translation id="5663955426505430495">ఈ పరికరం నిర్వాహకుడు అదనపు ఫంక్షన్‌ల కోసం ఎక్స్‌టెన్షన్‌లను ఇన్‌స్టాల్ చేశారు. మీ డేటాలో కొంత భాగానికి ఎక్స్‌టెన్షన్‌లు యాక్సెస్ కలిగి ఉంటాయి.</translation>
 <translation id="5667827081946850877">ఆడియోబుక్స్</translation>
+<translation id="5674082555327905359">మీ లోకల్ నెట్‌వర్క్‌లో ఏ పరికరాన్నైనా కనెక్ట్ చేయమని మీరు అడగవచ్చు</translation>
 <translation id="5675650730144413517">ఈ పేజీ పని చేయడం లేదు</translation>
 <translation id="5675809467256309336">డ్యాన్స్ &amp; ఎలక్ట్రానిక్ మ్యూజిక్</translation>
 <translation id="5675959228867414813">తేదీ వారీగా చూడండి</translation>
@@ -2898,6 +2905,7 @@
 <translation id="6116338172782435947">క్లిప్‌బోర్డ్‌కు కాపీ చేసిన వచనం మరియు చిత్రాలను చూడండి</translation>
 <translation id="6117833587752089929">ఫోటో (శాటిన్)</translation>
 <translation id="6118782133429281336">ఆరిజిన్ లిస్ట్‌ ఖాళీగా ఉంది.</translation>
+<translation id="6120950591512958208">చెక్ అవుట్ వద్ద ఈ కోడ్‌ను ఉపయోగించండి.</translation>
 <translation id="612178891608320683">వేగన్ వంటకాలు</translation>
 <translation id="6122181661879998141">మీ కార్డ్ ముందు వైపు</translation>
 <translation id="6124058285696691147">అటాచ్‌మెంట్‌ను డౌన్‌లోడ్ చేయండి</translation>
@@ -2923,6 +2931,7 @@
 <translation id="6159908896951210943">గౌరవప్రదం</translation>
 <translation id="6160391204859821737">యాడ్‌ల విషయంలో గోప్యత ఫీచర్‌ను ఆన్ చేయండి</translation>
 <translation id="6162403104168428984">అడ్రస్‌ను అప్‌డేట్ చేయాలా?</translation>
+<translation id="6164605812717770913">తల్లి/తండ్రి లేదా గార్డియన్ ఈ సైట్ మీరు సందర్శించడానికి సరైనది కాదని అన్నారు. మీరు దీన్ని అన్‌బ్లాక్ చేయమని వారిని అడగవచ్చు.</translation>
 <translation id="6165508094623778733">మరింత తెలుసుకోండి</translation>
 <translation id="6167577165590485365">చివరిగా పొందడానికి ప్రయత్నించింది:</translation>
 <translation id="617256461084925519">ఇది మీరేనని వెరిఫై చేయడానికి Google Chrome ట్రై చేస్తోంది, తద్వారా దీనిని మీ పేమెంట్ సమాచారంలో ఫిల్ చేయవచ్చు.</translation>
@@ -3014,6 +3023,7 @@
 <translation id="6321917430147971392">మీ DNS సెట్టింగ్‌లను చెక్ చేయండి</translation>
 <translation id="6322182122604171028">Windows Helloను ఉపయోగించడం సాధ్యం కాలేదు</translation>
 <translation id="6326947323444967009">iOS సెట్టింగ్‌లలో Chromeను సిస్టమ్ ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేయండి</translation>
+<translation id="6327065120806001832">లోకల్ నెట్‌వర్క్ యాక్సెస్</translation>
 <translation id="6328639280570009161">నెట్‌వర్క్ సూచనను నిలిపివేసి ప్రయత్నించండి</translation>
 <translation id="6335029926534404762">క్రీడాకారుల షూస్</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> కంటే తక్కువ స్థలాన్ని ఖాళీ చేస్తుంది. మీ తదుపరి సందర్శనలో కొన్ని సైట్‌లు మరింత నెమ్మదిగా లోడ్ కావచ్చు.</translation>

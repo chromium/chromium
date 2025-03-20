@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.app.tab_activity_glue;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 
 import android.content.res.Configuration;
+import android.os.Build;
 
 import androidx.test.filters.MediumTest;
 
@@ -23,6 +24,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -91,6 +93,7 @@ public class TabletPhoneLayoutChangeTest {
     @Test
     @MediumTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE) // See crbug.com/1302618.
+    @MinAndroidSdkLevel(Build.VERSION_CODES.Q) // See crbug.com/404979701.
     public void testUrlBarStateRetention() throws TimeoutException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         ToolbarManager toolbarManager = cta.getToolbarManager();

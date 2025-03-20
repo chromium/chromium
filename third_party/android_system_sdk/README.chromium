@@ -1,7 +1,7 @@
 Name: Android System SDK
 URL: https://android.googlesource.com/platform/frameworks/base
-Short Name:  Android System SDK
-Version: AP31.240517.022
+Short Name: Android System SDK
+Version: 13057076
 License: GPL-2.0-with-classpath-exception
 License File: LICENSE
 Security Critical: No
@@ -9,7 +9,7 @@ Shipped: no
 
 Description:
 System SDK stubs for compiling Android Webview and Monochrome targets.
-Revision is the BUILD ID of the Android release build.
+Version is the BUILD ID of the SDK.
 
 Because prebuilt system SDKs are not distributed publicly, Googlers will need to
 follow http://go/clank-webview/rolling_the_android_sdk.md to update this.

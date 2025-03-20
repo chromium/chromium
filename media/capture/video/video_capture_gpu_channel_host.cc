@@ -6,8 +6,7 @@
 
 namespace media {
 
-VideoCaptureGpuChannelHost::VideoCaptureGpuChannelHost()
-    : gpu_buffer_manager_(nullptr) {}
+VideoCaptureGpuChannelHost::VideoCaptureGpuChannelHost() = default;
 
 VideoCaptureGpuChannelHost::~VideoCaptureGpuChannelHost() = default;
 
@@ -15,18 +14,6 @@ VideoCaptureGpuChannelHost::~VideoCaptureGpuChannelHost() = default;
 VideoCaptureGpuChannelHost& VideoCaptureGpuChannelHost::GetInstance() {
   static base::NoDestructor<VideoCaptureGpuChannelHost> instance;
   return *instance;
-}
-
-void VideoCaptureGpuChannelHost::SetGpuMemoryBufferManager(
-    gpu::GpuMemoryBufferManager* gbm) {
-  base::AutoLock lock(lock_);
-  gpu_buffer_manager_ = gbm;
-}
-
-gpu::GpuMemoryBufferManager*
-VideoCaptureGpuChannelHost::GetGpuMemoryBufferManager() {
-  base::AutoLock lock(lock_);
-  return gpu_buffer_manager_;
 }
 
 void VideoCaptureGpuChannelHost::SetSharedImageInterface(

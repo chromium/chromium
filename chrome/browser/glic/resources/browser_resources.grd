@@ -244,6 +244,9 @@ found in the LICENSE file.
 
       <!-- Screenpicker Menu String -->
       <message name="IDS_GLIC_SCREEN_PICKER_REQUESTER" desc="Text shown on screen picker dialog that indicates the requesting source is Glic." translateable="false">Glic</message>
+      <message name="IDS_GLIC_SCREEN_PICKER_HEADLINE" desc="Title of the Glic screen picker dialog used for specifying which screen to capture." translateable="false">Choose a screen to capture</message>
+      <message name="IDS_GLIC_SCREEN_PICKER_DESCRIPTION" desc="Text that shows on the Glic screen picker dialog to indicate what happens with the capture." translateable="false">Your screenshot can be used with your prompt or deleted</message>
+      <message name="IDS_GLIC_SCREEN_PICKER_CTA" desc="Text for call to action button on Glic screen picker dialog. " translateable="false">Take a screenshot</message>
 
       <!-- Glic Window Title -->
       <message name="IDS_GLIC_WINDOW_TITLE" desc="Accessible title for the Glic Window." translateable="false">Glic</message>

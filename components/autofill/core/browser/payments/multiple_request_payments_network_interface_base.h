@@ -50,9 +50,12 @@ class MultipleRequestPaymentsNetworkInterfaceBase {
 
     const RequestId& StartOperation();
 
-   private:
-    friend class MultipleRequestsTest;
+    void OnSimpleLoaderCompleteInternalForTesting(int response_code,
+                                                  const std::string& data) {
+      OnSimpleLoaderCompleteInternal(response_code, data);
+    }
 
+   private:
     // Function invoked when access token is fetched.
     void AccessTokenFetchFinished(
         const std::variant<GoogleServiceAuthError, std::string>& result);
@@ -142,9 +145,13 @@ class MultipleRequestPaymentsNetworkInterfaceBase {
     return url_loader_factory_.get();
   }
 
- private:
-  friend class MultipleRequestsTest;
+  // Caller of this function should not modify the operations map directly.
+  const std::unordered_map<RequestId, std::unique_ptr<RequestOperation>>&
+  operations_for_testing() const {
+    return operations_;
+  }
 
+ private:
   // Function invoked when a request (operation) is finished.
   void OnRequestFinished(RequestId& id);
 

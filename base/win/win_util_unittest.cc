@@ -431,5 +431,11 @@ TEST(DeviceConvertibilityTest, DeviceFormAndChassisConvertible) {
   EXPECT_FALSE(IsDeviceFormConvertible() || IsChassisConvertible());
 }
 
+TEST(BaseWinUtilTest, GetSerialNumber) {
+  ScopedCOMInitializer com_initializer;
+  ASSERT_OK_AND_ASSIGN(std::wstring serial_number, GetSerialNumber());
+  EXPECT_FALSE(serial_number.empty());
+}
+
 }  // namespace win
 }  // namespace base

@@ -41,13 +41,6 @@
            didUpdateSuggestionsGroups:
                (NSArray<id<AutocompleteSuggestionGroup>>*)suggestionGroups;
 
-/// Notifies the delegate when pedals are invalidated.
-- (void)omniboxAutocompleteController:
-            (OmniboxAutocompleteController*)omniboxAutocompleteController
-                  didInvalidatePedals:
-                      (NSArray<id<AutocompleteSuggestionGroup>>*)
-                          suggestionGroups;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_AUTOCOMPLETE_CONTROLLER_DELEGATE_H_

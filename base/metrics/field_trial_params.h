@@ -81,6 +81,11 @@ typedef std::string (*FieldTrialParamsDecodeStringFunc)(const std::string& str);
 //     constexpr FeatureParam<double> kAssistantTriggerThreshold = {
 //         &kAssistantFeature, "trigger_threshold", 0.10};
 //
+// Equivalent using the caching macro (see base/feature_list.h):
+//
+//     BASE_FEATURE_PARAM(double, kAssistantTriggerThreshold,
+//                        &kAssistantFeature, "trigger_threshold", 0.10);
+//
 // If the feature is not enabled, the parameter is not set, or set to an invalid
 // value, then Get() will return the default value.
 template <typename T, bool IsEnum = std::is_enum_v<T>>

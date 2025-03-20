@@ -13,10 +13,12 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -42,6 +44,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "Layout and behavior are dependent on setup params for the activity.")
 public class PriceNotificationSettingsFragmentTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     public final SettingsActivityTestRule<PriceNotificationSettingsFragment> mTestRule =
             new SettingsActivityTestRule<>(PriceNotificationSettingsFragment.class);
 
@@ -56,8 +59,6 @@ public class PriceNotificationSettingsFragmentTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         // Make sure the browser is set up correctly prior to mocking everything for settings.
         mActivityTestRule.startMainActivityOnBlankPage();
 

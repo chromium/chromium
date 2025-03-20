@@ -444,6 +444,11 @@
       name: "AriaRowColIndexText",
       status: "stable",
     },
+    {
+      // When enabled, perform async IPCs from CookieJar::SetCookie to the
+      // network service.
+      name: "AsyncSetCookie",
+    },
     // This flag specifically guards live Range (and by extension, selection)
     // preservation for atomic move (`moveBefore()`). This is not part of the
     // launching proposal, per discussion in
@@ -714,7 +719,7 @@
     {
       // https://chromestatus.com/feature/5066778773028864
       name: "CanvasTextLang",
-      status: "experimental",
+      status: "stable",
     },
     {
       // crbug.com/389726691.
@@ -3043,7 +3048,8 @@
     {
       // This flag makes the <option> element's label attribute render the
       // contents of the label attribute even if it is only whitespace in order
-      // to match the spec and firefox.
+      // to match the spec and firefox. It also stops stripping/simplifying
+      // whitespace when using the label attribute for rendering.
       // https://github.com/whatwg/html/issues/10955
       name: "OptionLabelAttributeWhitespace",
       status: "stable",
@@ -3539,7 +3545,11 @@
     },
     {
       name: "RasterInducingScroll",
-      status: "test",
+      status: {
+        "Linux": "stable",
+        "Win": "stable",
+        "default": "test",
+      }
     },
     {
       name: "ReadableStreamAsyncIterable",

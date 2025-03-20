@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "components/device_signals/core/browser/browser_utils.h"
 #include "components/device_signals/core/common/common_types.h"
 #include "components/device_signals/core/common/platform_utils.h"
 #include "net/base/network_interfaces.h"
@@ -44,10 +45,6 @@ std::string GetSecurityPatchLevel() {
   return base::StringPrintf("%d.%d.%d", major, minor, bugfix);
 }
 
-std::string GetDeviceHostName() {
-  return net::GetHostName();
-}
-
 }  // namespace
 
 // static
@@ -64,7 +61,7 @@ DeviceInfo DeviceInfoFetcherLinux::Fetch() {
   device_info.os_name = "linux";
   device_info.os_version = GetOsVersion();
   device_info.security_patch_level = GetSecurityPatchLevel();
-  device_info.device_host_name = GetDeviceHostName();
+  device_info.device_host_name = device_signals::GetHostName();
   device_info.device_model = device_signals::GetDeviceModel();
   device_info.serial_number = device_signals::GetSerialNumber();
   device_info.screen_lock_secured = device_signals::GetScreenlockSecured();

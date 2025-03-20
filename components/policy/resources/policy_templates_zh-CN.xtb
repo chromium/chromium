@@ -4120,18 +4120,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="4052529125939620019">在浏览器启动时加载 CryptoToken 组件扩展程序</translation>
 <translation id="4053157306171963473">停用设备活动时长报告功能</translation>
 <translation id="4056910949759281379">停用 SPDY 协议</translation>
-<translation id="4057113125482566814">在 <ph name="PRODUCT_NAME" /> 中启用<ph name="UIA_NAME" />无障碍框架提供程序，以供无障碍工具使用。
-
-<ph name="PRODUCT_NAME" /> 在一年的过渡期内支持此政策，以便企业管理员控制浏览器的<ph name="UIA_NAME" />无障碍框架提供程序的部署情况。使用<ph name="UIA_NAME" />无障碍框架与浏览器互操作的无障碍工具和其他工具可能需要更新，才能与浏览器的<ph name="UIA_NAME" />提供程序正常搭配运行。管理员可以使用此政策暂时停用浏览器的<ph name="UIA_NAME" />提供程序（从而恢复到旧版行为），同时与供应商合作，为受影响的工具提供更新。
-
-如果此政策设为 false，<ph name="PRODUCT_NAME" /> 仅会启用其 <ph name="MSAA_NAME" /> 提供程序。使用较新版本的<ph name="UIA_NAME" />无障碍框架与浏览器互操作的无障碍工具和其他工具将通过 <ph name="MS_WIN_NAME" /> 中的兼容性 shim 与其通信。
-
-如果此政策设为 true，<ph name="PRODUCT_NAME" /> 不仅会启用其 <ph name="MSAA_NAME" /> 提供程序，还会启用其<ph name="UIA_NAME" />提供程序。
-使用较新版本的<ph name="UIA_NAME" />无障碍框架与浏览器互操作的无障碍工具和其他工具将直接与其通信。
-
-如果未设置此政策，系统会使用 <ph name="PRODUCT_NAME" /> 中的变体版本框架来启用或停用此提供程序。
-
-我们将在 <ph name="PRODUCT_NAME" /> 136 中停止对此政策设置的支持。</translation>
 <translation id="4057442294431066708">此政策旨在控制用于在“重新映射键盘按键”子页面中将事件重新映射到 F11/F12 的选定快捷键选项。这些设置仅适用于 ChromeOS 键盘；如果未设置此政策，这些设置默认处于停用状态。</translation>
 <translation id="4061590579642538878">报告有关崩溃报告的信息。</translation>
 <translation id="4062646759141042418">以列表形式为一系列网址启用 <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" />。

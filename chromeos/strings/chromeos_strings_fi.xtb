@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Piilota transkriptio</translation>
 <translation id="160633243685262989">Esikatselukuva</translation>
 <translation id="1611649489706141841">seuraava</translation>
-<translation id="1615144046047995187">Ei voi ladata. Yritä vielä tai käynnistä Chromebook uudelleen.</translation>
 <translation id="1615335640928990664">Datan käyttö <ph name="FRIENDLY_DATE" /> jälkeen</translation>
 <translation id="1618566998877964907">Käytä teemaa</translation>
 <translation id="1621067168122174824">Suorita lataustesti</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Lista audiotallenteista</translation>
 <translation id="2561093647892030937">sitruunat</translation>
 <translation id="2570743873672969996">Tehdään testiä <ph name="TEST_NAME" />…</translation>
-<translation id="2573178735329662769">Kaiken Chromebookin audion tallentaminen</translation>
 <translation id="2576253868710695442">Tämä vie korkeintaan 2 Gt tallennustilaa.</translation>
 <translation id="2584547424703650812">Hohtavat maisemat</translation>
 <translation id="2584559707064218956">Aloita määritys avaamalla Asetukset.</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">sininen ja pinkki</translation>
 <translation id="498186245079027698">Tarkista skanneri ja yritä uudelleen. Varmista, että paikallinen tallennustila riittää skannattujen tiedostojen tallentamiseen.</translation>
 <translation id="4982627662315910959">Pikanäppäin ei ole käytettävissä. Käytä uutta pikanäppäintä vaihdon ja yhden muun muokkausnäppäimen avulla (ctrl, alt tai <ph name="META_KEY" />).</translation>
-<translation id="4983216687482551672">Chromebookin audio</translation>
 <translation id="4985509611418653372">Suorita</translation>
 <translation id="4987769320337599931">Palomuuri</translation>
 <translation id="4988526792673242964">Sivut</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Irrota USB-johto (<ph name="DEVICE_NAME" />) ja kytke se takaisin jatkaaksesi päivitysprosessia.</translation>
 <translation id="5099354524039520280">ylös</translation>
 <translation id="5107243100836678918">Pikakomento ilman <ph name="META_KEY" />näppäintä voi olla ristiriidassa toisen sovelluksen pikakomennon kanssa. Jatka pikakomennon käyttöä painamalla sitä uudelleen tai paina uutta pikakomentoa <ph name="KEY" />näppäimellä. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Ei voi ladata transkriptiomallia, jonka kieli on <ph name="LANGUAGE_NAME" />. Yritä vielä tai käynnistä Chromebook uudelleen.</translation>
 <translation id="5108781503443873320">Samantyyppisiä:</translation>
-<translation id="5121677070210013200">Transkriptiomallia ei voi ladata. Yritä uudelleen tai käynnistä Chromebook uudelleen.</translation>
 <translation id="5130848777448318809">ponit</translation>
 <translation id="5137451382116112100">Koko näyttö</translation>
 <translation id="5139813694804168398">älä häiritse</translation>
@@ -920,6 +915,7 @@
 <translation id="5286263799730375393">taustavalon väri</translation>
 <translation id="5292579816060236070">Auringonnousu-taustakuva</translation>
 <translation id="5294769550414936029">versio <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">kameran pääsyoikeus päälle/pois</translation>
 <translation id="5300814202279832142">Siirrä ikkuna työpöydälle</translation>
 <translation id="5302048478445481009">Kieli</translation>
 <translation id="5303837385540978511">Tuotteen <ph name="PRODUCT_NAME" /> oma taustakuva</translation>
@@ -1032,6 +1028,7 @@
 <translation id="5896602941605730551">Toista</translation>
 <translation id="5901630391730855834">Keltainen</translation>
 <translation id="5903200662178656908">Laite on näppäimistön ja hiiren yhdistelmä.</translation>
+<translation id="5903822368221507416">Piilota välilehdet</translation>
 <translation id="5904994456462260490">Lisää uusi APN</translation>
 <translation id="590746845088109442">kissat</translation>
 <translation id="5907649332524363701">avaimen väri</translation>
@@ -1087,7 +1084,6 @@
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Chrome-käyttöjärjestelmän syöttötapapalvelu</translation>
 <translation id="6127426868813166163">valkoinen</translation>
-<translation id="613049107179582049">Kun Chromebookin audio on päällä, Tallentaja tallentaa kaiken laitteella toistettavan audion</translation>
 <translation id="6136285399872347291">askelpalautin</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Käyttäjävarmenne</translation>
@@ -1417,7 +1413,6 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-kosketusnäyttö</translation>
 <translation id="757747079855995705">kivi</translation>
-<translation id="7584853321964440104">Lataaminen ei onnistu. Yritä uudelleen tai käynnistä Chromebook uudelleen.</translation>
 <translation id="7590883480672980941">Syöttöasetukset</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> jäljellä</translation>
 <translation id="7600430297804876776">Järjestelmänvalvoja (<ph name="MANAGER" />) on määrittänyt, milloin laitetta (<ph name="DEVICE_TYPE" />) voidaan käyttää.</translation>
@@ -1784,7 +1779,6 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="9218016617214286986">Näytä tunnetut APN:t</translation>
 <translation id="932327136139879170">Etusivu</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Varmista, että mikrofoni on kytketty, tai yritä käynnistää Chromebook uudelleen</translation>
 <translation id="945522503751344254">Lähetä palautetta</translation>
 <translation id="950520315903467048">Näppäin puuttuu: <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Vertaile tallenteen ääniä niin, että transkriptio kuvastaa, mitä kukin puhuja sanoi ja milloin</translation>

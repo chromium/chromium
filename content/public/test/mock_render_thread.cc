@@ -167,9 +167,6 @@ int32_t MockRenderThread::GetClientId() {
   return 1;
 }
 
-void MockRenderThread::SetRendererProcessType(
-    blink::scheduler::WebRendererProcessType type) {}
-
 blink::WebString MockRenderThread::GetUserAgent() {
   return blink::WebString();
 }

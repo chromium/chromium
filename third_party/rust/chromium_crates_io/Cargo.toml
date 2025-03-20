@@ -48,6 +48,7 @@ small_ctor = "0.1"
 static_assertions = "1"
 strum = "0.25.0"
 strum_macros = "0.25.3"
+temporal_capi = "0.0.6"
 
 [dependencies.bstr]
 version = "1"

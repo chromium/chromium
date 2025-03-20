@@ -337,8 +337,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
 
   if (!for_bottom_sheet && !is_off_the_record && IsContextualPanelEnabled()) {
     ContextualPanelModelService* model_service =
-        ContextualPanelModelServiceFactory::GetForProfile(
-            ProfileIOS::FromBrowserState(profile));
+        ContextualPanelModelServiceFactory::GetForProfile(profile);
     ContextualPanelTabHelper::CreateForWebState(web_state,
                                                 model_service->models());
   }

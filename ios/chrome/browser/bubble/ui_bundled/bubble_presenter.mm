@@ -670,25 +670,20 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 
 - (void)gestureInProductHelpView:(GestureInProductHelpView*)view
             didDismissWithReason:(IPHDismissalReasonType)reason {
-  const feature_engagement::Tracker::SnoozeAction snoozeAction =
-      feature_engagement::Tracker::SnoozeAction::DISMISSED;
   std::string dismissButtonTappedEvent;
   if (view == _pullToRefreshGestureIPH) {
     dismissButtonTappedEvent =
         feature_engagement::events::kIOSPullToRefreshIPHDismissButtonTapped;
-    [self featureDismissed:feature_engagement::kIPHiOSPullToRefreshFeature
-                withSnooze:snoozeAction];
+    [self featureDismissed:feature_engagement::kIPHiOSPullToRefreshFeature];
   } else if (view == _swipeBackForwardGestureIPH) {
     dismissButtonTappedEvent =
         feature_engagement::events::kIOSSwipeBackForwardIPHDismissButtonTapped;
-    [self featureDismissed:feature_engagement::kIPHiOSSwipeBackForwardFeature
-                withSnooze:snoozeAction];
+    [self featureDismissed:feature_engagement::kIPHiOSSwipeBackForwardFeature];
   } else if (view == _toolbarSwipeGestureIPH) {
     dismissButtonTappedEvent = feature_engagement::events::
         kIOSSwipeToolbarToChangeTabIPHDismissButtonTapped;
     [self featureDismissed:feature_engagement::
-                               kIPHiOSSwipeToolbarToChangeTabFeature
-                withSnooze:snoozeAction];
+                               kIPHiOSSwipeToolbarToChangeTabFeature];
   } else {
     NOTREACHED();
   }
@@ -892,13 +887,12 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   // the feature engagement tracker will remain pointing to invalid memory if
   // its owner (the ProfileIOS) is deallocated.
   __weak BubblePresenter* weakSelf = self;
-  CallbackWithIPHDismissalReasonType dismissalCallbackWithSnoozeAction =
-      ^(IPHDismissalReasonType IPHDismissalReasonType,
-        feature_engagement::Tracker::SnoozeAction snoozeAction) {
+  CallbackWithIPHDismissalReasonType dismissalCallback =
+      ^(IPHDismissalReasonType IPHDismissalReasonType) {
         if (dismissAction) {
           dismissAction();
         }
-        [weakSelf featureDismissed:feature withSnooze:snoozeAction];
+        [weakSelf featureDismissed:feature];
       };
 
   BubbleViewControllerPresenter* bubbleViewControllerPresenter =
@@ -906,7 +900,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
           initDefaultBubbleWithText:text
                      arrowDirection:direction
                           alignment:alignment
-                  dismissalCallback:dismissalCallbackWithSnoozeAction];
+                  dismissalCallback:dismissalCallback];
 
   bubbleViewControllerPresenter.customBubbleVisibilityDuration =
       [self bubbleVisibilityDurationForFeature:feature];
@@ -990,13 +984,11 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   return nil;
 }
 
-- (void)featureDismissed:(const base::Feature&)feature
-              withSnooze:
-                  (feature_engagement::Tracker::SnoozeAction)snoozeAction {
+- (void)featureDismissed:(const base::Feature&)feature {
   if (!_engagementTracker) {
     return;
   }
-  _engagementTracker->DismissedWithSnooze(feature, snoozeAction);
+  _engagementTracker->Dismissed(feature);
 }
 
 // Returns the custom duration of the bubble for `feature`, or 0 if there is

@@ -11,6 +11,7 @@
 <translation id="103269572468856066">Маалымат бул сайттар менен колдонмолордон да өчүрүлсүнбү?</translation>
 <translation id="1034259925032978114">Терезе ачык</translation>
 <translation id="1036348656032585052">Өчүрүү</translation>
+<translation id="1045448422538531528">Топко кошуу</translation>
 <translation id="1045899828449635435">Маалымат бул сайттардан да өчүрүлсүнбү?</translation>
 <translation id="1049743911850919806">Жашыруун</translation>
 <translation id="1052842760770519282">Айрым сырсөздөрүңүз жеткиликсиз</translation>
@@ -535,6 +536,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3513704683820682405">Кошумчаланган чындык</translation>
 <translation id="3516053221628030540">Google Play'ге өтүү</translation>
 <translation id="3518985090088779359">Кабыл алып, улантуу</translation>
+<translation id="351952459507671940">Жаңы топко кошуу</translation>
 <translation id="3521388823983121502"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> менен улантууга болбойт</translation>
 <translation id="3522247891732774234">Жаңыртуу бар. Дагы опциялар</translation>
 <translation id="3523789730715594198">Шайкештирүүнү параметрлерден каалаган убакта токтото аласыз. Google таржымалыңыздын негизинде Издөөнү жана башка кызматтарды жекелештириши мүмкүн.</translation>
@@ -582,6 +584,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3721119614952978349">Сиз жана Google</translation>
 <translation id="3737319253362202215">Которуу параметрлери</translation>
 <translation id="3738139272394829648">Издөө үчүн Басуу</translation>
+<translation id="3739455665973395693">Google аккаунтуңузда сырсөздөр уурдалган эмес</translation>
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> кызматына жаңы кыстарма кошулду</translation>
 <translation id="3740525748616366977">Бул түзмөктө айтып издөө мүмкүнчүлүгү жок</translation>
 <translation id="376561056759077985">Айрым маалымат азырынча сактала элек</translation>
@@ -635,6 +638,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3985215325736559418"><ph name="FILE_NAME" /> файлын кайра жүктөп аласызбы?</translation>
 <translation id="3987993985790029246">Шилтм көчр</translation>
 <translation id="4000212216660919741">Үйдө оффлайн режиминде</translation>
+<translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{Google аккаунтуңузда 1 сырсөз уурдалган}other{Google аккаунтуңузда # сырсөз уурдалган}}</translation>
 <translation id="4016425174436051808">Жазылган жок. Бир жерден ката кетти.</translation>
 <translation id="4024768890073681126">Серепчиңди ата-энең башкарат</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# саат}other{# саат}}</translation>
@@ -829,6 +833,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="4881695831933465202">Ачуу</translation>
 <translation id="488187801263602086">Файлдын аталышын өзгөртүү</translation>
 <translation id="4885273946141277891">Мындай сандагы Chrome нускалары колдоого алынбайт.</translation>
+<translation id="4890973535105146893">Google аккаунтуңузда сырсөздөр сакталган эмес</translation>
 <translation id="4905823827770127520">Баракка болгон шилтемени көрсөтүңүз</translation>
 <translation id="4908869848243824489">Google сунуштары</translation>
 <translation id="4910889077668685004">Төлөм колдонмолору</translation>
@@ -1701,6 +1706,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="869891660844655955">Мөөнөтү аяктай турган күн</translation>
 <translation id="8699120352855309748">Төмөнкү тилдерди которуу сунушталбасын</translation>
 <translation id="8712637175834984815">Түшүндүм</translation>
+<translation id="8715286883001906001">Google аккаунтуңуздагы сырсөздөрүңүздү бекемдеңиз</translation>
 <translation id="8723453889042591629">Бул бетти ыкчам которуңуз. Бул ыкчам баскычты түзөтүү үчүн коё бербей басып туруңуз.</translation>
 <translation id="8725066075913043281">Кайра аракет кылып көрүү</translation>
 <translation id="8731268612289859741">Коопсуздук коду</translation>
@@ -1828,6 +1834,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="970715775301869095"><ph name="MINUTES" /> мүн. калды</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="983192555821071799">Бардык өтмөктөрдү жабуу</translation>
+<translation id="984756705737569814">Google аккаунтуңуздагы сырсөздөр текшерилбей жатат</translation>
 <translation id="987264212798334818">Жалпы</translation>
 <translation id="988091779042748639">Түзмөгүңүздөн жашыруун көрүлгөн вебсайттарды өчүрүү үчүн бардык жашыруун өтмөктөрдү жабыңыз.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> өтмөк</translation>

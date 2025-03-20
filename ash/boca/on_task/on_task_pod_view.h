@@ -20,6 +20,28 @@ namespace ash {
 class OnTaskPodController;
 class TabSlider;
 
+// Parameters for the OnTask pod.
+inline constexpr int kPodVerticalBorder = 8;
+inline constexpr int kPodHorizontalBorder = 10;
+inline constexpr int kPodBorderRadius = 26;
+inline constexpr int kPodVerticalPadding = 10;
+inline constexpr int kPodHorizontalPadding = 12;
+inline constexpr int kPodElementSpace = 8;
+
+// Parameters for the separator in the OnTask pod.
+inline constexpr int kSeparatorVerticalPadding = 0;
+inline constexpr int kSeparatorHorizontalPadding = 4;
+
+// Parameters for the label button in the OnTask pod.
+inline constexpr int kLabelButtonRadius = 16;
+inline constexpr int kLabelButtonTopPadding = 0;
+inline constexpr int kLabelButtonLeftPadding = 12;
+inline constexpr int kLabelButtonButtomPadding = 0;
+inline constexpr int kLabelButtonRightPadding = 16;
+inline constexpr int kLabelButtonHeight = 32;
+inline constexpr int kLabelButtonWidth = 120;
+inline constexpr int kLabelButtonIconTextSpace = 8;
+
 // OnTaskPodView contains the shortcut buttons that are part of the OnTask pod.
 // The OnTask pod is meant to supplement OnTask UX with convenience features
 // like page navigation, tab reloads, tab strip pinning in locked mode, etc.

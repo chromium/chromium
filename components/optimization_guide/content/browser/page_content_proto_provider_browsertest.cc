@@ -678,6 +678,34 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
   }
 }
 
+int TreeDepth(const optimization_guide::proto::ContentNode& node) {
+  int depth = 0;
+  for (const auto& child : node.children_nodes()) {
+    depth = std::max(depth, TreeDepth(child));
+  }
+  return depth + 1;
+}
+
+IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
+                       DeepTree) {
+  LoadPage(https_server()->GetURL("/deep.html"));
+
+  // deep.html has a tree depth of 300.  Expect mojo encoding to trim to less
+  // than mojo's kMaxRecursionDepth of 200.
+  EXPECT_LT(TreeDepth(page_content().root_node()), 200);
+}
+
+IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
+                       DeepSparseTree) {
+  LoadPage(https_server()->GetURL("/deep_sparse.html"));
+
+  // deep_sparse.html has a dom tree depth of 300. Every other DIV is one that
+  // will be skipped and not included in the mojo encoding.  If depth counting
+  // is working properly, the limit should not be reached and the encoded depth
+  // should be 152 (one for each unskipped div plus root and attributes).
+  EXPECT_EQ(TreeDepth(page_content().root_node()), 152);
+}
+
 }  // namespace
 
 }  // namespace optimization_guide

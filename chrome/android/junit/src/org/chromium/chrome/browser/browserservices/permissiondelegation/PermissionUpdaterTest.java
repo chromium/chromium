@@ -19,10 +19,12 @@ import android.content.pm.Signature;
 import android.content.pm.SigningInfo;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowPackageManager;
@@ -42,6 +44,7 @@ public class PermissionUpdaterTest {
     private static final String PACKAGE_NAME = "com.package.name";
     private static final String APP_LABEL = "name";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock InstalledWebappPermissionStore mStore;
 
     @Mock public TrustedWebActivityClient mTrustedWebActivityClient;
@@ -50,7 +53,6 @@ public class PermissionUpdaterTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         PackageManager pm = RuntimeEnvironment.application.getPackageManager();
         mShadowPackageManager = shadowOf(pm);

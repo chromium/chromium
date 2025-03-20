@@ -21,12 +21,46 @@ sys.path.insert(1, str(_SRC_ROOT / 'build' / '3pp_common'))
 import common
 
 
+# If false we roll to the latest branch, otherwise we roll to the latest commit.
+_ROLL_TO_TIP_OF_TREE = False
+
 # I have arbitrarily chosen 100 as a number much more than the number of commits
 # I expect to see in a day in R8.
 _COMMITS_URL = 'https://r8.googlesource.com/r8/+log/HEAD~100..HEAD?format=JSON'
 _ARCHIVE_URL = 'https://r8.googlesource.com/r8/+archive/{}.tar.gz'
 _DEPOT_TOOLS_URL = ('https://chromium.googlesource.com/chromium/tools/'
                     'depot_tools/+archive/main.tar.gz')
+_BRANCHES_URL = 'https://r8-review.googlesource.com/projects/r8/branches?r=%5B1-9%5D.*'
+_BRANCH_NAME_PREFIX = 'refs/heads/'
+
+# Examples of version strings:
+# 1.8, 2.5.10, 3.7-dev-aosp
+def version_tuple(version):
+    suffix = None
+    if '-' in version:
+        version, suffix = version.split('-', 1)
+    version_segments = []
+    for split in version.split('.'):
+        try:
+            version_segments.append(int(split))
+        except:
+            version_segments.append(split)
+    if len(version_segments) < 3:
+        version_segments += [0]*(3-len(version_segments))
+    return (*version_segments, suffix)
+
+
+def get_latest_dev_branch():
+    response_string = urllib.request.urlopen(_BRANCHES_URL).read()
+    # JSON response has a XSSI protection prefix )]}'
+    parsed_response = json.loads(response_string.lstrip(b")]}'\n"))
+    branch_revisions = {}
+    for branch_info in parsed_response:
+        # ref string looks like refs/heads/1.7
+        branch_name = branch_info['ref'][len(_BRANCH_NAME_PREFIX):]
+        branch_revisions[version_tuple(branch_name)] = branch_info['revision']
+    latest_version = sorted(branch_revisions.keys())[-1]
+    return branch_revisions[latest_version]
 
 
 def get_commit_before_today():
@@ -115,7 +149,9 @@ def _install(version, output_prefix):
 
 def main():
     def do_latest():
-        return get_commit_before_today()
+        if _ROLL_TO_TIP_OF_TREE:
+            return get_commit_before_today()
+        return get_latest_dev_branch()
 
     def do_install(args):
         _install(args.version, args.output_prefix)

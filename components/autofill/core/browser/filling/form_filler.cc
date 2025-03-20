@@ -63,11 +63,12 @@ bool FillingProductSupportsRefills(FillingProduct filling_product) {
     case FillingProduct::kAddress:
     case FillingProduct::kCreditCard:
       return true;
-    case FillingProduct::kAutofillAi:
-    case FillingProduct::kMerchantPromoCode:
-    case FillingProduct::kIban:
     case FillingProduct::kAutocomplete:
+    case FillingProduct::kAutofillAi:
     case FillingProduct::kCompose:
+    case FillingProduct::kIban:
+    case FillingProduct::kLoyaltyCard:
+    case FillingProduct::kMerchantPromoCode:
     case FillingProduct::kPlusAddresses:
       return false;
     case FillingProduct::kPassword:
@@ -131,6 +132,8 @@ std::optional<FieldTypeSet> GetFieldTypesToFillFromFillingProduct(
       return FieldTypeSet{MERCHANT_PROMO_CODE};
     case FillingProduct::kIban:
       return FieldTypeSet{IBAN_VALUE};
+    case FillingProduct::kLoyaltyCard:
+      return FieldTypeSet{LOYALTY_MEMBERSHIP_ID};
     case FillingProduct::kPlusAddresses:
       return FieldTypeSet{EMAIL_ADDRESS};
     case FillingProduct::kAutocomplete:
@@ -236,6 +239,7 @@ bool ShouldRecordFillingHistory(FillingProduct filling_product) {
     case FillingProduct::kAutocomplete:
     case FillingProduct::kPassword:
     case FillingProduct::kCompose:
+    case FillingProduct::kLoyaltyCard:
       return false;
   }
   NOTREACHED();

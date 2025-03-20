@@ -25,7 +25,8 @@ std::unique_ptr<EventMonitor> EventMonitor::CreateApplicationMonitor(
     gfx::NativeWindow context,
     const std::set<ui::EventType>& types) {
   // |context| is not needed on Mac.
-  return std::make_unique<EventMonitorMac>(event_observer, nullptr, types);
+  return std::make_unique<EventMonitorMac>(event_observer, gfx::NativeWindow(),
+                                           types);
 }
 
 // static

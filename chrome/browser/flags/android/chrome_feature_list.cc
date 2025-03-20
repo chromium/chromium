@@ -196,6 +196,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidTabDeclutterDedupeTabIdsKillSwitch,
     &kAndroidTabDeclutterRescueKillswitch,
     &kAndroidTabSkipSaveTabsKillswitch,
+    &kAndroidThemeModule,
     &kAndroidToolbarScrollAblation,
     &kAndroidWindowPopupLargeScreen,
     &kAnimatedImageDragShadow,
@@ -347,9 +348,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabSwitcherColorBlendAnimate,
     &kTabSwitcherContextMenuAndroid,
     &kTabSwitcherForeignFaviconSupport,
-    &kTabWindowManagerIndexReassignmentActivityFinishing,
-    &kTabWindowManagerIndexReassignmentActivityInSameTask,
-    &kTabWindowManagerIndexReassignmentActivityNotInAppTasks,
     &kTabWindowManagerReportIndicesMismatch,
     &kTestDefaultDisabled,
     &kTestDefaultEnabled,
@@ -561,6 +559,10 @@ BASE_FEATURE(kAndroidTabDeclutterRescueKillswitch,
 BASE_FEATURE(kAndroidTabSkipSaveTabsKillswitch,
              "AndroidTabSkipSaveTabsTaskKillswitch",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidThemeModule,
+             "AndroidThemeModule",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidToolbarScrollAblation,
              "AndroidToolbarScrollAblation",
@@ -973,7 +975,7 @@ BASE_FEATURE(kPageContentProvider,
 
 BASE_FEATURE(kPowerSavingModeBroadcastReceiverInBackground,
              "PowerSavingModeBroadcastReceiverInBackground",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPreconnectOnTabCreation,
              "PreconnectOnTabCreation",
@@ -1150,18 +1152,6 @@ BASE_FEATURE(kTabSwitcherContextMenuAndroid,
 BASE_FEATURE(kTabSwitcherForeignFaviconSupport,
              "TabSwitcherForeignFaviconSupport",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabWindowManagerIndexReassignmentActivityFinishing,
-             "TabWindowManagerIndexReassignmentActivityFinishing",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabWindowManagerIndexReassignmentActivityInSameTask,
-             "TabWindowManagerIndexReassignmentActivityInSameTask",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabWindowManagerIndexReassignmentActivityNotInAppTasks,
-             "TabWindowManagerIndexReassignmentActivityNotInAppTasks",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabWindowManagerReportIndicesMismatch,
              "TabWindowManagerReportIndicesMismatch",

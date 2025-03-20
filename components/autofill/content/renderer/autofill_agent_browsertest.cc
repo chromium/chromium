@@ -1712,21 +1712,27 @@ TEST_P(AutofillAgentTestClick, MAYBE_AskForValuesToFillOnClick) {
         .Times(AtMost(1));
   }
 
+  // Makes sure the next AskForValuesToFill() event is not throttled in
+  // AutofillAgent.
+  auto skip_throttle = [this]() {
+    task_environment_.FastForwardBy(base::Seconds(1));
+  };
+
   WaitForFormsSeen();
 
-  task_environment_.FastForwardBy(base::Seconds(1));
+  skip_throttle();
   checkpoint.Call("click on field");
   Click("f");
 
-  task_environment_.FastForwardBy(base::Seconds(1));
+  skip_throttle();
   checkpoint.Call("click on field");
   Click("f");
 
-  task_environment_.FastForwardBy(base::Seconds(1));
+  skip_throttle();
   checkpoint.Call("click outside of field");
   Click("other");
 
-  task_environment_.FastForwardBy(base::Seconds(1));
+  skip_throttle();
   checkpoint.Call("right click on field");
   RightClick("f");
 }

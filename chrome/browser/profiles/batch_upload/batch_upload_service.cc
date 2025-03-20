@@ -7,6 +7,7 @@
 #include <array>
 #include <map>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/notreached.h"
@@ -34,31 +35,42 @@ constexpr base::TimeDelta kBatchUploadAvatarButtonOverrideTextDuration =
 // This list contains all the data types that are available for the Batch Upload
 // dialog. Data types should not be repeated and the list is ordered based on
 // the priority of showing in the dialog.
-const std::array<syncer::DataType, 4> kBatchUploadOrderedAvailableTypes{
+const std::array<syncer::DataType, 4> kBatchUploadAvailableTypesOrder{
     syncer::DataType::PASSWORDS,
     syncer::DataType::BOOKMARKS,
     syncer::DataType::CONTACT_INFO,
     syncer::DataType::THEMES,
 };
 
+// Returns the list of data descriptions in `local_data_descriptions_map`
+// following the expected displayed order in the dialog.
 // Data descriptions with no local data will be filtered out.
 std::vector<syncer::LocalDataDescription>
 GetOrderedListOfNonEmptyDataDescriptions(
     std::map<syncer::DataType, syncer::LocalDataDescription>
         local_data_descriptions_map) {
-  // TODO(crbug.com/361340640): make the data type entry point the first one.
-  // TODO(crbug.com/374133537): Use `kBatchUploadOrderedAvailableTypes` types
-  // order to reorder the returned list for display order.
+  // TODO(crbug.com/361340640): make the data type entry point be the first one.
   std::vector<syncer::LocalDataDescription> local_data_description_list;
-  for (auto& [type, local_data_description] : local_data_descriptions_map) {
+  // Reorder the result from the `local_data_descriptions_map` based on the
+  // available types order.
+  for (syncer::DataType type : kBatchUploadAvailableTypesOrder) {
+    if (!local_data_descriptions_map.contains(type)) {
+      continue;
+    }
+
+    syncer::LocalDataDescription& local_data_description =
+        local_data_descriptions_map.at(type);
     if (!local_data_description.local_data_models.empty()) {
       CHECK_EQ(type, local_data_description.type)
           << "Non empty data description's data type and the keyed mapping "
              "value should always match.";
-
       local_data_description_list.push_back(std::move(local_data_description));
     }
+    local_data_descriptions_map.erase(type);
   }
+
+  // All initial inputs should be processed.
+  CHECK(local_data_descriptions_map.empty());
   return local_data_description_list;
 }
 
@@ -118,7 +130,7 @@ void BatchUploadService::OpenBatchUpload(
 void BatchUploadService::RequestLocalDataDescriptions() {
   syncer::DataTypeSet data_types;
   // Iterate over all available enums.
-  for (syncer::DataType type : kBatchUploadOrderedAvailableTypes) {
+  for (syncer::DataType type : kBatchUploadAvailableTypesOrder) {
     data_types.Put(type);
   }
 
@@ -228,3 +240,10 @@ BatchUploadService::ResettableState::~ResettableState() = default;
 
 BatchUploadService::ResettableState::DialogState::DialogState() = default;
 BatchUploadService::ResettableState::DialogState::~DialogState() = default;
+
+// static
+std::vector<syncer::DataType>
+BatchUploadService::AvailableTypesOrderForTesting() {
+  // Transforming to vector to avoid changing every definition on updates.
+  return base::ToVector(kBatchUploadAvailableTypesOrder);
+}

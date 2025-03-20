@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Átirat elrejtése</translation>
 <translation id="160633243685262989">Előnézeti kép</translation>
 <translation id="1611649489706141841">következő</translation>
-<translation id="1615144046047995187">Nem sikerült a letöltés. Próbálja újra, vagy indítsa újra a Chromebookot.</translation>
 <translation id="1615335640928990664">Adathasználat <ph name="FRIENDLY_DATE" /> óta</translation>
 <translation id="1618566998877964907">Téma használata</translation>
 <translation id="1621067168122174824">Töltési teszt futtatása</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Hangfelvételek listája</translation>
 <translation id="2561093647892030937">citromok</translation>
 <translation id="2570743873672969996">„<ph name="TEST_NAME" />” teszt futtatása…</translation>
-<translation id="2573178735329662769">A Chromebook összes hangjának rögzítése</translation>
 <translation id="2576253868710695442">Ez akár 2 GB tárhelyet is igénybe vehet.</translation>
 <translation id="2584547424703650812">Ragyogó tájak</translation>
 <translation id="2584559707064218956">A beállításhoz nyissa meg a Beállításokat</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">kék és rózsaszín</translation>
 <translation id="498186245079027698">Ellenőrizze a szkennert, majd próbálja újra. Győződjön meg arról, hogy van elég helyi tárhely a beolvasott fájlok mentéséhez.</translation>
 <translation id="4982627662315910959">A billentyűparancs nem áll rendelkezésre. Nyomjon meg egy új billentyűparancsot a Shift és egy további módosító billentyű (Ctrl, Alt vagy <ph name="META_KEY" />) használatával.</translation>
-<translation id="4983216687482551672">A Chromebook hangja</translation>
 <translation id="4985509611418653372">Futtatás</translation>
 <translation id="4987769320337599931">Tűzfal</translation>
 <translation id="4988526792673242964">Oldal</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Húzza ki a(z) <ph name="DEVICE_NAME" /> USB-kábelét, majd csatlakoztassa újra a frissítési folyamat folytatásához</translation>
 <translation id="5099354524039520280">felfelé</translation>
 <translation id="5107243100836678918">A(z) <ph name="META_KEY" /> billentyű nélküli billentyűparancs ütközhet egyes alkalmazások billentyűparancsaival. Ha továbbra is használni szeretné, nyomja le újra ezt a billentyűparancsot, vagy nyomjon le egy új billentyűparancsot a(z) <ph name="KEY" /> billentyű használatával. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Nem sikerült letölteni a(z) <ph name="LANGUAGE_NAME" /> nyelvű átírási modellt. Próbálkozzon újra, vagy indítsa újra a Chromebookot.</translation>
 <translation id="5108781503443873320">Rokon értelmű:</translation>
-<translation id="5121677070210013200">Nem sikerült letölteni az átírási modellt. Próbálja újra, vagy indítsa újra a Chromebookot.</translation>
 <translation id="5130848777448318809">pónik</translation>
 <translation id="5137451382116112100">Teljes</translation>
 <translation id="5139813694804168398">ne zavarjanak</translation>
@@ -1033,6 +1028,7 @@
 <translation id="5896602941605730551">Lejátszás</translation>
 <translation id="5901630391730855834">Sárga</translation>
 <translation id="5903200662178656908">Az eszközhöz billentyűzet és egér is tartozik.</translation>
+<translation id="5903822368221507416">Lapok elrejtése</translation>
 <translation id="5904994456462260490">Új APN hozzáadása</translation>
 <translation id="590746845088109442">macskák</translation>
 <translation id="5907649332524363701">billentyűk színe</translation>
@@ -1088,7 +1084,6 @@
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">ChromeOS beviteli módszere szolgáltatás</translation>
 <translation id="6127426868813166163">fehér</translation>
-<translation id="613049107179582049">Amikor be van kapcsolva A Chromebook hangja beállítás, a Hangfelvevő az eszközön lejátszott összes hangot rögzíti.</translation>
 <translation id="6136285399872347291">törlés</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">Felhasználói tanúsítvány</translation>
@@ -1418,7 +1413,6 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-érintőképernyő</translation>
 <translation id="757747079855995705">kő</translation>
-<translation id="7584853321964440104">Nem lehet letölteni. Próbálja újra, vagy indítsa újra a Chromebookot.</translation>
 <translation id="7590883480672980941">Beviteli beállítások</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> van hátra</translation>
 <translation id="7600430297804876776">A(z) <ph name="MANAGER" /> adminisztrátora meghatározta, hogy mikor használható ez a <ph name="DEVICE_TYPE" />.</translation>
@@ -1785,7 +1779,6 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="9218016617214286986">Ismert APN-ek megjelenítése</translation>
 <translation id="932327136139879170">Főoldal</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Győződjön meg arról, hogy a mikrofon csatlakoztatva van, vagy próbálja meg újraindítani a Chromebookot</translation>
 <translation id="945522503751344254">Visszajelzés küldése</translation>
 <translation id="950520315903467048">Nincs hozzárendelve billentyű a következőhöz: <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" />.</translation>
 <translation id="951780398843003443">Hasonlítsa össze a felvételben elhangzó beszédhangokat, hogy az átiratban látható legyen, az egyes beszélők mit és mikor mondtak</translation>

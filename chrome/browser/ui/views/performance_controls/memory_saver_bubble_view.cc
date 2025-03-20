@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_bubble_delegate.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_bubble_observer.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_tab_helper.h"
@@ -147,7 +148,7 @@ views::BubbleDialogModelHost* MemorySaverBubbleView::ShowBubble(
   auto* const toolbar_button_provider =
       BrowserView::GetBrowserViewForBrowser(browser)->toolbar_button_provider();
   views::Button* highlighted_button;
-  if (base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+  if (IsPageActionMigrated(PageActionIconType::kMemorySaver)) {
     highlighted_button =
         toolbar_button_provider->GetPageActionView(kActionShowMemorySaverChip);
   } else {

@@ -37,7 +37,8 @@ enum class SignalName {
   kFileSystemInfo,
   kSystemSettings,
   kAgent,
-  kMaxValue = kAgent
+  kOsSignals,
+  kMaxValue = kOsSignals
 };
 
 // Superset of all signal collection errors that can occur, including top-level
@@ -185,6 +186,40 @@ struct SettingsResponse : BaseSignalResponse {
   std::vector<SettingsItem> settings_items{};
 };
 
+struct OsSignalsResponse : BaseSignalResponse {
+  OsSignalsResponse();
+
+  OsSignalsResponse(const OsSignalsResponse&);
+  OsSignalsResponse& operator=(const OsSignalsResponse&);
+
+  ~OsSignalsResponse() override;
+
+  // Common to all platforms
+  std::optional<std::string> display_name = std::nullopt;
+  std::string browser_version{};
+  std::optional<std::string> device_enrollment_domain = std::nullopt;
+  std::string device_manufacturer{};
+  std::string device_model{};
+  device_signals::SettingValue disk_encryption =
+      device_signals::SettingValue::UNKNOWN;
+  std::optional<std::string> hostname = std::nullopt;
+  std::optional<std::vector<std::string>> mac_addresses = std::nullopt;
+  std::string operating_system{};
+  device_signals::SettingValue os_firewall =
+      device_signals::SettingValue::UNKNOWN;
+  std::string os_version{};
+  device_signals::SettingValue screen_lock_secured =
+      device_signals::SettingValue::UNKNOWN;
+  std::optional<std::string> serial_number = std::nullopt;
+  std::optional<std::vector<std::string>> system_dns_servers = std::nullopt;
+
+  // Windows specific
+  std::optional<std::string> machine_guid = std::nullopt;
+  std::optional<device_signals::SettingValue> secure_boot_mode = std::nullopt;
+  std::optional<std::string> windows_machine_domain = std::nullopt;
+  std::optional<std::string> windows_user_domain = std::nullopt;
+};
+
 struct FileSystemInfoResponse : BaseSignalResponse {
   FileSystemInfoResponse();
 
@@ -255,6 +290,7 @@ struct SignalsAggregationResponse {
   std::optional<HotfixSignalResponse> hotfix_signal_response = std::nullopt;
 #endif  // BUILDFLAG(IS_WIN)
   std::optional<SettingsResponse> settings_response = std::nullopt;
+  std::optional<OsSignalsResponse> os_signals_response = std::nullopt;
 
   std::optional<FileSystemInfoResponse> file_system_info_response =
       std::nullopt;

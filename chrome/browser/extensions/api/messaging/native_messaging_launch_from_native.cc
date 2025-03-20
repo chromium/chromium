@@ -35,6 +35,7 @@
 #include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace extensions {
 namespace {
@@ -75,9 +76,9 @@ class NativeMessagingHostErrorReporter : public NativeMessageHost::Client {
         NativeMessageProcessHost::CreateWithLauncher(
             extension_id, host_id,
             NativeProcessLauncher::CreateDefault(
-                /* allow_user_level = */ true,
-                /* native_view = */ nullptr, profile->GetPath(),
-                /* require_native_initiated_connections = */ false,
+                /* allow_user_level_hosts= */ true,
+                /* native_view= */ gfx::NativeView(), profile->GetPath(),
+                /* require_native_initiated_connections= */ false,
                 connection_id, error_arg, profile));
     MovableScopedKeepAlive keep_alive(
         new ScopedKeepAlive(KeepAliveOrigin::NATIVE_MESSAGING_HOST_ERROR_REPORT,
@@ -240,9 +241,9 @@ void LaunchNativeMessageHostFromNativeApp(const ExtensionId& extension_id,
   auto native_message_host = NativeMessageProcessHost::CreateWithLauncher(
       extension_id, host_id,
       NativeProcessLauncher::CreateDefault(
-          /* allow_user_level = */ true, /* native_view = */ nullptr,
-          profile->GetPath(),
-          /* require_native_initiated_connections = */ true, connection_id, "",
+          /* allow_user_level_hosts= */ true,
+          /* native_view= */ gfx::NativeView(), profile->GetPath(),
+          /* require_native_initiated_connections= */ true, connection_id, "",
           profile));
   auto native_message_port = std::make_unique<extensions::NativeMessagePort>(
       message_service->GetChannelDelegate(), port_id,

@@ -71,7 +71,6 @@ id<GREYMatcher> highlightedReviewsButtonMatcher() {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
   config.features_disabled = {};
-  config.features_enabled.push_back(kOmniboxActionsInSuggest);
   // HW keyboard simulation can mess up the SW keyboard simulator state.
   // Relaunching resets the state.
   config.relaunch_policy = ForceRelaunchByCleanShutdown;

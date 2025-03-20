@@ -1190,6 +1190,8 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
 
   RETURN_IF_ERROR(UpdateViewportPropertyIds(layers, property_trees, *update));
 
+  host_impl_->SetViewportDamage(update->viewport_damage_rect);
+
   property_trees.UpdateChangeTracking();
   property_trees.transform_tree_mutable().set_needs_update(
       transform_size_changed || transform_properties_changed ||

@@ -42,6 +42,7 @@
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -125,8 +126,8 @@ task_manager::TaskManagerTableModel* TaskManagerView::Show(
   // On Chrome OS, pressing Search-Esc when there are no open browser windows
   // will open the task manager on the root window for new windows.
   gfx::NativeWindow context =
-      browser ? browser->window()->GetNativeWindow() : nullptr;
-  CreateDialogWidget(g_task_manager_view, context, nullptr);
+      browser ? browser->window()->GetNativeWindow() : gfx::NativeWindow();
+  CreateDialogWidget(g_task_manager_view, context, gfx::NativeView());
   g_task_manager_view->GetDialogClientView()->SetBackgroundColor(
       kColorTaskManagerBackground);
   g_task_manager_view->InitAlwaysOnTopState();

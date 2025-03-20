@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">הסתרת התמליל</translation>
 <translation id="160633243685262989">התצוגה המקדימה של התמונה</translation>
 <translation id="1611649489706141841">קדימה</translation>
-<translation id="1615144046047995187">‏לא ניתן להוריד. צריך לנסות שוב או להפעיל מחדש את ה-Chromebook.</translation>
 <translation id="1615335640928990664">שימוש בחבילת הגלישה מאז <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">שימוש בעיצוב</translation>
 <translation id="1621067168122174824">הפעלה של בדיקת טעינה</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">רשימת הקלטות האודיו</translation>
 <translation id="2561093647892030937">לימונים</translation>
 <translation id="2570743873672969996">הבדיקה של <ph name="TEST_NAME" /> בתהליך…</translation>
-<translation id="2573178735329662769">‏הקלטת כל האודיו ב-Chromebook</translation>
 <translation id="2576253868710695442">‏הקובץ יתפוס עד 2GB מנפח האחסון</translation>
 <translation id="2584547424703650812">מרחבים זוהרים</translation>
 <translation id="2584559707064218956">כדי להגדיר את הרשת, צריך לעבור להגדרות</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">ורוד וכחול</translation>
 <translation id="498186245079027698">יש לבדוק את הסורק ולנסות שוב. חשוב לוודא שיש במכשיר מספיק מקום לשמור את הקבצים הסרוקים.</translation>
 <translation id="4982627662315910959">‏מקש הקיצור לא זמין. צריך להקיש על מקש קיצור חדש שכולל את Shift ומקש צירוף נוסף (Ctrl,‏ Alt או <ph name="META_KEY" />).</translation>
-<translation id="4983216687482551672">‏אודיו ב-Chromebook</translation>
 <translation id="4985509611418653372">הרצה</translation>
 <translation id="4987769320337599931">חומת אש</translation>
 <translation id="4988526792673242964">דפים</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">‏כדי להמשיך בתהליך העדכון, צריך לנתק את כבל ה-USB של <ph name="DEVICE_NAME" /> ולהכניס אותו שוב</translation>
 <translation id="5099354524039520280">למעלה</translation>
 <translation id="5107243100836678918">מקשי קיצור בלי המקש <ph name="META_KEY" /> עלולים להיות חופפים למקשי הקיצור באפליקציה כלשהי. כדי להשתמש במקשי הקיצור האלה בכל זאת, צריך להקיש עליהם שוב. אחרת, צריך להקיש על מקשי קיצור חדשים שכוללים את המקש <ph name="KEY" />. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">‏אי אפשר להוריד את מודל התמלול ב<ph name="LANGUAGE_NAME" />. צריך לנסות שוב או להפעיל מחדש את Chromebook</translation>
 <translation id="5108781503443873320">נרדפות:</translation>
-<translation id="5121677070210013200">‏לא ניתן להוריד את מודל התמלול. צריך לנסות שוב או להפעיל מחדש את ה-Chromebook.</translation>
 <translation id="5130848777448318809">סוסי פוני</translation>
 <translation id="5137451382116112100">מסך מלא</translation>
 <translation id="5139813694804168398">נא לא להפריע</translation>
@@ -1033,6 +1028,7 @@
 <translation id="5896602941605730551">הפעלה</translation>
 <translation id="5901630391730855834">צהוב</translation>
 <translation id="5903200662178656908">המכשיר משלב מקלדת ועכבר.</translation>
+<translation id="5903822368221507416">הסתרת הכרטיסיות</translation>
 <translation id="5904994456462260490">‏הוספת APN חדש</translation>
 <translation id="590746845088109442">חתולים</translation>
 <translation id="5907649332524363701">הצבע העיקרי</translation>
@@ -1088,7 +1084,6 @@
 <translation id="6122191549521593678">אונליין</translation>
 <translation id="6122277663991249694">‏שירות שיטת הקלט של ChromeOS</translation>
 <translation id="6127426868813166163">בצבע לבן</translation>
-<translation id="613049107179582049">‏כשהאודיו של Chromebook מופעל, מכשיר ההקלטה מקליט את כל האודיו שמושמע במכשיר הזה</translation>
 <translation id="6136285399872347291">מחיקת תו אחד</translation>
 <translation id="6137614725462089991">סייברפאנק</translation>
 <translation id="6137767437444130246">אישור משתמש</translation>
@@ -1418,7 +1413,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">‏מסך מגע של USB</translation>
 <translation id="757747079855995705">אבן</translation>
-<translation id="7584853321964440104">‏לא ניתן להוריד. צריך לנסות שוב או להפעיל מחדש את ה-Chromebook.</translation>
 <translation id="7590883480672980941">הגדרות קלט</translation>
 <translation id="7595982850646262331">הזמן שנותר: <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">האדמין של <ph name="MANAGER" /> קבע מתי אפשר להשתמש ב-<ph name="DEVICE_TYPE" /> הזה.</translation>
@@ -1785,7 +1779,6 @@
 <translation id="9218016617214286986">‏הצגת נקודות APN מוכרות</translation>
 <translation id="932327136139879170">בית</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">‏צריך לוודא שהמיקרופון מחובר או להפעיל מחדש את Chromebook</translation>
 <translation id="945522503751344254"> שליחת משוב</translation>
 <translation id="950520315903467048">חסר מקש עבור <ph name="DIRECTION" />. ‫<ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">להשוות בין הקולות במשך ההקלטה כך שהתמליל ישקף את מה שכל אחד הדוברים אמר ומתי</translation>

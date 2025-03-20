@@ -8,6 +8,7 @@
 
 #include "ash/boca/on_task/on_task_pod_controller.h"
 #include "ash/boca/on_task/on_task_pod_utils.h"
+#include "ash/boca/on_task/on_task_pod_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/test/scoped_feature_list.h"
@@ -584,9 +585,10 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
   const int boca_app_browser_frame_header_height =
       boca::GetFrameHeaderHeight(on_task_pod_widget->parent());
   EXPECT_EQ(on_task_pod_widget->GetWindowBoundsInScreen().origin(),
-            gfx::Point(boca_app_browser_bounds.x(),
+            gfx::Point(boca_app_browser_bounds.x() + kPodVerticalBorder,
                        boca_app_browser_bounds.y() +
-                           boca_app_browser_frame_header_height));
+                           boca_app_browser_frame_header_height +
+                           kPodHorizontalBorder));
 
   // Update browser window bounds and verify the new position of the pod.
   const gfx::Rect new_boca_app_browser_bounds(
@@ -595,9 +597,10 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
       boca_app_browser_bounds.height() + 1);
   on_task_pod_widget->parent()->SetBounds(new_boca_app_browser_bounds);
   EXPECT_EQ(on_task_pod_widget->GetWindowBoundsInScreen().origin(),
-            gfx::Point(new_boca_app_browser_bounds.x(),
+            gfx::Point(new_boca_app_browser_bounds.x() + kPodVerticalBorder,
                        new_boca_app_browser_bounds.y() +
-                           boca_app_browser_frame_header_height));
+                           boca_app_browser_frame_header_height +
+                           kPodHorizontalBorder));
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest, SetPodSnapLocation) {
@@ -628,20 +631,24 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest, SetPodSnapLocation) {
   const int boca_app_browser_frame_header_height =
       boca::GetFrameHeaderHeight(on_task_pod_widget->parent());
   EXPECT_EQ(on_task_pod_widget->GetWindowBoundsInScreen().origin(),
-            gfx::Point(boca_app_browser_bounds.x(),
+            gfx::Point(boca_app_browser_bounds.x() + kPodVerticalBorder,
                        boca_app_browser_bounds.y() +
-                           boca_app_browser_frame_header_height));
+                           boca_app_browser_frame_header_height +
+                           kPodHorizontalBorder));
 
   // Update pod snap location and verify its new position.
   on_task_pod_controller()->SetSnapLocation(OnTaskPodSnapLocation::kTopRight);
   ASSERT_EQ(on_task_pod_controller()->GetSnapLocationForTesting(),
             OnTaskPodSnapLocation::kTopRight);
-  EXPECT_EQ(
-      on_task_pod_widget->GetWindowBoundsInScreen().origin(),
-      gfx::Point(
-          boca_app_browser_bounds.right() -
-              on_task_pod_widget->GetContentsView()->GetPreferredSize().width(),
-          boca_app_browser_bounds.y() + boca_app_browser_frame_header_height));
+  EXPECT_EQ(on_task_pod_widget->GetWindowBoundsInScreen().origin(),
+            gfx::Point(boca_app_browser_bounds.right() -
+                           on_task_pod_widget->GetContentsView()
+                               ->GetPreferredSize()
+                               .width() -
+                           kPodVerticalBorder,
+                       boca_app_browser_bounds.y() +
+                           boca_app_browser_frame_header_height +
+                           kPodHorizontalBorder));
 
   // Update pod snap location to its initial value and verify its position is
   // reset.
@@ -649,9 +656,10 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest, SetPodSnapLocation) {
   ASSERT_EQ(on_task_pod_controller()->GetSnapLocationForTesting(),
             OnTaskPodSnapLocation::kTopLeft);
   EXPECT_EQ(on_task_pod_widget->GetWindowBoundsInScreen().origin(),
-            gfx::Point(boca_app_browser_bounds.x(),
+            gfx::Point(boca_app_browser_bounds.x() + kPodVerticalBorder,
                        boca_app_browser_bounds.y() +
-                           boca_app_browser_frame_header_height));
+                           boca_app_browser_frame_header_height +
+                           kPodHorizontalBorder));
 }
 
 }  // namespace

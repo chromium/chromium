@@ -13,10 +13,12 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
@@ -35,6 +37,7 @@ import java.util.UUID;
 @Batch(Batch.PER_CLASS)
 @DisabledTest(message = "https://crbug.com/349630317")
 public class SystemDownloadNotifierTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private final SystemDownloadNotifier mSystemDownloadNotifier = new SystemDownloadNotifier();
     private MockDownloadNotificationService mMockDownloadNotificationService;
 
@@ -47,7 +50,6 @@ public class SystemDownloadNotifierTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

@@ -116,14 +116,12 @@ std::unique_ptr<ExtensionSet> SharedModuleService::GetDependentExtensions(
 
   if (SharedModuleInfo::IsSharedModule(extension)) {
     ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
-    ExtensionService* service =
-        ExtensionSystem::Get(browser_context_)->extension_service();
 
     ExtensionSet set_to_check;
     set_to_check.InsertAll(registry->enabled_extensions());
     set_to_check.InsertAll(registry->disabled_extensions());
     set_to_check.InsertAll(
-        service->delayed_install_manager()->delayed_installs());
+        DelayedInstallManager::Get(browser_context_)->delayed_installs());
 
     for (ExtensionSet::const_iterator iter = set_to_check.begin();
          iter != set_to_check.end();
@@ -161,7 +159,7 @@ void SharedModuleService::PruneSharedModules() {
   set_to_check.InsertAll(registry->enabled_extensions());
   set_to_check.InsertAll(registry->disabled_extensions());
   set_to_check.InsertAll(
-      service->delayed_install_manager()->delayed_installs());
+      DelayedInstallManager::Get(browser_context_)->delayed_installs());
 
   std::vector<std::string> shared_modules;
   std::set<std::string> used_shared_modules;

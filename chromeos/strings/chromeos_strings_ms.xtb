@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Sembunyikan transkrip</translation>
 <translation id="160633243685262989">Pratonton Imej</translation>
 <translation id="1611649489706141841">ke hadapan</translation>
-<translation id="1615144046047995187">Tidak dapat memuat turun. Cuba lagi atau mulakan semula Chromebook anda.</translation>
 <translation id="1615335640928990664">Penggunaan data sejak <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Gunakan tema</translation>
 <translation id="1621067168122174824">Jalankan Ujian cas</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Senarai rakaman audio</translation>
 <translation id="2561093647892030937">lemon</translation>
 <translation id="2570743873672969996">Menjalankan ujian <ph name="TEST_NAME" />...</translation>
-<translation id="2573178735329662769">Merakam semua audio Chromebook</translation>
 <translation id="2576253868710695442">Model ini akan menggunakan hingga 2GB storan</translation>
 <translation id="2584547424703650812">Glowscape</translation>
 <translation id="2584559707064218956">Untuk membuat persediaan, pergi ke Tetapan</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">biru dan merah jambu</translation>
 <translation id="498186245079027698">Periksa pengimbas dan cuba lagi. Pastikan terdapat ruang setempat yang mencukupi untuk menyimpan fail yang diimbas.</translation>
 <translation id="4982627662315910959">Pintasan tidak tersedia. Tekan pintasan baharu menggunakan shift dan 1 lagi kekunci pengubah suai (ctrl, alt atau <ph name="META_KEY" />).</translation>
-<translation id="4983216687482551672">Audio Chromebook</translation>
 <translation id="4985509611418653372">Jalankan</translation>
 <translation id="4987769320337599931">Tembok api</translation>
 <translation id="4988526792673242964">Halaman</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Cabut kabel USB <ph name="DEVICE_NAME" /> dan masukkan semula kabel USB tersebut untuk meneruskan proses kemaskinian</translation>
 <translation id="5099354524039520280">ke atas</translation>
 <translation id="5107243100836678918">Pintasan tanpa kekunci <ph name="META_KEY" /> mungkin bercanggah dengan sesetengah pintasan apl. Tekan pintasan ini sekali lagi untuk terus digunakan atau tekan pintasan baharu menggunakan kekunci <ph name="KEY" />. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Tidak dapat memuat turun model transkripsi <ph name="LANGUAGE_NAME" />. Cuba lagi atau mulakan semula Chromebook anda</translation>
 <translation id="5108781503443873320">Serupa:</translation>
-<translation id="5121677070210013200">Tidak dapat memuat turun model transkrip. Cuba lagi atau mulakan semula Chromebook anda.</translation>
 <translation id="5130848777448318809">kuda padi</translation>
 <translation id="5137451382116112100">Penuh</translation>
 <translation id="5139813694804168398">jangan ganggu</translation>
@@ -1089,7 +1084,6 @@
 <translation id="6122191549521593678">Dalam talian</translation>
 <translation id="6122277663991249694">Perkhidmatan Kaedah Input Chrome OS</translation>
 <translation id="6127426868813166163">putih</translation>
-<translation id="613049107179582049">Apabila audio Chromebook dihidupkan, Recorder akan merakamkan semua audio yang dimainkan pada peranti ini</translation>
 <translation id="6136285399872347291">undur ruang</translation>
 <translation id="6137614725462089991">siberpunk</translation>
 <translation id="6137767437444130246">Sijil pengguna</translation>
@@ -1419,7 +1413,6 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Skrin sentuh USB</translation>
 <translation id="757747079855995705">batu</translation>
-<translation id="7584853321964440104">Tidak dapat memuat turun. Cuba lagi atau mulakan semula Chromebook anda.</translation>
 <translation id="7590883480672980941">Tetapan input</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> lagi</translation>
 <translation id="7600430297804876776">Pentadbir <ph name="MANAGER" /> telah menetapkan masa untuk <ph name="DEVICE_TYPE" /> boleh digunakan.</translation>
@@ -1786,7 +1779,6 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="9218016617214286986">Tunjukkan APN yang diketahui</translation>
 <translation id="932327136139879170">Laman Utama</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Pastikan mikrofon anda disambungkan atau cuba mulakan semula Chromebook anda</translation>
 <translation id="945522503751344254">Hantar maklum balas</translation>
 <translation id="950520315903467048">Tiada kunci untuk <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Bandingkan suara sepanjang rakaman supaya transkrip menggambarkan perkara yang setiap penutur katakan dan masa penutur berkata</translation>

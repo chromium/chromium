@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Amaga la transcripció</translation>
 <translation id="160633243685262989">Previsualitza la imatge</translation>
 <translation id="1611649489706141841">avança</translation>
-<translation id="1615144046047995187">No es pot baixar. Torna-ho a provar o reinicia el Chromebook.</translation>
 <translation id="1615335640928990664">Ús de dades des de <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Utilitza un tema</translation>
 <translation id="1621067168122174824">Executa la prova de càrrega</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Llista de gravacions d'àudio</translation>
 <translation id="2561093647892030937">llimones</translation>
 <translation id="2570743873672969996">S'està executant la prova <ph name="TEST_NAME" />...</translation>
-<translation id="2573178735329662769">S'està gravant tot l'àudio del Chromebook</translation>
 <translation id="2576253868710695442">Ocuparà fins a 2 GB d'emmagatzematge</translation>
 <translation id="2584547424703650812">Paisatges brillants</translation>
 <translation id="2584559707064218956">Per configurar-la, ves a Configuració</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">blau i rosa</translation>
 <translation id="498186245079027698">Comprova l'escàner i torna-ho a provar. Assegura't que hi hagi prou espai local per desar els fitxers escanejats.</translation>
 <translation id="4982627662315910959">La drecera no està disponible. Prem una drecera nova amb Maj i una tecla modificadora més (Ctrl, Alt o <ph name="META_KEY" />).</translation>
-<translation id="4983216687482551672">Àudio del Chromebook</translation>
 <translation id="4985509611418653372">Executa</translation>
 <translation id="4987769320337599931">Tallafoc</translation>
 <translation id="4988526792673242964">Pàgines</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Desconnecta el cable USB del <ph name="DEVICE_NAME" /> i torna'l a connectar per continuar amb el procés d'actualització</translation>
 <translation id="5099354524039520280">amunt</translation>
 <translation id="5107243100836678918">La drecera sense tecla de <ph name="META_KEY" /> pot entrar en conflicte amb la drecera d'alguna aplicació. Torna a prémer aquesta drecera per continuar utilitzant-la o prem-ne una altra mitjançant la tecla de <ph name="KEY" />. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">No es pot baixar el model de transcripció per a <ph name="LANGUAGE_NAME" />. Torna-ho a provar o reinicia el Chromebook.</translation>
 <translation id="5108781503443873320">Similars:</translation>
-<translation id="5121677070210013200">No es pot baixar el model de transcripció. Torna-ho a provar o reinicia el Chromebook.</translation>
 <translation id="5130848777448318809">ponis</translation>
 <translation id="5137451382116112100">Complet</translation>
 <translation id="5139813694804168398">No molestis</translation>
@@ -1033,6 +1028,7 @@
 <translation id="5896602941605730551">Reprodueix</translation>
 <translation id="5901630391730855834">Groc</translation>
 <translation id="5903200662178656908">El dispositiu és un conjunt de teclat i ratolí.</translation>
+<translation id="5903822368221507416">Amaga les pestanyes</translation>
 <translation id="5904994456462260490">Afegeix un APN nou</translation>
 <translation id="590746845088109442">gats</translation>
 <translation id="5907649332524363701">color de les tecles</translation>
@@ -1088,7 +1084,6 @@
 <translation id="6122191549521593678">En línia</translation>
 <translation id="6122277663991249694">Servei del mètode d'introducció de text a Chrome OS</translation>
 <translation id="6127426868813166163">blanc</translation>
-<translation id="613049107179582049">Quan l'àudio del Chromebook està activat, la gravadora captura tot l'àudio que es reprodueix en aquest dispositiu.</translation>
 <translation id="6136285399872347291">retrocés</translation>
 <translation id="6137614725462089991">ciberpunk</translation>
 <translation id="6137767437444130246">Certificat d'usuari</translation>
@@ -1418,7 +1413,6 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Pantalla tàctil USB</translation>
 <translation id="757747079855995705">pedra</translation>
-<translation id="7584853321964440104">No es pot baixar. Torna-ho a provar o reinicia el Chromebook.</translation>
 <translation id="7590883480672980941">Configuració d'introducció de text</translation>
 <translation id="7595982850646262331">Temps restant: <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">L'administrador de <ph name="MANAGER" /> ha definit quan es pot utilitzar aquest <ph name="DEVICE_TYPE" />.</translation>
@@ -1785,7 +1779,6 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="9218016617214286986">Mostra els APN coneguts</translation>
 <translation id="932327136139879170">Inici</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Comprova que el micròfon estigui connectat o prova de reiniciar el Chromebook</translation>
 <translation id="945522503751344254">Envia suggeriments</translation>
 <translation id="950520315903467048">Falta la tecla per a <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Comparar les veus al llarg de la gravació perquè la transcripció reflecteixi què ha dit cada interlocutor i en quin moment</translation>

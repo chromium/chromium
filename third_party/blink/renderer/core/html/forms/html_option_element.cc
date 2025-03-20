@@ -162,8 +162,7 @@ String HTMLOptionElement::DisplayLabel() const {
     // value. Otherwise, use inner text.
     String label_attr = String(FastGetAttribute(html_names::kLabelAttr));
     if (!label_attr.empty()) {
-      return label_attr.StripWhiteSpace(IsHTMLSpace<UChar>)
-          .SimplifyWhiteSpace(IsHTMLSpace<UChar>);
+      return label_attr;
     }
     return CollectOptionInnerText()
         .StripWhiteSpace(IsHTMLSpace<UChar>)

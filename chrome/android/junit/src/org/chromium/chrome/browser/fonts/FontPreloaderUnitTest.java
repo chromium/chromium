@@ -16,10 +16,12 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.core.content.res.ResourcesCompat.FontCallback;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
@@ -46,6 +48,7 @@ public class FontPreloaderUnitTest {
         org.chromium.chrome.R.font.chrome_google_sans_bold
     };
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Context mContext;
 
     private FontPreloader mFontPreloader;
@@ -75,7 +78,6 @@ public class FontPreloaderUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         ShadowResourcesCompat.reset();
         when(mContext.getApplicationContext()).thenReturn(mContext);
         mFontPreloader = new FontPreloader(FONTS);

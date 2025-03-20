@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_animation_trigger_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_timelinerangeoffset.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
+#include "third_party/blink/renderer/core/animation/scroll_snapshot_timeline.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
@@ -22,6 +23,7 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
  public:
   using RangeBoundary = V8UnionStringOrTimelineRangeOffset;
   using Type = V8AnimationTriggerType;
+  using TriggerState = blink::AnimationTriggerState;
 
   AnimationTrigger(AnimationTimeline* timeline,
                    Type type,
@@ -54,6 +56,12 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
     ScriptWrappable::Trace(visitor);
   }
 
+  using TimelineState = ScrollSnapshotTimeline::TimelineState;
+  void ActionAnimation(Animation* animation);
+  bool ActionAnimationInternal(Animation* animation,
+                               bool within_trigger_range,
+                               bool within_exit_range);
+
   static Type ToV8TriggerType(EAnimationTriggerType type) {
     switch (type) {
       case EAnimationTriggerType::kOnce:
@@ -68,6 +76,14 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
         NOTREACHED();
     };
   }
+
+  // It's possible we're in a range that would normally action
+  // the animation but, e.g. because `animation-play-state` was 'paused'
+  // when we initially entered the range (and updated |state_|) and has now
+  // changed to 'running', we should unpause (and vice versa for a change
+  // from 'running' to 'paused'). This function ensures that we pause or unpause
+  // the the animation in these cases.
+  void ProcessPendingPlayStateUpdate(Animation* animation);
 
  private:
   Member<AnimationTimeline> timeline_;

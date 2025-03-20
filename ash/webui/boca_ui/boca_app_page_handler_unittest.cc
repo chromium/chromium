@@ -639,7 +639,7 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithCritialInputOnly) {
 
             ASSERT_FALSE(request->captions_config());
             ASSERT_FALSE(request->on_task_config());
-            ASSERT_FALSE(request->roster());
+            ASSERT_TRUE(request->roster());
             request->callback().Run(std::make_unique<::boca::Session>());
           })));
 

@@ -4131,18 +4131,6 @@ Het beleid is van toepassing op zowel de URL waar de gebruiker naartoe navigeert
 <translation id="4052529125939620019">De componentextensie CryptoToken laden bij opstarten</translation>
 <translation id="4053157306171963473">Rapportage voor tijd van apparaatactiviteit uitzetten</translation>
 <translation id="4056910949759281379">SPDY-protocol uitzetten</translation>
-<translation id="4057113125482566814">Hiermee wordt de provider van het <ph name="UIA_NAME" />-toegankelijkheidsframework in <ph name="PRODUCT_NAME" /> aangezet voor gebruik door toegankelijkheidstools.
-
-Dit beleid wordt in <ph name="PRODUCT_NAME" /> ondersteund voor een overgangsperiode van één jaar, zodat bedrijfsbeheerders de implementatie van de provider van het <ph name="UIA_NAME" />-toegankelijkheidsframework van de browser kunnen beheren. Voor toegankelijkheid en andere tools die het <ph name="UIA_NAME" />-toegankelijkheidsframework gebruiken voor samenwerking met de browser, zijn misschien updates nodig voor een goede werking met de provider van <ph name="UIA_NAME" /> van de browser. Beheerders kunnen dit beleid gebruiken om de provider van <ph name="UIA_NAME" /> van de browser tijdelijk uit te zetten (waardoor het beleid wordt teruggezet naar het oude gedrag) terwijl ze samenwerken met leveranciers om updates voor getroffen tools te leveren.
-
-Als je dit beleid instelt op Onwaar, zet <ph name="PRODUCT_NAME" /> alleen de <ph name="MSAA_NAME" />-provider aan. Toegankelijkheid en andere tools die het nieuwere <ph name="UIA_NAME" />-toegankelijkheidsframework gebruiken voor samenwerking met de browser, communiceren via een tussenliggende compatibiliteitsfunctie in <ph name="MS_WIN_NAME" />.
-
-Als je dit instelt op Waar, zet <ph name="PRODUCT_NAME" /> de provider van <ph name="UIA_NAME" /> aan in aanvulling op de <ph name="MSAA_NAME" />-provider.
-Toegankelijkheid en andere tools die het nieuwere <ph name="UIA_NAME" />-toegankelijkheidsframework gebruiken voor samenwerking met de browser, communiceren rechtstreeks met de browser.
-
-Als je dit beleid niet instelt, wordt het framework voor varianten in <ph name="PRODUCT_NAME" /> gebruikt om de provider aan of uit te zetten.
-
-Ondersteuning voor deze beleidsinstelling wordt beëindigd in <ph name="PRODUCT_NAME" /> 136.</translation>
 <translation id="4057442294431066708">Dit beleid is van toepassing op de geselecteerde snelkoppelingsoptie om gebeurtenissen opnieuw toe te wijzen aan F11/F12 op de subpagina voor het opnieuw toewijzen van toetsen. Deze instellingen gelden alleen voor ChromeOS-toetsenborden en staan standaard uit als het beleid niet is ingesteld.</translation>
 <translation id="4061590579642538878">Informatie over crashrapporten rapporteren.</translation>
 <translation id="4062646759141042418">Zet <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> aan voor een lijst met URL's.

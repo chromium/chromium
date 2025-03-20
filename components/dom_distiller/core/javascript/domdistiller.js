@@ -4,7 +4,7 @@
 
 // Applies DomDistillerJs to the content of the page and returns a
 // DomDistillerResults (as a javascript object/dict).
-(function(options, stringify_output) {
+(function(options) {
 try {
   function initialize() {
     // This include will be processed at build time by grit.
@@ -19,12 +19,8 @@ try {
   // The OPTIONS placeholder will be replaced with the DomDistillerOptions at
   // runtime.
   const distiller = window.org.chromium.distiller.DomDistiller;
-  const res = distiller.applyWithOptions(options);
+  return distiller.applyWithOptions(options);
 
-  if (stringify_output) {
-    return JSON.stringify(res);
-  }
-  return res;
 } catch (e) {
   window.console.error('Error during distillation: ' + e);
   if (e.stack !== undefined) {
@@ -32,4 +28,4 @@ try {
   }
 }
 return undefined;
-})($$OPTIONS, $$STRINGIFY);
+})($$OPTIONS);

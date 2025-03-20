@@ -15,11 +15,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Promise;
@@ -43,6 +45,7 @@ public class TwaVerifierTest {
     private static final String ADDITIONAL_ORIGIN = "https://www.otherverifiedorigin.com";
     private static final String OTHER_URL = "https://www.notverifiedurl.com/page2.html";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock CustomTabIntentDataProvider mIntentDataProvider;
     @Mock ChromeOriginVerifier mOriginVerifier;
@@ -53,7 +56,6 @@ public class TwaVerifierTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         when(mIntentDataProvider.getUrlToLoad()).thenReturn(INITIAL_URL);
         HashSet<Origin> trustedOrigins = new HashSet<Origin>();

@@ -151,7 +151,6 @@
 <translation id="1604959087182679653">Թաքցնել տեքստը</translation>
 <translation id="160633243685262989">Պատկերի նախադիտում</translation>
 <translation id="1611649489706141841">փոխանցել</translation>
-<translation id="1615144046047995187">Չհաջողվեց ներբեռնել։ Նորից փորձեք կամ վերագործարկեք Chromebook-ը։</translation>
 <translation id="1615335640928990664">Տվյալների օգտագործում <ph name="FRIENDLY_DATE" />-ից ի վեր</translation>
 <translation id="1618566998877964907">Օգտագործեք թեմա</translation>
 <translation id="1621067168122174824">Փորձարկել լիցքավորումը</translation>
@@ -370,7 +369,6 @@
 <translation id="2560876255701405320">Ձայնագրությունների ցանկ</translation>
 <translation id="2561093647892030937">կիտրոններ</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" />ը ստուգվում է…</translation>
-<translation id="2573178735329662769">Chromebook-ի բոլոր աուդիո հոսքերի ձայնագրում</translation>
 <translation id="2576253868710695442">Սա կզբաղեցնի մինչև 2 ԳԲ տարածք</translation>
 <translation id="2584547424703650812">Լուսապատկերներ</translation>
 <translation id="2584559707064218956">Ցանցը կարգավորելու համար անցեք Կարգավորումներ</translation>
@@ -849,7 +847,6 @@
 <translation id="4981003703840817201">կապույտ և վարդագույն</translation>
 <translation id="498186245079027698">Ստուգեք սկաները և նորից փորձեք։ Համոզվեք, որ սկանավորված ֆայլերը պահելու համար բավարար տարածք կա։</translation>
 <translation id="4982627662315910959">Դյուրանցումը հասանելի չէ։ Սեղմեք նոր դյուրանցում՝ օգտագործելով Shift ստեղնն ու ևս մեկ կերպափոխիչ ստեղն (Ctrl, Alt կամ <ph name="META_KEY" />)։</translation>
-<translation id="4983216687482551672">Աուդիո Chromebook-ում</translation>
 <translation id="4985509611418653372">Գործարկել</translation>
 <translation id="4987769320337599931">Հրապատ</translation>
 <translation id="4988526792673242964">Էջեր</translation>
@@ -875,9 +872,7 @@
 <translation id="5095761549884461003">Թարմացումը շարունակելու համար ձեր <ph name="DEVICE_NAME" /> սարքից անջատեք USB մալուխը և նորից միացրեք այն</translation>
 <translation id="5099354524039520280">վերև</translation>
 <translation id="5107243100836678918">Առանց «<ph name="META_KEY" />» ստեղնի դյուրանցումը կարող է հակասել որոշ հավելվածների դյուրանցումներին։ Կրկին սեղմեք այս դյուրանցումը՝ դրա օգտագործումը շարունակելու համար, կամ սեղմեք նոր դյուրանցում՝ օգտագործելով «<ph name="KEY" />» ստեղնը։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Հնարավոր չէ ներբեռնել <ph name="LANGUAGE_NAME" /> լեզվով գրադարձման մոդելը։ Նորից փորձեք կամ վերագործարկեք ձեր Chromebook-ը</translation>
 <translation id="5108781503443873320">Հոմանիշներ՝</translation>
-<translation id="5121677070210013200">Հնարավոր չէ ներբեռնել գրադարձման մոդելը։ Նորից փորձեք կամ վերագործարկեք ձեր Chromebook-ը։</translation>
 <translation id="5130848777448318809">պոնիներ</translation>
 <translation id="5137451382116112100">Լիաէկրան</translation>
 <translation id="5139813694804168398">չանհանգստացնել</translation>
@@ -920,6 +915,7 @@
 <translation id="5286263799730375393">ֆոնի լուսավորության գույնը</translation>
 <translation id="5292579816060236070">«Արևածագ» պաստառ</translation>
 <translation id="5294769550414936029">տարբերակ <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">միացնել/անջատել տեսախցիկի հասանելիությունը</translation>
 <translation id="5300814202279832142">Պատուհանը տեղափոխել աշխատասեղան</translation>
 <translation id="5302048478445481009">Լեզու</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" />-ի բացառիկ պաստառ</translation>
@@ -1032,6 +1028,7 @@
 <translation id="5896602941605730551">Նվագարկել</translation>
 <translation id="5901630391730855834">Դեղին</translation>
 <translation id="5903200662178656908">Սարքը ստեղնաշարի և մկնիկի համադրություն է։</translation>
+<translation id="5903822368221507416">Թաքցնել ներդիրները</translation>
 <translation id="5904994456462260490">Ավելացրեք նոր APN</translation>
 <translation id="590746845088109442">կատուներ</translation>
 <translation id="5907649332524363701">ստեղների գույնը</translation>
@@ -1087,7 +1084,6 @@
 <translation id="6122191549521593678">Առցանց</translation>
 <translation id="6122277663991249694">ChromeOS-ում ներածման եղանակի ծառայություն</translation>
 <translation id="6127426868813166163">սպիտակ</translation>
-<translation id="613049107179582049">Երբ Chromebook-ի աուդիոն միացված է, ձայնագրիչը գրանցում է այս սարքում նվագարկվող բոլոր ձայները</translation>
 <translation id="6136285399872347291">հետշարժ</translation>
 <translation id="6137614725462089991">կիբեռպանկ</translation>
 <translation id="6137767437444130246">Օգտատիրոջ հավաստագիր</translation>
@@ -1417,7 +1413,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB հպէկրան</translation>
 <translation id="757747079855995705">քար</translation>
-<translation id="7584853321964440104">Չհաջողվեց ներբեռնել։ Նորից փորձեք կամ վերագործարկեք ձեր Chromebook-ը։</translation>
 <translation id="7590883480672980941">Ներածման կարգավորումներ</translation>
 <translation id="7595982850646262331">Մնացել է <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">Ադմինիստրատորը (<ph name="MANAGER" />) սահմանափակել է <ph name="DEVICE_TYPE" /> սարքի օգտագործման ժամանակը։</translation>
@@ -1784,7 +1779,6 @@
 <translation id="9218016617214286986">Ցույց տալ հայտնի APN-ները</translation>
 <translation id="932327136139879170">Գլխավոր էջ</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Համոզվեք, որ ձեր խոսափողը միացված է կամ փորձեք վերագործարկել ձեր Chromebook-ը</translation>
 <translation id="945522503751344254">Կարծիք հայտնել</translation>
 <translation id="950520315903467048">Սահմանված ստեղն չկա «<ph name="DIRECTION" />» ուղղության համար։ <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Համեմատել ձայնագրության ընթացքում հնչող բոլոր ձայները, որպեսզի գրադարձումն արտացոլի, թե խոսողներից յուրաքանչյուրն ինչ և երբ է ասել</translation>

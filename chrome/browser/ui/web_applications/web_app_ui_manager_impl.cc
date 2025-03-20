@@ -63,6 +63,7 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/native_window_tracker.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -430,7 +431,7 @@ void WebAppUiManagerImpl::PresentUserUninstallDialog(
     UninstallCompleteCallback callback) {
   PresentUserUninstallDialog(
       app_id, uninstall_source,
-      parent_window ? parent_window->GetNativeWindow() : nullptr,
+      parent_window ? parent_window->GetNativeWindow() : gfx::NativeWindow(),
       std::move(callback), base::DoNothing());
 }
 

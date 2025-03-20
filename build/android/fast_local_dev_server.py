@@ -1006,7 +1006,7 @@ def _print_build_status_all():
         status += f' in {out_dir}'
       status += f'. Completed [{completed_tasks}/{total_tasks}].'
       if completed_tasks < total_tasks:
-        status += f' {len(active_tasks)} tasks currently executing'
+        status += f' {len(active_tasks)} task(s) currently executing'
     print(f'{build_id}: {status}')
     if all_active_tasks:
       total = len(all_active_tasks)
@@ -1034,14 +1034,14 @@ def _print_build_status(build_id):
     print('⚠️ No server running. Consult $OUTDIR/buildserver.log.0')
     return 0
   pending_tasks = build_info['pending_tasks']
-  completed_tasks = build_info['completed_tasks']
-  total_tasks = pending_tasks + completed_tasks
 
-  # Print nothing if we never got any tasks.
-  if completed_tasks:
-    print(f'⏩ Build Server Status: [{completed_tasks}/{total_tasks}]')
-    if pending_tasks:
-      print('⏩ To wait for jobs:', shlex.join([server_path, '--wait-for-idle']))
+  # Print nothing unless there are still pending tasks
+  if pending_tasks:
+    is_str = 'is' if pending_tasks == 1 else 'are'
+    job_str = 'job' if pending_tasks == 1 else 'jobs'
+    print(f'⏩ There {is_str} still {pending_tasks} static analysis {job_str}'
+          ' running in the background.')
+    print('⏩ To wait for them:', shlex.join([server_path, '--wait-for-idle']))
   return 0
 
 

@@ -37,7 +37,7 @@ ChromeWebContentsViewDelegateViewsMac::
 
 gfx::NativeWindow ChromeWebContentsViewDelegateViewsMac::GetNativeWindow() {
   Browser* browser = chrome::FindBrowserWithTab(web_contents_);
-  return browser ? browser->window()->GetNativeWindow() : nullptr;
+  return browser ? browser->window()->GetNativeWindow() : gfx::NativeWindow();
 }
 
 NSObject<RenderWidgetHostViewMacDelegate>*

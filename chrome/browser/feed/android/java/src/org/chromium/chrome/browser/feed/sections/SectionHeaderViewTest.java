@@ -19,10 +19,12 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.FeatureOverrides;
@@ -39,6 +41,7 @@ import org.chromium.components.feature_engagement.Tracker;
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({ChromeFeatureList.FEED_CONTAINMENT})
 public final class SectionHeaderViewTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private SectionHeaderView mSectionHeaderView;
     private Activity mActivity;
 
@@ -48,7 +51,6 @@ public final class SectionHeaderViewTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.setupActivity(Activity.class);
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         TrackerFactory.setTrackerForTests(mTracker);

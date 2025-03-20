@@ -26,9 +26,6 @@ class TestExtensionService : public extensions::ExtensionServiceInterface {
   ~TestExtensionService() override;
 
   // ExtensionServiceInterface implementation.
-  extensions::CorruptedExtensionReinstaller* corrupted_extension_reinstaller()
-      override;
-
   scoped_refptr<extensions::CrxInstaller> CreateUpdateInstaller(
       const extensions::CRXFileInfo& file,
       bool file_ownership_passed) override;

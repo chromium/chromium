@@ -806,6 +806,8 @@ void MaybeRecordOneDriveSyncMetrics() {
   base::UmaHistogramBoolean("Windows.OneDriveSyncState.Synced", status.synced);
   base::UmaHistogramBoolean("Windows.OneDriveSyncState.DesktopSynced",
                             status.desktop_synced);
+  base::UmaHistogramBoolean("Windows.OneDriveSyncState.DocumentsSynced",
+                            status.documents_synced);
 }
 
 #endif  // BUILDFLAG(IS_WIN)
@@ -971,7 +973,7 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
 
   // Log once here at browser start rather than at each renderer launch.
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial("ClangPGO",
-#if BUILDFLAG(CLANG_PGO)
+#if BUILDFLAG(CLANG_PGO_OPTIMIZED)
 #if BUILDFLAG(USE_THIN_LTO)
                                                             "EnabledWithThinLTO"
 #else
