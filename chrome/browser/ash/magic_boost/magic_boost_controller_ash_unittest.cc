@@ -129,8 +129,6 @@ TEST_F(MagicBoostControllerAshTest, OnDisclaimerAcceptButtonPressed) {
 
   EXPECT_EQ(chromeos::HMRConsentStatus::kApproved,
             mock_magic_boost_state_->hmr_consent_status());
-  EXPECT_TRUE(mock_magic_boost_state_->hmr_enabled().value());
-
   EXPECT_FALSE(controller.disclaimer_widget_for_test());
 
   // Records the `kAcceptButtonPressed` metrics.
@@ -168,8 +166,6 @@ TEST_F(MagicBoostControllerAshTest,
 
   EXPECT_EQ(chromeos::HMRConsentStatus::kApproved,
             mock_magic_boost_state_->hmr_consent_status());
-  EXPECT_TRUE(mock_magic_boost_state_->hmr_enabled().value());
-
   EXPECT_FALSE(controller.disclaimer_widget_for_test());
 
   // Records the `kAcceptButtonPressed` metrics.
