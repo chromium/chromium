@@ -419,6 +419,11 @@ bool IsZeroSuggestPrefetchingEnabledInContext(
 bool IsOnFocusZeroSuggestEnabledInContext(
     metrics::OmniboxEventProto::PageClassification page_classification);
 
+// Returns whether suggestion group headers should be hidden in the Omnibox
+// popup in the given context.
+bool IsHideSuggestionGroupHeadersEnabledInContext(
+    metrics::OmniboxEventProto::PageClassification page_classification);
+
 // Rich autocompletion.
 bool IsRichAutocompletionEnabled();
 bool RichAutocompletionShowAdditionalText();
