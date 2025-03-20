@@ -13,6 +13,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 class Profile;
+class ProfileAttributesStorage;
 
 namespace glic {
 
@@ -70,7 +71,8 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   // * The profile has completed the first run experience
   static bool ShouldShowSettingsPage(Profile* profile);
 
-  explicit GlicEnabling(Profile* profile);
+  explicit GlicEnabling(Profile* profile,
+                        ProfileAttributesStorage* profile_attributes_storage);
   ~GlicEnabling() override;
 
   // Returns true if the given profile is allowed to use glic. This means that
@@ -104,8 +106,10 @@ class GlicEnabling : public signin::IdentityManager::Observer {
 
   // Detects changes to capabilities.
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
-
+  void OnExtendedAccountInfoRemoved(const AccountInfo& info) override;
   void OnRefreshTokensLoaded() override;
+  void OnRefreshTokenRemovedForAccount(
+      const CoreAccountId& account_id) override;
 
   // Detects paused state.
   void OnErrorStateOfRefreshTokenUpdatedForAccount(
@@ -114,7 +118,10 @@ class GlicEnabling : public signin::IdentityManager::Observer {
       signin_metrics::SourceForRefreshTokenOperation token_operation_source)
       override;
 
+  void UpdateEnabledStatus();
+
   raw_ptr<Profile> profile_;
+  raw_ptr<ProfileAttributesStorage> profile_attributes_storage_;
   using EnableChangedCallbackList = base::RepeatingCallbackList<void()>;
   EnableChangedCallbackList enable_changed_callback_list_;
   PrefChangeRegistrar pref_registrar_;
