@@ -14,7 +14,7 @@ source_set("model") {
     "//components/commerce/core:feature_list",
     "//components/commerce/core:proto",
     "//components/optimization_guide/core:core",
-    "//components/payments/core:core",
+    "//components/payments/core:currency_formatter",
     "//components/prefs:prefs",
     "//components/unified_consent:unified_consent",
     "//ios/chrome/browser/optimization_guide/model",

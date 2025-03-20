@@ -852,6 +852,7 @@ static_library("browser") {
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/os_crypt/async/common",
+    "//components/payments/core:currency_formatter",
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/pref_registry",

@@ -5022,6 +5022,7 @@ static_library("ui") {
       "//components/payments/content",
       "//components/payments/content:utils",
       "//components/payments/core",
+      "//components/payments/core:currency_formatter",
       "//components/plus_addresses:prefs",
       "//components/power_bookmarks/common",
       "//components/power_bookmarks/core:core",
