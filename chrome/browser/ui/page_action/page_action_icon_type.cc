@@ -14,6 +14,16 @@ bool IsPageActionMigrated(PageActionIconType page_action) {
   switch (page_action) {
     case PageActionIconType::kLensOverlay:
       return features::kPageActionsMigrationLensOverlay.Get();
+    case PageActionIconType::kMemorySaver:
+      return features::kPageActionsMigrationMemorySaver.Get();
+    case PageActionIconType::kTranslate:
+      return features::kPageActionsMigrationTranslate.Get();
+    case PageActionIconType::kIntentPicker:
+      return features::kPageActionsMigrationIntentPicker.Get();
+    case PageActionIconType::kZoom:
+      return features::kPageActionsMigrationZoom.Get();
+    case PageActionIconType::kPaymentsOfferNotification:
+      return features::kPageActionsMigrationOfferNotification.Get();
     default:
       return false;
   }

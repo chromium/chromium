@@ -3403,7 +3403,7 @@ ShowTranslateBubbleResult BrowserView::ShowTranslateBubble(
   }
 
   views::Button* translate_icon;
-  if (base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+  if (IsPageActionMigrated(PageActionIconType::kTranslate)) {
     translate_icon =
         toolbar_button_provider()->GetPageActionView(kActionShowTranslate);
   } else {
@@ -3436,7 +3436,7 @@ void BrowserView::StartPartialTranslate(const std::string& source_language,
       ->SetTranslateEnabled(true);
 
   views::Button* translate_icon;
-  if (base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+  if (IsPageActionMigrated(PageActionIconType::kTranslate)) {
     translate_icon =
         toolbar_button_provider()->GetPageActionView(kActionShowTranslate);
   } else {

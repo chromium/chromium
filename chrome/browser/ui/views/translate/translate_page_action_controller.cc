@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -32,7 +33,7 @@ ChromeTranslateClient& GetTranslateClient(
 TranslatePageActionController::TranslatePageActionController(
     tabs::TabInterface& tab_interface)
     : PageActionObserver(kActionShowTranslate), tab_interface_(tab_interface) {
-  CHECK(base::FeatureList::IsEnabled(features::kPageActionsMigration));
+  CHECK(IsPageActionMigrated(PageActionIconType::kTranslate));
   translate_observation_.Observe(
       GetTranslateClient(tab_interface).translate_driver());
   will_discard_contents_subscription_ =

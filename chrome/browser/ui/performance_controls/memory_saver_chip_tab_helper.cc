@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_controller.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -149,7 +150,7 @@ void MemorySaverChipTabHelper::ComputeChipState(
 }
 
 void MemorySaverChipTabHelper::UpdatePageActionState() {
-  if (!base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+  if (!IsPageActionMigrated(PageActionIconType::kMemorySaver)) {
     return;
   }
 

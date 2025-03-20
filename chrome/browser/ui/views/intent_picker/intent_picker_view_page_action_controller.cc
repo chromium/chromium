@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -15,7 +16,7 @@
 IntentPickerViewPageActionController::IntentPickerViewPageActionController(
     tabs::TabInterface& tab_interface)
     : tab_interface_(tab_interface) {
-  CHECK(base::FeatureList::IsEnabled(features::kPageActionsMigration));
+  CHECK(IsPageActionMigrated(PageActionIconType::kIntentPicker));
 }
 
 void IntentPickerViewPageActionController::UpdatePageActionVisibility(

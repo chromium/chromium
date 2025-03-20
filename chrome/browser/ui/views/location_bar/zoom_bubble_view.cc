@@ -347,7 +347,7 @@ std::u16string ZoomBubbleView::GetAccessibleWindowTitle() const {
   ToolbarButtonProvider* provider =
       BrowserView::GetBrowserViewForBrowser(browser)->toolbar_button_provider();
 
-  if (base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+  if (IsPageActionMigrated(PageActionIconType::kZoom)) {
     return provider->GetPageActionView(kActionZoomNormal)->GetAccessibleName();
   }
 
