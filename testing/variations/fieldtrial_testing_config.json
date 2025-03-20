@@ -12350,39 +12350,6 @@
             ]
         }
     ],
-    "IOSSetUpListShortenedDuration": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "SetUpListDurationParam": "3"
-                    },
-                    "enable_features": [
-                        "SetUpListShortenedDuration"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IOSSetUpListWithoutSignInItem": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SetUpListWithoutSignInItem"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSSharedHighlightingColorChange": [
         {
             "platforms": [
