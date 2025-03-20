@@ -45,6 +45,15 @@ TEST_F(StyleUseCounterTest, CSSFunctions) {
   EXPECT_TRUE(IsCountedOnParsing(feature, "@function --f() {}"));
 }
 
+TEST_F(StyleUseCounterTest, CssIf) {
+  WebDXFeature feature = WebDXFeature::kDRAFT_CssIf;
+  EXPECT_FALSE(IsCountedOnParsing(feature, "div { top: var(--x); }"));
+  EXPECT_FALSE(IsCountedOnParsing(feature, "div { top: 10px; }"));
+  EXPECT_FALSE(IsCountedOnParsing(feature, "div { top: if(!!!); }"));
+  EXPECT_TRUE(
+      IsCountedOnParsing(feature, "div { top: if(style(--x: 10px): 20px); }"));
+}
+
 TEST_F(StyleUseCounterTest, ViewportUnitVariants) {
   WebDXFeature feature = WebDXFeature::kViewportUnitVariants;
   EXPECT_FALSE(IsCountedOnParsing(feature, "body { top: 10vh; }"));
