@@ -126,6 +126,12 @@ chromium-metrics-reviews@google.com.
   <variant name="OneDrive" summary="Microsoft OneDrive"/>
 </variants>
 
+<variants name="Enterprise_SkyVaultMigrationDestination">
+  <variant name="Delete" summary="Delete"/>
+  <variant name="GoogleDrive" summary="Google Drive"/>
+  <variant name="OneDrive" summary="Microsoft OneDrive"/>
+</variants>
+
 <variants name="Enterprise_UserSessionType">
   <variant name="AffiliatedUserSession"
       summary="The local user is affiliated to the organization."/>
@@ -3234,6 +3240,20 @@ chromium-metrics-reviews@google.com.
     the wrong state error occurred.
   </summary>
   <token key="CloudProvider" variants="Enterprise_SkyVaultCloudProvider"/>
+</histogram>
+
+<histogram
+    name="Enterprise.SkyVault.Migration.{MigrationDestination}.CleanupError"
+    enum="Boolean" expires_after="2025-10-01">
+  <owner>aidazolic@google.com</owner>
+  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
+  <summary>
+    Records whether an error occured while cleaning up local files and
+    directories, after migrating local files to {MigrationDestination}, in case
+    of cloud destination, or just deleting them.
+  </summary>
+  <token key="MigrationDestination"
+      variants="Enterprise_SkyVaultMigrationDestination"/>
 </histogram>
 
 <histogram name="Enterprise.SkyVault.{Action}.DeleteError" enum="Boolean"
