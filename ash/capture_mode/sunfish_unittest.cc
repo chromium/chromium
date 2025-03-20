@@ -541,17 +541,19 @@ TEST_F(SunfishTest, AccelEntryPointMetrics) {
       ScannerFeatureUserState::kSunfishSessionStartedFromDebugShortcut, 1);
 }
 
-// Tests that the accelerator entry point is a no-op when the enabled pref is
-// false.
+// Tests that the accelerator entry point is a no-op when Sunfish is disabled by
+// enterprise policy.
 TEST_F(SunfishEnabledScannerDisabledTest,
-       AccelEntryPointIsNoopIfEnabledPrefIsFalse) {
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      prefs::kSunfishEnabled, false);
+       AccelEntryPointIsNoopIfEnterpriseDisabled) {
+  auto* controller = CaptureModeController::Get();
+  ASSERT_TRUE(controller);
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  test_delegate->set_is_search_allowed_by_policy(false);
 
   PressAndReleaseKey(ui::VKEY_8,
                      ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN);
 
-  auto* controller = CaptureModeController::Get();
   EXPECT_FALSE(controller->IsActive());
 }
 
@@ -1620,12 +1622,13 @@ TEST_F(SunfishTest, SearchActionButton) {
 
 // Tests that the search action button is not shown in the default capture mode
 // if the user has disabled Sunfish.
-TEST_F(SunfishTest, SearchActionButtonNotShownIfEnabledPrefIsFalse) {
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      prefs::kSunfishEnabled, false);
+TEST_F(SunfishTest, SearchActionButtonNotShownIfEnterpriseDisabled) {
+  auto* controller = CaptureModeController::Get();
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  test_delegate->set_is_search_allowed_by_policy(false);
   // Start default capture mode *not* region selection.
   StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kImage);
-  auto* controller = CaptureModeController::Get();
   ASSERT_TRUE(controller->IsActive());
   auto* session =
       static_cast<CaptureModeSession*>(controller->capture_mode_session());
@@ -1889,19 +1892,20 @@ TEST_F(SunfishTest, FeedbackButtonShownInDefaultMode) {
   EXPECT_GT(feedback_button_layer->GetTargetOpacity(), 0.f);
 }
 
-// Tests that the feedback button is hidden in default capture mode if the
-// enabled pref is false.
+// Tests that the feedback button is hidden in default capture mode if Sunfish
+// is disabled by enterprise policy.
 TEST_F(SunfishEnabledScannerDisabledTest,
-       FeedbackButtonNotShownInDefaultModeIfEnabledPrefIsFalse) {
+       FeedbackButtonNotShownInDefaultModeIfEnterpriseDisabled) {
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      prefs::kSunfishEnabled, false);
+  auto* controller = CaptureModeController::Get();
+  ASSERT_TRUE(controller);
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  test_delegate->set_is_search_allowed_by_policy(false);
 
   StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
 
-  auto* controller = CaptureModeController::Get();
-  ASSERT_TRUE(controller);
   auto* session =
       static_cast<CaptureModeSession*>(controller->capture_mode_session());
   ASSERT_TRUE(session);
@@ -3567,10 +3571,10 @@ TEST_F(ScannerTest, PressingActionButtonsEndSession) {
 }
 
 // Tests that no text detection request is ever made in default capture mode if
-// the Sunfish enabled pref is false.
+// the Scanner enabled pref is false.
 TEST_F(ScannerTest, NoTextDetectionInDefaultModeIfEnabledPrefIsFalse) {
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      prefs::kSunfishEnabled, false);
+      prefs::kScannerEnabled, false);
   StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
 
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
