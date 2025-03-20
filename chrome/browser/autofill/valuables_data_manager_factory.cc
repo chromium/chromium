@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/autofill/passes_data_manager_factory.h"
+#include "chrome/browser/autofill/valuables_data_manager_factory.h"
 
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
-#include "components/autofill/core/browser/data_manager/passes/passes_data_manager.h"
+#include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -15,28 +15,29 @@
 namespace autofill {
 
 // static
-PassesDataManager* PassesDataManagerFactory::GetForProfile(Profile* profile) {
-  return static_cast<PassesDataManager*>(
+ValuablesDataManager* ValuablesDataManagerFactory::GetForProfile(
+    Profile* profile) {
+  return static_cast<ValuablesDataManager*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
 // static
-PassesDataManagerFactory* PassesDataManagerFactory::GetInstance() {
-  static base::NoDestructor<PassesDataManagerFactory> instance;
+ValuablesDataManagerFactory* ValuablesDataManagerFactory::GetInstance() {
+  static base::NoDestructor<ValuablesDataManagerFactory> instance;
   return instance.get();
 }
 
-PassesDataManagerFactory::PassesDataManagerFactory()
+ValuablesDataManagerFactory::ValuablesDataManagerFactory()
     : ProfileKeyedServiceFactory(
-          "AutofillPassesDataManager",
+          "AutofillValuablesDataManager",
           ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(WebDataServiceFactory::GetInstance());
 }
 
-PassesDataManagerFactory::~PassesDataManagerFactory() = default;
+ValuablesDataManagerFactory::~ValuablesDataManagerFactory() = default;
 
 std::unique_ptr<KeyedService>
-PassesDataManagerFactory::BuildServiceInstanceForBrowserContext(
+ValuablesDataManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (!base::FeatureList::IsEnabled(
           features::kAutofillEnableLoyaltyCardsFilling)) {
@@ -51,10 +52,10 @@ PassesDataManagerFactory::BuildServiceInstanceForBrowserContext(
     // WebDataServiceFactory::ServiceIsNULLWhileTesting() is true.
     return nullptr;
   }
-  return std::make_unique<PassesDataManager>(std::move(account_storage));
+  return std::make_unique<ValuablesDataManager>(std::move(account_storage));
 }
 
-bool PassesDataManagerFactory::ServiceIsCreatedWithBrowserContext() const {
+bool ValuablesDataManagerFactory::ServiceIsCreatedWithBrowserContext() const {
   return true;
 }
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/webdata/passes/loyalty_card_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/valuables/loyalty_card_sync_bridge.h"
 
 #include <memory>
 #include <string_view>
@@ -12,12 +12,12 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/autofill/core/browser/data_model/passes/loyalty_card.h"
+#include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
-#include "components/autofill/core/browser/webdata/passes/loyalty_card_sync_util.h"
-#include "components/autofill/core/browser/webdata/passes/passes_table.h"
+#include "components/autofill/core/browser/webdata/valuables/loyalty_card_sync_util.h"
+#include "components/autofill/core/browser/webdata/valuables/valuables_table.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/model/data_batch.h"
@@ -59,7 +59,7 @@ std::vector<LoyaltyCard> ExtractLoyaltyCardsFromDataBatch(
 
 class LoyaltyCardSyncBridgeTest : public testing::Test {
  public:
-  // Creates the `bridge()` and mocks its `PassesTable`.
+  // Creates the `bridge()` and mocks its `ValuablesTable`.
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_.AddTable(&table_);
@@ -113,7 +113,7 @@ class LoyaltyCardSyncBridgeTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   testing::NiceMock<MockAutofillWebDataBackend> backend_;
-  PassesTable table_;
+  ValuablesTable table_;
   AutofillSyncMetadataTable sync_metadata_table_;
   WebDatabase db_;
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
@@ -244,7 +244,7 @@ TEST_F(LoyaltyCardSyncBridgeTest, GetAllDataForDebugging) {
   EXPECT_THAT(loyalty_cards, UnorderedElementsAre(card1, card2));
 }
 
-// Tests that `ApplyDisableSyncChanges()` clears all data in PassesTable when
+// Tests that `ApplyDisableSyncChanges()` clears all data in ValuablesTable when
 // the data type gets disabled.
 TEST_F(LoyaltyCardSyncBridgeTest, ApplyDisableSyncChanges) {
   const LoyaltyCard card1 = TestLoyaltyCard(kId1);

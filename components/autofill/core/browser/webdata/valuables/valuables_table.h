@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PASSES_PASSES_TABLE_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PASSES_PASSES_TABLE_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_VALUABLES_VALUABLES_TABLE_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_VALUABLES_VALUABLES_TABLE_H_
 
 #include <optional>
 #include <string_view>
 #include <vector>
 
-#include "components/autofill/core/browser/data_model/passes/loyalty_card.h"
+#include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/webdata/common/web_database_table.h"
 
 class WebDatabase;
@@ -32,17 +32,17 @@ namespace autofill {
 //   program_logo                 The url of the logo icon for the card.
 //   unmasked_loyalty_card_suffix A string representation of the unmasked
 //                                loyalty card number suffix.
-class PassesTable : public WebDatabaseTable {
+class ValuablesTable : public WebDatabaseTable {
  public:
-  PassesTable();
+  ValuablesTable();
 
-  PassesTable(const PassesTable&) = delete;
-  PassesTable& operator=(const PassesTable&) = delete;
+  ValuablesTable(const ValuablesTable&) = delete;
+  ValuablesTable& operator=(const ValuablesTable&) = delete;
 
-  ~PassesTable() override;
+  ~ValuablesTable() override;
 
-  // Retrieves the PassesTable* owned by `db`.
-  static PassesTable* FromWebDatabase(WebDatabase* db);
+  // Retrieves the ValuablesTable* owned by `db`.
+  static ValuablesTable* FromWebDatabase(WebDatabase* db);
 
   // WebDatabaseTable:
   WebDatabaseTable::TypeKey GetTypeKey() const override;
@@ -78,4 +78,4 @@ class PassesTable : public WebDatabaseTable {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PASSES_PASSES_TABLE_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_VALUABLES_VALUABLES_TABLE_H_

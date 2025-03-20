@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/webdata/passes/passes_table.h"
+#include "components/autofill/core/browser/webdata/valuables/valuables_table.h"
 
 #include <optional>
 #include <string_view>
 
-#include "components/autofill/core/browser/data_model/passes/loyalty_card.h"
+#include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/webdata/autofill_table_utils.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/database.h"
@@ -48,24 +48,24 @@ WebDatabaseTable::TypeKey GetKey() {
 
 }  // namespace
 
-PassesTable::PassesTable() = default;
+ValuablesTable::ValuablesTable() = default;
 
-PassesTable::~PassesTable() = default;
+ValuablesTable::~ValuablesTable() = default;
 
 // static
-PassesTable* PassesTable::FromWebDatabase(WebDatabase* db) {
-  return static_cast<PassesTable*>(db->GetTable(GetKey()));
+ValuablesTable* ValuablesTable::FromWebDatabase(WebDatabase* db) {
+  return static_cast<ValuablesTable*>(db->GetTable(GetKey()));
 }
 
-WebDatabaseTable::TypeKey PassesTable::GetTypeKey() const {
+WebDatabaseTable::TypeKey ValuablesTable::GetTypeKey() const {
   return GetKey();
 }
 
-bool PassesTable::CreateTablesIfNecessary() {
+bool ValuablesTable::CreateTablesIfNecessary() {
   return InitLoyaltyCardsTable();
 }
 
-bool PassesTable::InitLoyaltyCardsTable() {
+bool ValuablesTable::InitLoyaltyCardsTable() {
   return CreateTableIfNotExists(
       db(), kLoyaltyCardsTable,
       {{kLoyaltyCardGuid, "TEXT PRIMARY KEY NOT NULL"},
@@ -75,13 +75,13 @@ bool PassesTable::InitLoyaltyCardsTable() {
        {kUnmaskedLoyaltyCardSuffix, "TEXT NOT NULL"}});
 }
 
-bool PassesTable::MigrateToVersion(int version,
-                                   bool* update_compatible_version) {
+bool ValuablesTable::MigrateToVersion(int version,
+                                      bool* update_compatible_version) {
   // No migrations exist at this point.
   return true;
 }
 
-std::vector<LoyaltyCard> PassesTable::GetLoyaltyCards() const {
+std::vector<LoyaltyCard> ValuablesTable::GetLoyaltyCards() const {
   sql::Statement query;
   SelectBuilder(
       db(), query, kLoyaltyCardsTable,
@@ -96,7 +96,7 @@ std::vector<LoyaltyCard> PassesTable::GetLoyaltyCards() const {
   return result;
 }
 
-bool PassesTable::AddOrUpdateLoyaltyCard(
+bool ValuablesTable::AddOrUpdateLoyaltyCard(
     const LoyaltyCard& loyalty_card) const {
   if (!loyalty_card.IsValid()) {
     // Don't add loyalty cards with non-empty invalid program logo URLs.
@@ -117,7 +117,7 @@ bool PassesTable::AddOrUpdateLoyaltyCard(
   return query.Run();
 }
 
-std::optional<LoyaltyCard> PassesTable::GetLoyaltyCardById(
+std::optional<LoyaltyCard> ValuablesTable::GetLoyaltyCardById(
     std::string_view loyalty_card_id) const {
   sql::Statement query;
   if (SelectByGuid(
@@ -130,12 +130,12 @@ std::optional<LoyaltyCard> PassesTable::GetLoyaltyCardById(
   return std::nullopt;
 }
 
-bool PassesTable::RemoveLoyaltyCard(std::string_view loyalty_card_id) {
+bool ValuablesTable::RemoveLoyaltyCard(std::string_view loyalty_card_id) {
   return DeleteWhereColumnEq(db(), kLoyaltyCardsTable, kLoyaltyCardGuid,
                              loyalty_card_id);
 }
 
-bool PassesTable::ClearLoyaltyCards() {
+bool ValuablesTable::ClearLoyaltyCards() {
   return Delete(db(), kLoyaltyCardsTable);
 }
 

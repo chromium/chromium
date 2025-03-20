@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_PASSES_PASSES_DATA_MANAGER_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_PASSES_PASSES_DATA_MANAGER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_VALUABLES_VALUABLES_DATA_MANAGER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_VALUABLES_VALUABLES_DATA_MANAGER_H_
 
 #include <string_view>
 #include <vector>
@@ -11,7 +11,7 @@
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
-#include "components/autofill/core/browser/data_model/passes/loyalty_card.h"
+#include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -26,19 +26,19 @@ namespace autofill {
 // A shared instance of this service is created for regular and off-the-record
 // profiles. Future modifications to this service must make sure that no data is
 // persisted for the off-the-record profile.
-class PassesDataManager : public KeyedService,
-                          public AutofillWebDataServiceObserverOnUISequence {
+class ValuablesDataManager : public KeyedService,
+                             public AutofillWebDataServiceObserverOnUISequence {
  public:
-  explicit PassesDataManager(
+  explicit ValuablesDataManager(
       scoped_refptr<AutofillWebDataService> webdata_service);
-  PassesDataManager(const PassesDataManager&) = delete;
-  PassesDataManager& operator=(const PassesDataManager&) = delete;
-  ~PassesDataManager() override;
+  ValuablesDataManager(const ValuablesDataManager&) = delete;
+  ValuablesDataManager& operator=(const ValuablesDataManager&) = delete;
+  ~ValuablesDataManager() override;
 
   // Returns the cached loyalty cards from the database.
   //
   // The cache is populated asynchronously after the construction of this
-  // `PassesDataManager`. Returns an empty span until the population is
+  // `ValuablesDataManager`. Returns an empty span until the population is
   // finished.
   base::span<const LoyaltyCard> GetLoyaltyCards() const;
 
@@ -60,9 +60,9 @@ class PassesDataManager : public KeyedService,
   // The result of the last successful `LoadLoyaltyCards()` query.
   std::vector<LoyaltyCard> loyalty_cards_;
 
-  base::WeakPtrFactory<PassesDataManager> weak_ptr_factory_{this};
+  base::WeakPtrFactory<ValuablesDataManager> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_PASSES_PASSES_DATA_MANAGER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_VALUABLES_VALUABLES_DATA_MANAGER_H_

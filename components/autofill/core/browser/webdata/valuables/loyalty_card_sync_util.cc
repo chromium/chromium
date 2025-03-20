@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/webdata/passes/loyalty_card_sync_util.h"
+#include "components/autofill/core/browser/webdata/valuables/loyalty_card_sync_util.h"
 
 #include "base/uuid.h"
 #include "components/sync/protocol/autofill_loyalty_card_specifics.pb.h"

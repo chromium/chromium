@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_AUTOFILL_PASSES_DATA_MANAGER_FACTORY_H_
-#define CHROME_BROWSER_AUTOFILL_PASSES_DATA_MANAGER_FACTORY_H_
+#ifndef CHROME_BROWSER_AUTOFILL_VALUABLES_DATA_MANAGER_FACTORY_H_
+#define CHROME_BROWSER_AUTOFILL_VALUABLES_DATA_MANAGER_FACTORY_H_
 
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
@@ -17,22 +17,22 @@ class Profile;
 
 namespace autofill {
 
-class PassesDataManager;
+class ValuablesDataManager;
 
-class PassesDataManagerFactory : public ProfileKeyedServiceFactory {
+class ValuablesDataManagerFactory : public ProfileKeyedServiceFactory {
  public:
-  static PassesDataManager* GetForProfile(Profile* profile);
-  static PassesDataManagerFactory* GetInstance();
+  static ValuablesDataManager* GetForProfile(Profile* profile);
+  static ValuablesDataManagerFactory* GetInstance();
 
  protected:
   // ProfileKeyedServiceFactory:
   bool ServiceIsCreatedWithBrowserContext() const override;
 
  private:
-  friend base::NoDestructor<PassesDataManagerFactory>;
+  friend base::NoDestructor<ValuablesDataManagerFactory>;
 
-  PassesDataManagerFactory();
-  ~PassesDataManagerFactory() override;
+  ValuablesDataManagerFactory();
+  ~ValuablesDataManagerFactory() override;
 
   // BrowserContextKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
@@ -41,4 +41,4 @@ class PassesDataManagerFactory : public ProfileKeyedServiceFactory {
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_AUTOFILL_PASSES_DATA_MANAGER_FACTORY_H_
+#endif  // CHROME_BROWSER_AUTOFILL_VALUABLES_DATA_MANAGER_FACTORY_H_

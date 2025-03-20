@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PASSES_LOYALTY_CARD_SYNC_UTIL_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PASSES_LOYALTY_CARD_SYNC_UTIL_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_VALUABLES_LOYALTY_CARD_SYNC_UTIL_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_VALUABLES_LOYALTY_CARD_SYNC_UTIL_H_
 
-#include "components/autofill/core/browser/data_model/passes/loyalty_card.h"
+#include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/sync/protocol/autofill_loyalty_card_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
 
@@ -36,4 +36,4 @@ sync_pb::AutofillLoyaltyCardSpecifics TrimLoyaltyCardSpecificsDataForCaching(
     const sync_pb::AutofillLoyaltyCardSpecifics& specifics);
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PASSES_LOYALTY_CARD_SYNC_UTIL_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_VALUABLES_LOYALTY_CARD_SYNC_UTIL_H_

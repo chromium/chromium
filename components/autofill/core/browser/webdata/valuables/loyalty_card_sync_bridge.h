@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PASSES_LOYALTY_CARD_SYNC_BRIDGE_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PASSES_LOYALTY_CARD_SYNC_BRIDGE_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_VALUABLES_LOYALTY_CARD_SYNC_BRIDGE_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_VALUABLES_LOYALTY_CARD_SYNC_BRIDGE_H_
 
 #include <memory>
 #include <optional>
@@ -17,7 +17,7 @@
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
-#include "components/autofill/core/browser/webdata/passes/passes_table.h"
+#include "components/autofill/core/browser/webdata/valuables/valuables_table.h"
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/entity_change.h"
@@ -71,19 +71,19 @@ class LoyaltyCardSyncBridge : public base::SupportsUserData::Data,
       const sync_pb::EntitySpecifics& entity_specifics) const override;
 
  private:
-  // Synchronously load sync metadata from the `PassesTable` and pass it to
+  // Synchronously load sync metadata from the `ValuablesTable` and pass it to
   // the processor.
   void LoadMetadata();
 
   bool SyncMetadataCacheContainsSupportedFields(
       const syncer::EntityMetadataMap& metadata_map) const;
 
-  // Returns the `PassesTable` associated with the `web_data_backend_`.
-  PassesTable* GetPassesTable();
+  // Returns the `ValuablesTable` associated with the `web_data_backend_`.
+  ValuablesTable* GetValuablesTable();
 
   AutofillSyncMetadataTable* GetSyncMetadataStore();
 
-  // Queries all loyalty cards from `GetPassesTable()`.
+  // Queries all loyalty cards from `GetValuablesTable()`.
   // These cards are converted to their `AutofillLoyaltyCardSpecifics`
   // representation and returned as a `syncer::MutableDataBatch`.
   std::unique_ptr<syncer::MutableDataBatch> GetData();
@@ -99,4 +99,4 @@ class LoyaltyCardSyncBridge : public base::SupportsUserData::Data,
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PASSES_LOYALTY_CARD_SYNC_BRIDGE_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_VALUABLES_LOYALTY_CARD_SYNC_BRIDGE_H_

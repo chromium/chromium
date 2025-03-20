@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/data_manager/passes/passes_data_manager.h"
+#include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 
-#include "components/autofill/core/browser/data_model/passes/loyalty_card.h"
+#include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/webdata/common/web_data_results.h"
 
 namespace autofill {
 
-PassesDataManager::PassesDataManager(
+ValuablesDataManager::ValuablesDataManager(
     scoped_refptr<AutofillWebDataService> webdata_service)
     : webdata_service_(std::move(webdata_service)) {
   CHECK(webdata_service_);
@@ -18,18 +18,18 @@ PassesDataManager::PassesDataManager(
   LoadLoyaltyCards();
 }
 
-PassesDataManager::~PassesDataManager() = default;
+ValuablesDataManager::~ValuablesDataManager() = default;
 
-base::span<const LoyaltyCard> PassesDataManager::GetLoyaltyCards() const {
+base::span<const LoyaltyCard> ValuablesDataManager::GetLoyaltyCards() const {
   return loyalty_cards_;
 }
 
-void PassesDataManager::LoadLoyaltyCards() {
+void ValuablesDataManager::LoadLoyaltyCards() {
   if (pending_query_) {
     webdata_service_->CancelRequest(pending_query_);
   }
   pending_query_ = webdata_service_->GetLoyaltyCards(base::BindOnce(
-      [](base::WeakPtr<PassesDataManager> self,
+      [](base::WeakPtr<ValuablesDataManager> self,
          WebDataServiceBase::Handle handle,
          std::unique_ptr<WDTypedResult> result) {
         CHECK_EQ(handle, self->pending_query_);
@@ -44,7 +44,7 @@ void PassesDataManager::LoadLoyaltyCards() {
       weak_ptr_factory_.GetWeakPtr()));
 }
 
-void PassesDataManager::OnAutofillChangedBySync(syncer::DataType data_type) {
+void ValuablesDataManager::OnAutofillChangedBySync(syncer::DataType data_type) {
   if (data_type == syncer::DataType::AUTOFILL_LOYALTY_CARD) {
     LoadLoyaltyCards();
   }

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/test_utils/passes_data_test_utils.h"
+#include "components/autofill/core/browser/test_utils/valuables_data_test_utils.h"
 
-#include "components/autofill/core/browser/data_model/passes/loyalty_card.h"
+#include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "url/gurl.h"
 
 namespace autofill::test {

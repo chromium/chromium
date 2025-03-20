@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/webdata/passes/loyalty_card_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/valuables/loyalty_card_sync_bridge.h"
 
 #include <algorithm>
 #include <optional>
 
 #include "base/check.h"
-#include "components/autofill/core/browser/data_model/passes/loyalty_card.h"
+#include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
-#include "components/autofill/core/browser/webdata/passes/loyalty_card_sync_util.h"
+#include "components/autofill/core/browser/webdata/valuables/loyalty_card_sync_util.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/features.h"
@@ -34,7 +34,7 @@ LoyaltyCardSyncBridge::LoyaltyCardSyncBridge(
     : DataTypeSyncBridge(std::move(change_processor)),
       web_data_backend_(backend) {
   if (!web_data_backend_ || !web_data_backend_->GetDatabase() ||
-      !GetPassesTable()) {
+      !GetValuablesTable()) {
     DataTypeSyncBridge::change_processor()->ReportError(
         {FROM_HERE, "Failed to load AutofillWebDatabase."});
     return;
@@ -90,7 +90,7 @@ std::optional<syncer::ModelError> LoyaltyCardSyncBridge::MergeFullSyncData(
   auto transaction = web_data_backend_->GetDatabase()->AcquireTransaction();
 
   // Remove all stored loyalty cards and replace them with new cards.
-  if (!GetPassesTable()->ClearLoyaltyCards()) {
+  if (!GetValuablesTable()->ClearLoyaltyCards()) {
     return syncer::ModelError(FROM_HERE,
                               "Failed to delete loyalty cards from table.");
   }
@@ -105,7 +105,7 @@ std::optional<syncer::ModelError> LoyaltyCardSyncBridge::MergeFullSyncData(
         // Since the specifics are guaranteed to be valid by
         // `IsEntityDataValid()`, the conversion will succeed.
         DCHECK(remote);
-        if (!GetPassesTable()->AddOrUpdateLoyaltyCard(std::move(*remote))) {
+        if (!GetValuablesTable()->AddOrUpdateLoyaltyCard(std::move(*remote))) {
           return syncer::ModelError(FROM_HERE,
                                     "Failed to add loyalty card to the table.");
         }
@@ -145,7 +145,7 @@ LoyaltyCardSyncBridge::ApplyIncrementalSyncChanges(
 
 std::unique_ptr<syncer::MutableDataBatch> LoyaltyCardSyncBridge::GetData() {
   auto batch = std::make_unique<syncer::MutableDataBatch>();
-  for (const LoyaltyCard& card : GetPassesTable()->GetLoyaltyCards()) {
+  for (const LoyaltyCard& card : GetValuablesTable()->GetLoyaltyCards()) {
     const std::string& id = card.loyalty_card_id;
     batch->Put(id, CreateEntityDataFromLoyaltyCard(card));
   }
@@ -186,7 +186,7 @@ void LoyaltyCardSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   auto transaction = web_data_backend_->GetDatabase()->AcquireTransaction();
 
-  if (!GetPassesTable()->ClearLoyaltyCards()) {
+  if (!GetValuablesTable()->ClearLoyaltyCards()) {
     change_processor()->ReportError(
         {FROM_HERE, "Failed to delete loyalty cards from table."});
     return;
@@ -274,8 +274,8 @@ void LoyaltyCardSyncBridge::LoadMetadata() {
   change_processor()->ModelReadyToSync(std::move(batch));
 }
 
-PassesTable* LoyaltyCardSyncBridge::GetPassesTable() {
-  return PassesTable::FromWebDatabase(web_data_backend_->GetDatabase());
+ValuablesTable* LoyaltyCardSyncBridge::GetValuablesTable() {
+  return ValuablesTable::FromWebDatabase(web_data_backend_->GetDatabase());
 }
 
 }  // namespace autofill
