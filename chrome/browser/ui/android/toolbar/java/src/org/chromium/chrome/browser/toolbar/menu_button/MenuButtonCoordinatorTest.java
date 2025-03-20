@@ -12,10 +12,12 @@ import android.content.res.Resources;
 import android.widget.ImageButton;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -37,6 +39,7 @@ import java.lang.ref.WeakReference;
 @LooperMode(LooperMode.Mode.LEGACY)
 public class MenuButtonCoordinatorTest {
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;
     @Mock private Activity mActivity;
     @Mock private MenuButtonCoordinator.SetFocusFunction mFocusFunction;
@@ -58,7 +61,6 @@ public class MenuButtonCoordinatorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         doReturn(mAppMenuHandler).when(mAppMenuCoordinator).getAppMenuHandler();
         doReturn(mAppMenuButtonHelper).when(mAppMenuHandler).createAppMenuButtonHelper();
         doReturn(mAppMenuPropertiesDelegate)

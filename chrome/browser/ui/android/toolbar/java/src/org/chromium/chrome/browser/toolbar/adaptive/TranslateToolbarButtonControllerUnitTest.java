@@ -12,10 +12,12 @@ import android.graphics.drawable.Drawable;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -35,6 +37,7 @@ import org.chromium.url.JUnitTestGURLs;
 @Config(manifest = Config.NONE)
 public class TranslateToolbarButtonControllerUnitTest {
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private WebContents mWebContents;
     @Mock private Tab mTab;
     @Mock private Drawable mDrawable;
@@ -46,7 +49,6 @@ public class TranslateToolbarButtonControllerUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         TranslateBridgeJni.setInstanceForTesting(mMockTranslateBridge);
         mActionTester = new UserActionTester();
 
