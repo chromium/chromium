@@ -82,6 +82,10 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
   void SetCoordinatorForTesting(
       std::unique_ptr<MigrationCoordinator> coordinator);
 
+  // Injects a mock FilesCleanupHandler for tests.
+  void SetCleanupHandlerForTesting(
+      base::WeakPtr<chromeos::FilesCleanupHandler> cleanup_handler);
+
  private:
   // policy::local_user_files::Observer overrides:
   void OnLocalUserFilesPolicyChanged() override;
@@ -153,6 +157,10 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
   // Sets and stores the state on the device.
   void SetState(State new_state);
 
+  // Resets all stored prefs, like the state and start time, in case migration
+  // is stopped.
+  void ResetMigrationPrefs();
+
   // Notifies the observers that migration succeeded.
   void NotifySuccess();
 
@@ -196,6 +204,9 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
 
   // Number of times the entire upload failed and was retried.
   int current_retry_count_;
+
+  base::WeakPtr<chromeos::FilesCleanupHandler> cleanup_handler_for_testing_ =
+      nullptr;
 
   base::WeakPtrFactory<LocalFilesMigrationManager> weak_factory_{this};
 };

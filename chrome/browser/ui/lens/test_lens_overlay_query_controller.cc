@@ -182,7 +182,8 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
   } else if (request->has_objects_request() &&
              !request->objects_request().has_image_data() &&
              request->objects_request().has_payload() &&
-             request->objects_request().payload().has_partial_pdf_document()) {
+             request->objects_request().payload().request_type() ==
+                 lens::RequestType::REQUEST_TYPE_EARLY_PARTIAL_PDF) {
     // Partial page content upload request.
     num_partial_page_content_requests_sent_++;
     sent_partial_page_content_objects_request_.CopyFrom(
@@ -190,8 +191,18 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
     // The server doesn't send a response to this request, so no need to set
     // the response string to something meaningful.
     fake_server_response_string = "";
-    last_sent_partial_content_.CopyFrom(
-        request->objects_request().payload().partial_pdf_document());
+    if (request->objects_request().payload().has_partial_pdf_document()) {
+      last_sent_partial_content_.CopyFrom(
+          request->objects_request().payload().partial_pdf_document());
+    } else {
+      lens::LensOverlayDocument partial_pdf_document;
+      partial_pdf_document.ParseFromString(request->objects_request()
+                                               .payload()
+                                               .content()
+                                               .content_data(0)
+                                               .data());
+      last_sent_partial_content_.CopyFrom(partial_pdf_document);
+    }
   } else if (request->has_objects_request() &&
              !request->objects_request().has_image_data() &&
              request->objects_request().has_payload()) {

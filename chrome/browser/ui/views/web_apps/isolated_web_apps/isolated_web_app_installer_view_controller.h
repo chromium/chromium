@@ -116,7 +116,7 @@ class IsolatedWebAppInstallerViewController
       std::unique_ptr<views::View> contents_view);
 
   std::string instance_id_;
-  gfx::NativeWindow window_ = nullptr;
+  gfx::NativeWindow window_ = gfx::NativeWindow();
   gfx::ImageSkia icon_ = gfx::ImageSkia();
 
   raw_ptr<Profile> profile_ = nullptr;

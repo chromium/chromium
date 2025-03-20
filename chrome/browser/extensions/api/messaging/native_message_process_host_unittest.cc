@@ -50,6 +50,7 @@
 #include "extensions/common/features/feature_channel.h"
 #include "net/base/file_stream.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/native_widget_types.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include "base/files/file_descriptor_watcher_posix.h"
@@ -295,7 +296,7 @@ TEST_F(NativeMessagingTest, EchoConnect) {
   ASSERT_NO_FATAL_FAILURE(test_host.RegisterTestHost(false));
   std::string error_message;
   native_message_host_ = NativeMessageProcessHost::Create(
-      &profile_, NULL, ScopedTestNativeMessagingHost::kExtensionId,
+      &profile_, gfx::NativeView(), ScopedTestNativeMessagingHost::kExtensionId,
       ScopedTestNativeMessagingHost::kHostName, false, &error_message);
   native_message_host_->Start(this);
   ASSERT_TRUE(native_message_host_);
@@ -359,7 +360,7 @@ TEST_F(NativeMessagingTest, ReconnectArgs) {
   ASSERT_NO_FATAL_FAILURE(test_host.RegisterTestHost(false));
   std::string error_message;
   native_message_host_ = NativeMessageProcessHost::Create(
-      &profile_, NULL, ScopedTestNativeMessagingHost::kExtensionId,
+      &profile_, gfx::NativeView(), ScopedTestNativeMessagingHost::kExtensionId,
       ScopedTestNativeMessagingHost::
           kSupportsNativeInitiatedConnectionsHostName,
       false, &error_message);
@@ -413,7 +414,7 @@ TEST_F(NativeMessagingTest, ReconnectArgs_Disabled) {
   ASSERT_NO_FATAL_FAILURE(test_host.RegisterTestHost(false));
   std::string error_message;
   native_message_host_ = NativeMessageProcessHost::Create(
-      &profile_, NULL, ScopedTestNativeMessagingHost::kExtensionId,
+      &profile_, gfx::NativeView(), ScopedTestNativeMessagingHost::kExtensionId,
       ScopedTestNativeMessagingHost::
           kSupportsNativeInitiatedConnectionsHostName,
       false, &error_message);
@@ -441,7 +442,7 @@ TEST_F(NativeMessagingTest, ReconnectArgsIfNativeConnectionDisallowed) {
   ASSERT_NO_FATAL_FAILURE(test_host.RegisterTestHost(false));
   std::string error_message;
   native_message_host_ = NativeMessageProcessHost::Create(
-      &profile_, NULL, ScopedTestNativeMessagingHost::kExtensionId,
+      &profile_, gfx::NativeView(), ScopedTestNativeMessagingHost::kExtensionId,
       ScopedTestNativeMessagingHost::
           kSupportsNativeInitiatedConnectionsHostName,
       false, &error_message);
@@ -470,7 +471,7 @@ TEST_F(NativeMessagingTest, UserLevel) {
 
   std::string error_message;
   native_message_host_ = NativeMessageProcessHost::Create(
-      &profile_, NULL, ScopedTestNativeMessagingHost::kExtensionId,
+      &profile_, gfx::NativeView(), ScopedTestNativeMessagingHost::kExtensionId,
       ScopedTestNativeMessagingHost::kHostName, true, &error_message);
   native_message_host_->Start(this);
   ASSERT_TRUE(native_message_host_);
@@ -488,7 +489,7 @@ TEST_F(NativeMessagingTest, DisallowUserLevel) {
 
   std::string error_message;
   native_message_host_ = NativeMessageProcessHost::Create(
-      &profile_, NULL, ScopedTestNativeMessagingHost::kExtensionId,
+      &profile_, gfx::NativeView(), ScopedTestNativeMessagingHost::kExtensionId,
       ScopedTestNativeMessagingHost::kHostName, false, &error_message);
   native_message_host_->Start(this);
   ASSERT_TRUE(native_message_host_);

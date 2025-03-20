@@ -14,8 +14,6 @@ found in the LICENSE file.
   <RelativeLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:focusable="true"
-      android:focusableInTouchMode="true"
       android:importantForAccessibility="no"
       android:textDirection="locale">
 
@@ -66,40 +64,13 @@ found in the LICENSE file.
 
     </LinearLayout>
 
-    <!-- TODO(crbug.com/40267973): Use localized strings. -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/nickname_input_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="6dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginStart="21dp"
-        android:layout_marginEnd="21dp"
-        android:layout_below="@id/address_data"
-        android:paddingStart="0dp"
-        android:paddingEnd="0dp"
-        android:hint="Add a label"
-        app:placeholderText="Home, Work, etc."
-        app:placeholderTextAppearance="@style/TextAppearance.TextMedium.Secondary"
-        tools:ignore="HardcodedText">
-
-      <com.google.android.material.textfield.TextInputEditText
-          android:id="@+id/nickname_input"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:imeOptions="flagNoExtractUi"
-          android:minHeight="48dp"
-          android:singleLine="true"
-          android:textAppearance="@style/TextAppearance.TextLarge.Secondary" />
-    </com.google.android.material.textfield.TextInputLayout>
-
     <TextView
         android:id="@+id/autofill_address_profile_prompt_record_type_notice"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/address_prompt_end_margin"
         android:layout_marginTop="20dp"
-        android:layout_below="@+id/nickname_input_layout"
+        android:layout_below="@id/address_data"
         android:layout_marginStart="@dimen/dialog_padding_sides"
         android:breakStrategy="balanced"
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary"

@@ -401,11 +401,6 @@ void InProcessContextFactory::RemoveCompositor(Compositor* compositor) {
   per_compositor_data_.erase(it);
 }
 
-gpu::GpuMemoryBufferManager*
-InProcessContextFactory::GetGpuMemoryBufferManager() {
-  return &gpu_memory_buffer_manager_;
-}
-
 cc::TaskGraphRunner* InProcessContextFactory::GetTaskGraphRunner() {
   return &task_graph_runner_;
 }

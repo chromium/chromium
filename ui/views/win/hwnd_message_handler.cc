@@ -300,6 +300,10 @@ constexpr auto kTouchDownContextResetTimeout = base::Milliseconds(500);
 // same location as the cursor.
 constexpr int kSynthesizedMouseMessagesTimeDifference = 500;
 
+// TODO(dloehr): As of SDK version 10.0.26100.0, IsWindowArranged is now
+// declared in a header file, so we no longer need this version. Remove this
+// code once the SDK update is finalized.
+#ifndef NTDDI_WIN11_GE
 // Returns true if the window is arranged via Snap. For example, the browser
 // window is snapped via buttons shown when the mouse is hovered over window
 // maximize button.
@@ -312,6 +316,7 @@ bool IsWindowArranged(HWND window) {
           base::win::GetUser32FunctionPointer("IsWindowArranged"));
   return is_window_arranged_func ? is_window_arranged_func(window) : false;
 }
+#endif  // NTDDI_WIN11_GE
 
 }  // namespace
 
@@ -436,6 +441,7 @@ HWNDMessageHandler::HWNDMessageHandler(HWNDMessageHandlerDelegate* delegate,
       menu_depth_(0),
       id_generator_(0),
       pen_processor_(&id_generator_, true),
+      user_resize_detector_(delegate),
       touch_down_contexts_(0),
       last_mouse_hwheel_time_(0),
       dwm_transition_desired_(false),
@@ -1920,6 +1926,7 @@ void HWNDMessageHandler::OnEnterMenuLoop(BOOL from_track_popup_menu) {
 }
 
 void HWNDMessageHandler::OnEnterSizeMove() {
+  user_resize_detector_.OnEnterSizeMove();
   delegate_->HandleBeginWMSizeMove();
   SetMsgHandled(FALSE);
 }
@@ -1950,6 +1957,7 @@ void HWNDMessageHandler::OnExitMenuLoop(BOOL is_shortcut_menu) {
 }
 
 void HWNDMessageHandler::OnExitSizeMove() {
+  user_resize_detector_.OnExitSizeMove();
   delegate_->HandleEndWMSizeMove();
   SetMsgHandled(FALSE);
   // If the window was moved to a monitor which has a fullscreen window active,
@@ -2142,9 +2150,6 @@ LRESULT HWNDMessageHandler::OnMouseActivate(UINT message,
   if (delegate_->HasNonClientView()) {
     if (delegate_->CanActivate()) {
       return MA_ACTIVATE;
-    }
-    if (delegate_->WantsMouseEventsWhenInactive()) {
-      return MA_NOACTIVATE;
     }
     return MA_NOACTIVATEANDEAT;
   }
@@ -2770,6 +2775,8 @@ void HWNDMessageHandler::OnSize(UINT param, const gfx::Size& size) {
 }
 
 void HWNDMessageHandler::OnSizing(UINT param, RECT* rect) {
+  user_resize_detector_.OnSizing();
+
   // If the aspect ratio was not specified for the window, do nothing.
   if (!aspect_ratio_.has_value()) {
     return;

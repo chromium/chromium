@@ -54,7 +54,6 @@
 <translation id="1090629319939036170">VR-menu</translation>
 <translation id="1091463901118115503">Læs videre</translation>
 <translation id="1091779689406092804">screenshots</translation>
-<translation id="1094777233105318927">Oplysninger om browseren, operativsystemet, enheden, installeret software og filer</translation>
 <translation id="1096545575934602868">Dette felt må ikke have mere end <ph name="MAX_ITEMS_LIMIT" /> poster. Alle yderligere poster kasseres.</translation>
 <translation id="1097803577928227769">Parker og haver</translation>
 <translation id="1099928364755383720">automatisk integreret billede</translation>
@@ -1696,6 +1695,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3964661563329879394">{COUNT,plural, =0{Ingen}=1{1 website }one{# website }other{# websites }}</translation>
 <translation id="3965672182149944205">Vil du gemme adressen?</translation>
 <translation id="3966044442021752214">Produktsikkerhed</translation>
+<translation id="3969869202926863008">Lokal netværksadgang</translation>
 <translation id="397105322502079400">Beregner...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> er blokeret</translation>
 <translation id="3975852104434126461">Automobilindustrien</translation>
@@ -2052,6 +2052,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="460848736049414407">Blokeret af administrator</translation>
 <translation id="4610279718074907952">Dette website er i en gruppe, der er defineret af <ph name="SET_OWNER" />, og som kan se din aktivitet</translation>
 <translation id="46128681529823442">Fodboldudstyr</translation>
+<translation id="4612904677925722054">Dette website kan have indhold, der er uegnet for børn. En forælder eller værge skal godkende, at du må besøge dette website.</translation>
 <translation id="4619564267100705184">Verificer din identitet</translation>
 <translation id="4622292761762557753">Overfør alligevel</translation>
 <translation id="4622647778991854660">Aktivér notifikationer i Notifikationscenter. Åbn <ph name="LINK" />.</translation>
@@ -2649,6 +2650,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5660122698869360728">En ny smart mappe, der hjælper dig med at gemme alle dine shoppingsider på ét sted, ligesom den også giver dig mulighed for automatisk at overvåge priser, få prisinfo og meget mere.</translation>
 <translation id="5663955426505430495">Administratoren af enheden har installeret udvidelser til yderligere funktioner. Udvidelser har adgang til nogle af dine data.</translation>
 <translation id="5667827081946850877">Lydbøger</translation>
+<translation id="5674082555327905359">Kan anmode om at oprette tilknytning til enhver enhed på dit lokale netværk</translation>
 <translation id="5675650730144413517">Denne side virker ikke</translation>
 <translation id="5675809467256309336">Dance og elektronisk musik</translation>
 <translation id="5675959228867414813">Vis efter dato</translation>
@@ -2897,6 +2899,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6116338172782435947">Se tekst og billeder, der er kopieret til udklipsholderen</translation>
 <translation id="6117833587752089929">Foto (satin)</translation>
 <translation id="6118782133429281336">Oprindelseslisten er tom.</translation>
+<translation id="6120950591512958208">Brug denne kode ved betaling.</translation>
 <translation id="612178891608320683">Vegansk mad</translation>
 <translation id="6122181661879998141">forsiden af dit kort</translation>
 <translation id="6124058285696691147">Download den vedhæftede fil</translation>
@@ -2922,6 +2925,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6159908896951210943">Formel</translation>
 <translation id="6160391204859821737">Aktivér en privatlivsfunktion til annoncer</translation>
 <translation id="6162403104168428984">Vil du opdatere adressen?</translation>
+<translation id="6164605812717770913">En forælder eller værge har bestemt, at du ikke må besøge dette website. Du kan bede vedkommende om at fjerne blokeringen.</translation>
 <translation id="6165508094623778733">Flere oplysninger</translation>
 <translation id="6167577165590485365">Sidst forsøgt hentet:</translation>
 <translation id="617256461084925519">Google Chrome forsøger at verificere din identitet, så dine betalingsoplysninger kan udfyldes.</translation>
@@ -3013,6 +3017,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6321917430147971392">Kontrollér dine DNS-indstillinger</translation>
 <translation id="6322182122604171028">Windows Hello kunne ikke anvendes</translation>
 <translation id="6326947323444967009">Angiv Chrome som systemets standardbrowser i iOS-indstillingerne</translation>
+<translation id="6327065120806001832">lokal netværksadgang</translation>
 <translation id="6328639280570009161">Prøv at deaktivere netværksforslag</translation>
 <translation id="6335029926534404762">Sportssko</translation>
 <translation id="6337133576188860026">Frigiver mindre end <ph name="SIZE" />. Nogle websites indlæses muligvis langsommere under dit næste besøg.</translation>
@@ -4481,7 +4486,6 @@ Yderligere oplysninger:
 <translation id="8919895429178014996">Skjul alle elementer</translation>
 <translation id="8922013791253848639">Tillad altid annoncer på dette website</translation>
 <translation id="8922734931659847428">En begrænset liste over webadresser for sider, du besøger, hvor der forekommer <ph name="BEGIN_LINK" />hændelser relateret til forældet teknologi<ph name="END_LINK" /></translation>
-<translation id="8924109546403192898">Når sikkerhedshændelser rapporteres af Chrome, sendes der relevante data om hændelserne til din administrator. Disse data kan omfatte webadresserne på de sider, du besøger i Chrome, webadresserne på de sider, du har kopieret data fra, filnavne eller metadata, browser- eller fanenedbrud samt det brugernavn, du bruger til at logge ind med i webbaserede apps, på din enhed og i Chrome.</translation>
 <translation id="892588693504540538">Hul øverst til højre</translation>
 <translation id="8926389886865778422">Spørg ikke igen</translation>
 <translation id="8932102934695377596">Dit ur er bagud</translation>

@@ -228,9 +228,10 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
           : !!dispatcher;
 
   if (!provider && use_software_shared_image_provider) {
-    provider = CanvasResourceProvider::CreateSoftwareSharedImageProvider(
-        Size(), format, alpha_type, color_space, kShouldInitialize,
-        SharedGpuContext::SharedImageInterfaceProvider(), this);
+    provider =
+        CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
+            Size(), format, alpha_type, color_space, kShouldInitialize,
+            SharedGpuContext::SharedImageInterfaceProvider(), this);
   }
   if (!provider) {
     provider = CanvasResourceProvider::CreateBitmapProvider(
@@ -330,9 +331,10 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
     // In this case, we are using CPU raster and CPU compositing. Create a
     // CanvasResourceProvider that uses a SharedImage backed by a shared-memory
     // buffer that can be written by canvas raster and read by the compositor.
-    provider = CanvasResourceProvider::CreateSoftwareSharedImageProvider(
-        Size(), format, alpha_type, color_space, kShouldInitialize,
-        SharedGpuContext::SharedImageInterfaceProvider(), this);
+    provider =
+        CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
+            Size(), format, alpha_type, color_space, kShouldInitialize,
+            SharedGpuContext::SharedImageInterfaceProvider(), this);
   }
   if (!provider) {
     // The final fallback is to raster into a bitmap that will then either be

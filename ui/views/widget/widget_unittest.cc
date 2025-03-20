@@ -398,31 +398,6 @@ END_METADATA
 
 }  // namespace
 
-TEST_F(WidgetWithCustomParamsTest, InitWithNativeTheme) {
-  // Verify that `InitParams::native_theme` is applied during widget
-  // initialization.
-
-  const SkColor test_color = SkColorSetARGB(1, 2, 3, 4);
-
-  WidgetDelegate delegate;
-  auto view = std::make_unique<TestView>();
-  auto* view_raw_ptr = view.get();
-  delegate.SetContentsView(std::move(view));
-
-  ui::TestNativeTheme test_native_theme;
-  test_native_theme.set_user_color(test_color);
-
-  SetInitFunction(base::BindLambdaForTesting([&](Widget::InitParams* params) {
-    params->delegate = &delegate;
-    params->native_theme = &test_native_theme;
-  }));
-
-  std::unique_ptr<Widget> widget =
-      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
-
-  EXPECT_EQ(view_raw_ptr->user_color(), test_color);
-}
-
 class WidgetColorModeTest : public WidgetTest {
  public:
   static constexpr SkColor kLightColor = SK_ColorWHITE;
@@ -1822,7 +1797,7 @@ TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, OnNativeWidgetPaint) {
 
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest,
        OnNativeWidgetParentChanged) {
-  widget()->OnNativeWidgetParentChanged(nullptr);
+  widget()->OnNativeWidgetParentChanged(gfx::NativeView());
 }
 
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest,
@@ -1941,7 +1916,7 @@ TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, ReorderNativeViews) {
 
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, ReparentNativeView) {
   EXPECT_DCHECK_DEATH(
-      Widget::ReparentNativeView(widget()->GetNativeView(), nullptr));
+      Widget::ReparentNativeView(widget()->GetNativeView(), gfx::NativeView()));
 }
 
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, Restore) {

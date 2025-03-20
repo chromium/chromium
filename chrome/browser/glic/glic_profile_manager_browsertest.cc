@@ -9,9 +9,10 @@
 
 #include "base/memory/memory_pressure_monitor.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
-#include "chrome/browser/glic/glic_test_util.h"
+#include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
@@ -36,10 +37,12 @@ class MockGlicKeyedService : public GlicKeyedService {
  public:
   MockGlicKeyedService(content::BrowserContext* browser_context,
                        signin::IdentityManager* identity_manager,
-                       GlicProfileManager* profile_manager)
+                       ProfileManager* profile_manager,
+                       GlicProfileManager* glic_profile_manager)
       : GlicKeyedService(Profile::FromBrowserContext(browser_context),
                          identity_manager,
-                         profile_manager) {}
+                         profile_manager,
+                         glic_profile_manager) {}
   MOCK_METHOD(void, ClosePanel, (), (override));
 
   bool IsWindowDetached() const override { return detached_; }
@@ -97,7 +100,8 @@ class GlicProfileManagerBrowserTest : public InProcessBrowserTest {
     auto* identitity_manager = IdentityManagerFactory::GetForProfile(
         Profile::FromBrowserContext(context));
     return std::make_unique<MockGlicKeyedService>(
-        context, identitity_manager, GlicProfileManager::GetInstance());
+        context, identitity_manager, g_browser_process->profile_manager(),
+        GlicProfileManager::GetInstance());
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -201,12 +205,12 @@ class GlicProfileManagerPreloadingTest
                                 features::kTabstripComboButton},
           /*disabled_features=*/{features::kGlicWarming});
     }
+    GlicProfileManager::ForceMemoryPressureForTesting(&memory_pressure_);
   }
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     GlicProfileManager::ForceProfileForLaunchForTesting(browser()->profile());
-    GlicProfileManager::ForceMemoryPressureForTesting(&memory_pressure_);
     ForceSigninAndModelExecutionCapability(browser()->profile());
   }
 
@@ -218,18 +222,23 @@ class GlicProfileManagerPreloadingTest
 
   bool IsPreloadingEnabled() const { return GetParam(); }
 
-  base::MemoryPressureMonitor::MemoryPressureLevel& memory_pressure() {
-    return memory_pressure_;
+  void ResetMemoryPressure() {
+    memory_pressure_ = base::MemoryPressureMonitor::MemoryPressureLevel::
+        MEMORY_PRESSURE_LEVEL_NONE;
   }
 
  private:
-  base::MemoryPressureMonitor::MemoryPressureLevel memory_pressure_ = base::
-      MemoryPressureMonitor::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE;
+  // We initialize memory pressure to moderate to prevent any premature
+  // preloading.
+  base::MemoryPressureMonitor::MemoryPressureLevel memory_pressure_ =
+      base::MemoryPressureMonitor::MemoryPressureLevel::
+          MEMORY_PRESSURE_LEVEL_MODERATE;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,
                        ShouldPreloadForProfile_Success) {
+  ResetMemoryPressure();
   const bool should_preload = IsPreloadingEnabled();
   auto* profile_manager = GlicProfileManager::GetInstance();
   EXPECT_EQ(should_preload,
@@ -238,6 +247,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,
 
 IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,
                        ShouldPreloadForProfile_NotSupportedProfile) {
+  ResetMemoryPressure();
   GlicProfileManager::ForceProfileForLaunchForTesting(nullptr);
   SetModelExecutionCapability(browser()->profile(), false);
   auto* profile_manager = GlicProfileManager::GetInstance();
@@ -246,6 +256,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,
 
 IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,
                        ShouldPreloadForProfile_WillBeDestroyed) {
+  ResetMemoryPressure();
   browser()->profile()->NotifyWillBeDestroyed();
   auto* profile_manager = GlicProfileManager::GetInstance();
   EXPECT_FALSE(profile_manager->ShouldPreloadForProfile(browser()->profile()));
@@ -253,9 +264,8 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,
 
 IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,
                        ShouldPreloadForProfile_MemoryPressure) {
+  // Note: we keep memory pressure at moderate here.
   auto* profile_manager = GlicProfileManager::GetInstance();
-  memory_pressure() = base::MemoryPressureMonitor::MemoryPressureLevel::
-      MEMORY_PRESSURE_LEVEL_MODERATE;
   EXPECT_FALSE(profile_manager->ShouldPreloadForProfile(browser()->profile()));
 }
 

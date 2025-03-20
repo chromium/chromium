@@ -401,7 +401,7 @@ class ChildThreadImpl::IOThreadState
 #if BUILDFLAG(IS_POSIX)
     // Take the file descriptor so that |file| does not close it.
     base::ScopedFD fd(file.TakePlatformFile());
-#if BUILDFLAG(CLANG_PGO) || BUILDFLAG(USE_CLANG_COVERAGE)
+#if BUILDFLAG(CLANG_PGO_PROFILING) || BUILDFLAG(USE_CLANG_COVERAGE)
     FILE* f = fdopen(fd.release(), "r+b");
     __llvm_profile_set_file_object(f, 1);
 #else

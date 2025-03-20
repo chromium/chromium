@@ -479,8 +479,7 @@ bool OffscreenCanvas::EnableAcceleration() {
   // Note that `OffscreenCanvas::IsAccelerated` above is not equivalent! This
   // returns false if the canvas resource provider doesn't exist yet, even if it
   // will be an accelerated canvas once it has been created.
-  CanvasResourceProvider* provider =
-      GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
+  CanvasResourceProvider* provider = GetOrCreateResourceProvider();
   if (!provider) {
     return false;
   }
@@ -571,10 +570,11 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
     // using the software compositor
     base::WeakPtr<CanvasResourceDispatcher> dispatcher_weakptr =
         GetOrCreateResourceDispatcher()->GetWeakPtr();
-    provider = CanvasResourceProvider::CreateSoftwareSharedImageProvider(
-        Size(), format, alpha_type, color_space,
-        CanvasResourceProvider::ShouldInitialize::kCallClear,
-        SharedGpuContext::SharedImageInterfaceProvider(), this);
+    provider =
+        CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
+            Size(), format, alpha_type, color_space,
+            CanvasResourceProvider::ShouldInitialize::kCallClear,
+            SharedGpuContext::SharedImageInterfaceProvider(), this);
   }
 
   if (!provider) {

@@ -20,13 +20,15 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -61,6 +63,7 @@ public final class PageViewObserverTest {
     private static final String STARTING_FQDN = "www.one.com";
     private static final String DIFFERENT_FQDN = "www.two.com";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Activity mActivity;
     @Mock private ObservableSupplier<Tab> mTabSupplier;
     @Mock private Tab mTab;
@@ -99,7 +102,6 @@ public final class PageViewObserverTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         mUserDataHost = new UserDataHost();
         mUserDataHostTab2 = new UserDataHost();

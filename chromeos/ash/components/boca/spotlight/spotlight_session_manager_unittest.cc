@@ -36,7 +36,7 @@ using ::testing::WithArg;
 namespace ash::boca {
 namespace {
 using InitiateSpotlightSessionCallback =
-    base::OnceCallback<void(std::optional<std::string>)>;
+    base::OnceCallback<void(const std::string&)>;
 
 constexpr char kDeviceId[] = "device-id";
 constexpr char kGaiaId[] = "123";

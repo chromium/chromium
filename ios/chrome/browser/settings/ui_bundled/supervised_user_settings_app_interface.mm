@@ -208,8 +208,7 @@ bool isShowingInterstitialForState(web::WebState* web_state) {
 
   // Set up the KidsChromeManagementClient that provides fake safe search
   // responses.
-  ProfileIOS* profile =
-      ProfileIOS::FromBrowserState(chrome_test_util::GetOriginalProfile());
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   CHECK(identity_manager);

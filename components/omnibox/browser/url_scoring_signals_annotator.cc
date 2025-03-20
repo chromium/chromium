@@ -20,6 +20,7 @@
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/scored_history_match.h"
 #include "components/omnibox/browser/url_index_private_data.h"
+#include "components/omnibox/common/string_cleaning.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "url/gurl.h"
 
@@ -67,7 +68,7 @@ void UrlScoringSignalsAnnotator::PopulateQueryUrlMatchingSignals(
     ScoringSignals* scoring_signals) {
   base::OffsetAdjuster::Adjustments adjustments;
   std::u16string cleaned_up_url =
-      bookmarks::CleanUpUrlForMatching(url, &adjustments);
+      string_cleaning::CleanUpUrlForMatching(url, &adjustments);
 
   WordStarts url_word_starts;
   String16Set url_words =

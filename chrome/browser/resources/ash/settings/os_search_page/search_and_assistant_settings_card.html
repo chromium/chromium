@@ -172,8 +172,7 @@
     </settings-toggle-button>
   </template>
   <template is="dom-if" if="[[isScannerSettingsToggleVisible_]]">
-    <!-- TODO: b/368184169 - Localise the label and add an icon, sublabel and
-        learn more link. -->
+    <!-- TODO: crbug.com/404069127 - Add a learn more link. -->
     <!-- \`restamp\` is needed to ensure that deep links work correctly if
          \`isScannerAllowedByEnterprisePolicy_\` changes. -->
     <template is="dom-if" restamp if="[[!isScannerAllowedByEnterprisePolicy_]]">
@@ -188,8 +187,9 @@
           disabled
           no-set-pref
           icon="os-settings:scanner"
-          label="[[scannerLabel_]]"
-          sub-label="[[scannerSubLabel_]]"
+          label="$i18n{enableScanner}"
+          sub-label="$i18n{enableScannerDesc}"
+          learn-more-url="$i18n{scannerLearnMoreUrl}"
           deep-link-focus-id$="[[Setting.kScannerOnOff]]">
       </settings-toggle-button>
     </template>
@@ -199,8 +199,9 @@
           class="hr"
           pref="{{prefs.ash.scanner.enabled}}"
           icon="os-settings:scanner"
-          label="[[scannerLabel_]]"
-          sub-label="[[scannerSubLabel_]]"
+          label="$i18n{enableScanner}"
+          sub-label="$i18n{enableScannerDesc}"
+          learn-more-url="$i18n{scannerLearnMoreUrl}"
           deep-link-focus-id$="[[Setting.kScannerOnOff]]">
       </settings-toggle-button>
     </template>

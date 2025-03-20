@@ -59,7 +59,7 @@ class MultipleRequestsTest : public PaymentsNetworkInterfaceTestBase,
 
  protected:
   size_t operations_size() const {
-    return payments_network_interface_base_->operations_.size();
+    return payments_network_interface_base_->operations_for_testing().size();
   }
 
   // TODO: crbug.com/362787977 - After single request PaymentsNetworkInterface
@@ -68,9 +68,13 @@ class MultipleRequestsTest : public PaymentsNetworkInterfaceTestBase,
   void ReturnResponseForOperation(const RequestId& id,
                                   int response_code,
                                   const std::string& response_body) {
-    EXPECT_TRUE(payments_network_interface_base_->operations_[id]);
-    payments_network_interface_base_->operations_[id]
-        ->OnSimpleLoaderCompleteInternal(response_code, response_body);
+    EXPECT_TRUE(
+        payments_network_interface_base_->operations_for_testing().contains(
+            id));
+    payments_network_interface_base_->operations_for_testing()
+        .at(id)
+        ->OnSimpleLoaderCompleteInternalForTesting(response_code,
+                                                   response_body);
   }
 
   std::unique_ptr<MultipleRequestPaymentsNetworkInterfaceBase>

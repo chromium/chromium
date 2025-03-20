@@ -123,6 +123,13 @@ class AccountProfileMapper {
   //    as converting the personal profile into a managed one.
   void MakePersonalProfileManagedWithGaiaID(const GaiaId& gaia_id);
 
+  // For testing purposes, this moves the account with `gaia_id` from its
+  // current (managed) profile into the personal profile. This simulates the
+  // situation where a managed account was already signed in before
+  // kSeparateProfilesForManagedAccounts was enabled (but makes test setup much
+  // easier).
+  void MoveManagedAccountToPersonalProfileForTesting(const GaiaId& gaia_id);
+
  private:
   class Assigner;
 

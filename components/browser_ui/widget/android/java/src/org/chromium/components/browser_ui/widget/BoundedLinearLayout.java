@@ -12,6 +12,7 @@ import android.util.TypedValue;
 import android.widget.LinearLayout;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.ViewUtils;
 
 /**
@@ -37,7 +38,7 @@ public class BoundedLinearLayout extends LinearLayout {
     private boolean mIgnoreHeightConstraints;
 
     /** Constructor for inflating from XML. */
-    public BoundedLinearLayout(Context context, AttributeSet attrs) {
+    public BoundedLinearLayout(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.BoundedLinearLayout);

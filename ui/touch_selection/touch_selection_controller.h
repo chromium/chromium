@@ -18,7 +18,6 @@
 #include "ui/touch_selection/selection_event_type.h"
 #include "ui/touch_selection/touch_handle.h"
 #include "ui/touch_selection/touch_handle_orientation.h"
-#include "ui/touch_selection/touch_selection_metrics.h"
 #include "ui/touch_selection/ui_touch_selection_export.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -29,7 +28,6 @@ class Layer;
 
 namespace ui {
 class MotionEvent;
-class Event;
 
 // Interface through which |TouchSelectionController| issues selection-related
 // commands, notifications and requests.
@@ -125,13 +123,6 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionController
   void OnUpdateNativeViewTree(gfx::NativeView parent_native_view,
                               cc::slim::Layer* parent_layer);
 #endif
-
-  // To be called when a menu command has been requested, to dismiss touch
-  // handles and record metrics if needed.
-  void OnMenuCommand(bool should_dismiss_handles);
-
-  // To be called when an event occurs to deactivate touch selection.
-  void OnSessionEndEvent(const Event& event);
 
 // TODO(crbug.com/375388841): Remove once Aura also uses
 // TouchSelectionControllerInputObserver for receiving inputs.
@@ -301,8 +292,6 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionController
 
   // Whether a swipe-to-move-cursor gesture is activated.
   bool swipe_to_move_cursor_activated_ = false;
-
-  TouchSelectionSessionMetricsRecorder session_metrics_recorder_;
 };
 
 }  // namespace ui

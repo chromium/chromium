@@ -42,7 +42,7 @@
 
 - (void)start {
   [super start];
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   self.mediator = [[ConsistencyDefaultAccountMediator alloc]
       initWithIdentityManager:IdentityManagerFactory::GetForProfile(profile)
         accountManagerService:ChromeAccountManagerServiceFactory::GetForProfile(

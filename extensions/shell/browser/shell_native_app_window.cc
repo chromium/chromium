@@ -85,7 +85,7 @@ void ShellNativeAppWindow::SetZOrderLevel(ui::ZOrderLevel level) {
 
 gfx::NativeView ShellNativeAppWindow::GetHostView() const {
   NOTIMPLEMENTED();
-  return nullptr;
+  return gfx::NativeView();
 }
 
 gfx::Point ShellNativeAppWindow::GetDialogPosition(const gfx::Size& size) {

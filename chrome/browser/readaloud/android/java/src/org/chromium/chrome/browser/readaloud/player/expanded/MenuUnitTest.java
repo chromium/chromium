@@ -27,11 +27,12 @@ import android.widget.RadioButton;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -44,6 +45,7 @@ import org.chromium.chrome.browser.readaloud.player.expanded.MenuItem.Action;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class MenuUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private final Activity mActivity;
     private Menu mMenu;
     @Mock Callback<Integer> mHandler;
@@ -55,11 +57,6 @@ public class MenuUnitTest {
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mMenu = (Menu) mActivity.getLayoutInflater().inflate(R.layout.readaloud_menu, null);
         assertNotNull(mMenu);
-    }
-
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
     }
 
     @Test

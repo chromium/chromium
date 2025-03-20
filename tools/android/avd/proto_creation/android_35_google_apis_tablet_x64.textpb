@@ -6,12 +6,12 @@
 
 emulator_package {
   package_name: "chromium/third_party/android_sdk/public/emulator"
-  version: "bgmdN-Lg8WrwUIDnImxbAizwHkLLliL8Gggb4E9wAKgC"  # 35.4.6 (Canary)
+  version: "zbW-DiZAD3fm8BoSXv4L6FYVN79w8r_wMrqWZZ7azxwC"  # 35.4.9 (Stable)
 }
 
 system_image_package {
   package_name: "chromium/third_party/android_sdk/public/system-images/android-35/google_apis_tablet/x86_64"
-  version: "QTV_MFoiBsNSno9Znwd2unkBc6A0viaSxZuoZ6LL7hYC"  # r1, AE3A.240806.011.T2
+  version: "cwv_ErXBjn16P-RyhI_nDexLpo9o8K2xUpsHAO-RjboC"  # r2, AE3A.240806.047
 }
 system_image_name: "system-images;android-35;google_apis_tablet;x86_64"
 
@@ -21,7 +21,7 @@ avd_package {
 avd_name: "android_35_google_apis_tablet_x64"
 
 avd_settings {
-  # The same as "Pixel Tabelt" in Android Studio
+  # The same as "Pixel Tablet" in Android Studio
   screen {
     density: 320
     height: 1600

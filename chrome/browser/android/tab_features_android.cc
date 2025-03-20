@@ -8,6 +8,7 @@
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "components/favicon/content/content_favicon_driver.h"
+#include "components/metrics/content/dwa_web_contents_observer.h"
 
 TabFeaturesAndroid::TabFeaturesAndroid(content::WebContents* web_contents,
                                        Profile* profile) {
@@ -18,6 +19,9 @@ TabFeaturesAndroid::TabFeaturesAndroid(content::WebContents* web_contents,
               profile),
           ChromeTranslateClient::FromWebContents(web_contents),
           favicon::ContentFaviconDriver::FromWebContents(web_contents));
+
+  dwa_web_contents_observer_ =
+      std::make_unique<metrics::DwaWebContentsObserver>(web_contents);
 }
 
 TabFeaturesAndroid::~TabFeaturesAndroid() = default;

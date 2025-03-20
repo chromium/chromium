@@ -323,10 +323,11 @@ WebContents* Shell::AddNewContents(
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+  WebContents* result = new_contents.get();
   CreateShell(
       std::move(new_contents), AdjustWindowSize(window_features.bounds.size()),
       !delay_popup_contents_delegate_for_testing_ /* should_set_delegate */);
-  return nullptr;
+  return result;
 }
 
 void Shell::GoBackOrForward(int offset) {

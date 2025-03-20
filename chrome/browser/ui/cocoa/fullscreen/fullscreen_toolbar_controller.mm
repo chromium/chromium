@@ -15,6 +15,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 
 @implementation FullscreenToolbarController {
@@ -159,8 +160,8 @@
 }
 
 - (BOOL)isFullscreenTransitionInProgress {
-  auto* host =
-      views::NativeWidgetMacNSWindowHost::GetFromNativeWindow([self window]);
+  auto* host = views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(
+      gfx::NativeWindow([self window]));
   if (auto* bridge = host->GetInProcessNSWindowBridge()) {
     return bridge->in_fullscreen_transition();
   }

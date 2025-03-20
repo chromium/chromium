@@ -25,7 +25,6 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 -webkit-mask-box-image-width: auto
 -webkit-mask-position-x: 0%
 -webkit-mask-position-y: 0%
--webkit-print-color-adjust: economy
 -webkit-rtl-ordering: logical
 -webkit-text-combine: none
 -webkit-text-decorations-in-effect: none
@@ -324,6 +323,7 @@ position-area: none
 position-try-fallbacks: none
 position-try-order: normal
 position-visibility: always
+print-color-adjust: economy
 r: 0px
 reading-flow: normal
 reading-order: 0

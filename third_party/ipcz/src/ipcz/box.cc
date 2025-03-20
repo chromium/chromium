@@ -5,6 +5,7 @@
 #include "ipcz/box.h"
 
 #include <utility>
+#include <variant>
 
 #include "ipcz/ipcz.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
@@ -33,7 +34,7 @@ IpczResult Box::Close() {
 }
 
 bool Box::CanSendFrom(Router& sender) {
-  return absl::visit(
+  return std::visit(
       Overloaded{
           [](const Empty&) { return false; },
           [](const DriverObject& object) {
@@ -54,7 +55,7 @@ bool Box::CanSendFrom(Router& sender) {
 
 IpczResult Box::ExtractContents(ExtractMode mode, IpczBoxContents& contents) {
   const bool peek = (mode == kPeek);
-  const IpczResult result = absl::visit(
+  const IpczResult result = std::visit(
       Overloaded{
           [](const Empty& empty) { return IPCZ_RESULT_INVALID_ARGUMENT; },
           [&contents, peek](DriverObject& object) {

@@ -107,6 +107,8 @@ class MainContentExtractionTest : public InProcessBrowserTest {
     ScreenAIServiceRouterFactory::GetForBrowserContext(browser()->profile())
         ->BindMainContentExtractor(
             main_content_extractor_.BindNewPipeAndPassReceiver());
+    main_content_extractor_->SetClientType(
+        screen_ai::mojom::MceClientType::kTest);
   }
 
   ui::AXTreeUpdate DistillPage(const std::string& relative_url) {
@@ -150,6 +152,8 @@ class MainContentExtractionTest : public InProcessBrowserTest {
 
 // Tests that calling main content extraction without content gets replied.
 IN_PROC_BROWSER_TEST_F(MainContentExtractionTest, EmptyInput) {
+  base::HistogramTester histograms;
+
   Connect();
 
   ui::AXNodeData root;
@@ -167,6 +171,17 @@ IN_PROC_BROWSER_TEST_F(MainContentExtractionTest, EmptyInput) {
   ExtractMainContent(empty_tree, main_content_ids);
 
   ASSERT_EQ(0u, main_content_ids.size());
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+  histograms.ExpectTotalCount(
+      "Accessibility.ScreenAI.MainContentExtraction.Error.ResultNull", 1);
+  histograms.ExpectUniqueSample(
+      "Accessibility.ScreenAI.MainContentExtraction.Successful2", false, 1);
+  histograms.ExpectTotalCount(
+      "Accessibility.ScreenAI.MainContentExtraction.Latency.Success", 0);
+  histograms.ExpectTotalCount(
+      "Accessibility.ScreenAI.MainContentExtraction.Latency.Failure", 1);
 }
 
 // Fake library always returns empty.
@@ -189,10 +204,12 @@ IN_PROC_BROWSER_TEST_F(MainContentExtractionTest, RequestWithContent) {
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
+  histograms.ExpectUniqueSample(
+      "Accessibility.ScreenAI.MainContentExtraction.Successful2", true, 1);
   histograms.ExpectTotalCount(
-      "Accessibility.ScreenAI.MainContentExtraction.Successful", 1);
-  histograms.ExpectBucketCount(
-      "Accessibility.ScreenAI.MainContentExtraction.Successful", true, 1);
+      "Accessibility.ScreenAI.MainContentExtraction.Latency.Success", 1);
+  histograms.ExpectTotalCount(
+      "Accessibility.ScreenAI.MainContentExtraction.Latency.Failure", 0);
 }
 
 // Test requesting several extractions without waiting for the previous ones to

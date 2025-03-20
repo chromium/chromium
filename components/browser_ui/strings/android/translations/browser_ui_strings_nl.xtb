@@ -39,7 +39,9 @@
 <translation id="1538031354170655462">Sites gebruiken meestal Near Field Communication (NFC) om te werken met tags of apparaten in de buurt, zoals badges scannen of contactloos betalen</translation>
 <translation id="1547123415014299762">Cookies van derden zijn toegestaan</translation>
 <translation id="1593426485665524382">Er zijn nieuwe acties beschikbaar bovenaan het scherm</translation>
+<translation id="1615755956145364867">Sites kunnen vragen of ze beschermde content mogen afspelen</translation>
 <translation id="1620510694547887537">Camera</translation>
+<translation id="1621729191093924223">Functies waarvoor een microfoon nodig is, werken niet</translation>
 <translation id="1633720957382884102">Gerelateerde sites</translation>
 <translation id="1644574205037202324">Geschiedenis</translation>
 <translation id="1652197001188145583">Als deze optie aanstaat, kunnen sites vragen of ze NFC-apparaten mogen gebruiken. Staat de optie uit, dan kunnen sites geen NFC-apparaten gebruiken.</translation>
@@ -54,6 +56,7 @@
 <translation id="1743802530341753419">Vragen of sites verbinding mogen maken met een apparaat (aanbevolen)</translation>
 <translation id="1779089405699405702">Image Decoder</translation>
 <translation id="1785415724048343560">Aanbevolen voor de beste functionaliteit</translation>
+<translation id="1796588414813960292">Functies die afhankelijk zijn van geluid, werken niet</translation>
 <translation id="1799920918471566157">Chrome-tips</translation>
 <translation id="1816835383954230954">Als deze optie aanstaat, werkt Chrome sneller en zouden functies die JavaScript gebruiken, naar behoren moeten werken. Als deze optie uitstaat, worden de prestaties slechter, maar is V8 beter bestand tegen aanvallen.</translation>
 <translation id="1818308510395330587">Als je <ph name="APP_NAME" /> AR wilt laten gebruiken, moet je ook de camera aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
@@ -71,6 +74,7 @@
 <translation id="1994173015038366702">Site-URL</translation>
 <translation id="2004697686368036666">Functies op bepaalde sites werken misschien niet</translation>
 <translation id="2025115093177348061">Augmented reality</translation>
+<translation id="2028449514182362831">Functies waarvoor bewegingssensoren nodig zijn, werken niet</translation>
 <translation id="2030769033451695672">Tik om terug te gaan naar <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Ongedaan maken</translation>
 <translation id="2091887806945687916">Geluid</translation>
@@ -87,6 +91,7 @@
 <translation id="2215727959747642672">Bestanden bewerken</translation>
 <translation id="2218389616572918761">Sites kunnen om je microfoon vragen</translation>
 <translation id="2228071138934252756">Als je <ph name="APP_NAME" /> toegang wilt geven tot je camera, moet je de camera ook aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
+<translation id="2231160360698766265">Sites mogen beveiligde content afspelen</translation>
 <translation id="2235344399760031203">Cookies van derden worden geblokkeerd</translation>
 <translation id="2238944249568001759">Voorgestelde zoekopdrachten op basis van je laatste tabblad</translation>
 <translation id="2241587408274973373">Kaarten op de pagina Nieuw tabblad</translation>
@@ -256,6 +261,7 @@
 <translation id="4259722352634471385">Navigatie is geblokkeerd: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Nadat je een site verlaat, blijft de synchronisatie meestal doorgaan om taken af te ronden, zoals foto's uploaden of chatberichten sturen</translation>
 <translation id="4278390842282768270">Toegestaan</translation>
+<translation id="4290791284969893584">Nadat je een pagina hebt gesloten, kan het zijn dat gestarte taken niet worden afgerond</translation>
 <translation id="429312253194641664">Een site speelt media af</translation>
 <translation id="42981349822642051">Uitvouwen</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Verloopt morgen}other{Verloopt over # dagen}}</translation>
@@ -530,6 +536,7 @@
 <translation id="8010630645305864042">{TILE_COUNT,plural, =1{Kaart Doorgaan met dit tabblad verbergen}other{Kaart Doorgaan met deze tabbladen verbergen}}</translation>
 <translation id="802154636333426148">Downloaden mislukt</translation>
 <translation id="8042586301629853791">Sorteren op:</translation>
+<translation id="8051193500142930381">Functies waarvoor een camera nodig is, werken niet</translation>
 <translation id="8067883171444229417">Video afspelen</translation>
 <translation id="8068648041423924542">Kan certificaat niet selecteren.</translation>
 <translation id="8077120325605624147">Elke site die je bezoekt, kan elke advertentie aan je tonen</translation>
@@ -630,6 +637,7 @@
 <translation id="9138217887606523162">Huidig zoomniveau is <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9156722768168878035">Sta toe dat Chrome je recente tabbladen toont in de app-lijst en zoekresultaten van je apparaat. Je kunt dit altijd uitzetten in de Chrome-instellingen.</translation>
 <translation id="9162462602695099906">Deze pagina is gevaarlijk</translation>
+<translation id="9182556968660520230">Niet toestaan dat sites beschermde content afspelen</translation>
 <translation id="947156494302904893">Sites die je bezoekt, kunnen verifiëren dat je een echte persoon bent en geen bot</translation>
 <translation id="959682366969460160">Georganiseerd werken</translation>
 <translation id="967624055006145463">Opgeslagen gegevens</translation>

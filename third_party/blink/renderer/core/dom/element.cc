@@ -1195,10 +1195,15 @@ HeapVector<Member<Element>>* Element::GetAttrAssociatedElements(
 
     // Account for labelled vs labeled spelling
     if (attr == html_names::kAriaLabelledbyAttr) {
-      attr = hasAttribute(html_names::kAriaLabeledbyAttr) &&
-                     !hasAttribute(html_names::kAriaLabelledbyAttr)
-                 ? html_names::kAriaLabeledbyAttr
-                 : html_names::kAriaLabelledbyAttr;
+      bool is_alternative_spelling =
+          hasAttribute(html_names::kAriaLabeledbyAttr) &&
+          !hasAttribute(html_names::kAriaLabelledbyAttr);
+      attr = is_alternative_spelling ? html_names::kAriaLabeledbyAttr
+                                     : html_names::kAriaLabelledbyAttr;
+      if (is_alternative_spelling) {
+        UseCounter::Count(GetDocument(),
+                          WebFeature::kAriaLabeledByAlternativeSpelling);
+      }
     }
 
     if (!hasAttribute(attr)) {
@@ -3060,6 +3065,17 @@ SpecificTrustedType Element::ExpectedTrustedTypeForAttribute(
   return SpecificTrustedType::kNone;
 }
 
+void Element::ProcessElementRenderBlocking(const AtomicString& id_or_name) {
+  if (!GetDocument().HasPendingExpectLinkElements() || !isConnected() ||
+      !IsFinishedParsingChildren() || id_or_name.IsNull() ||
+      id_or_name.empty()) {
+    return;
+  }
+  DCHECK(GetDocument().GetRenderBlockingResourceManager());
+  GetDocument().GetRenderBlockingResourceManager()->RemovePendingParsingElement(
+      id_or_name, this);
+}
+
 DISABLE_CFI_PERF
 void Element::AttributeChanged(const AttributeModificationParams& params) {
   ParseAttribute(params);
@@ -3079,6 +3095,8 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
       AtomicString old_id = GetElementData()->SetIdForStyleResolution(new_id);
       GetDocument().GetStyleEngine().IdChangedForElement(old_id, new_id, *this);
     }
+
+    ProcessElementRenderBlocking(new_id);
 
     if (GetDocument().HasPendingExpectLinkElements() &&
         IsFinishedParsingChildren()) {
@@ -3395,6 +3413,8 @@ Node::InsertionNotificationRequest Element::InsertedInto(
         context->ElementConnected();
       }
     }
+
+    ProcessElementRenderBlocking(GetIdAttribute());
   }
 
   if (isConnected()) {
@@ -4700,6 +4720,15 @@ StyleRecalcChange Element::RecalcOwnStyle(
     }
     layout_object->SetStyle(layout_style, apply_changes);
   }
+
+  if (RuntimeEnabledFeatures::ScopedViewTransitionsEnabled() &&
+      !IsDocumentElement() && ViewTransitionUtils::GetTransition(*this)) {
+    // TODO(kevers): Retrieve vector of VT names from the view transition.
+    // TODO(kevers): Determine if it is safe to remove the call from StyleEngine
+    // for the document element here.
+    RecalcTransitionPseudoTreeStyle({});
+  }
+
   return child_change;
 }
 
@@ -5629,7 +5658,7 @@ bool Element::ShouldRecalcHighlightPseudoStyle(
   // If the originating element is a container for sizes, it means the
   // container has changed from that of the parent highlight, so we need
   // to re-evaluate container units.
-  if (highlight_parent && highlight_parent->HasContainerRelativeUnits() &&
+  if (highlight_parent && highlight_parent->HasContainerRelativeValue() &&
       originating_container == this &&
       originating_style.CanMatchSizeContainerQueries(*this)) {
     return true;
@@ -6431,6 +6460,7 @@ void Element::ParseAttribute(const AttributeModificationParams& params) {
   } else if (params.name.Matches(html_names::kInteresttargetAttr)) {
     if (RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
             GetDocument().GetExecutionContext())) {
+      UseCounter::Count(GetDocument(), WebFeature::kInterestTarget);
       if (!params.old_value.IsNull() && params.old_value != params.new_value) {
         // We are changing the value of the `interesttarget` attribute, which
         // might "point" it at a different target element. So clear the
@@ -8878,9 +8908,12 @@ Element* Element::GetStyledPseudoElement(
     return nullptr;
   }
 
-  // The transition pseudos can currently only exist on the document element.
-  if (!IsDocumentElement()) {
-    return nullptr;
+  if (!RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()) {
+    // The transition pseudos can currently only exist on the document element
+    // unless scoped view transitions are enabled.
+    if (!IsDocumentElement()) {
+      return nullptr;
+    }
   }
 
   // This traverses the pseudo element hierarchy generated in
@@ -9166,8 +9199,7 @@ const ComputedStyle* Element::StyleForSearchTextPseudoElement(
 
 bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
   if (pseudo_id == kPseudoIdViewTransition) {
-    DCHECK_EQ(this, GetDocument().documentElement());
-    return !!ViewTransitionUtils::GetTransition(GetDocument());
+    return !!ViewTransitionUtils::GetTransition(*this);
   }
   if (pseudo_id == kPseudoIdFirstLetter && IsSVGElement()) {
     return false;
@@ -10803,8 +10835,8 @@ void Element::InvalidateStyleAttribute(
 
 void Element::RecalcTransitionPseudoTreeStyle(
     const Vector<AtomicString>& view_transition_names) {
-  DCHECK_EQ(this, GetDocument().documentElement());
-
+  DCHECK(RuntimeEnabledFeatures::ScopedViewTransitionsEnabled() ||
+         this == GetDocument().documentElement());
   DisplayLockStyleScope display_lock_style_scope(this);
   if (!display_lock_style_scope.ShouldUpdateChildStyle()) {
     return;
@@ -10812,7 +10844,8 @@ void Element::RecalcTransitionPseudoTreeStyle(
 
   PseudoElement* old_transition_pseudo =
       GetPseudoElement(kPseudoIdViewTransition);
-  const auto* transition = ViewTransitionUtils::GetTransition(GetDocument());
+  const auto* transition = ViewTransitionUtils::GetTransition(*this);
+
   if (!transition && !old_transition_pseudo) {
     return;
   }

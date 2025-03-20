@@ -34,8 +34,8 @@
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
-#include "components/autofill/core/browser/webdata/passes/passes_table.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
+#include "components/autofill/core/browser/webdata/valuables/valuables_table.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -542,7 +542,7 @@ std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetLoyaltyCards(
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   return std::make_unique<WDResult<std::vector<LoyaltyCard>>>(
       AUTOFILL_LOYALTY_CARD_RESULT,
-      PassesTable::FromWebDatabase(db)->GetLoyaltyCards());
+      ValuablesTable::FromWebDatabase(db)->GetLoyaltyCards());
 }
 
 std::unique_ptr<WDTypedResult>

@@ -1908,7 +1908,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
       render_frame_host().GetMainFrame()->GetLastCommittedURL().path() != "/");
 }
 
-void FederatedAuthRequestImpl::NotifyAutofillSelection(
+void FederatedAuthRequestImpl::NotifyAutofillSuggestionAccepted(
     const GURL& idp,
     const std::string& account_id) {
   // TODO(crbug.com/380367784): The third argument of OnAccountSelected checks
@@ -3409,6 +3409,17 @@ bool FederatedAuthRequestImpl::OnResolve(
   // TODO(crbug.com/40262526): handle the corner cases where CompleteRequest
   // can't actually fulfill the request.
   return true;
+}
+
+void FederatedAuthRequestImpl::OnOriginMismatch(Method method,
+                                                const url::Origin& expected,
+                                                const url::Origin& actual) {
+  const char* method_string = method == Method::kClose ? "close" : "resolve";
+  std::string error_messsage = base::StringPrintf(
+      "IdentityProvider.%s called from incorrect origin '%s'; expected '%s'",
+      method_string, actual.Serialize().c_str(), expected.Serialize().c_str());
+  render_frame_host().AddMessageToConsole(
+      blink::mojom::ConsoleMessageLevel::kError, error_messsage);
 }
 
 bool FederatedAuthRequestImpl::SetupIdentityRegistryFromPopup() {

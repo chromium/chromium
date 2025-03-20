@@ -39,7 +39,7 @@
 #include "content/browser/devtools/protocol/visual_debugger_handler.h"
 #endif
 
-#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO)
+#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO_PROFILING)
 #include "content/browser/devtools/protocol/native_profiling_handler.h"
 #endif
 
@@ -220,7 +220,7 @@ bool BrowserDevToolsAgentHost::AttachSession(DevToolsSession* session) {
   session->CreateAndAddHandler<protocol::TracingHandler>(
       this, GetIOContext(), /* root_session */ nullptr);
 
-#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO)
+#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO_PROFILING)
   session->CreateAndAddHandler<protocol::NativeProfilingHandler>();
 #endif
 

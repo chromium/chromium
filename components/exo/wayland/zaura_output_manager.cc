@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "components/exo/wayland/output_metrics.h"
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/wayland_display_observer.h"
@@ -34,7 +35,8 @@ AuraOutputManager* AuraOutputManager::Get(wl_client* client) {
       [](wl_resource* resource, void* user_data) {
         constexpr char kAuraOutputManagerClass[] = "zaura_output_manager";
         const char* class_name = wl_resource_get_class(resource);
-        if (std::strcmp(kAuraOutputManagerClass, class_name) != 0) {
+        if (UNSAFE_TODO(std::strcmp(kAuraOutputManagerClass, class_name)) !=
+            0) {
           return WL_ITERATOR_CONTINUE;
         }
 
@@ -64,7 +66,7 @@ int64_t AuraOutputManager::GetDisplayIdForOutput(wl_resource* output_resource) {
   auto user_data_iterator = [](wl_resource* resource, void* user_data) {
     constexpr char kWlOutputClass[] = "wl_output";
     const char* class_name = wl_resource_get_class(resource);
-    if (std::strcmp(kWlOutputClass, class_name) != 0) {
+    if (UNSAFE_TODO(std::strcmp(kWlOutputClass, class_name)) != 0) {
       return WL_ITERATOR_CONTINUE;
     }
 

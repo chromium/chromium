@@ -228,6 +228,8 @@ void AXTreeDistiller::DistillViaScreen2x(
     main_content_extractor_.set_disconnect_handler(
         base::BindOnce(&AXTreeDistiller::OnMainContentExtractorDisconnected,
                        weak_ptr_factory_.GetWeakPtr()));
+    main_content_extractor_->SetClientType(
+        screen_ai::mojom::MceClientType::kReadingMode);
   }
 
   base::TimeTicks screen2x_start_time = base::TimeTicks::Now();
@@ -251,11 +253,29 @@ void AXTreeDistiller::ProcessScreen2xResult(
                         base::TimeTicks::Now() - screen2x_start_time,
                         !content_node_ids_screen2x.empty());
   // Merge the results from the algorithm and from screen2x.
-  for (ui::AXNodeID content_node_id_screen2x : content_node_ids_screen2x) {
-    if (!base::Contains(content_node_ids_algorithm, content_node_id_screen2x)) {
-      content_node_ids_algorithm.push_back(content_node_id_screen2x);
+  for (ui::AXNodeID node_id : content_node_ids_screen2x) {
+    if (!base::Contains(content_node_ids_algorithm, node_id)) {
+      content_node_ids_algorithm.push_back(node_id);
     }
   }
+
+  // Record metrics on how often screen2x merge was helpful.
+  if (content_node_ids_screen2x.empty()) {
+    base::UmaHistogramBoolean(
+        "Accessibility.ReadAnything.Algorithm.HadWhenScreen2xEmpty",
+        !content_node_ids_algorithm.empty());
+  } else {
+    bool added = false;
+    for (ui::AXNodeID node_id : content_node_ids_algorithm) {
+      if (!base::Contains(content_node_ids_screen2x, node_id)) {
+        added = true;
+        break;
+      }
+    }
+    base::UmaHistogramBoolean(
+        "Accessibility.ReadAnything.Algorithm.AddedToScreen2x", added);
+  }
+
   RecordMergedMetrics(ukm_source_id, base::TimeTicks::Now() - merged_start_time,
                       !content_node_ids_algorithm.empty());
   on_ax_tree_distilled_callback_.Run(tree_id, content_node_ids_algorithm);

@@ -378,7 +378,7 @@ source_set("eg_app_support+eg2") {
     "//components/data_sharing:test_support",
     "//components/data_sharing/public",
     "//components/saved_tab_groups/test_support",
-    "//components/sync/service",
+    "//components/saved_tab_groups/public",
     "//ios/chrome/browser/collaboration/model:features",
     "//ios/chrome/browser/data_sharing/model",
     "//ios/chrome/browser/saved_tab_groups/model",
@@ -387,7 +387,6 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/sync/model",
     "//ios/chrome/test/app:test_support",
   ]
 }

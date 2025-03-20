@@ -32,8 +32,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
-#import "ios/chrome/browser/policy/model/management_state.h"
-#import "ios/chrome/browser/policy/ui_bundled/management_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_coordinator_delegate.h"
@@ -56,8 +54,6 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/shared/ui/util/identity_snackbar/identity_snackbar_message.h"
-#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
@@ -82,7 +78,6 @@
   UINavigationController* _navigationController;
   raw_ptr<AuthenticationService> _authenticationService;
   raw_ptr<signin::IdentityManager> _identityManager;
-  raw_ptr<PrefService> _prefService;
   // Dismiss callback for account details view.
   SystemIdentityManager::DismissViewCallback
       _accountDetailsControllerDismissCallback;
@@ -125,13 +120,12 @@
 - (void)start {
   [super start];
 
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   _syncService = SyncServiceFactory::GetForProfile(profile);
   _authenticationService = AuthenticationServiceFactory::GetForProfile(profile);
   _accountManagerService =
       ChromeAccountManagerServiceFactory::GetForProfile(profile);
   _identityManager = IdentityManagerFactory::GetForProfile(profile);
-  _prefService = profile->GetPrefs();
 
   _viewController = [[AccountMenuViewController alloc]
       initWithHideEllipsisMenu:IdentityDiscAccountMenuEnabledWithoutEllipsis()
@@ -192,7 +186,6 @@
   // Sets the service to nil.
   _authenticationService = nil;
   _identityManager = nil;
-  _prefService = nil;
   _syncService = nullptr;
   _accountManagerService = nullptr;
   [super stop];
@@ -306,7 +299,9 @@
                initWithBrowser:self.browser
                       identity:identity
                    accessPoint:signin_metrics::AccessPoint::kAccountMenu
-             postSignInActions:PostSignInActionSet()
+          precedingHistorySync:NO
+             postSignInActions:
+                 {PostSignInAction::kShowIdentityConfirmationSnackbar}
       presentingViewController:_navigationController
                     anchorView:_viewController.view
                     anchorRect:anchorRect];
@@ -318,23 +313,6 @@
         }
       }];
   return authenticationFlow;
-}
-
-- (void)triggerAccountSwitchSnackbarWithIdentity:
-    (id<SystemIdentity>)systemIdentity {
-  UIImage* avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
-      systemIdentity, IdentityAvatarSize::Regular);
-  ManagementState managementState = GetManagementState(
-      _identityManager, _authenticationService, _prefService);
-  MDCSnackbarMessage* snackbarTitle = [[IdentitySnackbarMessage alloc]
-      initWithName:systemIdentity.userGivenName
-             email:systemIdentity.userEmail
-            avatar:avatar
-           managed:managementState.is_profile_managed()];
-  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-  id<SnackbarCommands> snackbarCommandsHandler =
-      HandlerForProtocol(dispatcher, SnackbarCommands);
-  [snackbarCommandsHandler showSnackbarMessageOverBrowserToolbar:snackbarTitle];
 }
 
 #pragma mark - SyncErrorSettingsCommandHandler

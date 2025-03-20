@@ -37,6 +37,8 @@
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service_factory.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_switch.h"
+#import "ios/chrome/browser/policy/model/management_state.h"
+#import "ios/chrome/browser/policy/ui_bundled/management_util.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -50,10 +52,12 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/browser/shared/ui/util/identity_snackbar/identity_snackbar_message.h"
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
@@ -336,6 +340,12 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
     syncService->GetUserSettings()->SetSelectedType(
         syncer::UserSelectableType::kReadingList, true);
     readingListToggleEnabledWithSigninFlow = YES;
+  }
+
+  if (postSignInActions.Has(
+          PostSignInAction::kShowIdentityConfirmationSnackbar)) {
+    [self triggerAccountSwitchSnackbarWithIdentity:identity browser:browser];
+    return;
   }
 
   if (!postSignInActions.Has(PostSignInAction::kShowSnackbar)) {
@@ -671,6 +681,28 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
     [self updateUserPolicyNotificationStatusIfNeeded:prefService];
   }
   [self.delegate didAcceptManagedConfirmation:keepBrowsingDataSeparate];
+}
+
+// Displays the identity confirmation snackbar with `identity`.
+- (void)triggerAccountSwitchSnackbarWithIdentity:(id<SystemIdentity>)identity
+                                         browser:(Browser*)browser {
+  ProfileIOS* profile = browser->GetProfile()->GetOriginalProfile();
+  UIImage* avatar = ChromeAccountManagerServiceFactory::GetForProfile(profile)
+                        ->GetIdentityAvatarWithIdentity(
+                            identity, IdentityAvatarSize::Regular);
+  ManagementState managementState =
+      GetManagementState(IdentityManagerFactory::GetForProfile(profile),
+                         AuthenticationServiceFactory::GetForProfile(profile),
+                         profile->GetPrefs());
+  MDCSnackbarMessage* snackbarTitle = [[IdentitySnackbarMessage alloc]
+      initWithName:identity.userGivenName
+             email:identity.userEmail
+            avatar:avatar
+           managed:managementState.is_profile_managed()];
+  CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
+  id<SnackbarCommands> snackbarCommandsHandler =
+      HandlerForProtocol(dispatcher, SnackbarCommands);
+  [snackbarCommandsHandler showSnackbarMessageOverBrowserToolbar:snackbarTitle];
 }
 
 #pragma mark - ManagedProfileCreationCoordinatorDelegate

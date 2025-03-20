@@ -5,11 +5,15 @@
 #include "chrome/browser/ash/system_web_apps/apps/boca_web_app_info.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/boca_ui/boca_app_page_handler.h"
 #include "ash/webui/boca_ui/boca_ui.h"
 #include "ash/webui/boca_ui/url_constants.h"
 #include "ash/webui/grit/ash_boca_ui_resources.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -144,6 +148,11 @@ Browser* BocaSystemAppDelegate::LaunchAndNavigateSystemWebApp(
     // Notify downstream Boca components so they can prepare the app instance
     // for OnTask and restore contents from the previous session if needed.
     ash::boca::BocaAppClient::Get()->GetSessionManager()->NotifyAppReload();
+  } else {
+    // Always launch producer app into float mode.
+    aura::Window* window = browser->window()->GetNativeWindow();
+    ash::boca::BocaAppHandler::SetFloatModeAndBoundsForWindow(
+        /*is_float_mode=*/true, window, base::BindOnce([](bool result) {}));
   }
   return browser;
 }

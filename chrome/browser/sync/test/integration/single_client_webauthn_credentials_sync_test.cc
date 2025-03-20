@@ -110,7 +110,8 @@ CreateEntityWithCustomClientTagHash(
                                              client_tag_hash),
       syncer::WEBAUTHN_CREDENTIAL, /*version=*/0,
       /*non_unique_name=*/"", client_tag_hash, entity, /*creation_time=*/0,
-      /*last_modified_time=*/0, /*collaboration_id=*/"");
+      /*last_modified_time=*/0,
+      /*collaboration_metadata=*/sync_pb::SyncEntity::CollaborationMetadata());
 }
 
 class PasskeyModelReadyChecker : public StatusChangeChecker,

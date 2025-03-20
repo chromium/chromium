@@ -275,6 +275,16 @@ bool IsANGLEValidationEnabled() {
 }
 #endif
 
+// Killswitch feature for allowing ANGLE to pass untranslated shaders to the
+// driver.
+BASE_FEATURE(kAllowANGLEPassthroughShaders,
+             "AllowANGLEPassthroughShaders",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsANGLEPassthroughShadersAllowed() {
+  return base::FeatureList::IsEnabled(kAllowANGLEPassthroughShaders);
+}
+
 void GetANGLEFeaturesFromCommandLineAndFinch(
     const base::CommandLine* command_line,
     std::vector<std::string>& enabled_angle_features,
@@ -346,6 +356,22 @@ bool IsSwiftShaderAllowedByFeature() {
 bool IsSwiftShaderAllowed(const base::CommandLine* command_line) {
   return IsSwiftShaderAllowedByCommandLine(command_line) ||
          IsSwiftShaderAllowedByFeature();
+}
+
+#if BUILDFLAG(IS_WIN)
+BASE_FEATURE(kAllowD3D11WarpFallback,
+             "AllowD3D11WarpFallback",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+bool IsAnySoftwareGLAllowed(const base::CommandLine* command_line) {
+#if BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(kAllowD3D11WarpFallback)) {
+    return true;
+  }
+#endif
+
+  return IsSwiftShaderAllowed(command_line);
 }
 
 base::TimeDelta GetGLCompileShaderDelay() {

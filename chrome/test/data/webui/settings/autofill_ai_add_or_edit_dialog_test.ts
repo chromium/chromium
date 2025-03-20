@@ -383,8 +383,10 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
         assertTrue(!!countrySelect);
         if (params.add) {
           assertEquals('', countrySelect.value);
+          assertTrue(countrySelect.textContent!.includes('No option selected'));
         } else {
           assertEquals(oldCountryCode, countrySelect.value);
+          assertTrue(countrySelect.textContent!.includes('Germany'));
         }
 
         if (params.changeCountry) {

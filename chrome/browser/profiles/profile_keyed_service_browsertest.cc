@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/router/media_router_feature.h"
+#include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/ui/browser.h"
@@ -511,6 +512,10 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
 #endif  // BUILDFLAG(IS_CHROMEOS)
   };
   // clang-format on
+  if (SearchEnginePreconnector::ShouldBeEnabledAsKeyedService() &&
+      SearchEnginePreconnector::ShouldBeEnabledForOffTheRecord()) {
+    guest_otr_active_services.insert("SearchEnginePreconnector");
+  }
 
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(user_manager::UserManager::Get()->IsLoggedInAsGuest());
@@ -611,6 +616,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "EventRouter",
     "ExtensionActionDispatcher",
     "ExtensionActionManager",
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+    "ExtensionAllowlist",
+#endif
     "ExtensionCommandsGlobalRegistry",
     "ExtensionErrorController",
     "ExtensionGCMAppHandler",
@@ -893,6 +901,10 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
 
   if (base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
     guest_active_services.insert("ProductSpecificationsService");
+  }
+
+  if (SearchEnginePreconnector::ShouldBeEnabledAsKeyedService()) {
+    guest_active_services.insert("SearchEnginePreconnector");
   }
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(user_manager::UserManager::Get()->IsLoggedInAsGuest());

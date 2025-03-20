@@ -90,7 +90,8 @@ TEST_F(UtilsUnitTest, TestValidGroups) {
   g2.SetIsTransitioningToSaved(true);
   g2.MarkTransitioningToSharedForTesting();
   g2.SetOriginatingTabGroupGuid(
-      base::Uuid::ParseLowercase("41abd97f-73e8-4b88-9389-b9fee6abda5e"));
+      base::Uuid::ParseLowercase("41abd97f-73e8-4b88-9389-b9fee6abda5e"),
+      /*use_originating_tab_group_guid=*/true);
   std::string log2 = TabGroupToShortLogString("prefix2", &g2);
   EXPECT_EQ(
       "prefix2\n"

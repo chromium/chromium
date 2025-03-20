@@ -52,6 +52,12 @@ class CORE_EXPORT CookieJar : public GarbageCollected<CookieJar> {
   void InvalidateCache();
 
  private:
+  using CookiesResponsePtr = network::mojom::blink::CookiesResponsePtr;
+
+  void OnSetCookieResponse(const KURL& cookie_url,
+                           const bool apply_devtools_overrides,
+                           CookiesResponsePtr response);
+
   void RequestRestrictedCookieManagerIfNeeded();
   void OnBackendDisconnect();
 
@@ -113,6 +119,12 @@ class CORE_EXPORT CookieJar : public GarbageCollected<CookieJar> {
   // be empty since that is a valid cookie string.
   String last_cookies_;
   bool is_first_operation_ = true;
+
+  // The number of required writes (via SetCookieFomString) that should be
+  // observed by the network service in order to skip an IPC in Cookies().
+  // This number increments when calling SetCookieFromString asynchronously
+  // and it is compared with the committed_writes_count in shared memory.
+  mojo::CountType required_committed_writes_ = 0;
 };
 
 }  // namespace blink

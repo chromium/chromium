@@ -139,8 +139,11 @@ class BnplManager {
   };
 
   // This function makes the appropriate call to the payments server to fetch
-  // the VCN details for the BNPL issuer selected in the BNPL manager.
-  void FetchVcnDetails();
+  // the VCN details for the BNPL issuer selected in the BNPL manager. `url` is
+  // the last URL navigated to inside of the pop-up, and will contain
+  // information that the issuer needs to fetch the virtual card details for the
+  // flow.
+  void FetchVcnDetails(GURL url);
 
   // The callback after the FetchVcnDetails call returns from the server. The
   // callback contains the result of the call as well as the VCN details.
@@ -193,8 +196,10 @@ class BnplManager {
 
   // The callback after `PaymentsWindowManager::InitBnplFlow()` calls.
   // The callback contains the result of the flow and will continue to
-  // VCN fetching if successful.
-  void OnPopupWindowCompleted(PaymentsWindowManager::BnplFlowResult result);
+  // VCN fetching if successful. `url` is the last URL that was navigated to
+  // inside of the pop-up.
+  void OnPopupWindowCompleted(PaymentsWindowManager::BnplFlowResult result,
+                              GURL url);
 
   // Combines `responses` from suggestion shown event and amount extraction,
   // and try to show card suggestions with buy-now-pay-later suggestion.

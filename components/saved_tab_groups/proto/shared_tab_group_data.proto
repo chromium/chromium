@@ -24,6 +24,10 @@ message LocalSharedTabGroupData {
   // For example, the originating shared tab groups will be hidden after
   // transitioning to saved groups.
   optional bool is_group_hidden = 3;
+
+  // Whether the originating tab group should be used by the signed in user (or
+  // whether the user is the owner of the originating tab group).
+  optional bool use_originating_tab_group_guid = 4;
 }
 
 // Message to store shared tab groups in DataTypeStore.

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -88,7 +89,8 @@ std::string EidToString(const std::vector<uint8_t>& eid_value_read) {
   std::string output;
   char* string_contents_ptr =
       base::WriteInto(&output, eid_value_read.size() + 1);
-  memcpy(string_contents_ptr, eid_value_read.data(), eid_value_read.size());
+  UNSAFE_TODO(memcpy(string_contents_ptr, eid_value_read.data(),
+                     eid_value_read.size()));
   return output;
 }
 

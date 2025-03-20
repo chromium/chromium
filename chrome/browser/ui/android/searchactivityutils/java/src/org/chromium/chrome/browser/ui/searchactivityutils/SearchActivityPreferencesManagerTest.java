@@ -25,11 +25,13 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARC
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowLooper;
@@ -63,6 +65,7 @@ import java.util.function.Consumer;
             SearchActivityPreferencesManagerTest.ShadowVoiceRecognitionUtil.class,
         })
 public class SearchActivityPreferencesManagerTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TemplateUrlService mTemplateUrlServiceMock;
     @Mock private LibraryLoader mLibraryLoaderMock;
     @Mock private TemplateUrl mTemplateUrlMock;
@@ -93,7 +96,6 @@ public class SearchActivityPreferencesManagerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlServiceMock);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
 

@@ -1623,7 +1623,8 @@ void Shell::Init(
   // the watcher), and additionally before `Shelf` is initialised in the
   // `WindowTreeHostManager::InitHosts` call.
   sunfish_scanner_feature_watcher_ =
-      std::make_unique<SunfishScannerFeatureWatcher>(*session_controller_);
+      std::make_unique<SunfishScannerFeatureWatcher>(*session_controller_,
+                                                     *this);
 
   // |tablet_mode_controller_| |mru_window_tracker_|, and
   // |assistant_controller_| are put before |app_list_controller_| as they are

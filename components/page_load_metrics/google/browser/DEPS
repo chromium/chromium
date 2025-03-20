@@ -12,4 +12,5 @@ include_rules = [
   "+net",
 
   "+services/metrics/public/cpp",
+  "+third_party/blink/public",
 ]

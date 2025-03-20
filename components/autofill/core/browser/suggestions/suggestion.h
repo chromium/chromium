@@ -144,6 +144,26 @@ struct Suggestion {
     std::u16string email_override;
   };
 
+  struct IdentityCredentialPayload final {
+    IdentityCredentialPayload();
+    IdentityCredentialPayload(GURL configURL, std::string account_id);
+    IdentityCredentialPayload(const IdentityCredentialPayload&);
+    IdentityCredentialPayload(IdentityCredentialPayload&&);
+    IdentityCredentialPayload& operator=(const IdentityCredentialPayload&);
+    IdentityCredentialPayload& operator=(IdentityCredentialPayload&&);
+    ~IdentityCredentialPayload();
+
+    friend bool operator==(const IdentityCredentialPayload&,
+                           const IdentityCredentialPayload&) = default;
+
+    // The IdP's configURL as defined here:
+    // https://w3c-fedid.github.io/FedCM/#dom-identityproviderconfig-configurl
+    GURL config_url;
+    // The account ID as defined here:
+    // https://w3c-fedid.github.io/FedCM/#dom-identityprovideraccount-id
+    std::string account_id;
+  };
+
   using IsLoading = base::StrongAlias<class IsLoadingTag, bool>;
   using InstrumentId = base::StrongAlias<class InstrumentIdTag, uint64_t>;
   using ValueToFill = base::StrongAlias<struct ValueToFill, std::u16string>;
@@ -155,7 +175,8 @@ struct Suggestion {
                                PasswordSuggestionDetails,
                                PlusAddressPayload,
                                AutofillAiPayload,
-                               PaymentsPayload>;
+                               PaymentsPayload,
+                               IdentityCredentialPayload>;
 
   // This struct is used to provide password suggestions with custom icons,
   // using the favicon of the website associated with the credentials. While
@@ -332,7 +353,7 @@ struct Suggestion {
              Icon icon,
              SuggestionType type);
   Suggestion(std::string_view main_text,
-             std::string_view minor_text,
+             base::span<std::string_view> minor_text_labels,
              std::string_view label,
              Icon icon,
              SuggestionType type);
@@ -356,6 +377,8 @@ struct Suggestion {
       case SuggestionType::kCreateNewPlusAddressInline:
       case SuggestionType::kPlusAddressError:
         return std::holds_alternative<PlusAddressPayload>(payload);
+      case SuggestionType::kIdentityCredential:
+        return std::holds_alternative<IdentityCredentialPayload>(payload);
       case SuggestionType::kPasswordEntry:
         // Manual fallback password suggestions store the password to preview or
         // fill in the suggestion's payload.
@@ -407,11 +430,11 @@ struct Suggestion {
 
   // The texts that will be displayed on the first line in a suggestion. The
   // order of showing the two texts on the first line depends on whether it is
-  // in RTL languages. The |main_text| includes the text value to be filled in
-  // the form, while the |minor_text| includes other supplementary text value to
-  // be shown also on the first line.
+  // in RTL languages. The `main_text` includes the text value to be filled in
+  // the form, while `minor_texts` includes other supplementary text values
+  // to be shown also on the first line.
   Text main_text;
-  Text minor_text;
+  std::vector<Text> minor_texts;
 
   // The secondary texts displayed in a suggestion. The labels are presented as
   // a N*M matrix, and the position of the text in the matrix decides where the

@@ -1006,6 +1006,7 @@ virtual/fenced-frame-mparch/external/wpt/fenced-frame/permission-api-denied.http
 virtual/fenced-frame-mparch/external/wpt/fenced-frame/resize-lock*
 virtual/fractional-scroll-offsets/external/wpt/css/css-position/sticky/position-sticky-inline.html
 virtual/fractional-scroll-offsets/external/wpt/css/css-position/sticky/position-sticky-large-top*
+virtual/fractional-scroll-offsets/external/wpt/css/css-position/sticky/position-sticky-offset-print.html
 virtual/generic-sensor-extra-classes/external/wpt/ambient-light/AmbientLightSensor-iframe-access.https.html
 virtual/generic-sensor-extra-classes/external/wpt/magnetometer/Magnetometer-iframe-access.https.html
 virtual/gpu-rasterization/external/wpt/css/css-images/object-fit-*
@@ -1056,6 +1057,7 @@ virtual/scalefactor200/external/wpt/css/filter-effects/filtered-html-is-not-cont
 virtual/scalefactor200/external/wpt/css/filter-effects/clip-under-filter-*
 virtual/scalefactor200/external/wpt/css/filter-effects/effect-reference-on-span.html
 virtual/scalefactor200/external/wpt/css/filter-effects/repaint-added-backdrop-filter.html
+virtual/scalefactor200/external/wpt/css/printing/*
 virtual/scalefactor200/external/wpt/largest-contentful-paint/animated/observe-cross-origin-tao-animated-image.tentative.html
 virtual/scalefactor200/external/wpt/largest-contentful-paint/image-not-fully-visible.html 
 virtual/scalefactor200/external/wpt/largest-contentful-paint/multiple-image-same-src.html

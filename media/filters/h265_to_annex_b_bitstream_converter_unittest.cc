@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/hevc.h"
@@ -90,8 +91,8 @@ TEST_F(H265ToAnnexBBitstreamConverterTest, FailureHeaderBufferOverflow) {
   // Simulate 10 nalu_array HEVCDecoderConfigurationRecord,
   // which would extend beyond the buffer.
   uint8_t corrupted_header[sizeof(kHeaderDataOkWithFieldLen4)];
-  memcpy(corrupted_header, kHeaderDataOkWithFieldLen4,
-         sizeof(kHeaderDataOkWithFieldLen4));
+  UNSAFE_TODO(memcpy(corrupted_header, kHeaderDataOkWithFieldLen4,
+                     sizeof(kHeaderDataOkWithFieldLen4)));
   // 23th byte contain the number of nalu arrays
   corrupted_header[22] = corrupted_header[22] | 0xA;
 
@@ -141,8 +142,8 @@ TEST_F(H265ToAnnexBBitstreamConverterTest, FailureNalUnitBreakage) {
 
   // Simulate NAL unit broken in middle by writing only some of the data.
   uint8_t corrupted_nal_unit[sizeof(kPacketDataOkWithFieldLen4) - 30];
-  memcpy(corrupted_nal_unit, kPacketDataOkWithFieldLen4,
-         sizeof(kPacketDataOkWithFieldLen4) - 30);
+  UNSAFE_TODO(memcpy(corrupted_nal_unit, kPacketDataOkWithFieldLen4,
+                     sizeof(kPacketDataOkWithFieldLen4) - 30));
 
   // Calculate buffer size for actual NAL unit, should return 0 because of
   // incomplete input buffer.

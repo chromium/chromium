@@ -22,7 +22,7 @@ import {AppStyleUpdater} from './app_style_updater.js';
 import type {SettingsPrefs} from './common.js';
 import {getCurrentSpeechRate, isWhitespace, minOverflowLengthToScroll, playFromSelectionTimeout} from './common.js';
 import type {LanguageToastElement} from './language_toast.js';
-import {ReadAnythingLogger, TimeFrom, TimeTo} from './read_anything_logger.js';
+import {ReadAnythingLogger, TimeFrom} from './read_anything_logger.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 import type {SpeechBrowserProxy} from './speech_browser_proxy.js';
 import {SpeechBrowserProxyImpl} from './speech_browser_proxy.js';
@@ -356,8 +356,8 @@ export class AppElement extends AppElementBase {
   constructor() {
     super();
     this.constructorTime = Date.now();
-    this.logger_.logTimeBetween(
-        TimeFrom.APP, TimeTo.CONSTRUCTOR, this.startTime, this.constructorTime);
+    this.logger_.logTimeFrom(
+        TimeFrom.APP, this.startTime, this.constructorTime);
     this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
     this.speechSynthesisLanguage = chrome.readingMode.baseLanguageForSpeech;
     this.styleUpdater_ = new AppStyleUpdater(this);
@@ -381,13 +381,6 @@ export class AppElement extends AppElementBase {
     // we're not blocking onConnected on anything else during WebUI setup.
     if (chrome.readingMode) {
       chrome.readingMode.onConnected();
-      const connectedCallbackTime = Date.now();
-      this.logger_.logTimeBetween(
-          TimeFrom.APP, TimeTo.CONNNECTED_CALLBACK, this.startTime,
-          connectedCallbackTime);
-      this.logger_.logTimeBetween(
-          TimeFrom.APP_CONSTRUCTOR, TimeTo.CONNNECTED_CALLBACK,
-          this.constructorTime, connectedCallbackTime);
     }
 
     // Push ShowUI() callback to the event queue to allow deferred rendering

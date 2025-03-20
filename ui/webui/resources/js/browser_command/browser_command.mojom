@@ -13,8 +13,7 @@ module browser_command.mojom;
 // side-effect-free.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// Please update PromoBrowserCommandEnum upon addition of new commands in
-// tools/metrics/histograms/metadata/new_tab_page/enums.xml
+// LINT.IfChange(Command)
 enum Command {
   kUnknownCommand = 0,
   kOpenSafetyCheck = 1,
@@ -32,7 +31,9 @@ enum Command {
   kOpenSafetyCheckFromWhatsNew = 13,
   kOpenPaymentsSettings = 14,
   // kOpenHistorySearchSettings = 15 - deprecated
+  kOpenGlic = 16,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:PromoBrowserCommandEnum)
 
 // Click information needed to determine user's desired window disposition using
 // ui::DispositionFromClick().

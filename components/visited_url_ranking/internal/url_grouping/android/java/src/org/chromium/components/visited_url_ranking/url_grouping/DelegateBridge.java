@@ -6,6 +6,7 @@ package org.chromium.components.visited_url_ranking.url_grouping;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 
 /**
@@ -34,10 +35,11 @@ public class DelegateBridge implements GroupSuggestionsService.Delegate {
 
     @CalledByNative
     @Override
-    public void showSuggestion(GroupSuggestions groupSuggestions) {
+    public void showSuggestion(
+            GroupSuggestions groupSuggestions, Callback<UserResponseMetadata> callback) {
         // TODO(crbug.com/397221723): Only show suggestions to corresponding window.
         for (GroupSuggestionsService.Delegate javaDelegate : mJavaDelegates) {
-            javaDelegate.showSuggestion(groupSuggestions);
+            javaDelegate.showSuggestion(groupSuggestions, callback);
         }
     }
 

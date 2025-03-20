@@ -58,7 +58,6 @@ ContouredRect PixelSnappedContouredBorderInternal(
     const PhysicalRect& border_rect,
     PhysicalBoxSides sides_to_include) {
   FloatRoundedRect rounded_rect(ToPixelSnappedRect(border_rect));
-
   if (style.HasBorderRadius()) {
     rounded_rect.SetRadii(
         CalcRadiiFor(style, gfx::SizeF(border_rect.size), sides_to_include));
@@ -69,6 +68,9 @@ ContouredRect PixelSnappedContouredBorderInternal(
   if (rounded_rect.IsRounded()) {
     contoured_rect.SetCornerCurvature(
         CalcCurvatureFor(style, rounded_rect.GetRadii()));
+    if (!contoured_rect.HasRoundCurvature()) {
+      contoured_rect.SetOriginRect(rounded_rect);
+    }
   }
   return contoured_rect;
 }
@@ -88,82 +90,20 @@ ContouredRect ContouredBorderGeometry::ContouredBorder(
   if (rounded_rect.IsRounded()) {
     contoured_rect.SetCornerCurvature(
         CalcCurvatureFor(style, rounded_rect.GetRadii()));
+    if (!contoured_rect.HasRoundCurvature()) {
+      contoured_rect.SetOriginRect(rounded_rect);
+    }
   }
   return contoured_rect;
 }
 
-// Each corner is rendered independently and its rendering should remain within
-// the corner bounds. With low curvature values (curvature<2),this creates an
-// effect where lines/curves drawn at the
-// border-width offset would seem thinner than the given border-width. To
-// correct this, while maintaining the rule of drawing only within the corners,
-// the outer corner is inset by some offset.
-// Note that this doesn't account for elliptical corners, as those aren't
-// corrected for ordinary rounded rects as well. See open spec issue:
-// https://github.com/w3c/csswg-drafts/issues/11610
-gfx::SizeF InsetOuterCornerSizeForCurvature(const gfx::SizeF& corner_size,
-                                            float curvature,
-                                            float horizontal_border_width,
-                                            float vertical_border_width) {
-  if (curvature >= 2) {
-    return corner_size;
-  }
-  if (curvature <= 0.5) {
-    return corner_size -
-           gfx::SizeF(vertical_border_width, horizontal_border_width);
-  }
-
-  // The offset from the inner edge is sqrt(2 / curvature).
-  // This would result in an offset of sqrt(2) for bevel, and and offset of 2
-  // for scoop. We then subtract it by 1 to get the offset from the outer edge.
-  float offset_from_outer_edge = std::sqrt(2. / curvature) - 1;
-  return corner_size -
-         gfx::SizeF(vertical_border_width * offset_from_outer_edge,
-                    horizontal_border_width * offset_from_outer_edge);
-}
 
 ContouredRect ContouredBorderGeometry::PixelSnappedContouredBorder(
     const ComputedStyle& style,
     const PhysicalRect& border_rect,
     PhysicalBoxSides sides_to_include) {
-  ContouredRect rounded_rect =
-      PixelSnappedContouredBorderInternal(style, border_rect, sides_to_include);
-  const auto& curvature = rounded_rect.GetCornerCurvature();
-
-  FloatRoundedRect::Radii radii = rounded_rect.GetRadii();
-  if (radii.IsZero() || curvature.IsRound() || sides_to_include.IsEmpty()) {
-    return rounded_rect;
-  }
-  if ((sides_to_include.left || sides_to_include.top) &&
-      !radii.TopLeft().IsEmpty()) {
-    radii.SetTopLeft(InsetOuterCornerSizeForCurvature(
-        radii.TopLeft(), curvature.TopLeft(),
-        sides_to_include.left ? style.BorderLeftWidth() : 0,
-        sides_to_include.top ? style.BorderTopWidth() : 0));
-  }
-  if ((sides_to_include.right || sides_to_include.top) &&
-      !radii.TopRight().IsEmpty()) {
-    radii.SetTopRight(InsetOuterCornerSizeForCurvature(
-        radii.TopRight(), curvature.TopRight(),
-        sides_to_include.right ? style.BorderRightWidth() : 0,
-        sides_to_include.top ? style.BorderTopWidth() : 0));
-  }
-  if ((sides_to_include.right || sides_to_include.bottom) &&
-      !radii.BottomRight().IsEmpty()) {
-    radii.SetBottomRight(InsetOuterCornerSizeForCurvature(
-        radii.BottomRight(), curvature.BottomRight(),
-        sides_to_include.right ? style.BorderRightWidth() : 0,
-        sides_to_include.bottom ? style.BorderBottomWidth() : 0));
-  }
-  if ((sides_to_include.left || sides_to_include.bottom) &&
-      !radii.BottomLeft().IsEmpty()) {
-    radii.SetBottomLeft(InsetOuterCornerSizeForCurvature(
-        radii.BottomLeft(), curvature.BottomLeft(),
-        sides_to_include.left ? style.BorderLeftWidth() : 0,
-        sides_to_include.bottom ? style.BorderBottomWidth() : 0));
-  }
-  rounded_rect.SetRadii(radii);
-  return rounded_rect;
+  return PixelSnappedContouredBorderInternal(style, border_rect,
+                                             sides_to_include);
 }
 
 ContouredRect ContouredBorderGeometry::ContouredInnerBorder(
@@ -223,6 +163,7 @@ ContouredRect ContouredBorderGeometry::PixelSnappedContouredBorderWithOutsets(
     contoured_rect.SetRadii(pixel_snapped_rounded_border.GetRadii());
     contoured_rect.SetCornerCurvature(
         pixel_snapped_rounded_border.GetCornerCurvature());
+    contoured_rect.SetOriginRect(pixel_snapped_rounded_border.GetOriginRect());
   }
   return contoured_rect;
 }

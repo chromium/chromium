@@ -90,11 +90,12 @@ class OnTaskLockedSessionWindowTrackerBrowserTestBase
     : public InProcessBrowserTest {
  protected:
   OnTaskLockedSessionWindowTrackerBrowserTestBase() {
-    // Enable Boca and consumer experience for testing purposes. This is used
-    // to set up the Boca SWA for OnTask.
+    // Enable Boca, Boca consumer, and Boca Pod experience for testing purposes.
+    // This is used to set up the Boca SWA for OnTask.
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{ash::features::kBoca,
-                              ash::features::kBocaConsumer},
+                              ash::features::kBocaConsumer,
+                              ash::features::kBocaOnTaskPod},
         /*disabled_features=*/{});
   }
 

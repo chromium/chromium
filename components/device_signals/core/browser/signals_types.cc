@@ -104,6 +104,14 @@ SettingsResponse& SettingsResponse::operator=(const SettingsResponse&) =
 
 SettingsResponse::~SettingsResponse() = default;
 
+OsSignalsResponse::OsSignalsResponse() = default;
+OsSignalsResponse::OsSignalsResponse(const OsSignalsResponse&) = default;
+
+OsSignalsResponse& OsSignalsResponse::operator=(const OsSignalsResponse&) =
+    default;
+
+OsSignalsResponse::~OsSignalsResponse() = default;
+
 FileSystemInfoResponse::FileSystemInfoResponse() = default;
 FileSystemInfoResponse::FileSystemInfoResponse(const FileSystemInfoResponse&) =
     default;

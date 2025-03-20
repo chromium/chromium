@@ -83,6 +83,8 @@ static_library("test_support") {
     "gtest_xml_util.h",
     "icu_test_util.cc",
     "icu_test_util.h",
+    "insecure_random_generator.cc",
+    "insecure_random_generator.h",
     "launcher/test_result.cc",
     "launcher/test_result.h",
     "launcher/test_results_tracker.h",

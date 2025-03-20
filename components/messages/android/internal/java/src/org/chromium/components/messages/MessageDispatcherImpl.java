@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -18,6 +19,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * This class implements public MessageDispatcher interface, delegating the actual work to
  * MessageQueueManager.
  */
+@NullMarked
 public class MessageDispatcherImpl implements ManagedMessageDispatcher {
     private final MessageQueueManager mMessageQueueManager;
     private final MessageContainer mMessageContainer;

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "pdf/pdf.h"
@@ -39,8 +40,8 @@ void PdfFlattener::FlattenPdf(base::ReadOnlySharedMemoryRegion src_pdf_region,
     return;
   }
 
-  memcpy(region_mapping.mapping.memory(), result->pdf.data(),
-         result->pdf.size());
+  UNSAFE_TODO(memcpy(region_mapping.mapping.memory(), result->pdf.data(),
+                     result->pdf.size()));
   std::move(callback).Run(printing::mojom::FlattenPdfResult::New(
       std::move(region_mapping.region), result->page_count));
 }

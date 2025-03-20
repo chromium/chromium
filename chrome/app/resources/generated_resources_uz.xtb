@@ -624,6 +624,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1430915738399379752">Chop etish</translation>
 <translation id="1431188203598586230">DT uchun oxirgi yangilanish</translation>
 <translation id="1432581352905426595">Qidiruv tizimlarini boshqarish</translation>
+<translation id="1432650420699700107">Saytlar mahalliy tarmoqdagi istalgan qurilmaga ulanish uchun ruxsat soʻrashi mumkin</translation>
 <translation id="1433478348197382180">Oʻqish rejimi</translation>
 <translation id="1433980411933182122">Boshlanishi</translation>
 <translation id="1434696352799406980">Bosh sahifa, yangi tezkor havolalar sahifasi, qidiruv tizimi va qadalgan sahifalar tiklanadi. Shuningdek, barcha kengaytmalar o‘chiriladi va cookie kabi vaqtinchalik fayllar tozalanadi. Xatcho‘plar, tarix va saqlab qo‘yilgan parollaringiz saqlanib qoladi.</translation>
@@ -4060,9 +4061,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
     <ph name="BEGIN_PARAGRAPH2" />Istalgan vaqtda Chrome qurilmasi sozlamalari orqali bu hisobotlarni yuborishni boshlash yoki toʻxtatishga ruxsat berishingiz mumkin. Agar domen administratori boʻlsangiz, bu sozlamani administrator konsoli orqali oʻzgartirishingiz mumkin.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">Kichik kottej ustidagi tungi shimol yogʻdusi.</translation>
 <translation id="3818102823568165369">Operatsion tizim yoki administrator kiritgan qurilmadagi sertifikatlar.</translation>
-<translation id="3818662907126913619">Qurilmadan <ph name="DOMAIN" /> profili orqali foydalanish uchun tashkilotga qurilma haqida axborot berish lozim.
-
-Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion tizim haqidagi maʼlumotlar kiradi.</translation>
 <translation id="3819164369574292143">Ekrandagi elementlar kattalashtirilishi. Lupani yoqib, oʻchirish uchun Search+Ctrl+M tugmalarini bosing. Kattalashtirilganidan keyin Ctrl+Alt+Strelka tugmalari bilan harakatlaning.</translation>
 <translation id="3819257035322786455">Zaxiralash</translation>
 <translation id="3819261658055281761">Tizim bu qurilmada API uchun ruxsat tokenini saqlay olmadi.</translation>
@@ -4380,9 +4378,6 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4031527940632463547">Sensorlar bloklandi</translation>
 <translation id="4033471457476425443">Yangi jild qo‘shish</translation>
 <translation id="4033963223187371752">Xavfsiz saytlarda rasmlar yoki freymlar kabi xavfli kontent boʻlishi mumkin.</translation>
-<translation id="4034706080855851454">Qurilmadan tashkilot profili orqali foydalanish uchun tashkilotga qurilma haqida axborot berish lozim.
-
-Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion tizim haqidagi maʼlumotlar kiradi.</translation>
 <translation id="4034824040120875894">Printer</translation>
 <translation id="4035758313003622889">&amp;Vazifalar menejeri</translation>
 <translation id="4035877632587724847">Rad etish</translation>
@@ -4831,6 +4826,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4364830672918311045">Bildirishnomalarni ko‘rsatish</translation>
 <translation id="4367971618859387374">Chiqadigan ism</translation>
 <translation id="4368960422722232719">Kursor varaq ustida surilganda xotira sarfi bildirgisi chiqsin</translation>
+<translation id="4369151461324628035">Saytlarga mahalliy tarmoqdagi istalgan qurilmaga ulanishni taqiqlash</translation>
 <translation id="4369215744064167350">Saytga ruxsat berildi</translation>
 <translation id="4369233657762989723">Ovoz bilan yozish sozlamasi</translation>
 <translation id="436926121798828366">Buni istalgan vaqtda <ph name="SETTINGS_LINK" /> orqali oʻzgartirish mumkin</translation>
@@ -5384,6 +5380,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4772914216048388646">Tartibli</translation>
 <translation id="4773112038801431077">Linux tizimini yangilash</translation>
 <translation id="4773122030389014189">“<ph name="GROUP_NAME" />” varaqlar guruhini ulashish</translation>
+<translation id="4773253008034797668">Mahalliy tarmoqdagi istalgan qurilmaga ulanishi mumkin</translation>
 <translation id="477548766361111120">Kengaytmaga bu saytni oʻqish va oʻzgartirishga ruxsat berish</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> ulandi</translation>
 <translation id="4776594120007763294">Sahifani keyinroq oʻqish uchun tugma ustiga bosing</translation>
@@ -7847,6 +7844,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6563002009564846727">Windowsdan import qilingan sertifikatlarni koʻrish</translation>
 <translation id="6563055593659435495">Telefon bilan aloqa uzildi. Telefoningiz yoningizda va undagi Bluetooth va Wi-Fi yoniqligini tekshiring.</translation>
 <translation id="6564860838537532172">Brauzer tarixini qidirganingizda, tarixingizdagi qidiruvlar, eng yaxshi mos keladigan sahifalar kontenti va yaratilgan model natijalari Googlega yuboriladi hamda bu funksiyani yaxshilash uchun odam muharrirlar tomonidan koʻrilishi mumkin.</translation>
+<translation id="6565144332292237355">Saytlar bu funksiya yordamida mahalliy tarmoqdagi istalgan qurilmani topishi va unga ulanishi mumkin</translation>
 <translation id="6569931898053264308">Oʻrtacha tejash</translation>
 <translation id="6570622975915850879">Boshqa qurilmadan foydalanish</translation>
 <translation id="65711204837946324">Yuklab olish uchun ruxsat kerak</translation>
@@ -11558,6 +11556,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
       <ph name="LIST_ITEM" />Chrome tarmoqlar diagnostikasini ishga tushiring
     <ph name="END_LIST" /></translation>
 <translation id="9161172953291434881">Bu saytga ishonasizmi?</translation>
+<translation id="9164418710391288146">Mahalliy tarmoqdagi istalgan qurilmaga ulanishi taqiqlangan</translation>
 <translation id="9165856803582999927"><ph name="APP_NAME" /> uchun kirish kaliti yaratilishi va saqlanishi kerak qurilma kamerasida bu QR kodni skanerlang</translation>
 <translation id="916607977885256133">Tasvir ustida tasvir</translation>
 <translation id="9166253503936244008">Bu QR kodni <ph name="APP_NAME" /> kodi bor qurilma orqali skanerlang</translation>

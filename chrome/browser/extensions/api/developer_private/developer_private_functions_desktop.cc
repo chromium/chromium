@@ -113,6 +113,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -1386,7 +1387,7 @@ DeveloperPrivateRemoveMultipleExtensionsFunction::Run() {
   gfx::NativeWindow parent;
   if (!GetSenderWebContents()) {
     CHECK_IS_TEST();
-    parent = nullptr;
+    parent = gfx::NativeWindow();
   } else {
     parent = chrome::FindBrowserWithTab(GetSenderWebContents())
                  ->window()

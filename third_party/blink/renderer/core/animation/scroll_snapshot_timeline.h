@@ -106,6 +106,9 @@ class CORE_EXPORT ScrollSnapshotTimeline : public AnimationTimeline,
   virtual ScrollAxis GetAxis() const = 0;
 
  protected:
+  // For access to TimelineState.
+  friend class AnimationTrigger;
+
   PhaseAndTime CurrentPhaseAndTime() override;
 
   AnimationTimeDelta CalculateIntrinsicIterationDuration(

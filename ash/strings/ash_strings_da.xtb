@@ -241,6 +241,8 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1755556344721611131">Appen Diagnostik</translation>
 <translation id="1756833229520115364">Skabelonen kunne ikke gemmes. Der er for mange vinduer eller faner.</translation>
 <translation id="1757857692711134412">Deaktiveret indtil solnedgang</translation>
+<translation id="1763084151787818322">Andre handlinger</translation>
+<translation id="1768138163688567246">Luk Søg på min skærm</translation>
 <translation id="1768366657309696705">Tastaturgenvejen <ph name="LAUNCHER_KEY_NAME" />+punktum er blevet ændret. Hvis du vil bruge Insert-knappen, skal du trykke på tasten <ph name="LAUNCHER_KEY_NAME" />+Shift+Backspace.</translation>
 <translation id="1770726142253415363">Flyttet til række <ph name="ROW_NUMBER" />, kolonne <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Rul til højre</translation>
@@ -1942,6 +1944,7 @@ Installeret for nylig</translation>
 <translation id="742594950370306541">Kameraet er i brug.</translation>
 <translation id="742608627846767349">Godmorgen</translation>
 <translation id="743058460480092004">Kamera og mikrofon er i brug.</translation>
+<translation id="7440404390546433462">Google Søgning</translation>
 <translation id="7441711280402516925">Afspiller · Skift til fane</translation>
 <translation id="7453330308669753048">Resultatet fra søgehistorikken er fjernet</translation>
 <translation id="7459485586006128091">Hotspottet er blevet deaktiveret på grund af en intern fejl. Prøv at genoprette forbindelsen om et par minutter.</translation>

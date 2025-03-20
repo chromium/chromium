@@ -39,7 +39,9 @@
 <translation id="1538031354170655462">Situs biasanya menggunakan komunikasi nirkabel jarak dekat (NFC) agar berfungsi dengan tag atau perangkat di sekitar, seperti memindai badge atau melakukan pembayaran nirsentuh</translation>
 <translation id="1547123415014299762">Cookie pihak ketiga diizinkan</translation>
 <translation id="1593426485665524382">Tindakan baru tersedia di dekat bagian atas layar</translation>
+<translation id="1615755956145364867">Situs dapat meminta untuk memutar konten yang dilindungi</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1621729191093924223">Fitur yang memerlukan mikrofon tidak akan berfungsi</translation>
 <translation id="1633720957382884102">Situs terkait</translation>
 <translation id="1644574205037202324">Histori</translation>
 <translation id="1652197001188145583">Jika diaktifkan, situs dapat meminta untuk menggunakan perangkat NFC. Jika dinonaktifkan, situs tidak dapat menggunakan perangkat NFC.</translation>
@@ -54,6 +56,7 @@
 <translation id="1743802530341753419">Tanya sebelum mengizinkan situs terhubung ke perangkat (disarankan)</translation>
 <translation id="1779089405699405702">Pendekode gambar</translation>
 <translation id="1785415724048343560">Direkomendasikan untuk mendapatkan pengalaman terbaik</translation>
+<translation id="1796588414813960292">Fitur yang memerlukan suara tidak akan berfungsi</translation>
 <translation id="1799920918471566157">Tips untuk Chrome</translation>
 <translation id="1816835383954230954">Jika diaktifkan, Chrome berjalan lebih cepat dan fitur yang menggunakan JavaScript akan berfungsi sebagaimana mestinya. Jika dinonaktifkan, performa akan berkurang tetapi akan membuat V8 lebih tahan terhadap serangan.</translation>
 <translation id="1818308510395330587">Untuk mengizinkan <ph name="APP_NAME" /> menggunakan Augmented Reality (AR), aktifkan juga kamera di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
@@ -71,6 +74,7 @@
 <translation id="1994173015038366702">URL situs</translation>
 <translation id="2004697686368036666">Fitur tertentu di beberapa situs mungkin tidak berfungsi</translation>
 <translation id="2025115093177348061">Augmented reality</translation>
+<translation id="2028449514182362831">Fitur yang memerlukan sensor gerakan tidak akan berfungsi</translation>
 <translation id="2030769033451695672">Ketuk untuk kembali ke <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Urungkan</translation>
 <translation id="2091887806945687916">Suara</translation>
@@ -87,6 +91,7 @@
 <translation id="2215727959747642672">Pengeditan file</translation>
 <translation id="2218389616572918761">Situs dapat meminta akses ke mikrofon Anda</translation>
 <translation id="2228071138934252756">Untuk mengizinkan <ph name="APP_NAME" /> mengakses kamera Anda, aktifkan juga kamera di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
+<translation id="2231160360698766265">Situs dapat memutar konten yang dilindungi</translation>
 <translation id="2235344399760031203">Cookie pihak ketiga diblokir</translation>
 <translation id="2238944249568001759">Penelusuran yang disarankan berdasarkan tab terakhir Anda</translation>
 <translation id="2241587408274973373">Kartu halaman tab baru</translation>
@@ -256,6 +261,7 @@
 <translation id="4259722352634471385">Navigasi diblokir: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Setelah Anda menutupnya, situs dapat terus melakukan sinkronisasi untuk menyelesaikan tugas, seperti mengupload foto atau mengirim pesan chat</translation>
 <translation id="4278390842282768270">Diizinkan</translation>
+<translation id="4290791284969893584">Setelah menutup halaman, tugas yang Anda mulai mungkin tidak selesai</translation>
 <translation id="429312253194641664">Sebuah situs sedang memutar media</translation>
 <translation id="42981349822642051">Luaskan</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Berakhir besok}other{Berakhir dalam # hari}}</translation>
@@ -530,6 +536,7 @@
 <translation id="8010630645305864042">{TILE_COUNT,plural, =1{Sembunyikan kartu lanjutkan dengan tab ini}other{Sembunyikan kartu lanjutkan dengan tab ini}}</translation>
 <translation id="802154636333426148">Download gagal</translation>
 <translation id="8042586301629853791">Urutkan menurut:</translation>
+<translation id="8051193500142930381">Fitur yang memerlukan kamera tidak akan berfungsi</translation>
 <translation id="8067883171444229417">Putar video</translation>
 <translation id="8068648041423924542">Tidak dapat memilih sertifikat.</translation>
 <translation id="8077120325605624147">Setiap situs yang Anda buka dapat menampilkan iklan apa pun kepada Anda</translation>
@@ -630,6 +637,7 @@
 <translation id="9138217887606523162">Zoom saat ini sebesar <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9156722768168878035">Izinkan Chrome menampilkan tab terbaru di daftar aplikasi dan hasil penelusuran perangkat Anda. Anda dapat menonaktifkannya kapan saja di setelan Chrome.</translation>
 <translation id="9162462602695099906">Halaman ini berbahaya</translation>
+<translation id="9182556968660520230">Jangan izinkan situs memutar konten yang dilindungi</translation>
 <translation id="947156494302904893">Situs yang Anda buka dapat memverifikasi bahwa Anda adalah orang sungguhan dan bukan bot</translation>
 <translation id="959682366969460160">Atur dengan mudah</translation>
 <translation id="967624055006145463">Data disimpan</translation>

@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/boca_ui/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "ash/wm/window_state.h"
 #include "base/files/file_path.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -163,6 +164,19 @@ IN_PROC_BROWSER_TEST_P(BocaAppProviderIntegrationTest,
 }
 
 IN_PROC_BROWSER_TEST_P(BocaAppProviderIntegrationTest,
+                       ShouldLaunchIntoFloatMode) {
+  LaunchAndWait();
+  auto* window =
+      ash::FindSystemWebAppBrowser(profile(), ash::SystemWebAppType::BOCA)
+          ->window()
+          ->GetNativeWindow();
+  ash::WindowState* window_state = ash::WindowState::Get(window);
+  EXPECT_TRUE(window_state->IsFloated());
+  EXPECT_EQ(400, window->bounds().width());
+  EXPECT_EQ(600, window->bounds().height());
+}
+
+IN_PROC_BROWSER_TEST_P(BocaAppProviderIntegrationTest,
                        ShouldHideExtensionsContainerInToolbar) {
   LaunchAndWait();
   const Browser* const boca_app_browser =
@@ -242,6 +256,17 @@ IN_PROC_BROWSER_TEST_P(BocaAppConsumerIntegrationTest,
                        ShouldNotifyReloadOnLaunch) {
   EXPECT_CALL(*session_observer(), OnAppReloaded).Times(1);
   LaunchAndWait();
+}
+
+IN_PROC_BROWSER_TEST_P(BocaAppConsumerIntegrationTest,
+                       ShouldNotLaunchIntoFloatMode) {
+  LaunchAndWait();
+  auto* window =
+      ash::FindSystemWebAppBrowser(profile(), ash::SystemWebAppType::BOCA)
+          ->window()
+          ->GetNativeWindow();
+  ash::WindowState* window_state = ash::WindowState::Get(window);
+  EXPECT_FALSE(window_state->IsFloated());
 }
 
 IN_PROC_BROWSER_TEST_P(BocaAppConsumerIntegrationTest,

@@ -14,10 +14,12 @@ import android.graphics.Rect;
 import android.util.Size;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -29,6 +31,7 @@ import org.chromium.content.browser.webcontents.WebContentsImpl;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ScreenshotBoundsManagerTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Context mContext;
 
     @Mock private Tab mTab;
@@ -43,8 +46,6 @@ public class ScreenshotBoundsManagerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mWebContents.getRenderCoordinates()).thenReturn(mRenderCoordinates);
         when(mRenderCoordinates.getPageScaleFactorInt()).thenReturn(1);

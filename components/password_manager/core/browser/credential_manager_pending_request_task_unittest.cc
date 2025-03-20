@@ -7,7 +7,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
-#include "components/password_manager/core/browser/credential_type_flags.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
@@ -26,9 +25,6 @@ namespace {
 
 using testing::_;
 using testing::Return;
-
-constexpr int kIncludePasswordsFlag =
-    static_cast<int>(CredentialTypeFlags::kPassword);
 
 PasswordFormDigest GetFormDigest() {
   PasswordFormDigest digest(PasswordForm::Scheme::kHtml,
@@ -159,8 +155,7 @@ TEST_F(CredentialManagerPendingRequestTaskTest, OnlyProfileStore) {
 
   CredentialManagerPendingRequestTask task(
       &delegate_mock_, /*callback=*/base::DoNothing(),
-      CredentialMediationRequirement::kOptional,
-      /*requested_credential_type_flags=*/kIncludePasswordsFlag,
+      CredentialMediationRequirement::kOptional, /*include_passwords=*/true,
       /*request_federations=*/{}, GetFormDigest());
   RunAllPendingTasks();
 }
@@ -189,8 +184,7 @@ TEST_F(CredentialManagerPendingRequestTaskTest,
 
   CredentialManagerPendingRequestTask task(
       &delegate_mock_, /*callback=*/base::DoNothing(),
-      CredentialMediationRequirement::kOptional,
-      /*requested_credential_type_flags=*/kIncludePasswordsFlag,
+      CredentialMediationRequirement::kOptional, /*include_passwords=*/true,
       /*request_federations=*/{}, GetFormDigest());
   RunAllPendingTasks();
 }
@@ -219,8 +213,7 @@ TEST_F(CredentialManagerPendingRequestTaskTest,
 
   CredentialManagerPendingRequestTask task(
       &delegate_mock_, /*callback=*/base::DoNothing(),
-      CredentialMediationRequirement::kOptional,
-      /*requested_credential_type_flags=*/kIncludePasswordsFlag,
+      CredentialMediationRequirement::kOptional, /*include_passwords=*/true,
       /*request_federations=*/{}, GetFormDigest());
   RunAllPendingTasks();
 }
@@ -252,7 +245,7 @@ TEST_F(CredentialManagerPendingRequestTaskTest,
   CredentialManagerPendingRequestTask task(
       &delegate_mock_, /*callback=*/base::DoNothing(),
       CredentialMediationRequirement::kOptional,
-      /*requested_credential_type_flags=*/0, {federation_url}, GetFormDigest());
+      /*include_passwords=*/false, {federation_url}, GetFormDigest());
   RunAllPendingTasks();
 }
 
@@ -273,8 +266,7 @@ TEST_F(CredentialManagerPendingRequestTaskTest,
 
   CredentialManagerPendingRequestTask task(
       &delegate_mock_, /*callback=*/base::DoNothing(),
-      CredentialMediationRequirement::kOptional,
-      /*requested_credential_type_flags=*/kIncludePasswordsFlag,
+      CredentialMediationRequirement::kOptional, /*include_passwords=*/true,
       /*request_federations=*/{}, GetFormDigest());
   RunAllPendingTasks();
 }
@@ -300,8 +292,7 @@ TEST_F(CredentialManagerPendingRequestTaskTest, NoAutosigninForPSLMatches) {
 
   CredentialManagerPendingRequestTask task(
       &delegate_mock_, /*callback=*/base::DoNothing(),
-      CredentialMediationRequirement::kOptional,
-      /*requested_credential_type_flags=*/kIncludePasswordsFlag,
+      CredentialMediationRequirement::kOptional, /*include_passwords=*/true,
       /*request_federations=*/{}, GetFormDigest());
   RunAllPendingTasks();
 }
@@ -330,8 +321,7 @@ TEST_F(CredentialManagerPendingRequestTaskTest,
 
   CredentialManagerPendingRequestTask task(
       &delegate_mock_, /*callback=*/base::DoNothing(),
-      CredentialMediationRequirement::kOptional,
-      /*requested_credential_type_flags=*/kIncludePasswordsFlag,
+      CredentialMediationRequirement::kOptional, /*include_passwords=*/true,
       /*request_federations=*/{}, GetFormDigest());
   RunAllPendingTasks();
 }

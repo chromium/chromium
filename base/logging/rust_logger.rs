@@ -4,13 +4,11 @@
 
 chromium::import! {
     "//base:logging_log_severity_bindgen" as log_severity;
-    "//base:logging_rust_log_integration_bindgen" as rust_log_integration;
 }
 
 use log::Level::{Debug, Error, Info, Trace, Warn};
 use log::{LevelFilter, Metadata, Record};
 use log_severity::logging::{LOGGING_ERROR, LOGGING_INFO, LOGGING_WARNING};
-use rust_log_integration::logging::internal::print_rust_log;
 use std::ffi::CString;
 
 struct RustLogger;
@@ -34,7 +32,7 @@ impl log::Log for RustLogger {
         let file = CString::new(record.file().unwrap())
             .expect("CString::new failed to create the log file name!");
         unsafe {
-            print_rust_log(
+            ffi::print_rust_log(
                 msg.as_ptr(),
                 file.as_ptr(),
                 record.line().unwrap() as i32,
@@ -60,6 +58,18 @@ static RUST_LOGGER: RustLogger = RustLogger;
 mod ffi {
     extern "Rust" {
         fn init_rust_log_crate();
+    }
+
+    extern "C++" {
+        include!("base/logging/rust_log_integration.h");
+
+        unsafe fn print_rust_log(
+            msg: *const c_char,
+            file: *const c_char,
+            line: i32,
+            severity: i32,
+            verbose: bool,
+        );
     }
 }
 

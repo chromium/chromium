@@ -553,10 +553,15 @@ void PreFreezeBackgroundMemoryTrimmer::FinishSelfCompaction(
     scoped_refptr<CompactionMetric> metric,
     base::TimeTicks triggered_at) {
   TRACE_EVENT0("base", "FinishSelfCompaction");
+  {
+    base::AutoLock locker(lock());
+    self_compaction_last_finished_ = base::TimeTicks::Now();
+  }
   if (ShouldContinueSelfCompaction(triggered_at)) {
     metric->RecordDelayedMetrics();
     base::AutoLock locker(lock());
-    metric->RecordTimeMetrics(self_compaction_last_cancelled_);
+    metric->RecordTimeMetrics(self_compaction_last_finished_,
+                              self_compaction_last_cancelled_);
   }
 }
 
@@ -579,12 +584,15 @@ void PreFreezeBackgroundMemoryTrimmer::MaybeCancelSelfCompactionInternal(
   base::AutoLock locker(lock());
   process_compacted_metadata_.reset();
   // Check for the last time cancelled here in order to avoid recording this
-  // metric multiple times.
-  if (self_compaction_last_cancelled_ < self_compaction_last_triggered_) {
-    UmaHistogramEnumeration("Memory.SelfCompact2.Renderer.CancellationReason",
+  // metric multiple times. Also, only record this metric if a compaction is
+  // currently running.
+  if (self_compaction_last_cancelled_ < self_compaction_last_triggered_ &&
+      self_compaction_last_finished_ < self_compaction_last_triggered_) {
+    UmaHistogramEnumeration("Memory.SelfCompact2.Renderer.CancellationReason2",
                             cancellation_reason);
   }
-  self_compaction_last_cancelled_ = base::TimeTicks::Now();
+  self_compaction_last_finished_ = self_compaction_last_cancelled_ =
+      base::TimeTicks::Now();
 }
 
 // static
@@ -628,15 +636,19 @@ void PreFreezeBackgroundMemoryTrimmer::CompactSelf(
 std::optional<uint64_t> PreFreezeBackgroundMemoryTrimmer::CompactRegion(
     debug::MappedMemoryRegion region) {
 #if defined(MADV_PAGEOUT)
+  using Permission = debug::MappedMemoryRegion::Permission;
   // Skip file-backed regions
   if (region.inode != 0 || region.dev_major != 0) {
     return 0;
   }
   // Skip shared regions
-  if ((region.permissions & debug::MappedMemoryRegion::Permission::PRIVATE) ==
-      0) {
+  if ((region.permissions & Permission::PRIVATE) == 0) {
     return 0;
   }
+
+  const bool is_inaccessible =
+      (region.permissions &
+       (Permission::READ | Permission::WRITE | Permission::EXECUTE)) == 0;
 
   TRACE_EVENT1("base", __PRETTY_FUNCTION__, "size", region.end - region.start);
 
@@ -658,7 +670,7 @@ std::optional<uint64_t> PreFreezeBackgroundMemoryTrimmer::CompactRegion(
     return 0;
   }
 
-  return region.end - region.start;
+  return is_inaccessible ? 0 : region.end - region.start;
 #else
   return std::nullopt;
 #endif
@@ -837,10 +849,11 @@ size_t PreFreezeBackgroundMemoryTrimmer::GetNumberOfValuesBeforeForTesting()
 }
 
 // static
-void PreFreezeBackgroundMemoryTrimmer::
-    ResetSelfCompactionLastCancelledForTesting() {
+void PreFreezeBackgroundMemoryTrimmer::ResetSelfCompactionForTesting() {
   base::AutoLock locker(lock());
   Instance().self_compaction_last_cancelled_ = base::TimeTicks::Min();
+  Instance().self_compaction_last_finished_ = base::TimeTicks::Min();
+  Instance().self_compaction_last_triggered_ = base::TimeTicks::Min();
 }
 
 // static
@@ -940,12 +953,12 @@ void PreFreezeBackgroundMemoryTrimmer::CompactionMetric::
 }
 
 void PreFreezeBackgroundMemoryTrimmer::CompactionMetric::RecordTimeMetrics(
-    base::TimeTicks self_compaction_last_cancelled) {
-  const auto now = base::TimeTicks::Now();
+    base::TimeTicks last_finished,
+    base::TimeTicks last_cancelled) {
   UmaHistogramMediumTimes("Memory.SelfCompact2.Renderer.SelfCompactionTime",
-                          now - self_compaction_started_at_);
+                          last_finished - self_compaction_started_at_);
   UmaHistogramMediumTimes("Memory.SelfCompact2.Renderer.TimeSinceLastCancel",
-                          now - self_compaction_last_cancelled);
+                          last_finished - last_cancelled);
 }
 
 }  // namespace base::android

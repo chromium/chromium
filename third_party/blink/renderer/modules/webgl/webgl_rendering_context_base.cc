@@ -204,6 +204,7 @@ enum class WebGLANGLEImplementation {
   kWebGL1_SwiftShader = 7,
   kWebGL1_Metal = 8,
   kWebGL1_Default = 9,
+  kWebGL1_D3D11Warp = 10,
 
   // Leave some space between WebGL1 and WebGL2 enums in case ANGLE has
   // new implementations, say ANGLE/Dawn.
@@ -218,8 +219,9 @@ enum class WebGLANGLEImplementation {
   kWebGL2_SwiftShader = 27,
   kWebGL2_Metal = 28,
   kWebGL2_Default = 29,
+  kWebGL2_D3D11Warp = 30,
 
-  kMaxValue = kWebGL2_Default,
+  kMaxValue = kWebGL2_D3D11Warp,
 };
 
 constexpr base::TimeDelta kDurationBetweenRestoreAttempts = base::Seconds(1);
@@ -1868,7 +1870,11 @@ bool WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
   if (!resource_provider)
     return false;
 
-  if (Host()->LowLatencyEnabled() && resource_provider->IsSingleBuffered()) {
+  if (resource_provider->GetType() ==
+      CanvasResourceProvider::ResourceProviderType::kPassThrough) {
+    // The passthrough provider should be created only in low-latency mode.
+    CHECK(Host()->LowLatencyEnabled());
+
     // Single buffered passthrough resource provider doesn't have backing
     // texture. We need to export the backbuffer mailbox directly without
     // copying.

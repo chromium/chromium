@@ -137,18 +137,18 @@ void StyleHighlightData::SetCustomHighlight(const AtomicString& highlight_name,
 
 bool StyleHighlightData::DependsOnSizeContainerQueries() const {
   if ((selection_ && (selection_->DependsOnSizeContainerQueries() ||
-                      selection_->HasContainerRelativeUnits())) ||
+                      selection_->HasContainerRelativeValue())) ||
       (target_text_ && (target_text_->DependsOnSizeContainerQueries() ||
-                        target_text_->HasContainerRelativeUnits())) ||
+                        target_text_->HasContainerRelativeValue())) ||
       (spelling_error_ && (spelling_error_->DependsOnSizeContainerQueries() ||
-                           spelling_error_->HasContainerRelativeUnits())) ||
+                           spelling_error_->HasContainerRelativeValue())) ||
       (grammar_error_ && (grammar_error_->DependsOnSizeContainerQueries() ||
-                          grammar_error_->HasContainerRelativeUnits()))) {
+                          grammar_error_->HasContainerRelativeValue()))) {
     return true;
   }
   for (auto style : custom_highlights_) {
     if (style.value->DependsOnSizeContainerQueries() ||
-        style.value->HasContainerRelativeUnits()) {
+        style.value->HasContainerRelativeValue()) {
       return true;
     }
   }

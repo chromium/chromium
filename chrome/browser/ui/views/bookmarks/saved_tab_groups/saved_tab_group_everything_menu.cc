@@ -242,42 +242,39 @@ void STGEverythingMenu::PopulateTabGroupSubMenu(views::MenuItemView* parent) {
   // owned by the AppMenu, it keeps unchanged throughout the session of the
   // expanded "Tab groups" item. If not cleared, the user will see duplicate
   // submenus for the same tab group accumulate.
-  if (parent->HasSubmenu()) {
-    parent->GetSubmenu()->RemoveAllChildViews();
-  }
+  base::Uuid group_id =
+      GetTabGroupIdFromCommandId(/*command_id=*/parent->GetCommand());
 
-  tabs_model_ = std::make_unique<STGTabsMenuModel>(this, browser_);
-  submenu_delegate_ =
-      std::make_unique<AppMenuSubMenuModelDelegate>(tabs_model_.get(), parent);
-
-  int parent_command_id = parent->GetCommand();
-  base::Uuid group_id = GetTabGroupIdFromCommandId(parent_command_id);
   TabGroupSyncService* tab_group_service =
       tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser_->profile());
-
   const std::optional<SavedTabGroup> saved_group =
       tab_group_service->GetGroup(group_id);
+
   // If the group has been deleted remotely.
   if (!saved_group.has_value()) {
     return;
   }
 
-  tabs_model_->Build(
-      saved_group.value(),
-      base::BindRepeating(&STGEverythingMenu::GetAndIncrementLatestCommandId,
-                          base::Unretained(this)));
-
-  AddModelToParent(tabs_model_.get(), parent);
-  parent->GetSubmenu()->InvalidateLayout();
+  if (!tabs_model_ || tabs_model_->sync_id() != group_id) {
+    // Only create the model if we have to.
+    tabs_model_ = std::make_unique<STGTabsMenuModel>(this, browser_);
+    submenu_delegate_ = std::make_unique<AppMenuSubMenuModelDelegate>(
+        tabs_model_.get(), parent);
+    tabs_model_->Build(
+        saved_group.value(),
+        base::BindRepeating(&STGEverythingMenu::GetAndIncrementLatestCommandId,
+                            base::Unretained(this)));
+    AddModelToParent(tabs_model_.get(), parent);
+  }
 }
 
 void STGEverythingMenu::PopulateMenu(views::MenuItemView* parent) {
-  if (parent->HasSubmenu()) {
-    parent->GetSubmenu()->RemoveAllChildViews();
+  if (!groups_model_) {
+    // Only recreate the model if we have to.
+    groups_model_ = CreateMenuModel();
   }
-  groups_model_ = CreateMenuModel();
+
   AddModelToParent(groups_model_.get(), parent);
-  parent->GetSubmenu()->InvalidateLayout();
 }
 
 void STGEverythingMenu::RunMenu() {
@@ -342,7 +339,7 @@ bool STGEverythingMenu::ShowContextMenu(views::MenuItemView* source,
   }
   base::RecordAction(base::UserMetricsAction(
       "TabGroups_SavedTabGroups_ContextMenuTriggeredFromEverythingMenu"));
-  const auto group_id = GetTabGroupIdFromCommandId(command_id);
+  const base::Uuid group_id = GetTabGroupIdFromCommandId(command_id);
 
   TabGroupSyncService* tab_group_service =
       tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser_->profile());
@@ -354,12 +351,14 @@ bool STGEverythingMenu::ShowContextMenu(views::MenuItemView* source,
     return false;
   }
 
-  tabs_model_ = std::make_unique<STGTabsMenuModel>(browser_);
-
-  tabs_model_->Build(
-      saved_group.value(),
-      base::BindRepeating(&STGEverythingMenu::GetAndIncrementLatestCommandId,
-                          base::Unretained(this)));
+  if (!tabs_model_ || tabs_model_->sync_id() != group_id) {
+    // Only recreate the menu if we have to.
+    tabs_model_ = std::make_unique<STGTabsMenuModel>(browser_);
+    tabs_model_->Build(
+        saved_group.value(),
+        base::BindRepeating(&STGEverythingMenu::GetAndIncrementLatestCommandId,
+                            base::Unretained(this)));
+  }
 
   context_menu_runner_ = std::make_unique<views::MenuRunner>(
       tabs_model_.get(),

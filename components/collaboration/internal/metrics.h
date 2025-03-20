@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_COLLABORATION_INTERNAL_METRICS_H_
 #define COMPONENTS_COLLABORATION_INTERNAL_METRICS_H_
 
+#include "components/collaboration/public/collaboration_flow_entry_point.h"
 #include "components/collaboration/public/collaboration_flow_type.h"
 
 namespace data_sharing {
@@ -99,6 +100,11 @@ void RecordJoinOrShareOrManageEvent(
     FlowType type,
     CollaborationServiceJoinEvent join_event,
     CollaborationServiceShareOrManageEvent share_or_manage_event);
+void RecordJoinEntryPoint(data_sharing::Logger* logger,
+                          CollaborationServiceJoinEntryPoint entry);
+void RecordShareOrManageEntryPoint(
+    data_sharing::Logger* logger,
+    CollaborationServiceShareOrManageEntryPoint entry);
 }  // namespace collaboration::metrics
 
 #endif  // COMPONENTS_COLLABORATION_INTERNAL_METRICS_H_

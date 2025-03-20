@@ -312,7 +312,8 @@ class MainThreadSchedulerImplForTest : public MainThreadSchedulerImpl {
     update_policy_count_++;
     MainThreadSchedulerImpl::UpdatePolicyLocked(update_type);
 
-    String use_case = UseCaseToString(main_thread_only().current_use_case);
+    String use_case =
+        UseCaseToString(main_thread_only().current_use_case).value;
     if (main_thread_only().blocking_input_expected_soon) {
       use_cases_.push_back(use_case + " blocking input expected");
     } else {

@@ -6,7 +6,7 @@
 
 namespace blink::scheduler {
 
-const char* ThrottlingTypeToString(ThrottlingType type) {
+perfetto::StaticString ThrottlingTypeToString(ThrottlingType type) {
   switch (type) {
     case ThrottlingType::kNone:
       return "none";

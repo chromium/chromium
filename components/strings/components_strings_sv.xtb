@@ -54,7 +54,6 @@
 <translation id="1090629319939036170">VR-meny</translation>
 <translation id="1091463901118115503">Fortsätt läsa</translation>
 <translation id="1091779689406092804">skärmbilder</translation>
-<translation id="1094777233105318927">Information om webbläsaren, operativsystemet, enheten, installerad mjukvara och filer</translation>
 <translation id="1096545575934602868">Fältet får ha högst <ph name="MAX_ITEMS_LIMIT" /> poster. Alla poster utöver detta antal ignoreras.</translation>
 <translation id="1097803577928227769">Parker och trädgårdar</translation>
 <translation id="1099928364755383720">automatisk bild-i-bild</translation>
@@ -1696,6 +1695,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3964661563329879394">{COUNT,plural, =0{Ingen}=1{Från 1 webbplats }other{Från # webbplatser }}</translation>
 <translation id="3965672182149944205">Vill du spara adressen?</translation>
 <translation id="3966044442021752214">Produktsäkerhet</translation>
+<translation id="3969869202926863008">Tillgång till lokalt nätverk</translation>
 <translation id="397105322502079400">Beräknar ...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> har blockerats</translation>
 <translation id="3975852104434126461">Fordonsindustri</translation>
@@ -2052,6 +2052,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="460848736049414407">Blockeras av administratören</translation>
 <translation id="4610279718074907952">Den här webbplatsen ingår i en grupp som definierats av <ph name="SET_OWNER" /> och som kan se din aktivitet</translation>
 <translation id="46128681529823442">Fotbollsutrustning</translation>
+<translation id="4612904677925722054">Den här webbplatsen kan ha innehåll för vuxna. En förälder eller vårdnadshavare måste godkänna att du besöker webbplatsen.</translation>
 <translation id="4619564267100705184">Verifiera din identitet</translation>
 <translation id="4622292761762557753">Överför ändå</translation>
 <translation id="4622647778991854660">Aktivera aviseringar i aviseringscentret. Öppna <ph name="LINK" />.</translation>
@@ -2649,6 +2650,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5660122698869360728">En ny smart mapp som hjälper dig att spara alla shoppingsidor på ett ställe och automatiskt bevakar priser, samlar prisinformation med mera</translation>
 <translation id="5663955426505430495">Administratören för enheten har installerat tillägg för ytterligare funktioner. Tilläggen har åtkomst till en del av din data.</translation>
 <translation id="5667827081946850877">Ljudböcker</translation>
+<translation id="5674082555327905359">Får begära tillstånd att ansluta till enheter i det lokala nätverket</translation>
 <translation id="5675650730144413517">Sidan fungerar inte</translation>
 <translation id="5675809467256309336">Dansmusik och elektronisk musik</translation>
 <translation id="5675959228867414813">Visa efter datum</translation>
@@ -2897,6 +2899,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6116338172782435947">Tillgång till text och bilder som kopierats till Urklipp</translation>
 <translation id="6117833587752089929">Foto (satäng)</translation>
 <translation id="6118782133429281336">Ursprungslistan är tom.</translation>
+<translation id="6120950591512958208">Använd följande kod i kassan.</translation>
 <translation id="612178891608320683">Vegansk matlagning</translation>
 <translation id="6122181661879998141">framsidan av kortet</translation>
 <translation id="6124058285696691147">Ladda ned bilagan</translation>
@@ -2922,6 +2925,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6159908896951210943">Formell</translation>
 <translation id="6160391204859821737">Aktivera en funktion för annonsintegritet</translation>
 <translation id="6162403104168428984">Vill du uppdatera adressen?</translation>
+<translation id="6164605812717770913">En förälder eller vårdnadshavare har sagt att du inte får besöka den här webbplatsen. Du kan be hen att låsa upp den.</translation>
 <translation id="6165508094623778733">Läs mer</translation>
 <translation id="6167577165590485365">Senaste hämtningsförsök:</translation>
 <translation id="617256461084925519">Google Chrome försöker verifiera din identitet för att fylla i dina betalningsuppgifter.</translation>
@@ -3013,6 +3017,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6321917430147971392">Kontrollera DNS-inställningarna</translation>
 <translation id="6322182122604171028">Det gick inte att använda Windows Hello</translation>
 <translation id="6326947323444967009">Ställ in Chrome som standardwebbläsare i systeminställningarna för iOS</translation>
+<translation id="6327065120806001832">tillgång till lokalt nätverk</translation>
 <translation id="6328639280570009161">Prova att inaktivera nätverksförslag</translation>
 <translation id="6335029926534404762">Sportskor</translation>
 <translation id="6337133576188860026">Frigör mindre än <ph name="SIZE" />. Vissa webbplatser kan läsas in långsammare nästa gång du besöker dem.</translation>
@@ -4481,7 +4486,6 @@ Mer information:
 <translation id="8919895429178014996">Dölj alla objekt</translation>
 <translation id="8922013791253848639">Tillåt alltid annonser på den här webbplatsen</translation>
 <translation id="8922734931659847428">En begränsad lista över webbadresser till sidor som du besöker där <ph name="BEGIN_LINK" />äldre teknikhändelser<ph name="END_LINK" /> inträffar</translation>
-<translation id="8924109546403192898">När säkerhetshändelser flaggas av Chrome skickas relevant data om händelserna till administratören. Exempel på sådan data är webbadresser till sidor du besöker i Chrome, webbadresser till sidor du har kopierat data från, filnamn eller metadata, webbläsar- eller flikkrascher och användarnamnet du loggar in med i webbaserade appar, på dina enheter och i Chrome.</translation>
 <translation id="892588693504540538">Hål uppe till höger</translation>
 <translation id="8926389886865778422">Fråga inte igen.</translation>
 <translation id="8932102934695377596">Klockan går efter</translation>

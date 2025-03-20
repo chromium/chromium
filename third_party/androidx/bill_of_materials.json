@@ -127,17 +127,17 @@
     {
         "name": "collection",
         "group": "androidx.collection",
-        "version": "1.5.0-SNAPSHOT"
+        "version": "1.5.0"
     },
     {
         "name": "collection-jvm",
         "group": "androidx.collection",
-        "version": "1.5.0-SNAPSHOT"
+        "version": "1.5.0"
     },
     {
         "name": "collection-ktx",
         "group": "androidx.collection",
-        "version": "1.5.0-SNAPSHOT"
+        "version": "1.5.0"
     },
     {
         "name": "animation",
@@ -342,7 +342,7 @@
     {
         "name": "core",
         "group": "androidx.core",
-        "version": "1.16.0-SNAPSHOT"
+        "version": "1.17.0-SNAPSHOT"
     },
     {
         "name": "core-animation",
@@ -357,7 +357,7 @@
     {
         "name": "core-ktx",
         "group": "androidx.core",
-        "version": "1.16.0-SNAPSHOT"
+        "version": "1.17.0-SNAPSHOT"
     },
     {
         "name": "core-viewtree",
@@ -377,12 +377,12 @@
     {
         "name": "credentials",
         "group": "androidx.credentials",
-        "version": "1.5.0-SNAPSHOT"
+        "version": "1.5.0"
     },
     {
         "name": "credentials-play-services-auth",
         "group": "androidx.credentials",
-        "version": "1.5.0-SNAPSHOT"
+        "version": "1.5.0"
     },
     {
         "name": "cursoradapter",
@@ -977,7 +977,7 @@
     {
         "name": "transition",
         "group": "androidx.transition",
-        "version": "1.6.0-SNAPSHOT"
+        "version": "1.7.0-SNAPSHOT"
     },
     {
         "name": "tvprovider",
@@ -1027,17 +1027,17 @@
     {
         "name": "window",
         "group": "androidx.window",
-        "version": "1.5.0-SNAPSHOT"
+        "version": "1.7.0-SNAPSHOT"
     },
     {
         "name": "window-core",
         "group": "androidx.window",
-        "version": "1.5.0-SNAPSHOT"
+        "version": "1.7.0-SNAPSHOT"
     },
     {
         "name": "window-core-android",
         "group": "androidx.window",
-        "version": "1.5.0-SNAPSHOT"
+        "version": "1.7.0-SNAPSHOT"
     },
     {
         "name": "arcore",
@@ -1262,7 +1262,7 @@
     {
         "name": "kotlin-stdlib-jdk7",
         "group": "org.jetbrains.kotlin",
-        "version": "1.8.20"
+        "version": "1.9.0"
     },
     {
         "name": "kotlin-stdlib-jdk8",

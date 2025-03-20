@@ -1374,6 +1374,18 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Invalid"/>
 </enum>
 
+<!-- LINT.IfChange(ReaderModeHeuristicState) -->
+
+<enum name="ReaderModeHeuristicState">
+  <int value="0" label="Malformed Response"/>
+  <int value="1" label="Eligible"/>
+  <int value="2" label="Not eligible (content only)"/>
+  <int value="3" label="Not eligible (length only)"/>
+  <int value="4" label="Not eligible (content and length)"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/reader_mode/model/constants.h:ReaderModeHeuristicState) -->
+
 <enum name="TextSelectionDetectedEntityType">
   <int value="0" label="Unknown"/>
   <int value="1" label="None"/>

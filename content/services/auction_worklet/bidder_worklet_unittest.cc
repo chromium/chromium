@@ -5024,6 +5024,11 @@ TEST_F(BidderWorkletCreativeScanningTest,
 // Test multiple GenerateBid calls on a single worklet, in parallel. Do this
 // twice, once before the worklet has loaded its Javascript, and once after, to
 // make sure both cases work.
+//
+// In the single-threaded case, make sure that generateBidCalls() that have been
+// finalized before worklet load are executed in the order they were started, by
+// having each script call console.log() and checking the order - can't rely on
+// callback invocation order, since Mojo doesn't guarantee that.
 TEST_P(BidderWorkletMultiThreadingTest, GenerateBidParallel) {
   // Each GenerateBid call provides a different `auctionSignals` value. Use that
   // in the result for testing.
@@ -5033,13 +5038,20 @@ TEST_P(BidderWorkletMultiThreadingTest, GenerateBidParallel) {
     render:"https://response.test/"
   })";
 
-  auto bidder_worklet = CreateWorklet();
+  ScopedInspectorSupport inspector_support(v8_helper().get());
+  BidderWorklet* worklet_impl;
+  auto bidder_worklet =
+      CreateWorklet(GURL(),
+                    /*pause_for_debugger_on_start=*/false, &worklet_impl);
+  int id = worklet_impl->context_group_ids_for_testing()[0];
+  TestChannel* channel =
+      inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
 
   // For the first loop iteration, call GenerateBid repeatedly and only then
   // provide the bidder script. For the second loop iteration, reuse the bidder
   // worklet from the first iteration, so the Javascript is loaded from the
   // start.
-  for (bool generate_bid_invoked_before_worklet_script_loaded : {false, true}) {
+  for (bool generate_bid_invoked_before_worklet_script_loaded : {true, false}) {
     SCOPED_TRACE(generate_bid_invoked_before_worklet_script_loaded);
 
     base::RunLoop run_loop;
@@ -5104,19 +5116,37 @@ TEST_P(BidderWorkletMultiThreadingTest, GenerateBidParallel) {
 
     // If this is the first loop iteration, wait for all the Mojo calls to
     // settle, and then provide the Javascript response body.
-    if (generate_bid_invoked_before_worklet_script_loaded == false) {
+    if (generate_bid_invoked_before_worklet_script_loaded) {
       // Since the script hasn't loaded yet, no bids should be generated.
       task_environment_.RunUntilIdle();
       EXPECT_FALSE(run_loop.AnyQuitCalled());
       EXPECT_EQ(0u, num_generate_bid_calls);
 
       // Load script.
-      AddJavascriptResponse(&url_loader_factory_, interest_group_bidding_url_,
-                            CreateGenerateBidScript(kBidderScriptReturnValue));
+      AddJavascriptResponse(
+          &url_loader_factory_, interest_group_bidding_url_,
+          CreateGenerateBidScript(kBidderScriptReturnValue,
+                                  "console.log(auctionSignals)"));
     }
 
     run_loop.Run();
     EXPECT_EQ(kNumGenerateBidCalls, num_generate_bid_calls);
+
+    // Since all the FinishGenerateBid() messages were passed before the load
+    // started, worklets should be invoked in order in the single thread case.
+    // Verify that.
+    if (generate_bid_invoked_before_worklet_script_loaded &&
+        NumThreads() == 1) {
+      for (size_t i = 0; i < kNumGenerateBidCalls; ++i) {
+        channel->WaitForAndValidateConsoleMessage(
+            "log", /*json_args=*/
+            base::StringPrintf("[{\"description\": \"%i\", "
+                               "\"type\":\"number\", \"value\":%i}]",
+                               i + 1, i + 1),
+            /*stack_trace_size=*/1, /*function=*/"generateBid",
+            interest_group_bidding_url_, /*line_number=*/4);
+      }
+    }
   }
 }
 

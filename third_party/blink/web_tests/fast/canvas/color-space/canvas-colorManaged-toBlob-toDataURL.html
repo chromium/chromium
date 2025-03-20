@@ -167,9 +167,9 @@ function runAllTests() {
     var alphaValues = [0.5, 1];
     var colorSettings = [
         {colorSpace: 'srgb', pixelFormat: 'rgba-unorm8'},
-        {colorSpace: 'srgb', pixelFormat: 'rgba-float32'},
-        {colorSpace: 'rec2020', pixelFormat: 'rgba-float32'},
-        {colorSpace: 'display-p3', pixelFormat: 'rgba-float32'}];
+        {colorSpace: 'srgb', pixelFormat: 'rgba-float16'},
+        {colorSpace: 'rec2020', pixelFormat: 'rgba-float16'},
+        {colorSpace: 'display-p3', pixelFormat: 'rgba-float16'}];
 
     var testScenarioSet = [];
     for (var i = 0; i < colorSpaces.length; i++)

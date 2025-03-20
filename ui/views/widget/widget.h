@@ -214,6 +214,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     kMaxValue = kAcceptButtonClicked
   };
 
+  // This struct had unused fields that were removed, but may be of interest to
+  // future users:
+  // - force_show_in_taskbar: https://crrev.com/c/6356649
+  // - native_theme: https://crrev.com/c/6356535
+  // - wants_mouse_events_when_inactive: https://crrev.com/c/6354158
   struct VIEWS_EXPORT InitParams {
     enum Type {
       TYPE_WINDOW,  // A decorated Window, like a frame window.
@@ -460,10 +465,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // the default desktop for new windows.
     gfx::NativeWindow context = gfx::NativeWindow();
 
-    // If true, forces the window to be shown in the taskbar, even for window
-    // types that do not appear in the taskbar by default (popup and bubble).
-    bool force_show_in_taskbar = false;
-
 #if BUILDFLAG(IS_WIN)
     // If true, force the window not to be shown in the taskbar, even for
     // window types that do appear in the taskbar by default.
@@ -471,8 +472,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
     // If true, adds the WS_SYSMENU style to TYPE_WINDOW_FRAMELESS windows.
     bool force_system_menu_for_frameless = false;
-#endif  //  BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_LINUX)
     // Only used by X11, for root level windows. Specifies the res_name and
     // res_class fields, respectively, of the WM_CLASS window property. Controls
     // window grouping and desktop file matching in Linux window managers.
@@ -482,12 +484,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
     // Only used by Wayland, for root level windows.
     std::string wayland_app_id;
+#endif  // BUILDFLAG(IS_LINUX)
 
     // If true then the widget uses software compositing.
     bool force_software_compositing = false;
-
-    // If set, mouse events will be sent to the widget even if inactive.
-    bool wants_mouse_events_when_inactive = false;
 
     // If set, the widget was created in headless mode.
     bool headless_mode = false;
@@ -518,12 +518,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // even if it matches with the compositor's keyboard shortcuts.
     bool inhibit_keyboard_shortcuts = false;
 #endif
-
-    // Directly sets the NativeTheme used by the Widget. Providing the
-    // NativeTheme here vs setting afterwards potentially avoids lots of
-    // notifications of theme changes.
-    // A value of null results in the default theme being used.
-    raw_ptr<ui::NativeTheme> native_theme = nullptr;
 
 #if BUILDFLAG(IS_MAC)
     // If set to true, tags the widget as an invisible overlay widget that

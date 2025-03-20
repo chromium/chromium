@@ -61,6 +61,8 @@ class MessageBox {
 
   void ChangeParentContainer(gfx::NativeView parent);
 
+  void SetMessageLabel(const std::u16string& message_label);
+
   views::DialogDelegate& GetDialogDelegate();
 
  private:

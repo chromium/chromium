@@ -57,8 +57,6 @@ import java.util.Set;
 public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, TabModelObserver {
     private static final List<Tab> sEmptyRelatedTabList =
             Collections.unmodifiableList(new ArrayList<Tab>());
-    private static final List<Integer> sEmptyRelatedTabIds =
-            Collections.unmodifiableList(new ArrayList<Integer>());
 
     /**
      * Class to hold metadata while fixRootIds still exists. Delete when rootId is removed.
@@ -677,25 +675,6 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
 
         int rootId = tab.getRootId();
         TabGroup group = mRootIdToGroupMap.get(rootId);
-        if (group == null) return sEmptyRelatedTabList;
-        return getRelatedTabList(group.getTabIdList());
-    }
-
-    @Override
-    public List<Integer> getRelatedTabIds(int tabId) {
-        Tab tab = getTabModel().getTabById(tabId);
-        if (tab == null) return sEmptyRelatedTabIds;
-
-        int rootId = tab.getRootId();
-        TabGroup group = mRootIdToGroupMap.get(rootId);
-        if (group == null) return sEmptyRelatedTabIds;
-        return Collections.unmodifiableList(group.getTabIdList());
-    }
-
-    @Override
-    public List<Tab> getRelatedTabListForRootId(int tabRootId) {
-        if (tabRootId == Tab.INVALID_TAB_ID) return sEmptyRelatedTabList;
-        TabGroup group = mRootIdToGroupMap.get(tabRootId);
         if (group == null) return sEmptyRelatedTabList;
         return getRelatedTabList(group.getTabIdList());
     }

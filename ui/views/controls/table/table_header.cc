@@ -71,10 +71,6 @@ class TableHeader::HighlightPathGenerator
 
   // HighlightPathGenerator:
   SkPath GetHighlightPath(const View* view) override {
-    if constexpr (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell) {
-      return SkPath();
-    }
-
     const TableHeader* const header = static_cast<const TableHeader*>(view);
     // If there's no focus indicator fall back on the default highlight path
     // (highlights entire view instead of active cell).
@@ -82,8 +78,14 @@ class TableHeader::HighlightPathGenerator
       return SkPath();
     }
 
-    // Draw a focus indicator around the active cell.
-    gfx::Rect bounds = header->GetActiveHeaderCellBounds();
+    const bool supports_cell_navigation =
+        PlatformStyle::kTableViewSupportsKeyboardNavigationByCell;
+
+    // Draw a focus indicator around the active cell, or if cell navigation is
+    // not supported, around the whole header.
+    gfx::Rect bounds = supports_cell_navigation
+                           ? header->GetActiveHeaderCellBounds()
+                           : header->GetLocalBounds();
     bounds.set_x(header->GetMirroredXForRect(bounds));
 
     // Fill the path with an explicitly calculated default radius.
@@ -98,10 +100,15 @@ class TableHeader::HighlightPathGenerator
       if (active_column.has_value()) {
         const float radius = header->GetFocusRingUpperRadius();
 
-        const float upper_left =
-            active_column.value() == 0 ? radius : default_radius;
-        const float upper_right =
-            active_column == columns.size() - 1 ? radius : default_radius;
+        const bool is_first_column = active_column.value() == 0;
+        const bool is_last_column = active_column == columns.size() - 1;
+
+        const float upper_left = is_first_column || !supports_cell_navigation
+                                     ? radius
+                                     : default_radius;
+        const float upper_right = is_last_column || !supports_cell_navigation
+                                      ? radius
+                                      : default_radius;
         const float lower_right = default_radius;
         const float lower_left = default_radius;
 

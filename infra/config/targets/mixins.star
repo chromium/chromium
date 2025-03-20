@@ -343,21 +343,21 @@ targets.mixin(
 targets.mixin(
     name = "16-x64-emulator",
     generate_pyl_entry = False,
-    description = "Run with android_b_google_apis_x64",
+    description = "Run with android_36_google_apis_x64",
     args = [
-        "--avd-config=../../tools/android/avd/proto/android_b_google_apis_x64.textpb",
+        "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
     ],
     swarming = targets.swarming(
         # soft affinity so that bots with caches will be picked first
         optional_dimensions = {
             60: {
-                "caches": "android_b_google_apis_x64",
+                "caches": "android_36_google_apis_x64",
             },
         },
         named_caches = [
             swarming.cache(
-                name = "android_b_google_apis_x64",
-                path = ".android_emulator/android_b_google_apis_x64",
+                name = "android_36_google_apis_x64",
+                path = ".android_emulator/android_36_google_apis_x64",
             ),
         ],
     ),
@@ -2526,12 +2526,12 @@ targets.mixin(
     generate_pyl_entry = False,
     args = [
         "--xcode-build-version",
-        "16e5121h",
+        "16e5129f",
     ],
     swarming = targets.swarming(
         named_caches = [
             swarming.cache(
-                name = "xcode_ios_16e5121h",
+                name = "xcode_ios_16e5129f",
                 path = "Xcode.app",
             ),
         ],

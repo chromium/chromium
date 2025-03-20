@@ -12,12 +12,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
@@ -34,6 +36,7 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.LEGACY)
 public class EventTrackerTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private UsageStatsBridge mBridge;
 
     @Captor
@@ -52,7 +55,6 @@ public class EventTrackerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mEventTracker = new EventTracker(mBridge);
         verify(mBridge, times(1)).getAllEvents(mLoadCallbackCaptor.capture());
     }

@@ -39,7 +39,9 @@
 <translation id="1538031354170655462">사이트에서는 일반적으로 근거리 무선통신(NFC)을 사용하여 배지를 스캔하거나 비접촉 결제하는 등 근처의 태그 또는 기기와 상호작용합니다.</translation>
 <translation id="1547123415014299762">서드 파티 쿠키 허용됨</translation>
 <translation id="1593426485665524382">화면 상단에서 새로운 작업 가능</translation>
+<translation id="1615755956145364867">사이트에서 보호된 콘텐츠 재생을 요청할 수 있음</translation>
 <translation id="1620510694547887537">카메라</translation>
+<translation id="1621729191093924223">마이크가 필요한 기능이 작동하지 않음</translation>
 <translation id="1633720957382884102">관련 사이트</translation>
 <translation id="1644574205037202324">방문 기록</translation>
 <translation id="1652197001188145583">사용 설정하면 사이트에서 NFC 기기 사용을 요청할 수 있습니다. 사용 중지하면 사이트에서 NFC 기기를 사용할 수 없습니다.</translation>
@@ -54,6 +56,7 @@
 <translation id="1743802530341753419">사이트에서 내 기기에 연결하도록 허용하기 전에 확인(권장)</translation>
 <translation id="1779089405699405702">이미지 디코더</translation>
 <translation id="1785415724048343560">최적의 경험을 위해 권장됨</translation>
+<translation id="1796588414813960292">소리가 필요한 기능이 작동하지 않습니다</translation>
 <translation id="1799920918471566157">Chrome 사용 팁</translation>
 <translation id="1816835383954230954">사용 설정하면 Chrome이 더 빠르게 실행되며 JavaScript를 사용하는 기능이 의도한 대로 작동합니다. 사용 중지하면 성능은 저하되지만 V8의 공격에 대한 저항력이 강화됩니다.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" />에서 AR을 사용하려면 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서도 카메라를 사용 설정하세요.</translation>
@@ -71,6 +74,7 @@
 <translation id="1994173015038366702">사이트 URL</translation>
 <translation id="2004697686368036666">일부 사이트에서 기능이 작동하지 않을 수 있음</translation>
 <translation id="2025115093177348061">증강 현실</translation>
+<translation id="2028449514182362831">움직임 감지 센서가 필요한 기능이 작동하지 않음</translation>
 <translation id="2030769033451695672">탭하여 <ph name="URL_OF_THE_CURRENT_TAB" />(으)로 돌아가기</translation>
 <translation id="2079545284768500474">실행취소</translation>
 <translation id="2091887806945687916">소리</translation>
@@ -87,6 +91,7 @@
 <translation id="2215727959747642672">파일 수정</translation>
 <translation id="2218389616572918761">사이트에서 마이크를 요청할 수 있음</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" />에서 카메라에 액세스하도록 허용하려면 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서도 카메라를 사용 설정하세요.</translation>
+<translation id="2231160360698766265">사이트가 보호된 콘텐츠를 재생할 수 있음</translation>
 <translation id="2235344399760031203">타사 쿠키가 차단됨</translation>
 <translation id="2238944249568001759">마지막 탭을 바탕으로 한 추천 검색어</translation>
 <translation id="2241587408274973373">새 탭 페이지 카드</translation>
@@ -256,6 +261,7 @@
 <translation id="4259722352634471385">탐색이 차단됨: <ph name="URL" /></translation>
 <translation id="4274673989874969668">사이트에서 나간 후에도 사이트가 동기화를 계속하여 사진 업로드나 채팅 메시지 전송과 같은 작업을 마무리합니다.</translation>
 <translation id="4278390842282768270">허용됨</translation>
+<translation id="4290791284969893584">페이지를 닫으면 시작한 작업이 완료되지 않을 수 있습니다</translation>
 <translation id="429312253194641664">사이트에서 미디어 재생 중</translation>
 <translation id="42981349822642051">펼치기</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{내일 만료됨}other{#일 후에 만료됨}}</translation>
@@ -530,6 +536,7 @@
 <translation id="8010630645305864042">{TILE_COUNT,plural, =1{이 탭으로 계속 숨기기 카드}other{이 탭으로 계속 숨기기 카드}}</translation>
 <translation id="802154636333426148">다운로드 실패</translation>
 <translation id="8042586301629853791">정렬 기준:</translation>
+<translation id="8051193500142930381">카메라가 필요한 기능이 작동하지 않음</translation>
 <translation id="8067883171444229417">동영상 재생</translation>
 <translation id="8068648041423924542">인증서를 선택할 수 없습니다.</translation>
 <translation id="8077120325605624147">어떤 사이트에서나 광고를 게재할 수 있습니다.</translation>
@@ -630,6 +637,7 @@
 <translation id="9138217887606523162">현재 확대/축소 레벨은 <ph name="ZOOM_LEVEL" />%%입니다</translation>
 <translation id="9156722768168878035">Chrome에서 기기의 앱 목록과 검색 결과에 최근 탭을 표시하도록 허용합니다. 이 기능은 Chrome 설정에서 언제든지 사용 중지할 수 있습니다.</translation>
 <translation id="9162462602695099906">위험한 페이지입니다.</translation>
+<translation id="9182556968660520230">사이트에서 보호된 콘텐츠를 재생하도록 허용하지 않음</translation>
 <translation id="947156494302904893">방문하는 사이트에서 내가 봇이 아니라 실제 사람인지 확인할 수 있습니다</translation>
 <translation id="959682366969460160">깔끔하게 정리하기</translation>
 <translation id="967624055006145463">저장된 데이터</translation>

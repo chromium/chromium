@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
@@ -50,8 +51,9 @@ bool CountryInfo::SetCountryFromCountryName(const std::u16string& value,
 }
 
 bool CountryInfo::SetCountryFromCountryCode(const std::u16string& value) {
-  if (data_util::IsValidCountryCode(value)) {
-    country_code_ = base::UTF16ToUTF8(value);
+  std::u16string value_upper = base::ToUpperASCII(value);
+  if (data_util::IsValidCountryCode(value_upper)) {
+    country_code_ = base::UTF16ToUTF8(value_upper);
     return true;
   }
   return false;

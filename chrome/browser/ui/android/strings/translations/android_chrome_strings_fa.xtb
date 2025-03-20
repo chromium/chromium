@@ -11,6 +11,7 @@
 <translation id="103269572468856066">داده‌های این سایت‌ها و برنامه‌ها نیز پاک شود؟</translation>
 <translation id="1034259925032978114">پنجره باز است</translation>
 <translation id="1036348656032585052">خاموش کردن</translation>
+<translation id="1045448422538531528">افزودن به گروه</translation>
 <translation id="1045899828449635435">داده‌های این سایت‌ها نیز پاک شود؟</translation>
 <translation id="1049743911850919806">ناشناس</translation>
 <translation id="1052842760770519282">برخی‌از گذرواژه‌هایتان دردسترس نیست</translation>
@@ -535,6 +536,7 @@
 <translation id="3513704683820682405">واقعیت افزوده</translation>
 <translation id="3516053221628030540">‏رفتن به Google Play</translation>
 <translation id="3518985090088779359">پذیرش و ادامه</translation>
+<translation id="351952459507671940">افزودن به گروه جدید</translation>
 <translation id="3521388823983121502">نمی‌توان با <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ادامه داد</translation>
 <translation id="3522247891732774234">به‌روزرسانی موجود است. گزینه‌های بیشتر</translation>
 <translation id="3523789730715594198">‏هرزمان بخواهید می‌توانید همگام‌سازی را در تنظیمات متوقف کنید. Google ممکن است «جستجو» و سرویس‌های دیگر را براساس سابقه‌تان شخصی‌سازی کند.</translation>
@@ -980,7 +982,7 @@
 <translation id="5626134646977739690">نام:</translation>
 <translation id="5628604359369369630">خوانده‌نشده - دردسترس درحالت آفلاین</translation>
 <translation id="5631483240431073854">مدیریت کردن برگه‌های باز</translation>
-<translation id="5641456720590409793">‏ممکن است <ph name="BEGIN_LINK1" />سابقه جستجو<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />دیگر انواع فعالیت<ph name="END_LINK2" /> در «حساب Google» شما ذخیره شوند</translation>
+<translation id="5641456720590409793">‏ممکن است <ph name="BEGIN_LINK1" />سابقه «جستجو»<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />دیگر انواع فعالیت<ph name="END_LINK2" /> در «حساب Google» شما ذخیره شوند</translation>
 <translation id="5648166631817621825">۷ روز گذشته</translation>
 <translation id="5655963694829536461">بارگیری‌هایتان را جستجو کنید</translation>
 <translation id="5657871969392618475">اطلاعات شما با قفل نمایه ایمن می‌شود</translation>

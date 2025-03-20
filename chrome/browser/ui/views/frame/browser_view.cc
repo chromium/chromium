@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -1033,9 +1034,8 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   views::View* contents_view;
   if (base::FeatureList::IsEnabled(features::kSideBySide)) {
     auto multi_contents_view = std::make_unique<MultiContentsView>(
-        browser_->profile(),
-        base::BindRepeating(&BrowserView::ActivateWebContents,
-                            base::Unretained(this)));
+        this, base::BindRepeating(&BrowserView::ActivateWebContents,
+                                  base::Unretained(this)));
     multi_contents_view_ =
         contents_container->AddChildView(std::move(multi_contents_view));
     multi_contents_view_->SetID(VIEW_ID_TAB_CONTAINER);
@@ -1624,7 +1624,7 @@ void BrowserView::SetZOrderLevel(ui::ZOrderLevel level) {
 gfx::NativeWindow BrowserView::GetNativeWindow() const {
   // While the browser destruction is going on, the widget can already be gone,
   // but utility functions like FindBrowserWithWindow will still call this.
-  return GetWidget() ? GetWidget()->GetNativeWindow() : nullptr;
+  return GetWidget() ? GetWidget()->GetNativeWindow() : gfx::NativeWindow();
 }
 
 bool BrowserView::IsOnCurrentWorkspace() const {
@@ -2034,14 +2034,8 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
   // Update all the UI bits.
   UpdateTitleBar();
 
-  if (old_contents) {
-    TranslateBubbleController* translate_bubble_controller =
-        TranslateBubbleController::FromWebContents(old_contents);
-
-    if (translate_bubble_controller) {
-      translate_bubble_controller->CloseBubble();
-    }
-  }
+  CHECK_DEREF(browser_->GetFeatures().translate_bubble_controller())
+      .CloseBubble();
 
   // This is only done once when the app is first opened so that there is only
   // one subscriber per web contents.
@@ -3409,7 +3403,7 @@ ShowTranslateBubbleResult BrowserView::ShowTranslateBubble(
   }
 
   views::Button* translate_icon;
-  if (base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+  if (IsPageActionMigrated(PageActionIconType::kTranslate)) {
     translate_icon =
         toolbar_button_provider()->GetPageActionView(kActionShowTranslate);
   } else {
@@ -3422,11 +3416,11 @@ ShowTranslateBubbleResult BrowserView::ShowTranslateBubble(
   if (views::Button::AsButton(anchor_view)) {
     translate_icon = views::Button::AsButton(anchor_view);
   }
-  TranslateBubbleController::GetOrCreate(web_contents)
-      ->ShowTranslateBubble(anchor_view, translate_icon, step, source_language,
-                            target_language, error_type,
-                            is_user_gesture ? TranslateBubbleView::USER_GESTURE
-                                            : TranslateBubbleView::AUTOMATIC);
+  CHECK_DEREF(browser_->GetFeatures().translate_bubble_controller())
+      .ShowTranslateBubble(web_contents, anchor_view, translate_icon, step,
+                           source_language, target_language, error_type,
+                           is_user_gesture ? TranslateBubbleView::USER_GESTURE
+                                           : TranslateBubbleView::AUTOMATIC);
 
   return ShowTranslateBubbleResult::SUCCESS;
 }
@@ -3442,7 +3436,7 @@ void BrowserView::StartPartialTranslate(const std::string& source_language,
       ->SetTranslateEnabled(true);
 
   views::Button* translate_icon;
-  if (base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+  if (IsPageActionMigrated(PageActionIconType::kTranslate)) {
     translate_icon =
         toolbar_button_provider()->GetPageActionView(kActionShowTranslate);
   } else {
@@ -3450,8 +3444,9 @@ void BrowserView::StartPartialTranslate(const std::string& source_language,
         PageActionIconType::kTranslate);
   }
 
-  TranslateBubbleController::GetOrCreate(GetActiveWebContents())
-      ->StartPartialTranslate(
+  CHECK_DEREF(browser_->GetFeatures().translate_bubble_controller())
+      .StartPartialTranslate(
+          GetActiveWebContents(),
           toolbar_button_provider()->GetAnchorView(kActionShowTranslate),
           translate_icon, source_language, target_language, text_selection);
 }

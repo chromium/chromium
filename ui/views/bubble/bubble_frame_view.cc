@@ -372,8 +372,6 @@ void BubbleFrameView::UpdateWindowTitle() {
   InvalidateLayout();
 }
 
-void BubbleFrameView::SizeConstraintsChanged() {}
-
 void BubbleFrameView::InsertClientView(ClientView* client_view) {
   // Place the client view before any footnote view for focus order.
   footnote_container_

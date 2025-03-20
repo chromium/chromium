@@ -61,8 +61,6 @@ const char* CannotDiscardReasonToString(CannotDiscardReason reason) {
       return "Tab is currently using DevTools";
     case CannotDiscardReason::kBackgroundActivity:
       return "Tab is updating favicon or title in the background";
-    case CannotDiscardReason::kWasDiscarded:
-      return "Tab was discarded";
     case CannotDiscardReason::kFormInteractions:
       return "Tab has form interactions";
     case CannotDiscardReason::kUserEdits:

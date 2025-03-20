@@ -1276,6 +1276,12 @@ const char kEnterpriseRealTimeUrlCheckOnAndroidDescription[] =
     "Enables enterprise real-time URL checks if the "
     "EnterpriseRealTimeUrlCheckMode policy is set.";
 
+const char kEnterpriseUrlFilteringEventReportingOnAndroidName[] =
+    "Allow enterprise url filtering event reporting";
+const char kEnterpriseUrlFilteringEventReportingOnAndroidDescription[] =
+    "Enables enterprise url filtering event reporting when the "
+    "OnSecurityEventEnterpriseConnector policy is turned on ";
+
 const char kEnterpriseSecurityEventReportingOnAndroidName[] =
     "Allow enterprise security event reporting";
 const char kEnterpriseSecurityEventReportingOnAndroidDescription[] =
@@ -2798,6 +2804,12 @@ const char kOmniboxFocusTriggersWebAndSRPZeroSuggestDescription[] =
     "focused, subject to the same conditions and restrictions as on-clobber "
     "suggestions.";
 
+const char kOmniboxHideSuggestionGroupHeadersName[] =
+    "Hide suggestion group headers in the Omnibox popup";
+const char kOmniboxHideSuggestionGroupHeadersDescription[] =
+    "If enabled, suggestion group headers will be hidden in the Omnibox popup "
+    "(e.g. to minimize visual clutter in the zero-prefix state)";
+
 const char kOmniboxUrlSuggestionsOnFocus[] =
     "Omnibox on-focus URL suggestions on web and SRP";
 const char kOmniboxUrlSuggestionsOnFocusDecription[] =
@@ -4300,6 +4312,10 @@ const char kAndroidTabDeclutterArchiveDuplicateTabsName[] =
 const char kAndroidTabDeclutterArchiveDuplicateTabsDescription[] =
     "Enables auto-archival of all duplicate tabs except the most recently used "
     "copy.";
+
+const char kAndroidThemeModuleName[] = "Android Theme Module";
+const char kAndroidThemeModuleDescription[] =
+    "Enables external theme overlays for Chrome activities when available.";
 
 const char kAnimatedImageDragShadowName[] =
     "Enable animated image drag shadow on Android.";
@@ -7621,8 +7637,13 @@ const char kZeroCopyVideoCaptureDescription[] =
 const char kFollowingFeedSidepanelName[] = "Following feed in the sidepanel";
 const char kFollowingFeedSidepanelDescription[] =
     "Enables the following feed in the sidepanel.";
+
+const char kLocalNetworkAccessChecksName[] = "Local Network Access Checks";
+const char kLocalNetworkAccessChecksDescription[] =
+    "Enables Local Network Access checks. "
+    "See: https://chromestatus.com/feature/5152728072060928";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        //  BUILDFLAG(IS_CHROMEOS)
+        // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
 const char kTaskManagerClankName[] = "Task Manager on Clank";

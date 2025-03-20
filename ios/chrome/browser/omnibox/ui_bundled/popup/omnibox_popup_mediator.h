@@ -11,7 +11,7 @@
 
 #import "components/history/core/browser/top_sites.h"
 #import "components/omnibox/browser/autocomplete_result.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_popup_controller_delegate.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_controller_observer_bridge.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_result_consumer.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/carousel/carousel_item_menu_provider.h"
@@ -26,7 +26,7 @@
 @class CarouselItem;
 @protocol CarouselItemConsumer;
 class FaviconLoader;
-@class OmniboxPopupController;
+@class OmniboxAutocompleteController;
 @class OmniboxPopupMediator;
 @class OmniboxPopupPresenter;
 @class SceneState;
@@ -64,15 +64,17 @@ class Tracker;
            originView:(UIView*)originView;
 @end
 
-@interface OmniboxPopupMediator : NSObject <AutocompleteResultConsumerDelegate,
-                                            AutocompleteResultDataSource,
-                                            OmniboxPopupControllerDelegate,
-                                            CarouselItemMenuProvider,
-                                            ImageRetriever,
-                                            FaviconRetriever>
+@interface OmniboxPopupMediator
+    : NSObject <AutocompleteResultConsumerDelegate,
+                AutocompleteResultDataSource,
+                OmniboxAutocompleteControllerDelegate,
+                CarouselItemMenuProvider,
+                ImageRetriever,
+                FaviconRetriever>
 
-/// Controller of the omnibox popup.
-@property(nonatomic, weak) OmniboxPopupController* popupController;
+/// Controller of the omnibox autocomplete.
+@property(nonatomic, weak)
+    OmniboxAutocompleteController* omniboxAutocompleteController;
 
 @property(nonatomic, readonly, assign) FaviconLoader* faviconLoader;
 

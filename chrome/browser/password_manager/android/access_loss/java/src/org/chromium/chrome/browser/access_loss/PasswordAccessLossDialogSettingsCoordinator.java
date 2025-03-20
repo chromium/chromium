@@ -19,7 +19,7 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.chrome.browser.password_manager.CustomTabIntentHelper;
+import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -43,7 +43,7 @@ public class PasswordAccessLossDialogSettingsCoordinator {
             @PasswordAccessLossWarningType int warningType,
             Callback<Context> launchGmsUpdate,
             Runnable launchExportFlow,
-            CustomTabIntentHelper customTabIntentHelper) {
+            SettingsCustomTabLauncher settingsCustomTabLauncher) {
         assert warningType != PasswordAccessLossWarningType.NONE
                 : "Only show the access loss dialog if there is a reason to warn about.";
         mContext = context;
@@ -55,7 +55,7 @@ public class PasswordAccessLossDialogSettingsCoordinator {
                         warningType,
                         launchGmsUpdate,
                         launchExportFlow,
-                        customTabIntentHelper);
+                        settingsCustomTabLauncher);
         View dialogCustomView = createAndBindDialogCustomView(warningType);
         mModalDialogManager.showDialog(
                 createDialogModel(context, warningType, dialogCustomView),

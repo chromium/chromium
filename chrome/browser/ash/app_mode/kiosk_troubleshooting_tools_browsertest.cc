@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "ash/shell.h"
+#include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
+#include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
-#include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_browser_window_handler.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
@@ -21,11 +25,13 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
+using ash::kiosk::test::DidKioskCloseNewWindow;
 using policy::DeveloperToolsPolicyHandler::Availability::kAllowed;
 using policy::DeveloperToolsPolicyHandler::Availability::kDisallowed;
 
@@ -86,7 +92,7 @@ class KioskTroubleshootingToolsTest : public WebKioskBaseTest {
 
   Browser* EmulateOpenNewWindowShortcutPressedAndReturnNewBrowser() const {
     EmulateOpenNewWindowShortcutPressed();
-    EXPECT_FALSE(DidSessionCloseNewWindow(kiosk_system_session()));
+    EXPECT_FALSE(DidKioskCloseNewWindow());
     return BrowserList::GetInstance()->GetLastActive();
   }
 
@@ -122,7 +128,7 @@ class KioskTroubleshootingToolsTest : public WebKioskBaseTest {
         /*user_gesture=*/true);
     Browser* new_browser = Browser::Create(params);
     new_browser->window()->Show();
-    EXPECT_FALSE(DidSessionCloseNewWindow(kiosk_system_session()));
+    EXPECT_FALSE(DidKioskCloseNewWindow());
     return new_browser;
   }
 
@@ -200,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
   ExpectOnlyKioskAppOpen();
 
   EmulateOpenNewWindowShortcutPressed();
-  EXPECT_FALSE(DidSessionCloseNewWindow(kiosk_system_session()));
+  EXPECT_FALSE(DidKioskCloseNewWindow());
 
   ExpectOpenBrowser(
       chromeos::KioskBrowserWindowType::kOpenedTroubleshootingNormalBrowser);
@@ -221,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
                                                 /*is_docked=*/false);
 
   EmulateOpenNewWindowShortcutPressed();
-  EXPECT_FALSE(DidSessionCloseNewWindow(kiosk_system_session()));
+  EXPECT_FALSE(DidKioskCloseNewWindow());
 
   EXPECT_EQ(BrowserList::GetInstance()->size(), 3u);
   histogram.ExpectBucketCount(
@@ -248,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
   EXPECT_TRUE(IsLactActiveBrowserResizable());
 
   EmulateOpenNewWindowShortcutPressed();
-  EXPECT_FALSE(DidSessionCloseNewWindow(kiosk_system_session()));
+  EXPECT_FALSE(DidKioskCloseNewWindow());
   EXPECT_TRUE(IsLactActiveBrowserResizable());
 }
 
@@ -259,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
 
   // Explicitly open a new window to make sure it will be closed.
   Browser::Create(Browser::CreateParams(profile(), /*user_gesture=*/true));
-  EXPECT_TRUE(DidSessionCloseNewWindow(kiosk_system_session()));
+  EXPECT_TRUE(DidKioskCloseNewWindow());
 
   histogram.ExpectBucketCount(
       chromeos::kKioskNewBrowserWindowHistogram,

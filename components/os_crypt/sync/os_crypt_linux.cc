@@ -22,9 +22,7 @@
 #include "components/os_crypt/sync/key_storage_linux.h"
 #include "components/os_crypt/sync/os_crypt_metrics.h"
 #include "crypto/aes_cbc.h"
-#include "crypto/encryptor.h"
 #include "crypto/kdf.h"
-#include "crypto/symmetric_key.h"
 
 namespace {
 

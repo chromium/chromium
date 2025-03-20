@@ -11,6 +11,7 @@
 #include "chrome/browser/android/tab_android.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/tab_groups/tab_group_color.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "url/gurl.h"
 
 // Utilities that interface with Java to support Sync testing on Android.
@@ -19,6 +20,9 @@ namespace sync_test_utils_android {
 
 // Sets up the test account and signs in synchronously.
 void SetUpAccountAndSignInForTesting();
+
+// Returns GaiaId for the default test account on Android.
+GaiaId GetGaiaIdForDefaultTestAccount();
 
 // Sets up the test account, signs in, and enables Sync-the-feature
 // synchronously.

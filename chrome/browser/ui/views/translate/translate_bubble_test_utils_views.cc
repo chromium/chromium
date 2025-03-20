@@ -4,6 +4,7 @@
 
 #include "base/check_op.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/translate/translate_bubble_model.h"
 #include "chrome/browser/ui/translate/translate_bubble_test_utils.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
@@ -15,8 +16,8 @@
 namespace translate::test_utils {
 
 TranslateBubbleView* GetTranslateBubble(Browser* browser) {
-  return TranslateBubbleController::FromWebContents(
-             browser->tab_strip_model()->GetActiveWebContents())
+  return browser->GetFeatures()
+      .translate_bubble_controller()
       ->GetTranslateBubble();
 }
 
@@ -30,8 +31,7 @@ const TranslateBubbleModel* GetCurrentModel(Browser* browser) {
 void CloseCurrentBubble(Browser* browser) {
   DCHECK(browser);
   TranslateBubbleController* controller =
-      TranslateBubbleController::FromWebContents(
-          browser->tab_strip_model()->GetActiveWebContents());
+      browser->GetFeatures().translate_bubble_controller();
   if (controller) {
     controller->CloseBubble();
   }

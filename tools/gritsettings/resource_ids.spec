@@ -1149,7 +1149,7 @@
     "META": {"align": 100},
     "structures": [1100],
   },
-  "ios/chrome/browser/ui/whats_new/strings/ios_whats_new_strings.grd": {
+  "ios/chrome/browser/whats_new/ui/strings/ios_whats_new_strings.grd": {
     "messages": [1120],
   },
   "ios/chrome/share_extension/strings/ios_share_extension_strings.grd": {

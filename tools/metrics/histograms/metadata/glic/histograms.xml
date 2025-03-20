@@ -90,6 +90,16 @@ chromium-metrics-reviews@google.com.
 
 </histogram>
 
+<histogram name="Glic.AttachToBrowser" enum="GlicAttachChangeReason"
+    expires_after="2026-01-15">
+  <owner>dullweber@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Record the reason for attaching the panel to a browser when the panel is
+    attached.
+  </summary>
+</histogram>
+
 <histogram name="Glic.ChromeClient.MultiProfileSyntheticTrialConflictDetected"
     enum="BooleanEnabled" expires_after="2026-01-15">
   <owner>birnie@chromium.org</owner>
@@ -101,6 +111,16 @@ chromium-metrics-reviews@google.com.
     quick succession. When analyzing metrics from a synthetic field trial this
     histogram will allow us to create custom queries to filter out users who may
     have contaminated logs from multiple profiles.
+  </summary>
+</histogram>
+
+<histogram name="Glic.DetachedFromBrowser" enum="GlicAttachChangeReason"
+    expires_after="2026-01-15">
+  <owner>dullweber@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Record the reason for detaching the panel from a browser when the panel is
+    detached.
   </summary>
 </histogram>
 
@@ -388,6 +408,16 @@ chromium-metrics-reviews@google.com.
     Measures the time from a user's submitted input until a response stops.
     There is no guarantee of correlation with Response.StartTime. This exists
     for diagnostic purposes only.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Session.AttachStateChanges" units="count"
+    expires_after="2026-01-15">
+  <owner>dullweber@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded when a session ends. The number of times the panel was attached or
+    detached.
   </summary>
 </histogram>
 

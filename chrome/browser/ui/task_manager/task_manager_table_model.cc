@@ -1188,12 +1188,6 @@ bool TaskManagerTableModel::FetchTaskTypes(TaskId child_task_id,
 
 bool TaskManagerTableModel::ShouldKeepTaskForSupportedType(
     TaskId task_id) const {
-  // TODO(crbug.com/364926055): Remove when the refreshed Task Manager launches.
-  // Used for backward compatibility with the prod. task manager.
-  if (display_category_ == DisplayCategory::kAll) {
-    return true;
-  }
-
   Task::Type type;
   Task::SubType subtype;
 
@@ -1212,14 +1206,13 @@ bool TaskManagerTableModel::ShouldKeepTask(TaskId task_id) const {
     // In search mode, keep the task if it falls in a supported category as well
     // as if it is in the same task group with tasks matching the current search
     // term.
-    return ShouldKeepTaskForSupportedType(task_id) &&
-           matched_process_set_.contains(
-               observed_task_manager()->GetProcessId(task_id));
+    return matched_process_set_.contains(
+        observed_task_manager()->GetProcessId(task_id));
   }
 
   // TODO(crbug.com/364926055): Remove when the refreshed Task Manager launches.
   // Used for backward compatibility with the prod. task manager.
-  if (display_category_ == DisplayCategory::kAll) {
+  if (!base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)) {
     return true;
   }
 
@@ -1239,6 +1232,8 @@ bool TaskManagerTableModel::ShouldKeepTask(TaskId task_id) const {
       return ShouldKeepTaskForTabsAndExtensions(type, subtype);
     case DisplayCategory::kSystem:
       return ShouldKeepTaskForSystem(type, subtype);
+    case DisplayCategory::kAll:
+      return true;
     default:
       NOTREACHED();
   }

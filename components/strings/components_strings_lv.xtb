@@ -54,7 +54,6 @@
 <translation id="1090629319939036170">VR izvēlne</translation>
 <translation id="1091463901118115503">Turpināt lasīt</translation>
 <translation id="1091779689406092804">ekrānuzņēmumi</translation>
-<translation id="1094777233105318927">Informācija par jūsu pārlūku, OS, ierīci, instalēto programmatūru un failiem</translation>
 <translation id="1096545575934602868">Šajā laukā drīkst būt ne vairāk kā <ph name="MAX_ITEMS_LIMIT" /> ierakstu. Visi turpmākie ieraksti tiks atmesti.</translation>
 <translation id="1097803577928227769">Reģionālie parki un dārzi</translation>
 <translation id="1099928364755383720">režīma “Attēls attēlā” automātiska aktivizēšana</translation>
@@ -1695,6 +1694,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3964661563329879394">{COUNT,plural, =0{Nav}=1{No 1 vietnes }zero{No # vietnēm }one{No # vietnes }other{No # vietnēm }}</translation>
 <translation id="3965672182149944205">Vai saglabāt adresi?</translation>
 <translation id="3966044442021752214">Produkta drošība</translation>
+<translation id="3969869202926863008">Piekļuve lokālajā tīklā</translation>
 <translation id="397105322502079400">Aprēķina...</translation>
 <translation id="3973234410852337861">Vietne <ph name="HOST_NAME" /> ir bloķēta</translation>
 <translation id="3975852104434126461">Automašīnu industrija</translation>
@@ -2050,6 +2050,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="460848736049414407">Bloķējis administrators</translation>
 <translation id="4610279718074907952">Šī vietne ir uzņēmuma <ph name="SET_OWNER" /> definētā grupā, un jūsu darbības ir redzamas visai grupai.</translation>
 <translation id="46128681529823442">Futbola aprīkojums</translation>
+<translation id="4612904677925722054">Šajā vietnē var būt ietverts galvenokārt pieaugušajiem paredzēts saturs. Kādam no vecākiem vai aizbildnim ir jāapstiprina, ka jūs drīkstat apmeklēt šo vietni.</translation>
 <translation id="4619564267100705184">Apstiprināt identitāti</translation>
 <translation id="4622292761762557753">Tomēr pārsūtīt</translation>
 <translation id="4622647778991854660">Paziņojumu centrā iespējojiet paziņojumus. Atveriet sadaļu “<ph name="LINK" />”.</translation>
@@ -2647,6 +2648,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5660122698869360728">Jauna viedā mape, kas palīdz vienuviet saglabāt visas pirkumu lapas un automātiski izsekot cenām, gūt cenu ieskatus un veikt citas darbības.</translation>
 <translation id="5663955426505430495">Šīs ierīces administrators ir instalējis paplašinājumus papildu funkcijām. Paplašinājumiem ir piekļuve dažiem jūsu datiem.</translation>
 <translation id="5667827081946850877">Audiogrāmatas</translation>
+<translation id="5674082555327905359">Var pieprasīt atļauju izveidot savienojumu ar jebkuru ierīci jūsu lokālajā tīklā</translation>
 <translation id="5675650730144413517">Šī lapa nedarbojas</translation>
 <translation id="5675809467256309336">Deju un elektroniskā mūzika</translation>
 <translation id="5675959228867414813">Rādīt pēc datuma</translation>
@@ -2895,6 +2897,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6116338172782435947">Skatīt starpliktuvē kopēto tekstu un attēlus</translation>
 <translation id="6117833587752089929">Fotopapīrs (satinēts)</translation>
 <translation id="6118782133429281336">Avotu saraksts ir tukšs.</translation>
+<translation id="6120950591512958208">Izmantojiet šo kodu norēķinoties.</translation>
 <translation id="612178891608320683">Vegāniskā virtuve</translation>
 <translation id="6122181661879998141">kartes priekšpusē</translation>
 <translation id="6124058285696691147">Lejupielādēt pielikumu</translation>
@@ -2920,6 +2923,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6159908896951210943">Formāls</translation>
 <translation id="6160391204859821737">Reklāmu konfidencialitātes funkcijas ieslēgšana</translation>
 <translation id="6162403104168428984">Vai atjaunināt adresi?</translation>
+<translation id="6164605812717770913">Kāds no vecākiem vai aizbildnis norādīja, ka jūs nedrīkstat apmeklēt šo vietni. Varat lūgt atbloķēt vietni.</translation>
 <translation id="6165508094623778733">Uzzināt vairāk</translation>
 <translation id="6167577165590485365">Pēdējais ienešanas mēģinājums:</translation>
 <translation id="617256461084925519">Pārlūkā Google Chrome tiek mēģināts verificēt jūsu identitāti, lai varētu ievadīt jūsu maksājumu informāciju.</translation>
@@ -3011,6 +3015,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6321917430147971392">Sistēmas DNS iestatījumu pārbaude</translation>
 <translation id="6322182122604171028">Neizdevās izmantot Windows Hello</translation>
 <translation id="6326947323444967009">Iestatīt Chrome kā sistēmas noklusējuma pārlūku iOS iestatījumos</translation>
+<translation id="6327065120806001832">piekļuve lokālajā tīklā</translation>
 <translation id="6328639280570009161">Tīkla prognožu atspējošana</translation>
 <translation id="6335029926534404762">Sporta apavi</translation>
 <translation id="6337133576188860026">Tiks atbrīvots mazāk nekā <ph name="SIZE" />. Dažas vietnes nākamajā apmeklējumā var ielādēt lēnāk.</translation>
@@ -4479,7 +4484,6 @@ Papildu informācija:
 <translation id="8919895429178014996">Paslēpt visus vienumus</translation>
 <translation id="8922013791253848639">Vienmēr atļaut reklāmu rādīšanu šajā vietnē</translation>
 <translation id="8922734931659847428">Ierobežots to jūsu apmeklēto lapu vietrāžu URL saraksts, kuros rodas <ph name="BEGIN_LINK" />mantotās tehnoloģijas notikumi<ph name="END_LINK" /></translation>
-<translation id="8924109546403192898">Ja pārlūkā Chrome tiek atzīmēti ar drošību saistīti notikumi, atbilstošie dati par notikumiem tiek nosūtīti administratoram. Šie dati var ietvert: pārlūkprogrammā Chrome apmeklēto lapu vietrāžus URL; to lapu vietrāžus URL, no kurām kopējāt datus; failu nosaukumus vai metadatus; pārlūkprogrammas vai ciļņu avārijas; lietotājvārdu, ko izmantojat, lai pierakstītos tīmekļa lietojumprogrammās, ierīcē un pārlūkā Chrome.</translation>
 <translation id="892588693504540538">Caurums augšējā labajā malā</translation>
 <translation id="8926389886865778422">Nejautāt atkārtoti</translation>
 <translation id="8932102934695377596">Norādītais laiks ir pārāk tālu pagātnē</translation>

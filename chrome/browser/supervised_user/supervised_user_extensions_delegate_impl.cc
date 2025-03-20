@@ -22,6 +22,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace {
 
@@ -147,7 +148,7 @@ void SupervisedUserExtensionsDelegateImpl::
       &::OnParentPermissionDialogComplete, std::move(done_callback_));
 
   gfx::NativeWindow parent_window =
-      contents ? contents->GetTopLevelNativeWindow() : nullptr;
+      contents ? contents->GetTopLevelNativeWindow() : gfx::NativeWindow();
   parent_permission_dialog_ =
       ParentPermissionDialog::CreateParentPermissionDialogForExtension(
           Profile::FromBrowserContext(context_), parent_window, icon,

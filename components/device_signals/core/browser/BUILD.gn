@@ -5,6 +5,7 @@
 static_library("browser") {
   public = [
     "base_signals_collector.h",
+    "browser_utils.h",
     "file_system_signals_collector.h",
     "metrics_utils.h",
     "pref_names.h",
@@ -46,10 +47,27 @@ static_library("browser") {
     "//components/policy/core/common",
     "//components/prefs",
     "//components/signin/public/identity_manager",
+    "//components/version_info",
+    "//net",
   ]
 
+  if (is_win || is_mac || is_linux) {
+    public += [ "os_signals_collector.h" ]
+    sources += [ "os_signals_collector.cc" ]
+  }
+
   if (is_win) {
+    sources += [ "win/browser_utils_win.cc" ]
+
     public_deps += [ "//components/device_signals/core/common/win" ]
+  }
+
+  if (is_mac) {
+    sources += [ "mac/browser_utils_mac.cc" ]
+  }
+
+  if (is_linux) {
+    sources += [ "linux/browser_utils_linux.cc" ]
   }
 
   if (is_win || is_mac) {
@@ -115,6 +133,10 @@ source_set("unit_tests") {
     "//components/signin/public/identity_manager:test_support",
     "//testing/gtest",
   ]
+
+  if (is_win || is_mac || is_linux) {
+    sources += [ "os_signals_collector_unittest.cc" ]
+  }
 
   if (is_win || is_mac) {
     sources += [

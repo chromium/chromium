@@ -116,7 +116,6 @@ source_set("passkey_util") {
   ]
   deps = [
     "//base",
-    "//components/crash/core/common:crash_key",
     "//components/sync/protocol",
     "//components/webauthn/core/browser:passkey_model",
     "//ios/chrome/common/app_group",

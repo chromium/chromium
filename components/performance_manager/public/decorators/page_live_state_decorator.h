@@ -83,9 +83,6 @@ class PageLiveStateDecorator
   static void SetIsAutoDiscardable(content::WebContents* contents,
                                    bool is_auto_discardable);
 
-  static void SetWasDiscarded(content::WebContents* contents,
-                              bool was_discarded);
-
   static void SetIsActiveTab(content::WebContents* contents,
                              bool is_active_tab);
 
@@ -107,7 +104,6 @@ class PageLiveStateDecorator
   static bool IsCapturingWindow(content::WebContents* contents);
   static bool IsCapturingDisplay(content::WebContents* contents);
   static bool IsAutoDiscardable(content::WebContents* contents);
-  static bool WasDiscarded(content::WebContents* contents);
   static bool IsActiveTab(content::WebContents* contents);
   static bool IsPinnedTab(content::WebContents* contents);
   static bool IsDevToolsOpen(content::WebContents* contents);
@@ -156,9 +152,6 @@ class PageLiveStateDecorator::Data {
   virtual bool IsCapturingWindow() const = 0;
   virtual bool IsCapturingDisplay() const = 0;
   virtual bool IsAutoDiscardable() const = 0;
-  // TODO(crbug.com/391179510): Remove this property which is always "false" due
-  // to a bug.
-  virtual bool WasDiscarded() const = 0;
   virtual bool IsActiveTab() const = 0;
   virtual bool IsPinnedTab() const = 0;
   virtual bool IsDevToolsOpen() const = 0;
@@ -180,7 +173,6 @@ class PageLiveStateDecorator::Data {
   virtual void SetIsCapturingWindowForTesting(bool value) = 0;
   virtual void SetIsCapturingDisplayForTesting(bool value) = 0;
   virtual void SetIsAutoDiscardableForTesting(bool value) = 0;
-  virtual void SetWasDiscardedForTesting(bool value) = 0;
   virtual void SetIsActiveTabForTesting(bool value) = 0;
   virtual void SetIsPinnedTabForTesting(bool value) = 0;
   virtual void SetIsDevToolsOpenForTesting(bool value) = 0;

@@ -4,8 +4,12 @@
 
 package org.chromium.chrome.browser.hub;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
 
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
@@ -24,17 +28,15 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable.TabSwitcherDrawableLocation;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -45,7 +47,6 @@ import java.util.List;
 /** Render tests for {@link HubPaneHostView}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@DisableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
 public class HubToolbarViewRenderTest {
     @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
@@ -55,14 +56,17 @@ public class HubToolbarViewRenderTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_HUB)
-                    .setRevision(10)
+                    .setRevision(11)
                     .build();
 
     @Mock private TabSwitcherDrawable.Observer mTabSwitcherDrawableObserver;
+    @Mock private Pane mPane;
 
+    private ObservableSupplierImpl<Pane> mFocusedPaneSupplier;
     private Activity mActivity;
     private HubToolbarView mToolbar;
     private PropertyModel mPropertyModel;
+    private HubColorMixer mColorMixer;
 
     @Before
     public void setUp() {
@@ -79,9 +83,17 @@ public class HubToolbarViewRenderTest {
                 (FrameLayout) inflater.inflate(R.layout.hub_toolbar_layout, null, false);
         mToolbar = toolbarContainer.findViewById(R.id.hub_toolbar);
         mActivity.setContentView(toolbarContainer);
-
-        mPropertyModel = new PropertyModel(HubToolbarProperties.ALL_KEYS);
+        mFocusedPaneSupplier = new ObservableSupplierImpl<>();
+        mColorMixer =
+                new HubColorMixer(
+                        mActivity, new ObservableSupplierImpl<>(true), mFocusedPaneSupplier);
+        mPropertyModel =
+                new PropertyModel.Builder(HubToolbarProperties.ALL_KEYS)
+                        .with(COLOR_MIXER, mColorMixer)
+                        .build();
         PropertyModelChangeProcessor.create(mPropertyModel, mToolbar, HubToolbarViewBinder::bind);
+        when(mPane.getColorScheme()).thenReturn(HubColorScheme.DEFAULT);
+        mFocusedPaneSupplier.set(mPane);
     }
 
     private FullButtonData enabledButtonData(@DrawableRes int drawableRes) {
@@ -133,10 +145,9 @@ public class HubToolbarViewRenderTest {
                 () -> {
                     mPropertyModel.set(HubToolbarProperties.ACTION_BUTTON_DATA, enabledButtonData);
                     mPropertyModel.set(HubToolbarProperties.MENU_BUTTON_VISIBLE, true);
-                    mPropertyModel.set(
-                            HubToolbarProperties.COLOR_SCHEME,
-                            new HubColorSchemeUpdate(
-                                    HubColorScheme.INCOGNITO, HubColorScheme.INCOGNITO));
+                    mPane = mock();
+                    when(mPane.getColorScheme()).thenReturn(HubColorScheme.INCOGNITO);
+                    mFocusedPaneSupplier.set(mPane);
                 });
         mRenderTestRule.render(mToolbar, "actionButtonIncognito");
 
@@ -172,10 +183,9 @@ public class HubToolbarViewRenderTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPropertyModel.set(
-                            HubToolbarProperties.COLOR_SCHEME,
-                            new HubColorSchemeUpdate(
-                                    HubColorScheme.INCOGNITO, HubColorScheme.INCOGNITO));
+                    mPane = mock();
+                    when(mPane.getColorScheme()).thenReturn(HubColorScheme.INCOGNITO);
+                    mFocusedPaneSupplier.set(mPane);
                 });
         mRenderTestRule.render(mToolbar, "paneSwitcherIncognito");
     }
@@ -261,10 +271,9 @@ public class HubToolbarViewRenderTest {
                     mPropertyModel.set(HubToolbarProperties.PANE_SWITCHER_INDEX, 1);
                     mPropertyModel.set(
                             HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA, paneSwitcherButtonData);
-                    mPropertyModel.set(
-                            HubToolbarProperties.COLOR_SCHEME,
-                            new HubColorSchemeUpdate(
-                                    HubColorScheme.INCOGNITO, HubColorScheme.INCOGNITO));
+                    mPane = mock();
+                    when(mPane.getColorScheme()).thenReturn(HubColorScheme.INCOGNITO);
+                    mFocusedPaneSupplier.set(mPane);
                 });
         mRenderTestRule.render(mToolbar, "onIncognitoTabSwitcherDrawableNotificationOn");
 
@@ -277,7 +286,6 @@ public class HubToolbarViewRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
     public void testSearchBox() throws Exception {
         FullButtonData actionButtonData = enabledButtonData(R.drawable.new_tab_icon);
         List<FullButtonData> paneSwitcherButtonData = new ArrayList<>();

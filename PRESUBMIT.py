@@ -1069,8 +1069,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         r'/absl::(bad_variant_access|get|holds_alternative|monostate|variant|'
         r'visit)',
         ('Abseil\'s variant library is banned, use std.', ),
-        # TODO(crbug.com/40242126): Make it an error once we're sure it works.
-        False,
+        True,
         [
             _THIRD_PARTY_EXCEPT_BLINK
         ],
@@ -1080,8 +1079,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         r'integer_sequence|make_from_tuple|make_index_sequence|'
         r'make_integer_sequence|move)',
         ('Abseil\'s util library is banned, use std.', ),
-        # TODO(crbug.com/40242126): Make it an error once we're sure it works.
-        False,
+        True,
         [
             _THIRD_PARTY_EXCEPT_BLINK
         ],
@@ -6131,6 +6129,9 @@ def ChecksCommon(input_api, output_api):
                 'infra', 'inclusive_language_presubmit_exempt_dirs.txt'
             ],
             non_inclusive_terms=_NON_INCLUSIVE_TERMS))
+    results.extend(
+        input_api.canned_checks.CheckNewDEPSHooksHasRequiredReviewers(
+            input_api, output_api))
 
     presubmit_py_filter = lambda f: input_api.FilterSourceFile(
         f, files_to_check=[r'.*PRESUBMIT\.py$'])
@@ -7519,10 +7520,10 @@ def CheckAndroidTestAnnotations(input_api, output_api):
             if m := robolectric_test.search(line):
                 is_instrumentation_test = False
                 if m.group(1) == '' and not has_base_robolectric_rule:
-                  path = str(f.LocalPath())
-                  # These two spots cannot use it.
-                  if 'webapk' not in path and 'build' not in path:
-                    wrong_robolectric_test_runner_errors.append(path)
+                    path = str(f.LocalPath())
+                    # These two spots cannot use it.
+                    if 'webapk' not in path and 'build' not in path:
+                        wrong_robolectric_test_runner_errors.append(path)
                 break
             if uiautomator_test.search(line):
                 is_instrumentation_test = False

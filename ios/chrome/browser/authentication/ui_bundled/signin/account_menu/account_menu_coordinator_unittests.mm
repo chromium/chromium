@@ -338,36 +338,12 @@ TEST_P(AccountMenuCoordinatorNonManagedTest, testSignin) {
                              assertOpenAndInterrupt();
                              closure.Run();
                            }];
+
+  OCMExpect([mock_snackbar_commands_handler_
+      showSnackbarMessageOverBrowserToolbar:[OCMArg any]]);
   EXPECT_TRUE(authentication_flow);
 
   run_loop.Run();
-}
-
-// Tests that `triggerAccountSwitchSnackbarWithIdentity` shows a snackbar.
-TEST_P(AccountMenuCoordinatorNonManagedTest, testSnackbar) {
-  OCMExpect([mock_snackbar_commands_handler_
-      showSnackbarMessageOverBrowserToolbar:[OCMArg checkWithBlock:^BOOL(
-                                                        IdentitySnackbarMessage*
-                                                            msg) {
-        EXPECT_FALSE(msg.managed);
-        return YES;
-      }]]);
-  [coordinator_ triggerAccountSwitchSnackbarWithIdentity:kPrimaryIdentity];
-  assertOpenAndInterrupt();
-}
-
-// Tests that `triggerAccountSwitchSnackbarWithIdentity` shows a snackbar with
-// `managed` set to true.
-TEST_F(AccountMenuCoordinatorManagedTest, testSnackbarManaged) {
-  OCMExpect([mock_snackbar_commands_handler_
-      showSnackbarMessageOverBrowserToolbar:[OCMArg checkWithBlock:^BOOL(
-                                                        IdentitySnackbarMessage*
-                                                            msg) {
-        EXPECT_TRUE(msg.managed);
-        return YES;
-      }]]);
-  [coordinator_ triggerAccountSwitchSnackbarWithIdentity:kManagedIdentity];
-  assertOpenAndInterrupt();
 }
 
 #pragma mark - SyncErrorSettingsCommandHandler

@@ -12,10 +12,12 @@ import android.os.Handler;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -33,6 +35,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class DiscountsActionProviderTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ShoppingService mMockShoppingService;
     @Mock private Tab mMockTab;
 
@@ -40,7 +43,6 @@ public class DiscountsActionProviderTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mDiscountsActionProvider = new DiscountsActionProvider(() -> mMockShoppingService);
     }
 

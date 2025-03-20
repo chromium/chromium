@@ -146,6 +146,7 @@ source_set("headers") {
     "fenced_frame/redacted_fenced_frame_config_mojom_traits.h",
     "fetch/fetch_api_request_headers_map.h",
     "fetch/fetch_api_request_headers_mojom_traits.h",
+    "fingerprinting_protection/canvas_noise_token.h",
     "forcedark/forcedark_switches.h",
     "frame/delegated_capability_request_token.h",
     "frame/fenced_frame_sandbox_flags.h",

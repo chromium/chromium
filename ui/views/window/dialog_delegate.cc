@@ -245,8 +245,15 @@ bool DialogDelegate::RunCloseCallback(
     already_started_close_ = true;
     std::get<base::OnceClosure>(std::move(callback)).Run();
   } else {
-    already_started_close_ =
+    base::WeakPtr<Widget> weak_ptr = GetWidget()->GetWeakPtr();
+    bool already_started_close =
         std::get<base::RepeatingCallback<bool()>>(callback).Run();
+    // Widget may get destroyed after the callback is run, this will detect
+    // that condition.
+    if (!weak_ptr) {
+      return false;
+    }
+    already_started_close_ = already_started_close;
   }
 
   return already_started_close_;

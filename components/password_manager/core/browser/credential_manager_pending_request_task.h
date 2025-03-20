@@ -58,7 +58,7 @@ class CredentialManagerPendingRequestTask : public FormFetcher::Consumer {
       CredentialManagerPendingRequestTaskDelegate* delegate,
       SendCredentialCallback callback,
       CredentialMediationRequirement mediation,
-      int requested_credential_type_flags,
+      bool include_passwords,
       const std::vector<GURL>& request_federations,
       PasswordFormDigest form_digest);
   CredentialManagerPendingRequestTask(
@@ -79,7 +79,7 @@ class CredentialManagerPendingRequestTask : public FormFetcher::Consumer {
   SendCredentialCallback send_callback_;
   const CredentialMediationRequirement mediation_;
   const url::Origin origin_;
-  const int requested_credential_type_flags_;
+  const bool include_passwords_;
   std::set<std::string> federations_;
   std::unique_ptr<FormFetcher> form_fetcher_;
 };

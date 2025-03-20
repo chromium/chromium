@@ -111,7 +111,8 @@ class ChromePrivateNetworkAccessDisablePermissionFeatureTest
         {features::kBlockInsecurePrivateNetworkRequests,
          features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
          features::kPrivateNetworkAccessSendPreflights},
-        {network::features::kPrivateNetworkAccessPermissionPrompt});
+        {network::features::kPrivateNetworkAccessPermissionPrompt,
+         network::features::kLocalNetworkAccessChecks});
   }
 };
 
@@ -145,7 +146,7 @@ class ChromePrivateNetworkAccessTest
          features::kBlockInsecurePrivateNetworkRequests,
          features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
          features::kPrivateNetworkAccessSendPreflights},
-        {});
+        {network::features::kLocalNetworkAccessChecks});
   }
 };
 

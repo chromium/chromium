@@ -88,6 +88,10 @@ class SaveOrUpdateAutofillAiDataController {
 
   virtual std::u16string GetDialogTitle() const = 0;
 
+  // Returns images resource ids to be used in the dialog header. The first
+  // value is to be used in a light mode theme and the second one in dark mode.
+  virtual std::pair<int, int> GetTitleImagesResourceId() const = 0;
+
   // Returns details about the new/updated prompted entity. This is used by the
   // UI layer to give users details about what changes will be done if they
   // accept the prompt.

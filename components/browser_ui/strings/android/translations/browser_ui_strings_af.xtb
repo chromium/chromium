@@ -39,7 +39,9 @@
 <translation id="1538031354170655462">Werwe gebruik gewoonlik kortveldkommunikasie (NFC) om met nabye merkers of toestelle te werk, soos skandering van kentekens of kontaklose betaling</translation>
 <translation id="1547123415014299762">Derdepartywebkoekies word toegelaat</translation>
 <translation id="1593426485665524382">Nuwe handelinge is naby die bokant van die skerm beskikbaar</translation>
+<translation id="1615755956145364867">Werwe kan vra om beskermde inhoud te speel</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1621729191093924223">Kenmerke wat 'n mikrofoon nodig het, sal nie werk nie</translation>
 <translation id="1633720957382884102">Verwante werwe</translation>
 <translation id="1644574205037202324">Geskiedenis</translation>
 <translation id="1652197001188145583">Wanneer dit aan is, kan werwe vra om NFC-toestelle te gebruik. Wanneer dit af is, kan werwe nie NFC-toestelle gebruik nie.</translation>
@@ -54,6 +56,7 @@
 <translation id="1743802530341753419">Vra voordat werwe toegelaat word om aan 'n toestel te koppel (aanbeveel)</translation>
 <translation id="1779089405699405702">Prentdekodeerder</translation>
 <translation id="1785415724048343560">Aanbeveel vir beste ervaring</translation>
+<translation id="1796588414813960292">Kenmerke wat klank nodig het, sal nie werk nie</translation>
 <translation id="1799920918471566157">Chrome-wenke</translation>
 <translation id="1816835383954230954">Wanneer dit aan is, werk Chrome vinniger en kenmerke wat JavaScript gebruik behoort te werk soos ontwerp. Wanneer dit af is neem werkverrigting af, maar dit maak V8 meer bestand teen aanvalle.</translation>
 <translation id="1818308510395330587">Om <ph name="APP_NAME" /> AR te laat gebruik, moet jy kamera ook in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aanskakel.</translation>
@@ -71,6 +74,7 @@
 <translation id="1994173015038366702">Werf-URL</translation>
 <translation id="2004697686368036666">Kenmerke op sommige webwerwe sal dalk nie werk nie</translation>
 <translation id="2025115093177348061">Aangevulde realiteit</translation>
+<translation id="2028449514182362831">Kenmerke wat bewegingsensors nodig het, sal nie werk nie</translation>
 <translation id="2030769033451695672">Tik om na <ph name="URL_OF_THE_CURRENT_TAB" /> terug te keer</translation>
 <translation id="2079545284768500474">Ontdoen</translation>
 <translation id="2091887806945687916">Klank</translation>
@@ -87,6 +91,7 @@
 <translation id="2215727959747642672">Lêerwysiging</translation>
 <translation id="2218389616572918761">Werwe kan vir jou mikrofoon vra</translation>
 <translation id="2228071138934252756">Om <ph name="APP_NAME" /> toegang tot jou kamera te gee, moet jy kamera ook in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aanskakel.</translation>
+<translation id="2231160360698766265">Werwe kan beskermde inhoud speel</translation>
 <translation id="2235344399760031203">Derdepartywebkoekies word geblokkeer</translation>
 <translation id="2238944249568001759">Voorgestelde soektogte op grond van jou jongste oortjie</translation>
 <translation id="2241587408274973373">Nuwe oortjiebladsykaarte</translation>
@@ -256,6 +261,7 @@
 <translation id="4259722352634471385">Navigasie is geblokkeer: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Nadat jy 'n werf verlaat het, kan dit aanhou sinkroniseer om take soos oplaai van foto's of stuur van kletsboodskappe te voltooi</translation>
 <translation id="4278390842282768270">Toegelaat</translation>
+<translation id="4290791284969893584">Take wat jy begin het, sal dalk nie klaarmaak as jy 'n bladsy toemaak nie</translation>
 <translation id="429312253194641664">'n Werf speel tans media</translation>
 <translation id="42981349822642051">Vou uit</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Verval môre}other{Verval oor # dae}}</translation>
@@ -530,6 +536,7 @@
 <translation id="8010630645305864042">{TILE_COUNT,plural, =1{Versteek Gaan voort met hierdie oortjie-kaart}other{Versteek Gaan voort met hierdie oortjies-kaart}}</translation>
 <translation id="802154636333426148">Kon nie aflaai nie</translation>
 <translation id="8042586301629853791">Rangskik volgens:</translation>
+<translation id="8051193500142930381">Kenmerke wat 'n kamera nodig het, sal nie werk nie</translation>
 <translation id="8067883171444229417">Speel video</translation>
 <translation id="8068648041423924542">Kan nie sertifikaat kies nie.</translation>
 <translation id="8077120325605624147">Enige werf wat jy besoek, kan vir jou enige advertensie wys</translation>
@@ -630,6 +637,7 @@
 <translation id="9138217887606523162">Huidige zoem is <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9156722768168878035">Laat Chrome jou onlangse oortjies in jou toestel se applys en soekresultate wys. Jy kan dit enige tyd in Chrome-instellings afskakel.</translation>
 <translation id="9162462602695099906">Hierdie bladsy is gevaarlik</translation>
+<translation id="9182556968660520230">Moenie werwe toelaat om beskermde inhoud te speel nie</translation>
 <translation id="947156494302904893">Werwe wat jy besoek, kan verifieer dat jy ’n regte persoon is en nie ’n bot nie</translation>
 <translation id="959682366969460160">Raak georganiseerd</translation>
 <translation id="967624055006145463">Data geberg</translation>

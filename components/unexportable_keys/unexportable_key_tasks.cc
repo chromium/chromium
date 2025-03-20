@@ -18,7 +18,7 @@ namespace unexportable_keys {
 namespace {
 
 std::unique_ptr<crypto::UnexportableSigningKey> GenerateSigningKeySlowly(
-    std::unique_ptr<crypto::UnexportableKeyProvider> key_provider,
+    crypto::UnexportableKeyProvider* key_provider,
     base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
         acceptable_algorithms,
     void* task_ptr_for_tracing) {
@@ -29,7 +29,7 @@ std::unique_ptr<crypto::UnexportableSigningKey> GenerateSigningKeySlowly(
 }
 
 std::unique_ptr<crypto::UnexportableSigningKey> FromWrappedSigningKeySlowly(
-    std::unique_ptr<crypto::UnexportableKeyProvider> key_provider,
+    crypto::UnexportableKeyProvider* key_provider,
     base::span<const uint8_t> wrapped_key,
     void* task_ptr_for_tracing) {
   TRACE_EVENT("browser", "unexportable_keys::FromWrappedSigningKeySlowly",
@@ -57,16 +57,17 @@ GenerateKeyTask::GenerateKeyTask(
     BackgroundTaskPriority priority,
     base::OnceCallback<void(GenerateKeyTask::ReturnType)> callback)
     : internal::BackgroundTaskImpl<GenerateKeyTask::ReturnType>(
-          base::BindOnce(
+          base::BindRepeating(
               &GenerateSigningKeySlowly,
-              std::move(key_provider),
+              base::Owned(std::move(key_provider)),
               std::vector<crypto::SignatureVerifier::SignatureAlgorithm>(
                   acceptable_algorithms.begin(),
                   acceptable_algorithms.end()),
               this),
           std::move(callback),
           priority,
-          BackgroundTaskType::kGenerateKey) {}
+          BackgroundTaskType::kGenerateKey,
+          /*max_retries=*/0) {}
 
 FromWrappedKeyTask::FromWrappedKeyTask(
     std::unique_ptr<crypto::UnexportableKeyProvider> key_provider,
@@ -74,26 +75,34 @@ FromWrappedKeyTask::FromWrappedKeyTask(
     BackgroundTaskPriority priority,
     base::OnceCallback<void(FromWrappedKeyTask::ReturnType)> callback)
     : internal::BackgroundTaskImpl<FromWrappedKeyTask::ReturnType>(
-          base::BindOnce(
+          base::BindRepeating(
               &FromWrappedSigningKeySlowly,
-              std::move(key_provider),
+              base::Owned(std::move(key_provider)),
               std::vector<uint8_t>(wrapped_key.begin(), wrapped_key.end()),
               this),
           std::move(callback),
           priority,
-          BackgroundTaskType::kFromWrappedKey) {}
+          BackgroundTaskType::kFromWrappedKey,
+          /*max_retries=*/0) {}
 
 SignTask::SignTask(scoped_refptr<RefCountedUnexportableSigningKey> signing_key,
                    base::span<const uint8_t> data,
                    BackgroundTaskPriority priority,
+                   size_t max_retries,
                    base::OnceCallback<void(SignTask::ReturnType)> callback)
     : internal::BackgroundTaskImpl<SignTask::ReturnType>(
-          base::BindOnce(&SignSlowlyWithRefCountedKey,
-                         std::move(signing_key),
-                         std::vector<uint8_t>(data.begin(), data.end()),
-                         this),
+          base::BindRepeating(&SignSlowlyWithRefCountedKey,
+                              std::move(signing_key),
+                              std::vector<uint8_t>(data.begin(), data.end()),
+                              this),
           std::move(callback),
           priority,
-          BackgroundTaskType::kSign) {}
+          BackgroundTaskType::kSign,
+          max_retries) {}
+
+bool SignTask::ShouldRetryBasedOnResult(
+    const std::optional<std::vector<uint8_t>>& result) const {
+  return !result.has_value();
+}
 
 }  // namespace unexportable_keys

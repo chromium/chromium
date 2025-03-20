@@ -329,12 +329,6 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   // returns nullable.
   WebAutofillClient* AutofillClientFromFrame(LocalFrame*);
 
-  // Returns a copy of `pending_rect`, adjusted for the given minimum window
-  // size. Defaulting to `blink::kMinimumWindowSize`.
-  gfx::Rect AdjustWindowRectForMinimum(
-      const gfx::Rect& pending_rect,
-      int minimum_size = blink::kMinimumWindowSize);
-
   // Returns a copy of |pending_rect|, adjusted for available screen area
   // constraints. This is used to synchronously estimate, or preemptively apply,
   // anticipated browser- or OS-imposed constraints. Note: This applies legacy

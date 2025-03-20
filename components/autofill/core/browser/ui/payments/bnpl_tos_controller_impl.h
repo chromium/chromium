@@ -23,7 +23,8 @@ class BnplTosControllerImpl : public BnplTosController {
   ~BnplTosControllerImpl() override;
 
   // BnplTosController:
-  void OnViewClosing(bool user_accepted) override;
+  void OnUserAccepted() override;
+  void OnUserCancelled() override;
   std::u16string GetOkButtonLabel() const override;
   std::u16string GetCancelButtonLabel() const override;
   std::u16string GetTitle() const override;
@@ -43,6 +44,9 @@ class BnplTosControllerImpl : public BnplTosController {
             BnplTosModel model,
             base::OnceClosure accept_callback,
             base::OnceClosure cancel_callback);
+
+  // Dismiss the BNPL ToS view.
+  void Dismiss();
 
  private:
   friend class BnplTosControllerImplTest;

@@ -37,7 +37,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.UnguessableToken;
@@ -70,6 +71,8 @@ import java.util.concurrent.TimeoutException;
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 @RequiresApi(Build.VERSION_CODES.O)
 public class PictureInPictureActivityTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
@@ -106,7 +109,6 @@ public class PictureInPictureActivityTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
         mTab = mActivityTestRule.getActivity().getActivityTab();
         PictureInPictureActivityJni.setInstanceForTesting(mNativeMock);

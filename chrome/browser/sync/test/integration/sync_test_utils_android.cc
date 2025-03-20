@@ -22,6 +22,8 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "components/saved_tab_groups/public/android/tab_group_sync_conversions_bridge.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -40,6 +42,22 @@ void SetUpAccountAndSignInForTesting() {
         run_loop.Quit();
       }));
   run_loop.Run();
+}
+
+GaiaId GetGaiaIdForDefaultTestAccount() {
+  base::RunLoop run_loop;
+  GaiaId result;
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()}, base::BindLambdaForTesting([&]() {
+        auto j_gaia_id =
+            Java_SyncTestSigninUtils_getGaiaIdForDefaultTestAccount(
+                base::android::AttachCurrentThread());
+        result = ConvertFromJavaGaiaId(base::android::AttachCurrentThread(),
+                                       j_gaia_id);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  return result;
 }
 
 void SetUpAccountAndSignInAndEnableSyncForTesting() {

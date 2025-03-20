@@ -251,6 +251,21 @@ scoped_refptr<InvalidationSet> CopyInvalidationSet(
   return copy;
 }
 
+bool IsPrecedingSimpleSelectorsValidBeforeHost(const CSSSelector* selector,
+                                               const CSSSelector* host) {
+  DCHECK(selector);
+  DCHECK(host);
+  for (; selector != host; selector = selector->NextSimpleSelector()) {
+    // TODO(blee@igalia.com) Need to support logical combinations before :host
+    // (e.g. ':not(:has(.a)):host')
+    if (!selector->IsHostPseudoClass() &&
+        selector->GetPseudoType() != CSSSelector::kPseudoHas) {
+      return false;
+    }
+  }
+  return true;
+}
+
 bool IsSimpleSelectorValidAfterHost(const CSSSelector* simple_selector) {
   // TODO(blee@igalia.com) Need to support logical combinations after :host
   // (e.g. ':host:not(:has(.a))')
@@ -356,9 +371,13 @@ RuleInvalidationDataVisitor<VisitorType>::CollectMetadataFromSelector(
     FeatureMetadata& metadata) {
   CSSSelector::RelationType relation = CSSSelector::kDescendant;
   bool found_host_pseudo = false;
+  const CSSSelector* compound = nullptr;
 
   for (const CSSSelector* current = &selector; current;
        current = current->NextSimpleSelector()) {
+    if (relation != CSSSelector::kSubSelector) {
+      compound = current;
+    }
     switch (current->GetPseudoType()) {
       case CSSSelector::kPseudoHas:
         if (found_host_pseudo && !current->IsLastInComplexSelector() &&
@@ -374,7 +393,9 @@ RuleInvalidationDataVisitor<VisitorType>::CollectMetadataFromSelector(
         break;
       case CSSSelector::kPseudoHost:
       case CSSSelector::kPseudoHostContext:
-        if (!found_host_pseudo && relation == CSSSelector::kSubSelector) {
+        if (!found_host_pseudo && relation == CSSSelector::kSubSelector &&
+            !IsPrecedingSimpleSelectorsValidBeforeHost(compound,
+                                                       /*host=*/current)) {
           return SelectorPreMatch::kNeverMatches;
         }
         if (!current->IsLastInComplexSelector() &&

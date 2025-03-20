@@ -39,7 +39,9 @@
 <translation id="1538031354170655462">‏אתרים משתמשים בדרך כלל בתקשורת מטווח קצר (NFC) כדי לעבוד עם תגים או מכשירים בקרבת מקום, כמו סריקה של תגים או תשלום באמצעות "מצמידים ומשלמים"</translation>
 <translation id="1547123415014299762">‏מותר להשתמש בקובצי cookie של צד שלישי</translation>
 <translation id="1593426485665524382">פעולות חדשות זמינות באזור החלק העליון של המסך</translation>
+<translation id="1615755956145364867">אתרים יכולים לבקש הרשאה להפעיל תוכן מוגן</translation>
 <translation id="1620510694547887537">מצלמה</translation>
+<translation id="1621729191093924223">תכונות שצריכות מיקרופון לא יפעלו</translation>
 <translation id="1633720957382884102">אתרים קשורים</translation>
 <translation id="1644574205037202324">היסטוריה</translation>
 <translation id="1652197001188145583">‏כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה להשתמש במכשירי NFC. כשהאפשרות מושבתת, אתרים לא יכולים להשתמש במכשירי NFC.</translation>
@@ -54,6 +56,7 @@
 <translation id="1743802530341753419">הצגת בקשה לפני מתן אישור לאתרים להתחבר להתקן (מומלץ)</translation>
 <translation id="1779089405699405702">מפענח התמונות</translation>
 <translation id="1785415724048343560">מומלץ כדי ליהנות מחוויית השימוש הטובה ביותר</translation>
+<translation id="1796588414813960292">תכונות שצריכות צלילים לא יפעלו</translation>
 <translation id="1799920918471566157">‏טיפים ל-Chrome</translation>
 <translation id="1816835383954230954">‏כשהאפשרות הזו מופעלת, דפדפן Chrome פועל מהר יותר ותכונות שמתבססות על JavaScript אמורות לפעול כמו שצריך. כשהאפשרות הזו מושבתת, יש ירידה ברמת הביצועים בתמורה להגברת העמידות של V8 בפני מתקפות.</translation>
 <translation id="1818308510395330587">‏כדי לאפשר ל-<ph name="APP_NAME" /> להשתמש ב-AR, צריך להפעיל את המצלמה גם ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
@@ -71,6 +74,7 @@
 <translation id="1994173015038366702">כתובת אתר</translation>
 <translation id="2004697686368036666">ייתכן שתכונות באתרים מסוימים לא יפעלו</translation>
 <translation id="2025115093177348061">מציאות רבודה</translation>
+<translation id="2028449514182362831">תכונות שצריכות חיישני תנועה לא יפעלו</translation>
 <translation id="2030769033451695672">כדי לחזור אל <ph name="URL_OF_THE_CURRENT_TAB" />, יש ללחוץ כאן</translation>
 <translation id="2079545284768500474">ביטול הפעולה</translation>
 <translation id="2091887806945687916">צליל</translation>
@@ -87,6 +91,7 @@
 <translation id="2215727959747642672">עריכת קובץ</translation>
 <translation id="2218389616572918761">אתרים יכולים לבקש הרשאה להשתמש במיקרופון</translation>
 <translation id="2228071138934252756">‏כדי לאפשר ל-<ph name="APP_NAME" /> לגשת אל המצלמה, צריך להפעיל אותה גם ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
+<translation id="2231160360698766265">אתרים יכולים להפעיל תוכן מוגן</translation>
 <translation id="2235344399760031203">‏קובצי cookie של צד שלישי חסומים</translation>
 <translation id="2238944249568001759">הצעות לחיפושים על סמך הכרטיסייה האחרונה שלך</translation>
 <translation id="2241587408274973373">כרטיסים בדף 'כרטיסייה חדשה'</translation>
@@ -256,6 +261,7 @@
 <translation id="4259722352634471385">הניווט חסום: <ph name="URL" /></translation>
 <translation id="4274673989874969668">לאחר יציאה מאתרים, ייתכן שפעולות סנכרון שלהם ימשיכו כדי להשלים משימות, כמו העלאת תמונות או שליחת הודעות צ'אט</translation>
 <translation id="4278390842282768270">מותר</translation>
+<translation id="4290791284969893584">לאחר סגירת דף, ייתכן שמשימות שהתחלת לא יסתיימו</translation>
 <translation id="429312253194641664">אתר מסוים מפעיל מדיה</translation>
 <translation id="42981349822642051">הרחבה</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{התוקף יפוג מחר}one{התוקף יפוג בעוד # ימים}two{התוקף יפוג בעוד יומיים}other{התוקף יפוג בעוד # ימים}}</translation>
@@ -531,6 +537,7 @@
 <translation id="8010630645305864042">{TILE_COUNT,plural, =1{הסתרת הכרטיס 'המשך הגלישה בכרטיסייה הזו‘}one{הסתרת הכרטיס 'המשך הגלישה בכרטיסיות האלה‘}two{הסתרת הכרטיס 'המשך הגלישה בכרטיסיות האלה‘}other{הסתרת הכרטיס 'המשך הגלישה בכרטיסיות האלה‘}}</translation>
 <translation id="802154636333426148">ההורדה נכשלה</translation>
 <translation id="8042586301629853791">מיון לפי:</translation>
+<translation id="8051193500142930381">תכונות שצריכות מצלמה לא יפעלו</translation>
 <translation id="8067883171444229417">הפעלת הסרטון</translation>
 <translation id="8068648041423924542">אין אפשרות לבחור אישור.</translation>
 <translation id="8077120325605624147">לכל אתר שבו מבקרים יש הרשאה להציג כל מודעה</translation>
@@ -631,6 +638,7 @@
 <translation id="9138217887606523162">הזום הנוכחי: <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9156722768168878035">‏‫Chrome יכול להציג את הכרטיסיות האחרונות ברשימת האפליקציות במכשיר ובתוצאות החיפוש. אפשר להשבית את האפשרות הזו בכל שלב בהגדרות Chrome.</translation>
 <translation id="9162462602695099906">הדף הזה מסוכן</translation>
+<translation id="9182556968660520230">לא לאפשר לאתרים להפעיל תוכן מוגן</translation>
 <translation id="947156494302904893">אתרים שמבקרים בהם יכולים לאמת שמדובר באדם אמיתי ולא בבוט</translation>
 <translation id="959682366969460160">ארגון הפריטים</translation>
 <translation id="967624055006145463">נפח הנתונים</translation>

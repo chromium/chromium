@@ -38,10 +38,8 @@
 <translation id="1155154308031262006">Въведете подкана</translation>
 <translation id="115705039208660697">ананаси</translation>
 <translation id="1164939766849482256">Скрийнсейвър „От зазоряване до здрачаване“</translation>
-<translation id="1166688493741195933">Генерирането на имена на записите не бе успешно</translation>
 <translation id="1167755866710282443">Отворете менюто, за да персонализирате клавишите. Плъзнете менюто за преместване.</translation>
 <translation id="1171349345463658120">пясъчна лагуна</translation>
-<translation id="1173894706177603556">Преименуване</translation>
 <translation id="1174073918202301297">Прекият път бе добавен</translation>
 <translation id="11743817593307477">Използвайте клавишите със стрелки, за да преместите тази контрола до желаното от вас действие в играта. Натиснете клавиша Enter, за да поставите контролата, или Escape, за да анулирате.</translation>
 <translation id="1175697296044146566">Това устройство <ph name="DEVICE_TYPE" /> се управлява от <ph name="MANAGER" />.</translation>
@@ -153,7 +151,6 @@
 <translation id="1604959087182679653">Скриване на преписа</translation>
 <translation id="160633243685262989">Визуализация на изображението</translation>
 <translation id="1611649489706141841">напред</translation>
-<translation id="1615144046047995187">Изтеглянето не е възможно. Опитайте отново или рестартирайте своя Chromebook.</translation>
 <translation id="1615335640928990664">Пренос на данни от <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Използване на тема</translation>
 <translation id="1621067168122174824">Стартиране на тест на зареждането</translation>
@@ -372,7 +369,6 @@
 <translation id="2560876255701405320">Списък с аудиозаписи</translation>
 <translation id="2561093647892030937">лимони</translation>
 <translation id="2570743873672969996">Изпълняван тест: <ph name="TEST_NAME" /></translation>
-<translation id="2573178735329662769">Записване на цялото аудио от Chromebook</translation>
 <translation id="2576253868710695442">Той ще заеме до 2 GB в хранилището</translation>
 <translation id="2584547424703650812">Сияйни пейзажи</translation>
 <translation id="2584559707064218956">За настройване отворете „Настройки“</translation>
@@ -415,7 +411,6 @@
 <translation id="2787237339470862294">Понастоящем този език не се поддържа</translation>
 <translation id="2787435249130282949">по-ярка клавиатура</translation>
 <translation id="2805756323405976993">Приложения</translation>
-<translation id="2822702442014805146">Моделът за създаване на обобщения и имена се изтегля</translation>
 <translation id="28232023175184696">Няма връзка с интернет. Кликнете, за да опитате отново.</translation>
 <translation id="2855718259207180827">вълна</translation>
 <translation id="2859243502336719778">Критична актуализация</translation>
@@ -503,7 +498,6 @@
 <translation id="3340011300870565703">Нивото на батерията на дясната слушалка е <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">настройките</translation>
 <translation id="3347558044552027859">модерен/модерно място</translation>
-<translation id="3353477144743332882">Изтегляне на модела за създаване на обобщения и имена</translation>
 <translation id="3359218928534347896">превключване на спирането на звука на микрофона</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">парчета суши</translation>
@@ -566,7 +560,6 @@
 <translation id="3632040286124154621">Добро предложение</translation>
 <translation id="3632579075709132555">Превключване на екрана за поверителност</translation>
 <translation id="3634941468757842845">Избиране на тема</translation>
-<translation id="3639873154908477486">Име (А до Я)</translation>
 <translation id="3644695927181369554">Неподходящо предложение</translation>
 <translation id="3651050199673793219">Изберете единица за температура</translation>
 <translation id="3661106764436337772">Пишете по-бързо и уверено</translation>
@@ -636,6 +629,7 @@
 <translation id="39823212440917567">Заданията за отпечатване, по-стари от <ph name="NUMBER_OF_DAYS" /> дни, ще бъдат премахнати</translation>
 <translation id="3993704782688964914">Устройството ви <ph name="DEVICE_NAME" /> вече е актуално</translation>
 <translation id="3998976413398910035">Управление на принтерите</translation>
+<translation id="4002066346123236978">Заглавие</translation>
 <translation id="4003384961948020559">Неуспешно – изходният контейнер е пълен</translation>
 <translation id="401147258241215701">обсидиан</translation>
 <translation id="4021031199988160623">За тестване превключете към режим на лаптоп</translation>
@@ -773,7 +767,6 @@
 <translation id="4594541568452132351">Изберете езика на преписите и изтеглете модела</translation>
 <translation id="4607282946861182308">Не могат да се създадат изображения на това. Опитайте с друга подкана.</translation>
 <translation id="4609350030397390689">Намаляване на яркостта на клавиатурата</translation>
-<translation id="4623061655523261501">Имената на записите бяха генерирани успешно</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> от <ph name="TOTAL_PAGE_NUMBER" />. Натиснете Enter, за да откажете заданието за отпечатване</translation>
 <translation id="463791356324567266">Сканирането се отменя...</translation>
 <translation id="4644611440022666152">Включване и изтегляне</translation>
@@ -836,7 +829,6 @@
 <translation id="4891842000192098784">Стрес</translation>
 <translation id="4897058166682006107">Нивото на батерията на лявата слушалка е <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="4905998861748258752">Включете функцията, за да изберете опции за скрийнсейвъра</translation>
-<translation id="4910853326379896417">Изтеглянето на модела за създаване на обобщения и имена завърши</translation>
 <translation id="4910858703033903787">Типове APN</translation>
 <translation id="4917385247580444890">Силен</translation>
 <translation id="4917889632206600977">Спряло – няма хартия</translation>
@@ -855,7 +847,6 @@
 <translation id="4981003703840817201">синьо и розово</translation>
 <translation id="498186245079027698">Проверете скенера и опитайте отново. Уверете се, че на устройството ви има достатъчно място за запазване на сканираните файлове.</translation>
 <translation id="4982627662315910959">Клавишната комбинация не е налице. Използвайте друга, като натиснете Shift и още 1 модифициращ клавиш (Ctrl, Alt или „<ph name="META_KEY" />“).</translation>
-<translation id="4983216687482551672">Аудио от Chromebook</translation>
 <translation id="4985509611418653372">Стартиране</translation>
 <translation id="4987769320337599931">Защитна стена</translation>
 <translation id="4988526792673242964">Страници</translation>
@@ -874,7 +865,6 @@
 <translation id="5056587122125565772">Създаване на изображение</translation>
 <translation id="5078711626843651677">Гласовите модели се съхраняват временно на устройството, докато обозначаването на говорещите бъде завършено. Можете да изключите това по всяко време от настройките.</translation>
 <translation id="5078983345702708852">футуристичен</translation>
-<translation id="5085224064082122501">Моделът за създаване на обобщения и имена не може да се изтегли. Опитайте отново или рестартирайте своя Chromebook.</translation>
 <translation id="5087864757604726239">назад</translation>
 <translation id="5088172560898466307">Име на хоста за сървъра</translation>
 <translation id="5089810972385038852">Щат</translation>
@@ -882,9 +872,7 @@
 <translation id="5095761549884461003">Изключете USB кабела на <ph name="DEVICE_NAME" /> и го включете отново, за да продължите процеса на актуализиране</translation>
 <translation id="5099354524039520280">нагоре</translation>
 <translation id="5107243100836678918">Клавишната комбинация без клавиша „<ph name="META_KEY" />“ може да е в конфликт с комбинация в приложение. Натиснете тази комбинация отново, за да продължите да я използвате, или натиснете нова, като включите и клавиша „<ph name="KEY" />“. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Моделът за преписи на <ph name="LANGUAGE_NAME" /> не може да се изтегли. Опитайте отново или рестартирайте своя Chromebook</translation>
 <translation id="5108781503443873320">Подобни:</translation>
-<translation id="5121677070210013200">Моделът за преписи не може да се изтегли. Опитайте отново или рестартирайте своя Chromebook.</translation>
 <translation id="5130848777448318809">понита</translation>
 <translation id="5137451382116112100">Цял екран</translation>
 <translation id="5139813694804168398">не безпокойте</translation>
@@ -899,7 +887,6 @@
 <translation id="5168185087976003268">Състояние на батерията</translation>
 <translation id="5170568018924773124">Показване в папката</translation>
 <translation id="517075088756846356">Изключете и включете отново захранващия кабел на устройството (<ph name="DEVICE_NAME" />), за да продължите процеса на актуализиране</translation>
-<translation id="5178021559562393163">Не могат да се създадат имена. Опитайте с по-кратък препис.</translation>
 <translation id="5180108905184566358">дървета баобаб</translation>
 <translation id="5180712487038406644">Изразителен</translation>
 <translation id="5190187232518914472">Преживейте отново любимите си спомени. За да добавите или редактирате албуми, отворете <ph name="LINK_BEGIN" />Google Снимки<ph name="LINK_END" />.</translation>
@@ -936,11 +923,9 @@
 <translation id="530883153651464140">Актуализиране на <ph name="DEVICE_NAME" /> до версия <ph name="VERSION" /></translation>
 <translation id="5315873049536339193">Самоличност</translation>
 <translation id="5317780077021120954">Запазване</translation>
-<translation id="5318310531701770497">Не могат да се създадат имена. Опитайте с по-дълъг препис.</translation>
 <translation id="5318334351163689047">Неуспешни заявки през TCP</translation>
 <translation id="53196409393069519">Да се включи ли функцията за препис?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
-<translation id="5327248766486351172">Име</translation>
 <translation id="5332948983412042822">Изберете нова сега</translation>
 <translation id="5333530671332546086">Състоянието на портала е неизвестно</translation>
 <translation id="5335373365677455232">розово</translation>
@@ -1005,7 +990,6 @@
 <translation id="5680504961595602662">Сюрреалистично изображение на <ph name="SURREAL_LANDSCAPE" /> с(ъс) <ph name="SURREAL_SUBJECT" /></translation>
 <translation id="5685478548317291523">череши</translation>
 <translation id="5691511426247308406">Семейство</translation>
-<translation id="5692395212036914927">Обобщаване на записа и създаване на име</translation>
 <translation id="5695599963893094957">Натиснете произволен клавиш на клавиатурата си. Можете да натиснете до 4 наведнъж.</translation>
 <translation id="5701381305118179107">Центриране</translation>
 <translation id="5703716265115423771">намаляване на силата на звука</translation>
@@ -1044,6 +1028,7 @@
 <translation id="5896602941605730551">Пускане</translation>
 <translation id="5901630391730855834">Жълто</translation>
 <translation id="5903200662178656908">Устройството е комбинирана клавиатура и мишка.</translation>
+<translation id="5903822368221507416">Скриване на разделите</translation>
 <translation id="5904994456462260490">Добавяне на ново име на точката за достъп (APN)</translation>
 <translation id="590746845088109442">котки</translation>
 <translation id="5907649332524363701">цвят на клавишите</translation>
@@ -1055,7 +1040,6 @@
 <translation id="5928411637936685857">Бутон за изтриване на <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5930669310554144537">Dreamscape</translation>
 <translation id="5931523347251946569">Файлът не бе намерен</translation>
-<translation id="5938286923316838007">Не могат да се създадат имена на записи за това съдържание</translation>
 <translation id="5939518447894949180">Нулиране</translation>
 <translation id="5942727615796467094">Администраторът на <ph name="MANAGER" /> е задал кога може да се използва това устройство (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="594552776027197022">Генериране на произволна двойка ключове</translation>
@@ -1100,7 +1084,6 @@
 <translation id="6122191549521593678">Онлайн</translation>
 <translation id="6122277663991249694">Услуга за метод на въвеждане в Chrome OS</translation>
 <translation id="6127426868813166163">бяло</translation>
-<translation id="613049107179582049">Когато аудиото от Chromebook е включено, „Рекордер“ записва целия звук, който се възпроизвежда на това устройство</translation>
 <translation id="6136285399872347291">изтриване назад</translation>
 <translation id="6137614725462089991">киберпънк</translation>
 <translation id="6137767437444130246">Потребителски сертификат</translation>
@@ -1152,7 +1135,6 @@
 <translation id="6359706544163531585">Деактивиране на светлата тема</translation>
 <translation id="6359919876285606596">Това действие е необратимо и не може да бъде отменено</translation>
 <translation id="636850387210749493">Корпоративно записване</translation>
-<translation id="6369221585240879141">Не могат да се създадат имена на записите за този език на преписа</translation>
 <translation id="6373461326814131011">Изкуствено езеро</translation>
 <translation id="6379086450106841622">Сензорен екран</translation>
 <translation id="6381741036071372448">Тестване на клавиатурата</translation>
@@ -1273,10 +1255,8 @@
 <translation id="6910312834584889076">Капакът на скенера е отворен. Затворете го и опитайте отново.</translation>
 <translation id="6910845598686542904">изчисляване на моделите на гласовете, разпознати в записа;</translation>
 <translation id="6911383237894364323">Не може да се установи връзка с мултимедийните сървъри</translation>
-<translation id="6927968682840110570">Име на записа</translation>
 <translation id="6930242544192836755">Продължителност</translation>
 <translation id="6930597342185648547">Всичко за фона</translation>
-<translation id="6939667434404433010">Търсете по име на записа</translation>
 <translation id="6939766318048400022">Кафене</translation>
 <translation id="6942253772720771875">Споделете отзиви или опишете проблема си</translation>
 <translation id="6943893908656559156">Отдалечена самоличност (по избор)</translation>
@@ -1313,7 +1293,6 @@
 <translation id="708426984172631313">СПРЯН</translation>
 <translation id="7086168019478250425">биолуминeсцентен плаж</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
-<translation id="7086916854357021265">Генерират се имена на записите</translation>
 <translation id="7097908713073775559">разноцветни</translation>
 <translation id="710028965487274708">Неуспешно – Удостоверяването не бе успешно</translation>
 <translation id="7101959270679078188">Отключете устройството (<ph name="DEVICE_NAME" />), за да продължите процеса на актуализиране</translation>
@@ -1434,7 +1413,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Сензорен екран с USB</translation>
 <translation id="757747079855995705">камък</translation>
-<translation id="7584853321964440104">Изтеглянето не е възможно. Опитайте отново или рестартирайте своя Chromebook.</translation>
 <translation id="7590883480672980941">Настройки за въвеждане</translation>
 <translation id="7595982850646262331">Оставащо време: <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">Администраторът на <ph name="MANAGER" /> е задал кога може да се използва това устройство (<ph name="DEVICE_TYPE" />).</translation>
@@ -1645,7 +1623,6 @@
 <translation id="8503836310948963452">Само още няколко минути…</translation>
 <translation id="8505011850330200833">Моделът на Gemini се нуждае от 2 GB място в хранилището, за да обработва преписи и да създава обобщения</translation>
 <translation id="8508640263392900755">Подробности за името на точката за достъп (APN)</translation>
-<translation id="8509574872955173831">Научете повече за създаването на обобщения и имена</translation>
 <translation id="8522687886059337719">Вече имате достъп до нови <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />тапети<ph name="END_LINK_WALLPAPER_SUBPAGE" /> и <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />скрийнсейвър<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">чайна</translation>
@@ -1662,7 +1639,6 @@
 <translation id="8626489604350149811">Още действия за <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Светлолилав</translation>
 <translation id="8647595191512746911">Аудиопрепис</translation>
-<translation id="8648578954147795914">Генерирани имена:</translation>
 <translation id="8650852232143958317">Вземете файловете си от Gmail и Google Диск със себе си</translation>
 <translation id="8651481478098336970">заглушаване на звука</translation>
 <translation id="8655295600908251630">Канал</translation>
@@ -1693,7 +1669,6 @@
 <translation id="8775713578693478175">Име на точката за достъп (APN) на модема</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Тази мрежа може да има портал за удостоверяване</translation>
-<translation id="8797082062139985406">Създаване на име чрез AI на Google</translation>
 <translation id="8798099450830957504">По подразбиране</translation>
 <translation id="8798441408945964110">Име на доставчика</translation>
 <translation id="8804164990146287819">Декларация за поверителност</translation>
@@ -1719,7 +1694,6 @@
 <translation id="8882789155418924367">сови</translation>
 <translation id="8885038613856655272">Свързване на микрофон</translation>
 <translation id="8892443466059986410">Анулиране на редактирането на прекия път</translation>
-<translation id="8897043028305808902">Файлът бе преименуван</translation>
 <translation id="8898840733695078011">Сила на сигнала</translation>
 <translation id="8909114361904403025">стрелка за нагоре</translation>
 <translation id="8910721771319628100">Забавянето на основната мрежа е над прага</translation>
@@ -1805,7 +1779,6 @@
 <translation id="9218016617214286986">Показване на известните имена на точки за достъп (APN)</translation>
 <translation id="932327136139879170">Начална страница</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Уверете се, че микрофонът ви е свързан, или опитайте да рестартирате своя Chromebook</translation>
 <translation id="945522503751344254">Изпращане на отзиви</translation>
 <translation id="950520315903467048">Липсва клавиш за <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">сравняване на гласовете в записа, така че преписът да отразява какво е казал всеки от говорещите и кога.</translation>

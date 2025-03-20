@@ -39,7 +39,9 @@
 <translation id="1538031354170655462">โดยปกติแล้วเว็บไซต์จะใช้ Near Field Communication (NFC) เพื่อทำงานร่วมกับแท็กหรืออุปกรณ์ที่อยู่ใกล้เคียง เช่น ป้ายสแกนหรือแตะเพื่อจ่าย</translation>
 <translation id="1547123415014299762">อนุญาตคุกกี้ของบุคคลที่สาม</translation>
 <translation id="1593426485665524382">การดำเนินการใหม่ที่พร้อมใช้งานบริเวณด้านบนของหน้าจอ</translation>
+<translation id="1615755956145364867">เว็บไซต์ขอเล่นเนื้อหาที่มีการคุ้มครองได้</translation>
 <translation id="1620510694547887537">กล้องถ่ายรูป</translation>
+<translation id="1621729191093924223">ฟีเจอร์ที่ต้องใช้ไมโครโฟนจะไม่ทำงาน</translation>
 <translation id="1633720957382884102">เว็บไซต์ที่เกี่ยวข้อง</translation>
 <translation id="1644574205037202324">ประวัติการเข้าชม</translation>
 <translation id="1652197001188145583">เมื่อเปิด เว็บไซต์จะขอใช้อุปกรณ์ NFC ได้ เมื่อปิด เว็บไซต์จะใช้อุปกรณ์ NFC ไม่ได้</translation>
@@ -54,6 +56,7 @@
 <translation id="1743802530341753419">ถามก่อนอนุญาตให้เว็บไซต์เชื่อมต่อกับอุปกรณ์ (แนะนำ)</translation>
 <translation id="1779089405699405702">ตัวถอดรหัสรูปภาพ</translation>
 <translation id="1785415724048343560">แนะนำเพื่อประสบการณ์การใช้งานที่ดีที่สุด</translation>
+<translation id="1796588414813960292">ฟีเจอร์ที่ต้องใช้เสียงจะไม่ทำงาน</translation>
 <translation id="1799920918471566157">เคล็ดลับในการใช้ Chrome</translation>
 <translation id="1816835383954230954">เมื่อเปิดใช้ Chrome จะทำงานได้เร็วขึ้นและฟีเจอร์ที่ใช้ JavaScript ควรทำงานตามที่ออกแบบไว้ เมื่อปิดใช้ ตัวเลือกนี้จะลดประสิทธิภาพแต่ทำให้ V8 ต้านทานการโจมตีได้มากขึ้น</translation>
 <translation id="1818308510395330587">หากต้องการอนุญาตให้ <ph name="APP_NAME" /> ใช้ AR ให้เปิดใช้กล้องใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /> ด้วย</translation>
@@ -71,6 +74,7 @@
 <translation id="1994173015038366702">URL ของเว็บไซต์</translation>
 <translation id="2004697686368036666">ฟีเจอร์ในบางเว็บไซต์อาจใช้งานไม่ได้</translation>
 <translation id="2025115093177348061">Augmented Reality</translation>
+<translation id="2028449514182362831">ฟีเจอร์ที่ต้องใช้เซ็นเซอร์ตรวจจับการเคลื่อนไหวจะไม่ทำงาน</translation>
 <translation id="2030769033451695672">แตะเพื่อกลับไปที่ <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">เลิกทำ</translation>
 <translation id="2091887806945687916">เสียง</translation>
@@ -87,6 +91,7 @@
 <translation id="2215727959747642672">การแก้ไขไฟล์</translation>
 <translation id="2218389616572918761">เว็บไซต์ขอสิทธิ์เข้าถึงไมโครโฟนได้</translation>
 <translation id="2228071138934252756">หากต้องการอนุญาตให้ <ph name="APP_NAME" /> เข้าถึงกล้องถ่ายรูป ให้เปิดใช้กล้องใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /> ด้วย</translation>
+<translation id="2231160360698766265">เว็บไซต์เล่นเนื้อหาที่มีการคุ้มครองได้</translation>
 <translation id="2235344399760031203">บล็อกคุกกี้ของบุคคลที่สามอยู่</translation>
 <translation id="2238944249568001759">การค้นหาที่แนะนําโดยอิงจากแท็บล่าสุด</translation>
 <translation id="2241587408274973373">การ์ดหน้าแท็บใหม่</translation>
@@ -256,6 +261,7 @@
 <translation id="4259722352634471385">มีการบล็อกการนำทาง: <ph name="URL" /></translation>
 <translation id="4274673989874969668">หลังจากที่คุณออกจากเว็บไซต์ไปแล้ว เว็บไซต์ยังสามารถทำการซิงค์ต่อได้จนกว่างานจะเสร็จ เช่น อัปโหลดรูปภาพหรือส่งข้อความแชท</translation>
 <translation id="4278390842282768270">อนุญาตแล้ว</translation>
+<translation id="4290791284969893584">หลังจากปิดหน้าไปแล้ว งานที่คุณเริ่มไว้อาจไม่ดำเนินต่อจนเสร็จสิ้น</translation>
 <translation id="429312253194641664">เว็บไซต์กำลังเล่นสื่อ</translation>
 <translation id="42981349822642051">ขยาย</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{หมดอายุวันพรุ่งนี้}other{หมดอายุในอีก # วัน}}</translation>
@@ -523,6 +529,7 @@
 <translation id="789180354981963912">บล็อกคุกกี้ของบุคคลที่สามในโหมดไม่ระบุตัวตน:</translation>
 <translation id="789722939441020330">ไม่อนุญาตให้เว็บไซต์ดาวน์โหลดหลายไฟล์โดยอัตโนมัติ</translation>
 <translation id="7940722705963108451">เตือนฉัน</translation>
+<translation id="7948081750384205628">ดูข้อมูลเพิ่มเติมเกี่ยวกับ<ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">เว็บไซต์ขอดูข้อความและรูปภาพในคลิปบอร์ดของคุณได้</translation>
 <translation id="7986741934819883144">เลือกรายชื่อติดต่อ</translation>
 <translation id="7990211076305263060">เมื่อเปิด เว็บไซต์จะขอใช้ไมโครโฟนของคุณได้ เมื่อปิด เว็บไซต์จะใช้ไมโครโฟนไม่ได้</translation>
@@ -530,6 +537,7 @@
 <translation id="8010630645305864042">{TILE_COUNT,plural, =1{ซ่อนการ์ด "ดำเนินการต่อโดยใช้แท็บนี้"}other{ซ่อนการ์ด "ดำเนินการต่อโดยใช้แท็บเหล่านี้"}}</translation>
 <translation id="802154636333426148">การดาวน์โหลดล้มเหลว</translation>
 <translation id="8042586301629853791">จัดเรียงตาม</translation>
+<translation id="8051193500142930381">ฟีเจอร์ที่ต้องใช้กล้องจะไม่ทำงาน</translation>
 <translation id="8067883171444229417">เล่นวิดีโอ</translation>
 <translation id="8068648041423924542">เลือกใบรับรองไม่ได้</translation>
 <translation id="8077120325605624147">เว็บไซต์ที่คุณเข้าชมจะแสดงโฆษณาต่อคุณได้</translation>
@@ -630,6 +638,7 @@
 <translation id="9138217887606523162">ระดับการซูมปัจจุบันคือ <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9156722768168878035">ให้ Chrome แสดงแท็บล่าสุดในรายการแอปและผลการค้นหาของอุปกรณ์ คุณปิดฟีเจอร์นี้ได้ทุกเมื่อในการตั้งค่า Chrome</translation>
 <translation id="9162462602695099906">หน้านี้อันตราย</translation>
+<translation id="9182556968660520230">ไม่อนุญาตให้เว็บไซต์เล่นเนื้อหาที่มีการคุมครอง</translation>
 <translation id="947156494302904893">เว็บไซต์ที่เข้าชมสามารถยืนยันได้ว่าคุณเป็นคนจริงๆ ไม่ใช่บ็อต</translation>
 <translation id="959682366969460160">จัดระเบียบ</translation>
 <translation id="967624055006145463">ข้อมูลที่จัดเก็บ</translation>

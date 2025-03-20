@@ -1656,6 +1656,24 @@ void CopySellerSignalsFromIdlToMojo(
           mojom::blink::AuctionAdConfigField::kSellerSignals, "sellerSignals");
 }
 
+void CopySellerTKVSignalsFromIdlToMojo(
+    NavigatorAuction::AuctionHandle* auction_handle,
+    mojom::blink::AuctionAdConfigAuctionId* auction_id,
+    const AuctionAdConfig& input,
+    mojom::blink::AuctionAdConfig& output) {
+  if (!input.hasSellerTKVSignals()) {
+    output.auction_ad_config_non_shared_params->seller_tkv_signals =
+        mojom::blink::AuctionAdConfigMaybePromiseJson::NewValue(String());
+    return;
+  }
+
+  output.auction_ad_config_non_shared_params->seller_tkv_signals =
+      ConvertJsonPromiseFromIdlToMojo(
+          auction_handle, auction_id, input, input.sellerTKVSignals(),
+          mojom::blink::AuctionAdConfigField::kSellerTKVSignals,
+          "sellerTKVSignals");
+}
+
 // Attempts to build a DirectFromSellerSignalsSubresource. If there is no
 // registered subresource URL `subresource_url` returns nullptr -- processing
 // may continue with the next `subresource_url`.
@@ -2007,6 +2025,40 @@ void CopyPerBuyerSignalsFromIdlToMojo(
           input.seller()));
   output.auction_ad_config_non_shared_params->per_buyer_signals =
       mojom::blink::AuctionAdConfigMaybePromisePerBuyerSignals::NewPromise(0);
+}
+
+bool CopyPerBuyerTKVSignalsFromIdlToMojo(
+    const ScriptState& script_state,
+    ExceptionState& exception_state,
+    const AuctionAdConfig& input,
+    mojom::blink::AuctionAdConfig& output) {
+  if (!input.hasPerBuyerTKVSignals()) {
+    return true;
+  }
+
+  for (const auto& per_buyer_tkv_signal : input.perBuyerTKVSignals()) {
+    scoped_refptr<const SecurityOrigin> buyer =
+        ParseOrigin(per_buyer_tkv_signal.first);
+    if (!buyer) {
+      exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
+          input, "perBuyerTKVSignals buyer", per_buyer_tkv_signal.first,
+          "must be a valid https origin."));
+      return false;
+    }
+
+    String tkv_signals_str;
+    if (!Jsonify(script_state, per_buyer_tkv_signal.second.V8Value(),
+                 tkv_signals_str)) {
+      exception_state.ThrowTypeError(ErrorInvalidAuctionConfigSellerJson(
+          input.seller(), "perBuyerTKVSignals"));
+      return false;
+    }
+
+    output.auction_ad_config_non_shared_params->per_buyer_tkv_signals.insert(
+        buyer, tkv_signals_str);
+  }
+
+  return true;
 }
 
 // Returns nullptr + sets exception on failure, or returns a concrete value.
@@ -2667,7 +2719,9 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
       !CopyAggregationCoordinatorOriginFromIdlToMojo(exception_state, config,
                                                      *mojo_config) ||
       !CopyPerBuyerRealTimeReportingTypesFromIdlToMojo(exception_state, config,
-                                                       *mojo_config)) {
+                                                       *mojo_config) ||
+      !CopyPerBuyerTKVSignalsFromIdlToMojo(script_state, exception_state,
+                                           config, *mojo_config)) {
     return mojom::blink::AuctionAdConfigPtr();
   }
 
@@ -2685,6 +2739,8 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
                                   *mojo_config);
   CopySellerSignalsFromIdlToMojo(auction_handle, auction_id.get(), config,
                                  *mojo_config);
+  CopySellerTKVSignalsFromIdlToMojo(auction_handle, auction_id.get(), config,
+                                    *mojo_config);
   CopyDirectFromSellerSignalsFromIdlToMojo(auction_handle, auction_id.get(),
                                            config, *mojo_config);
   CopyDirectFromSellerSignalsHeaderAdSlotFromIdlToMojo(

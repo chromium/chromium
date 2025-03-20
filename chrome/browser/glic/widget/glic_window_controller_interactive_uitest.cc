@@ -7,15 +7,17 @@
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "chrome/browser/background/glic/glic_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
-#include "chrome/browser/glic/interactive_glic_test.h"
+#include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
@@ -311,6 +313,7 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 // activation.
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, ApiDetach) {
+  base::HistogramTester tester;
   RunTestSequence(
       // Open attached.
       OpenGlicWindow(GlicWindowMode::kAttached), CheckControllerHasWidget(true),
@@ -328,6 +331,13 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, ApiDetach) {
       StopObservingState(test::internal::kGlicWindowControllerState),
 
       CheckControllerWidgetMode(GlicWindowMode::kDetached));
+
+  tester.ExpectTotalCount("Glic.AttachedToBrowser", 1);
+  tester.ExpectBucketCount("Glic.AttachedToBrowser", AttachChangeReason::kInit,
+                           1);
+  tester.ExpectTotalCount("Glic.DetachedFromBrowser", 1);
+  tester.ExpectBucketCount("Glic.DetachedFromBrowser",
+                           AttachChangeReason::kMenu, 1);
 }
 
 // TODO: Re-nable this test when there is a glic state for post-resize.

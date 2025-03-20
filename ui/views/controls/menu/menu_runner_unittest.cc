@@ -23,6 +23,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/menu/menu_controller.h"
@@ -147,10 +148,9 @@ class MenuRunnerTest : public ViewsTestBase {
     base::RepeatingClosure quit_closure = task_environment()->QuitClosure();
     task_environment()->GetMainThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindLambdaForTesting([&]() {
-          menu_runner()->RunMenuAt(owner(), nullptr,
-                                   gfx::Rect(anchor_position, gfx::Size()),
-                                   MenuAnchorPosition::kTopLeft,
-                                   ui::mojom::MenuSourceType::kMouse, nullptr);
+          menu_runner()->RunMenuAt(
+              owner(), nullptr, gfx::Rect(anchor_position, gfx::Size()),
+              MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kMouse);
           quit_closure.Run();
         }));
     task_environment()->RunUntilQuit();
@@ -172,7 +172,7 @@ TEST_F(MenuRunnerTest, AsynchronousRun) {
   InitMenuRunner(0);
   MenuRunner* runner = menu_runner();
   runner->RunMenuAt(owner(), nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
-                    ui::mojom::MenuSourceType::kNone, nullptr);
+                    ui::mojom::MenuSourceType::kNone);
   EXPECT_TRUE(runner->IsRunning());
 
   runner->Cancel();
@@ -188,7 +188,7 @@ TEST_F(MenuRunnerTest, AsynchronousKeyEventHandling) {
   InitMenuRunner(0);
   MenuRunner* runner = menu_runner();
   runner->RunMenuAt(owner(), nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
-                    ui::mojom::MenuSourceType::kNone, nullptr);
+                    ui::mojom::MenuSourceType::kNone);
   EXPECT_TRUE(runner->IsRunning());
 
   ui::test::EventGenerator generator(GetContext(), owner()->GetNativeWindow());
@@ -216,7 +216,7 @@ TEST_F(MenuRunnerTest, MAYBE_LatinMnemonic) {
   InitMenuRunner(0);
   MenuRunner* runner = menu_runner();
   runner->RunMenuAt(owner(), nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
-                    ui::mojom::MenuSourceType::kNone, nullptr);
+                    ui::mojom::MenuSourceType::kNone);
   EXPECT_TRUE(runner->IsRunning());
 
   ui::test::EventGenerator generator(GetContext(), owner()->GetNativeWindow());
@@ -241,7 +241,7 @@ TEST_F(MenuRunnerTest, NonLatinMnemonic) {
   InitMenuRunner(0);
   MenuRunner* runner = menu_runner();
   runner->RunMenuAt(owner(), nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
-                    ui::mojom::MenuSourceType::kNone, nullptr);
+                    ui::mojom::MenuSourceType::kNone);
   EXPECT_TRUE(runner->IsRunning());
 
   ui::test::EventGenerator generator(GetContext(), owner()->GetNativeWindow());
@@ -266,7 +266,7 @@ TEST_F(MenuRunnerTest, MenuItemViewShowsMnemonics) {
 
   menu_runner()->RunMenuAt(owner(), nullptr, gfx::Rect(),
                            MenuAnchorPosition::kTopLeft,
-                           ui::mojom::MenuSourceType::kNone, nullptr);
+                           ui::mojom::MenuSourceType::kNone);
 
   EXPECT_TRUE(menu_item_view()->show_mnemonics());
 }
@@ -280,7 +280,7 @@ TEST_F(MenuRunnerTest, MenuItemViewDoesNotShowMnemonics) {
 
   menu_runner()->RunMenuAt(owner(), nullptr, gfx::Rect(),
                            MenuAnchorPosition::kTopLeft,
-                           ui::mojom::MenuSourceType::kNone, nullptr);
+                           ui::mojom::MenuSourceType::kNone);
 
   EXPECT_FALSE(menu_item_view()->show_mnemonics());
 }
@@ -305,7 +305,7 @@ TEST_F(MenuRunnerTest, PrefixSelect) {
 
   MenuRunner* runner = menu_runner();
   runner->RunMenuAt(owner(), nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
-                    ui::mojom::MenuSourceType::kNone, nullptr);
+                    ui::mojom::MenuSourceType::kNone);
   EXPECT_TRUE(runner->IsRunning());
 
   menu_item_view()
@@ -349,7 +349,7 @@ TEST_F(MenuRunnerTest, SpaceActivatesItem) {
 
   MenuRunner* runner = menu_runner();
   runner->RunMenuAt(owner(), nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
-                    ui::mojom::MenuSourceType::kNone, nullptr);
+                    ui::mojom::MenuSourceType::kNone);
   EXPECT_TRUE(runner->IsRunning());
 
   ui::test::EventGenerator generator(GetContext(), owner()->GetNativeWindow());
@@ -373,7 +373,7 @@ TEST_F(MenuRunnerTest, NestingDuringDrag) {
   InitMenuRunner(MenuRunner::FOR_DROP);
   MenuRunner* runner = menu_runner();
   runner->RunMenuAt(owner(), nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
-                    ui::mojom::MenuSourceType::kNone, nullptr);
+                    ui::mojom::MenuSourceType::kNone);
   EXPECT_TRUE(runner->IsRunning());
 
   auto nested_delegate = std::make_unique<TestMenuDelegate>();
@@ -382,7 +382,7 @@ TEST_F(MenuRunnerTest, NestingDuringDrag) {
                  MenuRunner::IS_NESTED));
   nested_runner.RunMenuAt(owner(), nullptr, gfx::Rect(),
                           MenuAnchorPosition::kTopLeft,
-                          ui::mojom::MenuSourceType::kNone, nullptr);
+                          ui::mojom::MenuSourceType::kNone);
   EXPECT_TRUE(nested_runner.IsRunning());
   EXPECT_FALSE(runner->IsRunning());
   EXPECT_EQ(1, menu_delegate()->on_menu_closed_called());
@@ -536,7 +536,7 @@ class MenuLauncherEventHandler : public ui::EventHandler {
     if (event->type() == ui::EventType::kMousePressed) {
       runner_->RunMenuAt(owner_, nullptr, gfx::Rect(),
                          MenuAnchorPosition::kTopLeft,
-                         ui::mojom::MenuSourceType::kNone, nullptr);
+                         ui::mojom::MenuSourceType::kNone);
       event->SetHandled();
     }
   }
@@ -719,7 +719,7 @@ TEST_F(MenuRunnerImplTest, MenuRunnerDestroyedWithNoActiveController) {
       new internal::MenuRunnerImpl(CreateMenuItemView());
   menu_runner->RunMenuAt(owner(), nullptr, gfx::Rect(),
                          MenuAnchorPosition::kTopLeft,
-                         ui::mojom::MenuSourceType::kNone, 0, nullptr);
+                         ui::mojom::MenuSourceType::kNone, 0);
 
   // Hide the menu, and clear its item selection state.
   MenuControllerTestApi menu_controller;
@@ -734,7 +734,7 @@ TEST_F(MenuRunnerImplTest, MenuRunnerDestroyedWithNoActiveController) {
       base::WrapUnique<MenuItemView>(menu_item_view2));
   menu_runner2->RunMenuAt(
       owner(), nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
-      ui::mojom::MenuSourceType::kNone, MenuRunner::FOR_DROP, nullptr);
+      ui::mojom::MenuSourceType::kNone, MenuRunner::FOR_DROP);
 
   EXPECT_NE(menu_controller.controller(), MenuController::GetActiveInstance());
   menu_controller.SetShowing(true);
@@ -791,7 +791,7 @@ TEST_F(MenuRunnerDestructionTest, MenuRunnerDestroyedDuringReleaseRef) {
       new internal::MenuRunnerImpl(CreateMenuItemView());
   menu_runner->RunMenuAt(owner(), nullptr, gfx::Rect(),
                          MenuAnchorPosition::kTopLeft,
-                         ui::mojom::MenuSourceType::kNone, 0, nullptr);
+                         ui::mojom::MenuSourceType::kNone, 0);
 
   base::RunLoop run_loop;
   static_cast<ReleaseRefTestViewsDelegate*>(test_views_delegate())
@@ -943,8 +943,8 @@ TEST_F(MenuRunnerTest, ShowMenuHostDurationMetricsDoesLog) {
   InitMenuRunner(0);
   MenuRunner* runner = menu_runner();
   runner->RunMenuAt(owner(), nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
-                    ui::mojom::MenuSourceType::kNone, nullptr, std::nullopt,
-                    histogram_name);
+                    ui::mojom::MenuSourceType::kNone, gfx::NativeView(),
+                    std::nullopt, histogram_name);
 
   base::RunLoop run_loop;
   views::MenuController::GetActiveInstance()
@@ -974,7 +974,7 @@ TEST_F(MenuRunnerTest, ShowMenuHostDurationMetricsDoesNotLog) {
   InitMenuRunner(0);
   MenuRunner* runner = menu_runner();
   runner->RunMenuAt(owner(), nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
-                    ui::mojom::MenuSourceType::kNone, nullptr, std::nullopt);
+                    ui::mojom::MenuSourceType::kNone);
 
   base::RunLoop run_loop;
   views::MenuController::GetActiveInstance()

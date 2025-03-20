@@ -393,8 +393,7 @@ public class TabArchiverImpl implements TabArchiver {
             TabGroupModelFilter regularTabGroupModelFilter,
             Map<GURL, Long> tabUrlToLastActiveTimestampMap,
             Tab tab) {
-        List<Tab> relatedTabList =
-                regularTabGroupModelFilter.getRelatedTabListForRootId(tab.getRootId());
+        List<Tab> relatedTabList = regularTabGroupModelFilter.getTabsInGroup(tab.getTabGroupId());
         for (Tab relatedTab : relatedTabList) {
             if (!isTabEligibleForArchive(tabUrlToLastActiveTimestampMap, relatedTab)) {
                 return false;

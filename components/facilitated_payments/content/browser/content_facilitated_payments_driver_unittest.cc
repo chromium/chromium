@@ -22,23 +22,6 @@
 namespace payments::facilitated {
 namespace {
 
-class MockPixManager : public PixManager {
- public:
-  MockPixManager(
-      FacilitatedPaymentsClient* client,
-      FacilitatedPaymentsApiClientCreator api_client_creator,
-      optimization_guide::OptimizationGuideDecider* optimization_guide_decider)
-      : PixManager(client,
-                   std::move(api_client_creator),
-                   optimization_guide_decider) {}
-  ~MockPixManager() override = default;
-
-  MOCK_METHOD(void,
-              OnPixCodeCopiedToClipboard,
-              (const GURL&, const std::string&, ukm::SourceId),
-              (override));
-};
-
 class MockEwalletManager : public EwalletManager {
  public:
   MockEwalletManager(
@@ -83,7 +66,7 @@ class ContentFacilitatedPaymentsDriverTest
         std::make_unique<testing::NiceMock<MockSecurityChecker>>();
     security_checker_ = sc.get();
     driver_ = std::make_unique<ContentFacilitatedPaymentsDriver>(
-        client_.get(), decider_.get(), render_frame_host, std::move(sc));
+        client_.get(), render_frame_host, std::move(sc));
     std::unique_ptr<MockEwalletManager> em =
         std::make_unique<testing::NiceMock<MockEwalletManager>>(
             client_.get(),
@@ -91,15 +74,6 @@ class ContentFacilitatedPaymentsDriverTest
                 render_frame_host->GetGlobalId()),
             decider_.get());
     ewallet_manager_ = em.get();
-    std::unique_ptr<MockPixManager> pix_manager =
-        std::make_unique<testing::NiceMock<MockPixManager>>(
-            client_.get(),
-            GetFacilitatedPaymentsApiClientCreator(
-                render_frame_host->GetGlobalId()),
-            decider_.get());
-    pix_manager_ = pix_manager.get();
-
-    driver_->SetPixManagerForTesting(std::move(pix_manager));
     driver_->SetEwalletManagerForTesting(std::move(em));
   }
 
@@ -107,7 +81,6 @@ class ContentFacilitatedPaymentsDriverTest
     decider_.reset();
     driver_.reset();
     security_checker_ = nullptr;
-    pix_manager_ = nullptr;
     ewallet_manager_ = nullptr;
     content::RenderViewHostTestHarness::TearDown();
   }
@@ -116,34 +89,9 @@ class ContentFacilitatedPaymentsDriverTest
   std::unique_ptr<optimization_guide::TestOptimizationGuideDecider> decider_;
   std::unique_ptr<FacilitatedPaymentsClient> client_;
   std::unique_ptr<ContentFacilitatedPaymentsDriver> driver_;
-  raw_ptr<MockPixManager> pix_manager_;
   raw_ptr<MockEwalletManager> ewallet_manager_;
   raw_ptr<MockSecurityChecker> security_checker_;
 };
-
-TEST_F(ContentFacilitatedPaymentsDriverTest,
-       PixIdentifierExists_OnPixCodeCopiedToClipboardTriggered) {
-  GURL url("https://example.com/");
-
-  EXPECT_CALL(*pix_manager_, OnPixCodeCopiedToClipboard);
-
-  // "0014br.gov.bcb.pix" is the Pix identifier.
-  driver_->OnTextCopiedToClipboard(
-      /*render_frame_host_url=*/url, /*copied_text=*/
-      u"00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
-      /*ukm_source_id=*/123);
-}
-
-TEST_F(ContentFacilitatedPaymentsDriverTest,
-       PixIdentifierAbsent_OnPixCodeCopiedToClipboardNotTriggered) {
-  GURL url("https://example.com/");
-
-  EXPECT_CALL(*pix_manager_, OnPixCodeCopiedToClipboard).Times(0);
-
-  driver_->OnTextCopiedToClipboard(
-      /*render_frame_host_url=*/url, /*copied_text=*/u"notAValidPixIdentifier",
-      /*ukm_source_id=*/123);
-}
 
 TEST_F(ContentFacilitatedPaymentsDriverTest, EwalletPushPaymentTriggered) {
   const GURL kFakePaymentLinkUrl("https://www.example.com/pay");

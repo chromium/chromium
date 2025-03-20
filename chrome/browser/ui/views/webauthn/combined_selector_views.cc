@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <cstddef>
 #include <memory>
-#include <optional>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -21,12 +20,15 @@
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
@@ -121,7 +123,6 @@ CombinedSelectorRowView::CombinedSelectorRowView(
     CombinedSelectorRadioButton::Delegate* radio_delegate,
     int index)
     : radio_status_(radio_status), enabled_(enabled) {
-  SetBackground(views::CreateSolidBackground(ui::kColorSysSurface2));
   SetEnabled(enabled);
 
   GetViewAccessibility().SetRole(radio_status != RadioStatus::kNone
@@ -187,12 +188,14 @@ CombinedSelectorListView::CombinedSelectorListView(
     const auto& mechanism = model->dialog_model()->mechanisms[i];
     auto image_model =
         ui::ImageModel::FromVectorIcon(*mechanism.icon, ui::kColorIcon, 20);
+    AddChildView(std::make_unique<views::Separator>());
     AddChildView(std::make_unique<CombinedSelectorRowView>(
         image_model,
         std::vector<std::u16string_view>{mechanism.name, mechanism.description},
         model->GetSelectionStatus(i), !model->dialog_model()->ui_disabled_,
         delegate, i));
   }
+  AddChildView(std::make_unique<views::Separator>());
 }
 
 BEGIN_METADATA(CombinedSelectorListView)

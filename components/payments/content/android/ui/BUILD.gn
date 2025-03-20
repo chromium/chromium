@@ -13,7 +13,7 @@ static_library("ui") {
   deps = [
     ":jni_headers",
     "//base",
-    "//components/payments/core",
+    "//components/payments/core:currency_formatter",
   ]
 }
 

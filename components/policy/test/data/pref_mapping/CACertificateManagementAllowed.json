@@ -4,7 +4,7 @@
       "win",
       "mac",
       "linux",
-      "chromeos_ash"
+      "chromeos"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "ca_certificate_management_allowed",

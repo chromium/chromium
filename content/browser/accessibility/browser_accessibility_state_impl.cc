@@ -322,10 +322,6 @@ void BrowserAccessibilityStateImpl::UpdateHistogramsOnUIThread() {
   }
   ui_thread_histogram_callbacks_.clear();
 
-  UMA_HISTOGRAM_BOOLEAN(
-      "Accessibility.ManuallyEnabled",
-      !GetAccessibilityMode().is_mode_off() && !allow_ax_mode_changes_);
-
   ui_thread_done_ = true;
   if (background_thread_done_callback_) {
     std::move(background_thread_done_callback_).Run();
@@ -491,10 +487,6 @@ ui::AXMode BrowserAccessibilityStateImpl::GetProcessMode() {
 // Replaces the scoper that backs the legacy process-wide mode with one applying
 // `new_mode`.
 void BrowserAccessibilityStateImpl::SetProcessMode(ui::AXMode new_mode) {
-  UMA_HISTOGRAM_BOOLEAN(
-      "Accessibility.ManuallyEnabled",
-      !GetAccessibilityMode().is_mode_off() && !allow_ax_mode_changes_);
-
   if (!allow_ax_mode_changes_) {
     return;
   }

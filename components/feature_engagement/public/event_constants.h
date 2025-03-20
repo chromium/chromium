@@ -167,6 +167,9 @@ extern const char kOpenUrlFromOmnibox[];
 // The history item on overflow menu is used.
 extern const char kHistoryOnOverflowMenuUsed[];
 
+// The user has opened Settings via the Overflow Menu.
+extern const char kSettingsOnOverflowMenuUsed[];
+
 // The user has triggered the Lens button in the Omnibox keyboard.
 extern const char kLensButtonKeyboardUsed[];
 
@@ -298,6 +301,12 @@ extern const char kIOSReminderNotificationsOverflowMenuNewBadgeIPHTrigger[];
 
 // The user has executed an action that is a trigger for the Auto-deletion IPH.
 extern const char kIOSDownloadAutoDeletionIPHCriterionMet[];
+
+// The user has scrolled on the NTP while the feed is visible.
+extern const char kIOSScrolledOnFeed[];
+
+// The user has taken action on the feed.
+extern const char kIOSActionOnFeed[];
 
 #endif  // BUILDFLAG(IS_IOS)
 

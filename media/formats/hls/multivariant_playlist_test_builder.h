@@ -11,9 +11,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
-#include "media/formats/hls/audio_rendition.h"
 #include "media/formats/hls/multivariant_playlist.h"
 #include "media/formats/hls/playlist_test_builder.h"
+#include "media/formats/hls/rendition.h"
 #include "media/formats/hls/types.h"
 #include "media/formats/hls/variant_stream.h"
 
@@ -143,10 +143,9 @@ class MultivariantPlaylistTestBuilder
   void VerifyExpectations(const MultivariantPlaylist& playlist,
                           const base::Location& from) const override;
 
-  std::vector<RenditionGroupExpectation<AudioRenditionGroup>>
+  std::vector<RenditionGroupExpectation<RenditionGroup>>
       audio_rendition_group_expectations_;
-  std::vector<RenditionExpectation<AudioRendition>>
-      audio_rendition_expectations_;
+  std::vector<RenditionExpectation<Rendition>> audio_rendition_expectations_;
   std::vector<VariantExpectations> variant_expectations_;
 };
 
@@ -234,28 +233,28 @@ inline void HasAudioRenditionGroup(std::optional<std::string> group_id,
 // Checks that the audio rendition has the given URI.
 inline void RenditionHasUri(std::optional<GURL> uri,
                             const base::Location& from,
-                            const AudioRendition& rendition) {
+                            const Rendition& rendition) {
   EXPECT_EQ(rendition.GetUri(), uri) << from.ToString();
 }
 
 // Checks that the audio rendition has the given language.
 inline void HasLanguage(std::optional<std::string> language,
                         const base::Location& from,
-                        const AudioRendition& rendition) {
+                        const Rendition& rendition) {
   EXPECT_EQ(rendition.GetLanguage(), language) << from.ToString();
 }
 
 // Checks that the audio rendition has the given associated language.
 inline void HasAssociatedLanguage(std::optional<std::string> language,
                                   const base::Location& from,
-                                  const AudioRendition& rendition) {
+                                  const Rendition& rendition) {
   EXPECT_EQ(rendition.GetAssociatedLanguage(), language) << from.ToString();
 }
 
 // Checks that the audio rendition has the given StableId.
 inline void HasStableRenditionId(std::optional<types::StableId> id,
                                  const base::Location& from,
-                                 const AudioRendition& rendition) {
+                                 const Rendition& rendition) {
   EXPECT_EQ(rendition.GetStableRenditionId(), id) << from.ToString();
 }
 
@@ -263,7 +262,7 @@ inline void HasStableRenditionId(std::optional<types::StableId> id,
 // DEFAULT=YES).
 inline void MayAutoSelect(bool value,
                           const base::Location& from,
-                          const AudioRendition& rendition) {
+                          const Rendition& rendition) {
   EXPECT_EQ(rendition.MayAutoSelect(), value) << from.ToString();
 }
 
@@ -271,7 +270,7 @@ inline void MayAutoSelect(bool value,
 // name (or `std::nullopt` for no default rendition).
 inline void HasDefaultRendition(std::optional<std::string> name,
                                 const base::Location& from,
-                                const AudioRenditionGroup& group) {
+                                const RenditionGroup& group) {
   if (group.GetDefaultRendition()) {
     EXPECT_EQ(group.GetDefaultRendition()->GetName(), name) << from.ToString();
   } else {

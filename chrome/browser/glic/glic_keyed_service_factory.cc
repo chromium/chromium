@@ -4,7 +4,9 @@
 
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "extensions/browser/api/declarative/rules_registry_service.h"
 
@@ -42,7 +44,7 @@ GlicKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<GlicKeyedService>(
       profile, IdentityManagerFactory::GetForProfile(profile),
-      GlicProfileManager::GetInstance());
+      g_browser_process->profile_manager(), GlicProfileManager::GetInstance());
 }
 
 }  // namespace glic

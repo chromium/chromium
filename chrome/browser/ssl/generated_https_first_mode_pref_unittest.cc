@@ -12,6 +12,7 @@
 #include "chrome/browser/extensions/api/settings_private/generated_pref_test_base.h"
 #include "chrome/browser/extensions/api/settings_private/generated_prefs_factory.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
+#include "chrome/browser/safe_browsing/advanced_protection_status_manager_desktop.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ssl/https_first_mode_settings_tracker.h"
@@ -83,9 +84,10 @@ TEST_F(GeneratedHttpsFirstModePrefTest,
   // Sign in, otherwise AP manager won't notify observers of the AP status.
   SignIn(/*is_under_advanced_protection=*/false);
 
-  safe_browsing::AdvancedProtectionStatusManager* aps_manager =
-      safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
-          profile());
+  safe_browsing::AdvancedProtectionStatusManagerDesktop* aps_manager =
+      static_cast<safe_browsing::AdvancedProtectionStatusManagerDesktop*>(
+          safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
+              profile()));
   EXPECT_EQ(
       static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
       HttpsFirstModeSetting::kDisabled);
@@ -114,9 +116,10 @@ TEST_F(GeneratedHttpsFirstModePrefTest,
   settings_private::TestGeneratedPrefObserver test_observer;
   pref.AddObserver(&test_observer);
 
-  safe_browsing::AdvancedProtectionStatusManager* aps_manager =
-      safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
-          profile());
+  safe_browsing::AdvancedProtectionStatusManagerDesktop* aps_manager =
+      static_cast<safe_browsing::AdvancedProtectionStatusManagerDesktop*>(
+          safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
+              profile()));
   EXPECT_EQ(
       static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
       HttpsFirstModeSetting::kDisabled);

@@ -339,6 +339,21 @@ bool SetDataVersion(
   }
 }
 
+// Sets `view_or_click_counts` on the `member` member of `top_level_dict`.
+bool MaybeSetViewOrClickCounts(
+    v8::Isolate* isolate,
+    gin::Dictionary& top_level_dict,
+    const std::string& member,
+    const blink::mojom::ViewOrClickCountsPtr& view_or_click_counts) {
+  gin::Dictionary result = gin::Dictionary::CreateEmpty(isolate);
+  return result.Set("pastHour", view_or_click_counts->past_hour) &&
+         result.Set("pastDay", view_or_click_counts->past_day) &&
+         result.Set("pastWeek", view_or_click_counts->past_week) &&
+         result.Set("past30Days", view_or_click_counts->past_30_days) &&
+         result.Set("past90Days", view_or_click_counts->past_90_days) &&
+         top_level_dict.Set(member, result);
+}
+
 }  // namespace
 
 BidderWorklet::BidderWorklet(
@@ -507,8 +522,9 @@ void BidderWorklet::BeginGenerateBid(
         bid_finalizer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
-  generate_bid_tasks_.emplace_front();
-  auto generate_bid_task = generate_bid_tasks_.begin();
+  // Add to end of list to make best effort attempt to maintain task order.
+  auto generate_bid_task =
+      generate_bid_tasks_.emplace(generate_bid_tasks_.end());
   generate_bid_task->bidder_worklet_non_shared_params =
       std::move(bidder_worklet_non_shared_params);
   generate_bid_task->kanon_mode = kanon_mode;
@@ -645,8 +661,8 @@ void BidderWorklet::ReportWin(
         (!direct_from_seller_per_buyer_signals_header_ad_slot &&
          !direct_from_seller_auction_signals_header_ad_slot));
 
-  report_win_tasks_.emplace_front();
-  auto report_win_task = report_win_tasks_.begin();
+  // Add to end of list to make best effort attempt to maintain task order.
+  auto report_win_task = report_win_tasks_.emplace(report_win_tasks_.end());
   report_win_task->is_for_additional_bid = is_for_additional_bid;
   report_win_task->interest_group_name_reporting_id =
       interest_group_name_reporting_id;
@@ -1936,6 +1952,13 @@ BidderWorklet::V8State::RunGenerateBidOnce(
        !browser_signals_dict.Set(
            "topLevelSeller",
            browser_signal_top_level_seller_origin->Serialize())) ||
+      (base::FeatureList::IsEnabled(blink::features::kFledgeClickiness) &&
+       (!MaybeSetViewOrClickCounts(
+            isolate, browser_signals_dict, "viewCounts",
+            bidding_browser_signals->view_and_click_counts->view_counts) ||
+        !MaybeSetViewOrClickCounts(
+            isolate, browser_signals_dict, "clickCounts",
+            bidding_browser_signals->view_and_click_counts->click_counts))) ||
       !browser_signals_dict.Set("joinCount",
                                 bidding_browser_signals->join_count) ||
       !browser_signals_dict.Set("bidCount",

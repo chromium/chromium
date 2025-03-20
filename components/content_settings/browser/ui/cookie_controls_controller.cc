@@ -250,6 +250,21 @@ CookieControlsController::Status CookieControlsController::GetStatus(
           features};
 }
 
+void CookieControlsController::RecordActMetrics(bool protections_on) {
+  if (is_subresource_blocked_) {
+    base::RecordAction(UserMetricsAction(
+        protections_on
+            ? "TrackingProtections.Bubble.FppActive.EnableProtections"
+            : "TrackingProtections.Bubble.FppActive.DisableProtections"));
+  }
+  if (is_subresource_proxied_) {
+    base::RecordAction(UserMetricsAction(
+        protections_on
+            ? "TrackingProtections.Bubble.IppActive.EnableProtections"
+            : "TrackingProtections.Bubble.IppActive.DisableProtections"));
+  }
+}
+
 bool CookieControlsController::ShowActFeatures() {
   return base::FeatureList::IsEnabled(privacy_sandbox::kActUserBypassUx) &&
          ShouldUpdateTpContentSetting() &&
@@ -367,6 +382,7 @@ void CookieControlsController::OnCookieBlockingEnabledForSite(
     // content setting observer updates the UI for both settings.
     if (ShouldUpdateTpContentSetting()) {
       tracking_protection_settings_->RemoveTrackingProtectionException(url);
+      RecordActMetrics(block_third_party_cookies);
     }
     cookie_settings_->ResetThirdPartyCookieSetting(url);
 
@@ -377,6 +393,7 @@ void CookieControlsController::OnCookieBlockingEnabledForSite(
   base::RecordAction(UserMetricsAction("CookieControls.Bubble.TurnOff"));
   if (ShouldUpdateTpContentSetting()) {
     tracking_protection_settings_->AddTrackingProtectionException(url);
+    RecordActMetrics(block_third_party_cookies);
   }
   cookie_settings_->SetCookieSettingForUserBypass(url);
   // Record expiration metadata for the newly created exception, and increased
@@ -688,8 +705,8 @@ bool CookieControlsController::ShouldUserBypassIconBeVisible(
   // contexts.
   return controls_visible &&
          (HasOriginSandboxedTopLevelDocument() || !protections_on ||
-          site_data_access_attempted || GetIsSubresourceBlocked() ||
-          GetIsSubresourceProxied());
+          site_data_access_attempted || is_subresource_blocked_ ||
+          is_subresource_proxied_);
 }
 
 CookieControlsController::TabObserver::TabObserver(
@@ -755,16 +772,25 @@ void CookieControlsController::TabObserver::OnStatefulBounceDetected() {
 }
 
 void CookieControlsController::TabObserver::OnSubresourceBlocked() {
+  cookie_controls_->is_subresource_blocked_ =
+      cookie_controls_->GetIsSubresourceBlocked();
   cookie_controls_->OnSubresourceBlocked();
 }
 
 void CookieControlsController::TabObserver::
     OnFirstSubresourceProxiedOnCurrentPrimaryPage() const {
+  cookie_controls_->is_subresource_proxied_ =
+      cookie_controls_->GetIsSubresourceProxied();
   cookie_controls_->OnFirstSubresourceProxiedOnCurrentPrimaryPage();
 }
 
 void CookieControlsController::TabObserver::PrimaryPageChanged(
     content::Page& page) {
+  // Reset blocked/proxied status when the page changes.
+  cookie_controls_->is_subresource_blocked_ =
+      cookie_controls_->GetIsSubresourceBlocked();
+  cookie_controls_->is_subresource_proxied_ =
+      cookie_controls_->GetIsSubresourceProxied();
   const GURL& current_url =
       content::WebContentsObserver::web_contents()->GetVisibleURL();
   cookie_accessed_set_.clear();

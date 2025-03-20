@@ -82,10 +82,6 @@ class Rect;
 class Size;
 }  // namespace gfx
 
-namespace gpu {
-class GpuMemoryBufferManager;
-}  // namespace gpu
-
 namespace viz {
 namespace mojom {
 class DisplayPrivate;
@@ -127,9 +123,6 @@ class COMPOSITOR_EXPORT ContextFactory {
 
   // Destroys per-compositor data.
   virtual void RemoveCompositor(Compositor* compositor) = 0;
-
-  // Gets the GPU memory buffer manager.
-  virtual gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager() = 0;
 
   // Gets the task graph runner.
   virtual cc::TaskGraphRunner* GetTaskGraphRunner() = 0;

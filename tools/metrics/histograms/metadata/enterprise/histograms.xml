@@ -126,6 +126,12 @@ chromium-metrics-reviews@google.com.
   <variant name="OneDrive" summary="Microsoft OneDrive"/>
 </variants>
 
+<variants name="Enterprise_SkyVaultMigrationDestination">
+  <variant name="Delete" summary="Delete"/>
+  <variant name="GoogleDrive" summary="Google Drive"/>
+  <variant name="OneDrive" summary="Microsoft OneDrive"/>
+</variants>
+
 <variants name="Enterprise_UserSessionType">
   <variant name="AffiliatedUserSession"
       summary="The local user is affiliated to the organization."/>
@@ -3075,43 +3081,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.SkyVault.Migration.{CloudProvider}.DialogAction"
-    enum="EnterpriseSkyVaultMigrationDialogAction" expires_after="2025-10-01">
-  <owner>aidazolic@google.com</owner>
-  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
-  <summary>
-    Records user interactions with the migration dialog displayed 24 hours
-    before the scheduled migration of local files to {CloudProvider}.
-  </summary>
-  <token key="CloudProvider" variants="Enterprise_SkyVaultCloudProvider"/>
-</histogram>
-
-<histogram name="Enterprise.SkyVault.Migration.{CloudProvider}.DialogShown"
-    enum="Boolean" expires_after="2025-10-01">
-  <owner>aidazolic@google.com</owner>
-  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
-  <summary>
-    Recorded when initiating the display of the migration information dialog. A
-    value of &quot;true&quot; indicates the dialog was shown to the user. A
-    value of &quot;false&quot; indicates the dialog was not shown, typically
-    because a previous dialog was already displayed.
-  </summary>
-  <token key="CloudProvider" variants="Enterprise_SkyVaultCloudProvider"/>
-</histogram>
-
-<histogram name="Enterprise.SkyVault.Migration.{CloudProvider}.Enabled"
-    enum="Boolean" expires_after="2025-10-01">
-  <owner>aidazolic@google.com</owner>
-  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
-  <summary>
-    Recorded when SkyVault migration to {CloudProvider} is enabled and all
-    policies are configured properly, i.e. local storage is blocked, migration
-    destination is set to {CloudProvider} and the required cloud storage is
-    enabled.
-  </summary>
-  <token key="CloudProvider" variants="Enterprise_SkyVaultCloudProvider"/>
-</histogram>
-
 <histogram name="Enterprise.SkyVault.Migration.{CloudProvider}.Failed"
     enum="Boolean" expires_after="2025-10-01">
   <owner>aidazolic@google.com</owner>
@@ -3162,18 +3131,6 @@ chromium-metrics-reviews@google.com.
   <token key="CloudProvider" variants="Enterprise_SkyVaultCloudProvider"/>
 </histogram>
 
-<histogram name="Enterprise.SkyVault.Migration.{CloudProvider}.Stopped"
-    enum="Boolean" expires_after="2025-10-01">
-  <owner>aidazolic@google.com</owner>
-  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
-  <summary>
-    Recorded when SkyVault migration of local files to {CloudProvider} is
-    stopped due to policy update to allow local storage, disable migration, or
-    change the target cloud provider.
-  </summary>
-  <token key="CloudProvider" variants="Enterprise_SkyVaultCloudProvider"/>
-</histogram>
-
 <histogram name="Enterprise.SkyVault.Migration.{CloudProvider}.SuccessDuration"
     units="ms" expires_after="2025-10-01">
   <owner>aidazolic@google.com</owner>
@@ -3210,18 +3167,6 @@ chromium-metrics-reviews@google.com.
   <token key="CloudProvider" variants="Enterprise_SkyVaultCloudProvider"/>
 </histogram>
 
-<histogram name="Enterprise.SkyVault.Migration.{CloudProvider}.WrongState"
-    enum="EnterpriseSkyVaultMigrationState" expires_after="2025-10-01">
-  <owner>aidazolic@google.com</owner>
-  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
-  <summary>
-    Recorded when an unexpected state transition happens during SkyVault
-    migration of local files to {CloudProvider}. Records the unexpected state
-    value.
-  </summary>
-  <token key="CloudProvider" variants="Enterprise_SkyVaultCloudProvider"/>
-</histogram>
-
 <histogram
     name="Enterprise.SkyVault.Migration.{CloudProvider}.WrongStateContext"
     enum="EnterpriseSkyVaultMigrationStateErrorContext"
@@ -3234,6 +3179,90 @@ chromium-metrics-reviews@google.com.
     the wrong state error occurred.
   </summary>
   <token key="CloudProvider" variants="Enterprise_SkyVaultCloudProvider"/>
+</histogram>
+
+<histogram
+    name="Enterprise.SkyVault.Migration.{MigrationDestination}.CleanupError"
+    enum="Boolean" expires_after="2025-10-01">
+  <owner>aidazolic@google.com</owner>
+  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
+  <summary>
+    Records whether an error occured while cleaning up local files and
+    directories, after migrating local files to {MigrationDestination}, in case
+    of cloud destination, or just deleting them.
+  </summary>
+  <token key="MigrationDestination"
+      variants="Enterprise_SkyVaultMigrationDestination"/>
+</histogram>
+
+<histogram
+    name="Enterprise.SkyVault.Migration.{MigrationDestination}.DialogAction"
+    enum="EnterpriseSkyVaultMigrationDialogAction" expires_after="2025-10-01">
+  <owner>aidazolic@google.com</owner>
+  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
+  <summary>
+    Records user interactions with the migration dialog displayed 24 hours
+    before the scheduled migration to {MigrationDestination} or deletion of
+    local files.
+  </summary>
+  <token key="MigrationDestination"
+      variants="Enterprise_SkyVaultMigrationDestination"/>
+</histogram>
+
+<histogram
+    name="Enterprise.SkyVault.Migration.{MigrationDestination}.DialogShown"
+    enum="Boolean" expires_after="2025-10-01">
+  <owner>aidazolic@google.com</owner>
+  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
+  <summary>
+    Recorded when initiating the display of the migration information dialog. A
+    value of &quot;true&quot; indicates the dialog was shown to the user. A
+    value of &quot;false&quot; indicates the dialog was not shown, typically
+    because a previous dialog was already displayed.
+  </summary>
+  <token key="MigrationDestination"
+      variants="Enterprise_SkyVaultMigrationDestination"/>
+</histogram>
+
+<histogram name="Enterprise.SkyVault.Migration.{MigrationDestination}.Enabled"
+    enum="Boolean" expires_after="2025-10-01">
+  <owner>aidazolic@google.com</owner>
+  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
+  <summary>
+    Recorded when SkyVault migration to {MigrationDestination} or deletion is
+    enabled and that all policies are configured properly, i.e. local storage is
+    blocked, migration destination is set to {MigrationDestination} and, in case
+    of a cloud destination, the required cloud storage is enabled.
+  </summary>
+  <token key="MigrationDestination"
+      variants="Enterprise_SkyVaultMigrationDestination"/>
+</histogram>
+
+<histogram name="Enterprise.SkyVault.Migration.{MigrationDestination}.Stopped"
+    enum="Boolean" expires_after="2025-10-01">
+  <owner>aidazolic@google.com</owner>
+  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
+  <summary>
+    Recorded when SkyVault migration to {MigrationDestination} or deletion of
+    local files is stopped due to policy update to allow local storage, disable
+    migration, or change the migration destination.
+  </summary>
+  <token key="MigrationDestination"
+      variants="Enterprise_SkyVaultMigrationDestination"/>
+</histogram>
+
+<histogram
+    name="Enterprise.SkyVault.Migration.{MigrationDestination}.WrongState"
+    enum="EnterpriseSkyVaultMigrationState" expires_after="2025-10-01">
+  <owner>aidazolic@google.com</owner>
+  <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
+  <summary>
+    Recorded when an unexpected state transition happens during SkyVault
+    migration to {MigrationDestination} or deletion of local files. Records the
+    unexpected state value.
+  </summary>
+  <token key="MigrationDestination"
+      variants="Enterprise_SkyVaultMigrationDestination"/>
 </histogram>
 
 <histogram name="Enterprise.SkyVault.{Action}.DeleteError" enum="Boolean"

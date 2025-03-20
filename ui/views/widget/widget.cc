@@ -496,10 +496,6 @@ void Widget::Init(InitParams params) {
 
   sublevel_manager_ = std::make_unique<SublevelManager>(this, params.sublevel);
 
-  if (params.native_theme) {
-    native_theme_ = params.native_theme;
-  }
-
   internal::NativeWidgetPrivate* native_widget_raw_ptr =
       CreateNativeWidget(params, this)->AsNativeWidgetPrivate();
   native_widget_ = native_widget_raw_ptr->GetWeakPtr();
@@ -522,9 +518,6 @@ void Widget::Init(InitParams params) {
   should_set_initial_bounds = !params.display_id.has_value();
 #endif
 #if BUILDFLAG(IS_WIN)
-  // These are mutually exclusive.
-  CHECK(!(params.force_show_in_taskbar && params.dont_show_in_taskbar));
-
   // force_system_menu_for_frameless only applies to frameless windows.
   CHECK(!params.force_system_menu_for_frameless ||
         params.type == Widget::InitParams::TYPE_WINDOW_FRAMELESS);
@@ -1877,7 +1870,7 @@ void Widget::OnNativeFocus() {
 }
 
 void Widget::OnNativeBlur() {
-  WidgetFocusManager::GetInstance()->OnNativeFocusChanged(nullptr);
+  WidgetFocusManager::GetInstance()->OnNativeFocusChanged(gfx::NativeView());
 }
 
 void Widget::OnNativeWidgetVisibilityChanged(bool visible) {

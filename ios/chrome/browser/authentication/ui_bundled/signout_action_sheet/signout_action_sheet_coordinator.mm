@@ -93,11 +93,11 @@ using signin_metrics::SignoutDataLossAlertReason;
   DCHECK(self.signoutCompletion);
   DCHECK(self.authenticationService->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
-  PrefService* profilePrefService = self.browser->GetProfile()->GetPrefs();
+  PrefService* profilePrefService = self.profile->GetPrefs();
   _signedInUserState = GetSignedInUserState(
       self.authenticationService, self.identityManager, profilePrefService);
   if (ForceLeavingPrimaryAccountConfirmationDialog(
-          _signedInUserState, self.browser->GetProfile()->GetProfileName())) {
+          _signedInUserState, self.profile->GetProfileName())) {
     [self startActionSheetCoordinatorForSignout];
   } else {
     [self checkForUnsyncedDataAndSignOut];
@@ -132,12 +132,11 @@ using signin_metrics::SignoutDataLossAlertReason;
 #pragma mark - Browser-based properties
 
 - (AuthenticationService*)authenticationService {
-  return AuthenticationServiceFactory::GetForProfile(
-      self.browser->GetProfile());
+  return AuthenticationServiceFactory::GetForProfile(self.profile);
 }
 
 - (signin::IdentityManager*)identityManager {
-  return IdentityManagerFactory::GetForProfile(self.browser->GetProfile());
+  return IdentityManagerFactory::GetForProfile(self.profile);
 }
 
 #pragma mark - Properties
@@ -169,7 +168,7 @@ using signin_metrics::SignoutDataLossAlertReason;
   [self preventUserInteraction];
 
   syncer::SyncService* syncService =
-      SyncServiceFactory::GetForProfile(self.browser->GetProfile());
+      SyncServiceFactory::GetForProfile(self.profile);
   __weak __typeof(self) weakSelf = self;
   auto callback = base::BindOnce(^(syncer::DataTypeSet set) {
     [weakSelf continueSignOutWithUnsyncedDataTypeSet:set];
@@ -268,7 +267,7 @@ using signin_metrics::SignoutDataLossAlertReason;
     return nil;
   }
   syncer::SyncService* syncService =
-      SyncServiceFactory::GetForProfile(self.browser->GetProfile());
+      SyncServiceFactory::GetForProfile(self.profile);
   int message_id =
       syncService->HasDisableReason(
           syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) ||

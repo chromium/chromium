@@ -51,6 +51,7 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -112,12 +113,14 @@ std::string GetCookiesDirect(WebContentsImpl* tab, const GURL& url) {
 
 }  // namespace
 
-class CookieBrowserTest : public ContentBrowserTest,
-                          public ::testing::WithParamInterface<bool> {
+class CookieBrowserTest
+    : public ContentBrowserTest,
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   CookieBrowserTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        network::features::kGetCookiesOnSet, GetParam());
+    scoped_feature_list_.InitWithFeatureStates(
+        {{network::features::kGetCookiesOnSet, GetCookiesOnSetEnabled()},
+         {blink::features::kAsyncSetCookie, AsyncSetCookieEnabled()}});
   }
   ~CookieBrowserTest() override = default;
 
@@ -132,16 +135,24 @@ class CookieBrowserTest : public ContentBrowserTest,
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
+  bool GetCookiesOnSetEnabled() { return std::get<0>(GetParam()); }
+
+  bool AsyncSetCookieEnabled() { return std::get<1>(GetParam()); }
+
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(,
-                         CookieBrowserTest,
-                         ::testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "GetOnSetEnabled"
-                                             : "GetOnSetDisabled";
-                         });
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    CookieBrowserTest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<std::tuple<bool, bool>>& info) {
+      std::string name =
+          std::get<0>(info.param) ? "GetOnSetEnabled" : "GetOnSetDisabled";
+      name += "_";
+      name += std::get<1>(info.param) ? "Async" : "Sync";
+      return name;
+    });
 
 // Exercises basic cookie operations via javascript, including an http page
 // interacting with secure cookies.

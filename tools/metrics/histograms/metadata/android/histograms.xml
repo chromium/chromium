@@ -868,15 +868,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.BackPress.Backfalsing" enum="NavigationDirection"
+<histogram name="Android.BackPress.Backfalsing2" enum="NavigationDirection"
     expires_after="2025-07-27">
   <owner>eleanorlee@google.com</owner>
   <owner>lazzzis@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
-    Recorded when a user navigates to a URL and a backfalsing event happens.
-    Recorded for both swipes and clicks in both 3-button mode and gesture
-    navigation mode. Android only.
+    Recorded when a user navigates to a URL by a navigation gesture or a
+    navigation button and then a backfalsing event happens. Recorded for both
+    swipes and clicks in both 3-button mode and gesture navigation mode. Android
+    only.
   </summary>
 </histogram>
 
@@ -4812,7 +4813,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.SelectFileDialogImgCount" units="images"
-    expires_after="2025-03-30">
+    expires_after="2025-09-30">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -4824,7 +4825,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.SelectFileDialogScope" enum="SelectFileDialogScope"
-    expires_after="2025-03-30">
+    expires_after="2025-09-30">
   <owner>peter@chromium.org</owner>
   <owner>finnur@chromium.org</owner>
   <summary>
@@ -4899,8 +4900,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Survey.DownloadRequested2" enum="BooleanRequested"
-    expires_after="2025-04-19">
-  <owner>twellington@chromium.org</owner>
+    expires_after="2025-10-19">
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -4911,8 +4911,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Survey.DownloadResponseCode2"
-    enum="SurveyDownloadResponseCodes2" expires_after="2025-08-24">
-  <owner>skym@chromium.org</owner>
+    enum="SurveyDownloadResponseCodes2" expires_after="2025-10-19">
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -4924,10 +4923,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Survey.ShowSurveyStatus"
-    enum="SurveyPresentationStatusCode" expires_after="2025-08-24">
-  <owner>aishwaryarj@google.com</owner>
-  <owner>twellington@chromium.org</owner>
+    enum="SurveyPresentationStatusCode" expires_after="2025-10-19">
   <owner>wenyufu@chromium.org</owner>
+  <owner>aishwaryarj@google.com</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
     The result of the request to show the survey after it has been downloaded.
@@ -4939,9 +4937,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Survey.SurveyCompleted" enum="BooleanCompleted"
-    expires_after="2025-04-19">
-  <owner>skym@chromium.org</owner>
+    expires_after="2025-10-19">
   <owner>wenyufu@chromium.org</owner>
+  <owner>skym@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
     Whether a user completed the survey after it was presented. This histogram
@@ -4951,9 +4949,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Survey.SurveyFilteringResults"
-    enum="SurveyFilteringResult" expires_after="2025-08-24">
-  <owner>twellington@chromium.org</owner>
+    enum="SurveyFilteringResult" expires_after="2025-10-24">
   <owner>wenyufu@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
     The result of the survey filtering process. Each enum represents a different
@@ -7791,7 +7789,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.UserAgentClientHintsMetadata.AvailableType"
-    enum="UserAgentMetadataAvailableType" expires_after="2025-05-01">
+    enum="UserAgentMetadataAvailableType" expires_after="2026-05-01">
   <owner>victortan@chromium.org</owner>
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>

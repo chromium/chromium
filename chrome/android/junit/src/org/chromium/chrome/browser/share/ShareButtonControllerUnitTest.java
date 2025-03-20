@@ -20,10 +20,12 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
@@ -55,6 +57,7 @@ import org.chromium.url.GURL;
 public final class ShareButtonControllerUnitTest {
     private static final int WIDTH_DELTA = 50;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Context mContext;
 
     @Mock private UkmRecorder.Natives mUkmRecorderJniMock;
@@ -74,7 +77,6 @@ public final class ShareButtonControllerUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mContext = RuntimeEnvironment.application;
         UkmRecorderJni.setInstanceForTesting(mUkmRecorderJniMock);
 

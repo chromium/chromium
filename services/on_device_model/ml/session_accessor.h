@@ -38,10 +38,7 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionAccessor {
   Ptr Clone();
   ChromeMLCancelFn Append(on_device_model::mojom::AppendOptionsPtr options,
                           ChromeMLContextSavedFn context_saved_fn);
-  // TODO(crbug.com/403383823): Remove sampling params from this method.
   ChromeMLCancelFn Generate(on_device_model::mojom::GenerateOptionsPtr options,
-                            uint32_t top_k,
-                            float temperature,
                             ChromeMLExecutionOutputFn output_fn);
   void Score(const std::string& text, ChromeMLScoreFn score_fn);
   void SizeInTokens(on_device_model::mojom::InputPtr input,
@@ -64,8 +61,6 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionAccessor {
                       scoped_refptr<Canceler> canceler);
   void GenerateInternal(
       on_device_model::mojom::GenerateOptionsPtr generate_options,
-      uint32_t top_k,
-      float temperature,
       ChromeMLExecutionOutputFn output_fn,
       scoped_refptr<Canceler> canceler);
   void ScoreInternal(const std::string& text, ChromeMLScoreFn score_fn);

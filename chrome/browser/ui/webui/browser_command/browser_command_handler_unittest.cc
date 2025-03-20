@@ -51,6 +51,7 @@ std::vector<Command> supported_commands = {
     Command::kOpenAISettings,
     Command::kOpenSafetyCheckFromWhatsNew,
     Command::kOpenPaymentsSettings,
+    Command::kOpenGlic,
 };
 
 const ui::ElementContext kTestContext1(1);
@@ -60,7 +61,8 @@ class TestCommandHandler : public BrowserCommandHandler {
   explicit TestCommandHandler(Profile* profile)
       : BrowserCommandHandler(mojo::PendingReceiver<CommandHandler>(),
                               profile,
-                              supported_commands) {}
+                              supported_commands,
+                              /*web_contents=*/nullptr) {}
   ~TestCommandHandler() override = default;
 
   void NavigateToEnhancedProtectionSetting() override {
@@ -85,6 +87,11 @@ class TestCommandHandler : public BrowserCommandHandler {
 
   void OpenAISettings() override {
     // The functionality of opening the AI settings is removed, as it
+    // cannot be executed in a unittest.
+  }
+
+  void OpenGlic() override {
+    // The functionality of opening Glic is removed, as it
     // cannot be executed in a unittest.
   }
 
@@ -210,6 +217,8 @@ class MockCommandHandler : public TestCommandHandler {
   MOCK_METHOD(void, OpenAISettings, ());
 
   MOCK_METHOD(void, ShowCustomizeChromeToolbar, ());
+
+  MOCK_METHOD(void, OpenGlic, ());
 };
 
 class MockCommandUpdater : public CommandUpdaterImpl {
@@ -659,4 +668,15 @@ TEST_F(BrowserCommandHandlerTest, OpenPaymentsSettingsCommand) {
       NavigateToURL(GURL(chrome::GetSettingsUrl(chrome::kPaymentsSubPage)),
                     DispositionFromClick(*info)));
   EXPECT_TRUE(ExecuteCommand(Command::kOpenPaymentsSettings, std::move(info)));
+}
+
+TEST_F(BrowserCommandHandlerTest, OpenGlicCommand) {
+  // By default, opening Glic is allowed.
+  EXPECT_TRUE(CanExecuteCommand(Command::kOpenGlic));
+  ClickInfoPtr info = ClickInfo::New();
+  info->middle_button = true;
+  info->meta_key = true;
+  // The OpenGlic command opens glic.
+  EXPECT_CALL(*command_handler_, OpenGlic());
+  EXPECT_TRUE(ExecuteCommand(Command::kOpenGlic, std::move(info)));
 }

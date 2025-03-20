@@ -109,6 +109,9 @@ const ProfilePickerTestParam kTestParams[] = {
 #endif
     {.pixel_test_param = {.test_suffix = "GlicRegular"},
      .use_glic_version = true},
+    {.pixel_test_param = {.test_suffix = "GlicRegularDarkMode",
+                          .use_dark_theme = true},
+     .use_glic_version = true},
     {.pixel_test_param = {.test_suffix = "GlicRegularSmall",
                           .window_size = PixelTestParam::kSmallWindowSize},
      .use_glic_version = true},
@@ -131,7 +134,6 @@ const ProfilePickerTestParam kTestParams[] = {
                               PixelTestParam::kPortraitModeWindowSize},
      .use_multiple_profiles = true,
      .use_glic_version = true},
-
 };
 
 enum class ProfileStatus {

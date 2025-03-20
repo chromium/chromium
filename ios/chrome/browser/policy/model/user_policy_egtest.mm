@@ -32,12 +32,14 @@
 #import "ios/chrome/browser/policy/model/policy_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
+#import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
@@ -140,6 +142,29 @@ void ClearUserPolicyPrefs() {
   [ChromeEarlGrey commitPendingUserPrefsWrite];
 }
 
+id<GREYMatcher> ManagedProfileCreationTitleMatcher() {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    return grey_text(l10n_util::GetNSString(IDS_IOS_MANAGED_SIGNIN_TITLE));
+  }
+  return grey_accessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_TITLE));
+}
+
+id<GREYMatcher> ManagedProfileCreationSubtitleMatcher() {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    return grey_text(l10n_util::GetNSStringF(
+        IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_SUBTITLE,
+        base::UTF8ToUTF16(
+            std::string(policy::SignatureProvider::kTestDomain1))));
+  }
+  return grey_accessibilityLabel([NSString
+      stringWithFormat:
+          @"%@\n\n%@",
+          l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_SUBTITLE),
+          l10n_util::GetNSString(
+              IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_DESCRIPTION)]);
+}
+
 void VerifyTheNotificationUI() {
   // Swipe up to make sure that all the text content in the prompt is visible.
   [[EarlGrey
@@ -181,6 +206,17 @@ void WaitForVisibleChromeManagementURL() {
   base::TimeDelta timeout = base::Seconds(5);
   bool visibleUrl = [waitForUrl waitWithTimeout:timeout.InSecondsF()];
   GREYAssert(visibleUrl, errorString);
+}
+
+// Returns a matcher for the sign-in screen "Cancel" button.
+id<GREYMatcher> DeclineManagementButtonMatcher() {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    return grey_allOf(
+        grey_accessibilityID(@"CancelAlertAction"),
+        [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:IDS_CANCEL],
+        nil);
+  }
+  return chrome_test_util::PromoScreenSecondaryButtonMatcher();
 }
 
 }  // namespace
@@ -418,21 +454,15 @@ void WaitForVisibleChromeManagementURL() {
   // Disable egtest synchronization to avoid infinite spinner loop.
   ScopedSynchronizationDisabler disabler;
 
-  NSString* title = l10n_util::GetNSString(IDS_IOS_MANAGED_SIGNIN_TITLE);
-  NSString* subtitle = l10n_util::GetNSStringF(
-      IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_SUBTITLE,
-      base::UTF8ToUTF16(std::string(policy::SignatureProvider::kTestDomain1)));
+  // Verify the management disclosure UI.
+  [ChromeEarlGrey waitForMatcher:ManagedProfileCreationTitleMatcher()];
+  [[EarlGrey selectElementWithMatcher:ManagedProfileCreationTitleMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:ManagedProfileCreationSubtitleMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Verify the notification UI.
-  [[EarlGrey selectElementWithMatcher:grey_text(title)]
+  [[EarlGrey selectElementWithMatcher:DeclineManagementButtonMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:grey_text(subtitle)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(grey_accessibilityID(@"CancelAlertAction"),
-                            [ChromeMatchersAppInterface
-                                buttonWithAccessibilityLabelID:IDS_CANCEL],
-                            nil)] assertWithMatcher:grey_sufficientlyVisible()];
 
   // Complete the sign-in flow by completing the confirmation dialog.
   id<GREYMatcher> acceptButton = [ChromeMatchersAppInterface
@@ -442,7 +472,7 @@ void WaitForVisibleChromeManagementURL() {
   [[EarlGrey selectElementWithMatcher:acceptButton] performAction:grey_tap()];
 
   // Verify that the confirmation dialog was dismissed.
-  [[EarlGrey selectElementWithMatcher:grey_text(title)]
+  [[EarlGrey selectElementWithMatcher:ManagedProfileCreationTitleMatcher()]
       assertWithMatcher:grey_notVisible()];
 
   // Verify that the flow was successful by validating that the account is
@@ -464,16 +494,12 @@ void WaitForVisibleChromeManagementURL() {
   ScopedSynchronizationDisabler disabler;
 
   // Cancel the sign-in flow by tapping on the cancel button.
-  id<GREYMatcher> cancelButton = grey_allOf(
-      grey_accessibilityID(@"CancelAlertAction"),
-      [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:IDS_CANCEL],
-      grey_sufficientlyVisible(), nil);
-  [ChromeEarlGrey waitForMatcher:cancelButton];
-  [[EarlGrey selectElementWithMatcher:cancelButton] performAction:grey_tap()];
+  [ChromeEarlGrey waitForMatcher:DeclineManagementButtonMatcher()];
+  [[EarlGrey selectElementWithMatcher:DeclineManagementButtonMatcher()]
+      performAction:grey_tap()];
 
   // Verify that the confirmation dialog was dismissed.
-  NSString* title = l10n_util::GetNSString(IDS_IOS_MANAGED_SIGNIN_TITLE);
-  [[EarlGrey selectElementWithMatcher:grey_text(title)]
+  [[EarlGrey selectElementWithMatcher:ManagedProfileCreationTitleMatcher()]
       assertWithMatcher:grey_notVisible()];
 
   // Verify that no sign-in error alert action is shown.
@@ -491,6 +517,12 @@ void WaitForVisibleChromeManagementURL() {
 // Tests that the managed account confirmation dialog isn't shown if the browser
 // is already managed. Only applies for the sign-in consent level.
 - (void)testSigninFlowConfirmationDialogNotShownWhenAlreadyBrowserPolicies {
+  // With multi profile, the dialog is not shown at all, another screen is shown
+  // that screen will be shown even if the browser is already managed.
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    return;
+  }
+
   AppLaunchConfiguration config = [self minimalAppConfigurationForTestCase];
   // Enable User Policy for sign-in consent level exclusively.
   config.features_enabled.push_back(

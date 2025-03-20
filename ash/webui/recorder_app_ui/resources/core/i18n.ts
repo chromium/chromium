@@ -32,6 +32,9 @@ const noArgStringNames = [
   'exportDialogTranscriptionFormatTxtOption',
   'exportDialogTranscriptionHeader',
   'genAiDisclaimerText',
+  'genAiDownloadErrorStatusMessage',
+  'genAiDownloadFinishedStatusMessage',
+  'genAiDownloadStartedStatusMessage',
   'genAiErrorGeneralLabel',
   'genAiErrorModelDownloadButton',
   'genAiErrorModelDownloadButtonAriaLabel',
@@ -73,8 +76,8 @@ const noArgStringNames = [
   'micConnectionErrorDialogDescription',
   'micConnectionErrorDialogHeader',
   'micSelectionMenuButtonTooltip',
-  'micSelectionMenuChromebookAudioOption',
   'micSelectionMenuMicConnectionErrorDescription',
+  'micSelectionMenuSystemAudioOption',
   'onboardingDialogLanguageSelectionCancelButton',
   'onboardingDialogLanguageSelectionDescription',
   'onboardingDialogLanguageSelectionDownloadButton',
@@ -171,25 +174,26 @@ const noArgStringNames = [
   'recordingListSearchButtonTooltip',
   'recordingListSortButtonTooltip',
   'recordingListSortByDateOption',
-  'recordingListSortByNameOption',
+  'recordingListSortByTitleOption',
   'recordingListThisMonthHeader',
   'recordingListTodayHeader',
   'recordingListYesterdayHeader',
   'settingsHeader',
   'settingsOptionsDoNotDisturbDescription',
   'settingsOptionsDoNotDisturbLabel',
+  'settingsOptionsGenAiDescription',
+  'settingsOptionsGenAiDownloadButton',
+  'settingsOptionsGenAiDownloadButtonAriaLabel',
+  'settingsOptionsGenAiDownloadingButton',
+  'settingsOptionsGenAiDownloadingProgressDescription',
+  'settingsOptionsGenAiErrorDescription',
+  'settingsOptionsGenAiLabel',
+  'settingsOptionsGenAiLearnMoreLink',
+  'settingsOptionsGenAiLearnMoreLinkAriaLabel',
   'settingsOptionsKeepScreenOnLabel',
   'settingsOptionsLanguageSubpageButtonAriaLabel',
   'settingsOptionsSpeakerLabelDescription',
   'settingsOptionsSpeakerLabelLabel',
-  'settingsOptionsSummaryDescription',
-  'settingsOptionsSummaryDownloadButton',
-  'settingsOptionsSummaryDownloadButtonAriaLabel',
-  'settingsOptionsSummaryDownloadingButton',
-  'settingsOptionsSummaryErrorDescription',
-  'settingsOptionsSummaryLabel',
-  'settingsOptionsSummaryLearnMoreLink',
-  'settingsOptionsSummaryLearnMoreLinkAriaLabel',
   'settingsOptionsTranscriptionDownloadButton',
   'settingsOptionsTranscriptionDownloadButtonAriaLabel',
   'settingsOptionsTranscriptionDownloadingButton',
@@ -201,13 +205,10 @@ const noArgStringNames = [
   'settingsSectionTranscriptionSummaryHeader',
   'summaryCollapseTooltip',
   'summaryDisabledLabel',
-  'summaryDownloadErrorStatusMessage',
-  'summaryDownloadFinishedStatusMessage',
-  'summaryDownloadModelDescription',
-  'summaryDownloadModelDisableButton',
-  'summaryDownloadModelDownloadButton',
-  'summaryDownloadModelHeader',
-  'summaryDownloadStartedStatusMessage',
+  'summaryDownloadGenAiModelDescription',
+  'summaryDownloadGenAiModelDisableButton',
+  'summaryDownloadGenAiModelDownloadButton',
+  'summaryDownloadGenAiModelHeader',
   'summaryExpandTooltip',
   'summaryFailedStatusMessage',
   'summaryFinishedStatusMessage',
@@ -217,8 +218,8 @@ const noArgStringNames = [
   'systemAudioConsentDialogConsentButton',
   'systemAudioConsentDialogDescription',
   'systemAudioConsentDialogHeader',
-  'titleRenameSnackbarMessage',
-  'titleRenameTooltip',
+  'titleEditSnackbarMessage',
+  'titleEditTooltip',
   'titleSuggestionButtonTooltip',
   'titleSuggestionFailedStatusMessage',
   'titleSuggestionFinishedStatusMessage',
@@ -251,21 +252,49 @@ const withArgsStringNames = {
   recordingItemOptionsButtonAriaLabel: withArgs<[string]>(),
   recordingItemPauseButtonAriaLabel: withArgs<[string]>(),
   recordingItemPlayButtonAriaLabel: withArgs<[string]>(),
-  settingsOptionsSummaryDownloadingProgressDescription: withArgs<[number]>(),
+  settingsOptionsGenAiDownloadingProgressDescription: withArgs<[number]>(),
   settingsOptionsTranscriptionDownloadingProgressDescription:
     withArgs<[number]>(),
-  summaryDownloadingProgressDescription: withArgs<[number]>(),
+  summaryGenAiDownloadingProgressDescription: withArgs<[number]>(),
   transcriptionSpeakerLabelLabel: withArgs<[string]>(),
 } satisfies Record<string, I18nArgType[]>;
 type WithArgsStringNames = typeof withArgsStringNames;
 
+const withDeviceStringNames = [
+  'genAiDownloadErrorStatusMessage',
+  'genAiErrorModelLoadFailureLabel',
+  'languagePickerLanguageDownloadErrorAriaLabel',
+  'languagePickerLanguageDownloadErrorStatusMessage',
+  'languagePickerLanguageErrorDescription',
+  'micSelectionMenuSystemAudioOption',
+  'recordGeneralAudioErrorDialogDescription',
+  'recordTranscriptionUnusableErrorDescription',
+  'settingsOptionsGenAiErrorDescription',
+  'settingsOptionsTranscriptionErrorDescription',
+  'systemAudioConsentDialogDescription',
+  'systemAudioConsentDialogHeader',
+];
+
+function maybeReplaceDeviceType(name: string, i18nString: string) {
+  if (withDeviceStringNames.includes(name)) {
+    return i18nString.replaceAll(
+      '[deviceType]',
+      PlatformHandler.getDeviceType(),
+    );
+  }
+  return i18nString;
+}
+
 function getI18nString(name: string): string {
-  return PlatformHandler.getStringF(name);
+  return maybeReplaceDeviceType(name, PlatformHandler.getStringF(name));
 }
 
 function createI18nStringFormatter(name: string) {
   return (...args: I18nArgType[]) => {
-    return PlatformHandler.getStringF(name, ...args);
+    return maybeReplaceDeviceType(
+      name,
+      PlatformHandler.getStringF(name, ...args),
+    );
   };
 }
 

@@ -237,11 +237,6 @@ void VizProcessTransportFactory::RemoveCompositor(ui::Compositor* compositor) {
   compositor_data_map_.erase(compositor);
 }
 
-gpu::GpuMemoryBufferManager*
-VizProcessTransportFactory::GetGpuMemoryBufferManager() {
-  return gpu_channel_establish_factory_->GetGpuMemoryBufferManager();
-}
-
 cc::TaskGraphRunner* VizProcessTransportFactory::GetTaskGraphRunner() {
   return task_graph_runner_.get();
 }

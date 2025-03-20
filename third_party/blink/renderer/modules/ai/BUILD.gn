@@ -12,6 +12,8 @@ blink_modules_sources("ai") {
     "ai_availability.h",
     "ai_create_monitor.cc",
     "ai_create_monitor.h",
+    "ai_interface_proxy.cc",
+    "ai_interface_proxy.h",
     "ai_language_model.cc",
     "ai_language_model.h",
     "ai_language_model_factory.cc",
@@ -35,6 +37,7 @@ blink_modules_sources("ai") {
     "ai_writer.h",
     "ai_writer_factory.cc",
     "ai_writer_factory.h",
+    "ai_writing_assistance_base.h",
     "dom_ai.cc",
     "dom_ai.h",
     "exception_helpers.cc",
@@ -50,6 +53,8 @@ blink_modules_sources("ai") {
     "on_device_translation/ai_translator.h",
     "on_device_translation/ai_translator_factory.cc",
     "on_device_translation/ai_translator_factory.h",
+    "on_device_translation/create_translator_client.cc",
+    "on_device_translation/create_translator_client.h",
   ]
 
   public_deps = [ "//third_party/blink/public/mojom:mojom_modules_blink" ]

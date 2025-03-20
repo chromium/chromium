@@ -29,6 +29,8 @@
 #include "chrome/browser/glic/host/glic_actor_controller.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -40,6 +42,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/url_constants.h"
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/views/widget/widget.h"
@@ -49,9 +52,12 @@ namespace glic {
 
 GlicKeyedService::GlicKeyedService(Profile* profile,
                                    signin::IdentityManager* identity_manager,
-                                   GlicProfileManager* profile_manager)
+                                   ProfileManager* profile_manager,
+                                   GlicProfileManager* glic_profile_manager)
     : profile_(profile),
-      enabling_(std::make_unique<GlicEnabling>(profile)),
+      enabling_(std::make_unique<GlicEnabling>(
+          profile,
+          &profile_manager->GetProfileAttributesStorage())),
       metrics_(std::make_unique<GlicMetrics>(profile, enabling_.get())),
       window_controller_(
           std::make_unique<GlicWindowController>(profile,
@@ -63,7 +69,7 @@ GlicKeyedService::GlicKeyedService(Profile* profile,
       auth_controller_(std::make_unique<AuthController>(profile,
                                                         identity_manager,
                                                         /*use_for_fre=*/false)),
-      profile_manager_(profile_manager) {
+      glic_profile_manager_(glic_profile_manager) {
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
   metrics_->SetControllers(window_controller_.get(), &focused_tab_manager_);
 
@@ -83,7 +89,7 @@ GlicKeyedService::GlicKeyedService(Profile* profile,
   }
 
   // This is only used by automation for tests.
-  profile_manager_->MaybeAutoOpenGlicPanel();
+  glic_profile_manager_->MaybeAutoOpenGlicPanel();
 }
 
 GlicKeyedService::~GlicKeyedService() {
@@ -97,7 +103,7 @@ GlicKeyedService* GlicKeyedService::Get(content::BrowserContext* context) {
 
 void GlicKeyedService::Shutdown() {
   CloseUI();
-  profile_manager_->OnServiceShutdown(this);
+  glic_profile_manager_->OnServiceShutdown(this);
 }
 
 void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
@@ -108,7 +114,7 @@ void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
   // this method should already have been removed.
   CHECK(GlicEnabling::IsEnabledForProfile(profile_));
 
-  profile_manager_->SetActiveGlic(this);
+  glic_profile_manager_->SetActiveGlic(this);
   window_controller_->Toggle(bwi, prevent_close, source);
 }
 
@@ -130,7 +136,9 @@ void GlicKeyedService::GuestAdded(content::WebContents* guest_contents) {
   }
   auto* page_handler = GetPageHandler(top);
   if (page_handler) {
-    page_handler->GuestAdded(guest_contents);
+    auto* webview = extensions::WebViewGuest::FromWebContents(guest_contents);
+    CHECK(webview);
+    page_handler->GuestAdded(webview);
   }
 }
 
@@ -336,11 +344,11 @@ base::CallbackListSubscription GlicKeyedService::AddWebClientCreatedCallback(
 
 void GlicKeyedService::TryPreload() {
   CHECK(GlicEnabling::IsEnabledForProfile(profile_));
-  if (!profile_manager_) {
+  if (!glic_profile_manager_) {
     return;
   }
   Profile* profile = profile_;
-  if (!profile_manager_->ShouldPreloadForProfile(profile)) {
+  if (!glic_profile_manager_->ShouldPreloadForProfile(profile)) {
     return;
   }
 

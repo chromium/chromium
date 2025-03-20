@@ -20,10 +20,12 @@ import android.provider.OpenableColumns;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
@@ -61,12 +63,12 @@ public class PdfContentProviderUnitTest {
         }
     }
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private PdfContentProvider mProvider;
     @Mock private Context mContext;
 
     @Before
     public void setUp() throws IOException {
-        MockitoAnnotations.initMocks(this);
         mProvider = new PdfContentProvider();
         ContextUtils.initApplicationContextForTests(mContext);
         // Mock the package name for generating the URI

@@ -298,6 +298,11 @@ struct BLINK_COMMON_EXPORT
     return params.seller_signals;
   }
 
+  static const blink::AuctionConfig::MaybePromiseJson& seller_tkv_signals(
+      const blink::AuctionConfig::NonSharedParams& params) {
+    return params.seller_tkv_signals;
+  }
+
   static std::optional<base::TimeDelta> seller_timeout(
       const blink::AuctionConfig::NonSharedParams& params) {
     return params.seller_timeout;
@@ -306,6 +311,11 @@ struct BLINK_COMMON_EXPORT
   static const blink::AuctionConfig::MaybePromisePerBuyerSignals&
   per_buyer_signals(const blink::AuctionConfig::NonSharedParams& params) {
     return params.per_buyer_signals;
+  }
+
+  static const base::flat_map<url::Origin, std::string>& per_buyer_tkv_signals(
+      const blink::AuctionConfig::NonSharedParams& params) {
+    return params.per_buyer_tkv_signals;
   }
 
   static const blink::AuctionConfig::MaybePromiseBuyerTimeouts& buyer_timeouts(

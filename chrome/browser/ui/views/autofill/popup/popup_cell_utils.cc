@@ -187,7 +187,7 @@ std::unique_ptr<views::ImageView> ConvertModelToImageView(
 // leading and trailing icons is contained.
 std::unique_ptr<views::TableLayoutView> CreateSuggestionContentTable(
     std::unique_ptr<views::Label> main_text_label,
-    std::unique_ptr<views::Label> minor_text_label,
+    std::vector<std::unique_ptr<views::Label>> minor_text_labels,
     std::unique_ptr<views::Label> description_label,
     std::vector<std::unique_ptr<views::View>> subtext_views) {
   const bool kHasTwoColumns = !!description_label;
@@ -210,7 +210,7 @@ std::unique_ptr<views::TableLayoutView> CreateSuggestionContentTable(
 
   // Major and minor text go into the first row, first column.
   table->AddRows(1, 0);
-  if (minor_text_label) {
+  if (!minor_text_labels.empty()) {
     auto first_line_container = std::make_unique<views::View>();
     first_line_container
         ->SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -225,8 +225,9 @@ std::unique_ptr<views::TableLayoutView> CreateSuggestionContentTable(
                                    DISTANCE_RELATED_LABEL_HORIZONTAL_LIST)));
 
     first_line_container->AddChildView(std::move(main_text_label));
-
-    first_line_container->AddChildView(std::move(minor_text_label));
+    for (auto& minor_text : minor_text_labels) {
+      first_line_container->AddChildView(std::move(minor_text));
+    }
     table->AddChildView(std::move(first_line_container));
   } else {
     table->AddChildView(std::move(main_text_label));
@@ -389,7 +390,14 @@ std::u16string GetVoiceOverStringFromSuggestion(const Suggestion& suggestion) {
 
   add_if_not_empty(GetIconAccessibleName(suggestion.icon));
   text.push_back(suggestion.main_text.value);
-  add_if_not_empty(suggestion.minor_text.value);
+  if (!suggestion.minor_texts.empty()) {
+    std::vector<std::u16string> text_values;
+    for (const auto& minor_text : suggestion.minor_texts) {
+      text_values.push_back(minor_text.value);
+    }
+    std::u16string sublabel = base::JoinString(text_values, u" ");
+    add_if_not_empty(sublabel);
+  }
 
   for (const std::vector<Suggestion::Text>& row : suggestion.labels) {
     for (const Suggestion::Text& label : row) {
@@ -463,7 +471,7 @@ void AddSpacerWithSize(views::BoxLayoutView& view,
 void AddSuggestionContentToView(
     const Suggestion& suggestion,
     std::unique_ptr<views::Label> main_text_label,
-    std::unique_ptr<views::Label> minor_text_label,
+    std::vector<std::unique_ptr<views::Label>> minor_text_labels,
     std::unique_ptr<views::Label> description_label,
     std::vector<std::unique_ptr<views::View>> subtext_views,
     std::unique_ptr<views::View> icon,
@@ -509,7 +517,7 @@ void AddSuggestionContentToView(
   // The actual content table.
   content_view.SetFlexForView(
       content_view.AddChildView(CreateSuggestionContentTable(
-          std::move(main_text_label), std::move(minor_text_label),
+          std::move(main_text_label), std::move(minor_text_labels),
           std::move(description_label), std::move(subtext_views))),
       1);
 

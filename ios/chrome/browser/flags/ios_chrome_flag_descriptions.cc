@@ -608,6 +608,11 @@ const char kIOSKeyboardAccessoryUpgradeShortManualFillMenuDescription[] =
     "When enabled, the upgraded keyboard accessory UI will be presented with a "
     "shorter manual fill menu.";
 
+const char kIOSOneTapMiniMapRemoveSectionBreaksName[] =
+    "Remove section break for address detection.";
+const char kIOSOneTapMiniMapRemoveSectionBreaksDescription[] =
+    "Replace section break by spaces when detecting addresses.";
+
 const char kIOSOneTapMiniMapRestrictionsName[] =
     "Revalidate detected addresses for one tap Mini Map.";
 const char kIOSOneTapMiniMapRestrictionsDescription[] =
@@ -707,6 +712,11 @@ const char kIOSReactivationNotificationsName[] = "Reactivation Notifications";
 const char kIOSReactivationNotificationsDescription[] =
     "Enables a feature to send provisional notifications of interest to new"
     "users and encourage them to return to the app.";
+
+const char kIOSProvidesAppNotificationSettingsName[] =
+    "IOS Provides App Notification Settings";
+const char kIOSProvidesAppNotificationSettingsDescription[] =
+    "Enabled integration with iOS's ProvidesAppNotificationSettings feature.";
 
 const char kIPHForSafariSwitcherName[] = "IPH for Safari Switcher";
 const char kIPHForSafariSwitcherDescription[] =

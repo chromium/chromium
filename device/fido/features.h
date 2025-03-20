@@ -56,11 +56,6 @@ BASE_DECLARE_FEATURE(kWebAuthnRetryU2FErrors);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnUseInsecureSoftwareUnexportableKeys);
 
-// Enable a workaround for an interaction between Windows 10 and certain
-// security keys.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnCredProtectWin10BugWorkaround);
-
 // Send enclave requests with 5 seconds delay. For development purposes only.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnEnclaveAuthenticatorDelay);

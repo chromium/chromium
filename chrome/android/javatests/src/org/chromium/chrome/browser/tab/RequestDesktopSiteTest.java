@@ -16,7 +16,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
@@ -54,6 +55,8 @@ public class RequestDesktopSiteTest {
     private static final String URL_2 = "https://www.example.com/";
     private CallbackHelper mMenuObserver;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
@@ -61,7 +64,6 @@ public class RequestDesktopSiteTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         // Disable IPH to avoid interruptions on the app menu.
         TrackerFactory.setTrackerForTests(mMockTracker);
         Mockito.doReturn(false)

@@ -8,11 +8,13 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -63,7 +65,10 @@ class WebrtcTransport : public Transport,
     virtual void OnWebrtcTransportConnected() = 0;
 
     // Called when there is an error connecting the session.
-    virtual void OnWebrtcTransportError(ErrorCode error) = 0;
+    virtual void OnWebrtcTransportError(
+        ErrorCode error,
+        std::string_view error_details,
+        const base::Location& error_location) = 0;
 
     // Called when the transport protocol has been changed. Note that this might
     // be called before the channels become ready.
@@ -126,7 +131,9 @@ class WebrtcTransport : public Transport,
   void RequestIceRestart() override;
   void RequestSdpRestart() override;
 
-  void Close(ErrorCode error);
+  void Close(ErrorCode error,
+             std::string_view error_details,
+             const base::Location& error_location);
 
   void ApplySessionOptions(const SessionOptions& options);
 

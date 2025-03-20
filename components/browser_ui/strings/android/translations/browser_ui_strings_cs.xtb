@@ -39,7 +39,9 @@
 <translation id="1538031354170655462">Weby obvykle technologii NFC (Near Field Communication) používají ke komunikaci s lokátory nebo zařízeními v okolí, například ke skenování čipů nebo k bezkontaktnímu placení</translation>
 <translation id="1547123415014299762">Soubory cookie třetích stran jsou povoleny</translation>
 <translation id="1593426485665524382">V horní části obrazovky jsou k dispozici nové akce</translation>
+<translation id="1615755956145364867">Weby mohou žádat o přehrání chráněného obsahu</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1621729191093924223">Funkce vyžadující mikrofon nebudou k dispozici</translation>
 <translation id="1633720957382884102">Související weby</translation>
 <translation id="1644574205037202324">Historie</translation>
 <translation id="1652197001188145583">Když je tato možnost zapnutá, weby mohou žádat o použití zařízení NFC. Když je vypnutá, weby zařízení NFC používat nemohou.</translation>
@@ -54,6 +56,7 @@
 <translation id="1743802530341753419">Pokud se web bude chtít připojit k zařízení, zobrazit dotaz (doporučeno)</translation>
 <translation id="1779089405699405702">Dekodér obrázků</translation>
 <translation id="1785415724048343560">Doporučeno pro nejlepší zážitek</translation>
+<translation id="1796588414813960292">Funkce vyžadující zvuk nebudou k dispozici</translation>
 <translation id="1799920918471566157">Tipy Chrome</translation>
 <translation id="1816835383954230954">Když je tento přepínač zapnutý, běží Chrome rychleji a funkce využívající JavaScript by měly fungovat tak, jak byly navrženy. Když je vypnutý, je Chrome pomalejší, ale V8 je odolnější proti útokům.</translation>
 <translation id="1818308510395330587">Pokud aplikaci <ph name="APP_NAME" /> chcete povolit používání rozšířené reality, zapněte také v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" /> fotoaparát.</translation>
@@ -71,6 +74,7 @@
 <translation id="1994173015038366702">Adresa URL webu</translation>
 <translation id="2004697686368036666">Některé weby mohou přestat fungovat</translation>
 <translation id="2025115093177348061">Rozšířená realita</translation>
+<translation id="2028449514182362831">Funkce vyžadující senzory pohybu nebudou k dispozici</translation>
 <translation id="2030769033451695672">Klepnutím se vrátíte na web <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Vrátit zpět</translation>
 <translation id="2091887806945687916">Zvuk</translation>
@@ -87,6 +91,7 @@
 <translation id="2215727959747642672">Úprava souborů</translation>
 <translation id="2218389616572918761">Weby můžou žádat o přístup k mikrofonu</translation>
 <translation id="2228071138934252756">Pokud aplikaci <ph name="APP_NAME" /> chcete umožnit přístup k fotoaparátu, zapněte fotoaparát také v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
+<translation id="2231160360698766265">Weby mohou přehrávat chráněný obsah</translation>
 <translation id="2235344399760031203">Soubory cookie třetích stran jsou blokovány</translation>
 <translation id="2238944249568001759">Navrhovaná vyhledávání na základě poslední karty</translation>
 <translation id="2241587408274973373">Karty na stránce Nová karta</translation>
@@ -256,6 +261,7 @@
 <translation id="4259722352634471385">Navigace je blokována: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Po opuštění web může pokračovat v synchronizaci, aby dokončil úkoly, jako je nahrání fotek nebo odeslání chatové zprávy</translation>
 <translation id="4278390842282768270">Povoleno</translation>
+<translation id="4290791284969893584">Po zavření stránky se zahájené úlohy nemusí dokončit</translation>
 <translation id="429312253194641664">Web přehrává média</translation>
 <translation id="42981349822642051">Rozbalit</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Platnost skončí zítra}few{Platnost skončí za # dny}many{Platnost skončí za # dne}other{Platnost skončí za # dní}}</translation>
@@ -530,6 +536,7 @@
 <translation id="8010630645305864042">{TILE_COUNT,plural, =1{Skrýt kartu Pokračovat s touto kartou}few{Skrýt kartu Pokračovat s těmito kartami}many{Skrýt kartu Pokračovat s těmito kartami}other{Skrýt kartu Pokračovat s těmito kartami}}</translation>
 <translation id="802154636333426148">Stažení se nezdařilo</translation>
 <translation id="8042586301629853791">Řadit podle:</translation>
+<translation id="8051193500142930381">Funkce vyžadující fotoaparát nebudou k dispozici</translation>
 <translation id="8067883171444229417">Přehrát video</translation>
 <translation id="8068648041423924542">Certifikát nelze vybrat.</translation>
 <translation id="8077120325605624147">Kterýkoliv web, který navštívíte, vám může zobrazit jakoukoliv reklamu</translation>
@@ -630,6 +637,7 @@
 <translation id="9138217887606523162">Aktuální přiblížení je <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9156722768168878035">Umožněte Chromu zobrazovat nedávno použité karty v seznamu aplikací a ve výsledcích vyhledávání v zařízení. Tuto funkci můžete v nastavení Chromu kdykoli vypnout.</translation>
 <translation id="9162462602695099906">Tato stránka je nebezpečná</translation>
+<translation id="9182556968660520230">Nepovolovat webům přehrávání chráněného obsahu</translation>
 <translation id="947156494302904893">Weby, které navštěvujete, mohou ověřit, že jste člověk, a ne robot</translation>
 <translation id="959682366969460160">Uspořádejte si položky</translation>
 <translation id="967624055006145463">Uložená data</translation>

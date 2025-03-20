@@ -5,6 +5,7 @@
 #include "ui/gfx/color_space_win.h"
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 
@@ -13,7 +14,7 @@ namespace gfx {
 DXVA2_ExtendedFormat ColorSpaceWin::GetExtendedFormat(
     const ColorSpace& color_space) {
   DXVA2_ExtendedFormat format;
-  memset(&format, 0, sizeof(format));
+  UNSAFE_TODO(memset(&format, 0, sizeof(format)));
   format.SampleFormat = DXVA2_SampleProgressiveFrame;
   format.VideoLighting = DXVA2_VideoLighting_dim;
   format.NominalRange = DXVA2_NominalRange_16_235;

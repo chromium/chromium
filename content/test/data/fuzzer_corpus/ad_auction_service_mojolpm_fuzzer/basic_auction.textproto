@@ -171,6 +171,9 @@ actions {
               m_seller_signals {
                 old: 1
               }
+              m_seller_tkv_signals {
+                old: 1
+              }
               m_per_buyer_signals {
                 old: 1
               }

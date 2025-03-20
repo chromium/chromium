@@ -148,7 +148,8 @@ void WhatsNewUI::CreateBrowserCommandHandler(
           browser_command::mojom::Command::kOpenSafetyCheckFromWhatsNew,
       });
   command_handler_ = std::make_unique<BrowserCommandHandler>(
-      std::move(pending_handler), profile_, supported_commands);
+      std::move(pending_handler), profile_, supported_commands,
+      web_ui()->GetWebContents());
 }
 
 WhatsNewUI::~WhatsNewUI() = default;

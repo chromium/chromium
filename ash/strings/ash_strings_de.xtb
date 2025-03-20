@@ -241,6 +241,8 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1755556344721611131">Diagnose-App</translation>
 <translation id="1756833229520115364">Vorlage konnte nicht gespeichert werden. Zu viele Fenster oder Tabs.</translation>
 <translation id="1757857692711134412">Bis Sonnenuntergang deaktiviert</translation>
+<translation id="1763084151787818322">Weitere Aktionen</translation>
+<translation id="1768138163688567246">„Auf meinem Bildschirm suchen“ schließen</translation>
 <translation id="1768366657309696705">Die Tastenkombination „<ph name="LAUNCHER_KEY_NAME" /> + Punkt“ hat sich geändert. Wenn du jetzt die Einfügen-Taste benötigst, drücke die „<ph name="LAUNCHER_KEY_NAME" />-Taste + Umschalttaste + Rücktaste“.</translation>
 <translation id="1770726142253415363">In Zeile <ph name="ROW_NUMBER" />, Spalte <ph name="COLUMN_NUMBER" /> verschoben.</translation>
 <translation id="1771761307086386028">Nach rechts scrollen</translation>
@@ -563,7 +565,7 @@ Ansonsten wird das integrierte Touchpad in <ph name="TIMEOUT_SECONDS" /> wieder 
 <translation id="2941112035454246133">Niedrig</translation>
 <translation id="2941232201846070406">Prüfe deine Internetverbindung und versuche es noch einmal</translation>
 <translation id="2942350706960889382">Angedockte Lupe</translation>
-<translation id="2942516765047364088">Ablageposition</translation>
+<translation id="2942516765047364088">Position der Ablage</translation>
 <translation id="2946119680249604491">Verbindung hinzufügen</translation>
 <translation id="2947835478872237115">Aktueller Akkustand: <ph name="BATTERY_PERCENTAGE" /> %, <ph name="TIME" /> bis zur vollständigen Aufladung</translation>
 <translation id="2949420361496057765"><ph name="MODIFIER" /> drücken und auf einen Link klicken</translation>
@@ -1942,6 +1944,7 @@ Neuinstallation</translation>
 <translation id="742594950370306541">Kamera wird verwendet.</translation>
 <translation id="742608627846767349">Guten Morgen,</translation>
 <translation id="743058460480092004">Kamera und Mikrofon werden verwendet.</translation>
+<translation id="7440404390546433462">Google Suche</translation>
 <translation id="7441711280402516925">Wird abgespielt · Zum Tab wechseln</translation>
 <translation id="7453330308669753048">Ergebnis aus dem Suchverlauf entfernt</translation>
 <translation id="7459485586006128091">Aufgrund eines internen Fehlers wurde der Hotspot deaktiviert. Versuche in ein paar Minuten noch einmal, eine Verbindung herzustellen.</translation>

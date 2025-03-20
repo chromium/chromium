@@ -92,7 +92,10 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
     private final SyncService mSyncService;
     private final ObserverList<SignInStateObserver> mSignInStateObservers = new ObserverList<>();
     private final List<Runnable> mCallbacksWaitingForPendingOperation = new ArrayList<>();
-    private boolean mSigninAllowedByPolicy;
+
+    // Is true when the sign-in is not disabled via the toggle in settings and not disabled by
+    // policies. The value should match the one of PrefService.getBoolean(Pref.SIGNIN_ALLOWED).
+    private boolean mSigninAllowedPref;
 
     /**
      * Will be set during the sign in process, and nulled out when there is not a pending sign in.
@@ -154,8 +157,8 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
         mIdentityMutator = identityMutator;
         mSyncService = syncService;
 
-        mSigninAllowedByPolicy =
-                SigninManagerImplJni.get().isSigninAllowedByPolicy(mNativeSigninManagerAndroid);
+        mSigninAllowedPref =
+                SigninManagerImplJni.get().isSigninAllowed(mNativeSigninManagerAndroid);
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
         mAccountManagerFacade.addObserver(this);
         Promise<List<CoreAccountInfo>> coreAccountInfosPromise =
@@ -250,17 +253,8 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
     @Override
     public boolean isSigninAllowed() {
         return mSignInState == null
-                && mSigninAllowedByPolicy
+                && mSigninAllowedPref
                 && mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) == null
-                && isSigninSupported(/* requireUpdatedPlayServices= */ false);
-    }
-
-    /** Returns true if sync opt in can be started now. */
-    @Override
-    public boolean isSyncOptInAllowed() {
-        return mSignInState == null
-                && mSigninAllowedByPolicy
-                && mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) == null
                 && isSigninSupported(/* requireUpdatedPlayServices= */ false);
     }
 
@@ -273,16 +267,11 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
                 && mIdentityManager.isClearPrimaryAccountAllowed();
     }
 
-    /** Returns true if signin is disabled by policy. */
-    @Override
-    public boolean isSigninDisabledByPolicy() {
-        return !mSigninAllowedByPolicy;
-    }
-
     /**
      * Returns whether the user can sign-in (maybe after an update to Google Play services).
+     *
      * @param requireUpdatedPlayServices Indicates whether an updated version of play services is
-     *         required or not.
+     *     required or not.
      */
     @Override
     public boolean isSigninSupported(boolean requireUpdatedPlayServices) {
@@ -354,15 +343,15 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
     }
 
     private void signinInternal(SignInState signInState) {
-        assert isSyncOptInAllowed()
+        assert isSigninAllowed()
                 : String.format(
                         "Sign-in isn't allowed!\n"
                                 + "  mSignInState: %s\n"
-                                + "  mSigninAllowedByPolicy: %s\n"
-                                + "  Primary sync account: %s",
+                                + "  mSigninAllowedPref: %s\n"
+                                + "  Signed-in account: %s",
                         mSignInState,
-                        mSigninAllowedByPolicy,
-                        mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC));
+                        mSigninAllowedPref,
+                        mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
         assert signInState != null : "SigninState shouldn't be null!";
 
         // The mSignInState must be updated prior to the async processing below, as this indicates
@@ -643,9 +632,11 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
         }
     }
 
+    // TODO(crbug.com/404801135): Remove this method and mSigninAllowedPref to rely on
+    // Pref.SIGNIN_ALLOWED instead.
     @CalledByNative
-    private void onSigninAllowedByPolicyChanged(boolean newSigninAllowedByPolicy) {
-        mSigninAllowedByPolicy = newSigninAllowedByPolicy;
+    private void onSigninAllowedChanged(boolean signinAllowed) {
+        mSigninAllowedPref = signinAllowed;
         notifySignInAllowedChanged();
     }
 
@@ -928,7 +919,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
 
     @NativeMethods
     interface Natives {
-        boolean isSigninAllowedByPolicy(long nativeSigninManagerAndroid);
+        boolean isSigninAllowed(long nativeSigninManagerAndroid);
 
         boolean isForceSigninEnabled(long nativeSigninManagerAndroid);
 

@@ -282,6 +282,14 @@ export declare interface GlicBrowserHost {
   canAttachPanel?(): ObservableValue<boolean>;
 
   /**
+   * Whether any browser windows are open for this profile. This exists to allow
+   * the web client to signal the user that they need to open a browser window
+   * before sharing context. A browser window being open does not guarantee
+   * there is a focused tab or a panel can attach to the browser.
+   */
+  isBrowserOpen?(): ObservableValue<boolean>;
+
+  /**
    * Returns the observable state of the currently focused tab. Updates are sent
    * whenever the focus changes due to the user switching tabs or navigating the
    * current focused tab.
@@ -318,6 +326,9 @@ export declare interface GlicBrowserHost {
 
   /** Returns the state of the OS granted location permission. */
   getOsLocationPermissionState?(): ObservableValue<boolean>;
+
+  /** Returns the state of the OS hotkey. */
+  getOsHotkeyState?(): ObservableValue<{hotkey: string}>;
 
   /**
    * Set the state of the microphone permission in settings. Returns a promise
@@ -549,6 +560,8 @@ export enum InvocationSource {
   THREE_DOTS_MENU = 7,
   /** An unsupported/unknown source. */
   UNSUPPORTED = 8,
+  /** From the What's New page. */
+  WHATS_NEW = 9,
 }
 
 /** The default value of TabContextOptions.pdfSizeLimit. */

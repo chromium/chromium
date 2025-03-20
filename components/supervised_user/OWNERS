@@ -3,7 +3,7 @@
 #
 # These CLs will be automatically reassigned to a reviewer within
 # about 5 minutes. This approach helps our team to load-balance incoming
-# reviews. Googlers can read more about this at go/gwsq-gerrit.
+# reviews.
 chrome-family-kids-reviews@google.com
 
 # ChromeOS
@@ -11,10 +11,9 @@ agawronska@chromium.org    #{LAST_RESORT_SUGGESTION}
 courtneywong@chromium.org  #{LAST_RESORT_SUGGESTION}
 
 # Chrome Browser
-fernandex@google.com    #{LAST_RESORT_SUGGESTION}
+anthie@google.com       #{LAST_RESORT_SUGGESTION}
 ljjlee@google.com       #{LAST_RESORT_SUGGESTION}
 tju@google.com          #{LAST_RESORT_SUGGESTION}
-anthie@google.com       #{LAST_RESORT_SUGGESTION}
 
-# Previous owner, feel free to add for any questions or historical context:
-# treib@chromium.org
+# Previous owners, feel free to add for any questions or historical context:
+# fernandex@google.com, treib@chromium.org

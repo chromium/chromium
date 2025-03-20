@@ -149,7 +149,7 @@ public class BookmarkPromoHeader
             return false;
         }
 
-        return mSigninManager.isSyncOptInAllowed()
+        return mSigninManager.isSigninAllowed()
                 && mSyncPromoController != null
                 && mSyncPromoController.canShowSyncPromo();
     }

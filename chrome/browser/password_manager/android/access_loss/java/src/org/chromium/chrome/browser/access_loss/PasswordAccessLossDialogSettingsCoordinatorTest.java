@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.access_loss;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.spy;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningUserAction.DISMISS;
@@ -18,8 +18,6 @@ import static org.chromium.chrome.browser.password_manager.HelpUrlLauncher.KEEP_
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.view.View;
 
 import org.junit.Assert;
@@ -27,7 +25,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -38,7 +35,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.password_manager.CustomTabIntentHelper;
+import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -60,11 +57,11 @@ public class PasswordAccessLossDialogSettingsCoordinatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Callback<Context> mLaunchGmsCoreUpdate;
     @Mock private Runnable mLaunchExportFlow;
-    private CustomTabIntentHelper mCustomTabIntentHelper;
+
+    @Mock private SettingsCustomTabLauncher mSettingsCustomTabLauncher;
 
     @Before
     public void setUp() {
-        mCustomTabIntentHelper = (Context context, Intent intent) -> intent;
         mActivity = Robolectric.buildActivity(Activity.class).create().start().resume().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
     }
@@ -89,7 +86,7 @@ public class PasswordAccessLossDialogSettingsCoordinatorTest {
                 PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED,
                 mLaunchGmsCoreUpdate,
                 mLaunchExportFlow,
-                mCustomTabIntentHelper);
+                mSettingsCustomTabLauncher);
         PropertyModel mDialogModel = mModalDialogManager.getShownDialogModel();
         Assert.assertNotNull(mDialogModel);
 
@@ -114,7 +111,7 @@ public class PasswordAccessLossDialogSettingsCoordinatorTest {
                 PasswordAccessLossWarningType.NO_UPM,
                 mLaunchGmsCoreUpdate,
                 mLaunchExportFlow,
-                mCustomTabIntentHelper);
+                mSettingsCustomTabLauncher);
         PropertyModel mDialogModel = mModalDialogManager.getShownDialogModel();
         Assert.assertNotNull(mDialogModel);
 
@@ -140,7 +137,7 @@ public class PasswordAccessLossDialogSettingsCoordinatorTest {
                 PasswordAccessLossWarningType.ONLY_ACCOUNT_UPM,
                 mLaunchGmsCoreUpdate,
                 mLaunchExportFlow,
-                mCustomTabIntentHelper);
+                mSettingsCustomTabLauncher);
         PropertyModel mDialogModel = mModalDialogManager.getShownDialogModel();
         Assert.assertNotNull(mDialogModel);
 
@@ -166,7 +163,7 @@ public class PasswordAccessLossDialogSettingsCoordinatorTest {
                 PasswordAccessLossWarningType.NO_GMS_CORE,
                 mLaunchGmsCoreUpdate,
                 mLaunchExportFlow,
-                mCustomTabIntentHelper);
+                mSettingsCustomTabLauncher);
         PropertyModel mDialogModel = mModalDialogManager.getShownDialogModel();
         Assert.assertNotNull(mDialogModel);
 
@@ -193,7 +190,7 @@ public class PasswordAccessLossDialogSettingsCoordinatorTest {
                 PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED,
                 mLaunchGmsCoreUpdate,
                 mLaunchExportFlow,
-                mCustomTabIntentHelper);
+                mSettingsCustomTabLauncher);
         PropertyModel mDialogModel = mModalDialogManager.getShownDialogModel();
         Assert.assertNotNull(mDialogModel);
 
@@ -213,20 +210,17 @@ public class PasswordAccessLossDialogSettingsCoordinatorTest {
                                 HELP_CENTER)
                         .build();
 
-        Activity spyActivity = spy(mActivity);
         mCoordinator.showPasswordAccessLossDialog(
-                spyActivity,
+                mActivity,
                 mModalDialogManager,
                 PasswordAccessLossWarningType.NO_UPM,
                 mLaunchGmsCoreUpdate,
                 mLaunchExportFlow,
-                mCustomTabIntentHelper);
+                mSettingsCustomTabLauncher);
         findHelpButton().performClick();
-        ArgumentCaptor<Intent> intentArgumentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(intentArgumentCaptor.capture(), any());
-        Assert.assertEquals(
-                Uri.parse(KEEP_APPS_AND_DEVICES_WORKING_WITH_GMS_CORE_SUPPORT_URL),
-                intentArgumentCaptor.getValue().getData());
+        verify(mSettingsCustomTabLauncher)
+                .openUrlInCct(
+                        eq(mActivity), eq(KEEP_APPS_AND_DEVICES_WORKING_WITH_GMS_CORE_SUPPORT_URL));
 
         histogram.assertExpected();
     }
@@ -241,20 +235,16 @@ public class PasswordAccessLossDialogSettingsCoordinatorTest {
                                 HELP_CENTER)
                         .build();
 
-        Activity spyActivity = spy(mActivity);
         mCoordinator.showPasswordAccessLossDialog(
-                spyActivity,
+                mActivity,
                 mModalDialogManager,
                 PasswordAccessLossWarningType.NO_GMS_CORE,
                 mLaunchGmsCoreUpdate,
                 mLaunchExportFlow,
-                mCustomTabIntentHelper);
+                mSettingsCustomTabLauncher);
         findHelpButton().performClick();
-        ArgumentCaptor<Intent> intentArgumentCaptor = ArgumentCaptor.forClass(Intent.class);
-        verify(spyActivity).startActivity(intentArgumentCaptor.capture(), any());
-        Assert.assertEquals(
-                Uri.parse(GOOGLE_PLAY_SUPPORTED_DEVICES_SUPPORT_URL),
-                intentArgumentCaptor.getValue().getData());
+        verify(mSettingsCustomTabLauncher)
+                .openUrlInCct(eq(mActivity), eq(GOOGLE_PLAY_SUPPORTED_DEVICES_SUPPORT_URL));
 
         histogram.assertExpected();
     }

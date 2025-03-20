@@ -7,7 +7,7 @@
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
-#include "chrome/browser/glic/interactive_glic_test.h"
+#include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/test/browser_test.h"

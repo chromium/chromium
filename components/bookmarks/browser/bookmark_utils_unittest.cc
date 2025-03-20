@@ -285,7 +285,7 @@ TEST_F(BookmarkUtilsTest, CloneMetaInfo) {
   std::vector<BookmarkNodeData::Element> elements;
   BookmarkNodeData::Element node_data(node);
   elements.push_back(node_data);
-  EXPECT_EQ(0u, folder->children().size());
+  ASSERT_EQ(0u, folder->children().size());
   CloneBookmarkNode(model.get(), elements, folder, 0, false);
   ASSERT_EQ(1u, folder->children().size());
 
@@ -309,10 +309,10 @@ TEST_F(BookmarkUtilsTest, RemoveAllBookmarks) {
 
   std::unique_ptr<BookmarkModel> model(
       TestBookmarkClient::CreateModelWithClient(std::move(client)));
-  EXPECT_TRUE(model->bookmark_bar_node()->children().empty());
-  EXPECT_TRUE(model->other_node()->children().empty());
-  EXPECT_TRUE(model->mobile_node()->children().empty());
-  EXPECT_TRUE(managed_node->children().empty());
+  ASSERT_TRUE(model->bookmark_bar_node()->children().empty());
+  ASSERT_TRUE(model->other_node()->children().empty());
+  ASSERT_TRUE(model->mobile_node()->children().empty());
+  ASSERT_TRUE(managed_node->children().empty());
 
   const std::u16string title = u"Title";
   const GURL url("http://google.com");
@@ -333,13 +333,6 @@ TEST_F(BookmarkUtilsTest, RemoveAllBookmarks) {
   EXPECT_TRUE(model->other_node()->children().empty());
   EXPECT_TRUE(model->mobile_node()->children().empty());
   EXPECT_EQ(1u, managed_node->children().size());
-}
-
-TEST_F(BookmarkUtilsTest, CleanUpUrlForMatching) {
-  EXPECT_EQ(u"http://foo.com/", CleanUpUrlForMatching(GURL("http://foo.com"),
-                                                      /*adjustments=*/nullptr));
-  EXPECT_EQ(u"http://foo.com/", CleanUpUrlForMatching(GURL("http://Foo.com"),
-                                                      /*adjustments=*/nullptr));
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -615,6 +608,11 @@ TEST_F(
   std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
   model->CreateAccountPermanentFolders();
   const base::Time account_folders_created_time = base::Time::Now();
+
+  // Add a local node as well so that local permanent nodes are not filtered
+  // out.
+  model->AddURL(model->bookmark_bar_node(), 0, u"Title",
+                GURL("http://google.com"));
 
   const BookmarkNode* const bookmark_in_account_other_node = model->AddURL(
       model->account_other_node(), 0, u"Title", GURL("http://google.com"));
@@ -894,16 +892,16 @@ TEST_F(BookmarkUtilsTest, GetPermanentNodesForDisplayWithAccountBookmarks) {
   BookmarkNodesSplitByAccountAndLocal permanent_display_nodes =
       GetPermanentNodesForDisplay(model.get());
 
-  EXPECT_FALSE(HasLocalOrSyncableBookmarks(model.get()));
-  EXPECT_TRUE(permanent_display_nodes.local_nodes.empty());
-  EXPECT_THAT(permanent_display_nodes.account_nodes,
+  ASSERT_FALSE(HasLocalOrSyncableBookmarks(model.get()));
+  ASSERT_TRUE(permanent_display_nodes.local_nodes.empty());
+  ASSERT_THAT(permanent_display_nodes.account_nodes,
               ElementsAre(model->account_bookmark_bar_node(),
                           model->account_other_node()));
 
   // With visible local/syncable bookmarks we should display visible local
   // permanent nodes too.
   model->AddURL(model->other_node(), 0, u"Title", GURL("http://google.com"));
-  EXPECT_TRUE(HasLocalOrSyncableBookmarks(model.get()));
+  ASSERT_TRUE(HasLocalOrSyncableBookmarks(model.get()));
 
   permanent_display_nodes = GetPermanentNodesForDisplay(model.get());
   // Account nodes still showing.
@@ -915,32 +913,46 @@ TEST_F(BookmarkUtilsTest, GetPermanentNodesForDisplayWithAccountBookmarks) {
               ElementsAre(model->bookmark_bar_node(), model->other_node()));
 }
 
+TEST_F(BookmarkUtilsTest, GetPermanentNodesForDisplayWithSyncEnabled) {
+  std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
+  static_cast<TestBookmarkClient*>(model->client())
+      ->SetIsSyncFeatureEnabledIncludingBookmarks(true);
+
+  const BookmarkNodesSplitByAccountAndLocal permanent_display_nodes =
+      GetPermanentNodesForDisplay(model.get());
+
+  EXPECT_TRUE(permanent_display_nodes.account_nodes.empty());
+  EXPECT_THAT(permanent_display_nodes.local_nodes,
+              ElementsAre(model->bookmark_bar_node(), model->other_node()));
+}
+
 TEST_F(BookmarkUtilsTest, GetMostRecentlyModifiedUserFolders_DefaultOrder) {
   std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
   model->CreateAccountPermanentFolders();
   std::vector<const BookmarkNode*> recently_modified =
       GetMostRecentlyModifiedUserFolders(model.get());
 
-  // The permanent account nodes should come first in order, then the local
-  // ones in undefined order. The account other node comes first. Mobile nodes
-  // are not shown.
-  ASSERT_EQ(4u, recently_modified.size());
-  EXPECT_EQ(model->account_other_node(), recently_modified[0]);
-  EXPECT_EQ(model->account_bookmark_bar_node(), recently_modified[1]);
+  // The account other node should come first in order. Mobile nodes are not
+  // shown. Local nodes are not included if empty..
+  EXPECT_THAT(recently_modified,
+              ElementsAre(model->account_other_node(),
+                          model->account_bookmark_bar_node()));
 }
-
 TEST_F(
     BookmarkUtilsTest,
     GetMostRecentlyModifiedUserFolders_LocalFolderModifiedBeforeAccountFoldersAdded) {
   std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
 
-  // The local node is set to last used, so it should be first in the list.
-  model->SetDateFolderModified(model->bookmark_bar_node(), base::Time::Now());
+  // Add a bookmark to the local bookmark bar node, so it should be visible and
+  // first in the list.
+  model->AddURL(model->bookmark_bar_node(), 0, u"Title",
+                GURL("http://google.com"));
 
   std::vector<const BookmarkNode*> recently_modified =
       GetMostRecentlyModifiedUserFolders(model.get());
-  EXPECT_THAT(recently_modified,
+  ASSERT_THAT(recently_modified,
               ElementsAre(model->bookmark_bar_node(), model->other_node()));
+
   // Creating the account permanent folders should push the account other node
   // to the front of the list.
   model->CreateAccountPermanentFolders();
@@ -960,11 +972,12 @@ TEST_F(
   std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
   model->CreateAccountPermanentFolders();
 
-  // The local node is used after the account nodes were added, so it should be
-  // first in the list.
-  model->SetDateFolderModified(model->bookmark_bar_node(), base::Time::Now());
+  // Add a bookmark to the local bookmark bar node after the account nodes were
+  // added, so it should be visible and first in the list.
+  model->AddURL(model->bookmark_bar_node(), 0, u"Title",
+                GURL("http://google.com"));
 
-  std::vector<const BookmarkNode*> recently_modified =
+  const std::vector<const BookmarkNode*> recently_modified =
       GetMostRecentlyModifiedUserFolders(model.get());
 
   // The local bookmark bar should come first in order. Mobile nodes are not

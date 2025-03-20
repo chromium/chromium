@@ -624,6 +624,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1430915738399379752">Drucken</translation>
 <translation id="1431188203598586230">Letztes Softwareupdate</translation>
 <translation id="1432581352905426595">Suchmaschinen verwalten</translation>
+<translation id="1432650420699700107">Websites können nachfragen, ob eine Verbindung mit einem beliebigen Gerät in deinem lokalen Netzwerk hergestellt werden darf</translation>
 <translation id="1433478348197382180">Lesemodus</translation>
 <translation id="1433980411933182122">Starten</translation>
 <translation id="1434696352799406980">Mit dieser Funktion werden deine "Beim Start"-Seite, deine Suchmaschine, die "Neuer Tab"-Seite und angepinnte Tabs zurückgesetzt. Außerdem werden alle Erweiterungen deaktiviert und temporäre Daten wie Cookies gelöscht. Deine Lesezeichen, der Verlauf und gespeicherte Passwörter werden nicht gelöscht.</translation>
@@ -1332,6 +1333,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1918127774159128277">WiFi Direct-Funktionen aktualisieren</translation>
 <translation id="1918141783557917887">&amp;Kleiner</translation>
 <translation id="1918281588461452432">Wenn du Websites besuchst, werden die Seiteninhalte verschlüsselt und auf deinem Gerät gespeichert</translation>
+<translation id="1919096511823372013">Füge Links, Emojis und weitere Elemente ein. Du kannst dir beim Schreiben und Erstellen von Bildern auch Unterstützung von Google AI holen.</translation>
 <translation id="1919872106782726755">Bitte dein Kind, einen Finger auf den Fingerabdrucksensor oben rechts auf der Tastatur zu legen, neben der Ein-/Aus-Taste. Sein Fingerabdruck wird sicher auf dem <ph name="DEVICE_TYPE" /> gespeichert und verlässt dieses Gerät nie.</translation>
 <translation id="192015196730532810">Du kannst deine eigenen Tabgruppen erstellen.</translation>
 <translation id="1920314570001095522">Es gibt keine ähnlichen Tabs, die organisiert werden können, aber diese Gruppen könnten vielleicht infrage kommen</translation>
@@ -4054,9 +4056,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
     <ph name="BEGIN_PARAGRAPH2" />Das Teilen dieser Berichte kannst du jederzeit in den Einstellungen deines Chrome-Geräts aktivieren oder deaktivieren. Als Domainadministrator kannst du diese Einstellungen auch in der Admin-Konsole ändern.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">Nachthimmel mit Polarlichtern über einem kleinen Haus.</translation>
 <translation id="3818102823568165369">Lokale Zertifikate, die von deinem Betriebssystem oder Administrator hinzugefügt wurden.</translation>
-<translation id="3818662907126913619">Wenn du dein Gerät mit deinem <ph name="DOMAIN" />-Profil verwenden möchtest, benötigt deine Organisation Informationen zum Gerät.
-
-Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und das Betriebssystem des Geräts.</translation>
 <translation id="3819164369574292143">Durch Zoomen kannst du Bildschirmelemente vergrößern. Verwende die Suchtaste + Strg + M, um die Lupe zu aktivieren oder zu deaktivieren. Bei aktivierter Lupe kannst du den Cursor mit Strg + Alt + Pfeiltasten bewegen.</translation>
 <translation id="3819257035322786455">Sicherung</translation>
 <translation id="3819261658055281761">Das System konnte das langfristig gültige API-Zugriffstoken für das Gerät nicht speichern.</translation>
@@ -4374,9 +4373,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4031527940632463547">Sensoren blockiert</translation>
 <translation id="4033471457476425443">Neuen Ordner hinzufügen</translation>
 <translation id="4033963223187371752">Sichere Websites können Inhalte wie Bilder oder Webframes einbetten, die nicht sicher sind</translation>
-<translation id="4034706080855851454">Wenn du dein Gerät mit dem Profil deiner Organisation verwenden möchtest, benötigt deine Organisation Informationen zum Gerät.
-
-Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und das Betriebssystem des Geräts.</translation>
 <translation id="4034824040120875894">Drucker</translation>
 <translation id="4035758313003622889">&amp;Taskmanager</translation>
 <translation id="4035877632587724847">Nicht zulassen</translation>
@@ -4825,6 +4821,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4364830672918311045">Benachrichtigungen einblenden</translation>
 <translation id="4367971618859387374">Anzeigename</translation>
 <translation id="4368960422722232719">Arbeitsspeichernutzung auf Vorschaukarte anzeigen, die beim Bewegen des Mauszeigers auf einen Tab erscheint</translation>
+<translation id="4369151461324628035">Websites nicht erlauben, eine Verbindung zu Geräten in deinem lokalen Netzwerk herzustellen</translation>
 <translation id="4369215744064167350">Websiteanfrage genehmigt</translation>
 <translation id="4369233657762989723">Spracheingabe ein/aus</translation>
 <translation id="436926121798828366">Du kannst diese Einstellung jederzeit unter <ph name="SETTINGS_LINK" /> ändern</translation>
@@ -5378,6 +5375,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4772914216048388646">Ordentlich</translation>
 <translation id="4773112038801431077">Linux aktualisieren</translation>
 <translation id="4773122030389014189">Tabgruppe „<ph name="GROUP_NAME" />“ freigeben</translation>
+<translation id="4773253008034797668">Dürfen eine Verbindung zu beliebigen Geräten in deinem lokalen Netzwerk herstellen</translation>
 <translation id="477548766361111120">Erweiterung erlauben, diese Website zu lesen und zu ändern</translation>
 <translation id="4776311127346151860">„<ph name="DEVICE_NAME" />“ wurde verbunden</translation>
 <translation id="4776594120007763294">Wenn du eine Seite zum späteren Lesen hinzufügen möchtest, klicke auf die Schaltfläche</translation>
@@ -7837,6 +7835,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6563002009564846727">Aus Windows importierte Zertifikate ansehen</translation>
 <translation id="6563055593659435495">Verbindung mit deinem Smartphone kann nicht aufrechterhalten werden. Dein Smartphone muss sich in der Nähe befinden, entsperrt sein und Bluetooth und WLAN müssen aktiviert sein.</translation>
 <translation id="6564860838537532172">Wenn du im Browserverlauf suchst, werden deine Anfragen in der Verlaufssuche, die Seiteninhalte der besten Ergebnisse und die generierten Modellausgaben an Google gesendet und möglicherweise von Prüfern zur Verbesserung dieser Funktion angesehen.</translation>
+<translation id="6565144332292237355">Websites können diese Funktion verwenden, um nach Geräten in deinem lokalen Netzwerk zu suchen und sich mit ihnen zu verbinden</translation>
 <translation id="6569931898053264308">Mittlere Einsparungen</translation>
 <translation id="6570622975915850879">Anderes Gerät verwenden</translation>
 <translation id="65711204837946324">Du musst die Berechtigung haben, die Datei herunterzuladen</translation>
@@ -8965,6 +8964,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7377451353532943397">Zugriff auf den Sensor weiterhin blockieren</translation>
 <translation id="7377481913241237033">Verbindung per Code herstellen</translation>
 <translation id="73786666777299047">Chrome Web Store öffnen</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Eine weitere Task in derselben Taskgruppe: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. # weitere Tasks in derselben Taskgruppe: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380272457268061606">Wiederherstellung lokaler Daten deaktivieren?</translation>
 <translation id="7380459290951585794">Dein Smartphone muss sich in der Nähe befinden und entsperrt sein und Bluetooth sowie WLAN müssen aktiviert sein</translation>
 <translation id="7380622428988553498">Gerätename enthält ungültige Zeichen</translation>
@@ -11550,6 +11550,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
       <ph name="LIST_ITEM" />Verbindungsdiagnose für Chrome ausführen
     <ph name="END_LIST" /></translation>
 <translation id="9161172953291434881">Möchtest du dieser Website deine Daten anvertrauen?</translation>
+<translation id="9164418710391288146">Darf keine Verbindung zu Geräten in deinem lokalen Netzwerk herstellen</translation>
 <translation id="9165856803582999927">Scanne diesen QR‑Code mit der Kamera des Geräts, auf dem du deinen Passkey für „<ph name="APP_NAME" />“ erstellen und speichern möchtest</translation>
 <translation id="916607977885256133">Bild im Bild</translation>
 <translation id="9166253503936244008">Scanne diesen QR-Code mit dem Gerät mit dem Passkey, den du für <ph name="APP_NAME" /> verwenden möchtest</translation>

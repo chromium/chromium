@@ -80,7 +80,7 @@ bool IsBrowserGlicCompatible(Profile* profile, Browser* browser) {
 
 bool IsBrowserGlicAttachable(Profile* profile, Browser* browser) {
   return IsBrowserGlicCompatible(profile, browser) &&
-         browser->window()->IsVisible();
+         browser->window()->IsVisible() && !browser->window()->IsMinimized();
 }
 
 Browser* FindBrowserForAttachment(Profile* profile) {
@@ -156,6 +156,9 @@ class BrowserAttachObservationImpl : public BrowserAttachObservation,
         FROM_HERE, base::TimeDelta(),
         base::BindOnce(&BrowserAttachObservationImpl::CheckForChange,
                        base::Unretained(this)));
+  }
+  void OnWidgetShowStateChanged(views::Widget* widget) override {
+    CheckForChange();
   }
   void OnWidgetDestroyed(views::Widget* widget) override {
     // Note: widget observer removal has to be done at widget destruction time

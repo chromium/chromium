@@ -719,12 +719,20 @@ ScrollTranslationAction ConversionContext<Result>::StartEffect(
   current_effect_ = &effect;
 
   if (effect.Filter().HasReferenceFilter()) {
-    // Map a random point in the reference box through the filter to determine
-    // the bounds of the effect on an empty source. For empty chunks, or chunks
-    // with empty bounds, with a filter applied that produces output even when
-    // there's no input this will expand the bounds to match.
-    gfx::RectF filtered_bounds = current_effect_->MapRect(
-        gfx::RectF(effect.Filter().ReferenceBox().CenterPoint(), gfx::SizeF()));
+    // Map the input rect through the filter to determine the bounds of the
+    // effect on an empty source. For empty chunks, or chunks with empty bounds,
+    // with a filter applied that produces output even when there's no input
+    // this will expand the bounds to match.
+    gfx::RectF input_rect;
+    if (RuntimeEnabledFeatures::ReferenceFilterMapsReferenceBoxEnabled()) {
+      // Use the reference box as the input rect.
+      input_rect = effect.Filter().ReferenceBox();
+    } else {
+      // Use a random point as the input rect.
+      input_rect = gfx::RectF(effect.Filter().ReferenceBox().CenterPoint(),
+                              gfx::SizeF());
+    }
+    gfx::RectF filtered_bounds = current_effect_->MapRect(input_rect);
     effect_bounds_stack_.back().bounds = filtered_bounds;
     // Emit an empty paint operation to add the filtered bounds (mapped to layer
     // space) to the visual rect of the filter's SaveLayerOp.

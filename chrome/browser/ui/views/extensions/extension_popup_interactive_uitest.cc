@@ -30,6 +30,7 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
@@ -86,8 +87,9 @@ views::UniqueWidgetPtr CreateTestTopLevelWidget() {
 views::UniqueWidgetPtr CreateTestDialogWidget(views::Widget* parent) {
   auto dialog_delegate = std::make_unique<views::DialogDelegateView>();
   return std::unique_ptr<views::Widget>(
-      views::DialogDelegate::CreateDialogWidget(
-          dialog_delegate.release(), nullptr, parent->GetNativeView()));
+      views::DialogDelegate::CreateDialogWidget(dialog_delegate.release(),
+                                                gfx::NativeWindow(),
+                                                parent->GetNativeView()));
 }
 
 void ExpectWidgetDestroy(base::WeakPtr<views::Widget> widget) {

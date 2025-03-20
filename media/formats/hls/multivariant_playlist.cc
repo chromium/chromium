@@ -14,12 +14,12 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "media/formats/hls/audio_rendition.h"
 #include "media/formats/hls/items.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/playlist.h"
 #include "media/formats/hls/playlist_common.h"
 #include "media/formats/hls/quirks.h"
+#include "media/formats/hls/rendition.h"
 #include "media/formats/hls/source_string.h"
 #include "media/formats/hls/tags.h"
 #include "media/formats/hls/types.h"
@@ -43,7 +43,7 @@ T* GetOrCreateRenditionGroup(
   // If the group wasn't found, create it.
   if (iter == groups.end()) {
     auto group =
-        base::MakeRefCounted<AudioRenditionGroup>(pass_key, std::string(id));
+        base::MakeRefCounted<RenditionGroup>(pass_key, std::string(id));
     iter = groups.insert(std::make_pair(id, std::move(group))).first;
   }
 
@@ -88,8 +88,9 @@ MultivariantPlaylist::Parse(std::string_view source,
   VariableDictionary::SubstitutionBuffer sub_buffer;
   std::optional<XStreamInfTag> inf_tag;
   std::vector<VariantStream> variants;
-  base::flat_map<std::string_view, scoped_refptr<AudioRenditionGroup>>
+  base::flat_map<std::string_view, scoped_refptr<RenditionGroup>>
       audio_rendition_groups;
+  uint64_t rendition_unique_id = 0;
 
   // Get variants out of the playlist
   while (true) {
@@ -166,9 +167,9 @@ MultivariantPlaylist::Parse(std::string_view source,
             case MediaType::kAudio: {
               auto* group = GetOrCreateRenditionGroup(
                   {}, audio_rendition_groups, media_tag.group_id.Str());
-              auto rendition_result =
-                  group->AddRendition(base::PassKey<MultivariantPlaylist>(),
-                                      std::move(media_tag), uri);
+              auto rendition_result = group->AddRendition(
+                  base::PassKey<MultivariantPlaylist>(), std::move(media_tag),
+                  uri, ++rendition_unique_id);
               if (!rendition_result.has_value()) {
                 return std::move(rendition_result).error();
               }
@@ -230,7 +231,7 @@ MultivariantPlaylist::Parse(std::string_view source,
       return ParseStatusCode::kVariantMissingStreamInfTag;
     }
 
-    scoped_refptr<AudioRenditionGroup> audio_renditions;
+    scoped_refptr<RenditionGroup> audio_renditions;
     if (inf_tag->audio.has_value()) {
       audio_renditions = GetOrCreateRenditionGroup({}, audio_rendition_groups,
                                                    inf_tag->audio->Str());

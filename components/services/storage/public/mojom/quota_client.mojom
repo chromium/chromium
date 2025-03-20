@@ -25,8 +25,7 @@ interface QuotaClient {
   // all tracks of a `bucket`.
   GetBucketUsage(BucketLocator bucket) => (int64 usage);
 
-  // Returns a list of storage keys that have data in the default bucket for
-  // `type` storage.
+  // Returns a list of storage keys that have data in the default bucket.
   //
   // This method is currently used to bootstrap the buckets table in the quota
   // database with data produced by old code. No other uses should be added.
@@ -36,17 +35,16 @@ interface QuotaClient {
   //
   // WARNING: Implementations of this interface method must not use the
   // QuotaManager or else a deadlock could result. The QuotaManager waits until
-  // all QuotaClient::GetStorageKeysForType calls have finished before
+  // all QuotaClient::GetDefaultStorageKeys calls have finished before
   // processing other tasks, and a deadlock would occur if a
-  // QuotaClient::GetStorageKeysForType implementation waits for a QuotaManager
+  // QuotaClient::GetDefaultStorageKeys implementation waits for a QuotaManager
   // task to finish.
-  GetStorageKeysForType(blink.mojom.StorageType type)
-      => (array<blink.mojom.StorageKey> storage_keys);
+  GetDefaultStorageKeys() => (array<blink.mojom.StorageKey> storage_keys);
 
   // Returns after all data belonging to `bucket` has been deleted.
   DeleteBucketData(BucketLocator bucket)
       => (blink.mojom.QuotaStatusCode status);
 
   // An opportunity to perform a cleanup step after major deletions.
-  PerformStorageCleanup(blink.mojom.StorageType type) => ();
+  PerformStorageCleanup() => ();
 };

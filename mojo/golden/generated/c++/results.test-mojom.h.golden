@@ -47,6 +47,7 @@ template <typename ImplRefTraits>
 class ResultInterfaceStub;
 
 class ResultInterfaceRequestValidator;
+class ResultInterfaceResponseValidator;
 
 
 class ResultInterface
@@ -68,7 +69,7 @@ class ResultInterface
   using Stub_ = ResultInterfaceStub<ImplRefTraits>;
 
   using RequestValidator_ = ResultInterfaceRequestValidator;
-  using ResponseValidator_ = mojo::PassThroughFilter;
+  using ResponseValidator_ = ResultInterfaceResponseValidator;
   enum MethodMinVersions : uint32_t {
     kMethodMinVersion = 0,
   };
@@ -82,8 +83,10 @@ class ResultInterface
 #endif // !BUILDFLAG(IS_FUCHSIA)
   virtual ~ResultInterface() = default;
 
+
+  using MethodCallback = base::OnceCallback<void(ResultInterface_Method_ResponseParam_ResultPtr)>;
   
-  virtual void Method(bool a) = 0;
+  virtual void Method(bool a, MethodCallback callback) = 0;
 };
 
 
@@ -95,7 +98,7 @@ class  ResultInterfaceProxy
 
   explicit ResultInterfaceProxy(mojo::MessageReceiverWithResponder* receiver);
   
-  void Method(bool a) final;
+  void Method(bool a, MethodCallback callback) final;
 
  private:
   mojo::MessageReceiverWithResponder* receiver_;
@@ -142,6 +145,10 @@ class ResultInterfaceStub
   ImplPointerType sink_;
 };
 class  ResultInterfaceRequestValidator : public mojo::MessageReceiver {
+ public:
+  bool Accept(mojo::Message* message) override;
+};
+class  ResultInterfaceResponseValidator : public mojo::MessageReceiver {
  public:
   bool Accept(mojo::Message* message) override;
 };
@@ -286,14 +293,14 @@ bool operator>=(const T& lhs, const T& rhs) {
 
 
 
-class  ResultInterface_Method_ResponseParams_Result {
+class  ResultInterface_Method_ResponseParam_Result {
  public:
-  using DataView = ResultInterface_Method_ResponseParams_ResultDataView;
-  using Data_ = internal::ResultInterface_Method_ResponseParams_Result_Data;
-  using Tag = Data_::ResultInterface_Method_ResponseParams_Result_Tag;
+  using DataView = ResultInterface_Method_ResponseParam_ResultDataView;
+  using Data_ = internal::ResultInterface_Method_ResponseParam_Result_Data;
+  using Tag = Data_::ResultInterface_Method_ResponseParam_Result_Tag;
 
   template <typename... Args>
-  static ResultInterface_Method_ResponseParams_ResultPtr New(Args&&... args) {
+  static ResultInterface_Method_ResponseParam_ResultPtr New(Args&&... args) {
     static_assert(
         sizeof...(args) < 0,
         "Do not use Union::New(); to create a union of a given subtype, use "
@@ -303,56 +310,56 @@ class  ResultInterface_Method_ResponseParams_Result {
     return nullptr;
   }
   // Construct an instance holding |success|.
-  static ResultInterface_Method_ResponseParams_ResultPtr
+  static ResultInterface_Method_ResponseParam_ResultPtr
   NewSuccess(
       bool value) {
-    auto result = ResultInterface_Method_ResponseParams_ResultPtr(std::in_place);
+    auto result = ResultInterface_Method_ResponseParam_ResultPtr(std::in_place);
     result->set_success(std::move(value));
     return result;
   }
   // Construct an instance holding |failure|.
-  static ResultInterface_Method_ResponseParams_ResultPtr
+  static ResultInterface_Method_ResponseParam_ResultPtr
   NewFailure(
       ResultTestErrorPtr value) {
-    auto result = ResultInterface_Method_ResponseParams_ResultPtr(std::in_place);
+    auto result = ResultInterface_Method_ResponseParam_ResultPtr(std::in_place);
     result->set_failure(std::move(value));
     return result;
   }
 
   template <typename U>
-  static ResultInterface_Method_ResponseParams_ResultPtr From(const U& u) {
-    return mojo::TypeConverter<ResultInterface_Method_ResponseParams_ResultPtr, U>::Convert(u);
+  static ResultInterface_Method_ResponseParam_ResultPtr From(const U& u) {
+    return mojo::TypeConverter<ResultInterface_Method_ResponseParam_ResultPtr, U>::Convert(u);
   }
 
   template <typename U>
   U To() const {
-    return mojo::TypeConverter<U, ResultInterface_Method_ResponseParams_Result>::Convert(*this);
+    return mojo::TypeConverter<U, ResultInterface_Method_ResponseParam_Result>::Convert(*this);
   }
 
-  ResultInterface_Method_ResponseParams_Result();
-  ~ResultInterface_Method_ResponseParams_Result();
+  ResultInterface_Method_ResponseParam_Result();
+  ~ResultInterface_Method_ResponseParam_Result();
   // Delete the copy constructor and copy assignment operators because `data_`
   // contains raw pointers that must not be copied.
-  ResultInterface_Method_ResponseParams_Result(const ResultInterface_Method_ResponseParams_Result& other) = delete;
-  ResultInterface_Method_ResponseParams_Result& operator=(const ResultInterface_Method_ResponseParams_Result& other) = delete;
+  ResultInterface_Method_ResponseParam_Result(const ResultInterface_Method_ResponseParam_Result& other) = delete;
+  ResultInterface_Method_ResponseParam_Result& operator=(const ResultInterface_Method_ResponseParam_Result& other) = delete;
 
   // Clone() is a template so it is only instantiated if it is used. Thus, the
   // bindings generator does not need to know whether Clone() or copy
   // constructor/assignment are available for members.
-  template <typename UnionPtrType = ResultInterface_Method_ResponseParams_ResultPtr>
-  ResultInterface_Method_ResponseParams_ResultPtr Clone() const;
+  template <typename UnionPtrType = ResultInterface_Method_ResponseParam_ResultPtr>
+  ResultInterface_Method_ResponseParam_ResultPtr Clone() const;
 
   // Equals() is a template so it is only instantiated if it is used. Thus, the
   // bindings generator does not need to know whether Equals() or == operator
   // are available for members.
   template <typename T,
             typename std::enable_if<std::is_same<
-                T, ResultInterface_Method_ResponseParams_Result>::value>::type* = nullptr>
+                T, ResultInterface_Method_ResponseParam_Result>::value>::type* = nullptr>
   bool Equals(const T& other) const;
 
   template <typename T,
             typename std::enable_if<std::is_same<
-                T, ResultInterface_Method_ResponseParams_Result>::value>::type* = nullptr>
+                T, ResultInterface_Method_ResponseParam_Result>::value>::type* = nullptr>
   bool operator==(const T& rhs) const { return Equals(rhs); }
   size_t Hash(size_t seed) const;
 
@@ -389,13 +396,13 @@ class  ResultInterface_Method_ResponseParams_Result {
   template <typename UserType>
   static mojo::Message SerializeAsMessage(UserType* input) {
     return mojo::internal::SerializeAsMessageImpl<
-        ResultInterface_Method_ResponseParams_Result::DataView>(input);
+        ResultInterface_Method_ResponseParam_Result::DataView>(input);
   }
 
   template <typename UserType>
   static bool DeserializeFromMessage(mojo::Message input,
                                      UserType* output) {
-    return mojo::internal::DeserializeImpl<ResultInterface_Method_ResponseParams_Result::DataView>(
+    return mojo::internal::DeserializeImpl<ResultInterface_Method_ResponseParam_Result::DataView>(
         input, input.payload(), input.payload_num_bytes(), output, Validate);
   }
 
@@ -417,7 +424,7 @@ class  ResultInterface_Method_ResponseParams_Result {
 
 
 template <typename UnionPtrType>
-ResultInterface_Method_ResponseParams_ResultPtr ResultInterface_Method_ResponseParams_Result::Clone() const {
+ResultInterface_Method_ResponseParam_ResultPtr ResultInterface_Method_ResponseParam_Result::Clone() const {
   switch (tag_) {
     case Tag::kSuccess:
       return NewSuccess(
@@ -431,8 +438,8 @@ ResultInterface_Method_ResponseParams_ResultPtr ResultInterface_Method_ResponseP
 
 template <typename T,
           typename std::enable_if<std::is_same<
-              T, ResultInterface_Method_ResponseParams_Result>::value>::type*>
-bool ResultInterface_Method_ResponseParams_Result::Equals(const T& other) const {
+              T, ResultInterface_Method_ResponseParam_Result>::value>::type*>
+bool ResultInterface_Method_ResponseParam_Result::Equals(const T& other) const {
   if (tag_ != other.which())
     return false;
 
@@ -478,24 +485,24 @@ struct  StructTraits<::golden::ResultTestError::DataView,
 
 
 template <>
-struct  UnionTraits<::golden::ResultInterface_Method_ResponseParams_Result::DataView,
-                                        ::golden::ResultInterface_Method_ResponseParams_ResultPtr> {
-  static bool IsNull(const ::golden::ResultInterface_Method_ResponseParams_ResultPtr& input) { return !input; }
-  static void SetToNull(::golden::ResultInterface_Method_ResponseParams_ResultPtr* output) { output->reset(); }
+struct  UnionTraits<::golden::ResultInterface_Method_ResponseParam_Result::DataView,
+                                        ::golden::ResultInterface_Method_ResponseParam_ResultPtr> {
+  static bool IsNull(const ::golden::ResultInterface_Method_ResponseParam_ResultPtr& input) { return !input; }
+  static void SetToNull(::golden::ResultInterface_Method_ResponseParam_ResultPtr* output) { output->reset(); }
 
-  static ::golden::ResultInterface_Method_ResponseParams_Result::Tag GetTag(const ::golden::ResultInterface_Method_ResponseParams_ResultPtr& input) {
+  static ::golden::ResultInterface_Method_ResponseParam_Result::Tag GetTag(const ::golden::ResultInterface_Method_ResponseParam_ResultPtr& input) {
     return input->which();
   }
 
-  static  bool success(const ::golden::ResultInterface_Method_ResponseParams_ResultPtr& input) {
+  static  bool success(const ::golden::ResultInterface_Method_ResponseParam_ResultPtr& input) {
     return input->get_success();
   }
 
-  static const ::golden::ResultTestErrorPtr& failure(const ::golden::ResultInterface_Method_ResponseParams_ResultPtr& input) {
+  static const ::golden::ResultTestErrorPtr& failure(const ::golden::ResultInterface_Method_ResponseParam_ResultPtr& input) {
     return input->get_failure();
   }
 
-  static bool Read(::golden::ResultInterface_Method_ResponseParams_Result::DataView input, ::golden::ResultInterface_Method_ResponseParams_ResultPtr* output);
+  static bool Read(::golden::ResultInterface_Method_ResponseParam_Result::DataView input, ::golden::ResultInterface_Method_ResponseParam_ResultPtr* output);
 };
 
 }  // namespace mojo

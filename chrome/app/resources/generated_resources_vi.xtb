@@ -267,6 +267,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1175572348579024023">Cuộn</translation>
 <translation id="1175914831232945926">Chữ số</translation>
 <translation id="1176471985365269981">Không được phép chỉnh sửa tệp hoặc thư mục trên thiết bị của bạn</translation>
+<translation id="1176864681932214421">Tạo hình ảnh bằng AI</translation>
 <translation id="1177073277575830464">Quá trình thiết lập nhanh Android đã hoàn tất. Hãy tiếp tục thiết lập trên <ph name="DEVICE_TYPE" /> của bạn.</translation>
 <translation id="1177440945615690056">Bạn có thể kết nối với bất cứ mạng di động nào đủ điều kiện trong phần Cài đặt</translation>
 <translation id="1177548198167638471">Không hỏi lại</translation>
@@ -3699,6 +3700,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3582057310199111521">Bạn đã nhập mật khẩu vào trang web lừa đảo và mật khẩu này được phát hiện thấy trong một sự cố rò rỉ dữ liệu</translation>
 <translation id="3582299299336701326">Làm tối màn hình sáng và làm sáng màn hình tối. Nhấn tổ hợp phím Tìm kiếm + Ctrl + H để bật và tắt tính năng đảo màu.</translation>
 <translation id="3584169441612580296">Đọc và thay đổi ảnh, nhạc và phương tiện khác từ máy tính của bạn</translation>
+<translation id="3586741240886978899">Bạn đã dùng trên trang web này</translation>
 <translation id="3586806079541226322">Không thể mở tệp này</translation>
 <translation id="3586931643579894722">Ẩn chi tiết</translation>
 <translation id="3587279952965197737">Không được vượt quá <ph name="MAX_CHARACTER_COUNT" /> ký tự</translation>
@@ -4075,9 +4077,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
     <ph name="BEGIN_PARAGRAPH2" />Bạn có thể bắt đầu hoặc dừng cho phép các báo cáo này bất cứ lúc nào trong phần cài đặt thiết bị Chrome. Nếu là quản trị viên miền, bạn có thể thay đổi chế độ cài đặt này trong bảng điều khiển dành cho quản trị viên.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">Bắc cực quang về đêm, phía trên một ngôi nhà gỗ nhỏ.</translation>
 <translation id="3818102823568165369">Chứng chỉ trên thiết bị do hệ điều hành hoặc quản trị viên của bạn thêm.</translation>
-<translation id="3818662907126913619">Để sử dụng thiết bị bằng hồ sơ <ph name="DOMAIN" /> của mình, bạn cần cung cấp cho tổ chức thông tin về thiết bị.
-
-Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặt, tệp, trình duyệt và hệ điều hành của thiết bị.</translation>
 <translation id="3819164369574292143">Phóng to để tăng kích thước các mục trên màn hình. Nhấn tổ hợp phím Tìm kiếm + Ctrl + M để bật và tắt tính năng phóng to. Nhấn tổ hợp phím Ctrl + Alt + Phím mũi tên để di chuyển xung quanh khi đã phóng to.</translation>
 <translation id="3819257035322786455">Sao lưu</translation>
 <translation id="3819261658055281761">Hệ thống không lưu trữ được mã thông báo truy cập API dài hạn cho thiết bị này.</translation>
@@ -4395,9 +4394,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4031527940632463547">Đã chặn sử dụng cảm biến</translation>
 <translation id="4033471457476425443">Thêm thư mục mới</translation>
 <translation id="4033963223187371752">Các trang web an toàn có thể nhúng nội dung như hình ảnh hoặc khung web không an toàn</translation>
-<translation id="4034706080855851454">Để sử dụng thiết bị bằng hồ sơ tổ chức của mình, bạn cần cung cấp cho tổ chức thông tin về thiết bị.
-
-Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặt, tệp, trình duyệt và hệ điều hành của thiết bị.</translation>
 <translation id="4034824040120875894">Máy in</translation>
 <translation id="4035758313003622889">&amp;Trình quản lý tác vụ</translation>
 <translation id="4035877632587724847">Không cho phép</translation>
@@ -9376,6 +9372,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7650582458329409456">{COUNT,plural, =1{Đã thiết lập 1 vân tay}other{Đã thiết lập {COUNT} vân tay}}</translation>
 <translation id="7650677314924139716">Chế độ sử dụng dữ liệu hiện tại là Chỉ Wi-Fi</translation>
 <translation id="7650920359639954963">Không được bật: <ph name="REASON" /></translation>
+<translation id="7651182181030187705">Để sử dụng dấu trang này trên mọi thiết bị, hãy xác minh danh tính của bạn</translation>
 <translation id="7651400349472467012">Có điểm phát sóng tức thì</translation>
 <translation id="7651784568388208829">Tiếp tục công việc trong Trung tâm điều khiển điện thoại</translation>
 <translation id="765293928828334535">Không thể thêm các ứng dụng, tiện ích và tập lệnh của người dùng từ trang web này</translation>
@@ -9414,6 +9411,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7670434942695515800">Để có hiệu suất tốt nhất, hãy nâng cấp lên phiên bản mới nhất. Bạn nên sao lưu tệp phòng trường hợp quá trình nâng cấp không thể hoàn tất. Khi quá trình nâng cấp bắt đầu, Linux sẽ tắt. Vui lòng lưu các tệp đang mở trước khi tiếp tục. <ph name="LINK_START" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="7670483791111801022">Phụ đề</translation>
 <translation id="7671130400130574146">Sử dụng thanh tiêu đề và đường viền của hệ thống</translation>
+<translation id="7671139479636735732">Nhấp chuột phải để dễ dàng trực quan hoá ý tưởng của bạn</translation>
 <translation id="767127784612208024">Chạm để xác nhận đặt lại</translation>
 <translation id="7671472752213333268">"<ph name="EXTENSION_NAME" />" muốn quét từ "<ph name="SCANNER_NAME" />".</translation>
 <translation id="7672504401554182757">Chọn thiết bị có khoá đăng nhập cho <ph name="APP_NAME" /></translation>

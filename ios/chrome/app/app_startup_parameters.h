@@ -48,6 +48,7 @@ enum TabOpeningPostOpeningAction {
   ADD_BOOKMARKS,
   ADD_READING_LIST_ITEMS,
   EXTERNAL_ACTION_SHOW_BROWSER_SETTINGS,
+  START_LENS_FROM_SHARE_EXTENSION,
 };
 
 // Represents the status of a request to change the application mode.

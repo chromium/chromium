@@ -28,7 +28,7 @@ source_set("webui") {
     "//components/feature_engagement/public",
     "//components/history/core/browser:browser",
     "//components/optimization_guide/core:core",
-    "//components/payments/core",
+    "//components/payments/core:currency_formatter",
     "//components/power_bookmarks/core",
     "//components/prefs",
     "//components/url_formatter",

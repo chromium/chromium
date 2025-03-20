@@ -851,12 +851,6 @@ class CanvasResourceProviderPassThrough final : public CanvasResourceProvider {
   bool IsSingleBuffered() const override { return true; }
 
  private:
-  scoped_refptr<CanvasResource> CreateResource() final {
-    // This class has no CanvasResource to provide: this must be imported via
-    // ImportResource() and kept in the parent class.
-    NOTREACHED();
-  }
-
   scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) final {
     return NewOrRecycledResource();
   }
@@ -897,9 +891,11 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
                                    ->ContextProvider()
                                    .GetCapabilities()
                                    .gpu_rasterization) {
+    CHECK(ContextProviderWrapper());
     resource_ = CanvasResourceSwapChain::Create(
         size, format, alpha_type, color_space, ContextProviderWrapper(),
         CreateWeakPtr());
+    CHECK(resource_);
   }
   ~CanvasResourceProviderSwapChain() override = default;
 
@@ -927,7 +923,6 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
 
   scoped_refptr<CanvasResource> ProduceCanvasResource(
       FlushReason reason) override {
-    DCHECK(IsSingleBuffered());
     TRACE_EVENT0("blink",
                  "CanvasResourceProviderSwapChain::ProduceCanvasResource");
     if (!IsValid())
@@ -1055,7 +1050,7 @@ CanvasResourceProvider::CreateBitmapProvider(
 }
 
 std::unique_ptr<CanvasResourceProvider>
-CanvasResourceProvider::CreateSoftwareSharedImageProvider(
+CanvasResourceProvider::CreateSharedImageProviderForSoftwareCompositor(
     gfx::Size size,
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
@@ -1547,12 +1542,15 @@ bool CanvasResourceProvider::OverwriteImage(
     return false;
   }
 
-  raster->WaitSyncTokenCHROMIUM(ready_sync_token.GetConstData());
+  std::unique_ptr<gpu::RasterScopedAccess> ri_access =
+      shared_image->BeginRasterAccess(raster, ready_sync_token,
+                                      /*readonly=*/true);
   raster->CopySharedImage(shared_image->mailbox(), dst_client_si->mailbox(),
                           /*xoffset=*/0,
                           /*yoffset=*/0, copy_rect.x(), copy_rect.y(),
                           copy_rect.width(), copy_rect.height());
-  raster->GenUnverifiedSyncTokenCHROMIUM(completion_sync_token.GetData());
+  completion_sync_token =
+      gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
   return true;
 }
 
@@ -1958,7 +1956,7 @@ scoped_refptr<CanvasResource> CanvasResourceProvider::NewOrRecycledResource() {
 }
 
 bool CanvasResourceProvider::ImportResource(
-    scoped_refptr<CanvasResource>&& resource) {
+    scoped_refptr<ExternalCanvasResource>&& resource) {
   if (!IsSingleBuffered()) {
     return false;
   }

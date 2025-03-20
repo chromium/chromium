@@ -338,7 +338,7 @@ const base::FeatureParam<int> kGlicMaxLoadingTimeMs{
     &kGlic, "glic-max-loading-time-ms", 15000};
 
 const base::FeatureParam<int> kGlicInitialWidth{&kGlic, "glic-initial-width",
-                                                350};
+                                                352};
 const base::FeatureParam<int> kGlicInitialHeight{&kGlic, "glic-initial-height",
                                                  48};
 
@@ -424,6 +424,10 @@ BASE_FEATURE(kGlicSizingFitWindow,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicWarming, "GlicWarming", base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kGlicWarmMultiple,
+             "GlicWarmMultiple",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 BASE_FEATURE(kTabstripComboButton,
@@ -1578,11 +1582,6 @@ BASE_FEATURE(kUmaStorageDimensions,
 // Enables the accelerated default browser flow for Windows 10.
 BASE_FEATURE(kWin10AcceleratedDefaultBrowserFlow,
              "Win10AcceleratedDefaultBrowserFlow",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When enabled, a UI pump is requested for the UtilWin utility process.
-BASE_FEATURE(kUtilWinProcessUsesUiPump,
-             "UtilWinProcessUsesUiPump",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 

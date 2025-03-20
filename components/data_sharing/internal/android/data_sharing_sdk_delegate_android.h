@@ -70,6 +70,11 @@ class DataSharingSDKDelegateAndroid : public DataSharingSDKDelegate {
                    CreateGroupCallback callback) override;
   void ReadGroups(const data_sharing_pb::ReadGroupsParams& params,
                   ReadGroupsCallback callback) override;
+  void ReadGroupWithToken(
+      const data_sharing_pb::ReadGroupWithTokenParams& params,
+      base::OnceCallback<
+          void(const base::expected<data_sharing_pb::ReadGroupsResult,
+                                    absl::Status>&)> callback) override;
   void AddMember(const data_sharing_pb::AddMemberParams& params,
                  GetStatusCallback callback) override;
   void RemoveMember(const data_sharing_pb::RemoveMemberParams& params,

@@ -196,19 +196,24 @@ BASE_FEATURE(kBocaConsumer, "BocaConsumer", base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables or disables Boca custom polling interval on ChromeOS.
 BASE_FEATURE(kBocaCustomPolling,
              "BocaCustomPolling",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Time interval to do indefinite session polling.
 constexpr base::FeatureParam<base::TimeDelta>
     kBocaIndefinitePeriodicJobIntervalInSeconds{
         &kBocaCustomPolling, "IndefinitePollingIntervalInSeconds",
-        base::Seconds(60)};
+        base::Seconds(0)};
 
 // Time interval to do session polling within session
 constexpr base::FeatureParam<base::TimeDelta>
     kBocaInSessionPeriodicJobIntervalInSeconds{
         &kBocaCustomPolling, "InSessionPollingIntervalInSeconds",
         base::Seconds(60)};
+
+// Enables or disables Boca OnTask mute ARC audio requests on ChromeOS.
+BASE_FEATURE(kBocaOnTaskMuteArcAudio,
+             "BocaOnTaskMuteArcAudio",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables or disables the Boca OnTask pod on ChromeOS.
 BASE_FEATURE(kBocaOnTaskPod,
@@ -2548,6 +2553,12 @@ BASE_FEATURE(kScannerDogfood,
              "ScannerDogfood",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the toast which allows users to provide feedback after a Scanner
+// action is completed.
+BASE_FEATURE(kScannerFeedbackToast,
+             "ScannerFeedbackToast",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the scanner update.
 BASE_FEATURE(kScannerUpdate,
              "ScannerUpdate",
@@ -2891,12 +2902,6 @@ BASE_FEATURE(kAllowPasswordlessSetup,
 // a password as their main factor.
 BASE_FEATURE(kAllowPasswordlessRecovery,
              "AllowPasswordlessRecovery",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// This features controls whether or not pin will be setup as timeout based
-// lockout or attempt based lockout.
-BASE_FEATURE(kAllowPinTimeoutSetup,
-             "AllowPinTimeoutSetup",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This features controls whether or not we'll show the legacy WebAuthNDialog,
@@ -3369,6 +3374,10 @@ bool IsBocaExtensionConsumerEnabled() {
 
 bool IsBocaCustomPollingEnabled() {
   return base::FeatureList::IsEnabled(kBocaCustomPolling);
+}
+
+bool IsBocaOnTaskMuteArcAudioEnabled() {
+  return base::FeatureList::IsEnabled(kBocaOnTaskMuteArcAudio);
 }
 
 bool IsBocaOnTaskPodEnabled() {
@@ -4340,6 +4349,10 @@ bool IsScannerEnabled() {
          base::FeatureList::IsEnabled(kScannerDogfood);
 }
 
+bool IsScannerFeedbackToastEnabled() {
+  return base::FeatureList::IsEnabled(kScannerFeedbackToast);
+}
+
 bool IsSeaPenDemoModeEnabled() {
   return IsSeaPenEnabled() && base::FeatureList::IsEnabled(kSeaPenDemoMode);
 }
@@ -4655,10 +4668,6 @@ bool IsAllowPasswordlessRecoveryEnabled() {
 
 bool IsLocalAuthenticationWithPinEnabled() {
   return base::FeatureList::IsEnabled(kLocalAuthenticationWithPin);
-}
-
-bool IsAllowPinTimeoutSetupEnabled() {
-  return base::FeatureList::IsEnabled(kAllowPinTimeoutSetup);
 }
 
 bool IsWebAuthNAuthDialogMergeEnabled() {

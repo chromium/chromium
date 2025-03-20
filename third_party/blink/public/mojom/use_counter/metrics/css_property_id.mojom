@@ -367,7 +367,7 @@ enum CSSSampleId {
     kAliasWebkitPerspectiveOrigin = 309,
     kWebkitPerspectiveOriginX = 310,
     kWebkitPerspectiveOriginY = 311,
-    kWebkitPrintColorAdjust = 312,
+    kAliasWebkitPrintColorAdjust = 312,
     kWebkitRtlOrdering = 313,
     kWebkitRubyPosition = 314,
     kWebkitTextCombine = 315,
@@ -904,6 +904,7 @@ enum CSSSampleId {
     kGapRulePaintOrder = 845,
     kRowRuleWidth = 846,
     kRowRuleColor = 847,
+    kPrintColorAdjust = 848,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

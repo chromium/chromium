@@ -39,6 +39,7 @@ BASE_DECLARE_FEATURE(kDisambiguateTabMatchingForEntitySuggestions);
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions.
 BASE_DECLARE_FEATURE(kAdjustLocalHistoryZeroSuggestRelevanceScore);
 BASE_DECLARE_FEATURE(kFocusTriggersWebAndSRPZeroSuggest);
+BASE_DECLARE_FEATURE(kHideSuggestionGroupHeaders);
 BASE_DECLARE_FEATURE(kLocalHistoryZeroSuggestBeyondNTP);
 BASE_DECLARE_FEATURE(kZeroSuggestInMemoryCaching);
 BASE_DECLARE_FEATURE(kZeroSuggestPrefetchDebouncing);
@@ -46,6 +47,12 @@ BASE_DECLARE_FEATURE(kZeroSuggestPrefetching);
 BASE_DECLARE_FEATURE(kZeroSuggestPrefetchingOnSRP);
 BASE_DECLARE_FEATURE(kZeroSuggestPrefetchingOnWeb);
 // Related, kMaxZeroSuggestMatches.
+
+// Contextual zero-prefix (aka zero-suggest). There are suggestions based on the
+// user's current URL. Fullfillment of these suggestions is delegated to Lens
+// since Lens provides additional logic for contextualizing the results to the
+// current page, by using more than the URL, i.e. the page content.
+BASE_DECLARE_FEATURE(kContextualZeroSuggestLensFulfillment);
 
 // On Device Suggest.
 BASE_DECLARE_FEATURE(kOnDeviceHeadProviderIncognito);

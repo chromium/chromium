@@ -57,7 +57,7 @@ BASE_FEATURE(kRendererMainIsDefaultThreadTypeForWebRTC,
              "RendererMainIsNormalThreadTypeForWebRTC",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-const char* VisibilityStateToString(bool is_visible) {
+perfetto::StaticString VisibilityStateToString(bool is_visible) {
   if (is_visible) {
     return "visible";
   } else {
@@ -65,7 +65,7 @@ const char* VisibilityStateToString(bool is_visible) {
   }
 }
 
-const char* IsVisibleAreaLargeStateToString(bool is_large) {
+perfetto::StaticString IsVisibleAreaLargeStateToString(bool is_large) {
   if (is_large) {
     return "large";
   } else {
@@ -73,7 +73,7 @@ const char* IsVisibleAreaLargeStateToString(bool is_large) {
   }
 }
 
-const char* UserActivationStateToString(bool had_user_activation) {
+perfetto::StaticString UserActivationStateToString(bool had_user_activation) {
   if (had_user_activation) {
     return "had user activation";
   } else {
@@ -81,7 +81,7 @@ const char* UserActivationStateToString(bool had_user_activation) {
   }
 }
 
-const char* PausedStateToString(bool is_paused) {
+perfetto::StaticString PausedStateToString(bool is_paused) {
   if (is_paused) {
     return "paused";
   } else {
@@ -89,7 +89,7 @@ const char* PausedStateToString(bool is_paused) {
   }
 }
 
-const char* FrozenStateToString(bool is_frozen) {
+perfetto::StaticString FrozenStateToString(bool is_frozen) {
   if (is_frozen) {
     return "frozen";
   } else {
@@ -162,44 +162,47 @@ FrameSchedulerImpl::FrameSchedulerImpl(
           parent_page_scheduler_ && parent_page_scheduler_->IsPageVisible()
               ? PageVisibilityState::kVisible
               : PageVisibilityState::kHidden,
-          "FrameScheduler.PageVisibility",
+          MakeNamedTrack("FrameScheduler.PageVisibility", this),
           &tracing_controller_,
           PageVisibilityStateToString),
       frame_visible_(true,
-                     "FrameScheduler.FrameVisible",
+                     MakeNamedTrack("FrameScheduler.FrameVisible", this),
                      &tracing_controller_,
                      VisibilityStateToString),
-      is_visible_area_large_(true,
-                             "FrameScheduler.IsVisibleAreaLarge",
-                             &tracing_controller_,
-                             IsVisibleAreaLargeStateToString),
-      had_user_activation_(false,
-                           "FrameScheduler.HadUserActivation",
-                           &tracing_controller_,
-                           UserActivationStateToString),
+      is_visible_area_large_(
+          true,
+          MakeNamedTrack("FrameScheduler.IsVisibleAreaLarge", this),
+          &tracing_controller_,
+          IsVisibleAreaLargeStateToString),
+      had_user_activation_(
+          false,
+          MakeNamedTrack("FrameScheduler.HadUserActivation", this),
+          &tracing_controller_,
+          UserActivationStateToString),
       frame_paused_(false,
-                    "FrameScheduler.FramePaused",
+                    MakeNamedTrack("FrameScheduler.FramePaused", this),
                     &tracing_controller_,
                     PausedStateToString),
       frame_origin_type_(frame_type == FrameType::kMainFrame
                              ? FrameOriginType::kMainFrame
                              : FrameOriginType::kSameOriginToMainFrame,
-                         "FrameScheduler.Origin",
+                         MakeNamedTrack("FrameScheduler.Origin", this),
                          &tracing_controller_,
                          FrameOriginTypeToString),
-      subresource_loading_paused_(false,
-                                  "FrameScheduler.SubResourceLoadingPaused",
-                                  &tracing_controller_,
-                                  PausedStateToString),
-      url_tracer_("FrameScheduler.URL"),
+      subresource_loading_paused_(
+          false,
+          MakeNamedTrack("FrameScheduler.SubResourceLoadingPaused", this),
+          &tracing_controller_,
+          PausedStateToString),
+      url_track_("FrameScheduler.URL"),
       throttling_type_(ThrottlingType::kNone,
-                       "FrameScheduler.ThrottlingType",
+                       MakeNamedTrack("FrameScheduler.ThrottlingType", this),
                        &tracing_controller_,
                        ThrottlingTypeToString),
       aggressive_throttling_opt_out_count_(0),
       opted_out_from_aggressive_throttling_(
           false,
-          "FrameScheduler.AggressiveThrottlingDisabled",
+          MakeNamedTrack("FrameScheduler.AggressiveThrottlingDisabled", this),
           &tracing_controller_,
           YesNoStateToString),
       subresource_loading_pause_count_(0u),
@@ -209,24 +212,29 @@ FrameSchedulerImpl::FrameSchedulerImpl(
           GetLowPriorityAsyncScriptTaskPriority()),
       page_frozen_for_tracing_(
           parent_page_scheduler_ ? parent_page_scheduler_->IsFrozen() : true,
-          "FrameScheduler.PageFrozen",
+          MakeNamedTrack("FrameScheduler.PageFrozen", this),
           &tracing_controller_,
           FrozenStateToString),
-      waiting_for_contentful_paint_(true,
-                                    "FrameScheduler.WaitingForContentfulPaint",
-                                    &tracing_controller_,
-                                    YesNoStateToString),
-      waiting_for_meaningful_paint_(true,
-                                    "FrameScheduler.WaitingForMeaningfulPaint",
-                                    &tracing_controller_,
-                                    YesNoStateToString),
-      is_load_event_dispatched_(false,
-                                "FrameScheduler.IsLoadEventDispatched",
-                                &tracing_controller_,
-                                YesNoStateToString) {
+      waiting_for_contentful_paint_(
+          true,
+          MakeNamedTrack("FrameScheduler.WaitingForContentfulPaint", this),
+          &tracing_controller_,
+          YesNoStateToString),
+      waiting_for_meaningful_paint_(
+          true,
+          MakeNamedTrack("FrameScheduler.WaitingForMeaningfulPaint", this),
+          &tracing_controller_,
+          YesNoStateToString),
+      is_load_event_dispatched_(
+          false,
+          MakeNamedTrack("FrameScheduler.IsLoadEventDispatched", this),
+          &tracing_controller_,
+          YesNoStateToString) {
   frame_task_queue_controller_ = base::WrapUnique(
       new FrameTaskQueueController(main_thread_scheduler_, this, this));
   back_forward_cache_disabling_feature_tracker_.SetDelegate(delegate_);
+  TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
+                    "FrameScheduler.URL", url_track_, "url", "Unknown");
 }
 
 FrameSchedulerImpl::FrameSchedulerImpl()
@@ -238,6 +246,8 @@ FrameSchedulerImpl::FrameSchedulerImpl()
 
 FrameSchedulerImpl::~FrameSchedulerImpl() {
   weak_factory_.InvalidateWeakPtrs();
+
+  TRACE_EVENT_END(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"), url_track_);
 
   for (const auto& task_queue_and_voter :
        frame_task_queue_controller_->GetAllTaskQueuesAndVoters()) {
@@ -436,7 +446,9 @@ void FrameSchedulerImpl::SetAgentClusterId(
 }
 
 void FrameSchedulerImpl::TraceUrlChange(const String& url) {
-  url_tracer_.TraceString(url);
+  TRACE_EVENT_END(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"), url_track_);
+  TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
+                    "FrameScheduler.URL", url_track_, "url", url);
 }
 
 void FrameSchedulerImpl::AddTaskTime(base::TimeDelta time) {

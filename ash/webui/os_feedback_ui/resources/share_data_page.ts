@@ -112,14 +112,17 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
   }
 
   /**
-   * If feedback app has been requested from settings search, we do not need to
-   * collect system info and metrics data by default.
+   * If feedback app has been requested from Settings Search and the search
+   * query is not "fingerprint", we do not need to collect system info and
+   * metrics data by default. See crbug.com/285618656 for more information.
    */
   protected checkSysInfoAndMetrics(): boolean {
     if (!this.feedbackContext) {
       return true;
     }
-    return !this.feedbackContext.fromSettingsSearch;
+    return !this.feedbackContext.fromSettingsSearch ||
+        (this.feedbackContext.fromSettingsSearch &&
+         this.feedbackContext.isQueryFingerprint);
   }
 
   shouldShowPerformanceTraceCheckbox(): boolean {
@@ -308,6 +311,7 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
       feedbackContext: {
         assistantDebugInfoAllowed: false,
         fromSettingsSearch: false,
+        isQueryFingerprint: false,
         isInternalAccount: false,
         wifiDebugLogsAllowed: false,
         traceId: 0,

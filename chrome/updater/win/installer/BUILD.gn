@@ -24,12 +24,18 @@ source_set("msi_custom_action_sources") {
   libs = [ "msi.lib" ]
 }
 
+updater_process_version_rc_template("msi_custom_action_version") {
+  original_filename = "${updater_product_full_name}MsiInstallerCustomAction.dll"
+  rc = "msi_custom_action_version.rc"
+  product_fullname = "$updater_metainstaller_name"
+}
+
 shared_library("msi_custom_action") {
   sources = [ "msi_custom_action.def" ]
 
   deps = [
     ":msi_custom_action_sources",
-    ":version",
+    ":msi_custom_action_version",
     "//chrome/updater:constants_prod",
   ]
 
@@ -78,12 +84,6 @@ source_set("lib_with_resources") {
   sources = [ "installer.rc" ]
   public_deps = [ ":lib" ]
   deps = [ "//build:branding_buildflags" ]
-}
-
-updater_process_version_rc_template("version") {
-  original_filename = "UpdaterSetup.exe"
-  rc = "installer_version.rc"
-  product_fullname = "$updater_metainstaller_name"
 }
 
 # This target creats a list of runtime dependencies for the component
@@ -148,6 +148,12 @@ template("generate_installer") {
     }
   }
 
+  updater_process_version_rc_template("${target_name}_version") {
+    original_filename = "${invoker.output_name}.exe"
+    rc = "${target_name}_version.rc"
+    product_fullname = "$updater_metainstaller_name"
+  }
+
   executable(target_name) {
     output_name = invoker.output_name
 
@@ -162,8 +168,8 @@ template("generate_installer") {
 
     deps = [
              ":$archive_name",
+             ":${target_name}_version",
              ":lib_with_resources",
-             ":version",
              "//build/win:default_exe_manifest",
              "//chrome/updater:base",
              "//chrome/updater:branding_header",

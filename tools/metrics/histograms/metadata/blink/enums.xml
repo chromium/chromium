@@ -5976,6 +5976,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5370" label="V8AIWriter_MeasureInputUsage_Method"/>
   <int value="5371" label="V8AIWriter_InputQuota_AttributeGetter"/>
   <int value="5372" label="SpeculationRulesTargetHintBlank"/>
+  <int value="5373" label="InterestTarget"/>
+  <int value="5374" label="TextAutoSizingDisabledOnFlexbox"/>
+  <int value="5375" label="AriaLabeledByAlternativeSpelling"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -6971,7 +6974,7 @@ Called by update_use_counter_css.py.-->
   <int value="309" label="alias-webkit-perspective-origin"/>
   <int value="310" label="webkit-perspective-origin-x"/>
   <int value="311" label="webkit-perspective-origin-y"/>
-  <int value="312" label="webkit-print-color-adjust"/>
+  <int value="312" label="alias-webkit-print-color-adjust"/>
   <int value="313" label="webkit-rtl-ordering"/>
   <int value="314" label="webkit-ruby-position"/>
   <int value="315" label="webkit-text-combine"/>
@@ -7507,6 +7510,7 @@ Called by update_use_counter_css.py.-->
   <int value="845" label="gap-rule-paint-order"/>
   <int value="846" label="row-rule-width"/>
   <int value="847" label="row-rule-color"/>
+  <int value="848" label="print-color-adjust"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->
@@ -7913,6 +7917,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="307" label="DRAFT_WasmBranchHinting"/>
   <int value="308" label="DRAFT_ExplicitResourceManagement"/>
   <int value="309" label="LaunchHandler"/>
+  <int value="310" label="DRAFT_CssFunction"/>
+  <int value="311" label="DRAFT_CssIf"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
@@ -7939,6 +7945,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="7" label="WebGL1, SwiftShader"/>
   <int value="8" label="WebGL1, Metal"/>
   <int value="9" label="WebGL1, Default"/>
+  <int value="10" label="WebGL1, D3D11Warp"/>
   <int value="20" label="WebGL2, None"/>
   <int value="21" label="WebGL2, D3D9 (should never happen)"/>
   <int value="22" label="WebGL2, D3D11"/>
@@ -7949,6 +7956,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="27" label="WebGL2, SwiftShader"/>
   <int value="28" label="WebGL2, Metal"/>
   <int value="29" label="WebGL2, Default"/>
+  <int value="30" label="WebGL2, D3D11Warp"/>
 </enum>
 
 <enum name="WebOTPBackendAvailability">

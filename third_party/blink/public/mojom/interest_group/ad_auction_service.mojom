@@ -26,7 +26,8 @@ union AuctionAdConfigAuctionId {
 // that was originally passed in resolved.
 enum AuctionAdConfigField {
   kAuctionSignals,
-  kSellerSignals
+  kSellerSignals,
+  kSellerTKVSignals
 };
 
 // Represents which field that uses the AuctionAdConfigBuyerTimeouts struct is

@@ -38,10 +38,8 @@
 <translation id="1155154308031262006">Εισαγάγετε μια οδηγία</translation>
 <translation id="115705039208660697">ανανάδες</translation>
 <translation id="1164939766849482256">Προφύλαξη οθόνης Από την αυγή μέχρι να νυχτώσει</translation>
-<translation id="1166688493741195933">Η δημιουργία ονομάτων εγγραφών απέτυχε</translation>
 <translation id="1167755866710282443">Ανοίξτε το μενού για να προσαρμόσετε τα πλήκτρα. Σύρετε το μενού για μετακίνηση.</translation>
 <translation id="1171349345463658120">αμμώδης λιμνοθάλασσα</translation>
-<translation id="1173894706177603556">Μετονομασία</translation>
 <translation id="1174073918202301297">Η συντόμευση προστέθηκε</translation>
 <translation id="11743817593307477">Χρησιμοποιήστε τα πλήκτρα βέλους για να μετακινήσετε αυτό το στοιχείο ελέγχου στην ενέργεια παιχνιδιού που θέλετε. Χρησιμοποιήστε το πλήκτρο enter για να τοποθετήσετε το στοιχείο ελέγχου. Χρησιμοποιήστε το πλήκτρο escape για ακύρωση.</translation>
 <translation id="1175697296044146566">Η διαχείριση της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από <ph name="MANAGER" />.</translation>
@@ -153,7 +151,6 @@
 <translation id="1604959087182679653">Απόκρυψη μεταγραφής</translation>
 <translation id="160633243685262989">Εικόνα προεπισκόπησης</translation>
 <translation id="1611649489706141841">προώθηση</translation>
-<translation id="1615144046047995187">Δεν είναι δυνατή η λήψη. Δοκιμάστε ξανά ή επανεκκινήστε το Chromebook.</translation>
 <translation id="1615335640928990664">Χρήση δεδομένων από τις <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Χρήση θέματος</translation>
 <translation id="1621067168122174824">Εκτέλεση δοκιμής φόρτισης</translation>
@@ -372,7 +369,6 @@
 <translation id="2560876255701405320">Λίστα εγγραφών ήχου</translation>
 <translation id="2561093647892030937">λεμόνια</translation>
 <translation id="2570743873672969996">Εκτέλεση δοκιμής <ph name="TEST_NAME" />…</translation>
-<translation id="2573178735329662769">Εγγραφή όλου του ήχου του Chromebook</translation>
 <translation id="2576253868710695442">Για να γίνει αυτό απαιτούνται έως και 2 GB αποθηκευτικού χώρου</translation>
 <translation id="2584547424703650812">Λάμψεις</translation>
 <translation id="2584559707064218956">Για να ρυθμίσετε το δίκτυο, μεταβείτε στις Ρυθμίσεις.</translation>
@@ -415,7 +411,6 @@
 <translation id="2787237339470862294">Αυτή η γλώσσα δεν υποστηρίζεται προς το παρόν</translation>
 <translation id="2787435249130282949">πιο φωτεινό πληκτρολόγιο</translation>
 <translation id="2805756323405976993">Εφαρμογές </translation>
-<translation id="2822702442014805146">Λήψη μοντέλου δημιουργίας σύνοψης και ονόματος σε εξέλιξη</translation>
 <translation id="28232023175184696">Δεν είναι δυνατή η σύνδεση στο διαδίκτυο. Κάντε κλικ για να δοκιμάσετε ξανά.</translation>
 <translation id="2855718259207180827">μαλλί</translation>
 <translation id="2859243502336719778">Σημαντική ενημέρωση</translation>
@@ -503,7 +498,6 @@
 <translation id="3340011300870565703">Η μπαταρία δεξιού ακουστικού της συσκευής βρίσκεται στο <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">ρυθμίσεις</translation>
 <translation id="3347558044552027859">μοντέρνο</translation>
-<translation id="3353477144743332882">Λήψη μοντέλου δημιουργίας σύνοψης και ονόματος</translation>
 <translation id="3359218928534347896">εναλλαγή σίγασης μικροφώνου.</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">σούσι</translation>
@@ -566,7 +560,6 @@
 <translation id="3632040286124154621">Καλή πρόταση</translation>
 <translation id="3632579075709132555">Εναλλαγή οθόνης απορρήτου</translation>
 <translation id="3634941468757842845">Επιλέξτε ένα θέμα</translation>
-<translation id="3639873154908477486">Όνομα (από Α έως Ω)</translation>
 <translation id="3644695927181369554">Κακή πρόταση</translation>
 <translation id="3651050199673793219">Επιλέξτε μια μονάδα θερμοκρασίας</translation>
 <translation id="3661106764436337772">Γράψτε πιο γρήγορα και με περισσότερη αυτοπεποίθηση</translation>
@@ -636,6 +629,7 @@
 <translation id="39823212440917567">Οι εργασίες εκτύπωσης που είναι παλαιότερες των <ph name="NUMBER_OF_DAYS" /> ημερών θα καταργηθούν.</translation>
 <translation id="3993704782688964914">Η συσκευή <ph name="DEVICE_NAME" /> είναι ενημερωμένη</translation>
 <translation id="3998976413398910035">Διαχείριση εκτυπωτών</translation>
+<translation id="4002066346123236978">Τίτλος</translation>
 <translation id="4003384961948020559">Σφάλμα - Το σημείο εξόδου είναι γεμάτο</translation>
 <translation id="401147258241215701">οψιδιανός</translation>
 <translation id="4021031199988160623">Κάντε εναλλαγή σε λειτουργία φορητού υπολογιστή για δοκιμή</translation>
@@ -773,7 +767,6 @@
 <translation id="4594541568452132351">Επιλογή γλώσσας μεταγραφής και λήψη μοντέλου</translation>
 <translation id="4607282946861182308">Δεν είναι δυνατή η δημιουργία εικόνων αυτού του στοιχείου. Δοκιμάστε άλλη οδηγία.</translation>
 <translation id="4609350030397390689">Μείωση φωτεινότητας πληκτρολογίου</translation>
-<translation id="4623061655523261501">Τα ονόματα εγγραφών δημιουργήθηκαν με επιτυχία</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> από <ph name="TOTAL_PAGE_NUMBER" />. Πατήστε enter, για να ακυρώσετε την εργασία εκτύπωσης.</translation>
 <translation id="463791356324567266">Ακύρωση σάρωσης…</translation>
 <translation id="4644611440022666152">Ενεργοποίηση και λήψη</translation>
@@ -836,7 +829,6 @@
 <translation id="4891842000192098784">Καταπόνηση</translation>
 <translation id="4897058166682006107">Η μπαταρία αριστερού ακουστικού της συσκευής βρίσκεται στο <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="4905998861748258752">Ενεργοποιήστε τη λειτουργία για να ορίσετε επιλογές για την προφύλαξη οθόνης</translation>
-<translation id="4910853326379896417">Η λήψη μοντέλου δημιουργίας σύνοψης και ονόματος ολοκληρώθηκε</translation>
 <translation id="4910858703033903787">Τύποι APN</translation>
 <translation id="4917385247580444890">Ισχυρό</translation>
 <translation id="4917889632206600977">Διακοπή - Τελείωσε το χαρτί</translation>
@@ -855,7 +847,6 @@
 <translation id="4981003703840817201">μπλε και ροζ</translation>
 <translation id="498186245079027698">Ελέγξτε τον σαρωτή και δοκιμάστε ξανά. Βεβαιωθείτε ότι υπάρχει αρκετός τοπικός αποθηκευτικός χώρος για την αποθήκευση των αρχείων που σαρώνονται.</translation>
 <translation id="4982627662315910959">Η συντόμευση δεν είναι διαθέσιμη. Πατήστε μια νέα συντόμευση χρησιμοποιώντας το shift και 1 ακόμα πλήκτρο τροποποίησης (ctrl, alt ή <ph name="META_KEY" />).</translation>
-<translation id="4983216687482551672">Ήχος Chromebook</translation>
 <translation id="4985509611418653372">Εκτέλεση</translation>
 <translation id="4987769320337599931">Τείχος προστασίας</translation>
 <translation id="4988526792673242964">Σελίδες</translation>
@@ -874,7 +865,6 @@
 <translation id="5056587122125565772">Δημιουργία εικόνας</translation>
 <translation id="5078711626843651677">Τα φωνητικά μοντέλα αποθηκεύονται προσωρινά στη συσκευή μέχρι να ολοκληρωθεί η προσθήκη ετικετών ομιλητών. Μπορείτε να απενεργοποιήσετε αυτή τη λειτουργία ανά πάσα στιγμή στις Ρυθμίσεις.</translation>
 <translation id="5078983345702708852">φουτουριστικό</translation>
-<translation id="5085224064082122501">Δεν είναι δυνατή η λήψη μοντέλου δημιουργίας σύνοψης και ονόματος. Δοκιμάστε ξανά ή επανεκκινήστε το Chromebook.</translation>
 <translation id="5087864757604726239">πίσω</translation>
 <translation id="5088172560898466307">Όνομα κεντρικού υπολογιστή διακομιστή</translation>
 <translation id="5089810972385038852">Πολιτεία</translation>
@@ -882,9 +872,7 @@
 <translation id="5095761549884461003">Αποσυνδέστε το καλώδιο USB της συσκευής <ph name="DEVICE_NAME" /> και τοποθετήστε το ξανά για να συνεχίσετε τη διαδικασία ενημέρωσης</translation>
 <translation id="5099354524039520280">επάνω</translation>
 <translation id="5107243100836678918">Η συντόμευση χωρίς πλήκτρο <ph name="META_KEY" /> ενδέχεται να δημιουργήσει διένεξη με τη συντόμευση κάποιας εφαρμογής. Πατήστε ξανά αυτή τη συντόμευση για να συνεχίσετε να τη χρησιμοποιείτε ή πατήστε μια νέα συντόμευση χρησιμοποιώντας το πλήκτρο <ph name="KEY" />. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Δεν είναι δυνατή η λήψη του μοντέλου μεταγραφής στα <ph name="LANGUAGE_NAME" />. Δοκιμάστε ξανά ή επανεκκινήστε το Chromebook</translation>
 <translation id="5108781503443873320">Συνώνυμα:</translation>
-<translation id="5121677070210013200">Δεν είναι δυνατή η λήψη του μοντέλου μεταγραφής. Δοκιμάστε ξανά ή επανεκκινήστε το Chromebook.</translation>
 <translation id="5130848777448318809">πόνυ</translation>
 <translation id="5137451382116112100">Πλήρης</translation>
 <translation id="5139813694804168398">μην ενοχλείτε</translation>
@@ -899,7 +887,6 @@
 <translation id="5168185087976003268">Κατάσταση μπαταρίας</translation>
 <translation id="5170568018924773124">Εμφάνιση στο φάκελο</translation>
 <translation id="517075088756846356">Αποσυνδέστε και επανασυνδέστε το καλώδιο τροφοδοσίας <ph name="DEVICE_NAME" /> για να συνεχίσετε τη διαδικασία ενημέρωσης</translation>
-<translation id="5178021559562393163">Δεν είναι δυνατή η δημιουργία ονομάτων. Δοκιμάστε συντομότερη μεταγραφή.</translation>
 <translation id="5180108905184566358">δέντρα μπαομπάμπ</translation>
 <translation id="5180712487038406644">Εκφραστικός</translation>
 <translation id="5190187232518914472">Ξαναζήστε τις αγαπημένες σας αναμνήσεις. Για προσθήκη ή επεξεργασία λευκωμάτων, μεταβείτε στις <ph name="LINK_BEGIN" />Φωτογραφίες Google<ph name="LINK_END" />.</translation>
@@ -928,6 +915,7 @@
 <translation id="5286263799730375393">χρώμα οπίσθιου φωτισμού</translation>
 <translation id="5292579816060236070">Ταπετσαρία Ανατολή ηλίου</translation>
 <translation id="5294769550414936029">έκδοση <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">εναλλαγή πρόσβασης στην κάμερα</translation>
 <translation id="5300814202279832142">Μετακίνηση παραθύρου στο γραφείο</translation>
 <translation id="5302048478445481009">Γλώσσα</translation>
 <translation id="5303837385540978511">Αποκλειστική ταπετσαρία για <ph name="PRODUCT_NAME" /></translation>
@@ -935,11 +923,9 @@
 <translation id="530883153651464140">Ενημέρωση <ph name="DEVICE_NAME" /> στην έκδοση <ph name="VERSION" /></translation>
 <translation id="5315873049536339193">Ταυτότητα</translation>
 <translation id="5317780077021120954">Αποθήκευση</translation>
-<translation id="5318310531701770497">Δεν είναι δυνατή η δημιουργία ονομάτων. Δοκιμάστε εκτενέστεση μεταγραφή.</translation>
 <translation id="5318334351163689047">Σφάλματα αιτήματος TCP</translation>
 <translation id="53196409393069519">Ενεργοποίηση μεταγραφής;</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
-<translation id="5327248766486351172">Όνομα</translation>
 <translation id="5332948983412042822">Επιλέξτε έναν νέο τώρα</translation>
 <translation id="5333530671332546086">Άγνωστη κατάσταση πύλης</translation>
 <translation id="5335373365677455232">ροζ</translation>
@@ -1004,7 +990,6 @@
 <translation id="5680504961595602662">Σουρεαλιστική απεικόνιση <ph name="SURREAL_LANDSCAPE" /> με <ph name="SURREAL_SUBJECT" /></translation>
 <translation id="5685478548317291523">κεράσια</translation>
 <translation id="5691511426247308406">Οικογένεια</translation>
-<translation id="5692395212036914927">Σύνοψη εγγραφής και δημιουργία ονόματος</translation>
 <translation id="5695599963893094957">Πατήστε οποιοδήποτε πλήκτρο στο πληκτρολόγιο. Μπορείτε να πατήσετε έως και 4 πλήκτρα ταυτόχρονα.</translation>
 <translation id="5701381305118179107">Κέντρο</translation>
 <translation id="5703716265115423771">μείωση έντασης ήχου</translation>
@@ -1043,6 +1028,7 @@
 <translation id="5896602941605730551">Αναπαραγωγή</translation>
 <translation id="5901630391730855834">Κίτρινο</translation>
 <translation id="5903200662178656908">Η συσκευή είναι ένας συνδυασμός πληκτρολογίου και ποντικιού.</translation>
+<translation id="5903822368221507416">Απόκρυψη καρτελών</translation>
 <translation id="5904994456462260490">Προσθήκη νέου APN</translation>
 <translation id="590746845088109442">γάτες</translation>
 <translation id="5907649332524363701">χρώμα πλήκτρων</translation>
@@ -1054,7 +1040,6 @@
 <translation id="5928411637936685857">Κουμπί διαγραφής για <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5930669310554144537">Φανταστικό τοπίο</translation>
 <translation id="5931523347251946569">Το αρχείο δεν βρέθηκε</translation>
-<translation id="5938286923316838007">Δεν είναι δυνατή η δημιουργία ονομάτων εγγραφών για αυτό το περιεχόμενο</translation>
 <translation id="5939518447894949180">Επαναφορά</translation>
 <translation id="5942727615796467094">Ο διαχειριστής <ph name="MANAGER" /> έχει ορίσει πότε μπορεί να χρησιμοποιηθεί αυτή η συσκευή <ph name="DEVICE_TYPE" /></translation>
 <translation id="594552776027197022">Δημιουργία τυχαίου ζεύγους κλειδιών</translation>
@@ -1099,7 +1084,6 @@
 <translation id="6122191549521593678">Συνδεδεμένο</translation>
 <translation id="6122277663991249694">Υπηρεσία μεθόδου εισαγωγής Chrome OS</translation>
 <translation id="6127426868813166163">λευκό</translation>
-<translation id="613049107179582049">Όταν ο ήχος του Chromebook είναι ενεργοποιημένος, η Εγγραφή καταγράφει όλο τον ήχο που αναπαράγεται σε αυτή τη συσκευή</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">κυβερνοπάνκ</translation>
 <translation id="6137767437444130246">Πιστοποιητικό χρήστη</translation>
@@ -1151,7 +1135,6 @@
 <translation id="6359706544163531585">Απενεργοποίηση φωτεινού θέματος</translation>
 <translation id="6359919876285606596">Αυτή η ενέργεια είναι οριστική και δεν μπορεί να αναιρεθεί</translation>
 <translation id="636850387210749493">Εγγραφή επιχείρησης</translation>
-<translation id="6369221585240879141">Δεν είναι δυνατή η δημιουργία ονομάτων εγγραφών για αυτή τη γλώσσα μεταγραφής</translation>
 <translation id="6373461326814131011">λιμνούλα</translation>
 <translation id="6379086450106841622">Οθόνη αφής</translation>
 <translation id="6381741036071372448">Έλεγχος του πληκτρολογίου σας</translation>
@@ -1272,10 +1255,8 @@
 <translation id="6910312834584889076">Το καπάκι του σαρωτή είναι ανοικτό. Κλείστε το καπάκι και δοκιμάστε ξανά.</translation>
 <translation id="6910845598686542904">Να υπολογίζει μοντέλα για τις φωνές που εντοπίζονται στην εγγραφή</translation>
 <translation id="6911383237894364323">Δεν είναι δυνατή η σύνδεση σε διακομιστές πολυμέσων.</translation>
-<translation id="6927968682840110570">Όνομα εγγραφής</translation>
 <translation id="6930242544192836755">Διάρκεια</translation>
 <translation id="6930597342185648547">Πληροφορίες για το φόντο</translation>
-<translation id="6939667434404433010">Αναζήτηση ονόματος εγγραφής</translation>
 <translation id="6939766318048400022">Καφετέρια</translation>
 <translation id="6942253772720771875">Μοιραστείτε τα σχόλιά σας ή περιγράψτε το πρόβλημα</translation>
 <translation id="6943893908656559156">Απομακρυσμένη ταυτότητα (προαιρετικό)</translation>
@@ -1312,7 +1293,6 @@
 <translation id="708426984172631313">ΔΙΑΚΟΠΗΚΕ</translation>
 <translation id="7086168019478250425">βιοφωσφορίζουσα παραλία</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
-<translation id="7086916854357021265">Δημιουργία ονομάτων εγγραφών</translation>
 <translation id="7097908713073775559">πολύχρωμους</translation>
 <translation id="710028965487274708">Αποτυχία - Ο έλεγχος ταυτότητας απέτυχε</translation>
 <translation id="7101959270679078188">Ξεκλειδώστε τη συσκευή <ph name="DEVICE_NAME" /> για να συνεχίσετε τη διαδικασία ενημέρωσης</translation>
@@ -1433,7 +1413,6 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Επιφάνεια αφής USB</translation>
 <translation id="757747079855995705">πέτρα</translation>
-<translation id="7584853321964440104">Δεν είναι δυνατή η λήψη. Δοκιμάστε ξανά ή επανεκκινήστε το Chromebook.</translation>
 <translation id="7590883480672980941">Ρυθμίσεις εισαγωγής</translation>
 <translation id="7595982850646262331">Απομένουν <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">Ο διαχειριστής <ph name="MANAGER" /> έχει ορίσει πότε μπορεί να χρησιμοποιηθεί η συσκευή <ph name="DEVICE_TYPE" />.</translation>
@@ -1644,7 +1623,6 @@
 <translation id="8503836310948963452">Απομένουν λίγα μόνο λεπτά…</translation>
 <translation id="8505011850330200833">Το μοντέλο Gemini απαιτεί 2 GB αποθηκευτικού χώρου για την επεξεργασία μεταγραφών και τη δημιουργία συνόψεων</translation>
 <translation id="8508640263392900755">Λεπτομέρειες APN</translation>
-<translation id="8509574872955173831">Μάθετε περισσότερα σχετικά με τη δημιουργία σύνοψης και ονόματος</translation>
 <translation id="8522687886059337719">Έχετε πλέον πρόσβαση σε νέες <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ταπετσαρίες<ph name="END_LINK_WALLPAPER_SUBPAGE" /> και στην <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />προφύλαξη οθόνης<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">τσαγερί</translation>
@@ -1661,7 +1639,6 @@
 <translation id="8626489604350149811">Περισσότερες ενέργειες για <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Ανοιχτό μοβ</translation>
 <translation id="8647595191512746911">Μεταγραφή ήχου</translation>
-<translation id="8648578954147795914">Ονόματα που δημιουργήθηκαν:</translation>
 <translation id="8650852232143958317">Πάρτε μαζί σας τα αρχεία του Gmail και του Google Drive</translation>
 <translation id="8651481478098336970">σίγαση ήχου</translation>
 <translation id="8655295600908251630">Κανάλι</translation>
@@ -1692,7 +1669,6 @@
 <translation id="8775713578693478175">APN μόντεμ</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Αυτό το δίκτυο μπορεί να έχει πύλη υποδοχής</translation>
-<translation id="8797082062139985406">Δημιουργία ονόματος με χρήση του Google AI</translation>
 <translation id="8798099450830957504">Προεπιλογή</translation>
 <translation id="8798441408945964110">Όνομα παρόχου</translation>
 <translation id="8804164990146287819">Πολιτική απορρήτου</translation>
@@ -1718,7 +1694,6 @@
 <translation id="8882789155418924367">κουκουβάγιες</translation>
 <translation id="8885038613856655272">Σύνδεση μικροφώνου</translation>
 <translation id="8892443466059986410">Ακύρωση επεξεργασίας συντόμευσης</translation>
-<translation id="8897043028305808902">Το αρχείο μετονομάστηκε</translation>
 <translation id="8898840733695078011">Ισχύς σήματος</translation>
 <translation id="8909114361904403025">επάνω βέλος</translation>
 <translation id="8910721771319628100">Ο λανθάνων χρόνος του προεπιλεγμένου δικτύου έχει υπερβεί το ελάχιστο όριο.</translation>
@@ -1804,7 +1779,6 @@
 <translation id="9218016617214286986">Εμφάνιση γνωστών APN</translation>
 <translation id="932327136139879170">Αρχική σελίδα</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Βεβαιωθείτε ότι το μικρόφωνό σας είναι συνδεδεμένο ή δοκιμάστε να επανεκκινήσετε το Chromebook</translation>
 <translation id="945522503751344254">Αποστολή σχολίων</translation>
 <translation id="950520315903467048">Λείπει το πλήκτρο για το <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Να συγκρίνει φωνές σε ολόκληρη την εγγραφή, έτσι ώστε η μεταγραφή να αντικατοπτρίζει τι είπε ο κάθε ομιλητής και πότε</translation>

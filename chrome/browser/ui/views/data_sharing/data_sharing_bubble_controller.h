@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_utils.h"
 #include "chrome/browser/ui/webui/data_sharing/data_sharing_ui.h"
+#include "components/collaboration/public/collaboration_controller_delegate.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -38,12 +39,22 @@ class DataSharingBubbleController
   // Set a callback to invoke when there's an error.
   void SetShowErrorDialogCallback(base::OnceCallback<void()> callback);
 
+  void SetOnShareLinkRequestedCallback(
+      collaboration::CollaborationControllerDelegate::
+          ResultWithGroupTokenCallback callback);
+
+  void OnUrlReadyToShare(GURL url);
+
   // views::WidgetObserver
   void OnWidgetClosing(views::Widget* widget) override;
 
   // DataSharingUI::Delegate
   void ApiInitComplete() override;
   void ShowErrorDialog(int status_code) override;
+  void OnShareLinkRequested(
+      const std::string& group_id,
+      const std::string& access_token,
+      base::OnceCallback<void(const std::optional<GURL>&)> callback) override;
 
   base::WeakPtr<WebUIBubbleDialogView> BubbleViewForTesting() {
     return bubble_view_;
@@ -62,6 +73,15 @@ class DataSharingBubbleController
 
   // Callback to invoke when there's an error.
   base::OnceCallback<void()> on_error_callback_;
+
+  // Callback passed from CollaborationService to invoke when user clicks on the
+  // copy link button for the first time from share flow.
+  collaboration::CollaborationControllerDelegate::ResultWithGroupTokenCallback
+      on_share_link_requested_callback_;
+
+  // Callback passed from mojom interface to invoke when share link is ready or
+  // failed to share.
+  base::OnceCallback<void(const std::optional<GURL>&)> share_link_callback_;
 
   base::WeakPtr<WebUIBubbleDialogView> bubble_view_;
 

@@ -33,7 +33,7 @@ import type {HighlightMenuElement} from './menus/highlight_menu.js';
 import type {LetterSpacingMenuElement} from './menus/letter_spacing_menu.js';
 import type {LineSpacingMenuElement} from './menus/line_spacing_menu.js';
 import {ReadAloudSettingsChange, ReadAnythingSettingsChange} from './metrics_browser_proxy.js';
-import {ReadAnythingLogger, SpeechControls, TimeFrom, TimeTo} from './read_anything_logger.js';
+import {ReadAnythingLogger, SpeechControls, TimeFrom} from './read_anything_logger.js';
 import {getCss} from './read_anything_toolbar.css.js';
 import {getHtml} from './read_anything_toolbar.html.js';
 import type {VoiceSelectionMenuElement} from './voice_selection_menu.js';
@@ -181,6 +181,10 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   private spinnerDebouncerCallbackHandle_?: number;
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
 
+  // Corresponds to UI setup being complete on the toolbar when
+  // connectedCallback has finished executing.
+  private isSetupComplete_: boolean = false;
+
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
     if (changedProperties.has('isSpeechActive') ||
@@ -273,9 +277,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   constructor() {
     super();
     this.constructorTime_ = Date.now();
-    this.logger_.logTimeBetween(
-        TimeFrom.TOOLBAR, TimeTo.CONSTRUCTOR, this.startTime_,
-        this.constructorTime_);
+    this.logger_.logTimeFrom(
+        TimeFrom.TOOLBAR, this.startTime_, this.constructorTime_);
     this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
 
     // Only add the button to the toolbar if the feature is enabled.
@@ -293,13 +296,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
-    const connectedCallbackTime = Date.now();
-    this.logger_.logTimeBetween(
-        TimeFrom.TOOLBAR, TimeTo.CONNNECTED_CALLBACK, this.startTime_,
-        connectedCallbackTime);
-    this.logger_.logTimeBetween(
-        TimeFrom.TOOLBAR_CONSTRUCTOR, TimeTo.CONNNECTED_CALLBACK,
-        this.constructorTime_, connectedCallbackTime);
 
     this.windowResizeCallback_ = this.maybeUpdateMoreOptions_.bind(this);
     window.addEventListener('resize', this.windowResizeCallback_);
@@ -307,6 +303,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.initFonts_();
     this.loadFontsStylesheet();
     this.initializeMenuButtons_();
+    this.isSetupComplete_ = true;
   }
 
   override disconnectedCallback() {
@@ -847,14 +844,16 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     // If the previously focused item becomes disabled or disappears from the
     // toolbar because of speech starting or stopping, put the focus on the
     // play/pause button so keyboard navigation continues working.
-    if (this.isReadAloudPlayable && (this.shadowRoot !== null) &&
+    // If we're still loading the reading mode panel on
+    // a first open, we shouldn't attempt to refocus the play button or the
+    // rate menu.
+    if (this.isSetupComplete_ && (this.shadowRoot !== null) &&
         (this.shadowRoot.activeElement === null ||
          this.shadowRoot.activeElement.clientHeight === 0)) {
-      // TODO: crbug.com/404570701 - If we lose focus just because read aloud
-      // is no longer playable (e.g. from clicking a link in the panel via
-      // keyboard navigation), the rate menu should be focused instead.
-      this.$.toolbarContainer.querySelector<HTMLElement>('#play-pause')
-          ?.focus();
+      // If the play / pause button is enabled, we should focus it. Otherwise,
+      // we should focus the rate menu.
+      const tagToFocus = this.isReadAloudEnabled_ ? '#play-pause' : '#rate';
+      this.$.toolbarContainer.querySelector<HTMLElement>(tagToFocus)?.focus();
     }
 
     if (this.isSpeechActive !== this.wasSpeechActive_) {

@@ -543,6 +543,7 @@ class AuctionProcessManagerTest
         trusted_signals_handle =
             trusted_signals_cache_.RequestTrustedBiddingSignals(
                 /*url_loader_factory=*/nullptr, FrameTreeNodeId(1),
+                {"devtools_auction_id"},
                 url::Origin::Create(GURL("https://main-frame-origin.test")),
                 network::mojom::IPAddressSpace::kPublic, origin,
                 "Interest Group Name",
@@ -557,6 +558,7 @@ class AuctionProcessManagerTest
         trusted_signals_handle =
             trusted_signals_cache_.RequestTrustedScoringSignals(
                 /*url_loader_factory=*/nullptr, FrameTreeNodeId(1),
+                {"devtools_auction_id"},
                 url::Origin::Create(GURL("https://main-frame-origin.test")),
                 network::mojom::IPAddressSpace::kPublic, origin,
                 GURL("https://trusted-signals-url/"),

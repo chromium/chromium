@@ -944,6 +944,7 @@ blink_core_tests_css = [
   "style_scope_test.cc",
   "style_sheet_contents_test.cc",
   "style_traversal_root_test.cc",
+  "style_use_counter_test.cc",
   "try_tactic_transform_test.cc",
   "try_value_flips_test.cc",
   "threaded/css_parser_threaded_test.cc",

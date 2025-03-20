@@ -459,7 +459,7 @@ GpuFeatureInfo ComputeGpuFeatureInfoWithNoGpu() {
   return gpu_feature_info;
 }
 
-GpuFeatureInfo ComputeGpuFeatureInfoForSwiftShader() {
+GpuFeatureInfo ComputeGpuFeatureInfoForSoftwareGL() {
   GpuFeatureInfo gpu_feature_info;
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_2D_CANVAS] =
       kGpuFeatureStatusSoftware;
@@ -498,7 +498,7 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
                                      base::CommandLine* command_line,
                                      bool* needs_more_info) {
   GPU_STARTUP_TRACE_EVENT("gpu_util::ComputeGpuFeatureInfo");
-  bool use_swift_shader = false;
+  bool use_software_gl = false;
   bool blocklist_needs_more_info = false;
 
   std::optional<gl::GLImplementationParts> requested_impl =
@@ -507,20 +507,21 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
     if (*requested_impl == gl::kGLImplementationNone)
       return ComputeGpuFeatureInfoWithNoGpu();
 
-    use_swift_shader = gl::IsSoftwareGLImplementation(*requested_impl);
-    if (use_swift_shader) {
+    use_software_gl = gl::IsSoftwareGLImplementation(*requested_impl);
+    if (use_software_gl) {
       std::string use_gl = command_line->GetSwitchValueASCII(switches::kUseGL);
       std::string use_angle =
           command_line->GetSwitchValueASCII(switches::kUseANGLE);
-      if (use_angle == gl::kANGLEImplementationSwiftShaderForWebGLName) {
-        return ComputeGpuFeatureInfoForSwiftShader();
+      if (use_angle == gl::kANGLEImplementationSwiftShaderForWebGLName ||
+          use_angle == gl::kANGLEImplementationD3D11WarpName) {
+        return ComputeGpuFeatureInfoForSoftwareGL();
       }
     }
   }
 
   if (gpu_preferences.use_vulkan ==
       gpu::VulkanImplementationName::kSwiftshader) {
-    use_swift_shader = true;
+    use_software_gl = true;
   }
 
   GpuFeatureInfo gpu_feature_info;
@@ -553,33 +554,33 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
 #if !BUILDFLAG(IS_CHROMEOS)
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
       GetGpuRasterizationFeatureStatus(blocklisted_features, *command_line,
-                                       use_swift_shader);
+                                       use_software_gl);
 #else
   // TODO(penghuang): call GetGpuRasterizationFeatureStatus() with
-  // |use_swift_shader|.
+  // |use_software_gl|.
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
       GetGpuRasterizationFeatureStatus(blocklisted_features, *command_line,
-                                       /*use_swift_shader=*/false);
+                                       /*use_software_gl=*/false);
 #endif
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL] =
-      GetWebGLFeatureStatus(blocklisted_features, use_swift_shader);
+      GetWebGLFeatureStatus(blocklisted_features, use_software_gl);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL2] =
-      GetWebGL2FeatureStatus(blocklisted_features, use_swift_shader);
+      GetWebGL2FeatureStatus(blocklisted_features, use_software_gl);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGPU] =
-      GetWebGPUFeatureStatus(blocklisted_features, use_swift_shader);
+      GetWebGPUFeatureStatus(blocklisted_features, use_software_gl);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_2D_CANVAS] =
-      Get2DCanvasFeatureStatus(blocklisted_features, use_swift_shader);
+      Get2DCanvasFeatureStatus(blocklisted_features, use_software_gl);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE] =
       GetAcceleratedVideoDecodeFeatureStatus(blocklisted_features,
-                                             use_swift_shader);
+                                             use_software_gl);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_VIDEO_ENCODE] =
       GetAcceleratedVideoEncodeFeatureStatus(blocklisted_features,
-                                             use_swift_shader);
+                                             use_software_gl);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] =
       GetAndroidSurfaceControlFeatureStatus(blocklisted_features,
                                             gpu_preferences);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_GL] =
-      GetGLFeatureStatus(blocklisted_features, use_swift_shader);
+      GetGLFeatureStatus(blocklisted_features, use_software_gl);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_VULKAN] =
       GetVulkanFeatureStatus(blocklisted_features, gpu_preferences);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] =

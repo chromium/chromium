@@ -25,6 +25,10 @@ namespace autofill::prefs {
 // String serving as a seed for ablation studies.
 inline constexpr std::string_view kAutofillAblationSeedPref =
     "autofill.ablation_seed";
+// A dictionary that contains (hashed) GAIA ids and their opt-in status for
+// AutofillAI.
+inline constexpr char kAutofillAiOptInStatus[] =
+    "autofill.autofill_ai.opt_in_status";
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 // Boolean that is true if BNPL on Autofill is enabled.

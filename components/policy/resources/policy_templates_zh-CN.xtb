@@ -3831,6 +3831,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
 在 <ph name="MAC_OS_NAME" /> 上，此政策仅适用于通过 MDM 进行管理的实例、已通过 MCX 加入网域的实例或已在 <ph name="CHROME_ENTERPRISE_CORE_NAME" />中注册的实例。</translation>
 <translation id="3845318141474759319">允许使用生成式 AI 壁纸，但不改进 AI 模型</translation>
+<translation id="3849923496599301707">强制允许在自助服务终端模式下运行 Chrome 应用</translation>
 <translation id="3851443303439635700">控制嵌套阈值，以指定何时开始将 JavaScript setTimeout() 函数强制设为下限值</translation>
 <translation id="3854609566862485607">此政策可控制用于标识受管理资料的自定义标签。对于受管理资料，此标签会显示在工具栏中的头像旁边。系统不会翻译该自定义标签。
 
@@ -4119,18 +4120,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="4052529125939620019">在浏览器启动时加载 CryptoToken 组件扩展程序</translation>
 <translation id="4053157306171963473">停用设备活动时长报告功能</translation>
 <translation id="4056910949759281379">停用 SPDY 协议</translation>
-<translation id="4057113125482566814">在 <ph name="PRODUCT_NAME" /> 中启用<ph name="UIA_NAME" />无障碍框架提供程序，以供无障碍工具使用。
-
-<ph name="PRODUCT_NAME" /> 在一年的过渡期内支持此政策，以便企业管理员控制浏览器的<ph name="UIA_NAME" />无障碍框架提供程序的部署情况。使用<ph name="UIA_NAME" />无障碍框架与浏览器互操作的无障碍工具和其他工具可能需要更新，才能与浏览器的<ph name="UIA_NAME" />提供程序正常搭配运行。管理员可以使用此政策暂时停用浏览器的<ph name="UIA_NAME" />提供程序（从而恢复到旧版行为），同时与供应商合作，为受影响的工具提供更新。
-
-如果此政策设为 false，<ph name="PRODUCT_NAME" /> 仅会启用其 <ph name="MSAA_NAME" /> 提供程序。使用较新版本的<ph name="UIA_NAME" />无障碍框架与浏览器互操作的无障碍工具和其他工具将通过 <ph name="MS_WIN_NAME" /> 中的兼容性 shim 与其通信。
-
-如果此政策设为 true，<ph name="PRODUCT_NAME" /> 不仅会启用其 <ph name="MSAA_NAME" /> 提供程序，还会启用其<ph name="UIA_NAME" />提供程序。
-使用较新版本的<ph name="UIA_NAME" />无障碍框架与浏览器互操作的无障碍工具和其他工具将直接与其通信。
-
-如果未设置此政策，系统会使用 <ph name="PRODUCT_NAME" /> 中的变体版本框架来启用或停用此提供程序。
-
-我们将在 <ph name="PRODUCT_NAME" /> 136 中停止对此政策设置的支持。</translation>
 <translation id="4057442294431066708">此政策旨在控制用于在“重新映射键盘按键”子页面中将事件重新映射到 F11/F12 的选定快捷键选项。这些设置仅适用于 ChromeOS 键盘；如果未设置此政策，这些设置默认处于停用状态。</translation>
 <translation id="4061590579642538878">报告有关崩溃报告的信息。</translation>
 <translation id="4062646759141042418">以列表形式为一系列网址启用 <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" />。
@@ -5439,6 +5428,11 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="5041315457555330432">允许 <ph name="PRODUCT_NAME" /> 仅连接到位于专用 IP 地址的设备，除非 CastAllowAllIPs 功能已开启。</translation>
 <translation id="504689994545234073">允许在本地存储用户文件</translation>
 <translation id="5048890362473520096">为打印服务启用 LPAC 沙盒</translation>
+<translation id="5049989450078943331">如果此政策设为 True，Chrome 应用将能继续在自助服务终端会话中运行，无论 Chrome 应用是否默认已启用。
+
+如果此政策未设置或设为 False，系统将使用设备上定义的默认行为。
+
+当用户尝试启动已停用的 Chrome 应用时，系统会向用户显示一条消息，说明该应用未启动的原因，并建议用户联系其 IT 部门。</translation>
 <translation id="5055474681190962362">应在每月的哪一天 [1-31]（以设备的本地时区表示）重新启动设备。仅在“频率”设为“MONTHLY”时使用。如果此值超出给定月份的天数上限，系统将选择该月的最后一天。</translation>
 <translation id="5055513974503523022">借助生成式 AI 视频会议背景功能，用户可在 <ph name="PRODUCT_OS_NAME" /> 中使用生成式 AI 功能创建个性化的视频会议背景，展现自我风格。
 
@@ -6312,6 +6306,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 如果此政策未设置或设为空列表，则系统会在调用 <ph name="GET_SCANNER_LIST_FUNCTION" /> 或 <ph name="START_SCAN_FUNCTION" /> 时向用户显示扫描确认对话框。</translation>
 <translation id="5599461642204007579"><ph name="MS_AD_NAME" /> 管理设置</translation>
 <translation id="5601503069213153581">PIN 码</translation>
+<translation id="5605676983184673391">允许 Chrome 应用在自助服务终端会话中运行。</translation>
 <translation id="5607021831414604820">启用设备存储状态报告功能</translation>
 <translation id="5608114828230655271">默认设备行为</translation>
 <translation id="561001683838346956">此政策已从 <ph name="PRODUCT_NAME" /> 124 中移除。从该版本开始，系统始终禁止使用不安全的哈希。在之前的版本中，此政策用于控制浏览器是否允许在 TLS 握手过程中使用旧版不安全哈希。
@@ -6431,6 +6426,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
 请注意，仅在允许源使用 Direct Sockets API 时，此政策才适用。
 如需了解详情，请参阅 <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />、<ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> 和 <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />。</translation>
+<translation id="566569751231933416">使用默认行为。</translation>
 <translation id="5666457529647159548">允许用户管理已安装的客户端证书。</translation>
 <translation id="5670249935663090320">如果此政策已启用或未设置，系统将会开启 <ph name="PRODUCT_NAME" /> 以供用户从以下位置启动：应用菜单、页面上下文菜单、支持 Cast 的网站上的媒体控件，以及（如果显示的话）Cast 工具栏图标。
 

@@ -419,6 +419,19 @@ const FeatureEntry::Choice kPullToRefreshChoices[] = {
      switches::kPullToRefresh, "2"}};
 #endif  // USE_AURA
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_CHROMEOS)
+
+const FeatureEntry::FeatureParam kLocalNetworkAccessChecksBlock[] = {
+    {"LocalNetworkAccessChecksWarn", "false"}};
+
+const FeatureEntry::FeatureVariation kLocalNetworkAccessChecksVariations[] = {
+    {"(Blocking)", kLocalNetworkAccessChecksBlock,
+     std::size(kLocalNetworkAccessChecksBlock), nullptr}};
+
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_CHROME_OS)
+
 const FeatureEntry::Choice kEnableBenchmarkingChoices[] = {
     {flag_descriptions::kEnableBenchmarkingChoiceDisabled, "", ""},
     {flag_descriptions::kEnableBenchmarkingChoiceDefaultFeatureStates,
@@ -1185,6 +1198,18 @@ const FeatureEntry::FeatureVariation kPageContentAnnotationsVariations[] = {
      kPageContentAnnotationsTitleParams,
      std::size(kPageContentAnnotationsTitleParams), nullptr},
 };
+
+#if !BUILDFLAG(IS_ANDROID)
+constexpr FeatureEntry::FeatureParam
+    kHappinessTrackingSurveysForDesktopDemoWithoutAutoPrompt[] = {
+        {"auto_prompt", "false"}};
+constexpr FeatureEntry::FeatureVariation
+    kHappinessTrackingSurveysForDesktopDemoVariations[] = {
+        {"without Auto Prompt",
+         kHappinessTrackingSurveysForDesktopDemoWithoutAutoPrompt,
+         std::size(kHappinessTrackingSurveysForDesktopDemoWithoutAutoPrompt),
+         nullptr}};
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
@@ -6493,6 +6518,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kFocusTriggersWebAndSRPZeroSuggest)},
 
+    {"omnibox-hide-suggestion-group-headers",
+     flag_descriptions::kOmniboxHideSuggestionGroupHeadersName,
+     flag_descriptions::kOmniboxHideSuggestionGroupHeadersDescription,
+     kOsDesktop, FEATURE_VALUE_TYPE(omnibox::kHideSuggestionGroupHeaders)},
+
     {"omnibox-url-suggestions-on-focus",
      flag_descriptions::kOmniboxUrlSuggestionsOnFocus,
      flag_descriptions::kOmniboxUrlSuggestionsOnFocusDecription, kOsDesktop,
@@ -7626,7 +7656,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHappinessTrackingSurveysForDesktopDemoName,
      flag_descriptions::kHappinessTrackingSurveysForDesktopDemoDescription,
      kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kHappinessTrackingSurveysForDesktopDemo)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         features::kHappinessTrackingSurveysForDesktopDemo,
+         kHappinessTrackingSurveysForDesktopDemoVariations,
+         "HappinessTrackingSurveysForDesktopDemo")},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -11398,6 +11431,14 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(safe_browsing::kEnterpriseRealTimeUrlCheckOnAndroid)},
 
+    {"enterprise-url-filtering-event-reporting-on-android",
+     flag_descriptions::kEnterpriseUrlFilteringEventReportingOnAndroidName,
+     flag_descriptions::
+         kEnterpriseUrlFilteringEventReportingOnAndroidDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(enterprise_connectors::
+                            kEnterpriseUrlFilteringEventReportingOnAndroid)},
+
     {"enterprise-security-event-reporting-on-android",
      flag_descriptions::kEnterpriseSecurityEventReportingOnAndroidName,
      flag_descriptions::kEnterpriseSecurityEventReportingOnAndroidDescription,
@@ -11860,6 +11901,25 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kScannerDisclaimerDebugOverrideDescription, kOsCrOS,
      MULTI_VALUE_TYPE(kScannerDisclaimerDebugOverrideChoices)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_ANDROID)
+    {"android-theme-module", flag_descriptions::kAndroidThemeModuleName,
+     flag_descriptions::kAndroidThemeModuleDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidThemeModule)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_CHROMEOS)
+    {"local-network-access-check",
+     flag_descriptions::kLocalNetworkAccessChecksName,
+     flag_descriptions::kLocalNetworkAccessChecksDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         network::features::kLocalNetworkAccessChecks,
+         kLocalNetworkAccessChecksVariations,
+         "LocalNetworkAccessChecks")},
+
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_CHROME_OS)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

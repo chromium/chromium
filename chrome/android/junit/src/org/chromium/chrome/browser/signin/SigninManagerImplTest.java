@@ -121,7 +121,7 @@ public class SigninManagerImplTest {
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtils);
         BookmarkModel.setInstanceForTesting(FakeBookmarkModel.createModel());
 
-        when(mNativeMock.isSigninAllowedByPolicy(NATIVE_SIGNIN_MANAGER)).thenReturn(true);
+        when(mNativeMock.isSigninAllowed(NATIVE_SIGNIN_MANAGER)).thenReturn(true);
         // Pretend Google Play services are available as it is required for the sign-in
         when(mExternalAuthUtils.isGooglePlayServicesMissing(any())).thenReturn(false);
         // Suppose that the accounts are already seeded
@@ -194,7 +194,6 @@ public class SigninManagerImplTest {
 
         // There is no signed in account. Sign in is allowed.
         assertTrue(mSigninManager.isSigninAllowed());
-        assertTrue(mSigninManager.isSyncOptInAllowed());
         // Sign out is not allowed.
         assertFalse(mSigninManager.isSignOutAllowed());
 
@@ -206,7 +205,6 @@ public class SigninManagerImplTest {
                             // A sign in operation is in progress, so we do not allow a new sign
                             // in/out operation.
                             assertFalse(mSigninManager.isSigninAllowed());
-                            assertFalse(mSigninManager.isSyncOptInAllowed());
                             assertFalse(mSigninManager.isSignOutAllowed());
 
                             ((Runnable) args.getArgument(2)).run();
@@ -240,7 +238,6 @@ public class SigninManagerImplTest {
                         eq(NATIVE_IDENTITY_MANAGER), anyInt()))
                 .thenReturn(TestAccounts.ACCOUNT1);
         assertFalse(mSigninManager.isSigninAllowed());
-        assertFalse(mSigninManager.isSyncOptInAllowed());
         // Signing out is allowed.
         assertTrue(mSigninManager.isSignOutAllowed());
     }
@@ -270,7 +267,6 @@ public class SigninManagerImplTest {
                 .fetchAndApplyCloudPolicy(anyLong(), any(), any());
 
         assertTrue(mSigninManager.isSigninAllowed());
-        assertTrue(mSigninManager.isSyncOptInAllowed());
 
         SigninManager.SignInCallback callback = mock(SigninManager.SignInCallback.class);
         mSigninManager.signin(TestAccounts.ACCOUNT1, SigninAccessPoint.START_PAGE, callback);
@@ -294,7 +290,6 @@ public class SigninManagerImplTest {
                         eq(NATIVE_IDENTITY_MANAGER), eq(ConsentLevel.SIGNIN)))
                 .thenReturn(TestAccounts.ACCOUNT1);
         assertFalse(mSigninManager.isSigninAllowed());
-        assertTrue(mSigninManager.isSyncOptInAllowed());
     }
 
     @Test

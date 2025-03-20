@@ -35,6 +35,14 @@ namespace {
 // YUV format.
 constexpr base::TimeDelta kDelayForRetryingYUVFormat = base::Minutes(10);
 
+// TODO(crbug.com/397907161): When this feature is enabled, it will cause
+// `AdjustTargetForFullScreenLetterboxing` to return `dest_size` and
+// `target_rect` in terms of the unscaled video rect. This lets DWM scale up the
+// video (via the visual transform) rather than allocating a swap chain at the
+// target size and letting VP BLT do the scaling. Ensure that this does not
+// break DWM optimizations for MF fullscreen letterboxing in
+// `PresentDCOMPSurface`. These optimizations require `dest_size` to match the
+// monitor size in order for MF to handle fullscreen letterboxing of videos.
 BASE_FEATURE(kDisableVPBLTUpscale,
              "DisableVPBLTUpscale",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -368,6 +376,10 @@ bool IsVpAutoHDREnabled(UINT gpu_vendor_id) {
 }
 
 bool IsWithinMargin(float i, float j) {
+  // Tolerance to check if a video is close enough to the "ideal" fullscreen or
+  // letterboxing rect. This is necessary because websites sometimes position
+  // fullscreen or letterboxed videos slightly off from the expected "ideal"
+  // placement, and this provides some leeway.
   constexpr float kFullScreenMargin = 10.0;
   return (std::abs(i - j) < kFullScreenMargin);
 }
@@ -1404,6 +1416,7 @@ bool SwapChainPresenter::PresentToDecodeSwapChain(
       return false;
     }
     DCHECK(decode_swap_chain_);
+    SetSwapChainPresentDuration();
 
     Microsoft::WRL::ComPtr<IDCompositionDesktopDevice> desktop_device;
     dcomp_device_.As(&desktop_device);
@@ -1469,8 +1482,8 @@ bool SwapChainPresenter::PresentToDecodeSwapChain(
     return false;
   }
 
-  hr = decode_swap_chain_->PresentBuffer(array_slice, /*SyncInterval=*/1,
-                                         /*Flags=*/0);
+  UINT present_flags = DXGI_PRESENT_USE_DURATION;
+  hr = decode_swap_chain_->PresentBuffer(array_slice, 1, present_flags);
   // Ignore DXGI_STATUS_OCCLUDED since that's not an error but only indicates
   // that the window is occluded and we can stop rendering.
   if (FAILED(hr) && hr != DXGI_STATUS_OCCLUDED) {
@@ -1670,6 +1683,7 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
   HRESULT hr, device_removed_reason;
   if (first_present_) {
     first_present_ = false;
+    UINT flags = DXGI_PRESENT_USE_DURATION;
     // DirectComposition can display black for a swap chain between the first
     // and second time it's presented to - maybe the first Present can get lost
     // somehow and it shows the wrong buffer. In that case copy the buffers so
@@ -1677,7 +1691,7 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
     // after this needs to have SyncInterval > 0, or else the workaround doesn't
     // help.
     for (size_t i = 0; i < swap_chain_buffer_count_ - 1; ++i) {
-      hr = swap_chain_->Present(/*SyncInterval=*/0, /*Flags=*/0);
+      hr = swap_chain_->Present(0, flags);
       // Ignore DXGI_STATUS_OCCLUDED since that's not an error but only
       // indicates that the window is occluded and we can stop rendering.
       if (FAILED(hr) && hr != DXGI_STATUS_OCCLUDED) {
@@ -1729,7 +1743,7 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
       base::debug::DumpWithoutCrashing();
     }
   }
-  UINT flags = 0;
+  UINT flags = DXGI_PRESENT_USE_DURATION;
   UINT interval = 1;
   if (DirectCompositionSwapChainTearingEnabled()) {
     flags |= DXGI_PRESENT_ALLOW_TEARING;
@@ -1790,6 +1804,11 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
   last_overlay_image_ = std::move(params.overlay_image);
   RecordPresentationStatistics();
   return true;
+}
+
+// static
+bool SwapChainPresenter::CreateSurfaceHandleHelperForTesting(HANDLE* handle) {
+  return CreateSurfaceHandleHelper(handle);
 }
 
 void SwapChainPresenter::RecordPresentationStatistics() {
@@ -1865,13 +1884,55 @@ bool SwapChainPresenter::PresentDCOMPSurface(DCLayerOverlayParams& params,
   // Specially for fullscreen overlays with letterboxing effect,
   // |overlay_onscreen_rect| will be placed in the center of the screen, and
   // either left/right edges or top/bottom edges will touch the monitor edges.
-  if (visual_transform->IsScaleOrTranslation()) {
+  // Also guard against non-uniform scaling because MF-provided scaling via
+  // SetRect only allows uniform scaling of the video. For either fullscreen or
+  // fullscreen letterboxing, non-uniform scaling would result in MF scaling
+  // the video to a different aspect ratio than specified by the
+  // `visual_transform`.
+  const gfx::Vector2dF visual_transform_scale = visual_transform->To2dScale();
+  if (visual_transform->IsScaleOrTranslation() &&
+      visual_transform_scale.x() == visual_transform_scale.y()) {
     AdjustTargetToOptimalSizeIfNeeded(
         params, overlay_onscreen_rect, &on_screen_size_float, visual_transform,
         &visual_clip_rect_float, &dest_size, &target_rect);
   }
 
-  mapped_rect = visual_transform->MapRect(params.quad_rect);
+  // Adjust `dcomp_surface_proxy` to allow MF to handle letterboxing if we
+  // are in a fullscreen letterboxing overlay scenario.
+  // This optimization doesn't apply for fullscreen letterboxing underlay
+  // scenarios because the desktop plane must remain on in those cases (e.g.
+  // subtitles). If `DelegatedCompositing` is enabled, z_order will always
+  // be positive, so we must also check if `dest_size` was set to the monitor
+  // size by `AdjustTargetForFullScreenLetterboxing`.
+  constexpr float kDestSizeTolerance = 1.0;
+  const bool is_fullscreen_letterboxing_overlay_scenario =
+      dest_size.has_value() &&
+      gfx::RectF(dest_size.value())
+          .ApproximatelyEqual(gfx::RectF(GetMonitorSize()), kDestSizeTolerance,
+                              kDestSizeTolerance) &&
+      params.z_order > 0;
+
+  if (is_fullscreen_letterboxing_overlay_scenario) {
+    const gfx::Rect monitor_rect =
+        gfx::Rect(gfx::ToRoundedSize(dest_size.value()));
+    mapped_rect = monitor_rect;
+    // If `visual_clip_rect` is set to the content size, `DCLayerTree` will
+    // apply a clip and prevent the DWM optimization, so have it cover the whole
+    // monitor in the visual tree.
+    *visual_clip_rect = monitor_rect;
+    // Prevent `DCLayerTree` from setting a transform on the visual, as calling
+    // SetRect means that MF will handle our scaling and offset for us.
+    visual_transform->MakeIdentity();
+  } else {
+    mapped_rect = visual_transform->MapRect(params.quad_rect);
+
+    // Scaling is handled by the MF video renderer, so we only need the
+    // translation component.
+    gfx::Vector2dF visual_transform_offset =
+        visual_transform->To2dTranslation();
+    visual_transform->MakeIdentity();
+    visual_transform->Translate(visual_transform_offset);
+  }
 
   // Note: do not intersect clip rect w/ mapped_rect. This will result
   // in Media Foundation scaling the full video to the clipped region,
@@ -1897,16 +1958,11 @@ bool SwapChainPresenter::PresentDCOMPSurface(DCLayerOverlayParams& params,
 
   // TODO(crbug.com/40642952): Call UpdateVisuals() here.
 
-  // Scaling is handled by the MF video renderer, so we only need the
-  // translation component.
-  gfx::Vector2dF visual_transform_offset = visual_transform->To2dTranslation();
-  visual_transform->MakeIdentity();
-  visual_transform->Translate(visual_transform_offset);
-
 #if DCHECK_IS_ON()
-  TRACE_EVENT2("gpu", "PresentDCOMPSurface", "finalized transform",
-               visual_transform->ToString(), "finalized mapped rect",
-               mapped_rect.ToString());
+  TRACE_EVENT("gpu", "PresentDCOMPSurface", "finalized transform",
+              visual_transform->ToString(), "finalized mapped rect",
+              mapped_rect.ToString(), "is fullscreen letterboxing",
+              is_fullscreen_letterboxing_overlay_scenario);
 #endif  // DCHECK_IS_ON()
 
   // This visual's content was a different DC surface.
@@ -2359,6 +2415,7 @@ bool SwapChainPresenter::ReallocateSwapChain(
   LabelSwapChainAndBuffers(swap_chain_.Get(), "SwapChainPresenter");
 
   swap_chain_format_ = swap_chain_format;
+  SetSwapChainPresentDuration();
 
   DXGI_ADAPTER_DESC adapter_desc;
   HRESULT hr = dxgi_adapter->GetDesc(&adapter_desc);
@@ -2384,6 +2441,19 @@ void SwapChainPresenter::OnBatteryPowerStatusChange(
 
 bool SwapChainPresenter::ShouldUseVideoProcessorScaling() {
   return (!is_on_battery_power_ && !layer_tree_->disable_vp_scaling());
+}
+
+void SwapChainPresenter::SetSwapChainPresentDuration() {
+  Microsoft::WRL::ComPtr<IDXGISwapChainMedia> swap_chain_media =
+      GetSwapChainMedia();
+  if (swap_chain_media) {
+    UINT requested_duration = 0u;
+    HRESULT hr = swap_chain_media->SetPresentDuration(requested_duration);
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "SetPresentDuration failed with error 0x" << std::hex
+                  << hr;
+    }
+  }
 }
 
 Microsoft::WRL::ComPtr<IDXGISwapChainMedia>

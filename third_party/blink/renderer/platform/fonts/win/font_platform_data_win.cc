@@ -49,11 +49,6 @@ SkFont FontPlatformData::CreateSkFont(const FontDescription*) const {
   bool use_subpixel_rendering = style_.use_subpixel_rendering;
   bool use_anti_alias = style_.use_anti_alias;
 
-  if (RuntimeEnabledFeatures::DisableAhemAntialiasEnabled() && IsAhem()) {
-    use_subpixel_rendering = false;
-    use_anti_alias = false;
-  }
-
   if (use_subpixel_rendering) {
     font.setEdging(SkFont::Edging::kSubpixelAntiAlias);
   } else if (use_anti_alias) {

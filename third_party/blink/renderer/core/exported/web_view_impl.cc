@@ -47,6 +47,7 @@
 #include "media/base/media_switches.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/fingerprinting_protection/canvas_noise_token.h"
 #include "third_party/blink/public/common/history/session_history_constants.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
@@ -3087,11 +3088,6 @@ void WebViewImpl::Show(const LocalFrameToken& opener_frame_token,
       opener_frame_token, NavigationPolicyToDisposition(policy),
       std::move(window_features), opened_by_user_gesture,
       WTF::BindOnce(&WebViewImpl::DidShowCreatedWindow, WTF::Unretained(this)));
-
-  if (auto* dev_tools_agent =
-          MainFrameImpl()->DevToolsAgentImpl(/*create_if_necessary=*/false)) {
-    dev_tools_agent->DidShowNewWindow();
-  }
 }
 
 void WebViewImpl::DidShowCreatedWindow() {
@@ -3566,6 +3562,8 @@ void WebViewImpl::UpdateRendererPreferences(
     UpdateUseOverlayScrollbar(renderer_preferences_.use_overlay_scrollbar);
   }
 #endif
+
+  CanvasNoiseToken::Set(renderer_preferences_.canvas_noise_token);
 
   MaybePreloadSystemFonts(GetPage());
 }

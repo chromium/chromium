@@ -625,6 +625,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1430915738399379752">Imprimer</translation>
 <translation id="1431188203598586230">Dernière mise à jour logicielle</translation>
 <translation id="1432581352905426595">Gérer les moteurs de recherche</translation>
+<translation id="1432650420699700107">Les sites peuvent demander à se connecter à n'importe quel appareil de votre réseau local</translation>
 <translation id="1433478348197382180">Mode de lecture</translation>
 <translation id="1433980411933182122">Démarrage</translation>
 <translation id="1434696352799406980">Ceci entraînera la réinitialisation de votre page de démarrage, de votre page Nouvel onglet, de votre moteur de recherche et de vos onglets épinglés. Toutes vos extensions seront également désactivées et vos données temporaires, comme les témoins, seront supprimées. Vos favoris, votre historique et vos mots de passe enregistrés ne seront pas supprimés.</translation>
@@ -1336,6 +1337,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1918127774159128277">Actualiser les capacités Wi-Fi direct</translation>
 <translation id="1918141783557917887">Plu&amp;s petit</translation>
 <translation id="1918281588461452432">Lorsque vous naviguez sur des sites, le contenu de leurs pages est chiffré et enregistré sur votre appareil</translation>
+<translation id="1919096511823372013">Insérez des liens, des émojis et plus. Vous pouvez aussi obtenir de l'aide pour écrire et créer des images avec l'IA de Google.</translation>
 <translation id="1919872106782726755">Pour configurer l'empreinte digitale, demandez à votre enfant de toucher au capteur d'empreintes digitales dans le coin supérieur droit du clavier, à côté de l'interrupteur. Les données liées à l'empreinte digitale de votre enfant sont stockées de façon sécurisée et ne quittent jamais cet appareil : <ph name="DEVICE_TYPE" />.</translation>
 <translation id="192015196730532810">Vous pouvez créer votre propre groupe d'onglets.</translation>
 <translation id="1920314570001095522">Il n'y a aucun onglet similaire à organiser, mais ces groupes pourraient vous plaire</translation>
@@ -4062,9 +4064,6 @@ l'<ph name="BEGIN_LINK" />
     <ph name="BEGIN_PARAGRAPH2" />Vous pouvez activer ou désactiver l'autorisation de ces rapports en tout temps dans les paramètres de votre appareil Chrome. Si vous êtes un administrateur de domaine, vous pouvez modifier ce paramètre dans la console d'administrateur.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">Une aurore boréale la nuit, surplombant une petite maison de campagne.</translation>
 <translation id="3818102823568165369">Certificats locaux ajoutés par votre système d'exploitation ou votre administrateur.</translation>
-<translation id="3818662907126913619">Pour utiliser votre appareil avec votre profil <ph name="DOMAIN" />, votre organisation doit obtenir des renseignements sur l'appareil.
-
-Cela peut inclure des renseignements sur les fichiers, les logiciels installés, votre navigateur et le système d'exploitation de l'appareil.</translation>
 <translation id="3819164369574292143">Zoomez pour agrandir les éléments à l'écran. Utilisez Recherche+Ctrl+M pour activer et désactiver la loupe. Utilisez les touches Ctrl+Alt+touches fléchées pour vous déplacer lorsque vous zoomez.</translation>
 <translation id="3819257035322786455">Sauvegarder</translation>
 <translation id="3819261658055281761">Le système n'a pas réussi à stocker le jeton d'accès aux API à long terme pour cet appareil.</translation>
@@ -4382,9 +4381,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4031527940632463547">Capteurs bloqués</translation>
 <translation id="4033471457476425443">Ajouter un dossier</translation>
 <translation id="4033963223187371752">Les sites sécurisés peuvent intégrer du contenu comme des images ou des cadres Web non sécurisés</translation>
-<translation id="4034706080855851454">Pour utiliser votre appareil avec le profil de votre organisation, votre organisation doit obtenir des renseignements sur l'appareil.
-
-Cela peut inclure des renseignements sur les fichiers, les logiciels installés, votre navigateur et le système d'exploitation de l'appareil.</translation>
 <translation id="4034824040120875894">Imprimante</translation>
 <translation id="4035758313003622889">Gestionnaire de &amp;tâches</translation>
 <translation id="4035877632587724847">Ne pas autoriser</translation>
@@ -4833,6 +4829,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4364830672918311045">Afficher les notifications</translation>
 <translation id="4367971618859387374">Nom à afficher</translation>
 <translation id="4368960422722232719">Afficher l'utilisation de la mémoire sur la fiche informative d'aperçu de l'onglet</translation>
+<translation id="4369151461324628035">Ne pas autoriser les sites à se connecter à un appareil de votre réseau local</translation>
 <translation id="4369215744064167350">Demande de site Web approuvée</translation>
 <translation id="4369233657762989723">Dictée activée/désactivée</translation>
 <translation id="436926121798828366">Vous pouvez changer cette option en tout temps dans <ph name="SETTINGS_LINK" /></translation>
@@ -5386,6 +5383,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4772914216048388646">Ordonné</translation>
 <translation id="4773112038801431077">Mettre à niveau Linux</translation>
 <translation id="4773122030389014189">Partager le groupe d'onglets « <ph name="GROUP_NAME" /> »</translation>
+<translation id="4773253008034797668">Autorisé à se connecter à n'importe quel appareil sur votre réseau local</translation>
 <translation id="477548766361111120">Autoriser l'extension à lire et modifier ce site</translation>
 <translation id="4776311127346151860">Connexion de votre <ph name="DEVICE_NAME" /> réussie</translation>
 <translation id="4776594120007763294">Pour ajouter une page à lire plus tard, cliquez sur le bouton</translation>
@@ -7848,6 +7846,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6563002009564846727">Afficher les certificats importés de Windows</translation>
 <translation id="6563055593659435495">Impossible de maintenir une connexion avec votre téléphone. Assurez-vous que votre téléphone est à proximité et déverrouillé, et que le Bluetooth et le Wi-Fi sont activés.</translation>
 <translation id="6564860838537532172">Lorsque vous effectuez une recherche dans l'historique de navigation, vos recherches dans l'historique, le contenu des pages des meilleurs résultats et les sorties du modèle générées sont envoyés à Google et peuvent être vus par des réviseurs humains afin d'améliorer cette fonctionnalité.</translation>
+<translation id="6565144332292237355">Les sites peuvent utiliser cette fonctionnalité pour rechercher n'importe quel appareil sur votre réseau local et s'y connecter</translation>
 <translation id="6569931898053264308">Économies moyennes</translation>
 <translation id="6570622975915850879">Utiliser un autre appareil</translation>
 <translation id="65711204837946324">Le téléchargement exige une autorisation</translation>
@@ -8977,6 +8976,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7377451353532943397">Continuer de bloquer l'accès aux capteurs</translation>
 <translation id="7377481913241237033">Connecter avec un code</translation>
 <translation id="73786666777299047">Ouvrir la boutique en ligne Chrome Web Store</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Une autre tâche dans le même groupe de tâches : <ph name="OTHER_TASKS" />}one{<ph name="TASK_ROW" />. # autre tâche dans le même groupe de tâches : <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. # autres tâches dans le même groupe de tâches : <ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380272457268061606">Désactiver la récupération des données locales?</translation>
 <translation id="7380459290951585794">Assurez-vous que votre téléphone est à proximité, qu'il est déverrouillé et que le Bluetooth et le Wi-Fi sont activés</translation>
 <translation id="7380622428988553498">Le nom de l'appareil contient des caractères incorrects</translation>
@@ -11561,6 +11561,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
       <ph name="LIST_ITEM" />Exécutez l'utilitaire Chrome Connectivity Diagnostics
     <ph name="END_LIST" /></translation>
 <translation id="9161172953291434881">Faites-vous confiance à ce site pour vos données?</translation>
+<translation id="9164418710391288146">Non autorisé à se connecter à un appareil sur votre réseau local</translation>
 <translation id="9165856803582999927">Balayez ce code QR avec l'appareil photo de l'appareil sur lequel vous souhaitez créer et enregistrer votre clé d'accès pour <ph name="APP_NAME" /></translation>
 <translation id="916607977885256133">Incrustation d'image</translation>
 <translation id="9166253503936244008">Numérisez ce code QR avec l'appareil qui possède la clé d'accès que vous souhaitez utiliser pour <ph name="APP_NAME" /></translation>

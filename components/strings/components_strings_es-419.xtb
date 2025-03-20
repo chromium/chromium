@@ -54,7 +54,6 @@
 <translation id="1090629319939036170">Menú de RV</translation>
 <translation id="1091463901118115503">Seguir leyendo</translation>
 <translation id="1091779689406092804">capturas de pantalla</translation>
-<translation id="1094777233105318927">Información sobre tu navegador, SO, dispositivo, software instalado y archivos</translation>
 <translation id="1096545575934602868">Esta campo no debe tener más de <ph name="MAX_ITEMS_LIMIT" /> entradas. Se descartarán las restantes.</translation>
 <translation id="1097803577928227769">Parques y jardines regionales</translation>
 <translation id="1099928364755383720">modo de pantalla en pantalla automático</translation>
@@ -1697,6 +1696,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3964661563329879394">{COUNT,plural, =0{Ninguno}=1{De 1 sitio }other{De # sitios }}</translation>
 <translation id="3965672182149944205">¿Quieres guardar la dirección?</translation>
 <translation id="3966044442021752214">Seguridad del producto</translation>
+<translation id="3969869202926863008">Acceso a la red local</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3973234410852337861">Se bloqueó <ph name="HOST_NAME" /></translation>
 <translation id="3975852104434126461">Sector automotor</translation>
@@ -2053,6 +2053,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="460848736049414407">Bloqueada por el administrador</translation>
 <translation id="4610279718074907952">Este sitio está en un grupo, definido por <ph name="SET_OWNER" />, que puede ver tu actividad</translation>
 <translation id="46128681529823442">Equipo para fútbol</translation>
+<translation id="4612904677925722054">Es posible que este sitio incluya contenido para mayores de edad. Debes contar con el permiso de tu madre, padre o tutor para poder visitar este sitio web.</translation>
 <translation id="4619564267100705184">Verificar tu identidad</translation>
 <translation id="4622292761762557753">Transferir de todos modos</translation>
 <translation id="4622647778991854660">Habilita las notificaciones en el Centro de notificaciones. Abre <ph name="LINK" />.</translation>
@@ -2650,6 +2651,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5660122698869360728">Una nueva carpeta inteligente que te ayuda a guardar todas tus páginas de compras en un solo lugar, realizar un seguimiento automático de los precios, obtener información sobre los precios y mucho más.</translation>
 <translation id="5663955426505430495">El administrador de este dispositivo instaló extensiones para funciones adicionales. Las extensiones tienen acceso a algunos de tus datos.</translation>
 <translation id="5667827081946850877">Audiolibros</translation>
+<translation id="5674082555327905359">Puede solicitar permiso para conectarse a cualquier dispositivo de tu red local</translation>
 <translation id="5675650730144413517">Esta página no funciona</translation>
 <translation id="5675809467256309336">Música dance y electrónica</translation>
 <translation id="5675959228867414813">Mostrar por fecha</translation>
@@ -2898,6 +2900,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6116338172782435947">Ver el texto y las imágenes copiados en el portapapeles</translation>
 <translation id="6117833587752089929">Foto (satinado)</translation>
 <translation id="6118782133429281336">La lista de origen está vacía.</translation>
+<translation id="6120950591512958208">Usa este código cuando confirmes la compra.</translation>
 <translation id="612178891608320683">Cocina vegana</translation>
 <translation id="6122181661879998141">frente de la tarjeta</translation>
 <translation id="6124058285696691147">Descargar el archivo adjunto</translation>
@@ -2923,6 +2926,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6159908896951210943">Formal</translation>
 <translation id="6160391204859821737">Activa una función de privacidad en los anuncios</translation>
 <translation id="6162403104168428984">¿Quieres actualizar la dirección?</translation>
+<translation id="6164605812717770913">Tu madre, padre o tutor indicó que no puedes visitar este sitio. Puedes pedirle que lo desbloquee.</translation>
 <translation id="6165508094623778733">Más información</translation>
 <translation id="6167577165590485365">Último intento de recuperación:</translation>
 <translation id="617256461084925519">Google Chrome está intentando verificar tu identidad para poder completar tu información de pago.</translation>
@@ -3014,6 +3018,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6321917430147971392">Revisa la configuración de DNS.</translation>
 <translation id="6322182122604171028">No se pudo usar Windows Hello</translation>
 <translation id="6326947323444967009">Establece Chrome como el navegador predeterminado del sistema en la configuración de iOS</translation>
+<translation id="6327065120806001832">acceso a la red local</translation>
 <translation id="6328639280570009161">Intenta inhabilitar la predicción de red.</translation>
 <translation id="6335029926534404762">Calzado deportivo</translation>
 <translation id="6337133576188860026">Esta acción libera menos de <ph name="SIZE" />. Es posible que algunos sitios se carguen más lento en tu próxima visita.</translation>
@@ -4482,7 +4487,6 @@ Detalles adicionales:
 <translation id="8919895429178014996">Ocultar todos los elementos</translation>
 <translation id="8922013791253848639">Permite mostrar anuncios en este sitio</translation>
 <translation id="8922734931659847428">Una lista limitada de las URLs de las páginas que visitas, en las que se producen <ph name="BEGIN_LINK" />eventos tecnológicos heredados<ph name="END_LINK" /></translation>
-<translation id="8924109546403192898">Cuando Chrome marca eventos de seguridad, se envían datos relacionados con los eventos a tu administrador. Esta información puede incluir URLs de las páginas que visitas en Chrome, URLs de páginas de las que copiaste datos, nombres de archivos o metadatos, fallas en el navegador o las pestañas, y el nombre de usuario con el que accedes a aplicaciones basadas en la Web, a tu dispositivo y a Chrome.</translation>
 <translation id="892588693504540538">Perforación en la esquina superior derecha</translation>
 <translation id="8926389886865778422">No volver a preguntar</translation>
 <translation id="8932102934695377596">El reloj está atrasado</translation>

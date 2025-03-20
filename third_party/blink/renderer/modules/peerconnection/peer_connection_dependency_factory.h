@@ -32,17 +32,9 @@ namespace base {
 class WaitableEvent;
 }
 
-namespace cricket {
-class PortAllocator;
-}
-
 namespace media {
 class GpuVideoAcceleratorFactories;
 class MojoVideoEncoderMetricsProviderFactory;
-}
-
-namespace rtc {
-class Thread;
 }
 
 namespace gfx {

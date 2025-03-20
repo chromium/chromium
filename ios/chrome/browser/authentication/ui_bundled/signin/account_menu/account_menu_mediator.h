@@ -14,7 +14,6 @@
 @protocol AccountMenuMediatorDelegate;
 class AuthenticationService;
 class ChromeAccountManagerService;
-@protocol ManageSyncSettingsCommandHandler;
 class PrefService;
 typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
 namespace signin {
@@ -23,7 +22,6 @@ class IdentityManager;
 namespace syncer {
 class SyncService;
 }  // namespace syncer
-@protocol SystemIdentity;
 
 // Mediator for AccountMenu
 @interface AccountMenuMediator

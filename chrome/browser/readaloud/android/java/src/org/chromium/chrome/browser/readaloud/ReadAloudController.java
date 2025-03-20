@@ -430,14 +430,18 @@ public class ReadAloudController
      * Kicks of readability check on a page load iff: the url is valid, no previous result is
      * available/pending and if a request has to be sent, the necessary conditions are satisfied.
      */
-    private final ReadAloudReadabilityHooks.ReadabilityCallback mReadabilityCallback =
-            new ReadAloudReadabilityHooks.ReadabilityCallback() {
+    private final ReadAloudReadabilityHooks.ReadabilityPerModeCallback mReadabilityPerModeCallback =
+            new ReadAloudReadabilityHooks.ReadabilityPerModeCallback() {
                 @Override
-                public void onSuccess(String url, boolean isReadable, boolean timepointsSupported) {
+                public void onSuccess(String url, Map<PlaybackArgs.PlaybackMode, ReadAloudReadabilityHooks.ReadabilityResult> readabilityPerMode) {
                     if (url.isEmpty() || url == null) {
                         assert false;
                         return;
                     }
+                    ReadAloudReadabilityHooks.ReadabilityResult result = readabilityPerMode.getOrDefault(
+                        PlaybackArgs.PlaybackMode.CLASSIC,
+                        new ReadAloudReadabilityHooks.ReadabilityResult(/* readable = */false, /* supportsHighlighting = */ false));
+                    boolean isReadable = result.readable;
 
                     Log.d(TAG, "onSuccess called for %s", url);
                     ReadAloudMetrics.recordIsPageReadable(isReadable);
@@ -458,7 +462,9 @@ public class ReadAloudController
                     sReadabilityInfoMap.put(
                             urlHash,
                             new ReadabilityInfo(
-                                    isReadable, sClock.currentTimeMillis(), timepointsSupported));
+                                    isReadable,
+                                    sClock.currentTimeMillis(),
+                                    result.supportsHighlighting));
                     mPendingRequests.remove(urlHash);
                     notifyReadabilityMayHaveChanged();
                 }
@@ -781,7 +787,7 @@ public class ReadAloudController
             return;
         }
         mPendingRequests.add(urlSpecHash);
-        mReadabilityHooks.isPageReadable(urlSpec, mReadabilityCallback);
+        mReadabilityHooks.isPageReadable(urlSpec, mReadabilityPerModeCallback);
     }
 
     private ReadabilityInfo getReadabilityInfoIfUnexpired(int sanitizedUrlHash) {

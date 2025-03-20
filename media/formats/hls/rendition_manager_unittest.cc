@@ -113,7 +113,7 @@ class HlsRenditionManagerTest : public testing::Test {
 
   void _VariantSelected(AdaptationReason,
                         const VariantStream* vs,
-                        const AudioRendition* ar) {
+                        const Rendition* ar) {
     std::string variant_path = "NONE";
     std::string rendition_path = "NONE";
     if (vs) {

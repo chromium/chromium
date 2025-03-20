@@ -25,6 +25,7 @@
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "components/services/storage/shared_storage/shared_storage_options.h"
 #include "components/services/storage/shared_storage/shared_storage_test_utils.h"
+#include "content/public/test/shared_storage_test_utils.h"
 #include "services/network/public/cpp/features.h"
 #include "sql/database.h"
 #include "storage/browser/quota/special_storage_policy.h"
@@ -50,6 +51,7 @@ using GetResult = SharedStorageDatabase::GetResult;
 using TimeResult = SharedStorageDatabase::TimeResult;
 using EntriesResult = SharedStorageDatabase::EntriesResult;
 using DataClearSource = SharedStorageDatabase::DataClearSource;
+using BatchUpdateResult = SharedStorageDatabase::BatchUpdateResult;
 
 const int kBudgetIntervalHours = 24;
 const int kStalenessThresholdDays = 1;
@@ -507,6 +509,12 @@ TEST_F(SharedStorageDatabaseTest, DestroyTooNew) {
             db_->Append(kOrigin, u"key", u"value"));
   EXPECT_EQ(OperationResult::kInitFailure, db_->Delete(kOrigin, u"key"));
   EXPECT_EQ(OperationResult::kInitFailure, db_->Clear(kOrigin));
+
+  BatchUpdateResult batch_update_result =
+      db_->BatchUpdate(kOrigin, /*methods_with_options=*/{});
+  EXPECT_EQ(batch_update_result.overall_result, OperationResult::kInitFailure);
+  EXPECT_TRUE(batch_update_result.inner_method_results.empty());
+
   EXPECT_EQ(-1, db_->Length(kOrigin));
   EXPECT_EQ(OperationResult::kInitFailure,
             db_->PurgeMatchingOrigins(StorageKeyPolicyMatcherFunction(),
@@ -820,6 +828,154 @@ TEST_P(SharedStorageDatabaseParamTest, Append) {
   // The expired entry will be replaced instead of appended to.
   EXPECT_EQ(OperationResult::kSet, db_->Append(kOrigin1, u"key1", u"replaced"));
   EXPECT_EQ(db_->Get(kOrigin1, u"key1").data, u"replaced");
+}
+
+TEST_P(SharedStorageDatabaseParamTest, BatchUpdate_EmptyBatch) {
+  const url::Origin kOrigin1 =
+      url::Origin::Create(GURL("http://www.example1.test"));
+
+  BatchUpdateResult result =
+      db_->BatchUpdate(kOrigin1, /*methods_with_options=*/{});
+  EXPECT_EQ(result.overall_result, OperationResult::kSuccess);
+  EXPECT_TRUE(result.inner_method_results.empty());
+}
+
+TEST_P(SharedStorageDatabaseParamTest, BatchUpdate_OneMethod_Success) {
+  const url::Origin kOrigin1 =
+      url::Origin::Create(GURL("http://www.example1.test"));
+
+  std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+      methods_with_options;
+  methods_with_options.push_back(
+      content::MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
+                              /*ignore_if_present=*/true));
+
+  BatchUpdateResult result = db_->BatchUpdate(kOrigin1, methods_with_options);
+  EXPECT_EQ(result.overall_result, OperationResult::kSuccess);
+  EXPECT_THAT(result.inner_method_results, ElementsAre(OperationResult::kSet));
+
+  EXPECT_EQ(db_->Get(kOrigin1, u"a").data, u"b");
+}
+
+TEST_P(SharedStorageDatabaseParamTest, BatchUpdate_OneMethod_Failure) {
+  const url::Origin kOrigin1 =
+      url::Origin::Create(GURL("http://www.example1.test"));
+
+  std::pair<std::u16string, std::u16string> key_value_pair_max_bytes(
+      std::u16string(25, u'a'), std::u16string(25, u'b'));
+
+  // Attempt to set a value that would exceed its storage limit.
+  std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+      methods_with_options;
+  methods_with_options.push_back(content::MojomSetMethod(
+      /*key=*/key_value_pair_max_bytes.first,
+      /*value=*/(key_value_pair_max_bytes.second + u"b"),
+      /*ignore_if_present=*/true));
+
+  BatchUpdateResult result = db_->BatchUpdate(kOrigin1, methods_with_options);
+  EXPECT_EQ(result.overall_result, OperationResult::kNoCapacity);
+  EXPECT_THAT(result.inner_method_results,
+              ElementsAre(OperationResult::kNoCapacity));
+
+  EXPECT_EQ(db_->Get(kOrigin1, u"a").result, OperationResult::kNotFound);
+}
+
+TEST_P(SharedStorageDatabaseParamTest, BatchUpdate_ThreeMethods_Success) {
+  const url::Origin kOrigin1 =
+      url::Origin::Create(GURL("http://www.example1.test"));
+
+  std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+      methods_with_options;
+  methods_with_options.push_back(
+      content::MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
+                              /*ignore_if_present=*/true));
+  methods_with_options.push_back(
+      content::MojomAppendMethod(/*key=*/u"a", /*value=*/u"b"));
+  methods_with_options.push_back(content::MojomSetMethod(
+      /*key=*/u"c", /*value=*/u"d", /*ignore_if_present=*/true));
+
+  BatchUpdateResult result = db_->BatchUpdate(kOrigin1, methods_with_options);
+  EXPECT_EQ(result.overall_result, OperationResult::kSuccess);
+  EXPECT_THAT(result.inner_method_results,
+              ElementsAre(OperationResult::kSet, OperationResult::kSet,
+                          OperationResult::kSet));
+
+  EXPECT_EQ(db_->Get(kOrigin1, u"a").data, u"bb");
+  EXPECT_EQ(db_->Get(kOrigin1, u"c").data, u"d");
+}
+
+TEST_P(SharedStorageDatabaseParamTest,
+       BatchUpdate_ThreeMethods_SecondMethodFailure) {
+  const url::Origin kOrigin1 =
+      url::Origin::Create(GURL("http://www.example1.test"));
+
+  std::pair<std::u16string, std::u16string> key_value_pair_max_bytes(
+      std::u16string(25, u'a'), std::u16string(25, u'b'));
+
+  // For the second method, attempt to set a value that would exceed its storage
+  // limit. The expected outcome is that the entire batch fails due to the
+  // second method failure, and all changes are rolled back.
+  std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+      methods_with_options;
+  methods_with_options.push_back(
+      content::MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
+                              /*ignore_if_present=*/true));
+  methods_with_options.push_back(
+      content::MojomSetMethod(/*key=*/key_value_pair_max_bytes.first,
+                              /*value=*/key_value_pair_max_bytes.second,
+                              /*ignore_if_present=*/true));
+  methods_with_options.push_back(content::MojomSetMethod(
+      /*key=*/u"c", /*value=*/u"d", /*ignore_if_present=*/true));
+
+  BatchUpdateResult result = db_->BatchUpdate(kOrigin1, methods_with_options);
+  EXPECT_EQ(result.overall_result, OperationResult::kNoCapacity);
+  EXPECT_THAT(result.inner_method_results,
+              ElementsAre(OperationResult::kSet, OperationResult::kNoCapacity));
+
+  EXPECT_EQ(db_->Get(kOrigin1, u"a").result, OperationResult::kNotFound);
+  EXPECT_EQ(db_->Get(kOrigin1, key_value_pair_max_bytes.first).result,
+            OperationResult::kNotFound);
+  EXPECT_EQ(db_->Get(kOrigin1, u"c").result, OperationResult::kNotFound);
+}
+
+// Tests 'delete' within BatchUpdate() after a 'set' on the same key.
+TEST_P(SharedStorageDatabaseParamTest, BatchUpdate_SetAndDelete) {
+  const url::Origin kOrigin1 =
+      url::Origin::Create(GURL("http://www.example1.test"));
+
+  std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+      methods_with_options;
+  methods_with_options.push_back(
+      content::MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
+                              /*ignore_if_present=*/true));
+  methods_with_options.push_back(content::MojomDeleteMethod(/*key=*/u"a"));
+
+  BatchUpdateResult result = db_->BatchUpdate(kOrigin1, methods_with_options);
+  EXPECT_EQ(result.overall_result, OperationResult::kSuccess);
+  EXPECT_THAT(result.inner_method_results,
+              ElementsAre(OperationResult::kSet, OperationResult::kSuccess));
+
+  EXPECT_EQ(db_->Get(kOrigin1, u"a").result, OperationResult::kNotFound);
+}
+
+// Tests 'clear' within BatchUpdate() after a 'set'.
+TEST_P(SharedStorageDatabaseParamTest, BatchUpdate_SetAndClear) {
+  const url::Origin kOrigin1 =
+      url::Origin::Create(GURL("http://www.example1.test"));
+
+  std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+      methods_with_options;
+  methods_with_options.push_back(
+      content::MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
+                              /*ignore_if_present=*/true));
+  methods_with_options.push_back(content::MojomClearMethod());
+
+  BatchUpdateResult result = db_->BatchUpdate(kOrigin1, methods_with_options);
+  EXPECT_EQ(result.overall_result, OperationResult::kSuccess);
+  EXPECT_THAT(result.inner_method_results,
+              ElementsAre(OperationResult::kSet, OperationResult::kSuccess));
+
+  EXPECT_EQ(db_->Get(kOrigin1, u"a").result, OperationResult::kNotFound);
 }
 
 TEST_P(SharedStorageDatabaseParamTest, Get_NonUpdatedKeyExpires) {

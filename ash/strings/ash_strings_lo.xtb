@@ -215,6 +215,7 @@
 <translation id="1679841710523778799">ເພີ່ມຄວາມສະຫວ່າງຂຶ້ນ</translation>
 <translation id="1680659827022803830">ການຄວບຄຸມການໂທວິດີໂອ</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1696984622403682083">ທ່ານສາມາດປິດໃຊ້ຄຸນສົມບັດນີ້ຕອນໃດກໍໄດ້ໃນການຕັ້ງຄ່າ. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="1698080062160024910">ໂມງນັບຖອຍຫຼັງ <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">ທີ່ຢູ່ IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1703117532528082099">ຈອດໜ້າຈໍທີ່ນຳໃຊ້ຢູ່ທາງຊ້າຍແລ້ວ.</translation>
@@ -241,6 +242,8 @@
 <translation id="1755556344721611131">ແອັບການວິນິໄສ</translation>
 <translation id="1756833229520115364">ບໍ່ສາມາດບັນທຶກແມ່ແບບໄດ້. ມີໜ້າຈໍ ຫຼື ແຖບຫຼາຍເກີນໄປ.</translation>
 <translation id="1757857692711134412">ປິດຈົນກວ່າຕາເວັນຕົກ</translation>
+<translation id="1763084151787818322">ຄຳສັ່ງອື່ນໆ</translation>
+<translation id="1768138163688567246">ປິດການຊອກຫາໃນໜ້າຈໍຂອງຂ້ອຍ</translation>
 <translation id="1768366657309696705">ປ່ຽນປຸ່ມລັດແປ້ນພິມ <ph name="LAUNCHER_KEY_NAME" /> + ຈ້ຳເມັດ ແລ້ວ. ເພື່ອໃຊ້ປຸ່ມ Insert, ກະລຸນາກົດປຸ່ມ <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">ຍ້າຍໄປຫາແຖວ <ph name="ROW_NUMBER" />, ຖັນ <ph name="COLUMN_NUMBER" /> ແລ້ວ.</translation>
 <translation id="1771761307086386028">ເລື່ອນໄປຂວາ</translation>
@@ -965,6 +968,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ແອັບທີ່ຕິດຕັ້ງແລ້ວ, ຢຸດໄວ້ຊົ່ວຄາວແລ້ວ</translation>
 <translation id="4228078597006700451">ບໍ່ໄດ້ຕັ້ງຄ່າການຄວບຄຸມ</translation>
 <translation id="4230560241506423345">ໃໝ່</translation>
+<translation id="4236726631849783264">ການແຈ້ງເຕືອນກ່ຽວກັບຄຳສັ່ງທີ່ແນະນຳ</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">ໂໝດພາບຮວມ</translation>
 <translation id="4242533952199664413">ເປີດ​ການ​ຕັ້ງ​ຄ່າ</translation>
@@ -1042,6 +1046,7 @@
 <translation id="4471354919263203780">ກຳລັງດາວໂຫຼດໄຟລ໌ການຈຳແນກສຽງເວົ້າ... <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{ອັບເດດອຸປະກອນຕອນນີ້}=1{ອັບເດດອຸປະກອນພາຍໃນ 1 ວິນາທີ}other{ອັບເດດອຸປະກອນພາຍໃນ # ວິນາທີ}}</translation>
 <translation id="4472575034687746823">ເລີ່ມຕົ້ນ</translation>
+<translation id="4473489370276014885">Google Contacts</translation>
 <translation id="4477350412780666475">ເພງຕໍ່ໄປ</translation>
 <translation id="4477751544736611934">ສິ່ງນີ້ອາດມີຄ່າໃຊ້ຈ່າຍຂໍ້ມູນ.
 ເຊື່ອມຕໍ່ 1 ອຸປະກອນແລ້ວ.</translation>
@@ -1068,6 +1073,7 @@
 <translation id="4545950850562423083">ບັນທຶກໜ້າປັດຈຸບັນເປັນບຸກມາກ</translation>
 <translation id="4548482551627849548">ຍ້າຍໜ້າຈໍທີ່ເປີດນຳໃຊ້ຢູ່ໄປໃສ່ໂຕະຢູ່ທາງຊ້າຍ</translation>
 <translation id="4552748006424994716">ເພື່ອຫຼີກເວັ້ນສຽງສະທ້ອນ, ທ່ານສາມາດຟັງສຽງຈາກໄມຂອງທ່ານເທົ່ານັ້ນດ້ວຍຫູຟັງແບບມີສາຍ.</translation>
+<translation id="4556953949326137018">ເມື່ອທ່ານໃຊ້ຄຳສັ່ງທີ່ແນະນຳ ເຊັ່ນ: “ເພີ່ມໃສ່ປະຕິທິນ” ຫຼື “ສ້າງ Google Docs”, ເນື້ອຫາຈາກພື້ນທີ່ທີ່ເລືອກຈະຖືກສົ່ງໄປໃຫ້ເຊີບເວີຂອງ Google ເພື່ອແນະນຳຄຳສັ່ງ, ໂດຍຂຶ້ນກັບ <ph name="LINK_TO_SERVICE_TERMS" />. ຢ່າລະບຸຂໍ້ມູນໃດກໍຕາມທີ່ເປັນສ່ວນຕົວ, ລະອຽດອ່ອນ ຫຼື ເປັນຄວາມລັບ.</translation>
 <translation id="4560576029703263363">ເປີດ</translation>
 <translation id="4561267230861221837">3G</translation>
 <translation id="4565377596337484307">ເຊື່ອງລະຫັດຜ່ານ</translation>
@@ -1151,6 +1157,7 @@
 <translation id="481455355267255546">ຕໍ່ໄປ</translation>
 <translation id="481749895090480684">ລາຍຊື່ໜ້າວຽກ: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">ກ້ອງຖ່າຍຮູບ ແລະ ໄມໂຄຣໂຟນ</translation>
+<translation id="4828935196674083554">ກຳລັງເພີ່ມ...</translation>
 <translation id="482908187605862807">ແອັບທີ່ສາມາດໃຊ້ໄດ້ຈາກ Play Store</translation>
 <translation id="4831034276697007977">ທ່ານແນ່ໃຈບໍ່ວ່າທ່ານຕ້ອງການປິດການຄລິກອັດຕະໂນມັດ?</translation>
 <translation id="4835677468087803981">ເຊື່ອງ PIN</translation>
@@ -1648,6 +1655,7 @@
 <translation id="641817663353603351">ເລື່ອນໜ້າຂຶ້ນ</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">ລຶບລ້າງການແຈ້ງເຕືອນທັງໝົດ</translation>
+<translation id="6426905245930183644">ກຳລັງສ້າງ…</translation>
 <translation id="6430225033895752525">ສະແດງການຕັ້ງຄ່າໂໝດໂຟກັສ</translation>
 <translation id="643147933154517414">ສໍາເລັດແລ້ວ</translation>
 <translation id="6431865393913628856">ບັນທຶກໜ້າຈໍ</translation>

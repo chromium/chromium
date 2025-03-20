@@ -19,13 +19,15 @@ import android.view.View;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
@@ -63,6 +65,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
 public class PriceTrackingButtonControllerUnitTest {
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Activity mActivity;
     private ObservableSupplierImpl<Profile> mProfileSupplier;
     private ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
@@ -83,8 +86,6 @@ public class PriceTrackingButtonControllerUnitTest {
     public void setUp() {
         mActivity = Robolectric.setupActivity(Activity.class);
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-
-        MockitoAnnotations.initMocks(this);
 
         PriceTrackingUtilsJni.setInstanceForTesting(mMockPriceTrackingUtilsJni);
         mPriceTrackingStateSupplier = new ObservableSupplierImpl<>(false);

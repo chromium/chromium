@@ -702,16 +702,9 @@ void LabelButton::ResetLabelEnabledColor() {
     return;
   }
 
-  const auto& color_variant = button_state_colors_[GetState()];
-  if (color_variant) {
-    if (auto color = color_variant->GetSkColor();
-        color && color != label_->GetEnabledColor()) {
-      label_->SetEnabledColor(*color);
-    } else if (auto color_id = color_variant->GetColorId()) {
-      // Omitting the check that the new color id differs from the existing
-      // color id, because the setter already does that check.
-      label_->SetEnabledColor(*color_id);
-    }
+  const auto& color = button_state_colors_[GetState()];
+  if (color && color != label_->GetEnabledColor()) {
+    label_->SetEnabledColor(*color);
   }
 }
 

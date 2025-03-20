@@ -119,6 +119,102 @@ Value::Dict CreateTestResultPartValue(const TestResultPart& part) {
   return value;
 }
 
+// Create value for `TestResult`.
+Value::Dict CreateTestResultValue(const TestResult& test_result) {
+  Value::Dict value;
+  value.Set("status", test_result.StatusAsString());
+  value.Set("elapsed_time_ms",
+            static_cast<int>(test_result.elapsed_time.InMilliseconds()));
+
+  if (test_result.thread_id) {
+    // The thread id might be an int64, however int64 values are not
+    // representable in JS and JSON (cf. crbug.com/40228085) since JS
+    // numbers are float64. Since thread IDs are likely to be allocated
+    // sequentially, truncation of the high bits is preferable to loss of
+    // precision in the low bits, as threads are more likely to differ in
+    // their low bit values, so we truncate the value to int32. Since this
+    // is only used for dumping test runner state, the loss of information
+    // is not catastrophic and won't happen in normal browser execution.
+    // Additionally, the test launcher tid is also truncated, so the
+    // truncated values should match.
+    //
+    // LINT.IfChange(TestLauncherTidTruncation)
+    value.Set("thread_id",
+              test_result.thread_id->truncate_to_int32_for_display_only());
+    // LINT.ThenChange(test_launcher_tracer.cc:TestLauncherTidTruncation)
+  }
+  if (test_result.process_num) {
+    value.Set("process_num", *test_result.process_num);
+  }
+  if (test_result.timestamp) {
+    // The timestamp is formatted using TimeFormatAsIso8601 instead of
+    // FormatTimeAsIso8601 here for a better accuracy, since the former
+    // method includes fractions of a second.
+    value.Set("timestamp", TimeFormatAsIso8601(*test_result.timestamp).c_str());
+  }
+
+  bool lossless_snippet = false;
+  if (IsStringUTF8(test_result.output_snippet)) {
+    value.Set("output_snippet", test_result.output_snippet);
+    lossless_snippet = true;
+  } else {
+    value.Set("output_snippet",
+              "<non-UTF-8 snippet, see output_snippet_base64>");
+  }
+
+  // TODO(phajdan.jr): Fix typo in JSON key (losless -> lossless)
+  // making sure not to break any consumers of this data.
+  value.Set("losless_snippet", lossless_snippet);
+
+  // Also include the raw version (base64-encoded so that it can be safely
+  // JSON-serialized - there are no guarantees about character encoding
+  // of the snippet). This can be very useful piece of information when
+  // debugging a test failure related to character encoding.
+  std::string base64_output_snippet =
+      base::Base64Encode(test_result.output_snippet);
+  value.Set("output_snippet_base64", base64_output_snippet);
+  if (!test_result.links.empty()) {
+    Value::Dict links;
+    for (const auto& link : test_result.links) {
+      Value::Dict link_info;
+      link_info.Set("content", link.second);
+      links.SetByDottedPath(link.first, std::move(link_info));
+    }
+    value.Set("links", std::move(links));
+  }
+  if (!test_result.tags.empty()) {
+    Value::Dict tags;
+    for (const auto& tag : test_result.tags) {
+      Value::List tag_values;
+      for (const auto& tag_value : tag.second) {
+        tag_values.Append(tag_value);
+      }
+      Value::Dict tag_info;
+      tag_info.Set("values", std::move(tag_values));
+      tags.SetByDottedPath(tag.first, std::move(tag_info));
+    }
+    value.Set("tags", std::move(tags));
+  }
+  if (!test_result.properties.empty()) {
+    Value::Dict properties;
+    for (const auto& property : test_result.properties) {
+      Value::Dict property_info;
+      property_info.Set("value", property.second);
+      properties.SetByDottedPath(property.first, std::move(property_info));
+    }
+    value.Set("properties", std::move(properties));
+  }
+
+  Value::List test_result_parts;
+  for (const TestResultPart& result_part : test_result.test_result_parts) {
+    Value::Dict result_part_value = CreateTestResultPartValue(result_part);
+    test_result_parts.Append(std::move(result_part_value));
+  }
+  value.Set("result_parts", std::move(test_result_parts));
+
+  return value;
+}
+
 }  // namespace
 
 TestResultsTracker::TestResultsTracker() : iteration_(-1), out_(nullptr) {}
@@ -475,108 +571,8 @@ bool TestResultsTracker::SaveSummaryAsJSON(
     for (const auto& j : per_iteration_data_[i].results) {
       Value::List test_results;
 
-      for (const auto& test_result : j.second.test_results) {
-        Value::Dict test_result_value;
-
-        test_result_value.Set("status", test_result.StatusAsString());
-        test_result_value.Set(
-            "elapsed_time_ms",
-            static_cast<int>(test_result.elapsed_time.InMilliseconds()));
-
-        if (test_result.thread_id) {
-          // The thread id might be an int64, however int64 values are not
-          // representable in JS and JSON (cf. crbug.com/40228085) since JS
-          // numbers are float64. Since thread IDs are likely to be allocated
-          // sequentially, truncation of the high bits is preferable to loss of
-          // precision in the low bits, as threads are more likely to differ in
-          // their low bit values, so we truncate the value to int32. Since this
-          // is only used for dumping test runner state, the loss of information
-          // is not catastrophic and won't happen in normal browser execution.
-          // Additionally, the test launcher tid is also truncated, so the
-          // truncated values should match.
-          //
-          // LINT.IfChange(TestLauncherTidTruncation)
-          test_result_value.Set(
-              "thread_id",
-              test_result.thread_id->truncate_to_int32_for_display_only());
-          // LINT.ThenChange(test_launcher_tracer.cc:TestLauncherTidTruncation)
-        }
-        if (test_result.process_num) {
-          test_result_value.Set("process_num", *test_result.process_num);
-        }
-        if (test_result.timestamp) {
-          // The timestamp is formatted using TimeFormatAsIso8601 instead of
-          // FormatTimeAsIso8601 here for a better accuracy, since the former
-          // method includes fractions of a second.
-          test_result_value.Set(
-              "timestamp", TimeFormatAsIso8601(*test_result.timestamp).c_str());
-        }
-
-        bool lossless_snippet = false;
-        if (IsStringUTF8(test_result.output_snippet)) {
-          test_result_value.Set("output_snippet", test_result.output_snippet);
-          lossless_snippet = true;
-        } else {
-          test_result_value.Set(
-              "output_snippet",
-              "<non-UTF-8 snippet, see output_snippet_base64>");
-        }
-
-        // TODO(phajdan.jr): Fix typo in JSON key (losless -> lossless)
-        // making sure not to break any consumers of this data.
-        test_result_value.Set("losless_snippet", lossless_snippet);
-
-        // Also include the raw version (base64-encoded so that it can be safely
-        // JSON-serialized - there are no guarantees about character encoding
-        // of the snippet). This can be very useful piece of information when
-        // debugging a test failure related to character encoding.
-        std::string base64_output_snippet =
-            base::Base64Encode(test_result.output_snippet);
-        test_result_value.Set("output_snippet_base64", base64_output_snippet);
-        if (!test_result.links.empty()) {
-          Value::Dict links;
-          for (const auto& link : test_result.links) {
-            Value::Dict link_info;
-            link_info.Set("content", link.second);
-            links.SetByDottedPath(link.first, std::move(link_info));
-          }
-          test_result_value.Set("links", std::move(links));
-        }
-        if (!test_result.tags.empty()) {
-          Value::Dict tags;
-          for (const auto& tag : test_result.tags) {
-            Value::List tag_values;
-            for (const auto& tag_value : tag.second) {
-              tag_values.Append(tag_value);
-            }
-            Value::Dict tag_info;
-            tag_info.Set("values", std::move(tag_values));
-            tags.SetByDottedPath(tag.first, std::move(tag_info));
-          }
-          test_result_value.Set("tags", std::move(tags));
-        }
-        if (!test_result.properties.empty()) {
-          Value::Dict properties;
-          for (const auto& property : test_result.properties) {
-            Value::Dict property_info;
-            property_info.Set("value", property.second);
-            properties.SetByDottedPath(property.first,
-                                       std::move(property_info));
-          }
-          test_result_value.Set("properties", std::move(properties));
-        }
-
-        Value::List test_result_parts;
-        for (const TestResultPart& result_part :
-             test_result.test_result_parts) {
-          Value::Dict result_part_value =
-              CreateTestResultPartValue(result_part);
-
-          test_result_parts.Append(std::move(result_part_value));
-        }
-        test_result_value.Set("result_parts", std::move(test_result_parts));
-
-        test_results.Append(std::move(test_result_value));
+      for (const TestResult& test_result : j.second.test_results) {
+        test_results.Append(CreateTestResultValue(test_result));
       }
 
       current_iteration_data.Set(j.first, std::move(test_results));

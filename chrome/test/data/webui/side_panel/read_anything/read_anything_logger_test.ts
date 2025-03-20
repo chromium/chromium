@@ -4,9 +4,9 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {MetricsBrowserProxyImpl, ReadAloudSettingsChange, ReadAnythingLogger, ReadAnythingSettingsChange, SpeechControls, TimeFrom, TimeTo} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {MetricsBrowserProxyImpl, ReadAloudSettingsChange, ReadAnythingLogger, ReadAnythingSettingsChange, ReadAnythingVoiceType, SpeechControls, TimeFrom} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertGT, assertLE} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {ReadAnythingVoiceType} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+
 import {createSpeechSynthesisVoice} from './common.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
@@ -17,9 +17,9 @@ suite('Logger', () => {
   let metrics: TestMetricsBrowserProxy;
 
   async function assertTimeMetricIsCalled(
-      from: TimeFrom, to: TimeTo, expectedMetric: string) {
+      from: TimeFrom, expectedMetric: string) {
     metrics.reset();
-    logger.logTimeBetween(from, to, 100, 175);
+    logger.logTimeFrom(from, 100, 175);
     assertEquals(expectedMetric, (await metrics.whenCalled('recordTime'))[0]);
   }
 
@@ -211,35 +211,21 @@ suite('Logger', () => {
     assertGT(startTime, recordedTime);
   });
 
-  test('logTimeBetween uses correct uma name', () => {
+  test('logTimeFrom uses correct uma name', () => {
     assertTimeMetricIsCalled(
-        TimeFrom.APP, TimeTo.CONNNECTED_CALLBACK,
-        'Accessibility.ReadAnything.TimeFromAppStartedToConnectedCallback');
-    assertTimeMetricIsCalled(
-        TimeFrom.APP, TimeTo.CONSTRUCTOR,
+        TimeFrom.APP,
         'Accessibility.ReadAnything.TimeFromAppStartedToConstructor');
     assertTimeMetricIsCalled(
-        TimeFrom.APP_CONSTRUCTOR, TimeTo.CONNNECTED_CALLBACK,
-        'Accessibility.ReadAnything.' +
-            'TimeFromAppConstructorStartedToConnectedCallback');
-    assertTimeMetricIsCalled(
-        TimeFrom.TOOLBAR, TimeTo.CONNNECTED_CALLBACK,
-        'Accessibility.ReadAnything.TimeFromToolbarStartedToConnectedCallback');
-    assertTimeMetricIsCalled(
-        TimeFrom.TOOLBAR, TimeTo.CONSTRUCTOR,
+        TimeFrom.TOOLBAR,
         'Accessibility.ReadAnything.TimeFromToolbarStartedToConstructor');
-    assertTimeMetricIsCalled(
-        TimeFrom.TOOLBAR_CONSTRUCTOR, TimeTo.CONNNECTED_CALLBACK,
-        'Accessibility.ReadAnything.' +
-            'TimeFromToolbarConstructorStartedToConnectedCallback');
   });
 
-  test('logTimeBetween logs time difference', async () => {
+  test('logTimeFrom logs time difference', async () => {
     const startTime = 50;
     const endTime = 125;
     const expectedTime = endTime - startTime;
 
-    logger.logTimeBetween(TimeFrom.APP, TimeTo.CONSTRUCTOR, startTime, endTime);
+    logger.logTimeFrom(TimeFrom.APP, startTime, endTime);
 
     assertEquals(expectedTime, (await metrics.whenCalled('recordTime'))[1]);
   });

@@ -530,26 +530,6 @@ TEST_F(PageDiscardingHelperTest, TestCannotDiscardIsConnectedToUSBDevice) {
   EXPECT_TRUE(reasons_vec.empty());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/391179510): Remove this test if the WasDiscarded() property is
-// removed.
-TEST_F(PageDiscardingHelperTest, DISABLED_TestCannotDiscardPageMultipleTimes) {
-  PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
-      ->SetWasDiscardedForTesting(true);
-  std::vector<CannotDiscardReason> reasons_vec;
-  EXPECT_FALSE(CanDiscard(page_node(), DiscardReason::URGENT, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kWasDiscarded));
-
-  reasons_vec.clear();
-  EXPECT_FALSE(CanDiscard(page_node(), DiscardReason::PROACTIVE, &reasons_vec));
-  EXPECT_THAT(reasons_vec, Contains(CannotDiscardReason::kWasDiscarded));
-
-  reasons_vec.clear();
-  EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::EXTERNAL, &reasons_vec));
-  EXPECT_TRUE(reasons_vec.empty());
-}
-#endif
-
 TEST_F(PageDiscardingHelperTest, TestCannotDiscardPageWithFormInteractions) {
   frame_node()->SetHadFormInteraction();
   std::vector<CannotDiscardReason> reasons_vec;

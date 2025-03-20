@@ -861,10 +861,10 @@ TEST_F(WebStateImplTest, UncommittedRestoreSessionOptimisedStorage) {
   active_page->set_page_title("Title");
   active_page->set_page_url(url.spec());
 
-  WebStateImpl web_state =
-      WebStateImpl(GetBrowserState(), web::WebStateID::NewUnique(), metadata,
-                   base::ReturnValueOnce(std::move(storage)),
-                   base::ReturnValueOnce<NSData*>(nil));
+  WebStateImpl web_state = WebStateImpl(
+      GetBrowserState(), web::WebStateID::NewUnique(), metadata,
+      base::ReturnValueOnce(std::make_optional(std::move(storage))),
+      base::ReturnValueOnce<NSData*>(nil));
 
   // Check that the title and url are correct.
   ASSERT_FALSE(web_state.IsRealized());
@@ -1177,10 +1177,10 @@ TEST_F(WebStateImplTest, SerializeMetadataToProto) {
   original_metadata.Swap(storage.mutable_metadata());
 
   // Create an unrealized WebState.
-  web::WebStateImpl web_state =
-      WebStateImpl(GetBrowserState(), WebStateID::NewUnique(),
-                   original_metadata, base::ReturnValueOnce(std::move(storage)),
-                   base::ReturnValueOnce<NSData*>(nil));
+  web::WebStateImpl web_state = WebStateImpl(
+      GetBrowserState(), WebStateID::NewUnique(), original_metadata,
+      base::ReturnValueOnce(std::make_optional(std::move(storage))),
+      base::ReturnValueOnce<NSData*>(nil));
 
   // Check that the metadata can be fetched from the unrealized WebState.
   {

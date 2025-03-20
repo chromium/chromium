@@ -36,6 +36,8 @@ class TestLayerTreeFrameSink::TestCompositorFrameSinkSupport
     : public viz::CompositorFrameSinkSupport {
  public:
   TestCompositorFrameSinkSupport(viz::mojom::CompositorFrameSinkClient* client,
+                                 TestLayerTreeFrameSinkClient* test_client,
+                                 TaskRunnerProvider* task_runner_provider,
                                  viz::FrameSinkManagerImpl* frame_sink_manager,
                                  const viz::FrameSinkId& frame_sink_id,
                                  bool is_root,
@@ -44,7 +46,9 @@ class TestLayerTreeFrameSink::TestCompositorFrameSinkSupport
                                         frame_sink_manager,
                                         frame_sink_id,
                                         is_root),
-        display_(display) {}
+        display_(display),
+        test_client_(test_client),
+        task_runner_provider_(task_runner_provider) {}
   ~TestCompositorFrameSinkSupport() override = default;
 
   void SubmitCompositorFrame(
@@ -52,6 +56,9 @@ class TestLayerTreeFrameSink::TestCompositorFrameSinkSupport
       viz::CompositorFrame frame,
       std::optional<viz::HitTestRegionList> hit_test_region_list,
       uint64_t submit_time) override {
+    DebugScopedSetImplThread impl(task_runner_provider_);
+    test_client_->DisplayReceivedCompositorFrame(frame);
+
     // Ensure that the display's local surface ID and its size are initialized
     // (note that these calls will be no-ops if already called for this surface
     // ID/device scale factor/frame size on a previous invocation of
@@ -65,6 +72,8 @@ class TestLayerTreeFrameSink::TestCompositorFrameSinkSupport
 
  private:
   raw_ptr<viz::Display> display_;
+  raw_ptr<TestLayerTreeFrameSinkClient> test_client_ = nullptr;
+  raw_ptr<TaskRunnerProvider> task_runner_provider_;
 };
 
 class TestLayerTreeFrameSink::TestCompositorFrameSinkImpl
@@ -239,7 +248,8 @@ bool TestLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
 
   constexpr bool is_root = true;
   support_ = std::make_unique<TestCompositorFrameSinkSupport>(
-      this, frame_sink_manager_.get(), frame_sink_id_, is_root, display_.get());
+      this, test_client_, task_runner_provider_, frame_sink_manager_.get(),
+      frame_sink_id_, is_root, display_.get());
   support_->SetWantsAnimateOnlyBeginFrames();
   client_->SetBeginFrameSource(&external_begin_frame_source_);
   if (display_begin_frame_source_) {
@@ -302,7 +312,6 @@ void TestLayerTreeFrameSink::SubmitCompositorFrame(viz::CompositorFrame frame,
   DebugScopedSetImplThread impl(task_runner_provider_);
   DCHECK(frame.metadata.begin_frame_ack.has_damage);
   DCHECK(frame.metadata.begin_frame_ack.frame_id.IsSequenceValid());
-  test_client_->DisplayReceivedCompositorFrame(frame);
 
   gfx::Size frame_size = frame.size_in_pixels();
   float device_scale_factor = frame.device_scale_factor();

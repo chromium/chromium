@@ -9,7 +9,6 @@ assert(is_chromeos)
 component("cryptohome") {
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_CRYPTOHOME_IMPL" ]
   deps = [
-    "//ash/constants",
     "//base",
     "//chromeos/ash/components/dbus/constants",
     "//chromeos/ash/components/dbus/cryptohome",

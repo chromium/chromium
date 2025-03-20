@@ -388,12 +388,14 @@ RenderWidgetHostImpl* TestWebContents::CreateNewPopupWidget(
   return nullptr;
 }
 
-void TestWebContents::ShowCreatedWindow(
+WebContents* TestWebContents::ShowCreatedWindow(
     RenderFrameHostImpl* opener,
     int route_id,
     WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
-    bool user_gesture) {}
+    bool user_gesture) {
+  return nullptr;
+}
 
 void TestWebContents::ShowCreatedWidget(int process_id,
                                         int route_id,

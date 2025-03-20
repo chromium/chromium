@@ -10,9 +10,12 @@
 #import "base/logging.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/types/cxx23_to_underlying.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/chrome_overlay_window.h"
+#import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_util.h"
 
@@ -46,13 +49,13 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
 
 #pragma mark - SceneState
 
-@interface SceneState ()
+@interface SceneState () <ProfileStateObserver>
 
 @end
 
 @implementation SceneState {
   // Cache the session identifier.
-  NSString* _sceneSessionID;
+  std::string _sceneSessionID;
 
   // The AppState passed to the initializer.
   AppState* _appState;
@@ -66,19 +69,34 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
   // The state of the -incognitoContentVisible property.
   ContentVisibility _contentVisibility;
 
-  // The current value of -activationLevel.
-  SceneActivationLevel _activationLevel;
+  // The propagation policy for -activationLevel.
+  ActivationLevelPolicy _propagationPolicy;
+
+  // The current value of -activationLevel (may be hidden if the profile
+  // is not yet loaded depending on the propagation policy).
+  SceneActivationLevel _currentActivationLevel;
+
+  // The current visible value of -activationLevel.
+  SceneActivationLevel _visibleActivationLevel;
 }
 
 - (instancetype)initWithAppState:(AppState*)appState {
+  return [self initWithAppState:appState
+              propagationPolicy:ActivationLevelPolicy::kImmediate];
+}
+
+- (instancetype)initWithAppState:(AppState*)appState
+               propagationPolicy:(ActivationLevelPolicy)policy {
   self = [super init];
   if (self) {
     _appState = appState;
     _observers = [SceneStateObserverList
         observersWithProtocol:@protocol(SceneStateObserver)];
+    _currentActivationLevel = SceneActivationLevelUnattached;
+    _visibleActivationLevel = SceneActivationLevelUnattached;
     _contentVisibility = ContentVisibility::kUnknown;
     _agents = [[NSMutableArray alloc] init];
-    _sceneSessionID = @"";
+    _propagationPolicy = policy;
 
     // AppState might be nil in tests.
     if (appState) {
@@ -149,22 +167,45 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
   return self.rootViewController.view;
 }
 
+- (const std::string&)sceneSessionID {
+  return _sceneSessionID;
+}
+
 - (void)setScene:(UIWindowScene*)scene {
   _scene = scene;
   if (_scene) {
     _sceneSessionID = SessionIdentifierForScene(_scene);
   } else {
-    _sceneSessionID = @"";
+    _sceneSessionID.clear();
   }
 }
 
+- (SceneActivationLevel)activationLevel {
+  return _visibleActivationLevel;
+}
+
 - (void)setActivationLevel:(SceneActivationLevel)newLevel {
-  if (_activationLevel == newLevel) {
+  if (_currentActivationLevel == newLevel) {
     return;
   }
-  _activationLevel = newLevel;
 
-  [_observers sceneState:self transitionedToActivationLevel:newLevel];
+  _currentActivationLevel = newLevel;
+
+  // Check whether the observers must be notified of the change in activation
+  // level or not. If the propagation request to delay the propagation while
+  // the profile is loaded, do not propagate unless the profile has reached
+  // the kPrepareUI state (i.e. is done loading) or the activation level is
+  // SceneActivationLevelDisconnected (i.e. we always propagate this event
+  // to properly destroy the scene).
+  if (_propagationPolicy == ActivationLevelPolicy::kDelayedIfProfileLoading) {
+    if (_profileState.initStage < ProfileInitStage::kPrepareUI) {
+      if (_currentActivationLevel != SceneActivationLevelDisconnected) {
+        return;
+      }
+    }
+  }
+
+  [self transitionToActivationLevel];
 }
 
 - (void)setUIEnabled:(BOOL)UIEnabled {
@@ -269,6 +310,23 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
 - (void)setProfileState:(ProfileState*)profileState {
   _profileState = profileState;
   [_observers sceneState:self profileStateConnected:_profileState];
+  if (_propagationPolicy == ActivationLevelPolicy::kDelayedIfProfileLoading) {
+    [_profileState addObserver:self];
+  }
+}
+
+#pragma mark - ProfileStateObserver
+
+- (void)profileState:(ProfileState*)profileState
+    didTransitionToInitStage:(ProfileInitStage)nextInitStage
+               fromInitStage:(ProfileInitStage)fromInitStage {
+  if (nextInitStage < ProfileInitStage::kPrepareUI) {
+    return;
+  }
+
+  [profileState removeObserver:self];
+
+  [self transitionToActivationLevel];
 }
 
 #pragma mark - UIBlockerTarget
@@ -309,7 +367,7 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
 
 - (NSString*)description {
   NSString* activityString = nil;
-  switch (_activationLevel) {
+  switch (_visibleActivationLevel) {
     case SceneActivationLevelUnattached: {
       activityString = @"Unattached";
       break;
@@ -395,6 +453,33 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:object forKey:key];
   [userDefaults synchronize];
+}
+
+#pragma mark - Delayed activation level
+
+// Notifies the observers of the changes to the activation level. As the
+// client code expects the transition to go through stages sequentially,
+// step through the stages if they are not adjacent.
+- (void)transitionToActivationLevel {
+  if (_visibleActivationLevel == _currentActivationLevel) {
+    return;
+  }
+
+  NSInteger delta = _visibleActivationLevel < _currentActivationLevel ? +1 : -1;
+  if (_currentActivationLevel == SceneActivationLevelDisconnected) {
+    // Transition to SceneActivationLevelDisconnected do not have to go
+    // through intermediate activation levels.
+    delta = base::to_underlying(_currentActivationLevel) -
+            base::to_underlying(_visibleActivationLevel);
+  }
+
+  while (_visibleActivationLevel != _currentActivationLevel) {
+    _visibleActivationLevel = static_cast<SceneActivationLevel>(
+        base::to_underlying(_visibleActivationLevel) + delta);
+
+    [_observers sceneState:self
+        transitionedToActivationLevel:_visibleActivationLevel];
+  }
 }
 
 @end

@@ -54,7 +54,6 @@
 <translation id="1090629319939036170">Menú de RV</translation>
 <translation id="1091463901118115503">Seguir lendo</translation>
 <translation id="1091779689406092804">capturas de pantalla</translation>
-<translation id="1094777233105318927">Información sobre o teu navegador, sistema operativo, dispositivo, software instalado e ficheiros</translation>
 <translation id="1096545575934602868">Este campo non debe ter máis de <ph name="MAX_ITEMS_LIMIT" /> entradas. Descartaranse todas as restantes.</translation>
 <translation id="1097803577928227769">Xardíns e parques rexionais</translation>
 <translation id="1099928364755383720">pantalla superposta automática</translation>
@@ -1696,6 +1695,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3964661563329879394">{COUNT,plural, =0{Ningún}=1{De 1 sitio }other{De # sitios }}</translation>
 <translation id="3965672182149944205">Queres gardar o enderezo?</translation>
 <translation id="3966044442021752214">Seguranza do produto</translation>
+<translation id="3969869202926863008">Acceso á rede local</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> está bloqueado</translation>
 <translation id="3975852104434126461">Industria automobilística</translation>
@@ -2052,6 +2052,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="460848736049414407">Bloqueado polo administrador</translation>
 <translation id="4610279718074907952">Este sitio está nun grupo definido por <ph name="SET_OWNER" />, que pode ver a túa actividade</translation>
 <translation id="46128681529823442">Equipamento de fútbol</translation>
+<translation id="4612904677925722054">É posible que este sitio inclúa contido non adecuado para menores. Para poderes acceder a este sitio web, ten que darche permiso o teu pai, nai, titor ou titora.</translation>
 <translation id="4619564267100705184">Verificar a túa identidade</translation>
 <translation id="4622292761762557753">Transferir de todos os xeitos</translation>
 <translation id="4622647778991854660">Activa as notificacións no Centro de notificacións. Abre <ph name="LINK" />.</translation>
@@ -2649,6 +2650,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5660122698869360728">Un novo cartafol intelixente que che axuda a gardar todas as páxinas de compras nun mesmo lugar, a facer un seguimento automático dos prezos e a obter estatísticas relacionadas con eles, entre outras cousas.</translation>
 <translation id="5663955426505430495">O administrador deste dispositivo instalou extensións para poder utilizar funcións adicionais. As extensións teñen acceso a algúns dos teus datos.</translation>
 <translation id="5667827081946850877">Audiolibros</translation>
+<translation id="5674082555327905359">Pode pedir permiso para conectarse a calquera dispositivo da túa rede local</translation>
 <translation id="5675650730144413517">Esta páxina non funciona</translation>
 <translation id="5675809467256309336">Música dance e electrónica</translation>
 <translation id="5675959228867414813">Mostrar por data</translation>
@@ -2897,6 +2899,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6116338172782435947">Ver o texto e as imaxes que se copian no portapapeis</translation>
 <translation id="6117833587752089929">Foto (satinado)</translation>
 <translation id="6118782133429281336">A lista de orixe está baleira.</translation>
+<translation id="6120950591512958208">Usa este código cando tramites a compra.</translation>
 <translation id="612178891608320683">Cociña vegana</translation>
 <translation id="6122181661879998141">anverso da tarxeta</translation>
 <translation id="6124058285696691147">Descargar o anexo</translation>
@@ -2922,6 +2925,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6159908896951210943">Usar rexistro formal</translation>
 <translation id="6160391204859821737">Activar unha función de privacidade nos anuncios</translation>
 <translation id="6162403104168428984">Queres actualizar o enderezo?</translation>
+<translation id="6164605812717770913">O teu pai, nai, titor ou titora decidiu que non permitirche visitar este sitio. Podes pedirlle que o desbloquee.</translation>
 <translation id="6165508094623778733">Máis información</translation>
 <translation id="6167577165590485365">Último intento de obtención:</translation>
 <translation id="617256461084925519">Google Chrome está tentando verificar a túa identidade para poder completar a túa información de pago.</translation>
@@ -3013,6 +3017,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6321917430147971392">Comproba a configuración de DNS</translation>
 <translation id="6322182122604171028">Non se puido utilizar Windows Hello</translation>
 <translation id="6326947323444967009">Establecer Chrome como navegador predeterminado do sistema na configuración de iOS</translation>
+<translation id="6327065120806001832">acceso á rede local</translation>
 <translation id="6328639280570009161">Proba a desactivar a predición da rede</translation>
 <translation id="6335029926534404762">Zapatillas deportivas</translation>
 <translation id="6337133576188860026">Libera menos de <ph name="SIZE" />. É posible que algúns sitios carguen de forma máis lenta a próxima vez que os visites.</translation>
@@ -4479,7 +4484,6 @@ Detalles adicionais:
 <translation id="8919895429178014996">Ocultar todos os elementos</translation>
 <translation id="8922013791253848639">Permitir sempre os anuncios neste sitio</translation>
 <translation id="8922734931659847428">Unha lista limitada dos URL das páxinas que visites nas que se produzan <ph name="BEGIN_LINK" />eventos de tecnoloxía antiga<ph name="END_LINK" /></translation>
-<translation id="8924109546403192898">Cando Chrome marca un evento de seguranza, envíanselle datos relevantes sobre este á persoa administradora. Entre eles poden incluírse os URL das páxinas que visitas en Chrome, os URL das páxinas das que copias datos, metadatos ou nomes de ficheiros, información sobre fallos do navegador ou das pestanas e o nome de usuario que utilizas para iniciar sesión nas aplicacións baseadas na Web, no teu dispositivo e en Chrome.</translation>
 <translation id="892588693504540538">Perforación na parte superior dereita</translation>
 <translation id="8926389886865778422">Non preguntar de novo</translation>
 <translation id="8932102934695377596">O reloxo está atrasado</translation>

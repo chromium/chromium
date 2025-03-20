@@ -39,7 +39,9 @@
 <translation id="1538031354170655462">Sites usually use Near Field Communication (NFC) to work with nearby tags or devices, like scanning badges or paying contactless</translation>
 <translation id="1547123415014299762">Third-party cookies are allowed</translation>
 <translation id="1593426485665524382">New actions available near top of the screen</translation>
+<translation id="1615755956145364867">Sites can ask to play protected content</translation>
 <translation id="1620510694547887537">Camera</translation>
+<translation id="1621729191093924223">Features that need a microphone won't work</translation>
 <translation id="1633720957382884102">Related sites</translation>
 <translation id="1644574205037202324">History</translation>
 <translation id="1652197001188145583">When on, sites can ask to use NFC devices. When off, sites can't use NFC devices.</translation>
@@ -54,6 +56,7 @@
 <translation id="1743802530341753419">Ask before allowing sites to connect to a device (recommended)</translation>
 <translation id="1779089405699405702">Image decoder</translation>
 <translation id="1785415724048343560">Recommended for best experience</translation>
+<translation id="1796588414813960292">Features that need sound won't work</translation>
 <translation id="1799920918471566157">Chrome tips</translation>
 <translation id="1816835383954230954">When on, Chrome runs faster and features that use JavaScript should work as designed. When off, this reduces performance but makes V8 more resistant to attacks.</translation>
 <translation id="1818308510395330587">To let <ph name="APP_NAME" /> use AR, also turn on camera in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
@@ -71,6 +74,7 @@
 <translation id="1994173015038366702">Site URL</translation>
 <translation id="2004697686368036666">Features on some sites may not work</translation>
 <translation id="2025115093177348061">Augmented reality</translation>
+<translation id="2028449514182362831">Features that need motion sensors won't work</translation>
 <translation id="2030769033451695672">Tap to return to <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Undo</translation>
 <translation id="2091887806945687916">Sound</translation>
@@ -87,6 +91,7 @@
 <translation id="2215727959747642672">File editing</translation>
 <translation id="2218389616572918761">Sites can ask for your microphone</translation>
 <translation id="2228071138934252756">To let <ph name="APP_NAME" /> access your camera, also turn on camera in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
+<translation id="2231160360698766265">Sites can play protected content</translation>
 <translation id="2235344399760031203">Third-party cookies are blocked</translation>
 <translation id="2238944249568001759">Suggested searches based on your last tab</translation>
 <translation id="2241587408274973373">New tab page cards</translation>
@@ -256,6 +261,7 @@
 <translation id="4259722352634471385">Navigation is blocked: <ph name="URL" /></translation>
 <translation id="4274673989874969668">After you leave a site, it can keep syncing to finish tasks, like uploading photos or sending a chat message</translation>
 <translation id="4278390842282768270">Allowed</translation>
+<translation id="4290791284969893584">After closing a page, tasks that you started might not finish</translation>
 <translation id="429312253194641664">A site is playing media</translation>
 <translation id="42981349822642051">Expand</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Expires tomorrow}other{Expires in # days}}</translation>
@@ -530,6 +536,7 @@
 <translation id="8010630645305864042">{TILE_COUNT,plural, =1{Hide continue with this tab card}other{Hide continue with these tabs card}}</translation>
 <translation id="802154636333426148">Download failed</translation>
 <translation id="8042586301629853791">Sort by:</translation>
+<translation id="8051193500142930381">Features that need a camera won't work</translation>
 <translation id="8067883171444229417">Play video</translation>
 <translation id="8068648041423924542">Unable to select certificate.</translation>
 <translation id="8077120325605624147">Any site that you visit can show any ad to you</translation>
@@ -630,6 +637,7 @@
 <translation id="9138217887606523162">Current zoom is <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9156722768168878035">Let Chrome show your recent tabs in your device's app list and search results. You can turn this off at any time in Chrome settings.</translation>
 <translation id="9162462602695099906">This page is dangerous</translation>
+<translation id="9182556968660520230">Don't allow sites to play protected content</translation>
 <translation id="947156494302904893">Sites that you visit can verify that you're a real person and not a bot</translation>
 <translation id="959682366969460160">Get organised</translation>
 <translation id="967624055006145463">Data stored</translation>

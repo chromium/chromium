@@ -178,11 +178,6 @@ String FontPlatformData::FontFamilyName() const {
   return String::FromUTF8(base::as_byte_span(localized_string.fString));
 }
 
-bool FontPlatformData::IsAhem() const {
-  return EqualIgnoringASCIICase(FontFamilyName(), "ahem") ||
-         EqualIgnoringASCIICase(FontFamilyName(), "ahem (fontations)");
-}
-
 SkTypeface* FontPlatformData::Typeface() const {
   return typeface_.get();
 }
@@ -279,9 +274,8 @@ SkFont FontPlatformData::CreateSkFont(const FontDescription*) const {
 
   font.setEmbeddedBitmaps(!avoid_embedded_bitmaps_);
 
-  if ((RuntimeEnabledFeatures::NoFontAntialiasingEnabled() &&
-       !WebTestSupport::IsFontAntialiasingEnabledForTest()) ||
-      (RuntimeEnabledFeatures::DisableAhemAntialiasEnabled() && IsAhem())) {
+  if (RuntimeEnabledFeatures::NoFontAntialiasingEnabled() &&
+      !WebTestSupport::IsFontAntialiasingEnabledForTest()) {
     font.setEdging(SkFont::Edging::kAlias);
   }
 

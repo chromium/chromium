@@ -11,7 +11,8 @@ void TestLayerContext::SetVisible(bool visible) {}
 void TestLayerContext::UpdateDisplayTreeFrom(
     LayerTreeImpl& tree,
     viz::ClientResourceProvider& resource_provider,
-    viz::RasterContextProvider& context_provider) {}
+    viz::RasterContextProvider& context_provider,
+    const gfx::Rect& viewport_damage_rect) {}
 
 void TestLayerContext::UpdateDisplayTile(
     PictureLayerImpl& layer,

@@ -40,6 +40,10 @@ namespace ash {
 namespace {
 constexpr char kLockScreenReauthHistogram[] =
     "ChromeOS.LockScreenReauth.LockScreenReauthReason";
+
+bool IsScreenLocked() {
+  return session_manager::SessionManager::Get()->IsScreenLocked();
+}
 }  // namespace
 
 LockScreenReauthManager::LockScreenReauthManager(Profile* primary_profile)
@@ -92,7 +96,7 @@ void LockScreenReauthManager::MaybeForceReauthOnLockScreen(
     is_reauth_required_by_gaia_time_limit_policy_ = true;
   }
 
-  if (screenlock_bridge_->IsLocked()) {
+  if (IsScreenLocked()) {
     // On the lock screen: need to update the UI.
     ForceOnlineReauth();
   }
@@ -106,7 +110,7 @@ void LockScreenReauthManager::Shutdown() {}
 
 void LockScreenReauthManager::OnSessionStateChanged() {
   TRACE_EVENT0("login", "LockScreenReauthManager::OnSessionStateChanged");
-  if (!session_manager::SessionManager::Get()->IsScreenLocked()) {
+  if (!IsScreenLocked()) {
     // We are unlocking the session, no further action required.
     return;
   }

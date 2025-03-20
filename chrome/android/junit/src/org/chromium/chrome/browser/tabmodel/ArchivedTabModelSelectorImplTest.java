@@ -20,10 +20,12 @@ import android.content.Context;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -55,6 +57,7 @@ public class ArchivedTabModelSelectorImplTest {
     // Any type other than ActivityType.TABBED works.
     private static final @ActivityType int NO_RESTORE_TYPE = ActivityType.CUSTOM_TAB;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TabContentManager mMockTabContentManager;
     @Mock private TabDelegateFactory mTabDelegateFactory;
     @Mock private NextTabPolicySupplier mNextTabPolicySupplier;
@@ -77,7 +80,6 @@ public class ArchivedTabModelSelectorImplTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         doReturn(true).when(mIncognitoProfile).isOffTheRecord();
         mTabCreatorManager = new MockTabCreatorManager();

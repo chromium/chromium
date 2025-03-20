@@ -4,15 +4,26 @@
 
 package org.chromium.chrome.browser.dragdrop;
 
+import android.content.Context;
 import android.content.Intent;
 import android.text.format.DateUtils;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
+import org.chromium.ui.widget.Toast;
 
 /** Utility class for Chrome drag and drop implementations. */
 public class ChromeDragDropUtils {
@@ -63,5 +74,81 @@ public class ChromeDragDropUtils {
             case UrlIntentSource.TAB_IN_STRIP -> DragDropType.TAB_STRIP_TO_NEW_INSTANCE;
             default -> DragDropType.UNKNOWN_TO_NEW_INSTANCE;
         };
+    }
+
+    /**
+     * Determines the destination index when a tab is dropped into a different model.
+     *
+     * @param context The application context.
+     * @param isSourceIncognito Whether the source tab is in incognito mode.
+     * @param selector The current {@link TabModelSelector} to act on.
+     * @return The index where the tab should be inserted in the destination model.
+     */
+    public static int handleDropInDifferentModel(
+            Context context, boolean isSourceIncognito, TabModelSelector selector) {
+        assert selector != null;
+
+        // get Current selected tab in destination window.
+        Tab destTab = selector.getCurrentTab();
+
+        // Determine the destination index for drop. If the source and destination window belong to
+        // different models, show toast place the dragged view at the end of destination model.
+        // Otherwise place it immediately after the selected tab.
+        final int destIndex;
+        if (isSourceIncognito == destTab.isIncognitoBranded()) {
+            destIndex =
+                    TabModelUtils.getTabIndexById(
+                                    selector.getModel(destTab.isIncognitoBranded()),
+                                    destTab.getId())
+                            + 1;
+        } else {
+            destIndex = selector.getModel(isSourceIncognito).getCount();
+            Toast.makeText(context, R.string.tab_dropped_different_model, Toast.LENGTH_LONG).show();
+        }
+        return destIndex;
+    }
+
+    /**
+     * Retrieves {@link TabGroupMetadata} from the global drag-and-drop state.
+     *
+     * @param globalState The {@link DragDropGlobalState} containing drag data.
+     * @return The {@link TabGroupMetadata} if available, otherwise {@code null}.
+     */
+    public static @Nullable TabGroupMetadata getTabGroupMetadataFromGlobalState(
+            @Nullable DragDropGlobalState globalState) {
+        // We should only attempt to access this while we know there's an active drag.
+        assert globalState != null
+                : "Attempting to access dragged tab group with invalid drag state.";
+        if (!(globalState.getData() instanceof ChromeTabGroupDropDataAndroid)) return null;
+        return ((ChromeTabGroupDropDataAndroid) globalState.getData()).tabGroupMetadata;
+    }
+
+    /**
+     * Retrieves a {@link Tab} from the global drag-and-drop state.
+     *
+     * @param globalState The {@link DragDropGlobalState} containing drag data.
+     * @return The {@link Tab} if available, otherwise {@code null}.
+     */
+    public static @Nullable Tab getTabFromGlobalState(@Nullable DragDropGlobalState globalState) {
+        // We should only attempt to access this while we know there's an active drag.
+        assert globalState != null : "Attempting to access dragged tab with invalid drag state.";
+        if (!(globalState.getData() instanceof ChromeTabDropDataAndroid)) return null;
+        return ((ChromeTabDropDataAndroid) globalState.getData()).tab;
+    }
+
+    /**
+     * Checks whether the dragged tab is part of a tab group.
+     *
+     * @param globalState The {@link DragDropGlobalState} containing drag data.
+     * @return {@code true} if the dragged tab is part of a tab group, {@code false} otherwise.
+     */
+    public static boolean isTabInGroupFromGlobalState(@NonNull DragDropGlobalState globalState) {
+        // We should only attempt to access this while we know there's an active drag.
+        assert globalState != null : "Attempting to access dragged tab with invalid drag state.";
+        if (globalState.getData() instanceof ChromeTabDropDataAndroid) {
+            return ((ChromeTabDropDataAndroid) globalState.getData()).isTabInGroup;
+        } else {
+            return false;
+        }
     }
 }

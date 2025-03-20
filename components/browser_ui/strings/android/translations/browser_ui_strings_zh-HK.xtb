@@ -39,7 +39,9 @@
 <translation id="1538031354170655462">網站通常透過近距離無線通訊 (NFC) 與附近的標籤或裝置互動，例如掃瞄標誌或進行感應式付款</translation>
 <translation id="1547123415014299762">已允許第三方 Cookie</translation>
 <translation id="1593426485665524382">喺螢幕頂部附近有可以執行嘅新操作</translation>
+<translation id="1615755956145364867">網站可要求播放受保護的內容</translation>
 <translation id="1620510694547887537">相機</translation>
+<translation id="1621729191093924223">需要麥克風的功能將無法運作</translation>
 <translation id="1633720957382884102">相關網站</translation>
 <translation id="1644574205037202324">記錄</translation>
 <translation id="1652197001188145583">開咗之後，網站可以要求使用 NFC 裝置。閂咗之後，網站唔可以使用 NFC 裝置。</translation>
@@ -54,6 +56,7 @@
 <translation id="1743802530341753419">允許網站連接裝置前先詢問您 (建議)</translation>
 <translation id="1779089405699405702">圖片解碼器</translation>
 <translation id="1785415724048343560">建議勾選，以獲得最佳體驗</translation>
+<translation id="1796588414813960292">需要使用音訊的功能將無法運作</translation>
 <translation id="1799920918471566157">Chrome 提示</translation>
 <translation id="1816835383954230954">啟用之後可以提高 Chrome 執行速度，用 JavaScript 嘅功能應該會正常運作。閂咗之後效能會降低，不過 V8 防範攻擊嘅能力會提高。</translation>
 <translation id="1818308510395330587">如要讓 <ph name="APP_NAME" /> 使用 AR，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟相機。</translation>
@@ -71,6 +74,7 @@
 <translation id="1994173015038366702">網站網址</translation>
 <translation id="2004697686368036666">部分網站的功能可能會無法正常運作</translation>
 <translation id="2025115093177348061">擴張實境</translation>
+<translation id="2028449514182362831">需要動作感應器的功能將無法運作</translation>
 <translation id="2030769033451695672">輕按即可返回 <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">復原</translation>
 <translation id="2091887806945687916">音效</translation>
@@ -87,6 +91,7 @@
 <translation id="2215727959747642672">檔案編輯</translation>
 <translation id="2218389616572918761">網站可以要求使用麥克風</translation>
 <translation id="2228071138934252756">如要讓 <ph name="APP_NAME" /> 存取您的相機，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟相機。</translation>
+<translation id="2231160360698766265">網站可播放受保護的內容</translation>
 <translation id="2235344399760031203">已封鎖第三方 Cookie</translation>
 <translation id="2238944249568001759">根據最近開啟的分頁提供搜尋建議</translation>
 <translation id="2241587408274973373">新分頁資訊卡</translation>
@@ -256,6 +261,7 @@
 <translation id="4259722352634471385">瀏覽網址被封鎖：<ph name="URL" /></translation>
 <translation id="4274673989874969668">在您離開網站後，網站通常會保持同步以完成工作，例如上載相片或傳送即時通訊訊息</translation>
 <translation id="4278390842282768270">已允許</translation>
+<translation id="4290791284969893584">關閉網頁後，您已開始的工作可能無法完成</translation>
 <translation id="429312253194641664">網站正在播放媒體</translation>
 <translation id="42981349822642051">展開</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{明天到期}other{# 天後到期}}</translation>
@@ -530,6 +536,7 @@
 <translation id="8010630645305864042">{TILE_COUNT,plural, =1{隱藏「繼續使用此分頁」資訊卡}other{隱藏「繼續使用這些分頁」資訊卡}}</translation>
 <translation id="802154636333426148">下載失敗</translation>
 <translation id="8042586301629853791">排序方式：</translation>
+<translation id="8051193500142930381">需要攝錄機的功能將無法運作</translation>
 <translation id="8067883171444229417">播放影片</translation>
 <translation id="8068648041423924542">無法選擇憑證。</translation>
 <translation id="8077120325605624147">您瀏覽的網站都可向您顯示所有廣告</translation>
@@ -630,6 +637,7 @@
 <translation id="9138217887606523162">宜家嘅縮放率係 <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9156722768168878035">讓 Chrome 在裝置應用程式清單和搜尋結果中顯示你最近使用的分頁。你可隨時在 Chrome 設定中關閉此功能。</translation>
 <translation id="9162462602695099906">此頁面不安全</translation>
+<translation id="9182556968660520230">不允許網站播放受保護的內容</translation>
 <translation id="947156494302904893">您瀏覽的網站可驗證您是真人，而不是機器人</translation>
 <translation id="959682366969460160">讓所有內容變得井井有條</translation>
 <translation id="967624055006145463">已儲存的資料</translation>

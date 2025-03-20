@@ -118,8 +118,8 @@ std::string TabGroupToShortLogString(const std::string_view& prefix,
                                   ? group->collaboration_id()->value()
                                   : "N/A";
   std::string originating_id_str =
-      group->originating_tab_group_guid().has_value()
-          ? group->originating_tab_group_guid()->AsLowercaseString()
+      group->GetOriginatingTabGroupGuid().has_value()
+          ? group->GetOriginatingTabGroupGuid()->AsLowercaseString()
           : "N/A";
 
   std::string display_title = base::UTF16ToUTF8(group->title());

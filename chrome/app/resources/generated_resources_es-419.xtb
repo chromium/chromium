@@ -624,6 +624,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1431188203598586230">Actualización final de software</translation>
 <translation id="1432581352905426595">Administrar motores de búsqueda</translation>
+<translation id="1432650420699700107">Los sitios pueden solicitar permiso para conectarse a cualquier dispositivo de tu red local</translation>
 <translation id="1433478348197382180">Modo de lectura</translation>
 <translation id="1433980411933182122">Inicio</translation>
 <translation id="1434696352799406980">Esta acción restablecerá la página de inicio, la página Nueva pestaña, el motor de búsqueda y las pestañas fijas. Además, inhabilitará todas las extensiones y borrará datos temporales, como las cookies. No se borrarán tus favoritos, historial ni contraseñas guardadas.</translation>
@@ -1332,6 +1333,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1918127774159128277">Actualizar las capabilities de Wi-Fi directo</translation>
 <translation id="1918141783557917887">Meno&amp;r</translation>
 <translation id="1918281588461452432">Cuando navegas por sitios, el contenido de sus páginas se encripta y se guarda en tu dispositivo.</translation>
+<translation id="1919096511823372013">Inserta vínculos, emojis y más. También puedes obtener ayuda de la IA de Google para escribir o para crear imágenes.</translation>
 <translation id="1919872106782726755">Para configurar una huella dactilar, haz que tu hijo toque el sensor de huellas dactilares en la esquina superior derecha del teclado, junto al botón de encendido. Los datos de la huella dactilar de tu hijo se almacenan de forma segura y no salen nunca de este dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="192015196730532810">Puedes crear tu propio grupo de pestañas.</translation>
 <translation id="1920314570001095522">No hay pestañas similares para organizar, pero te pueden gustar estos grupos</translation>
@@ -4056,9 +4058,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
     <ph name="BEGIN_PARAGRAPH2" />Puedes permitir o cancelar estos informes en cualquier momento desde la configuración de tu dispositivo Chrome. Si eres el administrador de dominio, puedes cambiar esta configuración en la Consola del administrador.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">Aurora boreal de noche, sobre una pequeña casa de campo.</translation>
 <translation id="3818102823568165369">Certificados locales que agregó el sistema operativo o el administrador.</translation>
-<translation id="3818662907126913619">Tu organización necesita información sobre tu dispositivo si quieres usarlo con tu perfil de <ph name="DOMAIN" />.
-
-Esto puede incluir información sobre el software instalado, los archivos, el navegador y el sistema operativo del dispositivo.</translation>
 <translation id="3819164369574292143">Acerca la imagen para agrandar los elementos en pantalla. Usa Búsqueda + Ctrl + M para activar y desactivar la lupa. Usa Ctrl + Alt + teclas de flecha para moverte por la pantalla después de acercar la vista.</translation>
 <translation id="3819257035322786455">Copia de seguridad</translation>
 <translation id="3819261658055281761">El sistema no pudo obtener un token de acceso a la API a largo plazo para este dispositivo.</translation>
@@ -4376,9 +4375,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4031527940632463547">Se bloqueó el acceso a los sensores</translation>
 <translation id="4033471457476425443">Agregar carpeta nueva</translation>
 <translation id="4033963223187371752">Es posible que los sitios seguros incluyan contenido no seguro, como ciertas imágenes o marcos web</translation>
-<translation id="4034706080855851454">Tu organización necesita información sobre tu dispositivo si quieres usarlo con tu perfil de la organización.
-
-Esto puede incluir información sobre el software instalado, los archivos, el navegador y el sistema operativo del dispositivo.</translation>
 <translation id="4034824040120875894">Impresora</translation>
 <translation id="4035758313003622889">Adminis&amp;trador de &amp;tareas</translation>
 <translation id="4035877632587724847">No permitir</translation>
@@ -4827,6 +4823,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4364830672918311045">Mostrar notificaciones</translation>
 <translation id="4367971618859387374">Nombre visible</translation>
 <translation id="4368960422722232719">Mostrar el uso de memoria en la tarjeta de vista previa al colocar el cursor sobre una pestaña</translation>
+<translation id="4369151461324628035">No permitir que los sitios se conecten a ningún dispositivo de tu red local</translation>
 <translation id="4369215744064167350">Se aprobó la solicitud de acceso al sitio web</translation>
 <translation id="4369233657762989723">Dictado activado/desactivado</translation>
 <translation id="436926121798828366">Puedes cambiar este parámetro cuando lo desees en <ph name="SETTINGS_LINK" /></translation>
@@ -5380,6 +5377,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4772914216048388646">Ordenado</translation>
 <translation id="4773112038801431077">Actualiza Linux</translation>
 <translation id="4773122030389014189">Compartir el grupo de pestañas “<ph name="GROUP_NAME" />”</translation>
+<translation id="4773253008034797668">Puede conectarse a cualquier dispositivo de tu red local</translation>
 <translation id="477548766361111120">Permitir que la extensión lea y modifique este sitio</translation>
 <translation id="4776311127346151860">Se conectó <ph name="DEVICE_NAME" /></translation>
 <translation id="4776594120007763294">Si quieres agregar una página para leerla más tarde, haz clic en el botón</translation>
@@ -7844,6 +7842,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6563002009564846727">Ver certificados importados desde Windows</translation>
 <translation id="6563055593659435495">No se puede mantener la conexión con tu teléfono. Asegúrate de que el teléfono esté cerca, desbloqueado y tenga las conexiones Bluetooth y Wi-Fi activadas.</translation>
 <translation id="6564860838537532172">Cuando buscas en el historial de navegación, las búsquedas en el historial, el contenido de la página de las mejores coincidencias y los resultados generados por el modelo se envían a Google y es posible que los vean revisores humanos para mejorar esta función.</translation>
+<translation id="6565144332292237355">Los sitios pueden usar esta función para buscar y conectarse a cualquier dispositivo de tu red local</translation>
 <translation id="6569931898053264308">Ahorro: moderado</translation>
 <translation id="6570622975915850879">Usar otro dispositivo</translation>
 <translation id="65711204837946324">Se necesita permiso para continuar con la descarga.</translation>
@@ -8972,6 +8971,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7377451353532943397">Seguir bloqueando el acceso a los sensores</translation>
 <translation id="7377481913241237033">Conéctate con un código</translation>
 <translation id="73786666777299047">Abrir Chrome Web Store</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Otra tarea en el mismo grupo de tareas: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. # tareas más en el mismo grupo de tareas: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380272457268061606">¿Quieres inhabilitar la recuperación de datos locales?</translation>
 <translation id="7380459290951585794">Asegúrate de que el teléfono esté cerca, desbloqueado y tenga las conexiones Bluetooth y Wi-Fi activadas</translation>
 <translation id="7380622428988553498">El nombre del dispositivo incluye caracteres no válidos</translation>
@@ -11557,6 +11557,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
       <ph name="LIST_ITEM" />Ejecuta el Diagnóstico de conectividad de Chrome
     <ph name="END_LIST" /></translation>
 <translation id="9161172953291434881">¿Confías en este sitio con tus datos?</translation>
+<translation id="9164418710391288146">No se puede conectar a ningún dispositivo de tu red local</translation>
 <translation id="9165856803582999927">Escanea este código QR con la cámara del dispositivo en el que quieras crear y guardar la llave de acceso para <ph name="APP_NAME" /></translation>
 <translation id="916607977885256133">Pantalla en pantalla</translation>
 <translation id="9166253503936244008">Escanea este código QR con el dispositivo que tiene la llave de acceso que quieres usar para <ph name="APP_NAME" /></translation>

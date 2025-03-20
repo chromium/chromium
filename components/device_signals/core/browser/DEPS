@@ -2,6 +2,9 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/signin/public",
   "+components/policy/core",
+  "+components/policy/proto",
   "+components/prefs",
+  "+components/version_info",
   "+services/data_decoder/public/cpp",
+  "+net",
 ]

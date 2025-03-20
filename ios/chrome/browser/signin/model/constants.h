@@ -40,6 +40,8 @@ enum class PostSignInAction {
   // Shows a snackbar displaying the account that just signed-in.
   kShowSnackbar,
   kFirstType = kShowSnackbar,
+  // Shows a snackbar to confirm the account that was just switched to.
+  kShowIdentityConfirmationSnackbar,
   // Enables SelectableType::kBookmarks for the account that just signed-in from
   // the bookmarks manager.
   kEnableUserSelectableTypeBookmarks,

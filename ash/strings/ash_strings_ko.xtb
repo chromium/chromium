@@ -241,6 +241,8 @@
 <translation id="1755556344721611131">진단 앱</translation>
 <translation id="1756833229520115364">템플릿을 저장할 수 없습니다. 창 또는 탭이 너무 많습니다.</translation>
 <translation id="1757857692711134412">일몰까지 끄기</translation>
+<translation id="1763084151787818322">기타 작업</translation>
+<translation id="1768138163688567246">내 화면 검색 닫기</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + 마침표 단축키가 변경되었습니다. Insert 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + Shift + Backspace 키를 누르세요.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />행, <ph name="COLUMN_NUMBER" />열로 이동했습니다.</translation>
 <translation id="1771761307086386028">오른쪽으로 스크롤</translation>
@@ -1942,6 +1944,7 @@
 <translation id="742594950370306541">카메라가 사용 중입니다.</translation>
 <translation id="742608627846767349">좋은 아침이에요</translation>
 <translation id="743058460480092004">카메라와 마이크가 사용 중입니다.</translation>
+<translation id="7440404390546433462">Google 검색</translation>
 <translation id="7441711280402516925">재생 중 · 탭으로 전환</translation>
 <translation id="7453330308669753048">검색 기록 결과 삭제됨</translation>
 <translation id="7459485586006128091">내부 오류로 인해 핫스팟이 사용 중지되었습니다. 몇 분 후에 다시 연결해 보세요.</translation>

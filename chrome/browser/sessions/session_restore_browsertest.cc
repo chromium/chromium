@@ -4551,14 +4551,18 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupSessionRestoreTest,
           browser()->profile());
   ASSERT_TRUE(service);
 
-  service->SetIsInitializedForTesting(true);
-  EXPECT_EQ(0u, service->GetAllGroups().size());
+  service->SetIsInitializedForTesting(false);
+  WaitForPostedTasks();
 
   // Close the browser and restore the last session
   Browser* restored = QuitBrowserAndRestore(browser());
   TabStripModel* tab_strip_model = restored->tab_strip_model();
   const int tabs = tab_strip_model->count();
+
   ASSERT_EQ(2, tabs);
+
+  service->SetIsInitializedForTesting(true);
+  WaitForPostedTasks();
 
   // Expect the unsaved group has been saved at this point.
   EXPECT_EQ(1u, service->GetAllGroups().size());

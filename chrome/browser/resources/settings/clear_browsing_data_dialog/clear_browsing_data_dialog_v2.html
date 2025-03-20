@@ -36,6 +36,15 @@
   .checkbox-title {
     font-weight: 500;
   }
+
+  .row-aligned {
+    align-items: center;
+    display: flex;
+  }
+
+  settings-clear-browsing-data-account-indicator {
+    margin-inline-end: auto;
+  }
 </style>
 
 <cr-dialog id="deleteBrowsingDataDialog" close-text="$i18n{close}"
@@ -81,7 +90,11 @@
       </cr-icon>
     </cr-button>
   </div>
-  <div slot="button-container">
+  <div slot="button-container" class="row-aligned">
+<if expr="not is_chromeos">
+    <settings-clear-browsing-data-account-indicator>
+    </settings-clear-browsing-data-account-indicator>
+</if>
     <cr-button id="cancelButton" class="cancel-button" autofocus
         on-click="onCancelClick_">
       $i18n{cancel}

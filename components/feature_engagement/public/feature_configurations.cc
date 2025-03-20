@@ -2083,6 +2083,51 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHiOSFeedSwipeAnimatedFeature.name == feature->name) {
+    // The animated IPH to promote scrolling on the feed.
+
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(GREATER_THAN_OR_EQUAL, 3);
+    config.session_rate = Comparator(EQUAL, 0);
+    // The IPH is shown at most once.
+    config.trigger =
+        EventConfig("iph_feed_swipe_animated_trigger", Comparator(EQUAL, 0),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    // The user hasn't scrolled on the NTP while the feed is visible.
+    config.used =
+        EventConfig(feature_engagement::events::kIOSScrolledOnFeed,
+                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    // The IPH only shows when user has engaged with the feed in any way.
+    config.event_configs.insert(EventConfig(
+        feature_engagement::events::kIOSActionOnFeed,
+        Comparator(GREATER_THAN, 0), feature_engagement::kMaxStoragePeriod,
+        feature_engagement::kMaxStoragePeriod));
+    return config;
+  }
+
+  if (kIPHiOSFeedSwipeStaticFeature.name == feature->name) {
+    // The static IPH to promote scrolling on the feed.
+
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(EQUAL, 0);
+    // The IPH is shown at most once.
+    config.trigger =
+        EventConfig("iph_feed_swipe_static_trigger", Comparator(EQUAL, 0),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    // The user hasn't scrolled on the NTP while the feed is visible.
+    config.used =
+        EventConfig(feature_engagement::events::kIOSScrolledOnFeed,
+                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    return config;
+  }
+
   if (kIPHiOSHistoryOnOverflowMenuFeature.name == feature->name) {
     FeatureConfig config;
     config.valid = true;
@@ -2405,7 +2450,9 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
   if (kIPHiOSSettingsInOverflowMenuBubbleFeature.name == feature->name) {
     // A config that allows the Settings-in-overflow-menu IPH to be shown to
-    // users. This will be triggered a maximum of 2 times (once per week).
+    // users. This will be triggered a maximum of 2 times (once per week), and
+    // it will stop triggering once the user opens Settings via the overflow
+    // menu.
     FeatureConfig config;
     config.valid = true;
     config.availability = Comparator(ANY, 0);
@@ -2422,6 +2469,11 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     // Show at most once per week.
     config.event_configs.emplace(kSettingsInOverflowTriggerEvent,
                                  Comparator(EQUAL, 0), 7, 7);
+    // Stop showing once the user opens settings via the overflow menu.
+    config.used =
+        EventConfig(events::kSettingsOnOverflowMenuUsed, Comparator(EQUAL, 0),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
 
     return config;
   }

@@ -22,6 +22,8 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
@@ -37,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Mediator responsible for the business logic in a message banner. */
+@NullMarked
 class MessageBannerMediator implements SwipeHandler {
     // Message banner state
     @Retention(RetentionPolicy.SOURCE)
@@ -72,7 +75,7 @@ class MessageBannerMediator implements SwipeHandler {
     private final int mPeekingMarginTop;
     private final int mDefaultMarginTop;
 
-    private Animator mAnimation;
+    private @Nullable Animator mAnimation;
     @State private int mCurrentState = State.HIDDEN;
     @ScrollDirection private int mSwipeDirection;
     private float mSwipeStartTranslation;
@@ -140,13 +143,14 @@ class MessageBannerMediator implements SwipeHandler {
 
     /**
      * Hides the message banner with an animation.
+     *
      * @param fromIndex The initial position.
      * @param toIndex The target position the message is moving to.
      * @param animate Whether to hide with an animation.
      * @param messageHidden The {@link Runnable} that will run once the message banner is hidden.
      * @return The animator to hide the message.
      */
-    Animator hide(
+    @Nullable Animator hide(
             @Position int fromIndex,
             @Position int toIndex,
             boolean animate,
@@ -167,7 +171,7 @@ class MessageBannerMediator implements SwipeHandler {
         return startAnimation(true, false, translateTo, mDefaultMarginTop, messageHidden);
     }
 
-    void setOnTouchRunnable(Runnable runnable) {
+    void setOnTouchRunnable(@Nullable Runnable runnable) {
         mModel.set(MessageBannerProperties.ON_TOUCH_RUNNABLE, runnable);
     }
 

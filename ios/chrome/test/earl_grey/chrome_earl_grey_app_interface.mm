@@ -1578,7 +1578,7 @@ int watchRunNumber = 0;
 
   UNNotificationRequest* request = [UNNotificationRequest
       requestWithIdentifier:kTipsNotificationId
-                    content:ContentForTipsNotificationType(type)
+                    content:ContentForTipsNotificationType(type, false)
                     trigger:nil];
 
   [center addNotificationRequest:request withCompletionHandler:nil];

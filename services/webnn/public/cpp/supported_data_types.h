@@ -25,6 +25,10 @@ static constexpr SupportedDataTypes kInts4ToInts8 = {
     OperandDataType::kUint4, OperandDataType::kInt4, OperandDataType::kUint8,
     OperandDataType::kInt8};
 
+static constexpr SupportedDataTypes kInts4Ints8Ints32 = {
+    OperandDataType::kUint4, OperandDataType::kInt4,   OperandDataType::kUint8,
+    OperandDataType::kInt8,  OperandDataType::kUint32, OperandDataType::kInt32};
+
 static constexpr SupportedDataTypes kInt32To64 = {OperandDataType::kInt32,
                                                   OperandDataType::kInt64};
 

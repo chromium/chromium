@@ -122,7 +122,7 @@
   signin_metrics::LogSignInStarted(self.accessPoint);
   base::RecordAction(base::UserMetricsAction("Signin_BottomSheet_Opened"));
   // Create ConsistencyPromoSigninMediator.
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(profile);
   AccountReconcilor* accountReconcilor =
@@ -306,11 +306,11 @@
       [[AuthenticationFlow alloc] initWithBrowser:self.browser
                                          identity:self.selectedIdentity
                                       accessPoint:self.accessPoint
+                             precedingHistorySync:YES
                                 postSignInActions:PostSignInActionSet()
                          presentingViewController:self.navigationController
                                        anchorView:nil
                                        anchorRect:CGRectNull];
-  authenticationFlow.precedingHistorySync = YES;
   [self.consistencyPromoSigninMediator
       signinWithAuthenticationFlow:authenticationFlow];
 }
@@ -336,8 +336,7 @@
     (ConsistencyDefaultAccountCoordinator*)coordinator {
   // This DCHECK is to help to understand crbug.com/372272374.
   DCHECK(!self.alertCoordinator) << base::SysNSStringToUTF8([self description]);
-  ProfileIOS* profile = self.browser->GetProfile();
-  PrefService* userPrefService = profile->GetPrefs();
+  PrefService* userPrefService = self.profile->GetPrefs();
   if (self.accessPoint == signin_metrics::AccessPoint::kWebSignin) {
     const int skipCounter =
         userPrefService->GetInteger(prefs::kSigninWebSignDismissalCount) + 1;

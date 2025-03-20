@@ -21,7 +21,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
@@ -59,6 +60,8 @@ public class CloseButtonNavigatorTest {
         return Arrays.asList(new Object[][] {{true}, {false}});
     }
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule(order = -2)
     public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
@@ -77,7 +80,6 @@ public class CloseButtonNavigatorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         if (!mIsWebapp) {
             mWebappExtras = null;

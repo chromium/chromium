@@ -1795,7 +1795,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="IOS.Fullscreen.TimeSpentScrollingToTheBottom" units="ms"
     expires_after="2026-03-05">
   <owner>alionadangla@chromium.org</owner>
-  <owner>scottyoder@chromium.org</owner>
+  <owner>scottyoder@google.com</owner>
   <summary>
     The metric captures the elapsed time between the first scroll event on a new
     page and the final scroll event that reaches the page's bottom. This
@@ -2249,7 +2249,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="IOS.MagicStack.Module.Click" enum="IOSMagicStackModuleType"
     expires_after="2025-09-14">
   <owner>thegreenfrog@chromium.org</owner>
-  <owner>scottyoder@chromium.org</owner>
+  <owner>scottyoder@google.com</owner>
   <summary>
     Records a user engagement with a module within the Magic Stack.
   </summary>
@@ -2359,7 +2359,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="IOS.MagicStack.Module.TopImpression"
     enum="IOSMagicStackModuleType" expires_after="2025-09-14">
   <owner>thegreenfrog@chromium.org</owner>
-  <owner>scottyoder@chromium.org</owner>
+  <owner>scottyoder@google.com</owner>
   <summary>
     Records the first module shown for every Magic Stack impression.
   </summary>
@@ -2863,7 +2863,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="IOS.Notifications.OptInPrompt.Action"
     enum="IOSNotificationsOptInActionOnPrompt" expires_after="2025-07-13">
   <owner>hiramahmood@google.com</owner>
-  <owner>scottyoder@chromium.org</owner>
+  <owner>scottyoder@google.com</owner>
   <summary>Logs a user's action on the Notifications Opt-In Prompt.</summary>
 </histogram>
 
@@ -2958,17 +2958,10 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.Notifications.Tips.Cleared" enum="IOSTipsNotificationType"
-    expires_after="2025-07-13">
-  <owner>scottyoder@chromium.org</owner>
-  <owner>hiramahmood@google.com</owner>
-  <summary>Logs when a tips notification is cleared by the client.</summary>
-</histogram>
-
 <histogram name="IOS.Notifications.Tips.ClientStatus.Enabled.ByProvider"
     enum="Boolean" expires_after="2025-09-14">
   <owner>hiramahmood@google.com</owner>
-  <owner>scottyoder@chromium.org</owner>
+  <owner>scottyoder@google.com</owner>
   <summary>
     Logs the permission status, stored in iOS settings, the user has given for
     receiving tips notifications on the device. Logged every time the metrics
@@ -2976,53 +2969,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.Notifications.Tips.Dismissed"
-    enum="IOSTipsNotificationType" expires_after="2025-09-14">
-  <owner>scottyoder@chromium.org</owner>
-  <owner>hiramahmood@google.com</owner>
-  <summary>
-    Logs when a Tips notification that was triggered appears to have dismissed
-    or cleared from the notification center. Will be logged when or if the app
-    starts again, after the notification has dismissed.
-  </summary>
-</histogram>
-
-<histogram name="IOS.Notifications.Tips.Interaction"
-    enum="IOSTipsNotificationType" expires_after="2025-07-13">
-  <owner>scottyoder@chromium.org</owner>
-  <owner>hiramahmood@google.com</owner>
-  <summary>Logs when the user interacts with a Tips notification.</summary>
-</histogram>
-
-<histogram name="IOS.Notifications.Tips.Sent" enum="IOSTipsNotificationType"
-    expires_after="2025-09-14">
-  <owner>scottyoder@chromium.org</owner>
-  <owner>hiramahmood@google.com</owner>
-  <summary>
-    Logs when a Tips notification is sent. Note: this does not indicate that the
-    notification was received by the user.
-  </summary>
-</histogram>
-
-<histogram name="IOS.Notifications.Tips.Triggered"
-    enum="IOSTipsNotificationType" expires_after="2025-09-14">
-  <owner>scottyoder@chromium.org</owner>
-  <owner>hiramahmood@google.com</owner>
-  <summary>
-    Logs when a Tips notification that was requested appears to have triggered.
-    Will be logged when or if the app starts again, after the notification has
-    triggered.
-  </summary>
+<histogram name="IOS.Notifications.Tips.Proactive.{Event}"
+    enum="IOSTipsNotificationType" expires_after="2025-09-18">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-gsu-pod@google.com</owner>
+  <summary>Logs when a Proactive Tips notification {Event}.</summary>
+  <token key="Event">
+    <variant name="Dismissed" summary="has been dismissed by the user"/>
+    <variant name="Interaction" summary="is tapped by the user"/>
+    <variant name="Sent" summary="is scheduled / requested"/>
+    <variant name="Triggered" summary="appears to have triggered"/>
+  </token>
 </histogram>
 
 <histogram name="IOS.Notifications.Tips.UserType"
     enum="IOSTipsNotificationUserType" expires_after="2025-09-14">
-  <owner>scottyoder@chromium.org</owner>
+  <owner>scottyoder@google.com</owner>
   <owner>hiramahmood@google.com</owner>
   <summary>
     Logs when a Tips Notifications user is classified, when returning to the app
     after the first notification has been scheduled.
   </summary>
+</histogram>
+
+<histogram name="IOS.Notifications.Tips.{Event}" enum="IOSTipsNotificationType"
+    expires_after="2025-09-18">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-gsu-pod@google.com</owner>
+  <summary>Logs when a Tips notification {Event}.</summary>
+  <token key="Event">
+    <variant name="Dismissed" summary="has been dismissed by the user"/>
+    <variant name="Interaction" summary="is tapped by the user"/>
+    <variant name="Sent" summary="is scheduled / requested"/>
+    <variant name="Triggered" summary="appears to have triggered"/>
+  </token>
 </histogram>
 
 <histogram name="IOS.NSString.stringByReplacingCharactersInRange.NilArgument"
@@ -4058,6 +4038,29 @@ chromium-metrics-reviews@google.com.
     Logs whether the provisional push notification permissions were granted for
     the current device or an error occured. This is logged each time the device
     responds to a provisional notification permission request.
+  </summary>
+</histogram>
+
+<histogram name="IOS.ReaderMode.Heuristic.Latency" units="ms"
+    expires_after="2025-11-24">
+  <owner>fernandex@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Logs the latency of triggering the heuristic for Reader Mode from when the
+    JavaScript is executed until there are values for distillation. Sampled on a
+    subset of user page loads based on page load probability configuration which
+    will be dependent on the milestone and channel for iOS.
+  </summary>
+</histogram>
+
+<histogram name="IOS.ReaderMode.Heuristic.Result"
+    enum="ReaderModeHeuristicState" expires_after="2025-11-24">
+  <owner>fernandex@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Logs the result of the triggering heuristic for Reader Mode. Sampled on a
+    subset of user page loads based on page load probability configuration which
+    will be dependent on the milestone and channel for iOS.
   </summary>
 </histogram>
 

@@ -75,7 +75,7 @@ class CORE_EXPORT ViewTransitionSupplement
   static void AbortTransition(Document&);
 
   ViewTransition* GetTransition();
-  ViewTransition* GetTransition(Element&);
+  ViewTransition* GetTransition(const Element&);
   void ForEachTransition(base::FunctionRef<void(ViewTransition&)>);
 
   explicit ViewTransitionSupplement(Document&);
@@ -142,7 +142,8 @@ class CORE_EXPORT ViewTransitionSupplement
   Member<ViewTransition> document_transition_;
 
   // Element-scoped view transitions.
-  HeapHashMap<WeakMember<Element>, Member<ViewTransition>> element_transitions_;
+  HeapHashMap<WeakMember<const Element>, Member<ViewTransition>>
+      element_transitions_;
 
   VectorOf<std::unique_ptr<ViewTransitionRequest>> pending_requests_;
 

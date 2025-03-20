@@ -624,6 +624,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1430915738399379752">Druk uit</translation>
 <translation id="1431188203598586230">Finale sagtewareopdatering</translation>
 <translation id="1432581352905426595">Bestuur soekenjins</translation>
+<translation id="1432650420699700107">Werwe kan vra om aan enige toestel op jou plaaslike netwerk te koppel</translation>
 <translation id="1433478348197382180">Leesmodus</translation>
 <translation id="1433980411933182122">Aanskakeling</translation>
 <translation id="1434696352799406980">Dit sal jou afskopbladsy, nuweoortjiebladsy, soekenjin en vasgespelde oortjies terugstel. Dit sal ook alle uitbreidings deaktiveer en tydelike data, soos webkoekies, uitvee. Jou boekmerke, geskiedenis en gestoorde wagwoorde sal nie uitgevee word nie.</translation>
@@ -1345,6 +1346,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1918127774159128277">Herlaai vermoëns van wi-fi-direk</translation>
 <translation id="1918141783557917887">Kleiner</translation>
 <translation id="1918281588461452432">Terwyl jy deur werwe blaai, word hul bladsy-inhoud geënkripteer en op jou toestel gestoor</translation>
+<translation id="1919096511823372013">Voeg skakels, emosiekone en meer in. Jy kan ook met Google KI hulp kry met skryf en die skep van prente.</translation>
 <translation id="1919872106782726755">Laat jou kind die vingerafdruksensor in jou sleutelbord se hoek bo regs langs die aan/af-skakelaar raak om hul vingerafdruk op te stel. Jou kind se vingerafdrukdata word veilig geberg en verlaat nooit hierdie <ph name="DEVICE_TYPE" /> nie.</translation>
 <translation id="192015196730532810">Jy kan jou eie oortjiegroep skep.</translation>
 <translation id="1920314570001095522">Daar is geen soortgelyke oortjies om te organiseer nie, maar jy sal dalk van hierdie groepe hou</translation>
@@ -4072,9 +4074,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
     <ph name="BEGIN_PARAGRAPH2" />Jy kan toestemming vir hierdie verslae enige tyd in jou Chrome-toestel se instellings begin of stop. As jy ’n domeinadministrateur is, kan jy hierdie instelling in die adminkonsole verander.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">Noorderlig in die nag bo ’n klein kothuis.</translation>
 <translation id="3818102823568165369">Plaaslike sertifikate wat deur jou bedryfstelsel of jou administrateur bygevoeg is.</translation>
-<translation id="3818662907126913619">Om jou toestel met jou <ph name="DOMAIN" />-profiel te gebruik, het jou organisasie inligting oor die toestel nodig.
-
-Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toestel se bedryfstelsel insluit.</translation>
 <translation id="3819164369574292143">Zoem in om items op die skerm groter te maak. Gebruik Soek + Ctrl + M om vergrootglas aan en af te skakel. Gebruik Ctrl + Alt + pylsleutels om rond te beweeg wanneer jy ingezoem is.</translation>
 <translation id="3819257035322786455">Rugsteun</translation>
 <translation id="3819261658055281761">Die stelsel kon nie die langtermyn-API-toegangteken vir hierdie toestel stoor nie.</translation>
@@ -4392,9 +4391,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4031527940632463547">Sensors is geblokkeer</translation>
 <translation id="4033471457476425443">Voeg nuwe vouer by</translation>
 <translation id="4033963223187371752">Veilige werwe kan dalk inhoud, soos prente en webrame wat nie veilig is nie, inbed</translation>
-<translation id="4034706080855851454">Om jou toestel met jou organisasieprofiel te gebruik, het jou organisasie inligting oor die toestel nodig.
-
-Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toestel se bedryfstelsel insluit.</translation>
 <translation id="4034824040120875894">Drukker</translation>
 <translation id="4035758313003622889">Taakbestuurder</translation>
 <translation id="4035877632587724847">Moenie toelaat nie</translation>
@@ -4843,6 +4839,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4364830672918311045">Wys kennisgewings</translation>
 <translation id="4367971618859387374">Vertoonnaam</translation>
 <translation id="4368960422722232719">Wys geheuegebruik op voorskou van oortjie se stilhangkaart</translation>
+<translation id="4369151461324628035">Moenie toelaat dat werwe aan enige toestel op jou plaaslike netwerk koppel nie</translation>
 <translation id="4369215744064167350">Webwerfversoek is goedgekeur</translation>
 <translation id="4369233657762989723">Diktering aan/af</translation>
 <translation id="436926121798828366">Jy kan dit enige tyd in <ph name="SETTINGS_LINK" /> verander</translation>
@@ -5396,6 +5393,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4772914216048388646">Ordelik</translation>
 <translation id="4773112038801431077">Gradeer Linux op</translation>
 <translation id="4773122030389014189">Deel “<ph name="GROUP_NAME" />”-oortjiegroep</translation>
+<translation id="4773253008034797668">Mag aan enige toestel op jou plaaslike netwerk koppel</translation>
 <translation id="477548766361111120">Laat uitbreiding toe om hierdie werf te lees en te verander</translation>
 <translation id="4776311127346151860"><ph name="DEVICE_NAME" /> is gekoppel</translation>
 <translation id="4776594120007763294">Klik die knoppie om 'n bladsy by te voeg om later te lees</translation>
@@ -7861,6 +7859,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6563002009564846727">Bekyk ingevoerde sertifikate van Windows af</translation>
 <translation id="6563055593659435495">Kan nie ’n verbinding met jou foon behou nie. Maak seker dat jou foon in die omtrek en ontsluit is, en dat Bluetooth en wi-fi aangeskakel is.</translation>
 <translation id="6564860838537532172">Wanneer jy blaaigeskiedenis deursoek, word jou geskiedenissoektogte, die bladsy-inhoud van beste passings en gegenereerde modeluitsette na Google toe gestuur en kan dit gesien word deur ’n mens wat kontrolering uitvoer om hierdie kenmerk te verbeter.</translation>
+<translation id="6565144332292237355">Werwe kan hierdie kenmerk gebruik om enige toestel op jou plaaslike netwerk te soek en daaraan te koppel</translation>
 <translation id="6569931898053264308">Middelmatige besparing</translation>
 <translation id="6570622975915850879">Gebruik ’n ander toestel</translation>
 <translation id="65711204837946324">Benodig toestemming om af te laai</translation>
@@ -8988,6 +8987,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7377451353532943397">Hou aan om sensortoegang te blokkeer</translation>
 <translation id="7377481913241237033">Koppel met 'n kode</translation>
 <translation id="73786666777299047">Maak Chrome Webwinkel oop</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. ’n Ander taak in dieselfde taakgroep: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Ander # take in dieselfde taakgroep: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380272457268061606">Deaktiveer terugstelling van plaaslike data?</translation>
 <translation id="7380459290951585794">Maak seker dat jou foon in die omtrek is en ontsluit is, en dat Bluetooth en wi-fi aangeskakel is</translation>
 <translation id="7380622428988553498">Toestelnaam bevat ongeldige karakters</translation>
@@ -11572,6 +11572,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
       <ph name="LIST_ITEM" />Chrome-konnektiwiteitdiagnostiek uitvoer
     <ph name="END_LIST" /></translation>
 <translation id="9161172953291434881">Vertrou jy hierdie werf met jou data?</translation>
+<translation id="9164418710391288146">Mag nie aan enige toestel op jou plaaslike netwerk koppel nie</translation>
 <translation id="9165856803582999927">Skandeer hierdie QR-kode met die kamera op die toestel waar jy jou toegangsleutel vir <ph name="APP_NAME" /> wil skep en stoor</translation>
 <translation id="916607977885256133">Beeld-in-beeld</translation>
 <translation id="9166253503936244008">Skandeer hierdie QR-kode met die toestel wat die toegangsleutel het wat jy vir <ph name="APP_NAME" /> wil gebruik</translation>

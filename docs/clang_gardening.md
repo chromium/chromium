@@ -46,6 +46,18 @@ The gardener is also responsible for taking notes during the weekly Chrome toolc
 
 [TOC]
 
+## Clang packaging test failures
+
+When packaging clang/LLVM on our various supported platforms (`upload_*_clang`
+tryjobs), we run the entire LLVM test suite and block the build if any
+test failed. The most common test failures we see are Mac and Windows-specific
+tests since upstream LLVM is mostly Linux-focused. There are public bots that
+also run LLVM tests, mostly accessible from https://lab.llvm.org/buildbot.
+There are also some Apple bots running at
+http://green.lab.llvm.org/job/llvm.org/ which mirror test failures we see on
+Mac. Reverting the culprit change upstream with a pointer to a public bot
+showing the test failure is encouraged.
+
 ## Disk out of space
 
 If there are any issues with disk running out of space, file a go/bug-a-trooper

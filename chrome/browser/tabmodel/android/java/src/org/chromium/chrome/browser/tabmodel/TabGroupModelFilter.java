@@ -17,21 +17,7 @@ import java.util.Set;
 
 /** Interface for getting tab groups for the tabs in the {@link TabModel}. */
 @NullMarked
-public interface TabGroupModelFilter extends TabList {
-    /**
-     * Adds a {@link TabModelObserver} to be notified on {@link TabGroupModelFilter} changes.
-     *
-     * @param observer The {@link TabModelObserver} to add.
-     */
-    void addObserver(TabModelObserver observer);
-
-    /**
-     * Removes a {@link TabModelObserver}.
-     *
-     * @param observer The {@link TabModelObserver} to remove.
-     */
-    void removeObserver(TabModelObserver observer);
-
+public interface TabGroupModelFilter extends SupportsTabModelObserver, TabList {
     /**
      * This method adds a {@link TabGroupModelFilterObserver} to be notified on {@link
      * TabGroupModelFilter} changes.
@@ -90,25 +76,6 @@ public interface TabGroupModelFilter extends TabList {
      *     given tab if the tab is not in a group.
      */
     List<Tab> getRelatedTabList(@TabId int tabId);
-
-    /**
-     * Returns the list of tab ids that are grouped with the given {@code tabId}.
-     *
-     * @param tabId The id of a {@link Tab} in the group.
-     * @return An unmodifiable list of tab ids that are grouped, or a list containing only the given
-     *     tab's id if the tab is not in a group.
-     */
-    List<@TabId Integer> getRelatedTabIds(@TabId int tabId);
-
-    /**
-     * This method returns all tabs in a tab group with reference to {@code rootId}.
-     *
-     * @param rootId The tab root id that is used to find the related group.
-     * @return An unmodifiable list of {@link Tab} that relate with the given tab root id.
-     * @deprecated Use {@link #getRelatedTabList(int)} or {@link getTabsInGroup(Token)} instead.
-     */
-    @Deprecated
-    List<Tab> getRelatedTabListForRootId(@TabId int rootId);
 
     /** Returns the list of tabs in a tab group or an empty list if the group does not exist. */
     List<Tab> getTabsInGroup(@Nullable Token tabGroupId);

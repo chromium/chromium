@@ -89,8 +89,18 @@ export class BubbleController {
           BubbleController.getDisplayTextForGesture_(dictation)));
     }
 
+    const isWarning = this.baseText_.length > 0;
+
+    if (this.baseText_.length === 0) {
+      // If there is no other text to show in the bubble, then show the
+      // 'Face control active' message. This is gives users, who may be
+      // unfamiliar with FaceGaze, an understanding of why their computer
+      // can be controlled without touching the device.
+      this.baseText_.push(chrome.i18n.getMessage('facegaze_active'));
+    }
+
     chrome.accessibilityPrivate.updateFaceGazeBubble(
-        this.baseText_.join(', '), /*isWarning=*/ this.baseText_.length > 0);
+        this.baseText_.join(', '), isWarning);
   }
 
   static getDisplayText(gesture: FacialGesture, macro: Macro): string

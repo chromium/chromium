@@ -23,6 +23,11 @@ std::unique_ptr<PalmDetectionFilter> CreatePalmDetectionFilter(
     const EventDeviceInfo& devinfo,
     SharedPalmDetectionFilterState* shared_palm_state);
 
+COMPONENT_EXPORT(EVDEV)
+std::unique_ptr<PalmDetectionFilter> CreateHeatmapPalmDetectionFilter(
+    const EventDeviceInfo& devinfo,
+    SharedPalmDetectionFilterState* shared_palm_state);
+
 namespace internal {
 // In a named namespace for testing.
 

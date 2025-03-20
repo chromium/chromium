@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/message_loop/message_pump_type.h"
@@ -827,7 +828,8 @@ TEST_F(ServiceConnectionTest, FakeDocumentScanner) {
   std::vector<uint8_t> fake_nv12_data(kNv12ImageSize, 0);
   base::MappedReadOnlyRegion memory =
       base::ReadOnlySharedMemoryRegion::Create(fake_nv12_data.size());
-  memcpy(memory.mapping.memory(), fake_nv12_data.data(), fake_nv12_data.size());
+  UNSAFE_TODO(memcpy(memory.mapping.memory(), fake_nv12_data.data(),
+                     fake_nv12_data.size()));
 
   mojom::DetectCornersResultPtr result = mojom::DetectCornersResult::New();
   result->status = mojom::DocumentScannerResultStatus::OK;
@@ -880,7 +882,8 @@ TEST_F(ServiceConnectionTest, FakAnnotateEncodedImage) {
   std::vector<uint8_t> fake_data(kImageSize, 0);
   base::MappedReadOnlyRegion memory =
       base::ReadOnlySharedMemoryRegion::Create(fake_data.size());
-  memcpy(memory.mapping.memory(), fake_data.data(), fake_data.size());
+  UNSAFE_TODO(
+      memcpy(memory.mapping.memory(), fake_data.data(), fake_data.size()));
 
   mojom::ImageAnnotationResultPtr result = mojom::ImageAnnotationResult::New();
   result->status = mojom::ImageAnnotationResult_Status::OK;
@@ -933,7 +936,8 @@ TEST_F(ServiceConnectionTest, FakAnnotateRawImage) {
   std::vector<uint8_t> fake_data(kImageSize, 0);
   base::MappedReadOnlyRegion memory =
       base::ReadOnlySharedMemoryRegion::Create(fake_data.size());
-  memcpy(memory.mapping.memory(), fake_data.data(), fake_data.size());
+  UNSAFE_TODO(
+      memcpy(memory.mapping.memory(), fake_data.data(), fake_data.size()));
 
   mojom::ImageAnnotationResultPtr result = mojom::ImageAnnotationResult::New();
   result->status = mojom::ImageAnnotationResult_Status::OK;

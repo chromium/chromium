@@ -228,7 +228,7 @@ class FragmentPaintPropertyTreeBuilder {
   }
 
  private:
-  ALWAYS_INLINE bool CanPropagateSubpixelAccumulation() const;
+  ALWAYS_INLINE std::pair<bool, bool> CanPropagateSubpixelAccumulation() const;
   ALWAYS_INLINE void UpdatePaintOffset();
   ALWAYS_INLINE void UpdateForPaintOffsetTranslation(
       std::optional<gfx::Vector2d>&);
@@ -623,14 +623,14 @@ static bool IsViewTransitionGroupWithNesting(const LayoutObject& object) {
   return To<Element>(node)->HasViewTransitionGroupChildren();
 }
 
-bool FragmentPaintPropertyTreeBuilder::CanPropagateSubpixelAccumulation()
-    const {
+std::pair<bool, bool>
+FragmentPaintPropertyTreeBuilder::CanPropagateSubpixelAccumulation() const {
   if (!object_.HasLayer())
-    return true;
+    return {true, true};
 
   if (full_context_.direct_compositing_reasons &
       CompositingReason::kPreventingSubpixelAccumulationReasons) {
-    return false;
+    return {false, false};
   }
   if (full_context_.direct_compositing_reasons &
       (CompositingReason::kActiveTransformAnimation |
@@ -638,13 +638,23 @@ bool FragmentPaintPropertyTreeBuilder::CanPropagateSubpixelAccumulation()
        CompositingReason::kActiveScaleAnimation)) {
     if (const auto* element = DynamicTo<Element>(object_.GetNode())) {
       DCHECK(element->GetElementAnimations());
-      return element->GetElementAnimations()->IsIdentityOrTranslation();
+      if (element->GetElementAnimations()->IsIdentityOrTranslation()) {
+        return {true, true};
+      }
     }
-    return false;
+    return {false, false};
   }
 
-  const PaintLayer* layer = To<LayoutBoxModelObject>(object_).Layer();
-  return !layer->Transform() || layer->Transform()->IsIdentityOrTranslation();
+  const gfx::Transform* transform =
+      To<LayoutBoxModelObject>(object_).Layer()->Transform();
+  if (!transform || transform->IsIdentityOrTranslation()) {
+    return {true, true};
+  }
+  if (transform->IsScaleOrTranslation()) {
+    gfx::Vector2dF scale = transform->To2dScale();
+    return {scale.x() == 1, scale.y() == 1};
+  }
+  return {false, false};
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateForPaintOffsetTranslation(
@@ -675,13 +685,21 @@ void FragmentPaintPropertyTreeBuilder::UpdateForPaintOffsetTranslation(
       !context_.current
            .directly_composited_container_paint_offset_subpixel_delta
            .IsZero()) {
-    // If the object has a non-translation transform, discard the fractional
-    // paint offset which can't be transformed by the transform.
-    if (!CanPropagateSubpixelAccumulation()) {
+    // Discard the subpixel accumulation in the direction that the paint offset
+    // can't be transformed.
+    std::pair<bool, bool> can_propagate = CanPropagateSubpixelAccumulation();
+    if (!can_propagate.first) {
+      subpixel_accumulation.left = LayoutUnit();
+      context_.current.directly_composited_container_paint_offset_subpixel_delta
+          .left = LayoutUnit();
+    }
+    if (!can_propagate.second) {
+      subpixel_accumulation.top = LayoutUnit();
+      context_.current.directly_composited_container_paint_offset_subpixel_delta
+          .top = LayoutUnit();
+    }
+    if (!can_propagate.first && !can_propagate.second) {
       ResetPaintOffset();
-      context_.current
-          .directly_composited_container_paint_offset_subpixel_delta =
-          PhysicalOffset();
       return;
     }
   }
@@ -758,13 +776,14 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation(
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation(
-    const PhysicalOffset& sticky_offset) {
+    const PhysicalOffset& pixel_snap_offset) {
   DCHECK(properties_);
 
   if (NeedsPaintPropertyUpdate()) {
     if (NeedsStickyTranslation(object_)) {
       const auto& box_model = To<LayoutBoxModelObject>(object_);
-      auto rounded_sticky_offset = ToRoundedVector2d(sticky_offset);
+      auto rounded_sticky_offset = ToRoundedVector2d(
+          pixel_snap_offset + box_model.StickyPositionOffset());
       TransformPaintPropertyNode::State state{{gfx::Transform::MakeTranslation(
           ToRoundedVector2d(rounded_sticky_offset))}};
       state.direct_compositing_reasons =
@@ -824,26 +843,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation(
               gfx::RectF(layout_constraint
                              ->scroll_container_relative_containing_block_rect);
 
-          constraint->pixel_snap_offset = gfx::Vector2dF(
-              sticky_offset - PhysicalOffset(rounded_sticky_offset));
-          // gfx::Vector2dF rounds differently than PhysicalOffset at
-          // half-integral negative values. This hack works around that
-          // situation.
-          // See https://issues.chromium.org/issues/401693546#comment6
-          //
-          // TODO(crbug.com/404418768 ): Remove this in favor of applying the
-          // same rounding logic (round up instead of away from 0) for our
-          // floating point rounding.
-          float adjustment_left = 0.0;
-          float adjustment_top = 0.0;
-          if (constraint->pixel_snap_offset.x() == -0.5) {
-            adjustment_left = 0.001;
-          }
-          if (constraint->pixel_snap_offset.y() == -0.5) {
-            adjustment_top = 0.001;
-          }
-          constraint->pixel_snap_offset +=
-              gfx::Vector2dF(adjustment_left, adjustment_top);
+          constraint->pixel_snap_offset = gfx::Vector2dF(pixel_snap_offset);
 
           if (const LayoutBoxModelObject* sticky_box_shifting_ancestor =
                   layout_constraint->nearest_sticky_layer_shifting_sticky_box) {
@@ -2235,7 +2235,8 @@ static std::optional<FloatRoundedRect> PathToRRect(const Path& path) {
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
-  if (NeedsPaintPropertyUpdate()) {
+  if (NeedsPaintPropertyUpdate() ||
+      !ClipPathClipper::ClipPathStatusResolved(object_)) {
     DCHECK(!precise_clip_path_rect_.has_value());
     if (NeedsClipPathClipOrMask(object_,
                                 /*fully_resolve_composited_state=*/true)) {
@@ -3307,17 +3308,18 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
 
 void FragmentPaintPropertyTreeBuilder::UpdateForObjectLocation(
     std::optional<gfx::Vector2d>& paint_offset_translation,
-    PhysicalOffset& sticky_offset) {
+    PhysicalOffset& pixel_snap_offset) {
   context_.old_paint_offset = fragment_data_.PaintOffset();
   UpdatePaintOffset();
   UpdateForPaintOffsetTranslation(paint_offset_translation);
 
   if (NeedsStickyTranslation(object_)) {
     const auto& box_model = To<LayoutBoxModelObject>(object_);
-    sticky_offset =
+    pixel_snap_offset = context_.current.paint_offset;
+    auto total_offset =
         context_.current.paint_offset + box_model.StickyPositionOffset();
-    ResetPaintOffset(sticky_offset -
-                     PhysicalOffset(ToRoundedVector2d(sticky_offset)));
+    ResetPaintOffset(total_offset -
+                     PhysicalOffset(ToRoundedVector2d(total_offset)));
   }
 
   PhysicalOffset paint_offset_delta =

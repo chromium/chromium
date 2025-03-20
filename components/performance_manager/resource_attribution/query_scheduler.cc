@@ -5,7 +5,6 @@
 #include "components/performance_manager/resource_attribution/query_scheduler.h"
 
 #include <optional>
-#include <set>
 #include <utility>
 #include <vector>
 
@@ -14,18 +13,11 @@
 #include "base/containers/enum_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/synchronization/lock.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/types/optional_util.h"
 #include "base/types/pass_key.h"
-#include "base/types/variant_util.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
-#include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/resource_attribution/resource_types.h"
 #include "components/performance_manager/resource_attribution/context_collection.h"
 #include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
@@ -35,94 +27,7 @@ namespace resource_attribution::internal {
 
 namespace {
 
-// A global singleton that holds the TaskRunner the QueryScheduler runs on. In
-// production this is the PM graph sequence, but in unit tests it can be the
-// main thread. The TaskRunner is set when the QueryScheduler is passed to the
-// PM graph, so it will be reset between tests and can be null during graph
-// teardown.
-//
-// This is used instead of CallOnGraph because there are many
-// resource attribution tests that use GraphTestHarness and mock graphs instead
-// of PerformanceManagerTestHarness, that don't use any PerformanceManager hooks
-// except for the QueryScheduler.
-class SchedulerTaskRunner {
- public:
-  SchedulerTaskRunner(const SchedulerTaskRunner&) = delete;
-  SchedulerTaskRunner operator=(const SchedulerTaskRunner&) = delete;
-
-  static SchedulerTaskRunner* GetInstance();
-
-  // Registers the current sequence's TaskRunner as the QueryScheduler
-  // TaskRunner.
-  void OnSchedulerPassedToGraph(Graph* graph);
-
-  // Clears the QueryScheduler TaskRunner.
-  void OnSchedulerTakenFromGraph(Graph* graph);
-
-  // Returns the QueryScheduler TaskRunner, or null if there is none.
-  scoped_refptr<base::SequencedTaskRunner> GetTaskRunner();
-
-  // Looks up the QueryScheduler and passes it to `callback`. This must run on
-  // the TaskRunner returned by GetTaskRunner(). If there is no QueryScheduler
-  // (which can happen if the scheduler is deleted after the CallWithScheduler
-  // task is posted), `callback` is dropped.
-  void CallWithScheduler(base::OnceCallback<void(QueryScheduler*)> callback);
-
- private:
-  friend class base::NoDestructor<SchedulerTaskRunner>;
-
-  SchedulerTaskRunner() = default;
-  ~SchedulerTaskRunner() = default;
-
-  base::Lock task_runner_lock_;
-
-  scoped_refptr<base::SequencedTaskRunner> task_runner_
-      GUARDED_BY(task_runner_lock_);
-
-  raw_ptr<Graph> graph_ = nullptr;
-};
-
-// static
-SchedulerTaskRunner* SchedulerTaskRunner::GetInstance() {
-  static base::NoDestructor<SchedulerTaskRunner> instance;
-  return instance.get();
-}
-
-void SchedulerTaskRunner::OnSchedulerPassedToGraph(Graph* graph) {
-  base::AutoLock lock(task_runner_lock_);
-  CHECK(!task_runner_);
-  // Use the PM task runner if QueryScheduler is installed on the PM. (In tests
-  // it might not be.) This is used instead of GetCurrentDefault() because the
-  // PM task runner might be a wrapper for the default.
-  if (PerformanceManager::GetTaskRunner()->RunsTasksInCurrentSequence()) {
-    task_runner_ = PerformanceManager::GetTaskRunner();
-  } else {
-    task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
-  }
-  CHECK(task_runner_);
-  CHECK(!graph_);
-  graph_ = graph;
-}
-
-void SchedulerTaskRunner::OnSchedulerTakenFromGraph(Graph* graph) {
-  base::AutoLock lock(task_runner_lock_);
-  CHECK(task_runner_->RunsTasksInCurrentSequence());
-  task_runner_.reset();
-  CHECK_EQ(graph_.get(), graph);
-  graph_ = nullptr;
-}
-
-scoped_refptr<base::SequencedTaskRunner> SchedulerTaskRunner::GetTaskRunner() {
-  base::AutoLock lock(task_runner_lock_);
-  return task_runner_;
-}
-
-void SchedulerTaskRunner::CallWithScheduler(
-    base::OnceCallback<void(QueryScheduler*)> callback) {
-  if (graph_) {
-    std::move(callback).Run(QueryScheduler::GetFromGraph(graph_.get()));
-  }
-}
+QueryScheduler* g_query_scheduler = nullptr;
 
 }  // namespace
 
@@ -130,24 +35,13 @@ QueryScheduler::QueryScheduler() = default;
 
 QueryScheduler::~QueryScheduler() = default;
 
-base::WeakPtr<QueryScheduler> QueryScheduler::GetWeakPtr() {
-  return weak_factory_.GetWeakPtr();
+// static
+QueryScheduler* QueryScheduler::Get() {
+  return g_query_scheduler;
 }
 
-// static
-void QueryScheduler::CallWithScheduler(
-    base::OnceCallback<void(QueryScheduler*)> callback,
-    const base::Location& location) {
-  auto* scheduler_and_task_runner = SchedulerTaskRunner::GetInstance();
-  scoped_refptr<base::SequencedTaskRunner> task_runner =
-      scheduler_and_task_runner->GetTaskRunner();
-  if (task_runner) {
-    // Unretained is safe because SchedulerTaskRunner is a leaked singleton.
-    task_runner->PostTask(
-        location, base::BindOnce(&SchedulerTaskRunner::CallWithScheduler,
-                                 base::Unretained(scheduler_and_task_runner),
-                                 std::move(callback)));
-  }
+base::WeakPtr<QueryScheduler> QueryScheduler::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 void QueryScheduler::AddScopedQuery(QueryParams* query_params) {
@@ -241,17 +135,17 @@ void QueryScheduler::RequestResults(
 
 void QueryScheduler::OnPassedToGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!g_query_scheduler);
+  g_query_scheduler = this;
   memory_provider_.emplace(graph);
   graph->GetNodeDataDescriberRegistry()->RegisterDescriber(
       base::OptionalToPtr(memory_provider_), "ResourceAttr.Memory");
   graph->GetNodeDataDescriberRegistry()->RegisterDescriber(&cpu_monitor_,
                                                            "ResourceAttr.CPU");
-  SchedulerTaskRunner::GetInstance()->OnSchedulerPassedToGraph(graph);
 }
 
 void QueryScheduler::OnTakenFromGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SchedulerTaskRunner::GetInstance()->OnSchedulerTakenFromGraph(graph);
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(&cpu_monitor_);
   if (cpu_query_count_ > 0) {
     cpu_monitor_.StopMonitoring();
@@ -259,6 +153,8 @@ void QueryScheduler::OnTakenFromGraph(Graph* graph) {
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(
       base::OptionalToPtr(memory_provider_));
   memory_provider_.reset();
+  CHECK_EQ(g_query_scheduler, this);
+  g_query_scheduler = nullptr;
 }
 
 CPUMeasurementMonitor& QueryScheduler::GetCPUMonitorForTesting() {

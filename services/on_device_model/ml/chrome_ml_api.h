@@ -206,10 +206,6 @@ struct ChromeMLExecuteOptions {
   // Optional adaptation ID for this request.
   uint32_t* adaptation_id;
 
-  // TODO(crbug.com/403383823): Remove these members from this struct.
-  uint32_t top_k;
-  float temperature;
-
   const ml::InputPiece* input;
   size_t input_size;
 };

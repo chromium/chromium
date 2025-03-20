@@ -38,10 +38,8 @@
 <translation id="1155154308031262006">Sláðu inn skipun</translation>
 <translation id="115705039208660697">ananas</translation>
 <translation id="1164939766849482256">Skjávari, frá dögun til rökkurs</translation>
-<translation id="1166688493741195933">Ekki tókst að búa til upptökuheiti</translation>
 <translation id="1167755866710282443">Opnaðu valmyndina til að sérsníða lykla. Dragðu valmyndina til að færa hana.</translation>
 <translation id="1171349345463658120">strandlón</translation>
-<translation id="1173894706177603556">Endurnefna</translation>
 <translation id="1174073918202301297">Flýtileið bætt við</translation>
 <translation id="11743817593307477">Notaðu örvalyklana til að færa stýringuna á valda leikjaaðgerð. Notaðu Enter-lykilinn til að staðfesta staðsetningu stýringarinnar. Notaðu Escape-lykilinn til að hætta við.</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> er í umsjón <ph name="MANAGER" />.</translation>
@@ -153,7 +151,6 @@
 <translation id="1604959087182679653">Fela textauppskrift</translation>
 <translation id="160633243685262989">Forskoða mynd</translation>
 <translation id="1611649489706141841">áfram</translation>
-<translation id="1615144046047995187">Ekki er hægt að sækja. Reyndu aftur eða endurræstu Chromebook.</translation>
 <translation id="1615335640928990664">Gagnanotkun síðan <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Nota þema</translation>
 <translation id="1621067168122174824">Keyra hleðslupróf</translation>
@@ -372,7 +369,6 @@
 <translation id="2560876255701405320">Listi yfir hljóðupptökur</translation>
 <translation id="2561093647892030937">sítrónur</translation>
 <translation id="2570743873672969996">Keyrir prófið <ph name="TEST_NAME" />...</translation>
-<translation id="2573178735329662769">Upptaka á öllu hljóði í Chromebook</translation>
 <translation id="2576253868710695442">Þetta mun nota allt að 2 GB af geymslurými</translation>
 <translation id="2584547424703650812">Glóandi landslag</translation>
 <translation id="2584559707064218956">Opnaðu stillingarnar til að setja þetta upp.</translation>
@@ -415,7 +411,6 @@
 <translation id="2787237339470862294">Þetta tungumál er ekki stutt eins og er</translation>
 <translation id="2787435249130282949">ljósara lyklaborð</translation>
 <translation id="2805756323405976993">Forrit</translation>
-<translation id="2822702442014805146">Niðurhal á líkani sem býr til samantektir og heiti í gangi</translation>
 <translation id="28232023175184696">Ekki er hægt að tengjast netinu. Smelltu til að reyna aftur.</translation>
 <translation id="2855718259207180827">ull</translation>
 <translation id="2859243502336719778">Mikilvæg uppfærsla</translation>
@@ -503,7 +498,6 @@
 <translation id="3340011300870565703">Rafhleðsla hægra heyrnartóls er <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">stillingar</translation>
 <translation id="3347558044552027859">nútímaleg</translation>
-<translation id="3353477144743332882">Sækja samantekt og líkan sem býr til heiti</translation>
 <translation id="3359218928534347896">kveikja/slökkva á hljóðnema</translation>
 <translation id="3360306038446926262">Gluggar</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -566,7 +560,6 @@
 <translation id="3632040286124154621">Góð tillaga</translation>
 <translation id="3632579075709132555">Rofalykill persónuverndarskjás</translation>
 <translation id="3634941468757842845">Velja þema</translation>
-<translation id="3639873154908477486">Heiti (A til Ö)</translation>
 <translation id="3644695927181369554">Slæm tillaga</translation>
 <translation id="3651050199673793219">Velja mælieiningu hitastigs</translation>
 <translation id="3661106764436337772">Vertu fljótari og öruggari að skrifa</translation>
@@ -636,6 +629,7 @@
 <translation id="39823212440917567">Prentverk sem eru eldri en <ph name="NUMBER_OF_DAYS" /> verða fjarlægð</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> er nú uppfært</translation>
 <translation id="3998976413398910035">Stjórna prenturum</translation>
+<translation id="4002066346123236978">Heiti</translation>
 <translation id="4003384961948020559">Mistókst – úttakið er fullt</translation>
 <translation id="401147258241215701">hrafntinnu</translation>
 <translation id="4021031199988160623">Skiptu yfir í fartölvustillingu til að prófa</translation>
@@ -773,7 +767,6 @@
 <translation id="4594541568452132351">Velja tungumál textauppskriftar og sækja líkan</translation>
 <translation id="4607282946861182308">Ekki er hægt að búa til myndir af þessu. Prófaðu aðra skipun.</translation>
 <translation id="4609350030397390689">Draga úr birtustigi lyklaborðs</translation>
-<translation id="4623061655523261501">Upptökuheiti voru búin til</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> af <ph name="TOTAL_PAGE_NUMBER" />. Ýttu á færslulykilinn til að hætta við prentverkið.</translation>
 <translation id="463791356324567266">Hættir við að skanna...</translation>
 <translation id="4644611440022666152">Kveikja og sækja</translation>
@@ -836,7 +829,6 @@
 <translation id="4891842000192098784">Álag</translation>
 <translation id="4897058166682006107">Rafhleðsla vinstra heyrnartóls er <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="4905998861748258752">Kveiktu á eiginleikanum til að velja skjávaravalkosti</translation>
-<translation id="4910853326379896417">Niðurhali á líkani sem býr til samantektir og heiti lokið</translation>
 <translation id="4910858703033903787">APN-gerðir</translation>
 <translation id="4917385247580444890">Sterkt</translation>
 <translation id="4917889632206600977">Stöðvað – pappír vantar</translation>
@@ -855,7 +847,6 @@
 <translation id="4981003703840817201">bláum og bleikum lit</translation>
 <translation id="498186245079027698">Athugaðu skannann og reyndu aftur. Gakktu úr skugga um að nægilegt pláss sé á tækinu fyrir skannaðar skrár.</translation>
 <translation id="4982627662315910959">Flýtilykill ekki í boði. Ýttu á nýjan flýtilykil með því að nota shift og 1 annan breytilykil (ctrl, alt eða <ph name="META_KEY" />).</translation>
-<translation id="4983216687482551672">Hljóð í Chromebook</translation>
 <translation id="4985509611418653372">Keyra</translation>
 <translation id="4987769320337599931">Eldveggur</translation>
 <translation id="4988526792673242964">Síður</translation>
@@ -874,7 +865,6 @@
 <translation id="5056587122125565772">Búa til mynd</translation>
 <translation id="5078711626843651677">Raddlíkön eru vistuð tímabundið í tækinu þar til búið er að merkja mælendur. Þú getur slökkt á þessu hvenær sem er í stillingunum.</translation>
 <translation id="5078983345702708852">framúrstefnuleg</translation>
-<translation id="5085224064082122501">Ekki tókst að sækja líkan sem býr til samantektir og heiti. Reyndu aftur eða endurræstu Chromebook.</translation>
 <translation id="5087864757604726239">til baka</translation>
 <translation id="5088172560898466307">Hýsilheiti þjóns</translation>
 <translation id="5089810972385038852">Ríki</translation>
@@ -882,9 +872,7 @@
 <translation id="5095761549884461003">Aftengdu USB-snúru <ph name="DEVICE_NAME" /> og stingdu henni síðan aftur í samband til að halda áfram uppfærsluferlinu</translation>
 <translation id="5099354524039520280">upp</translation>
 <translation id="5107243100836678918">Flýtileið án <ph name="META_KEY" />-lykils gæti stangast á við flýtileið einhvers forrits. Ýttu aftur á þessa flýtileið til að halda áfram að nota hana eða ýttu á nýja flýtileið með <ph name="KEY" />-lyklinum. <ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Ekki tókst að sækja líkan textauppskriftar á þessu tungumáli: <ph name="LANGUAGE_NAME" />. Reyndu aftur eða endurræstu Chromebook</translation>
 <translation id="5108781503443873320">Svipað:</translation>
-<translation id="5121677070210013200">Ekki tókst að sækja líkan textauppskriftar. Reyndu aftur eða endurræstu Chromebook.</translation>
 <translation id="5130848777448318809">smáhestar</translation>
 <translation id="5137451382116112100">Allur skjárinn</translation>
 <translation id="5139813694804168398">ónáðið ekki</translation>
@@ -899,7 +887,6 @@
 <translation id="5168185087976003268">Ástand rafhlöðu</translation>
 <translation id="5170568018924773124">Sýna í möppu</translation>
 <translation id="517075088756846356">Taktu rafmagnssnúru <ph name="DEVICE_NAME" /> úr sambandi og settu hana aftur í samband til að halda uppfærsluferlinu áfram</translation>
-<translation id="5178021559562393163">Ekki hægt að búa til nöfn. Prófaðu styttri textauppskrift.</translation>
 <translation id="5180108905184566358">apabrauðstrjám</translation>
 <translation id="5180712487038406644">Tjáningarríkur</translation>
 <translation id="5190187232518914472">Upplifðu uppáhaldsstundirnar aftur. Opnaðu <ph name="LINK_BEGIN" />Google-myndir<ph name="LINK_END" /> til að bæta við eða breyta albúmum.</translation>
@@ -928,6 +915,7 @@
 <translation id="5286263799730375393">litur baklýsingar</translation>
 <translation id="5292579816060236070">Veggfóður, sólarupprás</translation>
 <translation id="5294769550414936029">útgáfa <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">kveikja/slökkva á myndavélaraðgangi</translation>
 <translation id="5300814202279832142">Færa glugga á skrifborð</translation>
 <translation id="5302048478445481009">Tungumál</translation>
 <translation id="5303837385540978511">Sérstakt veggfóður <ph name="PRODUCT_NAME" /></translation>
@@ -935,11 +923,9 @@
 <translation id="530883153651464140">Uppfæra <ph name="DEVICE_NAME" /> í útgáfu <ph name="VERSION" /></translation>
 <translation id="5315873049536339193">Auðkenni</translation>
 <translation id="5317780077021120954">Vista</translation>
-<translation id="5318310531701770497">Ekki hægt að búa til nöfn. Prófaðu lengri textauppskrift.</translation>
 <translation id="5318334351163689047">TCP-beiðnir mistókust</translation>
 <translation id="53196409393069519">Kveikja á umritun?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
-<translation id="5327248766486351172">Heiti</translation>
 <translation id="5332948983412042822">Veldu nýtt núna</translation>
 <translation id="5333530671332546086">Óþekkt staða gáttar</translation>
 <translation id="5335373365677455232">bleik(ur)</translation>
@@ -1004,7 +990,6 @@
 <translation id="5680504961595602662">Súrrealísk mynd af <ph name="SURREAL_LANDSCAPE" /> með <ph name="SURREAL_SUBJECT" /></translation>
 <translation id="5685478548317291523">kirsuber</translation>
 <translation id="5691511426247308406">Fjölskylda</translation>
-<translation id="5692395212036914927">Samantekt á upptökum og myndun heita</translation>
 <translation id="5695599963893094957">Ýttu á hvaða lykil sem er á lyklaborðinu. Hægt er að ýta á allt að 4 lykla í einu.</translation>
 <translation id="5701381305118179107">Miðjujafna</translation>
 <translation id="5703716265115423771">lækka hljóð</translation>
@@ -1043,6 +1028,7 @@
 <translation id="5896602941605730551">Spila</translation>
 <translation id="5901630391730855834">Gulur</translation>
 <translation id="5903200662178656908">Tækið er blanda af mús og lyklaborði.</translation>
+<translation id="5903822368221507416">Fela flipa</translation>
 <translation id="5904994456462260490">Bæta við nýju APN</translation>
 <translation id="590746845088109442">kettir</translation>
 <translation id="5907649332524363701">litur lykils</translation>
@@ -1054,7 +1040,6 @@
 <translation id="5928411637936685857">Eyða hnappi fyrir <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5930669310554144537">Draumsýn</translation>
 <translation id="5931523347251946569">Skráin fannst ekki</translation>
-<translation id="5938286923316838007">Ekki er hægt að búa til upptökuheiti fyrir þetta efni</translation>
 <translation id="5939518447894949180">Endurstilla</translation>
 <translation id="5942727615796467094">Kerfisstjóri <ph name="MANAGER" /> stillti hvenær hægt er að nota þessa <ph name="DEVICE_TYPE" /></translation>
 <translation id="594552776027197022">Búa til handahófsvalið lyklasett</translation>
@@ -1099,7 +1084,6 @@
 <translation id="6122191549521593678">Á netinu</translation>
 <translation id="6122277663991249694">Innfærsluaðferðarþjónusta ChromeOS</translation>
 <translation id="6127426868813166163">hvít(ur)</translation>
-<translation id="613049107179582049">Þegar kveikt er á hljóði í Chromebook tekur Upptökutækið upp allt hljóð sem spilast í tækinu</translation>
 <translation id="6136285399872347291">bakklykill</translation>
 <translation id="6137614725462089991">netpönkstíl</translation>
 <translation id="6137767437444130246">Notandavottorð</translation>
@@ -1151,7 +1135,6 @@
 <translation id="6359706544163531585">Slökkva á ljósu þema</translation>
 <translation id="6359919876285606596">Þessi aðgerð er varanleg og ekki er hægt að afturkalla hana</translation>
 <translation id="636850387210749493">Fyrirtækjaskráning</translation>
-<translation id="6369221585240879141">Ekki er hægt að búa til upptekin nöfn fyrir þetta tungumál textauppskriftar</translation>
 <translation id="6373461326814131011">tjörn</translation>
 <translation id="6379086450106841622">Snertiskjár</translation>
 <translation id="6381741036071372448">Prófa lyklaborðið</translation>
@@ -1272,10 +1255,8 @@
 <translation id="6910312834584889076">Lokið á skannanum er opið. Lokaðu skannanum og reyndu aftur.</translation>
 <translation id="6910845598686542904">Búa til líkön af röddunum sem greinast í upptökunni</translation>
 <translation id="6911383237894364323">Ekki er hægt að tengjast efnisþjónum</translation>
-<translation id="6927968682840110570">Heiti upptöku</translation>
 <translation id="6930242544192836755">Tímalengd</translation>
 <translation id="6930597342185648547">Um bakgrunn</translation>
-<translation id="6939667434404433010">Leita eftir heiti upptöku</translation>
 <translation id="6939766318048400022">Kaffihús</translation>
 <translation id="6942253772720771875">Sendu ábendingu eða lýstu vandamálinu</translation>
 <translation id="6943893908656559156">Fjarkenni (valkvætt)</translation>
@@ -1312,7 +1293,6 @@
 <translation id="708426984172631313">STÖÐVAÐ</translation>
 <translation id="7086168019478250425">lífljómandi strönd</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
-<translation id="7086916854357021265">Býr til upptökuheiti</translation>
 <translation id="7097908713073775559">mörgum litum</translation>
 <translation id="710028965487274708">Mistókst – Heimild fékkst ekki</translation>
 <translation id="7101959270679078188">Taktu <ph name="DEVICE_NAME" /> úr lás til að halda uppfærsluferlinu áfram</translation>
@@ -1433,7 +1413,6 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB-snertiskjár</translation>
 <translation id="757747079855995705">steini</translation>
-<translation id="7584853321964440104">Ekki tókst að sækja. Reyndu aftur eða endurræstu Chromebook.</translation>
 <translation id="7590883480672980941">Inntaksstillingar</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> eftir</translation>
 <translation id="7600430297804876776">Kerfisstjóri <ph name="MANAGER" /> stillti hvenær hægt er að nota þetta <ph name="DEVICE_TYPE" />.</translation>
@@ -1564,7 +1543,7 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">strönd</translation>
 <translation id="819278132617411009">Notaðu gervigreind Google til að koma fleiru í verk</translation>
-<translation id="82003371436638355">When you select “Create your own,” write a custom prompt. Að öðrum kosti geturðu valið „Velja þema“ og síðan undirstrikuðu orðin til að sérsníða gervigreindarveggfóðrið þitt.
+<translation id="82003371436638355">Þegar þú velur “Búðu til þitt eigið” skaltu skrifa eigin sérsniðna skipun. Að öðrum kosti geturðu valið „Velja þema“ og síðan undirstrikuðu orðin til að sérsníða gervigreindarveggfóðrið þitt.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           Veldu „Fá innblástur“ til að fá einstakari og fjölbreyttari valkosti fyrir gervigreindarmyndir.
@@ -1644,7 +1623,6 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="8503836310948963452">Aðeins nokkrar mínútur í viðbót…</translation>
 <translation id="8505011850330200833">Gemini-líkanið þarf að nota 2 GB af geymslurými til að geta unnið úr textauppskriftum og búið til samantektir</translation>
 <translation id="8508640263392900755">Upplýsingar um aðgangsstað</translation>
-<translation id="8509574872955173831">Nánar um samantekt og líkan sem býr til heiti</translation>
 <translation id="8522687886059337719">Nú hefurðu aðgang að nýjum <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />veggfóðrum<ph name="END_LINK_WALLPAPER_SUBPAGE" /> og <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />skjávörum<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">tehús</translation>
@@ -1661,7 +1639,6 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="8626489604350149811">Fleiri aðgerðir fyrir <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Ljósfjólublár</translation>
 <translation id="8647595191512746911">Hljóðumritun</translation>
-<translation id="8648578954147795914">Heiti sem búin voru til:</translation>
 <translation id="8650852232143958317">Taktu Gmail og Google Drive-skrárnar þínar með þér</translation>
 <translation id="8651481478098336970">hljóð af</translation>
 <translation id="8655295600908251630">Rás</translation>
@@ -1692,7 +1669,6 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="8775713578693478175">Aðgangsstaður mótalds</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Þetta netkerfi kann að innihalda innskráningarsíðu</translation>
-<translation id="8797082062139985406">Búa til heiti með gervigreind Google</translation>
 <translation id="8798099450830957504">Sjálfgefið</translation>
 <translation id="8798441408945964110">Heiti veitu</translation>
 <translation id="8804164990146287819">Persónuverndarstefna</translation>
@@ -1718,7 +1694,6 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="8882789155418924367">uglur</translation>
 <translation id="8885038613856655272">Tengja hljóðnema</translation>
 <translation id="8892443466059986410">Hætta við að breyta flýtileið</translation>
-<translation id="8897043028305808902">Skrá fékk nýtt heiti</translation>
 <translation id="8898840733695078011">Sendistyrkur</translation>
 <translation id="8909114361904403025">ör upp</translation>
 <translation id="8910721771319628100">Sjálfgefið net er yfir biðþröskuldi</translation>
@@ -1804,7 +1779,6 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="9218016617214286986">Sýna fyrirliggjandi aðgangsstaði</translation>
 <translation id="932327136139879170">Heim</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Gættu þess að hljóðneminn sé tengdur eða prófaðu að endurræsa Chromebook</translation>
 <translation id="945522503751344254">Senda ábendingu</translation>
 <translation id="950520315903467048">Lykil vantar fyrir „<ph name="DIRECTION" />“. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Bera saman raddir á allri upptökunni til að textauppskriftin endurspegli hvað hver mælandi segir og hvenær</translation>

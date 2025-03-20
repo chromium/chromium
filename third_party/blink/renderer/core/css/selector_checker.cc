@@ -1452,7 +1452,8 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
   bool match_in_shadow_tree = context.selector->HasArgumentMatchInShadowTree();
 
   if (match_in_shadow_tree && !has_anchor_element->GetShadowRoot()) {
-    NOTREACHED();
+    // Able to reach here when :host is after :has(). (e.g. ':has(div):host')
+    return false;
   }
 
   DCHECK(context.selector->SelectorList());

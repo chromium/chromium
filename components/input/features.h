@@ -23,6 +23,8 @@ BASE_DECLARE_FEATURE(kLogBubblingTouchscreenGesturesForDebug);
 COMPONENT_EXPORT(INPUT)
 BASE_DECLARE_FEATURE(kIgnoreBubblingCollisionIfSourceDevicesMismatch);
 COMPONENT_EXPORT(INPUT) BASE_DECLARE_FEATURE(kScrollBubblingFix);
+COMPONENT_EXPORT(INPUT)
+BASE_DECLARE_FEATURE(kUseFirstCoalescedFrameAsFlingGenerationTimestamp);
 
 }  // namespace input::features
 

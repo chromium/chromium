@@ -863,6 +863,7 @@ CGFloat SpaceBetweenModules() {
   if (self.feedVisible) {
     [self.feedMetricsRecorder recordFeedScrolled:scrollView.contentOffset.y -
                                                  self.scrollStartPosition];
+    [self.NTPContentDelegate feedDidScroll];
   }
 }
 

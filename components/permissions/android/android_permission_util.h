@@ -73,10 +73,6 @@ void AppendRequiredAndOptionalAndroidPermissionsForContentSettings(
 // level notification permission.
 bool DoesAppLevelSettingsAllowSiteNotifications();
 
-// Called to check whether Chrome has enabled app-level Notifications
-// permission.
-bool AreAppLevelNotificationsEnabled();
-
 // Checks if Chrome needs Location permission for using Bluetooth.
 bool NeedsLocationPermissionForBluetooth(content::WebContents* web_contents);
 

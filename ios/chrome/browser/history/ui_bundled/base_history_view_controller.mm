@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/history/ui_bundled/base_history_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/cancelable_callback.h"
 #import "base/i18n/time_formatting.h"
 #import "base/ios/ios_util.h"
 #import "base/metrics/user_metrics.h"
@@ -124,6 +125,11 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
 
   // Indicates the current state of the loading indicator.
   IndicatorState _indicatorState;
+
+  // Callbacks for the loading indicator delayed tasks. Allows for them to be
+  // canceled if results are displayed between callback runs.
+  base::CancelableOnceCallback<void(void)> _maybeRemoveLoadingIndicatorTask;
+  base::CancelableOnceCallback<void(void)> _displayLoadingIndicatorTask;
 }
 // YES if there are no results to show.
 @property(nonatomic, assign) BOOL empty;
@@ -158,6 +164,9 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
   // Clear C++ ivars.
   _browser = nullptr;
   _historyService = nullptr;
+
+  // Cancel all pending callbacks related to loading indicator.
+  [self cancelIndicatorCallbacks];
 }
 
 #pragma mark - ViewController Lifecycle.
@@ -254,13 +263,17 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
   // request again.
   BOOL waiting_for_results = _indicatorState != IndicatorState::IDLE;
   if ([self shouldDisplayLoadingIndicator] && !waiting_for_results) {
+    // Cancel all pending callbacks related to loading indicator.
+    [self cancelIndicatorCallbacks];
+
     // Wait for kDelayUntilShowLoadingMessageMs, before displaying the loading
     // indicator. If the query returns before, then the results are displayed.
     __weak __typeof(self) weakSelf = self;
+    _displayLoadingIndicatorTask.Reset(base::BindOnce(^{
+      [weakSelf displayLoadingIndicator];
+    }));
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, base::BindOnce(^{
-          [weakSelf displayLoadingIndicator];
-        }),
+        FROM_HERE, _displayLoadingIndicatorTask.callback(),
         kDelayUntilShowLoadingMessageMs);
   }
 
@@ -688,15 +701,16 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
   // TODO(crbug.com/371568658): Remove NotFatalUntil when we're sure this
   // check doesn't fail.
   CHECK_EQ(_indicatorState, IndicatorState::FETCHING_RESULTS,
-           base::NotFatalUntil::M136);
+           base::NotFatalUntil::M139);
   _indicatorState = IndicatorState::SHOWING_LOADING_INDICATOR;
   [self startLoadingIndicatorWithLoadingMessage:l10n_util::GetNSString(
                                                     IDS_HISTORY_NO_RESULTS)];
   __weak __typeof(self) weakSelf = self;
+  _maybeRemoveLoadingIndicatorTask.Reset(base::BindOnce(^{
+    [weakSelf maybeRemoveLoadingIndicator];
+  }));
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, base::BindOnce(^{
-        [weakSelf maybeRemoveLoadingIndicator];
-      }),
+      FROM_HERE, _maybeRemoveLoadingIndicatorTask.callback(),
       kDelayUntilReadyToRemoveLoadingIndicatorsMs);
 }
 
@@ -707,7 +721,7 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
   // TODO(crbug.com/371568658): Remove NotFatalUntil when we're sure this
   // check doesn't fail.
   CHECK_EQ(_indicatorState, IndicatorState::SHOWING_LOADING_INDICATOR,
-           base::NotFatalUntil::M136);
+           base::NotFatalUntil::M139);
   _indicatorState = IndicatorState::WAITING_FOR_RESULTS;
 
   // If results have returned, then the UI is updated right away.
@@ -733,8 +747,11 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
   // check doesn't fail.
   CHECK(_indicatorState == IndicatorState::WAITING_FOR_RESULTS ||
             _indicatorState == IndicatorState::FETCHING_RESULTS,
-        base::NotFatalUntil::M136);
+        base::NotFatalUntil::M139);
   _indicatorState = IndicatorState::IDLE;
+
+  // Cancel all pending callbacks related to loading indicator.
+  [self cancelIndicatorCallbacks];
 
   // Remove the loading indicator if it's being displayed.
   [self stopLoadingIndicatorWithCompletion:nil];
@@ -909,6 +926,14 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
 }
 
 #pragma mark - Helper Methods
+
+// Cancels all the callbacks and as a result the tasks associated with showing
+// the loading indicator. At some point, these callbacks were scheduled to run
+// within a delayed task.
+- (void)cancelIndicatorCallbacks {
+  _maybeRemoveLoadingIndicatorTask.Cancel();
+  _displayLoadingIndicatorTask.Cancel();
+}
 
 // Loads and opens a tab using `params`. If `incognito` is YES the tab will be
 // opened in incognito mode.

@@ -82,7 +82,7 @@ void FeedbackDialog::CreateOrShow(
 
   current_instance_ = new FeedbackDialog(profile, info);
   gfx::NativeWindow window =
-      chrome::ShowWebDialog(nullptr, profile, current_instance_,
+      chrome::ShowWebDialog(gfx::NativeView(), profile, current_instance_,
                             /*show=*/false);
   current_instance_->widget_ = views::Widget::GetWidgetForNativeWindow(window);
   views::View* root = current_instance_->widget_->GetRootView();

@@ -117,11 +117,6 @@ bool DoesAppLevelSettingsAllowSiteNotifications() {
   return Java_PermissionUtil_doesAppLevelSettingsAllowSiteNotifications(env);
 }
 
-bool AreAppLevelNotificationsEnabled() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_PermissionUtil_areAppLevelNotificationsEnabled(env);
-}
-
 bool NeedsLocationPermissionForBluetooth(content::WebContents* web_contents) {
   JNIEnv* env = base::android::AttachCurrentThread();
   auto* window_android = web_contents->GetNativeView()->GetWindowAndroid();

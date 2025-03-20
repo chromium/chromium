@@ -275,6 +275,12 @@ static bool BlockSuppressesAutosizing(const LayoutBlock* block) {
   if (BlockHeightConstrained(block))
     return true;
 
+  if (RuntimeEnabledFeatures::TextAutoSizingDisabledOnFlexboxEnabled() &&
+      block->IsFlexItem()) {
+    block->GetDocument().CountUse(WebFeature::kTextAutoSizingDisabledOnFlexbox);
+    return true;
+  }
+
   return false;
 }
 

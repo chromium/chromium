@@ -23,8 +23,9 @@ namespace {
 views::UniqueWidgetPtr CreateTestDialogWidget(views::Widget* parent) {
   auto dialog_delegate = std::make_unique<views::DialogDelegateView>();
   return std::unique_ptr<views::Widget>(
-      views::DialogDelegate::CreateDialogWidget(
-          dialog_delegate.release(), nullptr, parent->GetNativeView()));
+      views::DialogDelegate::CreateDialogWidget(dialog_delegate.release(),
+                                                gfx::NativeWindow(),
+                                                parent->GetNativeView()));
 }
 
 }  // namespace

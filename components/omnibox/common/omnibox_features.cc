@@ -96,6 +96,12 @@ BASE_FEATURE(kFocusTriggersWebAndSRPZeroSuggest,
              "OmniboxFocusTriggersWebAndSRPZeroSuggest",
              DISABLED);
 
+// If enabled, suggestion group headers in the Omnibox popup will be hidden
+// (e.g. in order to minimize visual clutter in the zero-prefix state).
+BASE_FEATURE(kHideSuggestionGroupHeaders,
+             "OmniboxHideSuggestionGroupHeaders",
+             DISABLED);
+
 // Enables local history zero-prefix suggestions in every context in which the
 // remote zero-prefix suggestions are enabled.
 BASE_FEATURE(kLocalHistoryZeroSuggestBeyondNTP,
@@ -127,6 +133,12 @@ BASE_FEATURE(kZeroSuggestPrefetchingOnSRP,
 // Web (i.e. non-NTP and non-SRP URLs).
 BASE_FEATURE(kZeroSuggestPrefetchingOnWeb,
              "ZeroSuggestPrefetchingOnWeb",
+             DISABLED);
+
+// Enables fullfillment of contextual zero-prefix suggestions by delegating the
+// logic to Lens.
+BASE_FEATURE(kContextualZeroSuggestLensFulfillment,
+             "kContextualZeroSuggestLensFullfilment",
              DISABLED);
 
 // Features to provide head and tail non personalized search suggestion from

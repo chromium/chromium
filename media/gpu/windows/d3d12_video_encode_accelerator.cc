@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/task/thread_pool.h"
+#include "media/base/video_util.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/windows/d3d12_video_encode_av1_delegate.h"
 #include "media/gpu/windows/d3d12_video_encode_delegate.h"
@@ -326,7 +327,11 @@ Microsoft::WRL::ComPtr<ID3D12Resource>
 D3D12VideoEncodeAccelerator::CreateResourceForSharedMemoryVideoFrame(
     const VideoFrame& frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
-  DCHECK_EQ(frame.storage_type(), VideoFrame::STORAGE_SHMEM);
+  if (frame.storage_type() != VideoFrame::STORAGE_SHMEM &&
+      frame.storage_type() != VideoFrame::STORAGE_UNOWNED_MEMORY) {
+    LOG(ERROR) << "Unsupported frame storage type for mapping";
+    return nullptr;
+  }
   CHECK(frame.IsMappable());
 
   D3D12_RESOURCE_DESC input_texture_desc = CD3DX12_RESOURCE_DESC::Tex2D(
@@ -410,7 +415,17 @@ void D3D12VideoEncodeAccelerator::DoEncodeTask(
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   Microsoft::WRL::ComPtr<ID3D12Resource> input_texture;
   if (frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-    input_texture = CreateResourceForGpuMemoryBufferVideoFrame(*frame);
+    if (frame->HasNativeGpuMemoryBuffer()) {
+      input_texture = CreateResourceForGpuMemoryBufferVideoFrame(*frame);
+    } else {
+      frame = ConvertToMemoryMappedFrame(std::move(frame));
+      if (!frame) {
+        return NotifyError(
+            {EncoderStatus::Codes::kInvalidInputFrame,
+             "Failed to convert shared memory GMB for encoding"});
+      }
+      input_texture = CreateResourceForSharedMemoryVideoFrame(*frame);
+    }
   } else if (frame->storage_type() == VideoFrame::STORAGE_SHMEM) {
     input_texture = CreateResourceForSharedMemoryVideoFrame(*frame);
   } else {

@@ -143,7 +143,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sync.AndroidExplicitPassphrasePlatformApiResponse"
     enum="AndroidExplicitPassphrasePlatformApiResponse"
-    expires_after="2025-03-30">
+    expires_after="2026-03-30">
   <owner>mastiz@chromium.org</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>

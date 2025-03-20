@@ -51,7 +51,7 @@ class BocaAppHandler : public mojom::PageHandler,
 
   ~BocaAppHandler() override;
   // Static
-  static void SetFloatModeAndBoundsForWindow(bool isFloatMode,
+  static void SetFloatModeAndBoundsForWindow(bool is_float_mode,
                                              aura::Window* window,
                                              SetFloatModeCallback callback);
 

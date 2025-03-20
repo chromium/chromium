@@ -31,6 +31,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/snapshot/snapshot.h"
 #include "ui/views/view.h"
 
@@ -195,7 +196,7 @@ bool CanShare() {
 
   gfx::Rect rectInWidget =
       browserView->ConvertRectToWidget(contentsView->bounds());
-  ui::GrabWindowSnapshot(_windowForShare, rectInWidget,
+  ui::GrabWindowSnapshot(gfx::NativeWindow(_windowForShare), rectInWidget,
                          base::BindOnce(
                              [](ShareMenuController* controller,
                                 base::OnceClosure closure, gfx::Image image) {

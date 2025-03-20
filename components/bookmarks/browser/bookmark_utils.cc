@@ -42,10 +42,6 @@ namespace bookmarks {
 
 namespace {
 
-// The maximum length of URL or title returned by the Cleanup functions.
-const size_t kCleanedUpUrlMaxLength = 1024u;
-const size_t kCleanedUpTitleMaxLength = 1024u;
-
 void CloneBookmarkNodeImpl(BookmarkModel* model,
                            const BookmarkNodeData::Element& element,
                            const BookmarkNode* parent,
@@ -108,25 +104,6 @@ const BookmarkNode* FindNode(const BookmarkNode* node, Predicate pred) {
     }
   }
   return nullptr;
-}
-
-// Attempts to shorten a URL safely (i.e., by preventing the end of the URL
-// from being in the middle of an escape sequence) to no more than
-// kCleanedUpUrlMaxLength characters, returning the result.
-std::string TruncateUrl(const std::string& url) {
-  if (url.length() <= kCleanedUpUrlMaxLength) {
-    return url;
-  }
-
-  // If we're in the middle of an escape sequence, truncate just before it.
-  if (url[kCleanedUpUrlMaxLength - 1] == '%') {
-    return url.substr(0, kCleanedUpUrlMaxLength - 1);
-  }
-  if (url[kCleanedUpUrlMaxLength - 2] == '%') {
-    return url.substr(0, kCleanedUpUrlMaxLength - 2);
-  }
-
-  return url.substr(0, kCleanedUpUrlMaxLength);
 }
 
 template <class type>
@@ -233,9 +210,6 @@ std::vector<const BookmarkNode*> GetMostRecentlyModifiedUserFolders(
   while (iterator.has_next()) {
     nodes.push_back(iterator.Next());
   }
-
-  // TODO(crbug.com/354892429): Filter local permanent nodes if they shouldn't
-  // visible (user has permanent account nodes but no local bookmarks).
 
   std::ranges::stable_sort(nodes, &MoreRecentlyModified);
 
@@ -358,25 +332,20 @@ BookmarkNodesSplitByAccountAndLocal GetMostRecentlyUsedFoldersForDisplay(
 BookmarkNodesSplitByAccountAndLocal GetPermanentNodesForDisplay(
     const BookmarkModel* model) {
   BookmarkNodesSplitByAccountAndLocal permanent_nodes;
-  const bool account_nodes_exists = model->account_bookmark_bar_node();
-  if (account_nodes_exists) {
-    for (const BookmarkNode* node :
-         {model->account_bookmark_bar_node(), model->account_other_node(),
-          model->account_mobile_node()}) {
-      if (!bookmarks::PruneFoldersForDisplay(model, node)) {
-        permanent_nodes.account_nodes.push_back(node);
-      }
-    }
-    // Show only account nodes if we have no local/syncable bookmarks.
-    if (!HasLocalOrSyncableBookmarks(model)) {
-      return permanent_nodes;
-    }
-  }
 
-  for (const BookmarkNode* node : {model->bookmark_bar_node(),
-                                   model->other_node(), model->mobile_node()}) {
-    if (!bookmarks::PruneFoldersForDisplay(model, node)) {
+  for (const auto& permanent_node : model->root_node()->children()) {
+    BookmarkNode* node = permanent_node.get();
+
+    // Do not include permanent nodes if they should not be visible.
+    if (PruneFoldersForDisplay(model, node)) {
+      continue;
+    }
+
+    if (model->IsLocalOnlyNode(*node) ||
+        model->client()->IsSyncFeatureEnabledIncludingBookmarks()) {
       permanent_nodes.local_nodes.push_back(node);
+    } else {
+      permanent_nodes.account_nodes.push_back(node);
     }
   }
 
@@ -552,24 +521,6 @@ void RemoveAllBookmarks(BookmarkModel* model,
   }
 }
 
-std::u16string CleanUpUrlForMatching(
-    const GURL& gurl,
-    base::OffsetAdjuster::Adjustments* adjustments) {
-  DCHECK(gurl.is_valid());
-
-  base::OffsetAdjuster::Adjustments tmp_adjustments;
-  return base::i18n::ToLower(url_formatter::FormatUrlWithAdjustments(
-      GURL(TruncateUrl(gurl.spec())),
-      url_formatter::kFormatUrlOmitUsernamePassword,
-      base::UnescapeRule::SPACES | base::UnescapeRule::PATH_SEPARATORS |
-          base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS,
-      nullptr, nullptr, adjustments ? adjustments : &tmp_adjustments));
-}
-
-std::u16string CleanUpTitleForMatching(const std::u16string& title) {
-  return base::i18n::ToLower(title.substr(0u, kCleanedUpTitleMaxLength));
-}
-
 bool IsBookmarkedByUser(BookmarkModel* model, const GURL& url) {
   for (const BookmarkNode* node : model->GetNodesByURL(url)) {
     if (!model->client()->IsNodeManaged(node)) {
@@ -620,7 +571,7 @@ const BookmarkNode* GetParentForNewNodes(BookmarkModel* model,
 
 bool PruneFoldersForDisplay(const BookmarkModel* model,
                             const BookmarkNode* node) {
-  return !node->IsVisible() || !node->is_folder() ||
+  return !model->IsNodeVisible(*node) || !node->is_folder() ||
          model->client()->IsNodeManaged(node);
 }
 

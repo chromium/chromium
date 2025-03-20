@@ -90,31 +90,6 @@ export class SearchAndAssistantSettingsCardElement extends
         },
       },
 
-      scannerLabel_: {
-        type: String,
-        readOnly: true,
-        value: function(this: SearchAndAssistantSettingsCardElement) {
-          // <if expr="_google_chrome">
-          return this.i18n('enableScanner');
-          // </if>
-          // <if expr="not _google_chrome">
-          return 'Enable Scanner';
-          // </if>
-        },
-      },
-      scannerSubLabel_: {
-        type: String,
-        readOnly: true,
-        value: function(this: SearchAndAssistantSettingsCardElement) {
-          // <if expr="_google_chrome">
-          return this.i18n('enableScannerDesc');
-          // </if>
-          // <if expr="not _google_chrome">
-          return 'Enables the Scanner feature.';
-          // </if>
-        },
-      },
-
       isScannerSettingsToggleVisible_: {
         type: Boolean,
         readOnly: true,

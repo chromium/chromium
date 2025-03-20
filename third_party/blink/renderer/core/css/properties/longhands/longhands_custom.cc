@@ -11036,7 +11036,7 @@ void WebkitPerspectiveOriginY::ApplyInherit(StyleResolverState& state) const {
       state.ParentStyle()->PerspectiveOrigin().Y());
 }
 
-const CSSValue* WebkitPrintColorAdjust::CSSValueFromComputedStyleInternal(
+const CSSValue* PrintColorAdjust::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style,

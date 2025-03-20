@@ -525,11 +525,9 @@ class QuotaManagerImpl::StorageKeyGathererTask {
 
     base::ConcurrentClosures concurrent;
     for (const auto& client_and_type : manager_->client_types_) {
-      client_and_type.first->GetStorageKeysForType(
-          StorageType::kTemporary,
-          base::BindOnce(&StorageKeyGathererTask::DidGetStorageKeys,
-                         weak_factory_.GetWeakPtr(),
-                         concurrent.CreateClosure()));
+      client_and_type.first->GetDefaultStorageKeys(base::BindOnce(
+          &StorageKeyGathererTask::DidGetStorageKeys,
+          weak_factory_.GetWeakPtr(), concurrent.CreateClosure()));
     }
     std::move(concurrent)
         .Done(
@@ -872,8 +870,7 @@ class QuotaManagerImpl::StorageCleanupHelper : public QuotaTask {
       mojom::QuotaClient* client = client_and_type.first;
       QuotaClientType client_type = client_and_type.second;
       if (quota_client_types_.contains(client_type)) {
-        client->PerformStorageCleanup(StorageType::kTemporary,
-                                      concurrent.CreateClosure());
+        client->PerformStorageCleanup(concurrent.CreateClosure());
       }
     }
     std::move(concurrent)

@@ -9,12 +9,14 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -27,6 +29,7 @@ import org.chromium.components.background_task_scheduler.TaskInfo;
 @Config(manifest = Config.NONE)
 public class NotificationTriggerSchedulerTest {
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private NotificationTriggerScheduler.Natives mNativeMock;
     @Mock private BackgroundTaskScheduler mTaskScheduler;
     @Captor private ArgumentCaptor<TaskInfo> mTaskInfoCaptor;
@@ -35,7 +38,6 @@ public class NotificationTriggerSchedulerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         BackgroundTaskSchedulerFactory.setSchedulerForTesting(mTaskScheduler);
         NotificationTriggerSchedulerJni.setInstanceForTesting(mNativeMock);
         doReturn(true).when(mTaskScheduler).schedule(any(), mTaskInfoCaptor.capture());

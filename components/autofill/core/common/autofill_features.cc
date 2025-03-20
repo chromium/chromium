@@ -84,6 +84,11 @@ const base::FeatureParam<base::TimeDelta>
 const base::FeatureParam<bool> kAutofillAiServerModelSendPageUrl{
     &kAutofillAiServerModel, "autofill_ai_model_send_page_url", false};
 
+// Whether the user may use the locally cached results from the server model
+// to provide AutofillAI predictions for filling and importing.
+const base::FeatureParam<bool> kAutofillAiServerModelUseCacheResults{
+    &kAutofillAiServerModel, "autofill_ai_model_use_cache_results", false};
+
 // Enables the second iteration AutofillAI.
 // This feature is independent of `autofill_ai::kAutofillAi`.
 BASE_FEATURE(kAutofillAiWithDataSchema,
@@ -309,26 +314,6 @@ BASE_FEATURE(kAutofillEnableSupportForHomeAndWork,
              "AutofillEnableSupportForHomeAndWork",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Gives precedence to local heuristics if they indicate that a field is an
-// EMAIL_ADDRESS field and the server believes that it is a USERNAME or
-// SINGLE_USERNAME field.
-//
-// Imagine that  a web page has a field that admits both email address
-// and username, but the server prediction only captures the username
-// aspect.
-// With this feature disabled, we predict the overall type to be USERNAME. If
-// Password Manager has not results, it defaults to Autofill, which, in turn,
-// defaults to Autocomplete because it cannot handle the USERNAME prediction.
-// With this feature enabled, Password Manager is still given  precedence for
-// showing username suggestions if it has any. However, if it does not, Autofill
-// can now show email-related suggestions. Only if it does not have any will it
-// fall back to Autocomplete.
-//
-// TODO: crbug.com/360791229 - clean up.
-BASE_FEATURE(kAutofillGivePrecedenceToEmailOverUsername,
-             "AutofillGivePrecedenceToEmailOverUsername",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, the autofill suggestion labels are more descriptive and
 // relevant.
 // TODO(crbug.com/380273791): Cleanup when launched.
@@ -352,17 +337,17 @@ const base::FeatureParam<bool>
         "autofill_improved_labels_with_differentiating_labels_in_front", false};
 
 // If enabled, we include a `FormFieldData`'s maxlength in crowdsourcing votes.
-// TODO(crbug.com/393995180): Clean up when launched.
+// TODO(crbug.com/393995180): Clean up in M137.
 BASE_FEATURE(kAutofillIncludeMaxLengthInCrowdsourcing,
              "AutofillIncludeMaxLengthInCrowdsourcing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, we include a <select>'s first, second, and last <option> in
 // crowdsourcing votes.
-// TODO(crbug.com/393999140): Clean up when launched.
+// TODO(crbug.com/393999140): Clean up in M137.
 BASE_FEATURE(kAutofillIncludeSelectOptionsInCrowdsourcing,
              "AutofillIncludeSelectOptionsInCrowdsourcing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, we include a `FormData`'s URL in crowdsourcing votes.
 // TODO(crbug.com/385043924): Clean up in M137.

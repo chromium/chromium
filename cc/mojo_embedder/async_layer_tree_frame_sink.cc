@@ -260,8 +260,17 @@ void AsyncLayerTreeFrameSink::SubmitCompositorFrame(
                 STEP_SEND_SUBMIT_COMPOSITOR_FRAME_MOJO_MESSAGE);
         data->set_surface_frame_trace_id(trace_id);
       });
+
   compositor_frame_sink_ptr_->SubmitCompositorFrame(
       local_surface_id_, std::move(frame), std::move(hit_test_region_list), 0);
+
+  if (base::FeatureList::IsEnabled(
+          features::kExportFrameTimingAfterFrameDone)) {
+    for (const auto& pair : timing_details_) {
+      client_->DidPresentCompositorFrame(pair.first, pair.second);
+    }
+    timing_details_.clear();
+  }
 }
 
 void AsyncLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack,
@@ -280,7 +289,16 @@ void AsyncLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack,
         data->set_frame_skipped_reason(to_proto_enum(reason));
         data->set_surface_frame_trace_id(ack.trace_id);
       });
+
   compositor_frame_sink_ptr_->DidNotProduceFrame(ack);
+
+  if (base::FeatureList::IsEnabled(
+          features::kExportFrameTimingAfterFrameDone)) {
+    for (const auto& pair : timing_details_) {
+      client_->DidPresentCompositorFrame(pair.first, pair.second);
+    }
+    timing_details_.clear();
+  }
 }
 
 std::unique_ptr<LayerContext> AsyncLayerTreeFrameSink::CreateLayerContext(
@@ -331,8 +349,17 @@ void AsyncLayerTreeFrameSink::OnBeginFrame(
     }
   }
 
+  bool timing_export =
+      base::FeatureList::IsEnabled(features::kExportFrameTimingAfterFrameDone);
+  if (timing_export) {
+    timing_details_.insert(timing_details.begin(), timing_details.end());
+  }
   for (const auto& pair : timing_details) {
-    client_->DidPresentCompositorFrame(pair.first, pair.second);
+    // Cache timing details to be exported in either SubmitCompositorFrame() or
+    // DidNotProduceFrame().
+    if (!timing_export) {
+      client_->DidPresentCompositorFrame(pair.first, pair.second);
+    }
     if (synthetic_begin_frame_source_ &&
         use_begin_frame_presentation_feedback_) {
       const auto& feedback = pair.second.presentation_feedback;

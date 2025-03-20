@@ -160,6 +160,7 @@ descentOverride
 direction
 display
 dominantBaseline
+dynamicRangeLimit
 emptyCells
 fallback
 fieldSizing
@@ -363,6 +364,7 @@ positionTryFallbacks
 positionTryOrder
 positionVisibility
 prefix
+printColorAdjust
 quotes
 r
 range

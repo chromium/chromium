@@ -6,8 +6,8 @@
 
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
-#include "media/formats/hls/audio_rendition.h"
 #include "media/formats/hls/multivariant_playlist.h"
+#include "media/formats/hls/rendition.h"
 #include "media/formats/hls/types.h"
 #include "media/formats/hls/variant_stream.h"
 
@@ -44,7 +44,7 @@ std::string GetVariantDisplayString(
   return variant->Format(components, id.value());
 }
 
-std::string GetAudioRenditionDisplayString(const AudioRendition* rendition) {
+std::string GetAudioRenditionDisplayString(const Rendition* rendition) {
   // TODO(crbug.com/40057824): Consider displaying characteristics / channels /
   // language and other things rather than just the name.
   return rendition->GetName();
@@ -60,16 +60,15 @@ RenditionManager::UpdatedSelections::UpdatedSelections(
 RenditionManager::VariantMetadata::~VariantMetadata() = default;
 RenditionManager::VariantMetadata::VariantMetadata(const VariantMetadata&) =
     default;
-RenditionManager::VariantMetadata::VariantMetadata(
-    const VariantStream* stream,
-    const AudioRenditionGroup* group)
+RenditionManager::VariantMetadata::VariantMetadata(const VariantStream* stream,
+                                                   const RenditionGroup* group)
     : track_id(""), stream(stream), audio_rendition_group(group) {}
 
 RenditionManager::RenditionMetadata::~RenditionMetadata() = default;
 RenditionManager::RenditionMetadata::RenditionMetadata(
     const RenditionMetadata&) = default;
 RenditionManager::RenditionMetadata::RenditionMetadata(
-    const AudioRendition* rendition)
+    const Rendition* rendition)
     : track_id(""), rendition(rendition) {}
 
 RenditionManager::~RenditionManager() = default;
@@ -130,7 +129,7 @@ void RenditionManager::Reselect(SelectedCallonce callback) {
   CHECK(selections.variant.has_value());
   const VariantStream* selected_variant =
       selectable_variants_.at(*selected_variant_).stream;
-  const AudioRendition* audio_override = nullptr;
+  const Rendition* audio_override = nullptr;
   if (selected_audio_rendition_.has_value()) {
     audio_override =
         selectable_renditions_.at(selected_audio_rendition_.value()).rendition;
@@ -278,7 +277,8 @@ void RenditionManager::InitializeVariantMaps(
 
   // Use the narrowed down variant set to determine the smallest set of data
   // that can be used to uniquely identify a variant.
-  auto format_components = DetermineVariantStreamFormatting();
+  auto format_components =
+      VariantStream::OptimalFormatForCollection(playlist_->GetVariants());
 
   for (auto& [variant_id, metadata] : selectable_variants_) {
     auto track = MediaTrack::CreateVideoTrack(
@@ -465,109 +465,13 @@ RenditionManager::SelectBestRendition(
 }
 
 std::optional<RenditionManager::RenditionID> RenditionManager::LookupRendition(
-    const AudioRendition* rendition) {
+    const Rendition* rendition) {
   for (const auto& [id, metadata] : selectable_renditions_) {
     if (metadata.rendition == rendition) {
       return id;
     }
   }
   return std::nullopt;
-}
-
-std::vector<VariantStream::FormatComponent>
-RenditionManager::DetermineVariantStreamFormatting() const {
-  // We have to find some set of properties that differentiates all of the
-  // supported variants. The most common differentiator is going to be
-  // video resolution. Resolution is always included in the format unless some
-  // of the variants are missing it or all variants have the same resolution.
-  // Framerate is used as a secondary differentiator to resolution, and is only
-  // used when there are two or more variants of the same resolution that have
-  // differing frames rates. Bandwidth is used as a tertiary differentiator to
-  // resolution and framerate.
-  // If we're still in a scenario where resolution, framerate, and bandwidth are
-  // all the same, we have to decide to fall back to either codecs, score, uri,
-  // or index. For now just fall back to stream index, and include resolution if
-  // there is more than one total size available.
-  base::flat_set<types::DecimalInteger> resolutions;
-  base::flat_set<types::DecimalInteger> rates;
-  base::flat_set<types::DecimalInteger> bandwidths;
-
-  bool missing_resolution = false;
-  bool missing_frame_rate = false;
-
-  for (const auto& [variant_id, stats] : selectable_variants_) {
-    auto resolution = stats.stream->GetResolution();
-    auto frame_rate = stats.stream->GetFrameRate();
-    auto bandwidth = stats.stream->GetBandwidth();
-
-    if (resolution.has_value()) {
-      resolutions.insert(resolution.value().Szudzik());
-    } else {
-      missing_resolution = true;
-    }
-
-    if (frame_rate.has_value()) {
-      // FrameRate x Resolution is a bit tricky. We can't just consider one or
-      // the other, because {360p, 720p} x {24fps, 60fps} would have four
-      // variants, but only two resolutions or two frame rates. This isn't an
-      // issue for bandwidth because it isn't an independent property like these
-      // two are. To account for the fact that frame rate is only a secondary
-      // differentiator, we actually hash it with resolution for a better
-      // signal.
-      if (frame_rate.value() > 2048) {
-        // We don't support this high of a frame rate anyway! This data is
-        // probably invalid, so just fall back to stream index.
-        return {VariantStream::FormatComponent::kIndex};
-      }
-      auto resolution_and_rate = frame_rate.value();
-      if (resolution.has_value()) {
-        resolution_and_rate += resolution.value().Szudzik() << 11;
-      }
-
-      rates.insert(resolution_and_rate);
-    } else {
-      missing_frame_rate = true;
-    }
-
-    bandwidths.insert(bandwidth);
-  }
-
-  if (resolutions.size() == selectable_variants_.size()) {
-    // There are no duplicates of resolution, and every variant provides one.
-    return {VariantStream::FormatComponent::kResolution};
-  }
-
-  if (rates.size() == selectable_variants_.size()) {
-    // The frame rates are a pure differentiator for variant, but we still
-    // want to include resolution as well, assuming each variant has one and
-    // they are not all the same.
-    if (missing_resolution || resolutions.size() == 1) {
-      return {VariantStream::FormatComponent::kFrameRate};
-    }
-    return {VariantStream::FormatComponent::kResolution,
-            VariantStream::FormatComponent::kFrameRate};
-  }
-
-  if (bandwidths.size() == selectable_variants_.size()) {
-    if (missing_resolution || resolutions.size() == 1) {
-      // Don't include resolution. Maybe frame rate?
-      if (missing_frame_rate || rates.size() == 1) {
-        return {VariantStream::FormatComponent::kBandwidth};
-      }
-      return {VariantStream::FormatComponent::kBandwidth,
-              VariantStream::FormatComponent::kFrameRate};
-    }
-    if (missing_frame_rate || rates.size() == 1) {
-      // Don't include frame rate, but resolution is ok.
-      return {VariantStream::FormatComponent::kBandwidth,
-              VariantStream::FormatComponent::kResolution};
-    }
-    return {VariantStream::FormatComponent::kBandwidth,
-            VariantStream::FormatComponent::kResolution,
-            VariantStream::FormatComponent::kFrameRate};
-  }
-
-  return {VariantStream::FormatComponent::kIndex};
 }
 
 }  // namespace media::hls

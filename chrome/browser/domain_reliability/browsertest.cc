@@ -297,6 +297,7 @@ IN_PROC_BROWSER_TEST_F(DomainReliabilityBrowserTest, RequestAtShutdown) {
   // doesn't see a connection error before NetworkContext does.
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = hung_url;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   auto simple_loader = network::SimpleURLLoader::Create(
       std::move(resource_request), TRAFFIC_ANNOTATION_FOR_TESTS);
   auto* storage_partition = browser()->profile()->GetDefaultStoragePartition();

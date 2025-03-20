@@ -624,6 +624,7 @@
 <translation id="1430915738399379752">列印</translation>
 <translation id="1431188203598586230">最後一次軟件更新</translation>
 <translation id="1432581352905426595">管理搜尋引擎</translation>
+<translation id="1432650420699700107">網站可要求連線至區域網絡上的任何裝置</translation>
 <translation id="1433478348197382180">閱讀模式</translation>
 <translation id="1433980411933182122">啟動</translation>
 <translation id="1434696352799406980">此功能會重設您的起始網頁、新分頁、搜尋引擎和固定標籤，同時停用所有擴充程式並清除 Cookie 等暫存資料，但不會清除您的書籤、記錄及已儲存的密碼。</translation>
@@ -1345,6 +1346,7 @@
 <translation id="1918127774159128277">重新整理 Wi-Fi Direct 功能</translation>
 <translation id="1918141783557917887">縮小(&amp;S)</translation>
 <translation id="1918281588461452432">當你瀏覽網站時，其網頁內容會加密並儲存至你的裝置</translation>
+<translation id="1919096511823372013">你可插入連結、Emoji 等內容，亦可讓 Google AI 協助你撰寫內容及建立圖片。</translation>
 <translation id="1919872106782726755">如要設定指紋，請讓子女輕觸鍵盤右上角 (即開關按鈕旁) 的指紋感應器，子女的指紋資料會安全儲存在此 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。</translation>
 <translation id="192015196730532810">你可以建立自己的分頁群組。</translation>
 <translation id="1920314570001095522">沒有類似分頁可以整理，但你可能會喜歡這些群組</translation>
@@ -1891,6 +1893,7 @@
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300332192655962933">無法在網站上找到檔案</translation>
 <translation id="2300383962156589922">自訂和控制 <ph name="APP_NAME" /></translation>
+<translation id="2301064673700597535">合格憑證聲明</translation>
 <translation id="2301382460326681002">擴充功能根目錄無效。</translation>
 <translation id="2301402091755573488">分享咗嘅分頁</translation>
 <translation id="2302342861452486996"><ph name="BEGIN_H3" />偵錯功能<ph name="END_H3" />
@@ -4069,7 +4072,6 @@
     <ph name="BEGIN_PARAGRAPH2" />您可在 Chrome 裝置設定中，隨時開始或停止允許這些報告。如果您是網域管理員，亦可在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">夜幕低垂，北極光在小木屋上空閃耀。</translation>
 <translation id="3818102823568165369">由作業系統或管理員新增的本機憑證。</translation>
-<translation id="3818662907126913619">如要配合 <ph name="DOMAIN" /> 設定檔使用你的裝置，機構需要取得裝置相關資料。這類資料可能包括已安裝的軟件、檔案、瀏覽器和裝置作業系統等相關資料。</translation>
 <translation id="3819164369574292143">放大畫面上的項目。使用搜尋鍵 + Ctrl + M 鍵即可開啟或關閉放大鏡。如要在畫面放大後四處移動，請使用 Ctrl + Alt + 方向鍵。</translation>
 <translation id="3819257035322786455">備份</translation>
 <translation id="3819261658055281761">系統無法為此裝置儲存長期 API 存取憑證。</translation>
@@ -4386,7 +4388,6 @@
 <translation id="4031527940632463547">已封鎖感應器</translation>
 <translation id="4033471457476425443">新增資料夾</translation>
 <translation id="4033963223187371752">即使是安全的網站，仍有可能嵌入不安全的圖片或網站頁框等內容</translation>
-<translation id="4034706080855851454">如要配合機構設定檔使用裝置，機構需要取得裝置相關資料。這類資料可能包括已安裝的軟件、檔案、瀏覽器和裝置作業系統等相關資料。</translation>
 <translation id="4034824040120875894">打印機</translation>
 <translation id="4035758313003622889">工作管理員(&amp;T)</translation>
 <translation id="4035877632587724847">不允許</translation>
@@ -4833,6 +4834,7 @@
 <translation id="4364830672918311045">顯示通知</translation>
 <translation id="4367971618859387374">顯示名稱</translation>
 <translation id="4368960422722232719">在分頁懸停預覽資訊卡上顯示記憶體用量</translation>
+<translation id="4369151461324628035">不允許網站連線至區域網絡上的任何裝置</translation>
 <translation id="4369215744064167350">已核准網站要求</translation>
 <translation id="4369233657762989723">開啟/關閉語音聽寫功能</translation>
 <translation id="436926121798828366">您可隨時在「<ph name="SETTINGS_LINK" />」中變更此設定</translation>
@@ -5386,6 +5388,7 @@
 <translation id="4772914216048388646">整齊</translation>
 <translation id="4773112038801431077">升級 Linux</translation>
 <translation id="4773122030389014189">分享「<ph name="GROUP_NAME" />」分頁群組</translation>
+<translation id="4773253008034797668">允許連線至區域網絡上的任何裝置</translation>
 <translation id="477548766361111120">允許擴充程式讀取並變更此網站</translation>
 <translation id="4776311127346151860">連接咗<ph name="DEVICE_NAME" /></translation>
 <translation id="4776594120007763294">如要新增頁面以便稍後閱讀，請按一下按鈕</translation>
@@ -7845,6 +7848,7 @@
 <translation id="6563002009564846727">查看從 Windows 匯入的憑證</translation>
 <translation id="6563055593659435495">無法與手機保持連線。請確認你的手機在附近並已解鎖，且已開啟藍牙和 Wi-Fi。</translation>
 <translation id="6564860838537532172">當你搜尋瀏覽記錄時，你的記錄搜尋內容、最相符的網頁內容及生成式模型輸出項目都會傳送給 Google，並可能交由人手審查以改善有關功能。</translation>
+<translation id="6565144332292237355">網站可使用此功能來搜尋和連線至區域網絡上的任何裝置</translation>
 <translation id="6569931898053264308">節省中量記憶體</translation>
 <translation id="6570622975915850879">使用其他裝置</translation>
 <translation id="65711204837946324">需要下載權限</translation>
@@ -8973,6 +8977,7 @@
 <translation id="7377451353532943397">繼續封鎖感應器存取權</translation>
 <translation id="7377481913241237033">使用代碼進行連結</translation>
 <translation id="73786666777299047">開啟 Chrome 網上應用程式商店</translation>
+<translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />。同一工作群組有另一項工作：<ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />。同一工作群組有另外 # 項工作：<ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380272457268061606">要停用本機資料復原功能嗎？</translation>
 <translation id="7380459290951585794">請確認您的手機在附近並已解鎖，且已開啟藍牙和 Wi-Fi</translation>
 <translation id="7380622428988553498">裝置名稱包含無效字元</translation>
@@ -11555,6 +11560,7 @@
       <ph name="LIST_ITEM" />執行 Chrome 連線診斷工具
     <ph name="END_LIST" /></translation>
 <translation id="9161172953291434881">你信任此網站處理你的資料嗎？</translation>
+<translation id="9164418710391288146">不允許連線至區域網絡上的任何裝置</translation>
 <translation id="9165856803582999927">在要建立並儲存「<ph name="APP_NAME" />」密鑰的裝置上，用鏡頭掃瞄此 QR 碼</translation>
 <translation id="916607977885256133">畫中畫</translation>
 <translation id="9166253503936244008">透過擁有您要為 <ph name="APP_NAME" /> 使用密鑰的裝置來掃瞄此 QR 碼</translation>

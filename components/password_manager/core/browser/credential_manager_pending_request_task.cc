@@ -17,11 +17,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
-#include "build/build_config.h"
-#include "build/buildflag.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/credential_manager_utils.h"
-#include "components/password_manager/core/browser/credential_type_flags.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -32,10 +29,6 @@
 #include "net/cert/cert_status_flags.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-#include "device/fido/features.h"
-#endif
 
 namespace password_manager {
 namespace {
@@ -138,14 +131,14 @@ CredentialManagerPendingRequestTask::CredentialManagerPendingRequestTask(
     CredentialManagerPendingRequestTaskDelegate* delegate,
     SendCredentialCallback callback,
     CredentialMediationRequirement mediation,
-    int requested_credential_type_flags,
+    bool include_passwords,
     const std::vector<GURL>& request_federations,
     PasswordFormDigest form_digest)
     : delegate_(delegate),
       send_callback_(std::move(callback)),
       mediation_(mediation),
       origin_(delegate_->GetOrigin()),
-      requested_credential_type_flags_(requested_credential_type_flags),
+      include_passwords_(include_passwords),
       form_fetcher_(std::make_unique<FormFetcherImpl>(
           std::move(form_digest),
           delegate_->client(),
@@ -179,10 +172,7 @@ void CredentialManagerPendingRequestTask::OnFetchCompleted() {
                          [](const PasswordForm& form) {
                            return std::make_unique<PasswordForm>(form);
                          });
-  bool include_passwords =
-      requested_credential_type_flags_ &
-      static_cast<int>(CredentialTypeFlags::kPassword);
-  FilterIrrelevantForms(all_matches, include_passwords, federations_);
+  FilterIrrelevantForms(all_matches, include_passwords_, federations_);
   ProcessForms(std::move(all_matches));
 }
 
@@ -258,26 +248,6 @@ void CredentialManagerPendingRequestTask::ProcessForms(
     delegate_->SendCredential(std::move(send_callback_), CredentialInfo());
     return;
   }
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // TODO(https://crbug.com/358119268): This is prototyping code only. For now,
-  // rely on the Ambient Sign-in bubble whenever the flag is enabled. In the
-  // future it might depend on new `mediation` value. Also, this might not be
-  // right place to branch from the CredentialManagement handler path toward
-  // new UI, and this should be revisited before turning this into shipping
-  // code. See:
-  // https://chromium-review.googlesource.com/c/chromium/src/+/5829785/comment/5d18ceaa_513033a7/
-  // Initially this is only supported on desktop Chrome.
-  if (base::FeatureList::IsEnabled(device::kWebAuthnAmbientSignin)) {
-    delegate_->client()->ShowCredentialsInAmbientBubble(
-        std::move(results), requested_credential_type_flags_,
-        base::BindOnce(
-            &CredentialManagerPendingRequestTaskDelegate::SendPasswordForm,
-            base::Unretained(delegate_), std::move(send_callback_),
-            mediation_));
-    return;
-  }
-#endif
 
   if (results.empty()) {
     LogCredentialManagerGetResult(

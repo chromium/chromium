@@ -26,6 +26,9 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_service.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_ui_action_logger.h"
@@ -121,6 +124,10 @@ PartialTranslateBubbleView::~PartialTranslateBubbleView() {
   // is referred by Combobox's destructor. Before destroying the models,
   // removing the child views is needed.
   RemoveAllChildViews();
+
+  if (action_item_.get()) {
+    action_item_.get()->SetIsShowingBubble(false);
+  }
 }
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PartialTranslateBubbleView, kIdentifier);
@@ -181,6 +188,10 @@ void PartialTranslateBubbleView::Init() {
   AddAccelerator(ui::Accelerator(ui::VKEY_RETURN, ui::EF_NONE));
 
   UpdateChildVisibilities();
+
+  if (action_item_.get()) {
+    action_item_->SetIsShowingBubble(true);
+  }
 }
 
 views::View* PartialTranslateBubbleView::GetInitiallyFocusedView() {
@@ -350,6 +361,7 @@ void PartialTranslateBubbleView::SetViewState(
 }
 
 PartialTranslateBubbleView::PartialTranslateBubbleView(
+    base::WeakPtr<actions::ActionItem> action_item,
     views::View* anchor_view,
     std::unique_ptr<PartialTranslateBubbleModel> model,
     content::WebContents* web_contents,
@@ -359,7 +371,8 @@ PartialTranslateBubbleView::PartialTranslateBubbleView(
                                     /*autosize=*/true),
       model_(std::move(model)),
       on_closing_(std::move(on_closing)),
-      web_contents_(web_contents) {
+      web_contents_(web_contents),
+      action_item_(action_item) {
   UpdateInsets(PartialTranslateBubbleModel::VIEW_STATE_WAITING);
 
   previous_source_language_index_ = model_->GetSourceLanguageIndex();

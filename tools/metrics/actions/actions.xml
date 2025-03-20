@@ -12426,6 +12426,20 @@ should be able to be added at any place in this file.
   <description>Tracks when glic webui crashes.</description>
 </action>
 
+<action name="GlicTabContextPermissionDisabled">
+  <owner>erikchen@chromium.org</owner>
+  <owner>pauladedeji@google.com</owner>
+  <description>
+    Tracks when glic tab context permission is disabled.
+  </description>
+</action>
+
+<action name="GlicTabContextPermissionEnabled">
+  <owner>erikchen@chromium.org</owner>
+  <owner>pauladedeji@google.com</owner>
+  <description>Tracks when glic tab context permission is enabled.</description>
+</action>
+
 <action name="GlicWebClientSessionEnd">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
@@ -23773,9 +23787,23 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileMenuAddToGroup">
+  <owner>mfiaz@google.com</owner>
+  <owner>skym@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <description>User pressed 'Add to group' in the app menu.</description>
+</action>
+
 <action name="MobileMenuAddToHomescreen">
   <owner>aurimas@chromium.org</owner>
   <description>User pressed 'Add to homescreen' in the app menu.</description>
+</action>
+
+<action name="MobileMenuAddToNewGroup">
+  <owner>mfiaz@google.com</owner>
+  <owner>skym@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <description>User pressed 'Add to new group' in the app menu.</description>
 </action>
 
 <action name="MobileMenuAddToOrEditBookmark">
@@ -44751,6 +44779,42 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TrackingProtections.Bubble.FppActive.DisableProtections">
+  <owner>michelleabreo@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Turn off protections in user bypass bubble while fingerprinting protection
+    is active on the current site.
+  </description>
+</action>
+
+<action name="TrackingProtections.Bubble.FppActive.EnableProtections">
+  <owner>michelleabreo@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Turn on protections in user bypass bubble while fingerprinting protection is
+    active on the current site.
+  </description>
+</action>
+
+<action name="TrackingProtections.Bubble.IppActive.DisableProtections">
+  <owner>michelleabreo@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Turn off protections in user bypass bubble while IP protection is active on
+    the current site.
+  </description>
+</action>
+
+<action name="TrackingProtections.Bubble.IppActive.EnableProtections">
+  <owner>michelleabreo@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Turn on protections in user bypass bubble while IP protection is active on
+    the current site.
+  </description>
+</action>
+
 <action name="TrackpadScroll">
   <obsolete>
     Not needed as of 05/2018 since performance metrics for ScrollBegin show the
@@ -47625,6 +47689,7 @@ should be able to be added at any place in this file.
 </action-suffix>
 
 <action-suffix separator="." ordering="suffix">
+  <suffix name="Glic" label="Glic edition."/>
   <suffix name="SafetyAwareness" label="Safety Awareness edition."/>
   <suffix name="Spark" label="Spark edition."/>
   <suffix name="TestEdition" label="Test edition."/>
@@ -47892,6 +47957,10 @@ should be able to be added at any place in this file.
       label="For iOSDockingPromoRemindMeLater feature"/>
   <suffix name="iOSDownloadAutoDeletion"
       label="For iOS Auto-deletion half-sheet IPH."/>
+  <suffix name="iOSFeedSwipeAnimatedFeature"
+      label="For iOSFeedSwipeAnimatedFeature feature"/>
+  <suffix name="iOSFeedSwipeStaticFeature"
+      label="For iOSFeedSwipeStaticFeature feature"/>
   <suffix name="iOSHistoryOnOverflowMenuFeature"
       label="For iOSHistoryOnOverflowMenuFeature feature"/>
   <suffix name="iOSInlineEnhancedSafeBrowsingPromoFeature"

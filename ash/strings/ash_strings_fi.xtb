@@ -241,6 +241,8 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1755556344721611131">Diagnostiikka-sovellus</translation>
 <translation id="1756833229520115364">Mallia ei voitu tallentaa. Liian monta ikkunaa tai välilehteä.</translation>
 <translation id="1757857692711134412">Pois päältä auringonlaskuun asti</translation>
+<translation id="1763084151787818322">Muut toiminnot</translation>
+<translation id="1768138163688567246">Sulje näytöltä haku</translation>
 <translation id="1768366657309696705">Pikanäppäinyhdistelmä <ph name="LAUNCHER_KEY_NAME" /> + piste on muuttunut. Jos haluat käyttää Insert-näppäintä, paina <ph name="LAUNCHER_KEY_NAME" /> + vaihto + askelpalautin.</translation>
 <translation id="1770726142253415363">Siirretty riville <ph name="ROW_NUMBER" />, sarakkeeseen <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Vieritä oikealle</translation>
@@ -1942,6 +1944,7 @@ Uusi asennus</translation>
 <translation id="742594950370306541">Kamera on käytössä.</translation>
 <translation id="742608627846767349">Huomenta</translation>
 <translation id="743058460480092004">Kamera ja mikrofoni ovat käytössä.</translation>
+<translation id="7440404390546433462">Google Haku</translation>
 <translation id="7441711280402516925">Toistetaan · Vaihda välilehteen</translation>
 <translation id="7453330308669753048">Hakuhistorian tulos poistettu</translation>
 <translation id="7459485586006128091">Hotspot on laitettu pois päältä sisäisen virheen takia. Yritä muodostaa yhteys uudelleen muutaman minuutin kuluttua.</translation>

@@ -241,6 +241,8 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1755556344721611131">Application de diagnostics</translation>
 <translation id="1756833229520115364">Impossible d'enregistrer ce modèle. Trop de fenêtres ou d'onglets sont ouverts.</translation>
 <translation id="1757857692711134412">Désactivée jusqu'au couchant</translation>
+<translation id="1763084151787818322">Autres actions</translation>
+<translation id="1768138163688567246">Fermer la recherche sur mon écran</translation>
 <translation id="1768366657309696705">Le raccourci-clavier <ph name="LAUNCHER_KEY_NAME" />+Point a changé. Pour utiliser la touche Insertion, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" />+Majuscule+Retour arrière.</translation>
 <translation id="1770726142253415363">Déplacée à la ligne <ph name="ROW_NUMBER" />, colonne <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Faire défiler vers la droite</translation>
@@ -1941,6 +1943,7 @@ Nouvelle installation</translation>
 <translation id="742594950370306541">La caméra est en cours d'utilisation.</translation>
 <translation id="742608627846767349">Bonjour,</translation>
 <translation id="743058460480092004">La caméra et le microphone sont actuellement utilisés.</translation>
+<translation id="7440404390546433462">Recherche Google</translation>
 <translation id="7441711280402516925">En cours de lecture · Passer à l'onglet</translation>
 <translation id="7453330308669753048">Résultat de l'historique de recherche retiré</translation>
 <translation id="7459485586006128091">En raison d'une erreur interne, le point d'accès sans fil a été désactivé. Essayez de vous reconnecter dans quelques minutes.</translation>

@@ -26,7 +26,7 @@ void ViewsTestHelper::TearDownTestViewsDelegate(TestViewsDelegate* delegate) {}
 void ViewsTestHelper::SetUp() {}
 
 gfx::NativeWindow ViewsTestHelper::GetContext() {
-  return nullptr;
+  return gfx::NativeWindow();
 }
 
 }  // namespace views

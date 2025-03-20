@@ -186,7 +186,7 @@ def generate_cpp_functions(schema):
   yield 'bool AttributeType::DisambiguationOrder(const AttributeType& lhs, const AttributeType& rhs) {'
   yield '  constexpr auto rank = [](const AttributeType& a) {'
   yield '    static constexpr auto ranks = [] {'
-  yield '      std::array<int, base::to_underlying(AttributeTypeName::kMaxValue)> ranks{};'
+  yield '      std::array<int, base::to_underlying(AttributeTypeName::kMaxValue) + 1> ranks{};'
   yield '      for (int& rank : ranks) {'
   yield '        rank = std::numeric_limits<int>::max();'
   yield '      }'

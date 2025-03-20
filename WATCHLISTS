@@ -46,6 +46,16 @@
     'accessibility_service': {
       'filepath': 'services/accessibility/',
     },
+    'actor': {
+      'filepath': 'chrome/browser/actor/|' \
+                  'chrome/browser/glic/actor/|' \
+                  'chrome/browser/glic/glic.mojom|' \
+                  'chrome/browser/glic/host/glic_actor|' \
+                  'chrome/browser/resources/glic/glic_api/|' \
+                  'chrome/browser/resources/glic/glic_api_impl/|' \
+                  'chrome/renderer/actor/|' \
+                  'third_party/blink/renderer/modules/actor/'
+    },
     'add_to_homescreen': {
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/webapps/|'\
                   'chrome/android/javatests/src/org/chromium/chrome/browser/webapps/|'\
@@ -56,6 +66,13 @@
     },
     'agent_scheduling_group': {
       'filepath': '.*agent_scheduling_group|.*agent_group_scheduler',
+    },
+    'ai_page_content' : {
+      'filepath': 'chrome/browser/ai/ai_data_keyed_service|' \
+                  'chrome/browser/glic/host/context/|' \
+                  'chrome/browser/glic/host/glic_annotation|' \
+                  'chrome/browser/page_content_annotations/|' \
+                  'components/optimization_guide/content/'
     },
     'ai_settings_page_desktop': {
       'filepath': 'chrome/browser/resources/settings/ai_page/',
@@ -361,6 +378,10 @@
       'filepath': 'third_party/blink/common'
                   '|third_party/blink/public/common' \
                   '|third_party/blink/public/mojom',
+    },
+    'blink_content_extraction': {
+      'filepath': 'third_party/blink/renderer/modules/content_extraction/' \
+                  '|third_party/blink/public/mojom/content_extraction/'
     },
     'blink_controller': {
       'filepath': 'third_party/blink/renderer/controller',
@@ -2487,10 +2508,12 @@
                               'trewin+watch@google.com'],
     'accessibility_service': ['hirokisato+watch@chromium.org',
                               'katie+watch@chromium.org'],
+    'actor': ['mfoltz+watch@chromium.org'],
     'add_to_homescreen': ['pkotwicz+watch@chromium.org',
                           'webapks-watchlist@chromium.org'],
     'agent_scheduling_group': ['blink-isolation-reviews@chromium.org',
                                'chikamune+watch@chromium.org'],
+    'ai_page_content': ['mfoltz+watch@chromium.org'],
     'ai_settings_page_desktop': ['rainhard+watch@chromium.org'],
     'android_accessibility': ['mschillaci+watcha11y@google.com',
                               'zhangwenyu+watcha11y@google.com',
@@ -2619,6 +2642,7 @@
                         'odejesush+watch@chromium.org'],
     'blink_clipboard': ['dcheng+clipboard@chromium.org'],
     'blink_common': ['kinuko+watch@chromium.org'],
+    'blink_content_extraction': ['mfoltz+watch@chromium.org'],
     'blink_controller': [],
     'blink_css': ['alexis.menard@intel.com',
                   'apavlov+blink@chromium.org',

@@ -48,6 +48,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace extensions {
 
@@ -441,7 +442,7 @@ void ExternalInstallError::OnFetchComplete() {
   // to pass ones which may be invalidated.
   install_ui_ = base::WrapUnique(
       new ExtensionInstallPrompt(Profile::FromBrowserContext(browser_context_),
-                                 /*native_window=*/nullptr));
+                                 /*native_window=*/gfx::NativeWindow()));
 
   install_ui_->ShowDialog(
       base::BindOnce(&ExternalInstallError::OnInstallPromptDone,

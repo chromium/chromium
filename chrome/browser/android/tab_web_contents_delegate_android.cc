@@ -377,8 +377,9 @@ WebContents* TabWebContentsDelegateAndroid::AddNewContents(
 
   // When handled is |true|, ownership has been passed to java, which in turn
   // creates a new TabAndroid instance to own the WebContents.
-  if (handled)
-    new_contents.release();
+  if (handled) {
+    return new_contents.release();
+  }
 
   return nullptr;
 }

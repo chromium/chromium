@@ -36,6 +36,9 @@ struct AutocompleteParsingResult {
   HtmlFieldType field_type = HtmlFieldType::kUnspecified;
   // Whether the field has a `webauthn` token.
   bool webauthn = false;
+
+  // Whether the field has a `webidentity` token.
+  bool webidentity = false;
 };
 
 std::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(

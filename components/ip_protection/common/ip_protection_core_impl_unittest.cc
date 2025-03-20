@@ -153,7 +153,8 @@ class FakePRTManager : public IpProtectionProbabilisticRevealTokenManager {
  public:
   explicit FakePRTManager(
       std::unique_ptr<IpProtectionProbabilisticRevealTokenFetcher> fetcher)
-      : IpProtectionProbabilisticRevealTokenManager(std::move(fetcher)) {}
+      : IpProtectionProbabilisticRevealTokenManager(std::move(fetcher),
+                                                    std::nullopt) {}
   ~FakePRTManager() override = default;
   bool IsTokenAvailable() override { NOTREACHED(); }
   std::optional<ProbabilisticRevealToken> GetToken(

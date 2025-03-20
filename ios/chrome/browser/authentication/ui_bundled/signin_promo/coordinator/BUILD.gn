@@ -1,0 +1,23 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "non_modal_signin_promo_coordinator.h",
+    "non_modal_signin_promo_coordinator.mm",
+    "non_modal_signin_promo_mediator.h",
+    "non_modal_signin_promo_mediator.mm",
+  ]
+  deps = [
+    "//components/signin/public/identity_manager/objc",
+    "//ios/chrome/browser/authentication/ui_bundled/signin_promo",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ui/base",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}

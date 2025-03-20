@@ -39,7 +39,9 @@
 <translation id="1538031354170655462">网站通常会通过近距离无线通信 (NFC) 与附近的标签或设备互动，例如扫描徽章或感应式付款</translation>
 <translation id="1547123415014299762">允许使用第三方 Cookie</translation>
 <translation id="1593426485665524382">屏幕顶部附近有多项可查看的新操作</translation>
+<translation id="1615755956145364867">网站可以请求播放受保护内容</translation>
 <translation id="1620510694547887537">摄像头</translation>
+<translation id="1621729191093924223">所有需要使用麦克风的功能都将无法正常运行</translation>
 <translation id="1633720957382884102">相关网站</translation>
 <translation id="1644574205037202324">历史记录</translation>
 <translation id="1652197001188145583">开启此设置后，网站可以请求使用 NFC 设备。关闭此设置后，网站无法使用 NFC 设备。</translation>
@@ -54,6 +56,7 @@
 <translation id="1743802530341753419">需先询问，得到许可后才允许网站连接设备（推荐）</translation>
 <translation id="1779089405699405702">图片解码器</translation>
 <translation id="1785415724048343560">建议勾选此选项以获得最佳体验</translation>
+<translation id="1796588414813960292">所有需要使用声音的功能都将无法正常运行</translation>
 <translation id="1799920918471566157">Chrome 提示</translation>
 <translation id="1816835383954230954">启用此设置后，Chrome 的运行速度会更快，并且使用 JavaScript 的功能能按预期运行。关闭此设置会降低性能，但提高 V8 防范攻击的能力。</translation>
 <translation id="1818308510395330587">若要允许 <ph name="APP_NAME" /> 使用 AR 功能，您还需在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启摄像头。</translation>
@@ -71,6 +74,7 @@
 <translation id="1994173015038366702">网站网址</translation>
 <translation id="2004697686368036666">某些网站上的功能可能无法正常运行</translation>
 <translation id="2025115093177348061">增强现实</translation>
+<translation id="2028449514182362831">所有需要使用移动传感器的功能都将无法正常运行</translation>
 <translation id="2030769033451695672">点按即可返回到 <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">撤消</translation>
 <translation id="2091887806945687916">声音</translation>
@@ -87,6 +91,7 @@
 <translation id="2215727959747642672">文件修改</translation>
 <translation id="2218389616572918761">网站可以请求使用麦克风</translation>
 <translation id="2228071138934252756">若要允许 <ph name="APP_NAME" /> 使用您的摄像头，您还需在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启摄像头。</translation>
+<translation id="2231160360698766265">网站可以播放受保护内容</translation>
 <translation id="2235344399760031203">已阻止第三方 Cookie</translation>
 <translation id="2238944249568001759">根据您上次浏览的标签页建议的搜索</translation>
 <translation id="2241587408274973373">“新标签页”页面卡片</translation>
@@ -256,6 +261,7 @@
 <translation id="4259722352634471385">已屏蔽 <ph name="URL" /></translation>
 <translation id="4274673989874969668">当您离开网站后，网站可保持同步以完成各项任务（例如上传照片或发送聊天消息）</translation>
 <translation id="4278390842282768270">允许</translation>
+<translation id="4290791284969893584">关闭网页后，您已启动的任务可能会无法完成</translation>
 <translation id="429312253194641664">某个网站正在播放媒体内容</translation>
 <translation id="42981349822642051">展开</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{明天过期}other{# 天后过期}}</translation>
@@ -523,6 +529,7 @@
 <translation id="789180354981963912">在无痕模式下阻止第三方 Cookie：</translation>
 <translation id="789722939441020330">不允许网站自动下载多个文件</translation>
 <translation id="7940722705963108451">提醒我</translation>
+<translation id="7948081750384205628">详细了解“<ph name="SETTING_TITLE" />”</translation>
 <translation id="7952708427581814389">网站可以请求查看您剪贴板中的文字和图片</translation>
 <translation id="7986741934819883144">选择联系人</translation>
 <translation id="7990211076305263060">开启此设置后，网站可以请求使用您的麦克风。关闭此设置后，网站无法使用您的麦克风。</translation>
@@ -530,6 +537,7 @@
 <translation id="8010630645305864042">{TILE_COUNT,plural, =1{隐藏“继续使用此标签页”卡片}other{隐藏“继续使用这些标签页”卡片}}</translation>
 <translation id="802154636333426148">下载失败</translation>
 <translation id="8042586301629853791">排序方式：</translation>
+<translation id="8051193500142930381">所有需要使用摄像头的功能都将无法正常运行</translation>
 <translation id="8067883171444229417">播放视频</translation>
 <translation id="8068648041423924542">无法选择证书。</translation>
 <translation id="8077120325605624147">您访问的任何网站都可向您展示任何广告</translation>
@@ -630,6 +638,7 @@
 <translation id="9138217887606523162">当前缩放比例为 <ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="9156722768168878035">让 Chrome 在设备的应用列表和搜索结果中显示您近期打开的标签页。您可以随时在 Chrome 设置中关闭此功能。</translation>
 <translation id="9162462602695099906">这是一个危险网页</translation>
+<translation id="9182556968660520230">不允许网站播放受保护内容</translation>
 <translation id="947156494302904893">您访问的网站可以验证您是真人而非机器人</translation>
 <translation id="959682366969460160">让各项内容井井有条</translation>
 <translation id="967624055006145463">已存储的数据</translation>

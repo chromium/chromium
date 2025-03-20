@@ -19,7 +19,8 @@
 #import "components/omnibox/browser/omnibox_edit_model.h"
 #import "components/omnibox/browser/omnibox_popup_selection.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_popup_controller.h"
+#import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_view_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
@@ -31,6 +32,9 @@
 using base::UserMetricsAction;
 
 @interface OmniboxAutocompleteController () <BooleanObserver>
+
+/// Redefined as a readwrite
+@property(nonatomic, assign, readwrite) BOOL hasSuggestions;
 
 @end
 
@@ -71,9 +75,11 @@ using base::UserMetricsAction;
 }
 
 - (void)disconnect {
+  [self.autocompleteResultWrapper disconnect];
   [_bottomOmniboxEnabled stop];
   [_bottomOmniboxEnabled setObserver:nil];
   _bottomOmniboxEnabled = nil;
+  _autocompleteResultWrapper = nil;
   _autocompleteController = nullptr;
   _omniboxEditModel = nullptr;
   _omniboxController = nullptr;
@@ -101,15 +107,18 @@ using base::UserMetricsAction;
   if (_autocompleteController) {
     BOOL isFocusing = _autocompleteController->input().focus_type() ==
                       metrics::OmniboxFocusType::INTERACTION_FOCUS;
-    [self.omniboxPopupController
-        newResultsAvailable:_autocompleteController->result()
-                 isFocusing:isFocusing];
+
+    self.hasSuggestions = !_autocompleteController->result().empty();
+    [self.delegate
+        omniboxAutocompleteControllerDidUpdateSuggestions:self
+                                           hasSuggestions:self.hasSuggestions
+                                               isFocusing:isFocusing];
   }
 }
 
 #pragma mark - OmniboxPopup event
 
-- (void)requestResultsWithVisibleSuggestionCount:
+- (void)requestSuggestionsWithVisibleSuggestionCount:
     (NSUInteger)visibleSuggestionCount {
   if (!_autocompleteController) {
     return;
@@ -132,17 +141,7 @@ using base::UserMetricsAction;
                                                            resultSize);
   }
 
-  [self.omniboxPopupController
-      updateWithSortedResults:_autocompleteController->result()];
-}
-
-- (BOOL)isStarredMatch:(const AutocompleteMatch&)match {
-  if (_omniboxController && _omniboxController->client()) {
-    auto* bookmark_model = _omniboxController->client()->GetBookmarkModel();
-    return bookmark_model &&
-           bookmark_model->IsBookmarked(match.destination_url);
-  }
-  return NO;
+  [self updateWithSortedResults:_autocompleteController->result()];
 }
 
 - (void)selectMatchForOpening:(const AutocompleteMatch&)match
@@ -220,6 +219,43 @@ using base::UserMetricsAction;
   if (_omniboxViewIOS) {
     _omniboxViewIOS->OnCallActionTap();
   }
+}
+
+#pragma mark - OmniboxText events
+
+- (void)setTextAlignment:(NSTextAlignment)alignment {
+  [self.delegate omniboxAutocompleteController:self
+                        didUpdateTextAlignment:alignment];
+}
+
+- (void)setSemanticContentAttribute:
+    (UISemanticContentAttribute)semanticContentAttribute {
+  [self.delegate omniboxAutocompleteController:self
+             didUpdateSemanticContentAttribute:semanticContentAttribute];
+}
+
+- (void)setHasThumbnail:(BOOL)hasThumbnail {
+  [self.delegate omniboxAutocompleteController:self
+                         didUpdateHasThumbnail:hasThumbnail];
+  self.autocompleteResultWrapper.hasThumbnail = hasThumbnail;
+}
+
+#pragma mark - OmniboxAutocomplete event
+
+- (void)updateWithSortedResults:(const AutocompleteResult&)results {
+  NSArray<id<AutocompleteSuggestionGroup>>* suggestionGroups =
+      [self.autocompleteResultWrapper wrapAutocompleteResultInGroups:results];
+  [self.delegate omniboxAutocompleteController:self
+                    didUpdateSuggestionsGroups:suggestionGroups];
+}
+
+#pragma mark - AutocompleteResultWrapperDelegate
+
+- (void)autocompleteResultWrapper:(AutocompleteResultWrapper*)wrapper
+              didInvalidatePedals:(NSArray<id<AutocompleteSuggestionGroup>>*)
+                                      nonPedalSuggestionsGroups {
+  [self.delegate omniboxAutocompleteController:self
+                    didUpdateSuggestionsGroups:nonPedalSuggestionsGroups];
 }
 
 #pragma mark - Private

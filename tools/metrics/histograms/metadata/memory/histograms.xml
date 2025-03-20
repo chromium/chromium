@@ -2125,7 +2125,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.SelfCompact2.Renderer.CancellationReason"
+<histogram name="Memory.SelfCompact2.Renderer.CancellationReason2"
     enum="SelfCompactionCancellationReason" expires_after="2025-10-06">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@google.com</owner>
@@ -2827,25 +2827,6 @@ chromium-metrics-reviews@google.com.
     every upload by Android devices. A device is considered low-RAM if it has
     512MiB of RAM or lower (see SysUtils.detectLowEndDevice()).
   </summary>
-</histogram>
-
-<histogram name="Memory{ProfiledProcess}.Pss" units="MiB"
-    expires_after="2025-07-13">
-  <owner>thiabaud@google.com</owner>
-  <summary>
-    PSS metric for the process. Recorded on Android, Linux, and ChromeOS only.
-  </summary>
-  <token key="ProfiledProcess" variants="ProfiledProcess"/>
-</histogram>
-
-<histogram name="Memory{ProfiledProcess}.SwapPss" units="MiB"
-    expires_after="2025-07-13">
-  <owner>thiabaud@google.com</owner>
-  <summary>
-    Swap PSS metric for the process. Recorded on Android, Linux, and ChromeOS
-    only.
-  </summary>
-  <token key="ProfiledProcess" variants="ProfiledProcess"/>
 </histogram>
 
 </histograms>

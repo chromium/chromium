@@ -1923,14 +1923,22 @@ bool TabStrip::HoverCardIsShowingForTab(Tab* tab) {
 }
 
 void TabStrip::ShowHover(Tab* tab, TabStyle::ShowHoverStyle style) {
-  for (Tab* split_tab : GetTabsInSplit(tab)) {
-    split_tab->tab_style_views()->ShowHover(style);
+  if (tab->split()) {
+    for (Tab* split_tab : GetTabsInSplit(tab)) {
+      split_tab->tab_style_views()->ShowHover(style);
+    }
+  } else {
+    tab->tab_style_views()->ShowHover(style);
   }
 }
 
 void TabStrip::HideHover(Tab* tab, TabStyle::HideHoverStyle style) {
-  for (Tab* split_tab : GetTabsInSplit(tab)) {
-    split_tab->tab_style_views()->HideHover(style);
+  if (tab->split()) {
+    for (Tab* split_tab : GetTabsInSplit(tab)) {
+      split_tab->tab_style_views()->HideHover(style);
+    }
+  } else {
+    tab->tab_style_views()->HideHover(style);
   }
 }
 

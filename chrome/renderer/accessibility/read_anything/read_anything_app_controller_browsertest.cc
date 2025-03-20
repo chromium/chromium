@@ -728,7 +728,8 @@ TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_SvgReturnsDivIfGoogleDocs) {
   update.nodes = {std::move(root), std::move(node)};
 
   AccessibilityEventReceived({std::move(update)});
-  EXPECT_TRUE(model().GetTreesForTesting()->at(id_1)->is_url_information_set);
+  EXPECT_TRUE(
+      model().tree_infos_for_testing().at(id_1)->is_url_information_set);
   controller().OnAXTreeDistilled(tree_id_, {});
   controller().OnActiveAXTreeIDChanged(id_1, ukm::kInvalidSourceId, false);
   EXPECT_TRUE(controller().IsGoogleDocs());
@@ -758,7 +759,8 @@ TEST_F(ReadAnythingAppControllerTest,
   update.nodes = {std::move(root), std::move(paragraph_node),
                   std::move(svg_node)};
   AccessibilityEventReceived({std::move(update)});
-  EXPECT_TRUE(model().GetTreesForTesting()->at(id_1)->is_url_information_set);
+  EXPECT_TRUE(
+      model().tree_infos_for_testing().at(id_1)->is_url_information_set);
   controller().OnAXTreeDistilled(tree_id_, {});
   controller().OnActiveAXTreeIDChanged(id_1, ukm::kInvalidSourceId, false);
   EXPECT_TRUE(controller().IsGoogleDocs());
@@ -1001,7 +1003,8 @@ TEST_F(ReadAnythingAppControllerTest,
   update.nodes = {std::move(root), std::move(node1), std::move(node2)};
 
   AccessibilityEventReceived({std::move(update)});
-  EXPECT_TRUE(model().GetTreesForTesting()->at(id_1)->is_url_information_set);
+  EXPECT_TRUE(
+      model().tree_infos_for_testing().at(id_1)->is_url_information_set);
   controller().OnAXTreeDistilled(tree_id_, {});
   controller().OnActiveAXTreeIDChanged(id_1, ukm::kInvalidSourceId, false);
   EXPECT_TRUE(controller().IsGoogleDocs());
@@ -1030,7 +1033,8 @@ TEST_F(ReadAnythingAppControllerTest,
   update.nodes = {std::move(root), std::move(node1), std::move(node2)};
 
   AccessibilityEventReceived({std::move(update)});
-  EXPECT_TRUE(model().GetTreesForTesting()->at(id_1)->is_url_information_set);
+  EXPECT_TRUE(
+      model().tree_infos_for_testing().at(id_1)->is_url_information_set);
   controller().OnAXTreeDistilled(tree_id_, {});
   controller().OnActiveAXTreeIDChanged(id_1, ukm::kInvalidSourceId, false);
   EXPECT_TRUE(controller().IsGoogleDocs());
@@ -1062,7 +1066,8 @@ TEST_F(ReadAnythingAppControllerTest,
   update.nodes = {std::move(root), std::move(node1), std::move(node2)};
 
   AccessibilityEventReceived({std::move(update)});
-  EXPECT_TRUE(model().GetTreesForTesting()->at(id_1)->is_url_information_set);
+  EXPECT_TRUE(
+      model().tree_infos_for_testing().at(id_1)->is_url_information_set);
   controller().OnAXTreeDistilled(tree_id_, {});
   controller().OnActiveAXTreeIDChanged(id_1, ukm::kInvalidSourceId, false);
   EXPECT_FALSE(controller().IsGoogleDocs());
@@ -1483,7 +1488,8 @@ TEST_F(ReadAnythingAppControllerTest, IsGoogleDocs) {
   ui::AXNodeData node = test::LinkNode(/*id = */ 1, "www.google.com");
   update.nodes = {std::move(node)};
   AccessibilityEventReceived({std::move(update)});
-  EXPECT_TRUE(model().GetTreesForTesting()->at(id_1)->is_url_information_set);
+  EXPECT_TRUE(
+      model().tree_infos_for_testing().at(id_1)->is_url_information_set);
   controller().OnAXTreeDistilled(tree_id_, {1});
 
   EXPECT_CALL(*distiller_, Distill).Times(1);
@@ -1498,7 +1504,7 @@ TEST_F(ReadAnythingAppControllerTest, IsGoogleDocs) {
   update_1.nodes = {std::move(root)};
   AccessibilityEventReceived({std::move(update_1)});
   EXPECT_TRUE(
-      model().GetTreesForTesting()->at(tree_id_)->is_url_information_set);
+      model().tree_infos_for_testing().at(tree_id_)->is_url_information_set);
   controller().OnAXTreeDistilled(tree_id_, {1});
 
   EXPECT_CALL(*distiller_, Distill).Times(1);
@@ -1876,7 +1882,8 @@ TEST_F(ReadAnythingAppControllerTest, ScrollToTargetNode_ScrollsIfGoogleDocs) {
   update.nodes = {std::move(root), std::move(node)};
 
   AccessibilityEventReceived({std::move(update)});
-  EXPECT_TRUE(model().GetTreesForTesting()->at(id_1)->is_url_information_set);
+  EXPECT_TRUE(
+      model().tree_infos_for_testing().at(id_1)->is_url_information_set);
   controller().OnAXTreeDistilled(tree_id_, {1});
   EXPECT_CALL(*distiller_, Distill).Times(1);
   controller().OnActiveAXTreeIDChanged(id_1, ukm::kInvalidSourceId, false);
@@ -1906,7 +1913,8 @@ TEST_F(ReadAnythingAppControllerTest,
   update.nodes = {std::move(root), std::move(node)};
 
   AccessibilityEventReceived({std::move(update)});
-  EXPECT_TRUE(model().GetTreesForTesting()->at(id_1)->is_url_information_set);
+  EXPECT_TRUE(
+      model().tree_infos_for_testing().at(id_1)->is_url_information_set);
   controller().OnAXTreeDistilled(tree_id_, {1});
   EXPECT_CALL(*distiller_, Distill).Times(1);
   controller().OnActiveAXTreeIDChanged(id_1, ukm::kInvalidSourceId, false);

@@ -39,7 +39,9 @@
 <translation id="1538031354170655462">Normalmente, os sites usam a tecnologia NFC (Comunicação a curta distância) para funcionar com identificadores ou dispositivos próximos, por exemplo, para a leitura de emblemas ou o pagamento sem contacto</translation>
 <translation id="1547123415014299762">Os cookies de terceiros são permitidos</translation>
 <translation id="1593426485665524382">Novas ações disponíveis junto à parte superior do ecrã</translation>
+<translation id="1615755956145364867">Os sites podem solicitar a reprodução de conteúdo protegido</translation>
 <translation id="1620510694547887537">Câmara</translation>
+<translation id="1621729191093924223">As funcionalidades que precisam de um microfone não funcionam</translation>
 <translation id="1633720957382884102">Sites relacionados</translation>
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="1652197001188145583">Quando esta opção está ativada, os sites podem pedir para usar dispositivos NFC. Quando esta opção está desativada, os sites não podem usar dispositivos NFC.</translation>
@@ -54,6 +56,7 @@
 <translation id="1743802530341753419">Perguntar antes de permitir a ligação de sites a um dispositivo (recomendado)</translation>
 <translation id="1779089405699405702">Descodificador de imagem</translation>
 <translation id="1785415724048343560">Recomendado para obter a melhor experiência</translation>
+<translation id="1796588414813960292">As funcionalidades que necessitam de som não funcionarão</translation>
 <translation id="1799920918471566157">Sugestões do Chrome</translation>
 <translation id="1816835383954230954">Quando está ativado, o Chrome é executado mais rapidamente e as funcionalidades que usam o JavaScript devem funcionar conforme previsto. Quando está desativado, reduz o desempenho, mas torna o V8 mais resistente a ataques.</translation>
 <translation id="1818308510395330587">Para permitir que a app <ph name="APP_NAME" /> utilize a realidade aumentada, ative também a câmara nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
@@ -71,6 +74,7 @@
 <translation id="1994173015038366702">URL do site</translation>
 <translation id="2004697686368036666">As funcionalidades em alguns sites podem não funcionar</translation>
 <translation id="2025115093177348061">Realidade aumentada</translation>
+<translation id="2028449514182362831">As funcionalidades que precisam de sensores de movimentos não funcionam</translation>
 <translation id="2030769033451695672">Toque para voltar a <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Anular</translation>
 <translation id="2091887806945687916">Som</translation>
@@ -87,6 +91,7 @@
 <translation id="2215727959747642672">Edição de ficheiros</translation>
 <translation id="2218389616572918761">Os sites podem pedir acesso ao seu microfone</translation>
 <translation id="2228071138934252756">Para permitir que a app <ph name="APP_NAME" /> aceda à câmara, ative também a câmara nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
+<translation id="2231160360698766265">Os sites podem reproduzir conteúdo protegido</translation>
 <translation id="2235344399760031203">Os cookies de terceiros estão bloqueados</translation>
 <translation id="2238944249568001759">Pesquisas sugeridas com base no último separador</translation>
 <translation id="2241587408274973373">Cartões da página Novo separador</translation>
@@ -256,6 +261,7 @@
 <translation id="4259722352634471385">A navegação está bloqueada: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Depois de sair de um site, este pode continuar a sincronizar para concluir tarefas, como carregar fotos ou enviar uma mensagem de chat</translation>
 <translation id="4278390842282768270">Permitido</translation>
+<translation id="4290791284969893584">Depois de fechar uma página, as tarefas que iniciou podem não ser concluídas</translation>
 <translation id="429312253194641664">Um site está a reproduzir multimédia.</translation>
 <translation id="42981349822642051">Expandir</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Expira amanhã}other{Expira dentro de # dias}}</translation>
@@ -523,6 +529,7 @@
 <translation id="789180354981963912">Bloqueie cookies de terceiros na Navegação anónima:</translation>
 <translation id="789722939441020330">Não permitir que os sites transfiram automaticamente vários ficheiros</translation>
 <translation id="7940722705963108451">Lembrar-me</translation>
+<translation id="7948081750384205628">Saber mais sobre <ph name="SETTING_TITLE" /></translation>
 <translation id="7952708427581814389">Os sites podem solicitar a visualização de texto e imagens na sua área de transferência</translation>
 <translation id="7986741934819883144">Selecionar um contacto</translation>
 <translation id="7990211076305263060">Quando esta opção está ativada, os sites podem pedir para usar o microfone. Quando esta opção está desativada, os sites não podem usar o microfone.</translation>
@@ -530,6 +537,7 @@
 <translation id="8010630645305864042">{TILE_COUNT,plural, =1{Ocultar cartão Continue com este separador}other{Ocultar cartão Continue com estes separadores}}</translation>
 <translation id="802154636333426148">Falha ao transferir</translation>
 <translation id="8042586301629853791">Ordenar por:</translation>
+<translation id="8051193500142930381">As funcionalidades que precisam de uma câmara não funcionam</translation>
 <translation id="8067883171444229417">Ver vídeo</translation>
 <translation id="8068648041423924542">Não é possível selecionar o certificado.</translation>
 <translation id="8077120325605624147">Qualquer site que visitar pode mostrar-lhe qualquer anúncio</translation>
@@ -630,6 +638,7 @@
 <translation id="9138217887606523162">O zoom atual é de <ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="9156722768168878035">Permita que o Chrome mostre os seus separadores recentes na lista de apps e nos resultados da pesquisa do seu dispositivo. Pode desativar esta opção em qualquer altura nas definições do Chrome.</translation>
 <translation id="9162462602695099906">Esta página é perigosa</translation>
+<translation id="9182556968660520230">Não permitir que os sites reproduzam conteúdo protegido</translation>
 <translation id="947156494302904893">Os sites que visita podem validar que é uma pessoa real e não um bot</translation>
 <translation id="959682366969460160">Organize-se</translation>
 <translation id="967624055006145463">Dados armazenados</translation>

@@ -59,7 +59,7 @@ template("ios_chrome_repack_locales") {
              "//components/strings:search_engine_descriptions_strings",
              "//ios/chrome/app/strings:ios_branded_strings",
              "//ios/chrome/app/strings:ios_strings",
-             "//ios/chrome/browser/ui/whats_new/strings:strings",
+             "//ios/chrome/browser/whats_new/ui/strings",
              "//third_party/libaddressinput:strings",
              "//ui/strings:app_locale_settings",
              "//ui/strings:ax_strings",

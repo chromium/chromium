@@ -1884,6 +1884,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300332192655962933">Fail ei olnud saidil saadaval</translation>
 <translation id="2300383962156589922">Rakenduse <ph name="APP_NAME" /> kohandamine ja juhtimine</translation>
+<translation id="2301064673700597535">Kvalifitseeritud sertifikaatide väljavõtted</translation>
 <translation id="2301382460326681002">Laienduse juurkaust on kehtetu.</translation>
 <translation id="2301402091755573488">Jagatud vaheleht</translation>
 <translation id="2302342861452486996"><ph name="BEGIN_H3" />Silumisfunktsioonid<ph name="END_H3" />
@@ -4065,9 +4066,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
     <ph name="BEGIN_PARAGRAPH2" />Need aruanded saate Chrome'i seadme seadetes igal ajal lubada või keelata. Kui olete domeeni administraator, saate seda seadet muuta administraatorikonsoolil.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">Virmalised öösel väikese suvila kohal.</translation>
 <translation id="3818102823568165369">Kohalikud sertifikaadid, mille on lisanud teie operatsioonisüsteem või administraator.</translation>
-<translation id="3818662907126913619">Oma seadme kasutamiseks domeeni <ph name="DOMAIN" /> profiiliga vajab teie organisatsioon teavet seadme kohta.
-
-See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme operatsioonisüsteemi kohta.</translation>
 <translation id="3819164369574292143">Suumige sisse, et üksused ekraanil suuremaks teha. Suurenduse sisse- ja väljalülitamiseks kasutage klahvikombinatsiooni Otsing + Ctrl + M. Sissesuumitud vaates ringiliikumiseks kasutage klahvikombinatsiooni Ctrl + Alt + nooleklahvid.</translation>
 <translation id="3819257035322786455">Varundamine</translation>
 <translation id="3819261658055281761">Süsteemil ei õnnestunud selle seadme pikaajalist API juurdepääsuluba salvestada.</translation>
@@ -4385,9 +4383,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4031527940632463547">Andurid on blokeeritud</translation>
 <translation id="4033471457476425443">Uue kausta lisamine</translation>
 <translation id="4033963223187371752">Turvalised saidid võivad manustada sisu, näiteks pilte või veebiraame, mis pole turvalised</translation>
-<translation id="4034706080855851454">Oma seadme kasutamiseks organisatsiooni profiiliga vajab teie organisatsioon teavet seadme kohta.
-
-See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme operatsioonisüsteemi kohta.</translation>
 <translation id="4034824040120875894">Printer</translation>
 <translation id="4035758313003622889">&amp;Tegumihaldur</translation>
 <translation id="4035877632587724847">Ära luba</translation>

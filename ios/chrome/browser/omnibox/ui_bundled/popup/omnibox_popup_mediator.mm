@@ -34,7 +34,7 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper_delegate.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_popup_controller.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_controller_observer_bridge.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion_group_impl.h"
@@ -133,7 +133,6 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 }
 
 - (void)disconnect {
-  [self.popupController disconnect];
   if (_remoteSuggestionsServiceObserverBridge) {
     self.remoteSuggestionsService->RemoveObserver(
         _remoteSuggestionsServiceObserverBridge.get());
@@ -173,12 +172,12 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   _open = open;
 }
 
-#pragma mark - OmniboxPopupControllerDelegate
+#pragma mark - OmniboxAutocompleteControllerDelegate
 
-- (void)popupControllerDidUpdateSuggestions:
-            (OmniboxPopupController*)popupController
-                             hasSuggestions:(BOOL)hasSuggestions
-                                 isFocusing:(BOOL)isFocusing {
+- (void)omniboxAutocompleteControllerDidUpdateSuggestions:
+            (OmniboxAutocompleteController*)autocompleteController
+                                           hasSuggestions:(BOOL)hasSuggestions
+                                               isFocusing:(BOOL)isFocusing {
   [self.consumer newResultsAvailable];
 
   if (self.debugInfoConsumer) {
@@ -194,9 +193,29 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   [self.presenter updatePopupOnFocus:isFocusing];
 }
 
-- (void)popupController:(OmniboxPopupController*)popupController
-    didUpdateSuggestionsGroups:
-        (NSArray<id<AutocompleteSuggestionGroup>>*)suggestionGroups {
+- (void)omniboxAutocompleteController:
+            (OmniboxAutocompleteController*)omniboxAutocompleteController
+               didUpdateTextAlignment:(NSTextAlignment)alignment {
+  [self.consumer setTextAlignment:alignment];
+}
+
+- (void)omniboxAutocompleteController:
+            (OmniboxAutocompleteController*)omniboxAutocompleteController
+    didUpdateSemanticContentAttribute:
+        (UISemanticContentAttribute)semanticContentAttribute {
+  [self.consumer setSemanticContentAttribute:semanticContentAttribute];
+}
+
+- (void)omniboxAutocompleteController:
+            (OmniboxAutocompleteController*)omniboxAutocompleteController
+                didUpdateHasThumbnail:(BOOL)hasThumbnail {
+  self.hasThumbnail = hasThumbnail;
+}
+
+- (void)omniboxAutocompleteController:
+            (OmniboxAutocompleteController*)omniboxAutocompleteController
+           didUpdateSuggestionsGroups:
+               (NSArray<id<AutocompleteSuggestionGroup>>*)suggestionGroups {
   _suggestionGroups = suggestionGroups;
 
   // Preselect the verbatim match. It's the top match, unless we inserted pedals
@@ -211,34 +230,11 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
       preselectedMatchGroupIndex:self.preselectedGroupIndex];
 }
 
-- (void)popupController:(OmniboxPopupController*)popupController
-    didUpdateTextAlignment:(NSTextAlignment)alignment {
-  [self.consumer setTextAlignment:alignment];
-}
-
-- (void)popupController:(OmniboxPopupController*)popupController
-    didUpdateSemanticContentAttribute:
-        (UISemanticContentAttribute)semanticContentAttribute {
-  [self.consumer setSemanticContentAttribute:semanticContentAttribute];
-}
-
-- (void)popupController:(OmniboxPopupController*)popupController
-    didUpdateHasThumbnail:(BOOL)hasThumbnail {
-  self.hasThumbnail = hasThumbnail;
-}
-
-- (void)popupController:(OmniboxPopupController*)popupController
-    didInvalidatePedals:
-        (NSArray<id<AutocompleteSuggestionGroup>>*)nonPedalSuggestionsGroups {
-  [self.consumer updateMatches:nonPedalSuggestionsGroups
-      preselectedMatchGroupIndex:0];
-}
-
 #pragma mark - AutocompleteResultDataSource
 
 - (void)requestResultsWithVisibleSuggestionCount:
     (NSUInteger)visibleSuggestionCount {
-  [self.popupController
+  [self.omniboxAutocompleteController
       requestSuggestionsWithVisibleSuggestionCount:visibleSuggestionCount];
 }
 
@@ -295,7 +291,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
         match.type == AutocompleteMatchType::TILE_NAVSUGGEST) {
       [self logSelectedAutocompleteTile:match];
     }
-    [self.popupController
+    [self.omniboxAutocompleteController
         selectMatchForOpening:match
                         inRow:row
                        openIn:WindowOpenDisposition::CURRENT_TAB];
@@ -356,7 +352,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
     const AutocompleteMatch& match =
         autocompleteMatchFormatter.autocompleteMatch;
     if (match.has_tab_match.value_or(false)) {
-      [self.popupController
+      [self.omniboxAutocompleteController
           selectMatchForOpening:match
                           inRow:row
                          openIn:WindowOpenDisposition::SWITCH_TO_TAB];
@@ -368,7 +364,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
         base::RecordAction(
             base::UserMetricsAction("MobileOmniboxRefineSuggestion.Url"));
       }
-      [self.popupController selectMatchForAppending:match];
+      [self.omniboxAutocompleteController selectMatchForAppending:match];
     }
   } else {
     NOTREACHED() << "Suggestion type " << NSStringFromClass(suggestion.class)
@@ -384,7 +380,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
         (AutocompleteMatchFormatter*)suggestion;
     const AutocompleteMatch& match =
         autocompleteMatchFormatter.autocompleteMatch;
-    [self.popupController selectMatchForDeletion:match];
+    [self.omniboxAutocompleteController selectMatchForDeletion:match];
   } else {
     DUMP_WILL_BE_NOTREACHED()
         << "Suggestion type " << NSStringFromClass(suggestion.class)
@@ -394,7 +390,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 
 - (void)autocompleteResultConsumerDidScroll:
     (id<AutocompleteResultConsumer>)sender {
-  [self.popupController onScroll];
+  [self.omniboxAutocompleteController onScroll];
 }
 
 #pragma mark AutocompleteResultConsumerDelegate Private
@@ -496,7 +492,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 }
 
 - (void)callActionTapped {
-  [self.popupController onCallAction];
+  [self.omniboxAutocompleteController onCallAction];
 }
 
 #pragma mark - CarouselItemMenuProvider

@@ -1725,6 +1725,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void AttachPseudoElement(PseudoId, AttachContext&);
   void DetachPseudoElement(PseudoId, bool performing_reattach);
 
+  void ProcessElementRenderBlocking(const AtomicString& id_or_name);
+
  private:
   friend class AXObject;
   struct AffectedByPseudoStateChange;

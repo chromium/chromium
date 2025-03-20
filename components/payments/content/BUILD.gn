@@ -69,6 +69,7 @@ static_library("content") {
     "//components/payments/content/browser_binding",
     "//components/payments/content/utility",
     "//components/payments/core",
+    "//components/payments/core:currency_formatter",
     "//components/payments/core:error_strings",
     "//components/payments/core:method_strings",
     "//components/payments/mojom",

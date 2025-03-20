@@ -641,6 +641,7 @@ void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
       {"clearPasswords", IDS_SETTINGS_CLEAR_PASSWORDS},
       {"clearFormData", IDS_SETTINGS_CLEAR_FORM_DATA},
       {"clearHostedAppData", IDS_SETTINGS_CLEAR_HOSTED_APP_DATA},
+      {"clearPeriod15Minutes", IDS_SETTINGS_CLEAR_PERIOD_15_MINUTES},
       {"clearPeriodHour", IDS_SETTINGS_CLEAR_PERIOD_HOUR},
       {"clearPeriod24Hours", IDS_SETTINGS_CLEAR_PERIOD_24_HOURS},
       {"clearPeriod7Days", IDS_SETTINGS_CLEAR_PERIOD_7_DAYS},
@@ -1279,6 +1280,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_REMOTE_PAYMENT_METHODS_LINK_LABEL},
       {"canMakePaymentToggleLabel", IDS_SETTINGS_CAN_MAKE_PAYMENT_TOGGLE_LABEL},
       {"autofillDetail", IDS_SETTINGS_AUTOFILL_DETAIL},
+      {"autofillDropdownNoOptionSelected",
+       IDS_SETTINGS_AUTOFILL_DROPDOWN_NO_OPTION_SELECTED},
       {"passwords", IDS_SETTINGS_PASSWORD_MANAGER},
       {"passwordsLeakDetectionLabel",
        IDS_SETTINGS_PASSWORDS_LEAK_DETECTION_LABEL},
@@ -1342,6 +1345,7 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"cardBenefitsLabel", IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_LABEL},
       {"autofillAiPageTitle", IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE},
       {"autofillAiDescription", IDS_SETTINGS_AUTOFILL_AI_DESCRIPTION},
+      {"autofillAiToggleSubLabel", IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL},
       {"autofillAiWhenOnSavedInfo",
        IDS_SETTINGS_AUTOFILL_AI_WHEN_ON_SAVED_INFO},
       {"autofillAiUseToFill", IDS_SETTINGS_AUTOFILL_AI_WHEN_ON_USE_TO_FILL},
@@ -1382,8 +1386,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                          chrome::kAddressesAndPaymentMethodsLearnMoreURL);
   html_source->AddString("cardBenefitsToggleLearnMoreUrl",
                          chrome::kCardBenefitsLearnMoreURL);
-  html_source->AddString("autofillAiLearnMoreURL",
-                         chrome::kAutofillAiLearnMoreURL);
   html_source->AddString(
       "signedOutUserLabel",
       l10n_util::GetStringFUTF16(IDS_SETTINGS_SIGNED_OUT_USER_LABEL,
@@ -1484,11 +1486,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       autofill_client &&
           autofill::MayPerformAutofillAiAction(
               *autofill_client, autofill::AutofillAiAction::kOptIn));
-
-  html_source->AddString(
-      "autofillAiToggleSubLabel",
-      l10n_util::GetStringFUTF16(IDS_SETTINGS_AUTOFILL_AI_TOGGLE_SUB_LABEL,
-                                 chrome::kAutofillAiLearnMoreURL));
 
   html_source->AddString(
       "autofillPayOverTimeSettingsSublabel",

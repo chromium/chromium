@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -183,8 +184,6 @@ void DesktopWindowTreeHostWin::OnWidgetThemeChanged(Widget* widget) {
 // DesktopWindowTreeHostWin, DesktopWindowTreeHost implementation:
 
 void DesktopWindowTreeHostWin::Init(const Widget::InitParams& params) {
-  wants_mouse_events_when_inactive_ = params.wants_mouse_events_when_inactive;
-
   wm::SetAnimationHost(content_window(), this);
   if (params.type == Widget::InitParams::TYPE_WINDOW &&
       !params.remove_standard_frame) {
@@ -752,7 +751,8 @@ DesktopWindowTreeHostWin::GetBoundsInAcceleratedWidgetPixelCoordinates() {
     return gfx::Rect(window_bounds.size());
   }
   const gfx::Vector2d offset = client_bounds.origin() - window_bounds.origin();
-  DCHECK(offset.x() >= 0 && offset.y() >= 0);
+  DCHECK_GE(offset.x(), 0);
+  DCHECK_GE(offset.y(), 0);
   return gfx::Rect(gfx::Point() + offset, client_bounds.size());
 }
 
@@ -914,10 +914,6 @@ bool DesktopWindowTreeHostWin::CanActivate() const {
   }
   return native_widget_delegate_ ? native_widget_delegate_->CanActivate()
                                  : false;
-}
-
-bool DesktopWindowTreeHostWin::WantsMouseEventsWhenInactive() const {
-  return wants_mouse_events_when_inactive_;
 }
 
 bool DesktopWindowTreeHostWin::WidgetSizeIsClientSize() const {
@@ -1114,6 +1110,18 @@ void DesktopWindowTreeHostWin::HandleBeginWMSizeMove() {
 void DesktopWindowTreeHostWin::HandleEndWMSizeMove() {
   if (native_widget_delegate_) {
     native_widget_delegate_->OnNativeWidgetEndUserBoundsChange();
+  }
+}
+
+void DesktopWindowTreeHostWin::HandleBeginUserResize() {
+  if (native_widget_delegate_) {
+    native_widget_delegate_->OnNativeWidgetUserResizeStarted();
+  }
+}
+
+void DesktopWindowTreeHostWin::HandleEndUserResize() {
+  if (native_widget_delegate_) {
+    native_widget_delegate_->OnNativeWidgetUserResizeEnded();
   }
 }
 

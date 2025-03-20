@@ -105,8 +105,7 @@ PseudoElement* PseudoElement::Create(Element* parent,
   if (pseudo_id == kPseudoIdFirstLetter) {
     return MakeGarbageCollected<FirstLetterPseudoElement>(parent);
   } else if (IsTransitionPseudoElement(pseudo_id)) {
-    auto* transition =
-        ViewTransitionUtils::GetTransition(parent->GetDocument());
+    auto* transition = ViewTransitionUtils::GetTransition(*parent);
     DCHECK(transition);
     return transition->CreatePseudoElement(parent, pseudo_id,
                                            view_transition_name);

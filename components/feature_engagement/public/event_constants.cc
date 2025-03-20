@@ -97,6 +97,7 @@ const char kCredentialProviderExtensionPromoSnoozed[] =
 const char kDockingPromoRemindMeLater[] = "docking_promo_remind_me_later";
 const char kOpenUrlFromOmnibox[] = "open_url_from_omnibox";
 const char kHistoryOnOverflowMenuUsed[] = "history_on_overflow_menu_used";
+const char kSettingsOnOverflowMenuUsed[] = "settings_on_overflow_menu_used";
 const char kLensButtonKeyboardUsed[] = "lens_keyboard_used";
 const char kIOSMultiGestureRefreshUsed[] = "multi_gesture_refresh_used";
 const char kIOSPullToRefreshUsed[] = "pull_to_refresh_feature_used";
@@ -158,6 +159,8 @@ const char kIOSReminderNotificationsOverflowMenuNewBadgeIPHTrigger[] =
     "ios_reminder_notifications_overflow_menu_new_badge_iph_trigger";
 const char kIOSDownloadAutoDeletionIPHCriterionMet[] =
     "ios_download_auto_deletion_iph_criterion_met";
+const char kIOSScrolledOnFeed[] = "ios_scrolled_on_feed";
+const char kIOSActionOnFeed[] = "ios_action_on_feed";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

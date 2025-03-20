@@ -71,7 +71,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ServiceLoaderUtil;
@@ -180,6 +181,8 @@ public class SiteSettingsTest {
 
     @ClassRule public static PermissionTestRule mPermissionRule = new PermissionTestRule(true);
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
             new BlankCTATabInitialStateRule(mPermissionRule, false);
@@ -249,7 +252,6 @@ public class SiteSettingsTest {
     public void setUp() throws TimeoutException {
         // Clean up cookies and permissions to ensure tests run in a clean environment.
         cleanUpCookiesAndPermissions();
-        MockitoAnnotations.initMocks(this);
     }
 
     @After
@@ -977,6 +979,11 @@ public class SiteSettingsTest {
                 "\"Foo=Bar; Foo=Bar\"",
                 mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
 
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Privacy.DeleteBrowsingData.Action",
+                        DeleteBrowsingDataAction.RWS_DELETE_ALL_DATA);
+
         resetRwsGroupOnSingleWebsiteSettings(rwsOwner);
 
         // Load the page again and ensure the cookie is gone.
@@ -984,6 +991,7 @@ public class SiteSettingsTest {
         Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
         mPermissionRule.loadUrl(url2);
         Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        histogramExpectation.assertExpected();
     }
 
     /** Tests clearing cookies for the RWS group from GroupedWebsiteSettings. */
@@ -1024,6 +1032,11 @@ public class SiteSettingsTest {
         Assert.assertEquals(
                 "\"Foo=Bar\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
 
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Privacy.DeleteBrowsingData.Action",
+                        DeleteBrowsingDataAction.RWS_DELETE_ALL_DATA);
+
         resetRwsGroupOnGroupedWebsiteSettings(rwsGroup);
 
         // 1 and 2 got cleared; 3 stays intact.
@@ -1034,6 +1047,7 @@ public class SiteSettingsTest {
         mPermissionRule.loadUrl(url3);
         Assert.assertEquals(
                 "\"Foo=Bar\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        histogramExpectation.assertExpected();
     }
 
     /**

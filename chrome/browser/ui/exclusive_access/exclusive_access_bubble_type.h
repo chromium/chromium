@@ -54,11 +54,22 @@ struct ExclusiveAccessBubbleParams {
 
 namespace exclusive_access_bubble {
 
-// Gets the text instructing the user how to exit an exclusive access mode.
-// |accelerator| is the name of the key to exit fullscreen mode.
+// Gets the text shown in the exclusive access bubble, including the origin and
+// the instruction text.
+// i.e. "<origin.com> - To exit fullscreen, press [Esc]".
+//   |type|: the type of exclusive access mode that leads to the bubble being
+//   showed.
+//   |accelerator|: the keyboard shortcut used to exit the exclusive
+//   access mode.
+//   |origin|: the origin of the site requesting Exclusive Access.
+//   |has_download|: True if download in progress, which affects the text
+//   content.
+//   |notify_overridden|: True if the bubble is showing and its text needs to be
+//   overridden. Valid when |has_download| is True.
 std::u16string GetInstructionTextForType(ExclusiveAccessBubbleType type,
                                          const std::u16string& accelerator,
-                                         bool download,
+                                         const url::Origin& origin,
+                                         bool has_download,
                                          bool notify_overridden);
 
 // Helpers to categorize different types of ExclusiveAccessBubbleType.

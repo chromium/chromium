@@ -647,13 +647,7 @@ void ProfilePickerView::Init(Profile* picker_profile) {
   flow_controller_ = CreateFlowController(picker_profile, GetClearClosure());
 
   // The widget is owned by the native widget.
-  ProfilePickerWidget* widget = new ProfilePickerWidget(this);
-
-  // Enforce dark mode for the Glic version as it has a Dark background; this
-  // allows all colors to adapt accordingly.
-  if (params_.entry_point() == ProfilePicker::EntryPoint::kGlicManager) {
-    widget->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark);
-  }
+  new ProfilePickerWidget(this);
 
 #if BUILDFLAG(IS_WIN)
   // Set the app id for the user manager to the app id of its parent.

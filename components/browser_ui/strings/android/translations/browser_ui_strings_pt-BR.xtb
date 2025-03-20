@@ -39,7 +39,9 @@
 <translation id="1538031354170655462">Os sites geralmente usam a comunicação a curta distância (NFC) para trabalhar com tags ou dispositivos nas proximidades, como a leitura de crachás ou o pagamento por aproximação</translation>
 <translation id="1547123415014299762">Cookies de terceiros são permitidos</translation>
 <translation id="1593426485665524382">Novas ações disponíveis perto da parte de cima da tela</translation>
+<translation id="1615755956145364867">Os sites podem pedir para reproduzir conteúdo protegido</translation>
 <translation id="1620510694547887537">Câmera</translation>
+<translation id="1621729191093924223">Recursos que precisam de microfone não funcionarão</translation>
 <translation id="1633720957382884102">Sites relacionados</translation>
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="1652197001188145583">Quando essa configuração está ativada, os sites podem pedir para usar dispositivos NFC. Quando está desativada, os sites não podem usar dispositivos NFC.</translation>
@@ -54,6 +56,7 @@
 <translation id="1743802530341753419">Perguntar antes de permitir que sites se conectem ao dispositivo (recomendado)</translation>
 <translation id="1779089405699405702">Decodificador de imagem</translation>
 <translation id="1785415724048343560">Recomendado para melhorar a experiência</translation>
+<translation id="1796588414813960292">Os recursos que precisam de som não funcionarão</translation>
 <translation id="1799920918471566157">Dicas do Chrome</translation>
 <translation id="1816835383954230954">Quando a opção está ativada, o Chrome fica mais rápido, e os recursos que usam JavaScript funcionam conforme o esperado. Quando desativada, isso reduz o desempenho, mas torna o V8 mais resistente a ataques.</translation>
 <translation id="1818308510395330587">Para permitir que o app <ph name="APP_NAME" /> use RA, também é necessário ativar a câmera nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
@@ -71,6 +74,7 @@
 <translation id="1994173015038366702">URL do site</translation>
 <translation id="2004697686368036666">Os recursos de alguns sites podem não funcionar</translation>
 <translation id="2025115093177348061">Realidade aumentada</translation>
+<translation id="2028449514182362831">Recursos que precisam de sensores de movimento não funcionarão</translation>
 <translation id="2030769033451695672">Toque para voltar para <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Desfazer</translation>
 <translation id="2091887806945687916">Som</translation>
@@ -87,6 +91,7 @@
 <translation id="2215727959747642672">Edição de arquivo</translation>
 <translation id="2218389616572918761">Os sites podem pedir acesso ao microfone</translation>
 <translation id="2228071138934252756">Para permitir que o app <ph name="APP_NAME" /> acesse sua câmera, ative-a também nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
+<translation id="2231160360698766265">Os sites podem abrir conteúdo protegido</translation>
 <translation id="2235344399760031203">Cookies de terceiros foram bloqueados</translation>
 <translation id="2238944249568001759">Pesquisas sugeridas com base na sua última guia</translation>
 <translation id="2241587408274973373">Cards da página "Nova guia"</translation>
@@ -256,6 +261,7 @@
 <translation id="4259722352634471385">A Navegação GPS está bloqueada: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Depois que você sai de um site, ele pode continuar a sincronização para finalizar tarefas, como o upload de fotos ou o envio de uma mensagem de chat</translation>
 <translation id="4278390842282768270">Permitido</translation>
+<translation id="4290791284969893584">Após fechar uma página, as tarefas iniciadas talvez não sejam encerradas</translation>
 <translation id="429312253194641664">Um site está com mídia aberta</translation>
 <translation id="42981349822642051">Expandir</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Expira amanhã}one{Expira em # dia}other{Expira em # dias}}</translation>
@@ -530,6 +536,7 @@
 <translation id="8010630645305864042">{TILE_COUNT,plural, =1{Ocultar o card "Continuar com esta guia"}one{Ocultar o card "Continuar com esta guia"}other{Ocultar o card "Continuar com estas guias"}}</translation>
 <translation id="802154636333426148">Falha no download</translation>
 <translation id="8042586301629853791">Ordenar por:</translation>
+<translation id="8051193500142930381">Recursos que precisam de câmera não funcionarão</translation>
 <translation id="8067883171444229417">Assistir vídeo</translation>
 <translation id="8068648041423924542">Não foi possível selecionar certificado.</translation>
 <translation id="8077120325605624147">Qualquer site que você visitar poderá mostrar anúncios para você</translation>
@@ -630,6 +637,7 @@
 <translation id="9138217887606523162">O zoom atual está em <ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="9156722768168878035">Permita que o Chrome mostre suas guias recentes na lista de apps e nos resultados da pesquisa do dispositivo. É possível desativar essa opção a qualquer momento nas configurações do Chrome.</translation>
 <translation id="9162462602695099906">Esta página é perigosa</translation>
+<translation id="9182556968660520230">Não permitir que os sites reproduzam conteúdo protegido</translation>
 <translation id="947156494302904893">Os sites que você visita podem verificar que você é uma pessoa real, e não um bot</translation>
 <translation id="959682366969460160">Organize-se</translation>
 <translation id="967624055006145463">Dados armazenados</translation>

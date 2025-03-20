@@ -21,6 +21,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/view_metadata_test_utils.h"
 #include "ui/views/test/widget_test.h"
@@ -91,8 +92,8 @@ class WebDialogViewUnitTest : public views::test::WidgetTest {
     // views code and the location of TestingProfile.
     web_dialog_view_->disable_url_load_for_test_ = true;
 
-    widget_ = views::DialogDelegate::CreateDialogWidget(web_dialog_view_,
-                                                        GetContext(), nullptr);
+    widget_ = views::DialogDelegate::CreateDialogWidget(
+        web_dialog_view_, GetContext(), gfx::NativeView());
     widget_->Show();
     EXPECT_FALSE(widget_is_closed());
   }

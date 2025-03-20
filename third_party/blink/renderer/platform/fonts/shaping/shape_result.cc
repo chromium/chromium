@@ -82,6 +82,13 @@ struct SameSizeAsRunInfo {
 
 ASSERT_SIZE(ShapeResult::RunInfo, SameSizeAsRunInfo);
 
+struct SameSizeAsShapeResultCharacterData {
+  LayoutUnit x_position;
+  unsigned bitfields : 32;
+};
+
+ASSERT_SIZE(ShapeResultCharacterData, SameSizeAsShapeResultCharacterData);
+
 struct SameSizeAsShapeResult {
   float width;
   UntracedMember<void*> deprecated_ink_bounds_;

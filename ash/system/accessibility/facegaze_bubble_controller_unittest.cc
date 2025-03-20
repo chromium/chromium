@@ -50,6 +50,10 @@ class FaceGazeBubbleControllerTest : public AshTestBase {
     return GetController()->facegaze_bubble_view_;
   }
 
+  const raw_ptr<FaceGazeBubbleCloseView> GetCloseView() {
+    return GetView()->GetCloseViewForTesting();
+  }
+
   bool IsVisible() { return GetController()->widget_->IsVisible(); }
 
   std::u16string_view GetBubbleText() { return GetView()->GetTextForTesting(); }
@@ -177,6 +181,23 @@ TEST_F(FaceGazeBubbleControllerTest, UpdateWhileHidden) {
   Update(u"Hello world", /*is_warning=*/false);
   EXPECT_TRUE(GetView());
   EXPECT_FALSE(IsVisible());
+}
+
+TEST_F(FaceGazeBubbleControllerTest, CloseButton) {
+  Update(u"Face control active", /*is_warning=*/false);
+  EXPECT_TRUE(GetCloseView());
+}
+
+TEST_F(FaceGazeBubbleControllerTest, HoverCloseButton) {
+  Update(u"Testing", /*is_warning=*/false);
+  EXPECT_TRUE(GetView());
+  EXPECT_TRUE(IsVisible());
+
+  // Ensure that the bubble remains visible if the close button is hovered.
+  GetEventGenerator()->MoveMouseTo(
+      GetCloseView()->GetBoundsInScreen().CenterPoint());
+  EXPECT_TRUE(GetView());
+  EXPECT_TRUE(IsVisible());
 }
 
 }  // namespace ash

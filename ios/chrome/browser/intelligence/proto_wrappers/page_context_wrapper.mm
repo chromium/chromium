@@ -103,90 +103,12 @@ const char16_t* kInnerTextJavaScript = u"document.body.innerText;";
   // execute the `page_context_barrier` callback, otherwise the `BarrierClosure`
   // will never execute its completion block.
 
-  // Retrieve WebState snapshot, if enabled.
   if (_shouldGetSnapshot) {
-    auto callback = ^(UIImage* image) {
-      if ([weakSelf shouldUpdateSnapshotWithImage:image]) {
-        [weakSelf updateSnapshotWithBarrier:page_context_barrier];
-        return;
-      }
-
-      [weakSelf encodeImageAndSetTabScreenshot:image];
-      page_context_barrier.Run();
-    };
-
-    // If the WebState is currently visible, update the snapshot in case the
-    // user was scrolling, otherwise retrieve the latest version in cache or on
-    // disk.
-    if (_webState->IsVisible()) {
-      raw_ptr<SnapshotTabHelper> snapshot_tab_helper =
-          SnapshotTabHelper::FromWebState(_webState.get());
-      auto updateSnapshotCallback =
-          base::BindOnce(^(std::optional<int> result_matches) {
-            // TODO(crbug.com/401282824): Log the matches count to measure
-            // highlighting precision.
-            snapshot_tab_helper->UpdateSnapshotWithCallback(callback);
-          });
-
-      // If there is text to highlight, do it before capturing the screenshot.
-      if (_textToHighlight != nil) {
-        web::WebFrame* main_frame =
-            _webState->GetPageWorldWebFramesManager()->GetMainWebFrame();
-        web::FindInPageJavaScriptFeature* find_in_page_feature =
-            web::FindInPageJavaScriptFeature::GetInstance();
-
-        find_in_page_feature->Search(main_frame,
-                                     base::SysNSStringToUTF8(_textToHighlight),
-                                     std::move(updateSnapshotCallback));
-      } else {
-        std::move(updateSnapshotCallback).Run(std::nullopt);
-      }
-    } else {
-      SnapshotTabHelper::FromWebState(_webState.get())
-          ->RetrieveColorSnapshot(callback);
-    }
+    [self processSnapshotWithBarrier:page_context_barrier];
   }
 
-  // Get the WebState's innerText, if enabled.
   if (_shouldGetInnerText) {
-    std::set<web::WebFrame*> web_frames =
-        _webState->GetPageWorldWebFramesManager()->GetAllWebFrames();
-    web::WebFrame* main_frame =
-        _webState->GetPageWorldWebFramesManager()->GetMainWebFrame();
-
-    if (web_frames.empty() || !main_frame) {
-      page_context_barrier.Run();
-    } else {
-      // Use a `BarrierClosure` to ensure the JavaScript is done executing in
-      // all WebFrames before executing the `page_context_barrier` barrier,
-      // which in turn signals to the PageContextWrapper that the innerText is
-      // done being processed. The BarrierClosure will wait until the
-      // `inner_text_barrier` callback is itself run once per WebFrame.
-      base::RepeatingClosure inner_text_barrier =
-          base::BarrierClosure(web_frames.size(), base::BindOnce(^{
-                                 [weakSelf webFramesInnerTextsFetchCompleted];
-                                 page_context_barrier.Run();
-                               }));
-
-      auto callback = ^(const base::Value* value, NSError* error) {
-        [weakSelf parseAndConcatenateJavaScriptValue:value withError:error];
-        inner_text_barrier.Run();
-      };
-
-      // Execute the JavaScript on each WebFrame and pass in the callback (which
-      // executes the barrier when run).
-      for (web::WebFrame* web_frame : web_frames) {
-        // Skip WebFrames with different origins from the main WebFrame.
-        if (!web_frame || (!web_frame->GetSecurityOrigin().IsSameOriginWith(
-                              main_frame->GetSecurityOrigin()))) {
-          inner_text_barrier.Run();
-          continue;
-        }
-
-        web_frame->ExecuteJavaScript(kInnerTextJavaScript,
-                                     base::BindOnce(callback));
-      }
-    }
+    [self processInnerTextWithBarrier:page_context_barrier];
   }
 
   // Create full page PDF representation of the WebState, if enabled.
@@ -235,6 +157,97 @@ const char16_t* kInnerTextJavaScript = u"document.body.innerText;";
 
 #pragma mark - Private
 
+// Retrieve WebState snapshot. The barrier's callback will be executed for all
+// codepaths in this method.
+
+- (void)processSnapshotWithBarrier:(base::RepeatingClosure)barrier {
+  __weak PageContextWrapper* weakSelf = self;
+  auto callback = ^(UIImage* image) {
+    if ([weakSelf shouldUpdateSnapshotWithImage:image]) {
+      [weakSelf updateSnapshotWithBarrier:barrier];
+      return;
+    }
+
+    [weakSelf encodeImageAndSetTabScreenshot:image];
+    barrier.Run();
+  };
+
+  // If the WebState is currently visible, update the snapshot in case the
+  // user was scrolling, otherwise retrieve the latest version in cache or on
+  // disk.
+  if (_webState->IsVisible()) {
+    raw_ptr<SnapshotTabHelper> snapshot_tab_helper =
+        SnapshotTabHelper::FromWebState(_webState.get());
+    auto updateSnapshotCallback =
+        base::BindOnce(^(std::optional<int> result_matches) {
+          // TODO(crbug.com/401282824): Log the matches count to measure
+          // highlighting precision.
+          snapshot_tab_helper->UpdateSnapshotWithCallback(callback);
+        });
+
+    // If there is text to highlight, do it before capturing the screenshot.
+    if (_textToHighlight != nil) {
+      web::WebFrame* main_frame =
+          _webState->GetPageWorldWebFramesManager()->GetMainWebFrame();
+      web::FindInPageJavaScriptFeature* find_in_page_feature =
+          web::FindInPageJavaScriptFeature::GetInstance();
+
+      find_in_page_feature->Search(main_frame,
+                                   base::SysNSStringToUTF8(_textToHighlight),
+                                   std::move(updateSnapshotCallback));
+    } else {
+      std::move(updateSnapshotCallback).Run(std::nullopt);
+    }
+  } else {
+    SnapshotTabHelper::FromWebState(_webState.get())
+        ->RetrieveColorSnapshot(callback);
+  }
+}
+
+// Get the WebState's innerText. The barrier's callback will be executed for all
+// codepaths in this method.
+- (void)processInnerTextWithBarrier:(base::RepeatingClosure)barrier {
+  std::set<web::WebFrame*> web_frames =
+      _webState->GetPageWorldWebFramesManager()->GetAllWebFrames();
+  web::WebFrame* main_frame =
+      _webState->GetPageWorldWebFramesManager()->GetMainWebFrame();
+
+  if (web_frames.empty() || !main_frame) {
+    barrier.Run();
+    return;
+  }
+  // Use a `BarrierClosure` to ensure the JavaScript is done executing in
+  // all WebFrames before executing the page context barrier `barrier`,
+  // which in turn signals to the PageContextWrapper that the innerText is
+  // done being processed. The BarrierClosure will wait until the
+  // `inner_text_barrier` callback is itself run once per WebFrame.
+  __weak PageContextWrapper* weakSelf = self;
+  base::RepeatingClosure inner_text_barrier =
+      base::BarrierClosure(web_frames.size(), base::BindOnce(^{
+                             [weakSelf webFramesInnerTextsFetchCompleted];
+                             barrier.Run();
+                           }));
+
+  auto callback = ^(const base::Value* value, NSError* error) {
+    [weakSelf parseAndConcatenateJavaScriptValue:value withError:error];
+    inner_text_barrier.Run();
+  };
+
+  // Execute the JavaScript on each WebFrame and pass in the callback (which
+  // executes the barrier when run).
+  for (web::WebFrame* web_frame : web_frames) {
+    // Skip WebFrames with different origins from the main WebFrame.
+    if (!web_frame || (!web_frame->GetSecurityOrigin().IsSameOriginWith(
+                          main_frame->GetSecurityOrigin()))) {
+      inner_text_barrier.Run();
+      continue;
+    }
+
+    web_frame->ExecuteJavaScript(kInnerTextJavaScript,
+                                 base::BindOnce(callback));
+  }
+}
+
 // All async tasks are complete, execute the overall completion callback.
 // Relinquish ownership to the callback handler.
 - (void)asyncWorkCompletedForPageContext {
@@ -269,6 +282,11 @@ const char16_t* kInnerTextJavaScript = u"document.body.innerText;";
   }
 
   NSData* imageData = UIImagePNGRepresentation(image);
+  if (!imageData) {
+    DLOG(WARNING) << "Failed to convert the screenshot to PNG.";
+    return;
+  }
+
   NSString* base64String = [imageData base64EncodedStringWithOptions:0];
   _page_context->set_tab_screenshot(base::SysNSStringToUTF8(base64String));
 }

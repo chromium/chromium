@@ -98,12 +98,13 @@ class CONTENT_EXPORT TrustedSignalsKVv2RequestHelperBuilder {
   // Build the request helper using the helper builder to construct the POST
   // body string, noting that the partition IDs will not be sequential for
   // bidding signals.
-  std::unique_ptr<TrustedSignalsKVv2RequestHelper> Build();
+  std::unique_ptr<TrustedSignalsKVv2RequestHelper> Build() const;
 
  protected:
   TrustedSignalsKVv2RequestHelperBuilder(
       std::string hostname,
       std::optional<int> experiment_group_id,
+      std::optional<std::string> contextual_data,
       mojom::TrustedSignalsPublicKeyPtr public_key);
 
   // All the data needed to request a particular bidding or scoring signals
@@ -151,13 +152,23 @@ class CONTENT_EXPORT TrustedSignalsKVv2RequestHelperBuilder {
     return compression_groups_;
   }
 
+  const std::map<int, CompressionGroup>& compression_groups() const {
+    return compression_groups_;
+  }
+
   const std::string& hostname() const { return hostname_; }
 
   const std::optional<int>& experiment_group_id() const {
     return experiment_group_id_;
   }
 
-  const mojom::TrustedSignalsPublicKey& public_key() { return *public_key_; }
+  const std::optional<std::string>& contextual_data() const {
+    return contextual_data_;
+  }
+
+  const mojom::TrustedSignalsPublicKey& public_key() const {
+    return *public_key_;
+  }
 
   // Return next compression group id and increase it by 1.
   int next_compression_group_id() { return next_compression_group_id_++; }
@@ -167,7 +178,7 @@ class CONTENT_EXPORT TrustedSignalsKVv2RequestHelperBuilder {
   virtual cbor::Value::MapValue BuildMapForPartition(
       const Partition& partition,
       int partition_id,
-      int compression_group_id) = 0;
+      int compression_group_id) const = 0;
 
   // Multiple partitions are keyed by compression group ID. For the Partition
   // vector, always place interest groups with the execution mode
@@ -177,6 +188,7 @@ class CONTENT_EXPORT TrustedSignalsKVv2RequestHelperBuilder {
 
   const std::string hostname_;
   const std::optional<int> experiment_group_id_;
+  const std::optional<std::string> contextual_data_;
   mojom::TrustedSignalsPublicKeyPtr public_key_;
 
   // Initial id for compression groups.
@@ -189,6 +201,7 @@ class CONTENT_EXPORT TrustedBiddingSignalsKVv2RequestHelperBuilder
   TrustedBiddingSignalsKVv2RequestHelperBuilder(
       const std::string& hostname,
       std::optional<int> experiment_group_id,
+      std::optional<std::string> contextual_data,
       mojom::TrustedSignalsPublicKeyPtr public_key,
       const std::string& trusted_bidding_signals_slot_size_param);
 
@@ -224,9 +237,10 @@ class CONTENT_EXPORT TrustedBiddingSignalsKVv2RequestHelperBuilder
   }
 
  private:
-  cbor::Value::MapValue BuildMapForPartition(const Partition& partition,
-                                             int partition_id,
-                                             int compression_group_id) override;
+  cbor::Value::MapValue BuildMapForPartition(
+      const Partition& partition,
+      int partition_id,
+      int compression_group_id) const override;
 
   // Joining origin to compression group id map.
   std::map<url::Origin, int> join_origin_compression_id_map_;
@@ -244,6 +258,7 @@ class CONTENT_EXPORT TrustedScoringSignalsKVv2RequestHelperBuilder
   TrustedScoringSignalsKVv2RequestHelperBuilder(
       const std::string& hostname,
       std::optional<int> experiment_group_id,
+      std::optional<std::string> contextual_data,
       mojom::TrustedSignalsPublicKeyPtr public_key);
 
   TrustedScoringSignalsKVv2RequestHelperBuilder(
@@ -276,9 +291,10 @@ class CONTENT_EXPORT TrustedScoringSignalsKVv2RequestHelperBuilder
     }
   };
 
-  cbor::Value::MapValue BuildMapForPartition(const Partition& partition,
-                                             int partition_id,
-                                             int compression_group_id) override;
+  cbor::Value::MapValue BuildMapForPartition(
+      const Partition& partition,
+      int partition_id,
+      int compression_group_id) const override;
 
   // Store different compression group ids keyed by `CompressionGroupMapKey`.
   std::map<CompressionGroupMapKey, int> compression_group_map;

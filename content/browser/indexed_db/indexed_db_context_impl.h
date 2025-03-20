@@ -138,12 +138,10 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // storage::mojom::QuotaClient implementation:
   void GetBucketUsage(const storage::BucketLocator& bucket,
                       GetBucketUsageCallback callback) override;
-  void GetStorageKeysForType(blink::mojom::StorageType type,
-                             GetStorageKeysForTypeCallback callback) override;
+  void GetDefaultStorageKeys(GetDefaultStorageKeysCallback callback) override;
   void DeleteBucketData(const storage::BucketLocator& bucket,
                         DeleteBucketDataCallback callback) override;
-  void PerformStorageCleanup(blink::mojom::StorageType type,
-                             PerformStorageCleanupCallback callback) override;
+  void PerformStorageCleanup(PerformStorageCleanupCallback callback) override;
 
   // Exposed for testing.
   bool BucketContextExists(storage::BucketId bucket_id);

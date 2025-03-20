@@ -779,7 +779,8 @@ DrawingBuffer::CreateOrRecycleColorBuffer() {
   return CreateColorBuffer(size_);
 }
 
-scoped_refptr<CanvasResource> DrawingBuffer::ExportLowLatencyCanvasResource(
+scoped_refptr<ExternalCanvasResource>
+DrawingBuffer::ExportLowLatencyCanvasResource(
     base::WeakPtr<CanvasResourceProvider> resource_provider) {
   // Swap chain must be presented before resource is exported.
   ResolveAndPresentSwapChainIfNeeded();

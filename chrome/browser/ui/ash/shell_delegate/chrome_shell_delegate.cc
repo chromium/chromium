@@ -31,7 +31,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/api/tasks/chrome_tasks_delegate.h"
 #include "chrome/browser/ash/arc/arc_util.h"
-#include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/arc/locked_fullscreen/arc_locked_fullscreen_manager.h"
+#include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/assistant/assistant_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -356,26 +357,20 @@ void ChromeShellDelegate::SetUpEnvironmentForLockedFullscreen(
   ChromeCaptureModeDelegate::Get()->SetIsScreenCaptureLocked(locked);
 
   // Get the primary profile as that's what ARC and Assistant are attached to.
-  const Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  const Profile* const profile = ProfileManager::GetPrimaryUserProfile();
   // Commands below require profile.
   if (!profile) {
     return;
   }
 
-  // Disable ARC while in the locked fullscreen mode.
-  arc::ArcSessionManager* const arc_session_manager =
-      arc::ArcSessionManager::Get();
-  if (!ash::IsArcWindow(window_state.window()) && arc_session_manager &&
+  arc::ArcServiceLauncher* const arc_service_launcher =
+      arc::ArcServiceLauncher::Get();
+  if (arc_service_launcher &&
+      arc_service_launcher->arc_locked_fullscreen_manager() &&
+      !ash::IsArcWindow(window_state.window()) &&
       arc::IsArcAllowedForProfile(profile)) {
-    if (locked) {
-      // Disable ARC, preserve data.
-      arc_session_manager->RequestDisable();
-    } else {
-      // Re-enable ARC if needed.
-      if (arc::IsArcPlayStoreEnabledForProfile(profile)) {
-        arc_session_manager->RequestEnable();
-      }
-    }
+    arc_service_launcher->arc_locked_fullscreen_manager()
+        ->UpdateForLockedFullscreenMode(locked);
   }
 
   if (assistant::IsAssistantAllowedForProfile(profile) ==

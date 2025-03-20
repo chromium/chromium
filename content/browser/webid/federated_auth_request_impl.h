@@ -127,12 +127,15 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   bool OnResolve(GURL idp_config_url,
                  const std::optional<std::string>& account_id,
                  const std::string& token) override;
+  void OnOriginMismatch(Method method,
+                        const url::Origin& expected,
+                        const url::Origin& actual) override;
 
   // content::FederatedAuthAutofillSource
   const std::optional<std::vector<IdentityRequestAccountPtr>>
   GetAutofillSuggestions() const override;
-  void NotifyAutofillSelection(const GURL& idp,
-                               const std::string& account_id) override;
+  void NotifyAutofillSuggestionAccepted(const GURL& idp,
+                                        const std::string& account_id) override;
 
   // To be called on the FederatedAuthRequest object corresponding to a
   // popup opened by ShowModalDialog, specifically for the case when

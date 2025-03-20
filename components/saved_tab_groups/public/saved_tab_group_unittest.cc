@@ -337,4 +337,33 @@ TEST(SavedTabGroupTest, UpdateCreatorCacheGuid) {
   EXPECT_EQ(group.creator_cache_guid(), cache_guid_2);
 }
 
+TEST(SavedTabGroupTest, GetOriginatingTabGroupGuid) {
+  const base::Uuid kOriginatingTabGroupGuid = MakeUniqueGUID();
+
+  SavedTabGroup saved_group = CreateDefaultEmptySavedTabGroup();
+  saved_group.SetOriginatingTabGroupGuid(
+      kOriginatingTabGroupGuid,
+      /*use_originating_tab_group_guid=*/true);
+
+  EXPECT_EQ(saved_group.GetOriginatingTabGroupGuid(), kOriginatingTabGroupGuid);
+
+  SavedTabGroup shared_group =
+      saved_group.CloneAsSharedTabGroup(CollaborationId("collaboration"));
+  EXPECT_EQ(shared_group.GetOriginatingTabGroupGuid(),
+            saved_group.saved_guid());
+
+  shared_group.SetOriginatingTabGroupGuid(
+      kOriginatingTabGroupGuid,
+      /*use_originating_tab_group_guid=*/false);
+
+  // For the shared tab group, the originating tab group guid should be returned
+  // only for the user who created the group.
+  EXPECT_EQ(shared_group.GetOriginatingTabGroupGuid(), std::nullopt);
+
+  // However, for sync, the originating tab group guid should be returned
+  // regardless of the group owner.
+  EXPECT_EQ(shared_group.GetOriginatingTabGroupGuid(/*for_sync=*/true),
+            kOriginatingTabGroupGuid);
+}
+
 }  // namespace tab_groups

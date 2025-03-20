@@ -444,6 +444,11 @@
       name: "AriaRowColIndexText",
       status: "stable",
     },
+    {
+      // When enabled, perform async IPCs from CookieJar::SetCookie to the
+      // network service.
+      name: "AsyncSetCookie",
+    },
     // This flag specifically guards live Range (and by extension, selection)
     // preservation for atomic move (`moveBefore()`). This is not part of the
     // launching proposal, per discussion in
@@ -568,11 +573,6 @@
         "Mac": "stable",
         "default": "test",
       },
-    },
-    {
-      // https://docs.google.com/document/d/1FY3AINZW_h2GU81U-XPQz8bKT6wgt0u7Z9GF4o7_Llk/edit?resourcekey=0-lQnRY9BK0iclRRV62LgVDQ
-      name: "BeaconLeakageLogging",
-      public: true,
     },
     {
       name: "BidiCaretAffinity",
@@ -719,7 +719,7 @@
     {
       // https://chromestatus.com/feature/5066778773028864
       name: "CanvasTextLang",
-      status: "experimental",
+      status: "stable",
     },
     {
       // crbug.com/389726691.
@@ -1087,7 +1087,7 @@
     },
     {
       name: "CSSDynamicRangeLimit",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Include custom properties in CSSComputedStyleDeclaration::item/length.
@@ -1419,6 +1419,12 @@
       // [1] https://drafts.csswg.org/css-scoping-1/#shadow-names
       name: "CSSTreeScopedTimelines",
     },
+    {
+      // The var() fallback does not validate against the type
+      // of the custom property being referenced.
+      name: "CSSTypeAgnosticVarFallback",
+      status: "stable",
+    },
     // Support for `user-select:contain`.
     {
       name: "CSSUserSelectContain",
@@ -1566,11 +1572,6 @@
       name: "DirectSocketsInSharedWorkers",
       status: "test",
       depends_on: ["DirectSockets"],
-    },
-    {
-      // Disables anti-aliasing for the Ahem font. Anti-aliasing this font breaks a
-      // significant amount of WPT test expectations.
-      name: "DisableAhemAntialias",
     },
     {
       name: "DisableDifferentOriginSubframeDialogSuppression",
@@ -2138,6 +2139,11 @@
       status: "test",
     },
     {
+      name: "FledgeTrustedSignalsKVv2ContextualData",
+      depends_on: ["FledgeTrustedSignalsKVv2Support"],
+      status: "test",
+    },
+    {
       name: "FledgeTrustedSignalsKVv2Support",
       status: "stable",
     },
@@ -2379,6 +2385,7 @@
       name: "HTMLInterestTargetAttribute",
       status: "experimental",
       origin_trial_feature_name: "HTMLInterestTargetAttribute",
+      origin_trial_allows_third_party: true,
     },
     {
       // A flag, just for local testing to make the
@@ -3041,7 +3048,8 @@
     {
       // This flag makes the <option> element's label attribute render the
       // contents of the label attribute even if it is only whitespace in order
-      // to match the spec and firefox.
+      // to match the spec and firefox. It also stops stripping/simplifying
+      // whitespace when using the label attribute for rendering.
       // https://github.com/whatwg/html/issues/10955
       name: "OptionLabelAttributeWhitespace",
       status: "stable",
@@ -3537,7 +3545,11 @@
     },
     {
       name: "RasterInducingScroll",
-      status: "test",
+      status: {
+        "Linux": "stable",
+        "Win": "stable",
+        "default": "test",
+      }
     },
     {
       name: "ReadableStreamAsyncIterable",
@@ -3570,6 +3582,11 @@
       name: "ReduceUserAgentPlatformOsCpu",
       depends_on: ["ReduceUserAgentMinorVersion"],
       status: {"Android": "", "default": "stable"},
+    },
+    {
+      // Killswitch M136.
+      name: "ReferenceFilterMapsReferenceBox",
+      status: "stable",
     },
     {
       name: "RegionCapture",
@@ -3964,6 +3981,11 @@
       // See https://crbug.com/40622041
       // This feature was shipped in M133, so this flag can be removed in M135.
       name: "SelectionOnShadowDOMWithDelegatesFocus",
+      status: "stable",
+    },
+    {
+      // See https://crbug.com/395544401
+      name: "SelectionUpdateToInitialSelectionInListify",
       status: "stable",
     },
     {
@@ -4394,6 +4416,10 @@
     // For unit tests.
     {
       name: "TestFeatureStable",
+      status: "stable",
+    },
+    {
+      name: "TextAutoSizingDisabledOnFlexbox",
       status: "stable",
     },
     {

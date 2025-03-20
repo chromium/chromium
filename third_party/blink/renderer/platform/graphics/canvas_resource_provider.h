@@ -117,7 +117,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
       CanvasResourceHost* resource_host = nullptr);
 
   static std::unique_ptr<CanvasResourceProvider>
-  CreateSoftwareSharedImageProvider(
+  CreateSharedImageProviderForSoftwareCompositor(
       gfx::Size size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
@@ -210,7 +210,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   virtual bool IsSingleBuffered() const = 0;
 
   // Only works in single buffering mode.
-  bool ImportResource(scoped_refptr<CanvasResource>&&);
+  bool ImportResource(scoped_refptr<ExternalCanvasResource>&&);
 
   void RecycleResource(scoped_refptr<CanvasResource>&&);
   void SetResourceRecyclingEnabled(bool);

@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_client.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_delegate.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -63,6 +64,21 @@ class PaintArtifactCompositor;
 class StyleChangeReasonForTracing;
 class TreeScope;
 class TimelineRange;
+class AnimationTrigger;
+
+// The state of the animation's trigger.
+// https://drafts.csswg.org/web-animations-2/#trigger-state
+enum class AnimationTriggerState {
+  // The initial state of the trigger. The trigger has not yet taken any action
+  // on the animation.
+  kIdle,
+  // The last action taken by the trigger on the animation was due to entering
+  // the trigger range.
+  kPrimary,
+  // The last action taken by the trigger on the animation was due to exiting
+  // the exit range.
+  kInverse,
+};
 
 class CORE_EXPORT Animation : public EventTarget,
                               public ActiveScriptWrappable<Animation>,
@@ -106,7 +122,10 @@ class CORE_EXPORT Animation : public EventTarget,
                            AnimationTimeline*,
                            ExceptionState&);
 
-  Animation(ExecutionContext*, AnimationTimeline*, AnimationEffect*);
+  Animation(ExecutionContext*,
+            AnimationTimeline*,
+            AnimationEffect*,
+            AnimationTrigger*);
   ~Animation() override;
   void Dispose();
 
@@ -431,6 +450,47 @@ class CORE_EXPORT Animation : public EventTarget,
   using NativePaintWorkletReasons = uint32_t;
   NativePaintWorkletReasons GetNativePaintWorkletReasons() const;
 
+  static RangeBoundary* ToRangeBoundary(std::optional<TimelineOffset> offset);
+
+  AnimationTrigger* trigger() {
+    FlushPendingUpdates();
+    return GetTriggerInternal();
+  }
+  AnimationTrigger* GetTriggerInternal() { return trigger_; }
+  virtual void setTrigger(AnimationTrigger* trigger) { trigger_ = trigger; }
+
+  struct AnimationTriggerData {
+    AnimationTriggerState state = blink::AnimationTriggerState::kIdle;
+
+    // The most recent `animation-play-state` value for |animation_|. This will
+    // be std::nullopt for non-CSSAnimations. When this animation's trigger
+    // actions this animation, it will factor in this play state, leaving the
+    // animation paused if necessary.
+    std::optional<EAnimPlayState> css_play_state;
+
+    // Whether there has been a change to |css_play_state_| value since the
+    // last time this animation's trigger had an opportunity to action it.
+    bool play_state_update_pending = false;
+  };
+  AnimationTriggerState GetTriggerState() const { return trigger_data_.state; }
+  void SetTriggerState(AnimationTriggerState state) {
+    trigger_data_.state = state;
+  }
+  std::optional<EAnimPlayState> GetTriggerActionPlayState() const {
+    return trigger_data_.css_play_state;
+  }
+  void SetTriggerActionPlayState(std::optional<EAnimPlayState> play_state) {
+    SetPendingTriggerPlayStateUpdate(play_state !=
+                                     trigger_data_.css_play_state);
+    trigger_data_.css_play_state = play_state;
+  }
+  bool PendingTriggerPlayStateUpdate() const {
+    return trigger_data_.play_state_update_pending;
+  }
+  void SetPendingTriggerPlayStateUpdate(bool pending) {
+    trigger_data_.play_state_update_pending = pending;
+  }
+
  protected:
   DispatchEventResult DispatchEventInternal(Event&) override;
   void AddedEventListener(const AtomicString& event_type,
@@ -542,7 +602,6 @@ class CORE_EXPORT Animation : public EventTarget,
       const RangeBoundary* boundary,
       double default_percent,
       ExceptionState& exception_state);
-  static RangeBoundary* ToRangeBoundary(std::optional<TimelineOffset> offset);
 
   String id_;
 
@@ -710,6 +769,9 @@ class CORE_EXPORT Animation : public EventTarget,
   // True if the only reason for not running the animation on the compositor is
   // that the animation would have no effect. Updated in |Animation::PreCommit|.
   bool animation_has_no_effect_;
+
+  Member<AnimationTrigger> trigger_;
+  AnimationTriggerData trigger_data_;
 
   FRIEND_TEST_ALL_PREFIXES(AnimationAnimationTestCompositing,
                            NoCompositeWithoutCompositedElementId);

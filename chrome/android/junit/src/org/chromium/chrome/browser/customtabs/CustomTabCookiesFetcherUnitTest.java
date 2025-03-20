@@ -8,11 +8,13 @@ import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.android.util.concurrent.PausedExecutorService;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.util.TempDirectory;
@@ -34,6 +36,7 @@ import java.util.concurrent.TimeoutException;
 @LooperMode(LooperMode.Mode.PAUSED)
 public class CustomTabCookiesFetcherUnitTest {
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ProfileProvider mProfileProvider;
 
     @Mock private CookiesFetcher.Natives mCookiesFetcherJni;
@@ -42,7 +45,6 @@ public class CustomTabCookiesFetcherUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         PostTask.setPrenativeThreadPoolExecutorForTesting(mExecutor);
 

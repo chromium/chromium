@@ -84,6 +84,7 @@
 #include "content/browser/download/save_package.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/find_request_manager.h"
+#include "content/browser/fingerprinting_protection/canvas_noise_token_data.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/guest_page_holder_impl.h"
 #include "content/browser/host_zoom_map_impl.h"
@@ -1353,6 +1354,11 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
 
   if (input::IsTransferInputToVizSupported()) {
     SetupRenderInputRouterDelegateConnection();
+  }
+
+  if (base::FeatureList::IsEnabled(blink::features::kCanvasInterventions)) {
+    renderer_preferences_.canvas_noise_token =
+        CanvasNoiseTokenData::GetToken(browser_context);
   }
 }
 
@@ -5273,7 +5279,7 @@ int64_t WebContentsImpl::AdjustWindowRect(gfx::Rect* bounds,
   return display_id;
 }
 
-void WebContentsImpl::ShowCreatedWindow(
+WebContents* WebContentsImpl::ShowCreatedWindow(
     RenderFrameHostImpl* opener,
     int main_frame_widget_route_id,
     WindowOpenDisposition disposition,
@@ -5285,7 +5291,7 @@ void WebContentsImpl::ShowCreatedWindow(
 
   if (GuestPageHolderImpl::FromRenderFrameHost(*opener)) {
     // opened from a guest with MPArch, we don't need to do anything.
-    return;
+    return nullptr;
   }
 
   // This method is the renderer requesting an existing top level window to
@@ -5303,7 +5309,7 @@ void WebContentsImpl::ShowCreatedWindow(
   // renderer could be requesting to show a previously shown window (occurs when
   // mojom::CreateNewWindowStatus::kReuse is used). Ignore the request then.
   if (!owned_created || !owned_created->contents) {
-    return;
+    return nullptr;
   }
 
   if (active_file_chooser_) {
@@ -5313,7 +5319,7 @@ void WebContentsImpl::ShowCreatedWindow(
     opener->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kWarning,
         "window.open blocked due to active file chooser.");
-    return;
+    return nullptr;
   }
 
   WebContentsImpl* created = owned_created->contents.get();
@@ -5336,19 +5342,22 @@ void WebContentsImpl::ShowCreatedWindow(
   // retain fullscreen and open a window on another screen.
   ForSecurityDropFullscreen(display_id).RunAndReset();
 
-  // The delegate can be null in tests, so we must check for it :(.
-  if (delegate) {
-    // Mark the web contents as pending resume, then immediately do
-    // the resume if the delegate wants it.
-    created->is_resume_pending_ = true;
-    if (delegate->ShouldResumeRequestsForCreatedWindow()) {
-      created->ResumeLoadingCreatedWebContents();
-    }
-
-    delegate->AddNewContents(this, std::move(owned_created->contents),
-                             std::move(owned_created->target_url), disposition,
-                             adjusted_features, user_gesture, nullptr);
+  // The delegate can be null in tests.
+  if (!delegate) {
+    return nullptr;
   }
+
+  // Mark the web contents as pending resume, then immediately do the resume if
+  // the delegate wants it.
+  created->is_resume_pending_ = true;
+  if (delegate->ShouldResumeRequestsForCreatedWindow()) {
+    created->ResumeLoadingCreatedWebContents();
+  }
+
+  return delegate->AddNewContents(this, std::move(owned_created->contents),
+                                  std::move(owned_created->target_url),
+                                  disposition, adjusted_features, user_gesture,
+                                  nullptr);
 }
 
 void WebContentsImpl::ShowCreatedWidget(int process_id,
@@ -8847,6 +8856,10 @@ const blink::RendererPreferences& WebContentsImpl::GetRendererPrefs(
   if (auto* guest = GuestPageHolderImpl::FromRenderFrameHost(
           *render_view_host->frame_tree()->GetMainFrame())) {
     return guest->GetRendererPrefs();
+  }
+  if (base::FeatureList::IsEnabled(blink::features::kCanvasInterventions)) {
+    renderer_preferences_.canvas_noise_token =
+        CanvasNoiseTokenData::GetToken(GetBrowserContext());
   }
   RenderViewHostImpl::GetPlatformSpecificPrefs(&renderer_preferences_);
   return renderer_preferences_;

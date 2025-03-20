@@ -1896,6 +1896,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2300214399009193026">PCIe</translation>
 <translation id="2300332192655962933">Datoteka ni bila na voljo na spletnem mestu</translation>
 <translation id="2300383962156589922">Prilagajanje in nadziranje aplikacije <ph name="APP_NAME" /></translation>
+<translation id="2301064673700597535">Izjave o kvalificiranih potrdilih</translation>
 <translation id="2301382460326681002">Korenski imenik razširitve je neveljaven.</translation>
 <translation id="2301402091755573488">Zavihek v skupni rabi</translation>
 <translation id="2302342861452486996"><ph name="BEGIN_H3" />Funkcije za odpravljanje napak<ph name="END_H3" />
@@ -4077,9 +4078,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
     <ph name="BEGIN_PARAGRAPH2" />Ta poročila lahko kadar koli omogočite ali onemogočite v nastavitvah naprave Chrome. Če ste skrbnik domene, lahko to nastavitev spremenite v skrbniški konzoli.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">Polarni sij ponoči nad majhno počitniško hišo.</translation>
 <translation id="3818102823568165369">Lokalna potrdila, ki jih je dodal operacijski sistem ali skrbnik.</translation>
-<translation id="3818662907126913619">Če želite napravo uporabljati s profilom za <ph name="DOMAIN" />, vaša organizacija potrebuje podatke o napravi.
-
-To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalniku in operacijskem sistemu naprave.</translation>
 <translation id="3819164369574292143">Povečajte sliko, če želite povečati elemente na zaslonu. Če želite vklopiti ali izklopiti lupo, pritisnite tipko za iskanje + Ctrl + M. Pri povečavi za premikanje uporabite tipke Ctrl + Alt + puščične tipke.</translation>
 <translation id="3819257035322786455">Varnostna kopija</translation>
 <translation id="3819261658055281761">Sistem za to napravo ni shranil žetona za dolgoročni dostop do API-ja.</translation>
@@ -4397,9 +4395,6 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4031527940632463547">Tipala so blokirana</translation>
 <translation id="4033471457476425443">Dodaj novo mapo</translation>
 <translation id="4033963223187371752">Varna spletna mesta morda vdelajo vsebino, kot so slike ali spletni okvirji, ki niso varni.</translation>
-<translation id="4034706080855851454">Če želite napravo uporabljati s profilom organizacije, potrebuje organizacija podatke o napravi.
-
-To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalniku in operacijskem sistemu naprave.</translation>
 <translation id="4034824040120875894">Tiskalnik</translation>
 <translation id="4035758313003622889">&amp;Upravitelj opravil</translation>
 <translation id="4035877632587724847">Ne dovoli</translation>

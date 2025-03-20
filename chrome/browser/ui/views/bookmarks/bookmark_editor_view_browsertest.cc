@@ -24,14 +24,14 @@ class BookmarkEditorViewBrowserTest : public DialogBrowserTest {
       const BookmarkEditorViewBrowserTest&) = delete;
 
   // DialogBrowserTest:
+  // Shows the dialog for bookmarking all tabs. This shows a BookmarkEditorView
+  // dialog, with a tree view, where a user can rename and select a parent
+  // folder.
   void ShowUi(const std::string& name) override {
-    DCHECK_EQ("all_tabs", name);
     chrome::ShowBookmarkAllTabsDialog(browser());
   }
 };
 
-// Shows the dialog for bookmarking all tabs. This shows a BookmarkEditorView
-// dialog, with a tree view, where a user can rename and select a parent folder.
 IN_PROC_BROWSER_TEST_F(BookmarkEditorViewBrowserTest, InvokeUi_all_tabs) {
   ShowAndVerifyUi();
 }
@@ -57,17 +57,50 @@ class BookmarkEditorViewBrowserTestWithAccountBookmarks
       switches::kSyncEnableBookmarksInTransportMode};
 };
 
-// TODO(crbug.com/354892429): Add test coverage for:
-// * Only local/syncable nodes
-// * Local nodes with no children
 IN_PROC_BROWSER_TEST_F(BookmarkEditorViewBrowserTestWithAccountBookmarks,
-                       InvokeUi_all_tabs) {
+                       InvokeUi_Default) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarkEditorViewBrowserTestWithAccountBookmarks,
+                       InvokeUi_AccountAndLocalNodes) {
   bookmarks::BookmarkModel* const bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(browser()->profile());
   bookmark_model->AddFolder(bookmark_model->bookmark_bar_node(),
                             /*index=*/0, u"Local Folder");
   bookmark_model->AddFolder(bookmark_model->account_bookmark_bar_node(),
                             /*index=*/0, u"Account Folder");
+
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarkEditorViewBrowserTestWithAccountBookmarks,
+                       InvokeUi_OnlyAccountNodes) {
+  bookmarks::BookmarkModel* const bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  bookmark_model->AddFolder(bookmark_model->account_bookmark_bar_node(),
+                            /*index=*/0, u"Account Folder");
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarkEditorViewBrowserTestWithAccountBookmarks,
+                       InvokeUi_OnlyLocalNodes) {
+  bookmarks::BookmarkModel* const bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  bookmark_model->AddFolder(bookmark_model->other_node(),
+                            /*index=*/0, u"Local Folder");
+
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarkEditorViewBrowserTestWithAccountBookmarks,
+                       InvokeUi_OnlyLocalChildren) {
+  bookmarks::BookmarkModel* const bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  bookmark_model->AddURL(bookmark_model->other_node(), 0, u"bookmark 2",
+                         GURL("http://www.google.com"));
+  bookmark_model->AddURL(bookmark_model->bookmark_bar_node(), 0, u"bookmark",
+                         GURL("http://www.google.com"));
 
   ShowAndVerifyUi();
 }

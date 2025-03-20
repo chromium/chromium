@@ -9,11 +9,8 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.Manifest;
 import android.os.Build;
 
-import androidx.core.app.NotificationManagerCompat;
-
 import org.jni_zero.CalledByNative;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.location.LocationUtils;
@@ -181,13 +178,6 @@ public class PermissionUtil {
                 ContextualNotificationPermissionRequester.getInstance();
         return contextualPermissionRequester != null
                 && contextualPermissionRequester.doesAppLevelSettingsAllowSiteNotifications();
-    }
-
-    @CalledByNative
-    private static boolean areAppLevelNotificationsEnabled() {
-        NotificationManagerCompat manager =
-                NotificationManagerCompat.from(ContextUtils.getApplicationContext());
-        return manager.areNotificationsEnabled();
     }
 
     public static boolean hasSystemPermissionsForBluetooth(WindowAndroid windowAndroid) {

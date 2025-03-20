@@ -11,6 +11,7 @@
 <translation id="103269572468856066">I-clear ang data sa mga site at app?</translation>
 <translation id="1034259925032978114">Bukas ang window</translation>
 <translation id="1036348656032585052">I-off</translation>
+<translation id="1045448422538531528">Idagdag sa pangkat</translation>
 <translation id="1045899828449635435">I-clear ang data sa mga site?</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1052842760770519282">Hindi ma-access ang ilan sa iyong mga password</translation>
@@ -535,6 +536,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3513704683820682405">Augmented Reality</translation>
 <translation id="3516053221628030540">Pumunta sa Google Play</translation>
 <translation id="3518985090088779359">Tanggapin, magpatuloy</translation>
+<translation id="351952459507671940">Idagdag sa bagong pangkat</translation>
 <translation id="3521388823983121502">Hindi makapagpatuloy gamit ang <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="3522247891732774234">May available na update. Higit pang mga opsyon</translation>
 <translation id="3523789730715594198">Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
@@ -582,6 +584,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3721119614952978349">Ikaw at ang Google</translation>
 <translation id="3737319253362202215">Mga setting ng pagsasalin</translation>
 <translation id="3738139272394829648">Pindutin upang Hanapin</translation>
+<translation id="3739455665973395693">Walang nakompromisong password sa iyong Google Account</translation>
 <translation id="3739899004075612870">Naka-bookmark sa <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740525748616366977">Hindi available ang Paghahanap gamit ang boses sa device na ito</translation>
 <translation id="376561056759077985">Hindi pa nase-save ang ilang data</translation>
@@ -635,6 +638,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3985215325736559418">Gusto mo bang muling i-download ang <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">Kopyahin ang link</translation>
 <translation id="4000212216660919741">Offline Home</translation>
+<translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 nakompromisong password sa iyong Google Account}one{# nakompromisong password sa iyong Google Account}other{# na nakompromisong password sa iyong Google Account}}</translation>
 <translation id="4016425174436051808">Hindi masubaybayan. Nagkaproblema.</translation>
 <translation id="4024768890073681126">Pinapamahalaan ng iyong magulang ang browser mo</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# oras}one{# oras}other{# na oras}}</translation>
@@ -829,6 +833,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4881695831933465202">Buksan</translation>
 <translation id="488187801263602086">Palitan ang pangalan ng file</translation>
 <translation id="4885273946141277891">Hindi sinusuportahang bilang ng mga instance ng Chrome.</translation>
+<translation id="4890973535105146893">Walang naka-save na password sa iyong Google Account</translation>
 <translation id="4905823827770127520">Magsama ng link sa page</translation>
 <translation id="4908869848243824489">Discover ng Google</translation>
 <translation id="4910889077668685004">Mga app sa pagbabayad</translation>
@@ -1701,6 +1706,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="869891660844655955">Expiration date</translation>
 <translation id="8699120352855309748">Huwag mag-alok na isalin ang mga wikang ito</translation>
 <translation id="8712637175834984815">Nakuha ko</translation>
+<translation id="8715286883001906001">Palakasin ang mga password mo sa iyong Google Account</translation>
 <translation id="8723453889042591629">Mabilis na isalin ang page na ito. Para i-edit ang shortcut na ito, pindutin ito nang matagal.</translation>
 <translation id="8725066075913043281">Subukan ulit</translation>
 <translation id="8731268612289859741">Panseguridad na code</translation>
@@ -1828,6 +1834,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="970715775301869095"><ph name="MINUTES" /> (na) minuto na lang ang natitira</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Isara ang lahat ng tab</translation>
+<translation id="984756705737569814">Hindi masuri ang mga password sa iyong Google Account</translation>
 <translation id="987264212798334818">Pangkalahatan</translation>
 <translation id="988091779042748639">Para i-delete ang history ng pag-browse sa Incognito mula sa iyong device, isara ang lahat ng tab na Incognito.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> (na) tab</translation>

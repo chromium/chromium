@@ -128,6 +128,8 @@ bool StructTraits<blink::mojom::RendererPreferencesDataView,
     return false;
   }
 
+  out->canvas_noise_token = data.canvas_noise_token();
+
   return true;
 }
 

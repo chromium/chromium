@@ -85,6 +85,8 @@ struct FeedbackContext {
   bool assistant_debug_info_allowed;
   // Whether or not the feedback app is opened from OS Settings Search.
   bool from_settings_search;
+  // Whether or not the searched query contains the word "fingerprint".
+  bool is_query_fingerprint;
   // Whether or not the feedback app is opened from autofill context menu.
   bool from_autofill;
   // Autofill metadata provided by source CrOS application by

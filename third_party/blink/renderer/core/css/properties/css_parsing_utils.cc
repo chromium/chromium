@@ -8629,5 +8629,72 @@ CSSValue* ConsumeProgressType(CSSParserTokenStream& stream,
                                                           easing_function);
 }
 
+bool ContainsSafeAreaInsetBottom(CSSParserTokenStream& stream) {
+  while (!stream.AtEnd()) {
+    if (stream.Peek().GetBlockType() == CSSParserToken::kBlockStart) {
+      // Check env("safe-area-inset-bottom")
+      if (stream.Peek().FunctionId() == CSSValueID::kEnv) {
+        CSSParserTokenStream::RestoringBlockGuard guard(stream);
+        stream.ConsumeWhitespace();
+        if (stream.Peek().GetType() == kIdentToken &&
+            stream.Peek().Value() == "safe-area-inset-bottom") {
+          return true;
+        }
+      }
+
+      CSSParserTokenStream::BlockGuard guard(stream);
+      if (ContainsSafeAreaInsetBottom(stream)) {
+        return true;
+      }
+      continue;
+    }
+    stream.Consume();
+  }
+
+  return false;
+}
+
+bool ContainsSafeAreaInsetBottom(StringView string) {
+  CSSParserTokenStream stream(string);
+  return ContainsSafeAreaInsetBottom(stream);
+}
+
+bool IsSimpleSum(CSSParserTokenStream& stream) {
+  while (!stream.AtEnd()) {
+    CSSParserTokenType type = stream.Peek().GetType();
+    if (type == kDelimiterToken) {
+      UChar delimiter = stream.Peek().Delimiter();
+      if (delimiter != '+' && delimiter != '-') {
+        break;
+      }
+      // Consume' '+' or '-'.
+      stream.ConsumeIncludingWhitespace();
+    } else if (type == kDimensionToken) {
+      // Consume literals.
+      stream.ConsumeIncludingWhitespace();
+    } else {
+      break;
+    }
+  }
+
+  return stream.AtEnd();
+}
+
+bool IsSimpleSum(StringView string) {
+  CSSParserTokenStream stream(string);
+  if (stream.Peek().GetBlockType() == CSSParserToken::kBlockStart) {
+    // Handle e.g. calc(1px + 2em - 3ch ... etc)
+    if (stream.Peek().FunctionId() != CSSValueID::kCalc) {
+      return false;
+    }
+    CSSParserTokenStream::BlockGuard guard(stream);
+    stream.ConsumeWhitespace();
+    return IsSimpleSum(stream);
+  } else {
+    // Handle 1px + 2em - 3ch ... etc
+    return IsSimpleSum(stream);
+  }
+}
+
 }  // namespace css_parsing_utils
 }  // namespace blink

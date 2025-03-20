@@ -17,6 +17,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/map_util.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -156,9 +157,20 @@ std::optional<std::string> RemoveTldFromSite(const net::SchemefulSite& site) {
   return serialized.substr(0, serialized.size() - tld_length);
 }
 
+struct ParsedPolicySetsInfoForField {
+  std::vector<SingleSet> sets;
+  base::flat_map<net::SchemefulSite, net::SchemefulSite> aliases;
+};
+
 struct ParsedPolicySetLists {
+  ParsedPolicySetsInfoForField replacements;
+  ParsedPolicySetsInfoForField additions;
+};
+
+struct MergedPolicySetLists {
   std::vector<SingleSet> replacements;
   std::vector<SingleSet> additions;
+  base::flat_map<net::SchemefulSite, net::SchemefulSite> aliases;
 };
 
 class ParseContext {
@@ -279,14 +291,15 @@ class ParseContext {
   }
 
   // Returns the parsed sets if successful; otherwise returns the first error.
-  base::expected<std::vector<SingleSet>, ParseError> GetPolicySetsFromList(
-      const base::Value::List* policy_sets,
-      PolicySetType set_type) {
+  base::expected<ParsedPolicySetsInfoForField, ParseError>
+  GetPolicySetsFromList(const base::Value::List* policy_sets,
+                        PolicySetType set_type) {
     if (!policy_sets) {
       return {};
     }
 
     std::vector<SingleSet> parsed_sets;
+    std::vector<std::pair<net::SchemefulSite, net::SchemefulSite>> all_aliases;
     size_t previous_size = warnings_.size();
     for (int i = 0; i < static_cast<int>(policy_sets->size()); i++) {
       base::expected<SetsAndAliases, ParseError> parsed =
@@ -310,6 +323,7 @@ class ParseContext {
         for (const auto& alias : parsed.value().second) {
           alias_entries.emplace_back(alias.first,
                                      set.find(alias.second)->second);
+          all_aliases.emplace_back(alias.first, alias.second);
         }
         set.insert(std::make_move_iterator(alias_entries.begin()),
                    std::make_move_iterator(alias_entries.end()));
@@ -318,7 +332,7 @@ class ParseContext {
       parsed_sets.push_back(std::move(set));
       previous_size = warnings_.size();
     }
-    return parsed_sets;
+    return ParsedPolicySetsInfoForField(parsed_sets, all_aliases);
   }
 
   // Updates the context to include the given set and aliases.
@@ -374,7 +388,7 @@ class ParseContext {
 
   // Removes invalid site entries and fixes up any lingering singletons.
   // Modifies the lists in-place.
-  void PostProcessSetLists(ParsedPolicySetLists& lists) {
+  void PostProcessSetLists(MergedPolicySetLists& lists) {
     if (invalid_keys_.empty()) {
       return;
     }
@@ -389,17 +403,32 @@ class ParseContext {
     for (auto& set : lists.replacements) {
       base::EraseIf(set, is_invalid_entry);
     }
+    base::EraseIf(lists.aliases,
+                  [&](const auto& pair) { return IsInvalidAlias(pair); });
 
     net::FirstPartySetsValidator validator;
     for (const auto& set : lists.additions) {
-      for (const auto& site_entry : set) {
-        validator.Update(site_entry.first, site_entry.second.primary());
+      for (const auto& [site, entry] : set) {
+        validator.Update(site, entry.primary());
       }
     }
     for (const auto& set : lists.replacements) {
-      for (const auto& site_entry : set) {
-        validator.Update(site_entry.first, site_entry.second.primary());
+      for (const auto& [site, entry] : set) {
+        validator.Update(site, entry.primary());
       }
+    }
+    const auto do_updates_for_alias = [&](const std::vector<SingleSet>& sets,
+                                          const net::SchemefulSite& site) {
+      for (const auto& set : sets) {
+        const auto* entry = base::FindOrNull(set, site);
+        if (entry) {
+          validator.Update(site, entry->primary());
+        }
+      }
+    };
+    for (const auto& [alias, canonical] : lists.aliases) {
+      do_updates_for_alias(lists.additions, alias);
+      do_updates_for_alias(lists.replacements, alias);
     }
 
     // Since we just removed some keys, we have to double-check that there are
@@ -720,17 +749,23 @@ FirstPartySetParser::PolicyParseResult
 FirstPartySetParser::ParseSetsFromEnterprisePolicy(
     const base::Value::Dict& policy) {
   ParseContext context(/*emit_errors=*/false, /*exempt_from_limits=*/true);
-  auto set_lists = [&]() -> base::expected<ParsedPolicySetLists,
+  auto set_lists = [&]() -> base::expected<MergedPolicySetLists,
                                            FirstPartySetsHandler::ParseError> {
-    ASSIGN_OR_RETURN(std::vector<SingleSet> replacements,
+    ASSIGN_OR_RETURN(ParsedPolicySetsInfoForField replacements,
                      context.GetPolicySetsFromList(
                          policy.FindList(kFirstPartySetPolicyReplacementsField),
                          PolicySetType::kReplacement));
-    ASSIGN_OR_RETURN(std::vector<SingleSet> additions,
+    ASSIGN_OR_RETURN(ParsedPolicySetsInfoForField additions,
                      context.GetPolicySetsFromList(
                          policy.FindList(kFirstPartySetPolicyAdditionsField),
                          PolicySetType::kAddition));
-    return ParsedPolicySetLists(std::move(replacements), std::move(additions));
+
+    base::flat_map<net::SchemefulSite, net::SchemefulSite> aliases =
+        std::move(replacements.aliases);
+    aliases.insert(std::make_move_iterator(additions.aliases.begin()),
+                   std::make_move_iterator(additions.aliases.end()));
+    return MergedPolicySetLists(std::move(replacements).sets,
+                                std::move(additions).sets, std::move(aliases));
   }();
 
   if (set_lists.has_value()) {
@@ -738,9 +773,10 @@ FirstPartySetParser::ParseSetsFromEnterprisePolicy(
   }
 
   return FirstPartySetParser::PolicyParseResult(
-      std::move(set_lists).transform([](ParsedPolicySetLists lists) {
+      std::move(set_lists).transform([](MergedPolicySetLists lists) {
         return FirstPartySetsOverridesPolicy(net::SetsMutation(
-            std::move(lists.replacements), std::move(lists.additions)));
+            std::move(lists.replacements), std::move(lists.additions),
+            std::move(lists.aliases)));
       }),
       context.warnings());
 }

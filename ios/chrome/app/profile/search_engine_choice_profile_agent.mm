@@ -11,6 +11,7 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/browser/device_orientation/ui_bundled/scoped_force_portrait_orientation.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 #import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_util.h"
 #import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_coordinator.h"
@@ -21,7 +22,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
-#import "ios/chrome/browser/ui/device_orientation/scoped_force_portrait_orientation.h"
 
 namespace {
 
@@ -45,7 +45,7 @@ enum class SkipScreenDecision {
   // UI blocker used by the search engine selection screen.
   std::unique_ptr<ScopedUIBlocker> _searchEngineChoiceUIBlocker;
   // Scene state ID where the search engine choice dialog is displayed.
-  NSString* _searchEngineChoiceSceneStateID;
+  std::string _searchEngineChoiceSceneStateID;
   // Store whether the Search Engine Choice Screen should be skipped or not.
   SkipScreenDecision _skipScreenDecision;
   // Used to force the device orientation in portrait mode on iPhone.
@@ -164,12 +164,12 @@ enum class SkipScreenDecision {
   // there is nothing to do.
   if (_searchEngineChoiceCoordinator) {
     DCHECK(_searchEngineChoiceUIBlocker);
-    DCHECK(_searchEngineChoiceSceneStateID);
+    DCHECK(!_searchEngineChoiceSceneStateID.empty());
     return;
   }
 
   DCHECK(!_searchEngineChoiceUIBlocker);
-  DCHECK(!_searchEngineChoiceSceneStateID);
+  DCHECK(_searchEngineChoiceSceneStateID.empty());
 
   if (![self shouldShowChoiceScreen]) {
     // If there is no need to present the screen, then transition to the next
@@ -206,9 +206,9 @@ enum class SkipScreenDecision {
   }
 
   DCHECK(_searchEngineChoiceUIBlocker);
-  DCHECK(_searchEngineChoiceSceneStateID);
+  DCHECK(!_searchEngineChoiceSceneStateID.empty());
 
-  if (![_searchEngineChoiceSceneStateID isEqual:sceneState.sceneSessionID]) {
+  if (_searchEngineChoiceSceneStateID != sceneState.sceneSessionID) {
     // Nothing to do if the Search Engine Choice Screen is not presented
     // by `sceneState`.
     return;
@@ -224,8 +224,8 @@ enum class SkipScreenDecision {
 // by the user or when programmatically dismissing when a SceneState is
 // detached or disconnected while the screen is presented.
 - (void)stopPresentingChoiceScreen {
-  DCHECK(_searchEngineChoiceSceneStateID);
-  _searchEngineChoiceSceneStateID = nil;
+  DCHECK(!_searchEngineChoiceSceneStateID.empty());
+  _searchEngineChoiceSceneStateID.clear();
   _searchEngineChoiceUIBlocker.reset();
 
   _searchEngineChoiceCoordinator.delegate = nil;

@@ -31,6 +31,8 @@ class TranslateKitComponentInstallerPolicy : public ComponentInstallerPolicy {
   // Requests to update the component.
   static void UpdateComponentOnDemand();
 
+  static const std::string GetExtensionId();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(RegisterTranslateKitComponentTest,
                            VerifyInstallationDefaultEmpty);

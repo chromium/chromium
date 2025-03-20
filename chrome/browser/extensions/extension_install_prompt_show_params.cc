@@ -78,7 +78,7 @@ content::WebContents* ExtensionInstallPromptShowParams::GetParentWebContents() {
 
 gfx::NativeWindow ExtensionInstallPromptShowParams::GetParentWindow() {
   if (WasParentDestroyed()) {
-    return nullptr;
+    return gfx::NativeWindow();
   }
 
   if (WasConfiguredForWebContents()) {

@@ -42,6 +42,11 @@ static const char* AsString(rtc::LoggingSeverity severity) {
 class WebRtcTextLogTest : public testing::Test {
  public:
   void SetUp() override {
+    // Some builds don't have runtime vlogging. See base/logging.h.
+    if (!VLOG_IS_ON(0)) {
+      GTEST_SKIP();
+    }
+
     ASSERT_TRUE(log_dir_.CreateUniqueTempDir());
     log_file_path_ = log_dir_.GetPath().AppendASCII("webrtc_log");
   }

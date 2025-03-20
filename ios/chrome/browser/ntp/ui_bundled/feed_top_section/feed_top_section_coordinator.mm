@@ -78,7 +78,7 @@ using base::UserMetricsAction;
       [[FeedTopSectionViewController alloc] init];
   _viewController = self.feedTopSectionViewController;
 
-  ProfileIOS* profile = self.browser->GetProfile();
+  ProfileIOS* profile = self.profile;
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(profile);
   AuthenticationService* authenticationService =

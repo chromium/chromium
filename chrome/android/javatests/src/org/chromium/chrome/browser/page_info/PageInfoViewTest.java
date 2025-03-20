@@ -63,7 +63,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -95,6 +96,8 @@ import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.pdf.PdfUtils.PdfPageType;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.privacy_sandbox.FakePrivacySandboxBridge;
+import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridgeJni;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.Tab;
@@ -122,6 +125,7 @@ import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.components.page_info.PageInfoAdPersonalizationController;
 import org.chromium.components.page_info.PageInfoController;
+import org.chromium.components.page_info.PageInfoCookiesController;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -228,9 +232,13 @@ public class PageInfoViewTest {
 
     @Mock private SettingsNavigation mSettingsNavigation;
 
+    private FakePrivacySandboxBridge mFakePrivacySandboxBridge;
+
     @ClassRule
     public static final ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public final BlankCTATabInitialStateRule mInitialStateRule =
@@ -363,23 +371,21 @@ public class PageInfoViewTest {
         return rwsInfo;
     }
 
-    private void setRwsInfoForTesting(RwsCookieInfo rwsCookieInfo) {
+    private PageInfoCookiesController getCookiesController() {
         PageInfoController controller = PageInfoController.getLastPageInfoController();
         assertNotNull(controller);
-        var cookiesController = controller.getCookiesController();
-        cookiesController.setRwsInfoForTesting(rwsCookieInfo.getMembers());
+        return controller.getCookiesController();
     }
 
     private void setRwsInfo(String url) {
-        RwsCookieInfo rwsInfo = getRwsCookieInfo(url);
-        setRwsInfoForTesting(rwsInfo);
+        getCookiesController().setRwsInfoForTesting(getRwsCookieInfo(url).getMembers());
     }
 
     private void setRwsInfoWithWebsite(Website site) {
         RwsCookieInfo rwsInfo =
                 new RwsCookieInfo(site.getAddress().getDomainAndRegistry(), List.of(site));
         site.setRwsCookieInfo(rwsInfo);
-        setRwsInfoForTesting(rwsInfo);
+        getCookiesController().setRwsInfoForTesting(rwsInfo.getMembers());
     }
 
     private void setThirdPartyCookieBlocking(@CookieControlsMode int value) {
@@ -543,9 +549,10 @@ public class PageInfoViewTest {
         mTestServerRule.setServerPort(424242);
         mTestServerRule.setServerUsesHttps(true);
 
-        PageInfoAdPersonalizationController.setTopicsForTesting(Arrays.asList("Testing topic"));
+        mFakePrivacySandboxBridge = new FakePrivacySandboxBridge();
+        PrivacySandboxBridgeJni.setInstanceForTesting(mFakePrivacySandboxBridge);
 
-        MockitoAnnotations.initMocks(this);
+        PageInfoAdPersonalizationController.setTopicsForTesting(Arrays.asList("Testing topic"));
     }
 
     @After
@@ -808,7 +815,6 @@ public class PageInfoViewTest {
         onView(withText("Camera")).check(matches(hasSibling(withText("Allowed"))));
     }
 
-    /** Tests the cookies page of the PageInfo UI with RWS enabled. */
     @Test
     @MediumTest
     @Feature({"RenderTest"})
@@ -819,17 +825,49 @@ public class PageInfoViewTest {
         setRwsInfo(hostName);
         onView(withId(R.id.page_info_cookies_row)).perform(click());
         onViewWaiting(allOf(withText(R.string.page_info_rws_v2_button_title), isDisplayed()));
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_CookiesSubpage_RwsEnabled");
+    }
+
+    @Test
+    @MediumTest
+    public void shouldNavigateToSiteSettingsWhenRwsButtonClicked() throws IOException {
+        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
+        String hostName = "example.com";
+        String url = mTestServerRule.getServer().getURLWithHostName(hostName, "/");
+        Website currentSite = new Website(WebsiteAddress.create(url), null);
+        loadUrlAndOpenPageInfo(url);
+        setRwsInfoWithWebsite(currentSite);
+        onView(withId(R.id.page_info_cookies_row)).perform(click());
+        onViewWaiting(allOf(withText(R.string.page_info_rws_v2_button_title), isDisplayed()));
         Context context = ApplicationProvider.getApplicationContext();
         String subtitle =
                 context.getString(R.string.page_info_rws_v2_button_subtitle_android, hostName);
         onViewWaiting(allOf(withText(subtitle), isDisplayed()));
-        mRenderTestRule.render(getPageInfoView(), "PageInfo_CookiesSubpage_RwsEnabled");
+        onView(withText(R.string.page_info_rws_v2_button_title)).perform(click());
+        Bundle extras = new Bundle();
+        extras.putSerializable(EXTRA_SITE, currentSite);
+        Mockito.verify(mSettingsNavigation)
+                .startSettings(any(), eq(SingleWebsiteSettings.class), refEq(extras));
     }
 
-    /** Tests the cookies page of the PageInfo UI with RWS enabled. */
     @Test
     @MediumTest
-    public void shouldNavigateToSiteSettingsWhenRwsButtonClicked() throws IOException {
+    @Feature({"RenderTest"})
+    public void showRwsButtonWhenRwsEnabledAndCurrentSetManaged() throws IOException {
+        mFakePrivacySandboxBridge.setIsRwsManaged(true);
+        String hostName = "example.com";
+        String url = mTestServerRule.getServer().getURLWithHostName(hostName, "/");
+        loadUrlAndOpenPageInfo(url);
+        setRwsInfo(hostName);
+        onView(withId(R.id.page_info_cookies_row)).perform(click());
+        onViewWaiting(allOf(withText(R.string.page_info_rws_v2_button_title), isDisplayed()));
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_CookiesSubpage_RwsEnabledAndManaged");
+    }
+
+    @Test
+    @MediumTest
+    public void shouldNavigateToSiteSettingsWhenRwsManagedAndButtonClicked() throws IOException {
+        mFakePrivacySandboxBridge.setIsRwsManaged(true);
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
         String hostName = "example.com";
         String url = mTestServerRule.getServer().getURLWithHostName(hostName, "/");

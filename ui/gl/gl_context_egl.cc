@@ -93,6 +93,11 @@
 #define EGL_CONTEXT_VIRTUALIZATION_GROUP_ANGLE 0x3481
 #endif /* EGL_ANGLE_context_virtualization */
 
+#ifndef EGL_ANGLE_create_context_passthrough_shaders
+#define EGL_ANGLE_create_context_passthrough_shaders 1
+#define EGL_CONTEXT_PASSTHROUGH_SHADERS_ANGLE 0x3463
+#endif /* EGL_ANGLE_create_context_passthrough_shaders */
+
 using ui::GetEGLErrorString;
 using ui::GetLastEGLErrorString;
 
@@ -184,6 +189,12 @@ bool GLContextEGL::InitializeImpl(GLSurface* compatible_surface,
     context_attributes.push_back(EGL_TRUE);
   }
 
+  if (attribs.passthrough_shaders &&
+      gl_display_->ext->b_EGL_ANGLE_create_context_passthrough_shaders) {
+    context_attributes.push_back(EGL_CONTEXT_PASSTHROUGH_SHADERS_ANGLE);
+    context_attributes.push_back(EGL_TRUE);
+  }
+
   // EGL_KHR_create_context allows requesting both a major and minor context
   // version
   if (gl_display_->ext->b_EGL_KHR_create_context) {
@@ -202,7 +213,7 @@ bool GLContextEGL::InitializeImpl(GLSurface* compatible_surface,
     DCHECK(context_client_minor_version == 0);
   }
 
-  bool is_swangle = IsSoftwareGLImplementation(GetGLImplementationParts());
+  bool is_swangle = IsSwiftShaderGLImplementation(GetGLImplementationParts());
 
   if (attribs.webgl_compatibility_context && is_swangle &&
       IsARMSwiftShaderPlatform() &&

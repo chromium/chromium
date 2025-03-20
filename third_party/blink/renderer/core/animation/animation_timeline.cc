@@ -6,6 +6,7 @@
 
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
+#include "third_party/blink/renderer/core/animation/animation_trigger.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -115,6 +116,16 @@ void AnimationTimeline::ServiceAnimations(TimingUpdateReason reason) {
   }
 
   last_current_phase_and_time_ = current_phase_and_time;
+
+  if (RuntimeEnabledFeatures::AnimationTriggerEnabled()) {
+    // TODO(crbug.com/405085123): Looping over all |animations_| in every frame
+    // could be costly. It is likely there is an opportunity to optimize here.
+    for (Animation* animation : animations_) {
+      if (AnimationTrigger* trigger = animation->GetTriggerInternal()) {
+        trigger->ActionAnimation(animation);
+      }
+    }
+  }
 
   HeapVector<Member<Animation>> animations;
   animations.ReserveInitialCapacity(animations_needing_update_.size());

@@ -30,8 +30,7 @@
 namespace media::hls {
 
 class MultivariantPlaylist;
-class AudioRendition;
-class AudioRenditionGroup;
+class Rendition;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -52,7 +51,7 @@ enum class AdaptationReason {
 class MEDIA_EXPORT RenditionManager {
  public:
   using VariantID = base::IdType32<VariantStream>;
-  using RenditionID = base::IdType32<AudioRendition>;
+  using RenditionID = base::IdType32<Rendition>;
 
   // We want to ask if a codec string is supported, but also if it contains
   // audio, video, or both types of content, allowing us to sort our variants
@@ -81,12 +80,12 @@ class MEDIA_EXPORT RenditionManager {
 
   // The VariantStream ptr can be null if there is not supposed to be a change
   // in the URI of the primary variant when this callback is run.
-  // The AudioRendition ptr can be null if there is no audio override rendition
+  // The Rendition ptr can be null if there is no audio override rendition
   // selected.
   using SelectedCB = base::RepeatingCallback<
-      void(AdaptationReason, const VariantStream*, const AudioRendition*)>;
+      void(AdaptationReason, const VariantStream*, const Rendition*)>;
   using SelectedCallonce =
-      base::OnceCallback<void(const VariantStream*, const AudioRendition*)>;
+      base::OnceCallback<void(const VariantStream*, const Rendition*)>;
 
   ~RenditionManager();
   RenditionManager(scoped_refptr<MultivariantPlaylist> playlist,
@@ -123,21 +122,21 @@ class MEDIA_EXPORT RenditionManager {
   struct VariantMetadata {
     ~VariantMetadata();
     VariantMetadata(const VariantMetadata&);
-    VariantMetadata(const VariantStream*, const AudioRenditionGroup*);
+    VariantMetadata(const VariantStream*, const RenditionGroup*);
 
     MediaTrack::Id track_id;
     raw_ptr<const VariantStream> stream;
-    raw_ptr<const AudioRenditionGroup> audio_rendition_group;
+    raw_ptr<const RenditionGroup> audio_rendition_group;
     base::flat_set<RenditionID> audio_renditions;
   };
 
   struct RenditionMetadata {
     ~RenditionMetadata();
     RenditionMetadata(const RenditionMetadata&);
-    explicit RenditionMetadata(const AudioRendition*);
+    explicit RenditionMetadata(const Rendition*);
 
     MediaTrack::Id track_id;
-    raw_ptr<const AudioRendition> rendition;
+    raw_ptr<const Rendition> rendition;
   };
 
   // Called during construction. This creates the per-variant statistics
@@ -164,12 +163,7 @@ class MEDIA_EXPORT RenditionManager {
 
   // Backwards lookup of RenditionID from `selectable_renditions_`. This map is
   // usually so small that an iteration is not significantly slow.
-  std::optional<RenditionID> LookupRendition(const AudioRendition* rendition);
-
-  // Determines the set and order of format components used to generate a human
-  // readable (and differentiable!) name for a variant stream.
-  std::vector<VariantStream::FormatComponent> DetermineVariantStreamFormatting()
-      const;
+  std::optional<RenditionID> LookupRendition(const Rendition* rendition);
 
   // Selects the best rendition based with an optionally given language, and a
   // flag stating whether only renditions tagged with "AUTOSELECT=TRUE" may be

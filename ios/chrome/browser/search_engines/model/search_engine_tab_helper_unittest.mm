@@ -83,8 +83,7 @@ class SearchEngineTabHelperTest : public PlatformTest {
 
   // Returns the testing TemplateURLService.
   TemplateURLService* template_url_service() {
-    ProfileIOS* profile = ProfileIOS::FromBrowserState(profile_.get());
-    return ios::TemplateURLServiceFactory::GetForProfile(profile);
+    return ios::TemplateURLServiceFactory::GetForProfile(profile_.get());
   }
 
   web::WebState* web_state() { return web_state_.get(); }

@@ -15,10 +15,12 @@ import android.view.View;
 import android.widget.PopupMenu;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -51,6 +53,7 @@ import java.util.ArrayList;
     ChromeFeatureList.ANDROID_OPEN_PDF_INLINE_BACKPORT
 })
 public class CustomTabAppMenuPropertiesDelegateUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private Tab mTab;
     @Mock private NavigationController mNavigationController;
@@ -69,7 +72,6 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         when(mActivityTabProvider.get()).thenReturn(mTab);
         when(mTab.getUrl()).thenReturn(new GURL("https://google.com"));
         when(mTab.isNativePage()).thenReturn(false);

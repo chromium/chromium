@@ -54,7 +54,6 @@
 <translation id="1090629319939036170">VR menyusu</translation>
 <translation id="1091463901118115503">Davamlı oxu</translation>
 <translation id="1091779689406092804">skrinşotlar</translation>
-<translation id="1094777233105318927">Brauzer, OS, cihaz, quraşdırılmış proqram təminatı və fayllar haqqında məlumat</translation>
 <translation id="1096545575934602868">Bu sahədə maksimum <ph name="MAX_ITEMS_LIMIT" /> daxiletmə olmalıdır. Əlavə daxiletmələr silinəcək.</translation>
 <translation id="1097803577928227769">Regional Parklar və Bağlar</translation>
 <translation id="1099928364755383720">avtomatik şəkildə şəkil</translation>
@@ -1692,6 +1691,7 @@
 <translation id="3964661563329879394">{COUNT,plural, =0{Yoxdur}=1{1 saytdan }other{# saytdan }}</translation>
 <translation id="3965672182149944205">Ünvan yadda saxlanılsın?</translation>
 <translation id="3966044442021752214">Məhsul təhlükəsizliyi</translation>
+<translation id="3969869202926863008">Lokal şəbəkə girişi</translation>
 <translation id="397105322502079400">Hesablanır...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> blok edilib</translation>
 <translation id="3975852104434126461">Avtomobil Sənayesi</translation>
@@ -2048,6 +2048,7 @@
 <translation id="460848736049414407">Admin tərəfindən bloklanıb</translation>
 <translation id="4610279718074907952">Bu sayt fəaliyyətinizi görən <ph name="SET_OWNER" /> tərəfindən təyin edilən qrupdadır</translation>
 <translation id="46128681529823442">Futbol ləvazimatları</translation>
+<translation id="4612904677925722054">Bu saytda böyüklər üçün nəzərdə tutulan kontent ola bilər. Valideyn və ya qəyyum bu veb-sayta daxil olmağınıza icazə verməlidir.</translation>
 <translation id="4619564267100705184">Kimliyinizi doğrulayın</translation>
 <translation id="4622292761762557753">İstənilən halda ötürün</translation>
 <translation id="4622647778991854660">Bildiriş Mərkəzində bildirişləri aktivləşdirin. Açın: <ph name="LINK" />.</translation>
@@ -2645,6 +2646,7 @@
 <translation id="5660122698869360728">Alış-veriş səhifələrini bir yerdə saxlamağa, qiymətləri avtomatik izləməyə, qiymət məlumatı əldə etməyə və s. kömək edən yeni ağıllı qovluq.</translation>
 <translation id="5663955426505430495">Bu cihazın administratoru əlavə funksiyalar üçün artırmalar quraşdırıb. Artırmalar datanın bir hissəsinə daxil ola bilər.</translation>
 <translation id="5667827081946850877">Audiokitablar</translation>
+<translation id="5674082555327905359">Lokal şəbəkənizdəki istənilən cihaza qoşulmaq istəyə bilər</translation>
 <translation id="5675650730144413517">Bu səhifə işləmir</translation>
 <translation id="5675809467256309336">Rəqs və Elektronik Musiqi</translation>
 <translation id="5675959228867414813">Tarix üzrə göstərin</translation>
@@ -2893,6 +2895,7 @@
 <translation id="6116338172782435947">Buferə kopyalanan mətn və şəkillərə baxın</translation>
 <translation id="6117833587752089929">Foto (hamar)</translation>
 <translation id="6118782133429281336">Mənşə siyahısı boşdur.</translation>
+<translation id="6120950591512958208">Ödəniş zamanı bu koddan istifadə edin.</translation>
 <translation id="612178891608320683">Veqan Mətbəxi</translation>
 <translation id="6122181661879998141">kartınızın ön tərəfi</translation>
 <translation id="6124058285696691147">Qoşmanı endirin</translation>
@@ -2918,6 +2921,7 @@
 <translation id="6159908896951210943">Rəsmi</translation>
 <translation id="6160391204859821737">Reklam məxfiliyi funksiyasını aktiv edin</translation>
 <translation id="6162403104168428984">Ünvan güncəllənsin?</translation>
+<translation id="6164605812717770913">Valideyn və ya qəyyum bu saytın daxil olmağınız üçün uyğun olmadığını bildirdi. Blokdan çıxarmasını istəyə bilərsiniz.</translation>
 <translation id="6165508094623778733">Ətraflı öyrənin</translation>
 <translation id="6167577165590485365">Son əldə etmə cəhdi:</translation>
 <translation id="617256461084925519">Google Chrome ödəniş məlumatlarını doldurmaq üçün kimliyinizi yoxlayır.</translation>
@@ -3009,6 +3013,7 @@
 <translation id="6321917430147971392">DNS ayarlarınızı yoxlayın</translation>
 <translation id="6322182122604171028">Windows Hello istifadə etmək mümkün olmadı</translation>
 <translation id="6326947323444967009">iOS ayarlarında Chrome'u sistemin defolt brauzeri kimi ayarlayın</translation>
+<translation id="6327065120806001832">lokal şəbəkə girişi</translation>
 <translation id="6328639280570009161">Şəbəkə proqnozunu deaktiv etməyə çalışın</translation>
 <translation id="6335029926534404762">Atletik ayaqqabılar</translation>
 <translation id="6337133576188860026">Maksimum <ph name="SIZE" /> boşaldılır. Növbəti dəfə daxil olarkən bəzi saytlar daha yavaş yüklənə bilər.</translation>
@@ -4475,7 +4480,6 @@
 <translation id="8919895429178014996">Bütün elementləri gizlədin</translation>
 <translation id="8922013791253848639">Həmişə bu saytdakı reklamlara icazə verin</translation>
 <translation id="8922734931659847428"><ph name="BEGIN_LINK" />Köhnə texnologiya hadisələri<ph name="END_LINK" /> olan səhifələrin məhdud URL siyahısı</translation>
-<translation id="8924109546403192898">Chrome tərəfindən təhlükəsizliklə bağlı hadisələr qeyd edildikdə hadisə haqqında uyğun data administratorunuza göndərilir. Buraya Chrome-da daxil olduğunuz səhifələrin URL-ləri, datanı kopyaladığınız səhifələrin URL-ləri, fayl adları və ya metadata, brauzer və ya tab xətaları, habelə veb əsaslı tətbiqlərə, cihaza və Chrome-a daxil olmaq üçün istifadə etdiyiniz istifadəçi adı daxil ola bilər.</translation>
 <translation id="892588693504540538">Yuxarı sağdan deşik açın</translation>
 <translation id="8926389886865778422">Daha soruşmayın</translation>
 <translation id="8932102934695377596">Saatınız geridədir</translation>

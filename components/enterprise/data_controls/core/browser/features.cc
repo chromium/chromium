@@ -6,10 +6,6 @@
 
 namespace data_controls {
 
-BASE_FEATURE(kEnableScreenshotProtection,
-             "EnableScreenshotProtection",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableClipboardDataControlsAndroid,
              "EnableClipboardDataControlsAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);

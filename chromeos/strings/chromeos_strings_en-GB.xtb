@@ -38,10 +38,8 @@
 <translation id="1155154308031262006">Enter a prompt</translation>
 <translation id="115705039208660697">pineapples</translation>
 <translation id="1164939766849482256">Dawn to dark screen saver</translation>
-<translation id="1166688493741195933">Failed to generate recording names</translation>
 <translation id="1167755866710282443">Open menu to customise keys. Drag menu to move.</translation>
 <translation id="1171349345463658120">sandy lagoon</translation>
-<translation id="1173894706177603556">Rename</translation>
 <translation id="1174073918202301297">Shortcut added</translation>
 <translation id="11743817593307477">Use arrow keys to move this control to the game action that you want. Use the enter key to place the control. Use the escape key to cancel.</translation>
 <translation id="1175697296044146566">This <ph name="DEVICE_TYPE" /> is managed by <ph name="MANAGER" />.</translation>
@@ -153,7 +151,6 @@
 <translation id="1604959087182679653">Hide transcript</translation>
 <translation id="160633243685262989">Preview image</translation>
 <translation id="1611649489706141841">forward</translation>
-<translation id="1615144046047995187">Can't download. Try again or restart your Chromebook.</translation>
 <translation id="1615335640928990664">Data usage since <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Use a theme</translation>
 <translation id="1621067168122174824">Run charge test</translation>
@@ -372,7 +369,6 @@
 <translation id="2560876255701405320">List of audio recordings</translation>
 <translation id="2561093647892030937">lemons</translation>
 <translation id="2570743873672969996">Running <ph name="TEST_NAME" /> test…</translation>
-<translation id="2573178735329662769">Recording all Chromebook audio</translation>
 <translation id="2576253868710695442">This will take up to 2 GB of storage</translation>
 <translation id="2584547424703650812">Glowscapes</translation>
 <translation id="2584559707064218956">To set up, go to Settings</translation>
@@ -415,7 +411,6 @@
 <translation id="2787237339470862294">This language isn't supported at this time</translation>
 <translation id="2787435249130282949">keyboard brighter</translation>
 <translation id="2805756323405976993">Apps</translation>
-<translation id="2822702442014805146">Summary and name creation model download in progress</translation>
 <translation id="28232023175184696">Cannot connect to the Internet. Click to try again.</translation>
 <translation id="2855718259207180827">wool</translation>
 <translation id="2859243502336719778">Critical update</translation>
@@ -503,7 +498,6 @@
 <translation id="3340011300870565703">Device has <ph name="BATTERY_PERCENTAGE" />% right bud battery.</translation>
 <translation id="3340978935015468852">settings</translation>
 <translation id="3347558044552027859">modern</translation>
-<translation id="3353477144743332882">Download summary and name creation model</translation>
 <translation id="3359218928534347896">toggle microphone mute</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361618936611118375">sushi</translation>
@@ -566,7 +560,6 @@
 <translation id="3632040286124154621">Good suggestion</translation>
 <translation id="3632579075709132555">Privacy screen toggle</translation>
 <translation id="3634941468757842845">Choose a theme</translation>
-<translation id="3639873154908477486">Name (A to Z)</translation>
 <translation id="3644695927181369554">Bad suggestion</translation>
 <translation id="3651050199673793219">Select a temperature unit</translation>
 <translation id="3661106764436337772">Write faster and with more confidence</translation>
@@ -636,6 +629,7 @@
 <translation id="39823212440917567">Print jobs older than <ph name="NUMBER_OF_DAYS" /> days will be removed</translation>
 <translation id="3993704782688964914">Your <ph name="DEVICE_NAME" /> is now up to date</translation>
 <translation id="3998976413398910035">Manage printers</translation>
+<translation id="4002066346123236978">Title</translation>
 <translation id="4003384961948020559">Failed – Output full</translation>
 <translation id="401147258241215701">obsidian</translation>
 <translation id="4021031199988160623">Switch to laptop mode to test</translation>
@@ -773,7 +767,6 @@
 <translation id="4594541568452132351">Select transcription language and download model</translation>
 <translation id="4607282946861182308">Can't create images of this. Try another prompt.</translation>
 <translation id="4609350030397390689">Keyboard brightness down</translation>
-<translation id="4623061655523261501">Recording names generated successfully</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> out of <ph name="TOTAL_PAGE_NUMBER" />. Press Enter to cancel the print job.</translation>
 <translation id="463791356324567266">Cancelling scanning...</translation>
 <translation id="4644611440022666152">Turn on and download</translation>
@@ -836,7 +829,6 @@
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4897058166682006107">Device has <ph name="BATTERY_PERCENTAGE" />% left bud battery.</translation>
 <translation id="4905998861748258752">Turn the feature on to select screen saver options</translation>
-<translation id="4910853326379896417">Summary and name creation model download completed</translation>
 <translation id="4910858703033903787">APN types</translation>
 <translation id="4917385247580444890">Strong</translation>
 <translation id="4917889632206600977">Stopped – out of paper</translation>
@@ -855,7 +847,6 @@
 <translation id="4981003703840817201">blue and pink</translation>
 <translation id="498186245079027698">Check the scanner and try again. Make sure that there is enough local space to save scanned files.</translation>
 <translation id="4982627662315910959">Shortcut not available. Press a new shortcut using shift and one more modifier key (ctrl, alt or <ph name="META_KEY" />).</translation>
-<translation id="4983216687482551672">Chromebook audio</translation>
 <translation id="4985509611418653372">Run</translation>
 <translation id="4987769320337599931">Firewall</translation>
 <translation id="4988526792673242964">Pages</translation>
@@ -874,7 +865,6 @@
 <translation id="5056587122125565772">Create image</translation>
 <translation id="5078711626843651677">Voice models are stored temporarily on-device until the speaker labelling is complete. You can turn this off at any time in Settings.</translation>
 <translation id="5078983345702708852">futuristic</translation>
-<translation id="5085224064082122501">Can't download model for summary and name creation. Try again or restart your Chromebook.</translation>
 <translation id="5087864757604726239">back</translation>
 <translation id="5088172560898466307">Server hostname</translation>
 <translation id="5089810972385038852">State</translation>
@@ -882,9 +872,7 @@
 <translation id="5095761549884461003">Unplug the <ph name="DEVICE_NAME" /> USB cable and then reinsert it to continue the update process</translation>
 <translation id="5099354524039520280">up</translation>
 <translation id="5107243100836678918">Shortcut without <ph name="META_KEY" /> key might conflict with some app's shortcut. Press this shortcut again to continue using it, or press a new shortcut using the <ph name="KEY" /> key. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
-<translation id="5107402373921342399">Can't download <ph name="LANGUAGE_NAME" /> transcription model. Try again or restart your Chromebook</translation>
 <translation id="5108781503443873320">Similar:</translation>
-<translation id="5121677070210013200">Can't download transcription model. Try again or restart your Chromebook.</translation>
 <translation id="5130848777448318809">ponies</translation>
 <translation id="5137451382116112100">Full</translation>
 <translation id="5139813694804168398">do not disturb</translation>
@@ -899,7 +887,6 @@
 <translation id="5168185087976003268">Battery health</translation>
 <translation id="5170568018924773124">Show in folder</translation>
 <translation id="517075088756846356">Unplug and replug the <ph name="DEVICE_NAME" /> power cable to continue the update process</translation>
-<translation id="5178021559562393163">Can't create names. Try a shorter transcript.</translation>
 <translation id="5180108905184566358">baobab trees</translation>
 <translation id="5180712487038406644">Expressive</translation>
 <translation id="5190187232518914472">Relive your favourite memories. To add or edit albums, go to <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
@@ -928,6 +915,7 @@
 <translation id="5286263799730375393">backlight colour</translation>
 <translation id="5292579816060236070">Sunrise wallpaper</translation>
 <translation id="5294769550414936029">Version <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">toggle camera access</translation>
 <translation id="5300814202279832142">Move window to desk</translation>
 <translation id="5302048478445481009">Language</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> exclusive wallpaper</translation>
@@ -935,11 +923,9 @@
 <translation id="530883153651464140">Update <ph name="DEVICE_NAME" /> to version <ph name="VERSION" /></translation>
 <translation id="5315873049536339193">Identity</translation>
 <translation id="5317780077021120954">Save</translation>
-<translation id="5318310531701770497">Can't create names. Try a longer transcript.</translation>
 <translation id="5318334351163689047">TCP request failures</translation>
 <translation id="53196409393069519">Turn on transcription?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
-<translation id="5327248766486351172">Name</translation>
 <translation id="5332948983412042822">Choose a new one now</translation>
 <translation id="5333530671332546086">Unknown portal state</translation>
 <translation id="5335373365677455232">pink</translation>
@@ -1004,7 +990,6 @@
 <translation id="5680504961595602662">A surreal <ph name="SURREAL_LANDSCAPE" /> with <ph name="SURREAL_SUBJECT" /></translation>
 <translation id="5685478548317291523">cherries</translation>
 <translation id="5691511426247308406">Family</translation>
-<translation id="5692395212036914927">Recording summary and name creation</translation>
 <translation id="5695599963893094957">Type any key on your keyboard. You can press up to four keys at the same time.</translation>
 <translation id="5701381305118179107">Centre</translation>
 <translation id="5703716265115423771">volume down</translation>
@@ -1043,6 +1028,7 @@
 <translation id="5896602941605730551">Play</translation>
 <translation id="5901630391730855834">Yellow</translation>
 <translation id="5903200662178656908">Device is a keyboard and mouse combo.</translation>
+<translation id="5903822368221507416">Hide tabs</translation>
 <translation id="5904994456462260490">Add a new APN</translation>
 <translation id="590746845088109442">cats</translation>
 <translation id="5907649332524363701">key colour</translation>
@@ -1054,7 +1040,6 @@
 <translation id="5928411637936685857">Delete button for <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5930669310554144537">Dreamscape</translation>
 <translation id="5931523347251946569">File not found</translation>
-<translation id="5938286923316838007">Can't create recording names for this content</translation>
 <translation id="5939518447894949180">Reset</translation>
 <translation id="5942727615796467094">The <ph name="MANAGER" /> administrator has set when this <ph name="DEVICE_TYPE" /> can be used</translation>
 <translation id="594552776027197022">Generate random keypair</translation>
@@ -1099,7 +1084,6 @@
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Chrome OS input method service</translation>
 <translation id="6127426868813166163">White</translation>
-<translation id="613049107179582049">When Chromebook audio is on, Recorder captures all audio playing on this device</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
 <translation id="6137767437444130246">User certificate</translation>
@@ -1151,7 +1135,6 @@
 <translation id="6359706544163531585">Disable Light theme</translation>
 <translation id="6359919876285606596">This action is permanent and can't be undone</translation>
 <translation id="636850387210749493">Enterprise enrolment</translation>
-<translation id="6369221585240879141">Can't create recording names for this transcript language</translation>
 <translation id="6373461326814131011">pond</translation>
 <translation id="6379086450106841622">Touchscreen</translation>
 <translation id="6381741036071372448">Test your keyboard</translation>
@@ -1272,10 +1255,8 @@
 <translation id="6910312834584889076">The scanner’s cover is open. Close the cover and try again.</translation>
 <translation id="6910845598686542904">Compute models of the voices detected in the recording</translation>
 <translation id="6911383237894364323">Unable to connect to media servers</translation>
-<translation id="6927968682840110570">Recording name</translation>
 <translation id="6930242544192836755">Duration</translation>
 <translation id="6930597342185648547">About background</translation>
-<translation id="6939667434404433010">Search recording name</translation>
 <translation id="6939766318048400022">Cafe</translation>
 <translation id="6942253772720771875">Share your feedback or describe your issue</translation>
 <translation id="6943893908656559156">Remote identity (optional)</translation>
@@ -1312,7 +1293,6 @@
 <translation id="708426984172631313">STOPPED</translation>
 <translation id="7086168019478250425">bioluminescent beach</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
-<translation id="7086916854357021265">Generating recording names</translation>
 <translation id="7097908713073775559">colourful</translation>
 <translation id="710028965487274708">Failed – authorisation failed</translation>
 <translation id="7101959270679078188">Unlock the <ph name="DEVICE_NAME" /> to continue the update process</translation>
@@ -1433,7 +1413,6 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">USB touchscreen</translation>
 <translation id="757747079855995705">stone</translation>
-<translation id="7584853321964440104">Can't download. Try again or restart your Chromebook.</translation>
 <translation id="7590883480672980941">Input settings</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> left</translation>
 <translation id="7600430297804876776">The <ph name="MANAGER" /> administrator has set when this <ph name="DEVICE_TYPE" /> can be used.</translation>
@@ -1644,7 +1623,6 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8503836310948963452">Just a few more minutes…</translation>
 <translation id="8505011850330200833">The Gemini model requires 2 GB of storage to process transcripts and create summaries</translation>
 <translation id="8508640263392900755">APN details</translation>
-<translation id="8509574872955173831">Learn more about summary and name creation</translation>
 <translation id="8522687886059337719">You now have access to new <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />wallpapers<ph name="END_LINK_WALLPAPER_SUBPAGE" /> and <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />screen savers<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">tea house</translation>
@@ -1661,7 +1639,6 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8626489604350149811">More actions for <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Light purple</translation>
 <translation id="8647595191512746911">Audio transcription</translation>
-<translation id="8648578954147795914">Generated names:</translation>
 <translation id="8650852232143958317">Take your Gmail and Google Drive files with you</translation>
 <translation id="8651481478098336970">volume mute</translation>
 <translation id="8655295600908251630">Channel</translation>
@@ -1692,7 +1669,6 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8775713578693478175">Modem APN</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">This network may have a captive portal</translation>
-<translation id="8797082062139985406">Create name using Google AI</translation>
 <translation id="8798099450830957504">Default</translation>
 <translation id="8798441408945964110">Provider name</translation>
 <translation id="8804164990146287819">Privacy Policy</translation>
@@ -1718,7 +1694,6 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8882789155418924367">owls</translation>
 <translation id="8885038613856655272">Connect a mic</translation>
 <translation id="8892443466059986410">Cancel shortcut editing</translation>
-<translation id="8897043028305808902">File renamed</translation>
 <translation id="8898840733695078011">Signal strength</translation>
 <translation id="8909114361904403025">arrow up</translation>
 <translation id="8910721771319628100">Default network above latency threshold</translation>
@@ -1804,7 +1779,6 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="9218016617214286986">Show known APNs</translation>
 <translation id="932327136139879170">Home</translation>
 <translation id="939519157834106403">SSID</translation>
-<translation id="940663759301549538">Make sure that your mic is connected or try restarting your Chromebook</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="950520315903467048">Key is missing for <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Compare voices throughout the recording so that the transcript reflects what each speaker said and when</translation>

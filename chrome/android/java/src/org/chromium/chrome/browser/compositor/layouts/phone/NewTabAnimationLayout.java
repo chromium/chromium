@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.BlackHoleEventFilter;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.hub.NewTabAnimationUtils;
 import org.chromium.chrome.browser.hub.RoundedCornerAnimatorUtil;
 import org.chromium.chrome.browser.hub.ShrinkExpandAnimator;
@@ -97,6 +98,7 @@ public class NewTabAnimationLayout extends Layout {
     private final BlackHoleEventFilter mBlackHoleEventFilter;
     private final Handler mHandler;
     private final ToolbarManager mToolbarManager;
+    private final BrowserControlsManager mBrowserControlsManager;
 
     private @Nullable StaticTabSceneLayer mSceneLayer;
     private AnimatorSet mTabCreatedForegroundAnimation;
@@ -125,7 +127,8 @@ public class NewTabAnimationLayout extends Layout {
             ViewGroup contentContainer,
             ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
             ViewGroup animationHostView,
-            ToolbarManager toolbarManager) {
+            ToolbarManager toolbarManager,
+            BrowserControlsManager browserControlsManager) {
         super(context, updateHost, renderHost);
         mContentContainer = contentContainer;
         mCompositorViewHolder = compositorViewHolderSupplier.get();
@@ -133,6 +136,7 @@ public class NewTabAnimationLayout extends Layout {
         mAnimationHostView = animationHostView;
         mHandler = new Handler();
         mToolbarManager = toolbarManager;
+        mBrowserControlsManager = browserControlsManager;
     }
 
     @Override
@@ -372,6 +376,7 @@ public class NewTabAnimationLayout extends Layout {
      * @param newTab The new {@link Tab} to animate.
      */
     private @RectStart int getForegroundRectStart(Tab oldTab, Tab newTab) {
+        // TODO(crbug.com/40282469): Account for {@code oldTab} being null.
         boolean oldTabHasTopToolbar = ToolbarPositionController.shouldShowToolbarOnTop(oldTab);
         boolean newTabHasTopToolbar = ToolbarPositionController.shouldShowToolbarOnTop(newTab);
 
@@ -587,7 +592,11 @@ public class NewTabAnimationLayout extends Layout {
                         : mToolbarManager.getPrimaryColor();
 
         mBackgroundHostView.updateFakeTabSwitcherButton(
-                tabSwitcherButton, prevTabCount, toolbarColor, isIncognito);
+                tabSwitcherButton,
+                prevTabCount,
+                toolbarColor,
+                isIncognito,
+                mBrowserControlsManager.getTopControlsMinHeight());
 
         // TODO(crbug.com/40282469): Remove once originX and originY properly work.
         float originX = mAnimationHostView.getWidth() / 2f;
@@ -600,12 +609,8 @@ public class NewTabAnimationLayout extends Layout {
         mAnimationRunnable =
                 () -> {
                     mAnimationRunnable = null;
-                    // TODO(crbug.com/40282469): Calculate offset when the {@link
-                    // EdgeToEdgeBaseLayout} is not present and when there is no internet
-                    // connection.
                     mTabCreatedBackgroundAnimation =
-                            mBackgroundHostView.getAnimatorSet(
-                                    originX, originY, mAnimationHostView.getPaddingTop());
+                            mBackgroundHostView.getAnimatorSet(originX, originY);
                     mTabCreatedBackgroundAnimation.addListener(
                             new AnimatorListenerAdapter() {
                                 @Override

@@ -157,13 +157,75 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
 
 // Test that when parameters appended include:
 // - `extra_diagnostics` string.
-// - `description_template` string.
+// - `description_template` string with `fingerprint` queried.
+// - `is_query_fingerprint` set true.
 // - `description_placeholder_text` string.
 // - `category_tag` string.
 // - `page_url` GURL.
 // - `from_settings_search` set true.
-IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
-                       OsFeedbackAdditionalSettingsSearchContextAddedToUrl) {
+IN_PROC_BROWSER_TEST_F(
+    ShowFeedbackPageBrowserTest,
+    OsFeedbackAdditionalSettingsSearchWithFingerprintContextAddedToUrl) {
+  ash::SystemWebAppManager::GetForTest(browser()->profile())
+      ->InstallSystemAppsForTesting();
+  std::string unused;
+  const GURL page_url = chrome::GetTargetTabUrl(
+      browser()->session_id(), browser()->tab_strip_model()->active_index());
+  const std::string extra_diagnostics = "extra diagnostics param";
+  const std::string description_template = "Q1: Question one fingerprint?";
+  const std::string description_placeholder_text =
+      "Thanks for giving feedback on the Camera app";
+  const std::string category_tag = "category tag param";
+  GURL expected_url(base::StrCat(
+      {ash::kChromeUIOSFeedbackUrl, "/?extra_diagnostics=",
+       base::EscapeQueryParamValue(extra_diagnostics, /*use_plus=*/false),
+       "&description_template=",
+       base::EscapeQueryParamValue(description_template, /*use_plus=*/false),
+       "&is_query_fingerprint=",
+       base::EscapeQueryParamValue("true", /*use_plus=*/false),
+       "&description_placeholder_text=",
+       base::EscapeQueryParamValue(description_placeholder_text,
+                                   /*use_plus=*/false),
+       "&category_tag=",
+       base::EscapeQueryParamValue(category_tag, /*use_plus=*/false),
+       "&page_url=",
+       base::EscapeQueryParamValue(page_url.spec(), /*use_plus=*/false),
+       "&from_settings_search=",
+       base::EscapeQueryParamValue("true", /*use_plus=*/false)}));
+
+  content::TestNavigationObserver navigation_observer(expected_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
+                                               true);
+
+  chrome::ShowFeedbackPage(
+      browser(), feedback::kFeedbackSourceOsSettingsSearch,
+      /*description_template=*/description_template,
+      /*description_placeholder_text=*/description_placeholder_text,
+      /*category_tag=*/category_tag,
+      /*extra_diagnostics=*/extra_diagnostics,
+      /*autofill_metadata=*/base::Value::Dict());
+  navigation_observer.Wait();
+
+  const GURL visible_url = chrome::FindLastActive()
+                               ->tab_strip_model()
+                               ->GetActiveWebContents()
+                               ->GetVisibleURL();
+  EXPECT_TRUE(visible_url.has_query());
+  EXPECT_EQ(expected_url, visible_url);
+}
+
+// Test that when parameters appended include:
+// - `extra_diagnostics` string.
+// - `description_template` string with `fingerprint` not queried.
+// - `description_placeholder_text` string.
+// - `category_tag` string.
+// - `page_url` GURL.
+// - `from_settings_search` set true.
+IN_PROC_BROWSER_TEST_F(
+    ShowFeedbackPageBrowserTest,
+    OsFeedbackAdditionalSettingsSearchNoFingerprintContextAddedToUrl) {
   ash::SystemWebAppManager::GetForTest(browser()->profile())
       ->InstallSystemAppsForTesting();
   std::string unused;

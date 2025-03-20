@@ -541,7 +541,7 @@ class BookmarkBarViewDragTestBase : public BookmarkBarViewEventTestBase,
     GetDragTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(base::IgnoreResult(&ui_controls::SendMouseMove),
-                       target.x(), target.y(), ui_controls::kNoWindowHint));
+                       target.x(), target.y(), gfx::NativeWindow()));
   }
 
   void OnWidgetDragComplete(views::Widget* widget) override {
@@ -601,8 +601,7 @@ class BookmarkBarViewDragTestBase : public BookmarkBarViewEventTestBase,
         FROM_HERE,
         base::BindOnce(base::IgnoreResult(&ui_controls::SendMouseEvents),
                        ui_controls::LEFT, ui_controls::UP,
-                       ui_controls::kNoAccelerator,
-                       ui_controls::kNoWindowHint));
+                       ui_controls::kNoAccelerator, gfx::NativeWindow()));
   }
 
   // Called after the drag ends; returns the node the test thinks should be the
@@ -984,7 +983,7 @@ class BookmarkBarViewTest7 : public BookmarkBarViewDragTestBase {
     GetDragTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(base::IgnoreResult(&ui_controls::SendMouseMove),
-                       target.x(), target.y(), ui_controls::kNoWindowHint));
+                       target.x(), target.y(), gfx::NativeWindow()));
   }
 
   void OnWidgetDragComplete(views::Widget* widget) override {
@@ -1046,7 +1045,7 @@ class BookmarkBarViewTest8 : public BookmarkBarViewDragTestBase {
     GetDragTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(base::IgnoreResult(&ui_controls::SendMouseMove),
-                       target.x(), target.y(), ui_controls::kNoWindowHint));
+                       target.x(), target.y(), gfx::NativeWindow()));
   }
 
   void OnWidgetDragComplete(views::Widget* widget) override {
@@ -2339,7 +2338,7 @@ class BookmarkBarViewTest29 : public BookmarkBarViewDragTestBase {
     GetDragTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(base::IgnoreResult(&ui_controls::SendMouseMove),
-                       target.x(), target.y(), ui_controls::kNoWindowHint));
+                       target.x(), target.y(), gfx::NativeWindow()));
   }
 
  protected:
@@ -2362,9 +2361,8 @@ class BookmarkBarViewTest29 : public BookmarkBarViewDragTestBase {
   }
 };
 
-// TODO(crbug.com/40943907): Flaky on Mac.
-// TODO(crbug.com/40947483): Flaky on Windows.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// Fails on Mac. crbug.com/405061054
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_DNDToEmptyMenu DISABLED_DNDToEmptyMenu
 #else
 #define MAYBE_DNDToEmptyMenu DNDToEmptyMenu

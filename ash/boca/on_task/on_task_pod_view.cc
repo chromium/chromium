@@ -27,26 +27,6 @@
 namespace ash {
 namespace {
 
-// Parameters for the OnTask pod.
-constexpr int kPodBorderRadius = 26;
-constexpr int kPodVerticalPadding = 10;
-constexpr int kPodHorizontalPadding = 12;
-constexpr int kPodElementSpace = 8;
-
-// Parameters for the separator in the OnTask pod.
-constexpr int kSeparatorVerticalPadding = 0;
-constexpr int kSeparatorHorizontalPadding = 4;
-
-// Parameters for the label button in the OnTask pod.
-constexpr int kLabelButtonRadius = 16;
-constexpr int kLabelButtonTopPadding = 0;
-constexpr int kLabelButtonLeftPadding = 12;
-constexpr int kLabelButtonButtomPadding = 0;
-constexpr int kLabelButtonRightPadding = 16;
-constexpr int kLabelButtonHeight = 32;
-constexpr int kLabelButtonWidth = 120;
-constexpr int kLabelButtonIconTextSpace = 8;
-
 std::unique_ptr<IconButton> CreateIconButton(base::RepeatingClosure callback,
                                              const gfx::VectorIcon* icon,
                                              int accessible_name_id,
@@ -69,7 +49,7 @@ class PinTabStripButton : public views::LabelButton {
       : views::LabelButton(std::move(callback), text) {
     SetImageModel(views::Button::STATE_NORMAL,
                   ui::ImageModel::FromVectorIcon(
-                      kTabsIcon, cros_tokens::kCrosSysOnSurface));
+                      kOnTaskPodTabsIcon, cros_tokens::kCrosSysOnSurface));
     // Accessing protected member label() to set the font list.
     label()->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
         TypographyToken::kCrosButton2));
@@ -122,13 +102,13 @@ void OnTaskPodView::AddShortcutButtons() {
       base::BindRepeating(&OnTaskPodController::SetSnapLocation,
                           base::Unretained(pod_controller_),
                           OnTaskPodSnapLocation::kTopLeft),
-      &kAutoclickPositionTopLeftIcon,
+      &kOnTaskPodPositionTopLeftIcon,
       l10n_util::GetStringUTF16(IDS_ON_TASK_MOVE_POD_TOP_LEFT_ACCESSIBLE_NAME));
   dock_right_button_ = pod_position_slider_->AddButton<IconSliderButton>(
       base::BindRepeating(&OnTaskPodController::SetSnapLocation,
                           base::Unretained(pod_controller_),
                           OnTaskPodSnapLocation::kTopRight),
-      &kAutoclickPositionTopRightIcon,
+      &kOnTaskPodPositionTopRightIcon,
       l10n_util::GetStringUTF16(
           IDS_ON_TASK_MOVE_POD_TOP_RIGHT_ACCESSIBLE_NAME));
   dock_left_button_->SetSelected(true);
@@ -185,7 +165,7 @@ void OnTaskPodView::UpdatePinTabStripButton() {
     pin_tab_strip_button_->SetImageModel(
         views::Button::STATE_NORMAL,
         ui::ImageModel::FromVectorIcon(
-            kTabsIcon, cros_tokens::kCrosSysSystemOnPrimaryContainer));
+            kOnTaskPodTabsIcon, cros_tokens::kCrosSysSystemOnPrimaryContainer));
   } else {
     // Otherwise, button is "Show tabs" when the tab strip is already hidden.
     pin_tab_strip_button_->SetText(l10n_util::GetStringUTF16(
@@ -195,7 +175,7 @@ void OnTaskPodView::UpdatePinTabStripButton() {
     pin_tab_strip_button_->SetEnabledTextColors(cros_tokens::kCrosSysOnSurface);
     pin_tab_strip_button_->SetImageModel(
         views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(kTabsIcon,
+        ui::ImageModel::FromVectorIcon(kOnTaskPodTabsIcon,
                                        cros_tokens::kCrosSysOnSurface));
   }
 }

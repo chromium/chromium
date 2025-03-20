@@ -161,3 +161,27 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, MAYBE_ResizesViaKeyboard) {
                        return start_width > end_width;
                      })));
 }
+
+// Check that MultiContentsView only has insets on the contents views when in a
+// split, verify this by checking that the sum of the contents views and resize
+// area is less than the total width.
+// TODO(crbug.com/397777917): Once this bug is resolved, if MultiContentsView is
+// update to use interior margins then we should check whether those are set
+// here instead of checking widths.
+IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, InsetsOnlyInSplit) {
+  RunTestSequence(
+      Check([&]() {
+        return multi_contents_view()
+                   ->GetActiveContentsView()
+                   ->bounds()
+                   .width() == multi_contents_view()->bounds().width();
+      }),
+      EnterSplitView(), Check([&]() {
+        int contents_and_resize_width =
+            multi_contents_view()->GetActiveContentsView()->bounds().width() +
+            multi_contents_view()->GetInactiveContentsView()->bounds().width() +
+            multi_contents_view()->resize_area_for_testing()->bounds().width();
+        return contents_and_resize_width <
+               multi_contents_view()->bounds().width();
+      }));
+}

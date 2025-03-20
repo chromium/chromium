@@ -286,6 +286,13 @@
     "expiry_milestone": 138
   },
   {
+    "name": "android-theme-module",
+    "owners": [
+      "wenyufu@chromium.org"
+    ],
+    "expiry_milestone": 142
+  },
+  {
     "name": "animate-suggestions-list-appearance",
     "owners": [ "pnoland@chromium.org", "chrome-mobile-search@google.com" ],
     "expiry_milestone": 135
@@ -1213,7 +1220,7 @@
   {
     "name": "canvas-2d-layers",
     "owners": [ "fserb@chromium.org", "jpgravel@chromium.org", "yiyix@chromium.org" ],
-    "expiry_milestone": 136
+    "expiry_milestone": 145
   },
   {
     "name": "canvas-oop-rasterization",
@@ -2958,7 +2965,7 @@
   {
     "name": "enable-enterprise-updated-profile-creation-screen",
     "owners": [ "ydago@chromium.org", "cbe-magic@google.com" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "enable-eol-notification-reset-dismissed-prefs",
@@ -4341,6 +4348,12 @@
     "expiry_milestone": 138
   },
   {
+    "name": "enterprise-url-filtering-event-reporting-on-android",
+    "owners": ["nancylanxiao@google.com", "cbe-cep-eng@google.com" ],
+    "expiry_milestone": 138
+  },
+
+  {
     "name": "eol-incentive",
     "owners": ["mmourgos@google.com", "tbarzic@google.com"],
     "expiry_milestone": 116
@@ -5403,6 +5416,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "ios-one-tap-mini-map-remove-section-breaks",
+    "owners": [ "olivierrobin@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "ios-one-tap-mini-map-restrictions",
     "owners": [ "olivierrobin@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 145
@@ -5450,6 +5468,11 @@
       "bling-transactions@google.com"
     ],
     "expiry_milestone": 140
+  },
+  {
+    "name": "ios-provides-app-notification-settings",
+    "owners": ["scottyoder@google.com", "bling-get-set-up@google.com"],
+    "expiry_milestone": 141
   },
   {
     "name": "ios-provisional-notification-alert",
@@ -5866,6 +5889,15 @@
     // This flag is used for debugging and development purposes to list all
     // external displays' modes without any exclusions.'
     "expiry_milestone": -1
+  },
+  {
+    "name": "local-network-access-check",
+    "owners": [
+      "cthomp@chromium.org",
+      "hchao@chromium.org",
+      "chrome-secure-web-and-net@chromium.org"
+    ],
+    "expiry_milestone": 142
   },
   {
     "name": "local-pdp-detection",
@@ -6590,6 +6622,11 @@
     "name": "omnibox-grouping-framework-zps",
     "owners": ["stkhapugin@chromium.org", "manukh@chromium.org", "mahmadi@chromium.org", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 130
+  },
+  {
+    "name": "omnibox-hide-suggestion-group-headers",
+    "owners": ["khalidpeer@chromium.org", "chrome-desktop-search@google.com" ],
+    "expiry_milestone": 140
   },
   {
     "name": "omnibox-https-upgrades",

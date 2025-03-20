@@ -921,38 +921,42 @@
       </message>
 
       <!-- RWS - All Sites -->
-      <!-- TODO(b:396463421): Mark strings translateable when content is finalized -->
-      <message name="IDS_ALL_SITES_RWS_LABEL" desc="" translateable="false" formatter_data="android_java">
+      <message name="IDS_ALL_SITES_RWS_LABEL" desc="A specific indication that this website has a list of related websites associated with it." formatter_data="android_java">
         Has related sites
       </message>
-      <message name="IDS_ALL_SITES_SHOW_RWS_BUTTON" desc="" translateable="false">
+      <message name="IDS_ALL_SITES_SHOW_RWS_BUTTON" desc="Title for a button that allows the user to go to the related website sets settings page to view all of the related sites associated with this website.">
         Show related sites
       </message>
-      <message name="IDS_ALL_SITES_RWS_FILTER_VIEW_TITLE" desc="" translateable="false">
+      <message name="IDS_ALL_SITES_RWS_FILTER_VIEW_TITLE" desc="Header for the related website sets settings page view. Includes the URL for the website that owns the related website set.">
         Related sites defined by <ph name="RWS_OWNER">$1<ex>google.com</ex></ph>
       </message>
-      <message name="IDS_ALL_SITES_RWS_FILTER_VIEW_DESCRIPTION" desc="" translateable="false">
+      <message name="IDS_ALL_SITES_RWS_FILTER_VIEW_DESCRIPTION" desc="Description explaining what related website sets are and how they relate to third-party cookies. Includes a Learn More link that takes the user to a Help Center article about managing settings for third-party cookies and related website sets.">
         Related sites can share third-party cookies with each other to help sites work as expected, such as keeping you signed in or remembering your site settings. Sites are responsible for explaining why they need access to this data. Learn more about <ph name="START_LINK">&lt;a target="_blank" href="$1" aria-description="$2"&gt;</ph>related sites and third-party cookies<ph name="END_LINK">&lt;/a&gt;</ph>
       </message>
-      <message name="IDS_ALL_SITES_RWS_FILTER_VIEW_STORAGE_DESCRIPTION" desc="" translateable="false">
+      <message name="IDS_ALL_SITES_RWS_FILTER_VIEW_STORAGE_DESCRIPTION" desc="Describes how much storage is being used by all sites in the displayed list of related websites.">
         Total storage used by sites in the list: <ph name="TOTAL_USAGE">$1<ex>8 GB</ex></ph>
+      </message>
+      <message name="IDS_ALL_SITES_RWS_DELETE_DATA_BUTTON_LABEL" desc="Label of a button to delete all site data for sites in a related website set.">
+        Delete data
+      </message>
+      <message name="IDS_ALL_SITES_RWS_DELETE_DATA_DIALOG_TITLE" desc="Title of the dialog that warns about deleting all site data for sites in a related website set.">
+        Delete data?
       </message>
 
       <!-- RWS - Site Settings -->
-      <!-- TODO(b:396463421): Mark strings translateable when content is finalized -->
-      <message name="IDS_SITE_SETTINGS_RWS_DESCRIPTION_ANDROID" desc="" translateable="false" formatter_data="android_java">
+      <message name="IDS_SITE_SETTINGS_RWS_DESCRIPTION_ANDROID" desc="Description explaining what related website sets are and how they relate to third-party cookies. Includes a Learn More link that takes the user to a Help Center article about managing settings for third-party cookies and related website sets." formatter_data="android_java">
         Related sites can share third-party cookies with each other to help sites work as expected, such as keeping you signed in or remembering your site settings. Sites are responsible for explaining why they need access to this data. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
-      <message name="IDS_SITE_SETTINGS_RWS_DELETE_BUTTON_LABEL" desc="" translateable="false" formatter_data="android_java">
+      <message name="IDS_SITE_SETTINGS_RWS_DELETE_BUTTON_LABEL" desc="Title for a button that allows the user to delete all stored data for sites in the related website set associated with this website." formatter_data="android_java">
         Delete all data
       </message>
-      <message name="IDS_SITE_SETTINGS_DELETE_RWS_STORAGE_CONFIRMATION_ANDROID" desc="Text for the dialog that warns about deleting storage used by a site and its related sites." translateable="false" formatter_data="android_java">
+      <message name="IDS_SITE_SETTINGS_DELETE_RWS_STORAGE_CONFIRMATION_ANDROID" desc="Text for the dialog that warns about deleting storage used by a site and its related sites." formatter_data="android_java">
         This action will delete all data and cookies stored by <ph name="SITE_NAME">%1$s<ex>www.example.com</ex></ph> and related sites
       </message>
-      <message name="IDS_SITE_SETTINGS_DELETE_RWS_STORAGE_SIGN_OUT" desc="" translateable="false" formatter_data="android_java">
+      <message name="IDS_SITE_SETTINGS_DELETE_RWS_STORAGE_SIGN_OUT" desc="Text for the dialog that warns about potentially being signed out of sites in the related website set." formatter_data="android_java">
         You'll be signed out of these sites
       </message>
-      <message name="IDS_SITE_SETTINGS_DELETE_RWS_STORAGE_DIALOG_TITLE" desc="" translateable="false" formatter_data="android_java">
+      <message name="IDS_SITE_SETTINGS_DELETE_RWS_STORAGE_DIALOG_TITLE" desc="Title for the dialog that prompts the user to confirm if they would like to delete all data for sites in the related website set." formatter_data="android_java">
         Delete all data?
       </message>
     </messages>

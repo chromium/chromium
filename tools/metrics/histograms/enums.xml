@@ -3531,6 +3531,7 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="5" label="History Page Entries"/>
   <int value="6" label="Quick delete"/>
   <int value="7" label="Page info permission reset"/>
+  <int value="8" label="RWS delete all data"/>
 </enum>
 
 <!--LINT.IfChange(DeleteBrowsingDataDialogAction) -->
@@ -8614,6 +8615,7 @@ from previous Chrome versions.
   <int value="-2134700188" label="InstantHotspotOnNearby:disabled"/>
   <int value="-2134653602" label="WebAppSyncGeneratedIconUpdateFix:enabled"/>
   <int value="-2134609104" label="SystemEmojiPickerVariantGrouping:enabled"/>
+  <int value="-2134563284" label="LocalNetworkAccessChecks:enabled"/>
   <int value="-2134333982" label="ShowArcFilesApp:enabled"/>
   <int value="-2134244069" label="HttpFormWarning:enabled"/>
   <int value="-2133892372" label="ResamplingInputEvents:disabled"/>
@@ -9058,6 +9060,7 @@ from previous Chrome versions.
   <int value="-1981692093"
       label="SafeBrowsingPasswordProtectionForSignedInUsers:enabled"/>
   <int value="-1980328793" label="trace-upload-url"/>
+  <int value="-1980124092" label="OmniboxHideSuggestionGroupHeaders:disabled"/>
   <int value="-1978938699" label="PwaNavigationCapturing:disabled"/>
   <int value="-1978625006" label="PcieBillboardNotification:disabled"/>
   <int value="-1978116081" label="SeaPen:disabled"/>
@@ -10788,6 +10791,7 @@ from previous Chrome versions.
   <int value="-1304666215" label="UseMLKEM:enabled"/>
   <int value="-1304558220" label="EnableViewPpd:disabled"/>
   <int value="-1304401930" label="CSSContainerQueries:enabled"/>
+  <int value="-1304027501" label="OmniboxHideSuggestionGroupHeaders:enabled"/>
   <int value="-1303986525" label="CCTBeforeUnload:enabled"/>
   <int value="-1303979994" label="UseSCContentSharingPicker:enabled"/>
   <int value="-1303417000" label="UseStorkSmdsServerAddress:enabled"/>
@@ -14132,6 +14136,8 @@ from previous Chrome versions.
   <int value="8891567" label="CaptionSettings:enabled"/>
   <int value="9609535" label="BrowsingDataLifetimeManager:disabled"/>
   <int value="9692911" label="BatteryBadgeIcon:enabled"/>
+  <int value="9803761"
+      label="EnterpriseUrlFilteringEventReportingOnAndroid:disabled"/>
   <int value="10405060" label="BluetoothSessionizedMetrics:disabled"/>
   <int value="10458238" label="disable-print-preview-simplify"/>
   <int value="10511293" label="LensOverlaySimplifiedSelection:enabled"/>
@@ -15100,6 +15106,7 @@ from previous Chrome versions.
   <int value="382131467"
       label="GridTabSwitcherLandscapeAspectRatioPhones:enabled"/>
   <int value="382478170" label="SemanticColorDebugOverride:disabled"/>
+  <int value="383647912" label="AndroidThemeModule:disabled"/>
   <int value="383974622" label="CrosPrivacyHubAppPermissionsV2:disabled"/>
   <int value="384054552" label="EnableDrDcVulkan:disabled"/>
   <int value="384677240" label="AssistMultiWordLacrosSupport:enabled"/>
@@ -15425,6 +15432,8 @@ from previous Chrome versions.
   <int value="514098449" label="LacrosProfileBackwardMigration:disabled"/>
   <int value="514406112" label="WebUIOmniboxPopup:disabled"/>
   <int value="514569020" label="RemoteCopyImageNotification:enabled"/>
+  <int value="515046556"
+      label="EnterpriseUrlFilteringEventReportingOnAndroid:enabled"/>
   <int value="515981953" label="ElasticOverscroll:enabled"/>
   <int value="516143995" label="EnableAriaElementReflection:enabled"/>
   <int value="516603570" label="QuickAnswersRichUi:disabled"/>
@@ -16091,6 +16100,7 @@ from previous Chrome versions.
   <int value="768900239" label="ArcSwitchToKeyMintOnTOverride:disabled"/>
   <int value="770680432" label="DecodeLossyWebPImagesToYUV:enabled"/>
   <int value="771216808" label="EnableAutomaticSharedImageManagement:enabled"/>
+  <int value="771793247" label="LocalNetworkAccessChecks:disabled"/>
   <int value="772237902" label="AutofillDisableLocalCardMigration:enabled"/>
   <int value="772272625" label="simplify-https-indicator"/>
   <int value="772348426" label="AffiliationBasedMatching:enabled"/>
@@ -16520,6 +16530,7 @@ from previous Chrome versions.
   <int value="951111587" label="MediaAppPhotosIntegrationVideo:disabled"/>
   <int value="951133343" label="UseSharedImagesForPepperVideo:disabled"/>
   <int value="951338017" label="SidePanelJourneysQueryless:enabled"/>
+  <int value="952085142" label="AndroidThemeModule:enabled"/>
   <int value="952558794" label="enable-remote-assistance"/>
   <int value="952625847"
       label="AboutThisSitePersistentSidePanelEntry:disabled"/>
@@ -20909,16 +20920,6 @@ Called by update_net_error_codes.py.-->
   <int value="14" label="Access Denied"/>
 </enum>
 
-<enum name="OCRClientType">
-  <int value="0" label="Tests"/>
-  <int value="1" label="PDF Viewer"/>
-  <int value="2" label="Local Search"/>
-  <int value="3" label="Camera App"/>
-  <int value="4" label="Not Used"/>
-  <int value="5" label="MediaApp"/>
-  <int value="6" label="Screenshot Text Detection"/>
-</enum>
-
 <enum name="OCSPResponseStatus">
   <int value="0" label="Not checked"/>
   <int value="1" label="Missing"/>
@@ -21051,6 +21052,7 @@ Called by update_net_error_codes.py.-->
   <int value="74" label="Lilo"/>
   <int value="75" label="Startpage"/>
   <int value="76" label="StarterPackPage"/>
+  <int value="77" label="McAfee"/>
 </enum>
 
 <enum name="OnboardingStartupState">
@@ -25847,6 +25849,8 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Slow input"/>
 </enum>
 
+<!-- LINT.IfChange(VideoCodec) -->
+
 <enum name="VideoCodec">
   <int value="0" label="kUnknownVideoCodec"/>
   <int value="1" label="kCodecH264"/>
@@ -25860,6 +25864,10 @@ Called by update_net_error_codes.py.-->
   <int value="9" label="kCodecDolbyVision"/>
   <int value="10" label="kCodecAV1"/>
 </enum>
+
+<!-- LINT.ThenChange(//media/base/video_codecs.h:VideoCodec) -->
+
+<!-- LINT.IfChange(VideoCodecProfile) -->
 
 <enum name="VideoCodecProfile">
   <int value="0" label="H.264 Baseline"/>
@@ -25915,6 +25923,8 @@ Called by update_net_error_codes.py.-->
   <int value="50" label="VVC Main12 444 Still-picture"/>
   <int value="51" label="VVC Main16 444 Still-picture"/>
 </enum>
+
+<!-- LINT.ThenChange(//gpu/config/gpu_info.h:VideoCodecProfile, //media/base/video_codecs.h:VideoCodecProfile) -->
 
 <enum name="VideoDecoderType">
   <int value="0" label="None"/>

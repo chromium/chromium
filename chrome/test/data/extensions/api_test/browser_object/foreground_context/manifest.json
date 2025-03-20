@@ -1,0 +1,16 @@
+{
+  "name": "Non background test extension",
+  "version": "0.1",
+  "manifest_version": 3,
+  "content_scripts": [
+    {
+      "matches": ["*://a.com/*"],
+      "js": ["content_script.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [{
+     "matches": ["<all_urls>"],
+     "resources": ["_test_resources/api_test/browser_object/browser_object_common_tests.js"]
+   }]
+}

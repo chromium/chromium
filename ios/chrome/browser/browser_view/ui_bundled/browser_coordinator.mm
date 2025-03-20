@@ -261,7 +261,6 @@
 #import "ios/chrome/browser/toolbar/ui_bundled/toolbar_coordinator.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
-#import "ios/chrome/browser/ui/whats_new/whats_new_coordinator.h"
 #import "ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_coordinator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
@@ -283,6 +282,7 @@
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/webui/model/net_export_tab_helper_delegate.h"
 #import "ios/chrome/browser/webui/ui_bundled/net_export_coordinator.h"
+#import "ios/chrome/browser/whats_new/coordinator/whats_new_coordinator.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -1697,8 +1697,7 @@ enum class ToolbarKind {
 - (void)contextualPanelEntrypointIPHDidDismissWithConfig:
             (base::WeakPtr<ContextualPanelItemConfiguration>)config
                                          dismissalReason:
-                                             (IPHDismissalReasonType)
-                                                 IPHDismissalReasonType {
+                                             (IPHDismissalReasonType)reason {
   ContextualPanelItemConfiguration* config_ptr = config.get();
   if (!config_ptr) {
     return;
@@ -1718,17 +1717,16 @@ enum class ToolbarKind {
   engagementTracker->Dismissed(*config_ptr->iph_feature);
   _contextualPanelEntrypointHelpPresenter = nil;
 
-  if (IPHDismissalReasonType == IPHDismissalReasonType::kTappedAnchorView ||
-      IPHDismissalReasonType == IPHDismissalReasonType::kTappedIPH) {
+  if (reason == IPHDismissalReasonType::kTappedAnchorView ||
+      reason == IPHDismissalReasonType::kTappedIPH) {
     [self openContextualSheet];
     [self recordContextualPanelEntrypointIPHDismissed:
               ContextualPanelIPHDismissedReason::UserInteracted];
     return;
   }
 
-  if (IPHDismissalReasonType ==
-          IPHDismissalReasonType::kTappedOutsideIPHAndAnchorView ||
-      IPHDismissalReasonType == IPHDismissalReasonType::kTappedClose) {
+  if (reason == IPHDismissalReasonType::kTappedOutsideIPHAndAnchorView ||
+      reason == IPHDismissalReasonType::kTappedClose) {
     engagementTracker->NotifyEvent(
         config_ptr->iph_entrypoint_explicitly_dismissed);
     [self recordContextualPanelEntrypointIPHDismissed:
@@ -1736,7 +1734,7 @@ enum class ToolbarKind {
     return;
   }
 
-  if (IPHDismissalReasonType == IPHDismissalReasonType::kTimedOut) {
+  if (reason == IPHDismissalReasonType::kTimedOut) {
     [self recordContextualPanelEntrypointIPHDismissed:
               ContextualPanelIPHDismissedReason::TimedOut];
     return;
@@ -2357,11 +2355,9 @@ enum class ToolbarKind {
   base::WeakPtr<ContextualPanelItemConfiguration> config_weak_ptr =
       config_ref.weak_ptr_factory.GetWeakPtr();
   CallbackWithIPHDismissalReasonType dismissalCallback = ^(
-      IPHDismissalReasonType IPHDismissalReasonType,
-      feature_engagement::Tracker::SnoozeAction snoozeAction) {
+      IPHDismissalReasonType reason) {
     [weakSelf contextualPanelEntrypointIPHDidDismissWithConfig:config_weak_ptr
-                                               dismissalReason:
-                                                   IPHDismissalReasonType];
+                                               dismissalReason:reason];
   };
 
   _contextualPanelEntrypointHelpPresenter =

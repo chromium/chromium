@@ -359,9 +359,7 @@ int UtilityMain(MainFunctionParams parameters) {
 
 #elif BUILDFLAG(IS_WIN)
   std::optional<base::win::ScopedCOMInitializer> scoped_com_initializer;
-  if (message_pump_type == base::MessagePumpType::UI &&
-      base::FeatureList::IsEnabled(
-          features::kUtilityWithUiPumpInitializesCom)) {
+  if (message_pump_type == base::MessagePumpType::UI) {
     scoped_com_initializer.emplace();
     CHECK(scoped_com_initializer->Succeeded());
   }

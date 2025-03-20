@@ -9,19 +9,25 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/background/startup_launch_manager.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/glic/glic_test_util.h"
 #include "chrome/browser/glic/host/context/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
+#include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/global_features.h"
+#include "chrome/browser/status_icons/status_icon.h"
+#include "chrome/browser/status_icons/status_icon_menu_model.h"
+#include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -68,22 +74,92 @@ class MockTabManager : public GlicFocusedTabManager {
   raw_ptr<content::WebContents> contents_;
 };
 
+class MockStatusIcon : public StatusIcon {
+ public:
+  explicit MockStatusIcon(const std::u16string& tool_tip)
+      : tool_tip_(tool_tip) {}
+  void SetImage(const gfx::ImageSkia& image) override {}
+  void SetToolTip(const std::u16string& tool_tip) override {
+    tool_tip_ = tool_tip;
+  }
+  void DisplayBalloon(const gfx::ImageSkia& icon,
+                      const std::u16string& title,
+                      const std::u16string& contents,
+                      const message_center::NotifierId& notifier_id) override {}
+  void UpdatePlatformContextMenu(StatusIconMenuModel* menu) override {
+    menu_item_ = menu;
+  }
+  const std::u16string& tool_tip() const { return tool_tip_; }
+  StatusIconMenuModel* menu_item() const { return menu_item_; }
+
+ private:
+  raw_ptr<StatusIconMenuModel> menu_item_ = nullptr;
+  std::u16string tool_tip_;
+};
+
+class MockStatusTray : public StatusTray {
+ public:
+  std::unique_ptr<StatusIcon> CreatePlatformStatusIcon(
+      StatusIconType type,
+      const gfx::ImageSkia& image,
+      const std::u16string& tool_tip) override {
+    return std::make_unique<MockStatusIcon>(tool_tip);
+  }
+
+  const StatusIcons& GetStatusIconsForTest() const { return status_icons(); }
+};
+
+class TestStartupLaunchManager : public StartupLaunchManager {
+ public:
+  TestStartupLaunchManager() = default;
+  ~TestStartupLaunchManager() override = default;
+};
+
 class GlicMetricsTest : public testing::Test {
  public:
   GlicMetricsTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   void SetUp() override {
-    // Set up profile before enabling is created so we don't fire enabled
-    // change notifications.
-    ForceSigninAndModelExecutionCapability(&profile_);
+    testing::Test::SetUp();
+    SetUpProfile();
+    SetUpGlicMetrics();
+  }
 
-    enabling_ = std::make_unique<GlicEnabling>(&profile_);
+  void SetUpProfile() {
+    StartupLaunchManager::SetInstanceForTesting(&startup_launch_manager_);
+
+    testing_profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(testing_profile_manager_->SetUp());
+    TestingBrowserProcess::GetGlobal()->SetStatusTray(
+        std::make_unique<MockStatusTray>());
+    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+    profile_ = testing_profile_manager_->CreateTestingProfile("profile", true);
+    ForceSigninAndModelExecutionCapability(profile_);
+  }
+
+  void SetUpGlicMetrics() {
+    enabling_ = std::make_unique<GlicEnabling>(
+        profile_, &testing_profile_manager_->profile_manager()
+                       ->GetProfileAttributesStorage());
     controller_ = std::make_unique<MockWindowController>(
-        &profile_, identity_env_.identity_manager(), enabling_.get());
-    tab_manager_ = std::make_unique<MockTabManager>(&profile_, *controller_);
+        profile_, identity_env_.identity_manager(), enabling_.get());
+    tab_manager_ = std::make_unique<MockTabManager>(profile_, *controller_);
 
-    metrics_ = std::make_unique<GlicMetrics>(&profile_, enabling_.get());
+    metrics_ = std::make_unique<GlicMetrics>(profile_, enabling_.get());
     metrics_->SetControllers(controller_.get(), tab_manager_.get());
+  }
+
+  void TearDown() override {
+    metrics_.reset();
+    tab_manager_.reset();
+    controller_.reset();
+    enabling_.reset();
+    TestingBrowserProcess::GetGlobal()->GetFeatures()->Shutdown();
+    profile_ = nullptr;
+    testing_profile_manager_.reset();
+    StartupLaunchManager::SetInstanceForTesting(nullptr);
+    testing::Test::TearDown();
   }
 
   void ExpectEntryPointImpressionLogged(
@@ -96,9 +172,12 @@ class GlicMetricsTest : public testing::Test {
   }
 
  protected:
-  TestingPrefServiceSimple* local_state() { return local_state_.Get(); }
+  TestingPrefServiceSimple* local_state() {
+    return testing_profile_manager_->local_state()->Get();
+  }
 
   content::BrowserTaskEnvironment task_environment_;
+  TestStartupLaunchManager startup_launch_manager_;
 
   content::RenderViewHostTestEnabler enabler_;
 
@@ -106,9 +185,9 @@ class GlicMetricsTest : public testing::Test {
   base::UserActionTester user_action_tester_;
   ukm::TestAutoSetUkmRecorder ukm_tester_;
 
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
-  TestingProfile profile_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
   signin::IdentityTestEnvironment identity_env_;
+  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
 
   std::unique_ptr<GlicEnabling> enabling_;
   std::unique_ptr<MockWindowController> controller_;
@@ -191,12 +270,12 @@ TEST_F(GlicMetricsTest, BasicUkm) {
 TEST_F(GlicMetricsTest, BasicUkmWithTarget) {
   // Create a SiteInstance, which is required to build a WebContents.
   scoped_refptr<content::SiteInstance> site_instance =
-      content::SiteInstance::Create(&profile_);
+      content::SiteInstance::Create(profile_);
 
   // Use WebContentsTester::CreateTestWebContents(...) to create a real
   // WebContents suitable for unit testing.
   std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(&profile_,
+      content::WebContentsTester::CreateTestWebContents(profile_,
                                                         site_instance.get());
   auto* tester = content::WebContentsTester::For(web_contents.get());
 
@@ -291,7 +370,7 @@ TEST_F(GlicMetricsTest, SessionDuration_LogsError) {
 }
 
 TEST_F(GlicMetricsTest, ImpressionBeforeFre) {
-  profile_.GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, false);
 
   ExpectEntryPointImpressionLogged(EntryPointImpression::kBeforeFre);
 }
@@ -304,21 +383,29 @@ TEST_F(GlicMetricsTest, ImpressionBeforeFre) {
 class GlicMetricsFeaturesEnabledTest : public GlicMetricsTest {
  public:
   void SetUp() override {
-    scoped_feature_list.InitWithFeatures(
+    scoped_feature_list_.InitWithFeatures(
         {
             features::kGlic,
             features::kTabstripComboButton,
         },
         {});
-    GlicMetricsTest::SetUp();
+    SetUpProfile();
+    // When Glic is enabled before the profile is setup GlicKeyedService starts
+    // and creates it's own GlicMetrics. Do not setup GlicMetrics again here so
+    // that duplicate metrics observers are not bound.
+  }
+
+  void TearDown() override {
+    scoped_feature_list_.Reset();
+    GlicMetricsTest::TearDown();
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionNotPermittedByPolicy) {
-  profile_.GetPrefs()->SetInteger(
+  profile_->GetPrefs()->SetInteger(
       ::prefs::kGeminiSettings,
       static_cast<int>(glic::prefs::SettingsPolicyState::kDisabled));
 
@@ -335,7 +422,7 @@ TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreBrowserOnly) {
 
 TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreOsOnly) {
   // kGeminiSettings is enabled
-  profile_.GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, false);
   local_state()->SetBoolean(prefs::kGlicLauncherEnabled, true);
 
   ExpectEntryPointImpressionLogged(EntryPointImpression::kAfterFreOsOnly);
@@ -351,7 +438,7 @@ TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreEnabled) {
 
 TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreDisabled) {
   // kGeminiSettings is enabled
-  profile_.GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, false);
   // kGlicLauncherEnabled is false
 
   ExpectEntryPointImpressionLogged(EntryPointImpression::kAfterFreDisabled);
@@ -359,36 +446,38 @@ TEST_F(GlicMetricsFeaturesEnabledTest, ImpressionAfterFreDisabled) {
 
 TEST_F(GlicMetricsFeaturesEnabledTest, EnablingChanged) {
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Disabled"), 0);
-  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 0);
+  // Glic starts enabled and during profile creation GlicMetrics records a user
+  // action.
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 1);
 
-  profile_.GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, false);
-  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Disabled"), 1);
-  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 0);
-
-  profile_.GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, false);
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Disabled"), 1);
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 1);
 
-  profile_.GetPrefs()->SetInteger(
+  profile_->GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, true);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Disabled"), 1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 2);
+
+  profile_->GetPrefs()->SetInteger(
       ::prefs::kGeminiSettings,
       static_cast<int>(glic::prefs::SettingsPolicyState::kDisabled));
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Disabled"), 2);
-  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 2);
 
-  profile_.GetPrefs()->SetInteger(
+  profile_->GetPrefs()->SetInteger(
       ::prefs::kGeminiSettings,
       static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled));
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Disabled"), 2);
-  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 2);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Enabled"), 3);
 }
 
 TEST_F(GlicMetricsFeaturesEnabledTest, PinnedChanged) {
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Pinned"), 0);
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Unpinned"), 0);
-  profile_.GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, false);
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Pinned"), 0);
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Unpinned"), 1);
-  profile_.GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, true);
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Pinned"), 1);
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Unpinned"), 1);
 }
@@ -436,6 +525,27 @@ TEST_F(GlicMetricsTest, InputModesUsed) {
   histogram_tester_.ExpectTotalCount("Glic.Session.InputModesUsed", 4);
   histogram_tester_.ExpectBucketCount("Glic.Session.InputModesUsed",
                                       InputModesUsed::kOnlyAudio, 1);
+}
+
+TEST_F(GlicMetricsTest, AttachStateChanges) {
+  // Attach changes during initialization should not be counted.
+  metrics_->OnAttachedToBrowser(AttachChangeReason::kInit);
+  metrics_->OnGlicWindowClose();
+  histogram_tester_.ExpectTotalCount("Glic.Session.AttachStateChanges", 1);
+  histogram_tester_.ExpectBucketCount("Glic.Session.AttachStateChanges", 0, 1);
+
+  metrics_->OnAttachedToBrowser(AttachChangeReason::kDrag);
+  metrics_->OnGlicWindowClose();
+  histogram_tester_.ExpectTotalCount("Glic.Session.AttachStateChanges", 2);
+  histogram_tester_.ExpectBucketCount("Glic.Session.AttachStateChanges", 1, 1);
+
+  metrics_->OnAttachedToBrowser(AttachChangeReason::kMenu);
+  metrics_->OnDetachedFromBrowser(AttachChangeReason::kMenu);
+  metrics_->OnAttachedToBrowser(AttachChangeReason::kMenu);
+  metrics_->OnDetachedFromBrowser(AttachChangeReason::kMenu);
+  metrics_->OnGlicWindowClose();
+  histogram_tester_.ExpectTotalCount("Glic.Session.AttachStateChanges", 3);
+  histogram_tester_.ExpectBucketCount("Glic.Session.AttachStateChanges", 4, 1);
 }
 
 }  // namespace

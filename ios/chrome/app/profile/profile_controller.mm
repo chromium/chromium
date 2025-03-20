@@ -104,6 +104,8 @@
 
 namespace {
 
+using SessionIds = ProfileAttributesIOS::SessionIds;
+
 // The delay for cleaning external files.
 constexpr base::TimeDelta kExternalFilesCleanupDelay = base::Minutes(1);
 
@@ -158,8 +160,8 @@ void FlushCookieStoreOnIOThread(
 
 // Purges data for discarded sessions `session_ids` relative to profile's
 // storage paths (regulard and off-the-record).
-void PurgeDataForSessions(std::set<std::string> session_ids,
-                          std::array<base::FilePath, 2> storage_paths) {
+void PurgeDataForSessions(const SessionIds& session_ids,
+                          const std::array<base::FilePath, 2>& storage_paths) {
   const std::array<base::FilePath::StringViewType, 3> directories = {
       kLegacySessionsDirname,
       kSessionRestorationDirname,
@@ -178,10 +180,9 @@ void PurgeDataForSessions(std::set<std::string> session_ids,
 }
 
 // Removes `session_ids` from the set of sessions to discard from `attrs`.
-void RemoveSessionsFromSessionsToDiscard(
-    const std::set<std::string>& session_ids,
-    ProfileAttributesIOS& attrs) {
-  std::set<std::string> discarded_sessions;
+void RemoveSessionsFromSessionsToDiscard(const SessionIds& session_ids,
+                                         ProfileAttributesIOS& attrs) {
+  SessionIds discarded_sessions;
   std::ranges::set_difference(
       attrs.GetDiscardedSessions(), session_ids,
       std::inserter(discarded_sessions, discarded_sessions.end()));
@@ -200,14 +201,13 @@ void RemoveSessionsFromSessionsToDiscard(
 //
 // See https://crbug.com/392575873 for more details.
 void RecordDiscardedSceneConnectedAfterBeingPurged(
-    const std::set<std::string>& purged_identifiers,
-    NSString* scene_identifier) {
+    const SessionIds& purged_identifiers,
+    std::string_view scene_identifier) {
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
     return;
   }
 
-  const auto iterator =
-      purged_identifiers.find(base::SysNSStringToUTF8(scene_identifier));
+  const auto iterator = purged_identifiers.find(scene_identifier);
   base::UmaHistogramBoolean(
       "IOS.Sessions.DiscardedSceneConnectedAfterBeingPurged",
       iterator != purged_identifiers.end());
@@ -239,7 +239,7 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
   // Contains the list of session identifiers whose data have been purged
   // during the current profile startup (used to detect whether data loss
   // occurred).
-  std::set<std::string> _purgedSessionIdentifiers;
+  SessionIds _purgedSessionIdentifiers;
 }
 
 - (instancetype)initWithAppState:(AppState*)appState
@@ -552,7 +552,7 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
   DCHECK(_profileManager);
   ProfileIOS* profile = _state.profile;
 
-  std::set<std::string> sessionIDs =
+  SessionIds sessionIDs =
       _profileManager->GetProfileAttributesStorage()
           ->GetAttributesForProfileWithName(profile->GetProfileName())
           .GetDiscardedSessions();
@@ -577,7 +577,7 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
       }));
 }
 
-- (void)dataPurgedForDiscardedSessions:(const std::set<std::string>&)sessions {
+- (void)dataPurgedForDiscardedSessions:(const SessionIds&)sessions {
   DCHECK(_state.profile);
   DCHECK(_profileManager);
   ProfileIOS* profile = _state.profile;
@@ -659,6 +659,14 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
 
   if (_state.foregroundScenes.count == 0) {
     return;
+  }
+
+  // Stop listening to the SceneStates, as there is no need anymore once
+  // the transition to the next stage is scheduled. This avoids a crash
+  // if a SceneState reaches foreground in reaction to the ProfileState
+  // reaching the PrepareUI stage.
+  for (SceneState* sceneState in _state.connectedScenes) {
+    [sceneState removeObserver:self];
   }
 
   [_state queueTransitionToNextInitStage];

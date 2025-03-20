@@ -14,13 +14,13 @@
 #include <cstddef>
 #include <cstdint>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "fuzzer/driver.h"
 #include "ipcz/ipcz.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "util/ref_counted.h"
 
 namespace ipcz::fuzzer {
@@ -146,7 +146,7 @@ class Fuzzer::TransportBackend : public RefCounted<Fuzzer::TransportBackend> {
   friend class RefCounted<TransportBackend>;
 
   struct Error {};
-  using Activity = absl::variant<Transmission, Error>;
+  using Activity = std::variant<Transmission, Error>;
 
   struct Endpoint {
     bool is_closed = false;
@@ -167,11 +167,11 @@ class Fuzzer::TransportBackend : public RefCounted<Fuzzer::TransportBackend> {
     std::vector<Activity> activity;
     activity.swap(e.activity);
     for (auto& entry : activity) {
-      if (absl::holds_alternative<Error>(entry)) {
+      if (std::holds_alternative<Error>(entry)) {
         e.handler(e.listener, nullptr, 0, nullptr, 0,
                   IPCZ_TRANSPORT_ACTIVITY_ERROR, nullptr);
       } else {
-        absl::get<Transmission>(entry).Dispatch(fuzzer_, e.listener, e.handler);
+        std::get<Transmission>(entry).Dispatch(fuzzer_, e.listener, e.handler);
       }
     }
     return true;

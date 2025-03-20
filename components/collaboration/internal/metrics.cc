@@ -146,6 +146,22 @@ std::string_view CollaborationServiceShareOrManageEventToString(
   }
 }
 
+std::string_view CollaborationServiceJoinEntryPointToString(
+    CollaborationServiceJoinEntryPoint entry) {
+  switch (entry) {
+    case CollaborationServiceJoinEntryPoint::kUnknown:
+      return "Unknown";
+  }
+}
+
+std::string_view CollaborationServiceShareOrManageEntryPointToString(
+    CollaborationServiceShareOrManageEntryPoint entry) {
+  switch (entry) {
+    case CollaborationServiceShareOrManageEntryPoint::kUnknown:
+      return "Unknown";
+  }
+}
+
 std::string CreateJoinEventLogString(CollaborationServiceJoinEvent event) {
   return base::StringPrintf("Join Flow Event\n  Event: %s\n",
                             CollaborationServiceJoinEventToString(event));
@@ -156,6 +172,19 @@ std::string CreateShareOrManageEventLogString(
   return base::StringPrintf(
       "Share or Manage Flow Event\n  Event: %s\n",
       CollaborationServiceShareOrManageEventToString(event));
+}
+
+std::string CreateJoinEntryLogToString(
+    CollaborationServiceJoinEntryPoint entry) {
+  return base::StringPrintf("Join Flow Started\n  From: %s\n",
+                            CollaborationServiceJoinEntryPointToString(entry));
+}
+
+std::string CreateShareOrManageEntryLogToString(
+    CollaborationServiceShareOrManageEntryPoint entry) {
+  return base::StringPrintf(
+      "Share or Manage Flow Started\n  From: %s\n",
+      CollaborationServiceShareOrManageEntryPointToString(entry));
 }
 
 }  // namespace
@@ -185,6 +214,23 @@ void RecordJoinOrShareOrManageEvent(
   } else {
     RecordShareOrManageEvent(logger, share_or_manage_event);
   }
+}
+
+void RecordJoinEntryPoint(data_sharing::Logger* logger,
+                          CollaborationServiceJoinEntryPoint entry) {
+  base::UmaHistogramEnumeration("CollaborationService.JoinFlow.EntryPoint",
+                                entry);
+  DATA_SHARING_LOG(logger_common::mojom::LogSource::CollaborationService,
+                   logger, CreateJoinEntryLogToString(entry));
+}
+
+void RecordShareOrManageEntryPoint(
+    data_sharing::Logger* logger,
+    CollaborationServiceShareOrManageEntryPoint entry) {
+  base::UmaHistogramEnumeration(
+      "CollaborationService.ShareOrManageFlow.EntryPoint", entry);
+  DATA_SHARING_LOG(logger_common::mojom::LogSource::CollaborationService,
+                   logger, CreateShareOrManageEntryLogToString(entry));
 }
 
 }  // namespace collaboration::metrics

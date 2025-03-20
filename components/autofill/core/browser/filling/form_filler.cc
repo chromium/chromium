@@ -47,6 +47,7 @@
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/autofill/core/common/logging/log_macros.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
@@ -62,11 +63,12 @@ bool FillingProductSupportsRefills(FillingProduct filling_product) {
     case FillingProduct::kAddress:
     case FillingProduct::kCreditCard:
       return true;
-    case FillingProduct::kAutofillAi:
-    case FillingProduct::kMerchantPromoCode:
-    case FillingProduct::kIban:
     case FillingProduct::kAutocomplete:
+    case FillingProduct::kAutofillAi:
     case FillingProduct::kCompose:
+    case FillingProduct::kIban:
+    case FillingProduct::kLoyaltyCard:
+    case FillingProduct::kMerchantPromoCode:
     case FillingProduct::kPlusAddresses:
       return false;
     case FillingProduct::kPassword:
@@ -130,6 +132,8 @@ std::optional<FieldTypeSet> GetFieldTypesToFillFromFillingProduct(
       return FieldTypeSet{MERCHANT_PROMO_CODE};
     case FillingProduct::kIban:
       return FieldTypeSet{IBAN_VALUE};
+    case FillingProduct::kLoyaltyCard:
+      return FieldTypeSet{LOYALTY_MEMBERSHIP_ID};
     case FillingProduct::kPlusAddresses:
       return FieldTypeSet{EMAIL_ADDRESS};
     case FillingProduct::kAutocomplete:
@@ -235,9 +239,60 @@ bool ShouldRecordFillingHistory(FillingProduct filling_product) {
     case FillingProduct::kAutocomplete:
     case FillingProduct::kPassword:
     case FillingProduct::kCompose:
+    case FillingProduct::kLoyaltyCard:
       return false;
   }
   NOTREACHED();
+}
+
+// Called by `FormFiller::MaybeTriggerRefill()` and constructs a refill value in
+// case the website used JavaScript to reformat an expiration date like
+// "05/2023" into "05 / 20" (i.e. it broke the year by cutting the last two
+// digits instead of stripping the first two digits).
+std::optional<std::u16string> GetRefillValueForExpirationDate(
+    const FormFieldData& field,
+    const std::u16string& old_value) {
+  // We currently support a single case of refilling credit card expiration
+  // dates: If we filled the expiration date in a format "05/2023" and the
+  // website turned it into "05 / 20" (i.e. it broke the year by cutting the
+  // last two digits instead of stripping the first two digits).
+  constexpr size_t kSupportedLength = std::string_view("MM/YYYY").size();
+  if (old_value.length() != kSupportedLength) {
+    return std::nullopt;
+  }
+  if (old_value == field.value()) {
+    return std::nullopt;
+  }
+  static constexpr char16_t kFormatRegEx[] =
+      uR"(^(\d\d)(\s?[/-]?\s?)?(\d\d|\d\d\d\d)$)";
+  std::vector<std::u16string> old_groups;
+  if (!MatchesRegex<kFormatRegEx>(old_value, &old_groups)) {
+    return std::nullopt;
+  }
+  DCHECK_EQ(old_groups.size(), 4u);
+
+  std::vector<std::u16string> new_groups;
+  if (!MatchesRegex<kFormatRegEx>(field.value(), &new_groups)) {
+    return std::nullopt;
+  }
+  DCHECK_EQ(new_groups.size(), 4u);
+
+  int old_month, old_year, new_month, new_year;
+  if (!base::StringToInt(old_groups[1], &old_month) ||
+      !base::StringToInt(old_groups[3], &old_year) ||
+      !base::StringToInt(new_groups[1], &new_month) ||
+      !base::StringToInt(new_groups[3], &new_year) ||
+      old_groups[3].size() != 4 || new_groups[3].size() != 2 ||
+      old_month != new_month ||
+      // We need to refill if the first two digits of the year were preserved.
+      old_year / 100 != new_year) {
+    return std::nullopt;
+  }
+  std::u16string refill_value = field.value();
+  CHECK(refill_value.size() >= 2);
+  refill_value[refill_value.size() - 1] = '0' + (old_year % 10);
+  refill_value[refill_value.size() - 2] = '0' + ((old_year % 100) / 10);
+  return refill_value;
 }
 
 }  // namespace
@@ -472,13 +527,15 @@ FillingProduct FormFiller::UndoAutofill(
     field.set_value(previous_state.value);
     field.set_is_autofilled(previous_state.is_autofilled);
 
-    // Update the cached AutofillField in the browser.
-    // TODO(crbug.com/40232021): Consider updating the value too.
-    autofill_field.set_is_autofilled(previous_state.is_autofilled);
-    autofill_field.set_autofill_source_profile_guid(
-        previous_state.autofill_source_profile_guid);
-    autofill_field.set_autofilled_type(previous_state.autofilled_type);
-    autofill_field.set_filling_product(previous_state.filling_product);
+    // Update the cached AutofillField in the browser if the operation isn't a
+    // preview.
+    if (action_persistence == mojom::ActionPersistence::kFill) {
+      autofill_field.set_is_autofilled(previous_state.is_autofilled);
+      autofill_field.set_autofill_source_profile_guid(
+          previous_state.autofill_source_profile_guid);
+      autofill_field.set_autofilled_type(previous_state.autofilled_type);
+      autofill_field.set_filling_product(previous_state.filling_product);
+    }
   }
   form.set_fields(std::move(fields));
 
@@ -764,6 +821,39 @@ void FormFiller::FillOrPreviewForm(
       is_refill);
 }
 
+void FormFiller::MaybeTriggerRefill(
+    const FormData& form,
+    const FormStructure& form_structure,
+    RefillTriggerReason refill_trigger_reason,
+    AutofillTriggerSource trigger_source,
+    base::optional_ref<const FormFieldData> field,
+    base::optional_ref<const std::u16string> old_value) {
+  if (!ShouldTriggerRefill(form_structure, refill_trigger_reason)) {
+    return;
+  }
+  switch (refill_trigger_reason) {
+    case RefillTriggerReason::kFormChanged:
+      ScheduleRefill(form, form_structure, AutofillTriggerSource::kFormsSeen,
+                     RefillTriggerReason::kFormChanged);
+      break;
+    case RefillTriggerReason::kSelectOptionsChanged:
+      TriggerRefill(form, AutofillTriggerSource::kSelectOptionsChanged,
+                    RefillTriggerReason::kSelectOptionsChanged);
+      break;
+    case RefillTriggerReason::kExpirationDateFormatted:
+      CHECK(field && old_value);
+      if (std::optional<std::u16string> refill_value =
+              GetRefillValueForExpirationDate(*field, *old_value)) {
+        RefillContext& refill_context =
+            CHECK_DEREF(GetRefillContext(form_structure.global_id()));
+        refill_context.forced_fill_values[field->global_id()] = *refill_value;
+        ScheduleRefill(form, form_structure, trigger_source,
+                       RefillTriggerReason::kExpirationDateFormatted);
+      }
+      break;
+  }
+}
+
 bool FormFiller::ShouldTriggerRefill(
     const FormStructure& form_structure,
     RefillTriggerReason refill_trigger_reason) {
@@ -871,63 +961,6 @@ void FormFiller::TriggerRefill(const FormData& form,
                           /*is_refill=*/true);
       },
       refill_context->profile_or_credit_card);
-}
-
-void FormFiller::MaybeTriggerRefillForExpirationDate(
-    const FormData& form,
-    const FormFieldData& field,
-    const FormStructure& form_structure,
-    const std::u16string& old_value,
-    AutofillTriggerSource trigger_source) {
-  // We currently support a single case of refilling credit card expiration
-  // dates: If we filled the expiration date in a format "05/2023" and the
-  // website turned it into "05 / 20" (i.e. it broke the year by cutting the
-  // last two digits instead of stripping the first two digits).
-  constexpr size_t kSupportedLength = std::string_view("MM/YYYY").size();
-  if (old_value.length() != kSupportedLength) {
-    return;
-  }
-  if (old_value == field.value()) {
-    return;
-  }
-  static constexpr char16_t kFormatRegEx[] =
-      uR"(^(\d\d)(\s?[/-]?\s?)?(\d\d|\d\d\d\d)$)";
-  std::vector<std::u16string> old_groups;
-  if (!MatchesRegex<kFormatRegEx>(old_value, &old_groups)) {
-    return;
-  }
-  DCHECK_EQ(old_groups.size(), 4u);
-
-  std::vector<std::u16string> new_groups;
-  if (!MatchesRegex<kFormatRegEx>(field.value(), &new_groups)) {
-    return;
-  }
-  DCHECK_EQ(new_groups.size(), 4u);
-
-  int old_month, old_year, new_month, new_year;
-  if (!base::StringToInt(old_groups[1], &old_month) ||
-      !base::StringToInt(old_groups[3], &old_year) ||
-      !base::StringToInt(new_groups[1], &new_month) ||
-      !base::StringToInt(new_groups[3], &new_year) ||
-      old_groups[3].size() != 4 || new_groups[3].size() != 2 ||
-      old_month != new_month ||
-      // We need to refill if the first two digits of the year were preserved.
-      old_year / 100 != new_year) {
-    return;
-  }
-  std::u16string refill_value = field.value();
-  CHECK(refill_value.size() >= 2);
-  refill_value[refill_value.size() - 1] = '0' + (old_year % 10);
-  refill_value[refill_value.size() - 2] = '0' + ((old_year % 100) / 10);
-
-  if (ShouldTriggerRefill(form_structure,
-                          RefillTriggerReason::kExpirationDateFormatted)) {
-    RefillContext& refill_context =
-        CHECK_DEREF(GetRefillContext(form_structure.global_id()));
-    refill_context.forced_fill_values[field.global_id()] = refill_value;
-    ScheduleRefill(form, form_structure, trigger_source,
-                   RefillTriggerReason::kExpirationDateFormatted);
-  }
 }
 
 void FormFiller::SetRefillContext(FormGlobalId form_id,

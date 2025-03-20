@@ -30,7 +30,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_float32array_uint16array_uint8clampedarray.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_float16array_float32array_uint8clampedarray.h"
 #include "third_party/blink/renderer/core/html/canvas/predefined_color_space.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -135,18 +135,33 @@ ImageData* ImageData::ValidateAndCreate(
   }
 
   // If |data| is provided, ensure it is a reasonable format, and that it can
-  // work with |size|. Update |color_type| to reflect |data|'s format.
+  // work with |size| and |color_type|.
   if (data) {
     DCHECK(data);
     switch ((*data)->GetType()) {
       case DOMArrayBufferView::ViewType::kTypeUint8Clamped:
-        color_type = kRGBA_8888_SkColorType;
+        if (color_type != kRGBA_8888_SkColorType) {
+          exception_state.ThrowDOMException(
+              DOMExceptionCode::kInvalidStateError,
+              "Uint8ClampedArray must use rgba-unorm8 pixelFormat.");
+          return nullptr;
+        }
         break;
-      case DOMArrayBufferView::ViewType::kTypeUint16:
-        color_type = kRGBA_F16_SkColorType;
+      case DOMArrayBufferView::ViewType::kTypeFloat16:
+        if (color_type != kRGBA_F16_SkColorType) {
+          exception_state.ThrowDOMException(
+              DOMExceptionCode::kInvalidStateError,
+              "Float16Array must use rgba-float16 pixelFormat.");
+          return nullptr;
+        }
         break;
       case DOMArrayBufferView::ViewType::kTypeFloat32:
-        color_type = kRGBA_F32_SkColorType;
+        if (color_type != kRGBA_F32_SkColorType) {
+          exception_state.ThrowDOMException(
+              DOMExceptionCode::kInvalidStateError,
+              "Float32Array must use rgba-float32 pixelFormat.");
+          return nullptr;
+        }
         break;
       default:
         exception_state.ThrowDOMException(
@@ -234,8 +249,8 @@ NotShared<DOMArrayBufferView> ImageData::AllocateAndValidateDataArray(
       break;
     case kRGBA_F16_SkColorType:
       data_array = NotShared<DOMArrayBufferView>(
-          zero_initialize ? DOMUint16Array::CreateOrNull(length)
-                          : DOMUint16Array::CreateUninitializedOrNull(length));
+          zero_initialize ? DOMFloat16Array::CreateOrNull(length)
+                          : DOMFloat16Array::CreateUninitializedOrNull(length));
       break;
     case kRGBA_F32_SkColorType:
       data_array = NotShared<DOMArrayBufferView>(
@@ -323,8 +338,8 @@ bool ImageData::IsBufferBaseDetached() const {
   switch (data_->GetContentType()) {
     case V8ImageDataArray::ContentType::kFloat32Array:
       return data_->GetAsFloat32Array()->BufferBase()->IsDetached();
-    case V8ImageDataArray::ContentType::kUint16Array:
-      return data_->GetAsUint16Array()->BufferBase()->IsDetached();
+    case V8ImageDataArray::ContentType::kFloat16Array:
+      return data_->GetAsFloat16Array()->BufferBase()->IsDetached();
     case V8ImageDataArray::ContentType::kUint8ClampedArray:
       return data_->GetAsUint8ClampedArray()->BufferBase()->IsDetached();
   }
@@ -339,8 +354,8 @@ SkPixmap ImageData::GetSkPixmap() const {
     case V8ImageDataArray::ContentType::kFloat32Array:
       data = data_->GetAsFloat32Array()->Data();
       break;
-    case V8ImageDataArray::ContentType::kUint16Array:
-      data = data_->GetAsUint16Array()->Data();
+    case V8ImageDataArray::ContentType::kFloat16Array:
+      data = data_->GetAsFloat16Array()->Data();
       break;
     case V8ImageDataArray::ContentType::kUint8ClampedArray:
       data = data_->GetAsUint8ClampedArray()->Data();
@@ -356,7 +371,7 @@ void ImageData::Trace(Visitor* visitor) const {
   visitor->Trace(settings_);
   visitor->Trace(data_);
   visitor->Trace(data_u8_);
-  visitor->Trace(data_u16_);
+  visitor->Trace(data_f16_);
   visitor->Trace(data_f32_);
   ScriptWrappable::Trace(visitor);
 }
@@ -404,7 +419,7 @@ ImageData::ImageData(const gfx::Size& size,
   DCHECK(data);
 
   data_u8_.Clear();
-  data_u16_.Clear();
+  data_f16_.Clear();
   data_f32_.Clear();
 
   if (settings_) {
@@ -425,13 +440,13 @@ ImageData::ImageData(const gfx::Size& size,
       break;
 
     case kRGBA_F16_SkColorType:
-      DCHECK_EQ(data->GetType(), DOMArrayBufferView::ViewType::kTypeUint16);
-      data_u16_ = data;
-      DCHECK(data_u16_);
+      DCHECK_EQ(data->GetType(), DOMArrayBufferView::ViewType::kTypeFloat16);
+      data_f16_ = data;
+      DCHECK(data_f16_);
       SECURITY_CHECK(
           (base::CheckedNumeric<size_t>(size.width()) * size.height() * 4)
-              .ValueOrDie() <= data_u16_->length());
-      data_ = MakeGarbageCollected<V8ImageDataArray>(data_u16_);
+              .ValueOrDie() <= data_f16_->length());
+      data_ = MakeGarbageCollected<V8ImageDataArray>(data_f16_);
       break;
 
     case kRGBA_F32_SkColorType:

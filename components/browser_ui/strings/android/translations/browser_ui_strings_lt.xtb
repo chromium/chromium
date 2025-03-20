@@ -39,7 +39,9 @@
 <translation id="1538031354170655462">Paprastai svetainėse naudojamas artimojo lauko ryšys (angl. „near-field communication“, NFC), kad būtų galima dirbti su netoliese esančiais sekikliais ar įrenginiais, pvz., nuskaitant ženklelius ar mokant bekontakčiu būdu</translation>
 <translation id="1547123415014299762">Trečiųjų šalių slapukai leidžiami</translation>
 <translation id="1593426485665524382">Nauji veiksmai pasiekiami netoli ekrano viršaus</translation>
+<translation id="1615755956145364867">Svetainėse gali būti prašoma leisti apsaugotą turinį</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1621729191093924223">Funkcijos, kurioms reikalingas mikrofonas, neveiks</translation>
 <translation id="1633720957382884102">Susijusios svetainės</translation>
 <translation id="1644574205037202324">Istorija</translation>
 <translation id="1652197001188145583">Įjungus svetainėse gali būti prašoma naudoti NFC įrenginius. Išjungus svetainėse negalima naudoti NFC įrenginių.</translation>
@@ -54,6 +56,7 @@
 <translation id="1743802530341753419">Paklausti prieš leidžiant svetainėms prisijungti prie įrenginio (rekomenduojama)</translation>
 <translation id="1779089405699405702">Vaizdų dekoderis</translation>
 <translation id="1785415724048343560">Rekomenduojama siekiant užtikrinti geriausią patirtį</translation>
+<translation id="1796588414813960292">Funkcijos, kurioms reikalingas garsas, neveiks</translation>
 <translation id="1799920918471566157">„Chrome“ patarimai</translation>
 <translation id="1816835383954230954">Įjungus „Chrome“ veikia sparčiau, o „JavaScript“ naudojančios funkcijos turėtų veikti, kaip numatyta. Išjungus sumažėja našumas, bet V8 tampa atsparesnė atakoms.</translation>
 <translation id="1818308510395330587">Norėdami leisti „<ph name="APP_NAME" />“ naudoti AR, taip pat įjunkite fotoaparatą <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
@@ -71,6 +74,7 @@
 <translation id="1994173015038366702">Svetainės URL</translation>
 <translation id="2004697686368036666">Funkcijos gali neveikti kai kuriose svetainėse</translation>
 <translation id="2025115093177348061">Išplėstoji realybė</translation>
+<translation id="2028449514182362831">Funkcijos, kurioms reikalingi judesio jutikliai, neveiks</translation>
 <translation id="2030769033451695672">Palieskite, kad grįžtumėte į <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Anuliuoti</translation>
 <translation id="2091887806945687916">Garsas</translation>
@@ -87,6 +91,7 @@
 <translation id="2215727959747642672">Failo redagavimas</translation>
 <translation id="2218389616572918761">Svetainės gali prašyti leidimo naudoti mikrofoną</translation>
 <translation id="2228071138934252756">Norėdami leisti „<ph name="APP_NAME" />“ pasiekti jūsų kamerą, taip pat įjunkite ją <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
+<translation id="2231160360698766265">Svetainėse gali būti leidžiamas apsaugotas turinys</translation>
 <translation id="2235344399760031203">Trečiųjų šalių slapukai užblokuoti</translation>
 <translation id="2238944249568001759">Siūlomos paieškos atsižvelgiant į paskutinį skirtuką</translation>
 <translation id="2241587408274973373">Naujų skirtukų puslapių kortelės</translation>
@@ -256,6 +261,7 @@
 <translation id="4259722352634471385">Naršymas užblokuotas: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Išėjus iš svetainės, joje gali būti toliau sinchronizuojama, kad būtų užbaigtos užduotys, pvz., įkeltos nuotraukos arba išsiųstas pokalbio pranešimas</translation>
 <translation id="4278390842282768270">Leidžiama</translation>
+<translation id="4290791284969893584">Uždarius puslapį, pradėtos užduotys gali likti nebaigtos</translation>
 <translation id="429312253194641664">Svetainėje leidžiama medija</translation>
 <translation id="42981349822642051">Išskleisti</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Galiojimo laikas baigsis rytoj}one{Galiojimo laikas baigsis po # dienos}few{Galiojimo laikas baigsis po # dienų}many{Galiojimo laikas baigsis po # dienos}other{Galiojimo laikas baigsis po # dienų}}</translation>
@@ -530,6 +536,7 @@
 <translation id="8010630645305864042">{TILE_COUNT,plural, =1{Slėpti kortelę „Tęsti naudojant šį skirtuką“}one{Slėpti kortelę „Tęsti naudojant šiuos skirtukus“}few{Slėpti kortelę „Tęsti naudojant šiuos skirtukus“}many{Slėpti kortelę „Tęsti naudojant šiuos skirtukus“}other{Slėpti kortelę „Tęsti naudojant šiuos skirtukus“}}</translation>
 <translation id="802154636333426148">Įvyko atsisiuntimo klaida</translation>
 <translation id="8042586301629853791">Rūšiuoti pagal:</translation>
+<translation id="8051193500142930381">Funkcijos, kurioms reikalingas fotoaparatas, neveiks</translation>
 <translation id="8067883171444229417">Leisti vaizdo įrašą</translation>
 <translation id="8068648041423924542">Nepavyko pasirinkti sertifikato.</translation>
 <translation id="8077120325605624147">Bet kokia svetainė, kurioje lankotės, gali rodyti jums bet kokį skelbimą</translation>
@@ -630,6 +637,7 @@
 <translation id="9138217887606523162">Dabartinis mastelis yra <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9156722768168878035">Leiskite „Chrome“ rodyti naujausius skirtukus įrenginio programų sąraše ir paieškos rezultatuose. Galite bet kada išjungti tai „Chrome“ nustatymuose.</translation>
 <translation id="9162462602695099906">Šis puslapis pavojingas</translation>
+<translation id="9182556968660520230">Neleisti svetainėms leisti apsaugoto turinio</translation>
 <translation id="947156494302904893">Svetainės, kuriose lankotės, gali patvirtinti, kad esate realus asmuo, o ne robotas</translation>
 <translation id="959682366969460160">Sutvarkykite</translation>
 <translation id="967624055006145463">Saugomi duomenys</translation>

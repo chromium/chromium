@@ -43,11 +43,8 @@ EwalletManager::EwalletManager(
     FacilitatedPaymentsApiClientCreator api_client_creator,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider)
     : client_(CHECK_DEREF(client)),
-      api_client_creator_(std::move(api_client_creator)),
-      optimization_guide_decider_(CHECK_DEREF(optimization_guide_decider)) {
-  optimization_guide_decider_->RegisterOptimizationTypes(
-      {optimization_guide::proto::EWALLET_MERCHANT_ALLOWLIST});
-}
+      api_client_creator_(api_client_creator),
+      optimization_guide_decider_(CHECK_DEREF(optimization_guide_decider)) {}
 
 EwalletManager::~EwalletManager() {
   DismissPrompt();
@@ -153,7 +150,7 @@ void EwalletManager::Reset() {
 FacilitatedPaymentsApiClient* EwalletManager::GetApiClient() {
   if (!api_client_) {
     if (api_client_creator_) {
-      api_client_ = std::move(api_client_creator_).Run();
+      api_client_ = api_client_creator_.Run();
     }
   }
 

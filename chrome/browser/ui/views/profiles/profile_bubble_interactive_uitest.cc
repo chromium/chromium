@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/dice_web_signin_interception_bubble_view.h"
-#include "chrome/browser/ui/views/profiles/profile_customization_bubble_view.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"
@@ -99,22 +98,6 @@ class ProfileBubbleInteractiveUiTest : public InProcessBrowserTest {
     EXPECT_TRUE(view->HasFocus());
   }
 };
-
-IN_PROC_BROWSER_TEST_F(ProfileBubbleInteractiveUiTest,
-                       CustomizationBubbleFocus) {
-  // Create the customization bubble, owned by the view hierarchy.
-  ProfileCustomizationBubbleView* bubble = new ProfileCustomizationBubbleView(
-      browser()->profile(), GetAvatarButton());
-  views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(bubble);
-  widget->Show();
-  // The bubble takes focus when it is displayed.
-  views::View* focused_view = WaitForFocus(bubble);
-  ClearFocus(focused_view);
-  // The bubble can be refocused using keyboard shortcuts.
-  Refocus(focused_view);
-  // Cleanup.
-  widget->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
-}
 
 IN_PROC_BROWSER_TEST_F(ProfileBubbleInteractiveUiTest,
                        InterceptionBubbleFocus) {

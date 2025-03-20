@@ -3,14 +3,12 @@
 // found in the LICENSE file.
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {MetricsBrowserProxyImpl, ReadAnythingLogger} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement, ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createApp, stubAnimationFrame} from './common.js';
-import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
-
+import {createApp, mockMetrics, stubAnimationFrame} from './common.js';
+import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 suite('PhraseHighlighting', () => {
   let app: AppElement;
   let metrics: TestMetricsBrowserProxy;
@@ -64,9 +62,7 @@ suite('PhraseHighlighting', () => {
     // the rest of the Read Anything feature, which we are not testing here.
     chrome.readingMode.onConnected = () => {};
 
-    metrics = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(metrics);
-    ReadAnythingLogger.setInstance(new ReadAnythingLogger());
+    metrics = mockMetrics();
     app = await createApp();
 
     // Use a tree with just one sentence. For the actual implementation of

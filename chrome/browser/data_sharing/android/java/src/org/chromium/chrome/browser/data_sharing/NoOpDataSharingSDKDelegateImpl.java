@@ -17,6 +17,7 @@ import org.chromium.components.data_sharing.protocol.CreateGroupParams;
 import org.chromium.components.data_sharing.protocol.DeleteGroupParams;
 import org.chromium.components.data_sharing.protocol.LeaveGroupParams;
 import org.chromium.components.data_sharing.protocol.LookupGaiaIdByEmailParams;
+import org.chromium.components.data_sharing.protocol.ReadGroupWithTokenParams;
 import org.chromium.components.data_sharing.protocol.ReadGroupsParams;
 import org.chromium.components.data_sharing.protocol.RemoveMemberParams;
 
@@ -39,6 +40,16 @@ public class NoOpDataSharingSDKDelegateImpl implements DataSharingSDKDelegate {
     @Override
     public void readGroups(
             ReadGroupsParams params, DataSharingSDKDelegateProtoResponseCallback callback) {
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    callback.run(new byte[0], Status.FAILURE);
+                });
+    }
+
+    @Override
+    public void readGroupWithToken(
+            ReadGroupWithTokenParams params, DataSharingSDKDelegateProtoResponseCallback callback) {
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {

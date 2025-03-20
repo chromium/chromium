@@ -16,6 +16,7 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/service/sync_service_impl.h"
+#include "google_apis/gaia/gaia_id.h"
 
 class Profile;
 
@@ -59,6 +60,10 @@ class SyncServiceImplHarness {
   void SetUsernameForFutureSignins(const std::string& username);
 
   signin::GaiaIdHash GetGaiaIdHashForPrimaryAccount() const;
+
+  // Returns GaiaId for the default test account. This method can be used when
+  // the account is not signed in.
+  GaiaId GetGaiaIdForDefaultTestAccount() const;
 
   // Signs in to a primary account without actually enabling sync the feature.
   [[nodiscard]] bool SignInPrimaryAccount(

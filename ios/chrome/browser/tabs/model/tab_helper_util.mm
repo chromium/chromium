@@ -81,6 +81,7 @@
 #import "ios/chrome/browser/permissions/model/permissions_tab_helper.h"
 #import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_tab_helper.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/reading_list/model/offline_page_tab_helper.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_web_state_observer.h"
@@ -199,6 +200,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
     }
     AppLauncherTabHelper::CreateForWebState(
         web_state, [[AppLauncherAbuseDetector alloc] init], is_off_the_record);
+    ReaderModeTabHelper::CreateForWebState(web_state);
   }
   security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(
       web_state);
@@ -335,8 +337,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
 
   if (!for_bottom_sheet && !is_off_the_record && IsContextualPanelEnabled()) {
     ContextualPanelModelService* model_service =
-        ContextualPanelModelServiceFactory::GetForProfile(
-            ProfileIOS::FromBrowserState(profile));
+        ContextualPanelModelServiceFactory::GetForProfile(profile);
     ContextualPanelTabHelper::CreateForWebState(web_state,
                                                 model_service->models());
   }

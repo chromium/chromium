@@ -57,10 +57,6 @@ class DistillerPage {
   // should be the same regardless of the DistillerPage implementation.
   virtual void DistillPageImpl(const GURL& url, const std::string& script) = 0;
 
-  // The value returned between the JavaScript and the DistillerPage can be
-  // either a dictionary with all the content, or a stringified version.
-  virtual bool StringifyOutput() = 0;
-
  private:
   bool ready_;
   DistillerPageCallback distiller_page_callback_;

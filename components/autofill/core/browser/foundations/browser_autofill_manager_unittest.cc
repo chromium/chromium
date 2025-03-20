@@ -267,9 +267,9 @@ Suggestion GenerateSuggestionFromCardDetails(
       last_four, ObfuscationLengthForCreditCardLastFourDigits());
   if (type == CREDIT_CARD_NUMBER) {
     if (ShouldSplitCardNameAndLastFourDigitsForMetadata()) {
+      std::vector<std::string_view> minor_text = {obfuscated_card_digits};
       return Suggestion(
-          /*main_text=*/network_or_nickname,
-          /*minor_text=*/obfuscated_card_digits,
+          /*main_text=*/network_or_nickname, minor_text,
           /*label=*/expiration_date_label, icon,
           SuggestionType::kCreditCardEntry);
     } else {
@@ -325,8 +325,9 @@ Suggestion GenerateVirtualCardSuggestionFromCreditCardSuggestion(
   const std::u16string& virtual_card_label = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE);
 #if BUILDFLAG(IS_IOS)
-  virtual_card_suggestion.minor_text.value =
-      virtual_card_suggestion.main_text.value;
+  virtual_card_suggestion.minor_texts = {};
+  virtual_card_suggestion.minor_texts.emplace_back(
+      virtual_card_suggestion.main_text.value);
   virtual_card_suggestion.main_text.value = virtual_card_label;
 #elif BUILDFLAG(IS_ANDROID)
   if (field_type == CREDIT_CARD_NUMBER) {
@@ -336,8 +337,9 @@ Suggestion GenerateVirtualCardSuggestionFromCreditCardSuggestion(
     virtual_card_suggestion.main_text.value = base::StrCat(
         {virtual_card_label, u"  ", virtual_card_suggestion.main_text.value});
   } else {
-    virtual_card_suggestion.minor_text.value =
-        virtual_card_suggestion.main_text.value;
+    virtual_card_suggestion.minor_texts = {};
+    virtual_card_suggestion.minor_texts.emplace_back(
+        virtual_card_suggestion.main_text.value);
     virtual_card_suggestion.main_text.value = virtual_card_label;
   }
 #else

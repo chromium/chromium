@@ -19,7 +19,7 @@ namespace password_manager::prefs {
 // general can be disabled using `kCredentialsEnableService` and
 // `kCredentialsEnablePasskeys`, in which case this pref's value is ignored.
 inline constexpr char kAutomaticPasskeyUpgrades[] =
-    "password_manager.automatic_passkey_upgrades";
+    "credentials_enable_automatic_passkey_upgrades";
 
 // Boolean controlling whether the password manager allows automatic signing in
 // through Credential Management API.
@@ -349,13 +349,6 @@ inline constexpr char kAutofillableCredentialsProfileStoreLoginDatabase[] =
 // A cache of whether the account LoginDatabase has autofillable credentials.
 inline constexpr char kAutofillableCredentialsAccountStoreLoginDatabase[] =
     "password_manager.autofillable_credentials_account_store_login_database";
-#endif
-
-#if !BUILDFLAG(IS_IOS)
-// Boolean pref indicating whether the user has accepted the privacy notice
-// agreement for starting the password change flow.
-inline constexpr char kPasswordChangeFlowNoticeAgreement[] =
-    "password_manager.password_change_flow_notice_agreement";
 #endif
 
 // Boolean pref indicating whether password sharing is enabled. Enables both

@@ -31,7 +31,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
@@ -301,6 +300,10 @@ class ContextMenuBrowserTestBase : public MixinBasedInProcessBrowserTest {
     params.link_text = link_text;
     params.page_url = web_contents->GetVisibleURL();
     params.source_type = source_type;
+
+    const bool is_image_media_type =
+        (media_type == blink::mojom::ContextMenuDataMediaType::kImage);
+    params.has_image_contents = is_image_media_type;
 #if BUILDFLAG(IS_MAC)
     params.writing_direction_default = 0;
     params.writing_direction_left_to_right = 0;
@@ -981,16 +984,17 @@ IN_PROC_BROWSER_TEST_P(ContextMenuForLockedFullscreenBrowserTest,
   browser()->SetLockedForOnTask(false);
   const GURL kTestUrl("http://www.google.com/");
   const std::unique_ptr<TestRenderViewContextMenu> menu =
-      CreateContextMenuMediaTypeNone(/*unfiltered_url=*/kTestUrl,
-                                     /*url=*/kTestUrl);
+      CreateContextMenuMediaTypeImage(/*url=*/kTestUrl);
 
   // Verify commands are enabled initially.
   static constexpr int kCommandsToTest[] = {
       // Navigation commands.
       IDC_BACK, IDC_FORWARD, IDC_RELOAD,
+      // Content contextual commands.
+      IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, IDC_CONTENT_CONTEXT_COPYIMAGE,
+      IDC_CONTENT_CONTEXT_COPYIMAGELOCATION, IDC_CONTENT_CONTEXT_INSPECTELEMENT,
       // Other commands (we only test a subset).
-      IDC_VIEW_SOURCE, IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
-      IDC_CONTENT_CONTEXT_INSPECTELEMENT};
+      IDC_VIEW_SOURCE};
   for (int command_id : kCommandsToTest) {
     EXPECT_TRUE(menu->IsCommandIdEnabled(command_id))
         << "Command " << command_id
@@ -1012,16 +1016,17 @@ IN_PROC_BROWSER_TEST_P(ContextMenuForLockedFullscreenBrowserTest,
                        CriticalItemsAreEnabledWhenPinnedAndLockedForOnTask) {
   const GURL kTestUrl("http://www.google.com/");
   const std::unique_ptr<TestRenderViewContextMenu> menu =
-      CreateContextMenuMediaTypeNone(/*unfiltered_url=*/kTestUrl,
-                                     /*url=*/kTestUrl);
+      CreateContextMenuMediaTypeImage(/*url=*/kTestUrl);
 
   // Verify commands are enabled initially.
   static constexpr int kCommandsToTest[] = {
       // Navigation commands.
       IDC_BACK, IDC_FORWARD, IDC_RELOAD,
+      // Content contextual commands.
+      IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, IDC_CONTENT_CONTEXT_COPYIMAGE,
+      IDC_CONTENT_CONTEXT_COPYIMAGELOCATION, IDC_CONTENT_CONTEXT_INSPECTELEMENT,
       // Other commands (we only test a subset).
-      IDC_VIEW_SOURCE, IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
-      IDC_CONTENT_CONTEXT_INSPECTELEMENT};
+      IDC_VIEW_SOURCE};
   for (int command_id : kCommandsToTest) {
     EXPECT_TRUE(menu->IsCommandIdEnabled(command_id))
         << "Command " << command_id
@@ -1034,9 +1039,11 @@ IN_PROC_BROWSER_TEST_P(ContextMenuForLockedFullscreenBrowserTest,
   // Set locked fullscreen state.
   PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
 
-  // Verify page navigation commands remain enabled.
+  // Verify page navigation commands and some contextual content commands remain
+  // enabled.
   static constexpr int kCommandsEnabledInLockedFullscreen[] = {
-      IDC_BACK, IDC_FORWARD, IDC_RELOAD};
+      IDC_BACK, IDC_FORWARD, IDC_RELOAD, IDC_CONTENT_CONTEXT_COPYIMAGE,
+      IDC_CONTENT_CONTEXT_COPYIMAGELOCATION};
   for (int command_id : kCommandsEnabledInLockedFullscreen) {
     EXPECT_TRUE(menu->IsCommandIdEnabled(command_id))
         << "Command " << command_id
@@ -1058,16 +1065,17 @@ IN_PROC_BROWSER_TEST_P(ContextMenuForLockedFullscreenBrowserTest,
                        CriticalItemsAreEnabledWhenLockedForOnTask) {
   const GURL kTestUrl("http://www.google.com/");
   const std::unique_ptr<TestRenderViewContextMenu> menu =
-      CreateContextMenuMediaTypeNone(/*unfiltered_url=*/kTestUrl,
-                                     /*url=*/kTestUrl);
+      CreateContextMenuMediaTypeImage(/*url=*/kTestUrl);
 
   // Verify commands are enabled initially.
   static constexpr int kCommandsToTest[] = {
       // Navigation commands.
       IDC_BACK, IDC_FORWARD, IDC_RELOAD,
+      // Content contextual commands.
+      IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, IDC_CONTENT_CONTEXT_COPYIMAGE,
+      IDC_CONTENT_CONTEXT_COPYIMAGELOCATION, IDC_CONTENT_CONTEXT_INSPECTELEMENT,
       // Other commands (we only test a subset).
-      IDC_VIEW_SOURCE, IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
-      IDC_CONTENT_CONTEXT_INSPECTELEMENT};
+      IDC_VIEW_SOURCE};
   for (int command_id : kCommandsToTest) {
     EXPECT_TRUE(menu->IsCommandIdEnabled(command_id))
         << "Command " << command_id
@@ -1077,9 +1085,11 @@ IN_PROC_BROWSER_TEST_P(ContextMenuForLockedFullscreenBrowserTest,
   // Lock instance for OnTask.
   browser()->SetLockedForOnTask(true);
 
-  // Verify page navigation commands remain enabled.
-  static constexpr int kCommandsEnabledForOnTask[] = {IDC_BACK, IDC_FORWARD,
-                                                      IDC_RELOAD};
+  // Verify page navigation commands and some contextual content commands remain
+  // enabled.
+  static constexpr int kCommandsEnabledForOnTask[] = {
+      IDC_BACK, IDC_FORWARD, IDC_RELOAD, IDC_CONTENT_CONTEXT_COPYIMAGE,
+      IDC_CONTENT_CONTEXT_COPYIMAGELOCATION};
   for (int command_id : kCommandsEnabledForOnTask) {
     EXPECT_TRUE(menu->IsCommandIdEnabled(command_id))
         << "Command " << command_id

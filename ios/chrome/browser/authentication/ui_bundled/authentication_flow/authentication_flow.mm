@@ -259,6 +259,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   raw_ptr<Browser> _browser;
   id<SystemIdentity> _identityToSignIn;
   signin_metrics::AccessPoint _accessPoint;
+  BOOL _precedingHistorySync;
   NSString* _identityToSignInHostedDomain;
 
   // Token to have access to user policies from dmserver.
@@ -304,6 +305,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 - (instancetype)initWithBrowser:(Browser*)browser
                        identity:(id<SystemIdentity>)identity
                     accessPoint:(signin_metrics::AccessPoint)accessPoint
+           precedingHistorySync:(BOOL)precedingHistorySync
               postSignInActions:(PostSignInActionSet)postSignInActions
        presentingViewController:(UIViewController*)presentingViewController
                      anchorView:(UIView*)anchorView
@@ -315,6 +317,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     _browser = browser;
     _identityToSignIn = identity;
     _accessPoint = accessPoint;
+    _precedingHistorySync = precedingHistorySync;
     _postSignInActions = postSignInActions;
     _presentingViewController = presentingViewController;
     _anchorView = anchorView;
@@ -974,12 +977,12 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   // sign-in is done. There is no need to own this instance.
   AuthenticationFlowInProfile* authenticationFlowInProfile =
       [[AuthenticationFlowInProfile alloc]
-            initWithBrowser:newProfileBrowser
-                   identity:_identityToSignIn
-          isManagedIdentity:_identityToSignInHostedDomain.length > 0
-                accessPoint:_accessPoint
-          postSignInActions:self.postSignInActions];
-  authenticationFlowInProfile.precedingHistorySync = self.precedingHistorySync;
+               initWithBrowser:newProfileBrowser
+                      identity:_identityToSignIn
+             isManagedIdentity:_identityToSignInHostedDomain.length > 0
+                   accessPoint:_accessPoint
+          precedingHistorySync:_precedingHistorySync
+             postSignInActions:self.postSignInActions];
   [authenticationFlowInProfile startSignInWithCompletion:_signInCompletion];
   _signInCompletion = nil;
   _didSwitchProfile = YES;
@@ -1024,7 +1027,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 
 // Return YES if capabilities should be fetched for the History Sync screen.
 - (BOOL)shouldFetchCapabilities {
-  if (!self.precedingHistorySync) {
+  if (!_precedingHistorySync) {
     return NO;
   }
 

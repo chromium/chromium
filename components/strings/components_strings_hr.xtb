@@ -54,7 +54,6 @@
 <translation id="1090629319939036170">VR izbornik</translation>
 <translation id="1091463901118115503">Nastavite čitati</translation>
 <translation id="1091779689406092804">snimki zaslona</translation>
-<translation id="1094777233105318927">Podaci o vašem pregledniku, OS-u, uređaju, instaliranom softveru i datotekama</translation>
 <translation id="1096545575934602868">Broj unosa u ovom polju ne smije biti veći od <ph name="MAX_ITEMS_LIMIT" />. Svi će se daljnji unosi odbaciti.</translation>
 <translation id="1097803577928227769">Regionalni parkovi i vrtovi</translation>
 <translation id="1099928364755383720">automatska slika u slici</translation>
@@ -159,6 +158,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1264309058268477500">Alternativna</translation>
 <translation id="1264974993859112054">Sport</translation>
 <translation id="1268480293435976622">Kineska omotnica br. 7</translation>
+<translation id="1269045546668906972">Uključite automatsko popunjavanje pomoću AI-ja da biste automatski ispunili više polja</translation>
 <translation id="1269516672602708785">Brzo izradite novu web-lokaciju na Google web-lokacijama</translation>
 <translation id="1270328905573953738">Selidba i premještaj</translation>
 <translation id="1270502636509132238">Način preuzimanja</translation>
@@ -1139,6 +1139,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3005723025932146533">Prikaži spremljenu kopiju</translation>
 <translation id="300580149047131921">Nedavno korišteno</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab da biste pregledali dostupne radnje, a zatim Enter da biste izvršili odabranu radnju.</translation>
+<translation id="3010991137650052245">Ako želite da se na ovoj web-lokaciji upotrebljava <ph name="PERMISSION" />, odobrite pristup za <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3013711734159931232">Kućanske potrepštine</translation>
 <translation id="3014553260345122294">Poslovne vijesti</translation>
 <translation id="3014726756341138577">Napredne značajke pisača</translation>
@@ -1788,6 +1789,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">Opseg pravila nije podržan.</translation>
+<translation id="411918202192379658">Automatsko popunjavanje upravo je postalo još bolje</translation>
 <translation id="4121428309786185360">Ističe</translation>
 <translation id="4123572138124678573">Trostruko bušenje pri dnu</translation>
 <translation id="412601465078863288">Prijenos je istekao</translation>
@@ -2176,6 +2178,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4819347708020428563">Želite li urediti napomene u zadanom prikazu?</translation>
 <translation id="4822493756793346865">Uobičajene cijene temelje se na trgovinama na cijelom webu u posljednjih 90 dana.</translation>
 <translation id="4822922322149719535">Pregled zapisnika pogrešaka</translation>
+<translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> treba pristup za <ph name="PERMISSION" /> uređaja</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste brzo izradili novu Google tablicu</translation>
 <translation id="4826588772550366629">kameru i mikrofon</translation>
 <translation id="4827283332383516812">Izbriši karticu</translation>
@@ -2906,6 +2909,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6116338172782435947">vidjeti tekst i slike koje kopirate u međuspremnik</translation>
 <translation id="6117833587752089929">Fotografija (saten)</translation>
 <translation id="6118782133429281336">Popis izvora je prazan.</translation>
+<translation id="6120950591512958208">Ovaj kôd primijenite pri naplati.</translation>
 <translation id="612178891608320683">Veganska kuhinja</translation>
 <translation id="6122181661879998141">prednja strana kartice</translation>
 <translation id="6124058285696691147">Preuzimanje privitka</translation>
@@ -4494,7 +4498,6 @@ Dodatne pojedinosti:
 <translation id="8919895429178014996">Sakrij sve stavke</translation>
 <translation id="8922013791253848639">Uvijek dopusti oglase na ovoj web-lokaciji</translation>
 <translation id="8922734931659847428">Ograničeni popis URL-ova stranica koje posjećujete na kojima se odvijaju <ph name="BEGIN_LINK" />događaji naslijeđene tehnologije<ph name="END_LINK" />.</translation>
-<translation id="8924109546403192898">Kad Chrome označi sigurnosne događaje, vašem administratoru šalju se relevantni podaci o tim događajima. To može uključivati URL-ove stranica koje posjetite u Chromeu, URL-ove stranica s kojih ste kopirali podatke, nazive ili metapodatke datoteka, rušenja preglednika ili kartica te korisničko ime koje upotrebljavate za prijavu u aplikacije temeljene na webu, uređaj i Chrome.</translation>
 <translation id="892588693504540538">Bušenje pri vrhu desno</translation>
 <translation id="8926389886865778422">Više me ne pitaj</translation>
 <translation id="8932102934695377596">Sat kasni</translation>

@@ -31,7 +31,6 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -2785,8 +2784,11 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
   if (browser && browser->IsLockedForOnTask()) {
     bool is_page_nav_command =
         (id == IDC_BACK) || (id == IDC_FORWARD) || (id == IDC_RELOAD);
+    bool is_allowed_content_context_command =
+        (id == IDC_CONTENT_CONTEXT_COPYIMAGE) ||
+        (id == IDC_CONTENT_CONTEXT_COPYIMAGELOCATION);
     should_disable_command_for_locked_fullscreen_or_on_task =
-        !is_page_nav_command &&
+        !is_page_nav_command && !is_allowed_content_context_command &&
         !ContextMenuMatcher::IsExtensionsCustomCommandId(id);
   }
 #endif

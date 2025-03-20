@@ -267,6 +267,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1175572348579024023">Scorri</translation>
 <translation id="1175914831232945926">Cifre</translation>
 <translation id="1176471985365269981">Non autorizzati a modificare file o cartelle sul dispositivo</translation>
+<translation id="1176864681932214421">Crea immagini con l'AI</translation>
 <translation id="1177073277575830464">Configurazione rapida di Android completata. Continua la configurazione sul tuo dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1177440945615690056">Puoi connetterti a qualsiasi rete mobile idonea in Impostazioni</translation>
 <translation id="1177548198167638471">Non chiedermelo più</translation>
@@ -624,6 +625,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1430915738399379752">Stampa</translation>
 <translation id="1431188203598586230">Aggiornamento software finale</translation>
 <translation id="1432581352905426595">Gestisci motori di ricerca</translation>
+<translation id="1432650420699700107">I siti possono chiedere di connettersi a qualsiasi dispositivo sulla rete locale</translation>
 <translation id="1433478348197382180">Modalità Lettura</translation>
 <translation id="1433980411933182122">Avvio</translation>
 <translation id="1434696352799406980">L'operazione reimposterà la pagina iniziale, la pagina Nuova scheda, il motore di ricerca e le schede bloccate. Inoltre, disattiverà tutte le estensioni e rimuoverà i dati temporanei, come i cookie. La cronologia, le password salvate e i preferiti non saranno invece cancellati.</translation>
@@ -3685,6 +3687,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3582057310199111521">Inserita in un sito ingannevole e rilevata in una violazione dei dati</translation>
 <translation id="3582299299336701326">Scurisci gli schermi chiari e schiarisci quelli scuri. Premi il tasto per la ricerca + Ctrl + H per attivare e disattivare l'inversione dei colori.</translation>
 <translation id="3584169441612580296">Lettura e modifica di foto, musica e altri contenuti multimediali del computer</translation>
+<translation id="3586741240886978899">Utilizzato su questo sito</translation>
 <translation id="3586806079541226322">Impossibile aprire questo file</translation>
 <translation id="3586931643579894722">Nascondi dettagli</translation>
 <translation id="3587279952965197737">Deve contenere al massimo <ph name="MAX_CHARACTER_COUNT" /> caratteri</translation>
@@ -4061,9 +4064,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
     <ph name="BEGIN_PARAGRAPH2" />Puoi attivare o disattivare l'invio di questi report in qualsiasi momento nelle impostazioni del tuo dispositivo ChromeOS. Se sei un amministratore di dominio, puoi modificare questa impostazione nella Console di amministrazione.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3817879349291136992">Aurora boreale di notte, sopra una piccola casa di campagna.</translation>
 <translation id="3818102823568165369">Certificati locali aggiunti dal sistema operativo o dall'amministratore.</translation>
-<translation id="3818662907126913619">Per utilizzare il dispositivo con il profilo <ph name="DOMAIN" />, la tua organizzazione ha bisogno di informazioni relative al dispositivo.
-
-Potrebbero essere incluse informazioni su software installati, file, browser e sistema operativo del dispositivo.</translation>
 <translation id="3819164369574292143">Aumenta lo zoom per ingrandire gli elementi sullo schermo. Premi il tasto per la ricerca + Ctrl + M per attivare e disattivare l'ingrandimento. Premi Ctrl + Alt + Tasti freccia per spostarti quando è attivo lo zoom.</translation>
 <translation id="3819257035322786455">Backup</translation>
 <translation id="3819261658055281761">Il sistema non è riuscito a memorizzare il token di accesso all'API a lungo termine per questo dispositivo.</translation>
@@ -4381,9 +4381,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4031527940632463547">Sensori bloccati</translation>
 <translation id="4033471457476425443">Aggiungi nuova cartella</translation>
 <translation id="4033963223187371752">I siti sicuri potrebbero incorporare contenuti come immagini o frame Web non sicuri</translation>
-<translation id="4034706080855851454">Per utilizzare il dispositivo con il profilo della tua organizzazione, quest'ultima ha bisogno di informazioni sul dispositivo.
-
-Potrebbero essere incluse informazioni su software installati, file, browser e sistema operativo del dispositivo.</translation>
 <translation id="4034824040120875894">Stampante</translation>
 <translation id="4035758313003622889">&amp;Task Manager</translation>
 <translation id="4035877632587724847">Non consentire</translation>
@@ -4832,6 +4829,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4364830672918311045">Mostrare notifiche</translation>
 <translation id="4367971618859387374">Nome visualizzato</translation>
 <translation id="4368960422722232719">Mostra utilizzo della memoria su una scheda popup quando passi il mouse sopra la scheda</translation>
+<translation id="4369151461324628035">Non consentire ai siti di connettersi a dispositivi sulla rete locale</translation>
 <translation id="4369215744064167350">Richiesta di accesso al sito web approvata</translation>
 <translation id="4369233657762989723">Dettatura on/off</translation>
 <translation id="436926121798828366">Puoi modificare questa impostazione in qualsiasi momento in <ph name="SETTINGS_LINK" /></translation>
@@ -5385,6 +5383,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4772914216048388646">Ordinato</translation>
 <translation id="4773112038801431077">Esegui l'upgrade di Linux</translation>
 <translation id="4773122030389014189">Condividi il gruppo di schede "<ph name="GROUP_NAME" />"</translation>
+<translation id="4773253008034797668">Possono connettersi a qualsiasi dispositivo sulla rete locale</translation>
 <translation id="477548766361111120">Consenti all'estensione di leggere e modificare questo sito</translation>
 <translation id="4776311127346151860">Connessione di <ph name="DEVICE_NAME" /> stabilita</translation>
 <translation id="4776594120007763294">Per aggiungere una pagina da leggere in un secondo momento, fai clic sul pulsante</translation>
@@ -7845,6 +7844,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6563002009564846727">Visualizza i certificati importati da Windows</translation>
 <translation id="6563055593659435495">Impossibile mantenere una connessione con lo smartphone. Assicurati che il tuo smartphone sia nelle vicinanze e sbloccato e che il Bluetooth e il Wi-Fi siano attivi.</translation>
 <translation id="6564860838537532172">Quando esegui una ricerca nella cronologia di navigazione, le ricerche della cronologia, i contenuti della pagina dei risultati più pertinenti e gli output del modello generati vengono inviati a Google e potrebbero essere visualizzati da revisori per migliorare questa funzionalità.</translation>
+<translation id="6565144332292237355">I siti possono usare questa funzionalità per cercare e connettersi a qualsiasi dispositivo sulla tua rete locale</translation>
 <translation id="6569931898053264308">Medi risparmi</translation>
 <translation id="6570622975915850879">Usa un dispositivo diverso</translation>
 <translation id="65711204837946324">Richiede l'autorizzazione al download</translation>
@@ -9353,6 +9353,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7650582458329409456">{COUNT,plural, =1{1 impronta configurata}other{{COUNT} impronte configurate}}</translation>
 <translation id="7650677314924139716">Impostazione di utilizzo dei dati corrente: Solo Wi-Fi</translation>
 <translation id="7650920359639954963">VM non attiva: <ph name="REASON" /></translation>
+<translation id="7651182181030187705">Per avere questo preferito su tutti i tuoi dispositivi, verifica la tua identità</translation>
 <translation id="7651400349472467012">Hotspot istantaneo disponibile</translation>
 <translation id="7651784568388208829">Continuazione attività di Phone Hub</translation>
 <translation id="765293928828334535">Non è possibile aggiungere app, estensioni e script utente da questo sito web</translation>
@@ -9391,6 +9392,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7670434942695515800">Per avere prestazioni ottimali, esegui l'upgrade all'ultima versione. Consigliamo di eseguire il backup dei file in caso di interruzione dell'upgrade. L'avvio dell'upgrade comporterà l'arresto di Linux. Salva i file aperti prima di continuare. <ph name="LINK_START" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="7670483791111801022">Sottotitoli</translation>
 <translation id="7671130400130574146">Usa barra del titolo di sistema e bordi</translation>
+<translation id="7671139479636735732">Fai clic con il tasto destro del mouse per visualizzare facilmente le tue idee</translation>
 <translation id="767127784612208024">Tocca per confermare la reimpostazione</translation>
 <translation id="7671472752213333268">"<ph name="EXTENSION_NAME" />" vuole scansionare da "<ph name="SCANNER_NAME" />".</translation>
 <translation id="7672504401554182757">Scegli quale dispositivo contiene la passkey per <ph name="APP_NAME" /></translation>
@@ -11559,6 +11561,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
       <ph name="LIST_ITEM" />Eseguire lo strumento Diagnostica della connettività Chrome
     <ph name="END_LIST" /></translation>
 <translation id="9161172953291434881">Ti fidi di come questo sito userà i tuoi dati?</translation>
+<translation id="9164418710391288146">Non possono connettersi a nessun dispositivo sulla rete locale</translation>
 <translation id="9165856803582999927">Scansiona questo codice QR con la fotocamera sul dispositivo in cui vuoi creare e salvare la passkey per <ph name="APP_NAME" /></translation>
 <translation id="916607977885256133">Picture in picture</translation>
 <translation id="9166253503936244008">Scansiona questo codice QR con il dispositivo contenente la passkey che vuoi utilizzare per <ph name="APP_NAME" /></translation>
