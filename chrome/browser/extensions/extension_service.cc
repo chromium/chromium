@@ -90,6 +90,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
@@ -963,7 +964,7 @@ void ExtensionService::AddComponentExtension(const Extension* extension) {
     return;
   }
 
-  AddExtension(extension);
+  extension_registrar_->AddExtension(extension);
 }
 
 void ExtensionService::OnExtensionInstalled(

@@ -41,6 +41,7 @@
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
@@ -375,7 +376,8 @@ void InstalledLoader::Load(const ExtensionInfo& info, bool write_to_prefs) {
   if (write_to_prefs)
     extension_prefs_->UpdateManifest(extension.get());
 
-  extension_service_->AddExtension(extension.get());
+  ExtensionRegistrar::Get(extension_service_->profile())
+      ->AddExtension(extension.get());
 }
 
 void InstalledLoader::LoadAllExtensions() {
