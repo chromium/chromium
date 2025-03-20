@@ -5138,6 +5138,112 @@ class CheckAndroidTestAnnotations(unittest.TestCase):
         self.assertIn('OneTest.java', errors[0].items[0])
 
 
+class CheckAndroidNullAwayAnnotatedClasses(unittest.TestCase):
+    """Test the _CheckAndroidNullAwayAnnotatedClasses presubmit check."""
+
+    def testDetectsInClasses(self):
+        """Tests that missing @NullMarked or @NullUnmarked are correctly flagged in classes."""
+        mock_input = MockInputApi()
+        mock_input.files = [
+            MockFile('path/OneMissing.java', ['public class OneMissing']),
+            MockFile('path/TwoMarked.java', [
+                '@NullMarked',
+                'public class TwoMarked {',
+            ]),
+            MockFile('path/ThreeMarked.java', [
+                '@NullUnmarked',
+                'public class ThreeMarked {',
+            ]),
+            MockFile('path/FourMissing.java', ['class FourMissing']),
+        ]
+        results = PRESUBMIT._CheckAndroidNullAwayAnnotatedClasses(mock_input, MockOutputApi())
+        self.assertEqual(1, len(results))
+        self.assertEqual('warning', results[0].type)
+        self.assertEqual(2, len(results[0].items))
+        self.assertIn('OneMissing.java', results[0].items[0])
+        self.assertIn('FourMissing.java', results[0].items[1])
+
+    def testDetectsInAnnotations(self):
+        """Tests that missing @NullMarked or @NullUnmarked are correctly flagged in annotations."""
+        mock_input = MockInputApi()
+        mock_input.files = [
+            MockFile('path/OneMissing.java', ['@interface OneMissing']),
+            MockFile('path/TwoMarked.java', [
+                '@NullMarked',
+                '@interface TwoMarked {',
+            ]),
+        ]
+        results = PRESUBMIT._CheckAndroidNullAwayAnnotatedClasses(mock_input, MockOutputApi())
+        self.assertEqual(1, len(results))
+        self.assertEqual('warning', results[0].type)
+        self.assertEqual(1, len(results[0].items))
+        self.assertIn('OneMissing.java', results[0].items[0])
+
+    def testDetectsInInterfaces(self):
+        """Tests that missing @NullMarked or @NullUnmarked are correctly flagged in interfaces."""
+        mock_input = MockInputApi()
+        mock_input.files = [
+            MockFile('path/OneMissing.java', ['interface OneMissing']),
+            MockFile('path/TwoMarked.java', [
+                '@NullMarked',
+                'interface TwoMarked {',
+            ]),
+        ]
+        results = PRESUBMIT._CheckAndroidNullAwayAnnotatedClasses(mock_input, MockOutputApi())
+        self.assertEqual(1, len(results))
+        self.assertEqual('warning', results[0].type)
+        self.assertEqual(1, len(results[0].items))
+        self.assertIn('OneMissing.java', results[0].items[0])
+
+    def testExcludesTests(self):
+        """Tests that missing @NullMarked or @NullUnmarked are not flagged in tests."""
+        mock_input = MockInputApi()
+        mock_input.files = [
+            MockFile('path/OneTest.java', ['public class OneTest']),
+        ]
+        results = PRESUBMIT._CheckAndroidNullAwayAnnotatedClasses(mock_input, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    def testExcludesTestSupport(self):
+        """Tests that missing @NullMarked or @NullUnmarked are not flagged in test support classes."""
+        mock_input = MockInputApi()
+        mock_input.files = [
+            MockFile('path/test/Two.java', [
+                'public class Two'
+            ]),
+        ]
+        results = PRESUBMIT._CheckAndroidNullAwayAnnotatedClasses(mock_input, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    def testAnnotatingMethodsIsNotEnough(self):
+        """Tests that @NullUnmarked on a method is not enough to pass the check."""
+        mock_input = MockInputApi()
+        mock_input.files = [
+            MockFile('path/OnePartial.java', [
+                'public class OnePartial {',
+                '  @NullUnmarked void foo() {}',
+                '}',
+            ]),
+            MockFile('path/TwoPartial.java', [
+                'public @interface TwoPartial {',
+                '  @NullUnmarked int FOO = 1;',
+                '}',
+            ]),
+            MockFile('path/ThreePartial.java', [
+                'public interface ThreePartial {',
+                '  @NullUnmarked void foo() {}',
+                '}',
+            ]),
+        ]
+        results = PRESUBMIT._CheckAndroidNullAwayAnnotatedClasses(mock_input, MockOutputApi())
+        self.assertEqual(1, len(results))
+        self.assertEqual('warning', results[0].type)
+        self.assertEqual(3, len(results[0].items))
+        self.assertIn('OnePartial.java', results[0].items[0])
+        self.assertIn('TwoPartial.java', results[0].items[1])
+        self.assertIn('ThreePartial.java', results[0].items[2])
+
+
 class AssertNoJsInIosTest(unittest.TestCase):
     def testErrorJs(self):
         input_api = MockInputApi()
