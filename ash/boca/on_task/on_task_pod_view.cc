@@ -27,26 +27,6 @@
 namespace ash {
 namespace {
 
-// Parameters for the OnTask pod.
-constexpr int kPodBorderRadius = 26;
-constexpr int kPodVerticalPadding = 10;
-constexpr int kPodHorizontalPadding = 12;
-constexpr int kPodElementSpace = 8;
-
-// Parameters for the separator in the OnTask pod.
-constexpr int kSeparatorVerticalPadding = 0;
-constexpr int kSeparatorHorizontalPadding = 4;
-
-// Parameters for the label button in the OnTask pod.
-constexpr int kLabelButtonRadius = 16;
-constexpr int kLabelButtonTopPadding = 0;
-constexpr int kLabelButtonLeftPadding = 12;
-constexpr int kLabelButtonButtomPadding = 0;
-constexpr int kLabelButtonRightPadding = 16;
-constexpr int kLabelButtonHeight = 32;
-constexpr int kLabelButtonWidth = 120;
-constexpr int kLabelButtonIconTextSpace = 8;
-
 std::unique_ptr<IconButton> CreateIconButton(base::RepeatingClosure callback,
                                              const gfx::VectorIcon* icon,
                                              int accessible_name_id,
