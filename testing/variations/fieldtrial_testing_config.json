@@ -466,10 +466,8 @@
                 {
                     "name": "Enabled_20240718",
                     "enable_features": [
+                        "AndroidBcivBottomControls",
                         "AndroidBrowserControlsInViz"
-                    ],
-                    "disable_features": [
-                        "AndroidBcivBottomControls"
                     ]
                 }
             ]
