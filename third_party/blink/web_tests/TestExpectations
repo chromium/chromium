@@ -2629,6 +2629,17 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac ] external/wpt/css/cssom-view/visual-scrollIntoView-003.html [ Failure Pass Skip ] # flaky
+external/wpt/css/css-flexbox/percent-height-flex-items-cross-sizes-with-mutations.html [ Failure Pass ]
+[ Win10.20h2 ] external/wpt/bluetooth/bidi/adapter/adapter-powered-on-getAvailability.https.window.html [ Failure Timeout ]
+[ Win10.20h2 ] external/wpt/css/css-flexbox/parsing/flex-computed.html [ Crash ]
+[ Mac14 ] external/wpt/css/css-flexbox/parsing/flex-computed.html [ Crash ]
+[ Linux ] external/wpt/css/css-flexbox/parsing/flex-computed.html [ Crash ]
+[ Win10.20h2 ] external/wpt/css/css-flexbox/parsing/flex-valid.html [ Crash ]
+[ Mac14 ] external/wpt/css/css-flexbox/parsing/flex-valid.html [ Crash ]
+[ Linux ] external/wpt/css/css-flexbox/parsing/flex-valid.html [ Crash ]
+[ Mac15-arm64 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/protocol-handler-register.https.html [ Crash Timeout ]
+[ Mac15-arm64 ] virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/protocol-handler-unregister.https.html [ Skip Timeout ]
 crbug.com/404571518 [ Mac12 ] virtual/gpu/external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html?mimeType=video/webm;codecs=av1,opus [ Failure Timeout ]
 crbug.com/404288142 external/wpt/html/canvas/offscreen/manual/text/canvas.2d.offscreen.worker.lang.html [ Timeout ]
 crbug.com/404288142 external/wpt/html/canvas/offscreen/manual/text/canvas.2d.offscreen.worker.lang.inherit.html [ Timeout ]
@@ -5417,8 +5428,6 @@ crbug.com/1208173 [ Mac ] external/wpt/css/filter-effects/backdrop-filter-basic-
 crbug.com/1208173 [ Mac ] svg/custom/svg-root-with-opacity.html [ Failure ]
 crbug.com/1208173 [ Mac ] virtual/prefer_compositing_to_lcd_text/compositing/overflow/nested-render-surfaces-with-rotation.html [ Failure ]
 crbug.com/1208173 [ Mac ] virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-basic-opacity-2.html [ Failure ]
-
-# Fix to unblock wpt-importer
 
 # Sheriff 2021-05-17
 crbug.com/1210199 http/tests/devtools/elements/elements-panel-restore-selection-when-node-comes-later.js [ Failure Pass ]
