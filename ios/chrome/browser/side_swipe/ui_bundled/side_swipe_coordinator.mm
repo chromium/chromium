@@ -37,9 +37,8 @@
 
 - (void)start {
   _fullscreenController = FullscreenController::FromBrowser(self.browser);
-  ProfileIOS* profile = self.browser->GetProfile();
   feature_engagement::Tracker* engagementTracker =
-      feature_engagement::TrackerFactory::GetForProfile(profile);
+      feature_engagement::TrackerFactory::GetForProfile(self.profile);
   _sideSwipeMediator = [[SideSwipeMediator alloc]
       initWithWebStateList:self.browser->GetWebStateList()];
   _sideSwipeMediator.engagementTracker = engagementTracker;
@@ -169,8 +168,7 @@
 
 // Checks if the user is navigating back to the Lens Overlay.
 - (BOOL)navigatingBackToLensOverlay {
-  if (!IsLensOverlaySameTabNavigationEnabled(
-          self.browser->GetProfile()->GetPrefs()) ||
+  if (!IsLensOverlaySameTabNavigationEnabled(self.profile->GetPrefs()) ||
       IsCompactHeight(self.baseViewController)) {
     return NO;
   }

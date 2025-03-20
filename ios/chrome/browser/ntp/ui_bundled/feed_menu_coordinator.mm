@@ -74,14 +74,14 @@ const CGFloat kManagementContextMenuIconSize = 18;
     return YES;
   }
   PrefService* prefService =
-      ProfileIOS::FromBrowserState(self.browser->GetProfile())->GetPrefs();
+      ProfileIOS::FromBrowserState(self.profile)->GetPrefs();
   return prefService->GetBoolean(feed::prefs::kArticlesListVisible);
 }
 
 // True if the user is signed in.
 - (bool)isSignedIn {
   AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
+      AuthenticationServiceFactory::GetForProfile(self.profile);
   return authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
 }
 
