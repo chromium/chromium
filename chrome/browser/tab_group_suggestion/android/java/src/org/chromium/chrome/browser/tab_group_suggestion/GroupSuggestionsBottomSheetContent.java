@@ -47,6 +47,16 @@ public class GroupSuggestionsBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
+    public float getFullHeightRatio() {
+        return HeightMode.WRAP_CONTENT;
+    }
+
+    @Override
+    public int getPeekHeight() {
+        return HeightMode.DISABLED;
+    }
+
+    @Override
     public boolean swipeToDismissEnabled() {
         return true;
     }
@@ -63,11 +73,15 @@ public class GroupSuggestionsBottomSheetContent implements BottomSheetContent {
 
     @Override
     public int getSheetFullHeightAccessibilityStringId() {
-        return 0;
+        // TODO(397221723): Placeholder string needed for bottom sheet to work. Replace with correct
+        // string later.
+        return R.string.commerce_bottom_sheet_content_opened_full;
     }
 
     @Override
     public int getSheetClosedAccessibilityStringId() {
-        return 0;
+        // TODO(397221723): Placeholder string needed for bottom sheet to work. Replace with correct
+        // string later.
+        return R.string.commerce_bottom_sheet_content_closed;
     }
 }

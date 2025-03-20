@@ -39,6 +39,11 @@ if (is_android) {
     sources = [
       "android/java/res/layout/group_suggestions_bottom_sheet_container.xml",
     ]
+
+    deps = [
+      "//components/strings:components_strings_grd",
+      "//ui/android:ui_java_resources",
+    ]
   }
 
   generate_jni("jni_headers") {
