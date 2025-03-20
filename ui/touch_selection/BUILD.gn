@@ -92,14 +92,12 @@ test("ui_touch_selection_unittests") {
     "longpress_drag_selector_unittest.cc",
     "touch_handle_unittest.cc",
     "touch_selection_controller_unittest.cc",
-    "touch_selection_metrics_unittest.cc",
   ]
 
   deps = [
     ":test_support",
     ":touch_selection",
     "//base/test:run_all_unittests",
-    "//base/test:test_support",
     "//testing/gmock:gmock",
     "//testing/gtest:gtest",
     "//ui/base:base",
