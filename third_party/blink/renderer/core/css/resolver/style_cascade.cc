@@ -343,7 +343,7 @@ void StyleCascade::Apply(CascadeFilter filter) {
     }
   }
 
-  ApplyUnresolvedEnv();
+  ApplyUnresolvedEnv(resolver);
 }
 
 std::unique_ptr<CSSBitset> StyleCascade::GetImportantSet() {
@@ -2559,19 +2559,21 @@ void StyleCascade::MarkHasVariableReference(const CSSProperty& property) {
   state_.StyleBuilder().SetHasVariableReference();
 }
 
-void StyleCascade::ApplyUnresolvedEnv() {
+void StyleCascade::ApplyUnresolvedEnv(CascadeResolver& resolver) {
   // Currently the only field that depends on parsing unresolved env().
-  ApplyIsBottomRelativeToSafeAreaInset();
+  ApplyIsBottomRelativeToSafeAreaInset(resolver);
 }
 
-void StyleCascade::ApplyIsBottomRelativeToSafeAreaInset() {
+void StyleCascade::ApplyIsBottomRelativeToSafeAreaInset(
+    CascadeResolver& resolver) {
   if (!state_.StyleBuilder().HasEnvSafeAreaInsetBottom() ||
       !map_.NativeBitset().Has(CSSPropertyID::kBottom)) {
     return;
   }
 
   const CascadePriority* p = map_.FindKnownToExist(CSSPropertyID::kBottom);
-  if (p->GetOrigin() >= CascadeOrigin::kAnimation) {
+  CascadeOrigin origin = p->GetOrigin();
+  if (origin >= CascadeOrigin::kAnimation) {
     // Effect values from animations/transition do not contain env().
     return;
   }
@@ -2582,12 +2584,27 @@ void StyleCascade::ApplyIsBottomRelativeToSafeAreaInset() {
     return;  // Does not contain env().
   }
 
-  // IsSafeAreaInsetBottom assumes the fallback is not taken.
-  DCHECK(GetEnvironmentVariable(AtomicString("safe-area-inset-bottom"),
-                                /*indices=*/WTF::Vector<unsigned>()));
-
-  if (CSSParserFastPaths::IsSafeAreaInsetBottom(
+  // First, check if env(safe-inset-area-bottom [, ...]) exists anywhere
+  // in the specified value.
+  if (!css_parsing_utils::ContainsSafeAreaInsetBottom(
           unparsed->VariableDataValue()->OriginalText())) {
+    return;
+  }
+
+  // Resolve all substitution functions within that value, and check if we end
+  // up with a simple calc() sum of literal <length> values.
+  CascadeResolver::AutoLock lock(GetCSSPropertyBottom(), resolver);
+  TokenSequence sequence;
+  const TreeScope& tree_scope = TreeScopeAt(match_result_, p->GetPosition());
+  CSSParserTokenStream stream(unparsed->VariableDataValue()->OriginalText());
+  if (!ResolveTokensInto(stream, &tree_scope, resolver,
+                         *unparsed->ParserContext(),
+                         /*function_context=*/nullptr,
+                         /*stop_type=*/kEOFToken, sequence)) {
+    return;
+  }
+
+  if (css_parsing_utils::IsSimpleSum(sequence.OriginalText())) {
     state_.StyleBuilder().SetIsBottomRelativeToSafeAreaInset(true);
 
     UseCounter::Count(
