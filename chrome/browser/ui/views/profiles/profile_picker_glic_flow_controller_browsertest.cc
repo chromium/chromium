@@ -15,11 +15,13 @@
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_destruction_waiter.h"
 #include "chrome/test/base/profile_waiter.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -81,7 +83,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerGlicFlowControllerBrowserTest,
       picked_profile_callback.Get());
   controller.PickProfile(new_profile_path, ProfilePicker::ProfilePickingArgs());
 
-  profile_waiter.WaitForProfileAdded();
+  Profile* loaded_profile = profile_waiter.WaitForProfileAdded();
+  signin::WaitForRefreshTokensLoaded(
+      IdentityManagerFactory::GetForProfile(loaded_profile));
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerGlicFlowControllerBrowserTest,
