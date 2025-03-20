@@ -2958,7 +2958,7 @@
   {
     "name": "enable-enterprise-updated-profile-creation-screen",
     "owners": [ "ydago@chromium.org", "cbe-magic@google.com" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "enable-eol-notification-reset-dismissed-prefs",
