@@ -899,10 +899,8 @@ bool CanReloadInputViews() {
   // Prepare the dismissal callback.
   __weak __typeof(self) weakSelf = self;
   CallbackWithIPHDismissalReasonType dismissalCallback =
-      ^(IPHDismissalReasonType IPHDismissalReasonType,
-        feature_engagement::Tracker::SnoozeAction snoozeAction) {
-        [weakSelf IPHDidDismissWithSnoozeAction:snoozeAction
-                                     forFeature:featureForIPH];
+      ^(IPHDismissalReasonType IPHDismissalReasonType) {
+        [weakSelf IPHDidDismissForFeature:featureForIPH];
       };
 
   // Create the BubbleViewControllerPresenter.
@@ -952,13 +950,11 @@ bool CanReloadInputViews() {
       kAutofillSuggestionTipDelay);
 }
 
-- (void)IPHDidDismissWithSnoozeAction:
-            (feature_engagement::Tracker::SnoozeAction)snoozeAction
-                           forFeature:(SuggestionFeatureForIPH)featureForIPH {
+- (void)IPHDidDismissForFeature:(SuggestionFeatureForIPH)featureForIPH {
   feature_engagement::Tracker* tracker = self.featureEngagementTracker;
   if (tracker) {
     const base::Feature* feature = FetchIPHFeatureFromEnum(featureForIPH);
-    tracker->DismissedWithSnooze(*feature, snoozeAction);
+    tracker->Dismissed(*feature);
   }
   self.bubblePresenter = nil;
 }

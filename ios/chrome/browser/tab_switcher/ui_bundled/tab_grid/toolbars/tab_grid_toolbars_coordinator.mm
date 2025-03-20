@@ -83,9 +83,7 @@
              arrowDirection:BubbleArrowDirectionUp
                   alignment:BubbleAlignmentCenter
                  bubbleType:BubbleViewTypeDefault
-          dismissalCallback:^(
-              IPHDismissalReasonType reason,
-              feature_engagement::Tracker::SnoozeAction action) {
+          dismissalCallback:^(IPHDismissalReasonType reason) {
             [weakSelf savedTabGroupIPHDismissed];
           }];
 
