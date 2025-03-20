@@ -5,9 +5,8 @@
 module printing.mojom;
 
 // Print job color mode values.
-[Stable, Extensible]
 enum ColorModel {
-  [Default] kUnknownColorModel,
+  kUnknownColorModel,
   kGray,
   kColor,
   kCMYK,
@@ -38,21 +37,20 @@ enum ColorModel {
   kSharpARCModeCMBW,            // Used in Sharp printer PPDs.
   kXeroxXRXColorAutomatic,      // Used in Xerox printer PPDs.
   kXeroxXRXColorBW,             // Used in Xerox printer PPDs.
-  kColorModelLast = kXeroxXRXColorBW,  // Obsolete, do not use
-  [MinVersion=1] kCanonCNColorModeColor,       // Used in Canon printer PPDs.
-  [MinVersion=1] kCanonCNColorModeMono,        // Used in Canon printer PPDs.
-  [MinVersion=1] kCanonCNIJGrayScaleOne,       // Used in Canon printer PPDs.
-  [MinVersion=1] kCanonCNIJGrayScaleZero,      // Used in Canon printer PPDs.
+  kCanonCNColorModeColor,       // Used in Canon printer PPDs.
+  kCanonCNColorModeMono,        // Used in Canon printer PPDs.
+  kCanonCNIJGrayScaleOne,       // Used in Canon printer PPDs.
+  kCanonCNIJGrayScaleZero,      // Used in Canon printer PPDs.
   // Used in Konica Minolta printer PPDs.
-  [MinVersion=1] kKonicaMinoltaSelectColorColor,
-  [MinVersion=1] kKonicaMinoltaSelectColorGrayscale,
-  [MinVersion=1] kOkiOKControlColor,           // Used in Oki printer PPDs.
-  [MinVersion=1] kOkiOKControlGray,            // Used in Oki printer PPDs.
+  kKonicaMinoltaSelectColorColor,
+  kKonicaMinoltaSelectColorGrayscale,
+  kOkiOKControlColor,           // Used in Oki printer PPDs.
+  kOkiOKControlGray,            // Used in Oki printer PPDs.
   // Used in Xerox printer PPDs.
-  [MinVersion=1] kXeroxXROutputColorPrintAsColor,
-  [MinVersion=1] kXeroxXROutputColorPrintAsGrayscale,
-  [MinVersion=2] kHpPjlColorAsGrayNo,   // Used in HP printer PPDs.
-  [MinVersion=2] kHpPjlColorAsGrayYes,  // Used in HP printer PPDs.
+  kXeroxXROutputColorPrintAsColor,
+  kXeroxXROutputColorPrintAsGrayscale,
+  kHpPjlColorAsGrayNo,   // Used in HP printer PPDs.
+  kHpPjlColorAsGrayYes,  // Used in HP printer PPDs.
 };
 
 // Print job duplex mode values.
