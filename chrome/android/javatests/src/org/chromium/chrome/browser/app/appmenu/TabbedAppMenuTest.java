@@ -56,9 +56,9 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 
 import java.io.IOException;
 import java.util.concurrent.Callable;
@@ -321,7 +321,7 @@ public class TabbedAppMenuTest {
         // Fake an identity error.
         fakeSyncService.setRequiresClientUpgrade(true);
         // Sign in and wait for sync machinery to be active.
-        mSigninTestRule.addTestAccountThenSignin();
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
         showAppMenuAndAssertMenuShown();
         View view = getSettingsMenuItemView();
@@ -338,53 +338,12 @@ public class TabbedAppMenuTest {
     public void testSettingsMenuItem_NoBadgeShownForSignedInUsersIfNoError() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
         // Sign in and wait for sync machinery to be active.
-        mSigninTestRule.addTestAccountThenSignin();
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
         showAppMenuAndAssertMenuShown();
         View view = getSettingsMenuItemView();
         Assert.assertNull(view.findViewById(R.id.menu_item_text).getContentDescription());
         mRenderTestRule.render(view, "settings_menu_item_signed_in_user_no_error");
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"Browser", "Main", "RenderTest"})
-    public void testSettingsMenuItem_BadgeShownForSyncingUsersOnSyncError() throws IOException {
-        ThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
-        FakeSyncServiceImpl fakeSyncService =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
-                            SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
-                            return fakeSyncServiceImpl;
-                        });
-        // Fake an identity error.
-        fakeSyncService.setRequiresClientUpgrade(true);
-        // Sign in and wait for sync machinery to be active.
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
-
-        showAppMenuAndAssertMenuShown();
-        View view = getSettingsMenuItemView();
-        assertEquals(
-                "Content description should mention an error.",
-                view.findViewById(R.id.menu_item_text).getContentDescription(),
-                mActivityTestRule.getActivity().getString(R.string.menu_settings_account_error));
-        mRenderTestRule.render(view, "settings_menu_item_syncing_user_sync_error");
-    }
-
-    @Test
-    @LargeTest
-    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30)
-    @Feature({"Browser", "Main", "RenderTest"})
-    public void testSettingsMenuItem_NoBadgeShownForSyncingUsersIfNoError() throws IOException {
-        ThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
-        // Sign in and wait for sync machinery to be active.
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
-
-        showAppMenuAndAssertMenuShown();
-        View view = getSettingsMenuItemView();
-        Assert.assertNull(view.findViewById(R.id.menu_item_text).getContentDescription());
-        mRenderTestRule.render(view, "settings_menu_item_syncing_user_no_error");
     }
 
     private void showAppMenuAndAssertMenuShown() {

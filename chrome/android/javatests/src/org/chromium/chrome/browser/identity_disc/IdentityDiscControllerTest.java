@@ -166,7 +166,7 @@ public class IdentityDiscControllerTest {
     @MediumTest
     public void testIdentityDiscWithNavigation() {
         // User is signed in.
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         ViewUtils.waitForVisibleView(allOf(withId(R.id.optional_toolbar_button), isDisplayed()));
 
         // Identity Disc should be hidden on navigation away from NTP.
@@ -300,7 +300,7 @@ public class IdentityDiscControllerTest {
     @MediumTest
     @SuppressWarnings("CheckReturnValue")
     public void testIdentityDiscWithSwitchToIncognito() {
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         ViewUtils.waitForVisibleView(withId(R.id.optional_toolbar_button));
 
         // Identity Disc should not be visible, when switched from sign in state to incognito NTP.

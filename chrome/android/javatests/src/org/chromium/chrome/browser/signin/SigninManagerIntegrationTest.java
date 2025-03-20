@@ -343,7 +343,7 @@ public class SigninManagerIntegrationTest {
 
     @Test
     @MediumTest
-    public void testClearPrimaryAccountWithSyncNotEnabled_signsOut() {
+    public void testClearPrimaryAccount_signsOut() {
         // Add accounts.
         mSigninTestRule.addTestAccountThenSignin();
 
@@ -365,56 +365,7 @@ public class SigninManagerIntegrationTest {
 
     @Test
     @MediumTest
-    public void testClearPrimaryAccountWithSyncEnabled_signsOut() {
-        // Add accounts.
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Assert.assertTrue(mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC));
-
-                    // Run test.
-                    mSigninManager.signOut(SignoutReason.TEST);
-
-                    Assert.assertFalse(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
-                });
-
-        // Wait for the operation to have completed - the revokeSyncConsent processing calls back
-        // SigninManager, and if we don't wait for this to complete before test teardown then we
-        // can hit a race condition where this async processing overlaps with the signout causing
-        // teardown to fail.
-        verify(mSignInStateObserverMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
-                .onSignedOut();
-    }
-
-    @Test
-    @MediumTest
-    public void testRevokeSyncConsent_disablesSync() {
-        // Add account.
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Assert.assertTrue(mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC));
-
-                    // Run test.
-                    mSigninManager.revokeSyncConsent(SignoutReason.TEST, null, false);
-
-                    Assert.assertFalse(mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC));
-                    Assert.assertTrue(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
-                });
-
-        // Wait for the operation to have completed - the revokeSyncConsent processing calls back
-        // SigninManager, and if we don't wait for this to complete before test teardown then we
-        // can hit a race condition where this async processing overlaps with the signout causing
-        // teardown to fail.
-        verify(mSignInStateObserverMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
-                .onSignedOut();
-    }
-
-    @Test
-    @MediumTest
-    public void testSignInWithoutSync_waitForPrefCommit() {
+    public void testSignIn_waitForPrefCommit() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         SigninTestUtil.signinAndWaitForPrefsCommit(TestAccounts.ACCOUNT1);
 
