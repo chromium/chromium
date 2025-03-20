@@ -719,7 +719,7 @@
     {
       // https://chromestatus.com/feature/5066778773028864
       name: "CanvasTextLang",
-      status: "experimental",
+      status: "stable",
     },
     {
       // crbug.com/389726691.
