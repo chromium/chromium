@@ -5653,7 +5653,7 @@ bool Element::ShouldRecalcHighlightPseudoStyle(
   // If the originating element is a container for sizes, it means the
   // container has changed from that of the parent highlight, so we need
   // to re-evaluate container units.
-  if (highlight_parent && highlight_parent->HasContainerRelativeUnits() &&
+  if (highlight_parent && highlight_parent->HasContainerRelativeValue() &&
       originating_container == this &&
       originating_style.CanMatchSizeContainerQueries(*this)) {
     return true;

@@ -798,7 +798,7 @@ class ComputedStyle final : public ComputedStyleBase {
            HasGlyphRelativeUnits();
   }
   bool HasAnyRelativeUnits() const {
-    return HasFontRelativeUnits() || HasContainerRelativeUnits() ||
+    return HasFontRelativeUnits() || HasContainerRelativeValue() ||
            HasLogicalDirectionRelativeUnits() || HasViewportUnits();
   }
 

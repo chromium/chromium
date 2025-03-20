@@ -443,7 +443,7 @@ void ApplyLengthConversionFlags(StyleResolverState& state) {
   }
   if (flags & static_cast<Flags>(Flag::kContainerRelative)) {
     builder.SetDependsOnSizeContainerQueries(true);
-    builder.SetHasContainerRelativeUnits();
+    builder.SetHasContainerRelativeValue();
   }
   if (flags & static_cast<Flags>(Flag::kTreeScopedReference)) {
     state.SetHasTreeScopedReference();

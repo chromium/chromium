@@ -2056,9 +2056,7 @@ void StyleCascade::FlattenFunctionBody(
       }
     } else if (auto* container_rule =
                    DynamicTo<StyleRuleContainer>(child.Get())) {
-      // TODO(crbug.com/394353319): Rename this flag to accommodate any
-      // CQ-dependent value.
-      state_.StyleBuilder().SetHasContainerRelativeUnits();
+      state_.StyleBuilder().SetHasContainerRelativeValue();
       if (EvaluateContainerQuery(
               state_.GetElement(), state_.GetPseudoId(),
               container_rule->GetContainerQuery(), function_tree_scope,
