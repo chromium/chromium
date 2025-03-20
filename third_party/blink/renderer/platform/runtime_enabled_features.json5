@@ -444,6 +444,11 @@
       name: "AriaRowColIndexText",
       status: "stable",
     },
+    {
+      // When enabled, perform async IPCs from CookieJar::SetCookie to the
+      // network service.
+      name: "AsyncSetCookie",
+    },
     // This flag specifically guards live Range (and by extension, selection)
     // preservation for atomic move (`moveBefore()`). This is not part of the
     // launching proposal, per discussion in

@@ -19,6 +19,8 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl_hash.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
@@ -69,21 +71,50 @@ void CookieJar::SetCookie(const String& value) {
   base::ElapsedTimer timer;
   RequestRestrictedCookieManagerIfNeeded();
 
-  network::mojom::blink::CookiesResponsePtr response;
+  CookiesResponsePtr response;
   const bool get_version_shared_memory =
       !shared_memory_version_client_.has_value();
   const bool apply_devtools_overrides = ShouldApplyDevtoolsOverrides();
-  if (!backend_->SetCookieFromString(
-          cookie_url, document_->SiteForCookies(), document_->TopFrameOrigin(),
-          document_->GetExecutionContext()->GetStorageAccessApiStatus(),
-          get_version_shared_memory, apply_devtools_overrides, value,
-          &response)) {
-    // On IPC failure invalidate cached values and return empty string since
-    // there is no guarantee the client can still validly access cookies in
-    // the current context. See crbug.com/1468909.
-    InvalidateCache();
-    return;
+  if (RuntimeEnabledFeatures::AsyncSetCookieEnabled()) {
+    required_committed_writes_++;
+    backend_->SetCookieFromString(
+        cookie_url, document_->SiteForCookies(), document_->TopFrameOrigin(),
+        document_->GetExecutionContext()->GetStorageAccessApiStatus(),
+        get_version_shared_memory, apply_devtools_overrides, value,
+        WTF::BindOnce(&CookieJar::OnSetCookieResponse, WrapWeakPersistent(this),
+                      cookie_url, apply_devtools_overrides));
+  } else {
+    if (!backend_->SetCookieFromString(
+            cookie_url, document_->SiteForCookies(),
+            document_->TopFrameOrigin(),
+            document_->GetExecutionContext()->GetStorageAccessApiStatus(),
+            get_version_shared_memory, apply_devtools_overrides, value,
+            &response)) {
+      // On IPC failure invalidate cached values and return empty string since
+      // there is no guarantee the client can still validly access cookies in
+      // the current context. See crbug.com/1468909.
+      InvalidateCache();
+      return;
+    }
+    OnSetCookieResponse(cookie_url, apply_devtools_overrides,
+                        std::move(response));
   }
+  last_operation_was_set_ = true;
+  base::UmaHistogramTimes("Blink.SetCookieTime", timer.Elapsed());
+  if (is_first_operation_) {
+    LogFirstCookieRequest(FirstCookieRequest::kFirstOperationWasSet);
+  }
+
+  // TODO(crbug.com/40808935): Remove after truncating characters are fully
+  // deprecated
+  if (value.Find(ContainsTruncatingChar) != kNotFound) {
+    document_->CountDeprecation(WebFeature::kCookieWithTruncatingChar);
+  }
+}
+
+void CookieJar::OnSetCookieResponse(const KURL& cookie_url,
+                                    bool apply_devtools_overrides,
+                                    CookiesResponsePtr response) {
   if (response) {
     if (response->version_buffer.IsValid()) {
       shared_memory_version_client_.emplace(
@@ -92,23 +123,13 @@ void CookieJar::SetCookie(const String& value) {
 
     // When features GetCookiesOnSet is disabled, an invalid version is
     // returned, then don't update the cache.
-    if (response->version != mojo::shared_memory_version::kInvalidVersion) {
+    if (response->version != mojo::shared_memory_version::kInvalidVersion &&
+        response->version > last_version_) {
       last_devtools_overrides_were_applied = apply_devtools_overrides;
       last_cookies_ = response->cookies;
       UpdateCacheAfterGetRequest(cookie_url, response->cookies,
                                  response->version);
     }
-  }
-  last_operation_was_set_ = true;
-  base::UmaHistogramTimes("Blink.SetCookieTime", timer.Elapsed());
-  if (is_first_operation_) {
-    LogFirstCookieRequest(FirstCookieRequest::kFirstOperationWasSet);
-  }
-
-  // TODO(crbug.com/1276520): Remove after truncating characters are fully
-  // deprecated
-  if (value.Find(ContainsTruncatingChar) != kNotFound) {
-    document_->CountDeprecation(WebFeature::kCookieWithTruncatingChar);
   }
 }
 
@@ -220,6 +241,14 @@ bool CookieJar::IPCNeeded(bool should_apply_devtools_overrides) {
 
   // No shared memory communication so IPC needed.
   if (!shared_memory_version_client_.has_value()) {
+    return true;
+  }
+
+  // Pending write commits.
+  // When AsyncSetCookie is disabled, required_committed_writes_ always equals
+  // 0, then this check is never true.
+  if (shared_memory_version_client_->CommittedWritesIsLessThan(
+          required_committed_writes_)) {
     return true;
   }
 
