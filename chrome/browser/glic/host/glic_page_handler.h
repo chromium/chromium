@@ -15,11 +15,15 @@
 
 namespace content {
 class BrowserContext;
+class RenderFrameHost;
 class WebContents;
 }  // namespace content
 namespace gfx {
 class Size;
 }  // namespace gfx
+namespace extensions {
+class WebViewGuest;
+}  // namespace extensions
 
 namespace glic {
 class GlicKeyedService;
@@ -42,13 +46,13 @@ class GlicPageHandler : public glic::mojom::PageHandler {
   // Called whenever a guest view is added to the WebContents owned by this
   // WebUI. Because we embed only one webview, there should only ever be one
   // guest view alive at one time within GlicPageHandler.
-  void GuestAdded(content::WebContents* guest_contents);
+  void GuestAdded(extensions::WebViewGuest* guest);
 
   void NotifyWindowIntentToShow();
 
-  // Returns the guest view's WebContents that lives within this WebUI. May be
-  // null.
-  content::WebContents* guest_contents() { return guest_contents_.get(); }
+  // Returns the main frame of the guest view that lives within this WebUI. May
+  // be null.
+  content::RenderFrameHost* GetGuestMainFrame();
 
   // glic::mojom::PageHandler implementation.
 
@@ -75,7 +79,7 @@ class GlicPageHandler : public glic::mojom::PageHandler {
   std::unique_ptr<GlicWebClientHandler> web_client_handler_;
   raw_ptr<content::WebContents> webui_contents_;
   raw_ptr<content::BrowserContext> browser_context_;
-  base::WeakPtr<content::WebContents> guest_contents_;
+  base::WeakPtr<extensions::WebViewGuest> guest_;
   mojo::Receiver<glic::mojom::PageHandler> receiver_;
   mojo::Remote<glic::mojom::Page> page_;
   mojo::Remote<glic::mojom::WebClient> web_client_;

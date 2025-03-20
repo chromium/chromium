@@ -74,9 +74,10 @@ class GlicApiTest : public test::InteractiveGlicTest {
   // If the test uses `advanceToNextStep()`, then ContinueJsTest() must be
   // called later.
   void ExecuteJsTest() {
-    content::WebContents* web_contents = FindGlicGuestWebContents();
-    ASSERT_TRUE(web_contents);
-    auto result = content::EvalJs(web_contents, base::StrCat({"runApiTest()"}));
+    content::RenderFrameHost* glic_guest_frame = FindGlicGuestMainFrame();
+    ASSERT_TRUE(glic_guest_frame);
+    auto result =
+        content::EvalJs(glic_guest_frame, base::StrCat({"runApiTest()"}));
     ASSERT_THAT(result, content::EvalJsResult::IsOk());
     ProcessTestResult(result);
   }
@@ -85,20 +86,20 @@ class GlicApiTest : public test::InteractiveGlicTest {
   // control to C++.
   void ContinueJsTest() {
     ASSERT_TRUE(next_step_required_);
-    content::WebContents* web_contents = FindGlicGuestWebContents();
+    content::RenderFrameHost* glic_guest_frame = FindGlicGuestMainFrame();
     next_step_required_ = false;
-    ASSERT_TRUE(web_contents);
+    ASSERT_TRUE(glic_guest_frame);
     auto result =
-        content::EvalJs(web_contents, base::StrCat({"continueApiTest()"}));
+        content::EvalJs(glic_guest_frame, base::StrCat({"continueApiTest()"}));
     ProcessTestResult(result);
   }
 
-  content::WebContents* FindGlicGuestWebContents() {
+  content::RenderFrameHost* FindGlicGuestMainFrame() {
     GlicKeyedService* glic =
         GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
     for (GlicPageHandler* handler : glic->GetPageHandlersForTesting()) {
-      if (handler->guest_contents()) {
-        return handler->guest_contents();
+      if (handler->GetGuestMainFrame()) {
+        return handler->GetGuestMainFrame();
       }
     }
     return nullptr;
