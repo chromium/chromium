@@ -62,7 +62,6 @@ buildflag_header("media_buildflags") {
     "PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT=$platform_has_optional_hevc_decode_support",
     "PLATFORM_HAS_OPTIONAL_HEVC_ENCODE_SUPPORT=$platform_has_optional_hevc_encode_support",
     "USE_ARC_PROTECTED_MEDIA=$use_arc_protected_media",
-    "USE_CHROMEOS_MEDIA_ACCELERATION=$use_vaapi||$use_v4l2_codec",
     "USE_CHROMEOS_PROTECTED_AV1=$use_chromeos_protected_av1",
     "USE_CHROMEOS_PROTECTED_MEDIA=$use_chromeos_protected_media",
     "USE_CRAS=$use_cras",
@@ -70,6 +69,12 @@ buildflag_header("media_buildflags") {
     "ENABLE_GPU_CHANNEL_MEDIA_CAPTURE=$enable_gpu_channel_media_capture",
     "USE_OPENSLES=$media_use_opensles",
   ]
+
+  if (use_vaapi || use_v4l2_codec) {
+    flags += [ "USE_CHROMEOS_MEDIA_ACCELERATION=true" ]
+  } else {
+    flags += [ "USE_CHROMEOS_MEDIA_ACCELERATION=false" ]
+  }
 
   if (enable_library_cdms) {
     flags += [
