@@ -307,7 +307,7 @@ LogicalOffset GetFragmentainerProgression(const BoxFragmentBuilder& builder,
                                           FragmentationType type) {
   if (type == kFragmentColumn) {
     LayoutUnit column_inline_progression = ColumnInlineProgression(
-        builder.ChildAvailableSize().inline_size, builder.Style());
+        builder.Style(), builder.ChildAvailableSize().inline_size);
     return LogicalOffset(column_inline_progression, LayoutUnit());
   }
   DCHECK_EQ(type, kFragmentPage);

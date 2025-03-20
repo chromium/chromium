@@ -156,22 +156,14 @@ class BaselineAccumulator {
 
 LayoutUnit RowGap(const ComputedStyle& style,
                   LogicalSize percentage_resolution_size) {
-  if (const std::optional<Length>& row_gap = style.RowGap()) {
-    return MinimumValueForLength(
-        *row_gap,
-        percentage_resolution_size.block_size.ClampIndefiniteToZero());
-  }
-  return LayoutUnit();
+  return ResolveRowGapLength(style, percentage_resolution_size.block_size)
+      .value_or(LayoutUnit());
 }
 
 LayoutUnit ColumnGap(const ComputedStyle& style,
                      LogicalSize percentage_resolution_size) {
-  if (const std::optional<Length>& column_gap = style.ColumnGap()) {
-    return MinimumValueForLength(
-        *column_gap,
-        percentage_resolution_size.inline_size.ClampIndefiniteToZero());
-  }
-  return LayoutUnit();
+  return ResolveColumnGapLength(style, percentage_resolution_size.inline_size)
+      .value_or(LayoutUnit());
 }
 
 }  // anonymous namespace
