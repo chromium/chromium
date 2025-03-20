@@ -664,11 +664,20 @@ bool PdfViewerStreamManager::MaybeRegisterPdfSubresourceOverride(
 
 bool PdfViewerStreamManager::MaybeSetUpPostMessage(
     content::NavigationHandle* navigation_handle) {
-  // Only set up postMessage if `navigation_handle` is for the PDF content
-  // frame.
+  // Only set up postMessage if `navigation_handle` is for a PDF content frame.
   auto* claimed_stream_info =
       GetClaimedStreamInfoFromPdfContentNavigation(navigation_handle);
   if (!claimed_stream_info) {
+    return false;
+  }
+
+  // If the user reloads the PDF URL before the PDF content frame finishes
+  // loading, the initial PDF content frame navigation might reach
+  // `MaybeSetUpPostMessage()` during the new PDF load and incorrectly set up
+  // the stream info. Only continue PDF setup if the PDF content navigation is
+  // for the new PDF load.
+  if (navigation_handle->GetFrameTreeNodeId() !=
+      claimed_stream_info->content_host_frame_tree_node_id()) {
     return false;
   }
 
