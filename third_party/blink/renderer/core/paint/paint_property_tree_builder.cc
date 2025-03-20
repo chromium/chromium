@@ -2217,7 +2217,8 @@ static std::optional<FloatRoundedRect> PathToRRect(const Path& path) {
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
-  if (NeedsPaintPropertyUpdate()) {
+  if (NeedsPaintPropertyUpdate() ||
+      !ClipPathClipper::ClipPathStatusResolved(object_)) {
     DCHECK(!precise_clip_path_rect_.has_value());
     if (NeedsClipPathClipOrMask(object_,
                                 /*fully_resolve_composited_state=*/true)) {
