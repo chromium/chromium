@@ -43,6 +43,10 @@
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/zlib/google/compression_utils.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/sync/test/integration/sync_test_utils_android.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 using syncer::SyncCycleSnapshot;
 using syncer::SyncServiceImpl;
 
@@ -206,6 +210,15 @@ signin::GaiaIdHash SyncServiceImplHarness::GetGaiaIdHashForPrimaryAccount()
   return signin::GaiaIdHash::FromGaiaId(
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .gaia);
+}
+
+GaiaId SyncServiceImplHarness::GetGaiaIdForDefaultTestAccount() const {
+#if !BUILDFLAG(IS_ANDROID)
+  return signin::GetTestGaiaIdForEmail(username_);
+#else   // !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/40165479): pass `username_` once supported.
+  return sync_test_utils_android::GetGaiaIdForDefaultTestAccount();
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 bool SyncServiceImplHarness::SignInPrimaryAccount(

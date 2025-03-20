@@ -117,7 +117,8 @@ TEST_F(SavedTabGroupConversionTest, GroupToDataRetainsData) {
   const base::Uuid kOriginatingSavedTabGroupGuid =
       base::Uuid::GenerateRandomV4();
   group.SetLastUserInteractionTime(time_);
-  group.SetOriginatingTabGroupGuid(kOriginatingSavedTabGroupGuid);
+  group.SetOriginatingTabGroupGuid(kOriginatingSavedTabGroupGuid,
+                                   /*use_originating_tab_group_guid=*/true);
   group.SetIsHidden(true);
 
   proto::SavedTabGroupData proto =
