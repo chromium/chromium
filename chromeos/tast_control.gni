@@ -102,6 +102,9 @@ tast_disabled_tests_from_chrome_all = [
   # b/404564227, Failing on jacuzzi, blocking uprev.
   "oobe.SmokeEndToEnd",
 
+  # b/404950758, Flaky, blocking uprev.
+  "secagentd.AuthenticationEvents",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
