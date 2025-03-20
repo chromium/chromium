@@ -258,15 +258,6 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
                 && isSigninSupported(/* requireUpdatedPlayServices= */ false);
     }
 
-    /** Returns true if sync opt in can be started now. */
-    @Override
-    public boolean isSyncOptInAllowed() {
-        return mSignInState == null
-                && mSigninAllowedPref
-                && mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) == null
-                && isSigninSupported(/* requireUpdatedPlayServices= */ false);
-    }
-
     /** Returns true if sign out can be started now. */
     @Override
     public boolean isSignOutAllowed() {
@@ -352,15 +343,15 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
     }
 
     private void signinInternal(SignInState signInState) {
-        assert isSyncOptInAllowed()
+        assert isSigninAllowed()
                 : String.format(
                         "Sign-in isn't allowed!\n"
                                 + "  mSignInState: %s\n"
                                 + "  mSigninAllowedPref: %s\n"
-                                + "  Primary sync account: %s",
+                                + "  Signed-in account: %s",
                         mSignInState,
                         mSigninAllowedPref,
-                        mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC));
+                        mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
         assert signInState != null : "SigninState shouldn't be null!";
 
         // The mSignInState must be updated prior to the async processing below, as this indicates

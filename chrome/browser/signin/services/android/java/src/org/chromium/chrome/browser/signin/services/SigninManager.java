@@ -99,9 +99,6 @@ public interface SigninManager {
      */
     boolean isSigninAllowed();
 
-    /** Returns true if sync opt in can be started now. */
-    boolean isSyncOptInAllowed();
-
     /**
      * Returns whether the user can sign-in (maybe after an update to Google Play services).
      *
