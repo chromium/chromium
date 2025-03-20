@@ -47,6 +47,7 @@
 #include "net/base/load_flags.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/mime_sniffer.h"
+#include "net/base/net_errors.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/transport_info.h"
@@ -733,7 +734,8 @@ URLLoader::URLLoader(
       include_request_cookies_with_response_(
           request.trusted_params &&
           request.trusted_params->include_request_cookies_with_response),
-      provide_data_use_updates_(context.DataUseUpdatesEnabled()) {
+      provide_data_use_updates_(context.DataUseUpdatesEnabled()),
+      partial_decoder_decoding_buffer_size_(net::kMaxBytesToSniff) {
   DCHECK(delete_callback_);
 
   // crbug.com/387537990: Experiment with creating the mojo data pipe
@@ -2261,14 +2263,173 @@ void URLLoader::ContinueOnResponseStartedImmediately() {
       response_->mime_type.assign("text/plain");
     }
   }
-  // TODO(crbug.com/402337002): When client side content decoding is enabled,
-  // we need to run MIME sniffing after decoding the first 1024 bytes of the
-  // body.
+
+  // If client-side content decoding is requested and either ORB or MIME
+  // sniffing is needed, use PartialDecoder to get decoded data for sniffing.
+  if (!response_->client_side_content_decoding_types.empty() &&
+      (is_more_orb_sniffing_needed_ || is_more_mime_sniffing_needed_)) {
+    // Create a PartialDecoder to decode the response body up to a certain limit
+    // for sniffing purposes.
+    partial_decoder_ = std::make_unique<PartialDecoder>(
+        base::BindRepeating(
+            [](base::WeakPtr<net::URLRequest> url_request, net::IOBuffer* dest,
+               int dest_size) {
+              CHECK(url_request);
+              return url_request->Read(dest, dest_size);
+            },
+            url_request_->GetWeakPtr()),
+        response_->client_side_content_decoding_types,
+        partial_decoder_decoding_buffer_size_);
+    // Start reading decoded data from the partial decoder.
+    ReadDecodedDataFromPartialDecoder();
+    return;
+  }
 
   StartReading();
 }
 
+void URLLoader::ReadDecodedDataFromPartialDecoder() {
+  // Keep reading from the partial decoder until it signals pending or
+  // completes.
+  while (partial_decoder_) {
+    // Attempt to read more decoded data.
+    int result = partial_decoder_->ReadDecodedDataMore(
+        base::BindOnce(&URLLoader::OnReadDecodedDataFromPartialDecoder,
+                       base::Unretained(this)));
+    if (result == net::ERR_IO_PENDING) {
+      // If the read is pending, return and wait for the callback.
+      return;
+    }
+    // Process the result immediately.
+    CheckPartialDecoderResult(result);
+    if (partial_decoder_result_) {
+      // Sniffing is complete, and we have the raw data. Stop using the
+      // partial decoder and proceed to read the rest of the response.
+      StartReading();
+      return;
+    }
+  }
+}
+
+void URLLoader::OnReadDecodedDataFromPartialDecoder(int result) {
+  // This is the callback from `PartialDecoder::ReadDecodedDataMore`.
+  // Process the result of the partial decode.
+  CheckPartialDecoderResult(result);
+  if (partial_decoder_result_) {
+    // Sniffing is complete. Proceed to read the full response.
+    StartReading();
+  } else if (partial_decoder_) {
+    // More sniffing might be needed, continue reading from the partial decoder.
+    ReadDecodedDataFromPartialDecoder();
+  }
+}
+
+void URLLoader::CheckPartialDecoderResult(int result) {
+  if (result < 0) {
+    // The partial decoder failed. Stop decoding and report the error.
+    partial_decoder_.reset();
+    // Defer calling NotifyCompleted to make sure the caller can still access
+    // |this|.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&URLLoader::NotifyCompleted,
+                                  weak_ptr_factory_.GetWeakPtr(), result));
+    return;
+  }
+  // Check if we should stop sniffing after processing the current chunk of
+  // decoded data. This happens if the decoder returns 0 (end of stream) or
+  // if the decoded buffer is full.
+  const bool stop_sniffing_after_processing_current_data =
+      (result == 0 || !partial_decoder_->HasRemainingBuffer());
+
+  // Get a view of the decoded data, limited to the maximum sniffing size.
+  // Capping the size to net::kMaxBytesToSniff for tests which have called
+  // set_partial_decoder_decoding_buffer_size_for_testing().
+  const std::string_view decoded_data_to_sniff =
+      base::as_string_view(partial_decoder_->decoded_data())
+          .substr(0, net::kMaxBytesToSniff);
+
+  if (is_more_mime_sniffing_needed_) {
+    // Perform MIME sniffing using the decoded data.
+    CHECK(mime_type_before_sniffing_.has_value());
+    std::string new_type;
+    is_more_mime_sniffing_needed_ = !net::SniffMimeType(
+        decoded_data_to_sniff, url_request_->url(),
+        mime_type_before_sniffing_.value(),
+        net::ForceSniffFileUrlsForHtml::kDisabled, &new_type);
+    response_->mime_type = std::move(new_type);
+    response_->did_mime_sniff = true;
+
+    if (stop_sniffing_after_processing_current_data) {
+      is_more_mime_sniffing_needed_ = false;
+    }
+  }
+
+  if (is_more_orb_sniffing_needed_) {
+    // Perform ORB sniffing using the decoded data.
+    orb::ResponseAnalyzer::Decision orb_decision =
+        result == 0 ? orb::ResponseAnalyzer::Decision::kSniffMore
+                    : orb_analyzer_->Sniff(decoded_data_to_sniff);
+    if (orb_decision == orb::ResponseAnalyzer::Decision::kSniffMore &&
+        stop_sniffing_after_processing_current_data) {
+      // If more sniffing was requested but we've reached the limit, get the
+      // final decision for the sniffed data.
+      orb_decision = orb_analyzer_->HandleEndOfSniffableResponseBody();
+      DCHECK_NE(orb::ResponseAnalyzer::Decision::kSniffMore, orb_decision);
+    }
+    if (MaybeBlockResponseForOrb(orb_decision)) {
+      partial_decoder_.reset();
+      return;
+    }
+  }
+  // If no more sniffing is needed, retrieve the accumulated raw data from the
+  // partial decoder.
+  if (!is_more_orb_sniffing_needed_ && !is_more_mime_sniffing_needed_) {
+    partial_decoder_result_ = std::move(*partial_decoder_).TakeResult();
+  }
+}
+
 void URLLoader::ReadMore() {
+  if (partial_decoder_result_) {
+    // If we have buffered raw data from the partial decoder, send that first.
+    while (partial_decoder_result_->HasRawData()) {
+      MojoResult result = NetToMojoPendingBuffer::BeginWrite(
+          &response_body_stream_, &pending_write_);
+      switch (result) {
+        case MOJO_RESULT_OK:
+          break;
+        case MOJO_RESULT_SHOULD_WAIT:
+          // The Mojo data pipe is full. Wait for it to become writable.
+          // While a SlopBucket would be ideal when enabled, it's omitted here
+          // for simplicity.
+          //
+          // This scenario occurs when the PartialDecoder reads raw data
+          // exceeding the Mojo data pipe's capacity. However, since the
+          // PartialDecoder only reads decompressed data up to
+          // net::kMaxBytesToSniff, this situation is extremely rare in
+          // real-world scenarios.
+          writable_handle_watcher_.ArmOrNotify();
+          return;
+        default:
+          // The response body stream is in a bad state. This happens when the
+          // consumer handle of the body was synchronously released in
+          // URLLoaderClient::OnReceiveResponse().
+          NotifyCompleted(net::ERR_FAILED);
+          return;
+      }
+      // Copy data from the raw buffer into the Mojo pipe buffer.
+      pending_write_buffer_offset_ = partial_decoder_result_->ConsumeRawData(
+          base::as_writable_byte_span(*pending_write_));
+      CHECK(pending_write_buffer_offset_);
+      CompletePendingWrite(true);
+    }
+    // Check if the partial decoder finished with a specific status.
+    if (partial_decoder_result_->completion_status()) {
+      NotifyCompleted(*partial_decoder_result_->completion_status());
+      return;
+    }
+    partial_decoder_result_.reset();
+  }
+
   DCHECK(!read_in_progress_);
   // Once the MIME type is sniffed, all data is sent as soon as it is read from
   // the network.
@@ -2510,6 +2671,12 @@ void URLLoader::DidRead(int num_bytes,
 
 void URLLoader::OnReadCompleted(net::URLRequest* url_request, int bytes_read) {
   DCHECK(url_request == url_request_.get());
+  if (partial_decoder_ && partial_decoder_->read_in_progress()) {
+    // When `partial_decoder_` is reading the body from `url_request`, pass the
+    // result to `partial_decoder_`.
+    partial_decoder_->OnReadRawDataCompleted(bytes_read);
+    return;
+  }
 
   bool into_slop_bucket = false;
   if (slop_bucket_ && slop_bucket_->read_in_progress()) {

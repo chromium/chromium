@@ -46,12 +46,12 @@
 }
 
 #tooltip-icon {
-  --iron-icon-height: 20px;
-  --iron-icon-width: 20px;
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
 
   display: inline-block;
   margin-inline-start: 4px;
-  vertical-align: top;
+  vertical-align: text-bottom;
 }
 
 #tooltip {

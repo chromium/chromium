@@ -2361,11 +2361,4 @@ class BookmarkBarViewTest29 : public BookmarkBarViewDragTestBase {
   }
 };
 
-// TODO(crbug.com/40943907): Flaky on Mac.
-// TODO(crbug.com/40947483): Flaky on Windows.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#define MAYBE_DNDToEmptyMenu DISABLED_DNDToEmptyMenu
-#else
-#define MAYBE_DNDToEmptyMenu DNDToEmptyMenu
-#endif
-VIEW_TEST(BookmarkBarViewTest29, MAYBE_DNDToEmptyMenu)
+VIEW_TEST(BookmarkBarViewTest29, DNDToEmptyMenu)

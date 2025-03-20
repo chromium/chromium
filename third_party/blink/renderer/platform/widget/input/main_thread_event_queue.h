@@ -204,6 +204,8 @@ class PLATFORM_EXPORT MainThreadEventQueue
   // is best effort. It is fine that the compositor executes a slightly
   // different path for events in flight while these variables are
   // mutated via the main thread.
+  //
+  // As a result, use relaxed ordering for all accesses to these variables.
   std::atomic<bool> has_pointerrawupdate_handlers_ = false;
   std::atomic<bool> needs_low_latency_ = false;
   std::atomic<bool> needs_unbuffered_input_for_debugger_ = false;

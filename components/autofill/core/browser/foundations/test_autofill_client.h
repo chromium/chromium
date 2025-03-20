@@ -467,9 +467,8 @@ class TestAutofillClientTemplate : public T {
                                 ModelExecutionEnterprisePolicyValue::kAllow),
         PrefRegistry::LOSSY_PREF);
 
-    AccountInfo account_info =
-        identity_test_environment().MakePrimaryAccountAvailable(
-            "foo@gmail.com", signin::ConsentLevel::kSignin);
+    identity_test_environment().MakePrimaryAccountAvailable(
+        "foo@gmail.com", signin::ConsentLevel::kSignin);
     SetCanUseModelExecutionFeatures(true);
     SetVariationConfigCountryCode(GeoIpCountryCode("US"));
   }

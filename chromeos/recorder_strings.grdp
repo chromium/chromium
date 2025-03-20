@@ -47,8 +47,8 @@
   <message desc="Disclaimer under generative AI features." name="IDS_RECORDER_GEN_AI_DISCLAIMER_TEXT">
     Generative AI is experimental and content may be inaccurate, misleading, or offensive.
   </message>
-  <message desc="Status message for screen reader to update that the summary and title creation model fails to download." name="IDS_RECORDER_GEN_AI_DOWNLOAD_ERROR_STATUS_MESSAGE">
-    Can't download model for summary and title creation. Try again or restart your Chromebook.
+  <message desc="Status message for screen reader to update that the summary and title creation model fails to download. The [deviceType] will be replaced by an untranslatable product name." name="IDS_RECORDER_GEN_AI_DOWNLOAD_ERROR_STATUS_MESSAGE">
+    Can't download model for summary and title creation. Try again or restart your <ph name="DEVICE_TYPE">[deviceType]</ph>.
   </message>
   <message desc="Status message for screen reader to update that the summary and title creation model finished downloading." name="IDS_RECORDER_GEN_AI_DOWNLOAD_FINISHED_STATUS_MESSAGE">
     Summary and title creation model download completed
@@ -65,8 +65,8 @@
   <message desc="Accessibility label of the button to download summary and title creation model again in the generative AI features." name="IDS_RECORDER_GEN_AI_ERROR_MODEL_DOWNLOAD_BUTTON_ARIA_LABEL">
     Download summary and title creation model
   </message>
-  <message desc="Error message for model load error in generative AI features." name="IDS_RECORDER_GEN_AI_ERROR_MODEL_LOAD_FAILURE_LABEL">
-    Can't download. Try again or restart your Chromebook.
+  <message desc="Error message for model load error in generative AI features. The [deviceType] will be replaced by an untranslatable product name." name="IDS_RECORDER_GEN_AI_ERROR_MODEL_LOAD_FAILURE_LABEL">
+    Can't download. Try again or restart your <ph name="DEVICE_TYPE">[deviceType]</ph>.
   </message>
   <message desc="Error message for unsupported transcript language input for summary." name="IDS_RECORDER_GEN_AI_ERROR_SUMMARY_LANGUAGE_UNSUPPORTED_LABEL">
     Can’t create summary for this transcript language
@@ -146,11 +146,11 @@
   <message desc="Accessibility label of download button in the language picker." name="IDS_RECORDER_LANGUAGE_PICKER_LANGUAGE_DOWNLOAD_BUTTON_ARIA_LABEL">
     Download and select <ph name="LANGUAGE_NAME">$1<ex>English</ex></ph> transcription model
   </message>
-  <message desc="Accessibility label of error language row in the language picker." name="IDS_RECORDER_LANGUAGE_PICKER_LANGUAGE_DOWNLOAD_ERROR_ARIA_LABEL">
-    Can't download <ph name="LANGUAGE_NAME">$1<ex>English</ex></ph> transcription model. Try again or restart your Chromebook
+  <message desc="Accessibility label of error language row in the language picker. The [deviceType] will be replaced by an untranslatable product name." name="IDS_RECORDER_LANGUAGE_PICKER_LANGUAGE_DOWNLOAD_ERROR_ARIA_LABEL">
+    Can't download <ph name="LANGUAGE_NAME">$1<ex>English</ex></ph> transcription model. Try again or restart your <ph name="DEVICE_TYPE">[deviceType]</ph>.
   </message>
-  <message desc="Status message for screen reader to announce the language download failure in the language picker." name="IDS_RECORDER_LANGUAGE_PICKER_LANGUAGE_DOWNLOAD_ERROR_STATUS_MESSAGE">
-    Can't download <ph name="LANGUAGE_NAME">$1<ex>English</ex></ph> transcription model. Try again or restart your Chromebook
+  <message desc="Status message for screen reader to announce the language download failure in the language picker. The [deviceType] will be replaced by an untranslatable product name." name="IDS_RECORDER_LANGUAGE_PICKER_LANGUAGE_DOWNLOAD_ERROR_STATUS_MESSAGE">
+    Can't download <ph name="LANGUAGE_NAME">$1<ex>English</ex></ph> transcription model. Try again or restart your <ph name="DEVICE_TYPE">[deviceType]</ph>.
   </message>
   <message desc="Status message for screen reader to announce the language download completion in the language picker." name="IDS_RECORDER_LANGUAGE_PICKER_LANGUAGE_DOWNLOAD_FINISHED_STATUS_MESSAGE">
     <ph name="LANGUAGE_NAME">$1<ex>English</ex></ph> transcription model download completed
@@ -158,8 +158,8 @@
   <message desc="Status message for screen reader to announce the language download start in the language picker." name="IDS_RECORDER_LANGUAGE_PICKER_LANGUAGE_DOWNLOAD_STARTED_STATUS_MESSAGE">
     <ph name="LANGUAGE_NAME">$1<ex>English</ex></ph> transcription model download in progress
   </message>
-  <message desc="Description of language error state in the language picker." name="IDS_RECORDER_LANGUAGE_PICKER_LANGUAGE_ERROR_DESCRIPTION">
-    Can’t download. Try again or restart your Chromebook.
+  <message desc="Description of language error state in the language picker. The [deviceType] will be replaced by an untranslatable product name." name="IDS_RECORDER_LANGUAGE_PICKER_LANGUAGE_ERROR_DESCRIPTION">
+    Can’t download. Try again or restart your <ph name="DEVICE_TYPE">[deviceType]</ph>.
   </message>
   <message desc="Accessibility label of not downloaded language row in the language picker." name="IDS_RECORDER_LANGUAGE_PICKER_LANGUAGE_NOT_DOWNLOADED_ARIA_LABEL">
     Download and select <ph name="LANGUAGE_NAME">$1<ex>English</ex></ph> transcription model
@@ -203,11 +203,11 @@
   <message desc="Tooltip of the combobox to choose microphone to use in recording session." meaning="Microphone device to use in recordding session." name="IDS_RECORDER_MIC_SELECTION_MENU_BUTTON_TOOLTIP">
     Mic options
   </message>
-  <message desc="Label of the option to include system audio in the recording." name="IDS_RECORDER_MIC_SELECTION_MENU_CHROMEBOOK_AUDIO_OPTION">
-    Chromebook audio
-  </message>
   <message desc="Description of mic connection error in the mic selection menu." name="IDS_RECORDER_MIC_SELECTION_MENU_MIC_CONNECTION_ERROR_DESCRIPTION">
     Connect a mic to start recording audio
+  </message>
+  <message desc="Label of the option to include system audio in the recording. The [deviceType] will be replaced by an untranslatable product name." name="IDS_RECORDER_MIC_SELECTION_MENU_SYSTEM_AUDIO_OPTION">
+    <ph name="DEVICE_TYPE">[deviceType]</ph> audio
   </message>
   <message desc="Button to defer transcription language selection and go next step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_LANGUAGE_SELECTION_CANCEL_BUTTON">
     Cancel
@@ -432,8 +432,8 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Button to save and exit in the exit recording dialog." name="IDS_RECORDER_RECORD_EXIT_DIALOG_SAVE_AND_EXIT_BUTTON">
     Save and exit
   </message>
-  <message desc="Description of general audio error dialog during recording." name="IDS_RECORDER_RECORD_GENERAL_AUDIO_ERROR_DIALOG_DESCRIPTION">
-    Make sure your mic is connected or try restarting your Chromebook
+  <message desc="Description of general audio error dialog during recording. The [deviceType] will be replaced by an untranslatable product name." name="IDS_RECORDER_RECORD_GENERAL_AUDIO_ERROR_DIALOG_DESCRIPTION">
+    Make sure your mic is connected or try restarting your <ph name="DEVICE_TYPE">[deviceType]</ph>
   </message>
   <message desc="Header of general audio error dialog during recording." name="IDS_RECORDER_RECORD_GENERAL_AUDIO_ERROR_DIALOG_HEADER">
     Something went wrong
@@ -501,8 +501,8 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Header when transcription is off in the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_OFF_HEADER">
     No transcript will be created
   </message>
-  <message desc="Description when the selected transcription language failed to install in the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_UNUSABLE_ERROR_DESCRIPTION">
-    Can’t download transcription model. Try again or restart your Chromebook.
+  <message desc="Description when the selected transcription language failed to install in the transcription view while recording. The [deviceType] will be replaced by an untranslatable product name." name="IDS_RECORDER_RECORD_TRANSCRIPTION_UNUSABLE_ERROR_DESCRIPTION">
+    Can’t download transcription model. Try again or restart your <ph name="DEVICE_TYPE">[deviceType]</ph>.
   </message>
   <message desc="Header when transcription is unusable in the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_UNUSABLE_HEADER">
     Can't create transcript
@@ -543,8 +543,8 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Accessibility label of the button to download summary and title creation model in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_GEN_AI_DOWNLOAD_BUTTON_ARIA_LABEL">
     Download summary and title creation model
   </message>
-  <message desc="Description of the summary and title creation setting when the summary and title creation model fails to download." name="IDS_RECORDER_SETTINGS_OPTIONS_GEN_AI_ERROR_DESCRIPTION">
-    Can't download. Try again or restart your Chromebook.
+  <message desc="Description of the summary and title creation setting when the summary and title creation model fails to download. The [deviceType] will be replaced by an untranslatable product name." name="IDS_RECORDER_SETTINGS_OPTIONS_GEN_AI_ERROR_DESCRIPTION">
+    Can't download. Try again or restart your <ph name="DEVICE_TYPE">[deviceType]</ph>.
   </message>
   <message desc="Label of the summary and title creation setting in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_GEN_AI_LABEL">
     Recording summary and title creation
@@ -579,8 +579,8 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Accessibility label of the transcription model download button in the settings." name="IDS_RECORDER_SETTINGS_OPTIONS_TRANSCRIPTION_DOWNLOAD_BUTTON_ARIA_LABEL">
     Download transcription model
   </message>
-  <message desc="Description of transcription error state in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_TRANSCRIPTION_ERROR_DESCRIPTION">
-    Can’t download. Try again or restart your Chromebook.
+  <message desc="Description of transcription error state in settings. The [deviceType] will be replaced by an untranslatable product name." name="IDS_RECORDER_SETTINGS_OPTIONS_TRANSCRIPTION_ERROR_DESCRIPTION">
+    Can’t download. Try again or restart your <ph name="DEVICE_TYPE">[deviceType]</ph>.
   </message>
   <message desc="Label of the transcription toggle in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_TRANSCRIPTION_LABEL">
     Audio transcription
@@ -636,14 +636,14 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Button to cancel recording from system audio." name="IDS_RECORDER_SYSTEM_AUDIO_CONSENT_DIALOG_CANCEL_BUTTON">
     Cancel
   </message>
-  <message desc="Button to acknowledge recording all sounds from Chromebook." name="IDS_RECORDER_SYSTEM_AUDIO_CONSENT_DIALOG_CONSENT_BUTTON">
+  <message desc="Button to acknowledge recording all sounds from the device." name="IDS_RECORDER_SYSTEM_AUDIO_CONSENT_DIALOG_CONSENT_BUTTON">
     OK
   </message>
-  <message desc="Description of the system audio consent dialog." name="IDS_RECORDER_SYSTEM_AUDIO_CONSENT_DIALOG_DESCRIPTION">
-    When Chromebook audio is on, Recorder captures all audio playing on this device
+  <message desc="Description of the system audio consent dialog. The [deviceType] will be replaced by an untranslatable product name." name="IDS_RECORDER_SYSTEM_AUDIO_CONSENT_DIALOG_DESCRIPTION">
+    When <ph name="DEVICE_TYPE">[deviceType]</ph> audio is on, Recorder captures all audio playing on this device
   </message>
-  <message desc="Header of the system audio consent dialog." name="IDS_RECORDER_SYSTEM_AUDIO_CONSENT_DIALOG_HEADER">
-    Recording all Chromebook audio
+  <message desc="Header of the system audio consent dialog. The [deviceType] will be replaced by an untranslatable product name." name="IDS_RECORDER_SYSTEM_AUDIO_CONSENT_DIALOG_HEADER">
+    Recording all <ph name="DEVICE_TYPE">[deviceType]</ph> audio
   </message>
   <message desc="Message after users edit the title of a recording." name="IDS_RECORDER_TITLE_EDIT_SNACKBAR_MESSAGE">
     Title edited

@@ -32,8 +32,8 @@ class WKContentRuleListProvider;
 class WKWebViewConfigurationProvider : public base::SupportsUserData::Data {
  public:
   // Callbacks invoked when a new WKWebViewConfiguration is created.
-  using ConfigurationCreatedCallbackList =
-      base::RepeatingCallbackList<void(WKWebViewConfiguration*)>;
+  using WebSiteDataStoreUpdatedCallbackList =
+      base::RepeatingCallbackList<void(WKWebsiteDataStore*)>;
 
   ~WKWebViewConfigurationProvider() override;
 
@@ -93,10 +93,10 @@ class WKWebViewConfigurationProvider : public base::SupportsUserData::Data {
   // in debug builds).
   void Purge();
 
-  // Registers callback to be invoked when a new WKWebViewConfiguration is
-  // created for this provider.
-  base::CallbackListSubscription RegisterConfigurationCreatedCallback(
-      ConfigurationCreatedCallbackList::CallbackType callback);
+  // Registers callback to be invoked when the website data store is updated for
+  // this provider.
+  base::CallbackListSubscription RegisterWebSiteDataStoreUpdatedCallback(
+      WebSiteDataStoreUpdatedCallbackList::CallbackType callback);
 
  private:
   explicit WKWebViewConfigurationProvider(BrowserState* browser_state);
@@ -110,8 +110,8 @@ class WKWebViewConfigurationProvider : public base::SupportsUserData::Data {
   raw_ptr<BrowserState> browser_state_;
   std::unique_ptr<WKContentRuleListProvider> content_rule_list_provider_;
 
-  // List of callbacks notified when a new WKWebViewConfiguration is created.
-  ConfigurationCreatedCallbackList configuration_created_callbacks_;
+  // List of callbacks notified when the website data store is updated.
+  WebSiteDataStoreUpdatedCallbackList website_data_store_updated_callbacks_;
 
   // Whether the data store is originated from //ios/web. This is used to
   // determine whether the data store should be reset when the configuration is

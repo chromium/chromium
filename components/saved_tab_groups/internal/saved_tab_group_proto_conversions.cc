@@ -188,7 +188,9 @@ SavedTabGroup DataToSavedTabGroup(const proto::SavedTabGroupData& data) {
   group.SetUpdateTimeWindowsEpochMicros(update_time);
   group.SetLastUserInteractionTime(last_user_interaction_time);
   if (originating_tab_group_guid.is_valid()) {
-    group.SetOriginatingTabGroupGuid(std::move(originating_tab_group_guid));
+    // The user is always an owner of saved tab groups.
+    group.SetOriginatingTabGroupGuid(std::move(originating_tab_group_guid),
+                                     /*use_originating_tab_group_guid=*/true);
   }
   group.SetIsHidden(is_hidden);
 
@@ -244,9 +246,10 @@ proto::SavedTabGroupData SavedTabGroupToData(const SavedTabGroup& group) {
       group.last_user_interaction_time()
           .ToDeltaSinceWindowsEpoch()
           .InMicroseconds());
-  if (group.originating_tab_group_guid().has_value()) {
+
+  if (group.GetOriginatingTabGroupGuid().has_value()) {
     local_data->set_originating_tab_group_guid(
-        group.originating_tab_group_guid().value().AsLowercaseString());
+        group.GetOriginatingTabGroupGuid().value().AsLowercaseString());
   }
   local_data->set_is_group_hidden(group.is_hidden());
 

@@ -1040,7 +1040,8 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncNewGroupWithTabs) {
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
   group.SetCollaborationId(CollaborationId("collaboration"));
-  group.SetOriginatingTabGroupGuid(kOriginatingSavedTabGroupGuid);
+  group.SetOriginatingTabGroupGuid(kOriginatingSavedTabGroupGuid,
+                                   /*use_originating_tab_group_guid=*/true);
   SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
       "http://google.com/1", u"tab 1", group.saved_guid(), /*position=*/0);
   SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(

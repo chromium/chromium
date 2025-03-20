@@ -44,6 +44,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "ui/gfx/geometry/mojom/geometry.mojom.h"
@@ -345,13 +346,12 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void SetAudioDucking(bool enabled,
                        SetAudioDuckingCallback callback) override {
-    content::WebContents* web_contents = page_handler_->guest_contents();
-    if (!web_contents || web_contents->IsBeingDestroyed()) {
+    if (!page_handler_->GetGuestMainFrame()) {
       std::move(callback).Run(false);
       return;
     }
-    AudioDucker* audio_ducker =
-        AudioDucker::GetOrCreateForPage(web_contents->GetPrimaryPage());
+    AudioDucker* audio_ducker = AudioDucker::GetOrCreateForPage(
+        page_handler_->GetGuestMainFrame()->GetPage());
     std::move(callback).Run(enabled ? audio_ducker->StartDuckingOtherAudio()
                                     : audio_ducker->StopDuckingOtherAudio());
   }
@@ -675,12 +675,16 @@ void GlicPageHandler::WebviewCommitted(const GURL& url) {
   }
 }
 
-void GlicPageHandler::GuestAdded(content::WebContents* guest_contents) {
-  guest_contents_ = guest_contents->GetWeakPtr();
+void GlicPageHandler::GuestAdded(extensions::WebViewGuest* guest) {
+  guest_ = guest->GetWeakPtr();
 }
 
 void GlicPageHandler::NotifyWindowIntentToShow() {
   page_->IntentToShow();
+}
+
+content::RenderFrameHost* GlicPageHandler::GetGuestMainFrame() {
+  return guest_ ? guest_->GetGuestMainFrame() : nullptr;
 }
 
 void GlicPageHandler::ClosePanel() {

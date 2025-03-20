@@ -77,6 +77,7 @@ class GLES2Interface;
 
 namespace blink {
 class CanvasResource;
+class ExternalCanvasResource;
 class CanvasResourceProvider;
 class Extensions3DUtil;
 class StaticBitmapImage;
@@ -318,7 +319,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   scoped_refptr<CanvasResource> ExportCanvasResource();
 
-  scoped_refptr<CanvasResource> ExportLowLatencyCanvasResource(
+  scoped_refptr<ExternalCanvasResource> ExportLowLatencyCanvasResource(
       base::WeakPtr<CanvasResourceProvider> resource_provider);
 
   static const size_t kDefaultColorBufferCacheLimit;

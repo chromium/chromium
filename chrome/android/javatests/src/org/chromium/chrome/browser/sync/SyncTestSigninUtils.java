@@ -13,6 +13,8 @@ import org.chromium.chrome.test.util.browser.signin.LiveSigninTestUtil;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.base.GaiaId;
+import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 
 /** Utility class for sign-in functionalities in native Sync browser tests. */
 @JNINamespace("sync_test_utils_android")
@@ -23,6 +25,12 @@ final class SyncTestSigninUtils {
     @CalledByNative
     private static void setUpAccountAndSignInForTesting() {
         sSigninTestRule.addTestAccountThenSignin();
+    }
+
+    /** Returns GaiaId for the default test account. */
+    @CalledByNative
+    private static GaiaId getGaiaIdForDefaultTestAccount() {
+        return FakeAccountManagerFacade.toGaiaId(SigninTestRule.TEST_ACCOUNT_EMAIL);
     }
 
     /** Sets up the test account, signs in, and enables Sync-the-feature. */

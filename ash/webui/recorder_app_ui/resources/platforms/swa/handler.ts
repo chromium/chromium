@@ -79,6 +79,10 @@ export class PlatformHandler extends PlatformHandlerBase {
     return loadTimeData.getStringF(id, ...args);
   }
 
+  static override getDeviceType(): string {
+    return loadTimeData.getStringF('deviceType');
+  }
+
   override readonly canCaptureSystemAudioWithLoopback = signal(false);
 
   override readonly eventsSender = new EventsSender();

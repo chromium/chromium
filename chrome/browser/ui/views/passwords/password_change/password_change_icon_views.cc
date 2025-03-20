@@ -66,7 +66,6 @@ PasswordChangeIconViews::PasswordChangeIconViews(
       IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_ICON_TOOLTIP);
   SetAccessibleName(tooltip);
   UpdateTooltipText();
-  SetTooltipForToolbarPinningEnabled(tooltip);
   // This doesn't work, the icon color stays the same.
   SetIconColor(ui::kColorSysOnTonalContainer);
 }
@@ -78,6 +77,11 @@ void PasswordChangeIconViews::SetState(password_manager::ui::State state) {
       state == password_manager::ui::State::PASSWORD_CHANGE_STATE &&
       !delegate()->ShouldHidePageActionIcon(this);
   SetVisible(should_be_visible);
+  if (state == password_manager::ui::State::PASSWORD_CHANGE_STATE) {
+    std::u16string tooltip = l10n_util::GetStringUTF16(
+        IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_ICON_TOOLTIP);
+    SetTooltipForToolbarPinningEnabled(tooltip);
+  }
 
   PasswordChangeDelegate* password_change_delegate =
       GetWebContents() ? PasswordsModelDelegateFromWebContents(GetWebContents())

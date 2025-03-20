@@ -34,8 +34,12 @@ void FakeWebrtcConnection::OnWebrtcTransportConnected() {
   std::move(on_closed_).Run();
 }
 
-void FakeWebrtcConnection::OnWebrtcTransportError(protocol::ErrorCode error) {
-  LOG(ERROR) << "Webrtc transport error: " << ErrorCodeToString(error);
+void FakeWebrtcConnection::OnWebrtcTransportError(
+    protocol::ErrorCode error,
+    std::string_view error_details,
+    const base::Location& error_location) {
+  LOG(ERROR) << "Webrtc transport error: " << ErrorCodeToString(error) << ", "
+             << error_details << ", location: " << error_location.ToString();
   std::move(on_closed_).Run();
 }
 

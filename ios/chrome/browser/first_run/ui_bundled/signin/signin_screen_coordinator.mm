@@ -97,7 +97,7 @@
   self.viewController.TOSHandler = TOSHandler;
   self.viewController.delegate = self;
 
-  ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
+  ProfileIOS* profile = self.profile->GetOriginalProfile();
 
   self.authenticationService =
       AuthenticationServiceFactory::GetForProfile(profile);

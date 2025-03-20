@@ -8,6 +8,8 @@
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/autocomplete_match_test_util.h"
 #import "components/omnibox/browser/autocomplete_result.h"
+#import "components/omnibox/browser/omnibox_controller.h"
+#import "components/omnibox/browser/test_omnibox_client.h"
 #import "components/search_engines/search_engines_test_environment.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
@@ -23,15 +25,9 @@
 @interface FakeAutocompleteResultWrapperDelegate
     : NSObject <AutocompleteResultWrapperDelegate>
 
-@property(nonatomic, assign) BOOL isStarred;
-
 @end
 
 @implementation FakeAutocompleteResultWrapperDelegate
-
-- (BOOL)isStarredMatch:(const AutocompleteMatch&)match {
-  return self.isStarred;
-}
 
 - (void)autocompleteResultWrapper:(AutocompleteResultWrapper*)wrapper
               didInvalidatePedals:(NSArray<id<AutocompleteSuggestionGroup>>*)
@@ -46,7 +42,11 @@ class AutocompleteResultWrapperTest : public PlatformTest {
   AutocompleteResultWrapperTest() {
     _fake_autocomplete_wrapper_delegate =
         [[FakeAutocompleteResultWrapperDelegate alloc] init];
-    wrapper_ = [[AutocompleteResultWrapper alloc] init];
+    auto omnibox_client = std::make_unique<TestOmniboxClient>();
+    omnibox_controller_ = std::make_unique<OmniboxController>(
+        /*view=*/nullptr, std::move(omnibox_client));
+    wrapper_ = [[AutocompleteResultWrapper alloc]
+        initWithOmniboxClient:omnibox_controller_->client()];
     wrapper_.isIncognito = NO;
     wrapper_.templateURLService =
         search_engines_test_environment_.template_url_service();
@@ -69,6 +69,7 @@ class AutocompleteResultWrapperTest : public PlatformTest {
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   FakeAutocompleteResultWrapperDelegate* _fake_autocomplete_wrapper_delegate;
+  std::unique_ptr<OmniboxController> omnibox_controller_;
 };
 
 // Tests wrapping an autocomplete result with 2 non-pedal starred matches.
@@ -78,8 +79,6 @@ TEST_F(AutocompleteResultWrapperTest,
       u"Action", {omnibox::ActionInfo_ActionType_REVIEWS,
                   omnibox::ActionInfo_ActionType_DIRECTIONS});
   AutocompleteMatch match2 = CreateSearchMatch(u"search");
-
-  _fake_autocomplete_wrapper_delegate.isStarred = YES;
 
   AutocompleteResult result;
   result.AppendMatches({match1, match2});
@@ -108,8 +107,8 @@ TEST_F(AutocompleteResultWrapperTest,
   AutocompleteMatchFormatter* secondSuggestion =
       wrappedGroups[0].suggestions[1];
 
-  EXPECT_TRUE(firstSuggestion.starred);
-  EXPECT_TRUE(secondSuggestion.starred);
+  EXPECT_FALSE(firstSuggestion.starred);
+  EXPECT_FALSE(secondSuggestion.starred);
 
   EXPECT_FALSE(firstSuggestion.incognito);
   EXPECT_FALSE(secondSuggestion.incognito);
@@ -122,9 +121,6 @@ TEST_F(AutocompleteResultWrapperTest,
 
   EXPECT_EQ(firstSuggestion.actionsInSuggest.count, 2u);
   EXPECT_EQ(secondSuggestion.actionsInSuggest.count, 0u);
-
-  // Reset isStarred to NO.
-  _fake_autocomplete_wrapper_delegate.isStarred = NO;
 }
 
 // Tests wrapping an autocomplete result after changing the default search

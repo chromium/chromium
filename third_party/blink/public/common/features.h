@@ -711,6 +711,11 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kInputPredictorTypeChoice);
 // detected.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kInputScenarioPriorityBoost);
 
+// Other times that kInputScenarioPriorityBoost should boost the priority, to
+// compensate for the lower default main thread priority.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kInputScenarioPriorityBoostIncludesLoading;
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kIntensiveWakeUpThrottling);
 BLINK_COMMON_EXPORT extern const char
     kIntensiveWakeUpThrottling_GracePeriodSeconds_Name[];

@@ -37,6 +37,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic.mojom:ActInFocusedTabErrorReason) -->
 
+<!-- LINT.IfChange(GlicAttachChangeReason) -->
+
+<enum name="GlicAttachChangeReason">
+  <int value="0" label="Drag gesture."/>
+  <int value="1" label="Menu click."/>
+  <int value="2" label="Panel initialized."/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:AttachChangeReason) -->
+
 <!-- LINT.IfChange(GlicEntryPointImpression) -->
 
 <enum name="GlicEntryPointImpression">
@@ -90,6 +100,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="From tab strip nudge"/>
   <int value="7" label="From 3-dot menu"/>
   <int value="8" label="An unsupported/unknown source"/>
+  <int value="9" label="From the What's New page"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic.mojom:InvocationSource) -->
@@ -151,6 +162,10 @@ chromium-metrics-reviews@google.com.
   <int value="34" label="Unsupported/unknown, attached, audio mode."/>
   <int value="35" label="Unsupported/unknown, detached, text mode."/>
   <int value="36" label="Unsupported/unknown, detached, audio mode."/>
+  <int value="37" label="What's New page, attached, text mode."/>
+  <int value="38" label="What's New page, attached, audio mode."/>
+  <int value="39" label="What's New page, detached, text mode."/>
+  <int value="40" label="What's New page, detached, audio mode."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:ResponseSegmentation) -->

@@ -28,6 +28,7 @@
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/url_prefix.h"
+#include "components/omnibox/common/string_cleaning.h"
 #include "url/gurl.h"
 #include "url/third_party/mozilla/url_parse.h"
 
@@ -179,8 +180,8 @@ ScoredHistoryMatch::ScoredHistoryMatch(
   base::OffsetAdjuster::Adjustments adjustments;
   GURL gurl = row.url();
   std::u16string cleaned_up_url_for_matching =
-      bookmarks::CleanUpUrlForMatching(gurl, &adjustments);
-  std::u16string title = bookmarks::CleanUpTitleForMatching(row.title());
+      string_cleaning::CleanUpUrlForMatching(gurl, &adjustments);
+  std::u16string title = string_cleaning::CleanUpTitleForMatching(row.title());
   int term_num = 0;
   for (const auto& term : terms_vector) {
     TermMatches url_term_matches =

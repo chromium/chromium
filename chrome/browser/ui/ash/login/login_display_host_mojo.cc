@@ -166,9 +166,6 @@ void UpdatePinAuthAvailability(const AccountId& account_id) {
             if (!LoginScreen::Get() || !LoginScreen::Get()->GetModel()) {
               return;
             }
-            if (!features::IsAllowPinTimeoutSetupEnabled()) {
-              available_at = std::nullopt;
-            }
             LoginScreen::Get()->GetModel()->SetPinEnabledForUser(
                 account_id, can_authenticate, available_at);
           },

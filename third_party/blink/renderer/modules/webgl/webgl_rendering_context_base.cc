@@ -1870,7 +1870,11 @@ bool WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
   if (!resource_provider)
     return false;
 
-  if (Host()->LowLatencyEnabled() && resource_provider->IsSingleBuffered()) {
+  if (resource_provider->GetType() ==
+      CanvasResourceProvider::ResourceProviderType::kPassThrough) {
+    // The passthrough provider should be created only in low-latency mode.
+    CHECK(Host()->LowLatencyEnabled());
+
     // Single buffered passthrough resource provider doesn't have backing
     // texture. We need to export the backbuffer mailbox directly without
     // copying.

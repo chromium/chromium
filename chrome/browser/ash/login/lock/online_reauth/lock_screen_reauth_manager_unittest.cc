@@ -78,16 +78,17 @@ class LockScreenReauthManagerTest : public testing::Test {
   raw_ptr<TestingProfile> primary_profile_ = nullptr;
   raw_ptr<TestingProfile> secondary_profile_ = nullptr;
 
-  std::unique_ptr<MockLockHandler> lock_handler_;
+  MockLockHandler lock_handler_;
   std::unique_ptr<LockScreenReauthManager> manager_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<user_manager::KnownUser> known_user_;
   const base::HistogramTester histogram_tester_;
+  // `AshTestHelper` makes sure that `SessionManager` is set up in these tests.
+  ash::AshTestHelper ash_test_helper_;
 };
 
 LockScreenReauthManagerTest::LockScreenReauthManagerTest() : manager_(nullptr) {
   UserDataAuthClient::InitializeFake();
-
   known_user_ = std::make_unique<user_manager::KnownUser>(
       g_browser_process->local_state());
 }
@@ -113,9 +114,11 @@ void LockScreenReauthManagerTest::SetUp() {
   // ActiveUser in FakeChromeUserManager needs to be set explicitly.
   fake_user_manager_->SwitchActiveUser(saml_login_account_id1_);
   ASSERT_TRUE(fake_user_manager_->GetActiveUser());
+  ash_test_helper_.SetUp();
 }
 
 void LockScreenReauthManagerTest::TearDown() {
+  ash_test_helper_.TearDown();
   proximity_auth::ScreenlockBridge::Get()->SetLockHandler(nullptr);
 }
 
@@ -133,8 +136,9 @@ void LockScreenReauthManagerTest::DestroyLockScreenReauthManager() {
 }
 
 void LockScreenReauthManagerTest::LockScreen() {
-  lock_handler_ = std::make_unique<MockLockHandler>();
-  proximity_auth::ScreenlockBridge::Get()->SetLockHandler(lock_handler_.get());
+  proximity_auth::ScreenlockBridge::Get()->SetLockHandler(&lock_handler_);
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::LOCKED);
 }
 
 void LockScreenReauthManagerTest::SetReauthRequiredBySamlTokenMismatch() {
@@ -171,12 +175,12 @@ TEST_F(LockScreenReauthManagerTest, ReauthenticateSetOnLock) {
   primary_profile_->GetPrefs()->SetBoolean(
       prefs::kLockScreenReauthenticationEnabled, true);
   CreateLockScreenReauthManager();
-  LockScreen();
-  EXPECT_CALL(*lock_handler_,
+  EXPECT_CALL(lock_handler_,
               SetAuthType(saml_login_account_id1_,
                           proximity_auth::mojom::AuthType::ONLINE_SIGN_IN,
                           std::u16string()))
       .Times(1);
+  LockScreen();
   fake_user_manager_->SaveForceOnlineSignin(saml_login_account_id1_, true);
   manager_->MaybeForceReauthOnLockScreen(
       ReauthReason::kSamlLockScreenReauthPolicy);
@@ -189,13 +193,13 @@ TEST_F(LockScreenReauthManagerTest, AuthenticateWithIncorrectUser) {
   primary_profile_->GetPrefs()->SetBoolean(
       prefs::kLockScreenReauthenticationEnabled, true);
   CreateLockScreenReauthManager();
-  LockScreen();
-  EXPECT_CALL(*lock_handler_,
+  EXPECT_CALL(lock_handler_,
               SetAuthType(saml_login_account_id1_,
                           proximity_auth::mojom::AuthType::ONLINE_SIGN_IN,
                           std::u16string()))
       .Times(1);
-  EXPECT_CALL(*lock_handler_, Unlock(saml_login_account_id1_)).Times(0);
+  LockScreen();
+  EXPECT_CALL(lock_handler_, Unlock(saml_login_account_id1_)).Times(0);
   fake_user_manager_->SaveForceOnlineSignin(saml_login_account_id1_, true);
   manager_->MaybeForceReauthOnLockScreen(
       ReauthReason::kSamlLockScreenReauthPolicy);
@@ -223,13 +227,13 @@ TEST_F(LockScreenReauthManagerTest, AuthenticateWithCorrectUser) {
   base::Time expected_signin_time = now + kSamlOnlineShortDelay;
 
   CreateLockScreenReauthManager();
-  LockScreen();
-  EXPECT_CALL(*lock_handler_,
+  EXPECT_CALL(lock_handler_,
               SetAuthType(saml_login_account_id1_,
                           proximity_auth::mojom::AuthType::ONLINE_SIGN_IN,
                           std::u16string()))
       .Times(1);
-  EXPECT_CALL(*lock_handler_, Unlock(saml_login_account_id1_)).Times(1);
+  EXPECT_CALL(lock_handler_, Unlock(saml_login_account_id1_)).Times(1);
+  LockScreen();
   fake_user_manager_->SaveForceOnlineSignin(saml_login_account_id1_, true);
   test_environment_.FastForwardBy(kSamlOnlineShortDelay);
   manager_->MaybeForceReauthOnLockScreen(
@@ -258,13 +262,13 @@ TEST_F(LockScreenReauthManagerTest, FlowTriggeredByPolicyAndInvalidToken) {
   base::Time expected_signin_time = now + kSamlOnlineShortDelay;
 
   CreateLockScreenReauthManager();
-  LockScreen();
-  EXPECT_CALL(*lock_handler_,
+  EXPECT_CALL(lock_handler_,
               SetAuthType(saml_login_account_id1_,
                           proximity_auth::mojom::AuthType::ONLINE_SIGN_IN,
                           std::u16string()))
       .Times(1);
-  EXPECT_CALL(*lock_handler_, Unlock(saml_login_account_id1_)).Times(1);
+  EXPECT_CALL(lock_handler_, Unlock(saml_login_account_id1_)).Times(1);
+  LockScreen();
   fake_user_manager_->SaveForceOnlineSignin(saml_login_account_id1_, true);
   SetReauthRequiredBySamlTokenMismatch();
   test_environment_.FastForwardBy(kSamlOnlineShortDelay);
@@ -306,18 +310,14 @@ class AutoStartLockScreenReauthManagerTest
   void TearDown() override;
 
   std::unique_ptr<ash::MockLoginScreenClient> login_screen_client_;
-  ash::AshTestHelper ash_test_helper_;
 };
 
 void AutoStartLockScreenReauthManagerTest::SetUp() {
   LockScreenReauthManagerTest::SetUp();
-
-  ash_test_helper_.SetUp();
   login_screen_client_ = std::make_unique<ash::MockLoginScreenClient>();
 }
 
 void AutoStartLockScreenReauthManagerTest::TearDown() {
-  ash_test_helper_.TearDown();
   LockScreenReauthManagerTest::TearDown();
 }
 
@@ -329,17 +329,14 @@ TEST_P(AutoStartLockScreenReauthManagerTest,
   CreateLockScreenReauthManager();
   manager_->MaybeForceReauthOnLockScreen(
       ReauthReason::kSamlLockScreenReauthPolicy);
-  LockScreen();
-  EXPECT_CALL(*lock_handler_,
+  EXPECT_CALL(lock_handler_,
               SetAuthType(saml_login_account_id1_,
                           proximity_auth::mojom::AuthType::ONLINE_SIGN_IN,
                           std::u16string()))
       .Times(1);
   EXPECT_CALL(*login_screen_client_, ShowGaiaSignin(saml_login_account_id1_))
       .Times(is_auto_start_enabled);
-  // The following triggers LockScreenReauthManager::OnSessionStateChanged
-  session_manager::SessionManager::Get()->SetSessionState(
-      session_manager::SessionState::LOCKED);
+  LockScreen();
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

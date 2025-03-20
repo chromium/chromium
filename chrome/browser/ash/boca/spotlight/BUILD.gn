@@ -16,9 +16,9 @@ static_library("spotlight") {
     "//ash",
     "//ash/constants",
     "//base",
-    "//chrome/browser/ash/policy/remote_commands/crd",
+    "//chrome/browser/ash/policy/remote_commands/crd/public",
+    "//chrome/browser/ash/policy/remote_commands/crd/public:interface",
     "//chromeos/ash/components/boca:spotlight",
-    "//components/policy/core/common:internal",
   ]
 }
 
@@ -32,9 +32,7 @@ source_set("unit_tests") {
     "//ash/constants",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash/policy/remote_commands/crd",
-    "//chrome/browser/ash/policy/remote_commands/crd:test_support",
-    "//components/policy/core/common:internal",
+    "//chrome/browser/ash/policy/remote_commands/crd/public:interface",
     "//testing/gmock",
     "//testing/gtest",
   ]

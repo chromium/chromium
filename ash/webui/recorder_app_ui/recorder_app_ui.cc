@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/devicetype.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/metrics/structured_metrics_service_wrapper.h"
 #include "ash/webui/recorder_app_ui/model_constants.h"
@@ -26,6 +27,7 @@
 #include "base/feature_list.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
+#include "chromeos/constants/devicetype.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "components/media_device_salt/media_device_salt_service.h"
 #include "components/soda/constants.h"
@@ -57,6 +59,8 @@ namespace {
 // model input & output (12k tokens in total) we likely want to include in the
 // description.
 const uint32_t kFeedbackDescriptionTemplateMaxChars = 49000;  // 1000 + 4 * 12k
+
+constexpr char kDefaultDeviceTypeName[] = "Chromebook";
 
 std::string_view SodaInstallerErrorCodeToString(
     speech::SodaInstaller::ErrorCode error) {
@@ -114,6 +118,11 @@ int GetResourceIdFromStringName(const std::string& name) {
   return iter->id;
 }
 
+std::string GetDeviceTypeString() {
+  std::string device_type = ash::DeviceTypeToString(chromeos::GetDeviceType());
+  return device_type.empty() ? kDefaultDeviceTypeName : device_type;
+}
+
 }  // namespace
 
 bool RecorderAppUIConfig::IsWebUIEnabled(
@@ -144,6 +153,8 @@ RecorderAppUI::RecorderAppUI(content::WebUI* web_ui,
   source->AddResourcePaths(kRecorderAppResources);
 
   source->AddResourcePath("", IDR_RECORDER_APP_INDEX_HTML);
+
+  source->AddString("deviceType", GetDeviceTypeString());
 
   source->AddLocalizedStrings(kLocalizedStrings);
 

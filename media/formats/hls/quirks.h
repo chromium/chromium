@@ -24,6 +24,11 @@ struct MEDIA_EXPORT HLSQuirks {
   // this restriction, and play content that voilates it.
   static constexpr bool DeduplicateRenditionNamesInGroup() { return true; }
 
+  // datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-4.4.6.1.1
+  // A Group MUST NOT have more than one member with a DEFAULT attribute of YES.
+  // Apple's own example content violates this requirement.
+  static constexpr bool AllowMultipleDefaultRenditionsInGroup() { return true; }
+
   // datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-4.4.4.1
   // The format of the EXTINF tag is:
   // #EXTINF:<duration>,[<title>]

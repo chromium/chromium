@@ -276,7 +276,8 @@ class MainThreadEventQueueTest : public testing::Test,
   }
 
   bool needs_low_latency_until_pointer_up() {
-    return queue_->needs_low_latency_until_pointer_up_;
+    return queue_->needs_low_latency_until_pointer_up_.load(
+        std::memory_order_relaxed);
   }
 
   bool last_touch_start_forced_nonblocking_due_to_fling() {

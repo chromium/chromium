@@ -12,6 +12,7 @@
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/core/common_string_util.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -86,11 +87,14 @@ void SupervisedUserVerificationPageForBlockedSites::PopulateInterstitialStrings(
   load_time_data.Set("primaryParagraph",
                      l10n_util::GetStringUTF16(
                          IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_NOT_SIGNED_IN));
-  load_time_data.Set("show_blocked_site_message", true);
-  load_time_data.Set("blockedSiteMessageHeader",
-                     l10n_util::GetStringUTF8(IDS_GENERIC_SITE_BLOCK_HEADER));
-  load_time_data.Set("blockedSiteMessageReason",
-                     l10n_util::GetStringUTF8(GetBlockMessageReasonId()));
+  // Hide the block message to match the V3 block interstitial.
+  if (!supervised_user::IsBlockInterstitialV3Enabled()) {
+    load_time_data.Set("show_blocked_site_message", true);
+    load_time_data.Set("blockedSiteMessageHeader",
+                       l10n_util::GetStringUTF8(IDS_GENERIC_SITE_BLOCK_HEADER));
+    load_time_data.Set("blockedSiteMessageReason",
+                       l10n_util::GetStringUTF8(GetBlockMessageReasonId()));
+  }
   load_time_data.Set("primaryButtonText",
                      l10n_util::GetStringUTF16(
                          IDS_SUPERVISED_USER_VERIFY_PAGE_PRIMARY_BUTTON));

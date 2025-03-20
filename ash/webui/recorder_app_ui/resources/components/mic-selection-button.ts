@@ -175,7 +175,7 @@ export class MicSelectionButton extends ReactiveLitElement {
     return html`
       <cros-menu-separator></cros-menu-separator>
       <cra-icon-dropdown-option
-        headline=${i18n.micSelectionMenuChromebookAudioOption}
+        headline=${i18n.micSelectionMenuSystemAudioOption}
         itemStart="icon"
         itemEnd="switch"
         .switchSelected=${live(includeSystemAudio)}
