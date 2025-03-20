@@ -1507,10 +1507,10 @@ void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
   cookies_info.allowed_sites_count = GetSitesWithAllowedCookiesAccessCount();
 
 #if !BUILDFLAG(IS_ANDROID)
-  auto rws_owner = delegate_->GetRwsOwner(site_url_);
-  if (rws_owner) {
+  if (auto rws_owner = delegate_->GetRwsOwner(site_url_);
+      rws_owner.has_value()) {
     cookies_info.rws_info = PageInfoUI::CookiesRwsInfo(*rws_owner);
-    cookies_info.rws_info->is_managed = delegate_->IsRwsManaged();
+    cookies_info.rws_info->is_managed = delegate_->IsRwsManaged(site_url_);
   }
 #endif
 
