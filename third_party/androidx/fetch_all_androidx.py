@@ -204,6 +204,8 @@ def main():
             extra_args += ['--override-artifact', f'{subpath}:{url}']
 
     os.makedirs(_CIPD_PATH, exist_ok=True)
+    # gclient/cipd extract files as read only.
+    subprocess.run(['chmod', '-R', '+w', _CIPD_PATH])
 
     fetch_util.run_fetch_all(android_deps_dir=_ANDROIDX_PATH,
                              output_subdir='cipd',
@@ -232,9 +234,11 @@ def main():
                                     dirnames=['libs'],
                                     absolute_file_map=file_map)
     if args.local:
-        subprocess.run(
-            [_EXTRACT_SCRIPT_PATH, '--cipd-package-path', _CIPD_PATH],
-            check=True)
+        subprocess.run([
+            _EXTRACT_SCRIPT_PATH, '--cipd-package-path', _CIPD_PATH,
+            '--no-git-add'
+        ],
+                       check=True)
 
     fetch_util.write_cipd_yaml(package_root=_CIPD_PATH,
                                package_name=_CIPD_PACKAGE,

@@ -448,9 +448,7 @@ dependencies {
 task setUpRepository(type: BuildConfigGenerator) {
     pathToBuildGradle 'third_party/androidx'
     cipdPackagePrefix 'chromium/third_party/androidx'
-    artifactSubdir 'cipd'
-    committedSubdir 'committed'
-    internalTargetVisibility = [':*', '//third_party/android_deps:*', '//third_party/android_deps/autorolled:*']
+    internalTargetVisibility = [':*', '//third_party/android_deps:*']
     ignoreDEPS true
     writeBoM true
 }

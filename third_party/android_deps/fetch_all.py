@@ -263,7 +263,12 @@ def CopyFileOrDirectory(src_path, dst_path, ignore_extension=None):
         subprocess.run(['chmod', '-R', '+w', dst_path])
     elif not ignore_extension or not re.match(r'.*\.' + ignore_extension[1:],
                                               src_path):
+        # cipd/gclient extract files as read only, allow writing before trying
+        # to override.
+        if os.path.exists(dst_path):
+            subprocess.run(['chmod', '+w', dst_path])
         shutil.copy(src_path, dst_path)
+        # In case src_path was also from cipd, +w after copying too.
         subprocess.run(['chmod', '+w', dst_path])
 
 
@@ -443,6 +448,8 @@ def ParseDeps(root_dir, libs_dir):
     result = {}
     root_dir = os.path.abspath(root_dir)
     libs_dir = os.path.abspath(os.path.join(root_dir, libs_dir))
+    # TODO(mheikal): do not use cipd.yaml for this since it is not useful for
+    # subprojects. Change to read from a README.chromium
     for cipd_file in FindInDirectory(libs_dir, 'cipd.yaml'):
         pkg_name, pkg_tag = GetCipdPackageInfo(cipd_file)
         cipd_path = os.path.dirname(cipd_file)
@@ -712,6 +719,8 @@ def main():
              src_path_must_exist=False)
 
         # Delete obsolete or updated package directories.
+        # TODO(mheikal): also delete directories that do not have a cipd.yaml
+        # file, there shouldn't be any of those under libs/
         for pkg in existing_packages.values():
             pkg_path = os.path.join(output_android_deps_dir, pkg.path)
             DeleteDirectory(pkg_path)

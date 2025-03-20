@@ -1615,7 +1615,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_activity_activity_java",
@@ -1636,7 +1635,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -1656,7 +1654,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     testonly = true
     deps = [
@@ -1681,7 +1678,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     testonly = true
     deps = [ ":androidx_benchmark_benchmark_traceprocessor_android_java" ]
@@ -1699,7 +1695,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     testonly = true
     deps = [
@@ -1723,7 +1718,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -1738,7 +1732,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_compose_animation_animation_android_java" ]
   }
@@ -1755,7 +1748,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_experimental_java",
@@ -1779,7 +1771,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_compose_animation_animation_core_android_java" ]
   }
@@ -1796,7 +1787,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -1818,7 +1808,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_compose_foundation_foundation_android_java" ]
   }
@@ -1835,7 +1824,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_experimental_java",
@@ -1860,7 +1848,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_compose_foundation_foundation_layout_android_java" ]
   }
@@ -1877,7 +1864,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_experimental_java",
@@ -1905,7 +1891,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_activity_activity_compose_java",
@@ -1933,7 +1918,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_compose_material_material_ripple_android_java" ]
   }
@@ -1950,7 +1934,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_collection_collection_java",
@@ -1969,7 +1952,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_compose_runtime_runtime_android_java" ]
   }
@@ -1981,7 +1963,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_compose_runtime_runtime_saveable_android_java" ]
   }
@@ -1998,7 +1979,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2020,7 +2000,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_activity_activity_ktx_java",
@@ -2056,7 +2035,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_compose_ui_ui_geometry_android_java" ]
   }
@@ -2073,7 +2051,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2090,7 +2067,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_compose_ui_ui_graphics_android_java" ]
   }
@@ -2107,7 +2083,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_experimental_java",
@@ -2129,7 +2104,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     testonly = true
     deps = [ ":androidx_compose_ui_ui_test_android_java" ]
@@ -2147,7 +2121,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     testonly = true
     deps = [
@@ -2175,7 +2148,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_compose_ui_ui_text_android_java" ]
   }
@@ -2191,7 +2163,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_experimental_java",
@@ -2216,7 +2187,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_compose_ui_ui_unit_android_java" ]
   }
@@ -2232,7 +2202,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_experimental_java",
@@ -2253,7 +2222,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_compose_ui_ui_util_android_java" ]
   }
@@ -2269,7 +2237,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_experimental_java",
@@ -2292,7 +2259,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2312,7 +2278,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2333,7 +2298,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
   }
@@ -2349,7 +2313,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2369,7 +2332,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_core_core_ktx_java",
@@ -2389,7 +2351,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2405,7 +2366,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_datastore_datastore_core_okio_jvm_java" ]
   }
@@ -2423,7 +2383,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_datastore_datastore_core_java",
@@ -2445,7 +2404,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2467,7 +2425,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_collection_collection_java",
@@ -2487,7 +2444,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2511,7 +2467,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     testonly = true
     deps = [
@@ -2535,7 +2490,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_core_core_java",
@@ -2550,7 +2504,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_graphics_graphics_shapes_android_java" ]
   }
@@ -2567,7 +2520,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_experimental_java",
@@ -2589,7 +2541,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2611,7 +2562,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2642,7 +2592,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2664,7 +2613,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_lifecycle_lifecycle_livedata_core_java",
@@ -2683,7 +2631,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2705,7 +2652,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2726,7 +2672,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_lifecycle_lifecycle_runtime_compose_android_java" ]
   }
@@ -2743,7 +2688,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2765,7 +2709,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2787,7 +2730,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2810,7 +2752,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2836,7 +2777,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_lifecycle_lifecycle_viewmodel_java",
@@ -2857,7 +2797,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2884,7 +2823,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2908,7 +2846,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2923,7 +2860,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_navigation_navigation_common_android_java" ]
   }
@@ -2940,7 +2876,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -2971,7 +2906,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_activity_activity_compose_java",
@@ -3009,7 +2943,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_activity_activity_ktx_java",
@@ -3040,7 +2973,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_collection_collection_java",
@@ -3059,7 +2991,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_core_core_java",
@@ -3080,7 +3011,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -3105,7 +3035,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -3120,7 +3049,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_room_room_common_jvm_java" ]
   }
@@ -3138,7 +3066,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -3157,7 +3084,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_savedstate_savedstate_java",
@@ -3177,7 +3103,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -3195,7 +3120,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_sqlite_sqlite_android_java" ]
   }
@@ -3207,7 +3131,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_sqlite_sqlite_framework_android_java" ]
   }
@@ -3224,7 +3147,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -3245,7 +3167,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -3265,7 +3186,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     testonly = true
     deps = [
@@ -3286,7 +3206,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     testonly = true
   }
@@ -3302,7 +3221,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -3322,7 +3240,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     testonly = true
     deps = [ ":androidx_tracing_tracing_java" ]
@@ -3340,7 +3257,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     testonly = true
     deps = [
@@ -3362,7 +3278,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     testonly = true
   }
@@ -3380,7 +3295,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     testonly = true
     deps = [ ":androidx_annotation_annotation_java" ]
@@ -3398,7 +3312,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -3414,7 +3327,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [ ":androidx_window_window_core_android_java" ]
   }
@@ -3430,7 +3342,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -3449,7 +3360,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -3470,7 +3380,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
@@ -3493,7 +3402,6 @@ if (!limit_android_deps) {
     visibility = [
       ":*",
       "//third_party/android_deps:*",
-      "//third_party/android_deps/autorolled:*",
     ]
     deps = [
       ":androidx_annotation_annotation_java",
