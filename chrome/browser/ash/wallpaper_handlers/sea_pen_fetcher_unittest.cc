@@ -299,8 +299,6 @@ TEST_F(SeaPenFetcherTest, ThumbnailsCallsSnapperProvider) {
               testing::UnorderedElementsAreArray(matchers));
 
   histogram_tester().ExpectTotalCount(kThumbnailsLatencyMetric, 1);
-  histogram_tester().ExpectUniqueSample(kThumbnailsStatusCodeMetric,
-                                        manta::MantaStatusCode::kOk, 1);
   histogram_tester().ExpectUniqueSample(kThumbnailsTimeoutMetric, false, 1);
   histogram_tester().ExpectUniqueSample(
       kThumbnailsCountMetric, SeaPenFetcher::kNumTemplateThumbnailsRequested,
@@ -411,8 +409,6 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnailsCallsSnapperProvider) {
               testing::UnorderedElementsAreArray(matchers));
 
   histogram_tester().ExpectTotalCount(kFreeformThumbnailsLatencyMetric, 1);
-  histogram_tester().ExpectUniqueSample(kFreeformThumbnailsStatusCodeMetric,
-                                        manta::MantaStatusCode::kOk, 1);
   histogram_tester().ExpectUniqueSample(kFreeformThumbnailsTimeoutMetric, false,
                                         1);
   histogram_tester().ExpectUniqueSample(
@@ -452,8 +448,6 @@ TEST_F(SeaPenFetcherTest, ThumbnailsEmptyReturnsError) {
 
   // Recorded an entry in the "0" thumbnail count bucket 1 time.
   histogram_tester().ExpectUniqueSample(kThumbnailsCountMetric, 0, 1);
-  histogram_tester().ExpectUniqueSample(kThumbnailsStatusCodeMetric,
-                                        manta::MantaStatusCode::kOk, 1);
   histogram_tester().ExpectTotalCount(kThumbnailsLatencyMetric, 1);
   histogram_tester().ExpectUniqueSample(kThumbnailsTimeoutMetric, false, 1);
 }
@@ -495,8 +489,6 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnailsEmptyReturnsBlockedError) {
 
   // Recorded an entry in the "0" thumbnail count bucket 1 time.
   histogram_tester().ExpectUniqueSample(kFreeformThumbnailsCountMetric, 0, 1);
-  histogram_tester().ExpectUniqueSample(kFreeformThumbnailsStatusCodeMetric,
-                                        manta::MantaStatusCode::kOk, 1);
   histogram_tester().ExpectTotalCount(kFreeformThumbnailsLatencyMetric, 1);
   histogram_tester().ExpectUniqueSample(kFreeformThumbnailsTimeoutMetric, false,
                                         1);
@@ -539,8 +531,6 @@ TEST_F(SeaPenFetcherTest, FreeformThumbnailsEmptyReturnsErrorDueToPerson) {
 
   // Recorded an entry in the "0" thumbnail count bucket 1 time.
   histogram_tester().ExpectUniqueSample(kFreeformThumbnailsCountMetric, 0, 1);
-  histogram_tester().ExpectUniqueSample(kFreeformThumbnailsStatusCodeMetric,
-                                        manta::MantaStatusCode::kOk, 1);
   histogram_tester().ExpectTotalCount(kFreeformThumbnailsLatencyMetric, 1);
   histogram_tester().ExpectUniqueSample(kFreeformThumbnailsTimeoutMetric, false,
                                         1);

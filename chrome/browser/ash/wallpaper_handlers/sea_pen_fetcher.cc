@@ -353,11 +353,6 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
 
     fetch_thumbnails_timer_.Stop();
 
-    ash::personalization_app::mojom::SeaPenQuery::Tag query_tag =
-        query->which();
-    RecordSeaPenMantaStatusCode(query_tag, status.status_code,
-                                SeaPenApiType::kThumbnails);
-
     if (status.status_code != manta::MantaStatusCode::kOk || !response) {
       LOG(WARNING) << "Failed to fetch manta response: "
                    << int32_t(status.status_code);
@@ -366,6 +361,8 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
       return;
     }
 
+    ash::personalization_app::mojom::SeaPenQuery::Tag query_tag =
+        query->which();
     RecordSeaPenLatency(query_tag, base::TimeTicks::Now() - start_time,
                         SeaPenApiType::kThumbnails);
     RecordSeaPenTimeout(query_tag, /*hit_timeout=*/false,
