@@ -347,6 +347,40 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testSetSyntheticExperimentState) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
+                       testSetSyntheticExperimentStateMultiProfile) {
+  ExecuteJsTest();
+  ASSERT_TRUE(base::test::RunUntil([]() {
+    std::vector<variations::ActiveGroupId> trials =
+        g_browser_process->metrics_service()
+            ->GetSyntheticTrialRegistry()
+            ->GetCurrentSyntheticFieldTrialsForTest();
+    variations::ActiveGroupId expected =
+        variations::MakeActiveGroupId("TestTrial", "MultiProfileDetected");
+    return std::ranges::any_of(trials, [&](const auto& trial) {
+      return trial.name == expected.name && trial.group == expected.group;
+    });
+  }));
+
+  // Now cut log file and see if Group2 is enabled.
+  g_browser_process->metrics_service()->NotifyLogsEventManagerForTesting(
+      metrics::MetricsLogsEventManager::LogEvent::kLogCreated, "Fakehash",
+      "Fake log created message...");
+
+  // Check that last registered group is registered on new log file...
+  ASSERT_TRUE(base::test::RunUntil([]() {
+    std::vector<variations::ActiveGroupId> trials =
+        g_browser_process->metrics_service()
+            ->GetSyntheticTrialRegistry()
+            ->GetCurrentSyntheticFieldTrialsForTest();
+    variations::ActiveGroupId expected =
+        variations::MakeActiveGroupId("TestTrial", "Group2");
+    return std::ranges::any_of(trials, [&](const auto& trial) {
+      return trial.name == expected.name && trial.group == expected.group;
+    });
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
                        testNotifyPanelWillOpenIsCalledOnce) {
   ExecuteJsTest();
 }

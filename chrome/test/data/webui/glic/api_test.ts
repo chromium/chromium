@@ -444,6 +444,12 @@ class ApiTests extends ApiTestFixtureBase {
     this.host.setSyntheticExperimentState('TestTrial', 'Enabled');
   }
 
+  async testSetSyntheticExperimentStateMultiProfile() {
+    assertTrue(!!this.host.setSyntheticExperimentState);
+    this.host.setSyntheticExperimentState('TestTrial', 'Group1');
+    this.host.setSyntheticExperimentState('TestTrial', 'Group2');
+  }
+
   private async waitForPanelState(kind: PanelStateKind): Promise<void> {
     assertTrue(!!this.host.getPanelState);
     const sequence = observeSequence(this.host.getPanelState());
